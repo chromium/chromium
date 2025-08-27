@@ -137,7 +137,7 @@ struct OmniboxPopupSelection {
       const AutocompleteInput& input,
       const AutocompleteResult& result,
       TemplateURLService* template_url_service,
-      const AutocompleteProviderClient* client,
+      bool aim_button_visible,
       Direction direction,
       Step step) const;
 
@@ -147,7 +147,7 @@ struct OmniboxPopupSelection {
       const AutocompleteInput& input,
       const AutocompleteResult& result,
       TemplateURLService* template_url_service,
-      const AutocompleteProviderClient* client,
+      bool aim_button_visible,
       Step step);
 };
 

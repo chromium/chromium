@@ -551,8 +551,10 @@ void OmniboxViewViews::SetFocus(bool is_user_initiated) {
   model()->ConsumeCtrlKey();
 }
 
-PageActionIconView* OmniboxViewViews::GetAiModePageActionIconView() {
-  if (!location_bar_view_) {
+PageActionIconView* OmniboxViewViews::GetAiModePageActionIconView() const {
+  // Verify location bar is fully initialized because the
+  // page_action_icon_controller may not be ready yet.
+  if (!location_bar_view_ || !location_bar_view_->IsInitialized()) {
     return nullptr;
   }
   return location_bar_view_->page_action_icon_controller()->GetIconView(
@@ -584,6 +586,11 @@ void OmniboxViewViews::ApplyFocusRingToAimButton(bool force_focus) {
   focus_ring->SchedulePaint();
 
   aim_page_action_icon_has_fake_focus_ = force_focus;
+}
+
+bool OmniboxViewViews::AimButtonVisible() const {
+  PageActionIconView* aim_icon_view = GetAiModePageActionIconView();
+  return aim_icon_view && aim_icon_view->GetVisible();
 }
 
 int OmniboxViewViews::GetTextWidth() const {
@@ -2344,17 +2351,8 @@ void OmniboxViewViews::UpdatePlaceholderTextColor() {
 }
 
 bool OmniboxViewViews::ShouldShowAimPlaceholderText() const {
-  // Verify location bar is fully initialized because
-  // ShouldShowAimPlaceholderText can be called during location bar
-  // initialization, before the page_action_icon_controller is initialized.
-  if (!location_bar_view_ || !location_bar_view_->IsInitialized()) {
-    return false;
-  }
   // If the AIM button is not visible, the placeholder text is not shown.
-  PageActionIconView* aim_icon_view =
-      location_bar_view_->page_action_icon_controller()
-          ->GetIconView(PageActionIconType::kAiMode);
-  if (!aim_icon_view || !aim_icon_view->GetVisible()) {
+  if (!AimButtonVisible()) {
     return false;
   }
   // The placeholder text should only be shown when the omnibox is visibly

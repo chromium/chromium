@@ -14,8 +14,6 @@
 #include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
-#include "components/omnibox/browser/fake_autocomplete_provider_client.h"
-#include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/testing_pref_service.h"
@@ -27,35 +25,17 @@ using Direction = OmniboxPopupSelection::Direction;
 using Step = OmniboxPopupSelection::Step;
 
 class OmniboxPopupSelectionTest : public testing::Test {
- public:
-  AutocompleteProviderClient* client() { return &client_; }
-
-  void SetAimEligibility(bool eligibility) {
-    MockAimEligibilityService* mock_aim_eligibility_service =
-        static_cast<MockAimEligibilityService*>(
-            client_.GetAimEligibilityService());
-    EXPECT_CALL(*mock_aim_eligibility_service, IsServerEligibilityEnabled())
-        .WillRepeatedly(testing::Return(eligibility));
-    EXPECT_CALL(*mock_aim_eligibility_service, IsAimLocallyEligible())
-        .WillRepeatedly(testing::Return(eligibility));
-    EXPECT_CALL(*mock_aim_eligibility_service, IsAimEligible())
-        .WillRepeatedly(testing::Return(eligibility));
-  }
-
  protected:
   void SetUp() override {}
 
-  void TearDown() override { SetAimEligibility(false); }
-
  private:
-  FakeAutocompleteProviderClient client_;
-
   base::test::TaskEnvironment task_environment_;
 };
 
 // Desktop has special selection handling for starter pack keyword mode.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(OmniboxPopupSelectionTest, SelectionWithKeywordMode) {
+  bool aim_button_visible = false;
   const std::u16string test_keyword = u"@bookmarks";
   TestOmniboxClient client;
   CHECK(client.GetTemplateURLService());
@@ -75,60 +55,55 @@ TEST_F(OmniboxPopupSelectionTest, SelectionWithKeywordMode) {
       nullptr, 1000, false, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
   result.match_at(1u)->associated_keyword->keyword = test_keyword;
 
-  auto autocomplete_provider_client = client.CreateAutocompleteProviderClient();
   OmniboxPopupSelection next = OmniboxPopupSelection(0u).GetNextSelection(
-      input, result, client.GetTemplateURLService(),
-      autocomplete_provider_client.get(), Direction::kForward,
-      Step::kWholeLine);
+      input, result, client.GetTemplateURLService(), aim_button_visible,
+      Direction::kForward, Step::kWholeLine);
   EXPECT_EQ(next.line, 1u);
   EXPECT_EQ(next.state, LineState::KEYWORD_MODE);
 
   next = OmniboxPopupSelection(0u).GetNextSelection(
-      input, result, client.GetTemplateURLService(),
-      autocomplete_provider_client.get(), Direction::kForward,
-      Step::kStateOrLine);
+      input, result, client.GetTemplateURLService(), aim_button_visible,
+      Direction::kForward, Step::kStateOrLine);
   EXPECT_EQ(next.line, 1u);
   EXPECT_EQ(next.state, LineState::KEYWORD_MODE);
 
   next = OmniboxPopupSelection(1u, LineState::KEYWORD_MODE)
              .GetNextSelection(input, result, client.GetTemplateURLService(),
-                               autocomplete_provider_client.get(),
-                               Direction::kForward, Step::kWholeLine);
+                               aim_button_visible, Direction::kForward,
+                               Step::kWholeLine);
   EXPECT_EQ(next.line, 2u);
   EXPECT_EQ(next.state, LineState::NORMAL);
 
   next = OmniboxPopupSelection(1u, LineState::KEYWORD_MODE)
              .GetNextSelection(input, result, client.GetTemplateURLService(),
-                               autocomplete_provider_client.get(),
-                               Direction::kForward, Step::kStateOrLine);
+                               aim_button_visible, Direction::kForward,
+                               Step::kStateOrLine);
   EXPECT_EQ(next.line, 2u);
   EXPECT_EQ(next.state, LineState::NORMAL);
 
   next = OmniboxPopupSelection(2u).GetNextSelection(
-      input, result, client.GetTemplateURLService(),
-      autocomplete_provider_client.get(), Direction::kForward,
-      Step::kWholeLine);
+      input, result, client.GetTemplateURLService(), aim_button_visible,
+      Direction::kForward, Step::kWholeLine);
   EXPECT_EQ(next.line, 0u);
   EXPECT_EQ(next.state, LineState::NORMAL);
 
   next = OmniboxPopupSelection(2u).GetNextSelection(
-      input, result, client.GetTemplateURLService(),
-      autocomplete_provider_client.get(), Direction::kForward,
-      Step::kStateOrLine);
+      input, result, client.GetTemplateURLService(), aim_button_visible,
+      Direction::kForward, Step::kStateOrLine);
   EXPECT_EQ(next.line, 2u);
   EXPECT_EQ(next.state, LineState::FOCUSED_BUTTON_THUMBS_UP);
 
   next = OmniboxPopupSelection(2u, LineState::FOCUSED_BUTTON_THUMBS_UP)
              .GetNextSelection(input, result, client.GetTemplateURLService(),
-                               autocomplete_provider_client.get(),
-                               Direction::kForward, Step::kStateOrLine);
+                               aim_button_visible, Direction::kForward,
+                               Step::kStateOrLine);
   EXPECT_EQ(next.line, 2u);
   EXPECT_EQ(next.state, LineState::FOCUSED_BUTTON_THUMBS_DOWN);
 
   next = OmniboxPopupSelection(2u, LineState::FOCUSED_BUTTON_THUMBS_DOWN)
              .GetNextSelection(input, result, client.GetTemplateURLService(),
-                               autocomplete_provider_client.get(),
-                               Direction::kForward, Step::kStateOrLine);
+                               aim_button_visible, Direction::kForward,
+                               Step::kStateOrLine);
   EXPECT_EQ(next.line, 0u);
   EXPECT_EQ(next.state, LineState::NORMAL);
 }
@@ -136,7 +111,7 @@ TEST_F(OmniboxPopupSelectionTest, SelectionWithKeywordMode) {
 TEST_F(OmniboxPopupSelectionTest, SelectionWithAIMButton) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(omnibox::kAiModeOmniboxEntryPoint);
-  SetAimEligibility(true);
+  bool aim_button_visible = true;
 
   AutocompleteInput input;
   AutocompleteResult result;
@@ -154,8 +129,8 @@ TEST_F(OmniboxPopupSelectionTest, SelectionWithAIMButton) {
     // Whole line stepping should skip the AIM button and just select the next
     // match.
     OmniboxPopupSelection next = initial.GetNextSelection(
-        input, result, /*template_url_service=*/nullptr,
-        /*client=*/client(), Direction::kForward, Step::kWholeLine);
+        input, result, /*template_url_service=*/nullptr, aim_button_visible,
+        Direction::kForward, Step::kWholeLine);
     EXPECT_EQ(next.line, 1u);
     EXPECT_EQ(next.state, LineState::NORMAL);
   }
@@ -164,22 +139,22 @@ TEST_F(OmniboxPopupSelectionTest, SelectionWithAIMButton) {
     // "Line or state" stepping should focus the AIM button associated with the
     // first match.
     OmniboxPopupSelection next = initial.GetNextSelection(
-        input, result, /*template_url_service=*/nullptr,
-        /*client=*/client(), Direction::kForward, Step::kStateOrLine);
+        input, result, /*template_url_service=*/nullptr, aim_button_visible,
+        Direction::kForward, Step::kStateOrLine);
     EXPECT_EQ(next.line, 0u);
     EXPECT_EQ(next.state, LineState::FOCUSED_BUTTON_AIM);
 
     // Then move to the next regular match.
     next = next.GetNextSelection(
-        input, result, /*template_url_service=*/nullptr,
-        /*client=*/client(), Direction::kForward, Step::kStateOrLine);
+        input, result, /*template_url_service=*/nullptr, aim_button_visible,
+        Direction::kForward, Step::kStateOrLine);
     EXPECT_EQ(next.line, 1u);
     EXPECT_EQ(next.state, LineState::NORMAL);
 
     // And then the one after that.
     next = next.GetNextSelection(
-        input, result, /*template_url_service=*/nullptr,
-        /*client=*/client(), Direction::kForward, Step::kStateOrLine);
+        input, result, /*template_url_service=*/nullptr, aim_button_visible,
+        Direction::kForward, Step::kStateOrLine);
     EXPECT_EQ(next.line, 2u);
     EXPECT_EQ(next.state, LineState::NORMAL);
   }
@@ -188,7 +163,7 @@ TEST_F(OmniboxPopupSelectionTest, SelectionWithAIMButton) {
 TEST_F(OmniboxPopupSelectionTest, SelectionWithAIMButtonZeroInput) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(omnibox::kAiModeOmniboxEntryPoint);
-  SetAimEligibility(true);
+  bool aim_button_visible = true;
 
   AutocompleteInput input;
   // INTERACTION_FOCUS indicates that there is no user input.
@@ -209,8 +184,8 @@ TEST_F(OmniboxPopupSelectionTest, SelectionWithAIMButtonZeroInput) {
     // Whole line stepping should skip the AIM button and just select the first
     // match.
     OmniboxPopupSelection next = initial.GetNextSelection(
-        input, result, /*template_url_service=*/nullptr,
-        /*client=*/client(), Direction::kForward, Step::kWholeLine);
+        input, result, /*template_url_service=*/nullptr, aim_button_visible,
+        Direction::kForward, Step::kWholeLine);
     EXPECT_EQ(next.line, 0u);
     EXPECT_EQ(next.state, LineState::NORMAL);
   }
@@ -219,22 +194,22 @@ TEST_F(OmniboxPopupSelectionTest, SelectionWithAIMButtonZeroInput) {
     // "Line or state" stepping should focus the AIM button, which is first in
     // the selection order when we're in zero suggest state.
     OmniboxPopupSelection next = initial.GetNextSelection(
-        input, result, /*template_url_service=*/nullptr,
-        /*client=*/client(), Direction::kForward, Step::kStateOrLine);
+        input, result, /*template_url_service=*/nullptr, aim_button_visible,
+        Direction::kForward, Step::kStateOrLine);
     EXPECT_EQ(next.line, OmniboxPopupSelection::kNoMatch);
     EXPECT_EQ(next.state, LineState::FOCUSED_BUTTON_AIM);
 
     // Then move to the first regular match.
     next = next.GetNextSelection(
-        input, result, /*template_url_service=*/nullptr,
-        /*client=*/client(), Direction::kForward, Step::kStateOrLine);
+        input, result, /*template_url_service=*/nullptr, aim_button_visible,
+        Direction::kForward, Step::kStateOrLine);
     EXPECT_EQ(next.line, 0u);
     EXPECT_EQ(next.state, LineState::NORMAL);
 
     // And then the one after that.
     next = next.GetNextSelection(
-        input, result, /*template_url_service=*/nullptr,
-        /*client=*/client(), Direction::kForward, Step::kStateOrLine);
+        input, result, /*template_url_service=*/nullptr, aim_button_visible,
+        Direction::kForward, Step::kStateOrLine);
     EXPECT_EQ(next.line, 1u);
     EXPECT_EQ(next.state, LineState::NORMAL);
   }

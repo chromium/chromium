@@ -157,6 +157,9 @@ class OmniboxView {
   // which is to show the focus ring when the button has focus.
   virtual void ApplyFocusRingToAimButton(bool force_focus) {}
 
+  // Returns true if the AI mode entrypoint button is visible.
+  virtual bool AimButtonVisible() const = 0;
+
   // Shows or hides the caret based on whether the model's is_caret_visible() is
   // true.
   virtual void ApplyCaretVisibility() = 0;

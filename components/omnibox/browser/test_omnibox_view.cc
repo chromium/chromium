@@ -53,6 +53,10 @@ void TestOmniboxView::SelectAll(bool reversed) {
     selection_ = gfx::Range(0, text_.size());
 }
 
+bool TestOmniboxView::AimButtonVisible() const {
+  return false;
+}
+
 void TestOmniboxView::OnTemporaryTextMaybeChanged(
     const std::u16string& display_text,
     const AutocompleteMatch& match,
