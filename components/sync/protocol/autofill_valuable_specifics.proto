@@ -21,7 +21,7 @@ message Any {
   optional string type_url = 1;
 
   // Must be a valid serialized protocol buffer of the above specified type.
-  required bytes value = 2;
+  optional bytes value = 2;
 }
 
 // Represents a loyalty card from Google Wallet.
