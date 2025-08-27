@@ -44,24 +44,7 @@ BINDGEN_CROSS_TARGET_BUILD_DIR = os.path.join(THIRD_PARTY_DIR,
 NCURSESW_CIPD_LINUX_AMD_PATH = 'infra/3pp/static_libs/ncursesw/linux-amd64'
 NCURSESW_CIPD_LINUX_AMD_VERSION = '6.0.chromium.1'
 
-RUST_BETA_SYSROOT_DIR = os.path.join(THIRD_PARTY_DIR,
-                                     'rust-toolchain-intermediate',
-                                     'beta-sysroot')
-
 EXE = '.exe' if sys.platform == 'win32' else ''
-
-
-def InstallRustBetaSysroot(rust_git_hash, target_triples):
-    if os.path.exists(RUST_BETA_SYSROOT_DIR):
-        RmTree(RUST_BETA_SYSROOT_DIR)
-    InstallBetaPackage(FetchBetaPackage('cargo', rust_git_hash),
-                       RUST_BETA_SYSROOT_DIR)
-    InstallBetaPackage(FetchBetaPackage('rustc', rust_git_hash),
-                       RUST_BETA_SYSROOT_DIR)
-    for t in target_triples:
-        InstallBetaPackage(
-            FetchBetaPackage('rust-std', rust_git_hash, triple=t),
-            RUST_BETA_SYSROOT_DIR)
 
 
 def FetchNcurseswLibrary():

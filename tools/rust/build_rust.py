@@ -119,6 +119,10 @@ RUST_HOST_LLVM_INSTALL_DIR = os.path.join(CHROMIUM_DIR, 'third_party',
                                           'rust-toolchain-intermediate',
                                           'llvm-host-install')
 
+RUST_BETA_SYSROOT_DIR = os.path.join(THIRD_PARTY_DIR,
+                                     'rust-toolchain-intermediate',
+                                     'beta-sysroot')
+
 # CIPD Versions from:
 # - List all platforms
 # cipd ls infra/3pp/static_libs/openssl/
@@ -153,6 +157,19 @@ TEST_SUITES = [
     'tests/codegen-llvm',
     'tests/ui',
 ]
+
+
+def InstallRustBetaSysroot(rust_git_hash, target_triples):
+    if os.path.exists(RUST_BETA_SYSROOT_DIR):
+        RmTree(RUST_BETA_SYSROOT_DIR)
+    InstallBetaPackage(FetchBetaPackage('cargo', rust_git_hash),
+                       RUST_BETA_SYSROOT_DIR)
+    InstallBetaPackage(FetchBetaPackage('rustc', rust_git_hash),
+                       RUST_BETA_SYSROOT_DIR)
+    for t in target_triples:
+        InstallBetaPackage(
+            FetchBetaPackage('rust-std', rust_git_hash, triple=t),
+            RUST_BETA_SYSROOT_DIR)
 
 
 def AddOpenSSLToEnv():
@@ -905,6 +922,7 @@ def main():
             TeeCmd(build_cmd, log, fail_hard=False)
 
         if args.gnrt_stdlib:
+            InstallRustBetaSysroot(checkout_revision, [RustTargetTriple()])
             build_cmd = [
                 sys.executable,
                 os.path.join(THIS_DIR, 'gnrt_stdlib.py'), '--skip-prep'

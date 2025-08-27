@@ -21,15 +21,15 @@ sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'crates'))
 from run_cargo import RunCargo
 
-from build_bindgen import (EXE, RUST_BETA_SYSROOT_DIR, InstallRustBetaSysroot)
-from build_rust import (RustTargetTriple, RUST_SRC_DIR)
+from build_bindgen import (EXE)
+from build_rust import (RustTargetTriple, RUST_SRC_DIR, RUST_BETA_SYSROOT_DIR,
+                        InstallRustBetaSysroot)
 from update_rust import (RUST_REVISION)
 
 BUILD_RUST_PY_PATH = os.path.join(CHROMIUM_DIR, 'tools', 'rust',
                                   'build_rust.py')
 GNRT_CARGO_TOML_PATH = os.path.join(CHROMIUM_DIR, 'tools', 'crates', 'gnrt',
                                     'Cargo.toml')
-
 
 def main():
     parser = argparse.ArgumentParser(
