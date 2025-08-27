@@ -55,6 +55,11 @@ class NewTabPagePreloadPipelineManager
   friend content::WebContentsUserData<NewTabPagePreloadPipelineManager>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
+  // Resets the pipeline to allow another preloading attempt if a given url is
+  // different from the started one. Pipeline creation will follow the check if
+  // a pipeline hasn't existed.
+  void EnsurePipelineForUrl(const GURL& url);
+
   std::unique_ptr<NewTabPagePreloadPipeline> pipeline_;
 
   base::WeakPtrFactory<NewTabPagePreloadPipelineManager> weak_factory_{this};

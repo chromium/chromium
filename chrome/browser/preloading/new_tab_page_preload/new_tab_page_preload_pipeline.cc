@@ -41,11 +41,11 @@ NewTabPagePreloadPipeline::NewTabPagePreloadPipeline(GURL url)
 
 NewTabPagePreloadPipeline::~NewTabPagePreloadPipeline() = default;
 
-bool NewTabPagePreloadPipeline::StartPrerender(
+void NewTabPagePreloadPipeline::StartPrerender(
     content::WebContents& web_contents,
     content::PreloadingPredictor predictor) {
-  if (prerender_handle_ && prerender_handle_->IsValid()) {
-    return true;
+  if (prerender_handle_) {
+    return;
   }
 
   // Helpers to create content::PreloadingAttempt.
@@ -65,14 +65,14 @@ bool NewTabPagePreloadPipeline::StartPrerender(
   if (is_search_url) {
     preloading_attempt->SetEligibility(ToPreloadingEligibility(
         ChromePreloadingEligibility::KDisallowSearchUrl));
-    return false;
+    return;
   }
 
   // NewTabPage only allows https protocol.
   if (!url_.SchemeIs("https")) {
     preloading_attempt->SetEligibility(
         content::PreloadingEligibility::kHttpsOnly);
-    return false;
+    return;
   }
 
   prerender_handle_ = web_contents.StartPrerendering(
@@ -91,6 +91,4 @@ bool NewTabPagePreloadPipeline::StartPrerender(
       base::BindRepeating(&page_load_metrics::NavigationHandleUserData::
                               AttachNewTabPageNavigationHandleUserData),
       /*allow_reuse=*/false);
-
-  return prerender_handle_ != nullptr;
 }

@@ -38,18 +38,17 @@ NewTabPagePreloadPipelineManager::GetOrCreateForWebContents(
 void NewTabPagePreloadPipelineManager::StartPrerender(
     const GURL& url,
     content::PreloadingPredictor predictor) {
-  if (pipeline_) {
-    // TODO(crbug.com/421941586): Introduce a CHECK here to ensure the pipeline
-    // contains the same url.
-    // Prerender is expected to be reset when mouseExit happens or every primary
-    // page changed, so if a pipeline is present, this is going to be a
-    // duplicate attempt.
-    return;
+  EnsurePipelineForUrl(url);
+  pipeline_->StartPrerender(*web_contents(), predictor);
+}
+
+void NewTabPagePreloadPipelineManager::EnsurePipelineForUrl(const GURL& url) {
+  if (pipeline_ && pipeline_->url() != url) {
+    pipeline_.reset();
   }
 
-  pipeline_ = std::make_unique<NewTabPagePreloadPipeline>(url);
-  if (!pipeline_->StartPrerender(*web_contents(), predictor)) {
-    pipeline_.reset();
+  if (!pipeline_) {
+    pipeline_ = std::make_unique<NewTabPagePreloadPipeline>(url);
   }
 }
 
