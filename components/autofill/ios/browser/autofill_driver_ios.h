@@ -275,7 +275,7 @@ class AutofillDriverIOS final : public AutofillDriver,
   base::flat_set<RemoteFrameToken> known_child_frames_;
 
   // AutofillDriverIOSBridge instance that is passed in.
-  __unsafe_unretained id<AutofillDriverIOSBridge> bridge_;
+  __weak id<AutofillDriverIOSBridge> bridge_;
 
   // Whether the initial processing has been done (JavaScript observers have
   // been enabled and the forms have been extracted).
