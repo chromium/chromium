@@ -339,10 +339,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
     host_resolver_factory_ = std::move(host_resolver_factory);
   }
 
-  bool split_auth_cache_by_network_isolation_key() const {
-    return split_auth_cache_by_network_isolation_key_;
-  }
-
   // From initialization on, this will be non-null and will always point to the
   // same object (although the object's state can change on updates to the
   // commitments). As a consequence, it's safe to store long-lived copies of the
@@ -516,10 +512,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       raw_headers_access_origins_by_pid_;
 
   bool quic_disabled_ = false;
-
-  // Whether new NetworkContexts will be configured to partition their
-  // HttpAuthCaches by NetworkIsolationKey.
-  bool split_auth_cache_by_network_isolation_key_ = false;
 
   // Globally-scoped cryptographic state for the Trust Tokens protocol
   // (https://github.com/wicg/trust-token-api), updated via a Mojo IPC and
