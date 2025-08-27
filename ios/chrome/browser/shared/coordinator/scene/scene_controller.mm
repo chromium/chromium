@@ -796,7 +796,10 @@ void OnListFamilyMembersResponse(
 
 - (void)sceneState:(SceneState*)sceneState
     hasPendingURLs:(NSSet<UIOpenURLContext*>*)URLContexts {
-  [self handleURLContextsToOpen];
+  // Only process the event if the profile is ready.
+  if (sceneState.profileState.initStage >= ProfileInitStage::kFinal) {
+    [self handleURLContextsToOpen];
+  }
 }
 
 - (void)performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem
@@ -1197,7 +1200,11 @@ void OnListFamilyMembersResponse(
     if (!IsFullscreenSigninPromoManagerMigrationEnabled()) {
       [self tryPresentSigninUpgradePromo];
     }
+
     [self handleExternalIntents];
+    if (self.sceneState.URLContextsToOpen.count != 0) {
+      [self handleURLContextsToOpen];
+    }
 
     if (!initializingUIInColdStart &&
         transitionedToForegroundActiveFromBackground &&
