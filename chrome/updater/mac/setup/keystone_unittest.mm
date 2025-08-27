@@ -19,6 +19,7 @@
 #include "base/version.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/updater/registration_data.h"
+#include "chrome/updater/updater_branding.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {
@@ -56,8 +57,8 @@ TEST_F(KeystoneTest, CreateEmptyPlistFile) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   // Verify plist file is created if not present.
-  const base::FilePath plist_path =
-      temp_dir.GetPath().Append("subdir").Append("org.chromium.Keystone.plist");
+  const base::FilePath plist_path = temp_dir.GetPath().Append("subdir").Append(
+      LEGACY_GOOGLE_UPDATE_APPID ".plist");
   EXPECT_TRUE(CreateLegacyPlistFileForTesting(
       UpdaterScope::kUser, temp_dir.GetPath(), "subdir", ".plist"));
   EXPECT_TRUE(base::PathExists(plist_path));
