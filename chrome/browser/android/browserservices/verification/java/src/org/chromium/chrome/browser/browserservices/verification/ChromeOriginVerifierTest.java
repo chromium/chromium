@@ -86,6 +86,16 @@ public class ChromeOriginVerifierTest {
     private volatile Origin mLastOrigin;
     private volatile boolean mLastVerified;
 
+    private boolean verify(ChromeOriginVerifier verifier, Origin origin)
+            throws InterruptedException {
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> verifier.start(new TestOriginVerificationListener(), origin));
+        Assert.assertTrue(
+                mVerificationResultSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
+        return mLastVerified;
+    }
+
     @Before
     public void setUp() throws Exception {
         mActivityTestRule.startOnBlankPage();
@@ -112,14 +122,7 @@ public class ChromeOriginVerifierTest {
     @Test
     @SmallTest
     public void testOnlyHttpsAllowed() throws InterruptedException {
-        PostTask.postTask(
-                TaskTraits.UI_DEFAULT,
-                () ->
-                        mHandleAllUrlsVerifier.start(
-                                new TestOriginVerificationListener(), mHttpOrigin));
-        Assert.assertTrue(
-                mVerificationResultSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
-        Assert.assertFalse(mLastVerified);
+        Assert.assertFalse(verify(mHandleAllUrlsVerifier, mHttpOrigin));
     }
 
     @Test
@@ -132,14 +135,7 @@ public class ChromeOriginVerifierTest {
                                 PACKAGE_NAME,
                                 mHttpsOrigin,
                                 CustomTabsService.RELATION_USE_AS_ORIGIN));
-        PostTask.postTask(
-                TaskTraits.UI_DEFAULT,
-                () ->
-                        mUseAsOriginVerifier.start(
-                                new TestOriginVerificationListener(), mHttpsOrigin));
-        Assert.assertTrue(
-                mVerificationResultSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
-        Assert.assertTrue(mLastVerified);
+        Assert.assertTrue(verify(mUseAsOriginVerifier, mHttpsOrigin));
         Assert.assertTrue(
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
@@ -170,22 +166,12 @@ public class ChromeOriginVerifierTest {
                 ChromeOriginVerifierFactory.create(
                         PACKAGE_NAME, CustomTabsService.RELATION_HANDLE_ALL_URLS, null);
 
-        PostTask.postTask(
-                TaskTraits.UI_DEFAULT,
-                () -> verifier.start(new TestOriginVerificationListener(), mHttpsOrigin));
-        Assert.assertTrue(
-                mVerificationResultSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
-        Assert.assertFalse(mLastVerified);
+        Assert.assertFalse(verify(verifier, mHttpsOrigin));
 
         // Try again, but this time allowlist the package/origin.
         mExternalAuthUtils.addToAllowlist(PACKAGE_NAME, mHttpsOrigin);
-        PostTask.postTask(
-                TaskTraits.UI_DEFAULT,
-                () -> verifier.start(new TestOriginVerificationListener(), mHttpsOrigin));
-        Assert.assertTrue(
-                mVerificationResultSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
 
-        Assert.assertTrue(mLastVerified);
+        Assert.assertTrue(verify(verifier, mHttpsOrigin));
     }
 
     @Test
@@ -222,5 +208,32 @@ public class ChromeOriginVerifierTest {
         Assert.assertTrue(
                 verifier.isAllowlisted(
                         PACKAGE_NAME, mHttpsOrigin, "delegate_permission/common.handle_all_urls"));
+    }
+
+    @Test
+    @SmallTest
+    @CommandLineFlags.Add({
+        ChromeSwitches.DISABLE_DIGITAL_ASSET_LINK_VERIFICATION
+                + "=https://www.example.com;https://not.exist.com;http://www.android.com"
+    })
+    public void testVerificationSkipByCommandline() throws InterruptedException {
+        ChromeOriginVerifier verifier =
+                ChromeOriginVerifierFactory.create(
+                        PACKAGE_NAME, CustomTabsService.RELATION_HANDLE_ALL_URLS, null);
+
+        Assert.assertTrue(verify(verifier, mHttpsOrigin));
+        Assert.assertTrue(verify(verifier, mHttpOrigin));
+
+        Origin origin = Origin.create("https://doesnot.exist.com");
+
+        Assert.assertFalse(verify(verifier, origin));
+
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () ->
+                        ChromeOriginVerifier.addVerificationOverride(
+                                PACKAGE_NAME, origin, CustomTabsService.RELATION_HANDLE_ALL_URLS));
+
+        Assert.assertTrue(verify(verifier, origin));
     }
 }
