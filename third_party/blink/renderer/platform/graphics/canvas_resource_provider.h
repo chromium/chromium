@@ -296,8 +296,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // `was_copy_performed` will be set to true if it is non-null.
   virtual scoped_refptr<gpu::ClientSharedImage>
   GetBackingClientSharedImageForExternalWrite(
-      gpu::SyncToken* internal_access_sync_token,
       gpu::SharedImageUsageSet required_shared_image_usages,
+      gpu::SyncToken& internal_access_sync_token,
       bool* was_copy_performed = nullptr) {
     return nullptr;
   }
@@ -311,18 +311,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
     NOTREACHED();
   }
 
-  // Returns the ClientSharedImage backing this CanvasResourceProvider, if one
-  // exists, for the purpose of allowing the caller to overwrite its contents.
-  // First flushes the resource and signals that an external write will occur on
-  // it.
-  // TODO(crbug.com/340922308): Eliminate this method in favor of all callers
-  // calling the above method with explanations at callsites for why they don't
-  // need to wait for any internal writes to finish.
-  virtual scoped_refptr<gpu::ClientSharedImage>
-  GetBackingClientSharedImageForOverwrite() {
-    return GetBackingClientSharedImageForExternalWrite(
-        /*internal_access_sync_token=*/nullptr, gpu::SharedImageUsageSet());
-  }
   virtual gpu::SharedImageUsageSet GetSharedImageUsageFlags() const {
     NOTREACHED();
   }

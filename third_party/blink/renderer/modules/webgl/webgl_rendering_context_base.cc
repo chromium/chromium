@@ -2148,7 +2148,7 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
     gpu::SyncToken sync_token;
     auto client_si =
         resource_provider->GetBackingClientSharedImageForExternalWrite(
-            &sync_token, gpu::SharedImageUsageSet());
+            gpu::SharedImageUsageSet(), sync_token);
     if (!client_si) {
       return false;
     }

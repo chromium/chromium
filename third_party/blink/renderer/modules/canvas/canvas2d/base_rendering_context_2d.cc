@@ -1511,10 +1511,9 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
   scoped_refptr<gpu::ClientSharedImage> client_si =
       GetResourceProviderForCanvas2D()
           ->GetBackingClientSharedImageForExternalWrite(
-              &canvas_access_sync_token,
               gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
                   gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE,
-              &performed_copy);
+              canvas_access_sync_token, &performed_copy);
   if (access_options->requireZeroCopy() && performed_copy) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,

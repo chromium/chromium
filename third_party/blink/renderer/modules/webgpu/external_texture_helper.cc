@@ -405,7 +405,7 @@ ExternalTexture CreateExternalTexture(
     gpu::SyncToken sync_token;
     auto client_si =
         resource_provider->GetBackingClientSharedImageForExternalWrite(
-            &sync_token, gpu::SharedImageUsageSet());
+            gpu::SharedImageUsageSet(), sync_token);
 
     // The returned sync token is from the SharedGpuContext.
     sync_token = video_renderer->CopyVideoFrameToSharedImage(
