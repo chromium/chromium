@@ -348,6 +348,34 @@ public class TouchToFillPaymentMethodRenderTest {
                     /* shouldDisplayTermsAvailable= */ false,
                     LONG_CARD_NAME_CARD.getGUID(),
                     LONG_CARD_NAME_CARD.getIsLocal());
+    private static final AutofillSuggestion BNPL_SUGGESTION =
+            createCreditCardSuggestion(
+                    /* label= */ "Pay later options",
+                    /* secondaryLabel= */ "",
+                    /* subLabel= */ "Available for purchases over $35",
+                    /* secondarySubLabel= */ "",
+                    /* labelContentDescription= */ "",
+                    /* suggestionType= */ SuggestionType.BNPL_ENTRY,
+                    /* customIconUrl= */ new GURL(""),
+                    /* iconId= */ R.drawable.bnpl_icon_generic,
+                    /* applyDeactivatedStyle= */ false,
+                    /* shouldDisplayTermsAvailable= */ false,
+                    /* guid= */ "",
+                    /* isLocalPaymentsMethod= */ false);
+    private static final AutofillSuggestion DEACTIVATED_BNPL_SUGGESTION =
+            createCreditCardSuggestion(
+                    /* label= */ "Pay later options",
+                    /* secondaryLabel= */ "",
+                    /* subLabel= */ "Available for purchases over $35",
+                    /* secondarySubLabel= */ "",
+                    /* labelContentDescription= */ "",
+                    /* suggestionType= */ SuggestionType.BNPL_ENTRY,
+                    /* customIconUrl= */ new GURL(""),
+                    /* iconId= */ R.drawable.bnpl_icon_generic,
+                    /* applyDeactivatedStyle= */ true,
+                    /* shouldDisplayTermsAvailable= */ false,
+                    /* guid= */ "",
+                    /* isLocalPaymentsMethod= */ false);
 
     private BottomSheetController mBottomSheetController;
     private TouchToFillPaymentMethodCoordinator mCoordinator;
@@ -616,6 +644,39 @@ public class TouchToFillPaymentMethodRenderTest {
         View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
         mRenderTestRule.render(
                 bottomSheetView, "touch_to_fill_credit_card_sheet_server_card_with_long_name");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testShowsBnplSuggestion() throws IOException {
+        runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator.showPaymentMethods(
+                            List.of(VISA_SUGGESTION, BNPL_SUGGESTION),
+                            /* shouldShowScanCreditCard= */ true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
+        mRenderTestRule.render(bottomSheetView, "touch_to_fill_credit_card_sheet_bnpl_suggestion");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testShowsDeactivatedBnplSuggestion() throws IOException {
+        runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator.showPaymentMethods(
+                            List.of(VISA_SUGGESTION, DEACTIVATED_BNPL_SUGGESTION),
+                            /* shouldShowScanCreditCard= */ true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
+        mRenderTestRule.render(
+                bottomSheetView, "touch_to_fill_credit_card_sheet_deactivated_bnpl_suggestion");
     }
 
     @Test

@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FOCUSED_VIEW_ID_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.ALL_LOYALTY_CARDS;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FILL_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FOOTER;
@@ -161,6 +162,10 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
                 TERMS_LABEL,
                 TouchToFillPaymentMethodViewBinder::createTermsLabelView,
                 TouchToFillPaymentMethodViewBinder::bindTermsLabelView);
+        adapter.registerType(
+                BNPL,
+                TouchToFillPaymentMethodViewBinder::createBnplItemView,
+                TouchToFillPaymentMethodViewBinder::bindBnplItemView);
         view.setSheetItemListAdapter(adapter);
     }
 

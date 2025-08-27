@@ -33,6 +33,11 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_NUMBER_OF_IBANS_SHOWN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_NUMBER_OF_LOYALTY_CARDS_SHOWN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BACK_PRESS_HANDLER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ICON_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.IS_ENABLED;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.ON_BNPL_CLICK_ACTION;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.PRIMARY_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.SECONDARY_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties.ON_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties.TEXT_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CURRENT_SCREEN;
@@ -55,6 +60,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_VALUE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.ON_IBAN_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.ALL_LOYALTY_CARDS;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FILL_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FOOTER;
@@ -311,6 +317,34 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                     /* shouldDisplayTermsAvailable= */ true,
                     VIRTUAL_CARD.getGUID(),
                     VIRTUAL_CARD.getIsLocal());
+    private static final AutofillSuggestion BNPL_SUGGESTION =
+            createCreditCardSuggestion(
+                    /* label= */ "Pay later options",
+                    /* secondaryLabel= */ "",
+                    /* subLabel= */ "Available for purchases over $35",
+                    /* secondarySubLabel= */ "",
+                    /* labelContentDescription= */ "",
+                    /* suggestionType= */ SuggestionType.BNPL_ENTRY,
+                    /* customIconUrl= */ new GURL(""),
+                    /* iconId= */ R.drawable.bnpl_icon_generic,
+                    /* applyDeactivatedStyle= */ false,
+                    /* shouldDisplayTermsAvailable= */ false,
+                    /* guid= */ "",
+                    /* isLocalPaymentsMethod= */ false);
+    private static final AutofillSuggestion DEACTIVATED_BNPL_SUGGESTION =
+            createCreditCardSuggestion(
+                    /* label= */ "Pay later options",
+                    /* secondaryLabel= */ "",
+                    /* subLabel= */ "Available for purchases over $35",
+                    /* secondarySubLabel= */ "",
+                    /* labelContentDescription= */ "",
+                    /* suggestionType= */ SuggestionType.BNPL_ENTRY,
+                    /* customIconUrl= */ new GURL(""),
+                    /* iconId= */ R.drawable.bnpl_icon_generic,
+                    /* applyDeactivatedStyle= */ true,
+                    /* shouldDisplayTermsAvailable= */ false,
+                    /* guid= */ "",
+                    /* isLocalPaymentsMethod= */ false);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -537,6 +571,87 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertThat(
                 cardSuggestionModel.get().get(SECOND_LINE_LABEL),
                 is(VIRTUAL_CARD_SUGGESTION_WITH_CARD_BENEFITS.getSecondarySublabel()));
+    }
+
+    @Test
+    public void testShowCreditCardSuggestionsWithBnplSuggestion() throws TimeoutException {
+        mCoordinator.showPaymentMethods(
+                List.of(VISA_SUGGESTION, BNPL_SUGGESTION), /* shouldShowScanCreditCard= */ false);
+
+        assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        TOUCH_TO_FILL_NUMBER_OF_CARDS_SHOWN, 2));
+        ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+        assertThat(getModelsOfType(itemList, CREDIT_CARD).size(), is(1));
+        assertThat(getModelsOfType(itemList, BNPL).size(), is(1));
+        assertThat(getModelsOfType(itemList, HEADER).size(), is(1));
+        assertThat(getModelsOfType(itemList, FOOTER).size(), is(1));
+        assertThat(getModelsOfType(itemList, FILL_BUTTON).size(), is(0));
+
+        Optional<PropertyModel> cardSuggestionModel =
+                getCardSuggestionModel(itemList, VISA_SUGGESTION);
+        assertTrue(cardSuggestionModel.isPresent());
+        assertThat(cardSuggestionModel.get().get(MAIN_TEXT), is(VISA_SUGGESTION.getLabel()));
+        assertThat(
+                cardSuggestionModel.get().get(MINOR_TEXT), is(VISA_SUGGESTION.getSecondaryLabel()));
+        assertThat(
+                cardSuggestionModel.get().get(FIRST_LINE_LABEL), is(VISA_SUGGESTION.getSublabel()));
+        assertFalse(cardSuggestionModel.get().get(APPLY_DEACTIVATED_STYLE));
+
+        Optional<PropertyModel> bnplSuggestionModel =
+                getBnplSuggestionModel(itemList, BNPL_SUGGESTION);
+        assertTrue(bnplSuggestionModel.isPresent());
+        assertThat(bnplSuggestionModel.get().get(PRIMARY_TEXT), is(BNPL_SUGGESTION.getLabel()));
+        assertThat(
+                bnplSuggestionModel.get().get(SECONDARY_TEXT), is(BNPL_SUGGESTION.getSublabel()));
+        assertThat(bnplSuggestionModel.get().get(BNPL_ICON_ID), is(BNPL_SUGGESTION.getIconId()));
+        assertNotNull(bnplSuggestionModel.get().get(ON_BNPL_CLICK_ACTION));
+        assertTrue(bnplSuggestionModel.get().get(IS_ENABLED));
+    }
+
+    @Test
+    public void testShowCreditCardSuggestionsWithDeactivatedBnplSuggestion()
+            throws TimeoutException {
+        mCoordinator.showPaymentMethods(
+                List.of(VISA_SUGGESTION, DEACTIVATED_BNPL_SUGGESTION),
+                /* shouldShowScanCreditCard= */ false);
+
+        assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        TOUCH_TO_FILL_NUMBER_OF_CARDS_SHOWN, 2));
+        ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+        assertThat(getModelsOfType(itemList, CREDIT_CARD).size(), is(1));
+        assertThat(getModelsOfType(itemList, BNPL).size(), is(1));
+        assertThat(getModelsOfType(itemList, HEADER).size(), is(1));
+        assertThat(getModelsOfType(itemList, FOOTER).size(), is(1));
+        assertThat(getModelsOfType(itemList, FILL_BUTTON).size(), is(0));
+
+        Optional<PropertyModel> cardSuggestionModel =
+                getCardSuggestionModel(itemList, VISA_SUGGESTION);
+        assertTrue(cardSuggestionModel.isPresent());
+        assertThat(cardSuggestionModel.get().get(MAIN_TEXT), is(VISA_SUGGESTION.getLabel()));
+        assertThat(
+                cardSuggestionModel.get().get(MINOR_TEXT), is(VISA_SUGGESTION.getSecondaryLabel()));
+        assertThat(
+                cardSuggestionModel.get().get(FIRST_LINE_LABEL), is(VISA_SUGGESTION.getSublabel()));
+        assertFalse(cardSuggestionModel.get().get(APPLY_DEACTIVATED_STYLE));
+
+        Optional<PropertyModel> bnplSuggestionModel =
+                getBnplSuggestionModel(itemList, DEACTIVATED_BNPL_SUGGESTION);
+        assertTrue(bnplSuggestionModel.isPresent());
+        assertThat(
+                bnplSuggestionModel.get().get(PRIMARY_TEXT),
+                is(DEACTIVATED_BNPL_SUGGESTION.getLabel()));
+        assertThat(
+                bnplSuggestionModel.get().get(SECONDARY_TEXT),
+                is(DEACTIVATED_BNPL_SUGGESTION.getSublabel()));
+        assertThat(
+                bnplSuggestionModel.get().get(BNPL_ICON_ID),
+                is(DEACTIVATED_BNPL_SUGGESTION.getIconId()));
+        assertNotNull(bnplSuggestionModel.get().get(ON_BNPL_CLICK_ACTION));
+        assertFalse(bnplSuggestionModel.get().get(IS_ENABLED));
     }
 
     @Test
@@ -1277,6 +1392,22 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                                                 || item.model
                                                         .get(SECOND_LINE_LABEL)
                                                         .equals(suggestion.getSecondarySublabel())))
+                .findFirst()
+                .map(item -> item.model);
+    }
+
+    private static Optional<PropertyModel> getBnplSuggestionModel(
+            ModelList items, AutofillSuggestion suggestion) {
+        return StreamSupport.stream(items.spliterator(), false)
+                .filter(
+                        item ->
+                                item.type == BNPL
+                                        && item.model
+                                                .get(PRIMARY_TEXT)
+                                                .equals(suggestion.getLabel())
+                                        && item.model
+                                                .get(SECONDARY_TEXT)
+                                                .equals(suggestion.getSublabel()))
                 .findFirst()
                 .map(item -> item.model);
     }

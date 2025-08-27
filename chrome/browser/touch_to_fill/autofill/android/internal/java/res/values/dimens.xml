@@ -11,4 +11,9 @@ found in the LICENSE file.
     <dimen name="ttf_for_payments_menu_item_icon_padding">12dp</dimen>
     <dimen name="ttf_for_payments_terms_label_margin_horizontal">8dp</dimen>
     <dimen name="ttf_for_payments_terms_label_margin_top">18dp</dimen>
+    <dimen name="ttf_for_sheet_item_padding">16dp</dimen>
+    <dimen name="ttf_for_sheet_item_margin_bottom">2dp</dimen>
+    <dimen name="ttf_for_sheet_item_margin_horizontal">8dp</dimen>
+    <dimen name="ttf_for_sheet_item_icon_margin_end">16dp</dimen>
+    <dimen name="ttf_for_sheet_item_layout_margin_start">4dp</dimen>
 </resources>

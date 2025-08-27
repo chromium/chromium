@@ -4,6 +4,13 @@
 
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ICON_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ITEM_COLLECTION_INFO;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.IS_ENABLED;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.NON_TRANSFORMING_BNPL_SUGGESTION_KEYS;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.ON_BNPL_CLICK_ACTION;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.PRIMARY_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.SECONDARY_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties.ON_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties.TEXT_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CURRENT_SCREEN;
@@ -30,6 +37,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.NON_TRANSFORMING_IBAN_KEYS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.ON_IBAN_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.ALL_LOYALTY_CARDS;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FILL_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FOOTER;
@@ -244,12 +252,23 @@ class TouchToFillPaymentMethodMediator {
 
         for (int i = 0; i < mSuggestions.size(); ++i) {
             AutofillSuggestion suggestion = mSuggestions.get(i);
-            final PropertyModel model =
-                    createCardSuggestionModel(
-                            suggestion,
-                            new FillableItemCollectionInfo(i + 1, mSuggestions.size()),
-                            cardImageFunction);
-            sheetItems.add(new ListItem(CREDIT_CARD, model));
+            if (suggestion.getSuggestionType() == SuggestionType.BNPL_ENTRY) {
+                sheetItems.add(
+                        new ListItem(
+                                BNPL,
+                                createBnplSuggestionModel(
+                                        suggestion,
+                                        new FillableItemCollectionInfo(
+                                                i + 1, mSuggestions.size()))));
+            } else {
+                sheetItems.add(
+                        new ListItem(
+                                CREDIT_CARD,
+                                createCardSuggestionModel(
+                                        suggestion,
+                                        new FillableItemCollectionInfo(i + 1, mSuggestions.size()),
+                                        cardImageFunction)));
+            }
             PaymentsPayload payload = suggestion.getPaymentsPayload();
             if (payload != null) {
                 cardBenefitsTermsAvailable |= payload.shouldDisplayTermsAvailable();
@@ -537,6 +556,10 @@ class TouchToFillPaymentMethodMediator {
         }
     }
 
+    private void onAcceptedBnplSuggestion() {
+        // TODO(crbug.com/c/430575808): Handle user clicking the chip.
+    }
+
     private void showAllLoyaltyCards() {
         mModel.set(CURRENT_SCREEN, ALL_LOYALTY_CARDS_SCREEN);
         mModel.set(FOCUSED_VIEW_ID_FOR_ACCESSIBILITY, R.id.all_loyalty_cards_back_image_button);
@@ -589,6 +612,19 @@ class TouchToFillPaymentMethodMediator {
                         .with(ITEM_COLLECTION_INFO, itemCollectionInfo)
                         .with(APPLY_DEACTIVATED_STYLE, suggestion.applyDeactivatedStyle());
         return creditCardSuggestionModelBuilder.build();
+    }
+
+    private PropertyModel createBnplSuggestionModel(
+            AutofillSuggestion suggestion, FillableItemCollectionInfo itemCollectionInfo) {
+        PropertyModel.Builder bnplSuggestionModelBuilder =
+                new PropertyModel.Builder(NON_TRANSFORMING_BNPL_SUGGESTION_KEYS)
+                        .with(BNPL_ICON_ID, suggestion.getIconId())
+                        .with(PRIMARY_TEXT, suggestion.getLabel())
+                        .with(SECONDARY_TEXT, suggestion.getSublabel())
+                        .with(ON_BNPL_CLICK_ACTION, () -> this.onAcceptedBnplSuggestion())
+                        .with(BNPL_ITEM_COLLECTION_INFO, itemCollectionInfo)
+                        .with(IS_ENABLED, !suggestion.applyDeactivatedStyle());
+        return bnplSuggestionModelBuilder.build();
     }
 
     private PropertyModel createIbanModel(Iban iban) {

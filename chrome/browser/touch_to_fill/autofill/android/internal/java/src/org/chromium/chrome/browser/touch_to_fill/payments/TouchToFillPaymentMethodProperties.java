@@ -93,6 +93,9 @@ class TouchToFillPaymentMethodProperties {
 
         // A section with a terms label is present when card benefits are available.
         int TERMS_LABEL = 8;
+
+        // A section containing the BNPL data.
+        int BNPL = 9;
     }
 
     /** Metadata associated with a card's image. */
@@ -210,6 +213,34 @@ class TouchToFillPaymentMethodProperties {
         static final PropertyKey[] ALL_TERMS_LABEL_KEYS = {CARD_BENEFITS_TERMS_AVAILABLE};
 
         private TermsLabelProperties() {}
+    }
+
+    /** Properties for a BNPL entry in the TouchToFill sheet for payments. */
+    static class BnplSuggestionProperties {
+        static final PropertyModel.ReadableIntPropertyKey BNPL_ICON_ID =
+                new PropertyModel.ReadableIntPropertyKey("bnpl_icon_id");
+        static final PropertyModel.ReadableObjectPropertyKey<String> PRIMARY_TEXT =
+                new PropertyModel.ReadableObjectPropertyKey<>("primary_text");
+        static final PropertyModel.ReadableObjectPropertyKey<String> SECONDARY_TEXT =
+                new PropertyModel.ReadableObjectPropertyKey<>("secondary_text");
+        static final PropertyModel.ReadableObjectPropertyKey<Runnable> ON_BNPL_CLICK_ACTION =
+                new PropertyModel.ReadableObjectPropertyKey<>("on_bnpl_click_action");
+        static final PropertyModel.ReadableBooleanPropertyKey IS_ENABLED =
+                new PropertyModel.ReadableBooleanPropertyKey("is_enabled");
+        static final PropertyModel.ReadableObjectPropertyKey<FillableItemCollectionInfo>
+                BNPL_ITEM_COLLECTION_INFO =
+                        new PropertyModel.ReadableObjectPropertyKey<>("bnpl_item_collection_info");
+
+        static final PropertyKey[] NON_TRANSFORMING_BNPL_SUGGESTION_KEYS = {
+            BNPL_ICON_ID,
+            PRIMARY_TEXT,
+            SECONDARY_TEXT,
+            ON_BNPL_CLICK_ACTION,
+            IS_ENABLED,
+            BNPL_ITEM_COLLECTION_INFO
+        };
+
+        private BnplSuggestionProperties() {}
     }
 
     /**

@@ -146,6 +146,7 @@ android_resources("autofill_payments_java_resources") {
     "payments/java/res/drawable-xxxhdpi/verve_card.png",
     "payments/java/res/drawable-xxxhdpi/verve_metadata_card.png",
     "payments/java/res/drawable-xxxhdpi/visa_metadata_card.png",
+    "payments/java/res/drawable/bnpl_icon_generic.xml",
     "payments/java/res/drawable/discover_card.xml",
     "payments/java/res/drawable/elo_card.xml",
     "payments/java/res/drawable/iban_icon.xml",

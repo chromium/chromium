@@ -18,6 +18,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,6 +31,13 @@ import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createCred
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createLocalCreditCard;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createVirtualCreditCard;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BACK_PRESS_HANDLER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ICON_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ITEM_COLLECTION_INFO;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.IS_ENABLED;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.NON_TRANSFORMING_BNPL_SUGGESTION_KEYS;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.ON_BNPL_CLICK_ACTION;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.PRIMARY_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.SECONDARY_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties.ON_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties.TEXT_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CURRENT_SCREEN;
@@ -50,6 +58,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.NON_TRANSFORMING_IBAN_KEYS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.ON_IBAN_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.ALL_LOYALTY_CARDS;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.FILL_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.HEADER;
@@ -297,6 +306,34 @@ public class TouchToFillPaymentMethodViewTest {
                     /* shouldDisplayTermsAvailable= */ false,
                     LONG_CARD_NAME_CARD.getGUID(),
                     LONG_CARD_NAME_CARD.getIsLocal());
+    private static final AutofillSuggestion BNPL_SUGGESTION =
+            createCreditCardSuggestion(
+                    /* label= */ "Pay later options",
+                    /* secondaryLabel= */ "",
+                    /* subLabel= */ "Available for purchases over $35",
+                    /* secondarySubLabel= */ "",
+                    /* labelContentDescription= */ "",
+                    /* suggestionType= */ SuggestionType.BNPL_ENTRY,
+                    /* customIconUrl= */ new GURL(""),
+                    /* iconId= */ R.drawable.bnpl_icon_generic,
+                    /* applyDeactivatedStyle= */ false,
+                    /* shouldDisplayTermsAvailable= */ false,
+                    /* guid= */ "",
+                    /* isLocalPaymentsMethod= */ false);
+    private static final AutofillSuggestion DEACTIVATED_BNPL_SUGGESTION =
+            createCreditCardSuggestion(
+                    /* label= */ "Pay later options",
+                    /* secondaryLabel= */ "",
+                    /* subLabel= */ "Available for purchases over $35",
+                    /* secondarySubLabel= */ "",
+                    /* labelContentDescription= */ "",
+                    /* suggestionType= */ SuggestionType.BNPL_ENTRY,
+                    /* customIconUrl= */ new GURL(""),
+                    /* iconId= */ R.drawable.bnpl_icon_generic,
+                    /* applyDeactivatedStyle= */ true,
+                    /* shouldDisplayTermsAvailable= */ false,
+                    /* guid= */ "",
+                    /* isLocalPaymentsMethod= */ false);
     private static final Iban LOCAL_IBAN =
             Iban.createLocal(
                     /* guid= */ "000000111111",
@@ -1203,6 +1240,120 @@ public class TouchToFillPaymentMethodViewTest {
         assertThat(allLoyaltyCardsContainer.getChildCount(), lessThan(loyaltyCardNumber));
     }
 
+    @Test
+    @MediumTest
+    public void testBnplSuggestionView() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(
+                                    new ListItem(
+                                            CREDIT_CARD,
+                                            createCardSuggestionModel(
+                                                    VISA_SUGGESTION,
+                                                    new FillableItemCollectionInfo(
+                                                            /* position= */ 1, /* total= */ 2))));
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(
+                                    new ListItem(
+                                            BNPL,
+                                            createBnplSuggestionModel(
+                                                    BNPL_SUGGESTION,
+                                                    new FillableItemCollectionInfo(
+                                                            /* position= */ 2, /* total= */ 2),
+                                                    /* actionCallback= */ CallbackUtils
+                                                            .emptyRunnable())));
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        assertThat(getCreditCardSuggestions().getChildCount(), is(2));
+        assertThat(getSuggestionPrimaryTextAt(1).getText(), is(BNPL_SUGGESTION.getLabel()));
+        assertThat(getSuggestionSecondaryTextAt(1).getText(), is(BNPL_SUGGESTION.getSublabel()));
+        assertContentDescriptionEquals(
+                getSuggestionSecondaryTextAt(1), /* position= */ 2, /* total= */ 2);
+    }
+
+    @Test
+    @MediumTest
+    public void testBnplClickIsHandled() {
+        Runnable actionCallback = mock(Runnable.class);
+        runOnUiThreadBlocking(
+                () -> {
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(
+                                    new ListItem(
+                                            BNPL,
+                                            createBnplSuggestionModel(
+                                                    BNPL_SUGGESTION,
+                                                    mItemCollectionInfo,
+                                                    actionCallback)));
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        onView(withText(BNPL_SUGGESTION.getLabel())).perform(createClickActionWithFlags(0));
+        waitForEvent(actionCallback).run();
+    }
+
+    @Test
+    @MediumTest
+    public void testDeactivatedBnplSuggestionIsStyledCorrectly() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(
+                                    new ListItem(
+                                            BNPL,
+                                            createBnplSuggestionModel(
+                                                    DEACTIVATED_BNPL_SUGGESTION,
+                                                    mItemCollectionInfo,
+                                                    /* actionCallback= */ CallbackUtils
+                                                            .emptyRunnable())));
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        ImageView icon =
+                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.bnpl_icon);
+        assertThat(icon.getAlpha(), is(0.38f));
+        assertFalse(getCreditCardSuggestions().getChildAt(0).isEnabled());
+        assertThat(
+                getSuggestionPrimaryTextAt(0).getText(),
+                is(DEACTIVATED_BNPL_SUGGESTION.getLabel()));
+        assertThat(
+                getSuggestionSecondaryTextAt(0).getText(),
+                is(DEACTIVATED_BNPL_SUGGESTION.getSublabel()));
+    }
+
+    @Test
+    @MediumTest
+    public void testDeactivatedBnplClickIsIgnored() {
+        Runnable actionCallback = mock(Runnable.class);
+        runOnUiThreadBlocking(
+                () -> {
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(
+                                    new ListItem(
+                                            BNPL,
+                                            createBnplSuggestionModel(
+                                                    DEACTIVATED_BNPL_SUGGESTION,
+                                                    mItemCollectionInfo,
+                                                    actionCallback)));
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        onView(withText(DEACTIVATED_BNPL_SUGGESTION.getLabel()))
+                .perform(createClickActionWithFlags(0));
+        verify(actionCallback, never()).run();
+    }
+
     private RecyclerView getCreditCardSuggestions() {
         return mTouchToFillPaymentMethodView
                 .getContentView()
@@ -1223,6 +1374,14 @@ public class TouchToFillPaymentMethodViewTest {
 
     private TextView getSuggestionSecondLineLabelAt(int index) {
         return getCreditCardSuggestions().getChildAt(index).findViewById(R.id.second_line_label);
+    }
+
+    private TextView getSuggestionPrimaryTextAt(int index) {
+        return getCreditCardSuggestions().getChildAt(index).findViewById(R.id.primary_text);
+    }
+
+    private TextView getSuggestionSecondaryTextAt(int index) {
+        return getCreditCardSuggestions().getChildAt(index).findViewById(R.id.secondary_text);
     }
 
     private TextView getCreditCardBenefitsTermsLabel() {
@@ -1295,6 +1454,21 @@ public class TouchToFillPaymentMethodViewTest {
         return new PropertyModel.Builder(AllLoyaltyCardsItemProperties.ALL_KEYS)
                 .with(AllLoyaltyCardsItemProperties.ON_CLICK_ACTION, runnable)
                 .build();
+    }
+
+    private static PropertyModel createBnplSuggestionModel(
+            AutofillSuggestion suggestion,
+            FillableItemCollectionInfo collectionInfo,
+            Runnable actionCallback) {
+        PropertyModel.Builder bnplSuggestionModelBuilder =
+                new PropertyModel.Builder(NON_TRANSFORMING_BNPL_SUGGESTION_KEYS)
+                        .with(BNPL_ICON_ID, suggestion.getIconId())
+                        .with(PRIMARY_TEXT, suggestion.getLabel())
+                        .with(SECONDARY_TEXT, suggestion.getSublabel())
+                        .with(ON_BNPL_CLICK_ACTION, actionCallback)
+                        .with(BNPL_ITEM_COLLECTION_INFO, collectionInfo)
+                        .with(IS_ENABLED, !suggestion.applyDeactivatedStyle());
+        return bnplSuggestionModelBuilder.build();
     }
 
     private static PropertyModel createFillButtonModel(Runnable actionCallback) {
