@@ -174,7 +174,7 @@ bool IsPermissionSetByAdministator(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/412616723): Support Android
+// Infobar exists only on Desktop platforms.
 bool ShouldShowInfobarOnPromptResolved(
     content::WebContents* web_contents,
     const PermissionRequest* request,
@@ -524,7 +524,7 @@ void ChromePermissionsClient::OnPromptResolved(
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/412616723): Support Android
+  // Infobar exists only on Desktop platforms.
   if (base::FeatureList::IsEnabled(
           permissions::features::kPermissionPromiseLifetimeModulation)) {
     bool should_show_infobar = ShouldShowInfobarOnPromptResolved(
