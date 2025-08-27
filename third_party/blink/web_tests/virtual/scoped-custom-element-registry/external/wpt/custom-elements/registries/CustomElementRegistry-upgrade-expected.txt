@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-[FAIL] upgrade should not upgrade a candidate element not associated with a registry
-  assert_equals: expected object "[object CustomElementRegistry]" but got null
+All subtests passed and are omitted for brevity.
+See https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/writing_web_tests.md#Text-Test-Baselines for details.
 Harness: the test ran to completion.
 

@@ -6772,10 +6772,22 @@ bool Element::AttachDeclarativeShadowRoot(
   }
   CHECK(mode == ShadowRootMode::kOpen || mode == ShadowRootMode::kClosed);
 
+  CustomElementRegistry* registry = nullptr;
+  // Get global registry of the document by default.
+  if (auto* window = GetDocument().domWindow()) {
+    registry = window->customElements();
+  }
+
+  // If the declarative shadow root is waiting a scoped registry, set
+  // the current registry to null explicitly.
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
+      waiting_for_scoped_registry) {
+    registry = nullptr;
+  }
+
   ShadowRoot& shadow_root = AttachShadowRootInternal(
-      mode, focus_delegation, slot_assignment,
-      waiting_for_scoped_registry ? nullptr : customElementRegistry(),
-      serializable, clonable, reference_target);
+      mode, focus_delegation, slot_assignment, registry, serializable, clonable,
+      reference_target);
   // 13.1. Set declarative shadow host element's shadow host's "is declarative
   // shadow root" property to true.
   shadow_root.SetIsDeclarativeShadowRoot(true);
