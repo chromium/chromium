@@ -55,10 +55,12 @@
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #endif
 
+namespace {
+
 using ::ip_protection::BlindSignedAuthToken;
 using ::ip_protection::GeoHint;
-
-namespace {
+using ::testing::Pair;
+using ::testing::UnorderedElementsAre;
 
 constexpr char kTryGetAuthTokensResultHistogram[] =
     "NetworkService.IpProtection.TryGetAuthTokensResult";
@@ -1166,4 +1168,28 @@ TEST_F(IpProtectionCoreHostTest, TokenFormat) {
   size_t comma_position = token.find(",", token_position);
   EXPECT_NE(comma_position, std::string::npos);
   EXPECT_LT(comma_position, extensions_position);
+}
+
+TEST_F(IpProtectionCoreHostTest, RecycleAndTakeRecycledTokens) {
+  std::vector<BlindSignedAuthToken> tokens_a;
+  tokens_a.push_back(ip_protection::IpProtectionTokenFetcherHelper::
+                         CreateMockBlindSignedAuthTokenForTesting(
+                             "single-use-1", expiration_time_, geo_hint_)
+                             .value());
+  std::vector<BlindSignedAuthToken> tokens_b;
+  tokens_b.push_back(ip_protection::IpProtectionTokenFetcherHelper::
+                         CreateMockBlindSignedAuthTokenForTesting(
+                             "single-use-2", expiration_time_, geo_hint_)
+                             .value());
+
+  core_host_->RecycleTokens(ip_protection::ProxyLayer::kProxyA, tokens_a);
+  core_host_->RecycleTokens(ip_protection::ProxyLayer::kProxyB, tokens_b);
+
+  EXPECT_THAT(
+      core_host_->TakeRecycledTokens(),
+      UnorderedElementsAre(Pair(ip_protection::ProxyLayer::kProxyA, tokens_a),
+                           Pair(ip_protection::ProxyLayer::kProxyB, tokens_b)));
+
+  // The previous operation should empty the cache.
+  EXPECT_THAT(core_host_->TakeRecycledTokens(), testing::IsEmpty());
 }

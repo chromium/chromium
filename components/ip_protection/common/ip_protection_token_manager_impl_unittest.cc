@@ -14,24 +14,33 @@
 #include <utility>
 #include <vector>
 
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_core.h"
+#include "components/ip_protection/common/ip_protection_core_host_remote.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/ip_protection_token_fetcher.h"
 #include "components/ip_protection/common/ip_protection_token_manager.h"
+#include "components/ip_protection/mojom/core.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "url/gurl.h"
 
 namespace ip_protection {
 
 namespace {
+
+using ::testing::ElementsAre;
+using ::testing::Pair;
 
 constexpr char kGeoChangeTokenPresence[] =
     "NetworkService.IpProtection.GeoChangeTokenPresence";
@@ -179,6 +188,40 @@ class MockIpProtectionCore : public IpProtectionCore {
   }
 };
 
+class FakeCoreHost : public ip_protection::mojom::CoreHost {
+ public:
+  void TryGetAuthTokens(uint32_t batch_size,
+                        ip_protection::ProxyLayer proxy_layer,
+                        ip_protection::mojom::CoreHost::TryGetAuthTokensCallback
+                            callback) override {
+    NOTREACHED();
+  }
+  void GetProxyConfig(ip_protection::mojom::CoreHost::GetProxyConfigCallback
+                          callback) override {
+    NOTREACHED();
+  }
+  void TryGetProbabilisticRevealTokens(
+      ip_protection::mojom::CoreHost::TryGetProbabilisticRevealTokensCallback
+          callback) override {
+    NOTREACHED();
+  }
+  void RecycleTokens(ip_protection::ProxyLayer proxy_layer,
+                     const std::vector<BlindSignedAuthToken>& tokens) override {
+    returned_tokens_[proxy_layer] = tokens;
+  }
+
+  const absl::flat_hash_map<ip_protection::ProxyLayer,
+                            std::vector<BlindSignedAuthToken>>&
+  returned_tokens() {
+    return returned_tokens_;
+  }
+
+ private:
+  absl::flat_hash_map<ip_protection::ProxyLayer,
+                      std::vector<BlindSignedAuthToken>>
+      returned_tokens_;
+};
+
 struct HistogramState {
   // Number of successful calls to GetAuthToken (true).
   int success;
@@ -211,11 +254,16 @@ class IpProtectionTokenManagerImplTest : public testing::Test {
           }
         });
 
+    auto core_host_remote = base::MakeRefCounted<IpProtectionCoreHostRemote>(
+        core_host_receiver_.BindNewPipeAndPassRemote());
+
     ipp_proxy_a_token_manager_ = std::make_unique<IpProtectionTokenManagerImpl>(
-        &mock_core_, std::move(ipp_proxy_a_token_fetcher), ProxyLayer::kProxyA,
+        &mock_core_, core_host_remote, std::move(ipp_proxy_a_token_fetcher),
+        ProxyLayer::kProxyA,
         /* disable_cache_management_for_testing=*/true);
     ipp_proxy_b_token_manager_ = std::make_unique<IpProtectionTokenManagerImpl>(
-        &mock_core_, std::move(ipp_proxy_b_token_fetcher), ProxyLayer::kProxyB,
+        &mock_core_, core_host_remote, std::move(ipp_proxy_b_token_fetcher),
+        ProxyLayer::kProxyB,
         /* disable_cache_management_for_testing=*/true);
 
     // Default to disabling token expiration fuzzing.
@@ -285,6 +333,9 @@ class IpProtectionTokenManagerImplTest : public testing::Test {
   const base::Time kPastExpiration = base::Time::Now() - base::Hours(1);
 
   testing::NiceMock<MockIpProtectionCore> mock_core_;
+  FakeCoreHost fake_core_host_;
+  mojo::Receiver<ip_protection::mojom::CoreHost> core_host_receiver_{
+      &fake_core_host_};
 
   std::unique_ptr<IpProtectionTokenManagerImpl> ipp_proxy_a_token_manager_;
   std::unique_ptr<IpProtectionTokenManagerImpl> ipp_proxy_b_token_manager_;
@@ -295,35 +346,48 @@ class IpProtectionTokenManagerImplTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 };
 
-TEST_F(IpProtectionTokenManagerImplTest, DtorWithNoTokens) {
+TEST_F(IpProtectionTokenManagerImplTest,
+       DtorWithNoTokensDoesNotCallRecycleTokens) {
   // No orphaned tokens should be logged if the cache is empty.
   ipp_proxy_a_token_fetcher_ = nullptr;
   ipp_proxy_a_token_manager_.reset();
+  core_host_receiver_.FlushForTesting();
+  EXPECT_TRUE(fake_core_host_.returned_tokens().empty());
   histogram_tester_.ExpectTotalCount(kProxyATokenCountOrphanedHistogram, 0);
 }
 
-TEST_F(IpProtectionTokenManagerImplTest, DtorWithOrphanedTokens) {
+TEST_F(IpProtectionTokenManagerImplTest,
+       DtorWithOrphanedTokensCallsRecycleTokens) {
   // Add a token to the cache.
-  ipp_proxy_a_token_fetcher_->ExpectTryGetAuthTokensCall(
-      expected_batch_size_, TokenBatch(1, kFutureExpiration, kMountainViewGeo));
+  auto tokens = TokenBatch(1, kFutureExpiration, kMountainViewGeo);
+  ipp_proxy_a_token_fetcher_->ExpectTryGetAuthTokensCall(expected_batch_size_,
+                                                         tokens);
   CallTryGetAuthTokensAndWait(ProxyLayer::kProxyA);
 
-  // Destroy the token manager and verify that the orphaned token is logged.
+  // Destroy the token manager and verify that the orphaned token is logged and
+  // returned.
   ipp_proxy_a_token_fetcher_ = nullptr;
   ipp_proxy_a_token_manager_.reset();
+  core_host_receiver_.FlushForTesting();
+  EXPECT_THAT(fake_core_host_.returned_tokens(),
+              ElementsAre(Pair(ProxyLayer::kProxyA, tokens)));
   histogram_tester_.ExpectUniqueSample(kProxyATokenCountOrphanedHistogram, 1,
                                        1);
 }
 
-TEST_F(IpProtectionTokenManagerImplTest, DtorWithExpiredTokens) {
+TEST_F(IpProtectionTokenManagerImplTest,
+       DtorWithExpiredTokensDoesNotCallRecycleTokens) {
   // Add an expired token to the cache.
   ipp_proxy_a_token_fetcher_->ExpectTryGetAuthTokensCall(
       expected_batch_size_, TokenBatch(1, kPastExpiration, kMountainViewGeo));
   CallTryGetAuthTokensAndWait(ProxyLayer::kProxyA);
 
-  // Destroy the token manager and verify that no orphaned tokens are logged.
+  // Destroy the token manager and verify that no orphaned tokens are logged or
+  // returned.
   ipp_proxy_a_token_fetcher_ = nullptr;
   ipp_proxy_a_token_manager_.reset();
+  core_host_receiver_.FlushForTesting();
+  EXPECT_TRUE(fake_core_host_.returned_tokens().empty());
   histogram_tester_.ExpectTotalCount(kProxyATokenCountOrphanedHistogram, 0);
 }
 
@@ -555,8 +619,9 @@ TEST_F(IpProtectionTokenManagerImplTest, TokenExpirationFuzzed) {
 TEST_F(IpProtectionTokenManagerImplTest, NullGetter) {
   MockIpProtectionCore core;
   auto ipp_token_manager = IpProtectionTokenManagerImpl(
-      &core, nullptr, ProxyLayer::kProxyA,
-      /* disable_cache_management_for_testing=*/true);
+      &core, /*core_host_remote=*/nullptr, /*fetcher=*/nullptr,
+      ProxyLayer::kProxyA,
+      /*disable_cache_management_for_testing=*/true);
 
   EXPECT_FALSE(ipp_token_manager.IsAuthTokenAvailable(kMountainViewGeoId));
 

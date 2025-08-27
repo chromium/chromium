@@ -60,13 +60,17 @@ class AwIpProtectionCoreHost
   AwIpProtectionCoreHost(const AwIpProtectionCoreHost&) = delete;
   AwIpProtectionCoreHost& operator=(const AwIpProtectionCoreHost&) = delete;
 
-  // IpProtectionConfigGetter:
+  // ip_protection::mojom::CoreHost:
   // Get a batch of blind-signed auth tokens.
   void TryGetAuthTokens(uint32_t batch_size,
                         ip_protection::ProxyLayer proxy_layer,
                         TryGetAuthTokensCallback callback) override;
   // Get the list of IP Protection proxies.
   void GetProxyConfig(GetProxyConfigCallback callback) override;
+  // Return a batch of unused blind-signed auth tokens.
+  void RecycleTokens(
+      ip_protection::ProxyLayer proxy_layer,
+      const std::vector<ip_protection::BlindSignedAuthToken>& tokens) override;
 
   // PRTs are not supported in WebView. This method is here to make
   // build work.

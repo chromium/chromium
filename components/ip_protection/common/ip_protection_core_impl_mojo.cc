@@ -48,7 +48,7 @@ IpProtectionCoreImpl::ProxyTokenManagerMap MakeTokenManagerMap(
     managers.insert(
         {proxy_layer,
          std::make_unique<IpProtectionTokenManagerImpl>(
-             ip_protection_core,
+             ip_protection_core, core_host_remote,
              std::make_unique<IpProtectionTokenMojoFetcher>(core_host_remote),
              proxy_layer)});
   }

@@ -40,6 +40,11 @@ class FakeCoreHost : public ip_protection::mojom::CoreHost {
       TryGetProbabilisticRevealTokensCallback callback) override {
     NOTREACHED();
   }
+
+  void RecycleTokens(ip_protection::ProxyLayer proxy_layer,
+                     const std::vector<BlindSignedAuthToken>& tokens) override {
+    NOTREACHED();
+  }
 };
 
 TEST(IpProtectionTokenMojoFetcherTest, CallsThrough) {

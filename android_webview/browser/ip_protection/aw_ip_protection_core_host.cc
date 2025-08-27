@@ -19,6 +19,7 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
@@ -158,6 +159,13 @@ void AwIpProtectionCoreHost::TryGetAuthTokens(
 
   ip_protection_token_fetcher_->TryGetAuthTokens(batch_size, proxy_layer,
                                                  std::move(callback_with_refs));
+}
+
+void AwIpProtectionCoreHost::RecycleTokens(
+    ip_protection::ProxyLayer proxy_layer,
+    const std::vector<ip_protection::BlindSignedAuthToken>& tokens) {
+  // Not yet implemented for WebView.
+  NOTIMPLEMENTED();
 }
 
 void AwIpProtectionCoreHost::TryGetProbabilisticRevealTokens(

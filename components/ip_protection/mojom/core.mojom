@@ -4,8 +4,8 @@
 
 module ip_protection.mojom;
 
-import "mojo/public/mojom/base/time.mojom";
 import "components/ip_protection/mojom/data_types.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/network_param.mojom";
 
 // Access to the IP Protection state in the network service process.
@@ -38,9 +38,9 @@ interface CoreHost {
   // tokens are available, it will return nullopt for `bsa_tokens` and
   // `try_again_after` will contain the time after which the getter suggests
   // trying again, as a form of backoff.
-  TryGetAuthTokens(uint32 batch_size, ProxyLayer proxy_layer) =>
-    (array<BlindSignedAuthToken>? bsa_tokens,
-     mojo_base.mojom.Time? try_again_after);
+  TryGetAuthTokens(uint32 batch_size, ProxyLayer proxy_layer)
+      => (array<BlindSignedAuthToken>? bsa_tokens,
+          mojo_base.mojom.Time? try_again_after);
 
   // Get the list of IP Protection proxy chains. The list contains lists of
   // proxy chain hostnames, in order of preference. Callers should prefer
@@ -49,8 +49,8 @@ interface CoreHost {
   //
   // This method will return an up-to-date list, possibly fetching that list
   // remotely before returning it.
-  GetProxyConfig() => (array<network.mojom.ProxyChain>? proxy_list,
-                       GeoHint? geo_hint);
+  GetProxyConfig()
+      => (array<network.mojom.ProxyChain>? proxy_list, GeoHint? geo_hint);
 
   // Try to get a batch of new PRTs.
   //
@@ -59,7 +59,20 @@ interface CoreHost {
   // `result.network_error_code` will indicate the network error code returned
   // by the url loader. `result.try_again_after`, if not null, will contain the
   // time after which the fetcher suggests trying again, as a form of backoff.
-  TryGetProbabilisticRevealTokens() =>
-    (TryGetProbabilisticRevealTokensOutcome? outcome,
-     TryGetProbabilisticRevealTokensResult result);
+  TryGetProbabilisticRevealTokens()
+      => (TryGetProbabilisticRevealTokensOutcome? outcome,
+          TryGetProbabilisticRevealTokensResult result);
+
+  // Passes unused tokens to the browser process for use in a future Incognito
+  // session.
+  //
+  // This is called from the IpProtectionTokenManager destructor. In the normal
+  // case, this occurs when the Incognito Profile is destroyed, which destroys
+  // the corresponding NetworkContext in the network service. Because the
+  // browser process is still alive, it will receive this IPC and hold the
+  // tokens in-memory for the next Incognito session.
+  //
+  // During browser shutdown, this IPC may be dropped, causing the tokens to be
+  // lost. This is an acceptable trade-off.
+  RecycleTokens(ProxyLayer proxy_layer, array<BlindSignedAuthToken> tokens);
 };

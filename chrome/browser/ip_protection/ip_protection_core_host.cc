@@ -220,6 +220,17 @@ void IpProtectionCoreHost::TryGetProbabilisticRevealTokens(
       std::move(callback)));
 }
 
+void IpProtectionCoreHost::RecycleTokens(
+    ip_protection::ProxyLayer proxy_layer,
+    const std::vector<ip_protection::BlindSignedAuthToken>& tokens) {
+  recycled_tokens_[proxy_layer] = tokens;
+}
+
+IpProtectionCoreHost::IpProtectionTokenCache
+IpProtectionCoreHost::TakeRecycledTokens() {
+  return std::exchange(recycled_tokens_, {});
+}
+
 void IpProtectionCoreHost::AuthenticateRequest(
     std::unique_ptr<network::ResourceRequest> resource_request,
     ip_protection::IpProtectionProxyConfigDirectFetcher::Delegate::

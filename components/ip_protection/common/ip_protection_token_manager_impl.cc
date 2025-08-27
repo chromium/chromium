@@ -10,6 +10,7 @@
 #include <iterator>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <utility>
 #include <vector>
@@ -23,6 +24,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_core.h"
+#include "components/ip_protection/common/ip_protection_core_host_remote.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/ip_protection_token_fetcher.h"
@@ -50,6 +52,7 @@ constexpr base::TimeDelta kTokenLimitExceededDelay = base::Minutes(10);
 
 IpProtectionTokenManagerImpl::IpProtectionTokenManagerImpl(
     IpProtectionCore* core,
+    scoped_refptr<IpProtectionCoreHostRemote> core_host_remote,
     std::unique_ptr<IpProtectionTokenFetcher> fetcher,
     ProxyLayer proxy_layer,
     bool disable_cache_management_for_testing)
@@ -59,6 +62,7 @@ IpProtectionTokenManagerImpl::IpProtectionTokenManagerImpl(
       fetcher_(std::move(fetcher)),
       proxy_layer_(proxy_layer),
       ip_protection_core_(core),
+      core_host_remote_(std::move(core_host_remote)),
       disable_cache_management_for_testing_(
           disable_cache_management_for_testing) {
   last_token_rate_measurement_ = base::TimeTicks::Now();
@@ -76,9 +80,16 @@ IpProtectionTokenManagerImpl::IpProtectionTokenManagerImpl(
 IpProtectionTokenManagerImpl::~IpProtectionTokenManagerImpl() {
   // Record orphaned (unspent, unexpired) tokens.
   RemoveExpiredTokens();
-  for (const auto& [geo_id, cache] : cache_by_geo_) {
+  std::vector<BlindSignedAuthToken> tokens;
+  for (auto& [geo_id, cache] : cache_by_geo_) {
     Telemetry().RecordTokenCountEvent(
         proxy_layer_, IpProtectionTokenCountEvent::kOrphaned, cache.size());
+    std::ranges::move(cache, std::back_inserter(tokens));
+  }
+  if (!tokens.empty()) {
+    CHECK(core_host_remote_);
+    core_host_remote_->core_host()->RecycleTokens(proxy_layer_,
+                                                  std::move(tokens));
   }
 }
 

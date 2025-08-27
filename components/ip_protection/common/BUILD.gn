@@ -444,12 +444,8 @@ source_set("ip_protection_performance_hooks") {
     "ip_protection_performance_hooks.cc",
     "ip_protection_performance_hooks.h",
   ]
-  public_deps = [
-    "//net/third_party/quiche:blind_sign_auth",
-  ]
-  deps = [
-    "//base",
-  ]
+  public_deps = [ "//net/third_party/quiche:blind_sign_auth" ]
+  deps = [ "//base" ]
 }
 
 source_set("ip_protection_performance_hooks_unittest") {
@@ -460,8 +456,8 @@ source_set("ip_protection_performance_hooks_unittest") {
     "//base",
     "//base/test:test_support",
     "//base/test:test_trace_processor",
-    "//testing/gtest",
     "//testing/gmock",
+    "//testing/gtest",
   ]
 }
 
@@ -476,6 +472,7 @@ source_set("ip_protection_token_manager_impl") {
   ]
   public_deps = [
     ":ip_protection_core",
+    ":ip_protection_core_host_remote",
     ":ip_protection_token_manager",
     "//base",
   ]

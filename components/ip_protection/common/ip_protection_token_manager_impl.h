@@ -17,6 +17,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -27,14 +28,16 @@ namespace ip_protection {
 
 class IpProtectionTokenFetcher;
 class IpProtectionCore;
+class IpProtectionCoreHostRemote;
 enum class ProxyLayer;
 
 // An implementation of IpProtectionTokenManager that populates itself
 // using a passed in IpProtectionTokenFetcher pointer from the cache.
 class IpProtectionTokenManagerImpl : public IpProtectionTokenManager {
  public:
-  explicit IpProtectionTokenManagerImpl(
+  IpProtectionTokenManagerImpl(
       IpProtectionCore* core,
+      scoped_refptr<IpProtectionCoreHostRemote> core_host_remote,
       std::unique_ptr<IpProtectionTokenFetcher> fetcher,
       ProxyLayer proxy_layer,
       bool disable_cache_management_for_testing = false);
@@ -131,6 +134,8 @@ class IpProtectionTokenManagerImpl : public IpProtectionTokenManager {
   // testing).
   const raw_ptr<IpProtectionCore> ip_protection_core_;
 
+  const scoped_refptr<IpProtectionCoreHostRemote> core_host_remote_;
+
   // True if an attempt to fetch tokens is outstanding.
   bool fetching_auth_tokens_ = false;
 
@@ -163,7 +168,7 @@ class IpProtectionTokenManagerImpl : public IpProtectionTokenManager {
   bool disable_cache_management_for_testing_ = false;
 
   // If false, token expiration is not fuzzed.
-  bool enable_token_expiration_fuzzing_= true;
+  bool enable_token_expiration_fuzzing_ = true;
 
   base::RepeatingTimer measurement_timer_;
 
