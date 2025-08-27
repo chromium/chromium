@@ -30,6 +30,7 @@ source_set("model") {
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/browser/data_sharing/model",
+    "//ios/chrome/browser/data_sharing/model/personal_collaboration_data",
     "//ios/chrome/browser/metrics/model:accessor",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/sessions/model:restoration_observer",
