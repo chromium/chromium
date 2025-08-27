@@ -60,7 +60,7 @@
   <message name="IDS_GLIC_OFFLINE_NOTICE_ACTION_BUTTON" desc="This is the button label text for the offline notice.">
     Try again
   </message>
-  <message name="IDS_GLIC_UNRESPONSIVE_MESSAGE" translateable="false" desc="This is the message that appears overlaying the floaty window for a few seconds if the Gemini backend becomes unresponsive.">
+  <message name="IDS_GLIC_UNRESPONSIVE_MESSAGE" desc="This is the message that appears overlaying the floaty window for a few seconds if the Gemini backend becomes unresponsive.">
     Gemini is refreshing...
   </message>
   <message name="IDS_GLIC_ERROR_NOTICE_HEADER" desc="Headline on the error notice informing the user that Gemini failed to load.">
@@ -72,31 +72,31 @@
   <message name="IDS_GLIC_ERROR_NOTICE_ACTION_BUTTON" desc="This is the button label text for the error notice.">
     Try again
   </message>
-  <message name="IDS_GLIC_NOTICE_CLOSE_BUTTON_LABEL" translateable="false" desc="Accessible label for the dialog notice and FRE close buttons.">
+  <message name="IDS_GLIC_NOTICE_CLOSE_BUTTON_LABEL" is_accessibility_with_no_ui="true" desc="Accessible label for the dialog notice and FRE close buttons.">
     Close
   </message>
-  <message name="IDS_GLIC_SIGN_IN_NOTICE_HEADER" translateable="false" desc="This is the headline on the Gemini sign in notice.">
+  <message name="IDS_GLIC_SIGN_IN_NOTICE_HEADER" desc="This is the headline on the Gemini sign in notice.">
     Verify it's you
   </message>
-  <message name="IDS_GLIC_SIGN_IN_NOTICE" translateable="false" desc="This is the text of the Gemini sign in notice.">
+  <message name="IDS_GLIC_SIGN_IN_NOTICE" desc="This is the text of the Gemini sign in notice.">
     To continue using Gemini, verify it's you
   </message>
-  <message name="IDS_GLIC_SIGN_IN_NOTICE_ACTION_BUTTON" translateable="false" desc="This is the button label text for a button that opens the sign-in page.">
+  <message name="IDS_GLIC_SIGN_IN_NOTICE_ACTION_BUTTON" desc="This is the button label text for a button that opens the sign-in page.">
     Verify it's you
   </message>
-  <message name ="IDS_GLIC_INELIGIBLE_PROFILE_NOTICE_HEADER" translateable="false" desc="This is the headline on the Gemini ineligible profile notice.">
+  <message name ="IDS_GLIC_INELIGIBLE_PROFILE_NOTICE_HEADER" desc="This is the headline on the Gemini ineligible profile notice.">
     This account can't use Gemini
   </message>
-  <message name ="IDS_GLIC_INELIGIBLE_PROFILE_NOTICE_ACTION_BUTTON" translateable="false" desc="This is the button label text for a button that opens the profile picker.">
+  <message name ="IDS_GLIC_INELIGIBLE_PROFILE_NOTICE_ACTION_BUTTON" desc="This is the button label text for a button that opens the profile picker.">
     Choose another profile
   </message>
-  <message name="IDS_GLIC_DISABLED_BY_ADMIN_NOTICE" translateable="false" desc="This is the text of the Gemini disabled by admin notice.">
+  <message name="IDS_GLIC_DISABLED_BY_ADMIN_NOTICE" desc="This is the text of the Gemini disabled by admin notice.">
     Contact your administrator for more information
   </message>
-  <message name="IDS_GLIC_DISABLED_BY_ADMIN_NOTICE_CLOSE_BUTTON" translateable="false" desc="This is the button label text for a button that closes the glic disabled by admin notice.">
+  <message name="IDS_GLIC_DISABLED_BY_ADMIN_NOTICE_CLOSE_BUTTON" desc="This is the button label text for a button that closes the glic disabled by admin notice.">
     Got it
   </message>
-  <message name="IDS_GLIC_DISABLED_BY_ADMIN_NOTICE_HEADER" translateable="false" desc="This is the headline on the glic disabled by admin notice.">
+  <message name="IDS_GLIC_DISABLED_BY_ADMIN_NOTICE_HEADER" desc="This is the headline on the glic disabled by admin notice.">
     Your organization has turned off this feature
   </message>
 
