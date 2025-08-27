@@ -457,7 +457,6 @@ export class Authenticator extends EventTarget {
     this.syncTrustedVaultKeys_ = null;
     this.closeViewReceived_ = false;
     this.gaiaStartTime = null;
-    this.samlRedirectionInProgress = false;
 
     window.addEventListener(
         'message', e => this.onMessageFromWebview_(e), false);
@@ -993,7 +992,7 @@ export class Authenticator extends EventTarget {
 
   /**
    * Invoked when headers are received in the main frame of the webview. It
-   * reads the authenticated user info from a sign-in header.
+   * reads the authenticated user info from a signin header.
    * @param {OnHeadersReceivedDetails} details
    * @private
    */
@@ -1016,12 +1015,6 @@ export class Authenticator extends EventTarget {
       const header = headers[i];
       const headerName = header.name.toLowerCase();
       if (headerName === SIGN_IN_HEADER) {
-        if (this.samlRedirectionInProgress) {
-          console.warn(
-              `Authenticator: sign-in header received during ongoing SAML ' +
-              'redirection, it will be ignored`)
-          return;
-        }
         // See go/gaia-response-headers#google-accounts-signin for the expected
         // format of the sign-in header fields.
         const headerValues = header.value.toLowerCase().split(',');
@@ -1394,8 +1387,8 @@ export class Authenticator extends EventTarget {
    * @private
    */
   onIsSamlFlowChanged_(e) {
-    this.samlRedirectionInProgress = e.detail.isSamlFlow;
-    if (this.samlRedirectionInProgress) {
+    const isSamlFlow = e.detail.isSamlFlow;
+    if (isSamlFlow) {
       this.authFlow = AuthFlow.SAML;
     }
   }
