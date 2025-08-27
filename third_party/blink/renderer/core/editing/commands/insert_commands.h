@@ -53,51 +53,51 @@ class InsertCommands {
   static bool ExecuteInsertBacktab(LocalFrame&,
                                    Event*,
                                    EditorCommandSource,
-                                   const WTF::String&);
+                                   const String&);
   static bool ExecuteInsertHorizontalRule(LocalFrame&,
                                           Event*,
                                           EditorCommandSource,
-                                          const WTF::String&);
+                                          const String&);
   static bool ExecuteInsertHTML(LocalFrame&,
                                 Event*,
                                 EditorCommandSource,
-                                const WTF::String&);
+                                const String&);
   static bool ExecuteInsertImage(LocalFrame&,
                                  Event*,
                                  EditorCommandSource,
-                                 const WTF::String&);
+                                 const String&);
   static bool ExecuteInsertLineBreak(LocalFrame&,
                                      Event*,
                                      EditorCommandSource,
-                                     const WTF::String&);
+                                     const String&);
   static bool ExecuteInsertNewline(LocalFrame&,
                                    Event*,
                                    EditorCommandSource,
-                                   const WTF::String&);
+                                   const String&);
   static bool ExecuteInsertNewlineInQuotedContent(LocalFrame&,
                                                   Event*,
                                                   EditorCommandSource,
-                                                  const WTF::String&);
+                                                  const String&);
   static bool ExecuteInsertOrderedList(LocalFrame&,
                                        Event*,
                                        EditorCommandSource,
-                                       const WTF::String&);
+                                       const String&);
   static bool ExecuteInsertParagraph(LocalFrame&,
                                      Event*,
                                      EditorCommandSource,
-                                     const WTF::String&);
+                                     const String&);
   static bool ExecuteInsertTab(LocalFrame&,
                                Event*,
                                EditorCommandSource,
-                               const WTF::String&);
+                               const String&);
   static bool ExecuteInsertText(LocalFrame&,
                                 Event*,
                                 EditorCommandSource,
-                                const WTF::String&);
+                                const String&);
   static bool ExecuteInsertUnorderedList(LocalFrame&,
                                          Event*,
                                          EditorCommandSource,
-                                         const WTF::String&);
+                                         const String&);
 
  private:
   static bool ExecuteInsertFragment(LocalFrame&, DocumentFragment*);

@@ -90,7 +90,7 @@ bool Editor::HandleEditingKeyboardEvent(KeyboardEvent* evt) {
       return true;
     }
 
-    WebString text(WTF::String(key_event->text.data()));
+    WebString text(String(key_event->text.data()));
     edit_context->InsertText(text);
     return true;
   }

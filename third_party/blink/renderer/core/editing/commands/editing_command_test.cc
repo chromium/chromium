@@ -45,8 +45,8 @@ class EditingCommandTest : public EditingTestBase {};
 TEST_F(EditingCommandTest, EditorCommandOrder) {
   for (size_t i = 1; i < std::size(kCommandNameEntries); ++i) {
     EXPECT_GT(0,
-              WTF::CodeUnitCompareIgnoringASCIICase(
-                  kCommandNameEntries[i - 1].name, kCommandNameEntries[i].name))
+              CodeUnitCompareIgnoringASCIICase(kCommandNameEntries[i - 1].name,
+                                               kCommandNameEntries[i].name))
         << "EDITOR_COMMAND_MAP must be case-folding ordered. Incorrect index:"
         << i;
   }

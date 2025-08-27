@@ -188,8 +188,8 @@ void IdleSpellCheckController::SetNeedsColdModeInvocation() {
                                  : kColdModeTimerInterval;
   cold_mode_timer_ = PostDelayedCancellableTask(
       *GetWindow().GetTaskRunner(TaskType::kInternalDefault), FROM_HERE,
-      WTF::BindOnce(&IdleSpellCheckController::ColdModeTimerFired,
-                    WrapPersistent(this)),
+      BindOnce(&IdleSpellCheckController::ColdModeTimerFired,
+               WrapPersistent(this)),
       interval);
   state_ = State::kColdModeTimerStarted;
 }

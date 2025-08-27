@@ -45,7 +45,7 @@ void TextSuggestionBackendImpl::Trace(Visitor* visitor) const {
 }
 
 void TextSuggestionBackendImpl::ApplySpellCheckSuggestion(
-    const WTF::String& suggestion) {
+    const String& suggestion) {
   GetSupplementable()->GetTextSuggestionController().ApplySpellCheckSuggestion(
       suggestion);
 }
@@ -62,8 +62,7 @@ void TextSuggestionBackendImpl::DeleteActiveSuggestionRange() {
       .DeleteActiveSuggestionRange();
 }
 
-void TextSuggestionBackendImpl::OnNewWordAddedToDictionary(
-    const WTF::String& word) {
+void TextSuggestionBackendImpl::OnNewWordAddedToDictionary(const String& word) {
   GetSupplementable()->GetTextSuggestionController().OnNewWordAddedToDictionary(
       word);
 }

@@ -140,7 +140,7 @@ class EmptyLocalFrameClientWithFailingLoaderFactory final
     // in BaseFetchContext::CanRequestInternal fails for non-data: URL
     // resources.
     return base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
-        WTF::BindOnce(
+        BindOnce(
             [](const network::ResourceRequest& resource_request,
                mojo::PendingReceiver<network::mojom::URLLoader> receiver,
                mojo::PendingRemote<network::mojom::URLLoaderClient> client) {

@@ -132,7 +132,7 @@ class CORE_EXPORT FindTaskController final
   // short-circuiting searches in the following scenarios: When a frame has
   // been searched and returned 0 results, we don't need to search that frame
   // again if the user is just adding to the search (making it more specific).
-  WTF::String last_search_string_;
+  String last_search_string_;
 
   int match_yield_check_interval_;
 };
