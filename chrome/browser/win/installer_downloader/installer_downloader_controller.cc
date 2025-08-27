@@ -190,6 +190,11 @@ void InstallerDownloaderController::OnEligibilityReady(
     return;
   }
 
+  // Early return when we have no destination and bypass is not allowed.
+  if (!destination.has_value() && !model_->ShouldByPassEligibilityCheck()) {
+    return;
+  }
+
   auto* contents = get_active_web_contents_callback_.Run();
 
   if (!contents) {
@@ -197,11 +202,6 @@ void InstallerDownloaderController::OnEligibilityReady(
   }
 
   if (visible_infobars_web_contents_.contains(contents)) {
-    return;
-  }
-
-  // Early return when we have no destination and bypass is not allowed.
-  if (!destination.has_value() && !model_->ShouldByPassEligibilityCheck()) {
     return;
   }
 
