@@ -17,10 +17,6 @@ BASE_DECLARE_FEATURE(kSegmentationPlatformFeature);
 // Feature flag for enabling UKM based engine.
 BASE_DECLARE_FEATURE(kSegmentationPlatformUkmEngine);
 
-// Feature flag to increase segmentation platform background processing task
-// runner priority.
-BASE_DECLARE_FEATURE(kSegmentationPlatformUserVisibleTaskRunner);
-
 // Feature flag for enabling adaptive toolbar v2 multi-output model.
 BASE_DECLARE_FEATURE(kSegmentationPlatformAdaptiveToolbarV2Feature);
 
