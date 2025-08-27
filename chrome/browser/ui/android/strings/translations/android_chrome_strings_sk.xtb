@@ -499,7 +499,6 @@
 <translation id="3384347053049321195">Zdieľať obrázok</translation>
 <translation id="3387650086002190359">Súbor <ph name="FILE_NAME" /> sa nepodarilo stiahnuť z dôvodu chýb systému súborov.</translation>
 <translation id="3414952576877147120">Veľkosť:</translation>
-<translation id="3421726884497337397">Vyberte, kedy blokovať súbory cookie tretích strán</translation>
 <translation id="3430670036890315772">Vypnutím zámky profilu odstránite uložené informácie</translation>
 <translation id="3435465986463792564">Máte veľa okien? Tu ich môžete spravovať.</translation>
 <translation id="3435575784518354875">Ak si chcete zachovať prístup k svojim heslám, exportujte ich, aktualizujte Služby Google Play a potom ich importujte späť do Správcu hesiel Google. <ph name="BEGIN_LINK" />Zobraziť úplné pokyny<ph name="END_LINK" /></translation>
@@ -760,7 +759,6 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 prelomené heslo}few{# prelomené heslá}many{# compromised passwords}other{# prelomených hesiel}}</translation>
 <translation id="4641919525231168205">Prechod na ďalšiu stránku</translation>
 <translation id="4642472735733036929">Sledovanie ceny bolo deaktivované</translation>
-<translation id="4645146721047390964">Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktivitu prehliadania v rámci rôznych webov (napríklad na prispôsobenie reklám). Funkcie na niektorých weboch môžu zlyhávať.</translation>
 <translation id="465657074423018424">Bezpečné prehliadanie vás chráni pred podvodnými webmi. Keď ho vypnete, pri prehliadaní postupujte opatrne (obzvlášť pri zadávaní hesiel).</translation>
 <translation id="4662373422909645029">Prezývka nemôže mať čísla</translation>
 <translation id="4663756553811254707">Počet odstránených záložiek: <ph name="NUMBER_OF_BOOKMARKS" /></translation>
@@ -1220,7 +1218,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6633067410344541938">Odblokovať režim inkognito</translation>
 <translation id="6636623428211296678">Preskúmajte ďalšie nastavenia nižšie alebo dokončite kontrolu</translation>
 <translation id="6637100877383020115">Na účely zlepšovania aplikácie odosiela Chrome údaje o využití a pádoch Googlu. <ph name="BEGIN_UMA_LINK" />Spravovať<ph name="END_UMA_LINK" /></translation>
-<translation id="6640207029842583248">Blokovať neustále</translation>
 <translation id="6641780377503683465">Odstrániť <ph name="INTEREST" /></translation>
 <translation id="6647441008198474441">Webové adresy, ktoré navštevujete, sa odosielajú Googlu, aby mohol vytvárať predpokladané dopyty webov, ktoré pravdepodobne navštívite</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ďalší}few{<ph name="CONTACT_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ďalšie}many{<ph name="CONTACT_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ďalšieho}other{<ph name="CONTACT_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ďalších}}</translation>
@@ -1232,6 +1229,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6674571176963658787">Ak chcete spustiť synchronizáciu, zadajte prístupovú frázu</translation>
 <translation id="6676927815633975364">Prihlásiť sa na tomto webe a v Chrome</translation>
 <translation id="6684809838922667136">Zlepšite Chrome</translation>
+<translation id="6689436252814043643">Režim čítania nie je k dispozícii</translation>
 <translation id="6700279777779583398">Vybrané možnosti boli uložené</translation>
 <translation id="670498945988402717">Kontrola prebehla včera</translation>
 <translation id="6710213216561001401">Späť</translation>
@@ -1342,6 +1340,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="7111822978084196600">Pomenujte toto okno</translation>
 <translation id="7115358764509798967">Predvolené systémom</translation>
 <translation id="7117485132243600300">Spravujte sledovaný obsah a navrhované témy aj vyhľadávania</translation>
+<translation id="7119984597597798764">Zavrieť <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Boli skontrolované povolenia pre 1 web}few{Boli skontrolované povolenia pre # weby}many{Permissions reviewed for # sites}other{Boli skontrolované povolenia pre # webov}}</translation>
 <translation id="7138678301420049075">Ostatné</translation>
 <translation id="7140829094791862589">Zoradiť manuálne</translation>
@@ -1443,7 +1442,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="751961395872307827">Nedá sa pripojiť k webu</translation>
 <translation id="7523960634226602883">Vyhľadávať fotoaparátom pomocou funkcie Google Lens</translation>
 <translation id="7525248386620136756"><ph name="TAB_GROUPS_AND_TABS_PART" /> boli zavreté a uložené</translation>
-<translation id="752731652852882757">Blokovať počas používania režimu inkognito</translation>
 <translation id="7545347190366646170">Osoby s prístupom</translation>
 <translation id="7554643625247105821">Verzia Chromu sa nedá skontrolovať</translation>
 <translation id="7557508262441527045">Účet je odhlásený</translation>
@@ -1609,7 +1607,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8243077599929149377">Pridajte svoje používateľské meno</translation>
 <translation id="8244387390464017490">Upraviť stránku Nová karta</translation>
 <translation id="8250920743982581267">Dokumenty</translation>
-<translation id="8255617931166444521">Weby môžu pomocou vašich súborov cookie zobrazovať iba vašu aktivitu prehliadania na nich</translation>
 <translation id="8258999165172757081">Pridané</translation>
 <translation id="8259179246279078674">Prednačítavané stránky sú šifrované, takže Google nezistí nič o ich obsahu. Servery Googlu budú mať k dispozícii informáciu, ktoré weby sú súkromne prednačítavané. Bude slúžiť iba na prednačítanie stránok, ale nebude spojená z ďalšími informáciami z vášho účtu Google.</translation>
 <translation id="8260126382462817229">Skúste sa znova prihlásiť</translation>

@@ -440,6 +440,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1719838434204287058">24 x 30 tum</translation>
 <translation id="1720941539803966190">Stäng självstudierna</translation>
 <translation id="1721424275792716183">* Fältet är obligatoriskt</translation>
+<translation id="1723636263173393300">Principen får ha högst <ph name="MAX_ITEMS_LIMIT" /> genvägar.</translation>
 <translation id="1725591448053514783">You 6-kuvert</translation>
 <translation id="1727613060316725209">Certifikatet är giltigt</translation>
 <translation id="1728677426644403582">Du visar källkoden till en webbsida</translation>
@@ -1047,6 +1048,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="271663710482723385">Tryck på |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| om du vill avsluta helskärmsläget</translation>
 <translation id="2717336592027046789">Rulle</translation>
 <translation id="2718207025093645426">Ingen princip har lästs in för den hanterade användaren eller enheten.</translation>
+<translation id="2719233594187778789">Icke-unik webbadress ignorerades: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Begäran genomfördes</translation>
 <translation id="2722622039067384533">Vardagsrumsmöbler</translation>
 <translation id="2723669454293168317">Kör en säkerhetskontroll i inställningarna för Chrome</translation>
@@ -2007,6 +2009,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4298000214066716287">Investeringar</translation>
 <translation id="4298148761711700950">Betala direkt utan att ladda upp QR-kod</translation>
 <translation id="4298925811540301889">Cookies för den här webbplatsen synkroniseras på dina ChromeOS-enheter. Gå till <ph name="SYNC_SETTINGS" /> om du vill hantera vad du synkroniserar.</translation>
+<translation id="4299919199185766032">Namnet på genvägen överskrider den maximala tillåtna längden på <ph name="MAX_LENGTH" /> tecken.</translation>
 <translation id="4300272766492248925">Öppna appen</translation>
 <translation id="4300675098767811073">Flera hål till höger</translation>
 <translation id="4302514097724775343">Tryck på dinon för att spela</translation>
@@ -2708,6 +2711,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
     Testa med att kontakta systemadministratören.</translation>
 <translation id="5496804587179176046">Spara säkerhetskoder. Inga säkerhetskoder är sparade just nu.</translation>
 <translation id="550365051221576010">Fyll i allt</translation>
+<translation id="5506286895894263601">Listan innehåller inga giltiga genvägar.</translation>
 <translation id="5508443345185481044">Kameror och videokameror</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Hanterade bokmärken</translation>
@@ -3627,6 +3631,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="7014741021609395734">Zoomnivå</translation>
 <translation id="7016992613359344582">Debiteringen kan göras en gång eller återkommande och det behöver inte framgå tydligt att detta händer.</translation>
 <translation id="701757816833614688">Konst- och formgivningsutbildning</translation>
+<translation id="7020464868401003526">Webbadressen till genvägen överskrider den maximala tillåtna längden på <ph name="MAX_LENGTH" /> tecken.</translation>
 <translation id="702275896380648118">Den här webbplatsen avgör vad du gillar och föreslår sedan annonser till andra webbplatser. Webbplatsen hämtar dessutom dina annonsämnen från Chrome för att visa mer relevanta annonser för dig.</translation>
 <translation id="7023162328967545559">Varning från administratören</translation>
 <translation id="7023765275461720661">Vill du länka kontot och betala med <ph name="BNPL_ISSUER_NAME" />?</translation>

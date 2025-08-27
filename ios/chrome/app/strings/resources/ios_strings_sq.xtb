@@ -21,6 +21,7 @@
 <translation id="1072476005125066234">Komentet bazohen në interesat e tu</translation>
 <translation id="1074827084851510304">Je gati të fshish {password_count} fjalëkalime dhe listën e sajteve dhe aplikacioneve për të cilat ke zgjedhur që të mos i ruash asnjëherë informacionet e identifikimit. Nuk do të fshihet asnjë llogari që ke krijuar për sajtet dhe aplikacionet.</translation>
 <translation id="1076421457278169141">Kodi u skanua</translation>
+<translation id="1081114897601629648">Fjalëkalimet e mëposhtme nuk u importuan te "Menaxheri i fjalëkalimeve i Google" pasi nuk përputhen me kërkesat.</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} skedë}other{{count} skeda}}</translation>
 <translation id="1082554859195167538">Komentet për produktet për ty</translation>
 <translation id="1084365883616172403">Postimi në Facebook u krye.</translation>
@@ -599,7 +600,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="333229797575847124">Si ta aktivizosh këtë veçori</translation>
 <translation id="3344485292736684439">{count,plural, =1{Faqeshënuesi u ruajt te "{title}" në llogarinë tënde, {email}}other{Faqeshënuesit u ruajtën te "{title}" në llogarinë tënde, {email}}}</translation>
 <translation id="334690320928261823">Skedat e fundit</translation>
-<translation id="3348387552617855658">Kjo kartë të ndihmon të gjurmosh pakot e tua dhe të jep përditësime të rëndësishme për dorëzimin.</translation>
 <translation id="3349031117032695619">Blloko dritaret kërcyese</translation>
 <translation id="3349676726073650389">Sajtet dhe kërkimet që ndjek ruhen në "Llogarinë tënde të Google". Mund t'i menaxhosh ndjekjet te cilësimet në çdo kohë.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Kjo llogari është e menaxhuar.</translation>

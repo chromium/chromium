@@ -21,6 +21,7 @@
 <translation id="1072476005125066234">İlgi alanlarınıza uygun yorumlar</translation>
 <translation id="1074827084851510304">{password_count} şifreyi ve oturum açma bilgilerini hiçbir zaman kaydetmemeyi seçtiğiniz site ve uygulamaların listesini silmek üzeresiniz. Siteler ve uygulamalar için oluşturduğunuz hesaplar silinmez.</translation>
 <translation id="1076421457278169141">Kod tarandı</translation>
+<translation id="1081114897601629648">Aşağıdaki şifreler, koşulları karşılamadıkları için Google Şifre Yöneticisi'ne aktarılamadı.</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} sekme}other{{count} sekme}}</translation>
 <translation id="1082554859195167538">Size özel ürün yorumları</translation>
 <translation id="1084365883616172403">Facebook yayını tamamlandı.</translation>
@@ -599,7 +600,6 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="333229797575847124">Bu özellik nasıl etkinleştirilir?</translation>
 <translation id="3344485292736684439">{count,plural, =1{Yer işareti {email} hesabınızda "{title}" konumuna kaydedildi}other{Yer işaretleri {email} hesabınızda "{title}" konumuna kaydedildi}}</translation>
 <translation id="334690320928261823">Son Sekmeler</translation>
-<translation id="3348387552617855658">Bu kart, kargolarınızı takip etmenize ve önemli teslimat güncellemelerini öğrenmenize yardımcı olur.</translation>
 <translation id="3349031117032695619">Pop-up'ları engelle</translation>
 <translation id="3349676726073650389">Takip ettiğiniz siteler ve aramalar Google Hesabınıza kaydedilir. Takip ettiklerinizi dilediğiniz zaman ayarlardan yönetebilirsiniz.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Bu hesap yönetiliyor.</translation>
@@ -1625,7 +1625,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="7334364820047587268">Google Şifre Yöneticinizde bu hesaplar için zaten şifreleriniz var. Aşağıdaki şifrelerden birini içe aktarmayı seçerseniz bu şifre mevcut şifrenin yerini alır.</translation>
 <translation id="7336264872878993241">Yüzde <ph name="PERCENT" /> indirildi</translation>
 <translation id="7346909386216857016">Tamam, anladım</translation>
-<translation id="7352651011704765696">Bir şeyler ters gitti</translation>
+<translation id="7352651011704765696">Bir hata oluştu</translation>
 <translation id="7363349185727752629">Gizlilik tercihlerinizle ilgili kılavuz</translation>
 <translation id="736564850024123010">Özelleştirilmiş bir deneyim için adres çubuğunuzun konumunu değiştirin.</translation>
 <translation id="7366909168761621528">Tarama verileri</translation>

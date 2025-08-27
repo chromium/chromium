@@ -311,6 +311,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="494490797786467921">Klik untuk menutup dialog log masuk Chromium</translation>
 <translation id="4950660488495335294">Dengan profil Chromium, anda dapat mengasingkan semua bahan Chromium anda. Buat profil untuk rakan dan keluarga atau asingkan pekerjaan daripada keseronokan.</translation>
 <translation id="4987820182225656817">Tetamu boleh menggunakan Chromium tanpa meninggalkan apa-apa.</translation>
+<translation id="4992938037305302429">Akaun Anda dalam Chromium</translation>
 <translation id="4994636714258228724">Tambahkan diri anda kepada Chromium</translation>
 <translation id="5123973130450702873">Chromium memerlukan kebenaran untuk menjejaki tangan anda</translation>
 <translation id="5141988424377517949">Anda belum melawati laman web ini baru-baru ini. Chromium mengalih keluar <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
@@ -389,6 +390,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="6072463441809498330">Jadikan Chromium Lebih Pantas</translation>
 <translation id="6096348254544841612">Sesuaikan dan kawal Chromium. Kemas kini tersedia.</translation>
 <translation id="6107893135096467929">Hidupkan • Chromium tidak dapat mengesahkan tempat asal sambungan ini</translation>
+<translation id="611228897408671387">Akaun anda dalam Chromium</translation>
 <translation id="6119438414301547735">Benarkan sambungan menunjukkan permintaan akses pada bar alat Chromium</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> berbahaya, jadi Chromium telah menyekat fail itu.</translation>
 <translation id="6132897690380286411">Chromium akan ditutup dan data akan dipadamkan sebentar lagi</translation>
@@ -614,7 +616,6 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8747073452963259673">penjuru bawah sebelah kiri kawasan carian: kiri <ph name="LEFT" />%, bawah <ph name="BOTTOM" />%</translation>
 <translation id="878572486461146056">Ralat pemasangan: Pentadbir rangkaian anda telah menggunakan Dasar Kumpulan yang menghalang pemasangan: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium memerlukan kebenaran untuk mengakses kamera dan mikrofon anda bagi tapak ini</translation>
-<translation id="880560872634367429">Mengesahkan muat turun...</translation>
 <translation id="8818550178040858407">Log Masuk ke Chromium?</translation>
 <translation id="8826492472752484139">Klik “Password Manager”</translation>
 <translation id="8833697763442816810">Sistem Chromium OS</translation>

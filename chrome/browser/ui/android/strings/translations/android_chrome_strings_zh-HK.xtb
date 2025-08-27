@@ -156,7 +156,8 @@
 <translation id="1749561566933687563">同步您的書籤</translation>
 <translation id="1750238553597293878">繼續使用 Google 帳戶中的密碼</translation>
 <translation id="17513872634828108">開啟分頁</translation>
-<translation id="1755203724116202818">為評估廣告成效，網站之間會分享特定類型的資料，例如使用者是否在瀏覽網站後購物</translation>
+<translation id="1753744496844366747">Aa</translation>
+<translation id="1755203724116202818">為評估廣告成效，網站之間會分享特定類型的資料，例如使用者是否在瀏覽網站後購物。</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{頁面，清單中有 1 個頁面}other{頁面，清單中有 # 個頁面}}</translation>
 <translation id="1771929606532798550">你的 Chrome 使用情況資料會傳送給 Google，但不會連繫你的身分\n\nChrome 當機時，當機詳情可能會包括部分個人資料\n\n如果你將記錄同步到 Google 帳戶，數據可能亦會包括所瀏覽網址的資料</translation>
 <translation id="1778457539567749232">標示為未讀取</translation>
@@ -321,6 +322,7 @@
 <translation id="253498598929009420">網站將可見到您螢幕上的內容</translation>
 <translation id="2535807170289627159">所有分頁</translation>
 <translation id="2536728043171574184">正在瀏覽此網頁的離線版本</translation>
+<translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />，分頁</translation>
 <translation id="2546283357679194313">Cookie 和網站數據</translation>
 <translation id="2547843573592965873">個人檔案鎖定功能可確保你在車上的資料安全，包括儲存在 Google 帳戶的密碼、付款資料等。</translation>
@@ -499,7 +501,6 @@
 <translation id="3384347053049321195">分享圖片</translation>
 <translation id="3387650086002190359">檔案系統發生錯誤，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="3414952576877147120">大小：</translation>
-<translation id="3421726884497337397">選擇何時封鎖第三方 Cookie</translation>
 <translation id="3430670036890315772">如果關閉個人檔案鎖定，系統將移除已儲存的資料</translation>
 <translation id="3435465986463792564">開啟了很多視窗嗎？您可在此管理視窗</translation>
 <translation id="3435575784518354875">如要繼續存取密碼，請立即匯出密碼、更新 Google Play 服務，再將密碼匯入回「Google 密碼管理工具」。<ph name="BEGIN_LINK" />查閱完整指示<ph name="END_LINK" />。</translation>
@@ -760,7 +761,6 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 個密碼被盜用}other{# 個密碼被盜用}}</translation>
 <translation id="4641919525231168205">前往下一頁</translation>
 <translation id="4642472735733036929">已停止追蹤價格</translation>
-<translation id="4645146721047390964">在無痕模式中，網站不能使用 Cookie 查看您在各網站的瀏覽活動，例如放送個人化廣告。有些網站的功能可能無法正常運作。</translation>
 <translation id="465657074423018424">「安全瀏覽」功能可保護您免受欺詐網站的威脅。如果您停用此功能，在瀏覽及輸入密碼時請提高警覺。</translation>
 <translation id="4662373422909645029">暱稱不可包含數字</translation>
 <translation id="4663756553811254707">已刪除 <ph name="NUMBER_OF_BOOKMARKS" /> 個書籤</translation>
@@ -1220,7 +1220,6 @@
 <translation id="6633067410344541938">解鎖無痕模式</translation>
 <translation id="6636623428211296678">探索下方更多設定或立即結束審核</translation>
 <translation id="6637100877383020115">Chrome 會向 Google 傳送使用情況和當機資料，以協助改善應用程式。<ph name="BEGIN_UMA_LINK" />管理<ph name="END_UMA_LINK" /></translation>
-<translation id="6640207029842583248">一律封鎖</translation>
 <translation id="6641780377503683465">移除<ph name="INTEREST" /></translation>
 <translation id="6647441008198474441">系統會將您瀏覽的網址傳送至 Google，以便預測您接下來可能會瀏覽的網站</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 個聯絡人}other{<ph name="CONTACT_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 個聯絡人}}</translation>
@@ -1241,6 +1240,7 @@
 <translation id="6723740634201835758">在您的 Google 帳戶中</translation>
 <translation id="6734310707649923383">你可查看瀏覽過的網頁，或從記錄刪除網頁</translation>
 <translation id="6738867403308150051">下載中…</translation>
+<translation id="6745063744988317486">等寬</translation>
 <translation id="6746338529702829275">查看帳戶資料</translation>
 <translation id="6751521182688001123">快速開啟新分頁。如要編輯此捷徑，請按住捷徑按鈕。</translation>
 <translation id="6752130751133944215">如要還原新視窗，請將使用中和閒置視窗的總數減至 <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> 個或以下。閒置視窗會在 6 個月後刪除。</translation>
@@ -1445,7 +1445,6 @@
 <translation id="751961395872307827">無法連接網站</translation>
 <translation id="7523960634226602883">使用 Google 智能鏡頭，透過相機搜尋</translation>
 <translation id="7525248386620136756">已關閉並儲存 <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
-<translation id="752731652852882757">使用無痕模式時封鎖</translation>
 <translation id="7545347190366646170">有存取權的使用者</translation>
 <translation id="7554643625247105821">無法檢查 Chrome 版本</translation>
 <translation id="7557508262441527045">已登出</translation>
@@ -1611,7 +1610,6 @@
 <translation id="8243077599929149377">新增你的使用者名稱</translation>
 <translation id="8244387390464017490">自訂新分頁</translation>
 <translation id="8250920743982581267">文件</translation>
-<translation id="8255617931166444521">網站只能使用 Cookie 查看您在該網站的瀏覽活動</translation>
 <translation id="8258999165172757081">已新增</translation>
 <translation id="8259179246279078674">由於預先載入的網頁已加密，Google 不會得知預先載入網頁內容的相關資料。Google 伺服器會知道哪些網站已透過私密方式預先載入。此資料只用於預先載入網頁，不會與您 Google 帳戶的其他資料連結。</translation>
 <translation id="8260126382462817229">請嘗試再次登入</translation>

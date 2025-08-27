@@ -25,6 +25,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="129382876167171263">Les fichiers enregistrés par des sites Web sont répertoriés ici</translation>
 <translation id="131112695174432497">Les données qui influent sur la personnalisation des annonces seront supprimées</translation>
 <translation id="1317194122196776028">Effacer pour ce site</translation>
+<translation id="1321110954513621549">Autorisée • Approximative</translation>
 <translation id="1323433172918577554">Afficher plus</translation>
 <translation id="1333965224356556482">Ne pas autoriser les sites à accéder à votre position</translation>
 <translation id="1343356790768851700">Ce site détermine ce que vous aimez, puis suggère des annonces à d'autres sites</translation>
@@ -40,6 +41,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="1448064542941920355">Réduire le zoom</translation>
 <translation id="1464044141348608623">Ne pas autoriser les sites à savoir quand vous utilisez activement votre appareil</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}one{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
+<translation id="1476700086976862423">Couleur du thème sépia</translation>
 <translation id="1500473259453106018">Masquer la fiche "Baisses de prix dans les onglets"</translation>
 <translation id="1508931164824684991">Les sites peuvent utiliser JavaScript</translation>
 <translation id="1510341833810331442">Les sites ne sont pas autorisés à enregistrer des données sur votre appareil</translation>
@@ -71,6 +73,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="1799920918471566157">Astuces Chrome</translation>
 <translation id="1816835383954230954">Lorsque cette option est activée, Chrome s'exécute plus rapidement, et les fonctionnalités qui utilisent JavaScript devraient fonctionner comme prévu. Lorsque cette option est désactivée, les performances sont réduites, mais V8 est plus résistant aux attaques.</translation>
 <translation id="1818308510395330587">Pour autoriser <ph name="APP_NAME" /> à utiliser la RA, activez également l'appareil photo dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
+<translation id="1848033246551405023">Police Sans Serif</translation>
 <translation id="1881806992065048905">Bottom sheet de l'apparence de la page "Nouvel onglet"</translation>
 <translation id="1887786770086287077">L'accès à la position est désactivé pour cet appareil. Activez-le dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Les sites accèdent généralement aux fichiers et aux dossiers sur votre appareil pour proposer des fonctionnalités comme la sauvegarde automatique de votre travail</translation>
@@ -92,6 +95,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="2079545284768500474">Annuler</translation>
 <translation id="2080070583977670716">Plus de paramètres</translation>
 <translation id="2091887806945687916">Son</translation>
+<translation id="2094208275686143364">Couleur du thème clair</translation>
 <translation id="2096716221239095980">Supprimer toutes les données</translation>
 <translation id="2102396546234652240">Ne pas autoriser les sites à utiliser votre micro</translation>
 <translation id="2117655453726830283">Diapositive suivante</translation>
@@ -137,6 +141,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="2498359688066513246">Aide et commentaires</translation>
 <translation id="2501278716633472235">Retour</translation>
 <translation id="2533138527374486328">Lorsque cette option est activée, les sites peuvent demander à se connecter à n'importe quel appareil sur votre réseau local. Lorsque cette option est désactivée, les sites ne peuvent pas se connecter aux appareils sur votre réseau local.</translation>
+<translation id="2544997614631598250">Couleur du thème sombre</translation>
 <translation id="2546283357679194313">Cookies et données des sites</translation>
 <translation id="2570922361219980984">L'accès à la position est également désactivé pour cet appareil. Activez-le dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Développé – Cliquer pour réduire</translation>
@@ -194,6 +199,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="3165022941318558018">Autorisez un site à utiliser des cookies tiers</translation>
 <translation id="3167868116600277716">Flux Discover</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> de données stockées</translation>
+<translation id="3199078925536734975">Autorisée cette fois-ci • Approximative</translation>
 <translation id="321187648315454507">Pour autoriser <ph name="APP_NAME" /> à vous envoyer des notifications, activez également celles-ci dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Position non autorisée</translation>
 <translation id="3227137524299004712">Micro</translation>
@@ -250,6 +256,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="3803367742635802571">Les sites que vous consultez ne fonctionneront peut-être plus comme prévu</translation>
 <translation id="3816118180265633665">Couleurs de Chrome</translation>
 <translation id="381841723434055211">Numéros de téléphone</translation>
+<translation id="3823453485268218808">Police Mono</translation>
 <translation id="3826050100957962900">Connexion tierce</translation>
 <translation id="3835233591525155343">Savoir si vous utilisez l'appareil</translation>
 <translation id="3843916486309149084">Chrome bloquera de nouveau les cookies aujourd'hui</translation>
@@ -302,6 +309,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="4402755511846832236">Empêcher les sites de savoir si vous utilisez activement cet appareil</translation>
 <translation id="4412992751769744546">Autoriser les cookies tiers</translation>
 <translation id="4419929467120297501">Chrome empêche les sites d'utiliser des cookies tiers pour suivre votre activité lorsque vous naviguez. Accédez aux paramètres pour <ph name="BEGIN_LINK" />gérer l'accès aux cookies tiers<ph name="END_LINK" />.</translation>
+<translation id="4425416282877905577">Police Serif</translation>
 <translation id="443121186588148776">Port de série</translation>
 <translation id="4434045419905280838">Pop-ups et redirections</translation>
 <translation id="443552056913301231">Cela supprimera toutes les données locales, y compris les cookies, et réinitialisera toutes les autorisations pour <ph name="ORIGIN" /></translation>
@@ -554,6 +562,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="7478658909253570368">Ne pas autoriser les sites à se connecter aux ports série</translation>
 <translation id="7488573225650545859">Masquer "Afficher les onglets dans votre liste d'applications"</translation>
 <translation id="7521387064766892559">JavaScript</translation>
+<translation id="7538975533793429503">Curseur de taille de police</translation>
 <translation id="7547989957535180761">Lorsque cette option est activée, les sites peuvent afficher des invites de connexion. Lorsqu'elle est désactivée, les sites ne peuvent pas afficher d'invite de connexion.</translation>
 <translation id="7553211568594248088">Quitter la recherche dans le hub</translation>
 <translation id="7554752735887601236">Un site utilise votre micro</translation>

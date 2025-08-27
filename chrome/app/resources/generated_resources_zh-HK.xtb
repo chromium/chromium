@@ -1195,6 +1195,7 @@
 <translation id="1805967612549112634">確認 PIN</translation>
 <translation id="1806335016774576568">切換至其他已開啟的應用程式</translation>
 <translation id="1807246157184219062">淺色</translation>
+<translation id="1808571181382454540">去「設定」頁面</translation>
 <translation id="1808805149659872686">新項目</translation>
 <translation id="1809201888580326312">您已選擇不儲存這些網站和應用程式的密碼</translation>
 <translation id="1809734401532861917">將我的書籤、記錄、密碼和其他設定新增至 <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -1567,6 +1568,7 @@
 <translation id="2059913712424898428">時區</translation>
 <translation id="2060375639911876205">移除 eSIM 卡設定檔</translation>
 <translation id="2061366302742593739">沒有可顯示的內容</translation>
+<translation id="2061589908388230480">如果 Chromium 發現你的密碼在公開資料外洩事件中外洩，「Google 密碼管理工具」可能會在你登入時提議為你更改密碼。<ph name="BEGIN_LINK" />進一步瞭解自動密碼變更<ph name="END_LINK" /></translation>
 <translation id="2062354623176996748">如果您使用無痕式視窗瀏覽網頁，系統便不會保留您的瀏覽記錄</translation>
 <translation id="206308717637808771">在關閉所有視窗後刪除資料。資料的處理方式與處理目前瀏覽網站的方式相同</translation>
 <translation id="2065405795449409761">Chrome 目前由自動化測試軟件控制。</translation>
@@ -2467,6 +2469,7 @@
 <translation id="2669241540496514785">無法開啟 <ph name="APP_NAME" />。</translation>
 <translation id="2669454659051515572">此裝置的所有使用者都能看到已下載的檔案</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> 正在共用 Chrome 分頁。</translation>
+<translation id="2670168377011445813">如果 Chrome 發現你的密碼在公開資料外洩事件中外洩，「Google 密碼管理工具」可能會在你登入時提議為你更改密碼。<ph name="BEGIN_LINK" />進一步瞭解自動密碼變更<ph name="END_LINK" /></translation>
 <translation id="2670350619068134931">減少動畫</translation>
 <translation id="2670403088701171361">不允許網站查看剪貼簿中的文字或圖片</translation>
 <translation id="2671423594960767771">分享群組項目</translation>
@@ -4553,7 +4556,6 @@
 <translation id="4109135793348361820">將視窗傳送給 <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">取消忽略警告</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (離線)</translation>
-<translation id="4113030288477039509">由管理員管理</translation>
 <translation id="4113743276555482284">檔案密碼</translation>
 <translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />開啟「定位精確度」時，系統會根據 Wi-Fi 存取點和流動網絡發射塔等無線訊號相關資料，以及加速計和陀螺儀等裝置感應器資料，更精確地估計裝置位置，供 Android 應用程式和服務提供適地性功能。為此，Google 會定期收集你附近的裝置感應器資訊和無線訊號，協助尋找無線訊號位置。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />Google 不會使用這些資料識別你的身分，而是用於改善定位精確度和適地性服務，並改善、提供及維護 Google 整體的服務。我們會按照自身和第三方的合法權益來處理這些資料，滿足使用者的需要。<ph name="END_PARAGRAPH2" /><ph name="BEGIN_PARAGRAPH3" />你可隨時在裝置的位置設定關閉「定位精確度」，只需前往 [設定] &gt; [私隱與安全] &gt; [私隱權設定] &gt; [位置資料存取權] &gt; [進階位置設定] 便可。如果停用「定位精確度」，系統就不會收集任何「定位精確度」資料。Android 應用程式和服務只能使用 IP 位址 (如有) 來判斷你裝置的位置，而這種做法可能會影響 Android 應用程式和服務 (例如「Google 地圖」) 的位置資訊可用性和準確度。<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />進一步瞭解「定位精確度」<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
@@ -5002,7 +5004,6 @@
 <translation id="443196770280837407">使用鍵盤快速鍵開啟 Gemini。</translation>
 <translation id="4432621511648257259">密碼不正確</translation>
 <translation id="4434611816075088065">目前沒有需要處理的事項</translation>
-<translation id="443475966875174318">更新或移除不兼容的應用程式</translation>
 <translation id="443503224864902151">你會登出大多數網站，但會保持登入 Google 帳戶，以便刪除已同步的資料。</translation>
 <translation id="4437879751057074691">提示儲存密碼和密鑰</translation>
 <translation id="4437947179446780764">新增自訂 DNS 服務供應商</translation>
@@ -5416,7 +5417,6 @@
 <translation id="4742334355511750246">不允許顯示圖片</translation>
 <translation id="4742795653798179840">已刪除 Chrome 資料</translation>
 <translation id="4742970037960872810">移除焦點內容</translation>
-<translation id="4743260470722568160"><ph name="BEGIN_LINK" />瞭解如何更新應用程式<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">已允許 – <ph name="PERMISSION_DETAILS" />。開啟<ph name="LINK_BEGIN" />系統麥克風存取權<ph name="LINK_END" />。</translation>
 <translation id="4744260496658845719">鍵盤背光亮度</translation>
 <translation id="4744268813103118742">前往網站</translation>
@@ -7157,7 +7157,6 @@
 <translation id="5989497858237037960">當你瀏覽網站時，其網頁內容會加密並儲存至你的裝置。這可能會影響 Chrome 的效能。</translation>
 <translation id="5990266201903445068">只限 Wi-Fi</translation>
 <translation id="5990386583461751448">已翻譯</translation>
-<translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{為確保您可以繼續瀏覽網絡，請要求您的管理員移除此應用程式。}other{為確保您可以繼續瀏覽網絡，請要求您的管理員移除這些應用程式。}}</translation>
 <translation id="5992225669837656567">已經解除連接所有滑鼠</translation>
 <translation id="5992652489368666106">無邊框</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{已完成 1 個網站的審核}other{已完成 {NUM_SITES} 個網站的審核}}</translation>
@@ -8648,7 +8647,6 @@
 <translation id="7039951224110875196">為子女建立 Google 帳戶</translation>
 <translation id="7039968672732182060">Chromebook 不會再收到安全更新。請盡快改用新 Chromebook，以獲得最新的安全和軟件更新。須遵守優惠條款。</translation>
 <translation id="7042116641003232070">可將資料儲存至您的裝置</translation>
-<translation id="7043108582968290193">大功告成！已沒有任何不兼容的應用程式。</translation>
 <translation id="7044124535091449260">瞭解詳情網站存取權</translation>
 <translation id="7044207729381622209">您將會從這些網站 (包括已開啟的分頁) 中登出</translation>
 <translation id="7044211973375150246">某個應用程式所設定會開啟的連結與 <ph name="APP_NAME" /> 的設定相同，這會導致「<ph name="APP_NAME_2" />」無法開啟支援的連結。</translation>
@@ -8984,7 +8982,6 @@
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">動畫</translation>
 <translation id="7301812050652048720">密鑰已刪除</translation>
-<translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{此應用程式可能會令 Chrome 無法正常運作。}other{這些應用程式可能會令 Chrome 無法正常運作。}}</translation>
 <translation id="7303281435234579599">糟糕！設定示範模式時發生問題。</translation>
 <translation id="7303485269821975179">設定 <ph name="DEVICE_TYPE" /> 密碼</translation>
 <translation id="7303900363563182677">此網站被禁止查看複製到剪貼簿的文字和圖片</translation>
@@ -11866,7 +11863,6 @@
 <translation id="962802172452141067">樹狀分枝書籤</translation>
 <translation id="963000966785016697">透過「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋圖片</translation>
 <translation id="964286338916298286">IT 管理員已為您的裝置停用 Chrome Goodies。</translation>
-<translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{應用程式}other{應用程式}}</translation>
 <translation id="964790508619473209">螢幕安排</translation>
 <translation id="96535553604365597">報告 Google Cast 的問題</translation>
 <translation id="965470117154635268">{NUM_SITES,plural, =1{審核最近曾傳送大量通知的 1 個網站}other{審核最近曾傳送大量通知的 {NUM_SITES} 個網站}}</translation>

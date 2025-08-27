@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
 <translation id="1001534784610492198">Instalētāja arhīvs ir bojāts vai nav derīgs. Lūdzu, vēlreiz lejupielādējiet Google Chrome.</translation>
+<translation id="1006034097353797313">Turpiniet darbu no vietas, kur to pārtraucāt: pārlūkā Chrome tiek atjaunotas jūsu cilnes ikreiz, kad to restartējat. Lai to izslēgtu, pārejiet uz lapu</translation>
 <translation id="1018937009655463387">Lai kopīgotu logu, sistēmas iestatījumos atļaujiet ekrāna ierakstīšanu pārlūkā Chrome.</translation>
 <translation id="1026101648481255140">Atsākt instalēšanu</translation>
 <translation id="102763973188675173">Pielāgojiet un pārvaldiet pārlūku Google Chrome. Ir pieejams atjauninājums.</translation>
@@ -81,6 +82,7 @@
 <translation id="2018879682492276940">Instalēšana neizdevās. Lūdzu, mēģiniet vēlreiz.</translation>
 <translation id="2024959665595762054">Lai izmantotu un saglabātu Chrome datus savā Google kontā, apstipriniet savu identitāti.</translation>
 <translation id="2034233344106846793">Pārlūkā Chrome nedrošie savienojumi tiek automātiski jaunināti uz HTTPS, ja iespējams.</translation>
+<translation id="2039417478970545937">Iestatījumi.</translation>
 <translation id="207902854391093810">Kad izmēģināšana ir ieslēgta, reklāmu izvērtēšana ļauj jūsu apmeklētajām vietnēm pieprasīt informāciju no Chrome, lai efektīvāk novērtētu vietnēs rādīto reklāmu veiktspēju. Reklāmu izvērtēšana ierobežo starpvietņu izsekošanu, pārsūtot starp vietnēm pēc iespējas mazāk informācijas.</translation>
 <translation id="2091012649849228750">Lai saņemtu turpmākus Google Chrome atjauninājumus, nepieciešama operētājsistēma Windows 10 vai jaunāka versija. Šajā datorā tiek izmantota operētājsistēma Windows 8.</translation>
 <translation id="2094648590148273905">Chrome OS Flex noteikumi</translation>
@@ -349,6 +351,7 @@
 
 Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai lietojiet jaunāku Chrome versiju.</translation>
 <translation id="5174969993834422967">Parasti jūs bloķējat paziņojumus. Lai ļautu šai vietnei sūtīt jums paziņojumus, noklikšķiniet uz paziņojumu ikonas atrašanās vietas joslas labajā stūrī.</translation>
+<translation id="5174983315706567306">Diskā nepietiek brīvas vietas.</translation>
 <translation id="5201744974236816379">Chrome atjauninājums</translation>
 <translation id="521447420733633466">Ja jūsu ierīci izmanto arī jūsu draugi un ģimenes locekļi, viņi var iestatīt pārlūku Chrome atbilstoši savām vēlmēm un pārlūkot saturu atsevišķos profilos.</translation>
 <translation id="5234764350956374838">Nerādīt</translation>
@@ -457,6 +460,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> — Google Chrome izstrādātāju versija</translation>
 <translation id="6520670145826811516">Lai varētu izmantot atrašanās vietas datus, piešķiriet pārlūkam Chrome piekļuvi <ph name="BEGIN_LINK" />sistēmas iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="659498884637196217">Google paroļu pārvaldniekā šajā ierīcē</translation>
+<translation id="6631524303639368205">Turpiniet darbu no vietas, kur to pārtraucāt: pārlūkā Chrome tika atjaunotas cilnes no jūsu pēdējās sesijas. Varat to izslēgt lapā</translation>
 <translation id="6632473616050862500">Chrome OS Flex darbību nodrošina papildu <ph name="BEGIN_LINK_CROS_OSS" />atklātā pirmkoda programmatūra<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6634299872736643004">Šī iestatījuma izmaiņas tiks lietotas pēc pārlūka Chrome restartēšanas.</translation>
 <translation id="6660596345553328257">Vai pierakstīties pārlūkā Chrome?</translation>
@@ -564,6 +568,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="7825851276765848807">Instalēšana neizdevās nenoteiktas kļūdas dēļ. Lūdzu, lejupielādējiet pārlūkprogrammu Google Chrome vēlreiz.</translation>
 <translation id="7827099906024714326">Pārlūkā Chrome ir jāverificē jūsu identitāte, lai noteiktus datus varētu saglabāt jūsu Google kontā un izmantot visās jūsu ierīcēs. Ja izrakstīsieties tūlīt, šie dati tiks dzēsti.</translation>
 <translation id="7845233973568007926">Pateicamies, ka veicāt instalēšanu. Pirms <ph name="BUNDLE_NAME" /> izmantošanas ir jārestartē dators.</translation>
+<translation id="7849037457735762883">Turpiniet darbu no vietas, kur to pārtraucāt: pārlūkā Chrome var tikt atjaunotas jūsu cilnes ikreiz, kad to restartējat. Lai to ieslēgtu, pārejiet uz lapu</translation>
 <translation id="7872446069773932638">Notiek lejupielāde... Atlikušais laiks: <ph name="SECONDS" /> sekunde(-es).</translation>
 <translation id="7886087451482920026">Atlasiet tekstu, izmantojot Google Lens.</translation>
 <translation id="7890208801193284374">Ja jūsu datoru izmanto arī jūsu draugi un ģimenes locekļi, viņi var iestatīt pārlūku Chrome atbilstoši savām vēlmēm un pārlūkot saturu atsevišķos kontos.</translation>

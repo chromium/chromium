@@ -243,6 +243,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="139305205187523129"><ph name="HOST_NAME" /> não enviou quaisquer dados.</translation>
 <translation id="1393071644879491291">Os atacantes no site que tentou visitar podem tentar enganar o utilizador para que instale software ou revele informações como as suas palavras-passe, número de telefone ou números de cartões de crédito. O Chrome recomenda vivamente voltar para um site seguro. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais acerca deste aviso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1405567553485452995">Verde-claro</translation>
+<translation id="1406370515365284486">Os seus métodos de pagamento continuam guardados</translation>
 <translation id="1406500794671479665">A confirmar...</translation>
 <translation id="1406812885827747674">Permitir desta vez</translation>
 <translation id="14070772729708640">Os ficheiros foram carregados com êxito para <ph name="FOLDER_NAME" /> no <ph name="CLOUD_PROVIDER" /></translation>

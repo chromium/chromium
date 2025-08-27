@@ -242,6 +242,7 @@
 <translation id="1902277226107477495">Adresdetectie uitgezet. Zet deze functie weer aan in Instellingen.</translation>
 <translation id="1904580727789512086">De URL's die je bezoekt, worden opgeslagen in je Google-account</translation>
 <translation id="1911619930368729126">Uploaden naar Google Drive</translation>
+<translation id="1925706052394657380">Open de instellingen voor <ph name="BEGIN_BOLD" />standaard-apps<ph name="END_BOLD" /> in iOS</translation>
 <translation id="1941314575388338491">Dubbeltik om te kopiëren.</translation>
 <translation id="1943478190258551035">Menu → Instellingen</translation>
 <translation id="1952728750904661634">Inloggen met een beheerd account</translation>
@@ -251,6 +252,7 @@
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> heeft een wachtwoord met je gedeeld voor <ph name="WEBSITE" /></translation>
 <translation id="1962969542251276847">Vergrendelscherm</translation>
 <translation id="1963976881984600709">Standaardbeveiliging</translation>
+<translation id="1964507856799750384">Tik op <ph name="BEGIN_BOLD" />Browser-app<ph name="END_BOLD" /></translation>
 <translation id="1966313166384086081">sitegegevens</translation>
 <translation id="1967461193809857427">{count,plural, =1{Wil je het tabblad ophalen dat je had achtergelaten op Android?}other{Wil je de tabbladen ophalen die je had achtergelaten op Android?}}</translation>
 <translation id="1972325230031091483">Je browst sneller, omdat content proactief wordt geladen op basis van je huidige webpagina</translation>
@@ -600,7 +602,6 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="333229797575847124">Deze functie aanzetten</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bookmark opgeslagen in {title} in je account {email}}other{Bookmarks opgeslagen in {title} in je account {email}}}</translation>
 <translation id="334690320928261823">Recente tabbladen</translation>
-<translation id="3348387552617855658">Met deze kaart kun je bijhouden waar je pakketten zijn en krijg je belangrijke updates over de bezorging.</translation>
 <translation id="3349031117032695619">Pop-ups blokkeren</translation>
 <translation id="3349676726073650389">De sites en zoekopdrachten die je volgt, worden opgeslagen in je Google-account. Je kunt je gevolgde items altijd beheren via de instellingen.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Dit account wordt beheerd.</translation>

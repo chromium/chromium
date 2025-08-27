@@ -243,6 +243,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="139305205187523129">Host <ph name="HOST_NAME" /> nije poslao nikakve podatke.</translation>
 <translation id="1393071644879491291">Napadači na sajtu koji ste probali da posetite mogu da vas prevare da instalirate softver ili otkrijete stvari poput lozinki, telefona ili brojeva kreditnih kartica. Chrome toplo preporučuje da se vratite na bezbedno mesto. <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više o ovom upozorenju<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1405567553485452995">Svetlozelena</translation>
+<translation id="1406370515365284486">Načini plaćanja će i dalje biti sačuvani</translation>
 <translation id="1406500794671479665">Verifikovanje...</translation>
 <translation id="1406812885827747674">Dozvoli ovaj put</translation>
 <translation id="14070772729708640">Fajlovi su otpremljeni u <ph name="FOLDER_NAME" /> u usluzi <ph name="CLOUD_PROVIDER" /></translation>

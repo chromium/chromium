@@ -499,7 +499,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3384347053049321195">Compartilhar imagem</translation>
 <translation id="3387650086002190359">Falha no download de <ph name="FILE_NAME" /> devido a erros do sistema de arquivos.</translation>
 <translation id="3414952576877147120">Tamanho:</translation>
-<translation id="3421726884497337397">Defina quando bloquear cookies de terceiros</translation>
 <translation id="3430670036890315772">Se o bloqueio de perfil for desativado, as informações salvas serão removidas</translation>
 <translation id="3435465986463792564">Muitas janelas? Gerencie aqui.</translation>
 <translation id="3435575784518354875">Para manter o acesso às suas senhas, exporte-as agora, atualize o Google Play Services e importe-as de volta ao Gerenciador de senhas do Google. <ph name="BEGIN_LINK" />Ver instruções completas<ph name="END_LINK" />.</translation>
@@ -761,7 +760,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 senha comprometida}one{# senha comprometida}other{# senhas comprometidas}}</translation>
 <translation id="4641919525231168205">Ir para a próxima página</translation>
 <translation id="4642472735733036929">Monitoramento de preço interrompido</translation>
-<translation id="4645146721047390964">Na navegação anônima, os sites não podem usar os cookies para acessar sua atividade de navegação em outros sites, por exemplo, para personalizar anúncios. Os recursos de alguns sites podem falhar.</translation>
 <translation id="465657074423018424">O recurso Navegação segura protege você de sites enganosos. Se desativá-lo, tenha cuidado redobrado ao navegar pela Internet, principalmente quando for digitar senhas.</translation>
 <translation id="4662373422909645029">O apelido não pode ter números</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> favoritos excluídos</translation>
@@ -1221,7 +1219,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6633067410344541938">Desbloquear a navegação anônima</translation>
 <translation id="6636623428211296678">Veja mais configurações abaixo ou conclua a revisão</translation>
 <translation id="6637100877383020115">Para ajudar a melhorar o app, o Chrome envia dados de uso e de falhas ao Google. <ph name="BEGIN_UMA_LINK" />Gerenciar<ph name="END_UMA_LINK" /></translation>
-<translation id="6640207029842583248">Bloquear sempre</translation>
 <translation id="6641780377503683465">Remover <ph name="INTEREST" /></translation>
 <translation id="6647441008198474441">Os URLs que você acessa são enviados ao Google para prever quais sites podem ser do seu interesse</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -1233,6 +1230,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6674571176963658787">Para iniciar a sincronização, digite a senha longa</translation>
 <translation id="6676927815633975364">Faça login neste site e no Chrome</translation>
 <translation id="6684809838922667136">Melhorar o Chrome</translation>
+<translation id="6689436252814043643">O modo de leitura está indisponível</translation>
 <translation id="6700279777779583398">Opções salvas</translation>
 <translation id="670498945988402717">Verificado ontem</translation>
 <translation id="6710213216561001401">Anterior</translation>
@@ -1343,6 +1341,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7111822978084196600">Dê um nome à janela</translation>
 <translation id="7115358764509798967">Padrão do sistema</translation>
 <translation id="7117485132243600300">Gerencie o conteúdo que você segue e as sugestões de temas e de pesquisas</translation>
+<translation id="7119984597597798764">Fechar <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Permissões revisadas para 1 site}one{Permissões revisadas para # site}other{Permissões revisadas para # sites}}</translation>
 <translation id="7138678301420049075">Outro</translation>
 <translation id="7140829094791862589">Classificar por ordem manual</translation>
@@ -1444,7 +1443,6 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="751961395872307827">Não foi possível se conectar ao site</translation>
 <translation id="7523960634226602883">Pesquisar com a câmera usando o Lens</translation>
 <translation id="7525248386620136756"><ph name="TAB_GROUPS_AND_TABS_PART" /> fechados e salvos</translation>
-<translation id="752731652852882757">Bloquear na navegação anônima</translation>
 <translation id="7545347190366646170">Pessoas com acesso</translation>
 <translation id="7554643625247105821">Não é possível verificar a versão do Chrome</translation>
 <translation id="7557508262441527045">Saiu</translation>
@@ -1610,7 +1608,6 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8243077599929149377">Adicione seu nome de usuário</translation>
 <translation id="8244387390464017490">Personalizar "Nova guia"</translation>
 <translation id="8250920743982581267">Documentos</translation>
-<translation id="8255617931166444521">Os sites só podem usar os cookies para ver sua atividade de navegação na própria página.</translation>
 <translation id="8258999165172757081">Adicionado</translation>
 <translation id="8259179246279078674">Como as páginas pré-carregadas são criptografadas, o Google não sabe nada sobre o conteúdo delas. Os servidores do Google saberão quais sites foram pré-carregados de forma anônima. Essa informação é usada somente para pré-carregar as páginas, e não está vinculada a outras informações da sua Conta do Google.</translation>
 <translation id="8260126382462817229">Tente fazer login novamente</translation>

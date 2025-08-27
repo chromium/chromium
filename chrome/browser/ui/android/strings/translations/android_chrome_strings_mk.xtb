@@ -499,7 +499,6 @@
 <translation id="3384347053049321195">Сподели ја сликата</translation>
 <translation id="3387650086002190359">Преземањето на <ph name="FILE_NAME" /> не успеа поради грешки на системот со датотеки.</translation>
 <translation id="3414952576877147120">Големина:</translation>
-<translation id="3421726884497337397">Изберете кога да се блокираат колачињата од трети страни</translation>
 <translation id="3430670036890315772">Ако го исклучите „Заклучувањето на профилот“, ќе се отстранат вашите зачувани податоци</translation>
 <translation id="3435465986463792564">Имате многу прозорци? Може да управувате со нив оттука</translation>
 <translation id="3435575784518354875">За да го задржите пристапот до лозинките, извезете ги сега, ажурирајте ја „Услуги на Google Play“, па увезете ги повторно во Google Password Manager. <ph name="BEGIN_LINK" />Погледнете ги целосните инструкции<ph name="END_LINK" />.</translation>
@@ -760,7 +759,6 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 компромитирана лозинка}one{# компромитирана лозинка}other{# компромитирани лозинки}}</translation>
 <translation id="4641919525231168205">Оди на следната страница</translation>
 <translation id="4642472735733036929">Следењето на цените е сопрено</translation>
-<translation id="4645146721047390964">Додека сте во „Инкогнито“, сајтовите не може да ги користат колачињата за да ја гледаат вашата активност од прелистувањето на различни сајтови, на пример, за персонализирање реклами. Функциите на некои сајтови можеби нема да работат.</translation>
 <translation id="465657074423018424">„Безбедното прелистување“ ве заштитува од измамнички веб-сајтови. Ако го исклучите, бидете многу внимателни при прелистувањето, особено пред внесување лозинки.</translation>
 <translation id="4662373422909645029">Прекарот не може да содржи броеви</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> обележувачи се избришани</translation>
@@ -1220,7 +1218,6 @@
 <translation id="6633067410344541938">Отклучете го режимот „Инкогнито“</translation>
 <translation id="6636623428211296678">Истражете други поставки долу или завршете сега</translation>
 <translation id="6637100877383020115">За да се подобри апликацијата, Chrome испраќа податоци за користењето и падовите во Google. <ph name="BEGIN_UMA_LINK" />Управувајте<ph name="END_UMA_LINK" /></translation>
-<translation id="6640207029842583248">Блокирај цело време</translation>
 <translation id="6641780377503683465">Отстранете <ph name="INTEREST" /></translation>
 <translation id="6647441008198474441">URL-адресите што ги посетувате се испраќаат во Google за да се предвидат сајтовите што можеби ќе ги посетите следно</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -1232,6 +1229,7 @@
 <translation id="6674571176963658787">За да започне синхронизацијата, внесете ја лозинката</translation>
 <translation id="6676927815633975364">Најавете се на сајтов и на Chrome</translation>
 <translation id="6684809838922667136">Подобрете го Chrome</translation>
+<translation id="6689436252814043643">„Режимот за читање“ е недостапен</translation>
 <translation id="6700279777779583398">Изборот е зачуван</translation>
 <translation id="670498945988402717">Проверено вчера</translation>
 <translation id="6710213216561001401">Претходно</translation>
@@ -1342,6 +1340,7 @@
 <translation id="7111822978084196600">Именувајте го прозорецов</translation>
 <translation id="7115358764509798967">Стандардно за системот</translation>
 <translation id="7117485132243600300">Управувајте со содржините што ги следите, како и предложените теми и пребарувања</translation>
+<translation id="7119984597597798764">Затвори <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Прегледани се дозволите за 1 сајт}one{Прегледани се дозволите за # сајт}other{Прегледани се дозволите за # сајта}}</translation>
 <translation id="7138678301420049075">Друго</translation>
 <translation id="7140829094791862589">Подреди рачно</translation>
@@ -1443,7 +1442,6 @@
 <translation id="751961395872307827">Не може да се поврзе со сајтот</translation>
 <translation id="7523960634226602883">Пребарувајте со камерата со Google Lens</translation>
 <translation id="7525248386620136756">Затворени и зачувани: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
-<translation id="752731652852882757">Блокирај додека се користи „Инкогнито“</translation>
 <translation id="7545347190366646170">Луѓе со пристап</translation>
 <translation id="7554643625247105821">Не може да се провери верзијата на Chrome</translation>
 <translation id="7557508262441527045">Одјавени сте</translation>
@@ -1609,7 +1607,6 @@
 <translation id="8243077599929149377">Додајте го вашето корисничко име</translation>
 <translation id="8244387390464017490">Страница во нова картичка</translation>
 <translation id="8250920743982581267">Документи</translation>
-<translation id="8255617931166444521">Сајтовите може да ги користат колачињата само за да ја гледаат вашата активност од прелистувањето на сопствениот сајт</translation>
 <translation id="8258999165172757081">Додадено</translation>
 <translation id="8259179246279078674">Бидејќи однапред вчитаните страници се шифрирани, Google нема да дознае ништо за нивните содржини. Серверите на Google ќе знаат кои сајтови се приватно вчитани однапред. Податоциве се користат само за вчитување на страниците однапред и не се поврзани со други податоци од вашата сметка на Google.</translation>
 <translation id="8260126382462817229">Обидете се да се најавите повторно</translation>

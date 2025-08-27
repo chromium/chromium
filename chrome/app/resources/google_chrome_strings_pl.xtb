@@ -428,6 +428,7 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6180522807229584611">Ta karta wykorzystuje dodatkowe zasoby. Aby zwiększyć wydajność, pozwól Chrome ją dezaktywować.</translation>
 <translation id="6182736845697986886">Instalacja się nie udała z powodu wewnętrznego błędu serwera aktualizacji.</translation>
+<translation id="6192058120268468905">Twoje konto w Chrome</translation>
 <translation id="6235018212288296708">Reguła dla ruchu przychodzącego w Google Chrome zezwalająca na ruch mDNS.</translation>
 <translation id="624230925347970731">Przeglądarka Chrome zostanie wkrótce zamknięta</translation>
 <translation id="6247557882553405851">Menedżer haseł Google</translation>
@@ -560,6 +561,7 @@
 <translation id="778331955594035129">Ta strona musi mieć w Chrome dostęp do lokalizacji</translation>
 <translation id="7787950393032327779">Wygląda na to, że profil jest używany przez inny proces Google Chrome (<ph name="PROCESS_ID" />) na innym komputerze (<ph name="HOST_NAME" />). Chrome zablokował profil, by zapobiec jego uszkodzeniu. Jeśli masz pewność, że żadne inne procesy nie używają tego profilu, możesz go odblokować i ponownie uruchomić Chrome.</translation>
 <translation id="7801699035218095297">Google Chrome próbuje skopiować hasła. Aby na to zezwolić, podaj swoje hasło do Windows.</translation>
+<translation id="7804364787702057554">Twoje konto w Chrome</translation>
 <translation id="7808348361785373670">Usuń z Chrome...</translation>
 <translation id="7825851276765848807">Instalacja nie powiodła się z powodu nieokreślonego błędu. Pobierz Google Chrome ponownie.</translation>
 <translation id="7827099906024714326">Aby niektóre dane mogły być zapisywane na Twoim koncie Google i używane na wszystkich Twoich urządzeniach, Chrome musi zweryfikować Twoją tożsamość. Jeśli wylogujesz się teraz, te dane zostaną usunięte.</translation>
@@ -643,7 +645,6 @@
 <translation id="8781673607513845160">Aby używać kamery, przyznaj Chrome dostęp w <ph name="BEGIN_LINK" />ustawieniach systemu<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Błąd instalacji: administrator sieci zastosował zasady grupy, które uniemożliwiają instalację: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8798550110818026746">Twoja organizacja może wyświetlać dane przeglądania (np. zakładki, historię i hasła) oraz nimi zarządzać. Nie widzi danych przeglądania w innych profilach Chrome</translation>
-<translation id="880560872634367429">Sprawdzam pobieranie…</translation>
 <translation id="8821043148920470810">Aby w przyszłości otrzymywać aktualizacje Google Chrome, musisz mieć system Windows 10 lub nowszy. Na tym komputerze jest zainstalowany system Windows 7.</translation>
 <translation id="8823341990149967727">Chrome jest nieaktualny</translation>
 <translation id="8825634023950448068">Aby chronić Twoją prywatność, automatycznie usuwamy Twoje zainteresowania, które są starsze niż 4 tygodnie. Podczas dalszego przeglądania zainteresowanie może się pojawić ponownie na liście. Jeśli uznasz to za błąd lub jeśli nie będą Cię interesować określone reklamy, możesz usunąć zainteresowanie.</translation>

@@ -440,6 +440,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1719838434204287058">24 x 30 collas</translation>
 <translation id="1720941539803966190">Aizvērt mācību burbuli</translation>
 <translation id="1721424275792716183">* Obligāts lauks</translation>
+<translation id="1723636263173393300">Šajā politikā drīkst būt ne vairāk kā <ph name="MAX_ITEMS_LIMIT" /> saīsnes.</translation>
 <translation id="1725591448053514783">Aploksne You 6</translation>
 <translation id="1727613060316725209">Sertifikāts ir derīgs</translation>
 <translation id="1728677426644403582">Jūs skatāt tīmekļa lapas avotu.</translation>
@@ -1047,6 +1048,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="271663710482723385">Nospiediet |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|, lai izietu no pilnekrāna režīma.</translation>
 <translation id="2717336592027046789">Rullis</translation>
 <translation id="2718207025093645426">Pārvaldītajam lietotājam vai ierīcei nav ielādēta neviena politika.</translation>
+<translation id="2719233594187778789">Ignorēts URL dublikāts: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Pieprasījums bija veiksmīgs.</translation>
 <translation id="2722622039067384533">Dzīvojamās istabas mēbeles</translation>
 <translation id="2723669454293168317">Veiciet drošības pārbaudi Chrome iestatījumos.</translation>
@@ -2005,6 +2007,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4298000214066716287">Ieguldījumi</translation>
 <translation id="4298148761711700950">Maksājiet uzreiz bez kvadrātkoda augšupielādes</translation>
 <translation id="4298925811540301889">Šīs vietnes sīkfaili tiek sinhronizēti visās jūsu Chrome OS ierīcēs. Lai pārvaldītu sinhronizētos datus, pārejiet uz vietni <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4299919199185766032">Saīsnes nosaukums pārsniedz maksimālo atļauto garumu (<ph name="MAX_LENGTH" /> rakstzīmes).</translation>
 <translation id="4300272766492248925">Atvērt lietotni</translation>
 <translation id="4300675098767811073">Vairāki caurumi labajā pusē</translation>
 <translation id="4302514097724775343">Lai spēlētu, pieskarieties dinozauram</translation>
@@ -2706,6 +2709,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
     Sazinieties ar sistēmas administratoru.</translation>
 <translation id="5496804587179176046">Saglabāt drošības kodus; pašlaik nav saglabāts neviens drošības kods</translation>
 <translation id="550365051221576010">Aizpildīt visu</translation>
+<translation id="5506286895894263601">Sarakstā nav nevienas derīgas saīsnes.</translation>
 <translation id="5508443345185481044">Kameras un videoierakstītāji</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Pārvaldītās grāmatzīmes</translation>
@@ -3625,6 +3629,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="7014741021609395734">Tālummaiņas līmenis</translation>
 <translation id="7016992613359344582">Šie naudas pieprasījumi var būt vienreizēji vai atkārtoti, un tie var nebūt uzreiz pamanāmi.</translation>
 <translation id="701757816833614688">Vizuālās mākslas un dizaina izglītība</translation>
+<translation id="7020464868401003526">Saīsnes vietrādis URL pārsniedz maksimālo atļauto garumu (<ph name="MAX_LENGTH" /> rakstzīmes).</translation>
 <translation id="702275896380648118">Šī vietne nosaka jūsu intereses un pēc tam iesaka reklāmas citām vietnēm. Turklāt šī vietne iegūst informāciju par jūsu reklāmu tēmām no pārlūka Chrome, lai rādītu jums atbilstošākas reklāmas.</translation>
 <translation id="7023162328967545559">Administratora brīdinājums</translation>
 <translation id="7023765275461720661">Vai saistīt kontu un maksāt, izmantojot <ph name="BNPL_ISSUER_NAME" />?</translation>

@@ -433,6 +433,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome phiên bản beta</translation>
 <translation id="6180522807229584611">Thẻ này đang sử dụng thêm tài nguyên. Để cải thiện hiệu suất, hãy cho phép Chrome dừng hoạt động của thẻ này.</translation>
 <translation id="6182736845697986886">Không cài đặt được do lỗi nội bộ của máy chủ cập nhật.</translation>
+<translation id="6192058120268468905">Tài khoản của bạn trong Chrome</translation>
 <translation id="6235018212288296708">Quy tắc kết nối để Google Chrome cho phép lưu lượng truy cập mDNS.</translation>
 <translation id="624230925347970731">Chrome sắp đóng</translation>
 <translation id="6247557882553405851">Trình quản lý mật khẩu</translation>
@@ -565,6 +566,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="778331955594035129">Chrome cần có quyền truy cập thông tin vị trí đối với trang web này</translation>
 <translation id="7787950393032327779">Dường như cấu hình này đang được quy trình Google Chrome khác (<ph name="PROCESS_ID" />) trên máy tính khác (<ph name="HOST_NAME" />) sử dụng. Chrome đã khóa cấu hình này để cấu hình không bị lỗi. Nếu bạn chắc chắn không có quy trình nào khác đang sử dụng cấu hình này, bạn có thể mở khóa cấu hình và chạy lại Chrome.</translation>
 <translation id="7801699035218095297">Google Chrome đang cố gắng sao chép mật khẩu. Hãy nhập mật khẩu Windows của bạn để cho phép việc này.</translation>
+<translation id="7804364787702057554">Tài khoản của bạn trong Chrome</translation>
 <translation id="7808348361785373670">Xóa khỏi Chrome...</translation>
 <translation id="7825851276765848807">Không thể cài đặt do lỗi không xác định. Hãy tải xuống lại Google Chrome.</translation>
 <translation id="7827099906024714326">Chrome cần xác minh danh tính của bạn thì mới có thể lưu một số dữ liệu vào Tài khoản Google và cho phép bạn sử dụng dữ liệu đó trên tất cả các thiết bị. Nếu bạn đăng xuất bây giờ, dữ liệu này sẽ bị xoá.</translation>
@@ -648,7 +650,6 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="8781673607513845160">Để cho phép Chrome dùng camera, hãy cấp quyền sử dụng trong phần <ph name="BEGIN_LINK" />cài đặt hệ thống<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Lỗi cài đặt: Quản trị viên mạng của bạn đã áp dụng Chính sách nhóm ngăn chặn hoạt động cài đặt: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8798550110818026746">Tổ chức của bạn có thể xem và quản lý dữ liệu duyệt web (chẳng hạn như dấu trang, nhật ký và mật khẩu). Tổ chức của bạn không thể xem dữ liệu duyệt web trong các hồ sơ khác trên Chrome</translation>
-<translation id="880560872634367429">Đang xác minh nội dung tải xuống...</translation>
 <translation id="8821043148920470810">Để nhận các bản cập nhật Google Chrome sau này, máy tính của bạn cần sử dụng hệ điều hành Windows 10 trở lên. Hệ điều hành hiện tại là Windows 7.</translation>
 <translation id="8823341990149967727">Chrome đã lỗi thời</translation>
 <translation id="8825634023950448068">Để bảo vệ quyền riêng tư của bạn, chúng tôi tự động xoá các mối quan tâm không được làm mới sau 4 tuần. Trong quá trình bạn duyệt web, các mối quan tâm có thể xuất hiện lại trong danh sách. Và nếu Chrome xác định nhầm hoặc bạn không muốn thấy một vài quảng cáo nhất định, bạn có thể xoá mối quan tâm tương ứng.</translation>

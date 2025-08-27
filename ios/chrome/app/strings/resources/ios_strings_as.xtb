@@ -21,6 +21,7 @@
 <translation id="1072476005125066234">আপোনাৰ আগ্ৰহৰ ভিত্তিত পৰ্যালোচনা</translation>
 <translation id="1074827084851510304">আপুনি {password_count} টা পাছৱৰ্ড আৰু আপুনি কেতিয়াও ছাইন-ইনৰ তথ্য ছেভ নকৰিবলৈ বাছনি কৰা ছাইট আৰু এপ্‌সমূহৰ সূচী মচিব ওলাইছে। আপুনি ছাইট বা এপ্‌সমূহৰ বাবে সৃষ্টি কৰা কোনো একাউণ্ট মচি পেলোৱা নহ’ব।</translation>
 <translation id="1076421457278169141">ক’ড স্কেন কৰা হ’ল</translation>
+<translation id="1081114897601629648">তলত উল্লেখিত পাছৱৰ্ডসমূহ Google Password Managerলৈ আমদানি কৰা হোৱা নাছিল, কাৰণ সেইসমূহে প্ৰয়োজনীয়তা পূৰণ কৰা নাই।</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} টা টেব}one{{count} টা টেব}other{{count} টা টেব}}</translation>
 <translation id="1082554859195167538">আপোনাৰ বাবে প্ৰ’ডাক্টৰ পৰ্যালোচনা</translation>
 <translation id="1084365883616172403">ফেচবুক প’ষ্ট দিয়া হ’ল।</translation>
@@ -241,6 +242,7 @@
 <translation id="1902277226107477495">ঠিকনা চিনাক্তকৰণ অফ আছে। ছেটিঙত সেয়া পুনৰ অন কৰক।</translation>
 <translation id="1904580727789512086">আপুনি চোৱা URLসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰা হৈছে</translation>
 <translation id="1911619930368729126">Google Driveলৈ আপল’ড কৰক</translation>
+<translation id="1925706052394657380">iOSত <ph name="BEGIN_BOLD" />ডিফ’ল্ট এপ্‌<ph name="END_BOLD" /> ছেটিংটো খোলক</translation>
 <translation id="1941314575388338491">প্ৰতিলিপি কৰিবলৈ দুবাৰ টিপক।</translation>
 <translation id="1943478190258551035">মেনু → ছেটিং</translation>
 <translation id="1952728750904661634">পৰিচালিত একাউণ্টৰ জৰিয়তে ছাইন ইন কৰক</translation>
@@ -250,6 +252,7 @@
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" />এ <ph name="WEBSITE" />ৰ বাবে আপোনাৰ সৈতে এটা পাছৱৰ্ড শ্বেয়াৰ কৰিছে</translation>
 <translation id="1962969542251276847">লক স্ক্ৰীন</translation>
 <translation id="1963976881984600709">মানক সুৰক্ষা</translation>
+<translation id="1964507856799750384"><ph name="BEGIN_BOLD" />ব্ৰাউজাৰ এপ<ph name="END_BOLD" />ত টিপক</translation>
 <translation id="1966313166384086081">ছাইটৰ ডেটা</translation>
 <translation id="1967461193809857427">{count,plural, =1{আপুনি Androidত এৰি অহা টেবটোলৈ যাব বিচাৰেনে?}one{আপুনি Androidত এৰি অহা টেবসমূহলৈ যাব বিচাৰেনে?}other{আপুনি Androidত এৰি অহা টেবসমূহলৈ যাব বিচাৰেনে?}}</translation>
 <translation id="1972325230031091483">আপোনাৰ বৰ্তমান চোৱা ৱেবপৃষ্ঠাখনৰ ভিত্তিত সমল আগতীয়াকৈ ল’ড কৰা হয় বাবে আপুনি দ্ৰুতভাৱে ব্ৰাউজ কৰিব পাৰিব</translation>
@@ -599,7 +602,6 @@
 <translation id="333229797575847124">এই সুবিধাটো কেনেকৈ সক্ষম কৰিব লাগে</translation>
 <translation id="3344485292736684439">{count,plural, =1{আপোনাৰ একাউণ্টত "{title}"ত বুকমাৰ্ক ছেভ কৰা হৈছে, {email}}one{আপোনাৰ একাউণ্টত "{title}"ত বুকমাৰ্কসমূহ ছেভ কৰা হৈছে, {email}}other{আপোনাৰ একাউণ্টত "{title}"ত বুকমাৰ্কসমূহ ছেভ কৰা হৈছে, {email}}}</translation>
 <translation id="334690320928261823">শেহতীয়া টেব</translation>
-<translation id="3348387552617855658">এই কাৰ্ডখনে আপোনাক নিজৰ পেকেজসমূহ ট্ৰেক কৰা আৰু ডেলিভাৰী সম্পৰ্কীয় গুৰুত্বপূৰ্ণ আপডে’টসমূহ দিয়াত সহায় কৰে।</translation>
 <translation id="3349031117032695619">পপ-আপ অৱৰোধ কৰক</translation>
 <translation id="3349676726073650389">আপুনি অনুসৰণ কৰা ছাইট আৰু সন্ধানসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰা হয়। আপুনি ছেটিঙলৈ গৈ যিকোনো সময়তে আপুনি কৰা অনুসৰণসমূহ পৰিচালনা কৰিব পাৰে।</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />। এই একাউণ্টটো পৰিচালনা কৰা হয়।</translation>

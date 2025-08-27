@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
 <translation id="1001534784610492198">Archiv instalačního programu je poškozený nebo neplatný. Stáhněte prosím Google Chrome ještě jednou.</translation>
+<translation id="1006034097353797313">Pokračujte od stavu, ve kterém jste skončili: Chrome při restartech obnovuje karty. Tuto funkci můžete zapnout v</translation>
 <translation id="1018937009655463387">Pokud chcete sdílet okno, v Nastavení systému povolte pro Chrome nahrávání obrazovky.</translation>
 <translation id="1026101648481255140">Pokračovat v instalaci</translation>
 <translation id="102763973188675173">Přizpůsobte si Google Chrome a ovládejte jej. Je k dispozici aktualizace.</translation>
@@ -83,6 +84,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2018879682492276940">Instalace se nezdařila. Zkuste to znovu.</translation>
 <translation id="2024959665595762054">Pokud chcete používat a ukládat data prohlížeče Chrome ve svém účtu Google, ověřte svou totožnost</translation>
 <translation id="2034233344106846793">Pokud je to možné, Chrome nezabezpečená připojení automaticky upgraduje na HTTPS</translation>
+<translation id="2039417478970545937">Nastavení.</translation>
 <translation id="207902854391093810">Když jsou zapnuté zkušební verze, měření reklam umožňuje navštíveným webům žádat Chrome o informace, na základě kterých mohou měřit výkonnost svých reklam. Měření reklam zabraňuje sledování mezi weby, protože se při něm mezi weby přenáší co možná nejméně informací.</translation>
 <translation id="2091012649849228750">Pokud chcete v budoucnu dostávat aktualizace prohlížeče Google Chrome, budete potřebovat systém Windows 10 nebo novější. Tento počítač používá Windows 8.</translation>
 <translation id="2094648590148273905">Smluvní podmínky systému ChromeOS Flex</translation>
@@ -351,6 +353,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 
 Některé funkce mohou být nedostupné. Zadejte prosím jiný adresář profilu, nebo používejte novější verzi aplikace Chrome.</translation>
 <translation id="5174969993834422967">Obvykle oznámení blokujete. Pokud tomuto webu chcete zobrazování oznámení povolit, klikněte na ikonu oznámení v pravém rohu adresního řádku.</translation>
+<translation id="5174983315706567306">Na disku není dost místa.</translation>
 <translation id="5201744974236816379">Aktualizace Chromu</translation>
 <translation id="521447420733633466">Pokud zařízení sdílíte s přáteli a členy rodiny, každý může procházet internet nezávisle a nastavit si Chrome tak, jak potřebuje</translation>
 <translation id="5234764350956374838">Zavřít</translation>
@@ -433,6 +436,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6180522807229584611">Tato karta využívá další zdroje. Ke zlepšení výkonu ji Chrome nechte deaktivovat.</translation>
 <translation id="6182736845697986886">Instalace se nezdařila kvůli interní chybě serveru s aktualizací.</translation>
+<translation id="6192058120268468905">Váš účet v Chromu</translation>
 <translation id="6235018212288296708">Pravidlo příchozího provozu pro aplikaci Google Chrome, které povolí provoz mDNS.</translation>
 <translation id="624230925347970731">Chrome se brzy zavře</translation>
 <translation id="6247557882553405851">Správce hesel Google</translation>
@@ -461,6 +465,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6520670145826811516">Pokud chcete používat polohu, udělte Chromu přístup v <ph name="BEGIN_LINK" />nastavení systému<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">Ve Správci hesel Google na tomto zařízení</translation>
+<translation id="6631524303639368205">Pokračujte od stavu, ve kterém jste skončili: Chrome obnovil karty z poslední relace. Tuto funkci můžete zapnout v</translation>
 <translation id="6632473616050862500">Systém ChromeOS Flex by nemohl existovat bez dalšího <ph name="BEGIN_LINK_CROS_OSS" />open source softwaru<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6634299872736643004">Změny tohohle nastavení se projeví po restartování Chromu.</translation>
 <translation id="6660596345553328257">Přihlásit se do Chromu?</translation>
@@ -564,10 +569,12 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="778331955594035129">Chrome pro tento web potřebuje přístup k poloze</translation>
 <translation id="7787950393032327779">Profil je zřejmě využíván jiným procesem prohlížeče Google Chrome (<ph name="PROCESS_ID" />) nebo v jiném počítač (<ph name="HOST_NAME" />). Chrome profil uzamkl, aby nedošlo k jeho poškození. Pokud jste si jisti, že žádný jiný proces tento profil nevyužívá, můžete jej odemknout a Chrome znovu spustit.</translation>
 <translation id="7801699035218095297">Google Chrome se pokouší zkopírovat hesla. Tato akce vyžaduje zadání hesla systému Windows.</translation>
+<translation id="7804364787702057554">Váš účet v Chromu</translation>
 <translation id="7808348361785373670">Odstranit z Chromu...</translation>
 <translation id="7825851276765848807">Instalace se z neznámého důvodu nezdařila. Stáhněte prosím aplikaci Google Chrome znovu.</translation>
 <translation id="7827099906024714326">Před uložením některých dat do vašeho účtu Google k použití na všech vašich zařízeních potřebuje Chrome ověřit, že jste to vy. Pokud se teď odhlásíte, tato data budou smazána.</translation>
 <translation id="7845233973568007926">Děkujeme za instalaci aplikace <ph name="BUNDLE_NAME" />. Před jejím použitím je třeba restartovat počítač.</translation>
+<translation id="7849037457735762883">Pokračujte od stavu, ve kterém jste skončili: Chrome může při každém restartu obnovit karty. Tuto funkci můžete zapnout v</translation>
 <translation id="7872446069773932638">Stahování… Zbývající čas: <ph name="SECONDS" /> s</translation>
 <translation id="7886087451482920026">Vyberte text pomocí Google Lens</translation>
 <translation id="7890208801193284374">Pokud počítač sdílíte s kamarády a členy rodiny, každý může web procházet samostatně a nastavit si Chrome podle svých požadavků.</translation>

@@ -156,6 +156,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="1749561566933687563">Xatcho‘plarni sinxronlang</translation>
 <translation id="1750238553597293878">Parollar Google hisobingizda saqlanishda davom etsin</translation>
 <translation id="17513872634828108">Ichki oynalarni ochish</translation>
+<translation id="1753744496844366747">Aa</translation>
 <translation id="1755203724116202818">Reklama samaradorligini hisoblash maqsadida saytga tashrifdan keyin bajarilgan xarid kabi cheklangan turdagi axborotlar saytlararo almashinishi mumkin.</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Sahifalar, roʻyxatdagi 1 ta sahifa}other{Sahifalar, roʻyxatdagi # ta sahifa}}</translation>
 <translation id="1771929606532798550">Chrome foydalanish statistikasi Googlega yuborildi, lekin bu axborot sizga tegishli emas\n\nChrome ishgan chiqsa, ishdan chiqishlar hisobotiga ayrim shaxsiy axborotlar kirishi mumkin\n\nAgar tarix Google hisobingizga sinxronlansa, yuboriladigan statistikaga siz tashrif buyurgan URL manzillar ham kirishi mumkin</translation>
@@ -321,6 +322,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="253498598929009420">Sayt ekrandagi kontentni koʻra oladi</translation>
 <translation id="2535807170289627159">Barcha varaqlar</translation>
 <translation id="2536728043171574184">Bu sahifaning oflayn nusxasi ko‘rilmoqda</translation>
+<translation id="2539002604555291451">Sans-serif</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, varaq</translation>
 <translation id="2546283357679194313">Cookie fayllari va sayt ma’lumotlari</translation>
 <translation id="2547843573592965873">Profil qulfi Google hisobingizdagi parollar, toʻlovlar kabi axborotlarni avtomobilda xavfsiz saqlaydi.</translation>
@@ -499,7 +501,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="3384347053049321195">Rasmni ulashish</translation>
 <translation id="3387650086002190359">Fayllar tizimi xatoliklari tufayli “<ph name="FILE_NAME" />” fayli yuklab olinmadi.</translation>
 <translation id="3414952576877147120">Hajmi:</translation>
-<translation id="3421726884497337397">Tashqi cookie fayllar qachon bloklanishini tanlang</translation>
 <translation id="3430670036890315772">Profilingiz qulfi faolsizlantirilsa, saqlangan maʼlumotlaringiz olib tashlanadi</translation>
 <translation id="3435465986463792564">Koʻp oynalar ochildimi? Ularni bu yerdan boshqarish mumkin</translation>
 <translation id="3435575784518354875">Parollardan foydalanishda davom etish uchun ularni hoziroq eksport qilib, Googel Play xizmatlarini yangilang va Google Parollar meneriga qayta import qiling. <ph name="BEGIN_LINK" />Toʻliq koʻrsatmalar<ph name="END_LINK" />.</translation>
@@ -760,7 +761,6 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 ta parol oshkor etilgan}other{# ta parol oshkor etilgan}}</translation>
 <translation id="4641919525231168205">Keyingi sahifaga</translation>
 <translation id="4642472735733036929">Narx kuzatuvi toʻxtatildi</translation>
-<translation id="4645146721047390964">Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzata olmaydi. Ayrim saytlardagi funksiyalar ishlamay qolishi mumkin.</translation>
 <translation id="465657074423018424">Saytlarni xavfsiz kezish sizni firibgar saytlardan himoya qiladi. Agar bu funksiyani faolsizlantirsangiz, notanish va shubhali saytlarga parol kiritishda ehtiyot boʻling.</translation>
 <translation id="4662373422909645029">Taxallusga raqam kiritish mumkin emas</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> ta xatcho‘p o‘chirib tashlandi</translation>
@@ -1220,7 +1220,6 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6633067410344541938">Inkognito qulfini ochish</translation>
 <translation id="6636623428211296678">Quyida koʻproq sozlamalarni varaqlang yoki hozir yakunlang</translation>
 <translation id="6637100877383020115">Ilovani yaxshilash maqsadida Chrome foydalanish statistikasi va ishdan chiqishlar axborotini Googlega yuboradi. <ph name="BEGIN_UMA_LINK" />Obunani boshqarish<ph name="END_UMA_LINK" /></translation>
-<translation id="6640207029842583248">Doim bloklash</translation>
 <translation id="6641780377503683465">Olib tashlash: <ph name="INTEREST" /></translation>
 <translation id="6647441008198474441">Kelgusida qaysi saytlarga tashrif buyurishingizni bashorat qilish maqsadida siz tashrif qilgan URL manzillar Googlega yuborildi</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 va yana <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ta}other{<ph name="CONTACT_PREVIEW" />\u2026 va yana <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ta}}</translation>
@@ -1241,6 +1240,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6723740634201835758">Google hisobingizda</translation>
 <translation id="6734310707649923383">Tarix orqali ochilgan sahifalarni koʻrish yoki oʻchirish mumkin</translation>
 <translation id="6738867403308150051">Yuklab olinmoqda...</translation>
+<translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">Hisobingiz maʼlumotlarini tekshiring</translation>
 <translation id="6751521182688001123">Tezda yangi varaqda ochish. Bu yorliqni tahrirlash uchun ustiga bosib turing.</translation>
 <translation id="6752130751133944215">Yangi oynani tiklash uchun jami faol va nofaol oynalar sonini <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> yoki undan kam miqdorga kamaytiring. Nofaol oynalar 6 oydan keyin avtomatik oʻchiriladi.</translation>
@@ -1445,7 +1445,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="751961395872307827">Saytga ulanib bo‘lmadi</translation>
 <translation id="7523960634226602883">Google Lens yordamida kamera bilan qidiring</translation>
 <translation id="7525248386620136756">Yopildi va saqlandi: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
-<translation id="752731652852882757">Inkognito rejimida bloklash</translation>
 <translation id="7545347190366646170">Ruxsatga ega foydalanuvchilar</translation>
 <translation id="7554643625247105821">Chrome versiyasi tekshirilmadi</translation>
 <translation id="7557508262441527045">Hisobdan chiqqansiz</translation>
@@ -1611,7 +1610,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="8243077599929149377">Foydalanuvchi nomini qoʻshish</translation>
 <translation id="8244387390464017490">Yangi varaqni moslash</translation>
 <translation id="8250920743982581267">Hujjatlar</translation>
-<translation id="8255617931166444521">Saytlar cookie fayllarni faqatgina u saytni kezish vaqtingizda koʻradi</translation>
 <translation id="8258999165172757081">Qo‘shildi</translation>
 <translation id="8259179246279078674">Oldindan yuklanadigan sahifalar shifrlanadi. Google bunday sahifalar tarkibi haqida hech narsani bila olmaydi. Google serverlari qaysi saytlar maxfiy tarzda oldindan yuklanganligini biladi. Bu maʼlumot faqat saytlarni oldindan yuklash uchun ishlatiladi va Google hisobingizdagi boshqa maʼlumotlarga ulanmaydi.</translation>
 <translation id="8260126382462817229">Qaytadan kirib ko‘ring</translation>

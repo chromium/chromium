@@ -28,6 +28,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> sekme gruplandı</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> sekme}other{<ph name="TABS_COUNT_MANY" /> sekme}}</translation>
 <translation id="1909810060368225529">Uyarı: Bu Ortak Sekme Grubu'nda yapılan değişiklikler herkes tarafından görülebilir. Herkes, paylaşılan sekme gruplarınızda değişiklik yapabilir</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{Sekmeyi sabitle}other{Sekmeleri sabitle}}</translation>
 <translation id="1982637982196732906">Etkin olmayanlar bölümüne taşıyın</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Seçili <ph name="TABS_COUNT_ONE" /> sekmeye yer işareti koy}other{Seçili <ph name="TABS_COUNT_MANY" /> sekmeye yer işareti koy}}</translation>
 <translation id="2055057176188061528">Sekme grubu seçin veya yeni sekme grubu oluşturun</translation>
@@ -78,6 +79,7 @@
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Paylaşım sayfası önizlemesinin küçük resmi.</translation>
 <translation id="3810973564298564668">Yönet</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{Sekmenin sabitlemesini kaldır}other{Sekmelerin sabitlemesini kaldır}}</translation>
 <translation id="3940195383040445971">Sekmelerde fiyatları takip et</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> yeni sekme, <ph name="ANY_CLOSED" /> kapatıldı}other{<ph name="MANY_ADDED" /> yeni sekme, <ph name="ANY_CLOSED" /> kapatıldı}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Sekmeyi grupla}other{Sekmeleri grupla}}</translation>
@@ -131,6 +133,7 @@
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Seçilen <ph name="TABS_COUNT_ONE" /> öğeyi kapat}other{Seçilen <ph name="TABS_COUNT_MANY" /> öğeyi kapat}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Grubu yeni pencereye taşı}other{Grubu başka bir pencereye taşı}}</translation>
 <translation id="6228793724645064692">(mağaza puanı)</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{Sekmeyi gruptan kaldır}other{Sekmeleri gruptan kaldır}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Sekmeyi yeni gruba ekle}other{Sekmeleri yeni gruba ekle}}</translation>
 <translation id="6333260925957816943">Bu mağazayla ilgili bilgiler</translation>
 <translation id="6381032505162537930">Sekme gruplarınız burada gösterilir</translation>

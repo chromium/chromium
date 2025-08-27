@@ -499,7 +499,6 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="3384347053049321195">Shiriki picha</translation>
 <translation id="3387650086002190359">Kipakuliwa cha <ph name="FILE_NAME" /> hakijafaulu kwa sababu ya hitilafu za mfumo wa faili.</translation>
 <translation id="3414952576877147120">Ukubwa:</translation>
-<translation id="3421726884497337397">Chagua wakati ambapo ungependa kuzuia vidakuzi vya wengine</translation>
 <translation id="3430670036890315772">Hatua ya kuzima kipengele cha kufuli lako la wasifu itaondoa taarifa ulizohifadhi</translation>
 <translation id="3435465986463792564">Je, una madirisha mengi? Unaweza kuyadhibiti hapa</translation>
 <translation id="3435575784518354875">Ili uendelee kufikia manenosiri yako, yahamishe sasa, sasisha Huduma za Google Play kisha uyapakie tena kwenye kidhibiti cha manenosiri unachopendelea. <ph name="BEGIN_LINK" />Angalia maagizo kamili<ph name="END_LINK" />.</translation>
@@ -760,7 +759,6 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{Nenosiri moja limeathiriwa}other{Manenosiri # yameathiriwa}}</translation>
 <translation id="4641919525231168205">Nenda kwenye ukurasa unaofuata</translation>
 <translation id="4642472735733036929">Imeacha kufuatilia bei</translation>
-<translation id="4645146721047390964">Katika hali fiche, tovuti haziwezi kutumia vidakuzi vyako kuona shughuli zako za kuvinjari kwenye tovuti mbalimbali, kwa mfano, ili kukuonyesha matangazo yanayokufaa zaidi. Huenda vipengele kwenye baadhi ya tovuti vikaacha kufanya kazi.</translation>
 <translation id="465657074423018424">Kipengele cha Kuvinjari Salama hukulinda dhidi ya tovuti zinazopotosha. Ukikizima, kuwa makini zaidi unapovinjari hasa kabla ya kuweka manenosiri.</translation>
 <translation id="4662373422909645029">Jina la kuwakilisha halipaswi kuwa na namba</translation>
 <translation id="4663756553811254707">Alamisho <ph name="NUMBER_OF_BOOKMARKS" /> zimefutwa</translation>
@@ -1220,7 +1218,6 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="6633067410344541938">Fungua hali fiche</translation>
 <translation id="6636623428211296678">Gundua mipangilio zaidi hapa chini au ukamilishe sasa</translation>
 <translation id="6637100877383020115">Ili kusaidia kuboresha programu, Chrome hutumia Google data ya matumizi na ripoti za kuacha kufanya kazi. <ph name="BEGIN_UMA_LINK" />Dhibiti<ph name="END_UMA_LINK" /></translation>
-<translation id="6640207029842583248">Zuia kila wakati</translation>
 <translation id="6641780377503683465">Ondoa <ph name="INTEREST" /></translation>
 <translation id="6647441008198474441">URL unazotembelea hutumwa kwa Google ili kutabiri tovuti ambazo huenda ukazitembelea baadaye</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 na <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> zaidi}other{<ph name="CONTACT_PREVIEW" />\u2026 na <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> zaidi}}</translation>
@@ -1232,6 +1229,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="6674571176963658787">Ili uanze kusawazisha, weka kauli yako ya siri</translation>
 <translation id="6676927815633975364">Ingia katika akaunti kwenye tovuti hii na kwenye Chrome</translation>
 <translation id="6684809838922667136">Boresha Chrome</translation>
+<translation id="6689436252814043643">Hali ya kusoma haipatikani</translation>
 <translation id="6700279777779583398">Imehifadhi chaguo</translation>
 <translation id="670498945988402717">Ilikaguliwa jana</translation>
 <translation id="6710213216561001401">Iliyopita</translation>
@@ -1342,6 +1340,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="7111822978084196600">Lipe dirisha jina</translation>
 <translation id="7115358764509798967">Chaguomsingi ya mfumo</translation>
 <translation id="7117485132243600300">Dhibiti maudhui unayofuatilia, utafutaji na mada unazopendekezewa</translation>
+<translation id="7119984597597798764">Funga <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Imekagua ruhusa katika tovuti 1}other{Imekagua ruhusa katika tovuti #}}</translation>
 <translation id="7138678301420049075">Nyingine</translation>
 <translation id="7140829094791862589">Panga mwenyewe</translation>
@@ -1443,7 +1442,6 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="751961395872307827">Imeshindwa kuunganisha kwenye tovuti</translation>
 <translation id="7523960634226602883">Tafuta kupitia kamera yako ukitumia Lenzi ya Google</translation>
 <translation id="7525248386620136756">Umefunga na ukahifadhi <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
-<translation id="752731652852882757">Zuia unapotumia hali fiche</translation>
 <translation id="7545347190366646170">Watu walio na uwezo wa kufikia</translation>
 <translation id="7554643625247105821">Imeshindwa kukagua toleo la Chrome</translation>
 <translation id="7557508262441527045">Umeondoka kwenye akaunti</translation>
@@ -1609,7 +1607,6 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="8243077599929149377">Weka jina lako la mtumiaji</translation>
 <translation id="8244387390464017490">Badilisha upendavyo ukurasa mpya wa kichupo</translation>
 <translation id="8250920743982581267">Hati</translation>
-<translation id="8255617931166444521">Tovuti zinaweza tu kutumia vidakuzi vyako kuona shughuli zako za kuvinjari kwenye tovuti hizo pekee</translation>
 <translation id="8258999165172757081">Imewekwa</translation>
 <translation id="8259179246279078674">Kwa sababu kurasa zilizopakiwa mapema zimesimbwa kwa njia fiche, Google haitapata maelezo yoyote kuhusu maudhui ya kurasa hizo. Seva za Google zitafahamu ni tovuti gani zilizopakiwa mapema kwa njia ya faragha. Maelezo haya yanatumiwa tu kwa ajili ya kupakia kurasa mapema na hayahusishwi na taarifa zingine kutoka kwenye Akaunti yako ya Google.</translation>
 <translation id="8260126382462817229">Jaribu kuingia katika akaunti tena</translation>

@@ -83,6 +83,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2008474315282236005">Z tohoto zařízení bude smazána 1 položka. Budete-li chtít své údaje později načíst, přihlaste se do prohlížeče Chromium jako <ph name="USER_EMAIL" />.</translation>
 <translation id="2018879682492276940">Instalace se nezdařila. Zkuste to znovu.</translation>
 <translation id="2020032459870799438">Chcete-li zkontrolovat, zda jsou ostatní hesla v bezpečí před porušením zabezpečení údajů a ostatními bezpečnostními hrozbami, <ph name="BEGIN_LINK" />přihlaste se do prohlížeče Chromium<ph name="END_LINK" />.</translation>
+<translation id="2039417478970545937">Nastavení.</translation>
 <translation id="2049376729098081731">Zvolte, zda pro lépe personalizované prostředí ve službách Google chcete zahrnout historii prohlížeče Chromium</translation>
 <translation id="2054039611381840095">Pokud chcete v budoucnu dostávat aktualizace prohlížeče Chromium, budete potřebovat systém macOS 12 nebo novější. Tento počítač používá systém macOS 11.</translation>
 <translation id="2086476982681781442">Prohlížeč Chromium toto stahování zablokoval, protože soubor je klamavý a může ve vašem zařízení provést neočekávané změny</translation>
@@ -311,10 +312,12 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="494490797786467921">Kliknutím zavřete přihlašovací dialogové okno prohlížeče Chromium</translation>
 <translation id="4950660488495335294">Pomocí profilů Chromium můžete všechny své údaje v prohlížeči Chromium uchovávat odděleně. Vytvořte profily pro přátele a rodinu nebo rozdělte činnosti mezi práci a zábavu.</translation>
 <translation id="4987820182225656817">Hosté mohou Chromium používat, aniž by po nich zůstaly jakékoliv stopy.</translation>
+<translation id="4992938037305302429">Váš účet v prohlížeči Chromium</translation>
 <translation id="4994636714258228724">Přidejte do prohlížeče Chromium svůj účet</translation>
 <translation id="5123973130450702873">Chromium potřebuje oprávnění ke sledování vašich rukou</translation>
 <translation id="5141988424377517949">V poslední době jste nenavštívili. Prohlížeč Chromium odebral tato oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a <ph name="PERMISSION_3" />.</translation>
 <translation id="5174969993834422967">Obvykle oznámení blokujete. Pokud tomuto webu chcete zobrazování oznámení povolit, klikněte na ikonu oznámení v pravém rohu adresního řádku.</translation>
+<translation id="5174983315706567306">Na disku není dost místa.</translation>
 <translation id="5187123684706427865">Účet v prohlížeči Chromium vyžaduje opětovné ověření</translation>
 <translation id="5224391634244552924">Nemáte žádná uložená hesla. Chromium může hesla zkontrolovat, pouze když si je uložíte.</translation>
 <translation id="5231355151045086930">Odhlášení z prohlížeče Chromium</translation>
@@ -388,6 +391,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="6072463441809498330">Zrychlete si Chromium</translation>
 <translation id="6096348254544841612">Přizpůsobte si prohlížeč Chromium a ovládejte jej. Je k dispozici aktualizace.</translation>
 <translation id="6107893135096467929">Zapnuto • Chromium nedokáže ověřit, odkud toto rozšíření pochází</translation>
+<translation id="611228897408671387">Váš účet v prohlížeči Chromium</translation>
 <translation id="6119438414301547735">Povolit rozšíření zobrazovat na liště prohlížeče Chromium žádosti o přístup</translation>
 <translation id="6129621093834146363">Soubor <ph name="FILE_NAME" /> je nebezpečný, proto jej prohlížeč Chromium zablokoval.</translation>
 <translation id="6132897690380286411">Chromium se brzy zavře a smaže data</translation>
@@ -442,6 +446,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="6598877126913850652">Přejít na nastavení oznámení prohlížeče Chromium</translation>
 <translation id="6600016381025017075">Vyhledat cokoliv na této stránce</translation>
 <translation id="6613594504749178791">Změny se projeví po příštím restartu prohlížeče Chromium.</translation>
+<translation id="6648212540664651655">Pokračujte od stavu, ve kterém jste skončili: Prohlížeč Chromium obnovil karty z poslední relace. Tuto funkci můžete zapnout v</translation>
 <translation id="665732753414869868">K vytvoření 3D mapy vašeho okolí potřebuje Chromium přístup k fotoaparátu</translation>
 <translation id="6669284030132180248">Pokud si záložky uložíte také do účtu Google, můžete v prohlížeči Chromium sledovat ceny produktů a dostávat upozornění, když cena klesne</translation>
 <translation id="6676384891291319759">Přístup k internetu</translation>
@@ -506,6 +511,7 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="7352651011704765696">Něco se pokazilo</translation>
 <translation id="7376384068949534168">V poslední době jste nenavštívili. Prohlížeč Chromium odebral tato oprávnění: <ph name="PERMISSION_1" /> a <ph name="PERMISSION_2" />.</translation>
 <translation id="7384121030444253939">Toto rozšíření už není podporováno. Chromium vám doporučuje odstranit ho.</translation>
+<translation id="7413153308467572558">Pokračujte od stavu, ve kterém jste skončili: Chromium při restartech obnovuje karty. Tuto funkci můžete zapnout v</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Text byl zkopírován</translation>
 <translation id="7451052299415159299">Chromium pro tento web potřebuje oprávnění k přístupu k fotoaparátu</translation>
@@ -637,6 +643,7 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="911206726377975832">Vymazat také všechna data procházení?</translation>
 <translation id="9134482777260927479">Pomoc s domácími úkoly</translation>
 <translation id="9148058034647219655">Ukončit</translation>
+<translation id="9155105544013854680">Pokračujte od stavu, ve kterém jste skončili: Chromium může při každém restartu obnovit karty. Tuto funkci můžete zapnout v</translation>
 <translation id="9158494823179993217">Administrátor systému nakonfiguroval prohlížeč Chromium tak, aby pro přístup k adrese <ph name="TARGET_URL_HOSTNAME" /> otevřel alternativní prohlížeč.</translation>
 <translation id="9185526690718004400">Znovu spustit a aktualizovat &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>

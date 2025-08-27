@@ -25,6 +25,7 @@
 <translation id="129382876167171263">වෙබ් අඩවිවලින් සුරකින ලද ගොනු මෙහි දිස් වෙති</translation>
 <translation id="131112695174432497">දැන්වීම් පෞද්ගලීකරණයට බලපාන දත්ත මකා දමනු ලැබේ</translation>
 <translation id="1317194122196776028">මෙම අඩවිය අමතක කරන්න</translation>
+<translation id="1321110954513621549">ඉඩ දී ඇත • ආසන්න වශයෙන්</translation>
 <translation id="1323433172918577554">තව පෙන්වන්න</translation>
 <translation id="1333965224356556482">ඔබගේ ස්ථානය බැලීමට අඩවිවලට ඉඩ නොදෙන්න</translation>
 <translation id="1343356790768851700">මෙම අඩවිය ඔබ කැමති දේවල් තීරණය කර පසුව වෙනත් අඩවිවලට දැන්වීම් යෝජනා කරයි</translation>
@@ -40,6 +41,7 @@
 <translation id="1448064542941920355">විශාලනය අඩු කරන්න</translation>
 <translation id="1464044141348608623">ඔබ ඔබගේ උපාංගය සක්‍රියව භාවිත කරන විට දැන ගැනීමට අඩවිවලට ඉඩ නොදෙන්න</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> අඩවියක්}one{අඩවි <ph name="SITE_COUNT" /> ක්}other{අඩවි <ph name="SITE_COUNT" /> ක්}}</translation>
+<translation id="1476700086976862423">තේමා වර්ණය සේපියා</translation>
 <translation id="1500473259453106018">පටිති කාඩ්පතේ මිල පහත වැටීම් සඟවන්න</translation>
 <translation id="1508931164824684991">අඩවිවලට ජාවාස්ක්‍රිප්ට් භාවිත කළ හැක</translation>
 <translation id="1510341833810331442">ඔබේ උපාංගයෙහි දත්ත සුරැකීමට අඩවිවලට ඉඩ නොදෙයි</translation>
@@ -71,6 +73,7 @@
 <translation id="1799920918471566157">Chrome ඉඟි</translation>
 <translation id="1816835383954230954">ක්‍රියාත්මක වූ විට, Chrome වේගයෙන් ක්‍රියාත්මක වන අතර JavaScript භාවිත කරන විශේෂාංග සැලසුම් කළ පරිදි ක්‍රියා කළ යුතු ය. ක්‍රියාවිරහිත වූ විට, මෙය කාර්ය සාධනය අඩු කරන නමුත් V8 ප්‍රහාරවලට වඩාත් ප්‍රතිරෝධී වෙයි.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> හට AR භාවිත කිරීමට ඉඩ දීමට, <ph name="BEGIN_LINK" />Android සැකසීම්<ph name="END_LINK" /> තුළ කැමරාවද ක්‍රියාත්මක කරන්න.</translation>
+<translation id="1848033246551405023">Sans Serif අකුරු</translation>
 <translation id="1881806992065048905">නව පටිති පිටුවේ පෙනුම පහළ පත්‍රය</translation>
 <translation id="1887786770086287077">මෙම උපාංගය සඳහා ස්ථාන ප්‍රවේශය ක්‍රියා විරහිතයි. <ph name="BEGIN_LINK" />Android සැකසීම්<ph name="END_LINK" /> තුළ එය ක්‍රියාත්මක කරන්න.</translation>
 <translation id="1906181697255754968">අඩවි සාමාන්‍යයෙන් ඔබේ වැඩ ස්වයංක්‍රියව සුරැකීම වැනි විශේෂාංග සඳහා ඔබගේ උපාංගයේ ගොනු සහ ෆෝල්ඩරවලට ප්‍රවේශ වේ</translation>
@@ -92,6 +95,7 @@
 <translation id="2079545284768500474">පසුගමනය</translation>
 <translation id="2080070583977670716">තවත් සැකසුම්</translation>
 <translation id="2091887806945687916">හඬ</translation>
+<translation id="2094208275686143364">තේමා වර්ණ ආලෝකය</translation>
 <translation id="2096716221239095980">සියලු දත්ත මකන්න</translation>
 <translation id="2102396546234652240">ඔබගේ මයික්‍රෆෝනය භාවිත කිරීමට අඩවිවලට ඉඩ නොදෙන්න</translation>
 <translation id="2117655453726830283">මීළඟ ස්ලයිඩය</translation>
@@ -137,6 +141,7 @@
 <translation id="2498359688066513246">උදවු සහ ප්‍රතිපෝෂණය</translation>
 <translation id="2501278716633472235">ආපසු යන්න</translation>
 <translation id="2533138527374486328">ක්‍රියාත්මක විට, වෙබ් අඩවි ඔබේ දේශීය ජාලයේ ඕනෑම උපාංගයකට සම්බන්ධ වීමට ඉල්ලිය හැක. ක්‍රියාවිරහිත වූ විට, වෙබ් අඩවිවලට ඔබේ දේශීය ජාලයේ උපාංග වෙත සම්බන්ධ විය නොහැක.</translation>
+<translation id="2544997614631598250">තේමා වර්ණය අඳුරු</translation>
 <translation id="2546283357679194313">කුකීස් සහ අඩවි දත්ත</translation>
 <translation id="2570922361219980984">මෙම උපාංගය සඳහා ස්ථාන ප්‍රවේශයත් ක්‍රියා විරහිතයි. <ph name="BEGIN_LINK" />Android සැකසීම්<ph name="END_LINK" /> තුළ එය ක්‍රියාත්මක කරන්න.</translation>
 <translation id="257931822824936280">පුඵල් කරන ලදි - හැකිලීමට ක්ලික් කරන්න</translation>
@@ -194,6 +199,7 @@
 <translation id="3165022941318558018">තෙවන පාර්ශ්ව කුකීස් භාවිතා කිරීමට අඩවියකට ඉඩ දෙන්න</translation>
 <translation id="3167868116600277716">සංග්‍රහය සොයා ගන්න</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> ගබඩා කළ දත්ත</translation>
+<translation id="3199078925536734975">මෙවර ඉඩ දී ඇත • ආසන්න වශයෙන්</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> හට ඔබට දැනුම්දීම් එවීමට ඉඩ දීමට <ph name="BEGIN_LINK" />Android සැකසීම්<ph name="END_LINK" /> තුළ දැනුම්දීම්ද ක්‍රියාත්මක කරන්න.</translation>
 <translation id="3223425961342298674">ස්ථානයට ඉඩ දී නැත</translation>
 <translation id="3227137524299004712">මයික්‍රෆෝනය:</translation>
@@ -250,6 +256,7 @@
 <translation id="3803367742635802571">ඔබ පිවිසෙන අඩවි සැලසුම් කළ පරිදි ක්‍රියා කිරීම නැවැත්විය හැක</translation>
 <translation id="3816118180265633665">Chrome වර්ණ</translation>
 <translation id="381841723434055211">දුරකථන අංක</translation>
+<translation id="3823453485268218808">මොනෝ අකුරු</translation>
 <translation id="3826050100957962900">තුන්වන පාර්ශ්ව පිරීම</translation>
 <translation id="3835233591525155343">ඔබගේ උපාංග භාවිතය</translation>
 <translation id="3843916486309149084">Chrome අද නැවතත් කුකී අවහිර කරයි</translation>
@@ -302,6 +309,7 @@
 <translation id="4402755511846832236">ඔබ මෙම උපාංගය සක්‍රියව භාවිත කරන විට දැන ගැනීමෙන් අඩවි අවහිර කරන්න</translation>
 <translation id="4412992751769744546">තෙවන පාර්ශව කුකී වලට ඉඩ දෙන්න</translation>
 <translation id="4419929467120297501">Chrome ඔබ බ්‍රවුස් කරන විට වෙබ් අඩවි ඔබව නිරීක්‍ෂණ කිරීමට තෙවන-පාර්ශ්ව කුකී භාවිත කිරීම අවහිර කරයි. <ph name="BEGIN_LINK" />තෙවන-පාර්ශ්ව කුකී වෙත ප්‍රවේශය කළමනාකරණය කිරීමට<ph name="END_LINK" /> සැකසීම් වෙත පිවිසෙන්න.</translation>
+<translation id="4425416282877905577">සෙරිෆ් අකුරු</translation>
 <translation id="443121186588148776">අනුක්‍රමික තොට</translation>
 <translation id="4434045419905280838">උත්පතන සහ හරවා යැවීම්</translation>
 <translation id="443552056913301231">මෙම ක්‍රියාව කුකීස් ඇතුළුව, සියලු ස්ථානීය දත්ත හිස් කර <ph name="ORIGIN" /> සඳහා සියලු අවසර මකනු ඇත</translation>
@@ -554,6 +562,7 @@
 <translation id="7478658909253570368">අනුක්‍රමික තොටවල්වලට සම්බන්ධ වීමට අඩවිවලට ඉඩ නොදෙන්න</translation>
 <translation id="7488573225650545859">ඔබේ යෙදුම් ලැයිස්තුවේ දසුන් පටිත්ත සඟවන්න</translation>
 <translation id="7521387064766892559">JavaScript</translation>
+<translation id="7538975533793429503">අකුරු ප්‍රමාණය ස්ලයිඩරය</translation>
 <translation id="7547989957535180761">සක්‍රීය වූ විට, අඩවිවලට පුරන ප්‍රේරක පෙන්විය හැක. අක්‍රිය වූ විට, අඩවිවලට පුරන ප්‍රේරක පෙන්විය නොහැක.</translation>
 <translation id="7553211568594248088">මධ්‍යස්ථාන සෙවීමෙන් පිටවන්න</translation>
 <translation id="7554752735887601236">වෙබ් අඩවියක් ඔබේ මයික්‍රොෆෝනය භාවිත කරයි</translation>

@@ -28,6 +28,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> pestana agrupada</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestana}other{<ph name="TABS_COUNT_MANY" /> pestanas}}</translation>
 <translation id="1909810060368225529">Aviso: Todo o mundo poderá ver os cambios neste grupo de pestanas compartido. Todos os membros do grupo poden facer cambios nos grupos de pestanas compartidos</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{Fixar a pestana}other{Fixar as pestanas}}</translation>
 <translation id="1982637982196732906">Mover á sección de elementos inactivos</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Engadir <ph name="TABS_COUNT_ONE" /> pestana seleccionada aos marcadores}other{Engadir <ph name="TABS_COUNT_MANY" /> pestanas seleccionadas aos marcadores}}</translation>
 <translation id="2055057176188061528">Seleccionar un grupo de pestanas ou crear un</translation>
@@ -78,6 +79,7 @@
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Miniatura vista previa compartida.</translation>
 <translation id="3810973564298564668">Xestionar</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{Deixar de fixar a pestana}other{Deixar de fixar as pestanas}}</translation>
 <translation id="3940195383040445971">Facer un seguimento dos prezos nas pestanas</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> pestana nova, pestanas pechadas: <ph name="ANY_CLOSED" />}other{<ph name="MANY_ADDED" /> pestanas novas, pestanas pechadas: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Agrupar pestana}other{Agrupar pestanas}}</translation>
@@ -131,6 +133,7 @@
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Pechar <ph name="TABS_COUNT_ONE" /> elemento seleccionado}other{Pechar <ph name="TABS_COUNT_MANY" /> elementos seleccionados}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Mover grupo a unha ventá nova}other{Mover grupo a outra ventá}}</translation>
 <translation id="6228793724645064692">(valoración da tenda)</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{Quitar a pestana do grupo}other{Quitar as pestanas do grupo}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Engadir pestana ao grupo novo}other{Engadir pestanas ao grupo novo}}</translation>
 <translation id="6333260925957816943">Información sobre esta tenda</translation>
 <translation id="6381032505162537930">Atoparás os teus grupos de pestanas aquí</translation>

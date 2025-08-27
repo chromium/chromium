@@ -25,6 +25,7 @@
 <translation id="129382876167171263">વેબસાઇટ દ્વારા સાચવવામાં આવેલી ફાઇલો અહીં દેખાશે</translation>
 <translation id="131112695174432497">રુચિ મુજબ જાહેરાતની સુવિધાને અસર કરે એવા ડેટાને ડિલીટ કરવામાં આવે છે</translation>
 <translation id="1317194122196776028">આ સાઇટને ભૂલી જાઓ</translation>
+<translation id="1321110954513621549">મંજૂરી આપવામાં આવી છે • અંદાજિત</translation>
 <translation id="1323433172918577554">વધુ બતાવો</translation>
 <translation id="1333965224356556482">સાઇટને તમારું સ્થાન જોવાની મંજૂરી આપશો નહીં</translation>
 <translation id="1343356790768851700">તમને ગમતી બાબતો વિશે આ સાઇટ અનુમાન લગાવે છે અને પછી અન્ય સાઇટને જાહેરાતો સૂચવે છે</translation>
@@ -40,6 +41,7 @@
 <translation id="1448064542941920355">નાનું-મોટું કરવાની ટકાવારી ઘટાડો</translation>
 <translation id="1464044141348608623">સાઇટને તમે સક્રિય રીતે તમારા ડિવાઇસનો ઉપયોગ ક્યારે કરો છો, તે જાણવાની મંજૂરી આપશો નહીં</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> સાઇટ}one{<ph name="SITE_COUNT" /> સાઇટ}other{<ph name="SITE_COUNT" /> સાઇટ}}</translation>
+<translation id="1476700086976862423">સિપિઆ રંગવાળી થીમ</translation>
 <translation id="1500473259453106018">ટૅબ કાર્ડ પર કિંમતમાં ઘટાડાની સૂચનાઓ છુપાવો</translation>
 <translation id="1508931164824684991">સાઇટ JavaScriptનો ઉપયોગ કરી શકે છે</translation>
 <translation id="1510341833810331442">સાઇટને તમારા ડિવાઇસ પર ડેટા સાચવવાની મંજૂરી આપવામાં આવતી નથી</translation>
@@ -71,6 +73,7 @@
 <translation id="1799920918471566157">Chrome વિશે ટિપ</translation>
 <translation id="1816835383954230954">ચાલુ હોય, ત્યારે Chrome વધુ ઝડપથી કામ કરે છે અને JavaScriptનો ઉપયોગ કરતી સુવિધાઓ ડિઝાઇન પ્રમાણે કામ કરવી જોઈએ. બંધ હોય, ત્યારે આ પર્ફોર્મન્સ ઘટાડે છે પરંતુ V8ને અટૅક સામે વધુ પ્રતિરોધક બનાવે છે.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" />ને ARનો વપરાશ કરવા દેવા માટે, <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માંથી પણ કૅમેરા ચાલુ કરો.</translation>
+<translation id="1848033246551405023">ફૉન્ટ Sans Serif</translation>
 <translation id="1881806992065048905">નવા ટૅબ પેજ દેખાવની બોટમ શીટ</translation>
 <translation id="1887786770086287077">આ ઉપકરણ માટે સ્થાન ઍક્સેસ બંધ છે. તેને <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં ચાલુ કરો.</translation>
 <translation id="1906181697255754968">તમારું કાર્ય ઑટોમૅટિક રીતે સાચવવા જેવી સુવિધાઓ માટે, સાઇટ તમારા ડિવાઇસ પર ફાઇલોને અને ફોલ્ડરોને ઍક્સેસ કરી શકે છે</translation>
@@ -92,6 +95,7 @@
 <translation id="2079545284768500474">છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="2080070583977670716">વધુ સેટિંગ</translation>
 <translation id="2091887806945687916">ધ્વનિ</translation>
+<translation id="2094208275686143364">હળવા રંગવાળી થીમ</translation>
 <translation id="2096716221239095980">બધો ડેટા ડિલીટ કરો</translation>
 <translation id="2102396546234652240">સાઇટને તમારા માઇક્રોફોનનો ઉપયોગ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="2117655453726830283">આગલી સ્લાઇડ</translation>
@@ -137,6 +141,7 @@
 <translation id="2498359688066513246">સહાય અને પ્રતિસાદ</translation>
 <translation id="2501278716633472235">પાછા જાઓ</translation>
 <translation id="2533138527374486328">જ્યારે વિકલ્પ ચાલુ હોય, ત્યારે સાઇટ, તમારા સ્થાનિક નેટવર્ક પર કોઈપણ ડિવાઇસ સાથે કનેક્ટ કરવાનું પૂછી શકે છે. જ્યારે વિકલ્પ બંધ હોય, ત્યારે સાઇટ તમારા સ્થાનિક નેટવર્ક પર ડિવાઇસ સાથે કનેક્ટ કરી શકતી નથી.</translation>
+<translation id="2544997614631598250">ડાર્ક રંગવાળી થીમ</translation>
 <translation id="2546283357679194313">કૂકીઝ અને સાઇટ ડેટા</translation>
 <translation id="2570922361219980984">આ ઉપકરણ માટે સ્થાન ઍક્સેસ પણ બંધ છે. તેને <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં ચાલુ કરો.</translation>
 <translation id="257931822824936280">વિસ્તૃત - સંકુચિત કરવા માટે ક્લિક કરો.</translation>
@@ -194,6 +199,7 @@
 <translation id="3165022941318558018">સાઇટને ત્રીજા પક્ષની કુકીનો ઉપયોગ કરવાની મંજૂરી આપો</translation>
 <translation id="3167868116600277716">Discover ફીડ</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> સંગ્રહિત ડેટા</translation>
+<translation id="3199078925536734975">આ વખતે મંજૂરી આપવામાં આવી • અંદાજિત</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> તમને નોટિફિકેશન મોકલી શકે તે માટે <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં પણ નોટિફિકેશન ચાલુ કરો.</translation>
 <translation id="3223425961342298674">લોકેશનની મંજૂરી નથી</translation>
 <translation id="3227137524299004712">માઇક્રોફોન</translation>
@@ -250,6 +256,7 @@
 <translation id="3803367742635802571">તમે મુલાકાત લો છો તે સાઇટ જે હેતુ માટે તૈયાર કરવામાં આવી છે તે મુજબ કામ કરવાનું બંધ કરી શકે છે</translation>
 <translation id="3816118180265633665">Chrome રંગો</translation>
 <translation id="381841723434055211">ફોન નંબર</translation>
+<translation id="3823453485268218808">ફૉન્ટ Mono</translation>
 <translation id="3826050100957962900">Third-party sign-in</translation>
 <translation id="3835233591525155343">તમારા ડિવાઇસનો વપરાશ</translation>
 <translation id="3843916486309149084">Chrome આજે પણ ફરી કુકી બ્લૉક કરશે</translation>
@@ -302,6 +309,7 @@
 <translation id="4402755511846832236">તમે સક્રિય રીતે આ ડિવાઇસનો ઉપયોગ ક્યારે કરો છો, તેની જાણ ન થાય એ માટે સાઇટ બ્લૉક કરો</translation>
 <translation id="4412992751769744546">તૃતીય-પક્ષ કૂકીઝને મંજૂરી આપો</translation>
 <translation id="4419929467120297501">Chrome સાઇટને તમે બ્રાઉઝ કરો ત્યારે તમને ટ્રૅક કરવા માટે ત્રીજા પક્ષની કુકીનો ઉપયોગ કરવાથી બ્લૉક કરે છે. <ph name="BEGIN_LINK" />ત્રીજા પક્ષની કુકીના ઍક્સેસને મેનેજ<ph name="END_LINK" /> કરવા સેટિંગની મુલાકાત લો.</translation>
+<translation id="4425416282877905577">ફૉન્ટ Serif</translation>
 <translation id="443121186588148776">સિરીઅલ પોર્ટ</translation>
 <translation id="4434045419905280838">પૉપ-અપ અને રીડાયરેક્ટ</translation>
 <translation id="443552056913301231">આ ક્રિયા કુકી સહિતનો તમામ સ્થાનિક ડેટા ડિલીટ કરશે અને <ph name="ORIGIN" /> માટેની બધી પરવાનગીઓને રીસેટ કરશે</translation>
@@ -554,6 +562,7 @@
 <translation id="7478658909253570368">સાઇટને સીરિયલ પોર્ટ સાથે કનેક્ટ થવાની મંજૂરી આપશો નહીં</translation>
 <translation id="7488573225650545859">તમારી ઍપની સૂચિમાં ટૅબ છુપાવો કે જુઓ</translation>
 <translation id="7521387064766892559">JavaScript</translation>
+<translation id="7538975533793429503">ફૉન્ટના કદ માટે સ્લાઇડર</translation>
 <translation id="7547989957535180761">ચાલુ હોય ત્યારે, સાઇટ સાઇન-ઇન કરવાના પ્રૉમ્પ્ટ બતાવી શકે છે. બંધ હોય ત્યારે, સાઇટ સાઇન ઇન કરવાના પ્રૉમ્પ્ટ બતાવી શકતી નથી.</translation>
 <translation id="7553211568594248088">હબ શોધની બહાર નીકળો</translation>
 <translation id="7554752735887601236">કોઈ સાઇટ તમારા માઇક્રોફોનનો ઉપયોગ કરી રહી છે</translation>

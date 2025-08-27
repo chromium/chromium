@@ -243,6 +243,7 @@
 <translation id="139305205187523129"><ph name="HOST_NAME" /> n'a envoyé aucune donnée.</translation>
 <translation id="1393071644879491291">Des pirates informatiques qui se trouvent sur le site que vous avez essayé de visiter pourraient tenter de vous inciter à installer un logiciel ou à révéler des renseignements tels que vos mots de passe ou vos numéros de téléphone ou de cartes de crédit. Chrome vous recommande fortement de revenir à une page sûre. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus sur cet avertissement<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1405567553485452995">Vert clair</translation>
+<translation id="1406370515365284486">Vos modes de paiement resteront enregistrés</translation>
 <translation id="1406500794671479665">Vérification en cours…</translation>
 <translation id="1406812885827747674">Autoriser cette fois</translation>
 <translation id="14070772729708640">Les fichiers ont bien été téléversés dans le dossier <ph name="FOLDER_NAME" /> sur <ph name="CLOUD_PROVIDER" /></translation>
@@ -440,6 +441,7 @@
 <translation id="1719838434204287058">24 po x 30 po</translation>
 <translation id="1720941539803966190">Fermer le tutoriel</translation>
 <translation id="1721424275792716183">* Ce champ est obligatoire</translation>
+<translation id="1723636263173393300">Cette politique ne peut pas contenir plus de <ph name="MAX_ITEMS_LIMIT" /> raccourcis.</translation>
 <translation id="1725591448053514783">Enveloppe You nᵒ 6</translation>
 <translation id="1727613060316725209">Le certificat est valide</translation>
 <translation id="1728677426644403582">Vous consultez la source d'une page Web</translation>
@@ -1047,6 +1049,7 @@
 <translation id="271663710482723385">Appuyez sur |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| pour quitter le mode plein écran</translation>
 <translation id="2717336592027046789">Rouleau</translation>
 <translation id="2718207025093645426">L'utilisateur ou l'appareil géré n'a pas de politique chargée.</translation>
+<translation id="2719233594187778789">URL non unique ignorée : <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Demande réussie</translation>
 <translation id="2722622039067384533">Meubles de salon</translation>
 <translation id="2723669454293168317">Effectuer une vérification de sécurité dans les paramètres de Chrome</translation>
@@ -2007,6 +2010,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4298000214066716287">Investissement</translation>
 <translation id="4298148761711700950">Payer instantanément sans téléverser de code QR</translation>
 <translation id="4298925811540301889">Les témoins de ce site sont synchronisés sur vos appareils ChromeOS. Pour gérer ce que vous synchronisez, accédez à <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4299919199185766032">Le nom du raccourci dépasse la longueur maximale autorisée de <ph name="MAX_LENGTH" /> caractères.</translation>
 <translation id="4300272766492248925">Ouvrir l'application</translation>
 <translation id="4300675098767811073">Multiple perforation à droite</translation>
 <translation id="4302514097724775343">Touchez le dinosaure pour jouer</translation>
@@ -2708,6 +2712,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
     Essayez de communiquer avec votre administrateur système.</translation>
 <translation id="5496804587179176046">Enregistrer des codes de sécurité, aucun code de sécurité actuellement enregistré</translation>
 <translation id="550365051221576010">Tout remplir</translation>
+<translation id="5506286895894263601">La liste ne contient aucun raccourci valide.</translation>
 <translation id="5508443345185481044">Appareils photo et caméras</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Favoris gérés</translation>
@@ -3627,6 +3632,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="7014741021609395734">Niveau de zoom</translation>
 <translation id="7016992613359344582">Ces frais peuvent être ponctuels ou récurrents, et peuvent ne pas être évidents.</translation>
 <translation id="701757816833614688">Formation en arts visuels et en design graphique</translation>
+<translation id="7020464868401003526">L'URL du raccourci dépasse la longueur maximale autorisée de <ph name="MAX_LENGTH" /> caractères.</translation>
 <translation id="702275896380648118">Ce site détermine ce que vous aimez et suggère ensuite des annonces à d'autres sites. Ce site récupère également les sujets de vos annonces à partir de Chrome pour vous montrer des annonces plus pertinentes.</translation>
 <translation id="7023162328967545559">Avertissement de l'administrateur</translation>
 <translation id="7023765275461720661">Associer le compte et payer avec <ph name="BNPL_ISSUER_NAME" />?</translation>

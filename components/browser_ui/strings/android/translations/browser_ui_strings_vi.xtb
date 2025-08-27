@@ -24,6 +24,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="129382876167171263">Những tệp mà trang web lưu lại sẽ xuất hiện ở đây</translation>
 <translation id="131112695174432497">Dữ liệu có ảnh hưởng đến hoạt động cá nhân hoá quảng cáo sẽ bị xoá</translation>
 <translation id="1317194122196776028">Xóa trang web này</translation>
+<translation id="1321110954513621549">Được cho phép • Vị trí ước chừng</translation>
 <translation id="1323433172918577554">Xem thêm</translation>
 <translation id="1333965224356556482">Không cho phép trang web xem thông tin vị trí của bạn</translation>
 <translation id="1343356790768851700">Trang web này xác định sở thích của bạn, sau đó đề xuất quảng cáo mà các trang web khác nên hiển thị</translation>
@@ -39,6 +40,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="1448064542941920355">Giảm mức thu phóng</translation>
 <translation id="1464044141348608623">Không cho trang web biết khi bạn đang dùng thiết bị của mình</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> trang web}other{<ph name="SITE_COUNT" /> trang web}}</translation>
+<translation id="1476700086976862423">Giao diện màu nâu đỏ</translation>
 <translation id="1500473259453106018">Ẩn thẻ thông báo giảm giá trên thẻ</translation>
 <translation id="1508931164824684991">Các trang web có thể dùng JavaScript</translation>
 <translation id="1510341833810331442">Các trang web không được phép lưu dữ liệu trên thiết bị của bạn</translation>
@@ -70,6 +72,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="1799920918471566157">Mẹo dùng Chrome</translation>
 <translation id="1816835383954230954">Khi bạn bật công cụ này, Chrome sẽ hoạt động nhanh hơn và các tính năng sử dụng JavaScript sẽ hoạt động như dự kiến. Khi bạn tắt công cụ này, hiệu suất sẽ giảm nhưng V8 có thể chống lại các cuộc tấn công tốt hơn.</translation>
 <translation id="1818308510395330587">Để cho phép <ph name="APP_NAME" /> sử dụng công nghệ thực tế tăng cường (AR), hãy bật cả máy ảnh trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
+<translation id="1848033246551405023">Phông chữ Sans Serif</translation>
 <translation id="1881806992065048905">Bảng giao diện trang thẻ mới ở dưới cùng</translation>
 <translation id="1887786770086287077">Đã tắt quyền truy cập vị trí đối với thiết bị này. Hãy bật trong <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Các trang web thường truy cập vào tệp và thư mục trên thiết bị của bạn để áp dụng những tính năng như tự động lưu công việc</translation>
@@ -91,6 +94,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="2079545284768500474">Huỷ</translation>
 <translation id="2080070583977670716">Chế độ cài đặt khác</translation>
 <translation id="2091887806945687916">Âm thanh</translation>
+<translation id="2094208275686143364">Giao diện màu sáng</translation>
 <translation id="2096716221239095980">Xoá mọi dữ liệu</translation>
 <translation id="2102396546234652240">Không cho phép trang web sử dụng micrô</translation>
 <translation id="2117655453726830283">Trang trình bày tiếp theo</translation>
@@ -136,6 +140,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="2498359688066513246">Trợ giúp và phản hồi</translation>
 <translation id="2501278716633472235">Quay lại</translation>
 <translation id="2533138527374486328">Khi tuỳ chọn này bật, các trang web có thể yêu cầu kết nối với thiết bị bất kỳ trên mạng cục bộ của bạn. Khi tuỳ chọn này tắt, các trang web không thể kết nối với thiết bị trên mạng cục bộ của bạn.</translation>
+<translation id="2544997614631598250">Giao diện màu tối</translation>
 <translation id="2546283357679194313">Cookie và dữ liệu trang web</translation>
 <translation id="2570922361219980984">Quyền truy cập vị trí cũng đã bị tắt đối với thiết bị này. Hãy bật trong <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Đã mở rộng - nhấp để thu gọn.</translation>
@@ -193,6 +198,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="3165022941318558018">Cho phép một trang web dùng cookie của bên thứ ba</translation>
 <translation id="3167868116600277716">Nguồn cấp dữ liệu khám phá</translation>
 <translation id="3198916472715691905">Dữ liệu đã lưu trữ: <ph name="STORAGE_AMOUNT" /></translation>
+<translation id="3199078925536734975">Được cho phép lần này • Vị trí ước chừng</translation>
 <translation id="321187648315454507">Để cho phép <ph name="APP_NAME" /> gửi thông báo cho bạn, hãy bật cả thông báo trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Không cho phép truy cập thông tin vị trí</translation>
 <translation id="3227137524299004712">Micrô</translation>
@@ -249,6 +255,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="3803367742635802571">Các trang web bạn truy cập có thể không còn hoạt động như dự kiến</translation>
 <translation id="3816118180265633665">Màu Chrome</translation>
 <translation id="381841723434055211">Số điện thoại</translation>
+<translation id="3823453485268218808">Phông chữ đơn cách</translation>
 <translation id="3826050100957962900">Đăng nhập qua bên thứ ba</translation>
 <translation id="3835233591525155343">Hoạt động dùng thiết bị của bạn</translation>
 <translation id="3843916486309149084">Hôm nay, Chrome sẽ chặn cookie trở lại</translation>
@@ -301,6 +308,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="4402755511846832236">Không cho các trang web biết khi bạn đang dùng thiết bị này</translation>
 <translation id="4412992751769744546">Cho phép cookie của bên thứ ba</translation>
 <translation id="4419929467120297501">Chrome cấm các trang web sử dụng cookie của bên thứ ba để theo dõi hoạt động duyệt web của bạn. Hãy vào phần cài đặt để <ph name="BEGIN_LINK" />quản lý quyền truy cập vào cookie của bên thứ ba<ph name="END_LINK" />.</translation>
+<translation id="4425416282877905577">Phông chữ Serif</translation>
 <translation id="443121186588148776">Cổng nối tiếp</translation>
 <translation id="4434045419905280838">Cửa sổ bật lên và liên kết chuyển hướng</translation>
 <translation id="443552056913301231">Thao tác này sẽ xoá toàn bộ dữ liệu cục bộ, kể cả cookie, và đặt lại mọi quyền cho <ph name="ORIGIN" /></translation>
@@ -553,6 +561,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="7478658909253570368">Không cho phép trang web kết nối với các cổng nối tiếp</translation>
 <translation id="7488573225650545859">Ẩn mục Xem các thẻ trong danh sách ứng dụng</translation>
 <translation id="7521387064766892559">JavaScript</translation>
+<translation id="7538975533793429503">Thanh trượt điều chỉnh cỡ chữ</translation>
 <translation id="7547989957535180761">Khi bạn bật tuỳ chọn này, các trang web có thể hiển thị lời nhắc đăng nhập. Khi bạn tắt tuỳ chọn này, các trang web không thể hiển thị lời nhắc đăng nhập.</translation>
 <translation id="7553211568594248088">Thoát khỏi chế độ tìm kiếm trong trung tâm</translation>
 <translation id="7554752735887601236">Một trang web đang sử dụng micrô của bạn</translation>

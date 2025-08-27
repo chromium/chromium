@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
 <translation id="1001534784610492198">L'archive du programme d'installation est corrompue ou incorrecte. Veuillez télécharger de nouveau Google Chrome.</translation>
+<translation id="1006034097353797313">Reprenez là où vous en étiez : Chrome restaure vos onglets à chaque redémarrage. Pour désactiver cette option, accédez aux</translation>
 <translation id="1018937009655463387">Pour partager votre fenêtre, autorisez l'enregistrement d'écran pour Chrome dans les réglages système.</translation>
 <translation id="1026101648481255140">Reprendre l'installation</translation>
 <translation id="102763973188675173">Personnalisez et contrôlez Google Chrome. Une mise à jour est disponible.</translation>
@@ -82,6 +83,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2018879682492276940">Échec de l'installation. Veuillez réessayer.</translation>
 <translation id="2024959665595762054">Pour utiliser et enregistrer des données Chrome dans votre compte Google, confirmez votre identité</translation>
 <translation id="2034233344106846793">Chrome convertit automatiquement les connexions non sécurisées en HTTPS lorsque c'est possible</translation>
+<translation id="2039417478970545937">paramètres.</translation>
 <translation id="207902854391093810">Pendant les essais, Ad Measurement autorise les sites que vous visitez à demander à Chrome des informations pour les aider à mesurer les performances de leurs annonces. Cette API limite le suivi intersites en transférant le minimum d'informations entre les sites.</translation>
 <translation id="2091012649849228750">Pour recevoir les futures mises à jour de Google Chrome, vous devez disposer de Windows 10 ou d'une version ultérieure. Cet ordinateur utilise Windows 8.</translation>
 <translation id="2094648590148273905">Conditions d'utilisation de ChromeOS Flex</translation>
@@ -351,6 +353,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 
 Certaines fonctionnalités peuvent être indisponibles. Veuillez spécifier un répertoire de profil différent ou utiliser une version plus récente de Google Chrome.</translation>
 <translation id="5174969993834422967">Vous bloquez généralement les notifications. Pour autoriser ce site à vous en envoyer, cliquez sur l'icône de notification dans l'angle droit de la barre d'adresse.</translation>
+<translation id="5174983315706567306">Espace disque insuffisant.</translation>
 <translation id="5201744974236816379">Mise à jour de Chrome</translation>
 <translation id="521447420733633466">Si vous partagez un appareil avec vos proches, ceux-ci peuvent configurer Chrome selon leurs préférences et naviguer sur le Web de façon indépendante.</translation>
 <translation id="5234764350956374838">Ignorer</translation>
@@ -461,6 +464,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome pour les développeurs</translation>
 <translation id="6520670145826811516">Pour que Chrome puisse utiliser votre position, autorisez-le à y accéder dans les <ph name="BEGIN_LINK" />paramètres système<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">Dans le Gestionnaire de mots de passe Google sur cet appareil</translation>
+<translation id="6631524303639368205">Reprenez là où vous en étiez : Chrome a restauré les onglets de votre dernière session. Vous pouvez désactiver cette option dans les</translation>
 <translation id="6632473616050862500">ChromeOS Flex dépend d'autres <ph name="BEGIN_LINK_CROS_OSS" />logiciels Open Source <ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6634299872736643004">Les modifications apportées à ce paramètre seront appliquées quand Chrome redémarrera.</translation>
 <translation id="6660596345553328257">Se connecter à Chrome ?</translation>
@@ -568,6 +572,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="7825851276765848807">Échec de l'installation en raison d'erreurs non spécifiées. Veuillez télécharger Google Chrome à nouveau.</translation>
 <translation id="7827099906024714326">Chrome doit valider votre identité avant que certaines données puissent être enregistrées dans votre compte Google et utilisées sur tous vos appareils. Si vous vous déconnectez maintenant, ces données seront supprimées.</translation>
 <translation id="7845233973568007926">Merci d'avoir installé notre produit. Vous devez redémarrer votre ordinateur avant d'utiliser <ph name="BUNDLE_NAME" />.</translation>
+<translation id="7849037457735762883">Reprenez là où vous en étiez : Chrome peut restaurer vos onglets à chaque redémarrage. Pour activer cette option, accédez aux</translation>
 <translation id="7872446069773932638">Téléchargement… <ph name="SECONDS" /> seconde(s) restante(s)</translation>
 <translation id="7886087451482920026">Sélectionnez du texte avec Google Lens</translation>
 <translation id="7890208801193284374">Si vous partagez un ordinateur avec vos proches, ceux-ci peuvent configurer Chrome comme bon leur semble et naviguer sur le Web à leur manière.</translation>

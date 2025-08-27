@@ -21,6 +21,7 @@
 <translation id="1072476005125066234">Avis basés sur vos centres d'intérêt</translation>
 <translation id="1074827084851510304">Vous êtes sur le point de supprimer {password_count} mots de passe et la liste des sites et applis pour lesquels vous avez choisi de ne jamais enregistrer d'informations de connexion. Les comptes que vous avez créés pour des sites et des applis ne seront pas supprimés.</translation>
 <translation id="1076421457278169141">Code scanné</translation>
+<translation id="1081114897601629648">Les mots de passe suivants n'ont pas été importés dans le Gestionnaire de mots de passe de Google, car ils ne répondent pas aux exigences.</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} onglet}one{{count} onglet}other{{count} onglets}}</translation>
 <translation id="1082554859195167538">Avis sur les produits pour vous</translation>
 <translation id="1084365883616172403">Post Facebook publié.</translation>
@@ -599,7 +600,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="333229797575847124">Comment activer cette fonctionnalité</translation>
 <translation id="3344485292736684439">{count,plural, =1{Favori enregistré dans "{title}" sur votre compte {email}}one{Favori enregistré dans "{title}" sur votre compte {email}}other{Favoris enregistrés dans "{title}" sur votre compte {email}}}</translation>
 <translation id="334690320928261823">Onglets récents</translation>
-<translation id="3348387552617855658">Cette carte vous permet d'effectuer le suivi de vos colis et de vous communiquer des informations importantes sur vos livraisons.</translation>
 <translation id="3349031117032695619">Bloquer les pop-ups</translation>
 <translation id="3349676726073650389">Les sites et les recherches que vous suivez sont enregistrés dans votre compte Google. Vous pouvez gérer vos contenus suivis dans les paramètres à tout moment.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Ce compte est géré.</translation>

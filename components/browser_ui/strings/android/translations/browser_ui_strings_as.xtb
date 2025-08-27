@@ -25,6 +25,7 @@
 <translation id="129382876167171263">ৱেবছাইটে ছেভ কৰা ফাইলসমূহ ইয়াত দেখা পোৱা যায়</translation>
 <translation id="131112695174432497">বিজ্ঞাপনৰ ব্যক্তিগতকৰণক প্ৰভাৱিত কৰা ডেটা মচি পেলোৱা হয়</translation>
 <translation id="1317194122196776028">এই ছাইটটো পাহৰি যাওক</translation>
+<translation id="1321110954513621549">অনুমতি দিয়া হৈছে • আনুমানিক</translation>
 <translation id="1323433172918577554">অধিক দেখুৱাওক</translation>
 <translation id="1333965224356556482">ছাইটক আপোনাৰ অৱস্থান চোৱাৰ অনুমতি নিদিব</translation>
 <translation id="1343356790768851700">এই ছাইটে আপুনি ভাল পোৱা বস্তুবোৰ নিৰ্ধাৰণ কৰে আৰু তাৰ পাছত অন্য ছাইটসমূহক বিজ্ঞাপনৰ বাবে পৰামৰ্শ দিয়ে</translation>
@@ -40,6 +41,7 @@
 <translation id="1448064542941920355">জুম কমাওক</translation>
 <translation id="1464044141348608623">ছাইটক আপুনি নিজৰ ডিভাইচটো কেতিয়া সক্ৰিয়ভাৱে ব্যৱহাৰ কৰি থাকে সেয়া জানিবলৈ নিদিব</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> টা ছাইট}one{<ph name="SITE_COUNT" /> টা ছাইট}other{<ph name="SITE_COUNT" /> টা ছাইট}}</translation>
+<translation id="1476700086976862423">থীমৰ ৰং ছেপিয়া</translation>
 <translation id="1500473259453106018">টেবৰ কাৰ্ডত দাম কমাটো লুকুৱাওক</translation>
 <translation id="1508931164824684991">ছাইটসমূহে JavaScript ব্যৱহাৰ কৰিব পাৰে</translation>
 <translation id="1510341833810331442">ছাইটসমূহক আপোনাৰ ডিভাইচত ডেটা ছেভ কৰাৰ অনুমতি দিয়া নহয়</translation>
@@ -71,6 +73,7 @@
 <translation id="1799920918471566157">Chromeৰ কিটিপ</translation>
 <translation id="1816835383954230954">অন থাকিলে, Chrome অধিক দ্ৰুততাৰে চলে আৰু JavaScript ব্যৱহাৰ কৰা সুবিধাসমূহে ডিজাইন কৰা অনুসৰি কাম কৰিব লাগে। অফ থাকিলে, ই কাৰ্যদক্ষতা কম কৰে কিন্তু V8ক আক্ৰমণৰ বাবে অধিক প্ৰতিৰোধী কৰে।</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" />ক AR ব্যৱহাৰ কৰিবলৈ দিবলৈ <ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />তো কেমেৰা অন কৰক।</translation>
+<translation id="1848033246551405023">ফণ্ট চেনচ চেৰিফ</translation>
 <translation id="1881806992065048905">নতুন টেবৰ পৃষ্ঠাখন প্ৰদৰ্শিত হোৱা তলৰ শ্বীট</translation>
 <translation id="1887786770086287077">এই ডিভাইচটোত অৱস্থান এক্সেছ বন্ধ কৰা আছে। ইয়াক <ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />লৈ গৈ অন কৰক।</translation>
 <translation id="1906181697255754968">ছাইটসমূহে সচৰাচৰ আপোনাৰ কাম স্বয়ংক্ৰিয়ভাৱে ছেভ কৰাৰ দৰে সুবিধাসমূহৰ বাবে আপোনাৰ ডিভাইচৰ ফাইল আৰু ফ'ল্ডাৰসমূহ এক্সেছ কৰে</translation>
@@ -92,6 +95,7 @@
 <translation id="2079545284768500474">আনডু কৰক</translation>
 <translation id="2080070583977670716">অধিক ছেটিং</translation>
 <translation id="2091887806945687916">শব্দ</translation>
+<translation id="2094208275686143364">থীমৰ ৰং পাতল</translation>
 <translation id="2096716221239095980">আটাইবোৰ ডেটা মচক</translation>
 <translation id="2102396546234652240">ছাইটক আপোনাৰ মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰাৰ অনুমতি নিদিব</translation>
 <translation id="2117655453726830283">পৰৱৰ্তী শ্লাইড</translation>
@@ -137,6 +141,7 @@
 <translation id="2498359688066513246">সহায় আৰু মতামত</translation>
 <translation id="2501278716633472235">উভতি যাওক</translation>
 <translation id="2533138527374486328">অন কৰা থাকিলে, ছাইটসমূহে আপোনাৰ স্থানীয় নেটৱৰ্কৰ যিকোনো ডিভাইচৰ সৈতে সংযোগ কৰিবলৈ অনুমতি বিচাৰিব পাৰে। অফ থাকিলে, ছাইটসমূহে আপোনাৰ স্থানীয় নেটৱৰ্কৰ ডিভাইচৰ সৈতে সংযোগ কৰিব নোৱাৰে।</translation>
+<translation id="2544997614631598250">থীমৰ ৰং গাঢ়</translation>
 <translation id="2546283357679194313">কুকি আৰু ছাইট ডেটা</translation>
 <translation id="2570922361219980984">এই ডিভাইচটোৰ বাবে অৱস্থান এক্সেছো অফ কৰা আছে। ইয়াক <ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />-লৈ গৈ অন কৰক।</translation>
 <translation id="257931822824936280">বিস্তাৰ কৰা আছে - সংকোচন কৰিবলৈ ক্লিক কৰক।</translation>
@@ -194,6 +199,7 @@
 <translation id="3165022941318558018">এটা ছাইটক তৃতীয় পক্ষৰ কুকি ব্যৱহাৰ কৰিবলৈ দিয়ক</translation>
 <translation id="3167868116600277716">ডিস্ক’ভাৰৰ ফীড</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> ডেটা ষ্ট’ৰ কৰা আছে</translation>
+<translation id="3199078925536734975">এইবাৰ অনুমতি দিয়ক • আনুমানিক</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" />ক আপোনালৈ জাননী পঠিয়াবলৈ দিবলৈ <ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />তো জাননী অন কৰক।</translation>
 <translation id="3223425961342298674">অৱস্থানৰ অনুমতি নাই</translation>
 <translation id="3227137524299004712">মাইক্ৰ’ফ’ন</translation>
@@ -250,6 +256,7 @@
 <translation id="3803367742635802571">আপুনি চোৱা ছাইটসমূহে ডিজাইন কৰা ধৰণে কাম কৰা বন্ধ কৰিব পাৰে</translation>
 <translation id="3816118180265633665">Chrome Colors</translation>
 <translation id="381841723434055211">ফ’ন নম্বৰসমূহ</translation>
+<translation id="3823453485268218808">ফণ্ট ম’ন’</translation>
 <translation id="3826050100957962900">তৃতীয় পক্ষৰ ছাইন ইন</translation>
 <translation id="3835233591525155343">আপোনাৰ ডিভাইচটোৰ ব্যৱহাৰ</translation>
 <translation id="3843916486309149084">Chromeএ আজি পুনৰ কুকি অৱৰোধ কৰিব</translation>
@@ -302,6 +309,7 @@
 <translation id="4402755511846832236">আপুনি এই ডিভাইচটো সক্ৰিয়ভাৱে ব্যৱহাৰ কৰি থকাৰ বিষয়ে ছাইটসমূহে জনাটো অৱৰোধ কৰক</translation>
 <translation id="4412992751769744546">তৃতীয় পক্ষৰ কুকিৰ অনুমতি দিয়ক</translation>
 <translation id="4419929467120297501">আপুনি ব্ৰাউজ কৰি থাকোঁতে Chromeএ ছাইটসমূহে আপোনাক ট্ৰেক কৰিবলৈ কৰা তৃতীয় পক্ষৰ কুকিৰ ব্যৱহাৰ অৱৰোধ কৰে। <ph name="BEGIN_LINK" />তৃতীয় পক্ষৰ কুকিসমূহলৈ এক্সেছ পৰিচালনা কৰিবলৈ<ph name="END_LINK" /> ছেটিঙলৈ যাওক।</translation>
+<translation id="4425416282877905577">ফণ্ট চেৰিফ</translation>
 <translation id="443121186588148776">ছিৰিয়েল প'ৰ্ট</translation>
 <translation id="4434045419905280838">পপ-আপ আৰু পুনৰ নির্দেশ</translation>
 <translation id="443552056913301231">এই কাৰ্যটোৱে কুকিসমূহকে ধৰি আপোনাৰ আটাইবোৰ স্থানীয় ডেটা মচিব আৰু <ph name="ORIGIN" />ৰ বাবে আটাইবোৰ অনুমতি ৰিছেট কৰিব</translation>
@@ -554,6 +562,7 @@
 <translation id="7478658909253570368">ছাইটক ছিৰিয়েল প’ৰ্টৰ সৈতে সংযোগ কৰাৰ অনুমতি নিদিব</translation>
 <translation id="7488573225650545859">আপোনাৰ এপৰ সূচীখনত টেব চোৱাটো লুকুৱাওক</translation>
 <translation id="7521387064766892559">JavaScript</translation>
+<translation id="7538975533793429503">ফণ্টৰ আকাৰ শ্লাইডাৰ</translation>
 <translation id="7547989957535180761">অন কৰা থাকিলে, ছাইটে ছাইন-ইনৰ প্ৰম্প্‌ট দেখুৱাব পাৰে। অফ কৰা থাকিলে, ছাইটে ছাইন-ইনৰ প্ৰম্প্‌ট দেখুৱাব নোৱাৰে।</translation>
 <translation id="7553211568594248088">হাব সন্ধানৰ বাহিৰ হওক</translation>
 <translation id="7554752735887601236">এটা ছাইটে আপোনাৰ মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰি আছে</translation>

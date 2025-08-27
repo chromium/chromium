@@ -25,6 +25,7 @@ Ukuvikela Okuthuthukile kulawula lawa masethingi eChrome:
 <translation id="129382876167171263">Amafayela ngamawebhusayithi abonakala lapha</translation>
 <translation id="131112695174432497">Idatha ethinta ukwenza ngezifiso izikhangiso iyasulwa</translation>
 <translation id="1317194122196776028">Khohlwa le sayithi</translation>
+<translation id="1321110954513621549">Kuvunyelwe • Ukulinganisela</translation>
 <translation id="1323433172918577554">Bonisa okuningi</translation>
 <translation id="1333965224356556482">Ungavumeli amasayithi abone indawo yakho</translation>
 <translation id="1343356790768851700">Le sayithi inquma izinto ozithandayo bese iphakamisa izikhangiso kwamanye amasayithi</translation>
@@ -40,6 +41,7 @@ Ukuvikela Okuthuthukile kulawula lawa masethingi eChrome:
 <translation id="1448064542941920355">Nciphisa ukusondeza</translation>
 <translation id="1464044141348608623">Ungavumeli amasayithi ukuthi azi uma usebenzisa ifoni yakho</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{Isayithi engu-<ph name="SITE_COUNT" />}one{Amasayithi angu-<ph name="SITE_COUNT" />}other{Amasayithi angu-<ph name="SITE_COUNT" />}}</translation>
+<translation id="1476700086976862423">Itimu yombala we-sepia</translation>
 <translation id="1500473259453106018">Fihla ukwehla kwentengo ekhadini lamathebhu</translation>
 <translation id="1508931164824684991">Amasayithi angasebenzisa i-JavaScript</translation>
 <translation id="1510341833810331442">Amasayithi awavunyelwe ukulondoloza idatha kudivayisi yakho</translation>
@@ -71,6 +73,7 @@ Ukuvikela Okuthuthukile kulawula lawa masethingi eChrome:
 <translation id="1799920918471566157">Amathiphu e-Chrome</translation>
 <translation id="1816835383954230954">Uma ivuliwe, iChrome isebenza ngokushesha futhi izakhi ezisebenzisa iJavaScript kufanele zisebenze ngendlela eziklanywe ngayo. Uma ivaliwe, lokhu kunciphisa ukusebenza kodwa kwenza i-V8 imelane kakhulu nokuhlaselwa.</translation>
 <translation id="1818308510395330587">Ukuze uvumele i-<ph name="APP_NAME" /> isebenzise i-AR, vula nekhamera <ph name="BEGIN_LINK" />Kumasethingi e-Android<ph name="END_LINK" />.</translation>
+<translation id="1848033246551405023">Ifonti yeSans Serif</translation>
 <translation id="1881806992065048905">Ukubonakala kweshidi eliphansi ekhasini lethebhu entsha</translation>
 <translation id="1887786770086287077">Ukufinyelela kwendawo kuvalelwe le divayisi. Kuvule <ph name="BEGIN_LINK" />kuzilungiselelo ze-Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Amasayithi avamise ukufinyelela kumafayela namafolda kudivayisi yakho kuzici ezifana nokulondoloza ngokuzenzakalela umsebenzi wakho</translation>
@@ -92,6 +95,7 @@ Ukuvikela Okuthuthukile kulawula lawa masethingi eChrome:
 <translation id="2079545284768500474">Hlehlisa</translation>
 <translation id="2080070583977670716">Ezinye izilungiselelo</translation>
 <translation id="2091887806945687916">Umsindo</translation>
+<translation id="2094208275686143364">Ukukhanya kombala wetimu</translation>
 <translation id="2096716221239095980">Sula yonke idatha</translation>
 <translation id="2102396546234652240">Ungavumeli amasayithi asebenzise imakrofoni yakho</translation>
 <translation id="2117655453726830283">Islayidi esilandelayo</translation>
@@ -137,6 +141,7 @@ Ukuvikela Okuthuthukile kulawula lawa masethingi eChrome:
 <translation id="2498359688066513246">Usizo nempendulo</translation>
 <translation id="2501278716633472235">Iya emuva</translation>
 <translation id="2533138527374486328">Lapho evuliwe, amasayithi angacela ukuxhuma kunoma iyiphi idivayisi kunethiwekhi yakho yendawo. Lapho evaliwe, amasayithi awakwazi ukuxhuma kumadivayisi kunethiwekhi yakho yendawo.</translation>
+<translation id="2544997614631598250">Itimu yombala omnyama</translation>
 <translation id="2546283357679194313">Amakhukhi nedatha yesayithi</translation>
 <translation id="2570922361219980984">Ukufinyelela endaweni nakho kuvalelwe le divayisi. Kuvule <ph name="BEGIN_LINK" />kuzilungiselelo ze-Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Inwetshiwe - chofoza ukuze ugoqe.</translation>
@@ -194,6 +199,7 @@ Ukuvikela Okuthuthukile kulawula lawa masethingi eChrome:
 <translation id="3165022941318558018">Vumela isayithi ukuthi lisebenzise amakhukhi ezinkampani zangaphandle</translation>
 <translation id="3167868116600277716">Okuphakelayo kwesivumbululi</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> idatha egciniwe</translation>
+<translation id="3199078925536734975">Kuvunyelwe ngalesi sikhathi • Ukulinganisela</translation>
 <translation id="321187648315454507">Ukuze uvumele i-<ph name="APP_NAME" /> ukuthi ikuthumele izaziso, vula nezaziso <ph name="BEGIN_LINK" />Kumasethingi e-Android<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Indawo ayivunyelwe</translation>
 <translation id="3227137524299004712">Imakrofoni</translation>
@@ -250,6 +256,7 @@ Ukuvikela Okuthuthukile kulawula lawa masethingi eChrome:
 <translation id="3803367742635802571">Amasayithi owavakashelayo angase ayeke ukusebenza ngendlela eklanywe ngayo</translation>
 <translation id="3816118180265633665">Imibala ye-Chrome</translation>
 <translation id="381841723434055211">Izinombolo zefoni</translation>
+<translation id="3823453485268218808">Ifonti yeMono</translation>
 <translation id="3826050100957962900">Ukungena ngemvume kwenkampani yangaphandle</translation>
 <translation id="3835233591525155343">Umsebenzi wedivayisi yakho</translation>
 <translation id="3843916486309149084">I-Chrome izophinde ivimbele amakhukhi namuhla</translation>
@@ -302,6 +309,7 @@ Ukuvikela Okuthuthukile kulawula lawa masethingi eChrome:
 <translation id="4402755511846832236">Vimbela amasayithi ukuthi azi lapho usebenzisa le divayisi</translation>
 <translation id="4412992751769744546">Vumela amakhukhi wezinkampani zangaphandle</translation>
 <translation id="4419929467120297501">IChrome iyawavimbela amasayithi ekusebenziseni amakhukhi ongahlangene ngqo ukuze akulandelele njengoba ubhrawuza. Vakashela amasethingi ukuze <ph name="BEGIN_LINK" />uphathe ukufinyelela kumakhukhi ongahlangene ngqo<ph name="END_LINK" />.</translation>
+<translation id="4425416282877905577">Ifonti yeSerif</translation>
 <translation id="443121186588148776">Imbobo ye-Serial</translation>
 <translation id="4434045419905280838">Okwesikhashana nokuqondiswa kabusha</translation>
 <translation id="443552056913301231">Lesi senzo sizosula yonke idatha yendawo, okuhlanganisa amakhukhi, futhi sisethe kabusha zonke izimvume ze-<ph name="ORIGIN" /></translation>
@@ -554,6 +562,7 @@ Ukuvikela Okuthuthukile kulawula lawa masethingi eChrome:
 <translation id="7478658909253570368">Ungavumeli amasayithi ukuba axhume ezimbobeni zomkhiqizo</translation>
 <translation id="7488573225650545859">Fihla amathebhu esakhi esithi Buka ohlwini lwe-app yakho</translation>
 <translation id="7521387064766892559">I-JavaScript</translation>
+<translation id="7538975533793429503">Islayida sosayizi wefonti</translation>
 <translation id="7547989957535180761">Lapho ivuliwe, amasayithi angabonisa imiyalo yokungena ngemvume. Lapho ivaliwe, amasayithi awakwazi ukubonisa imiyalo yokungena ngemvume.</translation>
 <translation id="7553211568594248088">Phuma ekusesheni kwehabhu</translation>
 <translation id="7554752735887601236">Isayithi isebenzisa imakrofoni yakho</translation>

@@ -28,6 +28,7 @@
 <translation id="1828808367831369073">Kichupo <ph name="TABS_COUNT_ONE" /> kimewekwa kwenye kikundi</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{Kichupo <ph name="TABS_COUNT_ONE" />}other{Vichupo <ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="1909810060368225529">Ilani: Kila mtu anaweza kuona mabadiliko kwenye Kikundi cha Vichupo cha pamoja. Kila mtu anaweza kubadilisha vikundi vyako vya vichupo vya pamoja</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{Bandika kichupo}other{Bandika vichupo}}</translation>
 <translation id="1982637982196732906">Hamishia kwenye sehemu ya visivyotumika</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Alamisha kichupo <ph name="TABS_COUNT_ONE" /> kilichochaguliwa}other{Alamisha vichupo <ph name="TABS_COUNT_MANY" /> vilivyochaguliwa}}</translation>
 <translation id="2055057176188061528">Chagua kikundi cha vichupo au uanzishe kikundi kipya cha vichupo</translation>
@@ -78,6 +79,7 @@
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Kijipicha cha kushiriki onyesho la kukagua laha</translation>
 <translation id="3810973564298564668">Dhibiti</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{Bandua kichupo}other{Bandua vichupo}}</translation>
 <translation id="3940195383040445971">Fuatilia bei kwenye vichupo</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{Kichupo <ph name="ONE_ADDED" /> kipya, umefunga <ph name="ANY_CLOSED" />}other{Vichupo <ph name="MANY_ADDED" /> vipya, umefunga <ph name="ANY_CLOSED" />}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Weka kichupo katika kikundi}other{Weka vichupo katika kikundi}}</translation>
@@ -131,6 +133,7 @@
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Funga kipengee <ph name="TABS_COUNT_ONE" /> ulichochagua}other{Funga vipengee <ph name="TABS_COUNT_MANY" /> ulivyochagua}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Hamishia kikundi kwenye dirisha jipya}other{Hamishia kikundi kwenye dirisha lingine}}</translation>
 <translation id="6228793724645064692">(ukadiriaji wa duka)</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{Ondoa kichupo kwenye kikundi}other{Ondoa vichupo kwenye kikundi}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Weka kichupo kwenye kikundi kipya}other{Weka vichupo kwenye kikundi kipya}}</translation>
 <translation id="6333260925957816943">Maelezo kuhusu duka hili</translation>
 <translation id="6381032505162537930">Utapata vikundi vya vichupo vyako hapa</translation>

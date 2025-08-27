@@ -21,6 +21,7 @@
 <translation id="1072476005125066234">Mga review batay sa iyong mga interes</translation>
 <translation id="1074827084851510304">Ide-delete mo ang {password_count} (na) password at ang listahan ng mga site at app na pinili mong hinding-hindi magse-save ng impormasyon sa pag-sign in. Hindi made-delete ang anumang account na ginawa mo para sa mga site at app.</translation>
 <translation id="1076421457278169141">Na-scan na ang code</translation>
+<translation id="1081114897601629648">Hindi na-import ang mga sumusunod na password sa Google Password Manager, dahil hindi tumutugma ang mga ito sa mga requirement.</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} tab}one{{count} tab}other{{count} na tab}}</translation>
 <translation id="1082554859195167538">Mga review ng produkto para sa iyo</translation>
 <translation id="1084365883616172403">Kumpleto na ang pag-post sa Facebook.</translation>
@@ -599,7 +600,6 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="333229797575847124">Paano i-enable ang feature na ito</translation>
 <translation id="3344485292736684439">{count,plural, =1{Na-save ang bookmark sa "{title}" sa iyong account, {email}}one{Na-save ang mga bookmark sa "{title}" sa iyong account, {email}}other{Na-save ang mga bookmark sa "{title}" sa iyong account, {email}}}</translation>
 <translation id="334690320928261823">Mga Kamakailang Tab</translation>
-<translation id="3348387552617855658">Makakatulong sa iyo ang card na ito na masubaybayan ang mga package mo at bibigyan ka nito ng mahahalagang update sa delivery.</translation>
 <translation id="3349031117032695619">I-block ang mga pop-up</translation>
 <translation id="3349676726073650389">Mase-save sa iyong Google Account ang mga site at paghahanap na sinusubaybayan mo. Mapapamahalaan mo ang iyong mga sinusubaybayan sa mga setting anumang oras.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Pinapamahalaan ang account na ito.</translation>

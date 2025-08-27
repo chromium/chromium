@@ -499,7 +499,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3384347053049321195">Del bildet</translation>
 <translation id="3387650086002190359">Nedlastingen av <ph name="FILE_NAME" /> ble avbrutt på grunn av filsystemfeil.</translation>
 <translation id="3414952576877147120">Størrelse:</translation>
-<translation id="3421726884497337397">Velg når informasjonskapsler fra tredjeparter skal blokkeres</translation>
 <translation id="3430670036890315772">Hvis du slår av profillåsen, fjernes den lagrede informasjonen din</translation>
 <translation id="3435465986463792564">Har du mange vinduer? Du kan administrere dem her</translation>
 <translation id="3435575784518354875">For å beholde tilgangen til passordene dine, eksporter dem nå, oppdater Google Play-tjenester, og importer dem til Google Passordlagring igjen. <ph name="BEGIN_LINK" />Se fullstendige instruksjoner.<ph name="END_LINK" /></translation>
@@ -760,7 +759,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 passord er utsatt for sikkerhetsbrudd}other{# passord er utsatt for sikkerhetsbrudd}}</translation>
 <translation id="4641919525231168205">Gå til neste side</translation>
 <translation id="4642472735733036929">Prissporing er stoppet</translation>
-<translation id="4645146721047390964">Når du bruker Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se nettleseraktiviteten din på andre nettsteder, for eksempel for å vise deg personlig tilpassede annonser. Det kan hende at funksjoner på enkelte nettsteder slutter å fungere.</translation>
 <translation id="465657074423018424">Safe Browsing beskytter deg mot villedende nettsteder. Hvis du slår det av, må du være ekstra forsiktig når du surfer, spesielt før du skriver inn passord.</translation>
 <translation id="4662373422909645029">Kallenavnet kan ikke inneholde tall</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> bokmerker ble slettet</translation>
@@ -1220,7 +1218,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6633067410344541938">Lås opp inkognitomodus</translation>
 <translation id="6636623428211296678">Utforsk flere innstillinger nedenfor, eller fullfør nå</translation>
 <translation id="6637100877383020115">For å bidra til å gjøre appen bedre sender Chrome bruks- og krasjrelaterte data til Google. <ph name="BEGIN_UMA_LINK" />Administrer<ph name="END_UMA_LINK" /></translation>
-<translation id="6640207029842583248">Blokkér alltid</translation>
 <translation id="6641780377503683465">Fjern <ph name="INTEREST" /></translation>
 <translation id="6647441008198474441">Nettadresser du besøker, sendes til Google for å forutsi hvilke nettsteder du kanskje kommer til å besøke etterpå</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> til}other{<ph name="CONTACT_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> til}}</translation>
@@ -1232,6 +1229,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6674571176963658787">For å starte synkroniseringen, skriv inn passordfrasen din</translation>
 <translation id="6676927815633975364">Logg på dette nettstedet og Chrome</translation>
 <translation id="6684809838922667136">Gjør Chrome bedre</translation>
+<translation id="6689436252814043643">Lesemodus er ikke tilgjengelig</translation>
 <translation id="6700279777779583398">Valgene er lagret</translation>
 <translation id="670498945988402717">Sjekket i går</translation>
 <translation id="6710213216561001401">Forrige</translation>
@@ -1342,6 +1340,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7111822978084196600">Gi navn til dette vinduet</translation>
 <translation id="7115358764509798967">Systemstandard</translation>
 <translation id="7117485132243600300">Administrer innholdet du følger og foreslåtte emner og søk</translation>
+<translation id="7119984597597798764">Lukk <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Tillatelsene er gjennomgått for 1 nettsted}other{Tillatelsene er gjennomgått for # nettsteder}}</translation>
 <translation id="7138678301420049075">Annet</translation>
 <translation id="7140829094791862589">Sorter manuelt</translation>
@@ -1443,7 +1442,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="751961395872307827">Kan ikke koble til nettstedet</translation>
 <translation id="7523960634226602883">Bruk Google Lens for å søke med kameraet</translation>
 <translation id="7525248386620136756"><ph name="TAB_GROUPS_AND_TABS_PART" /> ble lukket og lagret</translation>
-<translation id="752731652852882757">Blokker mens du bruker Inkognito</translation>
 <translation id="7545347190366646170">Personer med tilgang</translation>
 <translation id="7554643625247105821">Kan ikke sjekke Chrome-versjonen</translation>
 <translation id="7557508262441527045">Logget av</translation>
@@ -1609,7 +1607,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8243077599929149377">Legg til brukernavnet ditt</translation>
 <translation id="8244387390464017490">Tilpass Ny fane-siden</translation>
 <translation id="8250920743982581267">Dokumenter</translation>
-<translation id="8255617931166444521">Nettsteder kan bare bruke informasjonskapslene dine til å se surfeaktiviteten din på sitt eget nettsted</translation>
 <translation id="8258999165172757081">Lagt til</translation>
 <translation id="8259179246279078674">Siden de forhåndslastede sidene er krypterte, får ikke Google vite noe om det forhåndslastede sideinnholdet. Googles tjenere får vite hvilke nettsteder som forhåndslastes privat. Denne informasjonen brukes bare til å forhåndslaste sidene og blir ikke knyttet til annen informasjon i Google-kontoen din.</translation>
 <translation id="8260126382462817229">Prøv å logge på igjen</translation>

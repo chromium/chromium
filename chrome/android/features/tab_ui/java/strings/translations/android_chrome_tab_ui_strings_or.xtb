@@ -28,6 +28,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ଟାବ ଗ୍ରୁପ କରାଯାଇଛି</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଟାବ୍}other{<ph name="TABS_COUNT_MANY" />ଟି ଟାବ୍}}</translation>
 <translation id="1909810060368225529">ନୋଟିସ: ସେୟାର କରାଯାଇଥିବା ଏହି ଟାବ ଗ୍ରୁପରେ ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ସମସ୍ତଙ୍କୁ ଦେଖାଯିବ। ଆପଣଙ୍କର ସେୟାର କରାଯାଇଥିବା ଟାବ ଗ୍ରୁପରେ ସମସ୍ତେ ପରିବର୍ତ୍ତନ କରିପାରିବେ</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{ଟାବ ପିନ କରନ୍ତୁ}other{ଟାବଗୁଡ଼ିକ ପିନ କରନ୍ତୁ}}</translation>
 <translation id="1982637982196732906">ନିଷ୍କ୍ରିୟ ବିଭାଗକୁ ମୁଭ କରନ୍ତୁ</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଚୟନିତ ଟାବକୁ ବୁକମାର୍କ କରନ୍ତୁ}other{<ph name="TABS_COUNT_MANY" />ଟି ଚୟନିତ ଟାବକୁ ବୁକମାର୍କ କରନ୍ତୁ}}</translation>
 <translation id="2055057176188061528">ଟାବ ଗ୍ରୁପ ଚୟନ କରନ୍ତୁ କିମ୍ବା ଏକ ନୂଆ ଟାବ ଗ୍ରୁପ ତିଆରି କରନ୍ତୁ</translation>
@@ -78,6 +79,7 @@
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">ସିଟ ପ୍ରିଭ୍ୟୁ ସେୟାର କରିବାକୁ ଥମ୍ବନେଲ।</translation>
 <translation id="3810973564298564668">ପରିଚାଳନା</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{ଟାବ ଅନପିନ କରନ୍ତୁ}other{ଟାବଗୁଡ଼ିକ ଅନପିନ କରନ୍ତୁ}}</translation>
 <translation id="3940195383040445971">ଟାବଗୁଡ଼ିକରେ ମୂଲ୍ୟଗୁଡ଼ିକୁ ଟ୍ରାକ୍ କରନ୍ତୁ</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ନୂଆ ଟାବ, <ph name="ANY_CLOSED" /> ବନ୍ଦ ଅଛି}other{<ph name="MANY_ADDED" /> ନୂଆ ଟାବ, <ph name="ANY_CLOSED" /> ବନ୍ଦ ଅଛି}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{ଟାବକୁ ଗୋଷ୍ଠୀଭୁକ୍ତ କରନ୍ତୁ}other{ଟାବଗୁଡ଼ିକୁ ଗୋଷ୍ଠୀଭୁକ୍ତ କର}}</translation>
@@ -131,6 +133,7 @@
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ଚୟନିତ ଆଇଟମକୁ ବନ୍ଦ କରନ୍ତୁ}other{<ph name="TABS_COUNT_MANY" /> ଚୟନିତ ଆଇଟମକୁ ବନ୍ଦ କରନ୍ତୁ}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ଗ୍ରୁପକୁ ନୂଆ ୱିଣ୍ଡୋକୁ ମୁଭ କରନ୍ତୁ}other{ଗ୍ରୁପକୁ ଅନ୍ୟ ଏକ ୱିଣ୍ଡୋକୁ ମୁଭ କରନ୍ତୁ}}</translation>
 <translation id="6228793724645064692">(ଷ୍ଟୋର୍ ରେଟିଂ)</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{ଗ୍ରୁପରୁ ଟାବକୁ କାଢ଼ି ଦିଅନ୍ତୁ}other{ଗ୍ରୁପରୁ ଟାବଗୁଡ଼ିକୁ କାଢ଼ି ଦିଅନ୍ତୁ}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{ନୂଆ ଗ୍ରୁପରେ ଟାବ ଯୋଗ କରନ୍ତୁ}other{ନୂଆ ଗ୍ରୁପରେ ଟାବଗୁଡ଼ିକ ଯୋଗ କରନ୍ତୁ}}</translation>
 <translation id="6333260925957816943">ଏହି ଷ୍ଟୋର ବିଷୟରେ ସୂଚନା</translation>
 <translation id="6381032505162537930">ଆପଣ ଆପଣଙ୍କ ଟାବ ଗ୍ରୁପକୁ ଏଠାରେ ପାଇବେ</translation>

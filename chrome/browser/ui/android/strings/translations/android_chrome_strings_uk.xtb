@@ -499,7 +499,6 @@
 <translation id="3384347053049321195">Поділитися зображенням</translation>
 <translation id="3387650086002190359">Файл <ph name="FILE_NAME" /> не завантажено через помилки файлової системи.</translation>
 <translation id="3414952576877147120">Розмір:</translation>
-<translation id="3421726884497337397">Виберіть, коли потрібно блокувати сторонні файли cookie</translation>
 <translation id="3430670036890315772">Якщо вимкнути блокування профілю, збережені дані буде вилучено</translation>
 <translation id="3435465986463792564">Забагато вікон? Можете керувати ними тут</translation>
 <translation id="3435575784518354875">Щоб зберегти доступ до своїх паролів, експортуйте їх зараз, оновіть сервіси Google Play і знову імпортуйте паролі в Google Менеджер паролів. <ph name="BEGIN_LINK" />Переглянути докладні вказівки.<ph name="END_LINK" /></translation>
@@ -760,7 +759,6 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 зламаний пароль}one{# зламаний пароль}few{# зламані паролі}many{# зламаних паролів}other{# зламаного пароля}}</translation>
 <translation id="4641919525231168205">На наступну сторінку</translation>
 <translation id="4642472735733036929">Відстеження ціни зупинено</translation>
-<translation id="4645146721047390964">В анонімному режимі сайти не можуть використовувати файли cookie для перегляду ваших дій у веб-переглядачі, зокрема, щоб персоналізувати рекламу. Функції на деяких сайтах можуть не працювати.</translation>
 <translation id="465657074423018424">Безпечний перегляд захищає вас від оманливих веб-сайтів. Якщо ви вимкнете цю функцію, будьте обережні під час перегляду веб-сторінок, особливо коли вводите паролі.</translation>
 <translation id="4662373422909645029">Не можна додавати цифри</translation>
 <translation id="4663756553811254707">Видалено закладок: <ph name="NUMBER_OF_BOOKMARKS" /></translation>
@@ -1220,7 +1218,6 @@
 <translation id="6633067410344541938">Розблокувати анонімний режим</translation>
 <translation id="6636623428211296678">Перейдіть до інших налаштувань нижче або завершіть перевірку</translation>
 <translation id="6637100877383020115">Щоб покращити додаток, Chrome надсилає дані про використання та збої в Google. <ph name="BEGIN_UMA_LINK" />Керувати<ph name="END_UMA_LINK" /></translation>
-<translation id="6640207029842583248">Блокувати завжди</translation>
 <translation id="6641780377503683465">Вилучити інтерес "<ph name="INTEREST" />"</translation>
 <translation id="6647441008198474441">URL-адреси сторінок, які ви відвідуєте, надсилаються в Google, щоб ми могли передбачити, які сайти ви можете відвідати наступними</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}many{<ph name="CONTACT_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -1232,6 +1229,7 @@
 <translation id="6674571176963658787">Щоб почати синхронізацію, введіть парольну фразу</translation>
 <translation id="6676927815633975364">Увійдіть в обліковий запис на цьому сайті й у Chrome</translation>
 <translation id="6684809838922667136">Покращте Chrome</translation>
+<translation id="6689436252814043643">Режим читання недоступний</translation>
 <translation id="6700279777779583398">Вибрані налаштування збережено</translation>
 <translation id="670498945988402717">Перевірено вчора</translation>
 <translation id="6710213216561001401">Назад</translation>
@@ -1342,6 +1340,7 @@
 <translation id="7111822978084196600">Додайте назву вікна</translation>
 <translation id="7115358764509798967">Налаштування за умовчанням</translation>
 <translation id="7117485132243600300">Керуйте контентом, на який ви підписалися, а також рекомендованими темами й пошуковими запитами</translation>
+<translation id="7119984597597798764">Закрити <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Дозволи перевірено для 1 сайту}one{Дозволи перевірено для # сайту}few{Дозволи перевірено для # сайтів}many{Дозволи перевірено для # сайтів}other{Дозволи перевірено для # сайту}}</translation>
 <translation id="7138678301420049075">Інше</translation>
 <translation id="7140829094791862589">Сортувати вручну</translation>
@@ -1443,7 +1442,6 @@
 <translation id="751961395872307827">Немає з’єднання із сайтом</translation>
 <translation id="7523960634226602883">Пошук за допомогою камери через Google Об’єктив</translation>
 <translation id="7525248386620136756"><ph name="TAB_GROUPS_AND_TABS_PART" /> закрито й збережено</translation>
-<translation id="752731652852882757">Блокувати в анонімному режимі</translation>
 <translation id="7545347190366646170">Користувачі, які мають доступ</translation>
 <translation id="7554643625247105821">Не вдалося перевірити версію Chrome</translation>
 <translation id="7557508262441527045">Ви вийшли</translation>
@@ -1609,7 +1607,6 @@
 <translation id="8243077599929149377">Додайте ім’я користувача</translation>
 <translation id="8244387390464017490">Налаштувати нову вкладку</translation>
 <translation id="8250920743982581267">Документи</translation>
-<translation id="8255617931166444521">Сайти можуть використовувати файли cookie для перегляду ваших дій у веб-переглядачі лише на цих сайтах</translation>
 <translation id="8258999165172757081">Додано</translation>
 <translation id="8259179246279078674">Оскільки попередньо завантажені сторінки зашифровані, Google не зможе проаналізувати їх контент. Сервери Google визначатимуть, які сайти попередньо завантажуються в приватному режимі. Ця інформація використовується лише для попереднього завантаження сторінок і не пов’язується з іншими даними в обліковому записі Google.</translation>
 <translation id="8260126382462817229">Спробуйте ввійти ще раз</translation>

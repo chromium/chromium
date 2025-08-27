@@ -1196,6 +1196,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1805967612549112634">Sahkan PIN</translation>
 <translation id="1806335016774576568">Tukar kepada apl terbuka yang lain</translation>
 <translation id="1807246157184219062">Cahaya</translation>
+<translation id="1808571181382454540">Akses halaman Tetapan</translation>
 <translation id="1808805149659872686">Entri baharu</translation>
 <translation id="1809201888580326312">Anda telah memilih untuk tidak menyimpan kata laluan bagi laman dan apl ini</translation>
 <translation id="1809734401532861917">Tambahkan penanda halaman, sejarah, kata laluan dan tetapan saya yang lain pada <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -4559,7 +4560,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4109135793348361820">Alihkan tetingkap ke <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Pulihkan amaran</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (luar talian)</translation>
-<translation id="4113030288477039509">Diurus oleh pentadbir anda</translation>
 <translation id="4113743276555482284">Kata laluan fail</translation>
 <translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />Apabila Ketepatan Lokasi dihidupkan, maklumat tentang isyarat wayarles, seperti titik akses Wi-Fi dan menara rangkaian selular, bersama dengan data penderia peranti, seperti akselerometer dan giroskop, digunakan untuk menganggarkan lokasi peranti yang lebih tepat, yang digunakan oleh apl dan perkhidmatan Android untuk menyediakan ciri berasaskan lokasi. Untuk berbuat demikian, Google mengumpulkan maklumat secara berkala tentang penderia peranti dan isyarat wayarles berdekatan anda secara berkala untuk menyumbang kepada lokasi isyarat wayarles sumber khalayak.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google menggunakan maklumat ini tanpa mengenal pasti identiti anda untuk: meningkatkan ketepatan lokasi dan perkhidmatan berasaskan lokasi; dan secara amnya meningkatkan, menyediakan dan mengekalkan perkhidmatan Google. Kami memproses maklumat ini berdasarkan kepentingan sah Google dan pihak ketiga untuk memenuhi keperluan pengguna.<ph name="END_PARAGRAPH2" />
@@ -5010,7 +5010,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="443196770280837407">Buka Gemini dengan pintasan papan kekunci.</translation>
 <translation id="4432621511648257259">Kata laluan salah</translation>
 <translation id="4434611816075088065">Tiada perkara lain yang memerlukan perhatian anda sekarang</translation>
-<translation id="443475966875174318">Kemas kini atau alih keluar aplikasi yang tidak serasi</translation>
 <translation id="443503224864902151">Mengelog keluar anda dari kebanyakan laman. Anda akan kekal dilog masuk ke Google Account supaya data anda yang disegerakkan dapat dipadamkan.</translation>
 <translation id="4437879751057074691">Tawarkan untuk menyimpan kata laluan dan kunci laluan</translation>
 <translation id="4437947179446780764">Tambahkan penyedia perkhidmatan DNS tersuai</translation>
@@ -5424,7 +5423,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4742334355511750246">Tidak dibenarkan untuk memaparkan imej</translation>
 <translation id="4742795653798179840">Data Chrome yang dipadamkan</translation>
 <translation id="4742970037960872810">Alih keluar serlahan</translation>
-<translation id="4743260470722568160"><ph name="BEGIN_LINK" />Ketahui cara mengemas kini aplikasi<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">Dibenarkan – <ph name="PERMISSION_DETAILS" />. Hidupkan <ph name="LINK_BEGIN" />akses mikrofon sistem<ph name="LINK_END" />.</translation>
 <translation id="4744260496658845719">Kecerahan cahaya latar papan kekunci</translation>
 <translation id="4744268813103118742">Pergi ke Laman</translation>
@@ -7170,7 +7168,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5989497858237037960">Semasa anda menyemak imbas laman, kandungan halaman bagi laman tersebut disulitkan dan disimpan pada peranti anda. Hal ini boleh menjejaskan prestasi Chrome</translation>
 <translation id="5990266201903445068">Wi-Fi sahaja</translation>
 <translation id="5990386583461751448">Diterjemahkan</translation>
-<translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Untuk memastikan anda boleh terus melayari web, minta pentadbir anda mengalih keluar aplikasi ini.}other{Untuk memastikan anda boleh terus melayari web, minta pentadbir anda mengalih keluar aplikasi ini.}}</translation>
 <translation id="5992225669837656567">Semua tetikus telah diputuskan sambungan</translation>
 <translation id="5992652489368666106">Tiada sempadan</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Semakan lengkap untuk 1 laman}other{Semakan lengkap untuk {NUM_SITES} laman}}</translation>
@@ -8661,7 +8658,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7039951224110875196">Buat Google Account untuk anak</translation>
 <translation id="7039968672732182060">Chromebook anda tidak menerima kemaskinian keselamatan lagi. Masa untuk meningkatkan Chromebook dan mendapatkan keselamatan serta perisian terkini. Syarat tawaran dikenakan.</translation>
 <translation id="7042116641003232070">Dibenarkan menyimpan data pada peranti anda</translation>
-<translation id="7043108582968290193">Selesai! Tiada aplikasi tidak serasi ditemui.</translation>
 <translation id="7044124535091449260">Ketahui lebih lanjut tentang akses tapak</translation>
 <translation id="7044207729381622209">Anda akan dilog keluar daripada laman ini, termasuk dalam tab yang terbuka</translation>
 <translation id="7044211973375150246">Satu apl ditetapkan untuk membuka pautan yang sama sebagai <ph name="APP_NAME" />. Tindakan ini akan melumpuhkan <ph name="APP_NAME_2" /> daripada membuka pautan yang disokong.</translation>
@@ -8997,7 +8993,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">Animasi</translation>
 <translation id="7301812050652048720">Kunci laluan dipadamkan</translation>
-<translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Aplikasi ini boleh menghalang Chrome daripada berfungsi dengan betul.}other{Aplikasi ini boleh menghalang Chrome daripada berfungsi dengan betul.}}</translation>
 <translation id="7303281435234579599">Op! Kesilapan telah berlaku semasa menyediakan mod tunjuk cara.</translation>
 <translation id="7303485269821975179">Sediakan kata laluan <ph name="DEVICE_TYPE" /></translation>
 <translation id="7303900363563182677">Tapak ini telah disekat daripada melihat teks dan imej yang disalin ke papan keratan</translation>
@@ -11887,7 +11882,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="962802172452141067">Pohon folder penanda halaman</translation>
 <translation id="963000966785016697">Cari Imej dengan <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Pentadbir IT anda telah melumpuhkan Cenderahati Chrome untuk peranti anda.</translation>
-<translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Aplikasi}other{Aplikasi}}</translation>
 <translation id="964790508619473209">Susunan skrin</translation>
 <translation id="96535553604365597">Laporkan isu berkaitan Google Cast</translation>
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Semak 1 laman yang menghantar banyak pemberitahuan baru-baru ini}other{Semak {NUM_SITES} laman yang menghantar banyak pemberitahuan baru-baru ini}}</translation>

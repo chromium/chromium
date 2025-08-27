@@ -440,6 +440,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="1719838434204287058">Inchi 24 x 30</translation>
 <translation id="1720941539803966190">Funga mafunzo</translation>
 <translation id="1721424275792716183">* Unahitaji kujaza sehemu hii</translation>
+<translation id="1723636263173393300">Sera hii haipaswi kuwa na zaidi ya njia <ph name="MAX_ITEMS_LIMIT" /> za mkato.</translation>
 <translation id="1725591448053514783">Bahasha ya muundo wa You ya ukubwa wa 6</translation>
 <translation id="1727613060316725209">Cheti ni sahihi</translation>
 <translation id="1728677426644403582">Unaangalia chanzo cha ukurasa wa wavuti</translation>
@@ -1047,6 +1048,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="271663710482723385">Bonyeza |<ph name="ACCELERATOR1" />| + | <ph name="ACCELERATOR2" /> | ili uondoke kwenye skrini nzima</translation>
 <translation id="2717336592027046789">Kifurushi cha karatasi</translation>
 <translation id="2718207025093645426">Mtumiaji au kifaa kinachodhibitiwa hakina sera iliyopakiwa.</translation>
+<translation id="2719233594187778789">URL isiyo ya kipekee iliyopuuzwa: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Ombi limefanikiwa</translation>
 <translation id="2722622039067384533">Samani za Sebuleni</translation>
 <translation id="2723669454293168317">Fanya ukaguzi wa usalama katika mipangilio ya Chrome</translation>
@@ -2007,6 +2009,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4298000214066716287">Uwekezaji</translation>
 <translation id="4298148761711700950">Lipa papo hapo bila kupakia QR</translation>
 <translation id="4298925811540301889">Vidakuzi kwenye tovuti hii vimesawazishwa kwenye vifaa vyako vinavyotumia mfumo wa uendeshaji wa ChromeOS. Ili udhibiti unachosawazisha, nenda kwenye <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4299919199185766032">Jina la njia ya mkato linazidi urefu wa juu unaoruhusiwa wa herufi <ph name="MAX_LENGTH" />.</translation>
 <translation id="4300272766492248925">Fungua programu</translation>
 <translation id="4300675098767811073">Toboa mara kadhaa kulia</translation>
 <translation id="4302514097724775343">Gusa dinosau ili ucheze</translation>
@@ -2708,6 +2711,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
     Jaribu kuwasiliana na msimamizi wa mfumo wako.</translation>
 <translation id="5496804587179176046">Hifadhi misimbo ya usalama, hakuna misimbo ya usalama iliyohifadhiwa kwa sasa</translation>
 <translation id="550365051221576010">Jaza kila kitu</translation>
+<translation id="5506286895894263601">Orodha haina njia sahihi za mkato.</translation>
 <translation id="5508443345185481044">Kamera na Kamkoda</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Alamisho zinazosimamiwa</translation>
@@ -3627,6 +3631,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7014741021609395734">Kiwango cha ukuzaji</translation>
 <translation id="7016992613359344582">Gharama hizi zinaweza kuwa za mara moja au za kujirudia na huenda zisiwe za moja kwa moja.</translation>
 <translation id="701757816833614688">Sanaa ya Picha na Elimu ya Usanifu</translation>
+<translation id="7020464868401003526">URL ya njia ya mkato inazidi urefu wa juu unaoruhusiwa wa herufi <ph name="MAX_LENGTH" />.</translation>
 <translation id="702275896380648118">Tovuti hii hubainisha mambo unayopendelea na kisha hupendekeza matangazo kwenye tovuti zingine. Tovuti hii pia hupata mada zako za matangazo kutoka kwenye Chrome ili kukuonyesha matangazo yanayokufaa zaidi.</translation>
 <translation id="7023162328967545559">Onyo la msimamizi</translation>
 <translation id="7023765275461720661">Unganisha akaunti na ulipe ukitumia <ph name="BNPL_ISSUER_NAME" />?</translation>

@@ -82,6 +82,7 @@
 <translation id="2008474315282236005">Dette sletter 1 element fra denne enheten. For å hente dataene dine igjen senere må du logge på Chromium som <ph name="USER_EMAIL" />.</translation>
 <translation id="2018879682492276940">Installasjonen mislyktes. Prøv igjen.</translation>
 <translation id="2020032459870799438">For å sjekke om de andre passordene dine er trygge mot databrudd og andre sikkerhetsproblemer, <ph name="BEGIN_LINK" />logg på Chromium<ph name="END_LINK" />.</translation>
+<translation id="2039417478970545937">Innstillinger.</translation>
 <translation id="2049376729098081731">Velg om Chromium-loggen skal inkluderes for å gi opplevelser i Google-tjenester mer personlig preg</translation>
 <translation id="2054039611381840095">For å få fremtidige Chromium-oppdateringer må du ha macOS 12 eller nyere. Denne datamaskinen bruker macOS 11.</translation>
 <translation id="2086476982681781442">Chromium har blokkert denne nedlastingen fordi filen er villedende og kan gjøre uventede endringer på enheten din</translation>
@@ -314,6 +315,7 @@
 <translation id="5123973130450702873">Chromium trenger tillatelse til å spore hendene dine</translation>
 <translation id="5141988424377517949">Du har ikke vært her i det siste. Chromium har fjernet <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="PERMISSION_3" />.</translation>
 <translation id="5174969993834422967">Du blokkerer vanligvis varsler. For å la dette nettstedet sende deg varsler, klikk på varselikonet i høyre hjørne av adressefeltet.</translation>
+<translation id="5174983315706567306">Det er for lite diskplass.</translation>
 <translation id="5187123684706427865">Chromium-kontoen krever ny autentisering</translation>
 <translation id="5224391634244552924">Ingen lagrede passord. Chromium kan sjekke passordene dine når du lagrer dem.</translation>
 <translation id="5231355151045086930">Vil du logge av Chromium?</translation>
@@ -441,6 +443,7 @@
 <translation id="6598877126913850652">Gå til innstillinger for Chromium-varsler</translation>
 <translation id="6600016381025017075">Søk etter hva som helst på denne siden</translation>
 <translation id="6613594504749178791">Endringene dine trer i kraft neste gang du starter Chromium.</translation>
+<translation id="6648212540664651655">Fortsett der du avsluttet: Chromium har gjenopprettet fanene dine fra den forrige økten. Du kan slå av dette i</translation>
 <translation id="665732753414869868">Chromium trenger kameratillatelse for å lage et 3D-kart av omgivelsene dine</translation>
 <translation id="6669284030132180248">Hvis du også lagrer bokmerkene i Google-kontoen din, kan du spore produktpriser i Chromium og bli varslet om avslag</translation>
 <translation id="6676384891291319759">Gå til Internett</translation>
@@ -505,6 +508,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="7352651011704765696">Noe gikk galt</translation>
 <translation id="7376384068949534168">Du har ikke vært her i det siste. Chromium har fjernet <ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" />.</translation>
 <translation id="7384121030444253939">Denne utvidelsen støttes ikke lenger. Chromium anbefaler at du fjerner den i stedet.</translation>
+<translation id="7413153308467572558">Fortsett der du avsluttet: Chromium gjenoppretter fanene dine hver gang du starter på nytt. For å slå av dette, gå til</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium for utviklere</translation>
 <translation id="7450541714075000668">Teksten er kopiert</translation>
 <translation id="7451052299415159299">Chromium trenger tilgang til kameraet ditt for dette nettstedet</translation>
@@ -636,6 +640,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="911206726377975832">Vil du slette all nettlesingsdata også?</translation>
 <translation id="9134482777260927479">Leksehjelp</translation>
 <translation id="9148058034647219655">Avslutt</translation>
+<translation id="9155105544013854680">Fortsett der du avsluttet: Chromium kan gjenopprette fanene dine hver gang du starter på nytt. For å slå på dette, gå til</translation>
 <translation id="9158494823179993217">Systemadministratoren din har konfigurert Chromium til å åpne en annen nettleser når du går til <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Start på nytt for å oppdatere &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-Inn)</translation>

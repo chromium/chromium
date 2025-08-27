@@ -25,6 +25,7 @@
 <translation id="129382876167171263">ไฟล์ที่เว็บไซต์บันทึกไว้จะปรากฏที่นี่</translation>
 <translation id="131112695174432497">ระบบจะลบข้อมูลที่มีผลต่อการปรับโฆษณาตามโปรไฟล์ของผู้ใช้</translation>
 <translation id="1317194122196776028">เลิกจำเว็บไซต์นี้</translation>
+<translation id="1321110954513621549">อนุญาต • โดยประมาณ</translation>
 <translation id="1323433172918577554">แสดงเพิ่มเติม</translation>
 <translation id="1333965224356556482">ไม่อนุญาตให้เว็บไซต์ดูตำแหน่งของคุณ</translation>
 <translation id="1343356790768851700">เว็บไซต์นี้จะระบุสิ่งที่คุณชื่นชอบแล้วแนะนําโฆษณาในเว็บไซต์อื่น</translation>
@@ -40,6 +41,7 @@
 <translation id="1448064542941920355">ลดการซูม</translation>
 <translation id="1464044141348608623">ไม่อนุญาตให้เว็บไซต์ทราบเวลาที่คุณใช้งานอุปกรณ์อยู่</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> เว็บไซต์}other{<ph name="SITE_COUNT" /> เว็บไซต์}}</translation>
+<translation id="1476700086976862423">ธีมสีซีเปีย</translation>
 <translation id="1500473259453106018">ซ่อนการ์ด "ดูราคาที่ต่ำลงได้ในแท็บ"</translation>
 <translation id="1508931164824684991">เว็บไซต์ใช้ JavaScript ได้</translation>
 <translation id="1510341833810331442">ไม่อนุญาตให้เว็บไซต์บันทึกข้อมูลในอุปกรณ์ของคุณ</translation>
@@ -71,6 +73,7 @@
 <translation id="1799920918471566157">เคล็ดลับในการใช้ Chrome</translation>
 <translation id="1816835383954230954">เมื่อเปิดใช้ Chrome จะทำงานได้เร็วขึ้นและฟีเจอร์ที่ใช้ JavaScript ควรทำงานตามที่ออกแบบไว้ เมื่อปิดใช้ ตัวเลือกนี้จะลดประสิทธิภาพแต่ทำให้ V8 ต้านทานการโจมตีได้มากขึ้น</translation>
 <translation id="1818308510395330587">หากต้องการอนุญาตให้ <ph name="APP_NAME" /> ใช้ AR ให้เปิดใช้กล้องใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /> ด้วย</translation>
+<translation id="1848033246551405023">แบบอักษร Sans Serif</translation>
 <translation id="1881806992065048905">Bottom Sheet ลักษณะที่ปรากฏของหน้าแท็บใหม่</translation>
 <translation id="1887786770086287077">ตอนนี้ตำแหน่งสำหรับอุปกรณ์เครื่องนี้ปิดอยู่ เปิดตำแหน่งได้ใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /></translation>
 <translation id="1906181697255754968">โดยปกติแล้วเว็บไซต์จะเข้าถึงไฟล์และโฟลเดอร์ในอุปกรณ์ของคุณเพื่อดำเนินการตามฟีเจอร์ต่างๆ เช่น การบันทึกงานให้คุณโดยอัตโนมัติ</translation>
@@ -92,6 +95,7 @@
 <translation id="2079545284768500474">เลิกทำ</translation>
 <translation id="2080070583977670716">การตั้งค่าเพิ่มเติม</translation>
 <translation id="2091887806945687916">เสียง</translation>
+<translation id="2094208275686143364">ธีมสีสว่าง</translation>
 <translation id="2096716221239095980">ลบข้อมูลทั้งหมด</translation>
 <translation id="2102396546234652240">ไม่อนุญาตให้เว็บไซต์ใช้ไมโครโฟนของคุณ</translation>
 <translation id="2117655453726830283">สไลด์ถัดไป</translation>
@@ -137,6 +141,7 @@
 <translation id="2498359688066513246">ความช่วยเหลือและความคิดเห็น</translation>
 <translation id="2501278716633472235">ย้อนกลับ</translation>
 <translation id="2533138527374486328">เมื่อเปิด เว็บไซต์จะขอเชื่อมต่อกับอุปกรณ์ในเครือข่ายภายในของคุณได้ เมื่อปิด เว็บไซต์จะเชื่อมต่อกับอุปกรณ์ในเครือข่ายภายในของคุณไม่ได้</translation>
+<translation id="2544997614631598250">ธีมสีมืด</translation>
 <translation id="2546283357679194313">คุกกี้และข้อมูลเว็บไซต์</translation>
 <translation id="2570922361219980984">การเข้าถึงตำแหน่งสำหรับอุปกรณ์เครื่องนี้ปิดอยู่ เปิดการเข้าถึงได้ใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /></translation>
 <translation id="257931822824936280">ขยาย - คลิกเพื่อยุบ</translation>
@@ -194,6 +199,7 @@
 <translation id="3165022941318558018">อนุญาตให้เว็บไซต์ใช้คุกกี้ของบุคคลที่สาม</translation>
 <translation id="3167868116600277716">ฟีดสำรวจ</translation>
 <translation id="3198916472715691905">ข้อมูลที่จัดเก็บ <ph name="STORAGE_AMOUNT" /></translation>
+<translation id="3199078925536734975">อนุญาตในครั้งนี้ • โดยประมาณ</translation>
 <translation id="321187648315454507">หากต้องการอนุญาตให้ <ph name="APP_NAME" /> ส่งการแจ้งเตือนให้คุณ ให้เปิดใช้การแจ้งเตือนใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /> ด้วย</translation>
 <translation id="3223425961342298674">ไม่อนุญาตให้เข้าถึงตําแหน่ง</translation>
 <translation id="3227137524299004712">ไมโครโฟน</translation>
@@ -250,6 +256,7 @@
 <translation id="3803367742635802571">เว็บไซต์ที่คุณเข้าชมอาจหยุดทำงานตามการตั้งค่า</translation>
 <translation id="3816118180265633665">สีของ Chrome</translation>
 <translation id="381841723434055211">หมายเลขโทรศัพท์</translation>
+<translation id="3823453485268218808">แบบอักษร Mono</translation>
 <translation id="3826050100957962900">การลงชื่อเข้าใช้ของบุคคลที่สาม</translation>
 <translation id="3835233591525155343">การใช้งานอุปกรณ์ของคุณ</translation>
 <translation id="3843916486309149084">Chrome จะบล็อกคุกกี้อีกครั้งในวันนี้</translation>
@@ -302,6 +309,7 @@
 <translation id="4402755511846832236">บล็อกเว็บไซต์ไม่ให้ทราบเวลาที่คุณใช้งานอุปกรณ์นี้อยู่</translation>
 <translation id="4412992751769744546">อนุญาตคุกกี้ของบุคคลที่สาม</translation>
 <translation id="4419929467120297501">Chrome บล็อกเว็บไซต์ไม่ให้ใช้คุกกี้ของบุคคลที่สามเพื่อติดตามคุณในขณะที่ท่องเว็บ ไปที่การตั้งค่าเพื่อ<ph name="BEGIN_LINK" />จัดการการเข้าถึงคุกกี้ของบุคคลที่สาม<ph name="END_LINK" /></translation>
+<translation id="4425416282877905577">แบบอักษร Serif</translation>
 <translation id="443121186588148776">พอร์ตอนุกรม</translation>
 <translation id="4434045419905280838">ป๊อปอัปและการเปลี่ยนเส้นทาง</translation>
 <translation id="443552056913301231">การดำเนินการนี้จะลบข้อมูลในเครื่องและคุกกี้ทั้งหมด รวมถึงรีเซ็ตสิทธิ์ทั้งหมดสำหรับ <ph name="ORIGIN" /></translation>
@@ -554,6 +562,7 @@
 <translation id="7478658909253570368">ไม่อนุญาตให้เว็บไซต์เชื่อมต่อกับพอร์ตอนุกรม</translation>
 <translation id="7488573225650545859">ซ่อน "แท็บดู" ในรายการแอป</translation>
 <translation id="7521387064766892559">JavaScript</translation>
+<translation id="7538975533793429503">แถบเลื่อนขนาดแบบอักษร</translation>
 <translation id="7547989957535180761">เมื่อเปิด เว็บไซต์จะแสดงข้อความแจ้งให้ลงชื่อเข้าใช้ได้ เมื่อปิด เว็บไซต์จะแสดงข้อความแจ้งให้ลงชื่อเข้าใช้ไม่ได้</translation>
 <translation id="7553211568594248088">ออกจากการค้นหาในฮับ</translation>
 <translation id="7554752735887601236">มีเว็บไซต์กำลังใช้ไมโครโฟน</translation>

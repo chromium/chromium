@@ -21,6 +21,7 @@
 <translation id="1072476005125066234">Kiinnostuksen kohteisiisi perustuvat arvostelut</translation>
 <translation id="1074827084851510304">Olet poistamassa {password_count} salasanaa ja listan sivustoista ja sovelluksista, joiden sisäänkirjautumistietoja et halua tallentaa. Sivustoille ja sovelluksille luomiasi tilejä ei poisteta.</translation>
 <translation id="1076421457278169141">Koodi skannattiin.</translation>
+<translation id="1081114897601629648">Seuraavia salasanoja ei tuotu Google Salasanoihin, koska ne eivät täytä vaatimuksia.</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} välilehti}other{{count} välilehteä}}</translation>
 <translation id="1082554859195167538">Tuotearvostelut</translation>
 <translation id="1084365883616172403">Facebook-viesti julkaistu.</translation>
@@ -599,7 +600,6 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="333229797575847124">Näin otat ominaisuuden käyttöön</translation>
 <translation id="3344485292736684439">{count,plural, =1{Kirjanmerkki tallennettu tilillesi: {title}, {email}}other{Kirjanmerkit tallennettu tilillesi: {title}, {email}}}</translation>
 <translation id="334690320928261823">Viimeaikaiset välilehdet</translation>
-<translation id="3348387552617855658">Tämän kortin avulla voit seurata pakettejasi ja saada tärkeitä toimitusilmoituksia.</translation>
 <translation id="3349031117032695619">Estä ponnahdusikkunat</translation>
 <translation id="3349676726073650389">Seuraamasi sivustot ja haut tallennetaan Google-tilillesi. Voit muuttaa seuraamiasi kohteita milloin tahansa asetuksissa.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Tämä on hallinnoitu tili</translation>

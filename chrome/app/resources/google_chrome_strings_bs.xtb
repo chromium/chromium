@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bs">
 <translation id="1001534784610492198">Arhiva za instalaciju je oštećena ili nevažeća. Ponovo preuzmite Google Chrome.</translation>
-<translation id="1006034097353797313">Nastavite gdje ste stali: Chrome vraća kartice svaki put kada ponovo počnete. Da isključite ovo, idite u</translation>
+<translation id="1006034097353797313">Nastavite gdje ste stali: Chrome vraća kartice svaki put kada ga ponovo pokrenete. Da isključite ovo, idite u</translation>
 <translation id="1018937009655463387">Da podijelite prozor, dozvolite snimanje ekrana za Chrome u Postavkama sistema.</translation>
 <translation id="1026101648481255140">Nastavi instalaciju</translation>
 <translation id="102763973188675173">Prilagodite i kontrolirajte Google Chrome. Dostupno je ažuriranje.</translation>
@@ -465,7 +465,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6520670145826811516">Da koristite lokaciju, odobrite Chromeu pristup u <ph name="BEGIN_LINK" />postavkama sistema<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">U Googleovom Upravitelju lozinki na ovom uređaju</translation>
-<translation id="6631524303639368205">Nastavite gdje ste stali: Chrome vraća kartice iz posljednje sesije. Da isključite ovo, idite u</translation>
+<translation id="6631524303639368205">Nastavite gdje ste stali: Chrome je vratio kartice iz posljednje sesije. Da isključite ovo, idite u</translation>
 <translation id="6632473616050862500">ChromeOS Flex je moguć zahvaljujući dodatnom <ph name="BEGIN_LINK_CROS_OSS" />softveru otvorenog koda<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6634299872736643004">Promjene postavke će se primijeniti čim se Chrome ponovo pokrene.</translation>
 <translation id="6660596345553328257">Prijaviti se u Chrome?</translation>
@@ -573,7 +573,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="7825851276765848807">Instalacija nije uspjela zbog neodređene greške. Ponovo preuzmite Google Chrome.</translation>
 <translation id="7827099906024714326">Da se podaci mogu sačuvati na Google računu i koristiti na svim vašim uređajima, Chrome mora potvrditi vaš identitet. Ako se sada odjavite, ovi podaci će se izbrisati.</translation>
 <translation id="7845233973568007926">Hvala što ste instalirali. Morate ponovo instalirati računar prije nego što možete koristiti <ph name="BUNDLE_NAME" />.</translation>
-<translation id="7849037457735762883">Nastavite gdje ste stali: Chrome može vratiti kartice svaki put kada ponovo počnete. Da uključite ovo, idite u</translation>
+<translation id="7849037457735762883">Nastavite gdje ste stali: Chrome može vratiti kartice svaki put kada ga ponovo pokrenete. Da uključite ovo, idite u</translation>
 <translation id="7872446069773932638">Preuzimanje… Preostalo je <ph name="SECONDS" /> s</translation>
 <translation id="7886087451482920026">Odaberite tekst putem Google Objektiva</translation>
 <translation id="7890208801193284374">Ako dijelite računar, prijatelji i porodica mogu odvojeno pretraživati i postaviti Chrome na način koji njima odgovara.</translation>
@@ -652,7 +652,6 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="8781673607513845160">Da koristite kameru, odobrite Chromeu pristup u <ph name="BEGIN_LINK" />postavkama sistema<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Greška prilikom instaliranja: administrator mreže je primijenio pravila grupe koja sprečavaju instalaciju: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8798550110818026746">Vaša organizacija može vidjeti podatke o pregledanju kao što su oznake, historija i lozinke te upravljati njima. Ne može vidjeti podatke o pregledanju na drugim Chrome profilima</translation>
-<translation id="880560872634367429">Potvrda preuzimanja…</translation>
 <translation id="8821043148920470810">Da primate buduća ažuriranja za Google Chrome, trebat će vam Windows 10 ili novija verzija. Računar koristi Windows 7.</translation>
 <translation id="8823341990149967727">Chrome je zastario</translation>
 <translation id="8825634023950448068">Da zaštitimo vašu privatnost, automatski brišemo interesovanja koja su starija od 4 sedmice. Kada nastavite koristiti preglednik, interesovanje se može ponovo pojaviti na listi. Ako Chrome pogriješi ili ako ne želite gledati određene oglase, možete ukloniti interesovanje.</translation>

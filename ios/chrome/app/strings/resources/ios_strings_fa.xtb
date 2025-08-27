@@ -242,6 +242,7 @@
 <translation id="1902277226107477495">تشخیص نشانی غیرفعال شد. برای فعال کردن دوباره آن به «تنظیمات» بروید.</translation>
 <translation id="1904580727789512086">‏نشانی‌های وبی که بازدید می‌کنید در «حساب Google» شما ذخیره می‌شوند</translation>
 <translation id="1911619930368729126">‏بارگذاری در Google Drive</translation>
+<translation id="1925706052394657380">‏تنظیمات <ph name="BEGIN_BOLD" />Default Apps (برنامه‌های پیش‌فرض)<ph name="END_BOLD" /> را در iOS باز کنید</translation>
 <translation id="1941314575388338491">برای کپی کردن دو ضربه سریع بزنید.</translation>
 <translation id="1943478190258551035">تنظیمات ← منو</translation>
 <translation id="1952728750904661634">ورود به سیستم با حساب مدیریت‌شده</translation>
@@ -251,6 +252,7 @@
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> گذرواژه‌ای برای <ph name="WEBSITE" /> با شما هم‌رسانی کرده است</translation>
 <translation id="1962969542251276847">صفحه قفل</translation>
 <translation id="1963976881984600709">محافظت استاندارد</translation>
+<translation id="1964507856799750384">‏روی <ph name="BEGIN_BOLD" />Browser App (برنامه مرورگر)<ph name="END_BOLD" /> تک‌ضرب بزنید</translation>
 <translation id="1966313166384086081">داده‌های سایت</translation>
 <translation id="1967461193809857427">{count,plural, =1{‏می‌خواهید ادامه کار ناتمامتان در برگه Android را انجام دهید؟}one{‏می‌خواهید ادامه کار ناتمامتان در برگه‌های Android را انجام دهید؟}other{‏می‌خواهید ادامه کار ناتمامتان در برگه‌های Android را انجام دهید؟}}</translation>
 <translation id="1972325230031091483">سریع‌تر مرور خواهید کرد چون محتوا به‌صورت پیش‌نگرانه براساس بازدید صفحه وب فعلی‌تان بار می‌شود</translation>
@@ -600,7 +602,6 @@
 <translation id="333229797575847124">نحوه فعال کردن این ویژگی</translation>
 <translation id="3344485292736684439">{count,plural, =1{نشانک در «{title}» در حساب شما ({email}) ذخیره شد}one{نشانک در «{title}» در حساب شما ({email}) ذخیره شد}other{نشانک‌ها در «{title}» در حساب شما ({email}) ذخیره شد}}</translation>
 <translation id="334690320928261823">زبانه‌های اخیر</translation>
-<translation id="3348387552617855658">این کارت به شما کمک می‌کند بسته‌های پستی را پیگیری کنید و اخبار مهم تحویل را به شما ارائه می‌دهد.</translation>
 <translation id="3349031117032695619">مسدود کردن بالاپرها</translation>
 <translation id="3349676726073650389">‏سایت‌ها و جستجوهایی که دنبال می‌کنید در «حساب Google» شما ذخیره می‌شوند. هرزمان خواستید می‌توانید مواردی را که دنبال می‌کنید در تنظیمات مدیریت کنید.</translation>
 <translation id="3353037916374303415">‫<ph name="EMAIL" />. این حساب تحت‌مدیریت است.</translation>

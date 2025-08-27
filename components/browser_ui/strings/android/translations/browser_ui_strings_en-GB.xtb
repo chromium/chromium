@@ -25,6 +25,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="129382876167171263">Files saved by websites appear here</translation>
 <translation id="131112695174432497">Data that affects Ad Personalisation is deleted</translation>
 <translation id="1317194122196776028">Forget this site</translation>
+<translation id="1321110954513621549">Allowed • Approximate</translation>
 <translation id="1323433172918577554">Show More</translation>
 <translation id="1333965224356556482">Don't allow sites to see your location</translation>
 <translation id="1343356790768851700">This site determines things that you like and then suggests ads to other sites</translation>
@@ -40,6 +41,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="1448064542941920355">Decrease zoom</translation>
 <translation id="1464044141348608623">Don't allow sites to know when you're actively using your device</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
+<translation id="1476700086976862423">Theme colour sepia</translation>
 <translation id="1500473259453106018">Hide price drops on tabs card</translation>
 <translation id="1508931164824684991">Sites can use JavaScript</translation>
 <translation id="1510341833810331442">Sites aren't allowed to save data on your device</translation>
@@ -71,6 +73,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="1799920918471566157">Chrome tips</translation>
 <translation id="1816835383954230954">When on, Chrome runs faster and features that use JavaScript should work as designed. When off, this reduces performance but makes V8 more resistant to attacks.</translation>
 <translation id="1818308510395330587">To let <ph name="APP_NAME" /> use AR, also turn on camera in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
+<translation id="1848033246551405023">Font Sans Serif</translation>
 <translation id="1881806992065048905">New tab page appearance bottom sheet</translation>
 <translation id="1887786770086287077">Location access is off for this device. Turn it on in <ph name="BEGIN_LINK" />Android Settings<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Sites usually access files and folders on your device for features like automatically saving your work</translation>
@@ -92,6 +95,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="2079545284768500474">Undo</translation>
 <translation id="2080070583977670716">More settings</translation>
 <translation id="2091887806945687916">Sound</translation>
+<translation id="2094208275686143364">Theme colour light</translation>
 <translation id="2096716221239095980">Delete all data</translation>
 <translation id="2102396546234652240">Don't allow sites to use your microphone</translation>
 <translation id="2117655453726830283">Next slide</translation>
@@ -137,6 +141,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="2498359688066513246">Help and feedback</translation>
 <translation id="2501278716633472235">Go back</translation>
 <translation id="2533138527374486328">When on, sites can ask to connect to any device on your local network. When off, sites can't connect to devices on your local network.</translation>
+<translation id="2544997614631598250">Theme colour dark</translation>
 <translation id="2546283357679194313">Cookies and site data</translation>
 <translation id="2570922361219980984">Location access is also off for this device. Turn it on in <ph name="BEGIN_LINK" />Android Settings<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Expanded – click to collapse.</translation>
@@ -194,6 +199,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="3165022941318558018">Allow a site to use third-party cookies</translation>
 <translation id="3167868116600277716">Discover feed</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> stored data</translation>
+<translation id="3199078925536734975">Allowed this time • Approximate</translation>
 <translation id="321187648315454507">To let <ph name="APP_NAME" /> send you notifications, also turn on notifications in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Location not allowed</translation>
 <translation id="3227137524299004712">Microphone</translation>
@@ -250,6 +256,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="3803367742635802571">Sites that you visit may stop working as designed</translation>
 <translation id="3816118180265633665">Chrome colours</translation>
 <translation id="381841723434055211">Phone numbers</translation>
+<translation id="3823453485268218808">Font Mono</translation>
 <translation id="3826050100957962900">Third-party sign-in</translation>
 <translation id="3835233591525155343">Your device use</translation>
 <translation id="3843916486309149084">Chrome will block cookies again today</translation>
@@ -302,6 +309,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="4402755511846832236">Block sites from knowing when you're actively using this device</translation>
 <translation id="4412992751769744546">Allow third-party cookies</translation>
 <translation id="4419929467120297501">Chrome blocks sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK" />manage access to third-party cookies<ph name="END_LINK" />.</translation>
+<translation id="4425416282877905577">Font Serif</translation>
 <translation id="443121186588148776">Serial port</translation>
 <translation id="4434045419905280838">Pop-ups and redirects</translation>
 <translation id="443552056913301231">This action will delete all local data, including cookies, and reset all permissions for <ph name="ORIGIN" /></translation>
@@ -554,6 +562,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="7478658909253570368">Don't allow sites to connect to serial ports</translation>
 <translation id="7488573225650545859">Hide View tabs in your app list</translation>
 <translation id="7521387064766892559">JavaScript</translation>
+<translation id="7538975533793429503">Font size slider</translation>
 <translation id="7547989957535180761">When on, sites can show sign-in prompts. When off, sites can't show sign-in prompts.</translation>
 <translation id="7553211568594248088">Exit hub search</translation>
 <translation id="7554752735887601236">A site is using your microphone</translation>

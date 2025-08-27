@@ -25,6 +25,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="129382876167171263">File yang disimpan situs muncul di sini</translation>
 <translation id="131112695174432497">Data yang memengaruhi personalisasi iklan dihapus</translation>
 <translation id="1317194122196776028">Lupakan situs ini</translation>
+<translation id="1321110954513621549">Diizinkan • Perkiraan</translation>
 <translation id="1323433172918577554">Tampilkan Lebih Banyak</translation>
 <translation id="1333965224356556482">Jangan izinkan situs melihat lokasi Anda</translation>
 <translation id="1343356790768851700">Situs ini menentukan hal-hal yang Anda sukai, lalu menyarankan iklan ke situs lain</translation>
@@ -40,6 +41,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="1448064542941920355">Kurangi zoom</translation>
 <translation id="1464044141348608623">Jangan izinkan situs mengetahui saat Anda aktif menggunakan perangkat</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> situs}other{<ph name="SITE_COUNT" /> situs}}</translation>
+<translation id="1476700086976862423">Warna tema sepia</translation>
 <translation id="1500473259453106018">Sembunyikan kartu penurunan harga di tab</translation>
 <translation id="1508931164824684991">Situs dapat menggunakan JavaScript</translation>
 <translation id="1510341833810331442">Situs tidak diizinkan menyimpan data di perangkat Anda</translation>
@@ -71,6 +73,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="1799920918471566157">Tips untuk Chrome</translation>
 <translation id="1816835383954230954">Jika diaktifkan, Chrome berjalan lebih cepat dan fitur yang menggunakan JavaScript akan berfungsi sebagaimana mestinya. Jika dinonaktifkan, performa akan berkurang tetapi akan membuat V8 lebih tahan terhadap serangan.</translation>
 <translation id="1818308510395330587">Untuk mengizinkan <ph name="APP_NAME" /> menggunakan Augmented Reality (AR), aktifkan juga kamera di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
+<translation id="1848033246551405023">Font Sans Serif</translation>
 <translation id="1881806992065048905">Panel bawah tampilan halaman tab baru</translation>
 <translation id="1887786770086287077">Akses lokasi dinonaktifkan untuk perangkat ini. Aktifkan di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Situs biasanya mengakses file dan folder di perangkat Anda untuk fitur seperti penyimpanan tugas otomatis</translation>
@@ -92,6 +95,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="2079545284768500474">Urungkan</translation>
 <translation id="2080070583977670716">Setelan lain</translation>
 <translation id="2091887806945687916">Suara</translation>
+<translation id="2094208275686143364">Warna tema terang</translation>
 <translation id="2096716221239095980">Hapus semua data</translation>
 <translation id="2102396546234652240">Jangan izinkan situs menggunakan mikrofon Anda</translation>
 <translation id="2117655453726830283">Slide berikutnya</translation>
@@ -137,6 +141,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="2498359688066513246">Bantuan &amp; masukan</translation>
 <translation id="2501278716633472235">Kembali</translation>
 <translation id="2533138527374486328">Jika diaktifkan, situs dapat meminta untuk terhubung ke perangkat apa pun di jaringan lokal Anda. Jika dinonaktifkan, situs tidak dapat terhubung ke perangkat di jaringan lokal Anda.</translation>
+<translation id="2544997614631598250">Warna tema gelap</translation>
 <translation id="2546283357679194313">Cookie dan data situs</translation>
 <translation id="2570922361219980984">Akses lokasi juga dinonaktifkan untuk perangkat ini. Aktifkan di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Diperluas - klik untuk menciutkan</translation>
@@ -194,6 +199,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="3165022941318558018">Izinkan situs menggunakan cookie pihak ketiga</translation>
 <translation id="3167868116600277716">Feed Discover</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> data tersimpan</translation>
+<translation id="3199078925536734975">Diizinkan kali ini • Perkiraan</translation>
 <translation id="321187648315454507">Untuk mengizinkan <ph name="APP_NAME" /> mengirimkan notifikasi, aktifkan juga notifikasi di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Lokasi tidak diizinkan</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -250,6 +256,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="3803367742635802571">Situs yang Anda buka mungkin tidak berfungsi sebagaimana mestinya</translation>
 <translation id="3816118180265633665">Warna Chrome</translation>
 <translation id="381841723434055211">Nomor telepon</translation>
+<translation id="3823453485268218808">Font Mono</translation>
 <translation id="3826050100957962900">Login pihak ketiga</translation>
 <translation id="3835233591525155343">Penggunaan perangkat Anda</translation>
 <translation id="3843916486309149084">Chrome akan memblokir cookie lagi hari ini</translation>
@@ -302,6 +309,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="4402755511846832236">Blokir situs agar tidak mengetahui saat Anda aktif menggunakan perangkat ini</translation>
 <translation id="4412992751769744546">Izinkan cookie pihak ketiga</translation>
 <translation id="4419929467120297501">Chrome memblokir situs agar tidak menggunakan cookie pihak ketiga untuk melacak Anda saat menjelajah. Buka setelan untuk <ph name="BEGIN_LINK" />mengelola akses ke cookie pihak ketiga<ph name="END_LINK" />.</translation>
+<translation id="4425416282877905577">Font Serif</translation>
 <translation id="443121186588148776">Port serial</translation>
 <translation id="4434045419905280838">Pop-up dan pengalihan</translation>
 <translation id="443552056913301231">Tindakan ini akan menghapus semua data lokal, termasuk cookie, dan mereset semua izin untuk <ph name="ORIGIN" /></translation>
@@ -554,6 +562,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="7478658909253570368">Jangan izinkan situs terhubung ke port serial</translation>
 <translation id="7488573225650545859">Sembunyikan Lihat tab di daftar aplikasi Anda</translation>
 <translation id="7521387064766892559">JavaScript</translation>
+<translation id="7538975533793429503">Penggeser ukuran font</translation>
 <translation id="7547989957535180761">Jika diaktifkan, situs dapat menampilkan perintah login. Jika dinonaktifkan, situs tidak dapat menampilkan perintah login.</translation>
 <translation id="7553211568594248088">Keluar dari penelusuran hub</translation>
 <translation id="7554752735887601236">Situs menggunakan mikrofon Anda</translation>

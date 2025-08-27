@@ -436,6 +436,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta 版</translation>
 <translation id="6180522807229584611">此分頁正在使用額外的資源。為提升效能，請讓 Chrome 將其設定為閒置分頁。</translation>
 <translation id="6182736845697986886">由於更新伺服器發生內部錯誤，因此無法安裝。</translation>
+<translation id="6192058120268468905">你在 Chrome 的帳戶</translation>
 <translation id="6235018212288296708">允許 mDNS 流量的 Google Chrome 輸入規則。</translation>
 <translation id="624230925347970731">Chrome 即將關閉</translation>
 <translation id="6247557882553405851">Google 密碼管理工具</translation>
@@ -568,6 +569,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="778331955594035129">Chrome 需要位置存取權，才能執行此網站要求的功能</translation>
 <translation id="7787950393032327779">另一部電腦 (<ph name="PROCESS_ID" />) 的 Google Chrome 處理程序 (<ph name="HOST_NAME" />) 正在使用這個設定檔。Chrome 已鎖定這個設定檔，確保其不致受損。如果您確定其他處理程序目前未使用這個設定檔，請解除鎖定，然後重新啟動 Chrome。</translation>
 <translation id="7801699035218095297">Google Chrome 正在嘗試複製密碼。如果您同意，請輸入 Windows 密碼。</translation>
+<translation id="7804364787702057554">你在 Chrome 的帳戶</translation>
 <translation id="7808348361785373670">從 Chrome 中移除…</translation>
 <translation id="7825851276765848807">不明錯誤導致安裝失敗，請再次下載 Google Chrome。</translation>
 <translation id="7827099906024714326">Chrome 需要先驗證身分，才能將部分資料儲存至 Google 帳戶，並在所有裝置上使用。如果你現在登出，系統將刪除有關資料。</translation>
@@ -651,7 +653,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8781673607513845160">如要使用攝錄機，請在<ph name="BEGIN_LINK" />系統設定<ph name="END_LINK" />中向 Chrome 授予存取權</translation>
 <translation id="878572486461146056">安裝錯誤：網絡管理員已套用防止安裝的群組政策：<ph name="INSTALL_ERROR" /></translation>
 <translation id="8798550110818026746">機構可查看和管理瀏覽資料 (例如書籤、記錄和密碼)，但無法查看其他 Chrome 設定檔中的瀏覽資料</translation>
-<translation id="880560872634367429">正在驗證下載項目…</translation>
 <translation id="8821043148920470810">如要取得日後的 Google Chrome 更新，您需要使用 Windows 10 或以上版本。此電腦目前版本為 Windows 7。</translation>
 <translation id="8823341990149967727">Chrome 版本過舊</translation>
 <translation id="8825634023950448068">為保障您的私隱，我們會自動刪除超過 4 星期的興趣。按瀏覽內容而定，某個主題可能會再次在您的興趣清單中顯示。如果您認為 Chrome 判斷錯誤或不想看到特定廣告，可以移除感興趣的主題。</translation>

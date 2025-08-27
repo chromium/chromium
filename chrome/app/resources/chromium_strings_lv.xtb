@@ -81,6 +81,7 @@
 <translation id="2008474315282236005">Veicot šo darbību, no šīs ierīces tiks dzēsts 1 vienums. Lai vēlāk izgūtu datus, pierakstieties pārlūkā Chromium kā <ph name="USER_EMAIL" />.</translation>
 <translation id="2018879682492276940">Instalēšana neizdevās. Lūdzu, mēģiniet vēlreiz.</translation>
 <translation id="2020032459870799438">Lai pārbaudītu, vai jūsu pārējās paroles ir aizsargātas pret datu pārkāpumiem un citām drošības problēmām, <ph name="BEGIN_LINK" />pierakstieties pārlūkā Chromium<ph name="END_LINK" />.</translation>
+<translation id="2039417478970545937">Iestatījumi.</translation>
 <translation id="2049376729098081731">Izvēlieties, vai iekļaut Chromium vēsturi, lai iegūtu personalizētākas iespējas Google pakalpojumos.</translation>
 <translation id="2054039611381840095">Lai saņemtu turpmākus Chromium atjauninājumus, nepieciešama operētājsistēma macOS 12 vai jaunāka versija. Šajā datorā tiek izmantota operētājsistēma macOS 11.</translation>
 <translation id="2086476982681781442">Pārlūkā Chromium šī lejupielāde tika bloķēta, jo fails ir maldinošs un var veikt neparedzētas izmaiņas jūsu ierīcē.</translation>
@@ -313,6 +314,7 @@
 <translation id="5123973130450702873">Pārlūkam Chromium ir nepieciešama atļauja izsekot jūsu roku kustības.</translation>
 <translation id="5141988424377517949">Pēdējā laikā šī vietne nav apmeklēta. Pārlūkā Chromium tika noņemtas šādas atļaujas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="5174969993834422967">Parasti jūs bloķējat paziņojumus. Lai ļautu šai vietnei sūtīt jums paziņojumus, noklikšķiniet uz paziņojumu ikonas atrašanās vietas joslas labajā stūrī.</translation>
+<translation id="5174983315706567306">Diskā nepietiek brīvas vietas.</translation>
 <translation id="5187123684706427865">Chromium kontam nepieciešama atkārtota autentifikācija</translation>
 <translation id="5224391634244552924">Nav saglabātu paroļu. Pārlūkprogrammā Chromium var pārbaudīt jūsu paroles, ja jūs tās saglabājat.</translation>
 <translation id="5231355151045086930">Izrakstīšanās no Chromium</translation>
@@ -440,6 +442,7 @@
 <translation id="6598877126913850652">Pāriet uz Chromium paziņojumu iestatījumiem</translation>
 <translation id="6600016381025017075">Meklēt informāciju par jebkuru šīs lapas satura daļu</translation>
 <translation id="6613594504749178791">Izmaiņas stāsies spēkā, kad restartēsiet Chromium.</translation>
+<translation id="6648212540664651655">Turpiniet darbu no vietas, kur to pārtraucāt: pārlūkā Chromium tika atjaunotas cilnes no jūsu pēdējās sesijas. Varat to izslēgt lapā</translation>
 <translation id="665732753414869868">Pārlūkam Chromium ir nepieciešama atļauja izmantot kameru, lai varētu izveidot jūsu apkārtnes 3D karti.</translation>
 <translation id="6669284030132180248">Ja saglabāsiet grāmatzīmes arī Google kontā, varēsiet izsekot produktu cenām pārlūkā Chromium un saņemt paziņojumus par cenu kritumiem.</translation>
 <translation id="6676384891291319759">Piekļūt internetam</translation>
@@ -502,6 +505,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="7352651011704765696">Radās problēma</translation>
 <translation id="7376384068949534168">Pēdējā laikā šī vietne nav apmeklēta. Pārlūkā Chromium tika noņemtas šādas atļaujas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="7384121030444253939">Šis paplašinājums vairs netiek atbalstīts. Chromium iesaka to noņemt.</translation>
+<translation id="7413153308467572558">Turpiniet darbu no vietas, kur to pārtraucāt: pārlūkā Chromium tiek atjaunotas jūsu cilnes ikreiz, kad to restartējat. Lai to izslēgtu, pārejiet uz lapu</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> — Chromium izstrādātāju versija</translation>
 <translation id="7450541714075000668">Teksts ir nokopēts</translation>
 <translation id="7451052299415159299">Pārlūkam Chromium ir nepieciešama atļauja piekļūt jūsu kamerai šajā vietnē.</translation>
@@ -633,6 +637,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="911206726377975832">Vai dzēst arī pārlūkošanas datus?</translation>
 <translation id="9134482777260927479">Palīdzība mājasdarbos</translation>
 <translation id="9148058034647219655">Iziet</translation>
+<translation id="9155105544013854680">Turpiniet darbu no vietas, kur to pārtraucāt: pārlūkā Chromium var tikt atjaunotas jūsu cilnes ikreiz, kad to restartējat. Lai to ieslēgtu, pārejiet uz lapu</translation>
 <translation id="9158494823179993217">Sistēmas administrators ir konfigurējis Chromium, lai vietne <ph name="TARGET_URL_HOSTNAME" /> tiktu atvērta papildu pārlūkā.</translation>
 <translation id="9185526690718004400">Atkārtoti palaist, lai atjauninātu &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS ienākošie savienojumi)</translation>

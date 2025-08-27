@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
 <translation id="1001534784610492198">El instalador está dañado o no es válido. Descargue Google Chrome nuevamente.</translation>
+<translation id="1006034097353797313">Retoma tu actividad desde donde la dejaste: Chrome restablece tus pestañas cada vez que reinicias. Para desactivar esta opción, ve a</translation>
 <translation id="1018937009655463387">Para compartir tu ventana, permite la grabación de pantalla de Chrome en Configuración del sistema.</translation>
 <translation id="1026101648481255140">Reanudar la instalación</translation>
 <translation id="102763973188675173">Personalizar y controlar Google Chrome. Hay una actualización disponible.</translation>
@@ -79,6 +80,7 @@
 <translation id="2018879682492276940">No se completó la instalación. Vuelve a intentarlo.</translation>
 <translation id="2024959665595762054">Para usar y guardar datos de Chrome en tu Cuenta de Google, verifica tu identidad</translation>
 <translation id="2034233344106846793">Chrome actualiza automáticamente las conexiones no seguras a HTTPS cuando es posible</translation>
+<translation id="2039417478970545937">Configuración.</translation>
 <translation id="207902854391093810">Cuando comienzan las pruebas, la medición de anuncios les permite a los sitios que visitas solicitar información a Chrome a fin de medir el rendimiento de los anuncios. La medición de anuncios restringe el seguimiento entre sitios web, ya que se transfiere la menor cantidad de información posible entre sitios.</translation>
 <translation id="2091012649849228750">Para recibir las próximas actualizaciones de Google Chrome, necesitarás Windows 10 o una versión posterior. Esta computadora usa Windows 8.</translation>
 <translation id="2094648590148273905">Condiciones de ChromeOS Flex</translation>
@@ -346,6 +348,7 @@
 <translation id="5166439563123238795">Chrome necesita permiso para hacer un seguimiento de tus manos</translation>
 <translation id="5170938038195470297">No se puede usar tu perfil porque pertenece a una nueva versión de Google Chrome. Es posible que algunas características no estén disponibles. Especifica un directorio de perfil diferente o usa una nueva versión de Chrome.</translation>
 <translation id="5174969993834422967">Por lo general, bloqueas las notificaciones. Si quieres permitir que este sitio te envíe notificaciones, haz clic en el ícono de notificaciones que se encuentra en la esquina derecha de la barra de ubicación.</translation>
+<translation id="5174983315706567306">No hay espacio suficiente en el disco.</translation>
 <translation id="5201744974236816379">actualización de Chrome</translation>
 <translation id="521447420733633466">Si compartes un dispositivo, tus amigos y familiares podrán navegar de forma independiente y configurar Chrome según sus preferencias.</translation>
 <translation id="5234764350956374838">Descartar</translation>
@@ -454,6 +457,7 @@
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" />: Versión para desarrolladores de Google Chrome</translation>
 <translation id="6520670145826811516">Para usar la ubicación, otorga acceso a Chrome en la <ph name="BEGIN_LINK" />configuración del sistema<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">En el Administrador de contraseñas de Google en este dispositivo</translation>
+<translation id="6631524303639368205">Retoma tu actividad desde donde la dejaste: Chrome restableció las pestañas de tu última sesión. Puedes desactivar esta opción en</translation>
 <translation id="6632473616050862500">ChromeOS Flex funciona gracias a <ph name="BEGIN_LINK_CROS_OSS" />software de código abierto<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
 <translation id="6634299872736643004">Los cambios en este parámetro de configuración se aplicarán una vez que se reinicie Chrome.</translation>
 <translation id="6660596345553328257">¿Quieres acceder a Chrome?</translation>
@@ -561,6 +565,7 @@
 <translation id="7825851276765848807">La instalación falló debido a un error no especificado. Descarga Google Chrome otra vez.</translation>
 <translation id="7827099906024714326">Chrome debe verificar tu identidad para guardar algunos datos en tu Cuenta de Google y que puedan usarse en todos tus dispositivos. Si sales ahora, se borrarán estos datos.</translation>
 <translation id="7845233973568007926">Gracias por instalar <ph name="BUNDLE_NAME" />. Debes reiniciar tu computadora antes de usarlo.</translation>
+<translation id="7849037457735762883">Retoma tu actividad desde donde la dejaste: Chrome puede restablecer tus pestañas cada vez que reinicias. Para activar esta opción, ve a</translation>
 <translation id="7872446069773932638">Descargando… Segundos restantes: <ph name="SECONDS" /></translation>
 <translation id="7886087451482920026">Selecciona texto con Google Lens</translation>
 <translation id="7890208801193284374">Si compartes una computadora, tus amigos y familiares pueden navegar de forma independiente y configurar Chrome según los gustos individuales.</translation>

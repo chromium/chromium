@@ -21,6 +21,7 @@
 <translation id="1072476005125066234">Recenze na základě vašich zájmů</translation>
 <translation id="1074827084851510304">Chystáte se smazat hesla ({password_count}) a seznam webů a aplikací, pro které jste ukládání přihlašovacích údajů zakázali. Účty vytvořené pro weby a aplikace se nesmažou.</translation>
 <translation id="1076421457278169141">Kód byl naskenován</translation>
+<translation id="1081114897601629648">Následující hesla se do Správce hesel Google neimportovala, protože neodpovídají požadavkům.</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} karta}few{{count} karty}many{{count} karty}other{{count} karet}}</translation>
 <translation id="1082554859195167538">Recenze produktů pro vás</translation>
 <translation id="1084365883616172403">Příspěvek na Facebook byl odeslán.</translation>
@@ -241,6 +242,7 @@
 <translation id="1902277226107477495">Detekce adresy je vypnutá. Znovu ji zapnete v Nastavení.</translation>
 <translation id="1904580727789512086">Navštívené adresy URL se ukládají do vašeho účtu Google</translation>
 <translation id="1911619930368729126">Nahrát na Disk Google</translation>
+<translation id="1925706052394657380">Otevřete v systému iOS nastavení <ph name="BEGIN_BOLD" />Výchozí aplikace<ph name="END_BOLD" /></translation>
 <translation id="1941314575388338491">Zkopírujete dvojitým klepnutím.</translation>
 <translation id="1943478190258551035">Nabídka → Nastavení</translation>
 <translation id="1952728750904661634">Přihlášení pomocí spravovaného účtu</translation>
@@ -250,6 +252,7 @@
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> s vámi sdílí heslo pro web <ph name="WEBSITE" /></translation>
 <translation id="1962969542251276847">Zamknout obrazovku</translation>
 <translation id="1963976881984600709">Standardní ochrana</translation>
+<translation id="1964507856799750384">Klepněte na <ph name="BEGIN_BOLD" />Aplikace prohlížeče<ph name="END_BOLD" /></translation>
 <translation id="1966313166384086081">data webů</translation>
 <translation id="1967461193809857427">{count,plural, =1{Obnovit kartu, kterou jste opustili v Androidu?}few{Obnovit karty, které jste opustili v Androidu?}many{Obnovit karty, které jste opustili v Androidu?}other{Obnovit karty, které jste opustili v Androidu?}}</translation>
 <translation id="1972325230031091483">Budete web moci procházet rychleji, protože se obsah bude načítat proaktivně na základě aktuálně navštívené webové stránky</translation>
@@ -599,7 +602,6 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="333229797575847124">Jak tuto funkci povolit</translation>
 <translation id="3344485292736684439">{count,plural, =1{Záložka byla uložena do složky „{title}“ ve vašem účtu {email}}few{Záložky byly uloženy do složky „{title}“ ve vašem účtu {email}}many{Záložky byly uloženy do složky „{title}“ ve vašem účtu {email}}other{Záložky byly uloženy do složky „{title}“ ve vašem účtu {email}}}</translation>
 <translation id="334690320928261823">Nedávno použité karty</translation>
-<translation id="3348387552617855658">Tato karta vám pomůže sledovat vaše zásilky a poskytne vám důležité informace ohledně doručení.</translation>
 <translation id="3349031117032695619">Blokovat vyskakovací okna</translation>
 <translation id="3349676726073650389">Weby a vyhledávání, která sledujete, se ukládají do vašeho účtu Google. Sledovaný obsah můžete kdykoli spravovat v nastavení.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Tento účet je spravován.</translation>

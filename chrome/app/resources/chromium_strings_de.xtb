@@ -81,6 +81,7 @@
 <translation id="2008474315282236005">Dadurch wird 1 Element von diesem Gerät gelöscht. Wenn du deine Daten später abrufen möchtest, melde dich als <ph name="USER_EMAIL" /> in Chromium an.</translation>
 <translation id="2018879682492276940">Fehler bei der Installation. Bitte versuch es noch einmal.</translation>
 <translation id="2020032459870799438">Wenn du prüfen möchtest, ob deine anderen Passwörter von Datenpannen und anderen Sicherheitsproblemen betroffen sind, <ph name="BEGIN_LINK" />melde dich in Chromium an<ph name="END_LINK" />.</translation>
+<translation id="2039417478970545937">den Einstellungen.</translation>
 <translation id="2049376729098081731">Lege fest, ob der Chromium-Verlauf dafür verwendet werden soll, die Google-Dienste stärker für dich zu personalisieren</translation>
 <translation id="2054039611381840095">Du benötigst macOS 12 oder höher, um zukünftige Chromium-Updates zu erhalten. Auf diesem Computer wird macOS 11 ausgeführt.</translation>
 <translation id="2086476982681781442">Chromium hat diesen Download blockiert, weil dich die Datei täuschen soll und unerwartete Änderungen an deinem Gerät vornehmen könnte</translation>
@@ -313,6 +314,7 @@
 <translation id="5123973130450702873">Chromium benötigt eine Berechtigung für das Handtracking</translation>
 <translation id="5141988424377517949">Du hast diese Website in letzter Zeit nicht besucht. Chromium hat „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ und „<ph name="PERMISSION_3" />“ entfernt.</translation>
 <translation id="5174969993834422967">Normalerweise blockierst du Benachrichtigungen. Wenn du von dieser Website Benachrichtigungen erhalten möchtest, klicke auf das Benachrichtigungssymbol in der rechten Ecke der Adressleiste.</translation>
+<translation id="5174983315706567306">Nicht genügend Speicherplatz.</translation>
 <translation id="5187123684706427865">Chromium-Konto muss noch einmal authentifiziert werden</translation>
 <translation id="5224391634244552924">Keine gespeicherten Passwörter. Chromium kann deine Passwörter prüfen, wenn du sie speicherst.</translation>
 <translation id="5231355151045086930">Von Chromium abmelden</translation>
@@ -440,6 +442,7 @@
 <translation id="6598877126913850652">Zu Chromium-Benachrichtigungseinstellungen wechseln</translation>
 <translation id="6600016381025017075">Nach beliebigen Inhalten auf dieser Seite suchen</translation>
 <translation id="6613594504749178791">Deine Änderungen werden beim nächsten Neustart von Chromium wirksam.</translation>
+<translation id="6648212540664651655">Mach dort weiter, wo du aufgehört hast: Chromium hat deine Tabs aus der letzten Sitzung wiederhergestellt. Du kannst diese Funktion deaktivieren in</translation>
 <translation id="665732753414869868">Chromium benötigt die Kameraberechtigung, um eine 3D-Karte deiner Umgebung zu erstellen</translation>
 <translation id="6669284030132180248">Wenn du auch deine Lesezeichen in deinem Google-Konto speicherst, kannst du Produktpreise in Chromium beobachten und dich benachrichtigen lassen, wenn der Preis sinkt</translation>
 <translation id="6676384891291319759">Internetzugriff</translation>
@@ -504,6 +507,7 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="7352651011704765696">Ein Problem ist aufgetreten</translation>
 <translation id="7376384068949534168">Du hast diese Website in letzter Zeit nicht besucht. Chromium hat „<ph name="PERMISSION_1" />“ und „<ph name="PERMISSION_2" />“ entfernt.</translation>
 <translation id="7384121030444253939">Diese Erweiterung wird nicht mehr unterstützt. Chromium empfiehlt daher, sie zu entfernen.</translation>
+<translation id="7413153308467572558">Mach dort weiter, wo du aufgehört hast: Chromium stellt deine Tabs bei jedem Neustart wieder her. Wenn du diese Funktion deaktivieren möchtest, gehe zu</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Text kopiert</translation>
 <translation id="7451052299415159299">Chromium benötigt für diese Website die Berechtigung, auf deine Kamera zuzugreifen</translation>
@@ -635,6 +639,7 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="911206726377975832">Auch die Browserdaten löschen?</translation>
 <translation id="9134482777260927479">Hilfe bei den Hausaufgaben</translation>
 <translation id="9148058034647219655">Beenden</translation>
+<translation id="9155105544013854680">Mach dort weiter, wo du aufgehört hast: Chromium kann deine Tabs bei jedem Neustart wiederherstellen. Wenn du diese Funktion aktivieren möchtest, gehe zu</translation>
 <translation id="9158494823179993217">Dein Systemadministrator hat Chromium so konfiguriert, dass ein alternativer Browser für den Zugriff auf <ph name="TARGET_URL_HOSTNAME" /> geöffnet wird.</translation>
 <translation id="9185526690718004400">Neu starten, um &amp;Chromium zu aktualisieren</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>

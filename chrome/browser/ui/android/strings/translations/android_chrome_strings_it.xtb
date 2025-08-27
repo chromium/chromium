@@ -156,6 +156,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1749561566933687563">Sincronizza i tuoi preferiti</translation>
 <translation id="1750238553597293878">Continua a usare le password nel tuo Account Google</translation>
 <translation id="17513872634828108">Schede aperte</translation>
+<translation id="1753744496844366747">Aa</translation>
 <translation id="1755203724116202818">Per misurare il rendimento di un annuncio, tra i siti vengono condivisi tipi di dati limitati, ad esempio se hai effettuato un acquisto dopo aver visitato un sito.</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Pagine, 1 pagina nell'elenco}other{Pagine, # pagine nell'elenco}}</translation>
 <translation id="1771929606532798550">A Google vengono inviate informazioni sul tuo utilizzo di Chrome, ma non sono riconducibili a te\n\nSe Chrome si arresta in modo anomalo, i dettagli su questo evento potrebbero includere alcune delle tue informazioni personali\n\nSe sincronizzi la cronologia dell'Account Google, le metriche potrebbero includere anche informazioni sugli URL che visiti</translation>
@@ -321,6 +322,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="253498598929009420">Il sito potrà vedere i contenuti del tuo schermo</translation>
 <translation id="2535807170289627159">Tutte le schede</translation>
 <translation id="2536728043171574184">È visualizzata una copia offline della pagina</translation>
+<translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, scheda</translation>
 <translation id="2546283357679194313">Cookie e dati dei siti</translation>
 <translation id="2547843573592965873">Il blocco del profilo tiene al sicuro le informazioni, ad esempio password, pagamenti e altro, salvate nel tuo Account Google.</translation>
@@ -499,7 +501,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3384347053049321195">Condividi immagine</translation>
 <translation id="3387650086002190359">Download di <ph name="FILE_NAME" /> non riuscito a causa di errori del file system.</translation>
 <translation id="3414952576877147120">Dimensioni:</translation>
-<translation id="3421726884497337397">Scegli quando bloccare i cookie di terze parti</translation>
 <translation id="3430670036890315772">Se disattivi il blocco del profilo, le informazioni salvate verranno rimosse</translation>
 <translation id="3435465986463792564">Hai tante finestre? Puoi gestirle da qui</translation>
 <translation id="3435575784518354875">Per continuare ad accedere alle tue password, esportale ora, aggiorna Google Play Services e poi importale in Gestore delle password di Google. <ph name="BEGIN_LINK" />Visualizza le istruzioni complete<ph name="END_LINK" />.</translation>
@@ -760,7 +761,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 password compromessa}other{# password compromesse}}</translation>
 <translation id="4641919525231168205">Vai alla pagina successiva</translation>
 <translation id="4642472735733036929">Monitoraggio del prezzo interrotto</translation>
-<translation id="4645146721047390964">In modalità di navigazione in incognito, i siti non possono utilizzare i cookie per conoscere la tua attività di navigazione su diversi siti, ad esempio per personalizzare gli annunci. Le funzionalità su alcuni siti potrebbero non essere disponibili.</translation>
 <translation id="465657074423018424">Navigazione sicura ti protegge da siti web ingannevoli. Se la disattivi, fai molta attenzione quando navighi su internet, soprattutto prima di inserire delle password.</translation>
 <translation id="4662373422909645029">Il nickname non può includere numeri</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> Preferiti eliminati</translation>
@@ -1220,7 +1220,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6633067410344541938">Sblocca la modalità in incognito</translation>
 <translation id="6636623428211296678">Scopri altre impostazioni qui sotto oppure termina ora</translation>
 <translation id="6637100877383020115">Per contribuire a migliorare l'app, Chrome invia a Google dati sull'utilizzo e sugli arresti anomali. <ph name="BEGIN_UMA_LINK" />Gestisci<ph name="END_UMA_LINK" /></translation>
-<translation id="6640207029842583248">Blocca sempre</translation>
 <translation id="6641780377503683465">Rimuovi <ph name="INTEREST" /></translation>
 <translation id="6647441008198474441">Gli URL che visiti vengono inviati a Google per prevedere quali siti potresti visitare in futuro</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 e altri <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 e altri <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -1241,6 +1240,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6723740634201835758">Nel tuo Account Google</translation>
 <translation id="6734310707649923383">Puoi visualizzare le pagine che hai visitato o eliminarle dalla cronologia</translation>
 <translation id="6738867403308150051">Download in corso…</translation>
+<translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">Rivedi i dati dell'account</translation>
 <translation id="6751521182688001123">Apri rapidamente una nuova scheda. Tocca e tieni premuto per modificare questa scorciatoia.</translation>
 <translation id="6752130751133944215">Per ripristinare una nuova finestra, riduci il numero totale di finestre attive e inattive a <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> o meno. Le finestre inattive vengono eliminate dopo 6 mesi.</translation>
@@ -1445,7 +1445,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="751961395872307827">Impossibile connettersi al sito</translation>
 <translation id="7523960634226602883">Cerca con la fotocamera usando Google Lens</translation>
 <translation id="7525248386620136756">Chiusi e salvati: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
-<translation id="752731652852882757">Blocca quando la modalità di navigazione in incognito è in uso</translation>
 <translation id="7545347190366646170">Persone con accesso</translation>
 <translation id="7554643625247105821">Impossibile controllare la versione di Chrome</translation>
 <translation id="7557508262441527045">Account disconnesso</translation>
@@ -1611,7 +1610,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8243077599929149377">Aggiungi il tuo nome utente</translation>
 <translation id="8244387390464017490">Personal. pag. Nuova scheda</translation>
 <translation id="8250920743982581267">Documenti</translation>
-<translation id="8255617931166444521">I siti possono utilizzare i cookie per vedere la tua attività di navigazione solo sul proprio sito</translation>
 <translation id="8258999165172757081">Aggiunto</translation>
 <translation id="8259179246279078674">Poiché le pagine precaricate sono criptate, Google non accederà ai contenuti di tali pagine. I server di Google memorizzeranno quali siti vengono precaricati privatamente. Queste informazioni vengono utilizzate solo per precaricare le pagine e non sono collegate ad altri dati provenienti dal tuo Account Google.</translation>
 <translation id="8260126382462817229">Prova ad accedere nuovamente</translation>

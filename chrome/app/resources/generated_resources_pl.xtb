@@ -1189,6 +1189,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1805967612549112634">Potwierdź kod PIN</translation>
 <translation id="1806335016774576568">Przełącz na inną otwartą aplikację</translation>
 <translation id="1807246157184219062">Jasny</translation>
+<translation id="1808571181382454540">Otwórz stronę ustawień</translation>
 <translation id="1808805149659872686">Nowy wpis</translation>
 <translation id="1809201888580326312">Nie zapisujesz haseł do tych stron i aplikacji.</translation>
 <translation id="1809734401532861917">Dodaj moje zakładki, historię, hasła i inne ustawienia do profilu <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -1558,6 +1559,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2059913712424898428">Strefa czasowa</translation>
 <translation id="2060375639911876205">Usuń profil eSIM</translation>
 <translation id="2061366302742593739">Brak wydatków do wyświetlenia</translation>
+<translation id="2061589908388230480">Jeśli Chromium wykryje, że któreś z Twoich haseł zostało ujawnione w wyniku publicznego naruszenia bezpieczeństwa danych, to gdy się zalogujesz, Menedżer haseł Google może Ci zaproponować zmianę hasła. <ph name="BEGIN_LINK" />Więcej informacji o automatycznym zmienianiu hasła<ph name="END_LINK" /></translation>
 <translation id="2062354623176996748">Korzystaj z internetu w oknie incognito, aby nie zapisywać historii przeglądania</translation>
 <translation id="206308717637808771">Usuń dane w momencie zamknięcia wszystkich okien. Dane są traktowane tak samo jak strona, którą przeglądasz.</translation>
 <translation id="2065405795449409761">Przeglądarką Chrome steruje zautomatyzowane oprogramowanie testowe.</translation>
@@ -2440,6 +2442,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2669241540496514785">Nie udało się otworzyć <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Pobrane pliki może zobaczyć każdy użytkownik tego urządzenia</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> udostępnia kartę Chrome.</translation>
+<translation id="2670168377011445813">Jeśli Chrome wykryje, że któreś z Twoich haseł zostało ujawnione w wyniku publicznego naruszenia bezpieczeństwa danych, to gdy się zalogujesz, Menedżer haseł Google może Ci zaproponować zmianę hasła. <ph name="BEGIN_LINK" />Więcej informacji o automatycznym zmienianiu hasła<ph name="END_LINK" /></translation>
 <translation id="2670350619068134931">Mniej animacji</translation>
 <translation id="2670403088701171361">Nie zezwalaj witrynom na dostęp do tekstu i obrazów w schowku</translation>
 <translation id="2671423594960767771">Udostępnij grupę</translation>
@@ -4524,7 +4527,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4109135793348361820">Przesuń okno do: <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Przywróć ostrzeżenie</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
-<translation id="4113030288477039509">Zarządzany przez administratora</translation>
 <translation id="4113743276555482284">Hasło pliku</translation>
 <translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />Gdy ustawienie Dokładność lokalizacji jest włączone, wykorzystywane są dane o sygnałach bezprzewodowych pochodzących np. z punktów dostępu do Wi-Fi czy masztów sieci komórkowych, a także dane z czujników urządzenia takich jak akcelerometr i żyroskop. Pozwala to dokładniej określać lokalizację urządzenia, dzięki czemu aplikacje i usługi na Androida mogą udostępniać funkcje oparte na lokalizacji. W tym celu Google okresowo zbiera dane z czujników urządzenia i informacje o sygnałach bezprzewodowych w pobliżu tego urządzenia, aby pomóc ustalać lokalizacje sygnałów bezprzewodowych na zasadzie crowdsourcingu.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google wykorzystuje te informacje (bez identyfikowania Ciebie) do zwiększania dokładności lokalizacji i usprawniania działania usług wykorzystujących lokalizację oraz ulepszania, świadczenia i utrzymywania usług Google. Przetwarzamy te dane na podstawie uzasadnionego interesu Google i innych firm w spełnianiu potrzeb użytkowników.<ph name="END_PARAGRAPH2" />
@@ -4975,7 +4977,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="443196770280837407">Otwieraj Gemini za pomocą skrótu klawiszowego.</translation>
 <translation id="4432621511648257259">Nieprawidłowe hasło</translation>
 <translation id="4434611816075088065">Nic więcej nie wymaga teraz Twojej uwagi</translation>
-<translation id="443475966875174318">Zaktualizuj lub usuń niezgodne aplikacje</translation>
 <translation id="443503224864902151">Spowoduje wylogowanie Cię z większości stron internetowych. Nie nastąpi wylogowanie z konta Google, więc będzie można usunąć zsynchronizowane dane.</translation>
 <translation id="4437879751057074691">Oferuj zapisywanie haseł i kluczy dostępu</translation>
 <translation id="4437947179446780764">Dodaj niestandardowego dostawcę usługi DNS</translation>
@@ -5389,7 +5390,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4742334355511750246">Nie zezwolono na wyświetlanie obrazów</translation>
 <translation id="4742795653798179840">Usunięte dane Chrome</translation>
 <translation id="4742970037960872810">Usuń podświetlenie</translation>
-<translation id="4743260470722568160"><ph name="BEGIN_LINK" />Dowiedz się, jak zaktualizować aplikacje<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">Zezwolono – <ph name="PERMISSION_DETAILS" />. Włącz <ph name="LINK_BEGIN" />w systemie dostęp do mikrofonu<ph name="LINK_END" />.</translation>
 <translation id="4744260496658845719">Jasność podświetlenia klawiatury</translation>
 <translation id="4744268813103118742">Przejdź do witryny</translation>
@@ -7132,7 +7132,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5989497858237037960">Gdy przeglądasz strony, ich zawartość jest szyfrowana i zapisywana na Twoim urządzeniu. Może to mieć wpływ na działanie Chrome</translation>
 <translation id="5990266201903445068">Tylko Wi-Fi</translation>
 <translation id="5990386583461751448">Przetłumaczona</translation>
-<translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Aby móc dalej przeglądać internet, poproś administratora o usunięcie tej aplikacji.}few{Aby móc dalej przeglądać internet, poproś administratora o usunięcie tych aplikacji.}many{Aby móc dalej przeglądać internet, poproś administratora o usunięcie tych aplikacji.}other{Aby móc dalej przeglądać internet, poproś administratora o usunięcie tych aplikacji.}}</translation>
 <translation id="5992225669837656567">Wszystkie myszy zostały rozłączone</translation>
 <translation id="5992652489368666106">Bez obramowania</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Zakończono sprawdzanie 1 witryny}few{Zakończono sprawdzanie {NUM_SITES} witryn}many{Zakończono sprawdzanie {NUM_SITES} witryn}other{Zakończono sprawdzanie {NUM_SITES} witryny}}</translation>
@@ -8625,7 +8624,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7039951224110875196">Utwórz konto Google dla dziecka</translation>
 <translation id="7039968672732182060">Twój Chromebook nie otrzymuje już aktualizacji zabezpieczeń. Czas przejść na najnowszą wersję zabezpieczeń i oprogramowania. Obowiązują warunki oferty.</translation>
 <translation id="7042116641003232070">Może zapisywać dane na urządzeniu</translation>
-<translation id="7043108582968290193">Gotowe. Nie ma niezgodnych aplikacji.</translation>
 <translation id="7044124535091449260">Więcej informacji o uprawnieniach dostępu do stron</translation>
 <translation id="7044207729381622209">Wylogujemy Cię z tych stron, także na otwartych kartach</translation>
 <translation id="7044211973375150246">Inna aplikacja została ustawiona na otwieranie tych samych linków co <ph name="APP_NAME" />. Ta czynność spowoduje, że aplikacja <ph name="APP_NAME_2" /> przestanie otwierać obsługiwane linki.</translation>
@@ -8961,7 +8959,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7299588179200441056"><ph name="URL" /> – <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">Animacja</translation>
 <translation id="7301812050652048720">Klucz dostępu został usunięty</translation>
-<translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Ta aplikacja może uniemożliwiać prawidłowe działanie Chrome.}few{Te aplikacje mogą uniemożliwiać prawidłowe działanie Chrome.}many{Te aplikacje mogą uniemożliwiać prawidłowe działanie Chrome.}other{Te aplikacje mogą uniemożliwiać prawidłowe działanie Chrome.}}</translation>
 <translation id="7303281435234579599">Ups! Podczas konfigurowania trybu demonstracyjnego coś poszło nie tak.</translation>
 <translation id="7303485269821975179">Ustaw hasło urządzenia (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="7303900363563182677">Ta witryna nie ma dostępu do tekstu ani obrazów skopiowanych do schowka</translation>
@@ -11844,7 +11841,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="962802172452141067">Drzewo folderów zakładek</translation>
 <translation id="963000966785016697">Wyszukaj obraz za pomocą: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Twój administrator IT wyłączył możliwość korzystania z bonusów Chrome na tym urządzeniu.</translation>
-<translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Aplikacja}few{Aplikacje}many{Aplikacje}other{Aplikacje}}</translation>
 <translation id="964790508619473209">Rozmieszczanie ekranów</translation>
 <translation id="96535553604365597">Zgłoś problem z Google Cast</translation>
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Sprawdź 1 witrynę, która ostatnio wysłała wiele powiadomień}few{Sprawdź {NUM_SITES} witryny, które ostatnio wysłały wiele powiadomień}many{Sprawdź {NUM_SITES} witryn, które ostatnio wysłały wiele powiadomień}other{Sprawdź {NUM_SITES} witryny, która ostatnio wysłała wiele powiadomień}}</translation>

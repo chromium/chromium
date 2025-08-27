@@ -428,6 +428,7 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome 测试版</translation>
 <translation id="6180522807229584611">此标签页正在占用额外的资源。请通过 Chrome 将其设为非活跃状态，以便提升性能。</translation>
 <translation id="6182736845697986886">更新服务器出现内部错误，因此安装失败。</translation>
+<translation id="6192058120268468905">设置 Chrome 账号</translation>
 <translation id="6235018212288296708">Google Chrome的入站规则，允许mDNS流量。</translation>
 <translation id="624230925347970731">Chrome 即将关闭</translation>
 <translation id="6247557882553405851">Google 密码管理工具</translation>
@@ -560,6 +561,7 @@
 <translation id="778331955594035129">Chrome 需要为此网站授予位置信息权限</translation>
 <translation id="7787950393032327779">其他计算机 (<ph name="HOST_NAME" />) 的另一个 Google Chrome 进程 (<ph name="PROCESS_ID" />) 好像正在使用此个人资料。Chrome 已锁定此个人资料以防止其受损。如果您确定其他进程目前未使用此个人资料，请为其解锁并重新启动 Chrome。</translation>
 <translation id="7801699035218095297">Google Chrome 正在尝试复制密码。请输入您的 Windows 密码以允许此操作。</translation>
+<translation id="7804364787702057554">设置 Chrome 账号</translation>
 <translation id="7808348361785373670">从Chrome中移除…</translation>
 <translation id="7825851276765848807">由于未指定的错误导致安装失败。请重新下载 Google Chrome 浏览器。</translation>
 <translation id="7827099906024714326">Chrome 需要先验证您的身份，然后才能将某些数据保存到您的 Google 账号中，供您在所有设备上使用。如果现在就退出账号，这些数据将被删除。</translation>
@@ -643,7 +645,6 @@
 <translation id="8781673607513845160">如需使用摄像头，请在<ph name="BEGIN_LINK" />系统设置<ph name="END_LINK" />中授予 Chrome 访问权限</translation>
 <translation id="878572486461146056">安装时出错：您的网络管理员所应用的一项群组政策阻止了安装进程：<ph name="INSTALL_ERROR" /></translation>
 <translation id="8798550110818026746">您的组织可以查看和管理浏览数据，例如您的书签、历史记录和密码，但无法查看其他 Chrome 资料中的浏览数据</translation>
-<translation id="880560872634367429">正在验证这项下载…</translation>
 <translation id="8821043148920470810">若要接收后续 Google Chrome 更新，您需使用 Windows 10 或更高版本。该计算机目前使用的是 Windows 7。</translation>
 <translation id="8823341990149967727">Chrome版本太旧</translation>
 <translation id="8825634023950448068">为了保护您的隐私，如果您的兴趣保留时间超过 4 周，系统便会自动将其删除。随着您继续浏览，某项兴趣可能会再次出现在列表中。如果 Chrome 的推测不准确，或者您不想看到某些广告，可以移除某项兴趣。</translation>

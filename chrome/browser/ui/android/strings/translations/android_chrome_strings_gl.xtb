@@ -499,7 +499,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3384347053049321195">Compartir imaxe</translation>
 <translation id="3387650086002190359">Produciuse un erro ao descargar <ph name="FILE_NAME" /> debido a erros no sistema de ficheiros.</translation>
 <translation id="3414952576877147120">Tamaño:</translation>
-<translation id="3421726884497337397">Escolle cando queres bloquear as cookies de terceiros</translation>
 <translation id="3430670036890315772">Se desactivas o bloqueo do perfil, quitarase a información gardada</translation>
 <translation id="3435465986463792564">Tes varias ventás? Podes xestionalas desde aquí</translation>
 <translation id="3435575784518354875">Para poder acceder aos contrasinais, expórtaos agora, actualiza os servizos de Google Play e despois volve importalos no xestor de contrasinais de Google. <ph name="BEGIN_LINK" />Ver as instrucións completas.<ph name="END_LINK" /></translation>
@@ -760,7 +759,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 contrasinal vulnerado}other{# contrasinais vulnerados}}</translation>
 <translation id="4641919525231168205">Ir á páxina seguinte</translation>
 <translation id="4642472735733036929">Detívose o seguimento de prezos</translation>
-<translation id="4645146721047390964">Cando usas o modo de incógnito, os sitios non poden utilizar cookies para ver a túa actividade de navegación noutros sitios co fin de, por exemplo, personalizar os anuncios. É posible que se bloqueen as funcións dalgúns sitios.</translation>
 <translation id="465657074423018424">A función Navegación segura protéxete contra os sitios web enganosos. Se a desactivas, ten moito coidado ao navegar, sobre todo antes de escribir contrasinais.</translation>
 <translation id="4662373422909645029">O alcume non pode ter números</translation>
 <translation id="4663756553811254707">Elimináronse <ph name="NUMBER_OF_BOOKMARKS" /> marcadores</translation>
@@ -1220,7 +1218,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6633067410344541938">Desbloquear modo de incógnito</translation>
 <translation id="6636623428211296678">Explora máis opcións de configuración a continuación ou remata agora</translation>
 <translation id="6637100877383020115">Para contribuír a mellorar a aplicación, Chrome envíalle a Google datos de uso e de fallos. <ph name="BEGIN_UMA_LINK" />Xestionar<ph name="END_UMA_LINK" /></translation>
-<translation id="6640207029842583248">Bloquear sempre</translation>
 <translation id="6641780377503683465">Quitar <ph name="INTEREST" /></translation>
 <translation id="6647441008198474441">Os URL que visitas envíanse a Google para predicir os sitios que probablemente visites a continuación</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> máis}other{<ph name="CONTACT_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> máis}}</translation>
@@ -1232,6 +1229,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6674571176963658787">Para comezar a sincronizar datos, escribe a túa frase de acceso</translation>
 <translation id="6676927815633975364">Inicia sesión neste sitio e en Chrome</translation>
 <translation id="6684809838922667136">Mellora Chrome</translation>
+<translation id="6689436252814043643">O modo de lectura non está dispoñible</translation>
 <translation id="6700279777779583398">Gardouse a túa escolla</translation>
 <translation id="670498945988402717">A comprobación realizouse onte</translation>
 <translation id="6710213216561001401">Anterior</translation>
@@ -1342,6 +1340,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7111822978084196600">Asigna un nome a esta ventá</translation>
 <translation id="7115358764509798967">Opción predeterminada do sistema</translation>
 <translation id="7117485132243600300">Xestiona o contido que segues e as buscas e os temas suxeridos</translation>
+<translation id="7119984597597798764">Pechar <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Revisáronse os permisos de 1 sitio}other{Revisáronse os permisos de # sitios}}</translation>
 <translation id="7138678301420049075">Outros</translation>
 <translation id="7140829094791862589">Ordenar manualmente</translation>
@@ -1443,7 +1442,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="751961395872307827">Non se puido establecer conexión co sitio</translation>
 <translation id="7523960634226602883">Realizar buscas coa cámara usando Google Lens</translation>
 <translation id="7525248386620136756">Elementos pechados e gardados: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
-<translation id="752731652852882757">Bloquear no modo de incógnito</translation>
 <translation id="7545347190366646170">Persoas con acceso</translation>
 <translation id="7554643625247105821">Non se puido comprobar a versión de Chrome</translation>
 <translation id="7557508262441527045">Pechouse a sesión</translation>
@@ -1609,7 +1607,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8243077599929149377">Engade un nome de usuario</translation>
 <translation id="8244387390464017490">Personalizar Nova pestana</translation>
 <translation id="8250920743982581267">Documentos</translation>
-<translation id="8255617931166444521">Os distintos sitios só poden utilizar as túas cookies para consultar a actividade de navegación que levaches a cabo no seu propio sitio</translation>
 <translation id="8258999165172757081">Engadiuse</translation>
 <translation id="8259179246279078674">Como as páxinas precargadas están encriptadas, Google non recibirá información sobre o seu contido. Os nosos servidores saberán que sitios se precargan de forma privada. Esta información só se utilizará para precargar as páxinas e non se vinculará a outros datos da túa Conta de Google.</translation>
 <translation id="8260126382462817229">Proba a volver iniciar sesión</translation>

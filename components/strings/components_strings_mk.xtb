@@ -440,6 +440,7 @@
 <translation id="1719838434204287058">24 x 30 инчи</translation>
 <translation id="1720941539803966190">Затвори го упатството</translation>
 <translation id="1721424275792716183">* Полето е задолжително</translation>
+<translation id="1723636263173393300">Правилово не треба да има повеќе од <ph name="MAX_ITEMS_LIMIT" /> кратенки.</translation>
 <translation id="1725591448053514783">Плик You 6</translation>
 <translation id="1727613060316725209">Сертификатот е важечки</translation>
 <translation id="1728677426644403582">Го гледате кодот на веб-страницата</translation>
@@ -1047,6 +1048,7 @@
 <translation id="271663710482723385">Притиснете |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| за да излезете од цел екран</translation>
 <translation id="2717336592027046789">Ролна</translation>
 <translation id="2718207025093645426">Управуваниот корисник или уред нема вчитани правила.</translation>
+<translation id="2719233594187778789">Игнорирана неуникатна URL-адреса: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Барањето е успешно</translation>
 <translation id="2722622039067384533">Мебел за дневни соби</translation>
 <translation id="2723669454293168317">Извршете безбедносна проверка во поставките за Chrome</translation>
@@ -2007,6 +2009,7 @@
 <translation id="4298000214066716287">Инвестирање</translation>
 <translation id="4298148761711700950">Плаќајте веднаш со прикачување QR</translation>
 <translation id="4298925811540301889">Колачињата за сајтов се синхронизираат на вашите уреди со ChromeOS. За да управувате со тоа што синхронизирате, одете во <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4299919199185766032">Името на кратенката ја надминува максималната дозволена должина од <ph name="MAX_LENGTH" /> знаци.</translation>
 <translation id="4300272766492248925">Отвори ја апликацијата</translation>
 <translation id="4300675098767811073">Повеќе дупки десно</translation>
 <translation id="4302514097724775343">Допрете го диносаурусот за да играте</translation>
@@ -2708,6 +2711,7 @@
     Обидете се да го контактирате вашиот системски администратор.</translation>
 <translation id="5496804587179176046">Зачувувајте безбедносни кодови. Во моментов нема ниеден зачуван безбедносен код.</translation>
 <translation id="550365051221576010">Пополнување сѐ</translation>
+<translation id="5506286895894263601">Списокот не содржи важечки кратенки.</translation>
 <translation id="5508443345185481044">Фотоапарати и видеокамери</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Управувани обележувачи</translation>
@@ -3627,6 +3631,7 @@
 <translation id="7014741021609395734">Ниво на зумирање</translation>
 <translation id="7016992613359344582">Овие трошоци може да бидат еднократни или повторливи и може нема да бидат очигледни.</translation>
 <translation id="701757816833614688">Образование за визуелни уметности и дизајн</translation>
+<translation id="7020464868401003526">URL-адресата на кратенката ја надминува максималната дозволена должина од <ph name="MAX_LENGTH" /> знаци.</translation>
 <translation id="702275896380648118">Овој сајт одредува работи што ви се допаѓаат, а потоа предлага реклами на други сајтови. Сајтов ги добива вашите теми за реклами и од Chrome за да ви прикажува порелевантни реклами.</translation>
 <translation id="7023162328967545559">Предупредување од администратор</translation>
 <translation id="7023765275461720661">Да се поврзе сметката и да се плати со <ph name="BNPL_ISSUER_NAME" />?</translation>

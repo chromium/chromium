@@ -499,7 +499,6 @@
 <translation id="3384347053049321195">แชร์รูปภาพ</translation>
 <translation id="3387650086002190359">การดาวน์โหลด <ph name="FILE_NAME" /> ล้มเหลวเพราะเกิดข้อผิดพลาดกับระบบไฟล์</translation>
 <translation id="3414952576877147120">ขนาด:</translation>
-<translation id="3421726884497337397">เลือกเวลาที่จะบล็อกคุกกี้ของบุคคลที่สาม</translation>
 <translation id="3430670036890315772">การปิดการล็อกโปรไฟล์จะนําข้อมูลที่บันทึกไว้ออก</translation>
 <translation id="3435465986463792564">หากมีหน้าต่างเปิดอยู่หลายหน้า คุณจัดการหน้าต่างเหล่านั้นได้จากที่นี่</translation>
 <translation id="3435575784518354875">หากต้องการเข้าถึงรหัสผ่านต่อไป ให้ส่งออกรหัสผ่านตอนนี้ อัปเดตบริการ Google Play แล้วนำเข้ากลับไปยังเครื่องมือจัดการรหัสผ่านบน Google <ph name="BEGIN_LINK" />ดูวิธีการโดยละเอียด<ph name="END_LINK" /></translation>
@@ -760,7 +759,6 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{มีรหัสผ่านที่ถูกละเมิด 1 รายการ}other{มีรหัสผ่านที่ถูกละเมิด # รายการ}}</translation>
 <translation id="4641919525231168205">ไปที่หน้าถัดไป</translation>
 <translation id="4642472735733036929">หยุดติดตามราคาแล้ว</translation>
-<translation id="4645146721047390964">ขณะอยู่ในโหมดไม่ระบุตัวตน เว็บไซต์จะไม่สามารถใช้คุกกี้เพื่อดูกิจกรรมการท่องเว็บของคุณในเว็บไซต์ต่างๆ เช่น เพื่อปรับโฆษณาตามโปรไฟล์ของคุณ ฟีเจอร์ในเว็บไซต์บางแห่งอาจใช้งานไม่ได้</translation>
 <translation id="465657074423018424">Google Safe Browsing ปกป้องคุณจากเว็บไซต์ที่หลอกลวง หากคุณปิดใช้ ให้ระวังเป็นพิเศษขณะท่องเว็บ โดยเฉพาะก่อนที่จะป้อนรหัสผ่าน</translation>
 <translation id="4662373422909645029">ชื่อเล่นต้องไม่มีตัวเลข</translation>
 <translation id="4663756553811254707">ลบบุ๊กมาร์ก <ph name="NUMBER_OF_BOOKMARKS" /> รายการแล้ว</translation>
@@ -1220,7 +1218,6 @@
 <translation id="6633067410344541938">ปลดล็อกเซสชันที่ไม่ระบุตัวตน</translation>
 <translation id="6636623428211296678">สำรวจดูการตั้งค่าเพิ่มเติมด้านล่างหรือสิ้นสุดการตรวจสอบเลย</translation>
 <translation id="6637100877383020115">Chrome จะส่งข้อมูลการใช้งานและข้อขัดข้องไปยัง Google เพื่อช่วยปรับปรุงแอป <ph name="BEGIN_UMA_LINK" />จัดการ<ph name="END_UMA_LINK" /></translation>
-<translation id="6640207029842583248">บล็อกตลอดเวลา</translation>
 <translation id="6641780377503683465">นำ<ph name="INTEREST" />ออก</translation>
 <translation id="6647441008198474441">ระบบจะส่ง URL ที่คุณเข้าชมไปยัง Google เพื่อคาดคะเนเว็บไซต์ต่อไปที่คุณอาจเข้าชม</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 และอีก <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> รายการ}other{<ph name="CONTACT_PREVIEW" />\u2026 และอีก <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> รายการ}}</translation>
@@ -1343,6 +1340,7 @@
 <translation id="7111822978084196600">ตั้งชื่อหน้าต่างนี้</translation>
 <translation id="7115358764509798967">ค่าเริ่มต้นของระบบ</translation>
 <translation id="7117485132243600300">จัดการเนื้อหาที่คุณติดตาม รวมถึงหัวข้อและการค้นหาที่แนะนำ</translation>
+<translation id="7119984597597798764">ปิด <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{ตรวจสอบสิทธิ์สำหรับ 1 เว็บไซต์แล้ว}other{ตรวจสอบสิทธิ์สำหรับ # เว็บไซต์แล้ว}}</translation>
 <translation id="7138678301420049075">อื่นๆ</translation>
 <translation id="7140829094791862589">จัดเรียงลำดับด้วยตนเอง</translation>
@@ -1444,7 +1442,6 @@
 <translation id="751961395872307827">เชื่อมต่อเว็บไซต์ไม่ได้</translation>
 <translation id="7523960634226602883">ค้นหาด้วยกล้องโดยใช้ Google Lens</translation>
 <translation id="7525248386620136756">ปิดและบันทึก <ph name="TAB_GROUPS_AND_TABS_PART" />แล้ว</translation>
-<translation id="752731652852882757">บล็อกขณะใช้โหมดไม่ระบุตัวตน</translation>
 <translation id="7545347190366646170">บุคคลที่มีสิทธิ์เข้าถึง</translation>
 <translation id="7554643625247105821">ตรวจสอบเวอร์ชัน Chrome ไม่ได้</translation>
 <translation id="7557508262441527045">ออกจากระบบแล้ว</translation>
@@ -1610,7 +1607,6 @@
 <translation id="8243077599929149377">เพิ่มชื่อผู้ใช้ของคุณ</translation>
 <translation id="8244387390464017490">ปรับแต่งหน้าแท็บใหม่</translation>
 <translation id="8250920743982581267">เอกสาร</translation>
-<translation id="8255617931166444521">เว็บไซต์สามารถใช้คุกกี้เพื่อดูกิจกรรมการท่องเว็บของคุณในเว็บไซต์ของตนเท่านั้น</translation>
 <translation id="8258999165172757081">มีแล้ว</translation>
 <translation id="8259179246279078674">Google จะไม่อ่านเนื้อหาของหน้าเว็บที่โหลดล่วงหน้าเนื่องจากหน้าเหล่านั้นจะได้รับการเข้ารหัส เซิร์ฟเวอร์ของ Google จะเรียนรู้ว่าเว็บไซต์ใดโหลดล่วงหน้าแบบส่วนตัว ข้อมูลนี้ใช้เพื่อโหลดหน้าเว็บล่วงหน้าเท่านั้น และจะไม่ลิงก์กับข้อมูลอื่นๆ จากบัญชี Google ของคุณ</translation>
 <translation id="8260126382462817229">ลองลงชื่อเข้าใช้อีกครั้ง</translation>

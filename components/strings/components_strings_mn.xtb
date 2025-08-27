@@ -440,6 +440,7 @@
 <translation id="1719838434204287058">24 x 30 инч</translation>
 <translation id="1720941539803966190">Практик хичээлийг хаах</translation>
 <translation id="1721424275792716183">* Талбарыг бөглөх шаардлагатай</translation>
+<translation id="1723636263173393300">Энэ бодлого <ph name="MAX_ITEMS_LIMIT" />-с олон товчлолтой байх ёсгүй.</translation>
 <translation id="1725591448053514783">Юү дугтуй 6</translation>
 <translation id="1727613060316725209">Гэрчилгээ хүчинтэй байна</translation>
 <translation id="1728677426644403582">Та веб хуудасны эх сурвалжийг харж байна.</translation>
@@ -1047,6 +1048,7 @@
 <translation id="271663710482723385">Бүтэн дэлгэцээс гарахын тулд |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| дээр дарна уу</translation>
 <translation id="2717336592027046789">Хуйлмал</translation>
 <translation id="2718207025093645426">Хяналттай хэрэглэгч эсвэл төхөөрөмжид ачаалсан бодлого байхгүй байна.</translation>
+<translation id="2719233594187778789">Өвөрмөц бус URL-г үл хэрэгссэн: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Хүсэлт амжилттай боллоо.</translation>
 <translation id="2722622039067384533">Зочны өрөөний тавилга</translation>
 <translation id="2723669454293168317">Chrome-н тохиргоонд аюулгүй байдлын шалгалтыг ажиллуулна уу</translation>
@@ -2008,6 +2010,7 @@
 <translation id="4298000214066716287">Хөрөнгө оруулалт</translation>
 <translation id="4298148761711700950">QR код байршуулахгүйгээр шуурхай төлөх</translation>
 <translation id="4298925811540301889">Энэ сайтын күүкиг таны ChromeOS төхөөрөмжүүд дээр синк хийдэг. Юу синк хийхээ удирдахын тулд <ph name="SYNC_SETTINGS" /> руу очно уу.</translation>
+<translation id="4299919199185766032">Товчлолын нэр <ph name="MAX_LENGTH" /> тэмдэгтийн зөвшөөрөгдсөн хязгаараас хэтэрсэн байна.</translation>
 <translation id="4300272766492248925">Апп нээх</translation>
 <translation id="4300675098767811073">Баруун ирмэг дагуу олон нүх цоолох</translation>
 <translation id="4302514097724775343">Тоглохын тулд диног товшино уу</translation>
@@ -2709,6 +2712,7 @@
     Та системийн админтайгаа холбогдоно уу.</translation>
 <translation id="5496804587179176046">Хамгаалалтын кодыг хадгална уу, одоогоор хадгалсан хамгаалалтын код байхгүй байна</translation>
 <translation id="550365051221576010">Бүгдийг бөглөх</translation>
+<translation id="5506286895894263601">Жагсаалт ямар ч хүчинтэй товчлол агуулаагүй байна.</translation>
 <translation id="5508443345185481044">Камер, видео камерууд</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Зохицуулагдсан хавчуурга</translation>
@@ -3627,6 +3631,7 @@
 <translation id="7014741021609395734">Томруулалтын түвшин</translation>
 <translation id="7016992613359344582">Эдгээр тодорхойгүй төлбөрийг танд нэг удаа, эсвэл хэд хэдэн удаа ногдуулж болзошгүй.</translation>
 <translation id="701757816833614688">Визуал урлаг болон дизайны боловсрол</translation>
+<translation id="7020464868401003526">Товчлолын URL <ph name="MAX_LENGTH" /> тэмдэгтийн зөвшөөрөгдсөн хязгаараас хэтэрсэн байна.</translation>
 <translation id="702275896380648118">Энэ сайт таны дуртай зүйлсийг тодорхойлж, дараа нь бусад сайтад зар санал болгодог. Энэ сайт мөн танд илүү хамааралтай зар харуулахын тулд таны зарын сэдвүүдийг Chrome-с авдаг.</translation>
 <translation id="7023162328967545559">Админы сануулга</translation>
 <translation id="7023765275461720661">Бүртгэл холбоод, <ph name="BNPL_ISSUER_NAME" />-р төлбөр төлөх үү?</translation>

@@ -242,6 +242,7 @@
 <translation id="1902277226107477495">地址检测已关闭。您可以在“设置”中重新开启此功能。</translation>
 <translation id="1904580727789512086">系统会将您访问的网址保存到您的 Google 账号中</translation>
 <translation id="1911619930368729126">上传到Google云端硬盘</translation>
+<translation id="1925706052394657380">在 iOS 中打开<ph name="BEGIN_BOLD" />默认应用<ph name="END_BOLD" />设置</translation>
 <translation id="1941314575388338491">点按两次即可复制。</translation>
 <translation id="1943478190258551035">菜单 → 设置</translation>
 <translation id="1952728750904661634">登录受管理的账号</translation>
@@ -251,6 +252,7 @@
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" />与您分享了登录 <ph name="WEBSITE" /> 的密码</translation>
 <translation id="1962969542251276847">锁定屏幕</translation>
 <translation id="1963976881984600709">标准保护</translation>
+<translation id="1964507856799750384">点按<ph name="BEGIN_BOLD" />浏览器应用<ph name="END_BOLD" /></translation>
 <translation id="1966313166384086081">网站数据</translation>
 <translation id="1967461193809857427">{count,plural, =1{要继续使用之前在 Android 设备上打开的标签页吗？}other{要继续使用之前在 Android 设备上打开的标签页吗？}}</translation>
 <translation id="1972325230031091483">您的浏览速度会更快，因为系统会根据您当前访问的网页主动加载内容</translation>
@@ -600,7 +602,6 @@
 <translation id="333229797575847124">如何启用此功能</translation>
 <translation id="3344485292736684439">{count,plural, =1{已将书签保存到账号 {email} 中的“{title}”}other{已将书签保存到账号 {email} 中的“{title}”}}</translation>
 <translation id="334690320928261823">最近打开的标签页</translation>
-<translation id="3348387552617855658">此卡片可协助您跟踪包裹，并为您提供重要的递送动态。</translation>
 <translation id="3349031117032695619">阻止弹出式窗口</translation>
 <translation id="3349676726073650389">您关注的网站和搜索内容会保存在您的 Google 账号中。您可随时在设置中管理您关注的内容。</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />。此账号处于受管理状态。</translation>

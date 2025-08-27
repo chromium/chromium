@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
 <translation id="1001534784610492198">Archív inštalácie je poškodený alebo neplatný. Stiahnite prehliadač Google Chrome znova.</translation>
+<translation id="1006034097353797313">Pokračujte tam, kde ste prestali: Chrome obnoví vaše karty pri každom reštarte. Ak to chcete vypnúť, prejdite do sekcie</translation>
 <translation id="1018937009655463387">Ak chcete zdieľať okno, povoľte Chromu nahrávať obrazovku v nastaveniach systému.</translation>
 <translation id="1026101648481255140">Pokračovať v inštalácii</translation>
 <translation id="102763973188675173">Prispôsobte si Google Chrome a ovládajte ho. K dispozícii je aktualizácia.</translation>
@@ -81,6 +82,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2018879682492276940">Inštalácia bola neúspešná. Skúste to znova.</translation>
 <translation id="2024959665595762054">Ak chcete vo svojom účte Google používať a ukladať údaje Chromu, overte svoju totožnosť</translation>
 <translation id="2034233344106846793">Keď je to možné, Chrome automaticky inovuje nezabezpečené pripojenia na HTTPS</translation>
+<translation id="2039417478970545937">Nastavenia</translation>
 <translation id="207902854391093810">Keď sú skúšobné obdobia zapnuté, meranie reklám umožňuje webom, ktoré navštívite, požadovať od Chromu údaje, ktoré im pomáhajú merať výkonnosť reklám. Meranie reklám obmedzuje sledovanie na rôznych weboch presúvaním minimálneho množstva údajov medzi webmi.</translation>
 <translation id="2091012649849228750">Ak chcete v budúcnosti dostávať aktualizácie prehliadača Google Chrome, budete potrebovať systém Windows 10 alebo novší. Tento počítač používa Windows 8.</translation>
 <translation id="2094648590148273905">Zmluvné podmienky systému Chrome OS Flex</translation>
@@ -349,6 +351,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 
 Niektoré funkcie môžu byť nedostupné. Zadajte iný adresár profilu alebo použite novšiu verziu prehliadača Chrome.</translation>
 <translation id="5174969993834422967">Upozornenia zvyčajne blokujete. Ak chcete tomuto webu povoliť odosielanie upozornení, kliknite na ikonu upozornení v pravom rohu panela s polohou.</translation>
+<translation id="5174983315706567306">Na disku nie je dostatok miesta.</translation>
 <translation id="5201744974236816379">Aktualizácia Chromu</translation>
 <translation id="521447420733633466">Ak zdieľate zariadenie s rodinou a priateľmi, môžu v Chrome prehliadať samostatne a tiež si ho nastaviť podľa vlastných požiadaviek</translation>
 <translation id="5234764350956374838">Ignorovať</translation>
@@ -459,6 +462,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6520670145826811516">Ak chcete používať polohu, udeľte Chromu prístup v <ph name="BEGIN_LINK" />nastaveniach systému<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">V správcovi hesiel Google v tomto zariadení</translation>
+<translation id="6631524303639368205">Pokračujte tam, kde ste prestali: Chrome obnovil vaše karty z poslednej relácie. Môžete to vypnúť v sekcii</translation>
 <translation id="6632473616050862500">Systém Chrome OS Flex mohol vzniknúť vďaka ďalšiemu <ph name="BEGIN_LINK_CROS_OSS" />softvéru typu open source<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6634299872736643004">Zmeny tohto nastavenia sa uplatnia po reštarte Chromu.</translation>
 <translation id="6660596345553328257">Chcete sa prihlásiť do Chromu?</translation>
@@ -566,6 +570,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="7825851276765848807">Inštalácia zlyhala kvôli neznámej chybe. Skúste aplikáciu Google Chrome stiahnuť znova.</translation>
 <translation id="7827099906024714326">Než sa niektoré údaje uložia do vášho účtu Google a začnú používať vo všetkých zariadeniach, musí Chrome overiť vašu totožnosť. Ak sa teraz odhlásite, tieto údaje budú odstránené.</translation>
 <translation id="7845233973568007926">Ďakujeme za inštaláciu. Než začnete aplikáciu <ph name="BUNDLE_NAME" /> používať, musíte reštartovať počítač.</translation>
+<translation id="7849037457735762883">Pokračujte, kde ste prestali: Chrome môže obnoviť vaše karty pri každom reštarte. Ak to chcete zapnúť, prejdite do sekcie</translation>
 <translation id="7872446069773932638">Sťahuje sa… Zostávajúci čas: <ph name="SECONDS" /> s</translation>
 <translation id="7886087451482920026">Vyberte text pomocou funkcie Google Lens</translation>
 <translation id="7890208801193284374">Ak počítač zdieľate s rodinou a priateľmi, môžu v prehliadači Chrome prehliadať oddelene a tiež si ho nastaviť podľa vlastných požiadaviek.</translation>

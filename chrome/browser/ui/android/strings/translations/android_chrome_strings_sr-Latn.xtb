@@ -499,7 +499,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3384347053049321195">Deli sliku</translation>
 <translation id="3387650086002190359">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspelo zbog grešaka sistema datoteka.</translation>
 <translation id="3414952576877147120">Veličina:</translation>
-<translation id="3421726884497337397">Izaberite kada ćete blokirati kolačiće trećih strana</translation>
 <translation id="3430670036890315772">Ako isključite zaključavanje profila, uklonićete sačuvane informacije</translation>
 <translation id="3435465986463792564">Imate mnogo prozora? Njima možete da upravljate odavde.</translation>
 <translation id="3435575784518354875">Da biste zadržali pristup lozinkama, izvezite ih odmah, ažurirajte Google Play usluge, pa ih ponovo uvezite u Google menadžer lozinki. <ph name="BEGIN_LINK" />Pogledajte kompletna uputstva<ph name="END_LINK" />.</translation>
@@ -760,7 +759,6 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 ugrožena lozinka}one{# ugrožena lozinka}few{# ugrožene lozinke}other{# ugroženih lozinki}}</translation>
 <translation id="4641919525231168205">Idite na sledeću stranicu</translation>
 <translation id="4642472735733036929">Praćenje cena je zaustavljeno</translation>
-<translation id="4645146721047390964">Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na različitim sajtovima, na primer, za personalizaciju oglasa. Funkcije na nekim sajtovima mogu da prestanu sa radom.</translation>
 <translation id="465657074423018424">Bezbedno pregledanje vas štiti od obmanjujućih veb-sajtova. Ako ga isključite, budite posebno pažljivi tokom pregledanja, pogotovo pre unosa lozinki.</translation>
 <translation id="4662373422909645029">Nadimak ne sme da sadrži brojeve</translation>
 <translation id="4663756553811254707">Izbrisali ste <ph name="NUMBER_OF_BOOKMARKS" /> obeleživača</translation>
@@ -1220,7 +1218,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6633067410344541938">Otključaj kartice bez arhiviranja</translation>
 <translation id="6636623428211296678">Istražite još podešavanja u nastavku ili završite</translation>
 <translation id="6637100877383020115">Chrome šalje Google-u podatke o korišćenju i otkazivanju radi poboljšanja aplikacije. <ph name="BEGIN_UMA_LINK" />Upravljajte<ph name="END_UMA_LINK" /></translation>
-<translation id="6640207029842583248">Blokiraj uvek</translation>
 <translation id="6641780377503683465">Uklonite: <ph name="INTEREST" /></translation>
 <translation id="6647441008198474441">URL-ovi koje posećujete se šalju Google-u da bi se predvideli sajtovi koje ćete možda sledeće posetiti</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -1445,7 +1442,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="751961395872307827">Povezivanje sa sajtom nije uspelo</translation>
 <translation id="7523960634226602883">Pretražite pomoću kamere putem Google objektiva</translation>
 <translation id="7525248386620136756">Zatvoreno i sačuvano: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
-<translation id="752731652852882757">Blokiraj dok se koristi režim bez arhiviranja</translation>
 <translation id="7545347190366646170">Osobe sa pristupom</translation>
 <translation id="7554643625247105821">Provera verzije Chrome-a nije uspela</translation>
 <translation id="7557508262441527045">Odjavljeni ste</translation>
@@ -1611,7 +1607,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="8243077599929149377">Dodajte korisničko ime</translation>
 <translation id="8244387390464017490">Prilagodi stran. nove kart.</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
-<translation id="8255617931166444521">Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja samo na vlastitom sajtu</translation>
 <translation id="8258999165172757081">Dodato</translation>
 <translation id="8259179246279078674">Pošto su predučitane stranice šifrovane, Google neće saznati ništa o sadržaju predučitanih stranica. Google serveri će saznati koji sajtovi su privatno predučitani. Te informacije se koriste samo za predučitavanje stranica i nisu povezane sa drugim informacijama sa Google naloga.</translation>
 <translation id="8260126382462817229">Probajte ponovo da se prijavite</translation>

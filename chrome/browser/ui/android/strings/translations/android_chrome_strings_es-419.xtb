@@ -499,7 +499,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3384347053049321195">Compartir imagen</translation>
 <translation id="3387650086002190359"><ph name="FILE_NAME" /> no se pudo descargar debido a errores del sistema de archivos.</translation>
 <translation id="3414952576877147120">Tamaño:</translation>
-<translation id="3421726884497337397">Decide cuándo bloquear las cookies de terceros</translation>
 <translation id="3430670036890315772">Si desactivas el bloqueo de perfil, se quitará la información guardada</translation>
 <translation id="3435465986463792564">¿Tienes muchas ventanas? Puedes administrarlas desde aquí.</translation>
 <translation id="3435575784518354875">Para mantener el acceso a tus contraseñas, expórtalas ahora, actualiza los Servicios de Google Play y, luego, vuelve a importarlas al Administrador de contraseñas de Google. <ph name="BEGIN_LINK" />Consulta las instrucciones completas<ph name="END_LINK" />.</translation>
@@ -760,7 +759,6 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 contraseña hackeada}other{# contraseñas hackeadas}}</translation>
 <translation id="4641919525231168205">Ir a la página siguiente</translation>
 <translation id="4642472735733036929">Se detuvo el seguimiento de precios</translation>
-<translation id="4645146721047390964">Cuando está activado el modo Incógnito, los sitios no pueden usar tus cookies para ver tu actividad de navegación en diferentes sitios, por ejemplo, para personalizar anuncios. Es posible que se generen fallas en las funciones de algunos sitios.</translation>
 <translation id="465657074423018424">La Navegación segura te protege ante sitios web engañosos. Si la desactivas, debes tener mucho cuidado cuando navegas, en especial al ingresar contraseñas.</translation>
 <translation id="4662373422909645029">El sobrenombre no admite números</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> favoritos eliminados</translation>
@@ -1220,7 +1218,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6633067410344541938">Desbloquear pestañas de incógnito</translation>
 <translation id="6636623428211296678">Explora más parámetros de configuración a continuación o finaliza ahora.</translation>
 <translation id="6637100877383020115">Para ayudarnos a mejorar la app, Chrome envía datos de uso y fallas a Google. <ph name="BEGIN_UMA_LINK" />Administrar<ph name="END_UMA_LINK" /></translation>
-<translation id="6640207029842583248">Bloquear siempre</translation>
 <translation id="6641780377503683465">Quitar <ph name="INTEREST" /></translation>
 <translation id="6647441008198474441">Se enviarán a Google las URL que visites para predecir los sitios que posiblemente vayas a visitar</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> más}other{<ph name="CONTACT_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> más}}</translation>
@@ -1232,6 +1229,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6674571176963658787">Para iniciar la sincronización, ingresa tu frase de contraseña.</translation>
 <translation id="6676927815633975364">Accede a este sitio y a Chrome</translation>
 <translation id="6684809838922667136">Mejora Chrome</translation>
+<translation id="6689436252814043643">El Modo de lectura no está disponible</translation>
 <translation id="6700279777779583398">Se guardaron las selecciones</translation>
 <translation id="670498945988402717">Se verificó ayer</translation>
 <translation id="6710213216561001401">Anterior</translation>
@@ -1342,6 +1340,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7111822978084196600">Nombrar esta ventana</translation>
 <translation id="7115358764509798967">Predeterminado del sistema</translation>
 <translation id="7117485132243600300">Administra el contenido que sigues y los temas y las búsquedas sugeridos</translation>
+<translation id="7119984597597798764">Cerrar <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Se revisaron los permisos de 1 sitio}other{Se revisaron los permisos de # sitios}}</translation>
 <translation id="7138678301420049075">Otros</translation>
 <translation id="7140829094791862589">Ordenar manualmente</translation>
@@ -1443,7 +1442,6 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="751961395872307827">No se puede conectar al sitio</translation>
 <translation id="7523960634226602883">Buscar con la cámara mediante Google Lens</translation>
 <translation id="7525248386620136756">Se cerró y guardó <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
-<translation id="752731652852882757">Bloquear cuando se usa el modo Incógnito</translation>
 <translation id="7545347190366646170">Personas que tienen acceso</translation>
 <translation id="7554643625247105821">No se puede verificar la versión de Chrome</translation>
 <translation id="7557508262441527045">Saliste de la cuenta</translation>
@@ -1609,7 +1607,6 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8243077599929149377">Agrega tu nombre de usuario</translation>
 <translation id="8244387390464017490">Personalizar nueva pestaña</translation>
 <translation id="8250920743982581267">Documentos</translation>
-<translation id="8255617931166444521">Los sitios solo pueden utilizar las cookies para ver tu actividad de navegación en su propio sitio.</translation>
 <translation id="8258999165172757081">Agregado</translation>
 <translation id="8259179246279078674">Debido a que las páginas precargadas están encriptadas, Google no analizará el contenido de esas páginas. Los servidores de Google sabrán qué sitios se precargaron de forma privada. Esta información solo se usará para precargar las páginas y no se vincula a otra información de tu Cuenta de Google.</translation>
 <translation id="8260126382462817229">Intenta volver a acceder</translation>

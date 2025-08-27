@@ -84,6 +84,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2008474315282236005">Ett objekt tas bort från enheten. Logga in i Chromium som <ph name="USER_EMAIL" /> om du vill kunna återställa datan senare.</translation>
 <translation id="2018879682492276940">Installationen misslyckades. Försök igen.</translation>
 <translation id="2020032459870799438"><ph name="BEGIN_LINK" />Logga in i Chromium<ph name="END_LINK" /> om du vill kontrollera att dina andra lösenord skyddas från dataintrång och andra säkerhetsproblem.</translation>
+<translation id="2039417478970545937">Inställningar.</translation>
 <translation id="2049376729098081731">Välj om du vill inkludera Chromium-historiken och få en mer anpassad upplevelse i Googles tjänster</translation>
 <translation id="2054039611381840095">Du behöver macOS 12 eller senare för att få framtida uppdateringar av Chromium. På den här datorn används macOS 11.</translation>
 <translation id="2086476982681781442">Den här nedladdningen blockerades av Chromium eftersom filen är bedräglig och kan göra oväntade ändringar på enheten</translation>
@@ -316,6 +317,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="5123973130450702873">Chromium behöver behörighet för handspårning</translation>
 <translation id="5141988424377517949">Du har inte besökt webbplatsen på sistone. Chromium har tagit bort <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="PERMISSION_3" />.</translation>
 <translation id="5174969993834422967">Du brukar blockera aviseringar. Klicka på aviseringsikonen uppe till höger om platsfältet om du vill tillåta aviseringar från webbplatsen.</translation>
+<translation id="5174983315706567306">Det finns inte tillräckligt med diskutrymme.</translation>
 <translation id="5187123684706427865">Omautentisering krävs för Chromium-kontot</translation>
 <translation id="5224391634244552924">Inga sparade lösenord. Chromium kan bara kontrollera dina lösenord om du sparar dem.</translation>
 <translation id="5231355151045086930">Logga ut från Chromium</translation>
@@ -443,6 +445,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="6598877126913850652">Öppna aviseringsinställningarna för Chromium</translation>
 <translation id="6600016381025017075">Sök efter vad som helst på den här sidan</translation>
 <translation id="6613594504749178791">Ändringarna tillämpas nästa gång du startar om Chromium.</translation>
+<translation id="6648212540664651655">Fortsätt där du slutade: Chromium har återställt dina flikar från din senaste session. Du kan inaktivera detta i</translation>
 <translation id="665732753414869868">Du behöver ge Chromium kamerabehörighet om du vill skapa en 3D-karta över dina omgivningar</translation>
 <translation id="6669284030132180248">Om du även sparar bokmärken i Google-kontot kan du bevaka produktpriser i Chromium och få en avisering när priset sänks.</translation>
 <translation id="6676384891291319759">Gå ut på Internet</translation>
@@ -507,6 +510,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="7352651011704765696">Något gick fel</translation>
 <translation id="7376384068949534168">Du har inte besökt webbplatsen på sistone. Chromium har tagit bort <ph name="PERMISSION_1" /> och <ph name="PERMISSION_2" />.</translation>
 <translation id="7384121030444253939">Detta tillägg stöds inte längre. Vi rekommenderar att du tar bort det i stället.</translation>
+<translation id="7413153308467572558">Fortsätt där du slutade: Chromium återställer dina flikar varje gång du startar om. Inaktivera detta genom att öppna</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Texten har kopierats</translation>
 <translation id="7451052299415159299">Du behöver ge Chromium behörighet att använda kameran på webbplatsen</translation>
@@ -638,6 +642,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="911206726377975832">Vill du även ta bort din webbinformation?</translation>
 <translation id="9134482777260927479">Läxhjälp</translation>
 <translation id="9148058034647219655">Avsluta</translation>
+<translation id="9155105544013854680">Fortsätt där du slutade: Chromium kan återställa dina flikar varje gång du startar om. Aktivera detta genom att öppna</translation>
 <translation id="9158494823179993217">Systemadministratören har konfigurerat Chromium så att <ph name="TARGET_URL_HOSTNAME" /> öppnas i en annan webbläsare.</translation>
 <translation id="9185526690718004400">Starta om för att uppdatera &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>

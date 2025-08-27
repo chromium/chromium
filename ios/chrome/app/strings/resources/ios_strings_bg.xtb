@@ -242,6 +242,7 @@
 <translation id="1902277226107477495">Разпознаването на адреси е изключено. Можете да го включите отново в настройките.</translation>
 <translation id="1904580727789512086">URL адресите, които посещавате, се запазват в профила ви в Google</translation>
 <translation id="1911619930368729126">Качване в Google Диск</translation>
+<translation id="1925706052394657380">Отворете настройките за <ph name="BEGIN_BOLD" />основните приложения<ph name="END_BOLD" /> в iOS</translation>
 <translation id="1941314575388338491">Докоснете двукратно, за да копирате.</translation>
 <translation id="1943478190258551035">„Меню → Настройки“</translation>
 <translation id="1952728750904661634">Влизане с управляван профил</translation>
@@ -251,6 +252,7 @@
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> сподели с вас парола за <ph name="WEBSITE" /></translation>
 <translation id="1962969542251276847">Заключване на екрана</translation>
 <translation id="1963976881984600709">Стандартна защита</translation>
+<translation id="1964507856799750384">Докоснете <ph name="BEGIN_BOLD" />Приложение за браузър<ph name="END_BOLD" />.</translation>
 <translation id="1966313166384086081">данни за сайтовете</translation>
 <translation id="1967461193809857427">{count,plural, =1{Да се продължи ли от раздела, в който сте прекъснали на устройството си с Android?}other{Да се продължи ли от разделите, в които сте прекъснали на устройството си с Android?}}</translation>
 <translation id="1972325230031091483">Ще сърфирате по-бързо, тъй като съдържанието се зарежда предварително въз основа на уеб страницата, на която се намирате в момента</translation>
@@ -600,7 +602,6 @@
 <translation id="333229797575847124">Как да активирате тази функция</translation>
 <translation id="3344485292736684439">{count,plural, =1{Отметката бе запазена в(ъв) „{title}“ в профила ви {email}}other{Отметките бяха запазени в(ъв) „{title}“ в профила ви {email}}}</translation>
 <translation id="334690320928261823">Скорошни раздели</translation>
-<translation id="3348387552617855658">Тази карта ви помага да проследявате пратките си и да получавате важна актуална информация за доставянето им.</translation>
 <translation id="3349031117032695619">Блокиране на изскачащите прозорци</translation>
 <translation id="3349676726073650389">Сайтовете и търсенията, които следвате, се запазват в профила ви в Google. Можете да ги управлявате от настройките по всяко време.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Този профил е управляван.</translation>

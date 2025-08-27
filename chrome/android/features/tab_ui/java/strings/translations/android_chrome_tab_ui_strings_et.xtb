@@ -28,6 +28,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> vaheleht grupeeriti</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> vaheleht}other{<ph name="TABS_COUNT_MANY" /> vahelehte}}</translation>
 <translation id="1909810060368225529">Teade. Selle jagatud vahelehegrupi muutused on kõigile nähtavad. Kõik saavad teie jagatud vahelehegruppides muudatusi teha</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{Kinnita vaheleht}other{Kinnita vahelehed}}</translation>
 <translation id="1982637982196732906">Teisalda mitteaktiivsete üksuste jaotisse</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> valitud vahelehe järjehoidjatesse lisamine}other{<ph name="TABS_COUNT_MANY" /> valitud vahelehe järjehoidjatesse lisamine}}</translation>
 <translation id="2055057176188061528">Valige vahelehegrupp või looge uus vahelehegrupp</translation>
@@ -78,6 +79,7 @@
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Jagatud lehe eelvaate pisipilt.</translation>
 <translation id="3810973564298564668">Halda</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{Vabasta vaheleht}other{Vabasta vahelehed}}</translation>
 <translation id="3940195383040445971">Jälgige vahelehtedel hindu</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> uus vaheleht, <ph name="ANY_CLOSED" /> suletud}other{<ph name="MANY_ADDED" /> uut vahelehte, <ph name="ANY_CLOSED" /> suletud}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Grupeeri vaheleht}other{Grupeeri vahelehed}}</translation>
@@ -131,6 +133,7 @@
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Sule <ph name="TABS_COUNT_ONE" /> valitud üksus}other{Sule <ph name="TABS_COUNT_MANY" /> valitud üksust}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Teisaldage grupp uude aknasse}other{Teisaldage grupp uude aknasse}}</translation>
 <translation id="6228793724645064692">(hinnang poes)</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{Eemalda vaheleht grupist}other{Eemalda vahelehted grupist}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Vahelehe lisamine uude gruppi}other{Vahelehtede lisamine uude gruppi}}</translation>
 <translation id="6333260925957816943">Selle poe teave</translation>
 <translation id="6381032505162537930">Leiate oma vahelehegrupid siit</translation>

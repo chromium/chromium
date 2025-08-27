@@ -28,6 +28,7 @@
 <translation id="1828808367831369073">Byla seskupena <ph name="TABS_COUNT_ONE" /> karta</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> karty}other{<ph name="TABS_COUNT_MANY" /> karet}}</translation>
 <translation id="1909810060368225529">Oznámení: Změny téhle sdílené skupiny karet jsou viditelné pro všechny. Ve sdílených skupinách karet můžou všichni provádět změny.</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{Připnout kartu}few{Připnout karty}many{Připnout karty}other{Připnout karty}}</translation>
 <translation id="1982637982196732906">Přesunout do neaktivní sekce</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Přidat <ph name="TABS_COUNT_ONE" /> vybranou kartu do záložek}few{Přidat <ph name="TABS_COUNT_MANY" /> vybrané karty do záložek}many{Přidat <ph name="TABS_COUNT_MANY" /> vybrané karty do záložek}other{Přidat <ph name="TABS_COUNT_MANY" /> vybraných karet do záložek}}</translation>
 <translation id="2055057176188061528">Vyberte skupinu karet nebo vytvořte novou</translation>
@@ -78,6 +79,7 @@
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Miniatura náhledu sdílecího listu.</translation>
 <translation id="3810973564298564668">Spravovat</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{Odepnout kartu}few{Odepnout karty}many{Odepnout karty}other{Odepnout karty}}</translation>
 <translation id="3940195383040445971">Sledovat ceny na kartách</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> nová karta, zavřeno: <ph name="ANY_CLOSED" />}few{<ph name="MANY_ADDED" /> nové karty, zavřeno: <ph name="ANY_CLOSED" />}many{<ph name="MANY_ADDED" /> nové karty, zavřeno: <ph name="ANY_CLOSED" />}other{<ph name="MANY_ADDED" /> nových karet, zavřeno: <ph name="ANY_CLOSED" />}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Přidat kartu do skupiny}few{Seskupit karty}many{Seskupit karty}other{Seskupit karty}}</translation>
@@ -131,6 +133,7 @@
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Zavřít <ph name="TABS_COUNT_ONE" /> vybranou položku}few{Zavřít <ph name="TABS_COUNT_MANY" /> vybrané položky}many{Zavřít <ph name="TABS_COUNT_MANY" /> vybrané položky}other{Zavřít <ph name="TABS_COUNT_MANY" /> vybraných položek}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Přesunout skupinu do nového okna}few{Přesunout skupinu do nového okna}many{Přesunout skupinu do nového okna}other{Přesunout skupinu do nového okna}}</translation>
 <translation id="6228793724645064692">(hodnocení v obchodu)</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{Odstranit kartu ze skupiny}few{Odstranit karty ze skupiny}many{Odstranit karty ze skupiny}other{Odstranit karty ze skupiny}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Přidat kartu do nové skupiny}few{Přidat karty do nové skupiny}many{Přidat karty do nové skupiny}other{Přidat karty do nové skupiny}}</translation>
 <translation id="6333260925957816943">Informace o této prodejně</translation>
 <translation id="6381032505162537930">Tady najdete své skupiny karet</translation>

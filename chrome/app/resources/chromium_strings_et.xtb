@@ -82,6 +82,7 @@
 <translation id="2008474315282236005">See kustutab seadmest ühe üksuse. Hiljem oma andmete toomiseks logige Chromiumi sisse kasutajana <ph name="USER_EMAIL" />.</translation>
 <translation id="2018879682492276940">Installimine ebaõnnestus. Proovige uuesti.</translation>
 <translation id="2020032459870799438">Kui soovite kontrollida, kas teie muud paroolid on andmetega seotud rikkumiste ja muude turvaprobleemide eest kaitstud, <ph name="BEGIN_LINK" />logige Chromiumi sisse<ph name="END_LINK" />.</translation>
+<translation id="2039417478970545937">Seaded.</translation>
 <translation id="2049376729098081731">Valige, kas Google'i teenustes rohkem isikupärastatud kasutuskogemuse saamiseks kaasata Chromiumi ajalugu</translation>
 <translation id="2054039611381840095">Chromiumi tulevaste värskenduste saamiseks on teil vaja operatsioonisüsteemi macOS 12 või uuemat versiooni. See arvuti kasutab operatsioonisüsteemi macOS 11.</translation>
 <translation id="2086476982681781442">Chromium blokeeris selle allalaadimise, kuna fail on petlik ja võib teie seadmes ootamatuid muudatusi teha</translation>
@@ -314,6 +315,7 @@
 <translation id="5123973130450702873">Chromium vajab teie käeliigutuste jälgimiseks luba</translation>
 <translation id="5141988424377517949">Te pole hiljuti külastanud. Chromium eemaldas load <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="5174969993834422967">Tavaliselt blokeerite märguanded. Kui soovite lubada sellel saidil endale märguandeid saata, klõpsake oma asukoha lüliti paremas nurgas märguande ikoonil.</translation>
+<translation id="5174983315706567306">Pole piisavalt kettaruumi.</translation>
 <translation id="5187123684706427865">Chromiumi konto vajab uuesti autentimist</translation>
 <translation id="5224391634244552924">Salvestatud paroole ei ole. Chromium saab teie paroole kontrollida, kui olete need salvestanud.</translation>
 <translation id="5231355151045086930">Chromiumist väljalogimine</translation>
@@ -441,6 +443,7 @@
 <translation id="6598877126913850652">Ava Chromiumi märguandeseaded</translation>
 <translation id="6600016381025017075">Otsige sellelt lehelt mida tahes</translation>
 <translation id="6613594504749178791">Teie muudatused jõustuvad järgmine kord, kui Chromiumi taaskäivitate.</translation>
+<translation id="6648212540664651655">Jätkake sealt, kus pooleli jäite: Chromium taastas teie eelmise seansi vahelehed. Saate selle välja lülitada menüüs</translation>
 <translation id="665732753414869868">Chromium vajab kaamera kasutamise luba, et luua teie ümbruskonnast 3D-kaart</translation>
 <translation id="6669284030132180248">Kui salvestate ka oma järjehoidjad Google'i kontole, saate jälgida Chromiumis toodete hindu ja saada teateid hinnalanguste kohta</translation>
 <translation id="6676384891291319759">Pääs Internetti</translation>
@@ -505,6 +508,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="7352651011704765696">Midagi läks valesti</translation>
 <translation id="7376384068949534168">Te pole hiljuti külastanud. Chromium eemaldas load <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="7384121030444253939">Seda laiendust enam ei toetata. Chromium soovitab selle eemaldada.</translation>
+<translation id="7413153308467572558">Jätkake sealt, kus pooleli jäite: Chromium taastab teie vahelehed iga kord, kui brauseri uuesti käivitate. Selle väljalülitamiseks avage</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Tekst on kopeeritud</translation>
 <translation id="7451052299415159299">Chromium vajab selle saidi puhul luba, et teie kaamerale juurde pääseda</translation>
@@ -636,6 +640,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="911206726377975832">Kas kustutada ka teie sirvimisandmed?</translation>
 <translation id="9134482777260927479">Abi koduste ülesannetega</translation>
 <translation id="9148058034647219655">Välju</translation>
+<translation id="9155105544013854680">Jätkake sealt, kus pooleli jäite: Chromium saab teie vahelehed taastada iga kord, kui brauseri uuesti käivitate. Selle sisselülitamiseks avage</translation>
 <translation id="9158494823179993217">Teie süsteemiadministraator on konfigureerinud Chromiumi avama alternatiivset brauserit, et saada juurdepääs lehele <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Taaskäivitage &amp;Chromiumi värskendamiseks</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>

@@ -25,6 +25,7 @@
 <translation id="129382876167171263">Датотеките зачувани од веб-сајтовите се појавуваат тука</translation>
 <translation id="131112695174432497">Податоците што влијат на персонализацијата на реклами се избришани</translation>
 <translation id="1317194122196776028">Заборави го сајтов</translation>
+<translation id="1321110954513621549">Дозволено • Приближно</translation>
 <translation id="1323433172918577554">Прикажи повеќе</translation>
 <translation id="1333965224356556482">Не им дозволувај на сајтовите да ја гледаат локацијата</translation>
 <translation id="1343356790768851700">Овој сајт одредува работи што ви се допаѓаат, а потоа предлага реклами на други сајтови</translation>
@@ -40,6 +41,7 @@
 <translation id="1448064542941920355">Одзумирај</translation>
 <translation id="1464044141348608623">Не им дозволувај на сајтовите да знаат кога активно го користам уредот</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> сајт}one{<ph name="SITE_COUNT" /> сајт}other{<ph name="SITE_COUNT" /> сајта}}</translation>
+<translation id="1476700086976862423">Боја на темата: Сепија</translation>
 <translation id="1500473259453106018">Скриј ја картичката „Намалувања на цената на картичките“</translation>
 <translation id="1508931164824684991">Сајтовите може да користат JavaScript</translation>
 <translation id="1510341833810331442">На сајтовите не им е дозволено да зачувуваат податоци на вашиот уред</translation>
@@ -71,6 +73,7 @@
 <translation id="1799920918471566157">Совети за Chrome</translation>
 <translation id="1816835383954230954">Кога е вклучен, Chrome работи побрзо, а функциите што користат JavaScript би требало да функционираат според очекувањата. Кога е вклучен, ја намалува изведбата, но прави V8 да биде поотпорен на напади.</translation>
 <translation id="1818308510395330587">За да овозможите <ph name="APP_NAME" /> да користи AR, вклучете ја дозволата за камерата и во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
+<translation id="1848033246551405023">Фонт Sans Serif</translation>
 <translation id="1881806992065048905">Долен лист со изглед на страница во нова картичка</translation>
 <translation id="1887786770086287077">Пристапот до локацијата е исклучен за уредов. Вклучете го во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Сајтовите обично пристапуваат до датотеките и папките на вашиот уред за функции како што е автоматското зачувување на вашата работа</translation>
@@ -92,6 +95,7 @@
 <translation id="2079545284768500474">Врати</translation>
 <translation id="2080070583977670716">Повеќе поставки</translation>
 <translation id="2091887806945687916">Звук</translation>
+<translation id="2094208275686143364">Боја на темата: Светла</translation>
 <translation id="2096716221239095980">Избриши ги сите податоци</translation>
 <translation id="2102396546234652240">Не им дозволувај на сајтовите да го користат микрофонот</translation>
 <translation id="2117655453726830283">Следен слајд</translation>
@@ -137,6 +141,7 @@
 <translation id="2498359688066513246">Помош и повратни информации</translation>
 <translation id="2501278716633472235">Врати се</translation>
 <translation id="2533138527374486328">Кога е вклучено, сајтовите може да бараат да се поврзуваат со кој било уред во вашата локална мрежа. Кога е исклучено, сајтовите не може да поврзуваат со уредите во вашата локална мрежа.</translation>
+<translation id="2544997614631598250">Боја на темата: Темна</translation>
 <translation id="2546283357679194313">Колачиња и податоци од сајтот</translation>
 <translation id="2570922361219980984">Пристапот до локацијата е исклучен и за уредов. Вклучете го во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Проширено - кликни да се сокрие.</translation>
@@ -194,6 +199,7 @@
 <translation id="3165022941318558018">Дозволете му на сајт да користи колачиња од трети страни</translation>
 <translation id="3167868116600277716">Активност на Discover</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> складирани податоци</translation>
+<translation id="3199078925536734975">Дозволено овој пат • Приближно</translation>
 <translation id="321187648315454507">За да овозможите <ph name="APP_NAME" /> да ви испраќа известувања, вклучете ја дозволата за известувања и во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Локацијата не е дозволена</translation>
 <translation id="3227137524299004712">Микрофон</translation>
@@ -250,6 +256,7 @@
 <translation id="3803367742635802571">Сајтовите што ги посетувате може да прекинат со функционирање како што се дизајнирани</translation>
 <translation id="3816118180265633665">Бои на Chrome</translation>
 <translation id="381841723434055211">Телефонски броеви</translation>
+<translation id="3823453485268218808">Фонт Mono</translation>
 <translation id="3826050100957962900">Најавување на трети страни</translation>
 <translation id="3835233591525155343">Користење на уредот</translation>
 <translation id="3843916486309149084">Chrome пак ќе блокира колачиња денес</translation>
@@ -302,6 +309,7 @@
 <translation id="4402755511846832236">Не дозволувај сајтовите да знаат кога активно го користам уредов</translation>
 <translation id="4412992751769744546">Дозволи колачиња од трети лица</translation>
 <translation id="4419929467120297501">Chrome блокира сајтовите да користат колачиња од трети страни за да ве следат додека прелистувате. Одете во поставките за да <ph name="BEGIN_LINK" />управувате со пристапот до колачињата од трети страни<ph name="END_LINK" />.</translation>
+<translation id="4425416282877905577">Фонт Serif</translation>
 <translation id="443121186588148776">Сериска порта</translation>
 <translation id="4434045419905280838">Скокачки прозорци/пренасочувања</translation>
 <translation id="443552056913301231">Со дејствово ќе се избришат сите локални податоци, што опфаќа и колачиња, а ќе се ресетираат и сите дозволи за <ph name="ORIGIN" /></translation>
@@ -554,6 +562,7 @@
 <translation id="7478658909253570368">Не им дозволувај на сајтовите да се поврзуваат со сериски порти</translation>
 <translation id="7488573225650545859">Скриј „Прегледајте ги картичките во списокот со апликации“</translation>
 <translation id="7521387064766892559">JavaScript</translation>
+<translation id="7538975533793429503">Лизгач за големина на фонтот</translation>
 <translation id="7547989957535180761">Кога е вклучено, сајтовите може да прикажуваат барања за најавување. Кога е исклучено, сајтовите не може да прикажуваат барања за најавување.</translation>
 <translation id="7553211568594248088">излезете од пребарување во хаб</translation>
 <translation id="7554752735887601236">Сајтот го користи микрофонот</translation>

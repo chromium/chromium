@@ -28,6 +28,7 @@
 <translation id="1828808367831369073">တဘ် <ph name="TABS_COUNT_ONE" /> ခုကို အုပ်စုဖွဲ့ထားသည်</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခု}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခု}}</translation>
 <translation id="1909810060368225529">သတိပေးချက်- မျှဝေထားသော ဤ ‘တဘ်အုပ်စု’ ရှိ အပြောင်းအလဲများကို လူတိုင်း မြင်နိုင်သည်။ မျှဝေထားသော သင့်တဘ်အုပ်စုများကို လူတိုင်းက ပြောင်းလဲနိုင်သည်</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{တဘ်ကို ပင်ထိုးရန်}other{တဘ်များကို ပင်ထိုးရန်}}</translation>
 <translation id="1982637982196732906">အသုံးမပြုသည်များကဏ္ဍသို့ ရွှေ့ခြင်း</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{ရွေးထားသောတဘ် <ph name="TABS_COUNT_ONE" /> ခုကို လိပ်စာမှတ်ရန်}other{ရွေးထားသောတဘ် <ph name="TABS_COUNT_MANY" /> ခုကို လိပ်စာမှတ်ရန်}}</translation>
 <translation id="2055057176188061528">တဘ်အုပ်စု ရွေးနိုင်သည် (သို့) တဘ်အုပ်စုအသစ် ပြုလုပ်နိုင်သည်</translation>
@@ -78,6 +79,7 @@
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">စာမျက်နှာအစမ်းကြည့်ရှုမှု မျှဝေရန်ပုံသေး။</translation>
 <translation id="3810973564298564668">စီမံရန်</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{တဘ်ကို ပင်ဖြုတ်ရန်}other{တဘ်များကို ပင်ဖြုတ်ရန်}}</translation>
 <translation id="3940195383040445971">တဘ်များတွင် ဈေးနှုန်းများစောင့်ကြည့်ရန်</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{တဘ်အသစ် <ph name="ONE_ADDED" /> ခု၊ <ph name="ANY_CLOSED" /> ခု ပိတ်ထားသည်}other{တဘ်အသစ် <ph name="MANY_ADDED" /> ခု၊ <ph name="ANY_CLOSED" /> ခု ပိတ်ထားသည်}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{တဘ် အုပ်စုဖွဲ့ရန်}other{တဘ်များ အုပ်စုဖွဲ့ရန်}}</translation>
@@ -131,6 +133,7 @@
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{ရွေးထားသော တဘ် <ph name="TABS_COUNT_ONE" /> ခု ပိတ်ရန်}other{ရွေးထားသော တဘ် <ph name="TABS_COUNT_MANY" /> ခု ပိတ်ရန်}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{အုပ်စုကို ဝင်းဒိုးအသစ်သို့ ရွှေ့ရန်}other{အုပ်စုကို ဝင်းဒိုးနောက်တစ်ခုသို့ ရွှေ့ရန်}}</translation>
 <translation id="6228793724645064692">(ဆိုင်အဆင့်)</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{တဘ်ကို အုပ်စုမှ ဖယ်ရှားရန်}other{တဘ်များကို အုပ်စုမှ ဖယ်ရှားရန်}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{တဘ်ကို အုပ်စုအသစ်တွင် ထည့်ရန်}other{တဘ်ကို အုပ်စုအသစ်တွင် ထည့်ရန်}}</translation>
 <translation id="6333260925957816943">ဤဆိုင်အကြောင်း</translation>
 <translation id="6381032505162537930">တဘ်အုပ်စုများကို ဤနေရာတွင် မြင်ရမည်</translation>

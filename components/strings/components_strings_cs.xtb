@@ -441,6 +441,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1719838434204287058">24 × 30″</translation>
 <translation id="1720941539803966190">Zavřít výukový program</translation>
 <translation id="1721424275792716183">* Pole je povinné</translation>
+<translation id="1723636263173393300">Tato zásada smí zahrnovat maximálně tento počet zkratek: <ph name="MAX_ITEMS_LIMIT" />.</translation>
 <translation id="1725591448053514783">Obálka You 6</translation>
 <translation id="1727613060316725209">Certifikát je platný</translation>
 <translation id="1728677426644403582">Prohlížíte si zdrojový kód webové stránky</translation>
@@ -1048,6 +1049,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="271663710482723385">Režim celé obrazovky ukončíte stisknutím kláves |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
 <translation id="2717336592027046789">Role</translation>
 <translation id="2718207025093645426">Spravovaný uživatel nebo zařízení nemá načtené žádné zásady.</translation>
+<translation id="2719233594187778789">Nejedinečná adresa URL je ignorována: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Požadavek byl úspěšný</translation>
 <translation id="2722622039067384533">Nábytek do obývacího pokoje</translation>
 <translation id="2723669454293168317">Spusťte v nastavení Chromu bezpečnostní kontrolu</translation>
@@ -2004,6 +2006,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4298000214066716287">Investice</translation>
 <translation id="4298148761711700950">Plaťte okamžitě bez nahrávání QR kódu</translation>
 <translation id="4298925811540301889">Soubory cookie pro tento web se synchronizují mezi vašimi zařízeními se systémem ChromeOS. Synchronizované položky můžete spravovat v sekci <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4299919199185766032">Název zkratky překračuje maximální povolenou délku <ph name="MAX_LENGTH" /> znaků.</translation>
 <translation id="4300272766492248925">Do aplikace</translation>
 <translation id="4300675098767811073">Několik děr vpravo</translation>
 <translation id="4302514097724775343">Klepnutím na dinosaura spustíte hru</translation>
@@ -2705,6 +2708,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 Kontaktujte administrátora systému.</translation>
 <translation id="5496804587179176046">Uložte si bezpečnostní kódy, aktuálně žádné uloženy nejsou</translation>
 <translation id="550365051221576010">Vyplnit vše</translation>
+<translation id="5506286895894263601">Seznam neobsahuje žádné platné zkratky.</translation>
 <translation id="5508443345185481044">Fotoaparáty a kamery</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Spravované záložky</translation>
@@ -3623,6 +3627,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7014741021609395734">Úroveň přiblížení</translation>
 <translation id="7016992613359344582">Může se jednat o jednorázové nebo opakované poplatky, které nemusejí být jasně patrné.</translation>
 <translation id="701757816833614688">Vzdělávání ve výtvarném umění a designu</translation>
+<translation id="7020464868401003526">Adresa URL zkratky překračuje maximální povolenou délku <ph name="MAX_LENGTH" /> znaků.</translation>
 <translation id="702275896380648118">Tento web určuje, co se vám líbí, a pak navrhuje reklamy jiným webům. Tento web také získává témata reklam z Chromu, aby vám mohl zobrazovat relevantnější reklamy.</translation>
 <translation id="7023162328967545559">Upozornění administrátora</translation>
 <translation id="7023765275461720661">Připojit účet a zaplatit pomocí služby <ph name="BNPL_ISSUER_NAME" />?</translation>

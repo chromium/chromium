@@ -25,6 +25,7 @@
 <translation id="129382876167171263">በድር ጣቢያዎች የተቀመጡ ፋይሎች እዚህ ይታያሉ</translation>
 <translation id="131112695174432497">ማስታወቂያን ግላዊነት ማላበስ ላይ ተጽዕኖ የሚያሳድር ውሂብ ተሰርዟል</translation>
 <translation id="1317194122196776028">ይህን ጣቢያ እርሳ</translation>
+<translation id="1321110954513621549">የተፈቀደ • ግምታዊ</translation>
 <translation id="1323433172918577554">ተጨማሪ አሳይ</translation>
 <translation id="1333965224356556482">ጣቢያዎች አካባቢዎን እንዲያዩ አይፍቀዱ</translation>
 <translation id="1343356790768851700">ይህ ጣቢያ እርስዎ የሚወዷቸውን ነገሮች ይወስናል ከዚያ ማስታወቂያዎችን ለሌሎች ጣቢያዎች ይጠቁማል</translation>
@@ -40,6 +41,7 @@
 <translation id="1448064542941920355">ማጉላትን ቀንስ</translation>
 <translation id="1464044141348608623">የእርስዎን መሣሪያ በንቃት በሚጠቀሙበት ጊዜ ጣቢያዎች እንዲያውቁ አይፍቀዱ</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> ጣቢያ}one{<ph name="SITE_COUNT" /> ጣቢያዎች}other{<ph name="SITE_COUNT" /> ጣቢያዎች}}</translation>
+<translation id="1476700086976862423">የገጽታ ቀለም ሰፒያ</translation>
 <translation id="1500473259453106018">በትሮች ካርድ ላይ የዋጋ ቅነሳዎችን ደብቅ</translation>
 <translation id="1508931164824684991">ጣቢያዎች ጃቫስክሪፕትን መጠቀም ይችላሉ</translation>
 <translation id="1510341833810331442">ጣቢያዎች በመሣሪያዎ ላይ ውሂብ እንዲያስቀምጡ አይፈቀድላቸውም</translation>
@@ -71,6 +73,7 @@
 <translation id="1799920918471566157">የChrome ጠቃሚ ምክሮች</translation>
 <translation id="1816835383954230954">በሚበራበት ጊዜ Chrome በበለጠ ፍጥነት ይሄዳል እና ጃቫስክሪፕት የሚጠቀሙ ባህሪያት እንደተነደፉት ሊሠሩ ይገባል። በሚጠፋበት ጊዜ ይህ አፈጻጸምን ይቀንሳል ነገር ግን V8 ጥቃቶችን ይበልጥ እንዲቋቋም ያደርጋል።</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> ኤአር እንዲጠቀም ለማስቻል፣ በ <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ካሜራን በተጨማሪ ያብሩ።</translation>
+<translation id="1848033246551405023">የቅርጸ-ቁምፊ ሳንስ ሰሪፍ</translation>
 <translation id="1881806992065048905">የአዲስ ትር ገፅ ዕይታ ግርጌ ሉህ</translation>
 <translation id="1887786770086287077">የአካባቢ መዳረሻ ለዚህ መሣሪያ ጠፍቷል። በ<ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ያብሩት።</translation>
 <translation id="1906181697255754968">ጣቢያዎች እንደ ስራዎን በራስ-ሰር ማስቀመጥ ያሉ ባህሪያትን ለማግኘት አብዛኛውን ጊዜ በመሣሪያዎ ላይ ያሉትን ፋይሎች እና አቃፊዎች ይደርሳሉ።</translation>
@@ -92,6 +95,7 @@
 <translation id="2079545284768500474">ቀልብስ</translation>
 <translation id="2080070583977670716">ተጨማሪ ቅንብሮች</translation>
 <translation id="2091887806945687916">ድምፅ</translation>
+<translation id="2094208275686143364">የገጽታ ቀለም ብርሃን</translation>
 <translation id="2096716221239095980">ሁሉንም ውሂብ ሰርዝ</translation>
 <translation id="2102396546234652240">ጣቢያዎች ማይክሮፎንዎን እንዲጠቀሙ አይፍቀዱ</translation>
 <translation id="2117655453726830283">ቀጣይ ተንሸራታች</translation>
@@ -137,6 +141,7 @@
 <translation id="2498359688066513246">እገዛ እና ግብረመልስ</translation>
 <translation id="2501278716633472235">ወደ ኋላ ተመለስ</translation>
 <translation id="2533138527374486328">ሲበራ ጣቢያዎች በአካባቢያዊ አውታረ መረብዎ ላይ ከማንኛውም መሣሪያ ጋር ለመገናኘት መጠየቅ ይችላሉ። ሲጠፋ ጣቢያዎ በአካባቢያዊ አውታረ መረብዎ ላይ ከማንኛውም መሣሪያ ጋር ለመገናኘት መጠየቅ አይችሉም።</translation>
+<translation id="2544997614631598250">የገጽታ ቀለም ጠቆር ያለ</translation>
 <translation id="2546283357679194313">ኩኪዎች እና የጣቢያ ውሂብ</translation>
 <translation id="2570922361219980984">የአካባቢ መዳረሻ እንዲሁም ለዚህ መሣሪያ ጠፍቷል። በ<ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ያብሩት።</translation>
 <translation id="257931822824936280">ተዘርግቷል - ለመሰብሰብ ጠቅ ያድርጉ</translation>
@@ -194,6 +199,7 @@
 <translation id="3165022941318558018">አንድ ጣቢያ የሦስተኛ ወገን ኩኪዎችን እንዲጠቀም ይፍቀዱ</translation>
 <translation id="3167868116600277716">ምግብ ያግኙ</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> የተከማቸ ውሂብ</translation>
+<translation id="3199078925536734975">በዚህ ጊዜ የተፈቀደ • ግምታዊ</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> ማሳወቂያዎችን እንዲልክልዎት ለማድረግ፣ በተጨማሪ በ <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ማሳወቂያዎችን ያብሩ።</translation>
 <translation id="3223425961342298674">አካባቢ አይፈቀድም</translation>
 <translation id="3227137524299004712">ማይክሮፎን</translation>
@@ -250,6 +256,7 @@
 <translation id="3803367742635802571">የሚጎበኟቸው ጣቢያዎች እንደተነደፉት መስራታቸውን ሊያቆሙ ይችላሉ</translation>
 <translation id="3816118180265633665">Chrome ቀለማት</translation>
 <translation id="381841723434055211">ስልክ ቁጥሮች</translation>
+<translation id="3823453485268218808">ቅርጸ-ቁምፊ ሞኖ</translation>
 <translation id="3826050100957962900">የሶስተኛ ወገን መግቢያ</translation>
 <translation id="3835233591525155343">የእርስዎ መሣሪያ አጠቃቀም</translation>
 <translation id="3843916486309149084">Chrome ዛሬ እንደገና ኩኪዎችን ያግዳል</translation>
@@ -302,6 +309,7 @@
 <translation id="4402755511846832236">እርስዎ ይህን መሣሪያ በንቃት ሲጠቀሙ ጣቢያዎች እንዳያውቁ ያግዱ</translation>
 <translation id="4412992751769744546">የሶስተኛ ወገን ኩኪዎችን ፍቀድ</translation>
 <translation id="4419929467120297501">ጣቢያዎች እርስዎ በማሰስ ላይ እንዳሉ እርስዎን ለመከታተል የሦስተኛ ወገን ኩኪዎችን እንዳይጠቀሙ Chrome ያግዳቸዋል። <ph name="BEGIN_LINK" />ለሦስተኛ ወገን ኩኪዎች መዳረሻ ለማስተዳደር<ph name="END_LINK" /> ቅንብሮችን ይጎብኙ።</translation>
+<translation id="4425416282877905577">የቅርጸ-ቁምፊ ሰሪፍ</translation>
 <translation id="443121186588148776">የመለያ ወደብ</translation>
 <translation id="4434045419905280838">ብቅ-ባዮች እና አቅጣጫ ማዞሮች</translation>
 <translation id="443552056913301231">ይህ እርምጃ ኩኪዎችን ጨምሮ ሁሉንም የአካባቢ ውሂብ ይሰርዛል እና ሁሉንም ፈቃዶች ለ<ph name="ORIGIN" /> ዳግም ያስጀምራል</translation>
@@ -554,6 +562,7 @@
 <translation id="7478658909253570368">ጣቢያዎች ከተከታታይ ወደቦች ጋር እንዲገናኙ አይፍቀዱ</translation>
 <translation id="7488573225650545859">በመተግበሪያ ዝርዝር ውስጥ ያሉ ትሮችን ደብቅ</translation>
 <translation id="7521387064766892559">ጃቫስክሪፕት</translation>
+<translation id="7538975533793429503">የቅርጸ-ቁምፊ መጠን ተንሸራታች</translation>
 <translation id="7547989957535180761">ሲበራ፣ ጣቢያዎች የመግባት ጥያቄዎችን ሊያሳዩ ይችላሉ። ሲጠፋ፣ ጣቢያዎች የመግባት ጥያቄዎችን ማሳየት አይችሉም።</translation>
 <translation id="7553211568594248088">ከማዕከል ፍለጋ ውጣ</translation>
 <translation id="7554752735887601236">አንድ ጣቢያ የእርስዎን ማይክሮፎን እየተጠቀመ ነው</translation>

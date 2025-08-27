@@ -156,6 +156,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="1749561566933687563">Sinchronizuokite žymes</translation>
 <translation id="1750238553597293878">Toliau naudokite slaptažodžius „Google“ paskyroje</translation>
 <translation id="17513872634828108">Atidaryti skirtukai</translation>
+<translation id="1753744496844366747">Aa</translation>
 <translation id="1755203724116202818">Siekiant įvertinti skelbimo našumą, tarp svetainių bendrinami tam tikrų tipų duomenys, pvz., ar apsilankę svetainėje įsigijote pirkinį.</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Puslapiai, vienas puslapis sąraše}one{Puslapiai, # puslapis sąraše}few{Puslapiai, # puslapiai sąraše}many{Puslapiai, # puslapio sąraše}other{Puslapiai, # puslapių sąraše}}</translation>
 <translation id="1771929606532798550">„Google“ siunčiama informacija apie jūsų „Chrome“ naudojimą, bet ji nėra susieta su jumis.\n\nJei „Chrome“ užstringa, į išsamią strigties informaciją gali būti įtraukta asmens informacijos.\n\nJei sinchronizuosite istoriją su „Google“ paskyra, metrika taip pat gali apimti informaciją apie URL, kuriais lankotės.</translation>
@@ -321,6 +322,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="253498598929009420">Svetainė galės matyti jūsų ekrano turinį</translation>
 <translation id="2535807170289627159">Visi skirtukai</translation>
 <translation id="2536728043171574184">Žiūrima neprisijungus naudojama šio puslapio kopija</translation>
+<translation id="2539002604555291451">Be užraitų</translation>
 <translation id="2542548955756682219">„<ph name="TAB_TITLE" />“, skirtukas</translation>
 <translation id="2546283357679194313">Slapukai ir svetainės duomenys</translation>
 <translation id="2547843573592965873">Taikant profilio užraktą apsaugoma jūsų informacija automobilyje, įskaitant slaptažodžius, mokėjimus ir kt., saugomus „Google“ paskyroje.</translation>
@@ -499,7 +501,6 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="3384347053049321195">Bendrinti vaizdą</translation>
 <translation id="3387650086002190359">Nepavyko atsisiųsti „<ph name="FILE_NAME" />“ dėl failų sistemos klaidų.</translation>
 <translation id="3414952576877147120">Dydis:</translation>
-<translation id="3421726884497337397">Pasirinkite, kada blokuoti trečiosios šalies slapukus</translation>
 <translation id="3430670036890315772">Išjungus profilio užraktą bus pašalinta išsaugota informacija</translation>
 <translation id="3435465986463792564">Atidaryta daug langų? Galite tvarkyti juos čia</translation>
 <translation id="3435575784518354875">Jei norite išsaugoti prieigą prie slaptažodžių, juos eksportuokite dabar, atnaujinkite „Google Play“ paslaugas ir tada importuokite juos atgal į „Google“ slaptažodžių tvarkyklę. <ph name="BEGIN_LINK" />Žr. išsamias instrukcijas<ph name="END_LINK" />.</translation>
@@ -760,7 +761,6 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 pažeistas slaptažodis}one{# pažeistas slaptažodis}few{# pažeisti slaptažodžiai}many{# pažeisto slaptažodžio}other{# pažeistų slaptažodžių}}</translation>
 <translation id="4641919525231168205">Eiti į kitą puslapį</translation>
 <translation id="4642472735733036929">Kainų stebėjimas sustabdytas</translation>
-<translation id="4645146721047390964">Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos sužinoti apie naršymo veiklą skirtingose svetainėse, pavyzdžiui, kad galėtų suasmeninti skelbimus. Funkcijos gali neveikti tam tikrose svetainėse.</translation>
 <translation id="465657074423018424">Saugaus naršymo funkcija apsaugo jus nuo apgaulingų svetainių. Jei ją išjungsite, būkite itin atsargūs naršydami, ypač prieš įvesdami slaptažodžius.</translation>
 <translation id="4662373422909645029">Skaičiai slapyvardyje negalimi</translation>
 <translation id="4663756553811254707">Ištrinta žymių: <ph name="NUMBER_OF_BOOKMARKS" /></translation>
@@ -1220,7 +1220,6 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6633067410344541938">Atrakinti inkognito režimą</translation>
 <translation id="6636623428211296678">Galite toliau peržiūrėti daugiau nustatymų arba baigti dabar</translation>
 <translation id="6637100877383020115">Kad padėtų tobulinti programą, „Chrome“ siunčia naudojimo ir strigčių duomenis sistemai „Google“. <ph name="BEGIN_UMA_LINK" />Tvarkyti<ph name="END_UMA_LINK" /></translation>
-<translation id="6640207029842583248">Blokuoti visą laiką</translation>
 <translation id="6641780377503683465">Pašalinti „<ph name="INTEREST" />“</translation>
 <translation id="6647441008198474441">URL, kuriais lankotės, siunčiami „Google“, kad numatytų, kokiose svetainėse galite vėliau apsilankyti</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}many{<ph name="CONTACT_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -1241,6 +1240,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6723740634201835758">„Google“ paskyroje</translation>
 <translation id="6734310707649923383">Galite peržiūrėti puslapius, kuriuose lankėtės, arba ištrinti juos iš istorijos</translation>
 <translation id="6738867403308150051">Atsisiunčiama...</translation>
+<translation id="6745063744988317486">Lygiaplotis</translation>
 <translation id="6746338529702829275">Peržiūrėkite paskyros duomenis</translation>
 <translation id="6751521182688001123">Sparčiai atidarykite naują skirtuką. Jei norite redaguoti šį spartųjį klavišą, palieskite ir palaikykite.</translation>
 <translation id="6752130751133944215">Jei norite atkurti naują langą, sumažinkite bendrą aktyvių ir neaktyvių langų skaičių iki <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ar mažiau. Neaktyvūs langai ištrinami po šešių mėnesių.</translation>
@@ -1343,6 +1343,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="7111822978084196600">Pavadinkite šį langą</translation>
 <translation id="7115358764509798967">Numatytoji sistemos vertė</translation>
 <translation id="7117485132243600300">Tvarkykite stebimą turinį, siūlomas temas ir paieškas</translation>
+<translation id="7119984597597798764">Uždaryti „<ph name="INSTANCE_TITLE" />“</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Peržiūrėti vienos svetainės leidimai}one{Peržiūrėti # svetainės leidimai}few{Peržiūrėti # svetainių leidimai}many{Peržiūrėti # svetainės leidimai}other{Peržiūrėti # svetainių leidimai}}</translation>
 <translation id="7138678301420049075">Kitas</translation>
 <translation id="7140829094791862589">Rūšiuoti neautomatiškai</translation>
@@ -1444,7 +1445,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="751961395872307827">Nepavyksta prisijungti prie svetainės</translation>
 <translation id="7523960634226602883">Ieškoti naudojant fotoaparatą ir „Google Lens“</translation>
 <translation id="7525248386620136756">Uždaryta ir išsaugota: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
-<translation id="752731652852882757">Blokuoti naudojant inkognito režimą</translation>
 <translation id="7545347190366646170">Prieigą turintys žmonės</translation>
 <translation id="7554643625247105821">Nepavyko patikrinti „Chrome“ versijos</translation>
 <translation id="7557508262441527045">Atsijungta</translation>
@@ -1610,7 +1610,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="8243077599929149377">Naudotojo vardo pridėjimas</translation>
 <translation id="8244387390464017490">Tinkinti naujo skirt. psl.</translation>
 <translation id="8250920743982581267">Dokumentai</translation>
-<translation id="8255617931166444521">Svetainės slapukai gali būti naudojami tik siekiant peržiūrėti naršymo veiklą toje svetainėje.</translation>
 <translation id="8258999165172757081">Pridėta</translation>
 <translation id="8259179246279078674">Kadangi iš anksto įkelti puslapiai yra šifruojami, „Google“ nežinos nieko apie iš anksto įkelto puslapio turinį. „Google“ serveriai žinos, kurios svetainės yra privačiai iš anksto įkeltos. Ši informacija naudojama tik puslapiams iš anksto įkelti ir nėra susieta su kita informacija iš jūsų „Google“ paskyros.</translation>
 <translation id="8260126382462817229">Bandykite prisijungti dar kartą</translation>

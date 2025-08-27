@@ -440,6 +440,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1719838434204287058">24 x 30 palcev</translation>
 <translation id="1720941539803966190">Zapiranje vadnice</translation>
 <translation id="1721424275792716183">*Polje je obvezno</translation>
+<translation id="1723636263173393300">V tem pravilniku je lahko največ toliko bližnjic: <ph name="MAX_ITEMS_LIMIT" />.</translation>
 <translation id="1725591448053514783">Kuverta 6</translation>
 <translation id="1727613060316725209">Potrdilo je veljavno</translation>
 <translation id="1728677426644403582">Ogledujete si izvorno kodo spletne strani</translation>
@@ -1047,6 +1048,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="271663710482723385">Pritisnite |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| za zapiranje celozaslonskega načina</translation>
 <translation id="2717336592027046789">Roll</translation>
 <translation id="2718207025093645426">Upravljani uporabnik ali upravljana naprava nima naloženih pravilnikov.</translation>
+<translation id="2719233594187778789">Prezrt URL, ki ni enoličen: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Zahteva je uspela</translation>
 <translation id="2722622039067384533">Pohištvo za dnevne sobe</translation>
 <translation id="2723669454293168317">V nastavitvah Chroma zaženite varnostno preverjanje.</translation>
@@ -2007,6 +2009,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4298000214066716287">Naložbe</translation>
 <translation id="4298148761711700950">Plačujte takoj brez nalaganja kode QR</translation>
 <translation id="4298925811540301889">Piškotki za to spletno mesto so sinhronizirani v napravah ChromeOS. Če želite upravljati, kaj se sinhronizira, odprite <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4299919199185766032">Ime bližnjice presega največjo dovoljeno dolžino znakov: <ph name="MAX_LENGTH" />.</translation>
 <translation id="4300272766492248925">Odpri aplikacijo</translation>
 <translation id="4300675098767811073">Večkratno luknjanje na desni</translation>
 <translation id="4302514097724775343">Če želite igrati, se dotaknite dinozavra.</translation>
@@ -2708,6 +2711,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
     Poskusite se obrniti na skrbnika sistema.</translation>
 <translation id="5496804587179176046">Shranite varnostne kode, trenutno ni shranjenih varnostnih kod</translation>
 <translation id="550365051221576010">Izpolnitev vsega</translation>
+<translation id="5506286895894263601">Na seznamu ni veljavnih bližnjic.</translation>
 <translation id="5508443345185481044">Videokamere</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Upravljani zaznamki</translation>
@@ -3627,6 +3631,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7014741021609395734">Stopnja povečave</translation>
 <translation id="7016992613359344582">Te bremenitve so lahko enkratne ali ponavljajoče se in morda niso očitne.</translation>
 <translation id="701757816833614688">Izobraževanje, povezano z vizualno umetnostjo in oblikovanjem</translation>
+<translation id="7020464868401003526">URL bližnjice presega največjo dovoljeno dolžino znakov: <ph name="MAX_LENGTH" />.</translation>
 <translation id="702275896380648118">To spletno mesto določi stvari, ki so vam všeč, in nato predlaga oglase drugim spletnim mestom. To spletno mesto tudi pridobi vaše teme oglasov iz Chroma, da vam prikaže ustreznejše oglase.</translation>
 <translation id="7023162328967545559">Opozorilo skrbnika</translation>
 <translation id="7023765275461720661">Želite povezati račun in plačevati s ponudnikom <ph name="BNPL_ISSUER_NAME" />?</translation>

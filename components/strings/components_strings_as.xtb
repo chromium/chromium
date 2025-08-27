@@ -440,6 +440,7 @@
 <translation id="1719838434204287058">২৪ x ৩০ ইঞ্চি</translation>
 <translation id="1720941539803966190">টিউট’ৰিয়েল বন্ধ কৰক</translation>
 <translation id="1721424275792716183">* ক্ষেত্ৰটো আৱশ্যকীয়</translation>
+<translation id="1723636263173393300">এই নীতিটোত <ph name="MAX_ITEMS_LIMIT" /> টাতকৈ অধিক শ্বৰ্টকাট থাকিব নালাগে।</translation>
 <translation id="1725591448053514783">এনভেল’প আপুনি ৬</translation>
 <translation id="1727613060316725209">প্ৰমাণপত্ৰখন মান্য</translation>
 <translation id="1728677426644403582">আপুনি কোনো ৱেব পৃষ্ঠাৰ উৎস চাই আছে</translation>
@@ -1047,6 +1048,7 @@
 <translation id="271663710482723385">পূৰ্ণ স্ক্ৰীনৰ পৰা বাহিৰ ওলাবলৈ |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| টিপক</translation>
 <translation id="2717336592027046789">ৰ’ল</translation>
 <translation id="2718207025093645426">পৰিচালনা কৰা ব্যৱহাৰকাৰী অথবা ডিভাইচত কোনো নীতি ল’ড কৰা হোৱা নাই।</translation>
+<translation id="2719233594187778789">অদ্বিতীয় নোহোৱা URL উপেক্ষা কৰা হৈছে: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">অনুৰোধ সফল হৈছে</translation>
 <translation id="2722622039067384533">বহা কোঠাৰ আচবাব</translation>
 <translation id="2723669454293168317">Chromeৰ ছেটিঙত সুৰক্ষা পৰীক্ষা চলাওক</translation>
@@ -2003,6 +2005,7 @@
 <translation id="4298000214066716287">বিনিয়োগ কৰা</translation>
 <translation id="4298148761711700950">কিউআৰ ক’ড আপল’ড নকৰাকৈয়ে ক্ষিপ্ৰভাৱে পৰিশোধ কৰক</translation>
 <translation id="4298925811540301889">এই ছাইটটোৰ কুকিসমূহ আপোনাৰ সমগ্ৰ ChromeOS ডিভাইচত ছিংক কৰা হৈছে। আপুনি কি ছিংক কৰে সেয়া পৰিচালনা কৰিবলৈ, <ph name="SYNC_SETTINGS" />লৈ যাওক।</translation>
+<translation id="4299919199185766032">শ্বৰ্টকাটৰ নামে সৰ্বাধিক অনুমোদিত দৈৰ্ঘ্য <ph name="MAX_LENGTH" /> টা বৰ্ণসংখ্যা অতিক্ৰম কৰিছে।</translation>
 <translation id="4300272766492248925">এপ্ খোলক</translation>
 <translation id="4300675098767811073">সোঁফালে একাধিক পাঞ্চ কৰক</translation>
 <translation id="4302514097724775343">খেলিবলৈ ডাইন’ছৰত টিপক</translation>
@@ -2704,6 +2707,7 @@
     আপোনাৰ ছিষ্টেমৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰি চাওক৷</translation>
 <translation id="5496804587179176046">সুৰক্ষা সম্পৰ্কীয় ক’ড ছেভ কৰক, বৰ্তমান কোনো সুৰক্ষা সম্পৰ্কীয় ক’ড ছেভ কৰা হোৱা নাই</translation>
 <translation id="550365051221576010">আটাইবোৰ পূৰ কৰক</translation>
+<translation id="5506286895894263601">সূচীখনত কোনো মান্য শ্বৰ্টকাট নাই।</translation>
 <translation id="5508443345185481044">কেমেৰা আৰু কেমকৰ্ডাৰ</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">পৰিচালিত বুকমাৰ্ক</translation>
@@ -3622,6 +3626,7 @@
 <translation id="7014741021609395734">জুমৰ স্তৰ</translation>
 <translation id="7016992613359344582">এই মাচুলটো এবাৰেই বা বাৰে বাৰে দিবলগীয়া হ’ব পাৰে আৰু সেইটো সুনিৰ্দিষ্ট নহ’ব পাৰে।</translation>
 <translation id="701757816833614688">ভিজুৱেল আৰ্ট আৰু ডিজাইন সম্পৰ্কীয় শিক্ষা</translation>
+<translation id="7020464868401003526">শ্বৰ্টকাটৰ URLএ সৰ্বাধিক অনুমোদিত দৈৰ্ঘ্য <ph name="MAX_LENGTH" /> টা বৰ্ণসংখ্যা অতিক্ৰম কৰিছে।</translation>
 <translation id="702275896380648118">এই ছাইটে আপুনি ভাল পোৱা বস্তুবোৰ নিৰ্ধাৰণ কৰে আৰু তাৰ পাছত অন্য ছাইটসমূহক বিজ্ঞাপনৰ বাবে পৰামৰ্শ দিয়ে। আপোনাক অধিক প্ৰাসংগিক বিজ্ঞাপন দেখুৱাবলৈ এই ছাইটটোৱে Chromeৰ পৰাও আপোনাৰ বিজ্ঞাপনৰ বিষয়সমূহ লাভ কৰে।</translation>
 <translation id="7023162328967545559">প্ৰশাসকে দিয়া সকীয়নি</translation>
 <translation id="7023765275461720661">একাউণ্ট লিংক কৰি <ph name="BNPL_ISSUER_NAME" />ৰ জৰিয়তে পৰিশোধ কৰিবনে?</translation>

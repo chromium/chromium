@@ -28,6 +28,7 @@
 <translation id="1828808367831369073">Mae <ph name="TABS_COUNT_ONE" /> tab wedi'i grwpio</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}zero{<ph name="TABS_COUNT_MANY" /> tab}two{<ph name="TABS_COUNT_MANY" /> dab}few{<ph name="TABS_COUNT_MANY" /> thab}many{<ph name="TABS_COUNT_MANY" /> thab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
 <translation id="1909810060368225529">Sylwer: Mae newidiadau i'r Grŵp Tabiau a Rennir hwn yn weladwy i bawb. Gall pawb wneud newidiadau i'ch grwpiau tabiau a rennir</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{Pinio tab}zero{Pinio tabiau}two{Pinio tabiau}few{Pinio tabiau}many{Pinio tabiau}other{Pinio tabiau}}</translation>
 <translation id="1982637982196732906">Symud i adran anweithredol</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Rhoi nod tudalen ar <ph name="TABS_COUNT_ONE" /> tab sydd wedi'i ddewis}zero{Rhoi nod tudalen ar <ph name="TABS_COUNT_MANY" /> tab sydd wedi'u dewis}two{Rhoi nod tudalen ar <ph name="TABS_COUNT_MANY" /> dab sydd wedi'u dewis}few{Rhoi nod tudalen ar <ph name="TABS_COUNT_MANY" /> thab sydd wedi'u dewis}many{Rhoi nod tudalen ar <ph name="TABS_COUNT_MANY" /> thab sydd wedi'u dewis}other{Rhoi nod tudalen ar <ph name="TABS_COUNT_MANY" /> tab sydd wedi'u dewis}}</translation>
 <translation id="2055057176188061528">Dewiswch grŵp tabiau neu crëwch grŵp tabiau newydd</translation>
@@ -78,6 +79,7 @@
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Mân-lun ar gyfer rhagolwg taflen rhannu.</translation>
 <translation id="3810973564298564668">Rheoli</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{Dad-binio tab}zero{Dad-binio tabiau}two{Dad-binio tabiau}few{Dad-binio tabiau}many{Dad-binio tabiau}other{Dad-binio tabiau}}</translation>
 <translation id="3940195383040445971">Dilyn prisiau ar dabiau</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> tab newydd, <ph name="ANY_CLOSED" /> wedi cau}zero{<ph name="MANY_ADDED" /> tab newydd, <ph name="ANY_CLOSED" /> wedi cau}two{<ph name="MANY_ADDED" /> dab newydd, <ph name="ANY_CLOSED" /> wedi cau}few{<ph name="MANY_ADDED" /> thab newydd, <ph name="ANY_CLOSED" /> wedi cau}many{<ph name="MANY_ADDED" /> thab newydd, <ph name="ANY_CLOSED" /> wedi cau}other{<ph name="MANY_ADDED" /> tab newydd, <ph name="ANY_CLOSED" /> wedi cau}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Grwpio tab}zero{Grwpio tabiau}two{Grwpio tabiau}few{Grwpio tabiau}many{Grwpio tabiau}other{Grwpio tabiau}}</translation>
@@ -131,6 +133,7 @@
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Cau'r <ph name="TABS_COUNT_ONE" /> eitem a ddewiswyd}zero{Cau'r <ph name="TABS_COUNT_MANY" /> eitemau a ddewiswyd}two{Cau'r <ph name="TABS_COUNT_MANY" /> eitem a ddewiswyd}few{Cau'r <ph name="TABS_COUNT_MANY" /> eitem a ddewiswyd}many{Cau'r <ph name="TABS_COUNT_MANY" /> eitem a ddewiswyd}other{Cau'r <ph name="TABS_COUNT_MANY" /> eitem a ddewiswyd}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Symud grŵp i ffenestr newydd}zero{Symud grŵp i ffenestr arall}two{Symud grŵp i ffenestr arall}few{Symud grŵp i ffenestr arall}many{Symud grŵp i ffenestr arall}other{Symud grŵp i ffenestr arall}}</translation>
 <translation id="6228793724645064692">(sgôr siop)</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{Tynnu tab o'r grŵp}zero{Tynnu tabiau o'r grŵp}two{Tynnu tabiau o'r grŵp}few{Tynnu tabiau o'r grŵp}many{Tynnu tabiau o'r grŵp}other{Tynnu tabiau o'r grŵp}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Ychwanegu'r tab at grŵp newydd}zero{Ychwanegu'r tabiau at grŵp newydd}two{Ychwanegu'r tabiau at grŵp newydd}few{Ychwanegu'r tabiau at grŵp newydd}many{Ychwanegu'r tabiau at grŵp newydd}other{Ychwanegu'r tabiau at grŵp newydd}}</translation>
 <translation id="6333260925957816943">Gwybodaeth am y siop hon</translation>
 <translation id="6381032505162537930">Byddwch yn gweld eich grwpiau tabiau yma</translation>

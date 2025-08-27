@@ -440,6 +440,7 @@
 <translation id="1719838434204287058">२४ x ३० इं</translation>
 <translation id="1720941539803966190">ट्यूटोरियल बंद करा</translation>
 <translation id="1721424275792716183">* फील्ड आवश्यक आहे</translation>
+<translation id="1723636263173393300">या धोरणात <ph name="MAX_ITEMS_LIMIT" /> पेक्षा जास्त शॉर्टकट असू शकत नाहीत.</translation>
 <translation id="1725591448053514783">एन्व्हलप यू ६</translation>
 <translation id="1727613060316725209">सर्टिफिकेट योग्य आहे</translation>
 <translation id="1728677426644403582">तुम्ही वेब पेजचा स्रोत पाहत आहात</translation>
@@ -1047,6 +1048,7 @@
 <translation id="271663710482723385">फुल स्क्रीनमधून बाहेर पडण्यासाठी |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| प्रेस करा</translation>
 <translation id="2717336592027046789">रोल</translation>
 <translation id="2718207025093645426">व्यावस्थापित केलेला वापरकर्ता किंवा डिव्हाइसवर कोणतेही धोरण लोड केलेले नाही.</translation>
+<translation id="2719233594187778789">युनिक नसलेल्या URL कडे दुर्लक्ष केले आहे: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">विनंती यशस्वी</translation>
 <translation id="2722622039067384533">बैठकीच्या खोलीतील फर्निचर</translation>
 <translation id="2723669454293168317">Chrome सेटिंग्जमध्ये सुरक्षितता तपासणी रन करा</translation>
@@ -1495,7 +1497,7 @@
 <translation id="3498215018399854026">याक्षणी आम्ही आपल्या पालकांपर्यंत पोहोचू शकलो नाही. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="350069200438440499">फाइल नाव:</translation>
 <translation id="3501300228850242680">मेटल (संगीत)</translation>
-<translation id="350274464456291051">तुम्ही <ph name="BEGIN_LINK" />तुमच्या Google खाते <ph name="ACCOUNT" /> मध्ये <ph name="END_LINK" /> तुमचे नाव संपादित करू शकता.</translation>
+<translation id="350274464456291051">तुम्ही <ph name="BEGIN_LINK" />तुमच्या Google खाते मध्ये <ph name="ACCOUNT" /> <ph name="END_LINK" /> तुमचे नाव संपादित करू शकता.</translation>
 <translation id="350421688684366066">लेबल (हाय-ग्लॉस)</translation>
 <translation id="350763432931695541">पुढील काही पानांमधील मजकूर काढत आहे</translation>
 <translation id="3507869775212388416">कायदेविषयक नोकर्‍या</translation>
@@ -2006,6 +2008,7 @@
 <translation id="4298000214066716287">गुंतवणूक करणे</translation>
 <translation id="4298148761711700950">QR अपलोड न करता झटपट पेमेंट करा</translation>
 <translation id="4298925811540301889">या साइटसाठीच्या कुकी तुमच्या ChromeOS डिव्हाइसवर सिंक केल्या जातात. तुम्ही काय सिंक करता हे व्यवस्थापित करण्यासाठी, <ph name="SYNC_SETTINGS" /> वर जा.</translation>
+<translation id="4299919199185766032">शॉर्टकटचे नाव अनुमती असलेल्या <ph name="MAX_LENGTH" /> वर्ण इतक्या कमाल लांबीपेक्षा मोठे आहे.</translation>
 <translation id="4300272766492248925">अ‍ॅप उघडा</translation>
 <translation id="4300675098767811073">मल्टिपल पंच राइट</translation>
 <translation id="4302514097724775343">खेळण्यासाठी डायनासोरवर टॅप करा</translation>
@@ -2707,6 +2710,7 @@
     सिस्टीम अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधण्याचा प्रयत्न करा.</translation>
 <translation id="5496804587179176046">सुरक्षा कोड सेव्ह करा, सध्या कोणतेही सुरक्षा कोड सेव्ह केलेले नाहीत</translation>
 <translation id="550365051221576010">सर्व फील्ड</translation>
+<translation id="5506286895894263601">सूचीमध्ये कोणतेही वैध शॉर्टकट नाहीत.</translation>
 <translation id="5508443345185481044">कॅमेरा आणि कॅमकॉर्डर</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">व्यवस्थापित केलेले बुकमार्क</translation>
@@ -3627,6 +3631,7 @@
 <translation id="7014741021609395734">झूम करण्याची पातळी</translation>
 <translation id="7016992613359344582">हे शुल्क एकाच वेळी द्यायचे किंवा आवर्ती असू शकतात आणि स्पष्ट नसू शकतात.</translation>
 <translation id="701757816833614688">व्हिज्युअल आर्ट आणि डिझाइन शिक्षण</translation>
+<translation id="7020464868401003526">शॉर्टकटची URL अनुमती असलेल्या <ph name="MAX_LENGTH" /> वर्ण इतक्या कमाल लांबीपेक्षा मोठी आहे.</translation>
 <translation id="702275896380648118">ही साइट तुमच्या पसंतीच्या गोष्टी निर्धारित करते आणि इतर साइटना जाहिराती सुचवते. तुम्हाला आणखी उपयुक्त जाहिराती दाखवण्यासाठी, ही साइट Chrome मधून तुमचे जाहिरातीचे विषयदेखील मिळवते.</translation>
 <translation id="7023162328967545559">ॲडमिनची चेतावणी</translation>
 <translation id="7023765275461720661">खाते लिंक करा आणि <ph name="BNPL_ISSUER_NAME" /> वापरून पेमेंट करा?</translation>

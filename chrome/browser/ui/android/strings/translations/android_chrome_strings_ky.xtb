@@ -499,7 +499,6 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3384347053049321195">Сүрөт менен бөлүшүү</translation>
 <translation id="3387650086002190359">Тутумдагы каталарга байланыштуу <ph name="FILE_NAME" /> жүктөлбөй калды.</translation>
 <translation id="3414952576877147120">Өлчөм:</translation>
-<translation id="3421726884497337397">Үчүнчү тараптын cookie файлдары качан бөгөттөлсүн?</translation>
 <translation id="3430670036890315772">Профилиңиздин кулпусун өчүрүп салсаңыз, сакталган маалыматыңыз өчүрүлөт</translation>
 <translation id="3435465986463792564">Көп терезе ачылып турабы? Аларды бул жерден башкарыңыз</translation>
 <translation id="3435575784518354875">Сырсөздөрдү колдоно берүү үчүн аларды азыр экспорттоп, Google Play кызматтарын жаңыртып, Сырсөздөрдү башкаргычка кайра импорттоп алыңыз. <ph name="BEGIN_LINK" />Толук нускамаларды көрүңүз<ph name="END_LINK" />.</translation>
@@ -760,7 +759,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 уурдалган сырсөз бар}other{# уурдалган сырсөз бар}}</translation>
 <translation id="4641919525231168205">Кийинки бетке өтүү</translation>
 <translation id="4642472735733036929">Бааларга көз салуу токтотулду</translation>
-<translation id="4645146721047390964">Жашыруун режимде сайттар, мисалы, жарнамаларды жекелештирүү үчүн cookie файлдарыңыз аркылуу сиз көргөн вебсайттарды көрө албайт. Функциялар айрым сайттарда туура иштебеши мүмкүн.</translation>
 <translation id="465657074423018424">Коопсуз серептөө сизди кооптуу вебсайттардан коргойт. Эгер аны өчүрсөңүз, серептегенде, өзгөчө сырсөздөрдү киргизгенде этият болуңуз.</translation>
 <translation id="4662373422909645029">Ылакап атта сан болбошу керек</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> кыстарма өчүрүлдү</translation>
@@ -1220,7 +1218,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6633067410344541938">Жашыруун режимдин кулпусун ачуу</translation>
 <translation id="6636623428211296678">Төмөндө көбүрөөк параметрлерди изилдеңиз же азыр бүтүрүңүз</translation>
 <translation id="6637100877383020115">Колдонмону жакшыртууга жардам берүү үчүн Chrome колдонулушу жана ката тууралуу маалыматты Google'га жөнөтөт. <ph name="BEGIN_UMA_LINK" />Башкаруу<ph name="END_UMA_LINK" /></translation>
-<translation id="6640207029842583248">Ар дайым бөгөттөө</translation>
 <translation id="6641780377503683465"><ph name="INTEREST" /> өчүрүү</translation>
 <translation id="6647441008198474441">Кийин кайсы сайттарга кирериңизди болжолдоо үчүн сиз баш баккан URL даректери Google'га жөнөтүлүп турат</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -1232,6 +1229,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6674571176963658787">Шайкештирүүнү баштоо үчүн сыр сүйлөмүңүздү киргизиңиз</translation>
 <translation id="6676927815633975364">Бул сайтка жана Chrome'го кириңиз</translation>
 <translation id="6684809838922667136">Chrome'ду жакшыртууга жардам бериңиз</translation>
+<translation id="6689436252814043643">Окуу режими жеткиликсиз</translation>
 <translation id="6700279777779583398">Тандоолор сакталды</translation>
 <translation id="670498945988402717">Кечээ текшерилди</translation>
 <translation id="6710213216561001401">Мурунку</translation>
@@ -1342,6 +1340,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7111822978084196600">Терезенин аталышын коюңуз</translation>
 <translation id="7115358764509798967">Тутумдун демейки параметрлери</translation>
 <translation id="7117485132243600300">Катталган контентти жана сунушталган темалар менен издөөнү тескөө</translation>
+<translation id="7119984597597798764">Жабуу: <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 сайт үчүн уруксаттар өчүрүлдү}other{# сайт үчүн уруксаттар өчүрүлдү}}</translation>
 <translation id="7138678301420049075">Башка</translation>
 <translation id="7140829094791862589">Кол менен иреттөө</translation>
@@ -1443,7 +1442,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="751961395872307827">Сайтка туташпай жатат</translation>
 <translation id="7523960634226602883">Камераны иштетип, Google Lens'те колдонуңуз</translation>
 <translation id="7525248386620136756"><ph name="TAB_GROUPS_AND_TABS_PART" /> жабылды жана сакталды</translation>
-<translation id="752731652852882757">Жашыруун режимде бөгөттөө</translation>
 <translation id="7545347190366646170">Кирүү мүмкүнчүлүгү бар адамдар</translation>
 <translation id="7554643625247105821">Chrome версиясын текшерүү мүмкүн болбой жатат</translation>
 <translation id="7557508262441527045">Аккаунтуңуздан чыктыңыз</translation>
@@ -1609,7 +1607,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8243077599929149377">Колдонуучу атыңызды кошуңуз</translation>
 <translation id="8244387390464017490">Жаңы өтмөктү тууралоо бети</translation>
 <translation id="8250920743982581267">Документтер</translation>
-<translation id="8255617931166444521">Сайттар cookie файлдары аркылуу сайтында көрүлгөн барактарды көрө алышат</translation>
 <translation id="8258999165172757081">Кошулду</translation>
 <translation id="8259179246279078674">Алдын ала жүктөлгөн барактар шифрленгендиктен, Google алардын мазмунун окуй албайт. Google'дун серверлери кайсы сайттар алдын ала жүктөлгөнүн аныктайт. Бул маалымат барактарды алдын ала жүктөө үчүн гана колдонулат, ошондой эле Google аккаунтуңуздагы башка маалыматка байланыштырылбайт.</translation>
 <translation id="8260126382462817229">Кайра кирип көрүңүз.</translation>

@@ -440,6 +440,7 @@
 <translation id="1719838434204287058">24 x 30 цаляў</translation>
 <translation id="1720941539803966190">Закрыць дапаможнік</translation>
 <translation id="1721424275792716183">* Абавязковае поле</translation>
+<translation id="1723636263173393300">Максімальная колькасць ярлыкоў для гэтага правіла: <ph name="MAX_ITEMS_LIMIT" />.</translation>
 <translation id="1725591448053514783">Канверт You 6</translation>
 <translation id="1727613060316725209">Сертыфікат з’яўляецца сапраўдным</translation>
 <translation id="1728677426644403582">Вы праглядаеце крыніцу вэб-старонкі</translation>
@@ -1048,6 +1049,7 @@
 <translation id="271663710482723385">Націсніце |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|, каб выйсці з поўнаэкраннага рэжыму</translation>
 <translation id="2717336592027046789">Рулон</translation>
 <translation id="2718207025093645426">Для прылады або карыстальніка пад кіраваннем не загружана палітыка.</translation>
+<translation id="2719233594187778789">Паўторны URL-адрас <ph name="URL_NAME" /> ігнаруецца</translation>
 <translation id="2721148159707890343">Запыт выкананы</translation>
 <translation id="2722622039067384533">Мэбля для гасцінай</translation>
 <translation id="2723669454293168317">Запусціць праверку бяспекі ў наладах Chrome</translation>
@@ -2007,6 +2009,7 @@
 <translation id="4298000214066716287">Інвеставанне</translation>
 <translation id="4298148761711700950">Імгненная аплата без запампоўвання QR-кода</translation>
 <translation id="4298925811540301889">Файлы cookie для гэтага сайта сінхранізуюцца з усімі вашымі прыладамі з ChromeOS. Каб кіраваць наладамі сінхранізацыі, перайдзіце ў раздзел "<ph name="SYNC_SETTINGS" />".</translation>
+<translation id="4299919199185766032">Перавышана максімальна дапушчальная колькасць сімвалаў у назве ярлыка (<ph name="MAX_LENGTH" />).</translation>
 <translation id="4300272766492248925">Адкрыць праграму</translation>
 <translation id="4300675098767811073">Некалькі дзірак справа</translation>
 <translation id="4302514097724775343">Каб пачаць гульню, дакраніцеся да дыназаўра</translation>
@@ -2707,6 +2710,7 @@
     Звярніцеся да сістэмнага адміністратара.</translation>
 <translation id="5496804587179176046">Захоўваць коды бяспекі (цяпер захаваных кодаў няма)</translation>
 <translation id="550365051221576010">Запоўніць усе палі</translation>
+<translation id="5506286895894263601">У спісе няма сапраўдных ярлыкоў.</translation>
 <translation id="5508443345185481044">Фота- і відэакамеры</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Кіраваныя закладкі</translation>
@@ -3626,6 +3630,7 @@
 <translation id="7014741021609395734">Маштаб</translation>
 <translation id="7016992613359344582">Плацяжы могуць быць аднаразовыя або рэгулярныя, і іх можа быць цяжка заўважыць.</translation>
 <translation id="701757816833614688">Адукацыя ў сферы выяўленчага мастацтва і дызайну</translation>
+<translation id="7020464868401003526">Перавышана максімальна дапушчальная колькасць сімвалаў у URL-адрасе ярлыка (<ph name="MAX_LENGTH" />).</translation>
 <translation id="702275896380648118">Гэты сайт вызначае, што вам падабаецца, а затым на падставе гэтых звестак прапануе рэкламу іншым сайтам. Акрамя таго, ён выкарыстоўвае тэмы рэкламы з Chrome, каб паказваць вам больш рэлевантныя аб’явы.</translation>
 <translation id="7023162328967545559">Папярэджанне адміністратара</translation>
 <translation id="7023765275461720661">Звязаць уліковы запіс і заплаціць з дапамогай сэрвісу "<ph name="BNPL_ISSUER_NAME" />"?</translation>

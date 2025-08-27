@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
 <translation id="1001534784610492198">Asennusohjelman arkistotiedosto on vioittunut tai se ei kelpaa. Lataa Google Chrome uudelleen.</translation>
+<translation id="1006034097353797313">Jatka siitä, mihin jäit: Chrome palauttaa välilehdet aina, kun käynnistät sen uudelleen. Voit laittaa asetuksen pois päältä täältä:</translation>
 <translation id="1018937009655463387">Jos haluat jakaa ikkunan, salli Chromen näytön tallennus järjestelmäasetuksista.</translation>
 <translation id="1026101648481255140">Jatka asennusta</translation>
 <translation id="102763973188675173">Muokkaa ja hallinnoi Google Chromea. Päivitys on saatavilla.</translation>
@@ -79,6 +80,7 @@
 <translation id="2018879682492276940">Asennus epäonnistui. Yritä uudelleen.</translation>
 <translation id="2024959665595762054">Chrome-datan käyttö ja tallennus Google-tilillä edellyttää, että vahvistat henkilöllisyytesi</translation>
 <translation id="2034233344106846793">Chrome päivittää suojaamattomat yhteydet HTTPS:ään automaattisesti, jos mahdollista</translation>
+<translation id="2039417478970545937">Asetukset.</translation>
 <translation id="207902854391093810">Kokeilujen aikana käyttämäsi sivustot voivat pyytää Chromelta mainosten mittaamisen avulla tietoja, jotka auttavat mittaamaan sivustoilla näkyvien mainosten suoriutumista. Mainosten mittaaminen rajoittaa sivustojen välistä seurantaa siirtämällä mahdollisimman vähän tietoja sivustojen välillä.</translation>
 <translation id="2091012649849228750">Jotta saat tulevia Google Chromen päivityksiä, sinulla on oltava Windows 10 tai uudempi. Tietokoneen käyttöjärjestelmä on Windows 8.</translation>
 <translation id="2094648590148273905">ChromeOS Flexin ehdot</translation>
@@ -346,6 +348,7 @@
 <translation id="5166439563123238795">Chrome tarvitsee luvan käsiesi liikkeen seuraamiseen</translation>
 <translation id="5170938038195470297">Profiiliasi ei voi käyttää, koska se on peräisin uudemmasta Google Chromen versiosta. Kaikkia toimintoja ei välttämättä voi käyttää. Määritä toinen profiilihakemisto tai käytä uudempaa Chromen versiota.</translation>
 <translation id="5174969993834422967">Estät yleensä ilmoitukset. Voit antaa tälle sivustolle luvan lähettää ilmoituksia klikkaamalla ilmoituskuvaketta osoitepalkin oikeassa reunassa.</translation>
+<translation id="5174983315706567306">Levytila ei riitä.</translation>
 <translation id="5201744974236816379">Chrome-päivitys</translation>
 <translation id="521447420733633466">Jos käytät jaettua laitetta, kaverisi ja perheenjäsenesi voivat selata verkkoa erillään ja räätälöidä Chromesta juuri itselleen sopivan</translation>
 <translation id="5234764350956374838">Hylkää</translation>
@@ -454,6 +457,7 @@
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6520670145826811516">Anna Chromelle pääsyoikeus <ph name="BEGIN_LINK" />järjestelmäasetuksista<ph name="END_LINK" />, jotta voit käyttää sijaintia.</translation>
 <translation id="659498884637196217">Googlen Salasanojen ylläpidossa tällä laitteella</translation>
+<translation id="6631524303639368205">Jatka siitä, mihin jäit: Chrome palautti välilehdet edellisestä istunnosta. Voit laittaa asetuksen pois päältä täältä:</translation>
 <translation id="6632473616050862500">Toinen <ph name="BEGIN_LINK_CROS_OSS" />avoimen lähdekoodin ohjelmisto<ph name="END_LINK_CROS_OSS" /> tukee ChromeOS Flexiä.</translation>
 <translation id="6634299872736643004">Asetukseen tehdyt muutokset tulevat voimaan, kun Chrome käynnistetään uudelleen.</translation>
 <translation id="6660596345553328257">Haluatko kirjautua Chromeen?</translation>
@@ -561,6 +565,7 @@
 <translation id="7825851276765848807">Asennus epäonnistui tuntemattoman virheen vuoksi. Lataa Google Chrome uudelleen.</translation>
 <translation id="7827099906024714326">Chromen on vahvistettava henkilöllisyytesi, ennen kuin tiettyä dataa voidaan tallentaa Google-tilillesi ja käyttää kaikilla laitteillasi. Jos kirjaudut ulos nyt, tämä data poistetaan.</translation>
 <translation id="7845233973568007926">Kiitos asennuksesta. Tietokone pitää käynnistää uudelleen ennen kuin <ph name="BUNDLE_NAME" /> otetaan käyttöön.</translation>
+<translation id="7849037457735762883">Jatka siitä, mihin jäit: Chrome voi palauttaa välilehdet aina, kun käynnistät sen uudelleen. Voit laittaa asetuksen päälle täältä:</translation>
 <translation id="7872446069773932638">Ladataan… <ph name="SECONDS" /> sekuntia jäljellä</translation>
 <translation id="7886087451482920026">Valitse tekstiä Google Lensilla</translation>
 <translation id="7890208801193284374">Jos käytät jaettua tietokonetta, kaverisi ja perheenjäsenesi voivat selata verkkoa omista profiileistaan käsin ja muokata Chromesta juuri itselleen sopivan.</translation>

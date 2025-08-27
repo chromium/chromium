@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
 <translation id="1001534784610492198">Uppsetningarsafnskráin er skemmd eða ógild. Sæktu Google Chrome aftur.</translation>
+<translation id="1006034097353797313">Haltu áfram þaðan sem frá var horfið: Chrome endurheimtir flipana þína í hvert skipti sem þú hefst handa. Þú getur slökkt á þessu í</translation>
 <translation id="1018937009655463387">Leyfðu skjáupptöku í Chrome í kerfisstillingunum til að deila glugganum þínum.</translation>
 <translation id="1026101648481255140">Halda uppsetningu áfram</translation>
 <translation id="102763973188675173">Sérstilltu og stjórnaðu Google Chrome. Uppfærsla er í boði.</translation>
@@ -83,6 +84,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2018879682492276940">Uppsetning mistókst. Reyndu aftur.</translation>
 <translation id="2024959665595762054">Staðfestu að þetta sért þú til að nota og vista Chrome-gögn á Google-reikningnum þínum</translation>
 <translation id="2034233344106846793">Chrome uppfærir óöruggar tengingar sjálfkrafa í HTTPS þegar hægt er</translation>
+<translation id="2039417478970545937">Stillingar.</translation>
 <translation id="207902854391093810">Þegar kveikt er á prufuútgáfum gera auglýsingamælingar vefsvæðum sem þú opnar kleift að biðja Chrome um upplýsingar sem hjálpa vefsvæðinu að mæla afköst auglýsinga þess. Auglýsingamælingar takmarka rakningu á milli vefsvæða með því að flytja eins lítið magn upplýsinga á milli vefsvæða og mögulegt er.</translation>
 <translation id="2091012649849228750">Til að fá frekari uppfærslur á Google Chrome þarftu Windows 10 eða nýrri útgáfu. Þessi tölva notar Windows 8.</translation>
 <translation id="2094648590148273905">Skilmálar ChromeOS Flex</translation>
@@ -352,6 +354,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 
 Sumir eiginleikar kunna að vera óaðgengilegir. Tilgreindu aðra prófílmöppu eða notaðu nýrri útgáfu af Chrome.</translation>
 <translation id="5174969993834422967">Þú lokar yfirleitt á tilkynningar. Smelltu á tilkynningatáknið í hægra horni veffangastikunnar til að leyfa vefsvæðinu að senda þér tilkynningar.</translation>
+<translation id="5174983315706567306">Ekki nægilegt diskpláss.</translation>
 <translation id="5201744974236816379">Chrome-uppfærsla</translation>
 <translation id="521447420733633466">Ef nokkrir deila sama tæki geta vinir og fjölskyldumeðlimir vafrað hver á sínum prófíl og sett Chrome upp eins og hverjum og einum líkar best</translation>
 <translation id="5234764350956374838">Hunsa</translation>
@@ -462,6 +465,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6520670145826811516">Veittu Chrome aðgang að staðsetningunni þinni í <ph name="BEGIN_LINK" />kerfisstillingum<ph name="END_LINK" /> til að geta notað hana</translation>
 <translation id="659498884637196217">Í Aðgangsorðastjórnun Google í þessu tæki</translation>
+<translation id="6631524303639368205">Haltu áfram þaðan sem frá var horfið: Chrome endurheimtir flipana sem þú varst með opna síðast. Þú getur slökkt á þessu í</translation>
 <translation id="6632473616050862500">ChromeOS Flex á tilvist sína að þakka öðrum <ph name="BEGIN_LINK_CROS_OSS" />opnum hugbúnaði<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6634299872736643004">Breytingar á þessari stillingu taka gildi þegar Chrome endurræsist.</translation>
 <translation id="6660596345553328257">Skrá þig inn í Chrome?</translation>
@@ -569,6 +573,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7825851276765848807">Uppsetning mistókst vegna ótilgreindrar villu. Sæktu Google Chrome aftur.</translation>
 <translation id="7827099906024714326">Chrome þarf að staðfesta að þetta sért þú svo að þú getir vistað tiltekin gögn á Google-reikningnum þínum og notað þau í öllum tækjunum þínum. Ef þú skráir þig út núna verður þessum gögnum eytt.</translation>
 <translation id="7845233973568007926">Takk fyrir að setja upp. Þú þarft að endurræsa tölvuna áður en þú getur notað <ph name="BUNDLE_NAME" />.</translation>
+<translation id="7849037457735762883">Haltu áfram þaðan sem frá var horfið: Chrome getur endurheimt flipana þína í hvert skipti sem þú hefst handa. Þú getur kveikt á þessu í</translation>
 <translation id="7872446069773932638">Sækir... <ph name="SECONDS" /> sek. eftir</translation>
 <translation id="7886087451482920026">Notaðu Google-linsu til að velja texta</translation>
 <translation id="7890208801193284374">Ef nokkrir eru um sömu tölvu geta vinir og fjölskyldumeðlimir vafrað hver á sínum prófíl og sett Chrome upp eins og hverjum og einum líkar best.</translation>

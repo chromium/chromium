@@ -3549,6 +3549,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3450056559545492516">Afișează notificări de sistem despre funcțiile și sfaturile Chrome</translation>
 <translation id="3450157232394774192">Procentaj de ocupare în starea inactivă</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> îți solicită să te conectezi acum la rețeaua Wi-Fi și să descarci o actualizare.</translation>
+<translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – afișezi fila serviciului Gemini</translation>
 <translation id="345078987193237421">Astfel, se permite accesul la cameră pentru aplicații, site-uri care au permisiunea adecvată pentru camera foto și servicii de sistem</translation>
 <translation id="3451362021220965191">Aplicațiile web izolate controlează cititoarele de carduri inteligente pentru a obține acces la cardurile inteligente introduse sau prezentate acestora. Cardurile inteligente conțin de obicei identități folosite pentru autentificarea sau autorizarea operațiunilor, conectarea la servicii etc.</translation>
 <translation id="3452999110156026232">Acces pentru părinți</translation>
@@ -4543,7 +4544,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4109135793348361820">Mutați fereastra la <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Restabilește avertismentul</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
-<translation id="4113030288477039509">Gestionat de administratorul tău</translation>
 <translation id="4113743276555482284">Parola fișierului</translation>
 <translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />Când Precizia locației este activată, informațiile despre semnalele wireless, cum ar fi punctele de acces Wi-Fi și turnurile rețelelor de date mobile, împreună cu datele de la senzorii dispozitivului, precum accelerometrul și giroscopul, sunt folosite pentru a estima locația mai precisă a dispozitivului, pe care aplicațiile și serviciile Android o utilizează pentru a oferi funcții bazate pe locație. În acest scop, Google colectează periodic informații despre senzorii dispozitivului și semnalele wireless din apropierea ta pentru a contribui la externalizarea spre public a locațiilor semnalelor wireless.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google folosește aceste informații fără a te identifica în următoarele scopuri: pentru a îmbunătăți precizia locației și serviciile bazate pe locație și pentru a îmbunătăți, a oferi și a întreține serviciile Google în general. Prelucrăm aceste informații pe baza intereselor legitime ale companiei Google și ale terților pentru a deservi nevoile utilizatorilor.<ph name="END_PARAGRAPH2" />
@@ -4994,7 +4994,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="443196770280837407">Deschide Gemini cu o comandă rapidă de la tastatură.</translation>
 <translation id="4432621511648257259">Parolă incorectă</translation>
 <translation id="4434611816075088065">Momentan, nu există elemente care necesită atenție din partea ta</translation>
-<translation id="443475966875174318">Actualizează sau elimină aplicațiile incompatibile</translation>
 <translation id="443503224864902151">Te deconectează de pe majoritatea site-urilor. Vei rămâne conectat(ă) la Contul Google, astfel încât datele sincronizate să poată fi șterse.</translation>
 <translation id="4437879751057074691">Oferă salvarea parolelor și a cheilor de acces</translation>
 <translation id="4437947179446780764">Adaugă un furnizor de servicii DNS personalizat</translation>
@@ -5408,7 +5407,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4742334355511750246">Nu au permisiunea de a afișa imagini</translation>
 <translation id="4742795653798179840">Datele Chrome au fost șterse</translation>
 <translation id="4742970037960872810">Elimină evidențierea</translation>
-<translation id="4743260470722568160"><ph name="BEGIN_LINK" />Află cum să actualizezi aplicații<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">Se permite – <ph name="PERMISSION_DETAILS" />. Activează <ph name="LINK_BEGIN" />accesul la microfonul sistemului<ph name="LINK_END" />.</translation>
 <translation id="4744260496658845719">Luminozitatea iluminării din spate a tastaturii</translation>
 <translation id="4744268813103118742">Accesează site-ul</translation>
@@ -7152,7 +7150,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5989497858237037960">În timp ce navighezi pe site-uri, conținutul paginilor respective se criptează și se salvează pe dispozitiv. Acest lucru poate afecta performanța Chrome</translation>
 <translation id="5990266201903445068">Numai Wi-Fi</translation>
 <translation id="5990386583461751448">Tradusă</translation>
-<translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Ca să poți naviga în continuare pe web, trebuie să soliciți administratorului să elimine aplicația.}few{Ca să poți naviga în continuare pe web, trebuie să soliciți administratorului să elimine aplicațiile.}other{Ca să poți naviga în continuare pe web, trebuie să soliciți administratorului să elimine aplicațiile.}}</translation>
 <translation id="5992225669837656567">Toate mouse-urile au fost deconectate</translation>
 <translation id="5992652489368666106">Fără chenar</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Examinarea s-a încheiat pentru un site}few{Examinarea s-a încheiat pentru {NUM_SITES} site-uri}other{Examinarea s-a încheiat pentru {NUM_SITES} de site-uri}}</translation>
@@ -7372,6 +7369,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6151128161396960693">Asigură-te că ai încredere în persoana care a trimis această invitație</translation>
 <translation id="6151771661215463137">Fișierul există deja în dosarul de descărcare.</translation>
 <translation id="6152918902620844577">Se așteaptă următoarea operațiune</translation>
+<translation id="6152929108650354050">Afișezi fila serviciului Gemini</translation>
 <translation id="6153439704237222699">Află mai multe despre Do Not Track</translation>
 <translation id="6154240335466762404">Elimină toate porturile</translation>
 <translation id="615436196126345398">Protocol</translation>
@@ -8644,7 +8642,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7039951224110875196">Creează un Cont Google pentru un copil</translation>
 <translation id="7039968672732182060">Chromebookul nu mai primește actualizări de securitate. Este timpul să faci upgrade pentru cele mai recente funcții software și de securitate. Se aplică toate condițiile ofertei.</translation>
 <translation id="7042116641003232070">Are permisiunea de a salva date pe dispozitiv</translation>
-<translation id="7043108582968290193">Gata! Nu a fost găsită nicio aplicație incompatibilă.</translation>
 <translation id="7044124535091449260">Află mai multe despre accesul la site</translation>
 <translation id="7044207729381622209">Te vei deconecta de la site-uri, inclusiv din filele deschise</translation>
 <translation id="7044211973375150246">O aplicație este setată să deschidă aceleași linkuri ca <ph name="APP_NAME" />. Astfel, <ph name="APP_NAME_2" /> va fi setată să nu mai deschidă linkurile acceptate.</translation>
@@ -8980,7 +8977,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7299588179200441056"><ph name="URL" /> – <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">Animație</translation>
 <translation id="7301812050652048720">Cheia de acces a fost ștearsă</translation>
-<translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Această aplicație poate împiedica funcționarea corectă a browserului Chrome.}few{Aceste aplicații pot împiedica funcționarea corectă a browserului Chrome.}other{Aceste aplicații pot împiedica funcționarea corectă a browserului Chrome.}}</translation>
 <translation id="7303281435234579599">Hopa! A apărut o eroare la configurarea modului demo.</translation>
 <translation id="7303485269821975179">Configurează o parolă pentru <ph name="DEVICE_TYPE" /></translation>
 <translation id="7303900363563182677">Accesarea textului și a imaginilor copiate în clipboard de către acest site a fost blocată</translation>
@@ -11870,7 +11866,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="962802172452141067">Arborele cu dosarele de marcaje</translation>
 <translation id="963000966785016697">Caută imaginea cu <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Administratorul IT a dezactivat accesoriile Chrome pentru dispozitiv.</translation>
-<translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Aplicație}few{Aplicații}other{Aplicații}}</translation>
 <translation id="964790508619473209">Aranjarea pe ecran</translation>
 <translation id="96535553604365597">Raportează o problemă privind Google Cast</translation>
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Examinează un site care a trimis recent multe notificări}few{Examinează {NUM_SITES} site-uri care au trimis recent multe notificări}other{Examinează {NUM_SITES} de site-uri care au trimis recent multe notificări}}</translation>

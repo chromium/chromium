@@ -28,6 +28,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> guia agrupada</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> guia}one{<ph name="TABS_COUNT_MANY" /> guia}other{<ph name="TABS_COUNT_MANY" /> guias}}</translation>
 <translation id="1909810060368225529">Aviso: as mudanças feitas neste grupo de guias compartilhado são visíveis para todos. Todos os participantes podem fazer mudanças em grupos de guias compartilhados</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{Fixar guia}one{Fixar guia}other{Fixar guias}}</translation>
 <translation id="1982637982196732906">Mover para a seção inativa</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Adicionar <ph name="TABS_COUNT_ONE" /> guia selecionada aos favoritos}one{Adicionar <ph name="TABS_COUNT_MANY" /> guia selecionada aos favoritos}other{Adicionar <ph name="TABS_COUNT_MANY" /> guias selecionadas aos favoritos}}</translation>
 <translation id="2055057176188061528">Selecione um grupo de guias ou crie um novo</translation>
@@ -78,6 +79,7 @@
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Miniatura da página de compartilhamento.</translation>
 <translation id="3810973564298564668">Gerenciar</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{Liberar guia}one{Liberar guia}other{Liberar guias}}</translation>
 <translation id="3940195383040445971">Monitorar preço nas guias</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> nova guia, <ph name="ANY_CLOSED" /> fechada}one{<ph name="MANY_ADDED" /> nova guia, <ph name="ANY_CLOSED" /> fechada}other{<ph name="MANY_ADDED" /> novas guias, <ph name="ANY_CLOSED" /> fechadas}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Agrupar guia}one{Agrupar guia}other{Agrupar guias}}</translation>
@@ -131,6 +133,7 @@
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Fechar <ph name="TABS_COUNT_ONE" /> item selecionado}one{Fechar <ph name="TABS_COUNT_MANY" /> item selecionado}other{Fechar <ph name="TABS_COUNT_MANY" /> itens selecionados}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Mover grupo para nova janela}one{Mover grupo para outra janela}other{Mover grupo para outras janelas}}</translation>
 <translation id="6228793724645064692">(nota da loja)</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{Remover guia do grupo}one{Remover guia do grupo}other{Remover guias do grupo}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Adicionar guia ao novo grupo}one{Adicionar guia ao novo grupo}other{Adicionar guias ao novo grupo}}</translation>
 <translation id="6333260925957816943">Informações sobre a loja</translation>
 <translation id="6381032505162537930">Seus grupos de guias vão aparecer aqui</translation>

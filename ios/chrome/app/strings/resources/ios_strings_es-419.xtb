@@ -21,6 +21,7 @@
 <translation id="1072476005125066234">Opiniones basadas en tus intereses</translation>
 <translation id="1074827084851510304">Estás a punto de borrar {password_count} contraseñas y la lista de sitios y apps para los que elegiste no guardar información de acceso. No se borrarán las cuentas que hayas creado para sitios y apps.</translation>
 <translation id="1076421457278169141">Código escaneado</translation>
+<translation id="1081114897601629648">No se importaron las siguientes contraseñas al Administrador de contraseñas de Google porque no cumplen con los requisitos.</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} pestaña}other{{count} pestañas}}</translation>
 <translation id="1082554859195167538">Opiniones sobre productos para ti</translation>
 <translation id="1084365883616172403">Entrada de Facebook publicada</translation>
@@ -599,7 +600,6 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="333229797575847124">Cómo habilitar esta función</translation>
 <translation id="3344485292736684439">{count,plural, =1{El favorito se guardó en "{title}" en tu cuenta ({email}).}other{Los favoritos se guardaron en "{title}" en tu cuenta ({email}).}}</translation>
 <translation id="334690320928261823">Pestañas recientes</translation>
-<translation id="3348387552617855658">Esta tarjeta te ayuda a realizar un seguimiento de tus paquetes y brindarte actualizaciones importantes sobre las entregas.</translation>
 <translation id="3349031117032695619">Bloquear ventanas emergentes</translation>
 <translation id="3349676726073650389">Los sitios y las búsquedas que sigues se guardan en tu Cuenta de Google. Puedes administrar lo que sigues en la configuración cuando quieras.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Esta cuenta está administrada.</translation>
@@ -1881,7 +1881,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="8263809106706527890">Es posible que se haya producido un cambio en la configuración predeterminada de tu navegador. Puedes comprobarlo en la configuración.</translation>
 <translation id="8264966119170358612">Se expusieron algunas de tus contraseñas guardadas en una violación de la seguridad de los datos de terceros. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Saliste de tu cuenta <ph name="USER_NAME" /> como parte del restablecimiento de tu iPad. Para volver a acceder, presiona "Continuar".</translation>
-<translation id="8273982424131314219">Completarás la información en <ph name="URL" /></translation>
+<translation id="8273982424131314219">Se rellenará la información en <ph name="URL" /></translation>
 <translation id="8275068909952022340">Más…</translation>
 <translation id="8277328362018795342">Se comparte el contenido de tus páginas para brindar respuestas más pertinentes</translation>
 <translation id="8278488584187265939">Personaliza la página de inicio</translation>

@@ -440,6 +440,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1719838434204287058">24 x 30 pouces</translation>
 <translation id="1720941539803966190">Fermer le tutoriel</translation>
 <translation id="1721424275792716183">* Champ obligatoire</translation>
+<translation id="1723636263173393300">Cette règle ne peut pas contenir plus de <ph name="MAX_ITEMS_LIMIT" /> raccourcis.</translation>
 <translation id="1725591448053514783">Enveloppe You 6</translation>
 <translation id="1727613060316725209">Certificat valide</translation>
 <translation id="1728677426644403582">Vous consultez actuellement la source d'une page Web</translation>
@@ -1047,6 +1048,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="271663710482723385">Appuyez sur |<ph name="ACCELERATOR1" />|+|<ph name="ACCELERATOR2" />| pour quitter le mode plein écran</translation>
 <translation id="2717336592027046789">Rouleau</translation>
 <translation id="2718207025093645426">Aucune règle chargée pour l'utilisateur ou l'appareil géré.</translation>
+<translation id="2719233594187778789">URL non unique ignorée : <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Demande réussie.</translation>
 <translation id="2722622039067384533">Meubles de salon</translation>
 <translation id="2723669454293168317">Effectuez un contrôle de sécurité dans les paramètres de Chrome</translation>
@@ -2007,6 +2009,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4298000214066716287">Investissement</translation>
 <translation id="4298148761711700950">Payez instantanément sans importer de QR code</translation>
 <translation id="4298925811540301889">Les cookies de ce site sont synchronisés sur tous vos appareils ChromeOS. Pour gérer ce que vous synchronisez, accédez aux <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4299919199185766032">Le nom du raccourci dépasse la longueur maximale autorisée de <ph name="MAX_LENGTH" /> caractères.</translation>
 <translation id="4300272766492248925">Ouvrir l'application</translation>
 <translation id="4300675098767811073">Multiple perforation à droite</translation>
 <translation id="4302514097724775343">Appuyez sur le dinosaure pour jouer</translation>
@@ -2708,6 +2711,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
     Essayez de contacter votre administrateur système.</translation>
 <translation id="5496804587179176046">Enregistrer les codes de sécurité (aucun code de sécurité actuellement enregistré)</translation>
 <translation id="550365051221576010">Tout indiquer</translation>
+<translation id="5506286895894263601">La liste ne contient aucun raccourci valide.</translation>
 <translation id="5508443345185481044">Appareils photo et caméscopes</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Favoris gérés</translation>
@@ -3627,6 +3631,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="7014741021609395734">Niveau de zoom</translation>
 <translation id="7016992613359344582">Il peut s'agir de frais uniques ou récurrents qui ne sont pas toujours clairement signalés.</translation>
 <translation id="701757816833614688">Études d'art et de design visuels</translation>
+<translation id="7020464868401003526">L'URL du raccourci dépasse la longueur maximale autorisée de <ph name="MAX_LENGTH" /> caractères.</translation>
 <translation id="702275896380648118">Ce site détermine ce que vous aimez, puis suggère des annonces à d'autres sites. Il obtient aussi vos thèmes publicitaires par l'intermédiaire de Chrome pour vous montrer des annonces plus pertinentes.</translation>
 <translation id="7023162328967545559">Avertissement de l'administrateur</translation>
 <translation id="7023765275461720661">Associer votre compte et payer avec <ph name="BNPL_ISSUER_NAME" /> ?</translation>

@@ -16,7 +16,7 @@
 <translation id="2223143012868735942">מסנן צבע הניתן להתאמה המופעל באתרים כדי לשפר את ההבחנה בין צבעים.</translation>
 <translation id="2394933097471027016">רוצה לנסות עכשיו? דפדוף עם סמן מופעל תמיד בדף זה!</translation>
 <translation id="2471847333270902538">ערכת צבעים עבור <ph name="SITE" />:</translation>
-<translation id="2648340354586434750">‏יש ללחוץ לחיצה ארוכה על ‎&lt;span class='key'&gt;‎Option&lt;/span&gt;‎ כדי לעבור לפי מילים.</translation>
+<translation id="2648340354586434750">‏צריך ללחוץ לחיצה ארוכה על ‎&lt;span class='key'&gt;‎Option&lt;/span&gt;‎ כדי לעבור לפי מילים.</translation>
 <translation id="2795227192542594043">תוסף זה מספק סמן הניתן להזזה בדף האינטרנט, כך שניתן לבחור טקסט באמצעות המקלדת.</translation>
 <translation id="2808027189040546825">שלב 1: בוחרים את השורה המכילה את הכוכבים העמומים ביותר:</translation>
 <translation id="2965611304828530558">‏&lt;p&gt;כשמגיעים לקישור או לרכיב אינטרקטיבי, מתבצע בהם מיקוד אוטומטי. כדי ללחוץ על קישור או כפתור ‎&lt;/p&gt; &lt;p&gt;‎ יש ללחוץ על ‎&lt;span class="key"&gt;Enter&lt;/span&gt;‎ כשהמסך ממוקד ברכיב אינטראקטיבי (למשל תיבת טקסט או תיבת רשימה) שקולט לחיצות על מקשי חיצים, יש ללחוץ על ‎&lt;span class="key"&gt;Esc&lt;/span&gt;‎ ואז על מקש החץ שמאלה או ימינה, כדי להמשיך לדפדף עם סמן. ‎&lt;/p&gt; &lt;p&gt;‎ כדי לעבור לרכיב האינטראקטיבי הבא שאפשר למקד בו את המסך, יש ללחוץ על ‎&lt;span class="key"&gt;Tab&lt;/span&gt;‎ ‏&lt;/p&gt;</translation>
@@ -32,7 +32,7 @@
 <translation id="4769065380738716500">‏תמונות הוחלפו על-ידי טקסט ה-alt שלהן.</translation>
 <translation id="4896660567607030658">אין משוב, פשוט להציג את הסמן.</translation>
 <translation id="4937901943818762779">התרת תמונות המכילות אנימציה, אך רק פעם אחת.</translation>
-<translation id="4949131196216960195">‏כדי להפעיל דפדוף עם סמן יש להקיש על &lt;span class='key'&gt;חיפוש&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (מקש הגברת הבהירות או F7). כדי להשבית אותו יש להקיש עליו שוב.</translation>
+<translation id="4949131196216960195">‏כדי להפעיל דפדוף עם סמן טקסט צריך ללחוץ על &lt;span class='key'&gt;חיפוש&lt;/span&gt;‏ + &lt;img src='increase_brightness.png'&gt; (מקש הגברת הבהירות או F7). כדי להשבית אותו צריך ללחוץ עליו שוב.</translation>
 <translation id="4954450790315188152">כאשר 'דפדוף עם סמן' מופעל:</translation>
 <translation id="5041932793799765940">שינוי צבע</translation>
 <translation id="5094574508723441140">ניגודיות מוגברת</translation>

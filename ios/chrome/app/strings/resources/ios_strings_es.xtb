@@ -21,6 +21,7 @@
 <translation id="1072476005125066234">Reseñas según tus intereses</translation>
 <translation id="1074827084851510304">Estás a punto de eliminar {password_count} contraseñas y la lista de sitios y aplicaciones de los que has elegido no guardar nunca información de inicio de sesión. Las cuentas que hayas creado para sitios y aplicaciones no se eliminarán.</translation>
 <translation id="1076421457278169141">Código escaneado</translation>
+<translation id="1081114897601629648">Las siguientes contraseñas no se han importado al Gestor de contraseñas de Google porque no cumplen los requisitos.</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} pestaña}other{{count} pestañas}}</translation>
 <translation id="1082554859195167538">Reseñas de productos para ti</translation>
 <translation id="1084365883616172403">Publicado en Facebook</translation>
@@ -599,7 +600,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="333229797575847124">Cómo habilitar esta función</translation>
 <translation id="3344485292736684439">{count,plural, =1{Marcador guardado en {title} de tu cuenta {email}}other{Marcadores guardados en {title} de tu cuenta {email}}}</translation>
 <translation id="334690320928261823">Pestañas recientes</translation>
-<translation id="3348387552617855658">Esta tarjeta te ayuda a hacer un seguimiento de tus paquetes y te ofrece información importante sobre las entregas.</translation>
 <translation id="3349031117032695619">Bloquear ventanas emergentes</translation>
 <translation id="3349676726073650389">Los sitios y las búsquedas que sigues se guardan en tu cuenta de Google. Puedes gestionar lo que sigues en la configuración en cualquier momento.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Esta cuenta está gestionada.</translation>
@@ -1881,7 +1881,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="8263809106706527890">Puede que se haya cambiado la configuración predeterminada de tu navegador. Puedes comprobarlo en los ajustes.</translation>
 <translation id="8264966119170358612">Algunas de tus contraseñas guardadas se han visto expuestas en una brecha de seguridad de datos ajena a Google. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Se ha cerrado la sesión de tu cuenta (<ph name="USER_NAME" />) al restablecer tu iPad. Para volver a iniciar sesión, toca Continuar abajo.</translation>
-<translation id="8273982424131314219">Rellenarás la información en <ph name="URL" /></translation>
+<translation id="8273982424131314219">La información se compartirá con <ph name="URL" /></translation>
 <translation id="8275068909952022340">Más…</translation>
 <translation id="8277328362018795342">El contenido de la página se comparte para obtener respuestas más pertinentes</translation>
 <translation id="8278488584187265939">Personalizar página principal</translation>

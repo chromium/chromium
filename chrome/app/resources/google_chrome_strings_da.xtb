@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
 <translation id="1001534784610492198">Installationsarkivet er beskadiget eller ugyldigt. Download Google Chrome igen.</translation>
+<translation id="1006034097353797313">Fortsæt, hvor du slap: Chrome gendanner dine faner, hver gang du genstarter. For at deaktivere dette skal du gå til</translation>
 <translation id="1018937009655463387">Tillad skærmoptagelse for Chrome under Systemindstillinger for at dele dit vindue.</translation>
 <translation id="1026101648481255140">Genoptag installation</translation>
 <translation id="102763973188675173">Tilpas og administrer Google Chrome. Der er en tilgængelig opdatering.</translation>
@@ -79,6 +80,7 @@
 <translation id="2018879682492276940">Installationen mislykkedes. Prøv igen.</translation>
 <translation id="2024959665595762054">Verificer din identitet for at bruge og gemme Chrome-data på din Google-konto</translation>
 <translation id="2034233344106846793">Chrome opgraderer automatisk usikre forbindelser til HTTPS, når det er muligt</translation>
+<translation id="2039417478970545937">Indstillinger.</translation>
 <translation id="207902854391093810">Når prøver er aktiveret, giver Ad measurement de websites, du besøger, mulighed for at anmode om oplysninger fra Chrome, som hjælper websitet med at måle, hvor godt dets annoncer klarer sig. Ad measurement begrænser sporing på tværs af websites ved at overføre så få oplysninger som muligt mellem websites.</translation>
 <translation id="2091012649849228750">Hvis du vil have fremtidige Google Chrome-opdateringer, skal du have Windows 10 eller nyere. Denne computer har Windows 8.</translation>
 <translation id="2094648590148273905">Vilkår for ChromeOS Flex</translation>
@@ -346,6 +348,7 @@
 <translation id="5166439563123238795">Chrome skal have tilladelse til at registrere dine håndbevægelser</translation>
 <translation id="5170938038195470297">Din profil kan ikke bruges, fordi den stammer fra en nyere version af Google Chrome. Nogle funktioner er muligvis ikke tilgængelige. Angiv en anden profilmappe, eller brug en nyere version af Chrome.</translation>
 <translation id="5174969993834422967">Du blokerer som regel notifikationer. Klik på notifikationsikonet i højre hjørne af din adresselinje for at give websitet tilladelse til at sende notifikationer.</translation>
+<translation id="5174983315706567306">Der er ikke nok diskplads.</translation>
 <translation id="5201744974236816379">Chrome-opdatering</translation>
 <translation id="521447420733633466">Hvis du deler en enhed, kan venner og familie browse individuelt og konfigurere Chrome hver især</translation>
 <translation id="5234764350956374838">Luk</translation>
@@ -454,6 +457,7 @@
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome for udviklere</translation>
 <translation id="6520670145826811516">Giv Chrome adgang i <ph name="BEGIN_LINK" />systemindstillingerne<ph name="END_LINK" /> for at bruge din lokation</translation>
 <translation id="659498884637196217">I Google Adgangs­kode­admin­istrator på denne enhed</translation>
+<translation id="6631524303639368205">Fortsæt, hvor du slap: Chrome har gendannet dine faner fra din seneste session. Du kan deaktivere dette i</translation>
 <translation id="6632473616050862500">ChromeOS Flex leveres ved hjælp af <ph name="BEGIN_LINK_CROS_OSS" />open source-software<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6634299872736643004">Ændringerne af denne indstilling anvendes, når Chrome genstartes.</translation>
 <translation id="6660596345553328257">Vil du logge ind i Chrome?</translation>
@@ -561,6 +565,7 @@
 <translation id="7825851276765848807">Installationen mislykkedes på grund af en uspecificeret fejl. Download Google Chrome igen.</translation>
 <translation id="7827099906024714326">Chrome skal verificere din identitet, før visse data kan gemmes på din Google-konto og bruges på alle dine enheder. Hvis du logger ud nu, slettes disse data.</translation>
 <translation id="7845233973568007926">Tak for installationen. Du skal genstarte computeren, før du bruger <ph name="BUNDLE_NAME" />.</translation>
+<translation id="7849037457735762883">Fortsæt, hvor du slap: Chrome kan gendanne dine faner, hver gang du genstarter. For at aktivere dette skal du gå til</translation>
 <translation id="7872446069773932638">Downloader… Der er <ph name="SECONDS" /> sekunder tilbage</translation>
 <translation id="7886087451482920026">Vælg tekst med Google Lens</translation>
 <translation id="7890208801193284374">Hvis du deler en computer, kan venner og familie browse individuelt og konfigurere Chrome, som de ønsker hver især.</translation>

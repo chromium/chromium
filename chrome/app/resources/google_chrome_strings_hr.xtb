@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hr">
 <translation id="1001534784610492198">Arhiva programa za instalaciju je oštećena ili nevažeća. Ponovno preuzmite program Google Chrome.</translation>
+<translation id="1006034097353797313">Nastavite tamo gdje ste stali: Chrome vraća vaše kartice svaki put kada ponovno pokrenete sesiju. Da biste to isključili, otvorite</translation>
 <translation id="1018937009655463387">Da biste dijelili prozor, u postavkama sustava dopustite snimanje zaslona za Chrome.</translation>
 <translation id="1026101648481255140">Nastavi instaliranje</translation>
 <translation id="102763973188675173">Prilagodite i kontrolirajte Google Chrome. Dostupno je ažuriranje.</translation>
@@ -79,6 +80,7 @@
 <translation id="2018879682492276940">Instaliranje nije uspjelo. Pokušajte ponovo.</translation>
 <translation id="2024959665595762054">Da biste upotrebljavali i spremali podatke iz Chromea spremljene na vašem Google računu, potvrdite svoj identitet</translation>
 <translation id="2034233344106846793">Chrome automatski nadograđuje nesigurne veze na HTTPS kad je to moguće</translation>
+<translation id="2039417478970545937">Postavke.</translation>
 <translation id="207902854391093810">Tijekom eksperimenata Ad measurement API omogućuje web-lokacijama koje posjećujete da od Chromea traže podatke koji im pomažu mjeriti izvedbu svojih oglasa. Ad measurement API ograničava praćenje na različitim web-lokacijama tako što se između web-lokacija prenosi što je manje moguće podataka.</translation>
 <translation id="2091012649849228750">Da biste primali buduća ažuriranja Google Chromea, trebat će vam Windows 10 ili novija verzija. Na ovom se računalu upotrebljava Windows 8.</translation>
 <translation id="2094648590148273905">Uvjeti za ChromeOS Flex</translation>
@@ -346,6 +348,7 @@
 <translation id="5166439563123238795">Chrome treba dopuštenje za praćenje pokreta vaših ruku</translation>
 <translation id="5170938038195470297">Vaš se profil ne može upotrijebiti jer pripada novijoj verziji proizvoda Google Chrome. Neke značajke možda nisu dostupne. Navedite drugi direktorij profila ili upotrijebite noviju verziju proizvoda Chrome.</translation>
 <translation id="5174969993834422967">Uglavnom blokirate obavijesti. Da biste dopustili web-lokaciji da vas obavještava, kliknite ikonu obavijesti u desnom kutu trake za lokaciju.</translation>
+<translation id="5174983315706567306">Nema dovoljno prostora na disku.</translation>
 <translation id="5201744974236816379">Ažuriranje Chromea</translation>
 <translation id="521447420733633466">Ako dijelite uređaj, prijatelji i članovi obitelji mogu zasebno pregledavati i postaviti Chrome prema svojim željama</translation>
 <translation id="5234764350956374838">Odbaci</translation>
@@ -454,6 +457,7 @@
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6520670145826811516">Da biste upotrebljavali lokaciju, odobrite Chromeu pristup u <ph name="BEGIN_LINK" />sistemskim postavkama<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">Na Google upravitelju zaporki na ovom uređaju</translation>
+<translation id="6631524303639368205">Nastavite tamo gdje ste stali: Chrome je vratio vaše kartice iz posljednje sesije. To možete isključiti u odjeljku</translation>
 <translation id="6632473616050862500">ChromeOS Flex omogućuje dodatni <ph name="BEGIN_LINK_CROS_OSS" />softver otvorenog izvornog koda<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6634299872736643004">Promjene ove postavke primijenit će se nakon ponovnog pokretanja Chromea.</translation>
 <translation id="6660596345553328257">Prijaviti se u Chrome?</translation>
@@ -561,6 +565,7 @@
 <translation id="7825851276765848807">Instalacija nije uspjela zbog neodređene pogreške. Ponovo preuzmite Google Chrome.</translation>
 <translation id="7827099906024714326">Chrome treba potvrditi da ste to vi da bi se neki podaci mogli spremiti na vaš Google račun i upotrebljavati na svim vašim uređajima. Ako se sada odjavite, ovi će se podaci izbrisati.</translation>
 <translation id="7845233973568007926">Zahvaljujemo što ste izvršili instaliranje. Da biste mogli koristiti <ph name="BUNDLE_NAME" />, morate ponovno pokrenuti računalo.</translation>
+<translation id="7849037457735762883">Nastavite tamo gdje ste stali: Chrome može vratiti vaše kartice svaki put kada ponovno pokrenete sesiju. Da biste to uključili, otvorite</translation>
 <translation id="7872446069773932638">Preuzimanje... Još <ph name="SECONDS" /> s</translation>
 <translation id="7886087451482920026">Odaberite tekst pomoću Google objektiva</translation>
 <translation id="7890208801193284374">Ako dijelite računalo, prijatelji i članovi obitelji mogu zasebno pregledavati i postaviti Chrome prema svojim željama.</translation>

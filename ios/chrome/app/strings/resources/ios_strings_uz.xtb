@@ -242,6 +242,7 @@
 <translation id="1902277226107477495">Manzil aniqlanishi yoqilmagan. Sozlamalar orqali qayta yoqish mumkin</translation>
 <translation id="1904580727789512086">Tashrif qilingan URL manzillar Google hisobingizda saqlanadi</translation>
 <translation id="1911619930368729126">Google Drive’ga yuklash</translation>
+<translation id="1925706052394657380">iOS qurilmada <ph name="BEGIN_BOLD" />Birlamchi ilovalar<ph name="END_BOLD" /> sozlamalarini oching</translation>
 <translation id="1941314575388338491">Nusxalash uchun ikki marta bosing.</translation>
 <translation id="1943478190258551035">Menyu → Sozlamalar</translation>
 <translation id="1952728750904661634">Boshqariladigan hisobga kirish</translation>
@@ -251,6 +252,7 @@
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> sizga <ph name="WEBSITE" /> parolini ulashdi</translation>
 <translation id="1962969542251276847">Ekran qulfi</translation>
 <translation id="1963976881984600709">Standart himoya</translation>
+<translation id="1964507856799750384"><ph name="BEGIN_BOLD" />Brauzer ilovasini<ph name="END_BOLD" /> bosing</translation>
 <translation id="1966313166384086081">sayt maʼlumotlari</translation>
 <translation id="1967461193809857427">{count,plural, =1{Androidda koʻrilgan varaq ochilsinmi?}other{Androidda koʻrilgan varaqlar ochilsinmi?}}</translation>
 <translation id="1972325230031091483">Sahifalar joriy tashrifi asosida oldindan yuklanadi va tezroq ochiladi</translation>
@@ -600,7 +602,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="333229797575847124">Bu funksiyani yoqish tartibi</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bukmark {email} hisobingizdagi “{title}” jildiga saqlandi}other{Bukmark {email} hisobingizdagi “{title}” jildiga saqlandi}}</translation>
 <translation id="334690320928261823">Oxirgi varaqlar</translation>
-<translation id="3348387552617855658">Bu karta sizga paketlarni kuzatib borish va muhim yetkazib berish yangiliklarini taqdim etishda yordam beradi.</translation>
 <translation id="3349031117032695619">Qalqib chiquvchi oynalarni bloklash</translation>
 <translation id="3349676726073650389">Siz qidirgan va kuzatadigan saytlar Google hisobingizda saqlanadi. Kuzatuvdagi saytlarni endi istalgan vaqt sozlamalar orqali boshqarish mumkin.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Bu hisob nazorat ostida.</translation>

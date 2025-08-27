@@ -28,6 +28,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> välilehti lisätty ryhmään</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> välilehti}other{<ph name="TABS_COUNT_MANY" /> välilehteä}}</translation>
 <translation id="1909810060368225529">Huom. Tähän jaettuun välilehtiryhmään tehdyt muutokset näkyvät kaikille. Kaikki voivat tehdä muutoksia jaettuihin välilehtiryhmiin</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{Kiinnitä välilehti}other{Kiinnitä välilehdet}}</translation>
 <translation id="1982637982196732906">Siirrä ei-aktiivisten osioon</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Aseta <ph name="TABS_COUNT_ONE" /> valittu välilehti kirjanmerkiksi}other{Aseta <ph name="TABS_COUNT_MANY" /> valittua välilehteä kirjanmerkeiksi}}</translation>
 <translation id="2055057176188061528">Valitse välilehtiryhmä tai luo uusi</translation>
@@ -78,6 +79,7 @@
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Jakotaulukon pikkukuva.</translation>
 <translation id="3810973564298564668">Hallinnoi</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{Irrota välilehti}other{Irrota välilehdet}}</translation>
 <translation id="3940195383040445971">Seuraa hintoja välilehdillä</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> uusi välilehti, <ph name="ANY_CLOSED" /> suljettu}other{<ph name="MANY_ADDED" /> uutta välilehteä, <ph name="ANY_CLOSED" /> suljettu}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Ryhmittele välilehti}other{Ryhmittele välilehdet}}</translation>
@@ -131,6 +133,7 @@
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Sulje <ph name="TABS_COUNT_ONE" /> valittu kohde}other{Sulje <ph name="TABS_COUNT_MANY" /> valittua kohdetta}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Siirrä ryhmä uuteen ikkunaan}other{Siirrä ryhmä toiseen ikkunaan}}</translation>
 <translation id="6228793724645064692">(kauppa-arvio)</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{Poista välilehti ryhmästä}other{Poista välilehdet ryhmästä}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Lisää välilehti uuteen ryhmään}other{Lisää välilehtiä uuteen ryhmään}}</translation>
 <translation id="6333260925957816943">Tietoja tästä kaupasta</translation>
 <translation id="6381032505162537930">Näet välilehtiryhmäsi täällä</translation>

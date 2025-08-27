@@ -21,6 +21,7 @@
 <translation id="1072476005125066234">Rezensionen, die auf deinen Interessen basieren</translation>
 <translation id="1074827084851510304">Du bist im Begriff, {password_count} Passwörter und die Liste der Websites und Apps zu löschen, für die du festgelegt hast, dass Anmeldedaten nie gespeichert werden sollen. Konten, die du für Websites und Apps erstellt hast, werden nicht gelöscht.</translation>
 <translation id="1076421457278169141">Code gescannt</translation>
+<translation id="1081114897601629648">Die folgenden Passwörter wurden nicht in den Google Passwortmanager importiert, da sie die Anforderungen nicht erfüllen.</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} Tab}other{{count} Tabs}}</translation>
 <translation id="1082554859195167538">Rezensionen für dich</translation>
 <translation id="1084365883616172403">Facebook-Beitrag gepostet</translation>
@@ -599,7 +600,6 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="333229797575847124">So aktivierst du diese Funktion</translation>
 <translation id="3344485292736684439">{count,plural, =1{Lesezeichen unter „{title}“ in deinem Konto {email} gespeichert}other{Lesezeichen unter „{title}“ in deinem Konto {email} gespeichert}}</translation>
 <translation id="334690320928261823">Letzte Tabs</translation>
-<translation id="3348387552617855658">Auf dieser Karte hast du alle deine Pakete im Blick und siehst wichtige Updates zur Zustellung.</translation>
 <translation id="3349031117032695619">Pop-ups blockieren</translation>
 <translation id="3349676726073650389">Die Websites und Suchanfragen, denen du folgst, werden in deinem Google-Konto gespeichert. Du kannst sie jederzeit in den Einstellungen verwalten.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Dieses Konto ist verwaltet.</translation>

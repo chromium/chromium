@@ -28,6 +28,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ჩანართი დაჯგუფდა</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ჩანართი}other{<ph name="TABS_COUNT_MANY" /> ჩანართი}}</translation>
 <translation id="1909810060368225529">შეტყობინება: ამ საზიარო ჩანართების ჯგუფში შეტანილი ცვლილებები ხილულია ყველასთვის. ყველას შეუძლია ცვლილებების შეტანა თქვენს საზიარო ჩანართების ჯგუფში</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{ჩანართის ჩამაგრება}other{ჩანართების ჩამაგრება}}</translation>
 <translation id="1982637982196732906">არააქტიურთა სექციაში გადატანა</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> არჩეული ჩანართის სანიშნეებში დამატება}other{<ph name="TABS_COUNT_MANY" /> არჩეული ჩანართის სანიშნეებში დამატება}}</translation>
 <translation id="2055057176188061528">აირჩიეთ ჩანართების ჯგუფი ან შექმენით ჩანართების ახალი ჯგუფი</translation>
@@ -78,6 +79,7 @@
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">ესკიზი ფურცლის გაზიარების გადახედვისთვის.</translation>
 <translation id="3810973564298564668">მართვა</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{ჩანართის ჩამაგრების მოხსნა}other{ჩანართების ჩამაგრების მოხსნა}}</translation>
 <translation id="3940195383040445971">ფასებისთვის თვალის მიდევნება ჩანართებზე</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ახალი ჩანართი, <ph name="ANY_CLOSED" /> დაიხურა}other{<ph name="MANY_ADDED" /> ახალი ჩანართი, <ph name="ANY_CLOSED" /> დაიხურა}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{ჩანართის დაჯგუფება}other{ჩანართების დაჯგუფება}}</translation>
@@ -131,6 +133,7 @@
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> არჩეული ერთეულის დახურვა}other{<ph name="TABS_COUNT_MANY" /> არჩეული ერთეულის დახურვა}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ჯგუფის გადატანა ახალ ფანჯარაში}other{ჯგუფის გადატანა სხვა ფანჯარაში}}</translation>
 <translation id="6228793724645064692">(მაღაზიის შეფასება)</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{ჩანართის ამოშლა ჯგუფიდან}other{ჩანართების ამოშლა ჯგუფიდან}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{ჩანართის დამატება ახალ ჯგუფში}other{ჩანართის დამატება ახალ ჯგუფში}}</translation>
 <translation id="6333260925957816943">ინფორმაცია ამ მაღაზიის შესახებ</translation>
 <translation id="6381032505162537930">თქვენს ჩანართების ჯგუფებს აქ ნახავთ</translation>

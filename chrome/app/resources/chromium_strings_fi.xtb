@@ -82,6 +82,7 @@
 <translation id="2008474315282236005">Tämä poistaa yhden kohteen pysyvästi laitteelta. Jos haluat palauttaa tiedot myöhemmin, kirjaudu Chromiumiin käyttäjänä <ph name="USER_EMAIL" />.</translation>
 <translation id="2018879682492276940">Asennus epäonnistui. Yritä uudelleen.</translation>
 <translation id="2020032459870799438">Jos haluat tarkistaa, ovatko muut salasanasi turvassa tietosuojaloukkauksilta ja muilta tietoturvaongelmilta, <ph name="BEGIN_LINK" />kirjaudu Chromiumiin<ph name="END_LINK" />.</translation>
+<translation id="2039417478970545937">Asetukset.</translation>
 <translation id="2049376729098081731">Valitse, käytetäänkö Chromium-historiaa personoituun kokemukseen Google-palveluissa</translation>
 <translation id="2054039611381840095">Sinulla on oltava macOS 12 tai uudempi, jotta saat tulevia Chromiumin päivityksiä. Tällä tietokoneella on macOS 11.</translation>
 <translation id="2086476982681781442">Chromium on estänyt tämän latauksen, koska tiedosto on harhaanjohtava ja se voi tehdä odottamattomia muutoksia laitteellesi</translation>
@@ -314,6 +315,7 @@
 <translation id="5123973130450702873">Chromium tarvitsee luvan käsien liikkeen seuraamiseen</translation>
 <translation id="5141988424377517949">Sivustot, joilla et ole käynyt viime aikoina. Chromium poisti nämä luvat: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="PERMISSION_3" />.</translation>
 <translation id="5174969993834422967">Estät yleensä ilmoitukset. Voit antaa tälle sivustolle luvan lähettää ilmoituksia klikkaamalla ilmoituskuvaketta osoitepalkin oikeassa reunassa.</translation>
+<translation id="5174983315706567306">Levytila ei riitä.</translation>
 <translation id="5187123684706427865">Chromium-tili edellyttää uudelleentodennusta</translation>
 <translation id="5224391634244552924">Ei tallennettuja salasanoja. Chromium voi tarkistaa salasanasi, kun tallennat niitä.</translation>
 <translation id="5231355151045086930">Kirjaudu ulos Chromiumista</translation>
@@ -441,6 +443,7 @@
 <translation id="6598877126913850652">Siirry Chromiumin ilmoitusasetuksiin</translation>
 <translation id="6600016381025017075">Hae mitä tahansa tältä sivulta</translation>
 <translation id="6613594504749178791">Muutokset tulevat voimaan, kun käynnistät Chromiumin seuraavan kerran.</translation>
+<translation id="6648212540664651655">Jatka siitä, mihin jäit: Chromium palautti välilehdet edellisestä istunnosta. Voit laittaa asetuksen pois päältä täältä:</translation>
 <translation id="665732753414869868">Chromium tarvitsee kameran luvan, jotta se voi luoda 3D-kartan ympäristöstäsi</translation>
 <translation id="6669284030132180248">Jos tallennat kirjanmerkit myös Google-tilillesi, voit seurata tuotteiden hintoja Chromiumissa ja saada ilmoituksen, kun hinta laskee</translation>
 <translation id="6676384891291319759">Käytä internetiä</translation>
@@ -505,6 +508,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="7352651011704765696">Tapahtui jokin virhe</translation>
 <translation id="7376384068949534168">Sivustot, joilla et ole käynyt viime aikoina. Chromium poisti nämä luvat: <ph name="PERMISSION_1" /> ja <ph name="PERMISSION_2" />.</translation>
 <translation id="7384121030444253939">Tätä laajennusta ei enää tueta. Chromium suosittelee sen poistamista.</translation>
+<translation id="7413153308467572558">Jatka siitä, mihin jäit: Chromium palauttaa välilehdet aina, kun käynnistät sen uudelleen. Voit laittaa asetuksen pois päältä täältä:</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Teksti kopioitu</translation>
 <translation id="7451052299415159299">Chromium tarvitsee oikeuden käyttää kameraasi tällä sivustolla.</translation>
@@ -636,6 +640,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="911206726377975832">Poistetaanko myös selailutiedot?</translation>
 <translation id="9134482777260927479">Kotitehtäväapu</translation>
 <translation id="9148058034647219655">Poistu</translation>
+<translation id="9155105544013854680">Jatka siitä, mihin jäit: Chromium voi palauttaa välilehdet aina, kun käynnistät sen uudelleen. Voit laittaa asetuksen päälle täältä:</translation>
 <translation id="9158494823179993217">Järjestelmänvalvojasi on määrittänyt Chromiumin avaamaan toisen selaimen, jolla <ph name="TARGET_URL_HOSTNAME" /> avataan.</translation>
 <translation id="9185526690718004400">Päivitä &amp;Chromium käynnistämällä se uudelleen</translation>
 <translation id="9190841055450128916">Chromium (saapuva mDNS)</translation>

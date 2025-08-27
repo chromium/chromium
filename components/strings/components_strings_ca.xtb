@@ -440,6 +440,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1719838434204287058">24 x 30 polzades</translation>
 <translation id="1720941539803966190">Tanca el tutorial</translation>
 <translation id="1721424275792716183">* El camp és obligatori</translation>
+<translation id="1723636263173393300">Aquesta política no pot tenir més de <ph name="MAX_ITEMS_LIMIT" /> dreceres.</translation>
 <translation id="1725591448053514783">Sobre You 6</translation>
 <translation id="1727613060316725209">El certificat és vàlid</translation>
 <translation id="1728677426644403582">Estàs consultant el codi font d'una pàgina web</translation>
@@ -1047,6 +1048,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="271663710482723385">Prem |<ph name="ACCELERATOR1" />|+|<ph name="ACCELERATOR2" />| per sortir de la pantalla completa</translation>
 <translation id="2717336592027046789">Rotlle</translation>
 <translation id="2718207025093645426">L'usuari o el dispositiu gestionats no tenen cap política carregada.</translation>
+<translation id="2719233594187778789">S'ha ignorat l'URL no únic: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Sol·licitud realitzada correctament</translation>
 <translation id="2722622039067384533">Mobles de sala d'estar</translation>
 <translation id="2723669454293168317">Executa una comprovació de seguretat a la configuració de Chrome</translation>
@@ -2007,6 +2009,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4298000214066716287">Inversions</translation>
 <translation id="4298148761711700950">Paga a l'instant sense penjar cap QR</translation>
 <translation id="4298925811540301889">Les galetes d'aquest lloc web se sincronitzen en tots els teus dispositius ChromeOS. Per gestionar què sincronitzes, ves a <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4299919199185766032">El nom de la drecera supera la longitud màxima permesa de <ph name="MAX_LENGTH" /> caràcters.</translation>
 <translation id="4300272766492248925">Obre l'aplicació</translation>
 <translation id="4300675098767811073">Encunyació múltiple a la dreta</translation>
 <translation id="4302514097724775343">Toca el dinosaure per jugar</translation>
@@ -2708,6 +2711,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
     Proveu de contactar amb l'administrador del sistema.</translation>
 <translation id="5496804587179176046">Desa codis de seguretat (en aquest moment no hi ha cap codi de seguretat desat)</translation>
 <translation id="550365051221576010">Emplena-ho tot</translation>
+<translation id="5506286895894263601">La llista no conté cap drecera vàlida.</translation>
 <translation id="5508443345185481044">Càmeres i videocàmeres</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Adreces d'interès gestionades</translation>
@@ -3627,6 +3631,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="7014741021609395734">Nivell de zoom</translation>
 <translation id="7016992613359344582">Aquests càrrecs poden ser únics o periòdics i és possible que no s'indiquin d'una manera evident.</translation>
 <translation id="701757816833614688">Formació d'arts visuals i disseny</translation>
+<translation id="7020464868401003526">L'URL de la drecera supera la longitud màxima permesa de <ph name="MAX_LENGTH" /> caràcters.</translation>
 <translation id="702275896380648118">Aquest lloc web determina les coses que t'agraden i, a continuació, suggereix anuncis a altres llocs web. També obté de Chrome els teus temes d'anunci per mostrar-te anuncis més rellevants.</translation>
 <translation id="7023162328967545559">Advertiment d'administrador</translation>
 <translation id="7023765275461720661">Vols enllaçar el compte i pagar amb <ph name="BNPL_ISSUER_NAME" />?</translation>

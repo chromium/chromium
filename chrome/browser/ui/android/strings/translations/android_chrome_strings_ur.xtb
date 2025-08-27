@@ -499,7 +499,6 @@
 <translation id="3384347053049321195">تصویر کا اشتراک کریں</translation>
 <translation id="3387650086002190359">سسٹم کی خرابیوں کی وجہ سے <ph name="FILE_NAME" /> کو ڈاؤن لوڈ کرنا ناکام ہوگیا۔</translation>
 <translation id="3414952576877147120">سائز:</translation>
-<translation id="3421726884497337397">فریق ثالث کی کوکیز کو مسدود کرنے کا وقت منتخب کریں</translation>
 <translation id="3430670036890315772">آپ کے پروفائل لاک کو آف کرنے سے آپ کی محفوظ کردہ معلومات ہٹ جائے گی</translation>
 <translation id="3435465986463792564">کیا آپ کے پاس بہت ساری ونڈوز ہیں؟ آپ یہاں سے ان کا نظم کر سکتے ہیں</translation>
 <translation id="3435575784518354875">‏اپنے پاس ورڈز تک رسائی کو برقرار رکھنے کے لیے، انہیں ابھی برآمد کریں، Google Play سروسز کو اپ ڈیٹ کریں اور پھر انہیں واپس Google پاس ورڈ مینیجر میں درآمد کریں۔ <ph name="BEGIN_LINK" />مکمل ہدایات دیکھیں<ph name="END_LINK" />۔</translation>
@@ -760,7 +759,6 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 متاثرہ پاس ورڈ}other{# متاثرہ پاس ورڈز}}</translation>
 <translation id="4641919525231168205">اگلے صفحے پر جائیں</translation>
 <translation id="4642472735733036929">قیمت کی ٹریکنگ بند کی گئی</translation>
-<translation id="4645146721047390964">پوشیدگی وضع میں ہونے پر سائٹس مختلف سائٹس پر آپ کی براؤزنگ کی سرگرمی کو دیکھنے کے لیے آپ کی کوکیز کا استعمال نہیں کر سکتیں، مثال کے طور پر اشتہارات کو ذاتی نوعیت کا بنانے کے لیے۔ کچھ سائٹس پر خصوصیات میں خلل ہو سکتا ہے۔</translation>
 <translation id="465657074423018424">محفوظ براؤزنگ گمراہ کن ویب سائٹس سے آپ کی حفاظت کرتی ہے۔ اگر آپ اسے آف کرتے ہیں تو براؤز کرتے وقت، خاص طور پر پاس ورڈ داخل کرنے سے پہلے خوب محتاط رہیں۔</translation>
 <translation id="4662373422909645029">عرفی نام میں نمبرز شامل نہیں ہو سکتے</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> بُک مارکس حذف کر دیے گئے</translation>
@@ -1220,7 +1218,6 @@
 <translation id="6633067410344541938">پوشیدگی کو غیر مقفل کریں</translation>
 <translation id="6636623428211296678">ذیل میں مزید ترتیبات دریافت کریں یا ابھی مکمل کریں</translation>
 <translation id="6637100877383020115">‏ایپ کو بہتر بنانے میں مدد کرنے کے لیے، Chrome استعمال اور ناکامی کا ڈیٹا Google کو بھیجتا ہے۔ <ph name="BEGIN_UMA_LINK" />نظم کریں<ph name="END_UMA_LINK" /></translation>
-<translation id="6640207029842583248">ہر وقت مسدود کریں</translation>
 <translation id="6641780377503683465"><ph name="INTEREST" /> ہٹائیں</translation>
 <translation id="6647441008198474441">‏آپ کے ملاحظہ کردہ URLs اس بات کی پیشنگوئی کرنے کے لیے Google کو بھیجے جاتے ہیں کہ آپ اگلی بار کون سی سائٹس ملاحظہ کر سکتے ہیں</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{‏<ph name="CONTACT_PREVIEW" />\u2026 اور <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> مزید}other{‏<ph name="CONTACT_PREVIEW" />\u2026 اور <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> مزید}}</translation>
@@ -1343,6 +1340,7 @@
 <translation id="7111822978084196600">اس ونڈو کو نام دیں</translation>
 <translation id="7115358764509798967">سسٹم ڈیفالٹ</translation>
 <translation id="7117485132243600300">اس مواد کا جس کی آپ پیروی کرتے ہیں اور تجویز کردہ موضوعات اور تلاشوں کا نظم کریں</translation>
+<translation id="7119984597597798764">‫<ph name="INSTANCE_TITLE" /> بند کریں</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 سائٹ کے لیے اجازتوں کا جائزہ لیا گیا}other{# سائٹس کے لیے اجازتوں کا جائزہ لیا گیا}}</translation>
 <translation id="7138678301420049075">دوسرا</translation>
 <translation id="7140829094791862589">دستی ترتیب کے مطابق ترتیب دیں</translation>
@@ -1444,7 +1442,6 @@
 <translation id="751961395872307827">سائٹ سے منسلک نہیں کیا جا سکتا</translation>
 <translation id="7523960634226602883">‏Google لینز کا استعمال کرتے ہوئے اپنے کیمرے کی مدد سے تلاش کریں</translation>
 <translation id="7525248386620136756"><ph name="TAB_GROUPS_AND_TABS_PART" /> کو بند اور محفوظ کر دیا گیا</translation>
-<translation id="752731652852882757">پوشیدگی وضع کا استعمال کرتے وقت مسدود کریں</translation>
 <translation id="7545347190366646170">رسائی والے افراد</translation>
 <translation id="7554643625247105821">‏‫Chrome ورژن چیک نہیں کر سکتے</translation>
 <translation id="7557508262441527045">سائن آؤٹ ہو گئے</translation>
@@ -1610,7 +1607,6 @@
 <translation id="8243077599929149377">اپنا صارف نام شامل کریں</translation>
 <translation id="8244387390464017490">نئے ٹیب کا صفحہ حسب ضرورت بنائیں</translation>
 <translation id="8250920743982581267">دستاویزات</translation>
-<translation id="8255617931166444521">سائٹس آپ کی کوکیز کو صرف اپنی خود کی سائٹ پر آپ کی براؤزنگ سرگرمی دیکھنے کے لیے استعمال کر سکتی ہیں</translation>
 <translation id="8258999165172757081">شامل کر دیا گیا</translation>
 <translation id="8259179246279078674">‏چونکہ پیشگی لوڈ کردہ صفحات مرموز کردہ ہیں، Google پیشگی لوڈ کردہ صفحہ کے مواد کے بارے میں کچھ نہیں سیکھے گا Google سرورز یہ سیکھیں گے کون سی سائٹس نجی طور پر پیشگی لوڈ کردہ ہیں۔ یہ معلومات صرف صفحات کو پیشگی لوڈ کرنے کے لیے استعمال کی جاتی ہے اور آپ کے Google اکاؤنٹ کی دیگر معلومات سے لنک نہیں ہے۔</translation>
 <translation id="8260126382462817229">دوبارہ سائن ان کرنے کی کوشش کریں</translation>

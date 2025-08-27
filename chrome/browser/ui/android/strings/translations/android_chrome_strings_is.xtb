@@ -499,7 +499,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3384347053049321195">Deila mynd</translation>
 <translation id="3387650086002190359">Niðurhal á <ph name="FILE_NAME" /> mistókst vegna villu í skráakerfi.</translation>
 <translation id="3414952576877147120">Stærð:</translation>
-<translation id="3421726884497337397">Veldu hvenær á að útiloka fótspor þriðju aðila</translation>
 <translation id="3430670036890315772">Ef slökkt er á prófíllásnum veða vistaðar upplýsingar fjarlægðar</translation>
 <translation id="3435465986463792564">Ertu með of marga glugga opna? Þú getur stjórnað gluggunum héðan</translation>
 <translation id="3435575784518354875">Til að tryggja að þú hafir aðgang að aðgangsorðunum þínum skaltu flytja þau út núna, uppfæra þjónustu Google Play og flytja þau síðan aftur inn í Google-aðgangsorðastjórnun. <ph name="BEGIN_LINK" />Sjá ítarlegar leiðbeiningar<ph name="END_LINK" />.</translation>
@@ -760,7 +759,6 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 aðgangsorð í hættu}one{# aðgangsorð í hættu}other{# aðgangsorð í hættu}}</translation>
 <translation id="4641919525231168205">Fara á næstu síðu</translation>
 <translation id="4642472735733036929">Verðvöktun hætt</translation>
-<translation id="4645146721047390964">Þegar huliðsstilling er notuð geta vefsvæði ekki notað fótspor til að sjá vafranotkun þína á vefsvæðum, til dæmis til að sérsníða auglýsingar. Ekki er víst að allir eiginleikar á öllum vefsvæðum virki.</translation>
 <translation id="465657074423018424">Örugg vefnotkun ver þig fyrir villandi vefsvæðum. Ef þú slekkur á henni skaltu fara afar varlega við vefskoðun, sérstaklega áður en þú slærð inn aðgangsorð.</translation>
 <translation id="4662373422909645029">Gælunöfn mega ekki hafa númer</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> bókamerkjum eytt</translation>
@@ -1220,7 +1218,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6633067410344541938">Taka huliðsstillingu úr lás</translation>
 <translation id="6636623428211296678">Skoðaðu fleiri stillingar hér að neðan eða ljúktu þessu núna</translation>
 <translation id="6637100877383020115">Chrome sendir gögn um notkun og hrun til Google til að bæta forritið. <ph name="BEGIN_UMA_LINK" />Stjórna<ph name="END_UMA_LINK" /></translation>
-<translation id="6640207029842583248">Útiloka alltaf</translation>
 <translation id="6641780377503683465">Fjarlægja <ph name="INTEREST" /></translation>
 <translation id="6647441008198474441">Vefslóðir sem þú opnar eru sendar til Google til að spá fyrir um hvaða vefsvæði þú kannt að opna næst</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> í viðbót}one{<ph name="CONTACT_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> í viðbót}other{<ph name="CONTACT_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> í viðbót}}</translation>
@@ -1232,6 +1229,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6674571176963658787">Sláðu inn aðgangsorðið þitt til að hefja samstillingu</translation>
 <translation id="6676927815633975364">Skráðu þig inn á þetta vefsvæði og Chrome</translation>
 <translation id="6684809838922667136">Bættu Chrome</translation>
+<translation id="6689436252814043643">Lesstilling er ekki í boði</translation>
 <translation id="6700279777779583398">Valið var vistað</translation>
 <translation id="670498945988402717">Athugað í gær</translation>
 <translation id="6710213216561001401">Til baka</translation>
@@ -1342,6 +1340,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="7111822978084196600">Nefndu þennan glugga</translation>
 <translation id="7115358764509798967">Sjálfgildi kerfis</translation>
 <translation id="7117485132243600300">Stjórnaðu efni sem þú fylgist með, tillögum að efni og leitum</translation>
+<translation id="7119984597597798764">Loka <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Farið yfir heimildir fyrir eitt vefsvæði}one{Farið yfir heimildir fyrir # vefsvæði}other{Farið yfir heimildir fyrir # vefsvæði}}</translation>
 <translation id="7138678301420049075">Annað</translation>
 <translation id="7140829094791862589">Raða handvirkt</translation>
@@ -1443,7 +1442,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="751961395872307827">Ekki er hægt að tengjast svæðinu</translation>
 <translation id="7523960634226602883">Leitaðu með Google linsu í myndavélinni</translation>
 <translation id="7525248386620136756"><ph name="TAB_GROUPS_AND_TABS_PART" /> lokað og vistað</translation>
-<translation id="752731652852882757">Útiloka þegar huliðsstilling er notuð</translation>
 <translation id="7545347190366646170">Fólk með aðgang</translation>
 <translation id="7554643625247105821">Ekki er hægt að athuga Chrome-útgáfu</translation>
 <translation id="7557508262441527045">Útskráð(ur)</translation>
@@ -1609,7 +1607,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="8243077599929149377">Bættu notandanafninu þínu við</translation>
 <translation id="8244387390464017490">Sérsníða síðu nýrra flipa</translation>
 <translation id="8250920743982581267">Skjöl</translation>
-<translation id="8255617931166444521">Vefsvæði geta einungis notað fótspor frá þér til að sjá vafranotkun þína á umræddu vefsvæði</translation>
 <translation id="8258999165172757081">Bætt við</translation>
 <translation id="8259179246279078674">Vegna þess að forhlaðnar síður eru dulkóðaðar mun Google ekki fá upplýsingar um efni þeirra. Netþjónar Google fá upplýsingar um hvaða vefsvæðum er forhlaðið á lokaðan hátt. Þær upplýsingar eru eingöngu notaðar til að forhlaða síðum og þær eru ekki tengdar við aðrar upplýsingar á Google reikningnum þínum.</translation>
 <translation id="8260126382462817229">Reyndu að skrá þig inn aftur</translation>

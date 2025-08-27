@@ -4,7 +4,7 @@
 <translation id="100421257800558142">اضغط على مفتاح السهم المتّجه لليمين</translation>
 <translation id="100506692671054486">ما مِن طلب سابق.</translation>
 <translation id="1009046985747440431">‏اضغط على السهم المتجه للأعلى أو للأسفل للتنقل، واضغط على Enter للتفعيل.</translation>
-<translation id="1011903154582639569">اعثر على لوحة المفاتيح المراد استخدامها، ثم انقر عليها للكتابة.</translation>
+<translation id="1011903154582639569">يمكنك العثور على لوحة المفاتيح المراد استخدامها، ثم النقر عليها للكتابة.</translation>
 <translation id="1012173283529841972">عنصر قائمة</translation>
 <translation id="1013742170491673792">srched</translation>
 <translation id="1014370462248694370">التمرير السريع بإصبعين إلى يسار الشاشة</translation>
@@ -124,7 +124,7 @@
 <translation id="1659072772017912254">غير محدد</translation>
 <translation id="1674262202423278359">‏التنقل في ChromeVox</translation>
 <translation id="16777221443363124">شريط قوائم</translation>
-<translation id="1680732992526857724"><ph name="NAME" />، في وضع التفعيل</translation>
+<translation id="1680732992526857724">‫"<ph name="NAME" />"، في وضع التفعيل</translation>
 <translation id="1686878109459149415">ذهبي</translation>
 <translation id="1690731385917361335">لا توجد عناصر</translation>
 <translation id="1700517974991662022">تم الانتقال إليه</translation>
@@ -769,7 +769,7 @@
 <translation id="5851548754964597211">قائمة علامات التبويب</translation>
 <translation id="5866042630553435010">محدد جزئيًا</translation>
 <translation id="5866210856231860256">لتصفُّح دروس حول هذا الموضوع، اضغط على مفتاح البحث + مفتاح السهم المتّجه لليمين أو لليسار.</translation>
-<translation id="5867591286054666064">أثناء هذا البرنامج التعليمي، اضغط على أي مفتاح لسماع اسمه.</translation>
+<translation id="5867591286054666064">أثناء هذا البرنامج التعليمي، يُرجى الضغط على أي مفتاح لسماع اسمه.</translation>
 <translation id="5869546221129391014">شبكة</translation>
 <translation id="5876817486144482042">خفض مستوى صوت النطق</translation>
 <translation id="5878206664863390311">لتصفُّح المواضيع، اضغط على مفتاح البحث + مفتاح السهم المتّجه لليمين أو لليسار.</translation>
@@ -856,7 +856,7 @@
 <translation id="6511611327412641506">.input {$$COUNT :number} .match $$COUNT 1{{open paren}} *{{{$$COUNT} open parens}}</translation>
 <translation id="6521550811716689390">بنفسجي داكن</translation>
 <translation id="6536157907112457272">كتّاني</translation>
-<translation id="6540201937398578274">‏في ChromeVox، يكون مفتاح البحث (Search) هو مفتاح التعديل. وتبدأ معظم اختصارات ChromeVox بمفتاح البحث. وستستخدم أيضًا مفاتيح الأسهم للتنقل.</translation>
+<translation id="6540201937398578274">‏في ChromeVox، يكون مفتاح البحث (Search) هو مفتاح التعديل. وتبدأ معظم اختصارات ChromeVox بمفتاح البحث. وسيتم أيضًا استخدام مفاتيح الأسهم للتنقّل.</translation>
 <translation id="6544923685317771506">صدفي</translation>
 <translation id="6551185905438378412">عاجي</translation>
 <translation id="6561818612645211875">الانتقال إلى بداية الصف الحالي</translation>
@@ -1012,7 +1012,7 @@
 <translation id="762020119231868829">إيقاف كل التطبيقات المصغَّرة للوسائط التي يتم تشغيلها حاليًا مؤقتًا</translation>
 <translation id="7625690649919402823">الجدول التالي</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />)، الدرجة <ph name="GRADE" /></translation>
-<translation id="7637342083105831460">اضغط على مفتاح البحث + مفتاح السهم المتّجه لليمين للاطّلاع على زر "التدريب العملي" أو زر "الدرس التالي". بعد ذلك، اضغط على مفتاح البحث + مفتاح المسافة لتنشيط الزر.</translation>
+<translation id="7637342083105831460">يُرجى الضَّغط على مفتاح البحث + مفتاح السهم المتّجه لليمين للاطّلاع على زر "التدريب العملي" أو زر "الدرس التالي". بعد ذلك، يُرجى الضَّغط على مفتاح البحث + مفتاح المسافة لتنشيط الزر.</translation>
 <translation id="7639968568612851608">رمادي داكن</translation>
 <translation id="7663318257180412551">العنوان الثاني</translation>
 <translation id="7673144236430784711">.input {$$COUNT :number} .match $$COUNT 1{{dollar}} *{{{$$COUNT} dollar signs}}</translation>
@@ -1134,7 +1134,7 @@
 <translation id="847040613207937740">ليس هناك مربع اختيار تالٍ.</translation>
 <translation id="8473540203671727883">قول النص أسفل الماوس</translation>
 <translation id="8476408756881832830">‏إيقاف التشغيل مؤقتًا أثناء تحدُّث ChromeVox</translation>
-<translation id="8480873377842220259">ستتعرَّف الآن على بعض طلبات التنقُّل الأساسي. يمكنك الضغط مع الاستمرار على مفتاح البحث ثم الضغط على مفاتيح الأسهم للتنقُّل على الشاشة. للمواصلة، اضغط على مفتاح البحث + مفتاح السهم المتّجه لليمين.</translation>
+<translation id="8480873377842220259">سيتم الآن تقديم معلومات عن بعض طلبات التنقُّل الأساسي. يمكنك الضغط مع الاستمرار على مفتاح البحث ثم الضغط على مفاتيح الأسهم للتنقُّل على الشاشة. للمواصلة، ما عليك سوى الضغط على مفتاح البحث + مفتاح السهم المتّجه لليمين.</translation>
 <translation id="8503360654911991865">خفض دقة التنقل</translation>
 <translation id="8520472399088452386">زر الدوران</translation>
 <translation id="8534394844575788431">التنسيق</translation>

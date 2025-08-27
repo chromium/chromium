@@ -81,6 +81,7 @@
 <translation id="2008474315282236005">Bu işlem 1 öğeyi bu cihazdan silecektir. Verilerinizi daha sonra geri almak için Chromium'da <ph name="USER_EMAIL" /> hesabıyla oturum açın.</translation>
 <translation id="2018879682492276940">Yükleme başarısız oldu. Lütfen tekrar deneyin.</translation>
 <translation id="2020032459870799438">Öteki şifrelerinizin veri ihlali ve diğer güvenlik sorunlarına karşı güvende olup olmadığını kontrol etmek için <ph name="BEGIN_LINK" />Chromium'da oturum açın<ph name="END_LINK" />.</translation>
+<translation id="2039417478970545937">Ayarlar.</translation>
 <translation id="2049376729098081731">Google hizmetlerinde daha fazla kişiselleştirilmiş deneyimden faydalanmak için Chromium geçmişinin eklenip eklenmeyeceğini seçin</translation>
 <translation id="2054039611381840095">Gelecekteki Chromium güncellemelerini almak için macOS 12 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar macOS 11 kullanıyor.</translation>
 <translation id="2086476982681781442">Dosya yanıltıcı olduğu ve cihazınızda beklenmeyen değişiklikler yapabileceği için Chromium bu indirme işlemini engelledi</translation>
@@ -311,6 +312,7 @@
 <translation id="5123973130450702873">Chromium'un ellerinizi takip etmek için izne ihtiyacı var</translation>
 <translation id="5141988424377517949">Son zamanlarda ziyaret etmediniz. Chromium; <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="PERMISSION_3" /> iznini kaldırdı.</translation>
 <translation id="5174969993834422967">Genelde bildirimleri engelliyorsunuz. Bu sitenin size bildirim göndermesine izin vermek için konum çubuğunuzun sağ köşesindeki bildirim simgesini tıklayın.</translation>
+<translation id="5174983315706567306">Yeterli disk alanı yok.</translation>
 <translation id="5187123684706427865">Chromium hesabı için yeniden kimlik doğrulama gerekiyor</translation>
 <translation id="5224391634244552924">Kaydedilen şifre yok. Chromium, kaydetmeniz halinde şifrelerinizi kontrol edebilir.</translation>
 <translation id="5231355151045086930">Chromium oturumunu kapatın</translation>
@@ -438,6 +440,7 @@
 <translation id="6598877126913850652">Chromium bildirim ayarlarına git</translation>
 <translation id="6600016381025017075">Bu sayfada istediğiniz şeyi arayın</translation>
 <translation id="6613594504749178791">Değişiklikleriniz, Chromium tekrar başlatıldığında geçerli olacak.</translation>
+<translation id="6648212540664651655">Kaldığınız yerden devam edin: Chromium, son oturumunuzdaki sekmeleri geri yükledi. Bu özelliği şu bölümde devre dışı bırakabilirsiniz:</translation>
 <translation id="665732753414869868">Çevrenizin 3D haritasını oluşturmak için Chromium'un kamera iznine ihtiyacı var</translation>
 <translation id="6669284030132180248">Google Hesabınıza yer işaretlerinizi de kaydederseniz Chromium'da ürün fiyatlarını takip edebilir ve fiyat düştüğünde bildirim alabilirsiniz</translation>
 <translation id="6676384891291319759">İnternet'e erişin</translation>
@@ -499,9 +502,10 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="734373864078049451">Web, yer işaretleri ve diğer Chromium bilgileriniz burada bulunur.</translation>
 <translation id="7347827960336370838">Sadece parolanızı bilen kişiler şifrelenmiş verilerinizi okuyabilir. Parola Google'a gönderilmez veya Google tarafından saklanmaz. Parolanızı unutursanız veya bu ayarı değiştirmek isterseniz <ph name="BEGIN_LINK" />hesabınızdaki Chromium verilerini silmeniz<ph name="END_LINK" /> gerekir.</translation>
 <translation id="7349591376906416160">Sistem yöneticiniz Chromium'u <ph name="TARGET_URL_HOSTNAME" /> adresine erişmek için <ph name="ALTERNATIVE_BROWSER_NAME" /> tarayıcısını açacak şekilde yapılandırmış.</translation>
-<translation id="7352651011704765696">Bir şeyler ters gitti</translation>
+<translation id="7352651011704765696">Bir hata oluştu</translation>
 <translation id="7376384068949534168">Son zamanlarda ziyaret etmediniz. Chromium; <ph name="PERMISSION_1" /> ve <ph name="PERMISSION_2" /> iznini kaldırdı.</translation>
 <translation id="7384121030444253939">Bu uzantı artık desteklenmiyor. Chromium bunu kaldırmanızı öneriyor.</translation>
+<translation id="7413153308467572558">Kaldığınız yerden devam edin: Chromium tarayıcısını kapatıp yeniden açtığınız her seferinde sekmeleriniz geri yüklenir. Bu özelliği devre dışı bırakmak için şuraya gidin:</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">Metin kopyalandı</translation>
 <translation id="7451052299415159299">Chromium'un bu sitede kameranıza erişmesi için izin gerekiyor</translation>
@@ -633,6 +637,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="911206726377975832">Tarama verileriniz de silinsin mi?</translation>
 <translation id="9134482777260927479">Ödevlere yardım</translation>
 <translation id="9148058034647219655">Çıkış</translation>
+<translation id="9155105544013854680">Kaldığınız yerden devam edin: Chromium tarayıcısını kapatıp yeniden açtığınız her seferinde sekmeleriniz geri yüklenebilir. Bu özelliği etkinleştirmek için şuraya gidin:</translation>
 <translation id="9158494823179993217">Sistem yöneticiniz, Chromium'u, <ph name="TARGET_URL_HOSTNAME" /> sitesini alternatif bir tarayıcıda açacak şekilde yapılandırmış.</translation>
 <translation id="9185526690718004400">&amp;Chromium'u güncellemek için yeniden başlat</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>

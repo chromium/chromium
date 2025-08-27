@@ -440,6 +440,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1719838434204287058">24 x 30 tuumaa</translation>
 <translation id="1720941539803966190">Sulje ohje</translation>
 <translation id="1721424275792716183">* Kenttä on pakollinen.</translation>
+<translation id="1723636263173393300">Käytännössä voi olla korkeintaan <ph name="MAX_ITEMS_LIMIT" /> pikakuvaketta.</translation>
 <translation id="1725591448053514783">Kirjekuori 6</translation>
 <translation id="1727613060316725209">Varmenne on voimassa</translation>
 <translation id="1728677426644403582">Tämä on verkkosivun lähdekoodi.</translation>
@@ -463,7 +464,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1751544761369730824">Poista <ph name="SITE_NAME" /></translation>
 <translation id="1752021286346845558">Postilaatikko 8</translation>
 <translation id="1753706481035618306">Sivunumero</translation>
-<translation id="1755203724116202818">Mainostulosten mittaamiseksi sivustojen välillä jaetaan rajoitetusti tietyntyyppistä dataa, esim. teitkö ostoksen käytyäsi sivustolla.</translation>
+<translation id="1755203724116202818">Sivustojen välillä jaetaan mainostulosten mittaamiseen rajoitetusti tietyntyyppistä dataa, esim. ostoksen tekemisestä sivustolla käymisen jälkeen.</translation>
 <translation id="1755621011177747277">Adoptio</translation>
 <translation id="1756026472674246267">Avaa linkki uudella välilehdellä</translation>
 <translation id="1756555787993603971">Voit nyt käyttää virtuaalikorttia ja maksaa turvallisemmin automaattisen täytön avulla.</translation>
@@ -1047,6 +1048,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="271663710482723385">Poistu koko näytön tilasta painamalla |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
 <translation id="2717336592027046789">Rulla</translation>
 <translation id="2718207025093645426">Hallinnoidulla käyttäjällä tai laitteella ei ole ladattua käytäntöä.</translation>
+<translation id="2719233594187778789">Ohitettu päällekkäinen URL-osoite: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Pyyntö onnistui</translation>
 <translation id="2722622039067384533">Olohuoneen kalusteet</translation>
 <translation id="2723669454293168317">Tee turvatarkistus Chromen asetuksissa</translation>
@@ -2008,6 +2010,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4298000214066716287">Sijoittaminen</translation>
 <translation id="4298148761711700950">Maksa heti ilman QR-koodin lataamista</translation>
 <translation id="4298925811540301889">Tämän sivuston evästeet synkronoidaan ChromeOS-laitteiden välillä. Jos haluat valita synkronoitavat asiat, siirry osoitteeseen <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4299919199185766032">Pikakuvakkeen nimi ylittää <ph name="MAX_LENGTH" /> merkin enimmäispituuden.</translation>
 <translation id="4300272766492248925">Avaa sovellus</translation>
 <translation id="4300675098767811073">Useita reikiä oikealla</translation>
 <translation id="4302514097724775343">Pelaa napauttamalla dinosaurusta</translation>
@@ -2709,6 +2712,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
     Ota yhteyttä järjestelmänvalvojaasi.</translation>
 <translation id="5496804587179176046">Tallenna turvakoodit, ei tällä hetkellä tallennettuja turvakoodeja</translation>
 <translation id="550365051221576010">Täytä kaikki</translation>
+<translation id="5506286895894263601">Lista ei sisällä hyväksyttäviä pikakuvakkeita.</translation>
 <translation id="5508443345185481044">Kamerat ja videokamerat</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Hallinnoidut kirjanmerkit</translation>
@@ -3628,6 +3632,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="7014741021609395734">Zoomauksen taso</translation>
 <translation id="7016992613359344582">Veloitukset voivat olla kertaluontoisia tai toistuvia, eikä niitä välttämättä esitetä selkeästi.</translation>
 <translation id="701757816833614688">Kuvataide- ja muotoilukoulutus</translation>
+<translation id="7020464868401003526">Pikakuvakkeen URL-osoite ylittää <ph name="MAX_LENGTH" /> merkin enimmäispituuden.</translation>
 <translation id="702275896380648118">Tämä sivusto päättelee, mistä pidät, ja ehdottaa sitten mainoksia muille sivustoille. Se myös saa mainosaiheesi Chromesta, jotta voit nähdä osuvampia mainoksia.</translation>
 <translation id="7023162328967545559">Varoitus järjestelmänvalvojalta</translation>
 <translation id="7023765275461720661">Haluatko linkittää tilin ja maksaa palvelussa <ph name="BNPL_ISSUER_NAME" />?</translation>

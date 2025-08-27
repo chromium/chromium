@@ -82,6 +82,7 @@
 <translation id="2008474315282236005">Astfel, se va șterge 1 element de pe acest dispozitiv. Pentru a recupera datele mai târziu, conectează-te la Chromium ca <ph name="USER_EMAIL" />.</translation>
 <translation id="2018879682492276940">Nu s-a instalat. Încearcă din nou.</translation>
 <translation id="2020032459870799438">Ca să verifici dacă celelalte parole sunt protejate împotriva încălcării securității datelor și a altor probleme de securitate, <ph name="BEGIN_LINK" />conectează-te la Chromium<ph name="END_LINK" />.</translation>
+<translation id="2039417478970545937">Setări.</translation>
 <translation id="2049376729098081731">Alege dacă se include istoricul Chromium pentru experiențe mai personalizate în serviciile Google</translation>
 <translation id="2054039611381840095">Pentru a primi actualizările Chromium viitoare, vei avea nevoie de macOS 12 sau o versiune ulterioară. Acest computer folosește macOS 11.</translation>
 <translation id="2086476982681781442">Chromium a blocat descărcarea, deoarece fișierul este înșelător și poate face modificări neașteptate pe dispozitiv</translation>
@@ -314,6 +315,7 @@
 <translation id="5123973130450702873">Chromium are nevoie de permisiune pentru a-ți urmări mâinile</translation>
 <translation id="5141988424377517949">Nu ai accesat recent site-ul. Chromium a eliminat <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="5174969993834422967">De obicei blochezi notificările. Ca să-i permiți acestui site să-ți trimită notificări, dă clic pe pictograma de notificare din colțul din dreapta al barei de locație.</translation>
+<translation id="5174983315706567306">Nu există suficient spațiu pe disc.</translation>
 <translation id="5187123684706427865">Este necesară reautentificarea în contul Chromium</translation>
 <translation id="5224391634244552924">Nu există parole salvate. Chromium îți poate verifica parolele dacă le salvezi.</translation>
 <translation id="5231355151045086930">Deconectează-te de la Chromium</translation>
@@ -441,6 +443,7 @@
 <translation id="6598877126913850652">Accesează setările pentru notificări Chromium</translation>
 <translation id="6600016381025017075">Caută orice în această pagină</translation>
 <translation id="6613594504749178791">Modificările dvs. vor intra în vigoare următoarea dată când reporniți Chromium.</translation>
+<translation id="6648212540664651655">Continuă de unde ai rămas: Chromium a restabilit filele din ultima sesiune. Poți dezactiva această opțiune în</translation>
 <translation id="665732753414869868">Chromium are nevoie de acces la cameră pentru a crea o hartă 3D a lucrurilor din jurul tău</translation>
 <translation id="6669284030132180248">Dacă salvezi marcajele și în Contul Google, poți să urmărești prețurile produselor în Chromium și să primești notificări când scad</translation>
 <translation id="6676384891291319759">Accesează internetul</translation>
@@ -505,6 +508,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="7352651011704765696">A apărut o eroare</translation>
 <translation id="7376384068949534168">Nu ai accesat recent site-ul. Chromium a eliminat <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="7384121030444253939">Extensia nu mai este acceptată. Chromium recomandă să o elimini.</translation>
+<translation id="7413153308467572558">Continuă de unde ai rămas: Chromium restabilește filele de fiecare dată când repornești. Pentru a dezactiva opțiunea, accesează</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium pentru dezvoltatori</translation>
 <translation id="7450541714075000668">Text copiat</translation>
 <translation id="7451052299415159299">Chromium are nevoie de permisiune ca să acceseze camera foto pentru acest site</translation>
@@ -636,6 +640,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="911206726377975832">Ștergi și datele de navigare?</translation>
 <translation id="9134482777260927479">Ajutor pentru teme</translation>
 <translation id="9148058034647219655">Ieși</translation>
+<translation id="9155105544013854680">Continuă de unde ai rămas: Chromium poate restabili filele de fiecare dată când repornești. Pentru a activa opțiunea, accesează</translation>
 <translation id="9158494823179993217">Administratorul de sistem a configurat Chromium să deschidă un browser secundar pentru a accesa <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Relansează pentru a actualiza &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>

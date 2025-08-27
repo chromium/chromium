@@ -243,6 +243,7 @@
 <translation id="139305205187523129">Хост <ph name="HOST_NAME" /> није послао никакве податке.</translation>
 <translation id="1393071644879491291">Нападачи на сајту који сте пробали да посетите могу да вас преваре да инсталирате софтвер или откријете ствари попут лозинки, телефона или бројева кредитних картица. Chrome топло препоручује да се вратите на безбедно место. <ph name="BEGIN_LEARN_MORE_LINK" />Сазнајте више о овом упозорењу<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1405567553485452995">Светлозелена</translation>
+<translation id="1406370515365284486">Начини плаћања ће и даље бити сачувани</translation>
 <translation id="1406500794671479665">Верификовање...</translation>
 <translation id="1406812885827747674">Дозволи овај пут</translation>
 <translation id="14070772729708640">Фајлови су отпремљени у <ph name="FOLDER_NAME" /> у услузи <ph name="CLOUD_PROVIDER" /></translation>

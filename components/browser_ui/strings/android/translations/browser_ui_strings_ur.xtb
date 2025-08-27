@@ -25,6 +25,7 @@
 <translation id="129382876167171263">ویب سائٹس کے ذریعے محفوظ کردہ فائلز یہاں ظاہر ہوں گی</translation>
 <translation id="131112695174432497">اشتہارات کی ذاتی نوعیت سازی کو متاثر کرنے والا ڈیٹا حذف کر دیا جاتا ہے</translation>
 <translation id="1317194122196776028">اس سائٹ کو بھول جائیں</translation>
+<translation id="1321110954513621549">اجازت ہے • تخمینی</translation>
 <translation id="1323433172918577554">مزید دکھائیں</translation>
 <translation id="1333965224356556482">سائٹس کو اپنا مقام دیکھنے کی اجازت نہ دیں</translation>
 <translation id="1343356790768851700">یہ سائٹ آپ کی پسند کی چیزوں کا تعین کرتی ہے اور پھر دوسری سائٹس کو اشتہارات تجویز کرتی ہے</translation>
@@ -40,6 +41,7 @@
 <translation id="1448064542941920355">زوم آؤٹ کریں</translation>
 <translation id="1464044141348608623">آپ اپنے آلے کا فعال طور پر استعمال کب کر رہے ہیں سائٹس کو یہ جاننے کی اجازت نہ دیں</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> سائٹ}other{<ph name="SITE_COUNT" /> سائٹس}}</translation>
+<translation id="1476700086976862423">بھورے رنگ والی تھیم</translation>
 <translation id="1500473259453106018">ٹیبز کارڈ پر قیمت میں گرواٹ کو چھپائیں</translation>
 <translation id="1508931164824684991">‏سائٹس JavaScript کا استعمال کر سکتی ہیں</translation>
 <translation id="1510341833810331442">سائٹس کو آپ کے آلے پر ڈیٹا محفوظ کرنے کی اجازت نہیں ہے</translation>
@@ -71,6 +73,7 @@
 <translation id="1799920918471566157">‏Chrome کی تجاویز</translation>
 <translation id="1816835383954230954">‏آن ہونے پر، Chrome تیزی سے چلتا ہے اور JavaScript استعمال کرنے والی خصوصیات کو ڈیزائن کے مطابق کام کرنا چاہیے۔ آف ہونے پر، یہ کارکردگی کو کم کرتا ہے لیکن V8 کو حملوں کے خلاف زیادہ مزاحم بناتا ہے۔</translation>
 <translation id="1818308510395330587">‏<ph name="APP_NAME" /> کو AR کا استعمال کرنے دینے کے لیے، <ph name="BEGIN_LINK" />Android ترتیبات<ph name="END_LINK" /> میں بھی کیمرا آن کریں۔</translation>
+<translation id="1848033246551405023">‏فونٹ Sans Serif</translation>
 <translation id="1881806992065048905">نئے ٹیب کے صفحہ کی ہئیت کی نیچے کی شیٹ</translation>
 <translation id="1887786770086287077">‏مقام کی رسائی اس آلہ کے لیے آف ہے۔ <ph name="BEGIN_LINK" />Android کی ترتیبات<ph name="END_LINK" />.میں اسے آن کریں۔</translation>
 <translation id="1906181697255754968">سائٹس عام طور پر آپ کے آلہ پر موجود فائلز اور فولڈز تک آپ کا کام خودکار طور پر محفوظ کرنے جیسی خصوصیات کے لیے رسائی کرتی ہیں</translation>
@@ -92,6 +95,7 @@
 <translation id="2079545284768500474">کالعدم کریں</translation>
 <translation id="2080070583977670716">مزید ترتیبات</translation>
 <translation id="2091887806945687916">آواز</translation>
+<translation id="2094208275686143364">لائٹ رنگ والی تھیم</translation>
 <translation id="2096716221239095980">سبھی ڈیٹا حذف کریں</translation>
 <translation id="2102396546234652240">سائٹس کو اپنا مائیکروفون استعمال کرنے کی اجازت نہ دیں</translation>
 <translation id="2117655453726830283">اگلی سلائیڈ</translation>
@@ -137,6 +141,7 @@
 <translation id="2498359688066513246">مدد اور تاثرات</translation>
 <translation id="2501278716633472235">پیچھے جائیں</translation>
 <translation id="2533138527374486328">آن ہونے پر، سائٹس آپ کے مقامی نیٹ ورک پر کسی بھی آلہ سے منسلک ہونے کی درخواست کر سکتی ہیں۔ آف ہونے پر، سائٹس آپ کے مقامی نیٹ ورک پر موجود آلات سے منسلک نہیں ہو سکتیں۔</translation>
+<translation id="2544997614631598250">گہرے رنگ والی تھیم</translation>
 <translation id="2546283357679194313">کوکیز اور سائٹ ڈیٹا</translation>
 <translation id="2570922361219980984">‏مقام کی رسائی بھی اس آلہ کے لیے آف ہے۔ <ph name="BEGIN_LINK" />Android کی ترتیبات<ph name="END_LINK" />.میں اسے آن کریں۔</translation>
 <translation id="257931822824936280">پھیلایا ہوا - سکیڑنے کیلئے کلک کریں۔</translation>
@@ -194,6 +199,7 @@
 <translation id="3165022941318558018">سائٹ کو فریق ثالث کوکیز استعمال کرنے کی اجازت دیں</translation>
 <translation id="3167868116600277716">‏Discover فیڈ</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> اسٹور کردہ ڈیٹا</translation>
+<translation id="3199078925536734975">اس وقت اجازت ہے • تخمینی</translation>
 <translation id="321187648315454507">‏<ph name="APP_NAME" /> کو آپ کو اطلاعات بھیجنے کی سہولت دینے کے لیے، <ph name="BEGIN_LINK" />Android کی ترتیبات<ph name="END_LINK" /> میں بھی اطلاعات آن کریں۔</translation>
 <translation id="3223425961342298674">مقام کی اجازت نہیں ہے</translation>
 <translation id="3227137524299004712">مائیکروفون</translation>
@@ -250,6 +256,7 @@
 <translation id="3803367742635802571">جو سائٹس آپ دیکھتے ہیں وہ ڈیزائن کے مطابق کام کرنا بند کر سکتی ہیں</translation>
 <translation id="3816118180265633665">‏Chrome کے رنگ</translation>
 <translation id="381841723434055211">فون نمبرز</translation>
+<translation id="3823453485268218808">فونٹ مونو</translation>
 <translation id="3826050100957962900">فریق ثالث سائن ان</translation>
 <translation id="3835233591525155343">آپ کے آلے کا استعمال</translation>
 <translation id="3843916486309149084">‏Chrome آج دوبارہ کوکیز کو مسدود کر دے گا</translation>
@@ -302,6 +309,7 @@
 <translation id="4402755511846832236">کب آپ فعال طور پر اس آلہ کا استعمال کر رہے ہیں اس کا پتہ لگانے سے سائٹس کو مسدود کریں</translation>
 <translation id="4412992751769744546">فریق ثالث کی کوکیز کی اجازت دیں</translation>
 <translation id="4419929467120297501">‏‫Chrome سائٹس کو فریق ثالث کوکیز کا استعمال کرنے سے مسدود کرتا ہے تاکہ آپ کے براؤز کرتے وقت وہ آپ کو ٹریک نہ کر سکیں۔ <ph name="BEGIN_LINK" />فریق ثالث کوکیز تک رسائی کا نظم<ph name="END_LINK" /> کرنے کے لیے ترتیبات ملاحظہ کریں۔</translation>
+<translation id="4425416282877905577">‏فونٹ serif</translation>
 <translation id="443121186588148776">سیریل پورٹ</translation>
 <translation id="4434045419905280838">پوپ اپس اور ری ڈائریکٹس</translation>
 <translation id="443552056913301231">اس کارروائی سے کوکیز سمیت تمام مقامی ڈیٹا حذف ہو جائے گا اور <ph name="ORIGIN" /> کیلئے تمام اجازتیں ری سیٹ ہو جائیں گی</translation>
@@ -554,6 +562,7 @@
 <translation id="7478658909253570368">سائٹس کو سیریل پورٹس سے منسلک ہونے کی اجازت نہ دیں</translation>
 <translation id="7488573225650545859">'اپنی ایپس کی فہرست میں ٹیبز دیکھیں' کو چھپائیں</translation>
 <translation id="7521387064766892559">JavaScript</translation>
+<translation id="7538975533793429503">فونٹ سائز سلائیڈر</translation>
 <translation id="7547989957535180761">آن ہونے پر، سائٹس سائن ان پرامپٹس دکھا سکتی ہیں۔ آف ہونے پر، سائٹس سائن ان پرامپٹس نہیں دکھا سکتی ہیں۔</translation>
 <translation id="7553211568594248088">ہب تلاش سے باہر نکلیں</translation>
 <translation id="7554752735887601236">سائٹ آپ کا مائیکروفون استعمال کر رہی ہے</translation>

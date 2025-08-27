@@ -440,6 +440,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1719838434204287058">24 x 30 modfedd</translation>
 <translation id="1720941539803966190">Cau'r tiwtorial</translation>
 <translation id="1721424275792716183">* Mae'r maes yn ofynnol</translation>
+<translation id="1723636263173393300">Ni ddylai'r polisi hwn gynnwys mwy na <ph name="MAX_ITEMS_LIMIT" /> o lwybrau byr.</translation>
 <translation id="1725591448053514783">Amlen You 6</translation>
 <translation id="1727613060316725209">Mae'r dystysgrif yn ddilys</translation>
 <translation id="1728677426644403582">Rydych yn edrych ar ffynhonnell tudalen we</translation>
@@ -1047,6 +1048,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="271663710482723385">Pwyswch |<ph name="ACCELERATOR1" /> + <ph name="ACCELERATOR2" />| i adael y modd sgrîn lawn</translation>
 <translation id="2717336592027046789">Rholyn</translation>
 <translation id="2718207025093645426">Nid oes gan ddefnyddiwr neu ddyfais a reolir unrhyw bolisi wedi'i lwytho.</translation>
+<translation id="2719233594187778789">URL nad yw'n unigryw wedi'i anwybyddu: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Roedd y cais yn llwyddiannus</translation>
 <translation id="2722622039067384533">Dodrefn Ystafell Fyw</translation>
 <translation id="2723669454293168317">Rhedeg gwiriad diogelwch yng ngosodiadau Chrome</translation>
@@ -2007,6 +2009,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4298000214066716287">Buddsoddi</translation>
 <translation id="4298148761711700950">Talu ar unwaith heb uwchlwytho QR</translation>
 <translation id="4298925811540301889">Mae cwcis ar gyfer y wefan hon yn cael eu cysoni ar draws eich dyfeisiau ChromeOS. I reoli'r hyn rydych yn ei gysoni, ewch i <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4299919199185766032">Mae enw'r llwybr byr yn fwy na'r hyd mwyaf a ganiateir o <ph name="MAX_LENGTH" /> nod.</translation>
 <translation id="4300272766492248925">Agor yr ap</translation>
 <translation id="4300675098767811073">Mwy nag un twll ar y dde</translation>
 <translation id="4302514097724775343">Tapiwch y deino i chwarae</translation>
@@ -2708,6 +2711,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
     Rhowch gynnig ar gysylltu â'ch gweinyddwr system.</translation>
 <translation id="5496804587179176046">Cadw codau diogelwch, dim codau diogelwch wedi'u cadw ar hyn o bryd</translation>
 <translation id="550365051221576010">Llenwi popeth</translation>
+<translation id="5506286895894263601">Nid oes unrhyw lwybrau byr dilys yn y rhestr.</translation>
 <translation id="5508443345185481044">Camerâu a Chamcordyddion</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Nodau tudalen a reolir</translation>
@@ -3627,6 +3631,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="7014741021609395734">Lefel chwyddo</translation>
 <translation id="7016992613359344582">Gallai'r taliadau hyn fod yn untro neu'n ailadrodd ac mae'n bosib na fydd yn amlwg.</translation>
 <translation id="701757816833614688">Addysg Celfyddydau Gweledol a Dylunio</translation>
+<translation id="7020464868401003526">Mae URL y llwybr byr yn fwy na'r hyd mwyaf a ganiateir o <ph name="MAX_LENGTH" /> nod.</translation>
 <translation id="702275896380648118">Mae'r wefan hon yn penderfynu pethau rydych yn eu hoffi ac yn cynnig hysbysebion i wefannau eraill. Mae'r wefan hon hefyd yn cael eich pynciau hysbysebion o Chrome i ddangos hysbysebion mwy perthnasol i chi.</translation>
 <translation id="7023162328967545559">Rhybudd gweinyddwr</translation>
 <translation id="7023765275461720661">Cysylltu cyfrif a thalu gyda <ph name="BNPL_ISSUER_NAME" />?</translation>

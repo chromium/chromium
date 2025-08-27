@@ -21,6 +21,7 @@
 <translation id="1072476005125066234">Atsiliepimai pagal jūsų pomėgius</translation>
 <translation id="1074827084851510304">Ketina ištrinti tiek slaptažodžių: {password_count} ir svetainių bei programų, kurių prisijungimo informacijos pasirinkote niekada nesaugoti, sąrašą. Jokia sukurta svetainių ir programų paskyra nebus ištrinta.</translation>
 <translation id="1076421457278169141">Kodas nuskaitytas</translation>
+<translation id="1081114897601629648">Toliau nurodyti slaptažodžiai nebuvo importuoti į „Google“ slaptažodžių tvarkyklę, nes jie neatitinka reikalavimų.</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} skirtukas}one{{count} skirtukas}few{{count} skirtukai}many{{count} skirtuko}other{{count} skirtukų}}</translation>
 <translation id="1082554859195167538">Atsiliepimai apie produktus jums</translation>
 <translation id="1084365883616172403">„Facebook“ įrašas paskelbtas.</translation>
@@ -241,6 +242,7 @@
 <translation id="1902277226107477495">Adreso aptikimas išjungtas. Įjunkite jį nustatymuose.</translation>
 <translation id="1904580727789512086">URL, kuriais lankotės, išsaugomi jūsų „Google“ paskyroje</translation>
 <translation id="1911619930368729126">Įkelti į „Google“ diską</translation>
+<translation id="1925706052394657380">Atidarykite <ph name="BEGIN_BOLD" />numatytųjų programų<ph name="END_BOLD" /> nustatymus sistemoje „iOS“</translation>
 <translation id="1941314575388338491">Dukart palieskite, kad nukopijuotumėte.</translation>
 <translation id="1943478190258551035">Meniu → „Nustatymai“</translation>
 <translation id="1952728750904661634">Prisijunkite naudodami valdomą paskyrą</translation>
@@ -250,6 +252,7 @@
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> bendrino su jumis <ph name="WEBSITE" /> slaptažodį</translation>
 <translation id="1962969542251276847">Užrakinti ekraną</translation>
 <translation id="1963976881984600709">Įprasta apsauga</translation>
+<translation id="1964507856799750384">Palieskite <ph name="BEGIN_BOLD" />Naršyklės programa<ph name="END_BOLD" /></translation>
 <translation id="1966313166384086081">svetainių duomenys</translation>
 <translation id="1967461193809857427">{count,plural, =1{Pasirinkti skirtuką, iš kurio išėjote sistemoje „Android“?}one{Pasirinkti skirtukus, iš kurių išėjote sistemoje „Android“?}few{Pasirinkti skirtukus, iš kurių išėjote sistemoje „Android“?}many{Pasirinkti skirtukus, iš kurių išėjote sistemoje „Android“?}other{Pasirinkti skirtukus, iš kurių išėjote sistemoje „Android“?}}</translation>
 <translation id="1972325230031091483">Naršysite sparčiau, nes turinys įkeliamas iš anksto atsižvelgiant į tinklalapį, kuriame šiuo metu lankotės</translation>
@@ -599,7 +602,6 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="333229797575847124">Kaip įgalinti šią funkciją</translation>
 <translation id="3344485292736684439">{count,plural, =1{Žymė išsaugota skiltyje „{title}“ jūsų paskyroje, {email}}one{Žymės išsaugotos skiltyje „{title}“ jūsų paskyroje, {email}}few{Žymės išsaugotos skiltyje „{title}“ jūsų paskyroje, {email}}many{Žymės išsaugotos skiltyje „{title}“ jūsų paskyroje, {email}}other{Žymės išsaugotos skiltyje „{title}“ jūsų paskyroje, {email}}}</translation>
 <translation id="334690320928261823">Naujausi skirtukai</translation>
-<translation id="3348387552617855658">Ši kortelė padeda stebėti siuntinius ir pateikia svarbių naujienų apie pristatymą.</translation>
 <translation id="3349031117032695619">Blokuoti iššokančiuosius langus</translation>
 <translation id="3349676726073650389">Stebimos svetainės ir paieškos išsaugomos „Google“ paskyroje. Stebimą turinį galite bet kada tvarkyti nustatymuose.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Ši paskyra yra tvarkoma.</translation>

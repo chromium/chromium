@@ -156,6 +156,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="1749561566933687563">Đồng bộ hóa dấu trang của bạn</translation>
 <translation id="1750238553597293878">Tiếp tục sử dụng mật khẩu trong Tài khoản Google</translation>
 <translation id="17513872634828108">Thẻ đang mở</translation>
+<translation id="1753744496844366747">Aa</translation>
 <translation id="1755203724116202818">Để đo lường hiệu suất của quảng cáo, chỉ có một số loại dữ liệu được chia sẻ giữa các trang web, chẳng hạn như dữ liệu cho biết bạn có mua hàng sau khi truy cập một trang web hay không.</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Trang, 1 trang trong danh sách}other{Trang, # trang trong danh sách}}</translation>
 <translation id="1771929606532798550">Thông tin về mức sử dụng Chrome của bạn được gửi cho Google nhưng sẽ không được liên kết với bạn\n\nNếu Chrome gặp sự cố, thông tin chi tiết về sự cố đó có thể bao gồm một số thông tin cá nhân\n\nNếu bạn đồng bộ hoá nhật ký với Tài khoản Google, các chỉ số cũng có thể bao gồm thông tin về các URL mà bạn truy cập</translation>
@@ -321,6 +322,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="253498598929009420">Trang web này sẽ có thể xem nội dung trên màn hình của bạn</translation>
 <translation id="2535807170289627159">Tất cả các thẻ</translation>
 <translation id="2536728043171574184">Xem bản sao ngoại tuyến của trang này</translation>
+<translation id="2539002604555291451">Sans serif</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, thẻ</translation>
 <translation id="2546283357679194313">Cookie và dữ liệu trang web</translation>
 <translation id="2547843573592965873">Khoá hồ sơ giúp đảm bảo an toàn cho thông tin của bạn trong ô tô, trong đó có mật khẩu, thông tin thanh toán và những thông tin khác mà bạn đã lưu trong Tài khoản Google.</translation>
@@ -499,7 +501,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3384347053049321195">Chia sẻ hình ảnh</translation>
 <translation id="3387650086002190359">Tải xuống <ph name="FILE_NAME" /> không thành công do lỗi hệ thống tệp.</translation>
 <translation id="3414952576877147120">Kích thước:</translation>
-<translation id="3421726884497337397">Chọn thời điểm chặn cookie của bên thứ ba</translation>
 <translation id="3430670036890315772">Nếu bạn tắt khoá hồ sơ, thông tin đã lưu sẽ bị xoá</translation>
 <translation id="3435465986463792564">Có nhiều cửa sổ? Bạn có thể quản lý các trang web đó tại đây</translation>
 <translation id="3435575784518354875">Để tiếp tục sử dụng mật khẩu của bạn, hãy xuất mật khẩu ngay bây giờ, cập nhật Dịch vụ Google Play rồi nhập lại mật khẩu vào Trình quản lý mật khẩu của Google. <ph name="BEGIN_LINK" />Xem toàn bộ hướng dẫn<ph name="END_LINK" />.</translation>
@@ -760,7 +761,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 mật khẩu bị lộ}other{# mật khẩu bị lộ}}</translation>
 <translation id="4641919525231168205">Chuyển tới trang tiếp theo</translation>
 <translation id="4642472735733036929">Tính năng theo dõi giá đã dừng hoạt động</translation>
-<translation id="4645146721047390964">Ở chế độ Ẩn danh, các trang web không thể dùng cookie để giám sát hoạt động duyệt web của bạn trên nhiều trang web, chẳng hạn như cho mục đích cá nhân hoá quảng cáo. Do đó, các tính năng trên một số trang web có thể ngừng hoạt động.</translation>
 <translation id="465657074423018424">Tính năng Duyệt web an toàn bảo vệ bạn khỏi các trang web lừa đảo. Nếu bạn tắt tính năng này, hãy cẩn thận hơn khi duyệt web, đặc biệt là trước khi nhập mật khẩu.</translation>
 <translation id="4662373422909645029">Biệt hiệu không được bao gồm số</translation>
 <translation id="4663756553811254707">Đã xóa <ph name="NUMBER_OF_BOOKMARKS" /> dấu trang</translation>
@@ -1220,7 +1220,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6633067410344541938">Mở khóa thẻ Ẩn danh</translation>
 <translation id="6636623428211296678">Khám phá thêm về các chế độ cài đặt bên dưới hoặc hoàn tất ngay bây giờ</translation>
 <translation id="6637100877383020115">Để giúp cải thiện ứng dụng, Chrome sẽ gửi dữ liệu sử dụng và dữ liệu sự cố cho Google. <ph name="BEGIN_UMA_LINK" />Quản lý<ph name="END_UMA_LINK" /></translation>
-<translation id="6640207029842583248">Luôn chặn</translation>
 <translation id="6641780377503683465">Xoá <ph name="INTEREST" /></translation>
 <translation id="6647441008198474441">Các URL bạn truy cập sẽ được gửi cho Google nhằm dự đoán những trang web có thể sắp tới bạn sẽ truy cập</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> tùy chọn khác}other{<ph name="CONTACT_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> tùy chọn khác}}</translation>
@@ -1241,6 +1240,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6723740634201835758">Trong Tài khoản Google của bạn</translation>
 <translation id="6734310707649923383">Bạn có thể xem các trang mình đã truy cập hoặc xoá những trang đó khỏi nhật ký</translation>
 <translation id="6738867403308150051">Đang tải xuống...</translation>
+<translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">Kiểm tra dữ liệu tài khoản của bạn</translation>
 <translation id="6751521182688001123">Mở nhanh một thẻ mới. Để chỉnh sửa lối tắt này, hãy chạm và giữ.</translation>
 <translation id="6752130751133944215">Để khôi phục một cửa sổ mới, hãy giảm tổng số cửa sổ đang hoạt động và không hoạt động xuống còn <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> trở xuống. Các cửa sổ không hoạt động sẽ bị xoá sau 6 tháng.</translation>
@@ -1343,6 +1343,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7111822978084196600">Đặt tên cho cửa sổ này</translation>
 <translation id="7115358764509798967">Giá trị mặc định của hệ thống</translation>
 <translation id="7117485132243600300">Quản lý nội dung bạn theo dõi cũng như các chủ đề và nội dung tìm kiếm được đề xuất</translation>
+<translation id="7119984597597798764">Đóng <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Đã xem xét các quyền của 1 trang web}other{Đã xem xét các quyền của # trang web}}</translation>
 <translation id="7138678301420049075">Khác</translation>
 <translation id="7140829094791862589">Tự sắp xếp thứ tự</translation>
@@ -1444,7 +1445,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="751961395872307827">Không thể kết nối với trang web</translation>
 <translation id="7523960634226602883">Tìm kiếm bằng máy ảnh thông qua Google Ống kính</translation>
 <translation id="7525248386620136756">Đã đóng và lưu <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
-<translation id="752731652852882757">Chặn trong khi dùng chế độ Ẩn danh</translation>
 <translation id="7545347190366646170">Người có quyền truy cập</translation>
 <translation id="7554643625247105821">Không thể kiểm tra phiên bản Chrome</translation>
 <translation id="7557508262441527045">Đã đăng xuất</translation>
@@ -1610,7 +1610,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8243077599929149377">Thêm tên người dùng của bạn</translation>
 <translation id="8244387390464017490">Tuỳ chỉnh trang thẻ mới</translation>
 <translation id="8250920743982581267">Tài liệu</translation>
-<translation id="8255617931166444521">Các trang web chỉ có thể dùng cookie để xem hoạt động duyệt web của bạn trên trang web của riêng họ</translation>
 <translation id="8258999165172757081">Đã thêm</translation>
 <translation id="8259179246279078674">Vì các trang tải trước đã được mã hóa, nên Google sẽ không tìm hiểu bất cứ điều gì về nội dung trên trang được tải trước. Máy chủ của Google sẽ tìm hiểu những trang web nào đã được tải trước ở chế độ riêng tư. Thông tin này chỉ được dùng để tải trước các trang và không được liên kết với thông tin khác trong Tài khoản Google của bạn.</translation>
 <translation id="8260126382462817229">Thử đăng nhập lại</translation>

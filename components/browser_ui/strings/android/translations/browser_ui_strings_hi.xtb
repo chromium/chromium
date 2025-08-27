@@ -25,6 +25,7 @@
 <translation id="129382876167171263">यहां वे फ़ाइलें दिखाई देती हैं जिन्हें वेबसाइटें सेव करती हैं</translation>
 <translation id="131112695174432497">दिलचस्पी के मुताबिक विज्ञापन पर असर डालने वाला डेटा मिटा दिया जाएगा</translation>
 <translation id="1317194122196776028">इस साइट का पूरा इतिहास मिटाएं</translation>
+<translation id="1321110954513621549">अनुमति दी गई है • अनुमानित</translation>
 <translation id="1323433172918577554">और दिखाएं</translation>
 <translation id="1333965224356556482">साइटों को आपकी जगह की जानकारी देखने की अनुमति न दें</translation>
 <translation id="1343356790768851700">यह साइट, आपकी पसंद के विषयों का पता लगाती है और फिर दूसरी साइटों पर विज्ञापन के सुझाव देती है</translation>
@@ -40,6 +41,7 @@
 <translation id="1448064542941920355">ज़ूम आउट करें</translation>
 <translation id="1464044141348608623">साइटों को यह जानने की अनुमति न दें कि आप अपने डिवाइस का इस्तेमाल कब करते हैं</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> साइट}one{<ph name="SITE_COUNT" /> साइट}other{<ph name="SITE_COUNT" /> साइटें}}</translation>
+<translation id="1476700086976862423">सेपिया रंग वाली थीम</translation>
 <translation id="1500473259453106018">टैब कार्ड पर दिख रही कीमत में गिरावट की जानकारी को छिपाएं</translation>
 <translation id="1508931164824684991">साइटें JavaScript का इस्तेमाल कर सकती हैं</translation>
 <translation id="1510341833810331442">साइटों को आपके डिवाइस पर डेटा सेव करने की अनुमति नहीं है</translation>
@@ -71,6 +73,7 @@
 <translation id="1799920918471566157">Chrome से जुड़ी सलाह</translation>
 <translation id="1816835383954230954">इसे चालू करने पर, Chrome तेज़ी से काम करता है और JavaScript का इस्तेमाल करने वाली सुविधाएं बेहतर तरीके से काम करती हैं. इसे बंद करने पर, परफ़ॉर्मेंस कम हो जाती है. हालांकि, सायबर हमलों से V8 की सुरक्षा बढ़ जाती है.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> को एआर (ऑगमेंटेड रिएलिटी) का इस्तेमाल करने देने के लिए, <ph name="BEGIN_LINK" />Android की सेटिंग<ph name="END_LINK" /> में जाकर भी कैमरा चालू करें.</translation>
+<translation id="1848033246551405023">फ़ॉन्ट Sans Serif</translation>
 <translation id="1881806992065048905">'नया टैब' पेज पर दिखने वाली बॉटम शीट</translation>
 <translation id="1887786770086287077">इस डिवाइस के लिए जगह की जानकारी का एक्सेस बंद है. इसे <ph name="BEGIN_LINK" />Android सेटिंग<ph name="END_LINK" /> में चालू करें.</translation>
 <translation id="1906181697255754968">आम तौर पर, साइटें आपके डिवाइस पर फ़ाइलों और फ़ोल्डर को ऐक्सेस करती हैं. अपने-आप काम को सेव करने जैसी सुविधाओं के लिए ऐसा किया जाता है</translation>
@@ -92,6 +95,7 @@
 <translation id="2079545284768500474">पहले जैसा करें</translation>
 <translation id="2080070583977670716">ज़्यादा सेटिंग</translation>
 <translation id="2091887806945687916">आवाज़</translation>
+<translation id="2094208275686143364">हल्के रंग वाली थीम</translation>
 <translation id="2096716221239095980">सारा डेटा मिटाएं</translation>
 <translation id="2102396546234652240">साइटों को आपका माइक्रोफ़ोन इस्तेमाल करने की अनुमति न दें</translation>
 <translation id="2117655453726830283">अगली स्लाइड</translation>
@@ -137,6 +141,7 @@
 <translation id="2498359688066513246">सहायता और फ़ीडबैक</translation>
 <translation id="2501278716633472235">वापस जाएं</translation>
 <translation id="2533138527374486328">इस सेटिंग के चालू होने पर, साइटें आपके लोकल नेटवर्क पर मौजूद किसी डिवाइस से कनेक्ट करने के लिए अनुमति का अनुरोध कर सकती हैं. इस सेटिंग के बंद होने पर, साइटें आपके लोकल नेटवर्क पर मौजूद डिवाइसों से कनेक्ट नहीं कर सकतीं.</translation>
+<translation id="2544997614631598250">गहरे रंग वाली थीम</translation>
 <translation id="2546283357679194313">कुकी और साइट डेटा</translation>
 <translation id="2570922361219980984">इस डिवाइस के लिए जगह की जानकारी का एक्सेस भी बंद है. इसे <ph name="BEGIN_LINK" />Android सेटिंग<ph name="END_LINK" /> में चालू करें.</translation>
 <translation id="257931822824936280">बड़ा किया गया - छोटा करने के लिए क्‍लिक करें.</translation>
@@ -194,6 +199,7 @@
 <translation id="3165022941318558018">साइट को तीसरे पक्ष की कुकी इस्तेमाल करने की अनुमति दें</translation>
 <translation id="3167868116600277716">डिस्कवर फ़ीड</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> संग्रहित डेटा</translation>
+<translation id="3199078925536734975">इस बार अनुमति दी गई • अनुमानित</translation>
 <translation id="321187648315454507"><ph name="BEGIN_LINK" />Android की सेटिंग<ph name="END_LINK" /> में जाकर भी सूचनाएं चालू करें, ताकि <ph name="APP_NAME" /> आपको सूचनाएं भेज सके.</translation>
 <translation id="3223425961342298674">जगह की जानकारी ऐक्सेस करने की अनुमति नहीं है</translation>
 <translation id="3227137524299004712">माइक्रोफ़ोन</translation>
@@ -250,6 +256,7 @@
 <translation id="3803367742635802571">ऐसा हो सकता है कि विज़िट की गई साइटें ठीक तरह से काम करना बंद कर दें</translation>
 <translation id="3816118180265633665">Chrome Colors</translation>
 <translation id="381841723434055211">फ़ोन नंबर</translation>
+<translation id="3823453485268218808">फ़ॉन्ट Mono</translation>
 <translation id="3826050100957962900">तीसरे पक्ष की मदद से साइन-इन</translation>
 <translation id="3835233591525155343">आपके डिवाइस का इस्तेमाल</translation>
 <translation id="3843916486309149084">Chrome आज फिर से कुकी ब्लॉक करेगा</translation>
@@ -302,6 +309,7 @@
 <translation id="4402755511846832236">साइटों को यह जानने से रोकें कि आप इस डिवाइस का इस्तेमाल कब करते हैं</translation>
 <translation id="4412992751769744546">तीसरे पक्ष की कुकी को अनुमति दें</translation>
 <translation id="4419929467120297501">Chrome, साइटों को तीसरे पक्ष की कुकी इस्तेमाल करने से रोकता है, ताकि वे ब्राउज़ करने की आपकी गतिविधि को ट्रैक न कर पाएं. <ph name="BEGIN_LINK" />तीसरे पक्ष की कुकी का ऐक्सेस मैनेज करने<ph name="END_LINK" /> के लिए, सेटिंग पर जाएं.</translation>
+<translation id="4425416282877905577">फ़ॉन्ट serif</translation>
 <translation id="443121186588148776">सीरियल पोर्ट</translation>
 <translation id="4434045419905280838">पॉप-अप और रीडायरेक्ट</translation>
 <translation id="443552056913301231">इस कार्रवाई से, कुकी के साथ-साथ पूरा स्थानीय डेटा मिट जाएगा. साथ ही, <ph name="ORIGIN" /> की सभी अनुमतियां रीसेट हो जाएंगी</translation>
@@ -554,6 +562,7 @@
 <translation id="7478658909253570368">साइटों को सीरियल पोर्ट से कनेक्ट करने की अनुमति न दें</translation>
 <translation id="7488573225650545859">'ऐप्लिकेशन की सूची में टैब देखें' को छिपाएं</translation>
 <translation id="7521387064766892559">JavaScript</translation>
+<translation id="7538975533793429503">फ़ॉन्ट साइज़ के लिए स्लाइडर</translation>
 <translation id="7547989957535180761">इस सेटिंग के चालू होने पर, साइटें साइन-इन करने के अनुरोध दिखा सकती हैं. इस सेटिंग के बंद होने पर, साइटें साइन-इन करने के अनुरोध नहीं दिखा सकतीं.</translation>
 <translation id="7553211568594248088">हब सर्च से बाहर निकलें</translation>
 <translation id="7554752735887601236">कोई साइट आपके माइक्रोफ़ोन का इस्तेमाल कर रही है</translation>

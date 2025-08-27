@@ -3562,6 +3562,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3450056559545492516">Show system notifications about Chrome features and tips</translation>
 <translation id="3450157232394774192">Idle State Occupancy Percentage</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> requires you to connect to Wi-Fi now and download an update.</translation>
+<translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – you're sharing this tab with Gemini</translation>
 <translation id="345078987193237421">This allows camera access for apps, websites with the camera permission and system services</translation>
 <translation id="3451362021220965191">Isolated web apps control smart card readers to gain access to smart cards that are inserted or presented to them. Smart cards usually contain identities that are used to authenticate or authorise operations, log in to services, etc.</translation>
 <translation id="3452999110156026232">Parent access</translation>
@@ -4556,7 +4557,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4109135793348361820">Move window to <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Restore warning</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
-<translation id="4113030288477039509">Managed by your administrator</translation>
 <translation id="4113743276555482284">File password</translation>
 <translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />When Location Accuracy is on, information about wireless signals, such as Wi-Fi access points and mobile network towers, along with device sensor data, such as accelerometer and gyroscope, is used to estimate more accurate device location, which Android apps and services use to provide location-based features. To do this, Google periodically collects information about device sensors and wireless signals near you to contribute to crowdsourced wireless signal locations.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google uses this information without identifying you to: improve location accuracy and location-based services; and generally improve, provide and maintain Google's services. We process this information based on the legitimate interests of Google and third parties to serve users' needs.<ph name="END_PARAGRAPH2" />
@@ -5007,7 +5007,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="443196770280837407">Open Gemini with a keyboard shortcut.</translation>
 <translation id="4432621511648257259">Password incorrect</translation>
 <translation id="4434611816075088065">Nothing else needs your attention at the moment</translation>
-<translation id="443475966875174318">Update or remove incompatible applications</translation>
 <translation id="443503224864902151">Signs you out of most sites. You'll stay signed in to your Google Account so that your synced data can be deleted.</translation>
 <translation id="4437879751057074691">Offer to save passwords and passkeys</translation>
 <translation id="4437947179446780764">Add custom DNS service provider</translation>
@@ -5421,7 +5420,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4742334355511750246">Not allowed to show images</translation>
 <translation id="4742795653798179840">Deleted Chrome data</translation>
 <translation id="4742970037960872810">Remove highlight</translation>
-<translation id="4743260470722568160"><ph name="BEGIN_LINK" />Find out how to update applications<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">Allowed – <ph name="PERMISSION_DETAILS" />. Turn on <ph name="LINK_BEGIN" />system microphone access<ph name="LINK_END" />.</translation>
 <translation id="4744260496658845719">Keyboard backlight brightness</translation>
 <translation id="4744268813103118742">Go to site</translation>
@@ -7167,7 +7165,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5989497858237037960">As you browse sites, their page contents are encrypted and saved to your device. This may affect Chrome's performance</translation>
 <translation id="5990266201903445068">Wi-Fi only</translation>
 <translation id="5990386583461751448">Translated</translation>
-<translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{To ensure that you can keep browsing the web, ask your administrator to remove this application.}other{To ensure that you can keep browsing the web, ask your administrator to remove these applications.}}</translation>
 <translation id="5992225669837656567">All mice have been disconnected</translation>
 <translation id="5992652489368666106">No border</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Review complete for 1 site}other{Review complete for {NUM_SITES} sites}}</translation>
@@ -7387,6 +7384,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6151128161396960693">Make sure that you trust the person that sent this invitation</translation>
 <translation id="6151771661215463137">The file already exists in your download folder.</translation>
 <translation id="6152918902620844577">Waiting for the next operation</translation>
+<translation id="6152929108650354050">You're sharing this tab with Gemini</translation>
 <translation id="6153439704237222699">Learn more about Do Not Track</translation>
 <translation id="6154240335466762404">Remove all ports</translation>
 <translation id="615436196126345398">Protocol</translation>
@@ -8657,7 +8655,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7039951224110875196">Create a Google Account for a child</translation>
 <translation id="7039968672732182060">Your Chromebook is no longer receiving security updates. Time to upgrade for the latest security and software. Offer terms apply.</translation>
 <translation id="7042116641003232070">Allowed to save data to your device</translation>
-<translation id="7043108582968290193">Finished! No incompatible applications found.</translation>
 <translation id="7044124535091449260">Learn more about site access</translation>
 <translation id="7044207729381622209">You'll be signed out of these sites, including in open tabs</translation>
 <translation id="7044211973375150246">An app is set to open the same links as <ph name="APP_NAME" />. This will disable <ph name="APP_NAME_2" /> from opening supported links.</translation>
@@ -8993,7 +8990,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7299588179200441056"><ph name="URL" />–<ph name="FOLDER" /></translation>
 <translation id="730068416968462308">Animated</translation>
 <translation id="7301812050652048720">Passkey deleted</translation>
-<translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{This application could prevent Chrome from working properly.}other{These applications could prevent Chrome from working properly.}}</translation>
 <translation id="7303281435234579599">Oops! Something went wrong while setting up demo mode.</translation>
 <translation id="7303485269821975179">Set up a <ph name="DEVICE_TYPE" /> password</translation>
 <translation id="7303900363563182677">This site has been blocked from seeing text and images copied to the clipboard</translation>
@@ -11882,7 +11878,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="962802172452141067">Bookmark folder tree</translation>
 <translation id="963000966785016697">Search image with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Your IT administrator has disabled Chrome Goodies for your device.</translation>
-<translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Application}other{Applications}}</translation>
 <translation id="964790508619473209">Screen arrangement</translation>
 <translation id="96535553604365597">Report an issue with Google Cast</translation>
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Review 1 site that recently sent a lot of notifications}other{Review {NUM_SITES} sites that recently sent a lot of notifications}}</translation>

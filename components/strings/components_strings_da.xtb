@@ -440,6 +440,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1719838434204287058">24 x 30 tommer</translation>
 <translation id="1720941539803966190">Luk vejledningen</translation>
 <translation id="1721424275792716183">* Feltet skal udfyldes</translation>
+<translation id="1723636263173393300">Denne politik må ikke have mere end <ph name="MAX_ITEMS_LIMIT" /> genveje.</translation>
 <translation id="1725591448053514783">Konvolut Dig 6</translation>
 <translation id="1727613060316725209">Certifikatet er gyldigt</translation>
 <translation id="1728677426644403582">Du ser kilden for en webside</translation>
@@ -1047,6 +1048,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="271663710482723385">Tryk på |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| for at afslutte visning i fuld skærm</translation>
 <translation id="2717336592027046789">Papirrulle</translation>
 <translation id="2718207025093645426">Der er ikke indlæst en politik for den administrerede bruger eller enhed.</translation>
+<translation id="2719233594187778789">Identisk webadresse blev ignoreret: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Anmodning lykkedes</translation>
 <translation id="2722622039067384533">Stuemøbler</translation>
 <translation id="2723669454293168317">Kør et sikkerhedstjek i Chrome-indstillingerne</translation>
@@ -2007,6 +2009,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4298000214066716287">Investering</translation>
 <translation id="4298148761711700950">Betal øjeblikkeligt uden QR-upload</translation>
 <translation id="4298925811540301889">Cookies for dette website synkroniseres på tværs af dine ChromeOS-enheder. Gå til <ph name="SYNC_SETTINGS" /> for at administrere, hvad du synkroniserer.</translation>
+<translation id="4299919199185766032">Navnet på genvejen overskrider den maksimalt tilladte længde på <ph name="MAX_LENGTH" /> tegn.</translation>
 <translation id="4300272766492248925">Åbn app</translation>
 <translation id="4300675098767811073">Flere huller i højre side</translation>
 <translation id="4302514097724775343">Tryk på dinoen for at spille</translation>
@@ -2708,6 +2711,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
     Prøv at kontakte din systemadministrator.</translation>
 <translation id="5496804587179176046">Gem sikkerhedskoder. Du har ikke gemt nogen sikkerhedskoder endnu</translation>
 <translation id="550365051221576010">Udfyld alt</translation>
+<translation id="5506286895894263601">Listen indeholder ingen gyldige genveje.</translation>
 <translation id="5508443345185481044">Kameraer og videokameraer</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Administrerede bogmærker</translation>
@@ -3627,6 +3631,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="7014741021609395734">Zoomniveau</translation>
 <translation id="7016992613359344582">Disse opkrævninger kan være enkeltstående eller gentagne og fremgår muligvis ikke tydeligt.</translation>
 <translation id="701757816833614688">Uddannelse inden for visuel kunst og design</translation>
+<translation id="7020464868401003526">Webadressen for genvejen overskrider den maksimalt tilladte længde på <ph name="MAX_LENGTH" /> tegn.</translation>
 <translation id="702275896380648118">Dette website foretager en vurdering af, hvad du kan lide, og foreslår derefter annoncer til andre websites. Dette website indhenter også dine annonceemner fra Chrome med henblik på at vise dig mere relevante annoncer.</translation>
 <translation id="7023162328967545559">Advarsel fra administrator</translation>
 <translation id="7023765275461720661">Vil du tilknytte kontoen og betale med <ph name="BNPL_ISSUER_NAME" />?</translation>

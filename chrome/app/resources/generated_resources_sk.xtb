@@ -3551,6 +3551,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3450056559545492516">Zobrazovať systémové upozornenia týkajúce sa funkcií a tipov Chromu</translation>
 <translation id="3450157232394774192">Percento obsadenia priestoru údajmi stavu nečinnosti</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> vyžaduje, aby ste sa ihneď pripojili k sieti Wi-Fi a stiahli aktualizáciu.</translation>
+<translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> – Túto kartu zdieľate s Gemini</translation>
 <translation id="345078987193237421">Týmto povolíte prístup ku kamere aplikáciám, webom s povoleným prístupom ku kamere a systémovým službám</translation>
 <translation id="3451362021220965191">Izolované webové aplikácie môžu ovládať čítačky inteligentných kariet, aby mohli získať prístup k vloženým alebo priloženým inteligentným kartám. Inteligentné karty zvyčajne obsahujú údaje o totožnosti, ktoré sa používajú na overovanie alebo autorizáciu operácií, prihlasovanie do služieb a podobne.</translation>
 <translation id="3452999110156026232">Rodičovský prístup</translation>
@@ -4545,7 +4546,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4109135793348361820">Presunúť okno k používateľovi <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Obnoviť varovanie</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
-<translation id="4113030288477039509">Spravované vaším správcom</translation>
 <translation id="4113743276555482284">Heslo súboru</translation>
 <translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />Keď je presnosť určovania polohy zapnutá, pomocou informácií o bezdrôtových signáloch, ako sú prístupové body Wi-Fi a stanice mobilnej siete, ale aj dát senzorov zariadení, ako sú akcelerometer a gyroskop, sa odhaduje presnejšia poloha zriadenia, na základe ktorej aplikácie a služby pre Android poskytujú funkcie podmienené polohou. Google na tento účel pravidelne zhromažďuje informácie o senzoroch zariadení a bezdrôtových signáloch z vášho blízkeho okolia a prispieva tak ku crowdsourcingu polôh bezdrôtového signálu.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google používa tieto informácie bez identifikovania vašej osoby na účely zlepšovania presnosti určovania polohy a služieb podmienených polohou, ale aj všeobecného zlepšovania, poskytovania a udržiavania služieb Googlu. Spracúvame ich na základe oprávnených záujmov Googlu a tretích strán pri uspokojovaní potrieb používateľov.<ph name="END_PARAGRAPH2" />
@@ -4996,7 +4996,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="443196770280837407">Otvárajte Gemini klávesovou skratkou.</translation>
 <translation id="4432621511648257259">Heslo je nesprávne</translation>
 <translation id="4434611816075088065">Momentálne nevyžaduje vašu pozornosť nič iné</translation>
-<translation id="443475966875174318">Aktualizácia a odstránenie nekompatibilných aplikácií</translation>
 <translation id="443503224864902151">Odhlási vás z väčšiny webov, ale nie z účtu Google, aby sa dali vaše synchronizované dáta odstrániť.</translation>
 <translation id="4437879751057074691">Ponúkať ukladanie hesiel a prístupových kľúčov</translation>
 <translation id="4437947179446780764">Pridajte poskytovateľa služieb vlastného systému doménových názvov (DNS)</translation>
@@ -5410,7 +5409,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4742334355511750246">Nemôže zobrazovať obrázky</translation>
 <translation id="4742795653798179840">Dáta Chromu boli odstránené</translation>
 <translation id="4742970037960872810">Odstrániť zvýraznenie</translation>
-<translation id="4743260470722568160"><ph name="BEGIN_LINK" />Ako aktualizovať aplikácie<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">Povolený – <ph name="PERMISSION_DETAILS" />. Zapnite <ph name="LINK_BEGIN" />systémový prístup k mikrofónu<ph name="LINK_END" />.</translation>
 <translation id="4744260496658845719">Jas podsvietenia klávesnice</translation>
 <translation id="4744268813103118742">Prejsť na web</translation>
@@ -7154,7 +7152,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5989497858237037960">Keď prehliadate weby, obsah ich stránok sa šifruje a ukladá vo vašom zariadení. Môže to ovplyvniť výkon Chromu.</translation>
 <translation id="5990266201903445068">Len Wi‑Fi</translation>
 <translation id="5990386583461751448">Preložené</translation>
-<translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Ak chcete zaistiť, že aj naďalej budete môcť prehliadať internet, požiadajte správcu o odstránenie tejto aplikácie.}few{Ak chcete zaistiť, že aj naďalej budete môcť prehliadať internet, požiadajte správcu o odstránenie týchto aplikácií.}many{Ak chcete zaistiť, že aj naďalej budete môcť prehliadať internet, požiadajte správcu o odstránenie týchto aplikácií.}other{Ak chcete zaistiť, že aj naďalej budete môcť prehliadať internet, požiadajte správcu o odstránenie týchto aplikácií.}}</translation>
 <translation id="5992225669837656567">Všetky myši boli odpojené</translation>
 <translation id="5992652489368666106">Bez okraja</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Bola dokončená kontrola 1 webu}few{Bola dokončená kontrola {NUM_SITES} webov}many{Review complete for {NUM_SITES} sites}other{Bola dokončená kontrola {NUM_SITES} webov}}</translation>
@@ -7374,6 +7371,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6151128161396960693">Osobe, ktorá vám poslala túto pozvánku, musíte dôverovať</translation>
 <translation id="6151771661215463137">Súbor už existuje v priečinku so stiahnutými súbormi</translation>
 <translation id="6152918902620844577">Čaká sa na ďalšiu operáciu</translation>
+<translation id="6152929108650354050">Túto kartu zdieľate s Gemini</translation>
 <translation id="6153439704237222699">Ďalšie informácie o funkcii Do Not Track</translation>
 <translation id="6154240335466762404">Odstrániť všetky porty</translation>
 <translation id="615436196126345398">Protokol</translation>
@@ -8648,7 +8646,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7039951224110875196">Vytvoriť účet Google pre dieťa</translation>
 <translation id="7039968672732182060">Váš Chromebook už nedostáva bezpečnostné aktualizácie. Je čas na aktualizáciu na najnovšiu úroveň zabezpečenia a softvéru. Platia zmluvné podmienky ponuky.</translation>
 <translation id="7042116641003232070">Môže ukladať údaje do vášho zariadenia</translation>
-<translation id="7043108582968290193">Hotovo. Nenašli sa žiadne nekompatibilné aplikácie.</translation>
 <translation id="7044124535091449260">Ďalšie informácie o prístupe k webom</translation>
 <translation id="7044207729381622209">Systém vás odhlási z týchto webov (aj v otvorených kartách)</translation>
 <translation id="7044211973375150246">Určitá aplikácia je nastavená, aby otvárala rovnaké odkazy ako <ph name="APP_NAME" />. Týmto zakážete aplikácii <ph name="APP_NAME_2" /> otvárať podporované odkazy.</translation>
@@ -8984,7 +8981,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7299588179200441056"><ph name="URL" /> – <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">Animované</translation>
 <translation id="7301812050652048720">Prístupový kľúč bol odstránený</translation>
-<translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Táto aplikácia môže brániť Chromu v správnom fungovaní.}few{Tieto aplikácie môžu brániť Chromu v správnom fungovaní.}many{Tieto aplikácie môžu brániť Chromu v správnom fungovaní.}other{Tieto aplikácie môžu brániť Chromu v správnom fungovaní.}}</translation>
 <translation id="7303281435234579599">Ojoj! Pri nastavovaní režimu ukážky sa vyskytol problém.</translation>
 <translation id="7303485269821975179">Nastaviť heslo pre zariadenie <ph name="DEVICE_TYPE" /></translation>
 <translation id="7303900363563182677">Tomuto webu bolo zablokované zobrazenie textu a obrázkov skopírovaných do schránky</translation>
@@ -11874,7 +11870,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="962802172452141067">Stromová štruktúra priečinka so záložkami</translation>
 <translation id="963000966785016697">Hľadať obrázok pomocou funkcie <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Správca IT zakázal v zariadení doplnky Chrome Goodies.</translation>
-<translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Aplikácia}few{Aplikácie}many{Aplikácie}other{Aplikácie}}</translation>
 <translation id="964790508619473209">Usporiadanie obrazovky</translation>
 <translation id="96535553604365597">Nahlásiť problém pomocou technológie Google Cast</translation>
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Skontrolujte 1 web, ktorý v poslednom čase odoslal veľa upozornení}few{Skontrolujte {NUM_SITES} weby, ktoré v poslednom čase odoslali veľa upozornení}many{Review {NUM_SITES} sites that recently sent a lot of notifications}other{Skontrolujte {NUM_SITES} webov, ktoré v poslednom čase odoslali veľa upozornení}}</translation>

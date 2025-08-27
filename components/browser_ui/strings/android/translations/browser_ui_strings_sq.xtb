@@ -25,6 +25,7 @@
 <translation id="129382876167171263">Skedarët e ruajtur nga uebsajtet shfaqen këtu</translation>
 <translation id="131112695174432497">Të dhënat që ndikojnë në personalizimin e reklamave do të fshihen</translation>
 <translation id="1317194122196776028">Harroje këtë sajt</translation>
+<translation id="1321110954513621549">Lejohet • E përafërt</translation>
 <translation id="1323433172918577554">Shfaq më shumë</translation>
 <translation id="1333965224356556482">Mos lejo që sajtet të shikojnë vendndodhjen tënde</translation>
 <translation id="1343356790768851700">Ky sajt përcakton gjërat që të pëlqejnë dhe më pas sugjeron reklama për sajtet e tjera</translation>
@@ -40,6 +41,7 @@
 <translation id="1448064542941920355">Zvogëlo zmadhimin</translation>
 <translation id="1464044141348608623">Mos i lejo sajtet të dinë kur e përdor pajisjen tënde në mënyrë aktive</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sajt}other{<ph name="SITE_COUNT" /> sajte}}</translation>
+<translation id="1476700086976862423">Ngjyra e temës sepia</translation>
 <translation id="1500473259453106018">Fshih kartën "Uljet e çmimeve në skeda"</translation>
 <translation id="1508931164824684991">Sajtet mund të përdorin JavaScript</translation>
 <translation id="1510341833810331442">Sajtet nuk lejohen të ruajnë të dhëna në pajisjen tënde</translation>
@@ -71,6 +73,7 @@
 <translation id="1799920918471566157">Këshilla për Chrome</translation>
 <translation id="1816835383954230954">Kur është aktiv, Chrome funksionon më shpejt dhe veçoritë që përdorin JavaScript do të punojnë siç pritet. Kur është joaktiv, kjo zvogëlon performancën, por e bën V8 më rezistente ndaj sulmeve.</translation>
 <translation id="1818308510395330587">Për të lejuar që <ph name="APP_NAME" /> të përdorë AR, aktivizo gjithashtu kamerën në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
+<translation id="1848033246551405023">Fonti sans serif</translation>
 <translation id="1881806992065048905">Fleta e poshtme e pamjes së faqeve të skedave të reja</translation>
 <translation id="1887786770086287077">Qasja te vendndodhja është joaktive për këtë pajisje. Aktivizoje te <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Sajtet qasen zakonisht te skedarët dhe dosjet në pajisjen tënde për veçoritë si ruajtja automatike e punës</translation>
@@ -92,6 +95,7 @@
 <translation id="2079545284768500474">Zhbëj</translation>
 <translation id="2080070583977670716">Cilësime të tjera</translation>
 <translation id="2091887806945687916">Tingulli</translation>
+<translation id="2094208275686143364">Ngjyra e temës e ndritshme</translation>
 <translation id="2096716221239095980">Fshi të gjitha të dhënat</translation>
 <translation id="2102396546234652240">Mos lejo që sajtet të përdorin mikrofonin tënd</translation>
 <translation id="2117655453726830283">Diapozitivi tjetër</translation>
@@ -137,6 +141,7 @@
 <translation id="2498359688066513246">Ndihmë dhe komente</translation>
 <translation id="2501278716633472235">Kthehu prapa</translation>
 <translation id="2533138527374486328">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të lidhen me çdo pajisje në rrjetin tënde lokal. Kur cilësimi është joaktiv, sajtet nuk mund të lidhen me pajisjet në rrjetin tënd lokal.</translation>
+<translation id="2544997614631598250">Ngjyra e temës e errët</translation>
 <translation id="2546283357679194313">Kukit dhe të dhënat e faqes</translation>
 <translation id="2570922361219980984">Qasja te vendndodhja është po ashtu joaktive për këtë pajisje. Aktivizoje te <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">I zgjeruar - kliko për ta palosur.</translation>
@@ -194,6 +199,7 @@
 <translation id="3165022941318558018">Lejo që një sajt të përdorë kukit e palëve të treta</translation>
 <translation id="3167868116600277716">Furnizimi i "Zbulo"</translation>
 <translation id="3198916472715691905">Të dhënat e ruajtura <ph name="STORAGE_AMOUNT" /></translation>
+<translation id="3199078925536734975">Lejohet këtë herë • E përafërt</translation>
 <translation id="321187648315454507">Për të lejuar që <ph name="APP_NAME" /> të të dërgojë njoftime, aktivizo gjithashtu njoftimet në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Vendndodhja nuk lejohet</translation>
 <translation id="3227137524299004712">Mikrofoni</translation>
@@ -250,6 +256,7 @@
 <translation id="3803367742635802571">Sajtet që viziton mund të mos funksionojnë siç pritet</translation>
 <translation id="3816118180265633665">Ngjyrat e Chrome</translation>
 <translation id="381841723434055211">Numrat e telefonit</translation>
+<translation id="3823453485268218808">Fonti mono</translation>
 <translation id="3826050100957962900">Identifikimi i palëve të treta</translation>
 <translation id="3835233591525155343">Përdorimi i pajisjes sate</translation>
 <translation id="3843916486309149084">Chrome do t'i bllokojë kukit përsëri sot</translation>
@@ -302,6 +309,7 @@
 <translation id="4402755511846832236">Blloko sajtet që të mos e dinë kur ti e përdor këtë pajisje në mënyrë aktive</translation>
 <translation id="4412992751769744546">Lejo kukit e palëve të treta</translation>
 <translation id="4419929467120297501">Chrome i bllokon sajtet që të mos përdorin kukit e palëve të treta për të të gjurmuar kur ti shfleton. Vizito cilësimet <ph name="BEGIN_LINK" />për të menaxhuar qasjen te kukit e palëve të treta<ph name="END_LINK" />.</translation>
+<translation id="4425416282877905577">Fonti serif</translation>
 <translation id="443121186588148776">Porta seriale</translation>
 <translation id="4434045419905280838">Dritaret kërcyese dhe ridrejtimet</translation>
 <translation id="443552056913301231">Ky veprim do të fshijë të gjitha të dhënat lokale, duke përfshirë kukit, dhe do të rivendosë të gjitha lejet për <ph name="ORIGIN" /></translation>
@@ -554,6 +562,7 @@
 <translation id="7478658909253570368">Mos lejo që sajtet të lidhen me portat seriale</translation>
 <translation id="7488573225650545859">Fshih "Shiko skedat në listën e aplikacioneve"</translation>
 <translation id="7521387064766892559">JavaScript</translation>
+<translation id="7538975533793429503">Rrëshqitësi i madhësisë së fontit</translation>
 <translation id="7547989957535180761">Kur cilësimi është aktiv, sajtet mund të shfaqin kërkesat për identifikim. Kur cilësimi është joaktiv, sajtet nuk mund të shfaqin kërkesat për identifikim.</translation>
 <translation id="7553211568594248088">Dil nga kërkimi i qendrës</translation>
 <translation id="7554752735887601236">Një sajt po përdor mikrofonin tënd</translation>

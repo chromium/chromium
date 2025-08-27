@@ -242,6 +242,7 @@
 <translation id="1902277226107477495">Pengesanan alamat dimatikan. Hidupkan semula ciri ini dalam Tetapan.</translation>
 <translation id="1904580727789512086">URL yang anda lawati disimpan pada Google Account anda</translation>
 <translation id="1911619930368729126">Muat naik ke Google Drive</translation>
+<translation id="1925706052394657380">Buka tetapan <ph name="BEGIN_BOLD" />Apl Lalai<ph name="END_BOLD" /> dalam iOS</translation>
 <translation id="1941314575388338491">Ketik dua kali untuk menyalin.</translation>
 <translation id="1943478190258551035">Menu → Tetapan</translation>
 <translation id="1952728750904661634">Log masuk dengan akaun terurus</translation>
@@ -251,6 +252,7 @@
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> telah berkongsi kata laluan dengan anda untuk <ph name="WEBSITE" /></translation>
 <translation id="1962969542251276847">Kunci Skrin</translation>
 <translation id="1963976881984600709">Perlindungan standard</translation>
+<translation id="1964507856799750384">Ketik <ph name="BEGIN_BOLD" />Apl Penyemak Imbas<ph name="END_BOLD" /></translation>
 <translation id="1966313166384086081">data laman</translation>
 <translation id="1967461193809857427">{count,plural, =1{Sambung semula daripada tab tempat anda berhenti pada Android?}other{Sambung semula daripada tab tempat anda berhenti pada Android?}}</translation>
 <translation id="1972325230031091483">Anda akan menyemak imbas dengan lebih pantas kerana kandungan dimuatkan secara proaktif berdasarkan lawatan halaman web semasa anda</translation>
@@ -600,7 +602,6 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="333229797575847124">Cara mendayakan ciri ini</translation>
 <translation id="3344485292736684439">{count,plural, =1{Penanda halaman disimpan pada "{title}" dalam akaun anda, {email}}other{Penanda halaman disimpan pada "{title}" dalam akaun anda, {email}}}</translation>
 <translation id="334690320928261823">Tab Terbaharu</translation>
-<translation id="3348387552617855658">Kad ini membantu anda menjejaki pakej anda dan memberi anda kemaskinian penghantaran yang penting.</translation>
 <translation id="3349031117032695619">Sekat tetingkap timbul</translation>
 <translation id="3349676726073650389">Laman dan carian yang anda ikuti disimpan dalam Google Account anda. Anda boleh mengurus laman dan carian yang anda ikuti dalam tetapan pada bila-bila masa.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Akaun ini terurus.</translation>

@@ -28,6 +28,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> қойынды топтастырылды.</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> қойынды}other{<ph name="TABS_COUNT_MANY" /> қойынды}}</translation>
 <translation id="1909810060368225529">Ескерту: енгізілетін өзгерістерді барлық пайдаланушы көреді. Ортақ қойындылар топтарына барлығы өзгеріс енгізе алады</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{Қойындыны бекіту}other{Қойындыларды бекіту}}</translation>
 <translation id="1982637982196732906">Әрекетсіз бөлімге өту</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> таңдалған қойындыға бетбелгі қою}other{<ph name="TABS_COUNT_MANY" /> таңдалған қойындыға бетбелгі қою}}</translation>
 <translation id="2055057176188061528">Қойындылар тобын таңдаңыз немесе жаңа қойындылар тобын жасаңыз.</translation>
@@ -78,6 +79,7 @@
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Алғы көрінісі бар нобай.</translation>
 <translation id="3810973564298564668">Басқару</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{Қойындыны босату}other{Қойындыларды босату}}</translation>
 <translation id="3940195383040445971">Бағаны қойындыларда бақылау</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> жаңа қойынды, <ph name="ANY_CLOSED" /> қойынды жабылды.}other{<ph name="MANY_ADDED" /> жаңа қойынды, <ph name="ANY_CLOSED" /> қойынды жабылды.}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Қойындыны жаңа топқа енгізу}other{Қойындыларды жаңа топқа енгізу}}</translation>
@@ -131,6 +133,7 @@
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> таңдалған элементті жабу}other{<ph name="TABS_COUNT_MANY" /> таңдалған элементті жабу}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Топты жаңа терезеге тасымалдау}other{Топты басқа терезеге тасымалдау}}</translation>
 <translation id="6228793724645064692">(дүкен рейтингісі)</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{Қойындыны топтан өшіру}other{Қойындыларды топтан өшіру}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Жаңа топқа қойынды қосу}other{Жаңа топқа қойындылар қосу}}</translation>
 <translation id="6333260925957816943">Бұл дүкен туралы ақпарат</translation>
 <translation id="6381032505162537930">Қойындылар топтарын осы жерден табуға болады</translation>

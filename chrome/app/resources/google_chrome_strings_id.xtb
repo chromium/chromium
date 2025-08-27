@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
 <translation id="1001534784610492198">Arsip instalatur rusak atau tidak valid. Download kembali Google Chrome.</translation>
+<translation id="1006034097353797313">Lanjutkan dari halaman terakhir yang dibuka: Chrome memulihkan tab setiap kali Anda memulai ulang. Untuk menonaktifkannya, buka</translation>
 <translation id="1018937009655463387">Untuk membagikan jendela Anda, izinkan perekaman layar untuk Chrome di Setelan Sistem.</translation>
 <translation id="1026101648481255140">Lanjutkan Penginstalan</translation>
 <translation id="102763973188675173">Sesuaikan dan kontrol Google Chrome. Update tersedia.</translation>
@@ -79,6 +80,7 @@
 <translation id="2018879682492276940">Gagal menginstal. Coba lagi.</translation>
 <translation id="2024959665595762054">Untuk menggunakan dan menyimpan data Chrome di Akun Google Anda, verifikasi diri Anda</translation>
 <translation id="2034233344106846793">Chrome mengupgrade koneksi tidak aman ke HTTPS secara otomatis jika memungkinkan</translation>
+<translation id="2039417478970545937">Setelan.</translation>
 <translation id="207902854391093810">Jika uji coba diaktifkan, Pengukuran iklan akan memungkinkan situs yang Anda buka untuk meminta informasi dari Chrome yang membantu situs mengukur performa iklannya. Pengukuran iklan membatasi pelacakan lintas situs dengan mentransfer sesedikit mungkin informasi antar-situs.</translation>
 <translation id="2091012649849228750">Untuk mendapatkan update Google Chrome berikutnya, Anda perlu Windows 10 atau yang lebih baru. Komputer ini menggunakan Windows 8.</translation>
 <translation id="2094648590148273905">Persyaratan ChromeOS Flex</translation>
@@ -346,6 +348,7 @@
 <translation id="5166439563123238795">Chrome memerlukan izin untuk melacak tangan Anda</translation>
 <translation id="5170938038195470297">Profil Anda tidak dapat digunakan karena berasal dari versi terbaru Google Chrome. Beberapa fitur mungkin tidak tersedia. Tentukan direktori profil yang berbeda atau gunakan versi Chrome yang lebih anyar.</translation>
 <translation id="5174969993834422967">Anda biasanya memblokir notifikasi. Untuk mengizinkan situs ini memberi Anda notifikasi, klik ikon notifikasi di sudut kanan kolom lokasi.</translation>
+<translation id="5174983315706567306">Kapasitas disk tidak cukup.</translation>
 <translation id="5201744974236816379">Update Chrome</translation>
 <translation id="521447420733633466">Jika Anda berbagi perangkat, teman dan keluarga dapat menjelajah secara terpisah dan menyiapkan Chrome sesuai keinginannya</translation>
 <translation id="5234764350956374838">Tutup</translation>
@@ -454,6 +457,7 @@
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6520670145826811516">Untuk menggunakan lokasi, beri Chrome akses di <ph name="BEGIN_LINK" />setelan sistem<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">Di Pengelola Sandi Google di perangkat ini</translation>
+<translation id="6631524303639368205">Lanjutkan dari halaman terakhir yang dibuka: Chrome memulihkan tab Anda dari sesi terakhir. Anda dapat menonaktifkannya di</translation>
 <translation id="6632473616050862500">ChromeOS Flex terwujud karena adanya <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> tambahan.</translation>
 <translation id="6634299872736643004">Perubahan pada setelan ini akan diterapkan setelah Chrome dimulai ulang.</translation>
 <translation id="6660596345553328257">Login ke Chrome?</translation>
@@ -561,6 +565,7 @@
 <translation id="7825851276765848807">Pemasangan gagal karena kesalahan yang tidak ditentukan. Silakan download Google Chrome lagi.</translation>
 <translation id="7827099906024714326">Chrome perlu memverifikasi diri Anda sebelum beberapa data dapat disimpan di Akun Google Anda dan digunakan di semua perangkat Anda. Jika Anda logout sekarang, data ini akan dihapus.</translation>
 <translation id="7845233973568007926">Terima kasih telah menginstal. Anda harus memulai ulang komputer sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
+<translation id="7849037457735762883">Lanjutkan dari halaman terakhir yang dibuka: Chrome dapat memulihkan tab Anda setiap kali Anda memulai ulang. Untuk mengaktifkannya, buka</translation>
 <translation id="7872446069773932638">Mendownload ... <ph name="SECONDS" /> detik lagi</translation>
 <translation id="7886087451482920026">Pilih teks dengan Google Lens</translation>
 <translation id="7890208801193284374">Jika Anda berbagi komputer, teman dan keluarga bisa menjelajah secara terpisah dan menyiapkan Chrome sesuai keinginannya.</translation>

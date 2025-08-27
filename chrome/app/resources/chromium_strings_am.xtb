@@ -84,6 +84,7 @@
 <translation id="2008474315282236005">ይሄ 1 ንጥል ከዚህ መሣሪያ ይሰርዛል። ውሂብዎን በኋላ ላይ ሰርስረው ለማውጣት እንደ <ph name="USER_EMAIL" /> ሆነው ወደ Chromium ይግቡ።</translation>
 <translation id="2018879682492276940">መጫን አልተሳካም። እባክዎ እንደገና ይሞክሩ።</translation>
 <translation id="2020032459870799438">ሌሎች የእርስዎ ይለፍ ቃላት ከውሂብ ጥሰቶች እና ሌሎች የደህንነት ችግሮች ነፃ መሆናቸውን ለማረጋገጥ <ph name="BEGIN_LINK" />በመለያ ወደ Chromium ይግቡ<ph name="END_LINK" />።</translation>
+<translation id="2039417478970545937">ቅንብሮች።</translation>
 <translation id="2049376729098081731">በGoogle አገልግሎቶች ውስጥ ተጨማሪ ግላዊነት የተላበሱ ተሞክሮዎችን ለማግኘት የChromium ታሪክን ለማካተት እና ላለማካተት ይምረጡ</translation>
 <translation id="2054039611381840095">የወደፊት የChromium ዝማኔዎችን ለማግኘት macOS 12 ወይም ከዚያ በላይ ያስፈልግዎታል። ይህ ኮምፒውተር macOS 11 እየተጠቀመ ነው።</translation>
 <translation id="2086476982681781442">ፋይሉ አታላይ ስለሆነ እና በመሣሪያዎ ላይ ያልተጠበቁ ለውጦችን ሊያደርግ ስለሚችል Chromium ይህን ውርድ አግዷል</translation>
@@ -316,6 +317,7 @@
 <translation id="5123973130450702873">Chromium እጆችዎን ለመከታተል ፈቃድ ያስፈልገዋል</translation>
 <translation id="5141988424377517949">በቅርብ ጊዜ አልጎበኙም። Chromium <ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ <ph name="PERMISSION_3" />ን አስወግዷል።</translation>
 <translation id="5174969993834422967">አብዛኛውን ጊዜ ማሳወቂያዎችን ያግዳሉ። ይህ ጣቢያ እንዲያሳውቅዎ ለመፍቀድ በአካባቢ አሞሌዎ ቀኝ ጥግ ላይ ያለውን የማሳወቂያ አዶ ጠቅ ያድርጉ።</translation>
+<translation id="5174983315706567306">በቂ የዲስክ ቦታ የለም።</translation>
 <translation id="5187123684706427865">የChromium መለያ ዳግም ማረጋገጥ ያስፈልገዋል</translation>
 <translation id="5224391634244552924">ምንም የተቀመጡ የይለፍ ቃላት የሉም። እርስዎ የይለፍ ቃላትዎን ሲያስቀምጧቸው Chromium መፈተሽ ይችላል።</translation>
 <translation id="5231355151045086930">ከChromium ዘግተው ይውጡ</translation>
@@ -443,6 +445,7 @@
 <translation id="6598877126913850652">ወደ የChromium ማሳወቂያ ቅንብሮች ይሂዱ</translation>
 <translation id="6600016381025017075">በዚህ ገጽ ላይ ማንኛውንም ነገር ይፈልጉ</translation>
 <translation id="6613594504749178791">ለውጦችዎ Chromium በሚያስጀምሩበት ቀጣዩ ጊዜ ላይ ይተገበራሉ።</translation>
+<translation id="6648212540664651655">ካቆሙበት ይቀጥሉ፦ Chromium የእርስዎን ትሮች ከመጨረሻው ክፍለ ጊዜዎ ወደነበሩበት ይመልሳል። ይህን የሚከተለው ውስጥ ማጥፋት ይችላሉ</translation>
 <translation id="665732753414869868">Chromium የዙሪያዎን የ3ል ካርታ ለመፍጠር የካሜራ ፈቃድ ያስፈልገዋል</translation>
 <translation id="6669284030132180248">እንዲሁም ዕልባቶችዎን በእርስዎ Google መለያ ውስጥ ካስቀመጡ Chromium ውስጥ የምርት ዋጋዎችን መከታተል እና ዋጋው ሲቀንስ ማሳወቂያ ማግኘት ይችላሉ</translation>
 <translation id="6676384891291319759">በይነመረብን ተዳረስ</translation>
@@ -507,6 +510,7 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="7352651011704765696">የሆነ ችግር ተፈጥሯል</translation>
 <translation id="7376384068949534168">በቅርብ ጊዜ አልጎበኙም። Chromium <ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />ን አስወግዷል።</translation>
 <translation id="7384121030444253939">ይህ ቅጥያ ከአሁን በኋላ አይደገፍም። Chromium እንዲያስወግዱት ይመክራል።</translation>
+<translation id="7413153308467572558">ካቆሙበት ይቀጥሉ፦ Chromium እንደገና በጀመሩ ቁጥር የእርስዎን ትሮች ወደነበሩበት ይመልሳል። ይህን ለማጥፋት ወደሚከተለው ይሂዱ</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium ግንባታ</translation>
 <translation id="7450541714075000668">ጽሁፍ ገልብጧል</translation>
 <translation id="7451052299415159299">Chromium ለዚህ ጣቢያ የእርስዎን ካሜራ ለመድረስ ፈቃድ ያስፈልገዋል</translation>
@@ -638,6 +642,7 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="911206726377975832">የአሰሳ ውሂብዎም ይሰረዝ?</translation>
 <translation id="9134482777260927479">የቤት ሥራ እገዛ</translation>
 <translation id="9148058034647219655">ውጣ</translation>
+<translation id="9155105544013854680">ካቆሙበት ይቀጥሉ፦ Chromium እንደገና በጀመሩ ቁጥር የእርስዎን ትሮች ወደነበሩበት መመለስ ይችላል። ይህን ለማብራት ወደሚከተለው ይሂዱ</translation>
 <translation id="9158494823179993217">የእርስዎ የስርዓት አስተዳዳሪ <ph name="TARGET_URL_HOSTNAME" />ን ለመድረስ Chromium ተለዋጭ አሳሽን እንዲከፍት አዋቅረውታል።</translation>
 <translation id="9185526690718004400">&amp;Chromiumን ለማዘመን ዳግም ያስነሱት</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>

@@ -21,6 +21,7 @@
 <translation id="1072476005125066234">Reviews based on your interests</translation>
 <translation id="1074827084851510304">You are about to delete {password_count} passwords and the list of sites and apps for which you chose to never save sign-in info. Any account that you created for sites and apps won't be deleted.</translation>
 <translation id="1076421457278169141">Code scanned</translation>
+<translation id="1081114897601629648">The following passwords were not imported to Google Password Manager, because they don't match with the requirements.</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} tab}other{{count} tabs}}</translation>
 <translation id="1082554859195167538">Product reviews for you</translation>
 <translation id="1084365883616172403">Facebook post completed.</translation>
@@ -599,7 +600,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="333229797575847124">How to enable this feature</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bookmark saved to ‘{title}’ in your account, {email}}other{Bookmarks saved to ‘{title}’ in your account, {email}}}</translation>
 <translation id="334690320928261823">Recent tabs</translation>
-<translation id="3348387552617855658">This card helps you keep track of your packages and gives you important delivery updates.</translation>
 <translation id="3349031117032695619">Block pop-ups</translation>
 <translation id="3349676726073650389">The sites and searches you follow are saved in your Google Account. You can manage your follows in settings at any time.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. This account is managed.</translation>

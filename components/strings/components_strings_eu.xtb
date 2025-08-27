@@ -440,6 +440,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1719838434204287058">60,96 × 76,2 cm (24 × 30 in)</translation>
 <translation id="1720941539803966190">Itxi tutoriala</translation>
 <translation id="1721424275792716183">* Nahitaez bete behar da eremua</translation>
+<translation id="1723636263173393300">Gidalerro honek ez lituzke <ph name="MAX_ITEMS_LIMIT" /> lasterbide baino gehiago izan behar.</translation>
 <translation id="1725591448053514783">You gutun-azala 6</translation>
 <translation id="1727613060316725209">Ziurtagiriak balio du</translation>
 <translation id="1728677426644403582">Web-orri baten iturburua ari zara ikusten</translation>
@@ -1047,6 +1048,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="271663710482723385">Pantaila osotik irteteko, sakatu |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
 <translation id="2717336592027046789">Arrabola</translation>
 <translation id="2718207025093645426">Erabiltzaile edo gailu kudeatuak ez dauka gidalerrorik kargatuta.</translation>
+<translation id="2719233594187778789">Esklusiboa ez den URL honi ez ikusi egin zaio: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Eskaera behar bezala egin da</translation>
 <translation id="2722622039067384533">Egongelako altzariak</translation>
 <translation id="2723669454293168317">Egin segurtasun-egiaztapena Chrome-ren ezarpenetan</translation>
@@ -2003,6 +2005,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4298000214066716287">Inbertsioak</translation>
 <translation id="4298148761711700950">Ordaindu istantean QRa kargatu gabe</translation>
 <translation id="4298925811540301889">Webgune honetako cookieak zure ChromeOS-eko gailuetan sinkronizatzen dira. Zer sinkronizatzen den kudeatzeko, joan <ph name="SYNC_SETTINGS" /> atalera.</translation>
+<translation id="4299919199185766032">Lasterbidearen izenak gehieneko luzera (<ph name="MAX_LENGTH" /> karaktere) gainditzen du.</translation>
 <translation id="4300272766492248925">Ireki aplikazioa</translation>
 <translation id="4300675098767811073">Hainbat zulo eskuinean</translation>
 <translation id="4302514097724775343">Sakatu dinosauroa jokatzeko</translation>
@@ -2704,6 +2707,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
     Jarri harremanetan sistemaren administratzailearekin.</translation>
 <translation id="5496804587179176046">Gorde segurtasun-kodeak. Ez dago segurtasun-koderik gordeta une honetan.</translation>
 <translation id="550365051221576010">Bete dena</translation>
+<translation id="5506286895894263601">Zerrendan ez dago balio duen lasterbiderik.</translation>
 <translation id="5508443345185481044">Kamera eta bideokamerak</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Kudeatutako laster-markak</translation>
@@ -3622,6 +3626,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="7014741021609395734">Zoom-maila</translation>
 <translation id="7016992613359344582">Behin edo gehiagotan kobratzen saia liteke, eta baliteke zordunketa horiek begien bistakoak ez izatea.</translation>
 <translation id="701757816833614688">Ikusizko arteen eta diseinuaren inguruko ikasketak</translation>
+<translation id="7020464868401003526">Lasterbidearen URLak gehieneko luzera (<ph name="MAX_LENGTH" /> karaktere) gainditzen du.</translation>
 <translation id="702275896380648118">Webguneak gustatzen zaizkizun gauzak zehazten ditu eta, gero, beste webguneei iragarkiak iradokitzen dizkie. Halaber, Chrome-n oinarritzen da zure iragarkien gaien berri izateko, iragarki egokiagoak erakuts diezazkizun.</translation>
 <translation id="7023162328967545559">Administratzailearen abisua</translation>
 <translation id="7023765275461720661">Kontua lotu nahi duzu, eta <ph name="BNPL_ISSUER_NAME" /> erabilita ordaindu?</translation>

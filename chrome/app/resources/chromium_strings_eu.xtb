@@ -83,6 +83,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2008474315282236005">Gailuko elementu bat ezabatuko da. Geroago datuak eskuratu nahi izanez gero, hasi saioa Chromium-en <ph name="USER_EMAIL" /> gisa.</translation>
 <translation id="2018879682492276940">Ezin izan da instalatu. Saiatu berriro.</translation>
 <translation id="2020032459870799438">Gainerako pasahitzak datuen isilpekotasunaren urratzeen eta beste segurtasun-arazoen aurka babestuta dauden egiaztatzeko, <ph name="BEGIN_LINK" />hasi saioa Chromium-en<ph name="END_LINK" />.</translation>
+<translation id="2039417478970545937">Ezarpenak.</translation>
 <translation id="2049376729098081731">Aukeratu ea Chromium-eko historia kontuan hartu nahi duzun ala ez Google-ren zerbitzuak modu pertsonalizatuago batean erabiltzeko</translation>
 <translation id="2054039611381840095">Etorkizunean Chromium-en eguneratzeak eskuratzeko, macOS 12 edo berriago bat beharko duzu. Ordenagailu hau macOS 11 erabiltzen ari da.</translation>
 <translation id="2086476982681781442">Chromium-ek deskarga hau blokeatu du, fitxategia engainagarria delako eta agian espero ez dituzun aldaketak egingo dituelako gailuan</translation>
@@ -315,6 +316,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="5123973130450702873">Chromium-ek zure eskuen jarraipena egiteko baimena behar du</translation>
 <translation id="5141988424377517949">Azkenaldian ez duzu bisitatu webgune hau. Chromium-ek <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta <ph name="PERMISSION_3" /> erabiltzeko baimena kendu dio.</translation>
 <translation id="5174969993834422967">Jakinarazpenak blokeatu ohi dituzu. Webgune honen jakinarazpenak jasotzeko, sakatu kokapenaren barrako eskuineko izkinan dagoen jakinarazpen-ikonoa.</translation>
+<translation id="5174983315706567306">Ez dago nahikoa tokirik diskoan.</translation>
 <translation id="5187123684706427865">Berriro autentifikatu behar da Chromium-eko kontua</translation>
 <translation id="5224391634244552924">Ez dago pasahitzik gordeta. Gordeta dituzun pasahitzak egiaztatu egin ditzake Chromium-ek.</translation>
 <translation id="5231355151045086930">Amaitu Chromium-eko saioa</translation>
@@ -442,6 +444,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="6598877126913850652">Joan Chromium-en jakinarazpen-ezarpenetara</translation>
 <translation id="6600016381025017075">Bilatu edozer orri honetan</translation>
 <translation id="6613594504749178791">Aldaketek Chromium abiarazten duzun hurrengo aldian izango dute eragina.</translation>
+<translation id="6648212540664651655">Jarraitu utzi zenuen tokitik: Chromium-ek azken saioko fitxak leheneratu ditu. Aukera hori desaktibatzeko, joan hona:</translation>
 <translation id="665732753414869868">Chromium-ek kamera erabiltzeko baimena behar du zure inguruaren 3D-ko mapa bat sortzeko</translation>
 <translation id="6669284030132180248">Era berean, laster-markak Google-ko kontuan gordetzen badituzu, Chromium-en produktuen prezioen jarraipena egin ahal izango duzu, eta prezioak jaisten direnean jakinarazpenak jaso</translation>
 <translation id="6676384891291319759">Sartu Interneten</translation>
@@ -506,6 +509,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="7352651011704765696">Arazo bat izan da</translation>
 <translation id="7376384068949534168">Azkenaldian ez duzu bisitatu webgune hau. Chromium-ek <ph name="PERMISSION_1" /> eta <ph name="PERMISSION_2" /> erabiltzeko baimena kendu dio.</translation>
 <translation id="7384121030444253939">Luzapena ez da onartzen jada. Kentzea gomendatzen dizu Chromium-ek.</translation>
+<translation id="7413153308467572558">Jarraitu utzi zenuen tokitik: Chromium-ek fitxak leheneratzen ditu berrabiarazten duzun bakoitzean. Aukera hori desaktibatzeko, joan hona:</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">Kopiatu da testua</translation>
 <translation id="7451052299415159299">Chromium-ek webgune honen izenean kamera erabiltzeko baimena behar du</translation>
@@ -637,6 +641,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="911206726377975832">Arakatze-datuak ere ezabatu nahi dituzu?</translation>
 <translation id="9134482777260927479">Laguntza etxeko lanekin</translation>
 <translation id="9148058034647219655">Irten</translation>
+<translation id="9155105544013854680">Jarraitu utzi zenuen tokitik: Chromium-ek fitxak lehenera ditzake berrabiarazten duzun bakoitzean. Aukera hori aktibatzeko, joan hona:</translation>
 <translation id="9158494823179993217">Sistemaren administratzailearen konfigurazioaren arabera, Chromium-ek beste arakatzaile bat ireki behar du <ph name="TARGET_URL_HOSTNAME" /> helbidera joateko.</translation>
 <translation id="9185526690718004400">Exekuta ezazu berriro &amp;Chromium eguneratzeko</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>

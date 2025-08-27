@@ -242,6 +242,7 @@
 <translation id="1902277226107477495">Rilevamento dell'indirizzo disattivato. Riattivalo in Impostazioni.</translation>
 <translation id="1904580727789512086">Gli URL che visiti vengono salvati nel tuo Account Google</translation>
 <translation id="1911619930368729126">Carica su Google Drive</translation>
+<translation id="1925706052394657380">Apri le impostazioni <ph name="BEGIN_BOLD" />App predefinite<ph name="END_BOLD" /> in iOS</translation>
 <translation id="1941314575388338491">Tocca due volte per copiare.</translation>
 <translation id="1943478190258551035">Menu → Impostazioni</translation>
 <translation id="1952728750904661634">Accedi con l'account gestito</translation>
@@ -251,6 +252,7 @@
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> ha condiviso una password con te per <ph name="WEBSITE" /></translation>
 <translation id="1962969542251276847">Blocco schermo</translation>
 <translation id="1963976881984600709">Protezione standard</translation>
+<translation id="1964507856799750384">Tocca <ph name="BEGIN_BOLD" />App browser<ph name="END_BOLD" /></translation>
 <translation id="1966313166384086081">dati dei siti</translation>
 <translation id="1967461193809857427">{count,plural, =1{Vuoi riprendere la scheda che avevi lasciato su Android?}other{Vuoi riprendere le schede che avevi lasciato su Android?}}</translation>
 <translation id="1972325230031091483">Navigherai più velocemente perché i contenuti vengono caricati in modo proattivo in base alla pagina web che stai visitando</translation>
@@ -600,7 +602,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="333229797575847124">Come attivare questa funzionalità</translation>
 <translation id="3344485292736684439">{count,plural, =1{Preferito salvato nella cartella "{title}" nel tuo account {email}}other{Preferiti salvati nella cartella "{title}" nel tuo account {email}}}</translation>
 <translation id="334690320928261823">Schede recenti</translation>
-<translation id="3348387552617855658">Questa scheda ti consente di monitorare tuoi pacchi e ti dà importanti aggiornamenti sulla consegna.</translation>
 <translation id="3349031117032695619">Blocca popup</translation>
 <translation id="3349676726073650389">I siti e le ricerche che segui vengono salvati nel tuo Account Google. Puoi gestire le tue seguenti azioni nelle impostazioni in qualsiasi momento.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Questo account è gestito.</translation>
@@ -1578,7 +1579,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="7080806333218412752">Invia gli URL a Navigazione sicura per verificarli. Invia anche piccoli esempi di pagine, download, attività delle estensioni e informazioni di sistema per contribuire al rilevamento di nuove minacce. Quando hai effettuato l'accesso, collega temporaneamente questi dati al tuo Account Google per proteggerti nelle app Google.</translation>
 <translation id="7082853213442715471">Quando è attiva questa modalità, alcune tecnologie web sono bloccate e per questo motivo alcuni siti web potrebbero caricarsi più lentamente o non funzionare correttamente.</translation>
 <translation id="7091023926159231962">{count,plural, =1{Impossibile importare {count} password}other{Impossibile importare {count} password}}</translation>
-<translation id="7095110968493193530">In Gestore delle password di Google per l'account <ph name="EMAIL" /></translation>
+<translation id="7095110968493193530">Salva in Gestore delle password di Google per l'account <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">Nella barra degli indirizzi, tocca Cronologia dei prezzi per vedere le variazioni di prezzo nel tempo</translation>
 <translation id="7101580180124131336">Ora vedrai contenuti di e relativi a <ph name="CHANNEL_NAME" /> in Stai seguendo.</translation>
 <translation id="7102005569666697658">Download in corso… <ph name="FILE_SIZE" /></translation>

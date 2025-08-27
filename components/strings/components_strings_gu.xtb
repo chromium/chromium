@@ -243,6 +243,7 @@
 <translation id="139305205187523129"><ph name="HOST_NAME" /> એ કોઈપણ ડેટા મોકલ્યો ન હતો.</translation>
 <translation id="1393071644879491291">તમે જેની મુલાકાત લેવાનો પ્રયાસ કર્યો હતો તે સાઇટ પરના અટૅક કરનારા લોકો યુક્તિ અજમાવીને તમને સૉફ્ટવેર ઇન્સ્ટૉલ કરવા કે તમારા પાસવર્ડ, ફોન કે ક્રેડિટ કાર્ડ નંબર જેવી બાબતો જણાવવા છેતરી શકે છે. Chrome દ્વારા સલામતી પર પાછા ફરવાનો સુઝાવ ભારપૂર્વક આપવામાં આવે છે. <ph name="BEGIN_LEARN_MORE_LINK" />આ ચેતવણી વિશે વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1405567553485452995">આછો લીલો</translation>
+<translation id="1406370515365284486">તમારી ચુકવણી પદ્ધતિઓ હજી પણ સાચવવામાં આવશે</translation>
 <translation id="1406500794671479665">ચકાસી રહ્યું છે...</translation>
 <translation id="1406812885827747674">આ વખત માટે મંજૂરી આપો</translation>
 <translation id="14070772729708640"><ph name="CLOUD_PROVIDER" /> પર ઉપલબ્ધ <ph name="FOLDER_NAME" />માં ફાઇલો સફળતાપૂર્વક અપલોડ કરવામાં આવી હતી</translation>
@@ -440,6 +441,7 @@
 <translation id="1719838434204287058">24 x 30 ઇંચ</translation>
 <translation id="1720941539803966190">ટ્યૂટૉરિઅલ બંધ કરો</translation>
 <translation id="1721424275792716183">* ફીલ્ડ આવશ્યક છે</translation>
+<translation id="1723636263173393300">આ પૉલિસીમાં <ph name="MAX_ITEMS_LIMIT" /> કરતાં વધારે શૉર્ટકટ હોવા જોઈએ નહીં.</translation>
 <translation id="1725591448053514783">એન્વલપ યુ 6</translation>
 <translation id="1727613060316725209">પ્રમાણપત્ર માન્ય છે</translation>
 <translation id="1728677426644403582">તમે વેબ પેજનો સ્રોત જોઈ રહ્યાં છો</translation>
@@ -1047,6 +1049,7 @@
 <translation id="271663710482723385">પૂર્ણ સ્ક્રીનમાંથી બહાર નીકળવા માટે |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| દબાવો</translation>
 <translation id="2717336592027046789">રોલ</translation>
 <translation id="2718207025093645426">મેનેજ કરેલા વપરાશકર્તા અથવા ડિવાઇસ પાસે કોઈ પૉલિસી લોડ કરેલી નથી.</translation>
+<translation id="2719233594187778789">વિશિષ્ટ ન હોય તેવું URL અવગણવામાં આવ્યું: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">વિનંતી સફળ થઇ</translation>
 <translation id="2722622039067384533">લિવિંગ રૂમનું ફર્નિચર</translation>
 <translation id="2723669454293168317">Chrome સેટિંગમાં સલામતી માટે તપાસ ચલાવો</translation>
@@ -2007,6 +2010,7 @@
 <translation id="4298000214066716287">રોકાણ</translation>
 <translation id="4298148761711700950">QR અપલોડ વિના તાત્કાલિક ચુકવણી કરો</translation>
 <translation id="4298925811540301889">આ સાઇટની કૂકીને તમારા સમગ્ર ChromeOS ડિવાઇસમાં સિંક કરવામાં આવી છે. તમે શું સિંક કરો છો તેને મેનેજ કરવા માટે, <ph name="SYNC_SETTINGS" /> પર જાઓ.</translation>
+<translation id="4299919199185766032">શૉર્ટકટનું નામ <ph name="MAX_LENGTH" /> અક્ષરની મહત્તમ મંજૂર લંબાઈ કરતાં વધી જાય છે.</translation>
 <translation id="4300272766492248925">ઍપ્લિકેશન ખોલો</translation>
 <translation id="4300675098767811073">જમણી બાજુએ એકથી વધુ કાણાં પાડો</translation>
 <translation id="4302514097724775343">રમવા માટે, ડાયનાસોર પર ટૅપ કરો</translation>
@@ -2708,6 +2712,7 @@
     તમારા સિસ્ટમ વ્યવસ્થાપકનો સંપર્ક કરવાનો પ્રયાસ કરો.</translation>
 <translation id="5496804587179176046">સિક્યુરિટી કોડ સાચવો, હાલમાં કોઈ સિક્યુરિટી કોડ સાચવેલો નથી</translation>
 <translation id="550365051221576010">બધું ભરો</translation>
+<translation id="5506286895894263601">સૂચિમાં કોઈ માન્ય શૉર્ટકટ નથી.</translation>
 <translation id="5508443345185481044">કૅમેરા અને કૅમકોર્ડર</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">મેનેજ થયેલા બુકમાર્ક</translation>
@@ -3627,6 +3632,7 @@
 <translation id="7014741021609395734">ઝૂમ લેવલ</translation>
 <translation id="7016992613359344582">આ શુલ્ક એક-સમયનું અથવા પુનરાવર્તિત હોઈ શકે છે અને કદાચ દેખીતા શુલ્ક ન પણ હોય.</translation>
 <translation id="701757816833614688">વિઝ્યુઅલ આર્ટ અને ડિઝાઇન સંબંધિત શિક્ષણ</translation>
+<translation id="7020464868401003526">શૉર્ટકટનું URL <ph name="MAX_LENGTH" /> અક્ષરની મહત્તમ મંજૂર લંબાઈ કરતાં વધી જાય છે.</translation>
 <translation id="702275896380648118">તમને ગમતી બાબતો વિશે આ સાઇટ અનુમાન લગાવે છે અને પછી અન્ય સાઇટને જાહેરાતો સૂચવે છે. તમને વધુ સંબંધિત જાહેરાતો બતાવવા માટે, આ સાઇટ Chromeમાંથી જાહેરાતના તમારા વિષયોની માહિતી પણ મેળવે છે.</translation>
 <translation id="7023162328967545559">ઍડમિન દ્વારા ચેતવણી</translation>
 <translation id="7023765275461720661">એકાઉન્ટને લિંક કરીને <ph name="BNPL_ISSUER_NAME" /> વડે ચુકવણી કરવી છે?</translation>

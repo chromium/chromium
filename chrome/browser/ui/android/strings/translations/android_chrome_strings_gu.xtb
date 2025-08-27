@@ -499,7 +499,6 @@
 <translation id="3384347053049321195">છબી શેર કરો</translation>
 <translation id="3387650086002190359">ફાઇલ સિસ્ટમ ભૂલોના કારણે <ph name="FILE_NAME" /> ડાઉનલોડ નિષ્ફળ થયું.</translation>
 <translation id="3414952576877147120">કદ:</translation>
-<translation id="3421726884497337397">ત્રીજા પક્ષની કુકી ક્યારે બ્લૉક કરવી તે પસંદ કરો</translation>
 <translation id="3430670036890315772">તમારું પ્રોફાઇલ લૉક બંધ કરવાથી તમારી સાચવેલી માહિતી કાઢી નાખવામાં આવશે</translation>
 <translation id="3435465986463792564">શું ઘણી વિન્ડો ખોલી છે? તમે તેમને અહીંથી મેનેજ કરી શકો છો</translation>
 <translation id="3435575784518354875">તમારા પાસવર્ડનો ઍક્સેસ જાળવી રાખવા માટે, તેની હમણાં નિકાસ કરો, Google Play સેવાઓ અપડેટ કરો અને પછી તેમને પાછા Google Password Managerમાં આયાત કરો. <ph name="BEGIN_LINK" />સંપૂર્ણ સૂચના જુઓ<ph name="END_LINK" />.</translation>
@@ -760,7 +759,6 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{ચેડાં કરાયેલો 1 પાસવર્ડ}one{ચેડાં કરાયેલો # પાસવર્ડ}other{ચેડાં કરાયેલા # પાસવર્ડ}}</translation>
 <translation id="4641919525231168205">આગલા પેજ પર જાઓ</translation>
 <translation id="4642472735733036929">કિંમત ટ્રૅક કરવાનું બંધ કર્યું</translation>
-<translation id="4645146721047390964">જ્યારે છૂપા મોડમાં હો, ત્યારે અલગ-અલગ સાઇટ પરની તમારી બ્રાઉઝિંગ પ્રવૃત્તિ જોવા માટે સાઇટ તમારી કુકીનો ઉપયોગ કરી શકશે નહીં, ઉદાહરણ તરીકે, જાહેરાતોને મનગમતી બનાવવા માટે. અમુક સાઇટ પરની સુવિધાઓમાં કદાચ ખલેલ પડી શકે છે.</translation>
 <translation id="465657074423018424">Safe Browsing તમારું છેતરામણી વેબસાઇટથી રક્ષણ કરે છે. જો તમે તેને બંધ કરો, તો બ્રાઉઝ કરતી વખતે વધુ સાવધાન રહેજો, ખાસ કરીને પાસવર્ડ દાખલ કરતા પહેલાં.</translation>
 <translation id="4662373422909645029">ઉપનામમાં સંખ્યા ન હોઈ શકે</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> બુકમાર્ક કાઢી નાખ્યાં</translation>
@@ -1220,7 +1218,6 @@
 <translation id="6633067410344541938">છૂપા મોડના સત્ર અનલૉક કરો</translation>
 <translation id="6636623428211296678">નીચે વધુ સેટિંગ વિશે જાણકારી મેળવો અથવા હવે સમાપ્ત કરો</translation>
 <translation id="6637100877383020115">ઍપને બહેતર બનાવવામાં સહાય કરવા માટે, Chrome વપરાશ અને ક્રૅશ થવા સંબંધિત ડેટા Googleને મોકલે છે. <ph name="BEGIN_UMA_LINK" />મેનેજ કરો<ph name="END_UMA_LINK" /></translation>
-<translation id="6640207029842583248">હંમેશાં બ્લૉક કરો</translation>
 <translation id="6641780377503683465"><ph name="INTEREST" />ને કાઢી નાખો</translation>
 <translation id="6647441008198474441">હવે તમે આના પછી કઈ સાઇટની મુલાકાત લેશો તેનું પૂર્વાનુમાન લગાવવા માટે, તમે જેની મુલાકાત લો છો તે URLs Googleને મોકલવામાં આવે છે</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -1232,6 +1229,7 @@
 <translation id="6674571176963658787">સિંક કરવાનું શરૂ કરવા માટે, તમારો પાસફ્રેઝ દાખલ કરો</translation>
 <translation id="6676927815633975364">આ સાઇટ અને Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="6684809838922667136">Chromeને બહેતર બનાવો</translation>
+<translation id="6689436252814043643">વાંચન મોડ ઉપલબ્ધ નથી</translation>
 <translation id="6700279777779583398">પસંદગીઓ સાચવી</translation>
 <translation id="670498945988402717">ગઈકાલે ચેક કર્યું</translation>
 <translation id="6710213216561001401">પાછલી</translation>
@@ -1342,6 +1340,7 @@
 <translation id="7111822978084196600">આ વિન્ડોને નામ આપો</translation>
 <translation id="7115358764509798967">સિસ્ટમ ડિફૉલ્ટ</translation>
 <translation id="7117485132243600300">તમે ફૉલો કરો છો તે કન્ટેન્ટ, સૂચવેલા વિષયો અને શોધને મેનેજ કરો</translation>
+<translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> બંધ કરો</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 સાઇટની પરવાનગીઓનો રિવ્યૂ કર્યો}one{# સાઇટની પરવાનગીઓનો રિવ્યૂ કર્યો}other{# સાઇટની પરવાનગીઓનો રિવ્યૂ કર્યો}}</translation>
 <translation id="7138678301420049075">અન્ય</translation>
 <translation id="7140829094791862589">મેન્યુઅલ ક્રમે સૉર્ટ કરો</translation>
@@ -1443,7 +1442,6 @@
 <translation id="751961395872307827">સાઇટ સાથે કનેક્ટ કરી શકાતું નથી</translation>
 <translation id="7523960634226602883">Google Lensનો ઉપયોગ કરીને તમારા કૅમેરા વડે શોધો</translation>
 <translation id="7525248386620136756"><ph name="TAB_GROUPS_AND_TABS_PART" /> બંધ છે અને સાચવ્યું છે</translation>
-<translation id="752731652852882757">છૂપા મોડનો ઉપયોગ કરતી વખતે બ્લૉક કરો</translation>
 <translation id="7545347190366646170">ઍક્સેસ ધરાવતા લોકો</translation>
 <translation id="7554643625247105821">Chromeનું વર્ઝન ચેક કરી શકાતું નથી</translation>
 <translation id="7557508262441527045">સાઇન આઉટ કર્યું</translation>
@@ -1609,7 +1607,6 @@
 <translation id="8243077599929149377">તમારું વપરાશકર્તાનું નામ ઉમેરો</translation>
 <translation id="8244387390464017490">નવું ટૅબ પેજ કસ્ટમાઇઝ કરો</translation>
 <translation id="8250920743982581267">દસ્તાવેજો</translation>
-<translation id="8255617931166444521">અલગ-અલગ સાઇટ તમારી બ્રાઉઝિંગ પ્રવૃત્તિ જોવા માટે માત્ર તેમની પોતાની સાઇટ પર જ તમારી કુકીનો ઉપયોગ કરી શકે છે</translation>
 <translation id="8258999165172757081">ઉમેરી</translation>
 <translation id="8259179246279078674">પહેલેથી લોડ કરેલા પેજ એન્ક્રિપ્ટેડ હોવાથી, પહેલેથી લોડ કરેલા પેજના કન્ટેન્ટ વિશે Googleને જાણ થશે નહીં. કઈ સાઇટ ખાનગી રીતે પહેલેથી લોડ કરવામાં આવી છે, તે Googleના સર્વરને જાણવા મળશે. આ માહિતીનો ઉપયોગ માત્ર પેજને પહેલેથી લોડ કરવા માટે થાય છે અને તમારા Google એકાઉન્ટમાંથી અન્ય માહિતી સાથે લિંક કરવામાં આવતી નથી.</translation>
 <translation id="8260126382462817229">ફરીથી સાઇન ઇન કરવાનો પ્રયાસ કરો</translation>

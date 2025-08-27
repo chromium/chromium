@@ -310,6 +310,7 @@
 <translation id="494490797786467921">Fai clic per chiudere la finestra di dialogo di accesso a Chromium</translation>
 <translation id="4950660488495335294">Con i profili Chromium puoi separare tutti i tuoi contenuti di Chromium. Crea profili per amici e familiari oppure dividi i dati di lavoro e i contenuti di svago.</translation>
 <translation id="4987820182225656817">Gli ospiti possono utilizzare Chromium senza lasciare tracce.</translation>
+<translation id="4992938037305302429">Il tuo account in Chromium</translation>
 <translation id="4994636714258228724">Aggiungiti a Chromium</translation>
 <translation id="5123973130450702873">Chromium deve avere l'autorizzazione per monitorare le tue mani</translation>
 <translation id="5141988424377517949">Non hai visitato il sito di recente. Chromium ha rimosso <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="PERMISSION_3" />.</translation>
@@ -388,6 +389,7 @@
 <translation id="6072463441809498330">Rendi Chromium più veloce</translation>
 <translation id="6096348254544841612">È disponibile un nuovo aggiornamento.</translation>
 <translation id="6107893135096467929">On • Chromium non può verificare la provenienza dell'estensione</translation>
+<translation id="611228897408671387">Il tuo account in Chromium</translation>
 <translation id="6119438414301547735">Consenti all'estensione di mostrare le richieste di accesso nella barra degli strumenti di Chromium</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> è pericoloso, pertanto è stato bloccato da Chromium.</translation>
 <translation id="6132897690380286411">A breve Chromium chiuderà ed eliminerà i dati</translation>
@@ -613,7 +615,6 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="8747073452963259673">angolo in basso a sinistra dell'area di ricerca: sinistra <ph name="LEFT" />%, in basso <ph name="BOTTOM" />%</translation>
 <translation id="878572486461146056">Errore di installazione: l'amministratore di rete ha applicato una policy di gruppo che impedisce l'installazione: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Per questo sito Chromium ha bisogno dell'autorizzazione ad accedere alla fotocamera e al microfono</translation>
-<translation id="880560872634367429">Verifica del download in corso…</translation>
 <translation id="8818550178040858407">Accedere a Chromium?</translation>
 <translation id="8826492472752484139">Fai clic su "Gestore delle password"</translation>
 <translation id="8833697763442816810">Sistema Chromium OS</translation>

@@ -21,6 +21,7 @@
 <translation id="1072476005125066234">Maoni kulingana na mambo yanayokuvutia</translation>
 <translation id="1074827084851510304">Unakaribia kufuta manenosiri {password_count} pamoja na orodha ya tovuti na programu ulizochagua kutohifadhi kamwe maelezo ya kuingia katika akaunti. Akaunti yoyote uliyofungua kwenye tovuti au programu haitafutwa.</translation>
 <translation id="1076421457278169141">Msimbo umechanganuliwa</translation>
+<translation id="1081114897601629648">Manenosiri yafuatayo hayakuhamishiwa kwenye Kidhibiti cha Manenosiri cha Google, kwa sababu hayatimizi masharti.</translation>
 <translation id="1081932398873105675">{count,plural, =1{Kichupo {count}}other{Vichupo {count}}}</translation>
 <translation id="1082554859195167538">Maoni yanayokufaa kuhusu bidhaa</translation>
 <translation id="1084365883616172403">Chapisho la Facebook limekamilika.</translation>
@@ -599,7 +600,6 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="333229797575847124">Jinsi ya kuwasha kipengele hiki</translation>
 <translation id="3344485292736684439">{count,plural, =1{Alamisho imehifadhiwa kwenye "{title}" katika akaunti yako, {email}}other{Alamisho zimehifadhiwa kwenye "{title}" katika akaunti yako, {email}}}</translation>
 <translation id="334690320928261823">Vichupo vya Hivi Majuzi</translation>
-<translation id="3348387552617855658">Kadi hii hukusaidia kufuatilia vifurushi vyako na kukupa taarifa muhimu za ufikishaji.</translation>
 <translation id="3349031117032695619">Kuzuia madirisha ibukizi</translation>
 <translation id="3349676726073650389">Utafutaji na tovuti unazofuatilia zinahifadhiwa kwenye Akaunti yako ya Google. Unaweza kudhibiti mambo unayofuatilia katika mipangilio wakati wowote.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Akaunti hii inadhibitiwa.</translation>

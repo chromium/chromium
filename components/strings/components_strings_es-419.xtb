@@ -243,6 +243,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="139305205187523129"><ph name="HOST_NAME" /> no envió ningún dato.</translation>
 <translation id="1393071644879491291">Los atacantes del sitio que intentaste visitar podrían engañarte para que instales software o reveles información como tus contraseñas, teléfono o números de tarjeta de crédito. Chrome recomienda que regreses a un sitio seguro. <ph name="BEGIN_LEARN_MORE_LINK" />Más información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1405567553485452995">Verde claro</translation>
+<translation id="1406370515365284486">Se seguirán guardando tus formas de pago</translation>
 <translation id="1406500794671479665">Verificando...</translation>
 <translation id="1406812885827747674">Permitir esta vez</translation>
 <translation id="14070772729708640">Los archivos se subieron correctamente a <ph name="FOLDER_NAME" /> en <ph name="CLOUD_PROVIDER" /></translation>
@@ -440,6 +441,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1719838434204287058">61 × 76.2 cm (24 × 30 in)</translation>
 <translation id="1720941539803966190">Cerrar el instructivo</translation>
 <translation id="1721424275792716183">* El campo es obligatorio</translation>
+<translation id="1723636263173393300">Esta política no debe tener más de <ph name="MAX_ITEMS_LIMIT" /> accesos directos.</translation>
 <translation id="1725591448053514783">Sobre You 6</translation>
 <translation id="1727613060316725209">El certificado es válido</translation>
 <translation id="1728677426644403582">Estás viendo la fuente de una página web</translation>
@@ -1047,6 +1049,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="271663710482723385">Presiona |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| para salir de la pantalla completa</translation>
 <translation id="2717336592027046789">Rollo</translation>
 <translation id="2718207025093645426">El usuario o dispositivo administrado no tiene ninguna política cargada.</translation>
+<translation id="2719233594187778789">Se ignoró la URL duplicada: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Solicitud correcta</translation>
 <translation id="2722622039067384533">Muebles para la sala de estar</translation>
 <translation id="2723669454293168317">Ejecutar una Verificación de seguridad en la configuración de Chrome</translation>
@@ -2008,6 +2011,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4298000214066716287">Inversión</translation>
 <translation id="4298148761711700950">Paga al instante sin subir un código QR</translation>
 <translation id="4298925811540301889">Las cookies de este sitio se sincronizan en todos tus dispositivos ChromeOS. Para administrar los datos de la sincronización, ve a <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4299919199185766032">El nombre del acceso directo supera la longitud máxima permitida de <ph name="MAX_LENGTH" /> caracteres.</translation>
 <translation id="4300272766492248925">Abrir app</translation>
 <translation id="4300675098767811073">Perforaciones múltiples a la derecha</translation>
 <translation id="4302514097724775343">Presiona el dinosaurio para jugar</translation>
@@ -2709,6 +2713,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
     Intenta contactar al administrador de tu sistema.</translation>
 <translation id="5496804587179176046">Guardar códigos de seguridad; actualmente no hay códigos de seguridad guardados</translation>
 <translation id="550365051221576010">Completar todo</translation>
+<translation id="5506286895894263601">La lista no contiene accesos directos válidos.</translation>
 <translation id="5508443345185481044">Cámaras y videocámaras</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Favoritos administrados</translation>
@@ -3628,6 +3633,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="7014741021609395734">Nivel del zoom</translation>
 <translation id="7016992613359344582">Estos cargos pueden ser únicos o recurrentes, y es posible que no sean evidentes.</translation>
 <translation id="701757816833614688">Educación de artes visuales y diseño</translation>
+<translation id="7020464868401003526">La URL del acceso directo supera la longitud máxima permitida de <ph name="MAX_LENGTH" /> caracteres.</translation>
 <translation id="702275896380648118">Este sitio determina lo que te gusta y, luego, sugiere anuncios a otros sitios. Este sitio también obtiene tus temas de anuncios de Chrome para mostrarte anuncios más relevantes.</translation>
 <translation id="7023162328967545559">Advertencia del administrador</translation>
 <translation id="7023765275461720661">¿Quieres vincular la cuenta y pagar con <ph name="BNPL_ISSUER_NAME" />?</translation>

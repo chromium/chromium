@@ -243,6 +243,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="139305205187523129"><ph name="HOST_NAME" /> sendte ingen data.</translation>
 <translation id="1393071644879491291">Angripere på nettstedet du prøvde å besøke, kan lure deg til å installere programvare eller oppgi ting som passord, telefonnumre eller kredittkortnumre. Chrome anbefaler på det sterkeste at du går tilbake til trygg grunn. <ph name="BEGIN_LEARN_MORE_LINK" />Finn ut mer om denne advarselen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1405567553485452995">Lysegrønn</translation>
+<translation id="1406370515365284486">Betalingsmåtene dine lagres fortsatt</translation>
 <translation id="1406500794671479665">Bekrefter …</translation>
 <translation id="1406812885827747674">Tillat denne gangen</translation>
 <translation id="14070772729708640">Filene ble lastet opp til <ph name="FOLDER_NAME" /> i <ph name="CLOUD_PROVIDER" /></translation>
@@ -440,6 +441,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1719838434204287058">24 x 30 tommer</translation>
 <translation id="1720941539803966190">Lukk veiledningen</translation>
 <translation id="1721424275792716183">* Feltet er obligatorisk</translation>
+<translation id="1723636263173393300">Denne regelen skal ikke ha mer enn <ph name="MAX_ITEMS_LIMIT" /> snarveier.</translation>
 <translation id="1725591448053514783">You 6-konvolutt</translation>
 <translation id="1727613060316725209">Sertifikatet er gyldig</translation>
 <translation id="1728677426644403582">Du ser på kildekoden for en nettside</translation>
@@ -1047,6 +1049,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="271663710482723385">Trykk på |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| for å avslutte fullskjerm</translation>
 <translation id="2717336592027046789">Rull</translation>
 <translation id="2718207025093645426">Ingen regel er lastet inn for enheten eller den administrerte brukeren.</translation>
+<translation id="2719233594187778789">Duplisert nettadresse ignoreres: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Forespørselen var vellykket</translation>
 <translation id="2722622039067384533">Stuemøbler</translation>
 <translation id="2723669454293168317">Kjør en sikkerhetssjekk i Chrome-innstillingene</translation>
@@ -2007,6 +2010,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4298000214066716287">Investering</translation>
 <translation id="4298148761711700950">Betal umiddelbart uten å laste opp QR-kode</translation>
 <translation id="4298925811540301889">Informasjonskapsler for dette nettstedet synkroniseres mellom ChromeOS-enhetene dine. For å administrere hva du synkroniserer, gå til <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4299919199185766032">Navnet på snarveien overskrider den maksimale tillatte lengden på <ph name="MAX_LENGTH" /> tegn.</translation>
 <translation id="4300272766492248925">Åpne appen</translation>
 <translation id="4300675098767811073">Flere hull høyre</translation>
 <translation id="4302514097724775343">Trykk på dinosauren for å spille</translation>
@@ -2708,6 +2712,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
     Prøv å kontakte systemadministratoren din.</translation>
 <translation id="5496804587179176046">Lagre sikkerhetskoder – ingen sikkerhetskoder er lagret for øyeblikket</translation>
 <translation id="550365051221576010">Fyll ut alt</translation>
+<translation id="5506286895894263601">Listen inneholder ingen gyldige snarveier.</translation>
 <translation id="5508443345185481044">Kameraer og videokameraer</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Administrerte bokmerker</translation>
@@ -3627,6 +3632,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7014741021609395734">Zoomnivå</translation>
 <translation id="7016992613359344582">Disse belastningene kan skje én gang eller være gjentakende, og det er ikke sikkert de er åpenbare.</translation>
 <translation id="701757816833614688">Billedkunst- og designutdanning</translation>
+<translation id="7020464868401003526">Nettadressen til snarveien overskrider den maksimale tillatte lengden på <ph name="MAX_LENGTH" /> tegn.</translation>
 <translation id="702275896380648118">Dette nettstedet avgjør hva du liker, og foreslår deretter annonser til andre nettsteder. Dette nettstedet henter også annonseemnene dine fra Chrome for å kunne vise deg mer relevante annonser.</translation>
 <translation id="7023162328967545559">Advarsel fra administrator</translation>
 <translation id="7023765275461720661">Vil du tilknytte kontoen og betale med <ph name="BNPL_ISSUER_NAME" />?</translation>

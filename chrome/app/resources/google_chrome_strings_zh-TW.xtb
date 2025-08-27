@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
 <translation id="1001534784610492198">安裝程式封存檔案已經損壞或無效，請再次下載 Google Chrome。</translation>
+<translation id="1006034097353797313">接續上次的瀏覽內容：Chrome 每次重新啟動時都會還原分頁。如要關閉這項功能，請前往</translation>
 <translation id="1018937009655463387">如要分享視窗內容，請前往「系統設定」允許 Chrome 螢幕錄影。</translation>
 <translation id="1026101648481255140">繼續安裝</translation>
 <translation id="102763973188675173">有可用的更新，歡迎自訂及控制 Google Chrome。</translation>
@@ -79,6 +80,7 @@
 <translation id="2018879682492276940">無法安裝，請再試一次。</translation>
 <translation id="2024959665595762054">如要將 Chrome 資料儲存到 Google 帳戶，或使用帳戶中的 Chrome 資料，請驗證身分</translation>
 <translation id="2034233344106846793">Chrome 會盡可能自動將不安全的連線升級為 HTTPS</translation>
+<translation id="2039417478970545937">設定。</translation>
 <translation id="207902854391093810">在試用期間，廣告評估功能會允許你造訪的網站向 Chrome 要求資訊，以便協助網站評估自家廣告的成效。廣告評估功能會盡可能減少網站之間分享資訊的情況，藉此限制跨網站追蹤行為。</translation>
 <translation id="2091012649849228750">如要取得日後的 Google Chrome 更新，必須使用 Windows 10 以上版本。這部電腦目前版本為 Windows 8。</translation>
 <translation id="2094648590148273905">ChromeOS Flex 條款</translation>
@@ -345,6 +347,7 @@
 <translation id="5166439563123238795">Chrome 需要相關權限才能追蹤手勢</translation>
 <translation id="5170938038195470297">由於你的設定檔是來自較新版本的 Google Chrome，所以系統無法使用該檔案。這表示你可能無法使用部分功能。請指定另一個設定檔目錄，或使用較新版本的 Google Chrome。</translation>
 <translation id="5174969993834422967">系統已按照你的使用習慣封鎖通知。如要允許這個網站傳送通知，請點選網址列右上角的通知圖示。</translation>
+<translation id="5174983315706567306">磁碟空間不足。</translation>
 <translation id="5201744974236816379">Chrome 更新</translation>
 <translation id="521447420733633466">如果你與親朋好友共用裝置，人人皆可享有獨立的瀏覽空間，依照自己的偏好設定 Chrome</translation>
 <translation id="5234764350956374838">關閉</translation>
@@ -455,6 +458,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome 開發人員版</translation>
 <translation id="6520670145826811516">如要使用位置資訊，請在<ph name="BEGIN_LINK" />系統設定<ph name="END_LINK" />中授予 Chrome 存取權</translation>
 <translation id="659498884637196217">前往這部裝置的 Google 密碼管理員進行更新</translation>
+<translation id="6631524303639368205">接續上次的瀏覽內容：Chrome 已還原上次開啟的分頁。如要關閉這項功能，請前往</translation>
 <translation id="6632473616050862500">ChromeOS Flex 藉助了其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟體<ph name="END_LINK_CROS_OSS" />的相關技術才得以問世。</translation>
 <translation id="6634299872736643004">系統會在 Chrome 重新啟動後套用這項設定的變更。</translation>
 <translation id="6660596345553328257">要登入 Chrome 嗎？</translation>
@@ -562,6 +566,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7825851276765848807">不明錯誤導致安裝失敗，請再次下載 Google Chrome。</translation>
 <translation id="7827099906024714326">Chrome 必須先驗證身分，才能將這些資料儲存到 Google 帳戶，讓你在所有裝置上使用。如果現在登出，系統將刪除這類資料。</translation>
 <translation id="7845233973568007926">感謝你安裝本服務。你必須重新啟動電腦，才能使用 <ph name="BUNDLE_NAME" />。</translation>
+<translation id="7849037457735762883">接續上次的瀏覽內容：Chrome 每次重新啟動時都能還原分頁。如要開啟這項功能，請前往</translation>
 <translation id="7872446069773932638">下載中... 還剩 <ph name="SECONDS" /> 秒</translation>
 <translation id="7886087451482920026">使用 Google 智慧鏡頭選取文字</translation>
 <translation id="7890208801193284374">如果你與親朋好友共用電腦，人人皆可享有獨立的瀏覽空間，依照自己的偏好設定 Chrome。</translation>

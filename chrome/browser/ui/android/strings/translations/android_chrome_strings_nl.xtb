@@ -156,6 +156,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="1749561566933687563">Synchroniseer je bookmarks</translation>
 <translation id="1750238553597293878">Blijf de wachtwoorden in je Google-account gebruiken</translation>
 <translation id="17513872634828108">Geopende tabbladen</translation>
+<translation id="1753744496844366747">Aa</translation>
 <translation id="1755203724116202818">Beperkte typen gegevens worden gedeeld tussen sites om de prestaties van een advertentie te meten. Denk bijvoorbeeld aan informatie over of je een aankoop hebt gedaan na bezoek aan een site.</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Pagina's, 1 pagina in lijst}other{Pagina's, # pagina's in lijst}}</translation>
 <translation id="1771929606532798550">Er wordt informatie naar Google gestuurd over je Chrome-gebruik, maar de informatie wordt niet aan jou gekoppeld.\n\nAls Chrome crasht, kunnen de gegevens over de crash wat persoonlijke informatie bevatten.\n\nAls je je geschiedenis synchroniseert met je Google-account, kunnen de statistieken ook informatie bevatten over de URL's die je bezoekt.</translation>
@@ -321,6 +322,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="253498598929009420">De site kan de content van je scherm bekijken</translation>
 <translation id="2535807170289627159">Alle tabbladen</translation>
 <translation id="2536728043171574184">Een offline exemplaar van deze pagina bekijken</translation>
+<translation id="2539002604555291451">Sans serif</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, tabblad</translation>
 <translation id="2546283357679194313">Cookies en sitegegevens</translation>
 <translation id="2547843573592965873">Met je profielvergrendeling wordt je informatie in de auto beveiligd, waaronder wachtwoorden en betalingen die zijn opgeslagen in je Google-account.</translation>
@@ -499,7 +501,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3384347053049321195">Afbeelding delen</translation>
 <translation id="3387650086002190359">Downloaden van <ph name="FILE_NAME" /> is mislukt door fouten in het bestandssysteem.</translation>
 <translation id="3414952576877147120">Grootte:</translation>
-<translation id="3421726884497337397">Kies wanneer je cookies van derden wilt blokkeren</translation>
 <translation id="3430670036890315772">Als je de profielvergrendeling uitzet, worden je opgeslagen gegevens verwijderd</translation>
 <translation id="3435465986463792564">Heb je veel vensters open? Beheer ze hier.</translation>
 <translation id="3435575784518354875">Als je toegang wilt houden tot je wachtwoorden, exporteer je ze nu, update je Google Play-services en importeer je ze terug naar Google Wachtwoordmanager. <ph name="BEGIN_LINK" />Bekijk de volledige instructies<ph name="END_LINK" />.</translation>
@@ -760,7 +761,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 gehackt wachtwoord}other{# gehackte wachtwoorden}}</translation>
 <translation id="4641919525231168205">Naar de volgende pagina gaan</translation>
 <translation id="4642472735733036929">Prijs volgen gestopt</translation>
-<translation id="4645146721047390964">Als je de incognitomodus gebruikt, kunnen sites je cookies niet gebruiken om je browse-activiteit op verschillende sites te bekijken, bijvoorbeeld om advertenties te personaliseren. Functies op bepaalde sites werken misschien niet meer.</translation>
 <translation id="465657074423018424">Safe Browsing beschermt je tegen misleidende websites. Als je deze functie uitzet, moet je extra voorzichtig zijn als je browst, met name voordat je wachtwoorden opgeeft.</translation>
 <translation id="4662373422909645029">Cijfers niet toegestaan</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> bookmarks verwijderd</translation>
@@ -1220,7 +1220,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6633067410344541938">Incognitomodus ontgrendelen</translation>
 <translation id="6636623428211296678">Bekijk hieronder meer instellingen of rond nu af</translation>
 <translation id="6637100877383020115">Chrome stuurt gebruiks- en crashgegevens naar Google om de app te helpen verbeteren. <ph name="BEGIN_UMA_LINK" />Beheren<ph name="END_UMA_LINK" /></translation>
-<translation id="6640207029842583248">Altijd blokkeren</translation>
 <translation id="6641780377503683465"><ph name="INTEREST" /> verwijderen</translation>
 <translation id="6647441008198474441">URL's die je bezoekt, worden naar Google gestuurd om te voorspellen naar welke sites je misschien daarna gaat</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> andere}other{<ph name="CONTACT_PREVIEW" />\u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> andere}}</translation>
@@ -1241,6 +1240,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6723740634201835758">In je Google-account</translation>
 <translation id="6734310707649923383">Je kunt de pagina's zien die je hebt bezocht of ze uit je geschiedenis verwijderen</translation>
 <translation id="6738867403308150051">Downloaden...</translation>
+<translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">Check je accountgegevens</translation>
 <translation id="6751521182688001123">Open snel een nieuw tabblad. Tik en houd vast om deze snelkoppeling te bewerken.</translation>
 <translation id="6752130751133944215">Als je een nieuw venster wilt herstellen, verlaag je het totale aantal vensters (actief en inactief) tot <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> of minder. Inactieve vensters worden na 6 maanden verwijderd.</translation>
@@ -1445,7 +1445,6 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="751961395872307827">Kan geen verbinding maken met de site</translation>
 <translation id="7523960634226602883">Zoeken met je camera via Google Lens</translation>
 <translation id="7525248386620136756"><ph name="TAB_GROUPS_AND_TABS_PART" /> gesloten en opgeslagen</translation>
-<translation id="752731652852882757">Blokkeren tijdens gebruik van incognitomodus</translation>
 <translation id="7545347190366646170">Mensen met toegang</translation>
 <translation id="7554643625247105821">Kan Chrome-versie niet checken</translation>
 <translation id="7557508262441527045">Uitgelogd</translation>
@@ -1611,7 +1610,6 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8243077599929149377">Voeg je gebruikersnaam toe</translation>
 <translation id="8244387390464017490">Pagina Nieuw tabblad aanpassen</translation>
 <translation id="8250920743982581267">Documenten</translation>
-<translation id="8255617931166444521">Sites kunnen je cookies alleen gebruiken om je browse-activiteit op hun eigen site te bekijken</translation>
 <translation id="8258999165172757081">Toegevoegd</translation>
 <translation id="8259179246279078674">Omdat de vooraf geladen pagina's versleuteld zijn, krijgt Google geen informatie over de content van de vooraf geladen pagina. Google-servers kunnen wel zien welke sites privé vooraf worden geladen. Deze informatie wordt alleen gebruikt om de pagina's vooraf te laden en is niet gekoppeld aan andere informatie in je Google-account.</translation>
 <translation id="8260126382462817229">Probeer opnieuw in te loggen</translation>

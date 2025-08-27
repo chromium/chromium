@@ -19,12 +19,13 @@
 <translation id="1201402288615127009">הבא</translation>
 <translation id="1240190568154816272">‏טיפים של Chrome</translation>
 <translation id="1242008676835033345">מוטמע ב-<ph name="WEBSITE_URL" /></translation>
-<translation id="1263609676484797429">לוחצים על 'אפליקציות'  &gt; 'אפליקציות ברירת מחדל'</translation>
+<translation id="1263609676484797429">לוחצים על "אפליקציות'" &gt; "אפליקציות ברירת מחדל"</translation>
 <translation id="1272079795634619415">הפסקה</translation>
 <translation id="1289742167380433257">‏כדי לחסוך לך נתונים, התמונות בדף הזה עברו אופטימיזציה על ידי Google.</translation>
 <translation id="129382876167171263">קבצים שנשמרו על ידי אתרים מופיעים כאן</translation>
 <translation id="131112695174432497">יימחקו הנתונים שמשפיעים על ההתאמה האישית של מודעות</translation>
 <translation id="1317194122196776028">לא לזכור את האתר הזה</translation>
+<translation id="1321110954513621549">יש הרשאה • מיקום משוער</translation>
 <translation id="1323433172918577554">הצגת פריטים נוספים</translation>
 <translation id="1333965224356556482">לא לאפשר לאתרים לראות את המיקום שלך</translation>
 <translation id="1343356790768851700">האתר הזה מזהה אילו דברים אהבת ולאחר מכן מציע מודעות לאתרים אחרים</translation>
@@ -40,6 +41,7 @@
 <translation id="1448064542941920355">הקטנת הזום</translation>
 <translation id="1464044141348608623">לא לאפשר לאתרים לדעת מתי המכשיר הזה משמש אותך באופן פעיל</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{באתר אחד (<ph name="SITE_COUNT" />)}one{ב-<ph name="SITE_COUNT" /> אתרים}two{ב-<ph name="SITE_COUNT" /> אתרים}other{ב-<ph name="SITE_COUNT" /> אתרים}}</translation>
+<translation id="1476700086976862423">צבע עיצוב חום-ספיה</translation>
 <translation id="1500473259453106018">הסתרת הכרטיס 'הנחות בכרטיסיות'</translation>
 <translation id="1508931164824684991">‏אתרים יכולים להשתמש ב-JavaScript</translation>
 <translation id="1510341833810331442">לאתרים אין הרשאה לשמור נתונים במכשיר שלך</translation>
@@ -71,6 +73,7 @@
 <translation id="1799920918471566157">‏טיפים ל-Chrome</translation>
 <translation id="1816835383954230954">‏כשהאפשרות הזו מופעלת, דפדפן Chrome פועל מהר יותר ותכונות שמתבססות על JavaScript אמורות לפעול כמו שצריך. כשהאפשרות הזו מושבתת, יש ירידה ברמת הביצועים בתמורה להגברת העמידות של V8 בפני מתקפות.</translation>
 <translation id="1818308510395330587">‏כדי לאפשר ל-<ph name="APP_NAME" /> להשתמש ב-AR, צריך להפעיל את המצלמה גם ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
+<translation id="1848033246551405023">‏גופן Sans Serif</translation>
 <translation id="1881806992065048905">הגיליון התחתון של המראה של דף הכרטיסייה החדשה</translation>
 <translation id="1887786770086287077">‏הגישה למיקום כבויה בשביל המכשיר הזה. יש להפעיל אותה ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">אתרים ניגשים בדרך כלל לקבצים ולתיקיות כדי לתמוך בתכונות כמו שמירה אוטומטית של עבודה</translation>
@@ -92,6 +95,7 @@
 <translation id="2079545284768500474">ביטול הפעולה</translation>
 <translation id="2080070583977670716">הגדרות נוספות</translation>
 <translation id="2091887806945687916">צליל</translation>
+<translation id="2094208275686143364">צבע עיצוב בהיר</translation>
 <translation id="2096716221239095980">מחיקת כל הנתונים</translation>
 <translation id="2102396546234652240">לא לאפשר לאתרים להשתמש במיקרופון</translation>
 <translation id="2117655453726830283">לשקף הבא</translation>
@@ -137,6 +141,7 @@
 <translation id="2498359688066513246">עזרה ומשוב</translation>
 <translation id="2501278716633472235">חזרה</translation>
 <translation id="2533138527374486328">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה להתחבר לכל מכשיר ברשת המקומית. כשהאפשרות מושבתת, אתרים לא יכולים להתחבר למכשירים ברשת המקומית.</translation>
+<translation id="2544997614631598250">צבע עיצוב כהה</translation>
 <translation id="2546283357679194313">‏קובצי Cookie ונתונים מאתרים</translation>
 <translation id="2570922361219980984">‏גם הגישה למיקום כבויה במכשיר הזה. אפשר להפעיל אותה ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">מורחב - יש ללחוץ כדי לכווץ.</translation>
@@ -176,7 +181,7 @@
 <translation id="2968755619301702150">מציג האישורים</translation>
 <translation id="2979365474350987274">‏יש הגבלה על קובצי Cookie של צד שלישי</translation>
 <translation id="2990583317361835189">לא לאפשר לאתרים להשתמש בחיישני תנועה</translation>
-<translation id="3004438526346162184">אתרים יכולים להשתמש בתכונה הזו כדי לנהל את החלונות בכל המסכים</translation>
+<translation id="3004438526346162184">אתרים יכולים להשתמש בתכונה הזו כדי לנהל את החלונות בכל המסכים שלך</translation>
 <translation id="3008272652534848354">איפוס הרשאות</translation>
 <translation id="301521992641321250">נחסמה אוטומטית</translation>
 <translation id="3064871050034234884">אתרים יכולים להשמיע צלילים</translation>
@@ -194,6 +199,7 @@
 <translation id="3165022941318558018">‏מתן הרשאה לאתר להשתמש בקובצי cookie של צדדים שלישיים</translation>
 <translation id="3167868116600277716">‏פיד Discover</translation>
 <translation id="3198916472715691905">נתונים מאוחסנים בנפח <ph name="STORAGE_AMOUNT" /></translation>
+<translation id="3199078925536734975">יש אישור לשימוש חד-פעמי • מיקום משוער</translation>
 <translation id="321187648315454507">‏כדי לאפשר ל-<ph name="APP_NAME" /> לשלוח התראות, צריך להפעיל אותן גם ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">אין הרשאת גישה למיקום</translation>
 <translation id="3227137524299004712">מיקרופון</translation>
@@ -250,6 +256,7 @@
 <translation id="3803367742635802571">יכול להיות שאתרים שביקרת בהם יפסיקו לפעול כמו שצריך</translation>
 <translation id="3816118180265633665">‏צבעי Chrome</translation>
 <translation id="381841723434055211">מספרי טלפון</translation>
+<translation id="3823453485268218808">‏גופן Mono</translation>
 <translation id="3826050100957962900">כניסה של צד שלישי</translation>
 <translation id="3835233591525155343">השימוש שלך במכשיר</translation>
 <translation id="3843916486309149084">‏קובצי cookie יחסמו היום שוב ב-Chrome</translation>
@@ -302,6 +309,7 @@
 <translation id="4402755511846832236">חסמו אתרים מלדעת מתי אתם משתמשים במכשיר הזה</translation>
 <translation id="4412992751769744546">‏מתן אישור לקובצי Cookie של צד שלישי</translation>
 <translation id="4419929467120297501">‏‫Chrome מונע מאתרים לעשות שימוש בקובצי Cookie של צד שלישי כדי לעקוב אחריך במהלך הגלישה. בהגדרות ניתן <ph name="BEGIN_LINK" />לנהל את הגישה לקובצי Cookie של צד שלישי<ph name="END_LINK" />.</translation>
+<translation id="4425416282877905577">‏גופן Serif</translation>
 <translation id="443121186588148776">יציאה טורית</translation>
 <translation id="4434045419905280838">חלונות קופצים והפניות אוטומטיות</translation>
 <translation id="443552056913301231">‏יימחקו כל הנתונים המקומיים, כולל קובצי cookie, ויתאפסו כל ההרשאות של <ph name="ORIGIN" /></translation>
@@ -355,7 +363,7 @@
 <translation id="5063480226653192405">שימוש</translation>
 <translation id="5068293087784369013">איך להתאים אישית את דף הכרטיסייה החדשה</translation>
 <translation id="5091013926750941408">אתר לנייד</translation>
-<translation id="509133520954049755">שליחת בקשה לתצוגה למחשב</translation>
+<translation id="509133520954049755">הפעלת תצוגה למחשב כשאפשר</translation>
 <translation id="5091663350197390230">‏כשהאפשרות מופעלת, אתרים יכולים להשתמש ב-JavaScript. כשהאפשרות מושבתת, אתרים לא יכולים להשתמש ב-JavaScript.</translation>
 <translation id="5099358668261120049">‏הפעולה הזו תמחק את כל הנתונים וקובצי ה-Cookie שנשמרו על ידי האתר <ph name="ORIGIN" /> או האפליקציה שלו במסך הבית.</translation>
 <translation id="5100237604440890931">מכווץ – יש ללחוץ כדי להרחיב.</translation>
@@ -453,7 +461,7 @@
 <translation id="6165508094623778733">למידע נוסף</translation>
 <translation id="6171020522141473435">‏כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה להשתמש במכשירי Bluetooth. כשהאפשרות מושבתת, אתרים לא יכולים להשתמש במכשירי Bluetooth.</translation>
 <translation id="6177128806592000436">החיבור שלך לאתר הזה לא מאובטח</translation>
-<translation id="6181444274883918285">להוספת אתר להחרגה</translation>
+<translation id="6181444274883918285">הוספת אתר להחרגה</translation>
 <translation id="6192792657125177640">יוצאי דופן</translation>
 <translation id="6194967801833346599">{DAYS,plural, =1{‏קובצי Cookie ייחסמו מחר שוב ב-Chrome}one{‏יש עוד # ימים עד שקובצי Cookie ייחסמו שוב}two{‏יש עוד יומיים עד שקובצי Cookie ייחסמו שוב}other{‏יש עוד # ימים עד שקובצי Cookie ייחסמו שוב}}</translation>
 <translation id="6195163219142236913">‏יש הגבלה על קובצי Cookie של צד שלישי</translation>
@@ -533,7 +541,7 @@
 <translation id="7188508872042490670">נתונים מאתרים ששמורים במכשיר</translation>
 <translation id="7201549776650881587">‏הפעולה הזו תמחק את כל הנתונים וקובצי ה-Cookie שאוחסנו על ידי כל אתרי המשנה של <ph name="ORIGIN" /> או על ידי האפליקציה שלו במסך הבית</translation>
 <translation id="7203150201908454328">מורחב</translation>
-<translation id="7213166370492037743">אין הרשאה לאתרים להתחבר למכשירים ברשת המקומית</translation>
+<translation id="7213166370492037743">חסימת החיבור של אתרים למכשירים ברשת המקומית שלך</translation>
 <translation id="7219254577985949841">למחוק את הנתונים מהאתר?</translation>
 <translation id="723171743924126238">בחירת תמונות</translation>
 <translation id="7243246278722455312">גיליון תחתון להתאמה אישית של דף הכרטיסייה החדשה</translation>
@@ -554,6 +562,7 @@
 <translation id="7478658909253570368">חסימת אתרים מחיבור ליציאה טורית</translation>
 <translation id="7488573225650545859">הסתרת כרטיסיות ה-"צפייה" ברשימת האפליקציות</translation>
 <translation id="7521387064766892559">JavaScript</translation>
+<translation id="7538975533793429503">פס הזזה לשינוי גודל הגופן</translation>
 <translation id="7547989957535180761">כשהאפשרות מופעלת, אתרים יכולים להציג בקשות כניסה. כשהאפשרות מושבתת, אתרים לא יכולים להציג בקשות כניסה.</translation>
 <translation id="7553211568594248088">יציאה מהחיפוש ברכזת</translation>
 <translation id="7554752735887601236">אתר כלשהו משתמש במיקרופון שלך</translation>
@@ -653,7 +662,7 @@
 <translation id="857943718398505171">מותרת (מומלץ)</translation>
 <translation id="8580511488901768832">הגיליון התחתון של "קיצורי הדרך שלי" נפתח בגובה מלא</translation>
 <translation id="8593422116412089302">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה להשתמש במידע שנשמר עליך. כשהאפשרות מושבתת, אתרים לא יכולים לבקש הרשאה להשתמש במידע שנשמר עליך.</translation>
-<translation id="8609465669617005112">הזזה למעלה</translation>
+<translation id="8609465669617005112">העברה למעלה</translation>
 <translation id="8617611086246832542">כשהאפשרות מופעלת, אפשר לראות אתרים בתצוגה למחשב. כשהאפשרות מושבתת, אפשר לראות אתרים בתצוגה לנייד.</translation>
 <translation id="8670078035093027626">הגיליון התחתון של דפדפן ברירת המחדל נפתח בגובה מלא</translation>
 <translation id="8676316391139423634">כשההגדרה מופעלת, אתרים יכולים לבקש הרשאה לעקוב אחרי תנועות הידיים שלך. כשההגדרה מושבתת, אתרים לא יכולים לעקוב אחרי תנועות הידיים שלך.</translation>
@@ -662,7 +671,7 @@
 <translation id="868929229000858085">חיפוש באנשי הקשר</translation>
 <translation id="8707904142362025782">האתר יכול לבקש הרשאה להשתמש במצלמה</translation>
 <translation id="8712637175834984815">הבנתי</translation>
-<translation id="8715862698998036666">כדי לצאת מהמסך המלא, גוררים את האצבע מלמעלה למטה ומחליקים מהקצה הימני או השמאלי של המסך.</translation>
+<translation id="8715862698998036666">כדי לצאת מהמסך המלא, צריך לגרור את האצבע מלמעלה למטה ולהחליק מהקצה הימני או השמאלי של המסך.</translation>
 <translation id="8719283222052720129">‏יש להעניק הרשאה עבור <ph name="APP_NAME" /> ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">‏כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה לחפש מכשירי Bluetooth. כשהאפשרות מושבתת, אתרים לא יכולים לחפש מכשירי Bluetooth.</translation>
 <translation id="8725066075913043281">ניסיון חוזר</translation>

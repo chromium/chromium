@@ -499,7 +499,6 @@
 <translation id="3384347053049321195">ምስል አጋራ</translation>
 <translation id="3387650086002190359">በስርዓተ-ፋይል ስህተቶች ምክንያት <ph name="FILE_NAME" />ን ማውረድ አልተሳካም።</translation>
 <translation id="3414952576877147120">መጠን፦</translation>
-<translation id="3421726884497337397">የሶስተኛ ወገን ኩኪዎችን መቼ እንደሚታገዱ ይምረጡ</translation>
 <translation id="3430670036890315772">የመገለጫ መቆለፊያዎን ማጥፋት የተቀመጠ መረጃዎን ያስወግዳል</translation>
 <translation id="3435465986463792564">ብዙ መስኮቶች አሉዎት? ከዚህ ሆነው እነሱን ማስተዳደር ይችላሉ።</translation>
 <translation id="3435575784518354875">የይለፍ ቃላትዎን መዳረሻ ለማቆየት አሁን ወደ ውጪ ይላኳቸው፣Google  Play አገልግሎቶችን ያዘምኑ ከዚያም ወደ Google የይለፍ ቃል አስተዳዳሪ ያስመጧቸው። <ph name="BEGIN_LINK" />ሙሉ መመሪያዎችን አሳይ<ph name="END_LINK" />።</translation>
@@ -760,7 +759,6 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 የተጠለፈ የይለፍ ቃል}one{# የተጠለፉ የይለፍ ቃላት}other{# የተጠለፉ የይለፍ ቃላት}}</translation>
 <translation id="4641919525231168205">ወደ ቀጣይ ገፅ ሂድ</translation>
 <translation id="4642472735733036929">የዋጋ ክትትል ቆሟል</translation>
-<translation id="4645146721047390964">ማንነት በማያሳውቅ ሁኔታ ላይ ጣቢያዎች የእርስዎን የአሰሳ እንቅስቃሴ በመላው የተለያዩ ጣቢያዎች ለመመልከት ለምሳሌ ማስታወቂያዎችን ግላዊነት የተላበሱ ለማድረግ የእርስዎን ኩኪዎች መጠቀም አይችሉም። በአንዳንድ ጣቢያዎች ላይ ያሉ ባህሪያት ሊበላሹ ይችላሉ።</translation>
 <translation id="465657074423018424">ደህንነቱ የተጠበቀ አሰሳ ከአሳሳች ድር ጣቢያዎች እርስዎን ይጠብቃል። ካጠፉት፣ በማሰስ ጊዜ በተለይም የይለፍ ቃላትን ሲያስገቡ የበለጠ ጥንቃቄ ይውሰዱ።</translation>
 <translation id="4662373422909645029">ቅጥያ ስም ቁጥሮችን ማካተት አይችልም</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> ዕልባቶች ተሰርዘዋል</translation>
@@ -1220,7 +1218,6 @@
 <translation id="6633067410344541938">ማንነት የማያሳውቅን ክፈት</translation>
 <translation id="6636623428211296678">ተጨማሪ ቅንብሮችን ከታች ያስሱ ወይም አሁን ይጨርሱ</translation>
 <translation id="6637100877383020115">መተግበሪያውን ለማሻሻል ለማገዝ Chrome የአጠቃቀም እና የስንክል ውሂብን ወደ Google ይልካል። <ph name="BEGIN_UMA_LINK" />ያስተዳድሩ<ph name="END_UMA_LINK" /></translation>
-<translation id="6640207029842583248">ሁልጊዜ አግድ</translation>
 <translation id="6641780377503683465"><ph name="INTEREST" />ን አስወግድ</translation>
 <translation id="6647441008198474441">እርስዎ የሚጎበኟቸው ዩአርኤሎች ቀጥሎ የትኞቹን ጣቢያዎች ሊጎበኙ እንደሚችሉ ለመተንበይ ወደ Google ይላካሉ</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ተጨማሪ}one{<ph name="CONTACT_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ተጨማሪ}other{<ph name="CONTACT_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ተጨማሪ}}</translation>
@@ -1232,6 +1229,7 @@
 <translation id="6674571176963658787">ስምረትን ለመጀመር የይለፍ ሐረግዎን ያስገቡ</translation>
 <translation id="6676927815633975364">ወደዚህ ጣቢያ እና ወደ Chrome ይግቡ</translation>
 <translation id="6684809838922667136">Chromeን የተሻለ ያድርጉት</translation>
+<translation id="6689436252814043643">የንባብ ሁነታ አይገኝም</translation>
 <translation id="6700279777779583398">ምርጫዎች ተቀምጠዋል</translation>
 <translation id="670498945988402717">ትላንትና ተፈትሿል</translation>
 <translation id="6710213216561001401">ቀዳሚ</translation>
@@ -1342,6 +1340,7 @@
 <translation id="7111822978084196600">ይህን መስኮት ስም ይስጡት</translation>
 <translation id="7115358764509798967">የሥርዓት ነባሪ</translation>
 <translation id="7117485132243600300">የሚከተሉትን ይዘት እና የሚጠቆሙ ርዕሶች እና ፍለጋዎችን ያስተዳድሩ</translation>
+<translation id="7119984597597798764"><ph name="INSTANCE_TITLE" />ን ዝጋ</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{ፈቃዶች ለ1 ጣቢያ ተገምግመዋል}one{ፈቃዶች ለ# ጣቢያ ተገምግመዋል}other{ፈቃዶች ለ# ጣቢያዎች ተገምግመዋል}}</translation>
 <translation id="7138678301420049075">ሌላ</translation>
 <translation id="7140829094791862589">በእጅ ደርድር</translation>
@@ -1443,7 +1442,6 @@
 <translation id="751961395872307827">ከበይነመረቡ ጋር መገናኘት አልተቻለም</translation>
 <translation id="7523960634226602883">Google ሌንስን በመጠቀም በካሜራዎ ይፈልጉ</translation>
 <translation id="7525248386620136756"><ph name="TAB_GROUPS_AND_TABS_PART" />ተዘግቷል እና ተቀምጧል</translation>
-<translation id="752731652852882757">ማንነት የማያሳውቅን በመጠቀም ላይ ሳለ አግድ</translation>
 <translation id="7545347190366646170">መዳረሻ ያላቸው ሰዎች</translation>
 <translation id="7554643625247105821">የChrome ሥሪትን መፈተሽ አልተቻለም</translation>
 <translation id="7557508262441527045">ዘግተው ወጥተዋል</translation>
@@ -1609,7 +1607,6 @@
 <translation id="8243077599929149377">የእርስዎን የተጠቃሚ ስም ያክሉ</translation>
 <translation id="8244387390464017490">አዲስ የትር ገፅ አብጅ</translation>
 <translation id="8250920743982581267">ሰነዶች</translation>
-<translation id="8255617931166444521">ጣቢያዎች የአሰሳ እንቅስቃሴዎን በራሳቸው ጣቢያ ላይ ብቻ ለማየት የእርስዎን ኩኪዎች ብቻ ሊጠቀሙ ይችላሉ።</translation>
 <translation id="8258999165172757081">ታክሏል</translation>
 <translation id="8259179246279078674">ቅድሚያ የሚጫኑ ገጾች የተመሠጠሩ ስለሆኑ Google ቅድሚያ ስለተጫነው የገጽ ይዘት ምንም ነገር አያውቅም። የGoogle አገልጋዮች የትኛዎቹ ጣቢያዎች በግል ቅድሚያ እንደሚጫኑ ይማራል። ይህ መረጃ ገጾቹን ቅድሚያ ለመጫን ብቻ ነው ሥራ ላይ የሚውለው፣ እና ከGoogle መለያዎ ከመጣ ሌላ መረጃ ጋር አይገናኝም።</translation>
 <translation id="8260126382462817229">እንደገና ለመግባት ይሞክሩ</translation>

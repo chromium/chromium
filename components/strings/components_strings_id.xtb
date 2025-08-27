@@ -440,6 +440,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1719838434204287058">24 x 30 inci (60 x 76 cm)</translation>
 <translation id="1720941539803966190">Tutup tutorial</translation>
 <translation id="1721424275792716183">* Kolom wajib diisi</translation>
+<translation id="1723636263173393300">Kebijakan ini tidak boleh memiliki lebih dari <ph name="MAX_ITEMS_LIMIT" /> pintasan.</translation>
 <translation id="1725591448053514783">Envelope You 6</translation>
 <translation id="1727613060316725209">Sertifikat valid</translation>
 <translation id="1728677426644403582">Anda melihat sumber halaman web</translation>
@@ -1048,6 +1049,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="271663710482723385">Tekan |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| untuk keluar dari mode layar penuh</translation>
 <translation id="2717336592027046789">Gulungan</translation>
 <translation id="2718207025093645426">Pengguna atau perangkat terkelola tidak memuat kebijakan.</translation>
+<translation id="2719233594187778789">URL tidak unik yang diabaikan: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Permintaan berhasil</translation>
 <translation id="2722622039067384533">Furnitur Ruang Keluarga</translation>
 <translation id="2723669454293168317">Jalankan pemeriksaan keamanan di setelan Chrome</translation>
@@ -2007,6 +2009,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4298000214066716287">Investasi</translation>
 <translation id="4298148761711700950">Bayar langsung tanpa upload QR</translation>
 <translation id="4298925811540301889">Cookie untuk situs ini disinkronkan di seluruh perangkat ChromeOS Anda. Untuk mengelola apa saja yang Anda sinkronkan, buka <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4299919199185766032">Nama pintasan melebihi panjang maksimum yang diizinkan, yaitu <ph name="MAX_LENGTH" /> karakter.</translation>
 <translation id="4300272766492248925">Buka aplikasi</translation>
 <translation id="4300675098767811073">Beberapa lubang di kanan</translation>
 <translation id="4302514097724775343">Ketuk dinosaurus untuk bermain</translation>
@@ -2708,6 +2711,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
     Coba hubungi administrator sistem Anda.</translation>
 <translation id="5496804587179176046">Simpan kode keamanan, tidak ada kode keamanan yang disimpan saat ini</translation>
 <translation id="550365051221576010">Isi semua</translation>
+<translation id="5506286895894263601">Daftar ini tidak berisi pintasan yang valid.</translation>
 <translation id="5508443345185481044">Kamera &amp; Perekam Video</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Bookmark Terkelola</translation>
@@ -3627,6 +3631,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7014741021609395734">Tingkat zoom</translation>
 <translation id="7016992613359344582">Tagihan ini bisa hanya satu kali atau berulang, dan mungkin tidak pasti.</translation>
 <translation id="701757816833614688">Pendidikan Seni &amp; Desain Visual</translation>
+<translation id="7020464868401003526">URL pintasan melebihi panjang maksimum yang diizinkan, yaitu <ph name="MAX_LENGTH" /> karakter.</translation>
 <translation id="702275896380648118">Situs ini menentukan hal-hal yang Anda sukai, lalu menyarankan iklan ke situs lain. Situs ini juga mendapatkan topik iklan Anda dari Chrome untuk menampilkan iklan yang lebih relevan.</translation>
 <translation id="7023162328967545559">Peringatan admin</translation>
 <translation id="7023765275461720661">Tautkan akun dan bayar dengan <ph name="BNPL_ISSUER_NAME" />?</translation>

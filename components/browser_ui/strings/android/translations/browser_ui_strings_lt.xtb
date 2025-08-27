@@ -25,6 +25,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="129382876167171263">Svetainių išsaugoti failai rodomi čia</translation>
 <translation id="131112695174432497">Duomenys, turintys įtakos suasmeninant skelbimus, ištrinami</translation>
 <translation id="1317194122196776028">Pamiršti šią svetainę</translation>
+<translation id="1321110954513621549">Leidžiama • Apytikslė</translation>
 <translation id="1323433172918577554">Rodyti daugiau</translation>
 <translation id="1333965224356556482">Neleisti svetainėms peržiūrėti vietovės informacijos</translation>
 <translation id="1343356790768851700">Ši svetainė nustato, kas jums patinka, ir siūlo skelbimus, nukreipiančius į kitas svetaines</translation>
@@ -40,6 +41,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="1448064542941920355">Sumažinti mastelį</translation>
 <translation id="1464044141348608623">Neleisti svetainėms sužinoti, kada aktyviai naudojate įrenginį</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> svetainė}one{<ph name="SITE_COUNT" /> svetainė}few{<ph name="SITE_COUNT" /> svetainės}many{<ph name="SITE_COUNT" /> svetainės}other{<ph name="SITE_COUNT" /> svetainių}}</translation>
+<translation id="1476700086976862423">Temos spalva: sepija</translation>
 <translation id="1500473259453106018">Slėpti sumažintų kainų skirtukuose kortelę</translation>
 <translation id="1508931164824684991">Svetainėse gali būti naudojama „JavaScript“</translation>
 <translation id="1510341833810331442">Svetainėms neleidžiama išsaugoti duomenų įrenginyje</translation>
@@ -71,6 +73,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="1799920918471566157">„Chrome“ patarimai</translation>
 <translation id="1816835383954230954">Įjungus „Chrome“ veikia sparčiau, o „JavaScript“ naudojančios funkcijos turėtų veikti, kaip numatyta. Išjungus sumažėja našumas, bet V8 tampa atsparesnė atakoms.</translation>
 <translation id="1818308510395330587">Norėdami leisti „<ph name="APP_NAME" />“ naudoti AR, taip pat įjunkite fotoaparatą <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
+<translation id="1848033246551405023">Šriftas: be užraitų</translation>
 <translation id="1881806992065048905">Naujo skirtuko puslapio išvaizdos apatinis lapas</translation>
 <translation id="1887786770086287077">Vietos prieiga išjungta šiame įrenginyje. Įjunkite ją skiltyje <ph name="BEGIN_LINK" />„Android“ nustatymai“<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Paprastai svetainės pasiekia failus ir aplankus jūsų įrenginyje vykdydamos tokias funkcijas kaip automatinis darbo išsaugojimas</translation>
@@ -92,6 +95,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="2079545284768500474">Anuliuoti</translation>
 <translation id="2080070583977670716">Daugiau nustatymų</translation>
 <translation id="2091887806945687916">Garsas</translation>
+<translation id="2094208275686143364">Temos spalva: šviesi</translation>
 <translation id="2096716221239095980">Ištrinti visus duomenis</translation>
 <translation id="2102396546234652240">Neleisti svetainėms naudoti mikrofono</translation>
 <translation id="2117655453726830283">Kita skaidrė</translation>
@@ -137,6 +141,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="2498359688066513246">Pagalba ir atsiliepimai</translation>
 <translation id="2501278716633472235">Grįžti</translation>
 <translation id="2533138527374486328">Įjungus svetainės gali prašyti prisijungti prie bet kurio įrenginio vietiniame tinkle. Išjungus svetainės negali prisijungti prie įrenginių vietiniame tinkle.</translation>
+<translation id="2544997614631598250">Temos spalva: tamsi</translation>
 <translation id="2546283357679194313">Slapukai ir svetainės duomenys</translation>
 <translation id="2570922361219980984">Vietos prieiga taip pat išjungta šiame įrenginyje. Įjunkite ją skiltyje <ph name="BEGIN_LINK" />„Android“ nustatymai“<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Išskleista – spustelėkite, kad sutrauktumėte</translation>
@@ -194,6 +199,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="3165022941318558018">Leisti svetainėje naudoti trečiųjų šalių slapukus</translation>
 <translation id="3167868116600277716">„Discover“ sklaidos kanalas</translation>
 <translation id="3198916472715691905">Išsaugota duomenų: <ph name="STORAGE_AMOUNT" /></translation>
+<translation id="3199078925536734975">Leidžiama šį kartą • Apytikslė</translation>
 <translation id="321187648315454507">Norėdami leisti „<ph name="APP_NAME" />“ siųsti pranešimus, taip pat įjunkite juos <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Vietovė neleidžiama</translation>
 <translation id="3227137524299004712">Mikrofonas</translation>
@@ -250,6 +256,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="3803367742635802571">Svetainės, kuriose lankotės, gali neveikti taip, kaip numatyta</translation>
 <translation id="3816118180265633665">„Chrome“ spalvos</translation>
 <translation id="381841723434055211">Telefono numeriai</translation>
+<translation id="3823453485268218808">Šriftas: lygiaplotis</translation>
 <translation id="3826050100957962900">Trečiosios šalies prisijungimas</translation>
 <translation id="3835233591525155343">Įrenginio naudojimas</translation>
 <translation id="3843916486309149084">„Chrome“ vėl užblokuos slapukus šiandien</translation>
@@ -302,6 +309,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="4402755511846832236">Neleisti svetainėms žinoti, kada aktyviai naudojate šį įrenginį</translation>
 <translation id="4412992751769744546">Leisti trečiųjų šalių slapukus</translation>
 <translation id="4419929467120297501">„Chrome“ neleidžia svetainėms naudoti trečiųjų šalių slapukų, siekiant jus stebėti, kai naršote. Apsilankykite nustatymuose, kad galėtumėte <ph name="BEGIN_LINK" />tvarkyti prieigą prie trečiųjų šalių slapukų<ph name="END_LINK" />.</translation>
+<translation id="4425416282877905577">Šriftas: su užraitais</translation>
 <translation id="443121186588148776">Nuoseklusis prievadas</translation>
 <translation id="4434045419905280838">Iššok. langai ir peradresavimai</translation>
 <translation id="443552056913301231">Atlikus šį veiksmą bus ištrinti visi vietiniai duomenys, įskaitant slapukus, iš naujo nustatyti visi<ph name="ORIGIN" /> leidimai</translation>
@@ -554,6 +562,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="7478658909253570368">Neleisti svetainėms prisijungti prie nuosekliųjų prievadų</translation>
 <translation id="7488573225650545859">Slėpti peržiūros skirtukus programų sąraše</translation>
 <translation id="7521387064766892559">„JavaScript“</translation>
+<translation id="7538975533793429503">Šrifto dydžio šliaužiklis</translation>
 <translation id="7547989957535180761">Įjungus svetainėse gali būti rodomi raginimai prisijungti. Išjungus svetainėse negalima rodyti raginimų prisijungti.</translation>
 <translation id="7553211568594248088">Išeiti iš centro paieškos</translation>
 <translation id="7554752735887601236">Svetainėje naudojamas jūsų mikrofonas</translation>

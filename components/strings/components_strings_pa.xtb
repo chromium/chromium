@@ -243,6 +243,7 @@
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ਨੇ ਕੋਈ ਵੀ  ਡਾਟਾ  ਨਹੀਂ ਭੇਜਿਆ।</translation>
 <translation id="1393071644879491291">ਜਿਸ ਸਾਈਟ 'ਤੇ ਤੁਸੀਂ ਜਾਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ, ਉਸ 'ਤੇ ਹਮਲਾਵਰ ਤੁਹਾਨੂੰ ਸਾਫ਼ਟਵੇਅਰ ਸਥਾਪਤ ਕਰਨ ਜਾਂ ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ, ਫ਼ੋਨ ਜਾਂ ਕ੍ਰੈਡਿਟ ਕਾਰਡ ਨੰਬਰਾਂ ਵਰਗੀਆਂ ਚੀਜ਼ਾਂ ਨੂੰ ਜ਼ਾਹਰ ਕਰਨ ਲਈ ਭਰਮਾ ਸਕਦੇ ਹਨ। Chrome ਤੁਹਾਨੂੰ ਇਸ ਸਾਈਟ 'ਤੇ ਨਾ ਜਾਣ ਦੀ ਜ਼ੋਰਦਾਰ ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ। <ph name="BEGIN_LEARN_MORE_LINK" />ਇਸ ਚਿਤਾਵਨੀ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1405567553485452995">ਹਲਕਾ ਹਰਾ</translation>
+<translation id="1406370515365284486">ਤੁਹਾਡੀਆਂ ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਹਾਲੇ ਵੀ ਰੱਖਿਅਤ ਕੀਤੀਆਂ ਜਾਣਗੀਆਂ</translation>
 <translation id="1406500794671479665">ਪ੍ਰਮਾਣਿਤ ਕਰ ਰਿਹਾ ਹੈ...</translation>
 <translation id="1406812885827747674">ਇਸ ਵਾਰੀ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="14070772729708640"><ph name="CLOUD_PROVIDER" /> 'ਤੇ ਮੌਜੂਦ <ph name="FOLDER_NAME" /> ਵਿੱਚ ਫ਼ਾਈਲਾਂ ਨੂੰ ਸਫਲਤਾਪੂਰਵਕ ਅੱਪਲੋਡ ਕੀਤਾ ਗਿਆ</translation>
@@ -440,6 +441,7 @@
 <translation id="1719838434204287058">24 x 30 ਇੰਚ</translation>
 <translation id="1720941539803966190">ਟਿਊਟੋਰੀਅਲ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="1721424275792716183">* ਖੇਤਰ ਲੋੜੀਂਦਾ ਹੈ</translation>
+<translation id="1723636263173393300">ਇਸ ਨੀਤੀ ਵਿੱਚ <ph name="MAX_ITEMS_LIMIT" /> ਤੋਂ ਵੱਧ ਸ਼ਾਰਟਕੱਟ ਨਹੀਂ ਹੋਣੇ ਚਾਹੀਦੇ ਹਨ।</translation>
 <translation id="1725591448053514783">ਯੂ 6 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
 <translation id="1727613060316725209">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਵੈਧ ਹੈ</translation>
 <translation id="1728677426644403582">ਤੁਸੀਂ ਕਿਸੇ ਵੈੱਬ ਪੰਨੇ ਦੇ ਸਰੋਤ ਨੂੰ ਵੇਖ ਰਹੇ ਹੋ</translation>
@@ -1047,6 +1049,7 @@
 <translation id="271663710482723385">ਪੂਰੀ ਸਕ੍ਰੀਨ ਤੋਂ ਬਾਹਰ ਜਾਣ ਲਈ |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| ਦਬਾਓ</translation>
 <translation id="2717336592027046789">ਰੋਲ</translation>
 <translation id="2718207025093645426">ਪ੍ਰਬੰਧਿਤ ਵਰਤੋਂਕਾਰ ਜਾਂ ਡੀਵਾਈਸ ਲਈ ਕੋਈ ਨੀਤੀ ਲੋਡ ਨਹੀਂ ਕੀਤੀ ਗਈ।</translation>
+<translation id="2719233594187778789">ਗੈਰ-ਵਿਲੱਖਣ URL ਨੂੰ ਅਣਡਿੱਠ ਕੀਤਾ ਗਿਆ: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">ਬੇਨਤੀ ਸਫਲ ਹੋਈ</translation>
 <translation id="2722622039067384533">ਬੈਠਕ ਲਈ ਫ਼ਰਨੀਚਰ</translation>
 <translation id="2723669454293168317">Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਸੁਰੱਖਿਆ ਜਾਂਚ ਚਲਾਓ</translation>
@@ -2004,6 +2007,7 @@
 <translation id="4298000214066716287">ਨਿਵੇਸ਼</translation>
 <translation id="4298148761711700950">QR ਅੱਪਲੋਡ ਕੀਤੇ ਬਿਨਾਂ ਤੁਰੰਤ ਭੁਗਤਾਨ ਕਰੋ</translation>
 <translation id="4298925811540301889">ਇਸ ਸਾਈਟ ਲਈ ਕੁਕੀਜ਼ ਤੁਹਾਡੇ ChromeOS ਡੀਵਾਈਸਾਂ ਵਿੱਚ ਸਿੰਕ ਕੀਤੀਆਂ ਜਾਂਦੀਆਂ ਹਨ। ਤੁਸੀਂ ਜੋ ਸਿੰਕ ਕਰਦੇ ਹੋ ਉਸਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ, <ph name="SYNC_SETTINGS" /> 'ਤੇ ਜਾਓ।</translation>
+<translation id="4299919199185766032">ਸ਼ਾਰਟਕੱਟ ਦੇ ਨਾਮ ਦੀ ਲੰਬਾਈ ਵੱਧੋ-ਵੱਧ <ph name="MAX_LENGTH" /> ਮਨਜ਼ੂਰਸ਼ੁਦਾ ਅੱਖਰ-ਚਿੰਨ੍ਹਾਂ ਤੋਂ ਵਧ ਹੋ ਗਈ।</translation>
 <translation id="4300272766492248925">ਐਪ ਖੋਲ੍ਹੋ</translation>
 <translation id="4300675098767811073">ਸੱਜੇ ਪਾਸੇ ਇੱਕ ਤੋਂ ਵੱਧ ਮੋਰੀਆਂ</translation>
 <translation id="4302514097724775343">ਖੇਡਣ ਲਈ ਡਾਇਨਾਸੌਰ 'ਤੇ ਟੈਪ ਕਰੋ</translation>
@@ -2705,6 +2709,7 @@
     ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਸਿਸਟਮ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="5496804587179176046">ਸੁਰੱਖਿਆ ਕੋਡ ਰੱਖਿਅਤ ਕਰੋ, ਇਸ ਵੇਲੇ ਕੋਈ ਸੁਰੱਖਿਆ ਕੋਡ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤੇ ਗਏ ਹਨ</translation>
 <translation id="550365051221576010">ਹਰ ਖੇਤਰ ਭਰੋ</translation>
+<translation id="5506286895894263601">ਸੂਚੀ ਵਿੱਚ ਕੋਈ ਵੈਧ ਸ਼ਾਰਟਕੱਟ ਨਹੀਂ ਹੈ।</translation>
 <translation id="5508443345185481044">ਕੈਮਰੇ ਅਤੇ ਕੈਮਕੋਰਡਰ</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">ਵਿਵਸਥਿਤ ਕੀਤੇ ਬੁੱਕਮਾਰਕ</translation>
@@ -3623,6 +3628,7 @@
 <translation id="7014741021609395734">ਜ਼ੂਮ ਪੱਧਰ</translation>
 <translation id="7016992613359344582">ਇਹ ਖਰਚੇ ਇੱਕ-ਵਾਰ ਜਾਂ ਵਾਰ-ਵਾਰ ਲਏ ਜਾ ਸਕਦੇ ਹਨ ਅਤੇ ਸ਼ਾਇਦ ਇਨ੍ਹਾਂ ਬਾਰੇ ਸਪੱਸ਼ਟ ਜਾਣਕਾਰੀ ਨਾ ਦਿੱਤੀ ਜਾਵੇ।</translation>
 <translation id="701757816833614688">ਦ੍ਰਿਸ਼ਟੀਗਤ ਕਲਾਵਾਂ ਅਤੇ ਡਿਜ਼ਾਈਨ ਸੰਬੰਧੀ ਸਿੱਖਿਆ</translation>
+<translation id="7020464868401003526">ਸ਼ਾਰਟਕੱਟ ਦੇ URL ਦੀ ਲੰਬਾਈ ਵੱਧੋ-ਵੱਧ <ph name="MAX_LENGTH" /> ਮਨਜ਼ੂਰਸ਼ੁਦਾ ਅੱਖਰ-ਚਿੰਨ੍ਹਾਂ ਤੋਂ ਵਧ ਹੋ ਗਈ।</translation>
 <translation id="702275896380648118">ਇਹ ਸਾਈਟ ਤੁਹਾਡੀਆਂ ਮਨਪਸੰਦ ਚੀਜ਼ਾਂ ਨੂੰ ਨਿਰਧਾਰਿਤ ਕਰਦੀ ਹੈ ਅਤੇ ਫਿਰ ਦੂਜੀਆਂ ਸਾਈਟਾਂ ਨੂੰ ਵਿਗਿਆਪਨਾਂ ਦੇ ਸੁਝਾਅ ਦਿੰਦੀ ਹੈ। ਤੁਹਾਨੂੰ ਜ਼ਿਆਦਾ ਢੁਕਵੇਂ ਵਿਗਿਆਪਨ ਦਿਖਾਉਣ ਲਈ, ਇਹ ਸਾਈਟ Chrome ਤੋਂ ਵੀ ਤੁਹਾਡੇ ਵਿਗਿਆਪਨ ਦੇ ਵਿਸ਼ਿਆਂ ਬਾਰੇ ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰਦੀ ਹੈ।</translation>
 <translation id="7023162328967545559">ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਚਿਤਾਵਨੀ</translation>
 <translation id="7023765275461720661">ਕੀ ਖਾਤਾ ਲਿੰਕ ਕਰ ਕੇ <ph name="BNPL_ISSUER_NAME" /> ਨਾਲ ਭੁਗਤਾਨ ਕਰਨਾ ਹੈ?</translation>

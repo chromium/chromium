@@ -440,6 +440,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1719838434204287058">24 x 30 to.</translation>
 <translation id="1720941539803966190">Loka leiðsögn</translation>
 <translation id="1721424275792716183">* Reiturinn má ekki vera auður</translation>
+<translation id="1723636263173393300">Þessi regla á ekki að innihalda fleiri en <ph name="MAX_ITEMS_LIMIT" /> flýtileiðir.</translation>
 <translation id="1725591448053514783">Umslag: You 6</translation>
 <translation id="1727613060316725209">Vottorðið er gilt</translation>
 <translation id="1728677426644403582">Þú ert að skoða uppruna vefsíðu</translation>
@@ -1047,6 +1048,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="271663710482723385">Ýttu á |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| til að hætta birtingu á öllum skjánum</translation>
 <translation id="2717336592027046789">Rúlla</translation>
 <translation id="2718207025093645426">Engin regla er virk fyrir notanda eða tæki sem er stýrt.</translation>
+<translation id="2719233594187778789">Vefslóð sem er ekki einkvæm var hunsuð: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Beiðni tókst</translation>
 <translation id="2722622039067384533">Stofuhúsgögn</translation>
 <translation id="2723669454293168317">Keyra öryggisathugun í stillingum Chrome</translation>
@@ -2007,6 +2009,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4298000214066716287">Fjárfestingar</translation>
 <translation id="4298148761711700950">Borgaðu án tafar án QR-upphleðslu</translation>
 <translation id="4298925811540301889">Fótspor fyrir þetta vefsvæði eru samstillt í ChromeOS-tækjunum þínum. Opnaðu <ph name="SYNC_SETTINGS" /> til að stýra því sem þú samstillir.</translation>
+<translation id="4299919199185766032">Heiti flýtileiðarinnar fer umfram leyfilega hámarkslengd, þ.e. <ph name="MAX_LENGTH" /> stafir.</translation>
 <translation id="4300272766492248925">Opna forrit</translation>
 <translation id="4300675098767811073">Mörg göt hægra megin</translation>
 <translation id="4302514097724775343">Ýttu á risaeðluna til að spila</translation>
@@ -2708,6 +2711,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
     Prófaðu að hafa samband við vefstjórann þinn.</translation>
 <translation id="5496804587179176046">Vistaðu öryggiskóða, engir öryggiskóðar eru vistaðir eins og stendur</translation>
 <translation id="550365051221576010">Útfylla allt</translation>
+<translation id="5506286895894263601">Listinn inniheldur engar gildar flýtileiðir.</translation>
 <translation id="5508443345185481044">Myndavélar og myndupptökuvélar</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Stýrð bókamerki</translation>
@@ -3627,6 +3631,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7014741021609395734">Aðdráttarstig</translation>
 <translation id="7016992613359344582">Greiðslur gætu verið stakar eða endurteknar og hugsanlega er ekki greinilegt að borga þurfi.</translation>
 <translation id="701757816833614688">Sjónlistar- og hönnunarmenntun</translation>
+<translation id="7020464868401003526">Vefslóð flýtileiðarinnar fer umfram leyfilega hámarkslengd, þ.e. <ph name="MAX_LENGTH" /> stafir.</translation>
 <translation id="702275896380648118">Þetta vefsvæði áætlar áhugasvið þitt og sendir svo öðrum vefsvæðum auglýsingatillögur. Þetta vefsvæði fær einnig upplýsingar um umfjöllunarefni auglýsinga frá Chrome til að birta þér viðeigandi auglýsingar.</translation>
 <translation id="7023162328967545559">Viðvörun stjórnanda</translation>
 <translation id="7023765275461720661">Tengja reikning og greiða með <ph name="BNPL_ISSUER_NAME" />?</translation>

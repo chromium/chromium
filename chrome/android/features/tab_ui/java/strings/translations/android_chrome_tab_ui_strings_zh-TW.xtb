@@ -28,6 +28,7 @@
 <translation id="1828808367831369073">已將 <ph name="TABS_COUNT_ONE" /> 個分頁加入群組</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個分頁}other{<ph name="TABS_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="1909810060368225529">注意：所有人都能看到這個共用分頁群組的變動，以及變更你的共用分頁群組</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{固定分頁}other{固定分頁}}</translation>
 <translation id="1982637982196732906">移到閒置分頁區塊</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{已將 <ph name="TABS_COUNT_ONE" /> 個選取的分頁加入書籤}other{已將 <ph name="TABS_COUNT_MANY" /> 個選取的分頁加入書籤}}</translation>
 <translation id="2055057176188061528">選取分頁群組或新建一個</translation>
@@ -78,6 +79,7 @@
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">分享功能表預覽畫面縮圖。</translation>
 <translation id="3810973564298564668">管理</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{取消固定分頁}other{取消固定分頁}}</translation>
 <translation id="3940195383040445971">在分頁上追蹤價格</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{新增 <ph name="ONE_ADDED" /> 個分頁，關閉 <ph name="ANY_CLOSED" /> 個分頁}other{新增 <ph name="MANY_ADDED" /> 個分頁，關閉 <ph name="ANY_CLOSED" /> 個分頁}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{建立分頁群組}other{建立分頁群組}}</translation>
@@ -131,6 +133,7 @@
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{關閉 <ph name="TABS_COUNT_ONE" /> 個所選項目}other{關閉 <ph name="TABS_COUNT_MANY" /> 個所選項目}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{將群組移到新視窗}other{將群組移到其他視窗}}</translation>
 <translation id="6228793724645064692">(商店評分)</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{從群組中移除分頁}other{從群組中移除分頁}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{將分頁加入新群組}other{將分頁加入新群組}}</translation>
 <translation id="6333260925957816943">這間店的資訊</translation>
 <translation id="6381032505162537930">你可以在這裡找到分頁群組</translation>

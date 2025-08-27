@@ -25,6 +25,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="129382876167171263">Filer, der gemmes af websites, vises her</translation>
 <translation id="131112695174432497">Data, der påvirker personlig tilpasning af annoncer, slettes</translation>
 <translation id="1317194122196776028">Glem dette website</translation>
+<translation id="1321110954513621549">Tilladt • Omtrentlig</translation>
 <translation id="1323433172918577554">Se flere</translation>
 <translation id="1333965224356556482">Tillad ikke, at websites ser din lokation</translation>
 <translation id="1343356790768851700">Dette website foretager en vurdering af, hvad du kan lide, og foreslår derefter annoncer til andre websites</translation>
@@ -40,6 +41,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="1448064542941920355">Zoom ud</translation>
 <translation id="1464044141348608623">Tillad ikke, at websites ved, hvornår du aktivt bruger din enhed</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> website}one{<ph name="SITE_COUNT" /> website}other{<ph name="SITE_COUNT" /> websites}}</translation>
+<translation id="1476700086976862423">Sepia temafarve</translation>
 <translation id="1500473259453106018">Skjul kortet Vis prisfald på faner</translation>
 <translation id="1508931164824684991">Websites kan anvende JavaScript</translation>
 <translation id="1510341833810331442">Websites har ikke tilladelse til at gemme data på din enhed</translation>
@@ -71,6 +73,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="1799920918471566157">Tips til Chrome</translation>
 <translation id="1816835383954230954">Når denne indstilling er aktiveret, kører Chrome hurtigere, og funktioner, der anvender JavaScript, bør fungere som forventet. Når denne indstilling er deaktiveret, reducerer den ydeevnen, men gør V8 mere modstandsdygtig over for angreb.</translation>
 <translation id="1818308510395330587">Aktivér også kameraet i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> tilladelse til at bruge AR.</translation>
+<translation id="1848033246551405023">Sans Serif-skrifttype</translation>
 <translation id="1881806992065048905">Feltet i bunden, der viser udseendet af siden Ny fane</translation>
 <translation id="1887786770086287077">Lokationsadgang er deaktiveret for denne enhed. Aktivér det under <ph name="BEGIN_LINK" />indstillinger for Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Websites får normalt adgang til filer og mapper på din enhed for at kunne gemme dit arbejde automatisk</translation>
@@ -92,6 +95,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="2079545284768500474">Fortryd</translation>
 <translation id="2080070583977670716">Flere indstillinger</translation>
 <translation id="2091887806945687916">Lyd</translation>
+<translation id="2094208275686143364">Temafarve (lys)</translation>
 <translation id="2096716221239095980">Slet alle data</translation>
 <translation id="2102396546234652240">Tillad ikke, at websites anvender din mikrofon</translation>
 <translation id="2117655453726830283">Næste dias</translation>
@@ -137,6 +141,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="2498359688066513246">Hjælp og feedback</translation>
 <translation id="2501278716633472235">Gå tilbage</translation>
 <translation id="2533138527374486328">Når denne indstilling er aktiveret, kan websites anmode om at oprette tilknytning til enhver enhed på dit lokale netværk. Når denne indstilling er deaktiveret, kan websites ikke oprette tilknytning til enheder på dit lokale netværk.</translation>
+<translation id="2544997614631598250">Mørk temafarve</translation>
 <translation id="2546283357679194313">Cookies og websitedata</translation>
 <translation id="2570922361219980984">Lokationsadgang er også deaktiveret for denne enhed. Aktivér det under <ph name="BEGIN_LINK" />indstillinger for Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Udvidet – klik for at skjule.</translation>
@@ -194,6 +199,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="3165022941318558018">Tillad, at et website bruger tredjepartscookies</translation>
 <translation id="3167868116600277716">Discover-feed</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> gemte data</translation>
+<translation id="3199078925536734975">Tilladt denne gang • Omtrentlig</translation>
 <translation id="321187648315454507">Aktivér også notifikationer i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> tilladelse til at sende dig notifikationer.</translation>
 <translation id="3223425961342298674">Adgang til lokation er ikke tilladt</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -250,6 +256,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="3803367742635802571">Websites, du besøger, holder muligvis op med at fungere som forventet</translation>
 <translation id="3816118180265633665">Chrome-farver</translation>
 <translation id="381841723434055211">Telefonnumre</translation>
+<translation id="3823453485268218808">Mono-skrifttype</translation>
 <translation id="3826050100957962900">Tredjepartslogin</translation>
 <translation id="3835233591525155343">Din enhedsbrug</translation>
 <translation id="3843916486309149084">I dag blokerer Chrome cookies igen</translation>
@@ -302,6 +309,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="4402755511846832236">Bloker websites fra at vide, hvornår du aktivt bruger denne enhed</translation>
 <translation id="4412992751769744546">Tillad tredjepartscookies</translation>
 <translation id="4419929467120297501">Chrome blokerer websites, så de ikke kan bruge tredjepartscookies til at spore dig, mens du browser. Gå til indstillingerne for at <ph name="BEGIN_LINK" />administrere adgangen til tredjepartscookies<ph name="END_LINK" />.</translation>
+<translation id="4425416282877905577">Serif-skrifttype</translation>
 <translation id="443121186588148776">Serieport</translation>
 <translation id="4434045419905280838">Pop op-vinduer og omdirigeringer</translation>
 <translation id="443552056913301231">Denne handling sletter alle lokale data, herunder cookies, og nulstiller alle tilladelser for <ph name="ORIGIN" /></translation>
@@ -554,6 +562,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="7478658909253570368">Tillad ikke, at websites opretter forbindelse til serieporte</translation>
 <translation id="7488573225650545859">Skjul Se faner på din appliste</translation>
 <translation id="7521387064766892559">JavaScript</translation>
+<translation id="7538975533793429503">Skyder til skriftstørrelse</translation>
 <translation id="7547989957535180761">Når dette er slået til, kan websites vise loginmeddelelser. Når dette er slået fra, kan websites ikke vise loginmeddelelser.</translation>
 <translation id="7553211568594248088">Afslut søgehub</translation>
 <translation id="7554752735887601236">Et website anvender din mikrofon</translation>

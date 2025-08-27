@@ -311,6 +311,7 @@
 <translation id="494490797786467921">Κάντε κλικ για να κλείσετε το παράθυρο διαλόγου σύνδεσης του Chromium</translation>
 <translation id="4950660488495335294">Με τα προφίλ του Chromium μπορείτε να διαχωρίσετε όλη τη δραστηριότητα και το περιεχόμενό σας στο Chromium. Δημιουργήστε προφίλ για φίλους και μέλη της οικογένειας ή διαχωρίστε την εργασία και τη διασκέδαση.</translation>
 <translation id="4987820182225656817">Οι επισκέπτες μπορούν να χρησιμοποιούν το Chromium χωρίς να αφήνουν κανένα ίχνος.</translation>
+<translation id="4992938037305302429">Ο λογαριασμός σας στο Chromium</translation>
 <translation id="4994636714258228724">Προσθήκη του εαυτού σας στο Chromium</translation>
 <translation id="5123973130450702873">Το Chromium χρειάζεται άδεια για να παρακολουθεί τα χέρια σας</translation>
 <translation id="5141988424377517949">Δεν έχετε επισκεφτεί πρόσφατα τον ιστότοπο. Το Chromium κατάργησε τις άδειες <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="PERMISSION_3" />.</translation>
@@ -389,6 +390,7 @@
 <translation id="6072463441809498330">Κάντε το Chromium πιο γρήγορο</translation>
 <translation id="6096348254544841612">Προσαρμόστε και ελέγξτε το Chromium. Υπάρχει διαθέσιμη ενημέρωση.</translation>
 <translation id="6107893135096467929">Ενεργή • Το Chromium δεν μπορεί να επαληθεύσει την προέλευση αυτής της επέκτασης</translation>
+<translation id="611228897408671387">Ο λογαριασμός σας στο Chromium</translation>
 <translation id="6119438414301547735">Να επιτρέπεται στην επέκταση να εμφανίζει αιτήματα πρόσβασης στη γραμμή εργαλείων του Chromium</translation>
 <translation id="6129621093834146363">Το αρχείο <ph name="FILE_NAME" /> είναι επικίνδυνο, επομένως έχει αποκλειστεί από το Chromium.</translation>
 <translation id="6132897690380286411">Το Chromium θα κλείσει σύντομα και θα διαγράψει τα δεδομένα</translation>
@@ -614,7 +616,6 @@
 <translation id="8747073452963259673">κάτω αριστερή γωνία της περιοχής αναζήτησης: αριστερά <ph name="LEFT" />%, κάτω <ph name="BOTTOM" />%</translation>
 <translation id="878572486461146056">Σφάλμα εγκατάστασης: Ο διαχειριστής του δικτύου σας έχει εφαρμόσει μια πολιτική ομάδας που εμποδίζει την εγκατάσταση: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Το Chromium χρειάζεται άδεια, για να αποκτήσει πρόσβαση στην κάμερα και στο μικρόφωνο για αυτόν τον ιστότοπο</translation>
-<translation id="880560872634367429">Επαλήθευση της λήψης…</translation>
 <translation id="8818550178040858407">Σύνδεση στο Chromium;</translation>
 <translation id="8826492472752484139">Κάντε κλικ στην επιλογή Διαχείριση κωδικών πρόσβασης</translation>
 <translation id="8833697763442816810">Σύστημα Chromium OS</translation>

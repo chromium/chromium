@@ -499,7 +499,6 @@
 <translation id="3384347053049321195">Поделиться изображением</translation>
 <translation id="3387650086002190359">Не удалось скачать файл <ph name="FILE_NAME" /> из-за ошибок файловой системы.</translation>
 <translation id="3414952576877147120">Размер:</translation>
-<translation id="3421726884497337397">Настройте параметры блокировки сторонних файлов cookie</translation>
 <translation id="3430670036890315772">Если вы отключите блокировку профиля, вся сохраненная вами информация будет удалена.</translation>
 <translation id="3435465986463792564">Открыто много окон? Ими можно управлять здесь.</translation>
 <translation id="3435575784518354875">Экспортируйте пароли, обновите сервисы Google Play и импортируйте пароли обратно в Google Менеджер паролей. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
@@ -760,7 +759,6 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 раскрытый пароль}one{# раскрытый пароль}few{# раскрытых пароля}many{# раскрытых паролей}other{# раскрытого пароля}}</translation>
 <translation id="4641919525231168205">Перейти на следующую страницу</translation>
 <translation id="4642472735733036929">Отслеживание цен приостановлено.</translation>
-<translation id="4645146721047390964">Когда вы в режиме инкогнито, сайты не могут использовать файлы cookie, чтобы получать информацию о ваших действиях на других сайтах, например для персонализации рекламы. Функции некоторых сайтов могут перестать работать.</translation>
 <translation id="465657074423018424">Функция "Безопасный просмотр" защищает вас от вводящих в заблуждение сайтов. После ее отключения будьте особенно осторожны, посещая сайты, прежде всего когда вводите пароли.</translation>
 <translation id="4662373422909645029">Название не должно содержать цифры.</translation>
 <translation id="4663756553811254707">Удалено закладок: <ph name="NUMBER_OF_BOOKMARKS" /></translation>
@@ -1220,7 +1218,6 @@
 <translation id="6633067410344541938">Разблокировать вкладки инкогнито</translation>
 <translation id="6636623428211296678">Вы можете посмотреть другие настройки ниже или завершить проверку.</translation>
 <translation id="6637100877383020115">Chrome отправляет в Google информацию об использовании и сбоях, которая помогает улучшать приложение. <ph name="BEGIN_UMA_LINK" />Настроить отправку данных<ph name="END_UMA_LINK" /></translation>
-<translation id="6640207029842583248">Блокировать всегда</translation>
 <translation id="6641780377503683465">Удалить интерес "<ph name="INTEREST" />"</translation>
 <translation id="6647441008198474441">Для прогнозирования ваших дальнейших запросов URL посещенных вами страниц отправляются в Google.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контактное лицо}one{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контактное лицо}few{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контактных лица}many{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контактных лиц}other{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контактного лица}}</translation>
@@ -1232,6 +1229,7 @@
 <translation id="6674571176963658787">Чтобы начать синхронизацию, введите кодовую фразу.</translation>
 <translation id="6676927815633975364">Вы выполните вход на этом сайте и в Chrome</translation>
 <translation id="6684809838922667136">Сделайте браузер Chrome лучше</translation>
+<translation id="6689436252814043643">Режим чтения недоступен.</translation>
 <translation id="6700279777779583398">Предпочтения сохранены</translation>
 <translation id="670498945988402717">Проверено вчера.</translation>
 <translation id="6710213216561001401">Назад</translation>
@@ -1342,6 +1340,7 @@
 <translation id="7111822978084196600">Добавьте название окна</translation>
 <translation id="7115358764509798967">По умолчанию</translation>
 <translation id="7117485132243600300">Подписки на контент, рекомендованные темы и варианты поисковых запросов</translation>
+<translation id="7119984597597798764"><ph name="INSTANCE_TITLE" />: закрыть</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Проверены разрешения у 1 сайта.}one{Проверены разрешения у # сайта.}few{Проверены разрешения у # сайтов.}many{Проверены разрешения у # сайтов.}other{Проверены разрешения у # сайта.}}</translation>
 <translation id="7138678301420049075">Другое</translation>
 <translation id="7140829094791862589">Сортировать вручную</translation>
@@ -1443,7 +1442,6 @@
 <translation id="751961395872307827">Не удалось подключиться к сайту</translation>
 <translation id="7523960634226602883">Включить камеру и использовать для поиска Google Объектив</translation>
 <translation id="7525248386620136756">Закрыты и сохранены: <ph name="TAB_GROUPS_AND_TABS_PART" />.</translation>
-<translation id="752731652852882757">Блокировать в режиме инкогнито</translation>
 <translation id="7545347190366646170">Пользователи, у которых есть доступ</translation>
 <translation id="7554643625247105821">Не удалось проверить версию Chrome</translation>
 <translation id="7557508262441527045">Выполнен выход.</translation>
@@ -1609,7 +1607,6 @@
 <translation id="8243077599929149377">Добавьте свое имя пользователя</translation>
 <translation id="8244387390464017490">Настройки новой вкладки</translation>
 <translation id="8250920743982581267">Документы</translation>
-<translation id="8255617931166444521">С помощью файлов cookie сайт может только определять, какие действия вы совершали на нем.</translation>
 <translation id="8258999165172757081">Добавлено</translation>
 <translation id="8259179246279078674">Так как предзагруженные страницы зашифрованы, Google ничего не узнает об их содержимом. Серверы Google получат сведения о том, какие сайты анонимно предзагружены. Эта информация используется только для предварительной загрузки страниц и не связана с другими данными из вашего аккаунта Google.</translation>
 <translation id="8260126382462817229">Снова войдите в аккаунт</translation>

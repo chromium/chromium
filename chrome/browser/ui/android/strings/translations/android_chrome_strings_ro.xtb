@@ -499,7 +499,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3384347053049321195">Trimite imaginea</translation>
 <translation id="3387650086002190359">Descărcarea fișierului <ph name="FILE_NAME" /> nu a reușit din cauza unor erori privind sistemul de fișiere.</translation>
 <translation id="3414952576877147120">Dimensiune:</translation>
-<translation id="3421726884497337397">Alege când sunt blocate cookie-urile terțe</translation>
 <translation id="3430670036890315772">Dacă dezactivezi blocarea profilului, informațiile tale salvate vor fi șterse</translation>
 <translation id="3435465986463792564">Ai deschis multe ferestre? Gestionează-le de aici</translation>
 <translation id="3435575784518354875">Pentru a păstra accesul la parole, exportă-le acum, actualizează serviciile Google Play și apoi importă-le înapoi în Managerul de parole Google. <ph name="BEGIN_LINK" />Consultă instrucțiunile complete<ph name="END_LINK" />.</translation>
@@ -760,7 +759,6 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{O parolă compromisă}few{# parole compromise}other{# de parole compromise}}</translation>
 <translation id="4641919525231168205">Accesează pagina următoare</translation>
 <translation id="4642472735733036929">Urmărirea prețului s-a oprit</translation>
-<translation id="4645146721047390964">În modul incognito, site-urile nu pot folosi cookie-urile pentru a vedea activitatea ta de navigare de pe diferite site-uri, de exemplu, pentru a personaliza anunțurile. Este posibil ca funcțiile de pe anumite site-uri să fie întrerupte.</translation>
 <translation id="465657074423018424">Navigarea sigură te protejează împotriva site-urilor înșelătoare. Dacă o dezactivezi, ai mare grijă atunci când navighezi, mai ales înainte să introduci parole.</translation>
 <translation id="4662373422909645029">Pseudonimele nu pot să includă cifre</translation>
 <translation id="4663756553811254707">S-au șters <ph name="NUMBER_OF_BOOKMARKS" /> (de) marcaje</translation>
@@ -1220,7 +1218,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6633067410344541938">Deblochează modul incognito</translation>
 <translation id="6636623428211296678">Explorează mai multe dintre setările de mai jos sau finalizează acum</translation>
 <translation id="6637100877383020115">Pentru a contribui la îmbunătățirea aplicației, Chrome trimite date de utilizare și despre erori la Google. <ph name="BEGIN_UMA_LINK" />Gestionează<ph name="END_UMA_LINK" /></translation>
-<translation id="6640207029842583248">Blochează tot timpul</translation>
 <translation id="6641780377503683465">Elimină <ph name="INTEREST" /></translation>
 <translation id="6647441008198474441">Adresele URL pe care le accesezi sunt trimise la Google pentru a anticipa site-urile pe care le-ai putea accesa pe viitor</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -1232,6 +1229,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6674571176963658787">Pentru a porni sincronizarea, introdu expresia de acces</translation>
 <translation id="6676927815633975364">Conectează-te la acest site și la Chrome</translation>
 <translation id="6684809838922667136">Contribuie la îmbunătățirea Chrome</translation>
+<translation id="6689436252814043643">Modul de lectură nu este disponibil</translation>
 <translation id="6700279777779583398">Opțiunile au fost salvate</translation>
 <translation id="670498945988402717">A rulat ieri</translation>
 <translation id="6710213216561001401">Înapoi</translation>
@@ -1342,6 +1340,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="7111822978084196600">Denumește fereastra</translation>
 <translation id="7115358764509798967">Prestabilită de sistem</translation>
 <translation id="7117485132243600300">Gestionează conținutul pe care îl urmărești și subiectele și căutările sugerate</translation>
+<translation id="7119984597597798764">Închide <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Permisiunile au fost examinate pentru un site}few{Permisiunile au fost examinate pentru # site-uri}other{Permisiunile au fost examinate pentru # de site-uri}}</translation>
 <translation id="7138678301420049075">Altele</translation>
 <translation id="7140829094791862589">Sortează manual</translation>
@@ -1443,7 +1442,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="751961395872307827">Nu se poate realiza conexiunea la site</translation>
 <translation id="7523960634226602883">Caută cu camera foto folosind Google Lens</translation>
 <translation id="7525248386620136756"><ph name="TAB_GROUPS_AND_TABS_PART" /> au fost închise și salvate</translation>
-<translation id="752731652852882757">Blochează în timp ce folosești modul incognito</translation>
 <translation id="7545347190366646170">Persoane care au acces</translation>
 <translation id="7554643625247105821">Nu se poate verifica versiunea Chrome</translation>
 <translation id="7557508262441527045">Te-ai deconectat</translation>
@@ -1609,7 +1607,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="8243077599929149377">Adaugă-ți numele de utilizator</translation>
 <translation id="8244387390464017490">Personalizează Fila nouă</translation>
 <translation id="8250920743982581267">Documente</translation>
-<translation id="8255617931166444521">Site-urile pot folosi cookie-uri numai pentru a-ți vedea activitatea de navigare pe site-ul respectiv</translation>
 <translation id="8258999165172757081">Adăugat</translation>
 <translation id="8259179246279078674">Întrucât paginile preîncărcate sunt criptate, Google nu va afla nimic despre conținutul paginii preîncărcate. Serverele Google vor afla ce site-uri sunt preîncărcate în mod privat. Aceste informații sunt folosite numai la preîncărcarea paginilor și nu sunt conectate cu alte informații din Contul Google.</translation>
 <translation id="8260126382462817229">Încearcă să te conectezi din nou</translation>

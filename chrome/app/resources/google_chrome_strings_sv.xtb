@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
 <translation id="1001534784610492198">Arkivet för installationsfilen är skadat eller ogiltigt. Ladda ned Google Chrome igen.</translation>
+<translation id="1006034097353797313">Fortsätt där du slutade: Chrome återställer dina flikar varje gång du startar om. Inaktivera detta genom att öppna</translation>
 <translation id="1018937009655463387">För att dela fönstret tillåter du skärminspelning för Chrome i systeminställningarna.</translation>
 <translation id="1026101648481255140">Återuppta installationen</translation>
 <translation id="102763973188675173">Anpassa och styr Google Chrome. En uppdatering är tillgänglig.</translation>
@@ -83,6 +84,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2018879682492276940">Installationen misslyckades. Försök igen.</translation>
 <translation id="2024959665595762054">Verifiera din identitet om du vill använda och spara Chrome-data i Google-kontot</translation>
 <translation id="2034233344106846793">Chrome uppgraderar automatiskt osäkra anslutningar till HTTPS när det är möjligt</translation>
+<translation id="2039417478970545937">Inställningar.</translation>
 <translation id="207902854391093810">Genom annonsmätning, om provfunktioner är aktiverade, kan webbplatser du besöker begära information från Chrome som hjälper dem att mäta annonsernas resultat. Med annonsmätning begränsas spårningen från webbplats till webbplats genom att så lite information som möjligt överförs mellan webbplatserna.</translation>
 <translation id="2091012649849228750">Du behöver Windows 10 eller senare för att få kommande uppdateringar av Google Chrome. På den här datorn används Windows 8.</translation>
 <translation id="2094648590148273905">Villkor för ChromeOS Flex</translation>
@@ -352,6 +354,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 
 Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog om du vill använda en nyare version av Chrome.</translation>
 <translation id="5174969993834422967">Du brukar blockera aviseringar. Klicka på aviseringsikonen uppe till höger om platsfältet om du vill tillåta aviseringar från webbplatsen.</translation>
+<translation id="5174983315706567306">Det finns inte tillräckligt med diskutrymme.</translation>
 <translation id="5201744974236816379">Chrome-uppdatering</translation>
 <translation id="521447420733633466">Om du delar en enhet med vänner och familj kan de konfigurera Chrome precis som de vill och surfa separat.</translation>
 <translation id="5234764350956374838">Stäng</translation>
@@ -462,6 +465,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6520670145826811516">Ge Chrome åtkomst i <ph name="BEGIN_LINK" />systeminställningarna<ph name="END_LINK" /> om du vill använda platsen</translation>
 <translation id="659498884637196217">I Google Lösenordshantering på den här enheten</translation>
+<translation id="6631524303639368205">Fortsätt där du slutade: Chrome har återställt dina flikar från din senaste session. Du kan inaktivera detta i</translation>
 <translation id="6632473616050862500">ChromeOS Flex fungerar tack vare ytterligare <ph name="BEGIN_LINK_CROS_OSS" />program med öppen källkod<ph name="END_LINK_CROS_OSS" />,.</translation>
 <translation id="6634299872736643004">Ändringar av den här inställningen tillämpas när Chrome startas om.</translation>
 <translation id="6660596345553328257">Vill du logga in i Chrome?</translation>
@@ -569,6 +573,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="7825851276765848807">Installationen misslyckades på grund av ett okänt fel. Ladda ned Google Chrome igen.</translation>
 <translation id="7827099906024714326">Chrome måste verifiera din identitet innan viss data kan sparas i Google-kontot och användas på alla dina enheter. Om du loggar ut nu raderas denna data.</translation>
 <translation id="7845233973568007926">Tack för att du installerat programmet. Du måste starta om datorn innan du använder <ph name="BUNDLE_NAME" />.</translation>
+<translation id="7849037457735762883">Fortsätt där du slutade: Chrome kan återställa dina flikar varje gång du startar om. Aktivera detta genom att öppna</translation>
 <translation id="7872446069773932638">Laddar ned … <ph name="SECONDS" /> sekund/sekunder återstår</translation>
 <translation id="7886087451482920026">Välj text med Google Lens</translation>
 <translation id="7890208801193284374">Om du delar en dator med vänner och familj kan de konfigurera Chrome precis som de vill och surfa separat.</translation>

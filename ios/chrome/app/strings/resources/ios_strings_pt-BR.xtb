@@ -21,6 +21,7 @@
 <translation id="1072476005125066234">Avaliações com base nos seus interesses</translation>
 <translation id="1074827084851510304">Você está prestes a excluir {password_count} senhas e a lista de sites e apps em que escolheu nunca salvar informações de login. As contas que você criou em sites e apps não serão excluídas.</translation>
 <translation id="1076421457278169141">Código lido</translation>
+<translation id="1081114897601629648">As senhas a seguir não foram importadas para o Gerenciador de Senhas do Google porque não atendem aos requisitos.</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} guia}one{{count} guia}other{{count} guias}}</translation>
 <translation id="1082554859195167538">Avaliações de produtos para você</translation>
 <translation id="1084365883616172403">A postagem no Facebook foi concluída.</translation>
@@ -599,7 +600,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="333229797575847124">Como ativar esse recurso</translation>
 <translation id="3344485292736684439">{count,plural, =1{Favorito salvo em "{title}" na conta {email}}one{Favorito salvo em "{title}" na conta {email}}other{Favoritos salvos em "{title}" na conta {email}}}</translation>
 <translation id="334690320928261823">Guias recentes</translation>
-<translation id="3348387552617855658">Este card ajuda você a monitorar seus pacotes e fornece atualizações importantes sobre a entrega.</translation>
 <translation id="3349031117032695619">Bloquear pop-ups</translation>
 <translation id="3349676726073650389">Os sites e as pesquisas que você segue são armazenados na sua Conta do Google. Você pode gerenciar esse conteúdo nas configurações a qualquer momento.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Esta conta é gerenciada.</translation>
@@ -1881,7 +1881,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8263809106706527890">Pode ter ocorrido uma mudança nas configurações padrão do seu navegador. Confira nas configurações.</translation>
 <translation id="8264966119170358612">Algumas das suas senhas salvas foram expostas em uma violação de dados de terceiros. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Sua conta <ph name="USER_NAME" /> foi desconectada como parte da redefinição do iPad. Para fazer login novamente, toque em "Continuar" abaixo.</translation>
-<translation id="8273982424131314219">Você vai preencher informações em <ph name="URL" /></translation>
+<translation id="8273982424131314219">As informações serão preenchidas em <ph name="URL" /></translation>
 <translation id="8275068909952022340">Mais…</translation>
 <translation id="8277328362018795342">O conteúdo da página é compartilhado para oferecer respostas mais relevantes</translation>
 <translation id="8278488584187265939">Personalizar página inicial</translation>

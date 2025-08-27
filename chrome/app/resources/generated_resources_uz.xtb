@@ -1185,6 +1185,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1805967612549112634">PIN kodni tasdiqlang</translation>
 <translation id="1806335016774576568">Boshqa ochiq ilovaga oʻtish</translation>
 <translation id="1807246157184219062">Yorqin</translation>
+<translation id="1808571181382454540">Sozlamalarni ochish</translation>
 <translation id="1808805149659872686">Soʻz kiritish</translation>
 <translation id="1809201888580326312">Bu yerda paroli saqlanmasin deb belgilagan sayt va ilovalar chiqadi</translation>
 <translation id="1809734401532861917">Xatcho‘plar, tarix, parollar va boshqa sozlamalarim <ph name="USER_EMAIL_ADDRESS" /> hisobida saqlansin.</translation>
@@ -4546,7 +4547,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4109135793348361820">Oynani <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) foydalanuvchisi ish stoliga ko‘chirish</translation>
 <translation id="4110485659976215879">Ogohlantirishni tiklash</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (oflayn)</translation>
-<translation id="4113030288477039509">Administratoringiz tomonidan boshqariladi</translation>
 <translation id="4113743276555482284">Fayl paroli</translation>
 <translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />Joylashuv aniqligi yoqilganda simsiz signallar haqidagi axborot jamlanadi, jumladan, Wi-Fi ulanish nuqtalari, mobil tarmoq antennalari va hokazo. Shuningdek, funksiya akselerometr va giroskop kabi sensorlardan axborot olishi mumkin. Bunday maʼlumotlar geojoylashuv funksiyali ilova va xizmatlarga qurilma joylashuvini aniqroq aniqlashga yordam beradi. Buning uchun Google vaqti-vaqti bilan simsiz signallar joylashuvlarining umumiy omborini jamlash orqali atrofdagi qurilma sensorlari hamda simsiz aloqa haqidagi maʼlumotlardan foydalanadi.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google bu qurilmada jamlangan axborotlardan joylashuv aniqligi va joylashuv asosidagi xizmatlarni yaxshilash, umumiy tarzda Google xizmatlarini yaxshilash, taqdim etish hamda dastaklash maqsadlarida foydalanadi. Bunday maʼlumotlar foydalanuvchilar ehtiyojini qondirish maqsadida Google va tashqi tomonlar tomonidan qonun doirasida qayta ishlanadi.<ph name="END_PARAGRAPH2" />
@@ -4997,7 +4997,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="443196770280837407">Gemini panelini tezkor tugma orqali ochish</translation>
 <translation id="4432621511648257259">Parol xato kiritildi</translation>
 <translation id="4434611816075088065">Hozircha hammasi joyida</translation>
-<translation id="443475966875174318">Mos kelmaydigan ilovalarni yangilash yoki olib tashlash</translation>
 <translation id="443503224864902151">Bir nechta saytdagi hisobingizdan chiqasiz, lekin Google hisobingizdan emas. Sinxronlangan maʼlumotlaringiz saqlanib qoladi.</translation>
 <translation id="4437879751057074691">Parollar va kalitlarni saqlashni taklif qilish</translation>
 <translation id="4437947179446780764">Maxsus DNS provayderini kiritish</translation>
@@ -5411,7 +5410,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4742334355511750246">Rasmlarni chiqarish taqiqlangan</translation>
 <translation id="4742795653798179840">Chrome maʼlumotlarini oʻchirish</translation>
 <translation id="4742970037960872810">Belgilovni olib tashlash</translation>
-<translation id="4743260470722568160"><ph name="BEGIN_LINK" />Ilovalarni yangilash haqida axborot<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">Ruxsat berildi: <ph name="PERMISSION_DETAILS" /> <ph name="LINK_BEGIN" />Tizim darajasidagi mikrofonga ruxsat<ph name="LINK_END" /> bering.</translation>
 <translation id="4744260496658845719">Klaviatura orqa chirogʻi yorqinligi</translation>
 <translation id="4744268813103118742">Saytni ochish</translation>
@@ -7156,7 +7154,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="5989497858237037960">Sahifalarni kezish vaqtida, ularning kontenti qurilmangizda shifrlangan shaklda saqlanadi. Bu Chrome unumdorligiga taʼsir qilishi mumkin</translation>
 <translation id="5990266201903445068">Faqat Wi-Fi</translation>
 <translation id="5990386583461751448">Tarjima qilindi</translation>
-<translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Initernetda ishlashda davom etish uchun administratordan bu ilovani olib tashlashni so‘rang.}other{Initernetda ishlashda davom etish uchun administratordan bu ilovalarni olib tashlashni so‘rang.}}</translation>
 <translation id="5992225669837656567">Barcha sichqonchalar uzildi</translation>
 <translation id="5992652489368666106">Chegarasiz</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{1 ta sayt uchun tekshiruv tugadi}other{{NUM_SITES} ta sayt uchun tekshiruv tugadi}}</translation>
@@ -8646,7 +8643,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7039951224110875196">Farzand uchun Google hisobini yaratish</translation>
 <translation id="7039968672732182060">Chromebook qurilmangiz endi xavfsizlikka oid yangilanishlar olmaydi. Oxirgi xavfsizlik sozlamalari va dasturlardan foydalanish uchun yangilash vaqti keldi. Taklif shartlari amal qiladi.</translation>
 <translation id="7042116641003232070">Qurilmangizga maʼlumotlarni saqlashga ruxsat berilgan</translation>
-<translation id="7043108582968290193">Tayyor! Mos kelmaydigan ilovalar topilmadi.</translation>
 <translation id="7044124535091449260">Saytga ruxsat haqida batafsil axborot</translation>
 <translation id="7044207729381622209">Bu saytlardagi hisobingizdan avtomatik chiqarilasiz (shuningdek, ochiq varaqlardan ham)</translation>
 <translation id="7044211973375150246"><ph name="APP_NAME" /> ilovasini standart ilova sifatida oʻrnatishni istaysizmi? Bu havola oʻzgartirilgandan keyin <ph name="APP_NAME_2" /> ilovasi ochilmay qoladi.</translation>
@@ -8982,7 +8978,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7299588179200441056"><ph name="URL" /> – <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">Multfilmlar</translation>
 <translation id="7301812050652048720">Kalit oʻchirildi</translation>
-<translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Bu ilova Chrome brauzerining ishlashiga xalaqit berishi mumkin.}other{Bu ilovalar Chrome brauzerining ishlashiga xalaqit berishi mumkin.}}</translation>
 <translation id="7303281435234579599">Demo rejimni sozlashda notanish xatolik yuz berdi.</translation>
 <translation id="7303485269821975179"><ph name="DEVICE_TYPE" /> parolini sozlash</translation>
 <translation id="7303900363563182677">Bu saytga klipbordga nusxalangan matn va rasmlarni ko‘rish taqiqlandi</translation>
@@ -11869,7 +11864,6 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="962802172452141067">Xatcho‘plar javoni</translation>
 <translation id="963000966785016697">Rasmni <ph name="VISUAL_SEARCH_PROVIDER" /> orqali qidirish</translation>
 <translation id="964286338916298286">IT administratoringiz qurilmangiz uchun Chrome bonuslarini failsizlantirgan.</translation>
-<translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Ilova}other{Ilovalar}}</translation>
 <translation id="964790508619473209">Ekran joylashuv tartibi</translation>
 <translation id="96535553604365597">Google Cast muammosi haqida xabar berish</translation>
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Yaqinda juda koʻp bildirishnomalar yuborgan 1 ta saytni tekshiring}other{Yaqinda juda koʻp bildirishnomalar yuborgan {NUM_SITES} ta saytni tekshiring}}</translation>

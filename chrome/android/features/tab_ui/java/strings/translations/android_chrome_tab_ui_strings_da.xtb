@@ -28,6 +28,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> fane blev grupperet</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> fane}one{<ph name="TABS_COUNT_MANY" /> fane}other{<ph name="TABS_COUNT_MANY" /> faner}}</translation>
 <translation id="1909810060368225529">Bemærk! Ændringer af denne delte fanegruppe er synlige for alle. Alle kan ændre dine delte fanegrupper</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{Fastgør fane}one{Fastgør fane}other{Fastgør faner}}</translation>
 <translation id="1982637982196732906">Flyt til inaktiv sektion</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Gem <ph name="TABS_COUNT_ONE" /> valgt fane som bogmærke}one{Gem <ph name="TABS_COUNT_MANY" /> valgt faner som bogmærke}other{Gem <ph name="TABS_COUNT_MANY" /> valgte faner som bogmærker}}</translation>
 <translation id="2055057176188061528">Vælg fanegruppe, eller opret en ny fanegruppe</translation>
@@ -78,6 +79,7 @@
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Miniature med forhåndsvisning af deleark.</translation>
 <translation id="3810973564298564668">Administrer</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{Frigør fane}one{Frigør fane}other{Frigør faner}}</translation>
 <translation id="3940195383040445971">Følg prisudvikling på faner</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ny fane, <ph name="ANY_CLOSED" /> er lukket}one{<ph name="MANY_ADDED" /> ny fane, <ph name="ANY_CLOSED" /> er lukket}other{<ph name="MANY_ADDED" /> nye faner, <ph name="ANY_CLOSED" /> er lukket}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Gruppér fane}one{Gruppér fane}other{Gruppér faner}}</translation>
@@ -131,6 +133,7 @@
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Luk <ph name="TABS_COUNT_ONE" /> valgt element}one{Luk <ph name="TABS_COUNT_MANY" /> valgt element}other{Luk <ph name="TABS_COUNT_MANY" /> valgte elementer}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Flyt gruppe til det nye vindue}one{Flyt gruppe til det nye vindue}other{Flyt gruppe til et andet vindue}}</translation>
 <translation id="6228793724645064692">(butiksanmeldelse)</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{Fjern fane fra gruppe}one{Fjern fane fra gruppe}other{Fjern faner fra gruppe}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Føj fane til ny gruppe}one{Føj fane til ny gruppe}other{Føj faner til ny gruppe}}</translation>
 <translation id="6333260925957816943">Oplysninger om denne butik</translation>
 <translation id="6381032505162537930">Her kan du se dine fanegrupper</translation>

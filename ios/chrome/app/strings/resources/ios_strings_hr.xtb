@@ -21,6 +21,7 @@
 <translation id="1072476005125066234">Recenzije na temelju vaših interesa</translation>
 <translation id="1074827084851510304">Spremate se izbrisati zaporke (njih {password_count}) i popis web-lokacija i aplikacija za koje ste odabrali da se podaci za prijavu nikad ne spremaju. Računi koje ste izradili za web-lokacije i aplikacije neće se izbrisati.</translation>
 <translation id="1076421457278169141">Kod skeniran</translation>
+<translation id="1081114897601629648">Sljedeće zaporke nisu uvezene u Google upravitelj zaporki jer ne ispunjavaju zahtjeve.</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} kartica}one{{count} kartica}few{{count} kartice}other{{count} kartica}}</translation>
 <translation id="1082554859195167538">Recenzije proizvoda za vas</translation>
 <translation id="1084365883616172403">Dovršen je post za Facebook.</translation>
@@ -599,7 +600,6 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="333229797575847124">Kako omogućiti tu značajku</translation>
 <translation id="3344485292736684439">{count,plural, =1{Oznaka je spremljena u "{title}" na vašem računu, {email}}one{Oznake spremljene na "{title}" na vašem računu, {email}}few{Oznake spremljene na "{title}" na vašem računu, {email}}other{Oznake spremljene na "{title}" na vašem računu, {email}}}</translation>
 <translation id="334690320928261823">Nedavne kartice</translation>
-<translation id="3348387552617855658">Ta vam kartica pomaže pratiti pakete i pruža vam važne novosti o isporuci.</translation>
 <translation id="3349031117032695619">Blokiraj skočne prozore</translation>
 <translation id="3349676726073650389">Web-lokacije i pretraživanja koja pratite spremaju se na vaš Google račun. Praćenim stavkama možete upravljati u postavkama kad god želite.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Ovo je upravljani račun.</translation>

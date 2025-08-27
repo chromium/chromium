@@ -1187,6 +1187,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1805967612549112634">Confirma el PIN</translation>
 <translation id="1806335016774576568">Canvia a una altra aplicació oberta</translation>
 <translation id="1807246157184219062">Clar</translation>
+<translation id="1808571181382454540">Ves a la pàgina de configuració</translation>
 <translation id="1808805149659872686">Entrada nova</translation>
 <translation id="1809201888580326312">Has triat no desar les contrasenyes d'aquests llocs web i aplicacions</translation>
 <translation id="1809734401532861917">Afegeix les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració a <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -3547,6 +3548,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3450056559545492516">Mostra notificacions del sistema sobre funcions i consells de Chrome</translation>
 <translation id="3450157232394774192">Percentatge d'ocupació de l'estat d'inactivitat</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> requereix que et connectis a la Wi-Fi ara i que baixis una actualització.</translation>
+<translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - Estàs compartint aquesta pestanya amb Gemini</translation>
 <translation id="345078987193237421">Permet l'accés a la càmera per a les aplicacions, per als llocs web que tenen permís per accedir a la càmera i per als serveis del sistema</translation>
 <translation id="3451362021220965191">Les aplicacions web aïllades controlen els lectors de targetes intel·ligents per obtenir accés a les targetes intel·ligents que s'hi insereixen o se'ls mostren. Les targetes intel·ligents solen contenir identitats que s'utilitzen per autenticar o autoritzar operacions, iniciar la sessió en serveis, etc.</translation>
 <translation id="3452999110156026232">Accés parental</translation>
@@ -4540,7 +4542,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4109135793348361820">Mou la finestra a <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Restaura l'advertiment</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (sense connexió)</translation>
-<translation id="4113030288477039509">Gestionat per l'administrador</translation>
 <translation id="4113743276555482284">Contrasenya del fitxer</translation>
 <translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />Quan la precisió de la ubicació està activada, s'utilitzen la informació dels senyals sense fil, com ara els punts d'accés Wi‑Fi i les torres de xarxes mòbils, així com les dades dels sensors del dispositiu, com ara l'acceleròmetre i el giroscopi, per estimar la ubicació del dispositiu de manera més precisa. Les aplicacions i els serveis fan servir aquesta estimació per proporcionar serveis basats en la ubicació. Per aconseguir-ho, Google recull periòdicament la informació sobre els sensors del dispositiu i els senyals sense fil que hi ha a prop d'aquest dispositiu amb l'objectiu de contribuir a les ubicacions de senyals sense fil obtingudes col·lectivament.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google utilitza aquesta informació sense identificar-te per millorar la precisió de la ubicació i els serveis basats en la ubicació, i per millorar, proporcionar i mantenir els serveis de Google. Tractem aquesta informació segons els interessos legítims de Google i de tercers per atendre les necessitats dels usuaris.<ph name="END_PARAGRAPH2" />
@@ -4991,7 +4992,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="443196770280837407">Obre Gemini amb tecles de drecera.</translation>
 <translation id="4432621511648257259">Contrasenya incorrecta</translation>
 <translation id="4434611816075088065">Ara mateix no hi ha res més que requereixi la teva atenció</translation>
-<translation id="443475966875174318">Actualitza o suprimeix les aplicacions incompatibles</translation>
 <translation id="443503224864902151">Se't tancarà la sessió de la majoria de llocs web, però continuaràs tenint la sessió iniciada al teu Compte de Google perquè les teves dades sincronitzades es puguin suprimir.</translation>
 <translation id="4437879751057074691">Ofereix desar contrasenyes i claus d'accés</translation>
 <translation id="4437947179446780764">Afegeix un proveïdor de serveis DNS personalitzat</translation>
@@ -5405,7 +5405,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4742334355511750246">Sense permís per mostrar imatges</translation>
 <translation id="4742795653798179840">S'han suprimit les dades de Chrome</translation>
 <translation id="4742970037960872810">Suprimeix les marques</translation>
-<translation id="4743260470722568160"><ph name="BEGIN_LINK" />Obtén informació sobre com s'actualitzen les aplicacions<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">Concedit: <ph name="PERMISSION_DETAILS" />. Activa l'<ph name="LINK_BEGIN" />accés al micròfon del sistema<ph name="LINK_END" />.</translation>
 <translation id="4744260496658845719">Brillantor de la retroil·luminació del teclat</translation>
 <translation id="4744268813103118742">Ves al lloc web</translation>
@@ -7148,7 +7147,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5989497858237037960">A mesura que navegues pels llocs web, el contingut de les pàgines s'encripta i es desa al dispositiu. Això pot afectar el rendiment de Chrome.</translation>
 <translation id="5990266201903445068">Només Wi‑Fi</translation>
 <translation id="5990386583461751448">Traduïda</translation>
-<translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Per assegurar-te que pots continuar navegant per Internet, demana a l'administrador que suprimeixi aquesta aplicació.}other{Per assegurar-te que pots continuar navegant per Internet, demana a l'administrador que suprimeixi aquestes aplicacions.}}</translation>
 <translation id="5992225669837656567">S'han desconnectat tots els ratolins</translation>
 <translation id="5992652489368666106">Sense vores</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{S'ha completat la revisió d'1 lloc web}other{S'ha completat la revisió de {NUM_SITES} llocs web}}</translation>
@@ -7368,6 +7366,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6151128161396960693">Assegura't que confies en la persona que t'ha enviat aquesta invitació</translation>
 <translation id="6151771661215463137">El fitxer ja existeix a la carpeta de baixades.</translation>
 <translation id="6152918902620844577">S'està esperant l'operació següent</translation>
+<translation id="6152929108650354050">Estàs compartint aquesta pestanya amb Gemini</translation>
 <translation id="6153439704237222699">Més informació sobre Do Not Track</translation>
 <translation id="6154240335466762404">Suprimeix tots els ports</translation>
 <translation id="615436196126345398">Protocol</translation>
@@ -8638,7 +8637,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7039951224110875196">Crea un Compte de Google per a un nen o nena</translation>
 <translation id="7039968672732182060">El teu Chromebook ja no rep actualitzacions de seguretat. És hora de comprar-te'n un de nou per tenir el programari i les funcions de seguretat més recents. S'apliquen les condicions de l'oferta.</translation>
 <translation id="7042116641003232070">Té permís per desar dades al dispositiu</translation>
-<translation id="7043108582968290193">Fet! No s'ha trobat cap aplicació incompatible.</translation>
 <translation id="7044124535091449260">Més informació sobre l'accés als llocs web</translation>
 <translation id="7044207729381622209">Se't tancarà la sessió d'aquests llocs web, també de les pestanyes obertes.</translation>
 <translation id="7044211973375150246">S'ha configurat una aplicació per obrir els mateixos enllaços que <ph name="APP_NAME" />. Es desactivarà l'obertura d'enllaços compatibles des de l'aplicació <ph name="APP_NAME_2" />.</translation>
@@ -8974,7 +8972,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">Animat</translation>
 <translation id="7301812050652048720">La clau d'accés s'ha suprimit</translation>
-<translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Aquesta aplicació pot impedir que Chrome funcioni correctament.}other{Aquestes aplicacions poden impedir que Chrome funcioni correctament.}}</translation>
 <translation id="7303281435234579599">Hi ha hagut un error en configurar el mode de demostració.</translation>
 <translation id="7303485269821975179">Estableix una contrasenya per a <ph name="DEVICE_TYPE" /></translation>
 <translation id="7303900363563182677">No es permet que aquest lloc web vegi el text ni les imatges copiats al porta-retalls</translation>
@@ -11592,7 +11589,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 Obtén informació sobre les dades que Google recull i sobre el motiu pel qual ho fa a <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" />.</translation>
 <translation id="9066782832737749352">Text a parla</translation>
 <translation id="9068298336633421551">Permet que les aplicacions i els serveis d'Android amb permís d'ubicació utilitzin la ubicació del dispositiu. Google pot recollir dades d'ubicació periòdicament i utilitzar-les de manera anònima per millorar la precisió de la ubicació i els serveis basats en la ubicació.</translation>
-<translation id="9068598199622656904">Prem una tecla a la vegada per a les tecles de drecera en lloc de mantenir-les premudes alhora</translation>
+<translation id="9068598199622656904">Per a les tecles de dreceres, prem-les d'una en una en lloc de mantenir-les premudes totes alhora</translation>
 <translation id="9068878141610261315">Aquest tipus de fitxer no s'admet</translation>
 <translation id="9069417381769492963">No hi ha cap adreça d'interès que coincideixi amb la teva cerca</translation>
 <translation id="9070231741075992882">Els permisos que concedeixis a <ph name="APP_NAME" /> també es concediran per a les seves aplicacions instal·lades i reproduïdes en continu.</translation>
@@ -11864,7 +11861,6 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="962802172452141067">Arbre de carpetes d'adreces d'interès</translation>
 <translation id="963000966785016697">Cerca la imatge amb <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">L'administrador de TI ha desactivat els productes extra de Chrome per al dispositiu.</translation>
-<translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Aplicació}other{Aplicacions}}</translation>
 <translation id="964790508619473209">Disposició de la pantalla</translation>
 <translation id="96535553604365597">Informa d'un problema amb Google Cast</translation>
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Revisa 1 lloc web que ha enviat moltes notificacions recentment}other{Revisa {NUM_SITES} llocs web que han enviat moltes notificacions recentment}}</translation>

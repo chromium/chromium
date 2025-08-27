@@ -3548,6 +3548,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3450056559545492516">Afficher les notifications système sur les fonctionnalités et astuces de Chrome</translation>
 <translation id="3450157232394774192">Taux d'occupation en veille</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> vous demande de vous connecter au Wi-Fi maintenant et de télécharger une mise à jour.</translation>
+<translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - Vous partagez cet onglet avec Gemini</translation>
 <translation id="345078987193237421">L'accès à l'appareil photo sera accordé aux applis et sites Web ayant l'autorisation correspondante, ainsi qu'aux services système</translation>
 <translation id="3451362021220965191">Les applications Web isolées contrôlent les lecteurs de cartes à puce pour accéder aux cartes à puce qui sont insérées ou présentées à ces lecteurs. Les cartes à puce contiennent généralement des identités utilisées pour authentifier ou autoriser des opérations, se connecter à des services, etc.</translation>
 <translation id="3452999110156026232">Accès parental</translation>
@@ -4542,7 +4543,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4109135793348361820">Déplacer la fenêtre vers <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Restaurer l'avertissement</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (hors connexion)</translation>
-<translation id="4113030288477039509">Géré par votre administrateur</translation>
 <translation id="4113743276555482284">Mot de passe du fichier</translation>
 <translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />Lorsque la précision de la localisation est activée, les informations concernant les signaux sans fil, tels que les points d'accès Wi-Fi et les tours de réseau mobile, ainsi que les données des capteurs de l'appareil, tels que l'accéléromètre et le gyroscope, sont utilisées pour estimer plus précisément la localisation de l'appareil, que les applis et services Android utilisent pour fournir des fonctionnalités basées sur la localisation. Pour ce faire, Google collecte périodiquement des informations sur les capteurs de l'appareil et les signaux sans fil à proximité de vous afin de contribuer à la localisation des signaux sans fil à l'aide du crowdsourcing.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google utilise ces informations sans vous identifier pour améliorer la précision de la localisation et les services basés sur la localisation, et plus généralement pour améliorer, fournir et gérer les services Google. Nous traitons ces informations sur la base des intérêts légitimes de Google et de tiers pour répondre aux besoins des utilisateurs.<ph name="END_PARAGRAPH2" />
@@ -4993,7 +4993,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="443196770280837407">Ouvrez Gemini avec un raccourci clavier.</translation>
 <translation id="4432621511648257259">Mot de passe incorrect</translation>
 <translation id="4434611816075088065">Rien d'autre ne requiert votre attention pour le moment</translation>
-<translation id="443475966875174318">Mettre à jour ou supprimer des applications incompatibles</translation>
 <translation id="443503224864902151">Vous déconnecte de la plupart des sites. Toutefois, vous restez connecté à votre compte Google afin que vos données synchronisées puissent être supprimées.</translation>
 <translation id="4437879751057074691">Proposer d'enregistrer les mots de passe et les clés d'accès</translation>
 <translation id="4437947179446780764">Ajouter un fournisseur de services DNS personnalisé</translation>
@@ -5407,7 +5406,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4742334355511750246">Non autorisé à afficher des images</translation>
 <translation id="4742795653798179840">Données Chrome supprimées</translation>
 <translation id="4742970037960872810">Supprimer la surbrillance</translation>
-<translation id="4743260470722568160"><ph name="BEGIN_LINK" />Découvrir comment mettre à jour des applications<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">Accordée – <ph name="PERMISSION_DETAILS" />. Activez l'<ph name="LINK_BEGIN" />accès au micro du système<ph name="LINK_END" />.</translation>
 <translation id="4744260496658845719">Luminosité du rétroéclairage du clavier</translation>
 <translation id="4744268813103118742">Accéder au site</translation>
@@ -7152,7 +7150,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5989497858237037960">Lorsque vous parcourez des sites, le contenu de leurs pages est chiffré et enregistré sur votre appareil. Cela peut affecter les performances de Chrome.</translation>
 <translation id="5990266201903445068">Wi-Fi uniquement</translation>
 <translation id="5990386583461751448">Traduite</translation>
-<translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Pour pouvoir continuer à naviguer sur Internet, demandez à votre administrateur de supprimer cette application.}one{Pour pouvoir continuer à naviguer sur Internet, demandez à votre administrateur de supprimer cette application.}other{Pour pouvoir continuer à naviguer sur Internet, demandez à votre administrateur de supprimer ces applications.}}</translation>
 <translation id="5992225669837656567">Toutes les souris ont été déconnectées</translation>
 <translation id="5992652489368666106">Aucune bordure</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Examen terminé pour 1 site}one{Examen terminé pour {NUM_SITES} site}other{Examen terminé pour {NUM_SITES} sites}}</translation>
@@ -7372,6 +7369,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6151128161396960693">Vérifiez que la personne qui vous a envoyé cette invitation est digne de confiance</translation>
 <translation id="6151771661215463137">Ce fichier existe déjà dans votre dossier de téléchargements.</translation>
 <translation id="6152918902620844577">En attente de la prochaine opération</translation>
+<translation id="6152929108650354050">Vous partagez cet onglet avec Gemini</translation>
 <translation id="6153439704237222699">En savoir plus sur Do Not Track</translation>
 <translation id="6154240335466762404">Supprimer tous les ports</translation>
 <translation id="615436196126345398">Protocole</translation>
@@ -8644,7 +8642,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7039951224110875196">Créer un compte Google pour un enfant</translation>
 <translation id="7039968672732182060">Votre Chromebook ne reçoit plus de mises à jour de sécurité. Mettez-le à niveau pour bénéficier des dernières mises à jour logicielles et de sécurité. Offre soumise à conditions.</translation>
 <translation id="7042116641003232070">Autorisé à enregistrer des données sur votre appareil</translation>
-<translation id="7043108582968290193">Recherche terminée. Aucune application incompatible détectée.</translation>
 <translation id="7044124535091449260">En savoir plus sur l'accès aux sites</translation>
 <translation id="7044207729381622209">Vous allez être déconnecté de ces sites, y compris dans les onglets ouverts</translation>
 <translation id="7044211973375150246">Une appli est définie pour ouvrir les mêmes liens que <ph name="APP_NAME" />. Cela empêchera <ph name="APP_NAME_2" /> d'ouvrir les liens compatibles.</translation>
@@ -8980,7 +8977,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7299588179200441056"><ph name="URL" /> – <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">Animé</translation>
 <translation id="7301812050652048720">Clé d'accès supprimée</translation>
-<translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Cette application peut empêcher Chrome de fonctionner correctement.}one{Cette application peut empêcher Chrome de fonctionner correctement.}other{Ces applications peuvent empêcher Chrome de fonctionner correctement.}}</translation>
 <translation id="7303281435234579599">Petit problème… Une erreur s'est produite lors de la configuration du mode de démonstration.</translation>
 <translation id="7303485269821975179">Configurer un mot de passe <ph name="DEVICE_TYPE" /></translation>
 <translation id="7303900363563182677">Ce site ne peut pas accéder en lecture au texte ni aux images copiés dans le presse-papiers</translation>
@@ -11870,7 +11866,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="962802172452141067">Arborescence de dossiers des favoris</translation>
 <translation id="963000966785016697">Rechercher l'image avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Votre administrateur informatique a désactivé les bonus Chrome pour votre appareil.</translation>
-<translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Application}one{Application}other{Applications}}</translation>
 <translation id="964790508619473209">Mode d'affichage de l'écran</translation>
 <translation id="96535553604365597">Signaler un problème avec Google Cast</translation>
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Examiner 1 site qui a envoyé beaucoup de notifications récemment}one{Examiner {NUM_SITES} site qui a envoyé beaucoup de notifications récemment}other{Examiner {NUM_SITES} sites qui ont envoyé beaucoup de notifications récemment}}</translation>

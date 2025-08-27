@@ -25,6 +25,7 @@
 <translation id="129382876167171263">Здесь появятся файлы, сохраненные сайтами.</translation>
 <translation id="131112695174432497">Данные, влияющие на персонализацию рекламы, будут удалены.</translation>
 <translation id="1317194122196776028">Удалить этот сайт</translation>
+<translation id="1321110954513621549">Разрешение на доступ к приблизительному местоположению</translation>
 <translation id="1323433172918577554">Развернуть</translation>
 <translation id="1333965224356556482">Запретить сайтам доступ к местоположению</translation>
 <translation id="1343356790768851700">Этот сайт определяет ваши интересы и предлагает рекламу на их основе другим сайтам</translation>
@@ -40,6 +41,7 @@
 <translation id="1448064542941920355">Уменьшить масштаб</translation>
 <translation id="1464044141348608623">Запретить сайтам доступ к информации об использовании устройства</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> сайт}one{<ph name="SITE_COUNT" /> сайт}few{<ph name="SITE_COUNT" /> сайта}many{<ph name="SITE_COUNT" /> сайтов}other{<ph name="SITE_COUNT" /> сайта}}</translation>
+<translation id="1476700086976862423">Цвет темы: сепия</translation>
 <translation id="1500473259453106018">Скрыть карточку "Скидки на вкладках"</translation>
 <translation id="1508931164824684991">Разрешить сайтам использовать JavaScript</translation>
 <translation id="1510341833810331442">Сайтам запрещено сохранять данные на вашем устройстве</translation>
@@ -71,6 +73,7 @@
 <translation id="1799920918471566157">Советы по работе с Chrome</translation>
 <translation id="1816835383954230954">Если включить этот параметр, скорость Chrome повысится, а функции, использующие JavaScript, будут работать корректно. Если параметр отключить, производительность снизится, но движок V8 станет более устойчивым к атакам.</translation>
 <translation id="1818308510395330587">Чтобы браузер "<ph name="APP_NAME" />" мог использовать дополненную реальность, также предоставьте ему доступ к камере в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
+<translation id="1848033246551405023">Шрифт без засечек</translation>
 <translation id="1881806992065048905">Нижний экран с вариантами оформления для страницы быстрого доступа</translation>
 <translation id="1887786770086287077">Для устройства отключено определение местоположения. Включите эту функцию в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Обычно сайтам нужен доступ к файлам и папкам на устройстве, чтобы использовать некоторые функции, например автоматически сохранять вашу работу.</translation>
@@ -92,6 +95,7 @@
 <translation id="2079545284768500474">Отмена</translation>
 <translation id="2080070583977670716">Дополнительные настройки</translation>
 <translation id="2091887806945687916">Звук</translation>
+<translation id="2094208275686143364">Цвет темы: светлый</translation>
 <translation id="2096716221239095980">Удалить все данные</translation>
 <translation id="2102396546234652240">Запретить сайтам доступ к микрофону</translation>
 <translation id="2117655453726830283">Следующий слайд</translation>
@@ -137,6 +141,7 @@
 <translation id="2498359688066513246">Справка/отзыв</translation>
 <translation id="2501278716633472235">Назад</translation>
 <translation id="2533138527374486328">Если функция включена, сайты могут отправлять запросы на подключение к устройствам в локальной сети. Если функция отключена, сайты не могут подключаться к устройствам в локальной сети.</translation>
+<translation id="2544997614631598250">Цвет темы: тёмный</translation>
 <translation id="2546283357679194313">Файлы сookie и данные сайтов</translation>
 <translation id="2570922361219980984">Определение местоположения отключено и для самого устройства. Включите эту функцию в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Развернуто. Нажмите, чтобы свернуть.</translation>
@@ -194,6 +199,7 @@
 <translation id="3165022941318558018">Разрешите сайту использовать сторонние файлы cookie.</translation>
 <translation id="3167868116600277716">Лента рекомендаций</translation>
 <translation id="3198916472715691905">В памяти занято: <ph name="STORAGE_AMOUNT" /></translation>
+<translation id="3199078925536734975">Разовое разрешение на доступ к приблизительному местоположению</translation>
 <translation id="321187648315454507">Чтобы получать уведомления из приложения "<ph name="APP_NAME" />", включите их в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Доступ к данным о местоположении запрещен</translation>
 <translation id="3227137524299004712">Микрофон</translation>
@@ -250,6 +256,7 @@
 <translation id="3803367742635802571">Посещаемые сайты могут перестать работать должным образом</translation>
 <translation id="3816118180265633665">Цвета Chrome</translation>
 <translation id="381841723434055211">Номера телефонов</translation>
+<translation id="3823453485268218808">Шрифт: моноширинный</translation>
 <translation id="3826050100957962900">Вход через сторонние сервисы</translation>
 <translation id="3835233591525155343">Использование устройства</translation>
 <translation id="3843916486309149084">Сегодня Chrome снова заблокирует файлы cookie</translation>
@@ -302,6 +309,7 @@
 <translation id="4402755511846832236">Блокировать передачу на сайты информации об использовании устройства</translation>
 <translation id="4412992751769744546">Принимать сторонние файлы cookie</translation>
 <translation id="4419929467120297501">Chrome запрещает сайтам использовать сторонние файлы cookie для отслеживания ваших действий в интернете. <ph name="BEGIN_LINK" />Управлять доступом к сторонним файлам cookie<ph name="END_LINK" /> можно в настройках.</translation>
+<translation id="4425416282877905577">Шрифт с засечками</translation>
 <translation id="443121186588148776">Последовательный порт</translation>
 <translation id="4434045419905280838">Всплывающие окна и переадресация</translation>
 <translation id="443552056913301231">Это действие удалит все локальные данные сайта <ph name="ORIGIN" />, включая файлы cookie, и сбросит все его разрешения.</translation>
@@ -554,6 +562,7 @@
 <translation id="7478658909253570368">Запретить сайтам подключаться к последовательным портам</translation>
 <translation id="7488573225650545859">Скрыть карточку "Показывать вкладки в списке приложений"</translation>
 <translation id="7521387064766892559">JavaScript</translation>
+<translation id="7538975533793429503">Ползунок выбора размера шрифта</translation>
 <translation id="7547989957535180761">Когда этот параметр включен, сайты могут показывать предложения войти в аккаунт. Когда параметр отключен, сайтам запрещено это делать.</translation>
 <translation id="7553211568594248088">Покинуть страницу поиска</translation>
 <translation id="7554752735887601236">Сайт использует ваш микрофон</translation>

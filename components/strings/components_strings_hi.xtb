@@ -441,6 +441,7 @@
 <translation id="1719838434204287058">24 x 30 इंच</translation>
 <translation id="1720941539803966190">ट्यूटोरियल बंद करें</translation>
 <translation id="1721424275792716183">* फ़ील्ड ज़रूरी है</translation>
+<translation id="1723636263173393300">इस नीति में <ph name="MAX_ITEMS_LIMIT" /> से ज़्यादा शॉर्टकट नहीं हो सकते.</translation>
 <translation id="1725591448053514783">यू 6 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="1727613060316725209">प्रमाणपत्र मान्य है</translation>
 <translation id="1728677426644403582">एक वेब पेज का सोर्स देखा जा रहा है</translation>
@@ -1048,6 +1049,7 @@
 <translation id="271663710482723385">फ़ुल स्क्रीन से बाहर निकलने के लिए, |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| को दबाएं</translation>
 <translation id="2717336592027046789">रोल</translation>
 <translation id="2718207025093645426">मैनेज किए जा रहे उपयोगकर्ता या डिवाइस पर कोई नीति लोड नहीं है.</translation>
+<translation id="2719233594187778789">अनदेखा किया गया नॉन-यूनीक यूआरएल: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">अनुरोध कामयाब रहा</translation>
 <translation id="2722622039067384533">लिविंग रूम फ़र्नीचर</translation>
 <translation id="2723669454293168317">Chrome की सेटिंग में, सुरक्षा जांच करें</translation>
@@ -2007,6 +2009,7 @@
 <translation id="4298000214066716287">निवेश से जुड़े प्रॉडक्ट, जानकारी, और सेवाएं</translation>
 <translation id="4298148761711700950">क्यूआर कोड अपलोड किए बिना तुरंत पेमेंट करें</translation>
 <translation id="4298925811540301889">इस साइट की कुकी, आपके ChromeOS डिवाइसों पर सिंक की जाती हैं. सिंक किए गए डेटा को मैनेज करने के लिए, <ph name="SYNC_SETTINGS" /> पर जाएं.</translation>
+<translation id="4299919199185766032">शॉर्टकट के नाम में, तय किए गए वर्णों की सीमा <ph name="MAX_LENGTH" /> से ज़्यादा वर्ण नहीं हो सकते.</translation>
 <translation id="4300272766492248925">ऐप्लिकेशन खोलें</translation>
 <translation id="4300675098767811073">दाईं ओर एक से ज़्यादा पंच</translation>
 <translation id="4302514097724775343">डायनो को चलाने के लिए, उस पर टैप करें</translation>
@@ -2708,6 +2711,7 @@
     अपने सिस्टम एडमिन से संपर्क करने की कोशिश करें.</translation>
 <translation id="5496804587179176046">सुरक्षा कोड सेव करें. फ़िलहाल, कोई सुरक्षा कोड सेव नहीं है</translation>
 <translation id="550365051221576010">सभी जानकारी भरें</translation>
+<translation id="5506286895894263601">इस सूची में कोई मान्य शॉर्टकट शामिल नहीं है.</translation>
 <translation id="5508443345185481044">कैमरा और कैमकॉर्डर</translation>
 <translation id="5509762909502811065">बी0</translation>
 <translation id="5509780412636533143">मैनेज किए गए बुकमार्क</translation>
@@ -3627,6 +3631,7 @@
 <translation id="7014741021609395734">ज़ूम लेवल</translation>
 <translation id="7016992613359344582">ये शुल्क एक बार लगने वाले या बार-बार लगने वाले हो सकते हैं और हो सकता है कि इनके बारे में स्पष्ट जानकारी न दी जाए.</translation>
 <translation id="701757816833614688">विज़ुअल आर्ट और डिज़ाइन से जुड़ी शिक्षा</translation>
+<translation id="7020464868401003526">शॉर्टकट के यूआरएल में, तय किए गए वर्णों की सीमा <ph name="MAX_LENGTH" /> से ज़्यादा वर्ण नहीं हो सकते.</translation>
 <translation id="702275896380648118">यह साइट, आपकी पसंद के विषयों का पता लगाती है और फिर दूसरी साइटों पर, उनके हिसाब से विज्ञापन के सुझाव देती है. यह साइट आपके पसंदीदा, विज्ञापन के विषयों के बारे में जानने के लिए Chrome की भी मदद लेती है, ताकि आपको ज़्यादा काम के विज्ञापन दिखाए जा सकें.</translation>
 <translation id="7023162328967545559">एडमिन की चेतावनी</translation>
 <translation id="7023765275461720661">क्या आपको खाता लिंक करना है और <ph name="BNPL_ISSUER_NAME" /> से पेमेंट करना है?</translation>

@@ -1557,6 +1557,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2059913712424898428">Zona horaria</translation>
 <translation id="2060375639911876205">Quitar perfil de eSIM</translation>
 <translation id="2061366302742593739">Nada que mostrar</translation>
+<translation id="2061589908388230480">Si Chromium detecta que una de tus contraseñas aparece en una brecha pública de seguridad de datos, el Gestor de contraseñas de Google puede ofrecerte cambiarla si has iniciado sesión. <ph name="BEGIN_LINK" />Más información sobre el cambio de contraseña automatizado<ph name="END_LINK" /></translation>
 <translation id="2062354623176996748">Navega por Internet sin guardar tu historial de navegación con una ventana de Incógnito</translation>
 <translation id="206308717637808771">Elimina los datos al cerrar todas las ventanas. Los datos se tratan igual que en el sitio web que estás viendo.</translation>
 <translation id="2065405795449409761">Un software automatizado de pruebas está controlando Chrome.</translation>
@@ -2455,6 +2456,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2669241540496514785">No se ha podido abrir el archivo <ph name="APP_NAME" /></translation>
 <translation id="2669454659051515572">Cualquier persona que use este dispositivo puede ver los archivos descargados</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> está compartiendo una pestaña de Chrome.</translation>
+<translation id="2670168377011445813">Si Chrome detecta que una de tus contraseñas aparece en una brecha pública de seguridad de datos, el Gestor de contraseñas de Google puede ofrecerte cambiarla si has iniciado sesión. <ph name="BEGIN_LINK" />Más información sobre el cambio de contraseña automatizado<ph name="END_LINK" /></translation>
 <translation id="2670350619068134931">Animaciones reducidas</translation>
 <translation id="2670403088701171361">No permitir que los sitios vean texto ni imágenes del portapapeles</translation>
 <translation id="2671423594960767771">Compartir grupo</translation>
@@ -3550,6 +3552,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3450056559545492516">Mostrar notificaciones del sistema sobre funciones y consejos de Chrome</translation>
 <translation id="3450157232394774192">Porcentaje de ocupación de estado de inactividad</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> necesita que te conectes a una red Wi‑Fi para descargar una actualización.</translation>
+<translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - Estás compartiendo esta pestaña con Gemini</translation>
 <translation id="345078987193237421">Esto permite que las aplicaciones, los sitios web con el permiso de cámara y los servicios del sistema puedan acceder a la cámara</translation>
 <translation id="3451362021220965191">Las aplicaciones web aisladas controlan los lectores de tarjetas inteligentes para acceder a las tarjetas inteligentes que se insertan o se presentan. Las tarjetas inteligentes suelen contener identidades que se usan para autenticar o autorizar operaciones, iniciar sesión en servicios, etc.</translation>
 <translation id="3452999110156026232">Acceso parental</translation>
@@ -4543,7 +4546,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4109135793348361820">Mover ventana a <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Restaurar advertencia</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (sin conexión)</translation>
-<translation id="4113030288477039509">Administrado por tu administrador</translation>
 <translation id="4113743276555482284">Contraseña del archivo</translation>
 <translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />Cuando la precisión de la ubicación está activada, la información sobre las señales inalámbricas, como los puntos de acceso Wi-Fi y las torres de redes móviles, junto con los datos de los sensores del dispositivo, como el acelerómetro y el giroscopio, se usan para estimar con mayor precisión la ubicación del dispositivo, que las aplicaciones y los servicios de Android utilizan para proporcionar funciones basadas en la ubicación. Para ello, Google recopila periódicamente la información de los sensores de dispositivos y señales inalámbricas que hay cerca de ti para recoger las ubicaciones de las señales inalámbricas.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google usa esta información sin identificarte para mejorar la precisión de la ubicación y los servicios basados en la ubicación, así como para optimizar, proporcionar y mantener los servicios de Google. Tratamos esta información según los intereses legítimos de Google y de terceros para satisfacer las necesidades de los usuarios.<ph name="END_PARAGRAPH2" />
@@ -4994,7 +4996,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="443196770280837407">Abre Gemini con una combinación de teclas.</translation>
 <translation id="4432621511648257259">Contraseña incorrecta</translation>
 <translation id="4434611816075088065">No hay nada que requiera tu atención en este momento</translation>
-<translation id="443475966875174318">Actualizar o quitar aplicaciones incompatibles</translation>
 <translation id="443503224864902151">Se cerrará tu sesión en la mayoría de los sitios. Sin embargo, se mantendrá iniciada la sesión en tu cuenta de Google para que se puedan eliminar tus datos sincronizados.</translation>
 <translation id="4437879751057074691">Preguntar si quiero guardar contraseñas y llaves de acceso.</translation>
 <translation id="4437947179446780764">Añadir proveedor de servicios de DNS personalizado</translation>
@@ -5408,7 +5409,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4742334355511750246">No puede mostrar imágenes</translation>
 <translation id="4742795653798179840">Datos de Chrome eliminados</translation>
 <translation id="4742970037960872810">Eliminar texto destacado</translation>
-<translation id="4743260470722568160"><ph name="BEGIN_LINK" />Cómo actualizar aplicaciones<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">Permitido (<ph name="PERMISSION_DETAILS" />). Activa el <ph name="LINK_BEGIN" />acceso al micrófono del sistema<ph name="LINK_END" />.</translation>
 <translation id="4744260496658845719">Brillo de la retroiluminación del teclado</translation>
 <translation id="4744268813103118742">Ir al sitio</translation>
@@ -6023,7 +6023,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5178667623289523808">Buscar anterior</translation>
 <translation id="5180276433875360121">Mostrar <ph name="CERT_LIST" /></translation>
 <translation id="5181140330217080051">Descargando</translation>
-<translation id="5181172023548002891">En el Gestor de contraseñas de Google de <ph name="ACCOUNT" /></translation>
+<translation id="5181172023548002891">Guárdala en el Gestor de contraseñas de Google de <ph name="ACCOUNT" /></translation>
 <translation id="5181551096188687373">Esta contraseña está guardada solo en este dispositivo. Para usarla en tus otros dispositivos, guárdala en tu cuenta de Google: <ph name="USER_EMAIL" />.</translation>
 <translation id="5183344263225877832">¿Restablecer todos los permisos del dispositivo HID?</translation>
 <translation id="5184063094292164363">&amp;Consola JavaScript</translation>
@@ -7152,7 +7152,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="5989497858237037960">Cuando navegas por sitios, el contenido de sus páginas se cifra y se guarda en tu dispositivo. Esto puede afectar al rendimiento de Chrome.</translation>
 <translation id="5990266201903445068">Solo Wi‑Fi</translation>
 <translation id="5990386583461751448">Traducida</translation>
-<translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Para seguir navegando por Internet, pide a tu administrador que quite esta aplicación.}other{Para seguir navegando por Internet, pide a tu administrador que quite estas aplicaciones.}}</translation>
 <translation id="5992225669837656567">Todos los ratones se han desconectado</translation>
 <translation id="5992652489368666106">Sin bordes</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Revisión de 1 sitio completada}other{Revisión de {NUM_SITES} sitios completada}}</translation>
@@ -7372,6 +7371,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6151128161396960693">Asegúrate de que confías en la persona que ha enviado esta invitación</translation>
 <translation id="6151771661215463137">El archivo ya existe en tu carpeta de descargas.</translation>
 <translation id="6152918902620844577">Esperando la siguiente operación</translation>
+<translation id="6152929108650354050">Estás compartiendo esta pestaña con Gemini</translation>
 <translation id="6153439704237222699">Más información sobre Do Not Track</translation>
 <translation id="6154240335466762404">Quitar todos los puertos</translation>
 <translation id="615436196126345398">Protocolo</translation>
@@ -8642,7 +8642,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7039951224110875196">Crear una cuenta de Google para un niño/a</translation>
 <translation id="7039968672732182060">Tu Chromebook ya no recibe actualizaciones de seguridad. Ha llegado la hora de cambiar de Chromebook para disfrutar de las últimas novedades en seguridad y software. Oferta sujeta a condiciones.</translation>
 <translation id="7042116641003232070">Tiene permiso para guardar datos en tu dispositivo</translation>
-<translation id="7043108582968290193">¡Hecho! No se han encontrado aplicaciones incompatibles.</translation>
 <translation id="7044124535091449260">Más información sobre el acceso del sitio web</translation>
 <translation id="7044207729381622209">Se cerrarán tus sesiones en esos sitios, incluso si están en ventanas abiertas</translation>
 <translation id="7044211973375150246">Se ha configurado una aplicación para abrir los mismos enlaces que <ph name="APP_NAME" />. Se inhabilitará la apertura de enlaces compatibles desde <ph name="APP_NAME_2" />.</translation>
@@ -8978,7 +8977,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">Animado</translation>
 <translation id="7301812050652048720">Llave de acceso eliminada</translation>
-<translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Esta aplicación puede impedir que Chrome funcione correctamente.}other{Estas aplicaciones pueden impedir que Chrome funcione correctamente.}}</translation>
 <translation id="7303281435234579599">¡Vaya! Se ha producido un error inesperado al configurar el modo Demo.</translation>
 <translation id="7303485269821975179">Establece una contraseña para <ph name="DEVICE_TYPE" /></translation>
 <translation id="7303900363563182677">No se permite que este sitio web vea el texto y las imágenes que se hayan copiado en el portapapeles</translation>
@@ -11867,7 +11865,6 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="962802172452141067">Árbol de la carpeta de marcadores</translation>
 <translation id="963000966785016697">Buscar imagen con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Tu administrador de TI ha inhabilitado el contenido adicional de Chrome para tu dispositivo.</translation>
-<translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Aplicación}other{Aplicaciones}}</translation>
 <translation id="964790508619473209">Disposición de la pantalla</translation>
 <translation id="96535553604365597">Informar de un problema con Google Cast</translation>
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Revisa 1 sitio que ha enviado muchas notificaciones recientemente}other{Revisa {NUM_SITES} sitios que han enviado muchas notificaciones recientemente}}</translation>

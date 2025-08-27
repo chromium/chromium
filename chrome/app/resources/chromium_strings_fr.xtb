@@ -82,6 +82,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2008474315282236005">Cette action aura pour effet de supprimer 1 élément de cet appareil. Pour récupérer vos données ultérieurement, connectez-vous à Chromium en tant que <ph name="USER_EMAIL" />.</translation>
 <translation id="2018879682492276940">Échec de l'installation. Veuillez réessayer.</translation>
 <translation id="2020032459870799438">Pour vérifier si vos autres mots de passe sont suffisamment sécurisés afin d'empêcher toute violation de données et autres problèmes de sécurité, <ph name="BEGIN_LINK" />connectez-vous à Chromium<ph name="END_LINK" />.</translation>
+<translation id="2039417478970545937">paramètres.</translation>
 <translation id="2049376729098081731">Choisissez d'inclure l'historique Chromium pour une expérience plus personnalisée dans les services Google</translation>
 <translation id="2054039611381840095">Vous devez disposer de macOS 12 ou d'une version ultérieure pour recevoir les futures mises à jour de Chromium. macOS 11 est installé sur cet ordinateur.</translation>
 <translation id="2086476982681781442">Chromium a bloqué ce téléchargement, car le fichier est trompeur et risque d'apporter des modifications inattendues à votre appareil</translation>
@@ -314,6 +315,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="5123973130450702873">Chromium a besoin de l'autorisation de suivre vos mains</translation>
 <translation id="5141988424377517949">Vous n'avez pas consulté le site récemment. Chromium a supprimé "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" et "<ph name="PERMISSION_3" />".</translation>
 <translation id="5174969993834422967">Vous bloquez généralement les notifications. Pour autoriser ce site à vous en envoyer, cliquez sur l'icône de notification dans l'angle droit de la barre d'adresse.</translation>
+<translation id="5174983315706567306">Espace disque insuffisant.</translation>
 <translation id="5187123684706427865">Le compte Chromium nécessite une réauthentification</translation>
 <translation id="5224391634244552924">Aucun mot de passe enregistré. Chromium ne peut vérifier vos mots de passe que si vous les enregistrez.</translation>
 <translation id="5231355151045086930">Se déconnecter de Chromium</translation>
@@ -441,6 +443,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="6598877126913850652">Accéder aux paramètres de notification Chromium</translation>
 <translation id="6600016381025017075">Recherchez ce que vous voulez sur cette page</translation>
 <translation id="6613594504749178791">Vos modifications seront prises en compte au prochain redémarrage de Chromium.</translation>
+<translation id="6648212540664651655">Reprenez là où vous en étiez : Chromium a restauré les onglets de votre dernière session. Vous pouvez désactiver cette option dans les</translation>
 <translation id="665732753414869868">Pour créer un plan 3D de votre environnement, Chromium a besoin de l'autorisation d'accéder à la caméra</translation>
 <translation id="6669284030132180248">Si vous enregistrez également vos favoris dans votre compte Google, vous pouvez suivre le prix de produits dans Chromium et être averti lorsqu'ils baissent.</translation>
 <translation id="6676384891291319759">Accéder à Internet</translation>
@@ -505,6 +508,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="7352651011704765696">Un problème est survenu</translation>
 <translation id="7376384068949534168">Vous n'avez pas consulté le site récemment. Chromium a supprimé "<ph name="PERMISSION_1" />" et "<ph name="PERMISSION_2" />".</translation>
 <translation id="7384121030444253939">Cette extension n'est plus prise en charge. Chromium vous recommande de la supprimer.</translation>
+<translation id="7413153308467572558">Reprenez là où vous en étiez : Chromium restaure vos onglets à chaque redémarrage. Pour désactiver cette option, accédez aux</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium pour les développeurs</translation>
 <translation id="7450541714075000668">Texte copié</translation>
 <translation id="7451052299415159299">Chromium a besoin de votre autorisation pour accéder à votre appareil photo pour ce site</translation>
@@ -636,6 +640,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="911206726377975832">Supprimer également vos données de navigation ?</translation>
 <translation id="9134482777260927479">Aide aux devoirs</translation>
 <translation id="9148058034647219655">Quitter</translation>
+<translation id="9155105544013854680">Reprenez là où vous en étiez : Chromium peut restaurer vos onglets à chaque redémarrage. Pour activer cette option, accédez aux</translation>
 <translation id="9158494823179993217">Votre administrateur système a configuré Chromium pour que <ph name="TARGET_URL_HOSTNAME" /> s'ouvre dans un autre navigateur.</translation>
 <translation id="9185526690718004400">Relancer et mettre à jour &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>

@@ -84,6 +84,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2008474315282236005">Dit sal 1 item op hierdie toestel uitvee. Meld as <ph name="USER_EMAIL" /> by Chromium aan om jou data later op te haal.</translation>
 <translation id="2018879682492276940">Kan nie installeer nie. Probeer weer.</translation>
 <translation id="2020032459870799438"><ph name="BEGIN_LINK" />Meld by Chromium aan<ph name="END_LINK" /> om te kyk of jou ander wagwoorde teen dataskendings en ander sekuriteitkwessies beveilig word.</translation>
+<translation id="2039417478970545937">Instellings.</translation>
 <translation id="2049376729098081731">Kies of jy Chromium-geskiedenis wil insluit vir meer gepersonaliseerde ervarings in Google-dienste</translation>
 <translation id="2054039611381840095">Jy het macOS 12 of nuwer nodig om in die toekoms Chromium-opdaterings te kry. Hierdie rekenaar gebruik macOS 11.</translation>
 <translation id="2086476982681781442">Chromium het hierdie aflaai geblokkeer omdat die lêer misleidend is en onverwagte veranderinge aan jou toestel kan maak</translation>
@@ -316,6 +317,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="5123973130450702873">Chromium benodig toestemming om jou hande na te spoor</translation>
 <translation id="5141988424377517949">Jy het nie onlangs die webwerf besoek nie. Chromium het <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> verwyder.</translation>
 <translation id="5174969993834422967">Jy blokkeer gewoonlik kennisgewings. Klik die kennisgewing-ikoon in die regter hoek van jou liggingbalk sodat dié werf jou in kennis kan stel.</translation>
+<translation id="5174983315706567306">Te min skyfspasie.</translation>
 <translation id="5187123684706427865">Chromium-rekening vereis herstawing</translation>
 <translation id="5224391634244552924">Geen gestoorde wagwoorde nie. Chromium kan jou wagwoorde nagaan wanneer jy hulle stoor.</translation>
 <translation id="5231355151045086930">Meld af uit Chromium</translation>
@@ -443,6 +445,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="6598877126913850652">Gaan na Chromium se kennisgewinginstellings</translation>
 <translation id="6600016381025017075">Soek na enigiets op hierdie bladsy</translation>
 <translation id="6613594504749178791">Jou veranderinge sal in werking tree wanneer jy Chromium weer herbegin.</translation>
+<translation id="6648212540664651655">Gaan voort waar jy opgehou het: Chromium het jou oortjies van jou laaste sessie teruggestel. Jy kan dit afskakel in</translation>
 <translation id="665732753414869868">Chromium het kameratoestemming nodig om 'n 3D-kaart van jou omgewing te skep</translation>
 <translation id="6669284030132180248">As jy jou boekmerke ook in jou Google-rekening stoor, kan jy produkpryse in Chromium naspoor en kennisgewings kry wanneer die prys daal</translation>
 <translation id="6676384891291319759">Gaan by die internet in</translation>
@@ -507,6 +510,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="7352651011704765696">Iets het verkeerd geloop</translation>
 <translation id="7376384068949534168">Jy het nie onlangs die webwerf besoek nie. Chromium het <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> verwyder.</translation>
 <translation id="7384121030444253939">Hierdie uitbreiding word nie meer gesteun nie. Chromium beveel aan dat jy dit eerder verwyder.</translation>
+<translation id="7413153308467572558">Gaan voort waar jy opgehou het: Chromium stel elke keer as jy herbegin, jou oortjies terug. Om dit af te skakel, gaan na</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Teks gekopieer</translation>
 <translation id="7451052299415159299">Chromium het toestemming nodig om toegang te kry tot jou kamera vir hierdie werf</translation>
@@ -638,6 +642,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="911206726377975832">Vee ook jou blaaidata uit?</translation>
 <translation id="9134482777260927479">Huiswerkhulp</translation>
 <translation id="9148058034647219655">Gaan uit</translation>
+<translation id="9155105544013854680">Gaan voort waar jy opgehou het: Chromium kan elke keer as jy herbegin, jou oortjies terugstel. Om dit aan te skakel, gaan na</translation>
 <translation id="9158494823179993217">Jou stelseladministrateur het Chromium opgestel om 'n alternatiewe blaaier oop te maak om na <ph name="TARGET_URL_HOSTNAME" /> toe te gaan.</translation>
 <translation id="9185526690718004400">Begin weer om &amp;Chromium op te dateer</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>

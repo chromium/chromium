@@ -440,6 +440,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1719838434204287058">24 x 30 in</translation>
 <translation id="1720941539803966190">Zatvori vodič</translation>
 <translation id="1721424275792716183">* Polje je obavezno</translation>
+<translation id="1723636263173393300">Broj prečaca u ovom pravilu ne smije biti veći od <ph name="MAX_ITEMS_LIMIT" />.</translation>
 <translation id="1725591448053514783">Omotnica You 6</translation>
 <translation id="1727613060316725209">Certifikat je važeći</translation>
 <translation id="1728677426644403582">Gledate izvor web-stranice</translation>
@@ -1047,6 +1048,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="271663710482723385">Pritisnite |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| da biste zatvorili prikaz na cijelom zaslonu.</translation>
 <translation id="2717336592027046789">Kolut</translation>
 <translation id="2718207025093645426">Upravljani korisnik ili uređaj nema učitano pravilo.</translation>
+<translation id="2719233594187778789">Zanemaren je nejedinstveni URL: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Zahtjev je uspio</translation>
 <translation id="2722622039067384533">Namještaj za dnevni boravak</translation>
 <translation id="2723669454293168317">Izvršite sigurnosnu provjeru u postavkama Chromea</translation>
@@ -2006,6 +2008,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4298000214066716287">Investicije</translation>
 <translation id="4298148761711700950">Plaćajte odmah bez prijenosa QR koda</translation>
 <translation id="4298925811540301889">Kolačići za ovu web-lokaciju sinkroniziraju se na svim vašim ChromeOS uređajima. Da biste upravljali sadržajem koji se sinkronizira, otvorite <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4299919199185766032">Naziv prečaca premašuje maksimalnu dopuštenu duljinu od ovoliko znakova: <ph name="MAX_LENGTH" />.</translation>
 <translation id="4300272766492248925">Otvori aplikaciju</translation>
 <translation id="4300675098767811073">Višestruko bušenje s desne strane</translation>
 <translation id="4302514097724775343">Dodirnite dinosaura da biste počeli igrati</translation>
@@ -2707,6 +2710,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
     Pokušajte se obratiti administratoru sustava.</translation>
 <translation id="5496804587179176046">Spremite sigurnosne kodove, trenutačno nije spremljen nijedan sigurnosni kôd</translation>
 <translation id="550365051221576010">Ispunite sve</translation>
+<translation id="5506286895894263601">Popis ne sadrži važeće prečace.</translation>
 <translation id="5508443345185481044">Fotoaparati i kamere</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Upravljane oznake</translation>
@@ -3626,6 +3630,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="7014741021609395734">Razina zumiranja</translation>
 <translation id="7016992613359344582">Ta terećenja mogu biti jednokratna ili ponavljajuća i možda nisu odmah vidljiva.</translation>
 <translation id="701757816833614688">Obrazovanje za vizualne umjetnosti i dizajn</translation>
+<translation id="7020464868401003526">URL prečaca premašuje maksimalnu dopuštenu duljinu od ovoliko znakova: <ph name="MAX_LENGTH" />.</translation>
 <translation id="702275896380648118">Ova web-lokacija određuje što vam se sviđa, a zatim predlaže oglase na drugim web-lokacijama. Ova web-lokacija također prima podatke o temama vaših oglasa iz Chromea kako bi vam prikazivala relevantnije oglase.</translation>
 <translation id="7023162328967545559">Upozorenje administratora</translation>
 <translation id="7023765275461720661">Želite li povezati račun i platiti putem usluge <ph name="BNPL_ISSUER_NAME" />?</translation>

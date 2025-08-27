@@ -243,6 +243,7 @@
 <translation id="139305205187523129"><ph name="HOST_NAME" />에서 전송한 데이터가 없습니다.</translation>
 <translation id="1393071644879491291">방문하려고 한 사이트의 공격자가 속임수를 써서 소프트웨어를 설치하거나 비밀번호, 전화번호, 신용카드 번호 등을 공개하도록 유도할 수 있습니다. Chrome에서는 안전한 위치로 돌아갈 것을 적극 권장합니다. <ph name="BEGIN_LEARN_MORE_LINK" />이 경고에 대해 자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1405567553485452995">연한 녹색</translation>
+<translation id="1406370515365284486">결제 수단은 그대로 저장됩니다.</translation>
 <translation id="1406500794671479665">확인 중...</translation>
 <translation id="1406812885827747674">이번에만 허용</translation>
 <translation id="14070772729708640"><ph name="CLOUD_PROVIDER" />에 <ph name="FOLDER_NAME" />에 파일이 업로드되었습니다</translation>
@@ -440,6 +441,7 @@
 <translation id="1719838434204287058">24x30인치</translation>
 <translation id="1720941539803966190">튜토리얼 닫기</translation>
 <translation id="1721424275792716183">* 필수 입력란</translation>
+<translation id="1723636263173393300">정책의 바로가기는 <ph name="MAX_ITEMS_LIMIT" />개를 넘으면 안 됩니다.</translation>
 <translation id="1725591448053514783">봉투 You 6</translation>
 <translation id="1727613060316725209">인증서가 유효함</translation>
 <translation id="1728677426644403582">웹페이지 소스를 보는 중</translation>
@@ -1047,6 +1049,7 @@
 <translation id="271663710482723385">전체화면을 종료하려면 |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| 키를 누르세요.</translation>
 <translation id="2717336592027046789">롤</translation>
 <translation id="2718207025093645426">관리 사용자 또는 기기에 로드된 정책이 없습니다.</translation>
+<translation id="2719233594187778789">무시된 고유하지 않은 URL: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">요청 성공</translation>
 <translation id="2722622039067384533">거실 가구</translation>
 <translation id="2723669454293168317">Chrome 설정의 안전 확인 실행</translation>
@@ -2007,6 +2010,7 @@
 <translation id="4298000214066716287">투자</translation>
 <translation id="4298148761711700950">QR 업로드 없이 즉시 결제</translation>
 <translation id="4298925811540301889">이 사이트의 쿠키가 ChromeOS 기기 간에 동기화됩니다. 동기화 항목을 관리하려면 <ph name="SYNC_SETTINGS" /> 설정으로 이동하세요.</translation>
+<translation id="4299919199185766032">바로가기 이름이 최대 허용 길이인 <ph name="MAX_LENGTH" />자(영문 기준)를 초과합니다.</translation>
 <translation id="4300272766492248925">앱 열기</translation>
 <translation id="4300675098767811073">오른쪽 다공 펀칭</translation>
 <translation id="4302514097724775343">플레이하려면 공룡을 탭하세요.</translation>
@@ -2708,6 +2712,7 @@
     시스템 관리자에게 문의하세요.</translation>
 <translation id="5496804587179176046">보안 코드 저장, 현재 저장된 보안 코드 없음</translation>
 <translation id="550365051221576010">모두 입력</translation>
+<translation id="5506286895894263601">목록에 유효한 바로가기가 없습니다.</translation>
 <translation id="5508443345185481044">카메라 및 캠코더</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">관리 북마크</translation>
@@ -3627,6 +3632,7 @@
 <translation id="7014741021609395734">확대/축소 수준</translation>
 <translation id="7016992613359344582">이러한 금액 청구는 일회성이거나 반복적일 수 있으며 불분명한 방식으로 이루어질 수도 있습니다.</translation>
 <translation id="701757816833614688">시각 예술 및 디자인 교육</translation>
+<translation id="7020464868401003526">바로가기의 URL이 최대 허용 길이인 <ph name="MAX_LENGTH" />자(영문 기준)를 초과합니다.</translation>
 <translation id="702275896380648118">이 사이트는 내 관심분야를 파악한 후 다른 사이트에 광고를 추천합니다. Chrome에 저장된 내 광고 주제를 기반으로 더 관련성 있는 광고를 표시합니다.</translation>
 <translation id="7023162328967545559">관리자 경고</translation>
 <translation id="7023765275461720661">계정을 연결하고 <ph name="BNPL_ISSUER_NAME" /> 시스템을 통해 결제하시겠어요?</translation>
@@ -3808,7 +3814,7 @@
 <translation id="7346062987309535530">식기</translation>
 <translation id="7346081071264046066">'기쁜 마음으로 이 결혼식 초대에 '예'라고 답장'</translation>
 <translation id="7347640536700429009">카드에 기재된 이름이 잘못되었습니다.</translation>
-<translation id="7352651011704765696">문제가 발생했습니다.</translation>
+<translation id="7352651011704765696">문제가 발생했습니다</translation>
 <translation id="7353601530677266744">명령줄</translation>
 <translation id="7359588939039777303">광고가 차단되었습니다.</translation>
 <translation id="7360451453306104998">Google에서 이용 가능한 할인 혜택을 찾으면 결제 시 표시합니다.</translation>

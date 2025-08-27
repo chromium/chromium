@@ -21,6 +21,7 @@
 <translation id="1072476005125066234">Avis en fonction de vos centres d'intérêt</translation>
 <translation id="1074827084851510304">Vous êtes sur le point de supprimer {password_count} mots de passe et la liste des sites et des applis pour lesquels vous avez choisi de ne jamais enregistrer les renseignements de connexion. Tout compte que vous avez créé pour des sites ou des applis ne sera pas supprimé.</translation>
 <translation id="1076421457278169141">Code numérisé</translation>
+<translation id="1081114897601629648">Les mots de passe suivants n'ont pas été importés dans le gestionnaire de mots de passe Google parce qu'ils ne répondent pas aux exigences.</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} onglet}one{{count} onglet}other{{count} onglets}}</translation>
 <translation id="1082554859195167538">Avis sur les produits pour vous</translation>
 <translation id="1084365883616172403">Message Facebook terminé.</translation>
@@ -241,6 +242,7 @@
 <translation id="1902277226107477495">Détection d'adresse désactivée. Réactivez-la dans les paramètres.</translation>
 <translation id="1904580727789512086">Les adresses URL que vous visitez sont enregistrées dans votre compte Google</translation>
 <translation id="1911619930368729126">Télév. vers Google Disque</translation>
+<translation id="1925706052394657380">Ouvrez les réglages des <ph name="BEGIN_BOLD" />applis par défaut<ph name="END_BOLD" /> dans iOS</translation>
 <translation id="1941314575388338491">Appuyez deux fois pour copier.</translation>
 <translation id="1943478190258551035">Menu → Paramètres</translation>
 <translation id="1952728750904661634">Se connecter avec un compte géré</translation>
@@ -250,6 +252,7 @@
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> a partagé un mot de passe avec vous pour <ph name="WEBSITE" /></translation>
 <translation id="1962969542251276847">Écran de verrouillage</translation>
 <translation id="1963976881984600709">Protection standard</translation>
+<translation id="1964507856799750384">Touchez <ph name="BEGIN_BOLD" />Appli de navigation<ph name="END_BOLD" /></translation>
 <translation id="1966313166384086081">données relatives aux sites</translation>
 <translation id="1967461193809857427">{count,plural, =1{Reprendre l'onglet que vous avez laissé sur Android?}one{Reprendre les onglets que vous avez laissés sur Android?}other{Reprendre les onglets que vous avez laissés sur Android?}}</translation>
 <translation id="1972325230031091483">Vous naviguerez plus rapidement parce que le contenu sera chargé à l'avance en fonction de la page Web que vous êtes en train de consulter</translation>
@@ -599,7 +602,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="333229797575847124">Comment activer cette fonctionnalité</translation>
 <translation id="3344485292736684439">{count,plural, =1{Favori enregistré dans « {title} » dans votre compte, {email}}one{Favoris enregistrés dans « {title} » dans votre compte, {email}}other{Favoris enregistrés dans « {title} » dans votre compte, {email}}}</translation>
 <translation id="334690320928261823">Onglets récents</translation>
-<translation id="3348387552617855658">Cette carte vous aide à suivre vos colis et vous donne des mises à jour importantes sur les livraisons.</translation>
 <translation id="3349031117032695619">Bloquer les fenêtres contextuelles</translation>
 <translation id="3349676726073650389">Les sites et recherches que vous suivez sont enregistrés dans votre compte Google. Vous pouvez gérer vos contenus suivis dans les paramètres à tout moment.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Ce compte est géré.</translation>

@@ -21,6 +21,7 @@
 <translation id="1072476005125066234">በእርስዎ ዝንባሌዎች ላይ የተመሰረቱ ግምገማዎች</translation>
 <translation id="1074827084851510304">{password_count} የይለፍ ቃሎችን እና በመለያ መግቢያ መረጃን መቼም ላለማስቀመጥ የመረጡባቸውን የጣቢያዎች እና መተግበሪያዎች ዝርዝር ሊሰርዙ ነው። ለጣቢያዎች ወይም ለመተግበሪያዎች የፈጠሩት ማንኛውም መለያ አይሰረዝም።</translation>
 <translation id="1076421457278169141">ኮድ ተቃኝቷል</translation>
+<translation id="1081114897601629648">የሚከተሉት የይለፍ ቃላት ወደ Google የይለፍ ቃል አስተዳዳሪ አልመጡም፣ ምክንያቱም ከመስፈርቶቹ ጋር አይዛመዱም።</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} ትር}one{{count} ትር}other{{count} ትሮች}}</translation>
 <translation id="1082554859195167538">የምርት ግምገማዎች ለእርስዎ</translation>
 <translation id="1084365883616172403">የFacebook ልጥፍ ተጠናቅቋል።</translation>
@@ -599,7 +600,6 @@
 <translation id="333229797575847124">እንዴት ይህን ባህሪ ማብራት እንደሚቻል</translation>
 <translation id="3344485292736684439">{count,plural, =1{በመለያዎ፣ {email} ውስጥ ዕልባት ወደ «{title}» ተቀምጧል}one{በመለያዎ፣ {email} ውስጥ ዕልባት ወደ «{title}» ተቀምጧል}other{በመለያዎ፣ {email} ውስጥ ዕልባቶች ወደ «{title}» ተቀምጠዋል}}</translation>
 <translation id="334690320928261823">የቅርብ ጊዜ ትሮች</translation>
-<translation id="3348387552617855658">ይህ ካርድ ጥቅሎችዎን እንዲከታተሉ ያግዝዎታል እና አስፈላጊ የማድረስ ዝማኔዎችን ይሰጥዎታል።</translation>
 <translation id="3349031117032695619">ብቅ-ባዮችን አግድ</translation>
 <translation id="3349676726073650389">እርስዎ የሚከተሏቸው ጣቢያዎች እና ፍለጋዎች በእርስዎ Google መለያ ውስጥ ተቀምጠዋል። በማንኛውም ጊዜ የእርስዎን መከተሎች በቅንብሮች ውስጥ ማስተዳደር ይችላሉ።</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />። ይህ መለያ የሚተዳደር ነው።</translation>

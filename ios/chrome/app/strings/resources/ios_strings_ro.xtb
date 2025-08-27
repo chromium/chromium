@@ -21,6 +21,7 @@
 <translation id="1072476005125066234">Recenzii bazate pe interesele tale</translation>
 <translation id="1074827084851510304">Ești pe cale să ștergi {password_count} parole și lista de site-uri și aplicații pentru care ai ales să nu salvezi niciodată informațiile de conectare. Conturile pe care le-ai creat pentru site-uri și aplicații nu se vor șterge.</translation>
 <translation id="1076421457278169141">Codul a fost scanat</translation>
+<translation id="1081114897601629648">Următoarele parole nu au fost importate în Managerul de parole Google deoarece nu corespund cerințelor.</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} filă}few{{count} file}other{{count} de file}}</translation>
 <translation id="1082554859195167538">Recenzii de produse pentru tine</translation>
 <translation id="1084365883616172403">Postare pe Facebook finalizată.</translation>
@@ -599,7 +600,6 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="333229797575847124">Cum să activezi această funcție</translation>
 <translation id="3344485292736684439">{count,plural, =1{Marcaj salvat în {title} în contul tău {email}}few{Marcaje salvate în {title} în contul tău {email}}other{Marcaje salvate în {title} în contul tău {email}}}</translation>
 <translation id="334690320928261823">File recente</translation>
-<translation id="3348387552617855658">Acest card te ajută să urmărești coletele și să primești actualizări importante privind livrările.</translation>
 <translation id="3349031117032695619">Blochează ferestrele de tip pop-up</translation>
 <translation id="3349676726073650389">Site-urile și căutările pe care le urmărești se salvează în Contul Google. Poți gestiona oricând elementele urmărite din setări.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Acest cont este gestionat.</translation>

@@ -28,6 +28,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ਟੈਬ ਗਰੁੱਪਬੱਧ ਕੀਤੀ ਗਈ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ਟੈਬ}one{<ph name="TABS_COUNT_MANY" /> ਟੈਬ}other{<ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ}}</translation>
 <translation id="1909810060368225529">ਨੋਟਿਸ: ਸਾਂਝੇ ਕੀਤੇ ਇਸ ਟੈਬ ਗਰੁੱਪ ਵਿੱਚ ਕੀਤੀਆਂ ਜਾਣ ਵਾਲੀਆਂ ਤਬਦੀਲੀਆਂ ਹਰ ਕਿਸੇ ਨੂੰ ਦਿਖਾਈ ਦੇਣਗੀਆਂ। ਹਰ ਕੋਈ ਤੁਹਾਡੇ ਸਾਂਝੇ ਕੀਤੇ ਟੈਬ ਗਰੁੱਪਾਂ ਵਿੱਚ ਤਬਦੀਲੀਆਂ ਕਰ ਸਕਦਾ ਹੈ</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{ਟੈਬ ਪਿੰਨ ਕਰੋ}one{ਟੈਬ ਪਿੰਨ ਕਰੋ}other{ਟੈਬਾਂ ਪਿੰਨ ਕਰੋ}}</translation>
 <translation id="1982637982196732906">ਅਕਿਰਿਆਸ਼ੀਲ ਸੈਕਸ਼ਨ ਵਿੱਚ ਲਿਜਾਓ</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{ਚੁਣੀ ਹੋਈ <ph name="TABS_COUNT_ONE" /> ਟੈਬ ਨੂੰ ਬੁੱਕਮਾਰਕ ਕਰੋ}one{ਚੁਣੀ ਹੋਈ <ph name="TABS_COUNT_MANY" /> ਟੈਬ ਨੂੰ ਬੁੱਕਮਾਰਕ ਕਰੋ}other{ਚੁਣੀਆਂ ਹੋਈਆਂ <ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ ਨੂੰ ਬੁੱਕਮਾਰਕ ਕਰੋ}}</translation>
 <translation id="2055057176188061528">ਟੈਬ ਗਰੁੱਪ ਚੁਣੋ ਜਾਂ ਨਵਾਂ ਟੈਬ ਗਰੁੱਪ ਬਣਾਓ</translation>
@@ -78,6 +79,7 @@
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">'ਸਾਂਝਾ ਕਰੋ' ਸ਼ੀਟ ਦੀ ਪੂਰਵ-ਝਲਕ ਲਈ ਲਘੂ-ਚਿੱਤਰ।</translation>
 <translation id="3810973564298564668">ਵਿਵਸਥਿਤ ਕਰੋ</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{ਟੈਬ ਅਣਪਿੰਨ ਕਰੋ}one{ਟੈਬ ਅਣਪਿੰਨ ਕਰੋ}other{ਟੈਬਾਂ ਅਣਪਿੰਨ ਕਰੋ}}</translation>
 <translation id="3940195383040445971">ਟੈਬਾਂ ਵਿੱਚ ਕੀਮਤਾਂ 'ਤੇ ਨਜ਼ਰ ਰੱਖੋ</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> ਨਵੀ ਟੈਬ, <ph name="ANY_CLOSED" /> ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ}one{<ph name="MANY_ADDED" /> ਨਵੀ ਟੈਬ, <ph name="ANY_CLOSED" /> ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ}other{<ph name="MANY_ADDED" /> ਨਵੀਆਂ ਟੈਬਾਂ, <ph name="ANY_CLOSED" /> ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{ਟੈਬ ਨੂੰ ਗਰੁੱਪਬੱਧ ਕਰੋ}one{ਟੈਬ ਨੂੰ ਗਰੁੱਪਬੱਧ ਕਰੋ}other{ਟੈਬਾਂ ਨੂੰ ਗਰੁੱਪਬੱਧ ਕਰੋ}}</translation>
@@ -131,6 +133,7 @@
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{ਚੁਣੀ ਗਈ <ph name="TABS_COUNT_ONE" /> ਆਈਟਮ ਬੰਦ ਕਰੋ}one{ਚੁਣੀ ਗਈ <ph name="TABS_COUNT_MANY" /> ਆਈਟਮ ਬੰਦ ਕਰੋ}other{ਚੁਣੀ ਗਈ <ph name="TABS_COUNT_MANY" /> ਆਈਟਮਾਂ ਬੰਦ ਕਰੋ}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ਗਰੁੱਪ ਨੂੰ ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਲਿਜਾਓ}one{ਗਰੁੱਪ ਨੂੰ ਕਿਸੇ ਹੋਰ ਵਿੰਡੋ ਵਿੱਚ ਲਿਜਾਓ}other{ਗਰੁੱਪ ਨੂੰ ਕਿਸੇ ਹੋਰ ਵਿੰਡੋ ਵਿੱਚ ਲਿਜਾਓ}}</translation>
 <translation id="6228793724645064692">(ਸਟੋਰ ਰੇਟਿੰਗ)</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{ਟੈਬ ਨੂੰ ਗਰੁੱਪ ਤੋਂ ਹਟਾਓ}one{ਟੈਬ ਨੂੰ ਗਰੁੱਪ ਤੋਂ ਹਟਾਓ}other{ਟੈਬਾਂ ਨੂੰ ਗਰੁੱਪ ਵਿੱਚੋਂ ਹਟਾਓ}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{ਟੈਬ ਨੂੰ ਨਵੇਂ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ}one{ਟੈਬ ਨੂੰ ਨਵੇਂ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ}other{ਟੈਬਾਂ ਨੂੰ ਨਵੇਂ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ}}</translation>
 <translation id="6333260925957816943">ਇਸ ਸਟੋਰ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ</translation>
 <translation id="6381032505162537930">ਤੁਹਾਡੇ ਆਪਣੇ ਟੈਬ ਗਰੁੱਪ ਇੱਥੇ ਦਿਖਾਈ ਦੇਣਗੇ</translation>

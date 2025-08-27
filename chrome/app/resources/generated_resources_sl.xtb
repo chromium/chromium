@@ -4560,7 +4560,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4109135793348361820">Premakni okno uporabniku <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Obnovi opozorilo</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (brez povezave)</translation>
-<translation id="4113030288477039509">Upravlja skrbnik</translation>
 <translation id="4113743276555482284">Geslo za datoteko</translation>
 <translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />Če je vklopljena natančnost zaznavanja lokacije, se podatki o brezžičnih signalih, kot so dostopne točke Wi-Fi, bazne postaje mobilnih omrežij, ter podatki tipal naprave, kot sta merilnik pospeška in žiroskop, uporabljajo za ocenjevanje natančnejše lokacije naprave, ki jo aplikacije in storitve za Android uporabljajo za zagotavljanje funkcij, ki pri delovanju uporabljajo lokacijo. Google v ta namen redno zbira podatke o tipalih naprave in brezžičnih signalih v vaši bližini ter tako prispeva k množičnemu zbiranju lokacij brezžičnih signalov.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google te podatke, ne da bi vas osebno prepoznal, uporablja za izboljšanje natančnosti zaznavanja lokacije in storitev na podlagi lokacije ter splošno izboljšanje, zagotavljanje in vzdrževanje Googlovih storitev. Te podatke obdelujemo glede na zakonite interese Googla in tretjih oseb za izpolnjevanje potreb uporabnikov.<ph name="END_PARAGRAPH2" />
@@ -5011,7 +5010,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="443196770280837407">Odprite Geminija z bližnjičnimi tipkami.</translation>
 <translation id="4432621511648257259">Napačno geslo</translation>
 <translation id="4434611816075088065">Trenutno vam ni treba ukrepati</translation>
-<translation id="443475966875174318">Posodabljanje ali odstranjevanje nezdružljivih aplikacij</translation>
 <translation id="443503224864902151">Odjavi vas iz večine spletnih mest. Ostali boste prijavljeni v račun Google, da bo mogoče izbrisati sinhronizirane podatke.</translation>
 <translation id="4437879751057074691">Ponudi shranjevanje gesel in ključev za dostop</translation>
 <translation id="4437947179446780764">Dodajanje ponudnika storitev DNS-ja po meri</translation>
@@ -5425,7 +5423,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4742334355511750246">Ni dovoljeno prikazovanje slik</translation>
 <translation id="4742795653798179840">Izbrisani podatki v Chromu</translation>
 <translation id="4742970037960872810">Odstrani označitev</translation>
-<translation id="4743260470722568160"><ph name="BEGIN_LINK" />Preberite, kako posodobite aplikacije<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">Dovoljeno – <ph name="PERMISSION_DETAILS" />. Vklopite <ph name="LINK_BEGIN" />dostop do sistemskega mikrofona<ph name="LINK_END" />.</translation>
 <translation id="4744260496658845719">Svetlost osvetlitve tipkovnice</translation>
 <translation id="4744268813103118742">Na spletno mesto</translation>
@@ -7173,7 +7170,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5989497858237037960">Med brskanjem po spletnih mestih se vsebina njihovih strani šifrira in shrani v vaši napravi. To lahko vpliva na delovanje Chroma.</translation>
 <translation id="5990266201903445068">Samo Wi-Fi</translation>
 <translation id="5990386583461751448">Prevedeno</translation>
-<translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Če želite zagotoviti, da boste lahko še naprej brskali po spletu, prosite skrbnika, da odstrani to aplikacijo.}one{Če želite zagotoviti, da boste lahko še naprej brskali po spletu, prosite skrbnika, da odstrani te aplikacije.}two{Če želite zagotoviti, da boste lahko še naprej brskali po spletu, prosite skrbnika, da odstrani te aplikacije.}few{Če želite zagotoviti, da boste lahko še naprej brskali po spletu, prosite skrbnika, da odstrani te aplikacije.}other{Če želite zagotoviti, da boste lahko še naprej brskali po spletu, prosite skrbnika, da odstrani te aplikacije.}}</translation>
 <translation id="5992225669837656567">Povezava z vsemi miškami je prekinjena</translation>
 <translation id="5992652489368666106">Brez obrobe</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Pregled je končan za 1 spletno mesto.}one{Pregled je končan za {NUM_SITES} spletno mesto.}two{Pregled je končan za {NUM_SITES} spletni mesti.}few{Pregled je končan za {NUM_SITES} spletna mesta.}other{Pregled je končan za {NUM_SITES} spletnih mest.}}</translation>
@@ -8670,7 +8666,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7039951224110875196">Ustvari račun Google za otroka</translation>
 <translation id="7039968672732182060">Vaš Chromebook ne prejema več varnostnih posodobitev. Čas je za nadgradnjo za najnovejšo varnost in programsko opremo. Veljajo pogoji ponudbe.</translation>
 <translation id="7042116641003232070">Dovoljeno je shranjevanje podatkov v napravo</translation>
-<translation id="7043108582968290193">Končano. Ni nezdružljivih aplikacij.</translation>
 <translation id="7044124535091449260">Preberite več o dostopu do spletnih mest</translation>
 <translation id="7044207729381622209">Odjavljeni boste s teh spletnih mest, vključno s tistimi na odprtih zavihkih.</translation>
 <translation id="7044211973375150246">Aplikacija je nastavljena tako, da odpira iste povezave kot aplikacija <ph name="APP_NAME" />. S tem bo aplikaciji <ph name="APP_NAME_2" /> onemogočeno odpiranje podprtih povezav?</translation>
@@ -9006,7 +9001,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7299588179200441056"><ph name="URL" /> – <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">Animirano</translation>
 <translation id="7301812050652048720">Ključ za dostop je izbrisan</translation>
-<translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Ta aplikacija bi lahko Chromu preprečila normalno delovanje.}one{Te aplikacije bi lahko Chromu preprečile normalno delovanje.}two{Te aplikacije bi lahko Chromu preprečile normalno delovanje.}few{Te aplikacije bi lahko Chromu preprečile normalno delovanje.}other{Te aplikacije bi lahko Chromu preprečile normalno delovanje.}}</translation>
 <translation id="7303281435234579599">Ojoj. Pri nastavljanju predstavitvenega načina je prišlo do napake.</translation>
 <translation id="7303485269821975179">Nastavitev gesla za napravo <ph name="DEVICE_TYPE" /></translation>
 <translation id="7303900363563182677">Temu spletnemu mestu je preprečen ogled besedila in slik, shranjenih v odložišče</translation>
@@ -11898,7 +11892,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="962802172452141067">Drevo mape z zaznamki</translation>
 <translation id="963000966785016697">Iskanje slike s tem: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Skrbnik za IT je za vašo napravo onemogočil dodatke za Chrome.</translation>
-<translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Aplikacija}one{Aplikacije}two{Aplikacije}few{Aplikacije}other{Aplikacije}}</translation>
 <translation id="964790508619473209">Razporeditev zaslona</translation>
 <translation id="96535553604365597">Prijava težave z Googlom Cast</translation>
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Preglejte 1 spletno mesto, ki je nedavno poslalo veliko obvestil}one{Preglejte {NUM_SITES} spletno mesto, ki je nedavno poslalo veliko obvestil}two{Preglejte {NUM_SITES} spletni mesti, ki sta nedavno poslali veliko obvestil}few{Preglejte {NUM_SITES} spletna mesta, ki so nedavno poslala veliko obvestil}other{Preglejte {NUM_SITES} spletnih mest, ki so nedavno poslala veliko obvestil}}</translation>

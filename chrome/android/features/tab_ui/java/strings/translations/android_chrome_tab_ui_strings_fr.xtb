@@ -28,6 +28,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> onglet regroupé</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> onglet}one{<ph name="TABS_COUNT_MANY" /> onglet}other{<ph name="TABS_COUNT_MANY" /> onglets}}</translation>
 <translation id="1909810060368225529">Remarque : Les modifications apportées à ce groupe d'onglets partagé sont visibles par tous. Tout le monde peut modifier vos groupes d'onglets partagés</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{Épingler l'onglet}one{Épingler l'onglet}other{Épingler les onglets}}</translation>
 <translation id="1982637982196732906">Déplacer vers la section des éléments inactifs</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Ajouter <ph name="TABS_COUNT_ONE" /> onglet sélectionné aux favoris}one{Ajouter <ph name="TABS_COUNT_MANY" /> onglet sélectionné aux favoris}other{Ajouter <ph name="TABS_COUNT_MANY" /> onglets sélectionnés aux favoris}}</translation>
 <translation id="2055057176188061528">Sélectionner un groupe d'onglets ou en créer un</translation>
@@ -78,6 +79,7 @@
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Vignette de la feuille de partage.</translation>
 <translation id="3810973564298564668">Gérer</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{Retirer l'onglet}one{Retirer l'onglet}other{Retirer les onglets}}</translation>
 <translation id="3940195383040445971">Suivi des prix dans les onglets</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> nouvel onglet, <ph name="ANY_CLOSED" /> fermé(s)}one{<ph name="MANY_ADDED" /> nouvel onglet, <ph name="ANY_CLOSED" /> fermé(s)}other{<ph name="MANY_ADDED" /> nouveaux onglets, <ph name="ANY_CLOSED" /> fermé(s)}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Ajouter l'onglet au groupe}one{Ajouter l'onglet au groupe}other{Regrouper les onglets}}</translation>
@@ -131,6 +133,7 @@
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Fermer <ph name="TABS_COUNT_ONE" /> élément sélectionné}one{Fermer <ph name="TABS_COUNT_MANY" /> élément sélectionné}other{Fermer <ph name="TABS_COUNT_MANY" /> éléments sélectionnés}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Déplacer le groupe vers une nouvelle fenêtre}one{Déplacer le groupe vers une autre fenêtre}other{Déplacer le groupe vers une autre fenêtre}}</translation>
 <translation id="6228793724645064692">(note du magasin)</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{Supprimer l'onglet du groupe}one{Supprimer l'onglet du groupe}other{Supprimer les onglets du groupe}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Ajouter l'onglet à un nouveau groupe}one{Ajouter l'onglet à un nouveau groupe}other{Ajouter les onglets à un nouveau groupe}}</translation>
 <translation id="6333260925957816943">Infos sur ce magasin</translation>
 <translation id="6381032505162537930">Vos groupes d'onglets s'afficheront ici</translation>

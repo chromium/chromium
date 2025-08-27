@@ -243,6 +243,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="139305205187523129">Serwer <ph name="HOST_NAME" /> nie wysłał żadnych danych.</translation>
 <translation id="1393071644879491291">Osoby przeprowadzające atak na stronie, którą próbujesz otworzyć, mogą podstępem nakłonić Cię do zainstalowania oprogramowania lub ujawnienia takich danych jak Twoje hasła, numery telefonów czy numery kart kredytowych. Chrome zdecydowanie zaleca powrót do bezpieczeństwa. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji o tym ostrzeżeniu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1405567553485452995">Jasnozielony</translation>
+<translation id="1406370515365284486">Twoje formy płatności nadal będą zapisane</translation>
 <translation id="1406500794671479665">Weryfikuję...</translation>
 <translation id="1406812885827747674">Zezwól tym razem</translation>
 <translation id="14070772729708640">Pliki zostały przesłane do folderu <ph name="FOLDER_NAME" /> w usłudze <ph name="CLOUD_PROVIDER" /></translation>

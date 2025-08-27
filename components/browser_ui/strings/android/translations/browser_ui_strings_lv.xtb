@@ -25,6 +25,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="129382876167171263">Šeit tiek rādīti tīmekļa vietņu saglabātie faili</translation>
 <translation id="131112695174432497">Tiek dzēsti dati, kas ietekmē reklāmu personalizēšanu</translation>
 <translation id="1317194122196776028">Aizmirst šo vietni</translation>
+<translation id="1321110954513621549">Atļauta • Aptuvena</translation>
 <translation id="1323433172918577554">Rādīt vairāk</translation>
 <translation id="1333965224356556482">Neļaut vietnēm piekļūt jūsu atrašanās vietas informācijai</translation>
 <translation id="1343356790768851700">Šī vietne nosaka jūsu intereses un pēc tam iesaka reklāmas citām vietnēm</translation>
@@ -40,6 +41,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="1448064542941920355">Tuvināt</translation>
 <translation id="1464044141348608623">Nerādīt vietnēm, kad jūs aktīvi lietojat savu ierīci</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> vietne}zero{<ph name="SITE_COUNT" /> vietņu}one{<ph name="SITE_COUNT" /> vietne}other{<ph name="SITE_COUNT" /> vietnes}}</translation>
+<translation id="1476700086976862423">Motīva krāsa: sēpija</translation>
 <translation id="1500473259453106018">Paslēpt kartīti “Cenu kritums cilnēs”</translation>
 <translation id="1508931164824684991">Atļaut vietnēm izmantot JavaScript</translation>
 <translation id="1510341833810331442">Vietnēm nav atļauts saglabāt datus jūsu ierīcē</translation>
@@ -71,6 +73,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="1799920918471566157">Chrome padomi</translation>
 <translation id="1816835383954230954">Kad tas ir ieslēgts, pārlūks Chrome darbojas ātrāk, un funkcijām, kas izmanto JavaScript, ir jādarbojas paredzētajā veidā. Ja izslēgts, tiek samazināta veiktspēja, bet uzlabojas V8 noturība pret uzbrukumiem.</translation>
 <translation id="1818308510395330587">Lai atļautu lietotnei <ph name="APP_NAME" /> izmantot papildināto realitāti, ieslēdziet arī kameru <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
+<translation id="1848033246551405023">Bezserifa fonts</translation>
 <translation id="1881806992065048905">Jaunas cilnes lapas izskata ekrāna apakšdaļas lapa</translation>
 <translation id="1887786770086287077">Piekļuve šīs ierīces atrašanās vietai ir izslēgta. Ieslēdziet to <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Parasti piekļuve failiem un mapēm ierīcē vietnēm ir nepieciešama, lai nodrošinātu noteiktas funkcijas, piemēram, automātisku darba saglabāšanu.</translation>
@@ -92,6 +95,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="2079545284768500474">Atsaukt</translation>
 <translation id="2080070583977670716">Vairāk iestatījumu</translation>
 <translation id="2091887806945687916">Signāls</translation>
+<translation id="2094208275686143364">Motīva krāsa: gaiša</translation>
 <translation id="2096716221239095980">Dzēst visus datus</translation>
 <translation id="2102396546234652240">Neļaut vietnēm izmantot jūsu mikrofonu</translation>
 <translation id="2117655453726830283">Nākamais slaids</translation>
@@ -137,6 +141,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="2498359688066513246">Palīdzība un atsauksmes</translation>
 <translation id="2501278716633472235">Doties atpakaļ</translation>
 <translation id="2533138527374486328">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt atļauju izveidot savienojumu ar jebkuru ierīci jūsu lokālajā tīklā. Kad šis slēdzis ir izslēgts, vietnes nevar izveidot savienojumu ar ierīcēm jūsu lokālajā tīklā.</translation>
+<translation id="2544997614631598250">Motīva krāsa: tumša</translation>
 <translation id="2546283357679194313">Sīkfaili un vietņu dati</translation>
 <translation id="2570922361219980984">Arī piekļuve šīs ierīces atrašanās vietai ir izslēgta. Ieslēdziet to <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Izvērsts — noklikšķiniet, lai sakļautu.</translation>
@@ -194,6 +199,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="3165022941318558018">Atļaujiet vietnei izmantot trešo pušu sīkfailus.</translation>
 <translation id="3167868116600277716">Discover plūsma</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> saglabātu datu</translation>
+<translation id="3199078925536734975">Šoreiz atļauta • Aptuvena</translation>
 <translation id="321187648315454507">Lai atļautu lietotnei <ph name="APP_NAME" /> sūtīt jums paziņojumus, ieslēdziet paziņojumus arī <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Piekļuve atrašanās vietai nav atļauta</translation>
 <translation id="3227137524299004712">Mikrofons</translation>
@@ -250,6 +256,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="3803367742635802571">Apmeklētās vietnes var pārtraukt pienācīgi darboties</translation>
 <translation id="3816118180265633665">Chrome krāsas</translation>
 <translation id="381841723434055211">Tālruņa numuri</translation>
+<translation id="3823453485268218808">Fonts Mono</translation>
 <translation id="3826050100957962900">Trešās puses pierakstīšanās</translation>
 <translation id="3835233591525155343">Jūsu ierīces lietojums</translation>
 <translation id="3843916486309149084">Šodien pārlūkā Chrome sīkfaili atkal tiks bloķēti</translation>
@@ -302,6 +309,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="4402755511846832236">Nerādīt vietnēm, kad jūs aktīvi lietojat šo ierīci</translation>
 <translation id="4412992751769744546">Atļaut trešo pušu sīkfailus</translation>
 <translation id="4419929467120297501">Pārlūkā Chrome vietnēm tiek liegts pārlūkošanas laikā izmantot trešo pušu sīkfailus, lai izsekotu jūsu darbībām. Lai <ph name="BEGIN_LINK" />pārvaldītu piekļuvi trešo pušu sīkfailiem<ph name="END_LINK" />, pārejiet uz iestatījumiem.</translation>
+<translation id="4425416282877905577">Serifa fonts</translation>
 <translation id="443121186588148776">Seriālais ports</translation>
 <translation id="4434045419905280838">Uznirstošie elem. un novirzīšana</translation>
 <translation id="443552056913301231">Veicot šo darbību, tiks dzēsti visi lokālie dati, tostarp sīkfaili, kā arī tiks atiestatītas visas pakalpojuma <ph name="ORIGIN" /> atļaujas.</translation>
@@ -554,6 +562,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="7478658909253570368">Neļaut vietnēm veidot savienojumu ar seriālajiem portiem</translation>
 <translation id="7488573225650545859">Paslēpt kartīti Ciļņu skatīšana lietotņu sarakstā</translation>
 <translation id="7521387064766892559">JavaScript</translation>
+<translation id="7538975533793429503">Fonta lieluma slīdnis</translation>
 <translation id="7547989957535180761">Kad šis slēdzis ir ieslēgts, vietnēs var rādīt pierakstīšanās uzvednes. Kad šis slēdzis ir izslēgts, vietnēs nevar rādīt pierakstīšanās uzvednes.</translation>
 <translation id="7553211568594248088">izietu no meklēšanas mezglā</translation>
 <translation id="7554752735887601236">Kāda vietne izmanto jūsu mikrofonu</translation>

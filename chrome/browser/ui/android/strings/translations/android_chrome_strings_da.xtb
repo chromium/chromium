@@ -499,7 +499,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3384347053049321195">Del billede</translation>
 <translation id="3387650086002190359">Download af <ph name="FILE_NAME" /> mislykkedes på grund af fejl i filsystemet.</translation>
 <translation id="3414952576877147120">Størrelse:</translation>
-<translation id="3421726884497337397">Vælg, hvornår tredjepartscookies skal blokeres</translation>
 <translation id="3430670036890315772">Hvis du deaktiverer din profillås, fjernes dine gemte oplysninger</translation>
 <translation id="3435465986463792564">Har du mange åbne vinduer? Du kan administrere dem herfra</translation>
 <translation id="3435575784518354875">Hvis du fortsat vil have adgang til dine adgangskoder, skal du eksportere dem nu, opdatere Google Play-tjenester og derefter importere dem til Google Adgangskodeadministrator igen. <ph name="BEGIN_LINK" />Se hele vejledningen<ph name="END_LINK" />.</translation>
@@ -760,7 +759,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 kompromitteret adgangskode}one{# kompromitteret adgangskode}other{# kompromitterede adgangskoder}}</translation>
 <translation id="4641919525231168205">Gå til næste side</translation>
 <translation id="4642472735733036929">Prissporing er stoppet</translation>
-<translation id="4645146721047390964">Når du er i inkognitotilstand, kan websites ikke bruge dine cookies til at se din browseraktivitet på forskellige websites, f.eks. til at foretage personlig tilpasning af annoncer. Funktioner på visse websites virker muligvis ikke.</translation>
 <translation id="465657074423018424">Beskyttet søgning beskytter dig mod vildledende websites. Hvis du deaktiverer dette, skal du være ekstra påpasselig – især når du angiver adgangskoder.</translation>
 <translation id="4662373422909645029">Kaldenavnet må ikke indeholde tal</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> bogmærker blev slettet</translation>
@@ -1220,7 +1218,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6633067410344541938">Lås op for inkognito</translation>
 <translation id="6636623428211296678">Find flere indstillinger nedenfor, eller afslut nu</translation>
 <translation id="6637100877383020115">Chrome sender data om brug og nedbrud til Google for at hjælpe med at forbedre appen. <ph name="BEGIN_UMA_LINK" />Administrer<ph name="END_UMA_LINK" /></translation>
-<translation id="6640207029842583248">Bloker altid</translation>
 <translation id="6641780377503683465">Fjern <ph name="INTEREST" /></translation>
 <translation id="6647441008198474441">De websites, du besøger, sendes til Google for at forudsige, hvilke websites du kunne have lyst til at besøge som det næste</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> mere}one{<ph name="CONTACT_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> mere}other{<ph name="CONTACT_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> mere}}</translation>
@@ -1232,6 +1229,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6674571176963658787">Angiv din adgangssætning for at starte synkroniseringen</translation>
 <translation id="6676927815633975364">Log ind på dette website og Chrome</translation>
 <translation id="6684809838922667136">Gør Chrome bedre</translation>
+<translation id="6689436252814043643">Læsetilstand er ikke tilgængelig</translation>
 <translation id="6700279777779583398">Dine valg er gemt</translation>
 <translation id="670498945988402717">Tjekket i går</translation>
 <translation id="6710213216561001401">Forrige</translation>
@@ -1342,6 +1340,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7111822978084196600">Navngiv dette vindue</translation>
 <translation id="7115358764509798967">Systemstandard</translation>
 <translation id="7117485132243600300">Administrer indhold, du følger, og forslag til emner og søgninger</translation>
+<translation id="7119984597597798764">Luk <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Tilladelserne er gennemgået for 1 website}one{Tilladelserne er gennemgået for # website}other{Tilladelserne er gennemgået for # websites}}</translation>
 <translation id="7138678301420049075">Andet</translation>
 <translation id="7140829094791862589">Sortér manuelt</translation>
@@ -1443,7 +1442,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="751961395872307827">Der kunne ikke oprettes forbindelse til websitet</translation>
 <translation id="7523960634226602883">Søg med dit kamera ved hjælp af Google Lens</translation>
 <translation id="7525248386620136756"><ph name="TAB_GROUPS_AND_TABS_PART" /> er lukket og gemt</translation>
-<translation id="752731652852882757">Bloker under brug af inkognitotilstand</translation>
 <translation id="7545347190366646170">Personer med adgang</translation>
 <translation id="7554643625247105821">Chrome-versionen kan ikke tjekkes</translation>
 <translation id="7557508262441527045">Logget ud</translation>
@@ -1609,7 +1607,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8243077599929149377">Tilføj dit brugernavn</translation>
 <translation id="8244387390464017490">Tilpas siden Ny fane</translation>
 <translation id="8250920743982581267">Dokumenter</translation>
-<translation id="8255617931166444521">Websites kan kun bruge dine cookies til at se din browseraktivitet på deres eget website</translation>
 <translation id="8258999165172757081">Tilføjet</translation>
 <translation id="8259179246279078674">Fordi de forudindlæste sider er krypterede, vil Google ikke få nogle oplysninger om det forudindlæste sideindhold. Googles servere vil få oplysninger om, hvilke websites der forudindlæses privat. Disse oplysninger bruges udelukkende til at forudindlæse siderne og knyttes ikke til andre oplysninger på din Google-konto.</translation>
 <translation id="8260126382462817229">Prøv at logge ind igen</translation>

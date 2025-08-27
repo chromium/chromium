@@ -25,6 +25,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="129382876167171263">Lalabas dito ang mga file na na-save ng mga website</translation>
 <translation id="131112695174432497">Dine-delete ang data na nakakaapekto sa pag-personalize ng ad</translation>
 <translation id="1317194122196776028">Kalimutan ang site na ito</translation>
+<translation id="1321110954513621549">Pinapayagan • Tinatantya</translation>
 <translation id="1323433172918577554">Magpakita Nang Higit Pa</translation>
 <translation id="1333965224356556482">Huwag payagan ang mga site na makita ang iyong lokasyon</translation>
 <translation id="1343356790768851700">Tinutukoy ng site na ito ang mga bagay na gusto mo at pagkatapos ay nagmumungkahi ito ng mga ad sa iba pang site</translation>
@@ -40,6 +41,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="1448064542941920355">Bawasan ang pag-zoom</translation>
 <translation id="1464044141348608623">Huwag payagan ang mga site na malaman kung aktibo mong ginagamit ang iyong device</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}one{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> na site}}</translation>
+<translation id="1476700086976862423">Sepia na kulay ng tema</translation>
 <translation id="1500473259453106018">I-hide ang card tungkol sa mga pagbaba ng presyo sa mga tab</translation>
 <translation id="1508931164824684991">Puwedeng gumamit ng JavaScript ang mga site</translation>
 <translation id="1510341833810331442">Hindi pinapayagan ang mga site na mag-save ng data sa iyong device</translation>
@@ -71,6 +73,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="1799920918471566157">Mga Tip sa Chrome</translation>
 <translation id="1816835383954230954">Kapag naka-on, mas mabilis na tatakbo ang Chrome at gagana ang mga feature na gumagamit ng JavaScript ayon sa pagkakadisenyo sa mga ito. Kapag naka-off, pinapahina nito ang performance pero ginagawang mas matatag ang V8 laban sa mga attack.</translation>
 <translation id="1818308510395330587">Para payagan ang <ph name="APP_NAME" /> na gumamit ng AR, i-on din ang camera sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
+<translation id="1848033246551405023">Font Sans Serif</translation>
 <translation id="1881806992065048905">Bottom sheet ng hitsura ng page ng bagong tab</translation>
 <translation id="1887786770086287077">Naka-off ang access sa lokasyon para sa device na ito. I-on ito sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Karaniwang ina-access ng mga site ang mga file at folder sa iyong device para sa mga feature gaya ng awtomatikong pag-save sa trabaho mo</translation>
@@ -92,6 +95,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="2079545284768500474">I-undo</translation>
 <translation id="2080070583977670716">Higit pang mga setting</translation>
 <translation id="2091887806945687916">Tunog</translation>
+<translation id="2094208275686143364">Maliwanag na kulay ng tema</translation>
 <translation id="2096716221239095980">I-delete ang lahat ng data</translation>
 <translation id="2102396546234652240">Huwag payagan ang mga site na gamitin ang iyong mikropono</translation>
 <translation id="2117655453726830283">Susunod na slide</translation>
@@ -137,6 +141,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="2498359688066513246">Tulong at feedback</translation>
 <translation id="2501278716633472235">Bumalik</translation>
 <translation id="2533138527374486328">Kapag naka-on, puwedeng hilingin ng mga site na kumonekta sa anumang device sa iyong lokal na network. Kapag naka-off, hindi makakakonekta ang mga site sa mga device sa iyong lokal na network.</translation>
+<translation id="2544997614631598250">Madilim na kulay ng tema</translation>
 <translation id="2546283357679194313">Cookies at data ng site</translation>
 <translation id="2570922361219980984">Naka-off din ang access sa lokasyon para sa device na ito. I-on ito sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Pinalawak - i-click upang i-collapse.</translation>
@@ -194,6 +199,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="3165022941318558018">Payagan ang isang site na gumamit ng third-party na cookies</translation>
 <translation id="3167868116600277716">Feed ng Discover</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> ang naka-store na data</translation>
+<translation id="3199078925536734975">Pinapayagan sa pagkakataong ito • Tinatantya</translation>
 <translation id="321187648315454507">Para payagan ang <ph name="APP_NAME" /> na magpadala sa iyo ng mga notification, i-on din ang mga notification sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Hindi pinapayagan ang lokasyon</translation>
 <translation id="3227137524299004712">Mikropono</translation>
@@ -250,6 +256,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="3803367742635802571">Posibleng hindi na gumana ayon sa disenyo ang mga site na binibisita mo</translation>
 <translation id="3816118180265633665">Mga Kulay ng Chrome</translation>
 <translation id="381841723434055211">Mga numero ng telepono</translation>
+<translation id="3823453485268218808">Font Mono</translation>
 <translation id="3826050100957962900">Third-party na pag-sign in</translation>
 <translation id="3835233591525155343">Iyong paggamit ng device</translation>
 <translation id="3843916486309149084">Magba-block ulit ang Chrome ng cookies ngayong araw</translation>
@@ -302,6 +309,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="4402755511846832236">Pigilan ang mga site na malaman kung kailan mo aktibong ginagamit ang device na ito</translation>
 <translation id="4412992751769744546">Payagan ang third-party na cookies</translation>
 <translation id="4419929467120297501">Bina-block ng Chrome ang mga site sa paggamit ng third-party na cookies para masubaybayan ka habang nagba-browse ka. Bisitahin ang mga setting para <ph name="BEGIN_LINK" />pamahalaan ang access sa third-party na cookies<ph name="END_LINK" />.</translation>
+<translation id="4425416282877905577">Font Serif</translation>
 <translation id="443121186588148776">Serial port</translation>
 <translation id="4434045419905280838">Mga pop-up at pag-redirect</translation>
 <translation id="443552056913301231">Ide-delete ng pagkilos na ito ang lahat ng lokal na data, kabilang ang cookies, at ire-reset nito ang lahat ng pahintulot para sa <ph name="ORIGIN" /></translation>
@@ -554,6 +562,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="7478658909253570368">Huwag payagan ang mga site na kumonekta sa mga serial port</translation>
 <translation id="7488573225650545859">I-hide ang Tingnan ang mga tab sa iyong listahan ng app</translation>
 <translation id="7521387064766892559">JavaScript</translation>
+<translation id="7538975533793429503">Slider ng laki ng font</translation>
 <translation id="7547989957535180761">Kapag naka-on, makakapagpakita ang mga site ng mga prompt sa pag-sign in. Kapag naka-off, hindi makakapagpakita ang mga site ng mga prompt sa pag-sign in.</translation>
 <translation id="7553211568594248088">Lumabas sa paghahanap sa hub</translation>
 <translation id="7554752735887601236">Gingamit ng isang site ang iyong mikropono</translation>

@@ -25,6 +25,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="129382876167171263">A webhelyek által elmentett fájlok itt jelennek meg</translation>
 <translation id="131112695174432497">A hirdetések személyre szabását befolyásoló adatok törlődnek</translation>
 <translation id="1317194122196776028">Webhely elfelejtése</translation>
+<translation id="1321110954513621549">Engedélyezve • Hozzávetőleges</translation>
 <translation id="1323433172918577554">Több</translation>
 <translation id="1333965224356556482">A webhelyek nem tekinthetik meg az Ön tartózkodási helyét</translation>
 <translation id="1343356790768851700">Ez a webhely kikövetkezteti az Ön által kedvelt dolgokat, majd hirdetéseket ajánl más webhelyeknek</translation>
@@ -40,6 +41,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="1448064542941920355">Nagyítás csökkentése</translation>
 <translation id="1464044141348608623">A webhelyek nem tudhatják, hogy Ön mikor használja aktívan az eszközt</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> webhely}other{<ph name="SITE_COUNT" /> webhely}}</translation>
+<translation id="1476700086976862423">Szépia téma</translation>
 <translation id="1500473259453106018">A Price drops on tabs (Árcsökkenések a lapokon) kártya elrejtése</translation>
 <translation id="1508931164824684991">A webhelyek használhatnak Javascriptet</translation>
 <translation id="1510341833810331442">Webhelyek nem menthetnek adatokat az eszközére</translation>
@@ -71,6 +73,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="1799920918471566157">Chrome-tippek</translation>
 <translation id="1816835383954230954">Ha be van kapcsolva, a Chrome gyorsabban fut, a JavaScriptet használó funkcióknak pedig a tervezett módon kell működniük. Ha ki van kapcsolva, csökken a teljesítmény, de ellenállóbb lesz a V8 a támadásokkal szemben.</translation>
 <translation id="1818308510395330587">Ahhoz, hogy a(z) <ph name="APP_NAME" /> használhassa az AR-t, a kamerát az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között is be kell kapcsolni.</translation>
+<translation id="1848033246551405023">Sans Serif betűtípus</translation>
 <translation id="1881806992065048905">Az Új lap oldal megjelenésének alsó lapja</translation>
 <translation id="1887786770086287077">A helyhozzáférés ki van kapcsolva ennél az eszköznél. A funkciót az <ph name="BEGIN_LINK" />Android-beállításokban<ph name="END_LINK" /> tudja bekapcsolni.</translation>
 <translation id="1906181697255754968">A webhelyek általában bizonyos funkciók (például a munkák automatikus mentése) érdekében férnek hozzá az Ön eszközén lévő fájlokhoz és mappákhoz</translation>
@@ -92,6 +95,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="2079545284768500474">Visszavonás</translation>
 <translation id="2080070583977670716">További beállítások</translation>
 <translation id="2091887806945687916">Hang</translation>
+<translation id="2094208275686143364">Világos színű téma</translation>
 <translation id="2096716221239095980">Minden adat törlése</translation>
 <translation id="2102396546234652240">A webhelyek nem használhatják a mikrofont</translation>
 <translation id="2117655453726830283">Következő dia</translation>
@@ -137,6 +141,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="2498359688066513246">Súgó és visszajelzés</translation>
 <translation id="2501278716633472235">Visszalépés</translation>
 <translation id="2533138527374486328">Ha be van kapcsolva, a webhelyek engedélyt kérhetnek a helyi hálózaton lévő bármelyik eszközhöz való csatlakozásra. Ha ki van kapcsolva, a webhelyek nem tudnak csatlakozni a helyi hálózaton lévő eszközökhöz.</translation>
+<translation id="2544997614631598250">Sötét színű téma</translation>
 <translation id="2546283357679194313">Cookie-k és webhelyadatok</translation>
 <translation id="2570922361219980984">A helyhozzáférés is ki van kapcsolva ennél az eszköznél. A funkciót az <ph name="BEGIN_LINK" />Android-beállításokban<ph name="END_LINK" /> tudja bekapcsolni.</translation>
 <translation id="257931822824936280">Kibontva – kattintson az összecsukáshoz.</translation>
@@ -194,6 +199,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="3165022941318558018">Annak engedélyezése egy webhely számára, hogy harmadik féltől származó cookie-t használjon</translation>
 <translation id="3167868116600277716">Discover-feed</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> tárolt adat</translation>
+<translation id="3199078925536734975">Erre az alkalomra engedélyezve van • Hozzávetőleges</translation>
 <translation id="321187648315454507">Ahhoz, hogy a(z) <ph name="APP_NAME" /> értesítéseket küldhessen, az értesítéseket az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között is be kell kapcsolni.</translation>
 <translation id="3223425961342298674">Helyadatok nem engedélyezettek</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -250,6 +256,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="3803367742635802571">Előfordulhat, hogy az Ön által felkeresett webhelyek nem rendeltetésszerűen működnek</translation>
 <translation id="3816118180265633665">Chrome-színek</translation>
 <translation id="381841723434055211">Telefonszámok</translation>
+<translation id="3823453485268218808">Mono betűtípus</translation>
 <translation id="3826050100957962900">Harmadik fél bejelentkezése</translation>
 <translation id="3835233591525155343">Aktív eszközhasználat</translation>
 <translation id="3843916486309149084">A Chrome ma ismét letiltja a cookie-kat</translation>
@@ -302,6 +309,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="4402755511846832236">A webhelyek nem kaphatnak információt arról, hogy Ön mikor használja aktívan ezt az eszközt.</translation>
 <translation id="4412992751769744546">Harmadik felektől származó cookie-k engedélyezése</translation>
 <translation id="4419929467120297501">A Chrome megakadályozza a webhelyek számára, hogy harmadik féltől származó cookie-kat használjanak az Ön nyomon követésére böngészés közben. A beállítások között <ph name="BEGIN_LINK" />kezelheti a harmadik féltől származó cookie-khoz való hozzáférést<ph name="END_LINK" />.</translation>
+<translation id="4425416282877905577">Serif betűtípus</translation>
 <translation id="443121186588148776">Soros port</translation>
 <translation id="4434045419905280838">Előugró ablakok és átirányítások</translation>
 <translation id="443552056913301231">A művelet törli az összes helyi adatot (a cookie-kat is), és alaphelyzetbe állítja a(z) <ph name="ORIGIN" /> összes engedélyét</translation>
@@ -554,6 +562,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="7478658909253570368">A webhelyek nem csatlakozhatnak soros portokhoz</translation>
 <translation id="7488573225650545859">Nézetlapok elrejtése az alkalmazáslistában</translation>
 <translation id="7521387064766892559">JavaScript</translation>
+<translation id="7538975533793429503">Betűméret csúszkája</translation>
 <translation id="7547989957535180761">Ha be van kapcsolva, a webhelyek megjeleníthetnek bejelentkezési értesítéseket. Ha ki van kapcsolva, a webhelyek nem jeleníthetnek meg bejelentkezési értesítéseket.</translation>
 <translation id="7553211568594248088">Kilépés a központi keresésből</translation>
 <translation id="7554752735887601236">Egy webhely használja az Ön mikrofonját</translation>

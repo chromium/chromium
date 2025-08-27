@@ -1568,6 +1568,7 @@
 <translation id="2059913712424898428">시간대</translation>
 <translation id="2060375639911876205">eSIM 프로필 삭제</translation>
 <translation id="2061366302742593739">표시할 항목이 없습니다.</translation>
+<translation id="2061589908388230480">공개 정보 유출로 인해 노출된 비밀번호를 Chromium에서 발견하는 경우, Google 비밀번호 관리자는 사용자가 로그인 시 비밀번호를 변경하도록 제안할 수 있습니다. <ph name="BEGIN_LINK" />자동화된 비밀번호 변경에 대해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="2062354623176996748">시크릿 창에서는 인터넷 사용 기록을 저장하지 않고 웹을 사용할 수 있습니다.</translation>
 <translation id="206308717637808771">모든 창을 닫으면 데이터를 삭제합니다. 데이터는 현재 보고 있는 사이트와 동일하게 처리됩니다.</translation>
 <translation id="2065405795449409761">Chrome이 자동화된 테스트 소프트웨어에 의해 제어되고 있습니다.</translation>
@@ -2469,6 +2470,7 @@
 <translation id="2669241540496514785"><ph name="APP_NAME" /> 앱을 열 수 없음</translation>
 <translation id="2669454659051515572">이 기기를 사용하는 누구나 다운로드된 파일을 볼 수 있습니다.</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" />이(가) Chrome 탭을 공유합니다.</translation>
+<translation id="2670168377011445813">공개 정보 유출로 인해 노출된 비밀번호를 Chrome에서 발견하는 경우, Google 비밀번호 관리자는 사용자가 로그인 시 비밀번호를 변경하도록 제안할 수 있습니다. <ph name="BEGIN_LINK" />자동화된 비밀번호 변경에 대해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="2670350619068134931">애니메이션 감소</translation>
 <translation id="2670403088701171361">사이트에서 클립보드에 저장된 텍스트 또는 이미지를 확인하도록 허용하지 않음</translation>
 <translation id="2671423594960767771">그룹 공유</translation>
@@ -3564,6 +3566,7 @@
 <translation id="3450056559545492516">Chrome 기능 및 도움말에 관한 시스템 알림 표시</translation>
 <translation id="3450157232394774192">유휴 상태 점유율</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" />에서 지금 Wi-Fi에 연결하여 업데이트를 다운로드할 것을 요청합니다.</translation>
+<translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> - Gemini와 이 탭을 공유 중</translation>
 <translation id="345078987193237421">앱, 카메라 권한이 있는 웹사이트, 시스템 서비스에 대한 카메라 액세스가 허용됩니다.</translation>
 <translation id="3451362021220965191">분리형 웹 앱은 스마트 카드 리더를 제어하여 분리형 웹 앱에 삽입 또는 표시되는 스마트 카드에 액세스합니다. 보통 스마트 카드에는 작업을 인증하거나 승인하거나 서비스에 로그인하는 데 사용되는 ID가 포함됩니다.</translation>
 <translation id="3452999110156026232">부모 액세스</translation>
@@ -4556,7 +4559,6 @@
 <translation id="4109135793348361820">창을 <ph name="USER_NAME" />(<ph name="USER_EMAIL" />)님에게로 이동</translation>
 <translation id="4110485659976215879">경고 다시 열기</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" />(오프라인)</translation>
-<translation id="4113030288477039509">관리자가 관리합니다.</translation>
 <translation id="4113743276555482284">파일 비밀번호</translation>
 <translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />위치 정확도를 사용하면 무선 신호에 대한 정보(예: Wi-Fi 액세스 포인트, 셀룰러 네트워크 기지국)와 기기 센서 데이터(예: 가속도계 및 자이로스코프)가 더 정확한 기기 위치를 추정하기 위해 사용됩니다. 이는 Android 앱 및 서비스에서 위치 정보 기반 기능을 제공하는 데 사용됩니다. 이를 위해 Google은 사용자 주변의 기기 센서 및 무선 신호에 대한 정보를 주기적으로 수집하여 크라우드소싱된 무선 신호 위치에 기여합니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google은 사용자를 식별하지 않고 이 정보를 사용하여 위치 정확도 및 위치 기반 서비스를 개선하고, Google 서비스를 전반적으로 개선, 제공, 유지 관리합니다. Google은 사용자의 요구사항을 충족하기 위해 Google 및 서드 파티의 적법한 이익에 따라 이 정보를 처리합니다.<ph name="END_PARAGRAPH2" />
@@ -5007,7 +5009,6 @@
 <translation id="443196770280837407">단축키를 사용하여 Gemini를 엽니다.</translation>
 <translation id="4432621511648257259">비밀번호가 잘못됨</translation>
 <translation id="4434611816075088065">지금은 확인이 필요한 항목이 없습니다</translation>
-<translation id="443475966875174318">호환되지 않는 애플리케이션 업데이트 또는 삭제</translation>
 <translation id="443503224864902151">대부분의 사이트에서 로그아웃됩니다. 동기화된 데이터를 삭제할 수 있도록 Google 계정에서는 로그아웃되지 않습니다.</translation>
 <translation id="4437879751057074691">비밀번호 및 패스키 저장 여부 확인</translation>
 <translation id="4437947179446780764">맞춤 DNS 서비스 제공업체 추가</translation>
@@ -5422,7 +5423,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4742334355511750246">이미지 표시가 허용되지 않음</translation>
 <translation id="4742795653798179840">Chrome 데이터 삭제됨</translation>
 <translation id="4742970037960872810">강조표시 삭제</translation>
-<translation id="4743260470722568160"><ph name="BEGIN_LINK" />애플리케이션 업데이트 방법 알아보기<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">허용됨 – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />시스템 마이크 액세스<ph name="LINK_END" />를 사용 설정하세요.</translation>
 <translation id="4744260496658845719">키보드 백라이트 밝기</translation>
 <translation id="4744268813103118742">사이트로 이동</translation>
@@ -7168,7 +7168,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5989497858237037960">사이트를 탐색하면 페이지 콘텐츠가 암호화되어 기기에 저장됩니다. 이로 인해 Chrome의 성능이 저하될 수 있습니다.</translation>
 <translation id="5990266201903445068">Wi-Fi만 사용</translation>
 <translation id="5990386583461751448">번역됨</translation>
-<translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{계속 웹을 탐색하려면 관리자에게 이 애플리케이션을 삭제해 달라고 요청하세요.}other{계속 웹을 탐색하려면 관리자에게 이 애플리케이션을 삭제해 달라고 요청하세요.}}</translation>
 <translation id="5992225669837656567">모든 마우스의 연결이 해제되었습니다</translation>
 <translation id="5992652489368666106">테두리 없음</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{사이트 1개의 검토 완료}other{사이트 {NUM_SITES}개의 검토 완료}}</translation>
@@ -7388,6 +7387,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6151128161396960693">이 초대를 보낸 사람을 신뢰할 수 있는지 확인하세요.</translation>
 <translation id="6151771661215463137">파일이 이미 다운로드 폴더에 있습니다.</translation>
 <translation id="6152918902620844577">다음 작업 대기 중</translation>
+<translation id="6152929108650354050">Gemini와 이 탭을 공유 중</translation>
 <translation id="6153439704237222699">Do Not Track에 대해 자세히 알아보기</translation>
 <translation id="6154240335466762404">모든 포트 삭제</translation>
 <translation id="615436196126345398">프로토콜</translation>
@@ -8658,7 +8658,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7039951224110875196">자녀의 Google 계정 만들기</translation>
 <translation id="7039968672732182060">Chromebook에 더 이상 보안 업데이트가 적용되지 않습니다. 최신 보안 및 소프트웨어로 업그레이드하세요. 혜택 약관이 적용됩니다.</translation>
 <translation id="7042116641003232070">기기에 데이터를 저장하도록 허용됨</translation>
-<translation id="7043108582968290193">완료되었습니다. 모든 애플리케이션이 호환됩니다.</translation>
 <translation id="7044124535091449260">사이트 액세스 권한 자세히 알아보기</translation>
 <translation id="7044207729381622209">열려 있는 탭을 포함하여 이러한 사이트에서 로그아웃됩니다.</translation>
 <translation id="7044211973375150246">앱 1개가 <ph name="APP_NAME" /> 앱과 같은 링크를 열도록 설정되었습니다. <ph name="APP_NAME_2" /> 앱은 지원되는 링크를 열지 못하게 됩니다.</translation>
@@ -8994,7 +8993,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7299588179200441056"><ph name="URL" />~<ph name="FOLDER" /></translation>
 <translation id="730068416968462308">애니메이션</translation>
 <translation id="7301812050652048720">패스키 삭제됨</translation>
-<translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{이 애플리케이션으로 인해 Chrome이 제대로 작동하지 않을 수 있습니다.}other{이 애플리케이션으로 인해 Chrome이 제대로 작동하지 않을 수 있습니다.}}</translation>
 <translation id="7303281435234579599">데모 모드를 설정하는 동안 문제가 발생했습니다.</translation>
 <translation id="7303485269821975179"><ph name="DEVICE_TYPE" /> 기기의 비밀번호 설정</translation>
 <translation id="7303900363563182677">이 사이트는 클립보드에 복사된 텍스트 및 이미지에 액세스할 수 없습니다.</translation>
@@ -9065,7 +9063,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7348920948593871738">Mac 시스템 설정에서 카메라가 사용 중지됨</translation>
 <translation id="7349010927677336670">동영상 화질</translation>
 <translation id="7350327333026851413">{COUNT,plural, =1{비밀번호 {COUNT}개가 이 기기에만 저장됩니다}other{비밀번호 {COUNT}개가 이 기기에만 저장됩니다}}</translation>
-<translation id="7352651011704765696">문제가 발생했습니다.</translation>
+<translation id="7352651011704765696">문제가 발생했습니다</translation>
 <translation id="7353261921908507769">연락처에 있는 사용자가 근처에 있는 경우 나와 공유할 수 있습니다. 내가 수락하지 않으면 전송이 시작되지 않습니다.</translation>
 <translation id="7353432112255316844">본인 인증</translation>
 <translation id="735361434055555355">Linux 설치 중...</translation>
@@ -11883,7 +11881,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="962802172452141067">북마크 폴더 구조</translation>
 <translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" />로 이미지 검색</translation>
 <translation id="964286338916298286">IT 관리자가 내 기기에서 Chrome Goodies를 이용할 수 없도록 설정했습니다.</translation>
-<translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{애플리케이션}other{애플리케이션}}</translation>
 <translation id="964790508619473209">화면 배치</translation>
 <translation id="96535553604365597">Google Cast 문제 신고</translation>
 <translation id="965470117154635268">{NUM_SITES,plural, =1{최근에 알림을 많이 보낸 사이트 1개를 검토합니다.}other{최근에 알림을 많이 보낸 사이트 {NUM_SITES}개를 검토합니다.}}</translation>

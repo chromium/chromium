@@ -3549,6 +3549,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3450056559545492516">Rādīt sistēmas paziņojumus par Chrome funkcijām un padomiem</translation>
 <translation id="3450157232394774192">Neaktīvs stāvoklis — noslogojuma procentuālais daudzums</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> pieprasa, lai jūs tūlīt izveidotu savienojumu ar Wi-Fi tīklu un lejupielādētu atjauninājumu.</translation>
+<translation id="3450251767853793660"><ph name="WINDOW_TITLE" /> — jūs kopīgojat šo cilni ar Gemini</translation>
 <translation id="345078987193237421">Tādējādi kamerai drīkstēs piekļūt lietotnes, vietnes ar kameras atļauju un sistēmas pakalpojumi.</translation>
 <translation id="3451362021220965191">Izolētas tīmekļa lietotnes kontrolē viedkaršu lasītājus, lai iegūtu piekļuvi ievietotajām vai uzrādītajām viedkartēm. Viedkartēs parasti ir ietverti identitātes dati, kas tiek izmantoti, lai autentificētu vai pilnvarotu darbības, pierakstītos pakalpojumos utt.</translation>
 <translation id="3452999110156026232">Vecāku piekļuve</translation>
@@ -4543,7 +4544,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4109135793348361820">Pārvietot logu uz šī lietotāja darbvirsmu: <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Atjaunot brīdinājumu</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (bezsaistē)</translation>
-<translation id="4113030288477039509">Pārvalda jūsu administrators</translation>
 <translation id="4113743276555482284">Faila parole</translation>
 <translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />Kad iestatījums “Atrašanās vietas precizitāte” ir ieslēgts, informācija par bezvadu signāliem (piemēram, Wi-Fi piekļuves punkti un mobilā tīkla torņi, kā arī ierīces sensoru dati, tostarp no akselerometra un žiroskopa) tiek izmantota, lai noteiktu precīzāku ierīces atrašanās vietu. Noteiktā atrašanās vieta savukārt tiek izmantota Android lietotnēs un pakalpojumos, lai nodrošinātu funkcijas, kuru pamatā ir atrašanās vieta. Šim nolūkam Google periodiski vāc informāciju par ierīces sensoriem un bezvadu signāliem jūsu tuvumā, lai kolektīvajos pakalpojumos nodrošinātu bezvadu signālu atrašanās vietu informāciju.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Neidentificējot jūs, Google izmanto šo informāciju, lai uzlabotu atrašanās vietas precizitāti un ar atrašanās vietu saistītus pakalpojumus, kā arī kopumā uzlabotu, nodrošinātu un uzturētu Google pakalpojumus. Mēs apstrādājam šo informāciju, pamatojoties uz Google un trešo pušu likumīgajām interesēm sniegt lietotāju vajadzībām atbilstošu pakalpojumus.<ph name="END_PARAGRAPH2" />
@@ -4994,7 +4994,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="443196770280837407">Atveriet Gemini, izmantojot īsinājumtaustiņu.</translation>
 <translation id="4432621511648257259">Parole nav pareiza</translation>
 <translation id="4434611816075088065">Šobrīd nekam citam nav jāpievērš uzmanība</translation>
-<translation id="443475966875174318">Nesaderīgu lietojumprogrammu atjaunināšana vai noņemšana</translation>
 <translation id="443503224864902151">Jūs tiksiet izrakstīts no lielākās daļas vietņu. Jūs paliksiet pierakstījies Google kontā, lai varētu dzēst sinhronizētos datus.</translation>
 <translation id="4437879751057074691">Piedāvāt saglabāt paroles un piekļuves atslēgas</translation>
 <translation id="4437947179446780764">Pievienot pielāgota DNS pakalpojumu sniedzēju</translation>
@@ -5408,7 +5407,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="4742334355511750246">Nedrīkst rādīt attēlus</translation>
 <translation id="4742795653798179840">Chrome dati ir izdzēsti</translation>
 <translation id="4742970037960872810">Atcelt teksta atzīmēšanu</translation>
-<translation id="4743260470722568160"><ph name="BEGIN_LINK" />Uzzināt, kā atjaunināt lietojumprogrammas<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">Piekļuve atļauta — <ph name="PERMISSION_DETAILS" />. Ieslēdziet <ph name="LINK_BEGIN" />sistēmas piekļuvi mikrofonam<ph name="LINK_END" />.</translation>
 <translation id="4744260496658845719">Tastatūras fona apgaismojuma spilgtums</translation>
 <translation id="4744268813103118742">Apmeklēt vietni</translation>
@@ -7150,7 +7148,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5989497858237037960">Kad pārlūkojat vietnes, to lapu saturs tiek šifrēts un saglabāts jūsu ierīcē. Tas var ietekmēt pārlūka Chrome veiktspēju.</translation>
 <translation id="5990266201903445068">Tikai Wi-Fi</translation>
 <translation id="5990386583461751448">Tulkojums</translation>
-<translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Lai nodrošinātu iespēju turpmāk pārlūkot tīmekli, palūdziet administratoram noņemt šo lietojumprogrammu.}zero{Lai nodrošinātu iespēju turpmāk pārlūkot tīmekli, palūdziet administratoram noņemt šīs lietojumprogrammas.}one{Lai nodrošinātu iespēju turpmāk pārlūkot tīmekli, palūdziet administratoram noņemt šīs lietojumprogrammas.}other{Lai nodrošinātu iespēju turpmāk pārlūkot tīmekli, palūdziet administratoram noņemt šīs lietojumprogrammas.}}</translation>
 <translation id="5992225669837656567">Visas peles ir atvienotas</translation>
 <translation id="5992652489368666106">Bez apmales</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Vienas vietnes pārskatīšana ir pabeigta}zero{{NUM_SITES} vietņu pārskatīšana ir pabeigta}one{{NUM_SITES} vietnes pārskatīšana ir pabeigta}other{{NUM_SITES} vietņu pārskatīšana ir pabeigta}}</translation>
@@ -7370,6 +7367,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="6151128161396960693">Pārliecinieties, ka uzticaties personai, kas nosūtīja šo uzaicinājumu.</translation>
 <translation id="6151771661215463137">Fails jau pastāv jūsu lejupielāžu mapē.</translation>
 <translation id="6152918902620844577">Tiek gaidīta nākamā darbība</translation>
+<translation id="6152929108650354050">Jūs kopīgojat šo cilni ar Gemini</translation>
 <translation id="6153439704237222699">Uzzināt vairāk par pieprasījumu “Do Not Track”</translation>
 <translation id="6154240335466762404">Noņemt visus portus</translation>
 <translation id="615436196126345398">Protokols</translation>
@@ -8644,7 +8642,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7039951224110875196">Izveidot Google kontu bērnam</translation>
 <translation id="7039968672732182060">Jūsu Chromebook datorā vairs netiek saņemti drošības atjauninājumi. Lai iegūtu jaunākos drošības risinājumus un programmatūru, ir jāizmanto jauna ierīce. Ir spēkā piedāvājuma noteikumi.</translation>
 <translation id="7042116641003232070">Drīkst saglabāt datus jūsu ierīcē</translation>
-<translation id="7043108582968290193">Gatavs! Nav atrasta neviena nesaderīga lietojumprogramma.</translation>
 <translation id="7044124535091449260">Uzzināt vairāk par vietnes piekļuvi</translation>
 <translation id="7044207729381622209">Jūs tiksiet izrakstīts no šīm vietnēm, tostarp atvērtajās cilnēs</translation>
 <translation id="7044211973375150246">Lietotne ir iestatīta to pašu saišu atvēršanai, ko var atvērt, izmantojot lietotni <ph name="APP_NAME" />. Atbalstītās saites vairs nevarēs atvērt, izmantojot lietotni <ph name="APP_NAME_2" />.</translation>
@@ -8837,7 +8834,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7193051357671784796">Šo lietotni pievienoja jūsu organizācija. Lai pabeigtu instalēšanu, restartējiet lietotni.</translation>
 <translation id="7193374945610105795">Vietnei <ph name="ORIGIN" /> nav saglabāta neviena parole</translation>
 <translation id="7193663868864659844">Sūtīt atsauksmes par ieteiktajām grupām</translation>
-<translation id="7194873994243265344">Jūsu organizācija bloķēja šo failu, jo tas ir šifrēts. Lūdziet faila īpašniekam to atšifrēt.</translation>
+<translation id="7194873994243265344">Jūsu organizācija bloķēja šo failu, jo tas ir šifrēts. Lūdziet faila īpašniekam to transkribēt.</translation>
 <translation id="7196107899576756066">{COUNT,plural, =1{Notiek 1 lejupielāde}zero{Notiek # lejupielādes}one{Notiek # lejupielāde}other{Notiek # lejupielādes}}</translation>
 <translation id="7196272782924897510">Vai izmantot piekļuves atslēgu no citas ierīces?</translation>
 <translation id="719791532916917144">Īsinājumtaustiņi</translation>
@@ -8980,7 +8977,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7299588179200441056"><ph name="URL" /> — <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">Animācija</translation>
 <translation id="7301812050652048720">Piekļuves atslēga ir izdzēsta</translation>
-<translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Tālāk norādītā lietojumprogramma, iespējams, izraisa pārlūka Chrome nepareizu darbību.}zero{Tālāk norādītās lietojumprogrammas, iespējams, izraisa pārlūka Chrome nepareizu darbību.}one{Tālāk norādītās lietojumprogrammas, iespējams, izraisa pārlūka Chrome nepareizu darbību.}other{Tālāk norādītās lietojumprogrammas, iespējams, izraisa pārlūka Chrome nepareizu darbību.}}</translation>
 <translation id="7303281435234579599">Hmm... Iestatot demonstrācijas režīmu, radās problēma.</translation>
 <translation id="7303485269821975179">Iestatīt <ph name="DEVICE_TYPE" /> paroli</translation>
 <translation id="7303900363563182677">Šajā vietnē ir bloķēta starpliktuvē kopētā teksta un attēlu skatīšana.</translation>
@@ -10160,7 +10156,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8086015605808120405">Notiek printera <ph name="PRINTER_NAME" /> konfigurēšana...</translation>
 <translation id="8086121155774250556">Šī cilne kopīgo jūsu ekrānu</translation>
 <translation id="8086610718778464681">Nevar dublēt Linux lietotnes un failus</translation>
-<translation id="80866457114322936">{NUM_FILES,plural, =1{Šis fails ir šifrēts. Lūdziet faila īpašniekam to atšifrēt.}zero{Daži no šiem failiem ir šifrēti. Lūdziet failu īpašniekam tos atšifrēt.}one{Daži no šiem failiem ir šifrēti. Lūdziet failu īpašniekam tos atšifrēt.}other{Daži no šiem failiem ir šifrēti. Lūdziet failu īpašniekam tos atšifrēt.}}</translation>
+<translation id="80866457114322936">{NUM_FILES,plural, =1{Šis fails ir šifrēts. Lūdziet faila īpašniekam to transkribēt.}zero{Daži no šiem failiem ir šifrēti. Lūdziet failu īpašniekam tos atšifrēt.}one{Daži no šiem failiem ir šifrēti. Lūdziet failu īpašniekam tos atšifrēt.}other{Daži no šiem failiem ir šifrēti. Lūdziet failu īpašniekam tos atšifrēt.}}</translation>
 <translation id="808894953321890993">Mainīt paroli</translation>
 <translation id="8090234456044969073">Lasīt jūsu visbiežāk apmeklēto vietņu sarakstu</translation>
 <translation id="8090513782447872344">Jebkurā laikā varat atgriezties, lai apskatītu šos iestatījumus vēlreiz</translation>
@@ -11870,7 +11866,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="962802172452141067">Grāmatzīmju mapju koks</translation>
 <translation id="963000966785016697">Meklēt attēlu, izmantojot <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">IT administrators ir atspējojis Chrome piedāvājumus jūsu ierīcei.</translation>
-<translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Lietojumprogramma}zero{Lietojumprogrammas}one{Lietojumprogrammas}other{Lietojumprogrammas}}</translation>
 <translation id="964790508619473209">Ekrāna izkārtojums</translation>
 <translation id="96535553604365597">Ziņot par problēmu ar Google Cast</translation>
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Pārskatiet vienu vietni, no kuras nesen tika nosūtīts daudz paziņojumu}zero{Pārskatiet {NUM_SITES} vietņu, no kurām nesen tika nosūtīts daudz paziņojumu}one{Pārskatiet {NUM_SITES} vietni, no kurām nesen tika nosūtīts daudz paziņojumu}other{Pārskatiet {NUM_SITES} vietnes, no kurām nesen tika nosūtīts daudz paziņojumu}}</translation>

@@ -21,6 +21,7 @@
 <translation id="1072476005125066234">ຄຳຕິຊົມທີ່ອີງຕາມຄວາມສົນໃຈຂອງທ່ານ</translation>
 <translation id="1074827084851510304">ທ່ານກຳລັງຈະລຶບລະຫັດຜ່ານ {password_count} ລາຍການ ພ້ອມທັງລາຍຊື່ເວັບໄຊ ແລະ ແອັບທີ່ທ່ານເລືອກທີ່ຈະບໍ່ບັນທຶກຂໍ້ມູນການເຂົ້າສູ່ລະບົບ. ລະບົບຈະບໍ່ລຶບບັນຊີໃດກໍຕາມທີ່ທ່ານສ້າງໄວ້ສຳລັບເວັບໄຊ ແລະ ແອັບ.</translation>
 <translation id="1076421457278169141">ສະແກນລະຫັດແລ້ວ</translation>
+<translation id="1081114897601629648">ລະບົບບໍ່ໄດ້ນຳເຂົ້າລະຫັດຜ່ານຕໍ່ໄປນີ້ໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານ Google, ເນື່ອງຈາກບໍ່ກົງຕາມຂໍ້ກຳນົດ.</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} ແຖບ}other{{count} ແຖບ}}</translation>
 <translation id="1082554859195167538">ຄຳຕິຊົມຜະລິດຕະພັນສຳລັບທ່ານ</translation>
 <translation id="1084365883616172403">ການ​ໂພ​ສ​ທ໌ Facebook ສຳ​ເລັດ.</translation>
@@ -241,6 +242,7 @@
 <translation id="1902277226107477495">ການກວດຫາທີ່ຢູ່ປິດຢູ່. ກະລຸນາເປີດອີກຄັ້ງໃນການຕັ້ງຄ່າ.</translation>
 <translation id="1904580727789512086">URL ທີ່ທ່ານເຂົ້ານັ້ນຖືກບັນທຶກໄປໃສ່ບັນຊີ Google ທ່ານແລ້ວ</translation>
 <translation id="1911619930368729126">ອັບ​ໂຫຼດ​ໃສ່ Google Drive</translation>
+<translation id="1925706052394657380">ເປີດການຕັ້ງຄ່າ <ph name="BEGIN_BOLD" />ແອັບເລີ່ມຕົ້ນ<ph name="END_BOLD" /> ໃນ iOS</translation>
 <translation id="1941314575388338491">ແຕະສອງຄັ້ງເພື່ອສຳເນົາ</translation>
 <translation id="1943478190258551035">ເມນູ → ການຕັ້ງຄ່າ</translation>
 <translation id="1952728750904661634">ເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີທີ່ຖືກຈັດການ</translation>
@@ -250,6 +252,7 @@
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> ໄດ້ແບ່ງປັນລະຫັດຜ່ານກັບທ່ານສຳລັບ <ph name="WEBSITE" /></translation>
 <translation id="1962969542251276847">ຫນ້າຈໍລັອກ</translation>
 <translation id="1963976881984600709">ການປົກປ້ອງມາດຕະຖານ</translation>
+<translation id="1964507856799750384">ແຕະ <ph name="BEGIN_BOLD" />ແອັບໂປຣແກຣມທ່ອງເວັບ<ph name="END_BOLD" /></translation>
 <translation id="1966313166384086081">ຂໍ້ມູນເວັບໄຊ</translation>
 <translation id="1967461193809857427">{count,plural, =1{ເລືອກເອົາແຖບທີ່ທ່ານປະໄວ້ຢູ່ Android ບໍ່?}other{ເລືອກເອົາແຖບທີ່ທ່ານປະໄວ້ຢູ່ Android ບໍ່?}}</translation>
 <translation id="1972325230031091483">ທ່ານຈະທ່ອງເວັບໄດ້ໄວຂຶ້ນເນື່ອງຈາກເນື້ອຫາມີການໂຫຼດໄວ້ກ່ອນໂດຍອ້າງອີງໃສ່ການເຂົ້າເບິ່ງໜ້າເວັບປັດຈຸບັນຂອງທ່ານ</translation>
@@ -599,7 +602,6 @@
 <translation id="333229797575847124">ວິທີເປີດການນຳໃຊ້ຄຸນສົມບັດນີ້</translation>
 <translation id="3344485292736684439">{count,plural, =1{ບັນທຶກບຸກມາກໃສ່ "{title}" ໃນບັນຊີຂອງທ່ານ, {email}}other{ບັນທຶກບຸກມາກໃສ່ "{title}" ໃນບັນຊີຂອງທ່ານ, {email}}}</translation>
 <translation id="334690320928261823">ແຖບຫຼ້າສຸດ</translation>
-<translation id="3348387552617855658">ບັດນີ້ຈະຊ່ວຍທ່ານຕິດຕາມພັດສະດຸຂອງທ່ານ ແລະ ແຈ້ງອັບເດດການຈັດສົ່ງທີ່ສຳຄັນໃຫ້ທ່ານໄດ້.</translation>
 <translation id="3349031117032695619">ບລັອກປັອບອັບ</translation>
 <translation id="3349676726073650389">ເວັບໄຊ ແລະ ການຊອກຫາທີ່ທ່ານຕິດຕາມຖືກບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານແລ້ວ. ທ່ານສາມາດຈັດການການຕິດຕາມຂອງທ່ານໄດ້ໃນການຕັ້ງຄ່າຕອນໃດກໍໄດ້.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. ບັນຊີນີ້ມີການຈັດການ.</translation>

@@ -429,6 +429,7 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6180522807229584611">Este separador está a usar recursos adicionais. Para melhorar o seu desempenho, permita que o Chrome o torne inativo.</translation>
 <translation id="6182736845697986886">A instalação falhou devido a um erro interno do servidor de atualização.</translation>
+<translation id="6192058120268468905">A sua conta no Chrome</translation>
 <translation id="6235018212288296708">Regra de importação para o Google Chrome permitir o tráfego mDNS.</translation>
 <translation id="624230925347970731">O Chrome vai ser fechado em breve</translation>
 <translation id="6247557882553405851">Gestor de Palavras-passe da Google</translation>
@@ -561,6 +562,7 @@
 <translation id="778331955594035129">O Chrome necessita da autorização de acesso à localização para este site</translation>
 <translation id="7787950393032327779">O perfil parece estar a ser utilizado por outro processo do Google Chrome (<ph name="PROCESS_ID" />) noutro computador (<ph name="HOST_NAME" />). O Chrome bloqueou o perfil para que não seja danificado. Se tiver a certeza de que não existem outros processos a utilizar este perfil, pode desbloqueá-lo e reiniciar o Chrome.</translation>
 <translation id="7801699035218095297">O Google Chrome está a tentar copiar palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
+<translation id="7804364787702057554">A sua conta no Chrome</translation>
 <translation id="7808348361785373670">Remover do Chrome...</translation>
 <translation id="7825851276765848807">Ocorreu uma falha na instalação devido a um erro não especificado. Descarregue novamente o Google Chrome.</translation>
 <translation id="7827099906024714326">O Chrome precisa de validar a sua identidade antes de ser possível guardar alguns dados na sua Conta Google e usá-los em todos os seus dispositivos. Se terminar sessão agora, estes dados vão ser eliminados.</translation>
@@ -644,7 +646,6 @@
 <translation id="8781673607513845160">Para usar a câmara, dê acesso ao Chrome nas <ph name="BEGIN_LINK" />definições do sistema<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Erro de instalação: o administrador da rede aplicou uma política de grupo que impede a instalação: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8798550110818026746">A sua organização pode ver e gerir os dados de navegação, como os marcadores, o histórico e as palavras-passe. Não consegue ver dados de navegação noutros perfis do Chrome</translation>
-<translation id="880560872634367429">A validar a transferência…</translation>
 <translation id="8821043148920470810">Para obter atualizações futuras do Google Chrome, precisa do Windows 10 ou posterior. Este computador está a usar o Windows 7.</translation>
 <translation id="8823341990149967727">O Chrome Está Desatualizado</translation>
 <translation id="8825634023950448068">Para proteger a sua privacidade, eliminamos automaticamente os seus interesses com mais de 4 semanas. Enquanto navega, um interesse pode aparecer novamente na lista. Além disso, pode remover um interesse se o Chrome se enganar ou caso não queira ver determinados anúncios.</translation>

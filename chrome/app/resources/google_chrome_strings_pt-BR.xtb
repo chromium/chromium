@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
 <translation id="1001534784610492198">O arquivo do instalador está corrompido ou é inválido. Baixe o Google Chrome novamente.</translation>
+<translation id="1006034097353797313">Continue de onde você parou: o Chrome restaura suas guias sempre que você reinicia. Para desativar essa opção, acesse as</translation>
 <translation id="1018937009655463387">Para compartilhar a janela, use os Ajustes do Sistema para permitir a gravação de tela do Chrome.</translation>
 <translation id="1026101648481255140">Retomar instalação</translation>
 <translation id="102763973188675173">Personalize e controle o Google Chrome. Uma atualização está disponível.</translation>
@@ -79,6 +80,7 @@
 <translation id="2018879682492276940">Falha na instalação. Tente novamente.</translation>
 <translation id="2024959665595762054">Confirme sua identidade para usar e salvar dados do Chrome na sua Conta do Google</translation>
 <translation id="2034233344106846793">Quando possível, o Chrome faz upgrade automático de conexões sem segurança para HTTPS</translation>
+<translation id="2039417478970545937">configurações.</translation>
 <translation id="207902854391093810">Quando os testes estão ativados, a medição de anúncios permite que os sites que você visita solicitem informações do Chrome, ajudando a medir o desempenho dos anúncios. Ela também restringe o rastreamento entre sites transferindo o mínimo de informações possível entre eles.</translation>
 <translation id="2091012649849228750">Para receber as futuras atualizações do Google Chrome, você precisa do Windows 10 ou versão mais recente. Este computador está usando o Windows 8.</translation>
 <translation id="2094648590148273905">Termos do ChromeOS Flex</translation>
@@ -346,6 +348,7 @@
 <translation id="5166439563123238795">O Chrome precisa de permissão para rastrear suas mãos</translation>
 <translation id="5170938038195470297">Seu perfil não pode ser utilizado pois foi criado em uma versão mais recente do Google Chrome. Alguns recursos podem não estar disponíveis. Especifique um diretório de perfil diferente ou utilize uma versão mais recente do Google Chrome.</translation>
 <translation id="5174969993834422967">Você geralmente bloqueia notificações. Para permitir que este site envie notificações, clique no ícone de notificação no canto direito da barra de local.</translation>
+<translation id="5174983315706567306">Não há espaço em disco suficiente.</translation>
 <translation id="5201744974236816379">Atualização do Chrome</translation>
 <translation id="521447420733633466">Se você compartilha um dispositivo, seus amigos e familiares podem navegar separadamente e configurar o Chrome da maneira que quiserem</translation>
 <translation id="5234764350956374838">Dispensar</translation>
@@ -454,6 +457,7 @@
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" />: Google Chrome Dev</translation>
 <translation id="6520670145826811516">Para usar a localização, permita o acesso ao Chrome nas <ph name="BEGIN_LINK" />configurações do sistema<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">No Gerenciador de senhas do Google deste dispositivo</translation>
+<translation id="6631524303639368205">Continue de onde você parou: o Chrome restaurou as guias da sua última sessão. Para desativar essa opção, acesse as</translation>
 <translation id="6632473616050862500">A criação do ChromeOS Flex só foi possível graças a um outro <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6634299872736643004">As mudanças nessa configuração serão aplicadas assim que o Chrome for reiniciado.</translation>
 <translation id="6660596345553328257">Fazer login no Chrome?</translation>
@@ -561,6 +565,7 @@
 <translation id="7825851276765848807">Houve uma falha na instalação devido a um erro não-especificado. Baixe o Chrome novamente.</translation>
 <translation id="7827099906024714326">O Chrome precisa confirmar sua identidade para que alguns dados sejam salvos na sua Conta do Google e usados em todos os seus dispositivos. Se você sair agora, esses dados serão excluídos.</translation>
 <translation id="7845233973568007926">Agradecemos por fazer a instalação. É necessário reiniciar o computador antes de utilizar o <ph name="BUNDLE_NAME" />.</translation>
+<translation id="7849037457735762883">Continue de onde você parou: o Chrome pode restaurar suas guias sempre que você reinicia. Para ativar essa opção, acesse as</translation>
 <translation id="7872446069773932638">Fazendo o download… <ph name="SECONDS" /> segundo(s) restante(s)</translation>
 <translation id="7886087451482920026">Selecionar texto com o Google Lens</translation>
 <translation id="7890208801193284374">Se você usa um computador compartilhado, seus amigos e familiares podem navegar separadamente e configurar o Google Chrome da maneira que desejarem.</translation>

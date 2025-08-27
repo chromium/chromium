@@ -440,6 +440,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1719838434204287058">24 × 30 Zoll</translation>
 <translation id="1720941539803966190">Anleitung schließen</translation>
 <translation id="1721424275792716183">* Pflichtfeld</translation>
+<translation id="1723636263173393300">Diese Richtlinie sollte nicht mehr als <ph name="MAX_ITEMS_LIMIT" /> Verknüpfungen enthalten.</translation>
 <translation id="1725591448053514783">Umschlag You 6</translation>
 <translation id="1727613060316725209">Zertifikat ist gültig</translation>
 <translation id="1728677426644403582">Dies ist die Quelle einer Webseite</translation>
@@ -1047,6 +1048,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="271663710482723385">Zum Beenden des Vollbildmodus |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| drücken</translation>
 <translation id="2717336592027046789">Rolle</translation>
 <translation id="2718207025093645426">Für den verwalteten Nutzer oder das verwaltete Gerät wurde keine Richtlinie geladen.</translation>
+<translation id="2719233594187778789">Ignorierte nicht eindeutige URL: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Anfrage erfolgreich</translation>
 <translation id="2722622039067384533">Wohnzimmermöbel</translation>
 <translation id="2723669454293168317">Sicherheitscheck in den Chrome-Einstellungen ausführen</translation>
@@ -2005,6 +2007,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4298000214066716287">Investitionen</translation>
 <translation id="4298148761711700950">Sofort bezahlen, ohne einen QR-Code hochzuladen</translation>
 <translation id="4298925811540301889">Cookies für diese Website werden auf deinen ChromeOS-Geräten synchronisiert. In den <ph name="SYNC_SETTINGS" /> kannst du festlegen, welche Daten synchronisiert werden.</translation>
+<translation id="4299919199185766032">Der Name der Verknüpfung überschreitet die zulässige Höchstlänge von <ph name="MAX_LENGTH" /> Zeichen.</translation>
 <translation id="4300272766492248925">App öffnen</translation>
 <translation id="4300675098767811073">Mehrfache Lochung rechts</translation>
 <translation id="4302514097724775343">Tippe auf den Dino, um die Wiedergabe zu starten</translation>
@@ -2706,6 +2709,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
     Wende dich an deinen Systemadministrator.</translation>
 <translation id="5496804587179176046">Sicherheitscodes speichern, aktuell sind keine Sicherheitscodes gespeichert</translation>
 <translation id="550365051221576010">Alles ausfüllen</translation>
+<translation id="5506286895894263601">Die Liste enthält keine gültigen Verknüpfungen.</translation>
 <translation id="5508443345185481044">Kameras und Camcorder</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Verwaltete Lesezeichen</translation>
@@ -3625,6 +3629,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="7014741021609395734">Zoomstufe</translation>
 <translation id="7016992613359344582">Diese Belastungen können einmalig oder wiederkehrend sein und sind vielleicht nicht offensichtlich.</translation>
 <translation id="701757816833614688">Kunsterziehung (Bildende Künste und Design)</translation>
+<translation id="7020464868401003526">Die URL der Verknüpfung überschreitet die maximal zulässige Länge von <ph name="MAX_LENGTH" /> Zeichen.</translation>
 <translation id="702275896380648118">Diese Website erhebt Informationen dazu, was dir gefällt, und schlägt dann anderen Websites Werbung vor. Außerdem ruft sie deine Anzeigenthemen von Chrome ab, damit sie dir relevantere Werbung anzeigen kann.</translation>
 <translation id="7023162328967545559">Warnung vom Administrator</translation>
 <translation id="7023765275461720661">Konto verknüpfen und mit <ph name="BNPL_ISSUER_NAME" /> bezahlen?</translation>

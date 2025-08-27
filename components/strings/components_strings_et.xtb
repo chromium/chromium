@@ -441,6 +441,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1719838434204287058">24 × 30 tolli</translation>
 <translation id="1720941539803966190">Sule õpetus</translation>
 <translation id="1721424275792716183">* Kohustuslik väli</translation>
+<translation id="1723636263173393300">Sellel reeglil ei tohi olla üle <ph name="MAX_ITEMS_LIMIT" /> otsetee.</translation>
 <translation id="1725591448053514783">Ümbrik You 6</translation>
 <translation id="1727613060316725209">Sertifikaat on kehtiv</translation>
 <translation id="1728677426644403582">Vaatate veebilehe lähtekoodi</translation>
@@ -1048,6 +1049,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="271663710482723385">Täisekraanilt väljumiseks vajutage klahve |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
 <translation id="2717336592027046789">Rull</translation>
 <translation id="2718207025093645426">Hallatud kasutaja või seadme puhul pole reeglit laaditud.</translation>
+<translation id="2719233594187778789">Eirati korduvat URL-i: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Taotlus õnnestus</translation>
 <translation id="2722622039067384533">Elutoamööbel</translation>
 <translation id="2723669454293168317">Käitage Chrome'i seadetes ohutuskontroll</translation>
@@ -2008,6 +2010,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4298000214066716287">Investeerimine</translation>
 <translation id="4298148761711700950">Maksa koheselt ilma QR-koodi üleslaadimiseta</translation>
 <translation id="4298925811540301889">Selle saidi küpsiseid sünkroonitakse teie ChromeOS-i seadmetes. Avage <ph name="SYNC_SETTINGS" /> sünkroonimise haldamiseks.</translation>
+<translation id="4299919199185766032">Otsetee nimi ületab maksimaalset lubatud pikkust <ph name="MAX_LENGTH" /> tähemärki.</translation>
 <translation id="4300272766492248925">Ava rakendus</translation>
 <translation id="4300675098767811073">Mitu auku paremal</translation>
 <translation id="4302514097724775343">Mängimiseks puudutage dinosaurust</translation>
@@ -2709,6 +2712,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
     Võtke ühendust süsteemiadministraatoriga.</translation>
 <translation id="5496804587179176046">Salvestage turvakoodid, praegu ei ole turvakoode salvestatud</translation>
 <translation id="550365051221576010">Sisestage kõik</translation>
+<translation id="5506286895894263601">Loendis pole sobilikke otseteid.</translation>
 <translation id="5508443345185481044">Foto- ja videokaamerad</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Hallatud järjehoidjad</translation>
@@ -3628,6 +3632,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="7014741021609395734">Suumi tase</translation>
 <translation id="7016992613359344582">Tasud võivad olla ühekordsed või korduvad ja need ei pruugi olla ilmselged.</translation>
 <translation id="701757816833614688">Visuaalse kunsti ja disaini haridus</translation>
+<translation id="7020464868401003526">Otsetee URL ületab maksimaalset lubatud pikkust <ph name="MAX_LENGTH" /> tähemärki.</translation>
 <translation id="702275896380648118">See sait tuvastab asjad, mis teile meeldivad, ja soovitab seejärel teistele saitidele reklaame. Samuti hangib see sait Chrome'ist teie reklaamiteemad, et näidata teile asjakohasemaid reklaame.</translation>
 <translation id="7023162328967545559">Administraatori hoiatus</translation>
 <translation id="7023765275461720661">Kas linkida konto ja maksta teenusega <ph name="BNPL_ISSUER_NAME" />?</translation>

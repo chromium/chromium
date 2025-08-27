@@ -21,6 +21,7 @@
 <translation id="1072476005125066234">Umsagnir sem tengjast áhugasviðunum þínum</translation>
 <translation id="1074827084851510304">Þú ert í þann mund að fara að eyða {password_count} aðgangsorðum og listanum yfir vefsvæðin og forritin sem þú valdir að þurfa aldrei að skrá þig inn á/í. Engum reikningum sem þú hefur búið til á vefsvæðum eða í forritum verður eytt.</translation>
 <translation id="1076421457278169141">Kóði skannaður</translation>
+<translation id="1081114897601629648">Eftirfarandi aðgangsorð voru ekki flutt inn í Google-aðgangsorðastjórnun því þau uppfylla ekki skilyrðin.</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} flipi}one{{count} flipi}other{{count} flipa}}</translation>
 <translation id="1082554859195167538">Umsagnir um vörur fyrir þig</translation>
 <translation id="1084365883616172403">Facebook-færsla birt.</translation>
@@ -599,7 +600,6 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="333229797575847124">Hvernig á að virkja þennan eiginleika</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bókamerki vistað í „{title}“ á reikningnum þínum, {email}}one{Bókamerki vistuð í „{title}“ á reikningnum þínum, {email}}other{Bókamerki vistuð í „{title}“ á reikningnum þínum, {email}}}</translation>
 <translation id="334690320928261823">Nýlegir flipar</translation>
-<translation id="3348387552617855658">Þetta spjald hjálpar þér að fylgjast með pökkunum þínum og færa þér mikilvægar afhendingaruppfærslur.</translation>
 <translation id="3349031117032695619">Loka á sprettiglugga</translation>
 <translation id="3349676726073650389">Vefsvæði og leitir sem þú fylgir eru vistuð á Google-reikningnum þínum. Þú getur stjórnað stillingum „Fylgir“ hvenær sem er.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Þessum reikningi er stýrt.</translation>

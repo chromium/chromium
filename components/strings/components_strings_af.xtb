@@ -243,6 +243,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="139305205187523129"><ph name="HOST_NAME" /> het geen data gestuur nie.</translation>
 <translation id="1393071644879491291">Aanvallers op die webwerf wat jy probeer besoek het, kan jou dalk mislei om sagteware te installeer of dinge soos jou wagwoorde, foonnommer of kredietkaartnommers te openbaar. Chrome beveel sterk aan dat jy na veiligheid terugkeer. <ph name="BEGIN_LEARN_MORE_LINK" />Kry meer inligting oor hierdie waarskuwing<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1405567553485452995">Liggroen</translation>
+<translation id="1406370515365284486">Jou betaalmetodes sal gestoor word</translation>
 <translation id="1406500794671479665">Verifieer tans …</translation>
 <translation id="1406812885827747674">Laat dié keer toe</translation>
 <translation id="14070772729708640">Lêers is suksesvol na <ph name="FOLDER_NAME" /> op <ph name="CLOUD_PROVIDER" /> opgelaai</translation>
@@ -440,6 +441,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1719838434204287058">24x30 dm.</translation>
 <translation id="1720941539803966190">Maak tutoriaal toe</translation>
 <translation id="1721424275792716183">* Veld word vereis</translation>
+<translation id="1723636263173393300">Hierdie beleid moenie meer as <ph name="MAX_ITEMS_LIMIT" /> kortpaaie hê nie.</translation>
 <translation id="1725591448053514783">Koevert You 6</translation>
 <translation id="1727613060316725209">Sertifikaat is geldig</translation>
 <translation id="1728677426644403582">Jy bekyk tans die bron van 'n webbladsy</translation>
@@ -1047,6 +1049,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="271663710482723385">Druk |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| om volskerm te verlaat</translation>
 <translation id="2717336592027046789">Rol</translation>
 <translation id="2718207025093645426">Daar is geen beleid vir bestuurde gebruiker of toestel gelaai nie.</translation>
+<translation id="2719233594187778789">Nie-unieke URL: <ph name="URL_NAME" /> is geïgnoreer</translation>
 <translation id="2721148159707890343">Versoek was suksesvol</translation>
 <translation id="2722622039067384533">Woonvertrekmeubels</translation>
 <translation id="2723669454293168317">Doen 'n veiligheidskontrole in Chrome-instellings</translation>
@@ -2007,6 +2010,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4298000214066716287">Belegging</translation>
 <translation id="4298148761711700950">Betaal in ’n kits met QR-oplaai</translation>
 <translation id="4298925811540301889">Webkoekies vir hierdie werf is op al jou ChromeOS-toestelle gesinkroniseer. Gaan na <ph name="SYNC_SETTINGS" /> om te bestuur wat jy sinkroniseer.</translation>
+<translation id="4299919199185766032">Die naam van die kortpad oorskry die maksimum toegelate lengte van <ph name="MAX_LENGTH" /> karakters.</translation>
 <translation id="4300272766492248925">Maak app oop</translation>
 <translation id="4300675098767811073">Veelvuldige pons regs</translation>
 <translation id="4302514097724775343">Tik op die dinosourus om te speel</translation>
@@ -2708,6 +2712,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
     Probeer om jou stelseladministrateur te kontak.</translation>
 <translation id="5496804587179176046">Stoor sekuriteitskodes, geen sekuriteitskodes tans gestoor nie</translation>
 <translation id="550365051221576010">Vul alles in</translation>
+<translation id="5506286895894263601">Die lys bevat geen geldige kortpaaie nie.</translation>
 <translation id="5508443345185481044">Kameras en videokameras</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Bestuurde boekmerke</translation>
@@ -3627,6 +3632,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="7014741021609395734">Zoemvlak</translation>
 <translation id="7016992613359344582">Hierdie heffings kan eenmalig of herhalend wees en is dalk nie ooglopend nie.</translation>
 <translation id="701757816833614688">Visuelekuns- en ontwerponderrig</translation>
+<translation id="7020464868401003526">Die URL van die kortpad oorskry die maksimum toegelate lengte van <ph name="MAX_LENGTH" /> karakters.</translation>
 <translation id="702275896380648118">Hierdie werf bepaal van watter dinge jy hou, en stel dan advertensies aan ander werwe voor. Hierdie werf kry ook jou advertensieonderwerpe van Chrome af om vir jou relevanter advertensies te wys.</translation>
 <translation id="7023162328967545559">Adminwaarskuwing</translation>
 <translation id="7023765275461720661">Koppel rekening en betaal met <ph name="BNPL_ISSUER_NAME" />?</translation>

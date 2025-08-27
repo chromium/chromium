@@ -28,6 +28,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" />টি ট্যাব, গ্রুপ করা হয়েছে</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব}}</translation>
 <translation id="1909810060368225529">বিজ্ঞপ্তি: এই শেয়ার করা ট্যাব গ্রুপে করা পরিবর্তন সবাই দেখতে পাবেন। আপনার শেয়ার করা ট্যাব গ্রুপে প্রত্যেকে পরিবর্তন করতে পারবেন</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{ট্যাব পিন করুন}one{ট্যাব পিন করুন}other{ট্যাব পিন করুন}}</translation>
 <translation id="1982637982196732906">ইনঅ্যাক্টিভ বিভাগে সরান</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টি বেছে নেওয়া ট্যাব বুকমার্ক করুন}one{<ph name="TABS_COUNT_MANY" />টি বেছে নেওয়া ট্যাব বুকমার্ক করুন}other{<ph name="TABS_COUNT_MANY" />টি বেছে নেওয়া ট্যাব বুকমার্ক করুন}}</translation>
 <translation id="2055057176188061528">ট্যাব গ্রুপ বেছে নিন অথবা নতুন ট্যাব গ্রুপ তৈরি করুন</translation>
@@ -78,6 +79,7 @@
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">শিট শেয়ার করার প্রিভিউয়ের জন্য থাম্বনেল।</translation>
 <translation id="3810973564298564668">পরিচালনা করুন</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{ট্যাব আনপিন করুন}one{ট্যাব আনপিন করুন}other{ট্যাব আনপিন করুন}}</translation>
 <translation id="3940195383040445971">ট্যাবে দাম ট্র্যাক করুন</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" />টি নতুন ট্যাব,<ph name="ANY_CLOSED" />টি বন্ধ আছে}one{<ph name="MANY_ADDED" />টি নতুন ট্যাব,<ph name="ANY_CLOSED" />টি বন্ধ আছে}other{<ph name="MANY_ADDED" />টি নতুন ট্যাব,<ph name="ANY_CLOSED" />টি বন্ধ আছে}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{ট্যাব গ্রুপ করুন}one{ট্যাব গ্রুপ করুন}other{ট্যাব গ্রুপ করুন}}</translation>
@@ -131,6 +133,7 @@
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টি বেছে নেওয়া আইটেম বন্ধ করুন}one{<ph name="TABS_COUNT_MANY" />টি বেছে নেওয়া আইটেম বন্ধ করুন}other{<ph name="TABS_COUNT_MANY" />টি বেছে নেওয়া আইটেম বন্ধ করুন}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{নতুন উইন্ডোতে গ্রুপ সরান}one{অন্য উইন্ডোতে গ্রুপ সরান}other{অন্য উইন্ডোতে গ্রুপ সরান}}</translation>
 <translation id="6228793724645064692">(স্টোর রেটিং)</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{গ্রুপ থেকে ট্যাব সরিয়ে দিন}one{গ্রুপ থেকে ট্যাব সরান}other{গ্রুপ থেকে ট্যাব সরান}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{নতুন গ্রুপে ট্যাব যোগ করুন}one{নতুন গ্রুপে ট্যাব যোগ করুন}other{নতুন গ্রুপে ট্যাব যোগ করুন}}</translation>
 <translation id="6333260925957816943">এই স্টোরের বিষয়ে তথ্য</translation>
 <translation id="6381032505162537930">আপনার ট্যাব গ্রুপ এখানে দেখতে পাবেন</translation>

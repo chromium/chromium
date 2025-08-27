@@ -1187,6 +1187,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1805967612549112634">Conferma PIN</translation>
 <translation id="1806335016774576568">Passa a un'altra app aperta</translation>
 <translation id="1807246157184219062">Chiaro</translation>
+<translation id="1808571181382454540">Vai alla pagina delle Impostazioni</translation>
 <translation id="1808805149659872686">Nuova voce</translation>
 <translation id="1809201888580326312">Hai scelto di non salvare le password per questi siti e app</translation>
 <translation id="1809734401532861917">Aggiungi preferiti, cronologia, password e altre impostazioni a <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -4546,7 +4547,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4109135793348361820">Sposta finestra su <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Ripristina avviso</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
-<translation id="4113030288477039509">Gestito dall'amministratore</translation>
 <translation id="4113743276555482284">Password del file</translation>
 <translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />Quando la precisione della posizione è attiva, le informazioni sui segnali wireless, ad esempio i punti di accesso Wi-Fi, le torri di reti mobile, così come i dati dei sensori dei dispositivi, ad esempio l'accelerometro e il giroscopio, vengono usati per stimare con maggiore precisione la posizione del dispositivo, che le app e i servizi Android usano per offrire funzionalità basate sulla posizione. A questo scopo, Google raccoglie periodicamente informazioni relative a sensori dei dispositivi e segnali wireless nelle tue vicinanze per contribuire alla posizione dei segnali wireless mediante crowdsourcing.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google utilizza queste informazioni senza identificarti per: migliorare la precisione della posizione e i servizi basati sulla posizione geografica e, in generale, migliorare, fornire e gestire i servizi di Google. Trattiamo queste informazioni in base agli interessi legittimi di Google e di terze parti al fine di soddisfare le esigenze degli utenti.<ph name="END_PARAGRAPH2" />
@@ -4997,7 +4997,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="443196770280837407">Apri Gemini con una scorciatoia da tastiera.</translation>
 <translation id="4432621511648257259">Password errata</translation>
 <translation id="4434611816075088065">Al momento non c'è nient'altro che richiede la tua attenzione</translation>
-<translation id="443475966875174318">Aggiorna o rimuovi le applicazioni non compatibili</translation>
 <translation id="443503224864902151">Uscirai dalla maggior parte dei siti, ma non dal tuo Account Google, quindi i dati sincronizzati possono essere eliminati.</translation>
 <translation id="4437879751057074691">Chiedi di salvare password e passkey</translation>
 <translation id="4437947179446780764">Aggiungi fornitore di servizi DNS personalizzato</translation>
@@ -5411,7 +5410,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4742334355511750246">Non possono mostrare immagini</translation>
 <translation id="4742795653798179840">Dati di Chrome eliminati</translation>
 <translation id="4742970037960872810">Rimuovi evidenziazione</translation>
-<translation id="4743260470722568160"><ph name="BEGIN_LINK" />Scopri come aggiornare le applicazioni<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">Autorizzazione consentita - <ph name="PERMISSION_DETAILS" />. Attiva l'<ph name="LINK_BEGIN" />accesso al microfono del sistema<ph name="LINK_END" />.</translation>
 <translation id="4744260496658845719">Luminosità della retroilluminazione della tastiera</translation>
 <translation id="4744268813103118742">Vai al sito</translation>
@@ -7153,7 +7151,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5989497858237037960">Quando navighi nei siti, i contenuti delle pagine vengono criptati e salvati sul tuo dispositivo. Questa operazione potrebbe influire sulle prestazioni di Chrome</translation>
 <translation id="5990266201903445068">Solo Wi-Fi</translation>
 <translation id="5990386583461751448">Tradotta</translation>
-<translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Per assicurarti di poter continuare a navigare sul Web, chiedi al tuo amministratore di rimuovere questa applicazione.}other{Per assicurarti di poter continuare a navigare sul Web, chiedi al tuo amministratore di rimuovere queste applicazioni.}}</translation>
 <translation id="5992225669837656567">Tutti i mouse sono stati disconnessi</translation>
 <translation id="5992652489368666106">Senza bordo</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Controllo completo di 1 sito}other{Controllo completo di {NUM_SITES} siti}}</translation>
@@ -8644,7 +8641,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7039951224110875196">Crea un Account Google per un bambino</translation>
 <translation id="7039968672732182060">Il tuo Chromebook non riceve più aggiornamenti della sicurezza. È il momento di eseguire l'upgrade all'ultima versione del software e della sicurezza. Si applicano i termini dell'offerta.</translation>
 <translation id="7042116641003232070">Autorizzato a salvare i dati sul tuo dispositivo</translation>
-<translation id="7043108582968290193">Fatto! Non sono state trovate applicazioni non compatibili.</translation>
 <translation id="7044124535091449260">Ulteriori informazioni sull'accesso ai siti</translation>
 <translation id="7044207729381622209">Uscirai da questi siti, schede aperte incluse</translation>
 <translation id="7044211973375150246">C'è un'app impostata per aprire gli stessi link che è possibile aprire con <ph name="APP_NAME" />. Non sarà più possibile aprire i link supportati con <ph name="APP_NAME_2" />.</translation>
@@ -8980,7 +8976,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">Animato</translation>
 <translation id="7301812050652048720">Passkey eliminata</translation>
-<translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Questa applicazione potrebbe impedire il corretto funzionamento di Chrome.}other{Queste applicazioni potrebbero impedire il corretto funzionamento di Chrome.}}</translation>
 <translation id="7303281435234579599">Spiacenti. Si è verificato un problema durante la configurazione della modalità demo.</translation>
 <translation id="7303485269821975179">Imposta una password di <ph name="DEVICE_TYPE" /></translation>
 <translation id="7303900363563182677">A questo sito è stato impedito di leggere testo e immagini copiati negli appunti</translation>
@@ -11869,7 +11864,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="962802172452141067">Struttura ad albero della cartella dei preferiti</translation>
 <translation id="963000966785016697">Cerca immagine con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="964286338916298286">Il tuo amministratore IT ha disattivato i vantaggi offerti da Chrome per il tuo dispositivo.</translation>
-<translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Applicazione}other{Applicazioni}}</translation>
 <translation id="964790508619473209">Disposizione dello schermo</translation>
 <translation id="96535553604365597">Segnala un problema con Google Cast</translation>
 <translation id="965470117154635268">{NUM_SITES,plural, =1{Controlla 1 sito che di recente ha inviato molte notifiche}other{Controlla {NUM_SITES} siti che di recente hanno inviato molte notifiche}}</translation>

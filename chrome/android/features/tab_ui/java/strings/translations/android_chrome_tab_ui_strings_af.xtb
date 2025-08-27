@@ -28,6 +28,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> oortjie gegroepeer</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> oortjie}other{<ph name="TABS_COUNT_MANY" /> oortjies}}</translation>
 <translation id="1909810060368225529">Kennisgewing: Veranderinge aan hierdie gedeelde Oortjiegroep is vir almal sigbaar. Almal kan veranderinge aan jou gedeelde oortjiegroepe aanbring</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{Speld oortjie vas}other{Speld oortjies vas}}</translation>
 <translation id="1982637982196732906">Skuif na onaktiewe afdeling</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Boekmerk <ph name="TABS_COUNT_ONE" /> gekose oortjie}other{Boekmerk <ph name="TABS_COUNT_MANY" /> gekose oortjies}}</translation>
 <translation id="2055057176188061528">Kies oortjiegroep of skep nuwe oortjiegroep</translation>
@@ -78,6 +79,7 @@
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Miniprent vir deelbladvoorskou.</translation>
 <translation id="3810973564298564668">Bestuur</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{Ontspeld oortjie}other{Ontspeld oortjies}}</translation>
 <translation id="3940195383040445971">Spoor pryse na in oortjies</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> nuwe oortjie, <ph name="ANY_CLOSED" /> is toegemaak}other{<ph name="MANY_ADDED" /> nuwe oortjies, <ph name="ANY_CLOSED" /> is toegemaak}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Groepeer oortjie}other{Groepeer oortjies}}</translation>
@@ -131,6 +133,7 @@
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Maak <ph name="TABS_COUNT_ONE" /> gekose item toe}other{Maak <ph name="TABS_COUNT_MANY" /> gekose items toe}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Skuif groep na nuwe venster}other{Skuif groep na ’n ander venster}}</translation>
 <translation id="6228793724645064692">(winkelgradering)</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{Verwyder oortjie uit groep}other{Verwyder oortjies uit groep}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Voeg oortjie by nuwe groep}other{Voeg oortjies by nuwe groep}}</translation>
 <translation id="6333260925957816943">Inligting oor hierdie winkel</translation>
 <translation id="6381032505162537930">Jy sal jou oortjiegroepe hier kry</translation>

@@ -499,7 +499,6 @@
 <translation id="3384347053049321195">分享圖片</translation>
 <translation id="3387650086002190359">檔案系統發生錯誤，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="3414952576877147120">空間大小：</translation>
-<translation id="3421726884497337397">選擇要在何時封鎖第三方 Cookie</translation>
 <translation id="3430670036890315772">如果關閉設定檔鎖定功能，系統將移除已儲存的資訊</translation>
 <translation id="3435465986463792564">開啟了多個視窗嗎？你可以在這裡進行管理</translation>
 <translation id="3435575784518354875">如要繼續存取密碼，請立即匯出密碼、更新 Google Play 服務，再將密碼匯入回 Google 密碼管理工具。<ph name="BEGIN_LINK" />查看完整操作說明<ph name="END_LINK" />。</translation>
@@ -760,7 +759,6 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 組密碼外洩}other{# 組密碼外洩}}</translation>
 <translation id="4641919525231168205">前往下一頁</translation>
 <translation id="4642472735733036929">已停止追蹤價格</translation>
-<translation id="4645146721047390964">在無痕模式中，網站無法使用 Cookie 查看你在各網站的瀏覽活動，也無法提供個人化廣告等服務。某些網站的功能可能無法正常運作。</translation>
 <translation id="465657074423018424">「安全瀏覽」功能可協助你防範詐騙網站。如果停用這項功能，在瀏覽網站時請提高警覺，尤其在輸入密碼前請特別留意。</translation>
 <translation id="4662373422909645029">暱稱不可包含數字</translation>
 <translation id="4663756553811254707">已刪除 <ph name="NUMBER_OF_BOOKMARKS" /> 個書籤</translation>
@@ -1220,7 +1218,6 @@
 <translation id="6633067410344541938">解鎖無痕模式</translation>
 <translation id="6636623428211296678">探索下方更多設定或立即結束審查作業</translation>
 <translation id="6637100877383020115">為協助改良應用程式，Chrome 會將使用情形和當機資料傳送給 Google。<ph name="BEGIN_UMA_LINK" />管理設定<ph name="END_UMA_LINK" /></translation>
-<translation id="6640207029842583248">一律封鎖</translation>
 <translation id="6641780377503683465">移除<ph name="INTEREST" /></translation>
 <translation id="6647441008198474441">系統會將你造訪的網址傳送給 Google，預測你接下來可能會前往的網站</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 個聯絡人}other{<ph name="CONTACT_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 個聯絡人}}</translation>
@@ -1232,6 +1229,7 @@
 <translation id="6674571176963658787">如要開始同步處理，請輸入通關密語</translation>
 <translation id="6676927815633975364">登入這個網站和 Chrome</translation>
 <translation id="6684809838922667136">讓 Chrome 更臻完美</translation>
+<translation id="6689436252814043643">無法使用閱讀模式</translation>
 <translation id="6700279777779583398">系統已儲存所選設定</translation>
 <translation id="670498945988402717">昨天已檢查</translation>
 <translation id="6710213216561001401">返回</translation>
@@ -1342,6 +1340,7 @@
 <translation id="7111822978084196600">為這個視窗命名</translation>
 <translation id="7115358764509798967">系統預設</translation>
 <translation id="7117485132243600300">管理追蹤的內容，以及建議的主題和搜尋項目</translation>
+<translation id="7119984597597798764">關閉<ph name="INSTANCE_TITLE" /></translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{已檢查 1 個網站的權限}other{已檢查 # 個網站的權限}}</translation>
 <translation id="7138678301420049075">其他</translation>
 <translation id="7140829094791862589">依手動順序排序</translation>
@@ -1443,7 +1442,6 @@
 <translation id="751961395872307827">無法連線至網站</translation>
 <translation id="7523960634226602883">使用 Google 智慧鏡頭透過相機進行搜尋</translation>
 <translation id="7525248386620136756">已關閉並儲存 <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
-<translation id="752731652852882757">使用無痕模式時封鎖</translation>
 <translation id="7545347190366646170">有權存取的使用者</translation>
 <translation id="7554643625247105821">無法檢查 Chrome 版本</translation>
 <translation id="7557508262441527045">已登出</translation>
@@ -1609,7 +1607,6 @@
 <translation id="8243077599929149377">新增使用者名稱</translation>
 <translation id="8244387390464017490">自訂新分頁</translation>
 <translation id="8250920743982581267">文件</translation>
-<translation id="8255617931166444521">網站只能使用 Cookie 查看你在該網站上的瀏覽活動</translation>
 <translation id="8258999165172757081">已新增</translation>
 <translation id="8259179246279078674">由於預先載入的網頁已經過加密，Google 不會得知預先載入網頁內容的相關資訊。Google 伺服器會知道哪些網站已透過私密方式預先載入。這項資訊僅用於預先載入網頁，不會與你 Google 帳戶的其他資訊連結。</translation>
 <translation id="8260126382462817229">請嘗試重新登入</translation>

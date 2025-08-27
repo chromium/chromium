@@ -25,6 +25,7 @@
 <translation id="129382876167171263">वेबसाइटद्वारे सेव्ह केलेल्या फाइल येथे दिसतील</translation>
 <translation id="131112695174432497">जाहिरात पर्सनलायझेशनवर परिणाम करणारा डेटा हटवला आहे</translation>
 <translation id="1317194122196776028">या साइटचा इतिहास साफ करा</translation>
+<translation id="1321110954513621549">अनुमती दिलेले • अंदाजे</translation>
 <translation id="1323433172918577554">अधिक दाखवा</translation>
 <translation id="1333965224356556482">साइटना तुमचे स्थान पाहाण्याची अनुमती देऊ नका</translation>
 <translation id="1343356790768851700">ही साइट तुमच्या पसंतीच्या गोष्टी निर्धारित करते आणि इतर साइटना जाहिराती सुचवते</translation>
@@ -40,6 +41,7 @@
 <translation id="1448064542941920355">झूम कमी करते</translation>
 <translation id="1464044141348608623">तुम्ही तुमचे डिव्हाइस सक्रियपणे केव्हा वापरता हे साइटना जाणून घेण्याची अनुमती देऊ नका</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> साइट}other{<ph name="SITE_COUNT" /> साइट}}</translation>
+<translation id="1476700086976862423">थीम रंग सेपिया</translation>
 <translation id="1500473259453106018">टॅब कार्डवरील किंमत कमी झाल्याची सूचना लपवा</translation>
 <translation id="1508931164824684991">साइट JavaScript वापरू शकतात</translation>
 <translation id="1510341833810331442">साइटना तुमच्या डिव्हाइसवर डेटा सेव्ह करण्याची अनुमती नाही</translation>
@@ -71,6 +73,7 @@
 <translation id="1799920918471566157">Chrome शी संबंधित टिपा</translation>
 <translation id="1816835383954230954">सुरू असताना, Chrome अधिक जलद रन होते आणि JavaScript वापरणारी वैशिष्ट्ये डिझाइन केल्यानुसार कार्य करतात. बंद असताना, हे परफॉर्मन्स कमी करते, पण हल्ल्यांविरुद्ध V8 ला अधिक रोधक बनवते.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> ला AR वापरू देण्यासाठी, <ph name="BEGIN_LINK" />Android सेटिंग्ज<ph name="END_LINK" />मध्ये कॅमेरादेखील सुरू करा.</translation>
+<translation id="1848033246551405023">फाँट साँ सेरिफ</translation>
 <translation id="1881806992065048905">नवीन टॅब पेज स्वरूपाच्या तळाशी असलेली शीट</translation>
 <translation id="1887786770086287077">या डिव्हाइसाठी स्थान अ‍ॅक्सेस बंद आहे, <ph name="BEGIN_LINK" />Android सेटिंग्‍ज<ph name="END_LINK" /> मध्‍ये हे सुरू करा.</translation>
 <translation id="1906181697255754968">तुमचे काम आपोआप सेव्ह करणे यासारख्या वैशिष्ट्यांसाठी साइट सामान्यपणे तुमच्या डिव्हाइसवरील फाइल आणि फोल्डर अ‍ॅक्सेस करतात</translation>
@@ -92,6 +95,7 @@
 <translation id="2079545284768500474">पहिल्यासारखे करा</translation>
 <translation id="2080070583977670716">अधिक सेटिंग्ज</translation>
 <translation id="2091887806945687916">ध्वनी</translation>
+<translation id="2094208275686143364">थीम रंग फिकट</translation>
 <translation id="2096716221239095980">सर्व डेटा हटवा</translation>
 <translation id="2102396546234652240">साइटना तुमचा मायक्रोफोन वापरण्याची अनुमती देऊ नका</translation>
 <translation id="2117655453726830283">पुढील स्लाइड</translation>
@@ -137,6 +141,7 @@
 <translation id="2498359688066513246">मदत आणि अभिप्राय</translation>
 <translation id="2501278716633472235">परत जा</translation>
 <translation id="2533138527374486328">सुरू असल्यावर, साइट तुमच्या स्थानिक नेटवर्कवरील कोणत्याही डिव्हाइससोबत कनेक्ट करण्याची विनंती करू शकतात. बंद असल्यावर, साइट तुमच्या स्थानिक नेटवर्कवरील डिव्हाइससोबत कनेक्ट करू शकत नाहीत.</translation>
+<translation id="2544997614631598250">थीम रंग गडद</translation>
 <translation id="2546283357679194313">कुकीज आणि साइट डेटा</translation>
 <translation id="2570922361219980984">या डिव्हाइसाठी स्थान अ‍ॅक्सेस देखील बंद आहे, <ph name="BEGIN_LINK" />Android सेटिंग्‍ज<ph name="END_LINK" /> मध्‍ये हे सुरू करा.</translation>
 <translation id="257931822824936280">विस्‍तृत केले - संकुचित करण्‍यासाठी क्‍लिक करा.</translation>
@@ -194,6 +199,7 @@
 <translation id="3165022941318558018">साइटला तृतीय पक्ष कुकी वापरण्याची अनुमती द्या</translation>
 <translation id="3167868116600277716">Discover फीड</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> संचयित केलेला डेटा</translation>
+<translation id="3199078925536734975">या वेळी अनुमती दिलेले • अंदाजे</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> ने तुम्हाला सूचना पाठवण्यासाठी, <ph name="BEGIN_LINK" />Android सेटिंग्ज<ph name="END_LINK" /> मध्येदेखील सूचना सुरू करा.</translation>
 <translation id="3223425961342298674">स्थानाला अनुमती नाही</translation>
 <translation id="3227137524299004712">मायक्रोफोन</translation>
@@ -250,6 +256,7 @@
 <translation id="3803367742635802571">तुम्ही भेट देता त्या साइट कदाचित डिझाइन केल्यानुसार काम करणे थांबवतील</translation>
 <translation id="3816118180265633665">Chrome रंग</translation>
 <translation id="381841723434055211">फोन नंबर</translation>
+<translation id="3823453485268218808">फाँट मोनो</translation>
 <translation id="3826050100957962900">तृतीय पक्ष साइन इन</translation>
 <translation id="3835233591525155343">तुमच्या डिव्हाइसचा वापर</translation>
 <translation id="3843916486309149084">Chrome आज पुन्हा कुकी ब्लॉक करेल</translation>
@@ -302,6 +309,7 @@
 <translation id="4402755511846832236">तुम्ही हे डिव्हाइस ॲक्टिव्हपणे कधी वापरता हे साइटना जाणून घेण्यापासून ब्लॉक करा</translation>
 <translation id="4412992751769744546">तृतीय-पक्ष कुकीजना अनुमती द्या</translation>
 <translation id="4419929467120297501">तुम्ही ब्राउझ करत असताना तुम्हाला ट्रॅक करण्यासाठी Chrome साइटला तृतीय पक्ष कुकी वापरण्यापासून ब्लॉक करते. <ph name="BEGIN_LINK" />तृतीय पक्ष कुकीना असलेला अ‍ॅक्सेस व्यवस्थापित करणे<ph name="END_LINK" /> हे करण्यासाठी सेटिंग्जला भेट द्या.</translation>
+<translation id="4425416282877905577">फाँट सेरिफ</translation>
 <translation id="443121186588148776">सिरीअल पोर्ट</translation>
 <translation id="4434045419905280838">पॉप-अप आणि रीडिरेक्ट</translation>
 <translation id="443552056913301231">ही कृती कुकीसह सर्व स्थानिक डेटा हटवेल आणि <ph name="ORIGIN" /> साठी सर्व परवानग्या रीसेट करेल</translation>
@@ -554,6 +562,7 @@
 <translation id="7478658909253570368">साइटना सिरीअल पोर्टशी कनेक्ट करण्याची अनुमती देऊ नका</translation>
 <translation id="7488573225650545859">तुमच्या अ‍ॅप सूचीमध्ये टॅब पहा हे लपवा</translation>
 <translation id="7521387064766892559">JavaScript</translation>
+<translation id="7538975533793429503">फाँट आकार स्लायडर</translation>
 <translation id="7547989957535180761">सुरू असताना, साइट साइन-इन प्रॉम्प्ट दाखवू शकतात. बंद असताना, साइट साइन-इन प्रॉम्प्ट दाखवू शकत नाहीत.</translation>
 <translation id="7553211568594248088">हबसंबंधित शोधामधून बाहेर पडा</translation>
 <translation id="7554752735887601236">साइट तुमचा मायक्रोफोन वापरत आहे</translation>

@@ -28,6 +28,7 @@
 <translation id="1828808367831369073">Згруповано <ph name="TABS_COUNT_ONE" /> вкладку</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> вкладка}one{<ph name="TABS_COUNT_MANY" /> вкладка}few{<ph name="TABS_COUNT_MANY" /> вкладки}many{<ph name="TABS_COUNT_MANY" /> вкладок}other{<ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
 <translation id="1909810060368225529">Зверніть увагу: усі користувачі в цій спільній групі вкладок можуть бачити й вносити зміни.</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{Закріпити вкладку}one{Закріпити вкладки}few{Закріпити вкладки}many{Закріпити вкладки}other{Закріпити вкладки}}</translation>
 <translation id="1982637982196732906">Перемістити в розділ "Неактивні вкладки"</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Зробити закладку для <ph name="TABS_COUNT_ONE" /> вибраної вкладки}one{Зробити закладки для <ph name="TABS_COUNT_MANY" /> вибраної вкладки}few{Зробити закладки для <ph name="TABS_COUNT_MANY" /> вибраних вкладок}many{Зробити закладки для <ph name="TABS_COUNT_MANY" /> вибраних вкладок}other{Зробити закладки для <ph name="TABS_COUNT_MANY" /> вибраної вкладки}}</translation>
 <translation id="2055057176188061528">Виберіть групу вкладок або створіть нову</translation>
@@ -78,6 +79,7 @@
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">Зменш. зобр. для перегляду екрана поширення.</translation>
 <translation id="3810973564298564668">Керувати</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{Відкріпити вкладку}one{Відкріпити вкладки}few{Відкріпити вкладки}many{Відкріпити вкладки}other{Відкріпити вкладки}}</translation>
 <translation id="3940195383040445971">Відстежувати ціни на вкладках</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> нова вкладка, <ph name="ANY_CLOSED" /> закрито}one{<ph name="MANY_ADDED" /> нова вкладка, <ph name="ANY_CLOSED" /> закрито}few{<ph name="MANY_ADDED" /> нові вкладки, <ph name="ANY_CLOSED" /> закрито}many{<ph name="MANY_ADDED" /> нових вкладок, <ph name="ANY_CLOSED" /> закрито}other{<ph name="MANY_ADDED" /> нової вкладки, <ph name="ANY_CLOSED" /> закрито}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Додати вкладку в групу}one{Згрупувати вкладки}few{Згрупувати вкладки}many{Згрупувати вкладки}other{Згрупувати вкладки}}</translation>
@@ -131,6 +133,7 @@
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Закрити <ph name="TABS_COUNT_ONE" /> вибраний об’єкт}one{Закрити <ph name="TABS_COUNT_MANY" /> вибраний об’єкт}few{Закрити <ph name="TABS_COUNT_MANY" /> вибрані об’єкти}many{Закрити <ph name="TABS_COUNT_MANY" /> вибраних об’єктів}other{Закрити <ph name="TABS_COUNT_MANY" /> вибраного об’єкта}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Перемістити групу в нове вікно}one{Перемістити групи в інше вікно}few{Перемістити групи в інше вікно}many{Перемістити групи в інше вікно}other{Перемістити групи в інше вікно}}</translation>
 <translation id="6228793724645064692">(оцінка магазину)</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{Вилучити вкладку з групи}one{Вилучити вкладки з групи}few{Вилучити вкладки з групи}many{Вилучити вкладки з групи}other{Вилучити вкладки з групи}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Додати вкладку в нову групу}one{Додати вкладки в нову групу}few{Додати вкладки в нову групу}many{Додати вкладки в нову групу}other{Додати вкладки в нову групу}}</translation>
 <translation id="6333260925957816943">Інформація про цей магазин</translation>
 <translation id="6381032505162537930">Тут зберігатимуться групи вкладок</translation>

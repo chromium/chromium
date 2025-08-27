@@ -243,6 +243,7 @@
 <translation id="139305205187523129"><ph name="HOST_NAME" /> କୌଣସି ଡାଟା ପଠାଇନାହିଁ।</translation>
 <translation id="1393071644879491291">ଆପଣ ଭିଜିଟ କରିବାକୁ ଚେଷ୍ଟା କରିଥିବା ସାଇଟରେ ଆକ୍ରମଣକାରୀମାନେ ଆପଣଙ୍କୁ ସଫ୍ଟୱେର ଇନଷ୍ଟଲ କରିବାକୁ କିମ୍ବା ଆପଣଙ୍କ ପାସୱାର୍ଡ, ଫୋନ ବା କ୍ରେଡିଟ କାର୍ଡ ନମ୍ବରଗୁଡ଼ିକ ପରି ଜିନିଷଗୁଡ଼ିକୁ ପ୍ରକାଶ କରିବାକୁ ପ୍ରତାରଣା କରିପାରନ୍ତି। ସୁରକ୍ଷାକୁ ଫେରିବା ପାଇଁ Chrome ଦୃଢ଼ ଭାବେ ସୁପାରିଶ କରେ। <ph name="BEGIN_LEARN_MORE_LINK" />ଏହି ଚେତାବନୀ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1405567553485452995">ହାଲୁକା ସବୁଜ</translation>
+<translation id="1406370515365284486">ଆପଣଙ୍କ ପେମେଣ୍ଟ ପଦ୍ଧତିକୁ ଏବେ ବି ସେଭ କରାଯିବ</translation>
 <translation id="1406500794671479665">ଯାଞ୍ଚ ହେଉଛି...</translation>
 <translation id="1406812885827747674">ଏହି ଥର ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="14070772729708640"><ph name="CLOUD_PROVIDER" />ରେ ଥିବା <ph name="FOLDER_NAME" />ରେ ଫାଇଲଗୁଡ଼ିକୁ ସଫଳତାର ସହ ଅପଲୋଡ କରାଯାଇଛି</translation>
@@ -440,6 +441,7 @@
 <translation id="1719838434204287058">24 x 30 ଇଞ୍ଚ</translation>
 <translation id="1720941539803966190">ଟ୍ୟୁଟୋରିଆଲ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1721424275792716183">* ଫିଲ୍ଡ ଆବଶ୍ୟକ ଅଟେ</translation>
+<translation id="1723636263173393300">ଏହି ନୀତିରେ <ph name="MAX_ITEMS_LIMIT" />ରୁ ଅଧିକ ସର୍ଟକଟ ରହିବା ଉଚିତ ନୁହେଁ।</translation>
 <translation id="1725591448053514783">ଏନଭେଲପ ୟୁ 6</translation>
 <translation id="1727613060316725209">ସାର୍ଟିଫିକେଟଟି ବୈଧ ଅଟେ</translation>
 <translation id="1728677426644403582">ଆପଣ ଏକ ୱେବ୍ ପୃଷ୍ଠାର ଉତ୍ସ ଦେଖୁଛନ୍ତି</translation>
@@ -1047,6 +1049,7 @@
 <translation id="271663710482723385">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରୁ ବାହାରି ଯିବାକୁ |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| ଦବାନ୍ତୁ</translation>
 <translation id="2717336592027046789">ରୋଲ</translation>
 <translation id="2718207025093645426">ପରିଚାଳିତ ୟୁଜର କିମ୍ବା ଡିଭାଇସର କୌଣସି ନୀତି ଲୋଡ ହୋଇନାହିଁ।</translation>
+<translation id="2719233594187778789">ଅଣ-ସ୍ୱତନ୍ତ୍ର URLକୁ ଅଣଦେଖା କରାଯାଇଛି: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">ଅନୁରୋଧ ସଫଳ ହୋଇଛି</translation>
 <translation id="2722622039067384533">ଲିଭିଂ ରୁମ ଫର୍ଣ୍ଣିଚର</translation>
 <translation id="2723669454293168317">Chrome ସେଟିଂସରେ ଏକ ସୁରକ୍ଷା ଯାଞ୍ଚ ଚଲାନ୍ତୁ</translation>
@@ -2004,6 +2007,7 @@
 <translation id="4298000214066716287">ନିବେଶ</translation>
 <translation id="4298148761711700950">QR ଅପଲୋଡ ବିନା ତୁରନ୍ତ ପେମେଣ୍ଟ କରନ୍ତୁ</translation>
 <translation id="4298925811540301889">ଏହି ସାଇଟ ପାଇଁ କୁକୀଗୁଡ଼ିକ ଆପଣଙ୍କ ସମଗ୍ର ChromeOS ଡିଭାଇସରେ ସିଙ୍କ ହୋଇଛି। ଆପଣ ଯାହା ସିଙ୍କ କରନ୍ତି ତାହା ପରିଚାଳନା କରିବାକୁ <ph name="SYNC_SETTINGS" />କୁ ଯାଆନ୍ତୁ।</translation>
+<translation id="4299919199185766032">ସର୍ଟକଟର ନାମ ଅନୁମତି ଦିଆଯାଇଥିବା ସର୍ବାଧିକ <ph name="MAX_LENGTH" /> କେରେକ୍ଟର ଲମ୍ବକୁ ଅତିକ୍ରମ କରିଛି।</translation>
 <translation id="4300272766492248925">ଆପ ଖୋଲନ୍ତୁ</translation>
 <translation id="4300675098767811073">ଡାହାଣ ପଟରେ ଏକାଧିକ ପଞ୍ଚ୍</translation>
 <translation id="4302514097724775343">ଖେଳିବା ପାଇଁ ଡାଇନୋସରରେ ଟାପ୍ କରନ୍ତୁ</translation>
@@ -2705,6 +2709,7 @@
     ଆପଣଙ୍କର ସିଷ୍ଟମ୍ ବ୍ୟବସ୍ଥାପକଙ୍କୁ ଯୋଗାଯୋଗ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="5496804587179176046">ସୁରକ୍ଷା କୋଡ ସେଭ କରନ୍ତୁ, ବର୍ତ୍ତମାନ କୌଣସି ସୁରକ୍ଷା କୋଡ ସେଭ ହୋଇନାହିଁ</translation>
 <translation id="550365051221576010">ସବୁକିଛି ପୂରଣ କରନ୍ତୁ</translation>
+<translation id="5506286895894263601">ତାଲିକାରେ କୌଣସି ବୈଧ ସର୍ଟକଟ ନାହିଁ।</translation>
 <translation id="5508443345185481044">କ୍ୟାମେରା ଏବଂ କ୍ୟାମକର୍ଡରଗୁଡ଼ିକ</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">ବୁକ୍‍ମାର୍କଗୁଡ଼ିକୁ ପରିଚାଳନା କରାଯାଇଛି</translation>
@@ -3623,6 +3628,7 @@
 <translation id="7014741021609395734">ଜୁମ୍ ସ୍ତର</translation>
 <translation id="7016992613359344582">ଏହି ଶୁଳ୍କଗୁଡ଼ିକ ଗୋଟିଏ ଥର କିମ୍ବା ବାରମ୍ବାର ଲାଗୁ ହୋ‍ଇପାରେ ଏବଂ ସ୍ପଷ୍ଟ ଭାବରେ ଲାଗୁ ହୋ‍ଇନପାରେ।</translation>
 <translation id="701757816833614688">ଭିଜୁଆଲ ଆର୍ଟ ଏବଂ ଡିଜାଇନ ଶିକ୍ଷା</translation>
+<translation id="7020464868401003526">ସର୍ଟକଟର URL ଅନୁମତି ଦିଆଯାଇଥିବା ସର୍ବାଧିକ <ph name="MAX_LENGTH" /> କେରେକ୍ଟର ଲମ୍ବକୁ ଅତିକ୍ରମ କରିଛି।</translation>
 <translation id="702275896380648118">ଆପଣ ପସନ୍ଦ କରୁଥିବା ଜିନିଷଗୁଡ଼ିକୁ ଏହି ସାଇଟ ନିର୍ଦ୍ଧାରଣ କରେ ଏବଂ ତା'ପରେ ଅନ୍ୟ ସାଇଟଗୁଡ଼ିକୁ ବିଜ୍ଞାପନର ପରାମର୍ଶ ଦିଏ। ଆପଣଙ୍କୁ ଅଧିକ ପ୍ରାସଙ୍ଗିକ ବିଜ୍ଞାପନଗୁଡ଼ିକ ଦେଖାଇବା ପାଇଁ ମଧ୍ୟ ଏହି ସାଇଟ Chromeରୁ ଆପଣଙ୍କ ବିଜ୍ଞାପନ ବିଷୟଗୁଡ଼ିକ ପାଇଥାଏ।</translation>
 <translation id="7023162328967545559">ଆଡମିନଙ୍କ ଚେତାବନୀ</translation>
 <translation id="7023765275461720661">ଆକାଉଣ୍ଟ ଲିଙ୍କ କରି <ph name="BNPL_ISSUER_NAME" />କୁ ପେମେଣ୍ଟ କରିବେ?</translation>

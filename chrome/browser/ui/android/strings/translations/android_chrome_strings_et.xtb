@@ -499,7 +499,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3384347053049321195">Jaga kujutist</translation>
 <translation id="3387650086002190359">Faili <ph name="FILE_NAME" /> allalaadimine ebaõnnestus failisüsteemi vigade tõttu.</translation>
 <translation id="3414952576877147120">Suurus:</translation>
-<translation id="3421726884497337397">Valige, millal kolmandate osapoolte küpsiseid blokeerida</translation>
 <translation id="3430670036890315772">Profiililuku väljalülitamine eemaldab teie salvestatud teabe</translation>
 <translation id="3435465986463792564">Kas teil on palju aknaid? Saate neid kõiki siin hallata.</translation>
 <translation id="3435575784518354875">Paroolide kasutamise jätkamiseks eksportige need, värskendage Google Play teenused ja importige need uuesti Google'i paroolihaldurisse. <ph name="BEGIN_LINK" />Lugege juhiseid<ph name="END_LINK" />.</translation>
@@ -760,7 +759,6 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 parool on ohus}other{# parooli on ohus}}</translation>
 <translation id="4641919525231168205">Järgmisele lehele liikumine</translation>
 <translation id="4642472735733036929">Hinna jälgimine on peatatud</translation>
-<translation id="4645146721047390964">Inkognito režiimis ei saa saidid eri saitidel küpsisefailide kaudu teie sirvimistegevusi jälgida, näiteks selleks, et reklaame isikupärastada. Mõne saidi funktsioonid ei pruugi töötada.</translation>
 <translation id="465657074423018424">Google'i ohutu sirvimine kaitseb teid petlike veebisaitide eest. Kui selle välja lülitate, olge sirvimisel väga ettevaatlik (eriti siis, kui sisestate paroole).</translation>
 <translation id="4662373422909645029">Hüüdnimes ei tohi olla numbreid</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> järjehoidjat kustutati</translation>
@@ -1220,7 +1218,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6633067410344541938">Ava inkognito seanss</translation>
 <translation id="6636623428211296678">Avastage allpool rohkem seadeid või lõpetage kohe</translation>
 <translation id="6637100877383020115">Rakenduse täiustamiseks saadab Chrome Google'ile kasutus- ja krahhiandmeid. <ph name="BEGIN_UMA_LINK" />Haldamine<ph name="END_UMA_LINK" /></translation>
-<translation id="6640207029842583248">Blokeeri alati</translation>
 <translation id="6641780377503683465">Eemalda <ph name="INTEREST" /></translation>
 <translation id="6647441008198474441">Teie külastatavad URL-id saadetakse Google'ile, et prognoosida, milliseid saite võiksite järgmisena külastada</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 ja veel <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 ja veel <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -1232,6 +1229,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6674571176963658787">Sünkroonimise alustamiseks sisestage oma parool</translation>
 <translation id="6676927815633975364">Logige sellele saidile ja Chrome'i sisse</translation>
 <translation id="6684809838922667136">Chrome'i täiustamine</translation>
+<translation id="6689436252814043643">Lugemisrežiim pole saadaval</translation>
 <translation id="6700279777779583398">Valikud on salvestatud</translation>
 <translation id="670498945988402717">Kontrolliti eile</translation>
 <translation id="6710213216561001401">Eelmine</translation>
@@ -1444,7 +1442,6 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="751961395872307827">Saidiga ei saa ühendust luua</translation>
 <translation id="7523960634226602883">Otsige Google Lensi abil oma kaameraga</translation>
 <translation id="7525248386620136756"><ph name="TAB_GROUPS_AND_TABS_PART" /> on suletud ja salvestatud</translation>
-<translation id="752731652852882757">Blokeeri inkognito režiimi kasutamise ajal</translation>
 <translation id="7545347190366646170">Inimesed, kellel on juurdepääs</translation>
 <translation id="7554643625247105821">Chrome'i versiooni ei saa kontrollida</translation>
 <translation id="7557508262441527045">Välja logitud</translation>
@@ -1610,7 +1607,6 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8243077599929149377">Lisage oma kasutajanimi</translation>
 <translation id="8244387390464017490">Uue vahelehe kohandamine</translation>
 <translation id="8250920743982581267">Dokumendid</translation>
-<translation id="8255617931166444521">Saidid võivad teie küpsisefaile kasutada vaid selleks, et vaadata teie sirvimistegevust ainult samal saidil</translation>
 <translation id="8258999165172757081">Lisatud</translation>
 <translation id="8259179246279078674">Kuna eellaaditud lehed on krüpteeritud, ei saa Google eellaaditud lehe sisu kohta teavet. Google'i serverid saavad teada, millised saidid eellaaditakse privaatselt. Seda teavet kasutatakse ainult lehtede eellaadimiseks ja seda ei seostata teie Google'i kontol oleva muu teabega.</translation>
 <translation id="8260126382462817229">Proovige uuesti sisse logida</translation>

@@ -156,7 +156,8 @@
 <translation id="1749561566933687563">同步您的书签</translation>
 <translation id="1750238553597293878">请继续使用您的 Google 账号的密码</translation>
 <translation id="17513872634828108">目前打开的标签页</translation>
-<translation id="1755203724116202818">为了衡量某个广告的效果，网站之间会分享有限类型的数据，例如您在访问某个网站后是否购买了商品。</translation>
+<translation id="1753744496844366747">Aa</translation>
+<translation id="1755203724116202818">为衡量广告效果，网站之间会分享特定类型的数据，例如您在访问某个网站后是否进行了购买交易。</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{页面，列表中有 1 个页面}other{页面，列表中有 # 个页面}}</translation>
 <translation id="1771929606532798550">系统会向 Google 发送与您的 Chrome 使用情况相关的信息，但这些信息未关联到您\n\n如果 Chrome 崩溃了，崩溃事件的相关详情可能会包含一些个人信息\n\n如果您将历史记录同步到 Google 账号，相关指标可能也会包含与您访问的网址有关的信息</translation>
 <translation id="1778457539567749232">标记为未读</translation>
@@ -321,6 +322,7 @@
 <translation id="253498598929009420">该网站将能看到您屏幕上的内容</translation>
 <translation id="2535807170289627159">所有标签页</translation>
 <translation id="2536728043171574184">正在查看此网页的离线副本</translation>
+<translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />，标签页</translation>
 <translation id="2546283357679194313">Cookie 和网站数据</translation>
 <translation id="2547843573592965873">个人资料锁定功能可确保您 Google 账号中保存的信息（包括密码、付款信息等）安全地存储在车载系统中。</translation>
@@ -499,7 +501,6 @@
 <translation id="3384347053049321195">分享图片</translation>
 <translation id="3387650086002190359">未能成功下载 <ph name="FILE_NAME" />，因为文件系统出现了错误。</translation>
 <translation id="3414952576877147120">大小：</translation>
-<translation id="3421726884497337397">选择何时屏蔽第三方 Cookie</translation>
 <translation id="3430670036890315772">关闭个人资料锁定功能将移除您已保存的信息</translation>
 <translation id="3435465986463792564">打开了许多窗口？您可在此处管理它们</translation>
 <translation id="3435575784518354875">如需继续使用您的密码，请立即将其导出，更新 Google Play 服务，然后将其重新导入 Google 密码管理工具。<ph name="BEGIN_LINK" />查看完整说明<ph name="END_LINK" />。</translation>
@@ -760,7 +761,6 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{有 1 个密码已遭泄露}other{有 # 个密码已遭泄露}}</translation>
 <translation id="4641919525231168205">前往下一页</translation>
 <translation id="4642472735733036929">已停止跟踪价格</translation>
-<translation id="4645146721047390964">在无痕模式下，网站无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。某些网站上的功能可能会无法正常运作。</translation>
 <translation id="465657074423018424">“安全浏览”功能会保护您免受诈骗网站的侵害。如果您关闭此功能，当浏览网站时（特别是在输入密码之前），请一定多加小心。</translation>
 <translation id="4662373422909645029">昵称不能包含数字</translation>
 <translation id="4663756553811254707">已删除 <ph name="NUMBER_OF_BOOKMARKS" /> 个书签</translation>
@@ -1202,7 +1202,7 @@
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{系统将会关闭标签页“<ph name="TAB_TITLE" />”以及另外 <ph name="TAB_COUNT_ONE" /> 个标签页}other{系统将会关闭标签页“<ph name="TAB_TITLE" />”以及另外 <ph name="TAB_COUNT_MANY" /> 个标签页}}</translation>
 <translation id="6560414384669816528">改用搜狗搜索</translation>
 <translation id="656065428026159829">查看更多</translation>
-<translation id="6564820424018738527">您的 Android 设备可能包含类似的设置。如果您在 Chrome 中和 Android 设备上开启了“广告效果衡量”，相关公司或许就能对在您访问的网站和使用的应用中投放的广告进行效果衡量。</translation>
+<translation id="6564820424018738527">您的 Android 设备可能包含类似的设置。如果您在 Chrome 和 Android 设备上都开启了“广告效果衡量”，那么相关公司或许就能跨平台衡量广告在您访问的网站和使用的应用中的效果。</translation>
 <translation id="6565959834589222080">当 Wi-Fi 可用时使用 Wi-Fi</translation>
 <translation id="6569373978618239158">现在，当打开新标签页时，您会看到来自<ph name="SITE_NAME" />的故事。您关注的网站会保存在您的 Google 账号中。您可在“探索”设置中管理它们。</translation>
 <translation id="657177046675873214">如要将书签同步到所有设备上，请在设置中开启“书签”</translation>
@@ -1220,7 +1220,6 @@
 <translation id="6633067410344541938">解锁无痕模式</translation>
 <translation id="6636623428211296678">探索下方的更多设置，或立即结束</translation>
 <translation id="6637100877383020115">为帮助改进应用，Chrome 会向 Google 发送使用情况和崩溃数据。<ph name="BEGIN_UMA_LINK" />管理<ph name="END_UMA_LINK" /></translation>
-<translation id="6640207029842583248">始终屏蔽</translation>
 <translation id="6641780377503683465">移除“<ph name="INTEREST" />”</translation>
 <translation id="6647441008198474441">系统会将您访问过的网址发送给 Google，以预测您接下来可能会访问的网站</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 个联系人}other{<ph name="CONTACT_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 个联系人}}</translation>
@@ -1241,6 +1240,7 @@
 <translation id="6723740634201835758">在您的 Google 账号中</translation>
 <translation id="6734310707649923383">您可以查看自己访问过的网页，也可将网页从历史记录中删除</translation>
 <translation id="6738867403308150051">正在下载…</translation>
+<translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">检查您的账号数据</translation>
 <translation id="6751521182688001123">快速打开一个新标签页。若要修改此快捷方式，请轻触并按住这里。</translation>
 <translation id="6752130751133944215">如需恢复新窗口，请将活跃窗口和非活跃窗口的总数减少到 <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> 个或更少。非活跃窗口在 6 个月后会被删除。</translation>
@@ -1385,7 +1385,7 @@
 <translation id="7290209999329137901">不可重命名</translation>
 <translation id="7291910923717764901">已为此网页添加图片说明</translation>
 <translation id="7293429513719260019">选择语言</translation>
-<translation id="7304072650267745798">您的 Android 设备可能包含类似的设置。如果您在 Chrome 中和 Android 设备上开启了这项设置，相关公司或许就能在您访问的网站和使用的应用中衡量广告的效果。</translation>
+<translation id="7304072650267745798">您的 Android 设备可能包含类似的设置。如果您在 Chrome 和 Android 设备上都开启了“广告效果衡量”，那么相关公司或许就能跨平台衡量广告在您访问的网站和使用的应用中的效果。</translation>
 <translation id="7313188324932846546">点按即可设置同步</translation>
 <translation id="7314734791127433392">无法检查密码</translation>
 <translation id="7324354302972299151">发送“Do Not Track”请求</translation>
@@ -1443,7 +1443,6 @@
 <translation id="751961395872307827">无法连接到该网站</translation>
 <translation id="7523960634226602883">借助摄像头使用 Google 智能镜头进行搜索</translation>
 <translation id="7525248386620136756">已关闭并保存 <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
-<translation id="752731652852882757">使用无痕模式时屏蔽</translation>
 <translation id="7545347190366646170">有访问权限的人</translation>
 <translation id="7554643625247105821">无法检查 Chrome 版本</translation>
 <translation id="7557508262441527045">已退出账号</translation>
@@ -1609,7 +1608,6 @@
 <translation id="8243077599929149377">添加您的用户名</translation>
 <translation id="8244387390464017490">自定义新标签页页面</translation>
 <translation id="8250920743982581267">文档</translation>
-<translation id="8255617931166444521">网站只能使用 Cookie 查看您在此网站上的浏览活动</translation>
 <translation id="8258999165172757081">已添加</translation>
 <translation id="8259179246279078674">由于预加载的网页均已加密，因此 Google 不会得知与预加载的网页内容有关的任何信息。不过，Google 服务器会得知哪些网站是以私密方式预加载的。该信息仅用于预加载网页，不会关联到您 Google 账号中的其他信息。</translation>
 <translation id="8260126382462817229">请尝试重新登录</translation>

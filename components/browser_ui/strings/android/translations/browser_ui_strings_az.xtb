@@ -25,6 +25,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="129382876167171263">Veb saytların yadda saxladığı fayllar burada görünür</translation>
 <translation id="131112695174432497">Reklamın fərdiləşdirilməsinə təsir edən data silinir</translation>
 <translation id="1317194122196776028">Bu saytı unudun</translation>
+<translation id="1321110954513621549">İcazə verilir • Təxmini</translation>
 <translation id="1323433172918577554">Digərlərinə baxın</translation>
 <translation id="1333965224356556482">Saytlara məkanınıza baxmaq icazəsi verməyin</translation>
 <translation id="1343356790768851700">Bu sayt bəyəndiklərinizi müəyyənləşdirir və sonra digər saytlara reklam təklif edir</translation>
@@ -40,6 +41,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="1448064542941920355">Zoom'u azaldın</translation>
 <translation id="1464044141348608623">Saytlara cihazınızdan nə zaman aktiv şəkildə istifadə etdiyinizi bilmək icazəsi verməyin</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sayt}other{<ph name="SITE_COUNT" /> sayt}}</translation>
+<translation id="1476700086976862423">Tema rəngi sepiya</translation>
 <translation id="1500473259453106018">Tablarda qiymətin enməsi kartını gizlədin</translation>
 <translation id="1508931164824684991">Saytlar JavaScript istifadə edə bilər</translation>
 <translation id="1510341833810331442">Saytlara cihazınızda data saxlamaq icazəsi verilmir</translation>
@@ -71,6 +73,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="1799920918471566157">Chrome ipucuları</translation>
 <translation id="1816835383954230954">Aktiv olduqda Chrome daha sürətli işləyir və JavaScript istifadə edən funksiyalar nəzərdə tutulan kimi işləməlidir. Deaktiv olduqda bu, performansı azaldır, lakin V8-i hücumlara qarşı daha davamlı edir.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> tətbiqinə AR-dan istifadə icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> kameranı da aktiv edin.</translation>
+<translation id="1848033246551405023">Şrift Sans Serif</translation>
 <translation id="1881806992065048905">Yeni tab səhifəsi görünüşü üzrə aşağıdakı vərəq</translation>
 <translation id="1887786770086287077">Bu cihazda məkan girişi də deaktivdir. <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> girişi aktiv edin.</translation>
 <translation id="1906181697255754968">Saytlar adətən işinizi avtomatik yaddaşda saxlamaq kimi xüsusiyyətlər üçün cihazınızdakı fayllar və qovluqlara giriş edir</translation>
@@ -92,6 +95,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="2079545284768500474">Geri qaytarın</translation>
 <translation id="2080070583977670716">Digər ayarlar</translation>
 <translation id="2091887806945687916">Səs</translation>
+<translation id="2094208275686143364">Tema rəngi açıq</translation>
 <translation id="2096716221239095980">Bütün datanı silin</translation>
 <translation id="2102396546234652240">Saytlara mikrofonunuzdan istifadə etmək icazəsi verməyin</translation>
 <translation id="2117655453726830283">Növbəti slayd</translation>
@@ -137,6 +141,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="2498359688066513246">Yardım və geri əlaqə</translation>
 <translation id="2501278716633472235">Geri qayıdın</translation>
 <translation id="2533138527374486328">Aktiv olduqda saytlar yerli şəbəkənizdəki istənilən cihaza qoşulmağı istəyə bilər. Deaktiv olduqda saytlar yerli şəbəkənizdəki cihazlara qoşula bilməz.</translation>
+<translation id="2544997614631598250">Tema rəngi tünd</translation>
 <translation id="2546283357679194313">Kukilər və sayt datası</translation>
 <translation id="2570922361219980984">Bu cihazda məkan girişi də deaktivdir. <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> girişi aktiv edin.</translation>
 <translation id="257931822824936280">Geniş - Qısaltmaq üçün klikləyin</translation>
@@ -194,6 +199,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="3165022941318558018">Sayta üçüncü tərəf kukilərindən istifadə etməyə icazə verin</translation>
 <translation id="3167868116600277716">Təkliflər lenti</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> saxlanılan data</translation>
+<translation id="3199078925536734975">Bu dəfə icazə verilir • Təxmini</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> tətbiqinə sizə bildiriş göndərmək icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> bildirişləri də aktiv edin.</translation>
 <translation id="3223425961342298674">Məkana icazə verilmir</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -250,6 +256,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="3803367742635802571">Ziyarət etdiyiniz saytlar nəzərdə tutulduğu kimi fəaliyyətini dayandıra bilər</translation>
 <translation id="3816118180265633665">Chrome Rəngləri</translation>
 <translation id="381841723434055211">Telefon nömrələri</translation>
+<translation id="3823453485268218808">Şrift Mono</translation>
 <translation id="3826050100957962900">Üçüncü tərəfin girişi</translation>
 <translation id="3835233591525155343">Cihazdan istifadəniz</translation>
 <translation id="3843916486309149084">Chrome bu gün kukiləri yenidən bloklayacaq</translation>
@@ -302,6 +309,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="4402755511846832236">Saytların bu cihazdan nə zaman aktiv şəkildə istifadə etdiyinizi bilməsini bloklayın</translation>
 <translation id="4412992751769744546">Üçüncü tərəf kukilərinə icazə verin</translation>
 <translation id="4419929467120297501">Chrome saytların baxış zamanı sizi izləmək üçün üçüncü tərəf kukilərindən istifadəsini bloklayır. <ph name="BEGIN_LINK" />Üçüncü tərəf kukilərinə girişi idarə etmək<ph name="END_LINK" /> üçün Ayarlara keçin.</translation>
+<translation id="4425416282877905577">Şrift Serif</translation>
 <translation id="443121186588148776">Ardıcıl port</translation>
 <translation id="4434045419905280838">Popap və yönləndirmələr</translation>
 <translation id="443552056913301231">Bu əməliyyat ilə kukilər daxil olmaqla bütün lokal data silinəcək və <ph name="ORIGIN" /> icazələri sıfırlanacaq</translation>
@@ -554,6 +562,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="7478658909253570368">Saytlara ardıcıl portlara qoşulmaq icazəsi verməyin</translation>
 <translation id="7488573225650545859">Tətbiq siyahısındakı Baxış tablarını gizlədin</translation>
 <translation id="7521387064766892559">JavaScript</translation>
+<translation id="7538975533793429503">Şrift ölçüsü slayderi</translation>
 <translation id="7547989957535180761">Aktiv ediləndə saytlar giriş sorğularını göstərə bilər. Deaktiv ediləndə saytlar giriş sorğularını göstərə bilməz.</translation>
 <translation id="7553211568594248088">Hab axtarışından çıxın</translation>
 <translation id="7554752735887601236">Sayt mikrofonunuzdan istifadə edir</translation>

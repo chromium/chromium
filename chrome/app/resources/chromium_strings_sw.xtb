@@ -84,6 +84,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2008474315282236005">Hatua hii itafuta kipengee 1 kwenye kifaa hiki. Ili urejeshe data yako baadaye, ingia katika Chromium ukitumia <ph name="USER_EMAIL" />.</translation>
 <translation id="2018879682492276940">Imeshindwa kusakinisha. Tafadhali jaribu tena.</translation>
 <translation id="2020032459870799438">Ili uangalie kama manenosiri yako mengine ni salama dhidi ya ufichuzi haramu wa data na matatizo mengine ya usalama, <ph name="BEGIN_LINK" />ingia katika akaunti kwenye Chromium<ph name="END_LINK" />.</translation>
+<translation id="2039417478970545937">Mipangilio.</translation>
 <translation id="2049376729098081731">Chagua iwapo ungependa kujumuisha historia kwenye Chromium ili upate hali ya utumiaji inayokufaa zaidi katika huduma za Google</translation>
 <translation id="2054039611381840095">Utahitaji toleo la macOS 12 au matoleo mapya zaidi ili upate masasisho ya Chromium ya siku zijazo. Kompyuta hii inatumia toleo la macOS 11.</translation>
 <translation id="2086476982681781442">Chromium imezuia upakuaji huu kwa sababu faili inapotosha na huenda ikafanya mabadiliko yasiyotarajiwa kwenye kifaa chako</translation>
@@ -316,6 +317,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="5123973130450702873">Chromium inahitaji ruhusa ya kufuatilia mijongeo ya mikono</translation>
 <translation id="5141988424377517949">Hujazitembelea hivi majuzi. Chromium imeondoa <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> na <ph name="PERMISSION_3" />.</translation>
 <translation id="5174969993834422967">Kawaida unazuia arifa. Ili uruhusu tovuti hii ikuarifu, bofya aikoni ya arifa kwenye kona ya kulia ya upau wa eneo uliko.</translation>
+<translation id="5174983315706567306">Nafasi ya hifadhi ya diski haitoshi.</translation>
 <translation id="5187123684706427865">Akaunti ya Chromium inahitaji kuthibitisha upya</translation>
 <translation id="5224391634244552924">Hakuna manenosiri yaliyohifadhiwa. Chromium inaweza kukagua manenosiri yako ukiyahifadhi.</translation>
 <translation id="5231355151045086930">Ondoka kwenye Chromium</translation>
@@ -443,6 +445,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="6598877126913850652">Nenda kwenye mipangilio ya arifa ya Chromium</translation>
 <translation id="6600016381025017075">Tafuta chochote kwenye ukurasa huu</translation>
 <translation id="6613594504749178791">Mabadiliko yako yataanza kufanya kazi wakati ujao utakapozindua upya Chromium.</translation>
+<translation id="6648212540664651655">Endelea ulikoachia: Chromium imerejesha vichupo vyako kutoka kwenye kipindi chako kilichopita Unaweza kuzima hili katika</translation>
 <translation id="665732753414869868">Chromium inahitaji ruhusa ya kufikia kamera ili iunde ramani ya 3D ya mazingira yako</translation>
 <translation id="6669284030132180248">Iwapo pia unahifadhi alamisho kwenye Akaunti yako ya Google, unaweza kufuatilia bei za bidhaa katika Chromium na upokee arifa bei inapopunguzwa</translation>
 <translation id="6676384891291319759">Fikia wavuti</translation>
@@ -507,6 +510,7 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="7352651011704765696">Hitilafu fulani imetokea</translation>
 <translation id="7376384068949534168">Hujazitembelea hivi majuzi. Chromium imeonda <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="7384121030444253939">Kiendelezi hiki hakitumiki tena. Chromium inapendekeza ukiondoe badala yake.</translation>
+<translation id="7413153308467572558">Endelea ulikoachia: Chromium hurejesha vichupo vyako kila wakati unapoianzisha upya. Ili uzime, nenda kwenye</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium ya Wasanidi Programu</translation>
 <translation id="7450541714075000668">Maandishi yamenakiliwa</translation>
 <translation id="7451052299415159299">Chromium inahitaji ruhusa ya kufikia kamera yako katika tovuti hii</translation>
@@ -638,6 +642,7 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="911206726377975832">Futa historia yako ya kuvinjari pia?</translation>
 <translation id="9134482777260927479">Usaidizi kwenye kazi ya shuleni ya kufanyia nyumbani</translation>
 <translation id="9148058034647219655">Ondoka</translation>
+<translation id="9155105544013854680">Endelea ulikoachia: Chromium inaweza kurejesha vichupo vyako kila wakati unapoianzisha upya. Ili uwashe, nenda kwenye</translation>
 <translation id="9158494823179993217">Msimamizi wa mfumo unaotumia ameweka mipangilio ya Chromium ifungue kivinjari mbadala ili ufikie<ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Fungua tena ili usasishe &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>

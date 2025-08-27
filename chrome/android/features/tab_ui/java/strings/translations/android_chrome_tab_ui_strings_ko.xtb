@@ -28,6 +28,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" />개의 탭 그룹화됨</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개}other{탭 <ph name="TABS_COUNT_MANY" />개}}</translation>
 <translation id="1909810060368225529">알림: 이 공유 탭 그룹의 변경사항은 모든 사용자에게 표시됩니다. 모든 사용자가 공유 탭 그룹을 변경할 수 있습니다</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{탭 고정}other{탭 고정}}</translation>
 <translation id="1982637982196732906">비활성 섹션으로 이동</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{선택된 탭 <ph name="TABS_COUNT_ONE" />개 북마크}other{선택된 탭 <ph name="TABS_COUNT_MANY" />개 북마크}}</translation>
 <translation id="2055057176188061528">탭 그룹 선택 또는 새 탭 그룹 만들기</translation>
@@ -78,6 +79,7 @@
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">공유 시트 미리보기 썸네일</translation>
 <translation id="3810973564298564668">관리</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{탭 고정 해제}other{탭 고정 해제}}</translation>
 <translation id="3940195383040445971">탭에서 가격 추적</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{새 탭 <ph name="ONE_ADDED" />개, 닫힌 탭 <ph name="ANY_CLOSED" />개}other{새 탭 <ph name="MANY_ADDED" />개, 닫힌 탭 <ph name="ANY_CLOSED" />개}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{탭 그룹화}other{탭 그룹화}}</translation>
@@ -131,6 +133,7 @@
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{선택한 항목 <ph name="TABS_COUNT_ONE" />개 닫기}other{선택한 항목 <ph name="TABS_COUNT_MANY" />개 닫기}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{그룹을 새 창으로 이동}other{그룹을 다른 창으로 이동}}</translation>
 <translation id="6228793724645064692">(매장 평점)</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{그룹에서 탭 삭제}other{그룹에서 탭 삭제}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{새 그룹에 탭 추가}other{새 그룹에 탭 추가}}</translation>
 <translation id="6333260925957816943">매장에 관한 정보</translation>
 <translation id="6381032505162537930">여기에서 탭 그룹을 확인할 수 있습니다</translation>

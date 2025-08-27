@@ -21,6 +21,7 @@
 <translation id="1072476005125066234">Ulasan berdasarkan minat Anda</translation>
 <translation id="1074827084851510304">Anda akan menghapus {password_count} sandi dan daftar situs &amp; aplikasi yang Anda pilih agar tidak pernah menyimpan info login. Akun apa pun yang Anda buat untuk situs dan aplikasi tidak akan dihapus.</translation>
 <translation id="1076421457278169141">Kode telah dipindai</translation>
+<translation id="1081114897601629648">Sandi berikut tidak diimpor ke Pengelola Sandi Google karena tidak sesuai dengan persyaratan.</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} tab}other{{count} tab}}</translation>
 <translation id="1082554859195167538">Ulasan produk untuk Anda</translation>
 <translation id="1084365883616172403">Kirim Facebook selesai.</translation>
@@ -599,7 +600,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="333229797575847124">Cara mengaktifkan fitur ini</translation>
 <translation id="3344485292736684439">{count,plural, =1{Bookmark disimpan ke "{title}" di akun Anda, {email}}other{Bookmark disimpan ke "{title}" di akun Anda, {email}}}</translation>
 <translation id="334690320928261823">Tab Terbaru</translation>
-<translation id="3348387552617855658">Kartu ini membantu Anda melacak paket dan memberi Anda info terbaru dan penting terkait pengiriman paket.</translation>
 <translation id="3349031117032695619">Blokir pop-up</translation>
 <translation id="3349676726073650389">Situs dan penelusuran yang Anda ikuti disimpan di Akun Google Anda. Anda dapat mengelola konten yang Anda ikuti di setelan kapan saja.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Akun ini dikelola.</translation>

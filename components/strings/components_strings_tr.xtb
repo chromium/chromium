@@ -440,6 +440,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1719838434204287058">24 x 30 inç</translation>
 <translation id="1720941539803966190">Eğitimi kapat</translation>
 <translation id="1721424275792716183">* Zorunlu alan</translation>
+<translation id="1723636263173393300">Bu politikada en çok <ph name="MAX_ITEMS_LIMIT" /> giriş olabilir.</translation>
 <translation id="1725591448053514783">Zarf You 6</translation>
 <translation id="1727613060316725209">Sertifika geçerli</translation>
 <translation id="1728677426644403582">Bir web sayfasının kaynak kodunu görüntülüyorsunuz</translation>
@@ -1047,6 +1048,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="271663710482723385">Tam ekrandan çıkmak için |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| tuşlarına basın</translation>
 <translation id="2717336592027046789">Rulo</translation>
 <translation id="2718207025093645426">Yönetilen kullanıcı veya cihaz ile ilgili yüklenmiş bir politika yok.</translation>
+<translation id="2719233594187778789">Benzersiz olmayan URL yoksayıldı: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">İstek başarılı oldu</translation>
 <translation id="2722622039067384533">Oturma Odası Mobilyaları</translation>
 <translation id="2723669454293168317">Chrome ayarlarında güvenlik kontrolü yürütün</translation>
@@ -2007,6 +2009,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4298000214066716287">Yatırım</translation>
 <translation id="4298148761711700950">QR kodu yüklemeden anında ödeme yapın</translation>
 <translation id="4298925811540301889">Bu sitenin çerezleri ChromeOS cihazlarınızda senkronize edilir. Senkronize ettiğiniz öğeleri yönetmek için <ph name="SYNC_SETTINGS" /> bölümüne gidin.</translation>
+<translation id="4299919199185766032">Kısayolun adı, izin verilen maksimum uzunluk olan <ph name="MAX_LENGTH" /> karakteri aşıyor.</translation>
 <translation id="4300272766492248925">Uygulamayı aç</translation>
 <translation id="4300675098767811073">Sağda çoklu delik</translation>
 <translation id="4302514097724775343">Oynamak için dinozora dokunun</translation>
@@ -2708,6 +2711,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
     Sistem yöneticinize başvurmayı deneyin.</translation>
 <translation id="5496804587179176046">Güvenlik kodlarını kaydedin, şu anda kayıtlı güvenlik kodu yok</translation>
 <translation id="550365051221576010">Tüm alanları doldur</translation>
+<translation id="5506286895894263601">Listede geçerli bir kısayol yok.</translation>
 <translation id="5508443345185481044">Fotoğraf Makineleri ve Video Kameralar</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Yönetilen yer işaretleri</translation>
@@ -3627,6 +3631,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="7014741021609395734">Yakınlaştırma düzeyi</translation>
 <translation id="7016992613359344582">Bu ödemeler bir defalık alınabileceği gibi yinelenen ödemeler de olabilir ve bu durum açıkça belli olmayabilir.</translation>
 <translation id="701757816833614688">Görsel Sanatlar ve Tasarım Eğitimi</translation>
+<translation id="7020464868401003526">Kısayolun URL'si, izin verilen maksimum uzunluk olan <ph name="MAX_LENGTH" /> karakteri aşıyor.</translation>
 <translation id="702275896380648118">Bu site, nelerden hoşlandığınızı belirleyip diğer sitelere reklam önerir. Ayrıca, size daha alakalı reklamlar göstermek için Chrome'dan reklam konularınızı da öğrenir.</translation>
 <translation id="7023162328967545559">Yönetici uyarısı</translation>
 <translation id="7023765275461720661">Hesabı bağlayıp <ph name="BNPL_ISSUER_NAME" /> ile ödeme yapmak istiyor musunuz?</translation>
@@ -3808,7 +3813,7 @@ Ek ayrıntılar:
 <translation id="7346062987309535530">Yemek Takımları</translation>
 <translation id="7346081071264046066">"bu düğün davetini kabul edin ve ne kadar sevindiğinizi belirtin"</translation>
 <translation id="7347640536700429009">Kart üzerindeki ad geçersiz</translation>
-<translation id="7352651011704765696">Bir şeyler ters gitti</translation>
+<translation id="7352651011704765696">Bir hata oluştu</translation>
 <translation id="7353601530677266744">Komut Satırı</translation>
 <translation id="7359588939039777303">Reklamlar engellendi.</translation>
 <translation id="7360451453306104998">Google'ın bulduğu indirimler ödeme aşamasında gösterilir</translation>

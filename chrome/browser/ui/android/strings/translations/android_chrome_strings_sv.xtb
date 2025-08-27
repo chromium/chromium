@@ -156,6 +156,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1749561566933687563">Synkronisera bokmärken</translation>
 <translation id="1750238553597293878">Fortsätt använda lösenorden i Google-kontot</translation>
 <translation id="17513872634828108">Öppna flikar</translation>
+<translation id="1753744496844366747">Aa</translation>
 <translation id="1755203724116202818">För att mäta en annons resultat delas begränsade typer av data mellan webbplatser, till exempel om du har gjort ett köp efter att ha besökt en webbplats.</translation>
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Sidor, 1 sida i listan}other{Sidor, # sidor i listan}}</translation>
 <translation id="1771929606532798550">Information om hur du använder Chrome skickas till Google men kopplas inte till dig\n\nOm Chrome kraschar kan personliga uppgifter finnas med i kraschinformationen\n\nOm du synkroniserar historiken med Google-kontot kan mätvärdena även innehålla information om webbadresser du besöker</translation>
@@ -321,6 +322,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="253498598929009420">Innehållet på skärmen blir synligt för webbplatsen</translation>
 <translation id="2535807170289627159">Alla flikar</translation>
 <translation id="2536728043171574184">En offlinekopia av sidan visas</translation>
+<translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, flik</translation>
 <translation id="2546283357679194313">Cookies och webbplatsdata</translation>
 <translation id="2547843573592965873">Profillåset skyddar dina uppgifter i bilen, till exempel lösenord och betalningar som sparats i Google-kontot.</translation>
@@ -499,7 +501,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3384347053049321195">Dela bild</translation>
 <translation id="3387650086002190359">Det gick inte att ladda ned <ph name="FILE_NAME" /> på grund av filsystemfel.</translation>
 <translation id="3414952576877147120">Storlek:</translation>
-<translation id="3421726884497337397">Välj när cookies från tredje part ska blockeras</translation>
 <translation id="3430670036890315772">Om du inaktiverar profillåset tas dina sparade uppgifter bort</translation>
 <translation id="3435465986463792564">Har du många fönster? Du kan hantera dem härifrån</translation>
 <translation id="3435575784518354875">Om du vill behålla åtkomsten till dina lösenord kan du exportera dem nu, uppdatera Google Play-tjänster och sedan importera dem till Google Lösenordshantering. <ph name="BEGIN_LINK" />Se fullständiga instruktioner<ph name="END_LINK" />.</translation>
@@ -761,7 +762,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 utsatt lösenord}other{# utsatta lösenord}}</translation>
 <translation id="4641919525231168205">Öppna nästa sida</translation>
 <translation id="4642472735733036929">Prisbevakning har avslutats</translation>
-<translation id="4645146721047390964">I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplatser med hjälp av cookies, för att till exempel anpassa annonser. Funktioner på vissa webbplatser kan sluta fungera.</translation>
 <translation id="465657074423018424">Säker webbsökning skyddar mot bedrägliga webbplatser. Var extra försiktig när du surfar om du inaktiverar det, särskilt när du ska ange lösenord.</translation>
 <translation id="4662373422909645029">Namnet får inte innehålla siffror</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> bokmärken har raderats</translation>
@@ -1221,7 +1221,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6633067410344541938">Lås upp inkognito</translation>
 <translation id="6636623428211296678">Utforska fler inställningar nedan eller avsluta nu</translation>
 <translation id="6637100877383020115">Chrome skickar data om användning och krascher till Google i syfte att förbättra appen. <ph name="BEGIN_UMA_LINK" />Hantera<ph name="END_UMA_LINK" /></translation>
-<translation id="6640207029842583248">Blockera alltid</translation>
 <translation id="6641780377503683465">Ta bort <ph name="INTEREST" /></translation>
 <translation id="6647441008198474441">Webbadresser som du besöker skickas till Google för att förutse vilka webbplatser du kanske vill besöka härnäst</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> till}other{<ph name="CONTACT_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> till}}</translation>
@@ -1233,6 +1232,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6674571176963658787">Ange din lösenfras för att starta synkroniseringen</translation>
 <translation id="6676927815633975364">Logga in på den här webbplatsen och i Chrome</translation>
 <translation id="6684809838922667136">Gör Chrome bättre</translation>
+<translation id="6689436252814043643">Läsläget är inte tillgängligt</translation>
 <translation id="6700279777779583398">Dina val har sparats</translation>
 <translation id="670498945988402717">Genomsöktes i går</translation>
 <translation id="6710213216561001401">Föregående</translation>
@@ -1241,6 +1241,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6723740634201835758">I Google-kontot</translation>
 <translation id="6734310707649923383">Du kan se sidor som du har besökt eller radera dem från historiken</translation>
 <translation id="6738867403308150051">Laddar ned …</translation>
+<translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">Granska din kontodata</translation>
 <translation id="6751521182688001123">Öppna en ny flik snabbt. Tryck länge om du vill ändra genvägen.</translation>
 <translation id="6752130751133944215">Om du vill återställa ett nytt fönster minskar du det totala antalet fönster, både aktiva och inaktiva, till högst <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />. Inaktiva fönster raderas efter sex månader.</translation>
@@ -1343,6 +1344,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7111822978084196600">Namnge fönstret</translation>
 <translation id="7115358764509798967">Systemets standardinställning</translation>
 <translation id="7117485132243600300">Hantera innehåll som du följer och föreslagna ämnen och sökningar</translation>
+<translation id="7119984597597798764">Stäng <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Behörigheter har granskats för 1 webbplats}other{Behörigheter har granskats för # webbplatser}}</translation>
 <translation id="7138678301420049075">Övrigt</translation>
 <translation id="7140829094791862589">Sortera manuellt</translation>
@@ -1444,7 +1446,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="751961395872307827">Det gick inte att ansluta till webbplatsen</translation>
 <translation id="7523960634226602883">Sök med kameran med hjälp av Google Lens</translation>
 <translation id="7525248386620136756"><ph name="TAB_GROUPS_AND_TABS_PART" /> har stängts och sparats</translation>
-<translation id="752731652852882757">Blockera i inkognitoläget</translation>
 <translation id="7545347190366646170">Personer med åtkomst</translation>
 <translation id="7554643625247105821">Det går inte att kontrollera Chrome-versionen</translation>
 <translation id="7557508262441527045">Utloggad</translation>
@@ -1610,7 +1611,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8243077599929149377">Lägg till ditt användarnamn</translation>
 <translation id="8244387390464017490">Anpassa sidan Ny flik</translation>
 <translation id="8250920743982581267">Dokument</translation>
-<translation id="8255617931166444521">Webbplatser får endast se din webbaktivitet på den aktuella webbplatsen med hjälp av cookies</translation>
 <translation id="8258999165172757081">Tillagt</translation>
 <translation id="8259179246279078674">Eftersom förinlästa sidor är krypterade får Google ingen information om innehållet på dem. Googles servrar lär sig vilka webbplatser som läses in privat i förväg. Den här informationen används endast för att läsa in sidor i förväg och är inte länkar till andra uppgifter från ditt Google-konto.</translation>
 <translation id="8260126382462817229">Försök att logga in igen</translation>

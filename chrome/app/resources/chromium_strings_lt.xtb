@@ -313,6 +313,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="494490797786467921">Spustelėkite, kad uždarytumėte „Chromium“ prisijungimo dialogo langą</translation>
 <translation id="4950660488495335294">Naudodami „Chromium“ profilius galite atskirti visus savo „Chromium“ duomenis. Sukurkite profilius draugams ir šeimos nariams arba atskirkite darbą ir pramogas.</translation>
 <translation id="4987820182225656817">Svečiai gali naudoti „Chromium“ nepalikdami jokių duomenų.</translation>
+<translation id="4992938037305302429">Jūsų paskyra naršyklėje „Chromium“</translation>
 <translation id="4994636714258228724">Pridėkite save prie „Chromium“</translation>
 <translation id="5123973130450702873">„Chromium“ reikalingas leidimas stebėti jūsų rankas</translation>
 <translation id="5141988424377517949">Pastaruoju metu nesilankėte. „Chromium“ pašalino <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
@@ -391,6 +392,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="6072463441809498330">Paspartinkite „Chromium“</translation>
 <translation id="6096348254544841612">Tinkinkite ir valdykite „Chromium“. Pasiekiamas naujinys.</translation>
 <translation id="6107893135096467929">Įjungta • „Chromium“ nepavyko patvirtinti, iš kur gaunamas šis plėtinys</translation>
+<translation id="611228897408671387">Jūsų paskyra naršyklėje „Chromium“</translation>
 <translation id="6119438414301547735">Leisti plėtiniui rodyti prieigos užklausas „Chromium“ įrankių juostoje</translation>
 <translation id="6129621093834146363">Failas „<ph name="FILE_NAME" />“ pavojingas, todėl „Chromium“ jį užblokavo.</translation>
 <translation id="6132897690380286411">„Chromium“ netrukus bus uždaryta ir ištrins duomenis</translation>
@@ -616,7 +618,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="8747073452963259673">apatinis kairysis paieškos srities kampas: kairė – <ph name="LEFT" /> %, apačia – <ph name="BOTTOM" /> %</translation>
 <translation id="878572486461146056">Diegimo klaida: tinklo administratorius taiko grupių politiką, pagal kurią neleidžiama įdiegti: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">„Chromium“ reikia leidimo, kad galėtų naudoti fotoaparatą ir mikrofoną šioje svetainėje</translation>
-<translation id="880560872634367429">Patvirtinamas atsisiuntimas...</translation>
 <translation id="8818550178040858407">Prisijungti prie „Chromium“?</translation>
 <translation id="8826492472752484139">Spustelėkite „Slaptažodžių tvarkyklė“</translation>
 <translation id="8833697763442816810">„Chromium“ OS sistema</translation>

@@ -312,6 +312,7 @@
 <translation id="494490797786467921">點擊即可關閉 Chromium 登入對話框</translation>
 <translation id="4950660488495335294">透過 Chromium 設定檔，你可將所有 Chromium 內容分門別類，例如建立親朋好友專屬的設定檔，或劃分工作和娛樂內容。</translation>
 <translation id="4987820182225656817">以訪客身分使用 Chromium 不會留下任何記錄。</translation>
+<translation id="4992938037305302429">你在 Chromium 的帳戶</translation>
 <translation id="4994636714258228724">新增為 Chromium 使用者</translation>
 <translation id="5123973130450702873">Chromium 需要相關權限才能追蹤手勢</translation>
 <translation id="5141988424377517949">由於最近沒有瀏覽記錄，Chromium 已移除<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和<ph name="PERMISSION_3" />權限。</translation>
@@ -390,6 +391,7 @@
 <translation id="6072463441809498330">加快 Chromium 的運作速度</translation>
 <translation id="6096348254544841612">自訂和管理 Chromium。有可用的更新。</translation>
 <translation id="6107893135096467929">已開啟 • Chromium 無法驗證此擴充程式的來源</translation>
+<translation id="611228897408671387">你在 Chromium 的帳戶</translation>
 <translation id="6119438414301547735">允許擴充程式在 Chromium 工具列中顯示存取要求</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> 不安全，因此 Chromium 已封鎖此檔案。</translation>
 <translation id="6132897690380286411">Chromium 即將關閉並刪除資料</translation>
@@ -615,7 +617,6 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8747073452963259673">搜尋區域嘅左下角：距左側 <ph name="LEFT" />%，距底部 <ph name="BOTTOM" />%</translation>
 <translation id="878572486461146056">安裝錯誤：網絡管理員已套用防止安裝的群組政策：<ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium 需要取得權限，才能讓這個網站存取您的相機和麥克風</translation>
-<translation id="880560872634367429">正在驗證下載項目…</translation>
 <translation id="8818550178040858407">要登入 Chromium 嗎？</translation>
 <translation id="8826492472752484139">按一下 [密碼管理工具]</translation>
 <translation id="8833697763442816810">Chromium 作業系統</translation>

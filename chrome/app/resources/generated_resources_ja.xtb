@@ -1186,6 +1186,7 @@
 <translation id="1805967612549112634">PIN の確認</translation>
 <translation id="1806335016774576568">別の開いているアプリに切り替える</translation>
 <translation id="1807246157184219062">ライト</translation>
+<translation id="1808571181382454540">設定ページに移動</translation>
 <translation id="1808805149659872686">新しいエントリ</translation>
 <translation id="1809201888580326312">このサイトやアプリのパスワードは保存しないよう設定しています</translation>
 <translation id="1809734401532861917">自分のブックマーク、履歴、パスワード、その他の設定を <ph name="USER_EMAIL_ADDRESS" /> に追加します</translation>
@@ -4537,7 +4538,6 @@
 <translation id="4109135793348361820"><ph name="USER_NAME" />（<ph name="USER_EMAIL" />）にウィンドウを移動</translation>
 <translation id="4110485659976215879">警告を復元</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" />（オフライン）</translation>
-<translation id="4113030288477039509">管理者により管理されています</translation>
 <translation id="4113743276555482284">ファイルのパスワード</translation>
 <translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />[位置情報の精度] をオンにした場合、Wi-Fi アクセス ポイントやモバイル ネットワーク基地局などのワイヤレス シグナルに関する情報と、加速度計やジャイロスコープなどのデバイスのセンサーデータに基づき、デバイスのより正確な位置情報が推定され、Android アプリやサービスの位置情報を利用した機能で使用されます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やユーザーの付近のワイヤレス シグナルが Google で定期的に処理されます。<ph name="END_PARAGRAPH1" />
 　　　　<ph name="BEGIN_PARAGRAPH2" />Google は、ユーザーを特定することなく、位置情報の精度と、位置情報を利用したサービスを改善し、Google のサービスを全般的に改善、提供、維持する目的で、この情報を使用します。また、ユーザーのニーズに応えるうえでの Google およびサードパーティの正当な利益に基づき、この情報を処理します。<ph name="END_PARAGRAPH2" />
@@ -4986,7 +4986,6 @@
 <translation id="443196770280837407">キーボード ショートカットで Gemini を開きます。</translation>
 <translation id="4432621511648257259">パスワードが正しくありません。</translation>
 <translation id="4434611816075088065">他に確認の必要な項目はありません</translation>
-<translation id="443475966875174318">互換性のないアプリケーションの更新または削除</translation>
 <translation id="443503224864902151">ほとんどのサイトからログアウトします。ただし、同期データを削除できるように Google アカウントへのログイン状態は維持されます。</translation>
 <translation id="4437879751057074691">パスワードとパスキーを保存するか確認する</translation>
 <translation id="4437947179446780764">カスタム DNS サービス プロバイダを追加</translation>
@@ -5400,7 +5399,6 @@
 <translation id="4742334355511750246">画像の表示を許可しないサイト</translation>
 <translation id="4742795653798179840">Chrome データを削除しました</translation>
 <translation id="4742970037960872810">テキストの選択を解除</translation>
-<translation id="4743260470722568160"><ph name="BEGIN_LINK" />アプリケーションの更新方法を確認<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">許可 – <ph name="PERMISSION_DETAILS" />。<ph name="LINK_BEGIN" />システムのマイクへのアクセス<ph name="LINK_END" />をオンにする。</translation>
 <translation id="4744260496658845719">キーボード バックライトの明るさ</translation>
 <translation id="4744268813103118742">サイトに移動</translation>
@@ -7141,7 +7139,6 @@
 <translation id="5989497858237037960">サイトを閲覧すると、そのページのコンテンツが暗号化されてデバイスに保存されます（この処理は Chrome のパフォーマンスに影響する可能性があります）</translation>
 <translation id="5990266201903445068">Wi-Fi のみ</translation>
 <translation id="5990386583461751448">翻訳済み</translation>
-<translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{今後もウェブ ブラウジングを続けられるように、管理者にこのアプリケーションの削除を依頼してください。}other{今後もウェブ ブラウジングを続けられるように、管理者にこれらのアプリケーションの削除を依頼してください。}}</translation>
 <translation id="5992225669837656567">すべてのマウスの接続を解除しました</translation>
 <translation id="5992652489368666106">余白なし</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{1 件のサイトの確認が完了しました}other{{NUM_SITES} 件のサイトの確認が完了しました}}</translation>
@@ -8630,7 +8627,6 @@
 <translation id="7039951224110875196">お子様用の Google アカウントを作成する</translation>
 <translation id="7039968672732182060">この Chromebook は、セキュリティ アップデートの提供が終了しました。最新のセキュリティとソフトウェアにアップグレードしましょう。特典の利用規約が適用されます。</translation>
 <translation id="7042116641003232070">デバイスへのデータの保存を許可しました</translation>
-<translation id="7043108582968290193">完了しました。互換性のないアプリケーションは見つかりませんでした。</translation>
 <translation id="7044124535091449260">サイトアクセスの詳細</translation>
 <translation id="7044207729381622209">タブで表示中のものも含め、これらのサイトからログアウトします</translation>
 <translation id="7044211973375150246"><ph name="APP_NAME" /> と同じリンクを開くよう設定されているアプリがあります。設定を変更すると、<ph name="APP_NAME_2" /> で対応リンクを開けなくなります。</translation>
@@ -8966,7 +8962,6 @@
 <translation id="7299588179200441056"><ph name="URL" />～<ph name="FOLDER" /></translation>
 <translation id="730068416968462308">アニメーション</translation>
 <translation id="7301812050652048720">パスキーを削除しました</translation>
-<translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{このアプリケーションは、Chrome の正常な動作を妨げる可能性があります。}other{これらのアプリケーションは、Chrome の正常な動作を妨げる可能性があります。}}</translation>
 <translation id="7303281435234579599">デモモードの設定中にエラーが発生しました。</translation>
 <translation id="7303485269821975179"><ph name="DEVICE_TYPE" /> のパスワードを設定する</translation>
 <translation id="7303900363563182677">このサイトでは、クリップボードにコピーされているテキストや画像へのアクセスがブロックされています</translation>
@@ -11854,7 +11849,6 @@
 <translation id="962802172452141067">ブックマーク フォルダ ツリー</translation>
 <translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" /> で画像を検索</translation>
 <translation id="964286338916298286">お使いのデバイスの Chrome 特典は IT 管理者によって無効にされています。</translation>
-<translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{アプリケーション}other{アプリケーション}}</translation>
 <translation id="964790508619473209">画面の配置</translation>
 <translation id="96535553604365597">Google Cast の問題を報告</translation>
 <translation id="965470117154635268">{NUM_SITES,plural, =1{最近、通知を多数受け取った 1 件のサイトを確認する}other{最近、通知を多数受け取った {NUM_SITES} 件のサイトを確認する}}</translation>

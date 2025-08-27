@@ -440,6 +440,7 @@
 <translation id="1719838434204287058">24 x 30 дюйм.</translation>
 <translation id="1720941539803966190">Закрити навчальний посібник</translation>
 <translation id="1721424275792716183">* Обов’язкове поле</translation>
+<translation id="1723636263173393300">Максимальна кількість ярликів у цьому правилі: <ph name="MAX_ITEMS_LIMIT" />.</translation>
 <translation id="1725591448053514783">Конверт You 6</translation>
 <translation id="1727613060316725209">Сертифікат дійсний</translation>
 <translation id="1728677426644403582">Ви переглядаєте джерело веб-сторінки</translation>
@@ -1047,6 +1048,7 @@
 <translation id="271663710482723385">Натисніть |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|, щоб вийти з повноекранного режиму</translation>
 <translation id="2717336592027046789">Рулонний друк</translation>
 <translation id="2718207025093645426">Для керованого користувача чи пристрою не завантажено правила.</translation>
+<translation id="2719233594187778789">Повторювана URL-адреса, яка ігнорується: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Запит надіслано</translation>
 <translation id="2722622039067384533">Меблі для вітальні</translation>
 <translation id="2723669454293168317">Виконайте перевірку безпеки в налаштуваннях Chrome</translation>
@@ -2007,6 +2009,7 @@
 <translation id="4298000214066716287">Інвестиції</translation>
 <translation id="4298148761711700950">Сплачуйте миттєво без завантаження QR-коду</translation>
 <translation id="4298925811540301889">Файли cookie для цього сайту синхронізуються на ваших пристроях із ChromeOS. Щоб керувати даними для синхронізації, перейдіть на сторінку <ph name="SYNC_SETTINGS" />.</translation>
+<translation id="4299919199185766032">Назва ярлика перевищує максимально дозволену кількість символів – <ph name="MAX_LENGTH" />.</translation>
 <translation id="4300272766492248925">Відкрити додаток</translation>
 <translation id="4300675098767811073">Пробити кілька отворів праворуч</translation>
 <translation id="4302514097724775343">Щоб почати гру, торкніться динозавра</translation>
@@ -2708,6 +2711,7 @@
     Зв’яжіться зі своїм системним адміністратором.</translation>
 <translation id="5496804587179176046">Зберігати коди безпеки (зараз немає збережених кодів безпеки)</translation>
 <translation id="550365051221576010">Заповнити все</translation>
+<translation id="5506286895894263601">У списку немає дійсних ярликів.</translation>
 <translation id="5508443345185481044">Фотоапарати й відеокамери</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Закладки, якими керує адміністратор</translation>
@@ -3627,6 +3631,7 @@
 <translation id="7014741021609395734">Рівень масштабування</translation>
 <translation id="7016992613359344582">Такі стягнення можуть бути одноразовими чи регулярними й неочевидними.</translation>
 <translation id="701757816833614688">Освіта у сфері дизайну й образотворчого мистецтва</translation>
+<translation id="7020464868401003526">URL-адреса ярлика перевищує максимально дозволену кількість символів – <ph name="MAX_LENGTH" />.</translation>
 <translation id="702275896380648118">Цей сайт визначає теми, які вас цікавлять, а потім пропонує свою рекламу на інших сайтах. Він також використовує ваші теми оголошень із Chrome, щоб показувати вам релевантнішу рекламу.</translation>
 <translation id="7023162328967545559">Попередження від адміністратора</translation>
 <translation id="7023765275461720661">Зв’язати обліковий запис і оплатити через <ph name="BNPL_ISSUER_NAME" />?</translation>

@@ -84,6 +84,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2008474315282236005">Þetta mun eyða einu atriði úr þessu tæki. Skráðu þig inn í Chromium sem <ph name="USER_EMAIL" /> til að endurheimta gögnin síðar.</translation>
 <translation id="2018879682492276940">Uppsetning mistókst. Reyndu aftur.</translation>
 <translation id="2020032459870799438"><ph name="BEGIN_LINK" />Skráðu þig inn á Chromium<ph name="END_LINK" /> til að athuga hvort hin aðgangsorðin þín séu óhult fyrir öryggisbrotum og öðrum öryggisvandamálum.</translation>
+<translation id="2039417478970545937">Stillingar.</translation>
 <translation id="2049376729098081731">Veldu hvort að Chromium ferill eigi að fylgja með til að fá sérsniðnari upplifun í Google-þjónustum</translation>
 <translation id="2054039611381840095">Til að fá frekari uppfærslur á Chromium þarftu macOS 12 eða nýrri útgáfu. Þessi tölva notar macOS 11.</translation>
 <translation id="2086476982681781442">Chromium lokaði á þetta niðurhal vegna þess að skráin er blekkjandi og gæti gert óvæntar breytingar á tækinu þínu</translation>
@@ -316,6 +317,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="5123973130450702873">Chromium þarf heimild til að rekja handahreyfingar þínar</translation>
 <translation id="5141988424377517949">Þú hefur ekki skoðað vefsvæðið nýlega. Chromium fjarlægði <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="5174969993834422967">Þú lokar yfirleitt á tilkynningar. Smelltu á tilkynningatáknið í hægra horni veffangastikunnar til að leyfa vefsvæðinu að senda þér tilkynningar.</translation>
+<translation id="5174983315706567306">Ekki nægilegt diskpláss.</translation>
 <translation id="5187123684706427865">Chromium-reikningur þarfnast endurauðkenningar</translation>
 <translation id="5224391634244552924">Engin vistuð aðgangsorð. Chromium getur athugað aðgangsorðin þín þegar þú vistar þau.</translation>
 <translation id="5231355151045086930">Skrá út af Chromium</translation>
@@ -443,6 +445,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="6598877126913850652">Fara í tilkynningastillingar Chromium</translation>
 <translation id="6600016381025017075">Leitaðu að hverju sem er á síðunni</translation>
 <translation id="6613594504749178791">Breytingar þínar munu taka gildi næst þegar þú endurræsir Chromium.</translation>
+<translation id="6648212540664651655">Haltu áfram þaðan sem frá var horfið: Chromium endurheimtir flipana sem þú varst með opna síðast. Þú getur slökkt á þessu í</translation>
 <translation id="665732753414869868">Chromium verður að fá leyfi fyrir myndavél til að búa til þrívíddarkort af umhverfi þínu</translation>
 <translation id="6669284030132180248">Ef þú vistar bókamerkin þín einnig á Google-reikningnum þínum geturðu vaktað verð á vörum í Chromium og fengið tilkynningar þegar verð lækka</translation>
 <translation id="6676384891291319759">Aðgangur að internetinu</translation>
@@ -507,6 +510,7 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7352651011704765696">Eitthvað fór úrskeiðis</translation>
 <translation id="7376384068949534168">Þú hefur ekki skoðað vefsvæðið nýlega. Chromium fjarlægði <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="7384121030444253939">Þessi viðbót er ekki lengur studd. Chromium mælir með að þú fjarlægir hana þess í stað.</translation>
+<translation id="7413153308467572558">Haltu áfram þaðan sem frá var horfið: Chromium endurheimtir flipana þína í hvert skipti sem þú hefst handa. Þú getur slökkt á þessu í</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">Texti afritaður</translation>
 <translation id="7451052299415159299">Chromium þarf leyfi til að nota myndavélina á þessu vefsvæði</translation>
@@ -638,6 +642,7 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="911206726377975832">Eyða líka vafragögnum?</translation>
 <translation id="9134482777260927479">Aðstoð með heimanám</translation>
 <translation id="9148058034647219655">Hætta</translation>
+<translation id="9155105544013854680">Haltu áfram þaðan sem frá var horfið: Chromium getur endurheimt flipana þína í hvert skipti sem þú hefst handa. Þú getur kveikt á þessu í</translation>
 <translation id="9158494823179993217">Kerfisstjórinn þinn hefur stillt Chromium á að opna annan vafra fyrir <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Endurræstu til að uppfæra &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-inn)</translation>

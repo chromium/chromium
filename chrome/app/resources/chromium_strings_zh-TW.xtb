@@ -81,6 +81,7 @@
 <translation id="2008474315282236005">登出後，系統會將 1 個項目從這個裝置上刪除。日後如要重新取得你的資料，請以 <ph name="USER_EMAIL" /> 身分登入 Chromium。</translation>
 <translation id="2018879682492276940">無法安裝，請再試一次。</translation>
 <translation id="2020032459870799438">如要檢查你其他的密碼是否因資料侵害事件而遭到外洩，或是否有其他安全性問題，<ph name="BEGIN_LINK" />請登入 Chromium<ph name="END_LINK" />。</translation>
+<translation id="2039417478970545937">設定。</translation>
 <translation id="2049376729098081731">選擇是否要包含 Chromium 歷史記錄，取得更貼近個人需求的 Google 服務體驗</translation>
 <translation id="2054039611381840095">如果之後要更新 Chromium，請使用 macOS 12 以上版本。這部電腦目前搭載的版本為 macOS 11。</translation>
 <translation id="2086476982681781442">這是詐騙檔案，可能會對裝置造成非預期的變更，因此 Chromium 已禁止下載</translation>
@@ -313,6 +314,7 @@
 <translation id="5123973130450702873">Chromium 需要相關權限才能追蹤手勢</translation>
 <translation id="5141988424377517949">由於近期並未造訪，Chromium 已移除<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和<ph name="PERMISSION_3" />權限。</translation>
 <translation id="5174969993834422967">系統已按照你的使用習慣封鎖通知。如要允許這個網站傳送通知，請點選網址列右上角的通知圖示。</translation>
+<translation id="5174983315706567306">磁碟空間不足。</translation>
 <translation id="5187123684706427865">Chromium 帳戶需要重新驗證</translation>
 <translation id="5224391634244552924">未儲存任何密碼。你必須先儲存密碼，才能使用 Chromium 的密碼檢查功能。</translation>
 <translation id="5231355151045086930">登出 Chromium</translation>
@@ -440,6 +442,7 @@
 <translation id="6598877126913850652">前往 Chromium 通知設定</translation>
 <translation id="6600016381025017075">搜尋本頁內容</translation>
 <translation id="6613594504749178791">你的變更將於下次重新啟動 Chromium 時生效。</translation>
+<translation id="6648212540664651655">接續上次的瀏覽內容：Chromium 已還原上次開啟的分頁。如要關閉這項功能，請前往</translation>
 <translation id="665732753414869868">Chromium 需要相機權限，才能根據你的周遭環境製作 3D 地圖</translation>
 <translation id="6669284030132180248">如果一併將書籤儲存在 Google 帳戶中，就可以在 Chromium 中追蹤產品價格，並在降價時收到通知</translation>
 <translation id="6676384891291319759">連線到網際網路</translation>
@@ -504,6 +507,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="7352651011704765696">發生錯誤</translation>
 <translation id="7376384068949534168">由於近期並未造訪，Chromium 已移除<ph name="PERMISSION_1" />和<ph name="PERMISSION_2" />權限。</translation>
 <translation id="7384121030444253939">Chromium 不再支援這項擴充功能，建議你移除。</translation>
+<translation id="7413153308467572558">接續上次的瀏覽內容：Chromium 每次重新啟動時都會還原分頁。如要關閉這項功能，請前往</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium 開發人員版</translation>
 <translation id="7450541714075000668">已複製文字</translation>
 <translation id="7451052299415159299">Chromium 需要相關權限，才能讓這個網站使用你的攝影機</translation>
@@ -635,6 +639,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="911206726377975832">你要一併刪除瀏覽資料嗎？</translation>
 <translation id="9134482777260927479">作業幫手</translation>
 <translation id="9148058034647219655">結束</translation>
+<translation id="9155105544013854680">接續上次的瀏覽內容：Chromium 每次重新啟動時都能還原分頁。如要開啟這項功能，請前往</translation>
 <translation id="9158494823179993217">系統管理員已設定 Chromium 開啟替代瀏覽器來存取 <ph name="TARGET_URL_HOSTNAME" />。</translation>
 <translation id="9185526690718004400">重新啟動以更新 &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>

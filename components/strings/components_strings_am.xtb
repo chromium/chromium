@@ -440,6 +440,7 @@
 <translation id="1719838434204287058">24 x 30 ኢንች</translation>
 <translation id="1720941539803966190">አጋዥ ስልጠናውን ዝጋ</translation>
 <translation id="1721424275792716183">* መስክ ያስፈልጋል</translation>
+<translation id="1723636263173393300">ይህ መመሪያ ከ<ph name="MAX_ITEMS_LIMIT" /> አቋራጭዖች በላይ ሊኖሩት አይገባም።</translation>
 <translation id="1725591448053514783">ዩ 6 ፖስታ</translation>
 <translation id="1727613060316725209">የዕውቅና ማረጋገጫ ልክ የሆነ ነው</translation>
 <translation id="1728677426644403582">የአንድ ድረ-ገፅ ምንጭ እየተመለከቱ ነው</translation>
@@ -1047,6 +1048,7 @@
 <translation id="271663710482723385">ከሙሉ ገፅ ዕይታ ለመውጣት |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|ን ይጫኑ</translation>
 <translation id="2717336592027046789">ጥቅል</translation>
 <translation id="2718207025093645426">የሚተዳደር ተጠቃሚ ወይም መሣሪያ ምንም የተጫነ መመሪያ የለውም።</translation>
+<translation id="2719233594187778789">ልዩ ያልሆነ ዩአርኤል ችላ ተብሏል፦ <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">ጥያቄ ተሳክቷል</translation>
 <translation id="2722622039067384533">የሳሎን ቤት ዕቃዎች</translation>
 <translation id="2723669454293168317">በChrome ቅንብሮች ውስጥ የደህንነት ፍተሻን ያሂዱ</translation>
@@ -2006,6 +2008,7 @@
 <translation id="4298000214066716287">ኢንቨስት ማድረግ</translation>
 <translation id="4298148761711700950">ያለ QR ኮድ በቅጽበት ይክፈሉ</translation>
 <translation id="4298925811540301889">ለዚህ ጣቢያ ያሉ ኩኪዎች በመላ የእርስዎ የChromeOS መሣሪያ ላይ ሠምረዋል። የሚያሠምሩትን ነገር ለማስተዳደር ወደ <ph name="SYNC_SETTINGS" /> ይሂዱ።</translation>
+<translation id="4299919199185766032">የአቋራጭ ስም ከሚፈቀደው ከፍተኛ የ<ph name="MAX_LENGTH" /> ቁምፊዎች ርዝመት ይበልጣል።</translation>
 <translation id="4300272766492248925">መተግበሪያ ክፈት</translation>
 <translation id="4300675098767811073">በርካታ ብስ ቀኝ</translation>
 <translation id="4302514097724775343">ለማጫወት ዲኖውን መታ ያድርጉ</translation>
@@ -2707,6 +2710,7 @@
     የእርስዎን የስርዓት አስተዳዳሪ ለማነጋገር ይሞክሩ።</translation>
 <translation id="5496804587179176046">የደኅንነት ኮዶችን ያስቀምጡ፣ በአሁኑ ጊዜ ምንም የደኅንነት ኮዶች አልተቀመጡም</translation>
 <translation id="550365051221576010">ሁሉንም ነገር ይሙሉ</translation>
+<translation id="5506286895894263601">ዝርዝሩ ምንም ትክክለኛ አቋራጮች አልያዘም።</translation>
 <translation id="5508443345185481044">ካሜራዎች እና ካምኮርደሮች</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">የተዳደሩ እልባቶች</translation>
@@ -3626,6 +3630,7 @@
 <translation id="7014741021609395734">የማጉላት ደረጃ</translation>
 <translation id="7016992613359344582">እነዚህ ክፍያዎች የአንድ ጊዜ ወይም ተደጋጋሚ፣ እና የማያስታውቁ ሊሆኑ ይችላሉ።</translation>
 <translation id="701757816833614688">የሚታይ ሥነ ጥበብ እና ዲዛይን ትምህርት</translation>
+<translation id="7020464868401003526">የአቋራጭ ዩአርኤል ከሚፈቀደው ከፍተኛ የ<ph name="MAX_LENGTH" /> ቁምፊዎች ርዝመት ይበልጣል።</translation>
 <translation id="702275896380648118">ይህ ጣቢያ እርስዎ የሚወዷቸውን ነገሮች ይወስናል እና ከዚያም ማስታወቂያዎችን ለሌሎች ጣቢያዎች ይጠቁማል። እንዲሁም ይህ ጣቢያ ይበልጥ አግባብነት ያላቸው ማስታወቂያዎችን ለእርስዎ ለማሳየት የእርስዎን የማስታወቂያ ርዕሶች ከChrome ያገኛል።</translation>
 <translation id="7023162328967545559">የአስተዳዳሪ ማስጠንቀቂያ</translation>
 <translation id="7023765275461720661">መለያ ይገናኝ እና በ<ph name="BNPL_ISSUER_NAME" /> ይከፈል?</translation>

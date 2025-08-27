@@ -242,6 +242,7 @@
 <translation id="1902277226107477495">Deteção de morada desativada. Ative-a nas Definições.</translation>
 <translation id="1904580727789512086">Os URLs que visita são guardados na sua Conta Google</translation>
 <translation id="1911619930368729126">Carregar p/ Google Drive</translation>
+<translation id="1925706052394657380">Abra as definições de <ph name="BEGIN_BOLD" />Apps predefinidas<ph name="END_BOLD" /> no iOS</translation>
 <translation id="1941314575388338491">Toque duas vezes para copiar.</translation>
 <translation id="1943478190258551035">Menu → Definições</translation>
 <translation id="1952728750904661634">Iniciar sessão com uma conta gerida</translation>
@@ -251,6 +252,7 @@
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> partilhou uma palavra-passe consigo para o Website <ph name="WEBSITE" /></translation>
 <translation id="1962969542251276847">Bloqueio de Ecrã</translation>
 <translation id="1963976881984600709">Proteção padrão</translation>
+<translation id="1964507856799750384">Toque em <ph name="BEGIN_BOLD" />App do navegador<ph name="END_BOLD" /></translation>
 <translation id="1966313166384086081">dados de sites</translation>
 <translation id="1967461193809857427">{count,plural, =1{Retomar o separador que deixou no Android?}other{Retomar os separadores que deixou no Android?}}</translation>
 <translation id="1972325230031091483">Irá navegar mais depressa porque os conteúdos são carregados proativamente com base na página Web que está a visitar</translation>
@@ -600,7 +602,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="333229797575847124">Como ativar esta funcionalidade</translation>
 <translation id="3344485292736684439">{count,plural, =1{Marcador guardado em "{title}" na sua conta, {email}}other{Marcadores guardados em "{title}" na sua conta, {email}}}</translation>
 <translation id="334690320928261823">Separadores recentes</translation>
-<translation id="3348387552617855658">Este cartão ajuda a acompanhar os seus pacotes e a dar-lhe atualizações importantes sobre a entrega.</translation>
 <translation id="3349031117032695619">Bloquear pop-ups</translation>
 <translation id="3349676726073650389">Os sites e as pesquisas que segue são guardados na sua Conta Google. Pode gerir o que segue nas definições em qualquer altura.</translation>
 <translation id="3353037916374303415"><ph name="EMAIL" />. Esta conta é gerida.</translation>

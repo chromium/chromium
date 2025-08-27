@@ -308,6 +308,7 @@
 <translation id="494490797786467921">Chromium tizimiga kirish oynasini yopish uchun bosing</translation>
 <translation id="4950660488495335294">Chromium profillari brauzerdan alohida foydalanish uchun kerak. Doʻstlar va oila uchun profillar yarating yoki ish va hordiqni ajrating.</translation>
 <translation id="4987820182225656817">Agar tashrif buyurgan saytlaringiz haqidagi ma’lumotlar saqlanmasligini xohlasangiz, Chromium mehmon rejimidan foydalaning.</translation>
+<translation id="4992938037305302429">Chromiumdagi hisobingiz</translation>
 <translation id="4994636714258228724">Chromium foydalanuvchini qo‘shish</translation>
 <translation id="5123973130450702873">Chromium qoʻllaringiz holatini kuzatishi uchun ruxsat olmagan</translation>
 <translation id="5141988424377517949">Yaqinda ochmagansiz. Chromium olib tashladi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
@@ -386,6 +387,7 @@
 <translation id="6072463441809498330">Chromiumni tezlashtirish</translation>
 <translation id="6096348254544841612">Chromium uchun yangilanish chiqdi.</translation>
 <translation id="6107893135096467929">Yoniq • Chromium bu kengaytma manbasini tekshira olmadi</translation>
+<translation id="611228897408671387">Chromiumdagi hisobingiz</translation>
 <translation id="6119438414301547735">Kengaytma Chromium asboblar panelida ruxsat soʻrovlarini chiqarishiga ruxsat bering</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> xavfli edi, shuning uchun u Chromium tomonidan bloklandi.</translation>
 <translation id="6132897690380286411">Chromium tez orada yopiladi va brauzer maʼlumotlari oʻchib ketadi</translation>
@@ -611,7 +613,6 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8747073452963259673">qidiruv hududining pastki chap burchagi: chap <ph name="LEFT" />%, past <ph name="BOTTOM" />%</translation>
 <translation id="878572486461146056">Oʻrnatishda xato: Tarmoq administratori oʻrnatishlarni taqiqlovchi guruh siyosatini tatbiq qilgan: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Bu sayt kamera va mikrofoningizdan foydalanishi uchun Chromium brauzeriga ruxsat berishingiz lozim</translation>
-<translation id="880560872634367429">Yuklanma tasdiqlanmoqda...</translation>
 <translation id="8818550178040858407">Chromium hisobiga kirasizmi?</translation>
 <translation id="8826492472752484139">“Parollar menejeri” ustiga bosing</translation>
 <translation id="8833697763442816810">ChromiumOS tizimi</translation>

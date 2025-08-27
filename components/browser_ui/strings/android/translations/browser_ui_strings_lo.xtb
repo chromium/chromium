@@ -25,6 +25,7 @@
 <translation id="129382876167171263">ໄຟລ໌ທີ່ບັນທຶກໄວ້ໂດຍເວັບໄຊປາກົດຢູ່ບ່ອນນີ້</translation>
 <translation id="131112695174432497">ລະບົບຈະລຶບຂໍ້ມູນທີ່ມີຜົນຕໍ່ການປັບແຕ່ງໂຄສະນາເປັນແບບສ່ວນຕົວ</translation>
 <translation id="1317194122196776028">ລືມເວັບໄຊນີ້</translation>
+<translation id="1321110954513621549">ອະນຸຍາດ • ໂດຍປະມານ</translation>
 <translation id="1323433172918577554">ຂະຫຍາຍອອກ</translation>
 <translation id="1333965224356556482">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊເຫັນສະຖານທີ່ຂອງທ່ານ</translation>
 <translation id="1343356790768851700">ເວັບໄຊນີ້ຈະລະບຸສິ່ງທີ່ທ່ານມັກແລ້ວຈາກນັ້ນແນະນຳໂຄສະນາໃນເວັບໄຊອື່ນ</translation>
@@ -40,6 +41,7 @@
 <translation id="1448064542941920355">ຫຼຸດການຊູມ</translation>
 <translation id="1464044141348608623">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊຮູ້ເມື່ອທ່ານກຳລັງໃຊ້ອຸປະກອນຂອງທ່ານຢູ່</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> ເວັບໄຊ}other{<ph name="SITE_COUNT" /> ເວັບໄຊ}}</translation>
+<translation id="1476700086976862423">ຮູບແບບສີສັນສີຊີເປຍ</translation>
 <translation id="1500473259453106018">ເຊື່ອງບັດເບິ່ງລາຄາຫຼຸດລົງໃນແຖບ</translation>
 <translation id="1508931164824684991">ເວັບໄຊສາມາດໃຊ້ JavaScript ໄດ້</translation>
 <translation id="1510341833810331442">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊບັນທຶກຂໍ້ມູນຢູ່ໃນອຸປະກອນຂອງທ່ານ</translation>
@@ -71,6 +73,7 @@
 <translation id="1799920918471566157">ເຄັດລັບກ່ຽວກັບ Chrome</translation>
 <translation id="1816835383954230954">ເມື່ອເປີດຢູ່, Chrome ຈະເຮັດວຽກໄດ້ໄວຂຶ້ນ ແລະ ຄຸນສົມບັດທີ່ໃຊ້ JavaScript ຄວນເຮັດວຽກຕາມທີ່ອອກແບບໄວ້. ເມື່ອປິດຢຸດ, ການດໍາເນີນການນີ້ຈະຫຼຸດປະສິດທິພາບ ແຕ່ເຮັດໃຫ້ V8 ທົນທານຕໍ່ການໂຈມຕີໄດ້ຫຼາຍຂຶ້ນ.</translation>
 <translation id="1818308510395330587">ເພື່ອອະນຸຍາດໃຫ້ <ph name="APP_NAME" /> ໃຊ້ AR, ກະລຸນາເປີດກ້ອງໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_LINK" /> ນຳ.</translation>
+<translation id="1848033246551405023">ຟອນ Sans Serif</translation>
 <translation id="1881806992065048905">ຊີດລຸ່ມສຸດລັກສະນະທີ່ປາກົດຂອງໜ້າແຖບໃໝ່</translation>
 <translation id="1887786770086287077">ການເຂົ້າເຖິງສະຖານທີ່ປິດຢູ່ສຳລັບອຸປະກອນນີ້. ກະລຸນາເປີດມັນໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">ໂດຍປົກກະຕິແລ້ວ ເວັບໄຊຈະເຂົ້າເຖິງໄຟລ໌ ແລະ ໂຟນເດີໃນອຸປະກອນຂອງທ່ານສຳລັບຄຸນສົມບັດ ເຊັ່ນ: ການບັນທຶກວຽກຂອງທ່ານໄວ້ໂດຍອັດຕະໂນມັດ</translation>
@@ -92,6 +95,7 @@
 <translation id="2079545284768500474">ບໍ່ເຮັດ</translation>
 <translation id="2080070583977670716">ການຕັ້ງຄ່າເພີ່ມເຕີມ</translation>
 <translation id="2091887806945687916">ສຽງ</translation>
+<translation id="2094208275686143364">ຮູບແບບສີສັນສີແຈ້ງ</translation>
 <translation id="2096716221239095980">ລຶບຂໍ້ມູນທັງໝົດ</translation>
 <translation id="2102396546234652240">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານ</translation>
 <translation id="2117655453726830283">ສະໄລ້ຕໍ່ໄປ</translation>
@@ -137,6 +141,7 @@
 <translation id="2498359688066513246">ຊ່ວຍເຫຼືອ ​ແລະ ຄໍາ​ຄິດ​ເຫັນຕິ​ຊົມ</translation>
 <translation id="2501278716633472235">ກັບ​ຄືນ​ໄປ</translation>
 <translation id="2533138527374486328">ເມື່ອເປີດ, ເວັບໄຊສາມາດຂໍເຊື່ອມຕໍ່ກັບອຸປະກອນໃດກໍຕາມໃນເຄືອຂ່າຍທ້ອງຖິ່ນຂອງທ່ານໄດ້. ເມື່ອປິດ, ເວັບໄຊຈະບໍ່ສາມາດຂໍເຊື່ອມຕໍ່ກັບອຸປະກອນໃນເຄືອຂ່າຍທ້ອງຖິ່ນຂອງທ່ານໄດ້.</translation>
+<translation id="2544997614631598250">ຮູບແບບສີສັນສີມືດ</translation>
 <translation id="2546283357679194313">ຄຸກກີ້ ແລະຂໍ້ມູນເວັບໄຊທ໌...</translation>
 <translation id="2570922361219980984">ການເຂົ້າເຖິງສະຖານທີ່ປິດຢູ່ສຳລັບອຸປະກອນນີ້ນຳອີກ. ກະລຸນາເປີດມັນໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">ຂະ​ຫຍາຍແລ້ວ - ຄລິກ​ເພື່ອຫຍໍ້ລົງ.</translation>
@@ -194,6 +199,7 @@
 <translation id="3165022941318558018">ອະນຸຍາດໃຫ້ເວັບໄຊໃຊ້ຄຸກກີ້ພາກສ່ວນທີສາມ</translation>
 <translation id="3167868116600277716">ຟີດ Discover</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> ຂໍ້​ມູນ​ເກັບ​ຮັກ​ສາ​ໄວ້</translation>
+<translation id="3199078925536734975">ອະນຸຍາດໃນເທື່ອນີ້ • ໂດຍປະມານ</translation>
 <translation id="321187648315454507">ເພື່ອອະນຸຍາດໃຫ້ <ph name="APP_NAME" /> ສົ່ງການແຈ້ງເຕືອນໃຫ້ທ່ານ, ກະລຸນາເປີດການແຈ້ງເຕືອນໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_LINK" /> ນຳ.</translation>
 <translation id="3223425961342298674">ບໍ່ອະນຸຍາດໃຫ້ເຂົ້າເຖິງສະຖານທີ່</translation>
 <translation id="3227137524299004712">ໄມໂຄຣໂຟນ</translation>
@@ -250,6 +256,7 @@
 <translation id="3803367742635802571">ເວັບໄຊທີ່ທ່ານເຂົ້າອາດຢຸດການເຮັດວຽກຕາມທີ່ອອກແບບໄວ້</translation>
 <translation id="3816118180265633665">ສີຂອງ Chrome</translation>
 <translation id="381841723434055211">ເບີໂທລະສັບ</translation>
+<translation id="3823453485268218808">ຟອນ Mono</translation>
 <translation id="3826050100957962900">ການເຂົ້າສູ່ລະບົບຂອງພາກສ່ວນທີສາມ</translation>
 <translation id="3835233591525155343">ການນຳໃຊ້ອຸປະກອນຂອງທ່ານ</translation>
 <translation id="3843916486309149084">Chrome ຈະບລັອກຄຸກກີ້ອີກເທື່ອໜຶ່ງໃນມື້ນີ້</translation>
@@ -302,6 +309,7 @@
 <translation id="4402755511846832236">ບລັອກບໍ່ໃຫ້ເວັບໄຊຮູ້ໃນເວລາທີ່ທ່ານກຳລັງໃຊ້ອຸປະກອນນີ້ຢູ່</translation>
 <translation id="4412992751769744546">ອະ​ນຸ​ຍາດ​ຄຸກ​ກີ້​ບຸກ​ຄົນ​ທີ​ສາມ</translation>
 <translation id="4419929467120297501">Chrome ບລັອກເວັບໄຊບໍ່ໃຫ້ໃຊ້ຄຸກກີ້ພາກສ່ວນທີສາມເພື່ອຕິດຕາມທ່ານໃນລະຫວ່າງທີ່ທ່ານທ່ອງເວັບ. ເຂົ້າໄປການຕັ້ງຄ່າເພື່ອ <ph name="BEGIN_LINK" />ຈັດການການເຂົ້າເຖິງຄຸກກີ້ພາກສ່ວນທີສາມ<ph name="END_LINK" />.</translation>
+<translation id="4425416282877905577">ຟອນ Serif</translation>
 <translation id="443121186588148776">ຜອດອະນຸກຳ</translation>
 <translation id="4434045419905280838">ປັອບອັບ ແລະ ການປ່ຽນເສັ້ນທາງ</translation>
 <translation id="443552056913301231">ການດຳເນີນການນີ້ຈະລຶບຂໍ້ມູນທັງໝົດໃນເຄື່ອງ, ຮວມທັງຄຸກກີ້ ແລະ ຈະຣີເຊັດການອະນຸຍາດທັງໝົດສຳລັບ <ph name="ORIGIN" /></translation>
@@ -554,6 +562,7 @@
 <translation id="7478658909253570368">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊຕ່າງໆເຊື່ອມຕໍ່ຫາຜອດຊີຣຽວ</translation>
 <translation id="7488573225650545859">ເຊື່ອງແຖບມຸມມອງໃນລາຍຊື່ແອັບຂອງທ່ານ</translation>
 <translation id="7521387064766892559">JavaScript</translation>
+<translation id="7538975533793429503">ແຖບເລື່ອນຂະໜາດຟອນ</translation>
 <translation id="7547989957535180761">ເມື່ອເປີດ, ເວັບໄຊສາມາດສະແດງການແຈ້ງເຕືອນການເຂົ້າສູ່ລະບົບໄດ້. ເມື່ອປິດ, ເວັບໄຊບໍ່ສາມາດສະແດງການແຈ້ງເຕືອນການເຂົ້າສູ່ລະບົບໄດ້.</translation>
 <translation id="7553211568594248088">ອອກຈາກສູນກາງການຊອກຫາ</translation>
 <translation id="7554752735887601236">ເວັບໄຊກຳລັງໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານ</translation>

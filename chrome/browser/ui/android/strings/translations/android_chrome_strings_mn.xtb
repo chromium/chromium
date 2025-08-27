@@ -499,7 +499,6 @@
 <translation id="3384347053049321195">Зураг хуваалцах</translation>
 <translation id="3387650086002190359">Файлын системийн алдаанаас шалтгаалан <ph name="FILE_NAME" />-г татаж чадсангүй.</translation>
 <translation id="3414952576877147120">Хэмжээ:</translation>
-<translation id="3421726884497337397">Гуравдагч талын күүкиг хэзээ блоклохыг сонгох</translation>
 <translation id="3430670036890315772">Профайлынхаа түгжээг унтраах нь таны хадгалсан мэдээллийг хасна</translation>
 <translation id="3435465986463792564">Олон цонхтой юу? Та тэдгээрийг эндээс удирдах боломжтой</translation>
 <translation id="3435575784518354875">Нууц үгэндээ хандах эрхээ хадгалахын тулд одоо нууц үгээ экспортолж, Google Play үйлчилгээг шинэчилж, дараа нь буцааж Google Нууц үгний менежер лүү импортолно уу. <ph name="BEGIN_LINK" />Бүтэн зааварчилгааг харна уу<ph name="END_LINK" />.</translation>
@@ -760,7 +759,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{Алдагдсан 1 нууц үг}other{Алдагдсан # нууц үг}}</translation>
 <translation id="4641919525231168205">Дараагийн хуудас руу очих</translation>
 <translation id="4642472735733036929">Үнэ хянахыг зогсоосон</translation>
-<translation id="4645146721047390964">Сайтууд нь Нууцлалтай горимд байх үедээ, жишээлбэл зарыг хувийн болгохын тулд өөр өөр сайт дээрх таны хөтчийн үйл ажиллагааг харах зорилгоор таны күүкиг ашиглах боломжгүй. Зарим сайтын онцлог ажиллахгүй байж болзошгүй.</translation>
 <translation id="465657074423018424">Аюулгүй үзэх үйлчилгээ нь сэжигтэй вебсайтаас таныг хамгаалдаг. Хэрэв та энэ үйлчилгээг идэвхгүй болгох бол вебсайт үзэхдээ, ялангуяа нууц үг оруулахаасаа өмнө маш болгоомжтой байгаарай.</translation>
 <translation id="4662373422909645029">Хоч тоо агуулж болохгүй</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> хавчуурга устгасан</translation>
@@ -1220,7 +1218,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6633067410344541938">Нууцлалтай харилцан үйлдлийн түгжээг тайлах</translation>
 <translation id="6636623428211296678">Доорх бусад тохиргоог судлах эсвэл одоо дуусгах</translation>
 <translation id="6637100877383020115">Аппыг сайжруулахад туслахын тулд Chrome нь ашиглалт болон гэмтлийн өгөгдлийг Google-д илгээдэг. <ph name="BEGIN_UMA_LINK" />Удирдах<ph name="END_UMA_LINK" /></translation>
-<translation id="6640207029842583248">Ямар ч үед блоклох</translation>
 <translation id="6641780377503683465"><ph name="INTEREST" />-г хасах</translation>
 <translation id="6647441008198474441">Таны зочилсон URL-г Google рүү илгээж, дараа нь ямар сайтад зочилж болохыг таамаглах болно</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 болон бусад <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 болон бусад <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
@@ -1232,6 +1229,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6674571176963658787">Синк хийж эхлэхийн тулд нэвтрэх үгээ оруулна уу</translation>
 <translation id="6676927815633975364">Энэ сайт болон Chrome-д нэвтэрнэ үү</translation>
 <translation id="6684809838922667136">Chrome-г сайжруулаарай</translation>
+<translation id="6689436252814043643">Унших горимыг ашиглах боломжгүй байна</translation>
 <translation id="6700279777779583398">Сонголтуудыг хадгалсан</translation>
 <translation id="670498945988402717">Өчигдөр шалгасан</translation>
 <translation id="6710213216561001401">Өмнөх</translation>
@@ -1342,6 +1340,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7111822978084196600">Энэ цонхыг нэрлэнэ үү</translation>
 <translation id="7115358764509798967">Системийн өгөгдмөл</translation>
 <translation id="7117485132243600300">Дагадаг контент, санал болгосон сэдэв, хайлтаа удирдана уу</translation>
+<translation id="7119984597597798764"><ph name="INSTANCE_TITLE" />-г хаах</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 сайтын зөвшөөрлийг хянасан}other{# сайтын зөвшөөрлийг хянасан}}</translation>
 <translation id="7138678301420049075">Бусад</translation>
 <translation id="7140829094791862589">Гар дарааллаар эрэмбэлэх</translation>
@@ -1443,7 +1442,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="751961395872307827">Сайтад холбогдох боломжгүй байна</translation>
 <translation id="7523960634226602883">Google Lens ашиглан камераараа хайгаарай</translation>
 <translation id="7525248386620136756"><ph name="TAB_GROUPS_AND_TABS_PART" />-г хааж, хадгалсан</translation>
-<translation id="752731652852882757">Нууцлалтай горимыг ашиглаж байх үед блоклох</translation>
 <translation id="7545347190366646170">Хандах эрхтэй хүмүүс</translation>
 <translation id="7554643625247105821">Chrome-н хувилбарыг шалгаж чадахгүй байна</translation>
 <translation id="7557508262441527045">Гарсан</translation>
@@ -1609,7 +1607,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8243077599929149377">Хэрэглэгчийн нэрээ нэмэх</translation>
 <translation id="8244387390464017490">Шинэ таб хуудсыг өөрчлөх</translation>
 <translation id="8250920743982581267">Документ</translation>
-<translation id="8255617931166444521">Сайтууд нь зөвхөн өөрийн сайт дээр таны хөтчийн үйл ажиллагааг харахын тулд күүкиг тань ашиглах боломжтой</translation>
 <translation id="8258999165172757081">Нэмсэн</translation>
 <translation id="8259179246279078674">Урьдчилан ачаалсан хуудаснууд шифрлэгдсэн тул Google урьдчилан ачаалсан хуудасны контентын талаар ямар нэг зүйл мэдэж авахгүй. Google-н серверүүд ямар сайтуудыг нууцлалтайгаар урьдчилан ачаалсан болохыг мэдэж авна. Энэ мэдээллийг зөвхөн хуудаснуудыг урьдчилан ачаалахад ашигладаг бөгөөд таны Google Бүртгэлийн бусад мэдээлэлтэй холбодоггүй.</translation>
 <translation id="8260126382462817229">Дахин нэвтрэхээр оролдоно уу.</translation>

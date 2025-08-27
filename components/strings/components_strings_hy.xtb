@@ -444,6 +444,7 @@
 <translation id="1719838434204287058">24 x 30 դյույմ</translation>
 <translation id="1720941539803966190">Փակել ուղեցույցը</translation>
 <translation id="1721424275792716183">* Դաշտը պարտադիր է</translation>
+<translation id="1723636263173393300">Այս կանոնում դյուրանցումների առավելագույն քանակը՝ <ph name="MAX_ITEMS_LIMIT" />:</translation>
 <translation id="1725591448053514783">Envelope You 6</translation>
 <translation id="1727613060316725209">Հավաստագիրը վավեր է</translation>
 <translation id="1728677426644403582">Դուք դիտում եք վեբ էջի կոդը</translation>
@@ -1051,6 +1052,7 @@
 <translation id="271663710482723385">Լիաէկրան ռեժիմից դուրս գալու համար սեղմեք |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
 <translation id="2717336592027046789">Գլան</translation>
 <translation id="2718207025093645426">Կառավարվող օգտատիրոջ կամ սարքի համար չի բեռնվել կանոն։</translation>
+<translation id="2719233594187778789">Կրկնվող URL-ը անտեսվում է՝ <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Հարցումը հաջողվեց</translation>
 <translation id="2722622039067384533">Հյուրասենյակի կահույք</translation>
 <translation id="2723669454293168317">Անցեք անվտանգության ստուգում Chrome-ի կարգավորումներում</translation>
@@ -2013,6 +2015,7 @@
 <translation id="4298000214066716287">Ներդ­րումներ</translation>
 <translation id="4298148761711700950">Ակնթարթորեն վճարեք՝ առանց QR կոդ վերբեռնելու</translation>
 <translation id="4298925811540301889">Այս կայքի համար քուքիները համաժամացվում են ChromeOS սարքերում։ Անցեք <ph name="SYNC_SETTINGS" />՝ տվյալների համաժամացումը կառավարելու համար։</translation>
+<translation id="4299919199185766032">Դյուրանցման անվանումը գերազանցում է նիշերի առավելագույն թույլատրելի քանակը (<ph name="MAX_LENGTH" />)։</translation>
 <translation id="4300272766492248925">Բացել հավելվածը</translation>
 <translation id="4300675098767811073">Մի քանի անցք աջ կողմում</translation>
 <translation id="4302514097724775343">Խաղալու համար սեղմեք դինոզավրի վրա</translation>
@@ -2717,6 +2720,7 @@
     Փորձեք կապվել ձեր համակարգի ադմինիստրատորի հետ:</translation>
 <translation id="5496804587179176046">Պահել անվտանգության կոդերը․ այս պահին անվտանգության ոչ մի կոդ պահված չէ</translation>
 <translation id="550365051221576010">Լրացնել բոլոր տվյալները</translation>
+<translation id="5506286895894263601">Ցանկում վավեր դյուրանցումներ չկան։</translation>
 <translation id="5508443345185481044">Ֆոտոխցիկներ և տեսախցիկներ</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Կառավարվող էջանիշներ</translation>
@@ -3636,6 +3640,7 @@
 <translation id="7014741021609395734">Մասշտաբ</translation>
 <translation id="7016992613359344582">Այս գանձումները կարող են մեկանգամյա կամ պարբերական լինել և հնարավոր է ակնհայտ չերևան:</translation>
 <translation id="701757816833614688">Կրթություն գեղարվեստի և դիզայնի ոլորտում</translation>
+<translation id="7020464868401003526">Դյուրանցման URL-ը գերազանցում է նիշերի առավելագույն թույլատրելի քանակը (<ph name="MAX_LENGTH" />)։</translation>
 <translation id="702275896380648118">Այս կայքը որոշում է ձեր նախասիրությունները և դրանց հիման վրա գովազդ է առաջարկում այլ կայքերի։ Այս կայքը Chrome-ից նաև ստանում է գովազդի թեմաների մասին տվյալներ՝ ձեզ ավելի համապատասխան գովազդ ցուցադրելու համար։</translation>
 <translation id="7023162328967545559">Ադմինիստրատորի նախազգուշացում</translation>
 <translation id="7023765275461720661">Կապե՞լ հաշիվը և վճարել <ph name="BNPL_ISSUER_NAME" />-ի միջոցով</translation>

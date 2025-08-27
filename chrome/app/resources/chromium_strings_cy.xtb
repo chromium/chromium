@@ -84,6 +84,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="2008474315282236005">Bydd hyn yn dileu 1 eitem o'r ddyfais hon. I adfer eich data yn nes ymlaen, mewngofnodwch i Chromium fel <ph name="USER_EMAIL" />.</translation>
 <translation id="2018879682492276940">Methwyd â gosod. Rhowch gynnig arall arni.</translation>
 <translation id="2020032459870799438">I wirio a yw'ch cyfrineiriau eraill yn ddiogel rhag toriadau data a phroblemau diogelwch eraill, <ph name="BEGIN_LINK" />mewngofnodwch i Chromium<ph name="END_LINK" />.</translation>
+<translation id="2039417478970545937">Gosodiadau.</translation>
 <translation id="2049376729098081731">Dewiswch a ddylid cynnwys hanes Chromium i gael profiadau mwy personol yng ngwasanaethau Google</translation>
 <translation id="2054039611381840095">I gael diweddariadau Chromium yn y dyfodol, bydd angen macOS 12 neu'n hwyrach arnoch. Mae'r cyfrifiadur hwn yn defnyddio macOS 11.</translation>
 <translation id="2086476982681781442">Gwnaeth Chromium rwystro'r lawrlwythiad hwn oherwydd bod y ffeil yn dwyllodrus a gallai wneud newidiadau annisgwyl i'ch dyfais</translation>
@@ -316,6 +317,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="5123973130450702873">Mae angen caniatâd i olrhain eich dwylo ar Chromium</translation>
 <translation id="5141988424377517949">Nid ydych wedi ymweld yn ddiweddar. Mae Chromium wedi tynnu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="5174969993834422967">Rydych fel arfer yn rhwystro hysbysiadau. I adael i'r wefan hon eich hysbysu, cliciwch yr eicon hysbysu ar gornel dde eich bar lleoliad.</translation>
+<translation id="5174983315706567306">Does dim digon o le ar y ddisg.</translation>
 <translation id="5187123684706427865">Mae angen ail-ddilysu'r cyfrif Chromium</translation>
 <translation id="5224391634244552924">Nid oes unrhyw gyfrineiriau sydd wedi'u cadw. Gall Chromium wirio'ch cyfrineiriau pan fyddwch yn eu cadw.</translation>
 <translation id="5231355151045086930">Allgofnodi o Chromium</translation>
@@ -443,6 +445,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="6598877126913850652">Ewch i osodiadau hysbysu Chromium</translation>
 <translation id="6600016381025017075">Chwilio unrhyw beth ar y dudalen hon</translation>
 <translation id="6613594504749178791">Bydd eich newidiadau yn dod i rym y tro nesaf y byddwch yn ail-lansio Chromium.</translation>
+<translation id="6648212540664651655">Parhau lle gwnaethoch adael: Mae Chromium wedi adfer eich tabiau o'ch sesiwn ddiwethaf. Gallwch ddiffodd hyn yn</translation>
 <translation id="665732753414869868">Mae angen caniatâd camera ar Chromium i greu map 3D o'ch amgylchoedd</translation>
 <translation id="6669284030132180248">Os ydych hefyd yn cadw eich nodau tudalen yn eich Cyfrif Google, gallwch olrhain prisiau cynnyrch yn Chromium a chael gwybod pan fydd y pris yn gostwng</translation>
 <translation id="6676384891291319759">Cyrchu'r Rhyngrwyd</translation>
@@ -507,6 +510,7 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="7352651011704765696">Aeth rhywbeth o'i le</translation>
 <translation id="7376384068949534168">Nid ydych wedi ymweld yn ddiweddar. Mae Chromium wedi tynnu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="7384121030444253939">Nid yw'r estyniad hwn yn cael ei gefnogi mwyach. Mae Chromium yn argymell eich bod yn ei dynnu yn lle hynny.</translation>
+<translation id="7413153308467572558">Parhau lle gwnaethoch adael: Mae Chromium yn adfer eich tabiau bob tro y byddwch chi'n ailgychwyn. I ddiffodd hyn, ewch i</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">Copïwyd y testun</translation>
 <translation id="7451052299415159299">Mae angen eich caniatâd ar Chromium i ddefnyddio eich camera ar gyfer y wefan hon</translation>
@@ -638,6 +642,7 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="911206726377975832">Dileu eich data pori hefyd?</translation>
 <translation id="9134482777260927479">Help gyda gwaith cartref</translation>
 <translation id="9148058034647219655">Gadael</translation>
+<translation id="9155105544013854680">Parhewch lle gwnaethoch chi adael: Gall Chromium adfer eich tabiau bob tro y byddwch chi'n ailgychwyn. I droi hyn ymlaen, ewch i</translation>
 <translation id="9158494823179993217">Mae'ch gweinyddwr system wedi ffurfweddu Chromium i agor porwr gwahanol i fynd i mewn i <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Ail-lansiwch i ddiweddaru &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
