@@ -2326,7 +2326,7 @@ BASE_FEATURE(UrgentMainFrameForInput, base::FEATURE_DISABLED_BY_DEFAULT);
 // to canonicalize URL properties. See https://crbug.com/409350827
 BASE_FEATURE(kURLPatternDummyURLCanonicalization,
              "URLPatternDummyURLCanonicalization",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Flag guard for changes in how navigation code handles the URL to commit.
 // https://crbug.com/422803238

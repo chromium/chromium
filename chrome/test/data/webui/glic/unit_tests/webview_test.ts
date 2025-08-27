@@ -48,7 +48,10 @@ suite('WebviewTest', () => {
     assertEquals('http', result?.protocol);
     assertEquals('*', result?.port);
 
-    assertFalse(!!matcherForOrigin('http://cat.fun/://foo://'));
+    result = matcherForOrigin('http://cat.fun/://foo://');
+    assertTrue(!!result);
+    assertEquals('cat.fun', result?.hostname);
+    assertEquals('http', result?.protocol);
   });
 
   test('urlMatchesAllowedOrigin allows the primary url', () => {
