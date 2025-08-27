@@ -395,6 +395,11 @@ class MagicStackRankingModelTest : public PlatformTest {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
+  void TearDown() override {
+    segmentation_test_utils_->WillDestroyProfile(profile_.get());
+    PlatformTest::TearDown();
+  }
+
   web::BrowserState* SetUpEnvironment(web::BrowserState* context) {
     ProfileIOS* setup_profile = ProfileIOS::FromBrowserState(context);
     segmentation_test_utils_->SetupForProfile(setup_profile);
