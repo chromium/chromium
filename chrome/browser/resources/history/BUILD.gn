@@ -48,6 +48,7 @@ build_webui("build") {
 
   # Files that are passed as input to css_to_wrapper().
   css_files = [
+    "app.css",
     "history_embeddings_promo.css",
     "history_item.css",
     "history_list.css",

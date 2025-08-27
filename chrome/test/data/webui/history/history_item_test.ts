@@ -86,7 +86,10 @@ suite('<history-item> integration test', function() {
     const app = document.createElement('history-app');
     document.body.appendChild(app);
     element = app.$.history;
-    return testService.handler.whenCalled('queryHistory');
+    return Promise.all([
+      testService.handler.whenCalled('queryHistory'),
+      microtasksFinished(),
+    ]);
   });
 
   function getHistoryData(): HistoryEntry[] {
@@ -115,9 +118,9 @@ suite('<history-item> integration test', function() {
     return microtasksFinished().then(function() {
       const items = element.shadowRoot.querySelectorAll('history-item');
 
-      assertTrue(items[0]!.hasTimeGap);
-      assertFalse(items[1]!.hasTimeGap);
-      assertFalse(items[2]!.hasTimeGap);
+      assertTrue(items[0]!.hasTimeGap, '0');
+      assertFalse(items[1]!.hasTimeGap, '1');
+      assertFalse(items[2]!.hasTimeGap, '2');
     });
   });
 

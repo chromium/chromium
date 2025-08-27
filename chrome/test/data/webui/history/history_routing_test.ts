@@ -49,13 +49,13 @@ import {navigateTo} from './test_util.js';
       document.body.appendChild(app);
 
       assertEquals('chrome://history/', window.location.href);
-      sidebar = app.$['content-side-bar'];
+      sidebar = app.$.contentSideBar;
       return microtasksFinished();
     });
 
     test('changing route changes active view', async () => {
       assertEquals('history', app.$.content.selected);
-      assertEquals(app.$.history, app.$['tabs-content'].selectedItem);
+      assertEquals(app.$.history, app.$.tabsContent.selectedItem);
 
       navigateTo('/syncedTabs', app);
       await eventToPromise('iron-select', sidebar.$.menu);
@@ -64,7 +64,7 @@ import {navigateTo} from './test_util.js';
       await microtasksFinished();
       assertEquals('syncedTabs', app.$.content.selected);
       assertEquals(
-          app.shadowRoot!.querySelector('#syncedDevicesScroll'),
+          app.shadowRoot.querySelector('#syncedDevicesScroll'),
           app.$.content.selectedItem);
     });
 
@@ -72,8 +72,8 @@ import {navigateTo} from './test_util.js';
     test('routing to /grouped may change active view', async () => {
       assertEquals('history', app.$.content.selected);
       assertEquals(
-          app.shadowRoot!.querySelector('#history'),
-          app.$['tabs-content'].selectedItem);
+          app.shadowRoot.querySelector('#history'),
+          app.$.tabsContent.selectedItem);
 
       navigateTo('/grouped', app);
       await microtasksFinished();
@@ -82,13 +82,13 @@ import {navigateTo} from './test_util.js';
       await microtasksFinished();
       assertEquals('history', app.$.content.selected);
       assertEquals(
-          !!app.shadowRoot!.querySelector('#history-clusters'),
+          !!app.shadowRoot.querySelector('#history-clusters'),
           isHistoryClustersEnabled);
       assertEquals(
           isHistoryClustersEnabled ?
-              app.shadowRoot!.querySelector('#history-clusters') :
-              app.shadowRoot!.querySelector('#history'),
-          app.$['tabs-content'].selectedItem);
+              app.shadowRoot.querySelector('#history-clusters') :
+              app.shadowRoot.querySelector('#history'),
+          app.$.tabsContent.selectedItem);
     });
 
     test('routing to /grouped may update sidebar menu item', function() {
@@ -125,7 +125,7 @@ import {navigateTo} from './test_util.js';
       assertEquals('history', sidebar.$.menu.selected);
       assertEquals('chrome://history/', window.location.href);
 
-      const historyTabs = app.shadowRoot!.querySelector('cr-tabs');
+      const historyTabs = app.shadowRoot.querySelector('cr-tabs');
       assertEquals(!!historyTabs, isHistoryClustersEnabled);
 
       if (isHistoryClustersEnabled) {
@@ -199,10 +199,10 @@ import {navigateTo} from './test_util.js';
               'chrome://history/?q=' + searchTerm, window.location.href);
 
           if (isHistoryClustersEnabled) {
-            const tabs = app.shadowRoot!.querySelector('cr-tabs');
+            const tabs = app.shadowRoot.querySelector('cr-tabs');
             assertTrue(!!tabs);
             tabs.selected = 1;
-            await tabs.updateComplete;
+            await microtasksFinished();
             assertEquals('grouped', sidebar.$.menu.selected);
             assertEquals(searchTerm, app.$.toolbar.searchTerm);
             assertEquals(
@@ -218,7 +218,7 @@ import {navigateTo} from './test_util.js';
           if (isHistoryClustersEnabled) {
             // cr-tabs can change their selected value, but these should be
             // ignored since /syncedTabs is not a tabbed page.
-            const historyTabs = app.shadowRoot!.querySelector('cr-tabs')!;
+            const historyTabs = app.shadowRoot.querySelector('cr-tabs')!;
             historyTabs.selected = -1;
             await microtasksFinished();
           }
@@ -269,9 +269,12 @@ suite(`routing-test-with-history-clusters-pref-set`, () => {
       });
 
   test(`route to grouped url when last tab is grouped`, async () => {
+    loadTimeData.overrideValues({lastSelectedTab: 0});
     initialize();
     await microtasksFinished();
-    assertEquals(`chrome://history/grouped`, window.location.href);
+    assertEquals(`chrome://history/`, window.location.href);
+    testBrowserService.handler.reset();
+
     navigateTo('/grouped', app);
     await microtasksFinished();
     assertEquals(`chrome://history/grouped`, window.location.href);
@@ -323,10 +326,10 @@ suite(`routing-test-with-history-embeddings-enabled`, () => {
 
   test('route updates from group filter chip', async () => {
     // Tabs should be hidden.
-    assertEquals(null, app.shadowRoot!.querySelector('cr-tabs'));
+    assertEquals(null, app.shadowRoot.querySelector('cr-tabs'));
 
     const filterChips =
-        app.shadowRoot!.querySelector('cr-history-embeddings-filter-chips');
+        app.shadowRoot.querySelector('cr-history-embeddings-filter-chips');
     assertTrue(!!filterChips);
     assertTrue(isVisible(filterChips));
 
@@ -347,7 +350,7 @@ suite(`routing-test-with-history-embeddings-enabled`, () => {
     await microtasksFinished();
 
     const filterChips =
-        app.shadowRoot!.querySelector('cr-history-embeddings-filter-chips');
+        app.shadowRoot.querySelector('cr-history-embeddings-filter-chips');
     assertTrue(!!filterChips);
 
     // Changing the "By group" chip to should change the URL.
@@ -382,7 +385,7 @@ suite(`routing-test-with-history-embeddings-enabled`, () => {
     }
 
     const filterChips =
-        app.shadowRoot!.querySelector('cr-history-embeddings-filter-chips');
+        app.shadowRoot.querySelector('cr-history-embeddings-filter-chips');
     assertTrue(!!filterChips);
     assertEquals(
         stringAsDateObject('2022-12-04').getTime(),
@@ -396,6 +399,6 @@ suite(`routing-test-with-history-embeddings-enabled`, () => {
 
     navigateTo('/?q=test', app);
     await microtasksFinished();
-    assertEquals(undefined, filterChips.timeRangeStart);
+    assertEquals(null, filterChips.timeRangeStart);
   });
 });

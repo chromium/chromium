@@ -67,7 +67,7 @@ suite('HistoryListTest', function() {
 
     element = app.$.history;
     toolbar = app.$.toolbar;
-    const queryManager = app.shadowRoot!.querySelector('history-query-manager');
+    const queryManager = app.shadowRoot.querySelector('history-query-manager');
     assertTrue(!!queryManager);
     queryManager.queryState = {...queryManager.queryState, incremental: true};
     return Promise.all([
@@ -211,8 +211,7 @@ suite('HistoryListTest', function() {
   // See http://crbug.com/845802.
   test('DisablingCtrlAOnSyncedTabsPage', async function() {
     await finishSetup(TEST_HISTORY_RESULTS);
-    app.shadowRoot!.querySelector('history-router')!.selectedPage =
-        'syncedTabs';
+    app.shadowRoot.querySelector('history-router')!.selectedPage = 'syncedTabs';
     await microtasksFinished();
     const field = toolbar.$.mainToolbar.getSearchField();
     field.blur();
@@ -365,8 +364,8 @@ suite('HistoryListTest', function() {
     await microtasksFinished();
 
     assertEquals(1, toolbar.count);
-    app.shadowRoot!.querySelector(
-                       'history-query-manager')!.queryState.incremental = false;
+    app.shadowRoot.querySelector(
+                      'history-query-manager')!.queryState.incremental = false;
 
     testService.handler.resetResolver('queryHistory');
     testService.handler.setResultFor('queryHistory', Promise.resolve({

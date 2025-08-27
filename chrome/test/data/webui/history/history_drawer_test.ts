@@ -7,7 +7,7 @@ import 'chrome://history/history.js';
 import type {HistoryAppElement, HistorySideBarElement} from 'chrome://history/history.js';
 import {BrowserServiceImpl, ensureLazyLoaded} from 'chrome://history/history.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserService} from './test_browser_service.js';
 import {navigateTo} from './test_util.js';
@@ -30,13 +30,13 @@ suite('drawer-test', function() {
   test('drawer has correct selection', function() {
     navigateTo('/syncedTabs', app);
     app.setHasDrawerForTesting(true);
-    return flushTasks().then(function() {
+    return microtasksFinished().then(function() {
       const drawerLazyRender = app.$.drawer;
       assertTrue(!!drawerLazyRender);
 
       // Drawer side bar doesn't exist until the first time the drawer is
       // opened.
-      let drawerSideBar = app.shadowRoot!.querySelector<HistorySideBarElement>(
+      let drawerSideBar = app.shadowRoot.querySelector<HistorySideBarElement>(
           '#drawer-side-bar');
       assertFalse(!!drawerSideBar);
 
@@ -49,7 +49,7 @@ suite('drawer-test', function() {
       const drawer = drawerLazyRender.getIfExists();
       assertTrue(!!drawer);
       assertTrue(drawer.open);
-      drawerSideBar = app.shadowRoot!.querySelector<HistorySideBarElement>(
+      drawerSideBar = app.shadowRoot.querySelector<HistorySideBarElement>(
           '#drawer-side-bar');
       assertTrue(!!drawerSideBar);
 

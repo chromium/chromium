@@ -5,7 +5,7 @@
 import type {ActionMenuModel, CrActionMenuElement, HistoryListElement} from 'chrome://history/history.js';
 import {BrowserServiceImpl, ensureLazyLoaded} from 'chrome://history/history.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserService} from './test_browser_service.js';
 import {createHistoryEntry} from './test_util.js';
@@ -47,6 +47,7 @@ suite('#overflow-menu', function() {
     };
     listContainer.dispatchEvent(new CustomEvent(
         'open-menu', {bubbles: true, composed: true, detail: detail1}));
+    await microtasksFinished();
     assertTrue(sharedMenu.open);
 
     const moreButton = sharedMenu.querySelector<HTMLElement>('#menuMoreButton');
@@ -70,6 +71,7 @@ suite('#overflow-menu', function() {
     };
     listContainer.dispatchEvent(new CustomEvent(
         'open-menu', {bubbles: true, composed: true, detail: detail2}));
+    await microtasksFinished();
     assertTrue(sharedMenu.open);
 
     // Ensure that the menu corresponds to the newly clicked item.

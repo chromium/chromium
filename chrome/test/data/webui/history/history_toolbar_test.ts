@@ -104,6 +104,7 @@ suite('history-toolbar', function() {
     toolbar.$.mainToolbar.dispatchEvent(new CustomEvent(
         'search-changed', {bubbles: true, composed: true, detail: 'Test2'}));
     await testService.handler.whenCalled('queryHistory');
+    await microtasksFinished();
 
     assertTrue(toolbar.spinnerActive);
     delayedQuery.resolve({

@@ -8,8 +8,8 @@ import type {HistoryAppElement} from 'chrome://history/history.js';
 import {BrowserServiceImpl, HistoryEmbeddingsBrowserProxyImpl, HistoryEmbeddingsPageHandlerRemote} from 'chrome://history/history.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserService} from './test_browser_service.js';
 import {createHistoryInfo, navigateTo} from './test_util.js';
@@ -49,7 +49,7 @@ suite('routing-with-query-param', function() {
     return testService.handler.whenCalled('queryHistory')
         .then(query => {
           assertEquals(expectedQuery, query[0]);
-          return flushTasks();
+          return microtasksFinished();
         })
         .then(function() {
           assertEquals(
@@ -98,9 +98,11 @@ suite('routing-with-query-param', function() {
       },
     }));
 
-    // Invalid date format should only query the search term.
-    navigateTo('/?q=hello', app);
-    const queryArgs = await testService.handler.whenCalled('queryHistory');
-    assertEquals('hello', queryArgs[0]);
+    navigateTo('/?q=query&after=some-bad-date', app);
+    const [query, numResults, timestamp] =
+        await testService.handler.whenCalled('queryHistory');
+    assertEquals('query', query);
+    assertEquals(numResults, 150);
+    assertEquals(null, timestamp);
   });
 });
