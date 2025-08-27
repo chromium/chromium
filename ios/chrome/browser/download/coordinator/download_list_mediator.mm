@@ -20,7 +20,8 @@
 #import "ios/chrome/browser/download/model/download_record.h"
 #import "ios/chrome/browser/download/model/download_record_observer_bridge.h"
 #import "ios/chrome/browser/download/model/download_record_service.h"
-#import "ios/chrome/browser/download/ui/download_list_consumer.h"
+#import "ios/chrome/browser/download/ui/download_list/download_list_consumer.h"
+#import "ios/chrome/browser/download/ui/download_list/download_list_item.h"
 #import "ios/web/public/download/download_task.h"
 
 @interface DownloadListMediator () <DownloadRecordObserverDelegate> {
@@ -109,9 +110,7 @@
   std::vector<DownloadRecord> recordsToDisplay =
       [self applyCurrentFilter:_allRecords];
 
-  [_consumer setDownloadRecords:recordsToDisplay];
-  [_consumer setLoadingState:NO];
-  [_consumer setEmptyState:(recordsToDisplay.size() == 0)];
+  [self setDownloadListItems:recordsToDisplay];
 }
 
 - (void)syncRecordsIfNeeded {
@@ -121,7 +120,7 @@
 
   std::vector<DownloadRecord> recordsToDisplay =
       [self applyCurrentFilter:_allRecords];
-  [_consumer setDownloadRecords:recordsToDisplay];
+  [self setDownloadListItems:recordsToDisplay];
 }
 
 - (void)filterRecordsWithType:(DownloadFilterType)type {
@@ -134,9 +133,7 @@
   std::vector<DownloadRecord> filteredRecords =
       [self applyCurrentFilter:_allRecords];
 
-  [_consumer setDownloadRecords:filteredRecords];
-  [_consumer setLoadingState:NO];
-  [_consumer setEmptyState:(filteredRecords.size() == 0)];
+  [self setDownloadListItems:filteredRecords];
 }
 
 #pragma mark - DownloadRecordObserver Methods
@@ -190,6 +187,19 @@
 - (void)handleApplicationWillResignActive {
   // Set flag to indicate the app is resigning active state.
   _isRecoveringFromBackground = YES;
+}
+
+/// Sets the download list items in the consumer.
+- (void)setDownloadListItems:(const std::vector<DownloadRecord>&)records {
+  NSMutableArray<DownloadListItem*>* items = [NSMutableArray array];
+  for (const auto& record : records) {
+    DownloadListItem* item =
+        [[DownloadListItem alloc] initWithDownloadRecord:record];
+    [items addObject:item];
+  }
+  [_consumer setDownloadListItems:items.copy];
+  [_consumer setLoadingState:NO];
+  [_consumer setEmptyState:(items.count == 0)];
 }
 
 @end

@@ -60,3 +60,7 @@ bool DownloadRecord::operator==(const DownloadRecord& other) const {
          created_time == other.created_time &&
          completed_time == other.completed_time;
 }
+
+bool DownloadRecord::operator!=(const DownloadRecord& other) const {
+  return !(*this == other);
+}

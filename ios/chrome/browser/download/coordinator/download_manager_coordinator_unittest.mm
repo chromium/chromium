@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/file_size_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/fakes/fake_contained_presenter.h"
 #import "ios/chrome/test/scoped_key_window.h"
@@ -62,17 +63,6 @@ const int64_t kTestReceivedBytes = 0;
 const base::FilePath::CharType kTestSuggestedFileName[] =
     FILE_PATH_LITERAL("file.zip");
 
-// Returns formatted size string.
-NSString* GetSizeString(int64_t size_in_bytes) {
-  NSByteCountFormatter* formatter = [[NSByteCountFormatter alloc] init];
-  formatter.countStyle = NSByteCountFormatterCountStyleFile;
-  formatter.zeroPadsFractionDigits = YES;
-  NSString* result = [formatter stringFromByteCount:size_in_bytes];
-  // Replace spaces with non-breaking spaces.
-  result = [result stringByReplacingOccurrencesOfString:@" "
-                                             withString:@"\u00A0"];
-  return result;
-}
 
 }  // namespace
 

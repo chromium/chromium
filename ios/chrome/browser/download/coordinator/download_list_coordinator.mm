@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/download/coordinator/download_list_mediator.h"
 #import "ios/chrome/browser/download/model/download_record_service_factory.h"
-#import "ios/chrome/browser/download/ui/download_list_view_controller.h"
+#import "ios/chrome/browser/download/ui/download_list/download_list_table_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -20,7 +20,7 @@
   // Mediator for handling download list logic.
   DownloadListMediator* _mediator;
   // View controller for presenting Download List UI.
-  DownloadListViewController* _downloadListViewController;
+  DownloadListTableViewController* _downloadListViewController;
   // Navigation controller for presenting the download list.
   UINavigationController* _navigationController;
   // YES after start has been called.
@@ -76,15 +76,17 @@
 - (void)setupAndPresentDownloadListUI {
   // Create view controller based on UI type.
   DownloadListUIType uiType = CurrentDownloadListUIType();
-  DownloadListViewController* viewController = nil;
+  DownloadListTableViewController* viewController = nil;
   switch (uiType) {
     case DownloadListUIType::kDefaultUI:
-      viewController = [[DownloadListViewController alloc] init];
+      viewController = [[DownloadListTableViewController alloc]
+          initWithStyle:UITableViewStyleInsetGrouped];
       break;
     case DownloadListUIType::kCustomUI:
       // Custom UI can be implemented here if needed.
       // For now, we will use the default implementation.
-      viewController = [[DownloadListViewController alloc] init];
+      viewController = [[DownloadListTableViewController alloc]
+          initWithStyle:UITableViewStyleInsetGrouped];
       break;
   }
   _downloadListViewController = viewController;

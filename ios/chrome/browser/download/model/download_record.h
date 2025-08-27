@@ -24,6 +24,7 @@ struct DownloadRecord {
   ~DownloadRecord();
 
   bool operator==(const DownloadRecord& other) const;
+  bool operator!=(const DownloadRecord& other) const;
 
   // Unique identifier for this download.
   std::string download_id;

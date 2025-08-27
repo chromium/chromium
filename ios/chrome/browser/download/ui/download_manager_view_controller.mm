@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/file_size_util.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -60,17 +61,6 @@ const NSTimeInterval kAnimationDelay = 0.5;
 const NSTimeInterval kAnimationDuration = 0.15;
 const CGFloat kAnimationMinScale = 0.75;
 
-// Returns formatted size string.
-NSString* GetSizeString(int64_t size_in_bytes) {
-  NSByteCountFormatter* formatter = [[NSByteCountFormatter alloc] init];
-  formatter.countStyle = NSByteCountFormatterCountStyleFile;
-  formatter.zeroPadsFractionDigits = YES;
-  NSString* result = [formatter stringFromByteCount:size_in_bytes];
-  // Replace spaces with non-breaking spaces.
-  result = [result stringByReplacingOccurrencesOfString:@" "
-                                             withString:@"\u00A0"];
-  return result;
-}
 
 // Returns the appropriate image for a destination icon.
 UIImage* GetDownloadFileDestinationImage(DownloadFileDestination destination) {

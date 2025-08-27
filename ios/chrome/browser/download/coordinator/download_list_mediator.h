@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/download/ui/download_list_mutator.h"
+#import "ios/chrome/browser/download/ui/download_list/download_list_mutator.h"
 
 @protocol DownloadListConsumer;
 class DownloadRecordService;
