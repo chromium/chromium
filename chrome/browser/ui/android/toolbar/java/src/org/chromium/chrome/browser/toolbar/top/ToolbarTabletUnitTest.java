@@ -102,7 +102,6 @@ import org.chromium.ui.widget.ToastManager;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /** Unit tests for @{@link ToolbarTablet} */
@@ -147,12 +146,6 @@ public final class ToolbarTabletUnitTest {
                 observer.onIncognitoStateChanged(/* isIncognito */ true);
                 return null;
             };
-
-    private static final Map<Integer, String> TOOLBAR_COMPONENT_NAMES =
-            Map.of(
-                    ToolbarComponentId.BACK, "BACK",
-                    ToolbarComponentId.FORWARD, "FORWARD",
-                    ToolbarComponentId.RELOAD, "RELOAD");
 
     @Before
     public void setUp() {
@@ -215,6 +208,7 @@ public final class ToolbarTabletUnitTest {
                         .getContext()
                         .getResources()
                         .getDimensionPixelSize(R.dimen.toolbar_button_width);
+        doReturn(buttonWidth).when(mHomeButtonCoordinator).updateVisibility(anyInt());
         doReturn(buttonWidth).when(mReloadButtonCoordinator).updateVisibility(anyInt());
         doReturn(buttonWidth).when(mBackButtonCoordinator).updateVisibility(anyInt());
 
@@ -927,14 +921,24 @@ public final class ToolbarTabletUnitTest {
                         .getResources()
                         .getDimensionPixelSize(R.dimen.toolbar_button_width);
 
-        verify(mHomeButtonCoordinator, visibleComponents.contains(HOME) ? atLeastOnce() : never())
-                .updateVisibility(geq(buttonWidth));
-        verify(mBackButtonCoordinator, visibleComponents.contains(BACK) ? atLeastOnce() : never())
-                .updateVisibility(geq(buttonWidth));
-        verify(
-                        mReloadButtonCoordinator,
-                        visibleComponents.contains(RELOAD) ? atLeastOnce() : never())
-                .updateVisibility(geq(buttonWidth));
+        if (visibleComponents.contains(HOME)) {
+            verify(mHomeButtonCoordinator).updateVisibility(geq(buttonWidth));
+        } else {
+            verify(mHomeButtonCoordinator, never()).updateVisibility(geq(buttonWidth));
+        }
+
+        if (visibleComponents.contains(BACK)) {
+            verify(mBackButtonCoordinator).updateVisibility(geq(buttonWidth));
+        } else {
+            verify(mBackButtonCoordinator, never()).updateVisibility(geq(buttonWidth));
+        }
+
+        if (visibleComponents.contains(RELOAD)) {
+            verify(mReloadButtonCoordinator).updateVisibility(geq(buttonWidth));
+        } else {
+            verify(mReloadButtonCoordinator, never()).updateVisibility(geq(buttonWidth));
+        }
+
         Mockito.clearInvocations(
                 mHomeButtonCoordinator, mBackButtonCoordinator, mReloadButtonCoordinator);
 
