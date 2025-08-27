@@ -15,8 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
-#include "crypto/secure_hash.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -71,24 +70,11 @@ std::string Sha256File(const base::FilePath& path) {
     return "";
   }
 
-  std::unique_ptr<crypto::SecureHash> ctx(
-      crypto::SecureHash::Create(crypto::SecureHash::SHA256));
-  std::array<uint8_t, 4096> buffer;
-  while (true) {
-    std::optional<size_t> read = file.ReadAtCurrentPos(buffer);
-
-    // Treat EOF the same as any other error, stop reading and return the hash
-    // of what we read. If there was a disk error or something we'll end up with
-    // an invalid hash, same as if the file were truncated.
-    if (read.value_or(0) == 0) {
-      break;
-    }
-    ctx->Update(base::span(buffer).first(*read));
+  std::array<uint8_t, crypto::hash::kSha256Size> hash;
+  if (!crypto::hash::HashFile(crypto::hash::kSha256, &file, hash)) {
+    return "";
   }
-
-  std::array<uint8_t, crypto::kSHA256Length> digest_bytes;
-  ctx->Finish(digest_bytes);
-  return base::HexEncode(digest_bytes);
+  return base::HexEncode(hash);
 }
 
 }  // namespace
