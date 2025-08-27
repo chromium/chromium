@@ -73,6 +73,11 @@ BASE_DECLARE_FEATURE(kClearUndecryptablePasswords);
 // Delete undecryptable passwords from the store when Sync is active.
 BASE_DECLARE_FEATURE(kClearUndecryptablePasswordsOnSync);
 
+// Enables debug data popups on OTP fields for manual testing of
+// one-time-passwords. Only for OTP detection testing, not intended to be
+// launched.
+BASE_DECLARE_FEATURE(kDebugUiForOtps);
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 // Enables the Mojo JavaScript API for the password manager, replacing the
 // legacy passwordsPrivate extension API.

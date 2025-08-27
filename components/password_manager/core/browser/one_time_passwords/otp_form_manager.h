@@ -77,6 +77,10 @@ class OtpFormManager {
 #endif  // defined(UNIT_TEST)
 
  private:
+  // If the kDebugUiForOtps flag is on, this method will populate
+  // `otp_suggestions_` with debugging data.
+  void UpdateManualTestingDebuggingDataIfNeeded();
+
   // Triggers the request to the appropriate backend.
   void RetrieveOtpValue();
 

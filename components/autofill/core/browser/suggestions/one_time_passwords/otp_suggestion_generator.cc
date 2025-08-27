@@ -13,7 +13,11 @@ Suggestion BuildOtpSuggestion(const std::string& otp_value,
                               const FieldGlobalId& field_id) {
   Suggestion suggestion = Suggestion(base::UTF8ToUTF16(otp_value),
                                      SuggestionType::kOneTimePasswordEntry);
+#if BUILDFLAG(IS_ANDROID)
+  // Android SMS OTPs are the only supported OTPs at the moment. Choose the
+  // right icon when more OTP options are supported in the future.
   suggestion.icon = Suggestion::Icon::kAndroidMessages;
+#endif
   return suggestion;
 }
 

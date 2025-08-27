@@ -32,11 +32,15 @@ TEST_F(OtpSuggestionGeneratorTest, Otps) {
   ASSERT_EQ(suggestions.size(), 2U);
   EXPECT_EQ(suggestions[0].main_text.value, base::UTF8ToUTF16(otps[0]));
   EXPECT_EQ(suggestions[0].type, SuggestionType::kOneTimePasswordEntry);
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(suggestions[0].icon, Suggestion::Icon::kAndroidMessages);
+#endif
 
   EXPECT_EQ(suggestions[1].main_text.value, base::UTF8ToUTF16(otps[1]));
   EXPECT_EQ(suggestions[1].type, SuggestionType::kOneTimePasswordEntry);
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(suggestions[1].icon, Suggestion::Icon::kAndroidMessages);
+#endif
 }
 
 }  // namespace autofill

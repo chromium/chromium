@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/feature_list.h"
+#include "base/strings/stringprintf.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -20,6 +21,17 @@ namespace password_manager {
 namespace {
 
 using autofill::FieldGlobalId;
+
+std::string OtpSourceToString(OtpSource source) {
+  switch (source) {
+    case OtpSource::kUnknown:
+      return "Unknown";
+    case OtpSource::kSms:
+      return "Sms";
+    case OtpSource::kEmail:
+      return "Email";
+  }
+}
 
 // TODO(crbug.com/415274388): Evaluate if FieldInfoManager needs to be improved
 // to track more user inputs.
@@ -58,6 +70,8 @@ OtpFormManager::OtpFormManager(
   otp_source_ = DetermineWhereOtpWasLikelySent(client_->GetFieldInfoManager(),
                                                client_->GetLastCommittedURL());
 
+  UpdateManualTestingDebuggingDataIfNeeded();
+
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kAndroidSmsOtpFilling)) {
     sms_otp_backend_ = client_->GetSmsOtpBackend();
@@ -82,6 +96,7 @@ void OtpFormManager::ProcessUpdatedPredictions(
     return;
   }
   otp_source_ = new_otp_source;
+  UpdateManualTestingDebuggingDataIfNeeded();
   // The form and the assumed OTP source have changed, we need to refetch the
   // OTP value.
   RetrieveOtpValue();
@@ -173,6 +188,13 @@ autofill::OtpFillData OtpFormManager::GetFillDataForOtpSuggestion(
   // All other cases are non-trivial, attempt to fill the value into the
   // triggering field as the best effort.
   return {{field_id, otp_value}};
+}
+
+void OtpFormManager::UpdateManualTestingDebuggingDataIfNeeded() {
+  if (base::FeatureList::IsEnabled(features::kDebugUiForOtps)) {
+    otp_suggestions_ = {"Identified OTP field. OTP is delivered via: " +
+                        OtpSourceToString(otp_source_)};
+  }
 }
 
 void OtpFormManager::RetrieveOtpValue() {
