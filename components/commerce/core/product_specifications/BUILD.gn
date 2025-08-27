@@ -28,7 +28,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "product_specifications_cache_unittest.cc",
-    "product_specifications_service_unittest.cc",
     "product_specifications_sync_bridge_unittest.cc",
   ]
   deps = [

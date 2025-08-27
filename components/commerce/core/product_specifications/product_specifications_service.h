@@ -20,9 +20,6 @@ extern const size_t kMaxNameLength;
 
 extern const size_t kMaxTableSize;
 
-class ProductSpecificationsServiceTest;
-class ProductSpecificationsServiceSyncDisabledTest;
-
 // Acquires synced data about product specifications.
 class ProductSpecificationsService
     : public KeyedService,
@@ -87,45 +84,9 @@ class ProductSpecificationsService
       commerce::ProductSpecificationsSet::Observer* observer);
 
  private:
-  friend class commerce::ProductSpecificationsServiceTest;
-  friend class commerce::ProductSpecificationsServiceSyncDisabledTest;
   std::unique_ptr<ProductSpecificationsSyncBridge> bridge_;
-  scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
-  std::vector<base::OnceCallback<void()>> deferred_operations_;
-  base::ObserverList<commerce::ProductSpecificationsSet::Observer> observers_;
-
-  bool is_initialized_{false};
 
   void OnInit();
-  void OnProductSpecificationsSetAdded(
-      const ProductSpecificationsSet& product_specifications_set);
-  void OnSpecificsAdded(const std::vector<sync_pb::ProductComparisonSpecifics>
-                            specifics) override;
-
-  void OnSpecificsUpdated(
-      const std::vector<std::pair<sync_pb::ProductComparisonSpecifics,
-                                  sync_pb::ProductComparisonSpecifics>>
-          before_after_specifics) override;
-
-  void OnSpecificsRemoved(const std::vector<sync_pb::ProductComparisonSpecifics>
-                              specifics) override;
-
-  void OnMultiSpecificsChanged(
-      const std::vector<sync_pb::ProductComparisonSpecifics> changed_specifics,
-      const std::map<std::string, sync_pb::ProductComparisonSpecifics>
-          prev_entries) override;
-
-  void NotifyProductSpecificationsAdded(
-      const ProductSpecificationsSet& added_set);
-
-  void NotifyProductSpecificationsUpdate(const ProductSpecificationsSet& before,
-                                         const ProductSpecificationsSet& after);
-
-  void NotifyProductSpecificationsRemoval(const ProductSpecificationsSet& set);
-
-  void DisableInitializedForTesting();
-
-  base::WeakPtrFactory<ProductSpecificationsService> weak_ptr_factory_{this};
 };
 
 }  // namespace commerce

@@ -25,7 +25,6 @@ class ModelError;
 namespace commerce {
 
 class ProductSpecificationsService;
-class ProductSpecificationsServiceTest;
 class ProductSpecificationsSyncBridgeMultiSpecsTest;
 class ProductSpecificationsSyncBridgeTest;
 
@@ -92,7 +91,6 @@ class ProductSpecificationsSyncBridge : public syncer::DataTypeSyncBridge {
 
  private:
   friend class commerce::ProductSpecificationsService;
-  friend class commerce::ProductSpecificationsServiceTest;
   friend class commerce::ProductSpecificationsSyncBridgeMultiSpecsTest;
   friend class commerce::ProductSpecificationsSyncBridgeTest;
 

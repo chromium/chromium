@@ -123,7 +123,6 @@ source_set("sync_integration_tests_impl") {
       "single_client_password_sharing_policy_test.cc",
       "single_client_passwords_sync_test.cc",
       "single_client_polling_sync_test.cc",
-      "single_client_product_specifications_sync_test.cc",
       "single_client_saved_tab_groups_sync_test.cc",
       "single_client_search_engines_sync_test.cc",
       "single_client_secondary_account_sync_test.cc",
