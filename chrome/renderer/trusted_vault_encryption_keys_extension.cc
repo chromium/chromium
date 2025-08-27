@@ -80,6 +80,7 @@ bool ParseTrustedVaultKeyArrayMayDeleteFrame(
     v8::Local<v8::Array> array,
     std::vector<chrome::mojom::TrustedVaultKeyPtr>* trusted_vault_keys) {
   DCHECK(trusted_vault_keys);
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   for (uint32_t i = 0; i < array->Length(); ++i) {
     v8::Local<v8::Value> value;
     if (!array->Get(context, i).ToLocal(&value) || !value->IsObject()) {
@@ -88,7 +89,7 @@ bool ParseTrustedVaultKeyArrayMayDeleteFrame(
     }
     v8::Local<v8::Object> obj = value.As<v8::Object>();
     v8::Local<v8::Value> epoch_value;
-    if (!obj->Get(context, gin::StringToV8(context->GetIsolate(), "epoch"))
+    if (!obj->Get(context, gin::StringToV8(isolate, "epoch"))
              .ToLocal(&epoch_value) ||
         !epoch_value->IsInt32()) {
       DVLOG(1) << "invalid key epoch";
@@ -97,7 +98,7 @@ bool ParseTrustedVaultKeyArrayMayDeleteFrame(
     const int32_t version = epoch_value.As<v8::Int32>()->Value();
 
     v8::Local<v8::Value> key_value;
-    if (!obj->Get(context, gin::StringToV8(context->GetIsolate(), "key"))
+    if (!obj->Get(context, gin::StringToV8(isolate, "key"))
              .ToLocal(&key_value) ||
         !key_value->IsArrayBuffer()) {
       DVLOG(1) << "invalid key bytes";
@@ -134,6 +135,7 @@ void ParseTrustedVaultKeysFromMapMayDeleteFrame(
       result;
   v8::Local<v8::Array> array = map->AsArray();
   CHECK_EQ(array->Length(), 2 * map->Size());
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   for (uint32_t i = 0; i < array->Length(); i += 2) {
     v8::Local<v8::Value> key;
     if (!array->Get(context, i).ToLocal(&key) || !key->IsString()) {
@@ -142,7 +144,7 @@ void ParseTrustedVaultKeysFromMapMayDeleteFrame(
       return;
     }
     const std::string security_domain_name(
-        *v8::String::Utf8Value(context->GetIsolate(), key));
+        *v8::String::Utf8Value(isolate, key));
 
     v8::Local<v8::Value> value;
     if (!array->Get(context, i + 1).ToLocal(&value) || !value->IsArray()) {

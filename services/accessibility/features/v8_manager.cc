@@ -104,7 +104,7 @@ MaybeLocal<Module> ResolveModuleCallback(
   V8Environment* v8_env = V8Environment::GetFromContext(context);
   CHECK(v8_env);
 
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   std::optional<std::string> referrer_identifier =
       v8_env->GetIdentifierFromModule(v8::Global<Module>(isolate, referrer));
   CHECK(referrer_identifier.has_value());

@@ -150,7 +150,7 @@ v8::Local<v8::Object> MojoWatcher::Create(
     bool writable,
     bool peer_closed,
     std::unique_ptr<MojoWatchCallback> callback) {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   CHECK(isolate);
 
   MojoWatcher* watcher = cppgc::MakeGarbageCollected<MojoWatcher>(

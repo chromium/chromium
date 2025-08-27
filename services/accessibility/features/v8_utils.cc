@@ -23,9 +23,9 @@ v8::Local<v8::Value> V8ValueConverter::ConvertToV8Value(
     base::ValueView value,
     v8::Local<v8::Context> context) const {
   v8::Context::Scope context_scope(context);
-  v8::EscapableHandleScope handle_scope(context->GetIsolate());
-  return handle_scope.Escape(
-      ToV8Value(context->GetIsolate(), context->Global(), value));
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::EscapableHandleScope handle_scope(isolate);
+  return handle_scope.Escape(ToV8Value(isolate, context->Global(), value));
 }
 
 v8::Local<v8::Value> V8ValueConverter::ToV8Value(

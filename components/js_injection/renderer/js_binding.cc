@@ -295,9 +295,8 @@ void JsBinding::AddEventListener(gin::Arguments* args) {
     return;
   }
 
-  v8::Local<v8::Context> context = args->GetHolderCreationContext();
   listeners_.push_back(
-      v8::Global<v8::Function>(context->GetIsolate(), listener));
+      v8::Global<v8::Function>(v8::Isolate::GetCurrent(), listener));
 }
 
 // RemoveEventListener() needs to match EventTarget's RemoveEventListener() in

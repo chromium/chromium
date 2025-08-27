@@ -50,7 +50,7 @@ v8::Local<v8::Object> WebCryptoAlgorithmToV8Value(
     v8::Local<v8::Context> context) {
   DCHECK(!algorithm.IsNull());
   v8::Context::Scope scope(context);
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
 
   const blink::WebCryptoAlgorithmInfo* info =
       blink::WebCryptoAlgorithm::LookupAlgorithmInfo(algorithm.Id());
