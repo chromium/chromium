@@ -11,9 +11,6 @@ namespace optimization_guide {
 
 class IOSChromePredictionModelStore : public PredictionModelStore {
  public:
-  // TODO:(crbug.com/440098411): Remove this once downstream stops using it.
-  static IOSChromePredictionModelStore* GetInstance();
-
   IOSChromePredictionModelStore();
   ~IOSChromePredictionModelStore() override;
 

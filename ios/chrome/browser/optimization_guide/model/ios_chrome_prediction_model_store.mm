@@ -9,14 +9,6 @@
 
 namespace optimization_guide {
 
-// TODO:(crbug.com/440098411): Remove this once downstream stops using it.
-// static
-IOSChromePredictionModelStore* IOSChromePredictionModelStore::GetInstance() {
-  return &GetApplicationContext()
-              ->GetOptimizationGuideGlobalState()
-              ->prediction_model_store();
-}
-
 IOSChromePredictionModelStore::IOSChromePredictionModelStore() = default;
 IOSChromePredictionModelStore::~IOSChromePredictionModelStore() = default;
 

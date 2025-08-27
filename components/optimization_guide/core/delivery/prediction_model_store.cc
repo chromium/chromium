@@ -524,8 +524,4 @@ base::FilePath PredictionModelStore::GetBaseStoreDirForTesting() const {
   return base_store_dir_;
 }
 
-void PredictionModelStore::ResetForTesting() {
-  // TODO:(crbug.com/440098411): Remove this once downstream stops using it.
-}
-
 }  // namespace optimization_guide
