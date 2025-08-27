@@ -117,7 +117,7 @@ export class NetworkStorage {
         'Network.requestWillBeSent',
         (params: Protocol.Network.RequestWillBeSentEvent) => {
           const request = this.getRequestById(params.requestId);
-
+          request?.updateCdpTarget(cdpTarget);
           if (request && request.isRedirecting()) {
             request.handleRedirect(params);
             this.disposeRequest(params.requestId);
@@ -137,56 +137,68 @@ export class NetworkStorage {
       [
         'Network.requestWillBeSentExtraInfo',
         (params: Protocol.Network.RequestWillBeSentExtraInfoEvent) => {
-          this.#getOrCreateNetworkRequest(
+          const request = this.#getOrCreateNetworkRequest(
             params.requestId,
             cdpTarget,
-          ).onRequestWillBeSentExtraInfoEvent(params);
+          );
+          request.updateCdpTarget(cdpTarget);
+          request.onRequestWillBeSentExtraInfoEvent(params);
         },
       ],
       [
         'Network.responseReceived',
         (params: Protocol.Network.ResponseReceivedEvent) => {
-          this.#getOrCreateNetworkRequest(
+          const request = this.#getOrCreateNetworkRequest(
             params.requestId,
             cdpTarget,
-          ).onResponseReceivedEvent(params);
+          );
+          request.updateCdpTarget(cdpTarget);
+          request.onResponseReceivedEvent(params);
         },
       ],
       [
         'Network.responseReceivedExtraInfo',
         (params: Protocol.Network.ResponseReceivedExtraInfoEvent) => {
-          this.#getOrCreateNetworkRequest(
+          const request = this.#getOrCreateNetworkRequest(
             params.requestId,
             cdpTarget,
-          ).onResponseReceivedExtraInfoEvent(params);
+          );
+          request.updateCdpTarget(cdpTarget);
+          request.onResponseReceivedExtraInfoEvent(params);
         },
       ],
       [
         'Network.requestServedFromCache',
         (params: Protocol.Network.RequestServedFromCacheEvent) => {
-          this.#getOrCreateNetworkRequest(
+          const request = this.#getOrCreateNetworkRequest(
             params.requestId,
             cdpTarget,
-          ).onServedFromCache();
+          );
+          request.updateCdpTarget(cdpTarget);
+          request.onServedFromCache();
         },
       ],
       [
         'Network.loadingFailed',
         (params: Protocol.Network.LoadingFailedEvent) => {
-          this.#getOrCreateNetworkRequest(
+          const request = this.#getOrCreateNetworkRequest(
             params.requestId,
             cdpTarget,
-          ).onLoadingFailedEvent(params);
+          );
+          request.updateCdpTarget(cdpTarget);
+          request.onLoadingFailedEvent(params);
         },
       ],
       [
         'Fetch.requestPaused',
         (event: Protocol.Fetch.RequestPausedEvent) => {
-          this.#getOrCreateNetworkRequest(
+          const request = this.#getOrCreateNetworkRequest(
             // CDP quirk if the Network domain is not present this is undefined
             event.networkId ?? event.requestId,
             cdpTarget,
-          ).onRequestPaused(event);
+          );
+          request.updateCdpTarget(cdpTarget);
+          request.onRequestPaused(event);
         },
       ],
       [
@@ -199,8 +211,20 @@ export class NetworkStorage {
               cdpTarget,
             );
           }
-
+          request.updateCdpTarget(cdpTarget);
           request.onAuthRequired(event);
+        },
+      ],
+      [
+        'Network.dataReceived',
+        (params: Protocol.Network.DataReceivedEvent) => {
+          this.getRequestById(params.requestId)?.updateCdpTarget(cdpTarget);
+        },
+      ],
+      [
+        'Network.loadingFinished',
+        (params: Protocol.Network.LoadingFinishedEvent) => {
+          this.getRequestById(params.requestId)?.updateCdpTarget(cdpTarget);
         },
       ],
     ] as const;

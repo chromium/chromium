@@ -174,6 +174,17 @@ export class NetworkRequest {
     return this.#cdpTarget;
   }
 
+  /** CdpTarget can be changed when frame is moving out of process. */
+  updateCdpTarget(cdpTarget: CdpTarget) {
+    if (cdpTarget !== this.#cdpTarget) {
+      this.#logger?.(
+        LogType.debugInfo,
+        `Request ${this.id} was moved from ${this.#cdpTarget.id} to ${cdpTarget.id}`,
+      );
+      this.#cdpTarget = cdpTarget;
+    }
+  }
+
   get cdpClient() {
     return this.#cdpTarget.cdpClient;
   }

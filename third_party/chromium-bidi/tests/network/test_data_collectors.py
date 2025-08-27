@@ -15,8 +15,9 @@
 
 import pytest
 import pytest_asyncio
-from test_helpers import (ANY_UUID, AnyExtending, execute_command,
-                          send_JSON_command, subscribe, to_base64)
+from test_helpers import (ANY_UUID, AnyExtending, execute_command, goto_url,
+                          send_JSON_command, subscribe, to_base64,
+                          wait_for_event)
 
 SOME_CONTENT = "some downloadable content"
 NETWORK_RESPONSE_STARTED_EVENT = "network.responseStarted"
@@ -36,7 +37,7 @@ def get_url(local_server_http):
 
 
 @pytest_asyncio.fixture
-async def init_request(websocket, local_server_http, read_messages, get_url):
+async def init_request(websocket, read_messages, get_url):
     async def init_request(context_id, content):
         await subscribe(websocket, NETWORK_RESPONSE_STARTED_EVENT, context_id)
         command_id = await send_JSON_command(
@@ -79,7 +80,7 @@ async def init_request(websocket, local_server_http, read_messages, get_url):
 
 @pytest.mark.asyncio
 async def test_network_collector_get_data_required_params(
-        websocket, context_id, init_request, read_messages):
+        websocket, context_id, init_request):
     resp = await execute_command(
         websocket, {
             "method": "network.addDataCollector",
@@ -127,8 +128,7 @@ async def test_network_collector_get_data_required_params(
 
 @pytest.mark.asyncio
 async def test_network_collector_get_data_collector(websocket, context_id,
-                                                    init_request,
-                                                    read_messages):
+                                                    init_request):
     resp = await execute_command(
         websocket, {
             "method": "network.addDataCollector",
@@ -178,7 +178,7 @@ async def test_network_collector_get_data_collector(websocket, context_id,
 
 @pytest.mark.asyncio
 async def test_network_collector_get_data_unknown_collector(
-        websocket, context_id, init_request, read_messages):
+        websocket, context_id, init_request):
     request_id = await init_request(context_id, SOME_CONTENT)
 
     with pytest.raises(
@@ -200,7 +200,7 @@ async def test_network_collector_get_data_unknown_collector(
 
 @pytest.mark.asyncio
 async def test_network_collector_get_data_disown_no_collector(
-        websocket, context_id, init_request, read_messages):
+        websocket, context_id, init_request):
     await execute_command(
         websocket, {
             "method": "network.addDataCollector",
@@ -231,7 +231,7 @@ async def test_network_collector_get_data_disown_no_collector(
 
 @pytest.mark.asyncio
 async def test_network_collector_get_data_disown_removes_data(
-        websocket, context_id, init_request, read_messages):
+        websocket, context_id, init_request):
     resp = await execute_command(
         websocket, {
             "method": "network.addDataCollector",
@@ -282,8 +282,7 @@ async def test_network_collector_get_data_disown_removes_data(
 
 @pytest.mark.asyncio
 async def test_network_collector_remove_data_collector(websocket, context_id,
-                                                       init_request,
-                                                       read_messages):
+                                                       init_request):
     resp = await execute_command(
         websocket, {
             "method": "network.addDataCollector",
@@ -355,7 +354,7 @@ async def test_network_collector_remove_data_collector(websocket, context_id,
 
 @pytest.mark.asyncio
 async def test_network_collector_disown_data(websocket, context_id,
-                                             init_request, read_messages):
+                                             init_request):
     resp = await execute_command(
         websocket, {
             "method": "network.addDataCollector",
@@ -415,8 +414,7 @@ async def test_network_collector_disown_data(websocket, context_id,
 @pytest.mark.asyncio
 async def test_network_collector_scoped_to_context(websocket, context_id,
                                                    another_context_id,
-                                                   init_request,
-                                                   read_messages):
+                                                   init_request):
     resp = await execute_command(
         websocket,
         {
@@ -446,3 +444,71 @@ async def test_network_collector_scoped_to_context(websocket, context_id,
                     "request": request_id
                 }
             })
+
+
+@pytest.mark.asyncio
+async def test_network_collector_get_data_oopif(websocket, context_id, html):
+    await goto_url(websocket, context_id, html())
+
+    await subscribe(websocket, ['network.responseCompleted'])
+
+    resp = await execute_command(
+        websocket, {
+            "method": "network.addDataCollector",
+            "params": {
+                "dataTypes": ["response"],
+                "maxEncodedDataSize": MAX_ENCODED_DATA_SIZE
+            }
+        })
+    assert resp == {"collector": ANY_UUID}
+
+    await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": f"""
+                    const iframe = document.createElement('iframe');
+                    iframe.src = '{html(same_origin=True)}';
+                    document.body.appendChild(iframe);
+                """,
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": True
+            }
+        })
+
+    event = await wait_for_event(websocket, 'network.responseCompleted')
+    iframe_id = event['params']['context']
+    same_process_request_id = event["params"]["request"]["request"]
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": html(same_origin=False),
+                "context": iframe_id,
+                "wait": "none"
+            }
+        })
+
+    event = await wait_for_event(websocket, 'network.responseCompleted')
+    another_process_request_id = event["params"]["request"]["request"]
+
+    await execute_command(
+        websocket, {
+            "method": "network.getData",
+            "params": {
+                "dataType": "response",
+                "request": same_process_request_id
+            }
+        })
+
+    await execute_command(
+        websocket, {
+            "method": "network.getData",
+            "params": {
+                "dataType": "response",
+                "request": another_process_request_id
+            }
+        })
