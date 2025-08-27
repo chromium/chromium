@@ -7,6 +7,74 @@ import("//build/config/android/rules.gni")
 import("//chrome/browser/buildflags.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
+source_set("auxiliary_search") {
+  sources = [
+    "auxiliary_search_provider.h",
+    "auxiliary_search_top_site_provider_bridge.h",
+    "fetch_and_rank_helper.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/ntp_tiles",
+    "//components/visited_url_ranking/public",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "auxiliary_search_provider.cc",
+    "auxiliary_search_top_site_provider_bridge.cc",
+    "fetch_and_rank_helper.cc",
+  ]
+  deps = [
+    ":auxiliary_search",
+    ":auxiliary_search_enums_srcjar",
+    ":jni_headers",
+    "//base",
+    "//chrome/browser/auxiliary_search/proto",
+    "//chrome/browser/profiles:profile",
+    "//components/ntp_tiles",
+    "//components/visited_url_ranking/public",
+    "//url",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "auxiliary_search_top_site_provider_bridge_unittest.cc" ]
+  deps = [
+    ":auxiliary_search",
+    "//components/ntp_tiles",
+    "//components/prefs:test_support",
+    "//components/visited_url_ranking/public:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "auxiliary_search_provider_browsertest.cc" ]
+  deps = [
+    ":auxiliary_search",
+    ":auxiliary_search_enums_srcjar",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/android/tab_model",
+    "//chrome/browser/ui/android/tab_model:enums_java",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui_android",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//net/android:net_java_test_support_enums_srcjar",
+    "//url",
+  ]
+}
+
 android_library("java") {
   srcjar_deps = [
     ":auxiliary_search_enums_srcjar",
