@@ -133,10 +133,10 @@ class WebSocketProxy : public AndroidDeviceManager::AndroidWebSocket::Delegate {
   }
 
   void OnSocketClosed() override {
-    constexpr char kMsg[] =
+    constexpr std::string_view kMsg =
         "{\"method\":\"Inspector.detached\",\"params\":"
         "{\"reason\":\"Connection lost.\"}}";
-    proxy_->DispatchOnClientHost(base::byte_span_with_nul_from_cstring(kMsg));
+    proxy_->DispatchOnClientHost(base::as_byte_span(kMsg));
     web_socket_.reset();
     socket_opened_ = false;
     proxy_->ConnectionClosed();  // Deletes |this|.
