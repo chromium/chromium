@@ -157,8 +157,8 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
         if (CommandLine.getInstance().hasSwitch(ChromeSwitches.NO_RESTORE_STATE)) return false;
 
         // A valid saved instance state is needed here.
-        if (!mSavedInstanceStateSupplier.hasValue()) return false;
         Bundle savedInstanceState = mSavedInstanceStateSupplier.get();
+        if (savedInstanceState == null) return false;
 
         if (!mCipherFactory.restoreFromBundle(savedInstanceState)) return false;
 
@@ -198,8 +198,9 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
     }
 
     private void maybeUnblockDraw() {
-        if (!mTabModelSelectorSupplier.hasValue()) return;
-        if (!mTabModelSelectorSupplier.get().isTabStateInitialized()) return;
+        var tabModelSelector = mTabModelSelectorSupplier.get();
+        if (tabModelSelector == null) return;
+        if (!tabModelSelector.isTabStateInitialized()) return;
         if (!mIsNativeInitializationFinished) return;
         if (mIsUnblockDrawRunnableInvoked) return;
 

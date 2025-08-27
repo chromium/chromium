@@ -420,7 +420,7 @@ public class ShareDelegateImpl implements ShareDelegate {
                         "Sharing.SharingHubAndroid.Opened", shareOrigin, ShareOrigin.COUNT);
                 ShareHelper.recordShareSource(ShareHelper.ShareSourceAndroid.CHROME_SHARE_SHEET);
                 boolean isIncognito =
-                        tabModelSelectorSupplier.hasValue()
+                        tabModelSelectorSupplier.get() != null
                                 && tabModelSelectorSupplier.get().isIncognitoSelected();
                 ShareSheetCoordinator coordinator =
                         new ShareSheetCoordinator(

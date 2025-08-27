@@ -936,7 +936,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         // determined the first time its visibility is examined in #initializeOptionalButton:
         // 1) if we already have 2 dev buttons
         // 2) Width constraint hides the optional button.
-        if (!mOptionalButtonVisibilitySupplier.hasValue()) {
+        var optionalButtonVisibility = mOptionalButtonVisibilitySupplier.get();
+        if (optionalButtonVisibility == null) {
             if (hasMultipleDevButtons()) {
                 mOptionalButtonVisibilitySupplier.set(false);
             } else {
@@ -1791,7 +1792,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                         CustomTabMtbHiddenReason.COUNT);
             }
             var buttonVariant = buttonData.getButtonSpec().getButtonVariant();
-            if (!mOptionalButtonVisibilitySupplier.hasValue()) {
+            var optionalButtonVisibility = mOptionalButtonVisibilitySupplier.get();
+            if (optionalButtonVisibility == null) {
                 mOptionalButtonVisibilitySupplier.set(showOptionalButton);
             }
             if (showOptionalButton) {

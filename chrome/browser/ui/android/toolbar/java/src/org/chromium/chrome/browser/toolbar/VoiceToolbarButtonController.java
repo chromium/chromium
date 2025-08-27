@@ -87,7 +87,8 @@ public class VoiceToolbarButtonController extends BaseButtonDataProvider {
         RecordUserAction.record("MobileTopToolbarVoiceButton");
         mVoiceSearchDelegate.startVoiceRecognition();
 
-        if (mTrackerSupplier.hasValue()) {
+        var tracker = mTrackerSupplier.get();
+        if (tracker != null) {
             mTrackerSupplier
                     .get()
                     .notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_VOICE_SEARCH_OPENED);

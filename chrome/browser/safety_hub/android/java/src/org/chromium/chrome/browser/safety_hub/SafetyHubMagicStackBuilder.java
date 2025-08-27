@@ -93,7 +93,8 @@ public class SafetyHubMagicStackBuilder implements ModuleProviderBuilder, Module
         // The Safety Hub is not fully supported on Automotive.
         if (DeviceInfo.isAutomotive()) return false;
 
-        if (!mProfileSupplier.hasValue()) return false;
+        Profile profile = mProfileSupplier.get();
+        if (profile == null) return false;
 
         return true;
     }

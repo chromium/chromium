@@ -161,7 +161,6 @@ public class MerchantTrustSignalsCoordinatorTest {
         doReturn(mMockProfile).when(mMockProfileSupplier).get();
         doReturn(false).when(mMockProfile).isOffTheRecord();
         doReturn(FAKE_HOST).when(mMockGurl).getSpec();
-        doReturn(true).when(mMockTabProvider).hasValue();
         doReturn(mMockTab).when(mMockTabProvider).get();
         doReturn(mMockWebContents).when(mMockTab).getWebContents();
         doAnswer((Answer<String>) invocation -> mSerializedTimestamps)

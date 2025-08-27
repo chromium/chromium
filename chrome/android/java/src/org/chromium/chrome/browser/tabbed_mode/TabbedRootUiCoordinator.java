@@ -643,8 +643,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (mHistoryNavigationCoordinator != null) {
             TouchEventObserver obs = mHistoryNavigationCoordinator.getTouchEventObserver();
-            if (mCompositorViewHolderSupplier.hasValue() && obs != null) {
-                mCompositorViewHolderSupplier.get().removeTouchEventObserver(obs);
+            var compositorViewHolder = mCompositorViewHolderSupplier.get();
+            if (compositorViewHolder != null && obs != null) {
+                compositorViewHolder.removeTouchEventObserver(obs);
             }
             mHistoryNavigationCoordinator.destroy();
             mHistoryNavigationCoordinator = null;

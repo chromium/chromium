@@ -153,7 +153,7 @@ public class CustomTabMinimizationManager
     @Override
     public void minimize() {
         if (mMinimized) return;
-        if (!mTabProvider.hasValue()) return;
+        if (!(mTabProvider.get() != null)) return;
         mFeatureEngagementDelegate.notifyUserEngaged();
         var builder = new PictureInPictureParams.Builder().setAspectRatio(ASPECT_RATIO);
         if (VERSION.SDK_INT >= VERSION_CODES.S) {
@@ -235,9 +235,10 @@ public class CustomTabMinimizationManager
         Tab tab = mTabProvider.get();
 
         if (tab == null) {
+            Bundle savedInstanceState = mSavedInstanceStateSupplier.get();
             boolean wasInitializedMinimized =
-                    mSavedInstanceStateSupplier.hasValue()
-                            && mSavedInstanceStateSupplier.get().getBoolean(KEY_IS_CCT_MINIMIZED);
+                    savedInstanceState != null
+                            && savedInstanceState.getBoolean(KEY_IS_CCT_MINIMIZED);
             String msg =
                     "Tab is null. Activity state is "
                             + mActivity.getLifecycle().getCurrentState()
@@ -272,9 +273,9 @@ public class CustomTabMinimizationManager
     }
 
     private void maybeInitializeAsMinimized() {
+        Bundle savedInstanceState = mSavedInstanceStateSupplier.get();
         mMinimized =
-                mSavedInstanceStateSupplier.hasValue()
-                        && mSavedInstanceStateSupplier.get().getBoolean(KEY_IS_CCT_MINIMIZED);
+                savedInstanceState != null && savedInstanceState.getBoolean(KEY_IS_CCT_MINIMIZED);
 
         if (mMinimized) {
             mLifecycleDispatcher.register(
@@ -297,7 +298,7 @@ public class CustomTabMinimizationManager
 
     private void showMinimizedCard(boolean fromSavedState) {
         if (fromSavedState) {
-            assert mSavedInstanceStateSupplier.hasValue();
+            assert mSavedInstanceStateSupplier.get() != null;
             mModel = toModel(mSavedInstanceStateSupplier.get());
         } else {
             Tab tab = mTabProvider.get();

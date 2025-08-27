@@ -41,26 +41,28 @@ public class ChromeKeyboardVisibilityDelegate extends ActivityKeyboardVisibility
     @Override
     public boolean hideKeyboard(View view) {
         boolean wasManualFillingViewShowing = false;
-        if (mManualFillingComponentSupplier.hasValue()) {
-            wasManualFillingViewShowing =
-                    mManualFillingComponentSupplier.get().isFillingViewShown(view);
-            mManualFillingComponentSupplier.get().hide();
+        var manualFillingComponent = mManualFillingComponentSupplier.get();
+        if (manualFillingComponent != null) {
+            wasManualFillingViewShowing = manualFillingComponent.isFillingViewShown(view);
+            manualFillingComponent.hide();
         }
         return hideSoftKeyboardOnly(view) || wasManualFillingViewShowing;
     }
 
     @Override
     public boolean isKeyboardShowing(View view) {
+        ManualFillingComponent manualFillingComponent = mManualFillingComponentSupplier.get();
         return isSoftKeyboardShowing(view)
-                || (mManualFillingComponentSupplier.hasValue()
-                        && mManualFillingComponentSupplier.get().isFillingViewShown(view));
+                || (manualFillingComponent != null
+                        && manualFillingComponent.isFillingViewShown(view));
     }
 
     @Override
     public int calculateTotalKeyboardHeight(View rootView) {
         int accessoryHeight = 0;
-        if (mManualFillingComponentSupplier.hasValue()) {
-            accessoryHeight = mManualFillingComponentSupplier.get().getKeyboardExtensionHeight();
+        var manualFillingComponent = mManualFillingComponentSupplier.get();
+        if (manualFillingComponent != null) {
+            accessoryHeight = manualFillingComponent.getKeyboardExtensionHeight();
         }
         return calculateSoftKeyboardHeight(rootView) + accessoryHeight;
     }

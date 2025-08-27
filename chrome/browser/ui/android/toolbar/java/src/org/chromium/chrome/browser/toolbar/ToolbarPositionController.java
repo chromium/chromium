@@ -330,8 +330,9 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mIsFormFieldFocusedSupplier.addObserver(mFormFieldViewOffsetCallback);
         mControlContainerTranslationSupplier.addObserver(mControlContainerTranslationCallback);
 
-        if (mTopInsetCoordinatorSupplier.hasValue()) {
-            onTopInsetCoordinatorAvailable(mTopInsetCoordinatorSupplier.get());
+        var topInsetCoordinator = mTopInsetCoordinatorSupplier.get();
+        if (topInsetCoordinator != null) {
+            onTopInsetCoordinatorAvailable(topInsetCoordinator);
         } else {
             mTopInsetCoordinatorAvailableCallback = this::onTopInsetCoordinatorAvailable;
             mTopInsetCoordinatorSupplier.addObserver(mTopInsetCoordinatorAvailableCallback);
@@ -357,8 +358,9 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mControlContainerTranslationSupplier.removeObserver(mControlContainerTranslationCallback);
         mControlContainerHeightSupplier.removeObserver(mControlContainerHeightCallback);
         if (mTopInsetCoordinatorObserver != null) {
-            if (mTopInsetCoordinatorSupplier.hasValue()) {
-                mTopInsetCoordinatorSupplier.get().removeObserver(mTopInsetCoordinatorObserver);
+            var topInsetCoordinator = mTopInsetCoordinatorSupplier.get();
+            if (topInsetCoordinator != null) {
+                topInsetCoordinator.removeObserver(mTopInsetCoordinatorObserver);
             }
             mTopInsetCoordinatorObserver = null;
         }

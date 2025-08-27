@@ -21,7 +21,8 @@ public class WebContentsPresentCondition extends ConditionWithResult<WebContents
 
     @Override
     protected ConditionStatusWithResult<WebContents> resolveWithSuppliers() {
-        return whether(hasValue()).withResult(get());
+        WebContents value = get();
+        return whether(value != null).withResult(value);
     }
 
     @Override
@@ -33,9 +34,6 @@ public class WebContentsPresentCondition extends ConditionWithResult<WebContents
     public WebContents get() {
         // Do not return a WebContents that has been destroyed, so always get it from the
         // Tab instead of letting ConditionWithResult return its |mResult|.
-        if (!mLoadedTabSupplier.hasValue()) {
-            return null;
-        }
         Tab loadedTab = mLoadedTabSupplier.get();
         if (loadedTab == null) {
             return null;

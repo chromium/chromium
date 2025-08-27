@@ -55,7 +55,7 @@ public class SingleTabModuleBuilder implements ModuleProviderBuilder, ModuleConf
             ModuleDelegate moduleDelegate, Callback<ModuleProvider> onModuleBuiltCallback) {
         ModuleDelegateHost moduleDelegateHost =
                 ((HomeModulesCoordinator) moduleDelegate).getModuleDelegateHost();
-        assert mTabContentManagerSupplier.hasValue();
+        assert mTabContentManagerSupplier.get() != null;
         Callback<Integer> singleTabCardClickedCallback =
                 (tabId) -> {
                     moduleDelegate.onTabClicked(tabId, ModuleType.SINGLE_TAB);

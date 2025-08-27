@@ -26,7 +26,8 @@ public class SupplierUtils {
             int waitingSupplierCount = 0;
             Callback<?> supplierCallback = (unused) -> onSupplierAvailable();
             for (Supplier<?> supplier : suppliers) {
-                if (supplier.hasValue()) continue;
+                var value = supplier.get();
+                if (value != null) continue;
 
                 waitingSupplierCount++;
                 if (supplier instanceof ObservableSupplier) {

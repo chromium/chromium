@@ -640,12 +640,12 @@ class ManualFillingMediator
             // to trigger events that rely on the relayout (like toggling the overview button):
             Supplier<CompositorViewHolder> compositorViewHolderSupplier =
                     mActivity.getCompositorViewHolderSupplier();
-            if (compositorViewHolderSupplier.hasValue()) {
+            var compositorViewHolder = compositorViewHolderSupplier.get();
+            if (compositorViewHolder != null) {
                 // The CompositorViewHolder is null when the activity is in the process of being
                 // destroyed which also renders relayouting pointless.
                 ViewUtils.requestLayout(
-                        compositorViewHolderSupplier.get(),
-                        "ManualFillingMediator.enforceStateProperties");
+                        compositorViewHolder, "ManualFillingMediator.enforceStateProperties");
             }
             trySetA11yFocusOnWebContents();
         }

@@ -199,15 +199,15 @@ public class BottomControlsCoordinator implements BackPressHandler {
      * @return Whether or not the back press event is consumed here.
      */
     public boolean onBackPressed() {
-        return mContentDelegateSupplier.hasValue()
-                ? mContentDelegateSupplier.get().onBackPressed()
-                : false;
+        BottomControlsContentDelegate contentDelegate = mContentDelegateSupplier.get();
+        return contentDelegate != null ? contentDelegate.onBackPressed() : false;
     }
 
     @Override
     public @BackPressResult int handleBackPress() {
-        return mContentDelegateSupplier.hasValue()
-                ? mContentDelegateSupplier.get().handleBackPress()
+        BottomControlsContentDelegate contentDelegate = mContentDelegateSupplier.get();
+        return contentDelegate != null
+                ? contentDelegate.handleBackPress()
                 : BackPressResult.FAILURE;
     }
 
@@ -225,7 +225,8 @@ public class BottomControlsCoordinator implements BackPressHandler {
     public void destroy() {
         mIsDestroyed = true;
 
-        if (mContentDelegateSupplier.hasValue()) mContentDelegateSupplier.get().destroy();
+        BottomControlsContentDelegate contentDelegate = mContentDelegateSupplier.get();
+        if (contentDelegate != null) contentDelegate.destroy();
         mMediator.destroy();
     }
 

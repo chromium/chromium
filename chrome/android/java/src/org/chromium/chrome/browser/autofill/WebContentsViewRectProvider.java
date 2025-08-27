@@ -92,7 +92,7 @@ class WebContentsViewRectProvider extends RectProvider {
         if (mManualFillingComponentSupplier != null) {
             mManualFillingComponentSupplier.addObserver(mOnManualFillingComponentChanged);
             observeBottomInsetSupplier(
-                    mManualFillingComponentSupplier.hasValue()
+                    mManualFillingComponentSupplier.get() != null
                             ? mManualFillingComponentSupplier.get().getBottomInsetSupplier()
                             : null);
         }

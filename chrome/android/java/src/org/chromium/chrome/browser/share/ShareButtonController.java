@@ -94,7 +94,8 @@ public class ShareButtonController extends BaseButtonDataProvider {
         }
         shareDelegate.share(tab, /* shareDirectly= */ false, ShareOrigin.TOP_TOOLBAR);
 
-        if (mTrackerSupplier.hasValue()) {
+        var tracker = mTrackerSupplier.get();
+        if (tracker != null) {
             mTrackerSupplier
                     .get()
                     .notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SHARE_OPENED);

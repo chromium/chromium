@@ -57,20 +57,18 @@ public class GroupSuggestionsButtonDataProvider extends BaseButtonDataProvider {
 
     @Override
     public void onClick(View view) {
-        if (!mActiveTabSupplier.hasValue()
-                || !mGroupSuggestionsButtonControllerSupplier.hasValue()
-                || !mTabModelSelectorSupplier.hasValue()) {
-            return;
-        }
+        Tab activeTab = mActiveTabSupplier.get();
+        if (activeTab == null) return;
+        GroupSuggestionsButtonController groupController =
+                mGroupSuggestionsButtonControllerSupplier.get();
+        if (groupController == null) return;
+        TabModelSelector selector = mTabModelSelectorSupplier.get();
+        if (selector == null) return;
 
-        mGroupSuggestionsButtonControllerSupplier
-                .get()
-                .onButtonClicked(
-                        mActiveTabSupplier.get(),
-                        mTabModelSelectorSupplier
-                                .get()
-                                .getTabGroupModelFilterProvider()
-                                .getTabGroupModelFilter(/* isIncognito= */ false));
+        groupController.onButtonClicked(
+                activeTab,
+                selector.getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(/* isIncognito= */ false));
         notifyObservers(false);
     }
 }

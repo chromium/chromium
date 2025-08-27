@@ -39,6 +39,6 @@ public class OriginalProfileSupplier extends OneshotSupplierImpl<Profile>
 
     @Override
     public void destroy() {
-        if (!hasValue()) ProfileManager.removeObserver(this);
+        if (get() == null) ProfileManager.removeObserver(this);
     }
 }

@@ -103,9 +103,8 @@ public class RestoreTabsDialogMediator extends RestoreTabsMediator {
      * @return True if the request was successful, false otherwise.
      */
     public boolean setVisible(boolean isVisible, View content) {
-        if (!mModalDialogManagerSupplier.hasValue()) return false;
-
         ModalDialogManager dialogManager = mModalDialogManagerSupplier.get();
+        if (dialogManager == null) return false;
 
         if (isVisible) {
             mHostDialogModel.set(ModalDialogProperties.CUSTOM_VIEW, content);

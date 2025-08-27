@@ -59,8 +59,9 @@ public interface OneshotSupplier<T> extends Supplier<@Nullable T> {
      * @param callback The callback to be called (either async or sync).
      */
     default void runSyncOrOnAvailable(Callback<T> callback) {
-        if (hasValue()) {
-            callback.onResult(get());
+        T value = get();
+        if (value != null) {
+            callback.onResult(value);
         } else {
             onAvailable(callback);
         }

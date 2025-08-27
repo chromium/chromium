@@ -10,7 +10,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
-import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 
 import java.util.LinkedList;
 
@@ -98,7 +97,7 @@ public class PaneBackStackHandler implements BackPressHandler {
 
     private void onPaneFocused(Pane pane) {
         // `pane` is the newly focused pane. At this point mCurrentPane is the previous pane.
-        if (mCurrentPane != null && mCurrentPane.getReferenceButtonDataSupplier().hasValue()) {
+        if (mCurrentPane != null && mCurrentPane.getReferenceButtonDataSupplier().get() != null) {
             mBackStack.addFirst(mCurrentPane);
             mHandleBackPressSupplier.set(true);
         }

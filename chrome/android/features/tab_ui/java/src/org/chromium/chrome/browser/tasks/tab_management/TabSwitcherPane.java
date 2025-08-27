@@ -288,8 +288,9 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
         if (oldValue != null) {
             OneshotSupplier<ObservableSupplier<Boolean>> wrappedSupplier =
                     oldValue.getIsScrollingSupplier();
-            if (wrappedSupplier.hasValue()) {
-                wrappedSupplier.get().removeObserver(mScrollingObserver);
+            var wrapped = wrappedSupplier.get();
+            if (wrapped != null) {
+                wrapped.removeObserver(mScrollingObserver);
             }
         }
         if (newValue != null) {

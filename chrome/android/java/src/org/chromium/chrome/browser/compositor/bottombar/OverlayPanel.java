@@ -448,13 +448,15 @@ public class OverlayPanel extends OverlayPanelAnimation
     }
 
     /**
-     * Set the visibility of the base page text selection controls. This will also attempt to
-     * remove focus from the base page to clear any open controls.
+     * Set the visibility of the base page text selection controls. This will also attempt to remove
+     * focus from the base page to clear any open controls.
+     *
      * @param visible If the text controls are visible.
      */
     protected void setBasePageTextControlsVisibility(boolean visible) {
         if (mActivity == null) return;
-        if (!mCurrentTabSupplier.hasValue()) return;
+        var currentTab = mCurrentTabSupplier.get();
+        if (currentTab == null) return;
 
         WebContents baseWebContents = assumeNonNull(mCurrentTabSupplier.get()).getWebContents();
         if (baseWebContents == null) return;

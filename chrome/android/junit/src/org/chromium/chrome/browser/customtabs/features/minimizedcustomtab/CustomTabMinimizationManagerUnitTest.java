@@ -112,7 +112,6 @@ public class CustomTabMinimizationManagerUnitTest {
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.SEARCH_URL);
         when(mTab.getTitle()).thenReturn(TITLE);
-        when(mTabProvider.hasValue()).thenReturn(true);
         when(mTabProvider.get()).thenReturn(mTab);
         when(mActivity.enterPictureInPictureMode(any(PictureInPictureParams.class)))
                 .thenReturn(true);
@@ -306,7 +305,6 @@ public class CustomTabMinimizationManagerUnitTest {
         bundle.putString(MinimizedCardProperties.TITLE.toString(), TITLE);
         bundle.putString(MinimizedCardProperties.URL.toString(), HOST);
 
-        when(mSavedInstanceStateSupplier.hasValue()).thenReturn(true);
         when(mSavedInstanceStateSupplier.get()).thenReturn(bundle);
         var manager =
                 new CustomTabMinimizationManager(

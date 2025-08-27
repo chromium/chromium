@@ -180,8 +180,9 @@ public class ArchivedTabsMessageService extends MessageService<@MessageType Inte
         mTabGroupUiActionHandlerSupplier = tabGroupUiActionHandlerSupplier;
         mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
         mLayoutStateProviderSupplier = layoutStateProviderSupplier;
-        if (mLayoutStateProviderSupplier.hasValue()) {
-            mLayoutStateProviderSupplier.get().addObserver(mLayoutStateObserver);
+        var layoutStateProvider = mLayoutStateProviderSupplier.get();
+        if (layoutStateProvider != null) {
+            layoutStateProvider.addObserver(mLayoutStateObserver);
         }
 
         mTabListCoordinatorSupplier.addObserver(
@@ -248,9 +249,8 @@ public class ArchivedTabsMessageService extends MessageService<@MessageType Inte
             mArchivedTabsDialogCoordinator.destroy();
         }
 
-        if (mTabListCoordinatorSupplier.hasValue()) {
-            TabListCoordinator tabListCoordinator = mTabListCoordinatorSupplier.get();
-            assumeNonNull(tabListCoordinator);
+        TabListCoordinator tabListCoordinator = mTabListCoordinatorSupplier.get();
+        if (tabListCoordinator != null) {
             tabListCoordinator.removeTabListItemSizeChangedObserver(
                     mTabListItemSizeChangedObserver);
         }
@@ -259,8 +259,9 @@ public class ArchivedTabsMessageService extends MessageService<@MessageType Inte
             mTabCountSupplier.removeObserver(mTabCountObserver);
         }
 
-        if (mLayoutStateProviderSupplier.hasValue()) {
-            mLayoutStateProviderSupplier.get().removeObserver(mLayoutStateObserver);
+        var layoutStateProvider = mLayoutStateProviderSupplier.get();
+        if (layoutStateProvider != null) {
+            layoutStateProvider.removeObserver(mLayoutStateObserver);
         }
     }
 
@@ -277,9 +278,8 @@ public class ArchivedTabsMessageService extends MessageService<@MessageType Inte
             PostTask.postTask(
                     TaskTraits.UI_DEFAULT,
                     () -> {
-                        if (!mTabListCoordinatorSupplier.hasValue()) return;
                         TabListCoordinator tabListCoordinator = mTabListCoordinatorSupplier.get();
-                        assumeNonNull(tabListCoordinator);
+                        if (tabListCoordinator == null) return;
                         if (tabListCoordinator.specialItemExists(
                                 MessageType.ARCHIVED_TABS_MESSAGE)) {
                             tabListCoordinator.setRecyclerViewPosition(

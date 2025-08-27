@@ -88,7 +88,6 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
         TrackerFactory.setTrackerForTests(mTracker);
         IncognitoUtils.setEnabledForTesting(true);
 
-        when(mTabModelSelectorSupplier.hasValue()).thenReturn(true);
         when(mTabModelSelectorSupplier.get()).thenReturn(mTabModelSelector);
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
         when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);

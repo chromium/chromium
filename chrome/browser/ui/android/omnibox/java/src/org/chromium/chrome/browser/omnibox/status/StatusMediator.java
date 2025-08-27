@@ -204,8 +204,9 @@ public class StatusMediator
             mMerchantTrustSignalsCoordinatorSupplier.get().setOmniboxIconController(null);
         }
 
-        if (mTemplateUrlServiceSupplier.hasValue()) {
-            mTemplateUrlServiceSupplier.get().removeObserver(this);
+        var templateUrlService = mTemplateUrlServiceSupplier.get();
+        if (templateUrlService != null) {
+            templateUrlService.removeObserver(this);
         }
         if (mCookieControlsBridge != null) {
             mCookieControlsBridge.destroy();
@@ -570,7 +571,7 @@ public class StatusMediator
             return true;
         }
 
-        return (isNtpVisible() || isIncognitoNtpVisible()) && mProfileSupplier.hasValue();
+        return (isNtpVisible() || isIncognitoNtpVisible()) && mProfileSupplier.get() != null;
     }
 
     /** Returns status icon resource for the user-selected default search engine. */
@@ -854,7 +855,7 @@ public class StatusMediator
     public void onUrlChanged(boolean isTabChanging) {
         var currentTab = mLocationBarDataProvider.getTab();
         Profile profile = mProfileSupplier.get();
-        if (mProfileSupplier.hasValue() && currentTab != null) {
+        if (profile != null && currentTab != null) {
             WebContents webContents = currentTab.getWebContents();
 
             if (webContents != null && profile != null) {

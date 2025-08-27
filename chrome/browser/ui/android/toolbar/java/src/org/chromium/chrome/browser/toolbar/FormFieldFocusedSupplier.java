@@ -56,7 +56,8 @@ public class FormFieldFocusedSupplier extends ObservableSupplierImpl<Boolean>
     }
 
     public boolean getAsBoolean() {
-        return hasValue() ? get() : false;
+        Boolean value = get();
+        return value != null ? value : false;
     }
 
     /**

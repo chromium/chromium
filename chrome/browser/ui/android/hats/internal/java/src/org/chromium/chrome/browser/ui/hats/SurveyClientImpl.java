@@ -317,8 +317,8 @@ class SurveyClientImpl implements SurveyClient {
         if (forceShowSurvey()) return true;
 
         // Do not include any logging to avoid reveal the fact user has crash upload disabled.
-        boolean isCrashUploadAllowed =
-                mCrashUploadPermissionSupplier.hasValue() && mCrashUploadPermissionSupplier.get();
+        Boolean crashUploadPermission = mCrashUploadPermissionSupplier.get();
+        boolean isCrashUploadAllowed = crashUploadPermission != null && crashUploadPermission;
         boolean isHatsEnabledByPolicy =
                 UserPrefs.get(mProfile).getBoolean(Pref.FEEDBACK_SURVEYS_ENABLED);
         return isCrashUploadAllowed && isHatsEnabledByPolicy;

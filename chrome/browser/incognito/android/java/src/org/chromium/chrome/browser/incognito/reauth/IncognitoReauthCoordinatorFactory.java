@@ -195,7 +195,7 @@ public class IncognitoReauthCoordinatorFactory {
      *     coordinator.
      */
     boolean areDependenciesReadyFor(boolean showFullScreen) {
-        return showFullScreen || mTabSwitcherCustomViewManagerSupplier.hasValue();
+        return showFullScreen || mTabSwitcherCustomViewManagerSupplier.get() != null;
     }
 
     /**

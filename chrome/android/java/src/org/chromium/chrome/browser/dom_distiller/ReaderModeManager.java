@@ -986,7 +986,7 @@ public class ReaderModeManager extends EmptyTabObserver
                         }
                     });
         }
-        if (showCpaButton.hasValue() && showCpaButton.get()) {
+        if (showCpaButton.get() != null && showCpaButton.get()) {
             markUrlAsShown();
         }
     }

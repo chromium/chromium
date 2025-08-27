@@ -232,7 +232,8 @@ public class ChromeTabModalPresenter extends TabModalPresenter
 
     @Override
     protected void setBrowserControlsAccess(boolean restricted) {
-        if (!mToolbarManagerSupplier.hasValue()) return;
+        var toolbarManager = mToolbarManagerSupplier.get();
+        if (toolbarManager == null) return;
 
         View menuButton = mToolbarManagerSupplier.get().getMenuButtonView();
 

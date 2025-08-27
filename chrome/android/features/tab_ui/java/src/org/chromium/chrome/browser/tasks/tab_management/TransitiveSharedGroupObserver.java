@@ -116,8 +116,9 @@ public class TransitiveSharedGroupObserver implements Destroyable {
     }
 
     private void swapSharedGroupObserver(@Nullable SharedGroupObserver newObserver) {
-        if (mCurrentSharedGroupObserverSupplier.hasValue()) {
-            assumeNonNull(mCurrentSharedGroupObserverSupplier.get()).destroy();
+        var currentSharedGroupObserver = mCurrentSharedGroupObserverSupplier.get();
+        if (currentSharedGroupObserver != null) {
+            assumeNonNull(currentSharedGroupObserver).destroy();
         }
 
         mCurrentSharedGroupObserverSupplier.set(newObserver);

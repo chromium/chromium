@@ -390,10 +390,13 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
             return LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT;
         }
 
-        if (mBrowserCutoutModeSupplier != null && mBrowserCutoutModeSupplier.hasValue()) {
-            int browserCutoutMode = mBrowserCutoutModeSupplier.get();
-            if (browserCutoutMode != LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT) {
-                return browserCutoutMode;
+        if (mBrowserCutoutModeSupplier != null) {
+            Integer mode = mBrowserCutoutModeSupplier.get();
+            if (mode != null) {
+                int browserCutoutMode = mode;
+                if (browserCutoutMode != LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT) {
+                    return browserCutoutMode;
+                }
             }
         }
 

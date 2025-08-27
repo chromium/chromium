@@ -134,7 +134,8 @@ public class OptionalNewTabButtonController extends BaseButtonDataProvider
         RecordUserAction.record("MobileTopToolbarOptionalButtonNewTab");
         tabCreatorManager.getTabCreator(isIncognito).launchNtp();
 
-        if (mTrackerSupplier.hasValue()) {
+        var tracker = mTrackerSupplier.get();
+        if (tracker != null) {
             mTrackerSupplier
                     .get()
                     .notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_NEW_TAB_OPENED);

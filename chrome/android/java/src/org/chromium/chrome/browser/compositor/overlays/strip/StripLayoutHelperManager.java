@@ -598,8 +598,9 @@ public class StripLayoutHelperManager
                 });
 
         if (tabModelStartupInfoSupplier != null) {
-            if (tabModelStartupInfoSupplier.hasValue()) {
-                setTabModelStartupInfo(tabModelStartupInfoSupplier.get());
+            var tabModelStartupInfo = tabModelStartupInfoSupplier.get();
+            if (tabModelStartupInfo != null) {
+                setTabModelStartupInfo(tabModelStartupInfo);
             } else {
                 tabModelStartupInfoSupplier.addObserver(this::setTabModelStartupInfo);
             }
@@ -1407,8 +1408,9 @@ public class StripLayoutHelperManager
 
                     @Override
                     public void tabClosureCommitted(Tab tab) {
-                        if (mLayerTitleCacheSupplier.hasValue()) {
-                            mLayerTitleCacheSupplier.get().removeTabTitle(tab.getId());
+                        LayerTitleCache titleCache = mLayerTitleCacheSupplier.get();
+                        if (titleCache != null) {
+                            titleCache.removeTabTitle(tab.getId());
                         }
                     }
 

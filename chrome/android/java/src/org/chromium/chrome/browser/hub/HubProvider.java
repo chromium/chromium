@@ -76,10 +76,10 @@ public class HubProvider {
         mHubManagerSupplier =
                 LazyOneshotSupplier.fromSupplier(
                         () -> {
-                            assert tabModelSelectorSupplier.hasValue();
+                            assert tabModelSelectorSupplier.get() != null;
                             ObservableSupplier<@Nullable Tab> tabSupplier =
                                     tabModelSelectorSupplier.get().getCurrentTabSupplier();
-                            assert menuButtonCoordinatorSupplier.hasValue();
+                            assert menuButtonCoordinatorSupplier.get() != null;
 
                             SnackbarManager snackbarManager = snackbarManagerSupplier.get();
                             assert snackbarManager != null;

@@ -663,7 +663,8 @@ class AutocompleteMediator
     @VisibleForTesting
     public boolean maybeSwitchToTab(AutocompleteMatch match) {
         Tab tab = mAutocomplete.map(a -> a.getMatchingTabForSuggestion(match)).orElse(null);
-        if (tab == null || !mTabWindowManagerSupplier.hasValue()) return false;
+        TabWindowManager tabWindowManager = mTabWindowManagerSupplier.get();
+        if (tab == null || tabWindowManager == null) return false;
 
         // When invoked directly from a browser, we want to trigger switch to tab animation.
         // If invoked from other activities, ex. searchActivity, we do not need to trigger the
@@ -676,7 +677,7 @@ class AutocompleteMediator
             return true;
         }
 
-        TabModel tabModel = mTabWindowManagerSupplier.get().getTabModelForTab(tab);
+        TabModel tabModel = tabWindowManager.getTabModelForTab(tab);
         if (tabModel == null) return false;
 
         int tabIndex = TabModelUtils.getTabIndexById(tabModel, tab.getId());

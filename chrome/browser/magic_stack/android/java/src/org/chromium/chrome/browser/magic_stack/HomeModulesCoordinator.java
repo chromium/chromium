@@ -233,12 +233,13 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
             return;
         }
 
-        if (mProfileSupplier.hasValue()) {
+        var profile = mProfileSupplier.get();
+        if (profile != null) {
             mMediator.showModules(callback, this);
         } else {
             long waitForProfileStartTimeMs = SystemClock.elapsedRealtime();
             mOnProfileAvailableObserver =
-                    (profile) -> {
+                    (p) -> {
                         onProfileAvailable(callback, waitForProfileStartTimeMs);
                     };
 

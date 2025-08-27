@@ -230,7 +230,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         }
 
         if (ChromeFeatureList.sTabStorageSqlitePrototype.isEnabled()) {
-            assert mProfileProviderSupplier.hasValue();
+            assert mProfileProviderSupplier.get() != null;
             ProfileProvider profileProvider = mProfileProviderSupplier.get();
             Profile profile = profileProvider.getOriginalProfile();
             assert profile != null;
@@ -261,7 +261,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         if (mActivityLifecycleDispatcher.isActivityFinishingOrDestroyed()) return;
         ThreadUtils.assertOnUiThread();
         // The profile will be available because native is initialized.
-        assert mProfileProviderSupplier.hasValue();
+        assert mProfileProviderSupplier.get() != null;
         assert tabContentManager != null;
 
         Profile profile = mProfileProviderSupplier.get().getOriginalProfile();

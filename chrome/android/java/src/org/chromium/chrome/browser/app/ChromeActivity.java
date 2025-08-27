@@ -1352,7 +1352,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
      * startup path here. This method will be called automatically.
      */
     private void onDeferredStartup() {
-        assert getProfileProviderSupplier().hasValue()
+        assert getProfileProviderSupplier().get() != null
                 : "Profile should be loaded and available by the time deferred startup is started.";
         getProfileProviderSupplier()
                 .runSyncOrOnAvailable(
@@ -1448,8 +1448,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                                     .getAsyncTabParams()
                                     .size());
 
-            if (mCompositorViewHolderSupplier.hasValue()) {
-                mCompositorViewHolderSupplier.get().prepareForTabReparenting();
+            CompositorViewHolder compositorViewHolder = mCompositorViewHolderSupplier.get();
+            if (compositorViewHolder != null) {
+                compositorViewHolder.prepareForTabReparenting();
             }
         }
         super.onStart();
@@ -1467,7 +1468,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                                 }
                             });
         }
-        if (mCompositorViewHolderSupplier.hasValue()) mCompositorViewHolderSupplier.get().onStart();
+        CompositorViewHolder compositorViewHolder = mCompositorViewHolderSupplier.get();
+        if (compositorViewHolder != null) compositorViewHolder.onStart();
 
         mStarted = true;
     }
@@ -1518,7 +1520,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
         // We want to refresh partner browser provider every onStart().
         mPartnerBrowserRefreshNeeded = true;
-        if (mCompositorViewHolderSupplier.hasValue()) mCompositorViewHolderSupplier.get().onStop();
+        CompositorViewHolder compositorViewHolder = mCompositorViewHolderSupplier.get();
+        if (compositorViewHolder != null) compositorViewHolder.onStop();
 
         // If postInflationStartup hasn't been called yet (because inflation was done asynchronously
         // and has not yet completed), it no longer needs to do the belated onStart code since we
@@ -1621,8 +1624,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             LayoutManagerAppUtils.detach(mLayoutManagerSupplier.get());
         }
 
-        if (mCompositorViewHolderSupplier.hasValue()) {
-            CompositorViewHolder compositorViewHolder = mCompositorViewHolderSupplier.get();
+        CompositorViewHolder compositorViewHolder = mCompositorViewHolderSupplier.get();
+        if (compositorViewHolder != null) {
             if (compositorViewHolder.getLayoutManager() != null) {
                 compositorViewHolder.getLayoutManager().removeSceneChangeObserver(this);
             }
@@ -1652,13 +1655,15 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             mTabContentManagerSupplier = null;
         }
 
-        if (mManualFillingComponentSupplier.hasValue()) {
-            mManualFillingComponentSupplier.get().destroy();
+        var manualFillingComponent = mManualFillingComponentSupplier.get();
+        if (manualFillingComponent != null) {
+            manualFillingComponent.destroy();
         }
         mManualFillingComponentSupplier.destroy();
 
-        if (mBrowserControlsManagerSupplier.hasValue()) {
-            mBrowserControlsManagerSupplier.get().destroy();
+        var browserControlsManager = mBrowserControlsManagerSupplier.get();
+        if (browserControlsManager != null) {
+            browserControlsManager.destroy();
         }
         mBrowserControlsManagerSupplier.destroy();
 
@@ -1921,8 +1926,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     @Override
     public boolean onOptionsItemSelected(
             int itemId, @Nullable Bundle menuItemData, @Nullable MotionEventInfo triggeringMotion) {
-        if (mManualFillingComponentSupplier.hasValue()) {
-            mManualFillingComponentSupplier.get().dismiss();
+        var manualFillingComponent = mManualFillingComponentSupplier.get();
+        if (manualFillingComponent != null) {
+            manualFillingComponent.dismiss();
         }
         return onMenuOrKeyboardAction(itemId, /* fromMenu= */ true, triggeringMotion);
     }
@@ -2107,19 +2113,21 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     /**
      * Gets the browser controls manager, creates it unless already created.
+     *
      * @deprecated Instead, inject this directly to your constructor. If that's not possible, then
-     *         use {@link BrowserControlsManagerSupplier}.
+     *     use {@link BrowserControlsManagerSupplier}.
      */
     @NonNull
     @Deprecated
     public BrowserControlsManager getBrowserControlsManager() {
-        if (!mBrowserControlsManagerSupplier.hasValue() && isActivityFinishingOrDestroyed()) {
+        var browserControlsManager = mBrowserControlsManagerSupplier.get();
+        if (browserControlsManager == null && isActivityFinishingOrDestroyed()) {
             // BrowserControlsManagerSupplier should always have a value unless it's in the process
             // of destruction (and in that case, nothing should be called this method).
             throw new IllegalStateException();
         }
-        assert mBrowserControlsManagerSupplier.hasValue();
-        return mBrowserControlsManagerSupplier.get();
+        assert browserControlsManager != null;
+        return browserControlsManager;
     }
 
     /**
@@ -2950,9 +2958,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     private boolean doPrintShare(Activity activity, Supplier<Tab> currentTabSupplier) {
         PrintingController printingController = PrintingControllerImpl.getInstance();
 
-        if (!currentTabSupplier.hasValue()) return false;
-        if (printingController == null || printingController.isBusy()) return false;
         Tab currentTab = currentTabSupplier.get();
+        if (currentTab == null) return false;
+        if (printingController == null || printingController.isBusy()) return false;
         if (!UserPrefs.get(currentTab.getProfile()).getBoolean(Pref.PRINTING_ENABLED)) {
             return false;
         }
@@ -3070,7 +3078,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     @Override
     public boolean shouldAllocateChildConnection() {
-        if (!getProfileProviderSupplier().hasValue()) return true;
+        if (!(getProfileProviderSupplier().get() != null)) return true;
 
         // If a spare Tab exists, a child connection has already been allocated that will be
         // used by the next created tab.

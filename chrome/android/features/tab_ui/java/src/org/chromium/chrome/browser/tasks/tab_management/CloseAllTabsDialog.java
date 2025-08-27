@@ -37,7 +37,7 @@ public class CloseAllTabsDialog {
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             TabModelSelector tabModelSelector,
             Runnable onCloseAll) {
-        assert modalDialogManagerSupplier.hasValue();
+        assert modalDialogManagerSupplier.get() != null;
         final ModalDialogManager manager = modalDialogManagerSupplier.get();
         final boolean isIncognito = tabModelSelector.getCurrentModel().isIncognito();
 

@@ -131,8 +131,9 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
                         hubLayoutDependencyHolder,
                         mTabModelSelectorSupplier,
                         mDesktopWindowStateManager);
-        if (mTabContentManagerSupplier.hasValue()) {
-            mHubLayout.setTabContentManager(mTabContentManagerSupplier.get());
+        TabContentManager content = mTabContentManagerSupplier.get();
+        if (content != null) {
+            mHubLayout.setTabContentManager(content);
         }
         if (getTabModelSelector() != null) {
             mHubLayout.setTabModelSelector(getTabModelSelector());
@@ -224,7 +225,8 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
      * switcher is shown on tablets and phones.
      */
     private void initTabSwitcher() {
-        if (mTabSwitcherSupplier.hasValue()) {
+        var tabSwitcher = mTabSwitcherSupplier.get();
+        if (tabSwitcher != null) {
             return;
         }
 

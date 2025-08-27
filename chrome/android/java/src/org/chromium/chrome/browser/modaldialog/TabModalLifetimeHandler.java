@@ -189,10 +189,10 @@ public class TabModalLifetimeHandler
 
     @Override
     public void onFinishNativeInitialization() {
-        assert mTabModelSelectorSupplier.hasValue();
+        assert mTabModelSelectorSupplier.get() != null;
         TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
-        assert mBrowserControlsVisibilityManagerSupplier.hasValue();
-        assert mFullscreenManagerSupplier.hasValue();
+        assert mBrowserControlsVisibilityManagerSupplier.get() != null;
+        assert mFullscreenManagerSupplier.get() != null;
         mPresenter =
                 new ChromeTabModalPresenter(
                         mActivity,
@@ -204,7 +204,7 @@ public class TabModalLifetimeHandler
                         tabModelSelector,
                         mScrimManagerSupplier,
                         mEdgeToEdgeControllerSupplier);
-        assert mAppVisibilityDelegateSupplier.hasValue();
+        assert mAppVisibilityDelegateSupplier.get() != null;
         mAppVisibilityDelegateSupplier
                 .get()
                 .addDelegate(mPresenter.getBrowserControlsVisibilityDelegate());

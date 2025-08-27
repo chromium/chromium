@@ -264,9 +264,8 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
 
     @Override
     protected @Nullable FirstPartyOption createCollaborateFirstPartyOption() {
-        if (!mTabProvider.hasValue()
-                || !mTabGroupSharingController.isAvailableForTab(
-                        assertNonNull(mTabProvider.get()))) {
+        Tab tab = mTabProvider.get();
+        if (tab == null || !mTabGroupSharingController.isAvailableForTab(tab)) {
             return null;
         }
         return new FirstPartyOptionBuilder(ContentType.LINK_PAGE_VISIBLE)
@@ -276,9 +275,7 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
                 .setOnClickCallback(
                         (view) -> {
                             mTabGroupSharingController.shareAsTabGroup(
-                                    mActivity,
-                                    mChromeOptionShareCallback,
-                                    assertNonNull(mTabProvider.get()));
+                                    mActivity, mChromeOptionShareCallback, tab);
                         })
                 .build();
     }

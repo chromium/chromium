@@ -288,17 +288,18 @@ public class OptionalButtonCoordinator {
             mTransitionFinishedCallback.onResult(transitionType);
         }
 
-        if (transitionType == TransitionType.EXPANDING_ACTION_CHIP
-                && mFeatureEngagementTrackerSupplier.hasValue()) {
-            // Record an event in feature engagement to limit the amount of times we show the action
-            // chip.
+        if (transitionType == TransitionType.EXPANDING_ACTION_CHIP) {
             Tracker featureEngagementTracker = mFeatureEngagementTrackerSupplier.get();
-            featureEngagementTracker.addOnInitializedCallback(
-                    isReady -> {
-                        if (!isReady) return;
-                        featureEngagementTracker.dismissed(
-                                FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_ACTION_CHIP);
-                    });
+            if (featureEngagementTracker != null) {
+                // Record an event in feature engagement to limit the amount of times we show the
+                // action chip.
+                featureEngagementTracker.addOnInitializedCallback(
+                        isReady -> {
+                            if (!isReady) return;
+                            featureEngagementTracker.dismissed(
+                                    FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_ACTION_CHIP);
+                        });
+            }
         }
 
         if (mIphCommandBuilder != null) {

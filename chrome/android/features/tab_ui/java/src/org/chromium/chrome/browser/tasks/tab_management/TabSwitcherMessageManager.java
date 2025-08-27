@@ -414,7 +414,8 @@ public class TabSwitcherMessageManager {
      */
     private void translateStartMergeAnimation(
             @TabId int targetTabId, List<@TabId Integer> tabIdsToMerge, Runnable onAnimationEnd) {
-        if (!mTabListCoordinatorSupplier.hasValue()) return;
+        TabListCoordinator oldTabListCoordinator = mTabListCoordinatorSupplier.get();
+        if (oldTabListCoordinator == null) return;
 
         TabListCoordinator tabListCoordinator = assumeNonNull(mTabListCoordinatorSupplier.get());
         int targetTabIndex = tabListCoordinator.getTabIndexFromTabId(targetTabId);

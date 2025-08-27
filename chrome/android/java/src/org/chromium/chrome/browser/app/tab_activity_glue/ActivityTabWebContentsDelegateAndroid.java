@@ -538,8 +538,9 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
     @Override
     protected void setOverlayMode(boolean useOverlayMode) {
-        if (mCompositorViewHolderSupplier.hasValue()) {
-            mCompositorViewHolderSupplier.get().setOverlayMode(useOverlayMode);
+        var compositorViewHolder = mCompositorViewHolderSupplier.get();
+        if (compositorViewHolder != null) {
+            compositorViewHolder.setOverlayMode(useOverlayMode);
         }
     }
 
@@ -579,7 +580,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
     @Override
     public boolean controlsResizeView() {
-        return mCompositorViewHolderSupplier.hasValue()
+        return mCompositorViewHolderSupplier.get() != null
                 && mCompositorViewHolderSupplier.get().controlsResizeView();
     }
 

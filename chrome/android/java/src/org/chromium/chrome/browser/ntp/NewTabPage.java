@@ -794,14 +794,15 @@ public class NewTabPage
 
     private void initTopInsetCoordinatorObserver() {
         mTopInsetChangeObserver = this::onToEdgeChange;
-        if (mTopInsetCoordinatorSupplier.hasValue()) {
-            mTopInsetCoordinatorSupplier.get().addObserver(mTopInsetChangeObserver);
+        var topInsetCoordinator = mTopInsetCoordinatorSupplier.get();
+        if (topInsetCoordinator != null) {
+            topInsetCoordinator.addObserver(mTopInsetChangeObserver);
             return;
         }
 
         mTopInsetCoordinatorCallback =
-                topInsetCoordinator -> {
-                    topInsetCoordinator.addObserver(assumeNonNull(mTopInsetChangeObserver));
+                coordinator -> {
+                    coordinator.addObserver(assumeNonNull(mTopInsetChangeObserver));
                     if (mTopInsetCoordinatorCallback != null) {
                         mTopInsetCoordinatorSupplier.removeObserver(mTopInsetCoordinatorCallback);
                         mTopInsetCoordinatorCallback = null;
@@ -1146,8 +1147,9 @@ public class NewTabPage
             mHomeModulesCoordinator.destroy();
         }
 
-        if (mTopInsetCoordinatorSupplier.hasValue() && mTopInsetChangeObserver != null) {
-            mTopInsetCoordinatorSupplier.get().removeObserver(mTopInsetChangeObserver);
+        var topInsetCoordinator = mTopInsetCoordinatorSupplier.get();
+        if (topInsetCoordinator != null && mTopInsetChangeObserver != null) {
+            topInsetCoordinator.removeObserver(mTopInsetChangeObserver);
             mTopInsetChangeObserver = null;
         }
 
@@ -1516,7 +1518,8 @@ public class NewTabPage
     @Nullable
     @Override
     public Tab getTrackingTab() {
-        if (!mMostRecentTabSupplier.hasValue()) {
+        var mostRecentTab = mMostRecentTabSupplier.get();
+        if (mostRecentTab == null) {
             return null;
         }
 
@@ -1527,7 +1530,7 @@ public class NewTabPage
     public boolean isHomeSurface() {
         // Can only show a local tab to resume if we we have a tracked tab. The presence of the
         // local tab to resume module is effectively what being a home surface is.
-        return mMostRecentTabSupplier.hasValue();
+        return mMostRecentTabSupplier.get() != null;
     }
 
     @Override

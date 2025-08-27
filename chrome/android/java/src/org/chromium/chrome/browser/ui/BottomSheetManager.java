@@ -230,7 +230,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
             }
         }
 
-        if (mOverlayPanelManager.hasValue()
+        if (mOverlayPanelManager.get() != null
                 && mOverlayPanelManager.get().getActivePanel() != null) {
             mOverlayPanelManager
                     .get()
@@ -283,8 +283,9 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
         mTabProvider.removeObserver(mOnActiveTabChanged);
         mBrowserControlsVisibilityManager.removeObserver(mBrowserControlsObserver);
         mOmniboxFocusStateSupplier.removeObserver(mOmniboxFocusObserver);
-        if (mLayoutStateProviderSupplier.get() != null) {
-            mLayoutStateProviderSupplier.get().removeObserver(mLayoutStateObserver);
+        var layoutStateProvider = mLayoutStateProviderSupplier.get();
+        if (layoutStateProvider != null) {
+            layoutStateProvider.removeObserver(mLayoutStateObserver);
         }
     }
 }

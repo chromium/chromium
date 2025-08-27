@@ -199,12 +199,10 @@ public class TabSwitcherActionMenuCoordinator {
     }
 
     ModelList buildMenuItems() {
+        TabModelSelector selector = mTabModelSelectorSupplier.get();
         boolean isCurrentModelIncognito =
-                mTabModelSelectorSupplier.hasValue()
-                        && mTabModelSelectorSupplier.get().isIncognitoBrandedModelSelected();
-        boolean hasIncognitoTabs =
-                mTabModelSelectorSupplier.hasValue()
-                        && mTabModelSelectorSupplier.get().getModel(true).getCount() > 0;
+                selector != null && selector.isIncognitoBrandedModelSelected();
+        boolean hasIncognitoTabs = selector != null && selector.getModel(true).getCount() > 0;
         boolean incognitoMigrationFFEnabled =
                 ChromeFeatureList.sTabStripIncognitoMigration.isEnabled();
         boolean supportedMixedWindows = !IncognitoUtils.shouldOpenIncognitoAsWindow();

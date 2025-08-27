@@ -189,7 +189,7 @@ class BookmarkBridge {
         if (mInitializedPartnerBookmarks) return;
 
         mInitializedPartnerBookmarks = true;
-        assert sPartnerBookmarkIteratorSupplier.hasValue();
+        assert sPartnerBookmarkIteratorSupplier.get() != null;
         sPartnerBookmarkIteratorSupplier.runSyncOrOnAvailable(
                 (provider) -> {
                     // Don't attempt to load partner bookmarks if the bridge has been deleted.

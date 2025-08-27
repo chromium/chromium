@@ -254,7 +254,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
             if (url == null) return;
             // Blocking pre-connect for all off-the-record profiles.
             if (IntentHandler.hasAnyIncognitoExtra(intent.getExtras())) return;
-            assert getProfileProviderSupplier().hasValue();
+            assert getProfileProviderSupplier().get() != null;
             getProfileProviderSupplier()
                     .runSyncOrOnAvailable(
                             (profileProvider) -> {

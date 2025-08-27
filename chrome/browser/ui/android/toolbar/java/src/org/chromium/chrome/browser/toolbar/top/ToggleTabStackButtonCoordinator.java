@@ -331,7 +331,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChild {
         params.setBoundsRespectPadding(true);
         IphCommandBuilder builder = null;
         if (ChromeFeatureList.sTabStripIncognitoMigration.isEnabled()
-                && mTabModelSelectorSupplier.hasValue()) {
+                && mTabModelSelectorSupplier.get() != null) {
             TabModelSelector selector = mTabModelSelectorSupplier.get();
             // When in Incognito, show IPH to switch out.
             if (selector.getCurrentModel().isIncognitoBranded()) {
@@ -355,7 +355,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChild {
 
         if (builder == null
                 && !mIncognitoStateProvider.isIncognitoSelected()
-                && mPromoShownOneshotSupplier.hasValue()
+                && mPromoShownOneshotSupplier.get() != null
                 && !mPromoShownOneshotSupplier.get()) {
             builder =
                     new IphCommandBuilder(

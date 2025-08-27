@@ -208,10 +208,9 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
             mCallbackController.destroy();
             mCallbackController = null;
         }
-        if (mReadAloudControllerSupplier.get() != null) {
-            mReadAloudControllerSupplier
-                    .get()
-                    .removeReadabilityUpdateListener(mReadAloudAppMenuResetter);
+        ReadAloudController readAloudController = mReadAloudControllerSupplier.get();
+        if (readAloudController != null) {
+            readAloudController.removeReadabilityUpdateListener(mReadAloudAppMenuResetter);
         }
     }
 
@@ -518,8 +517,9 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     public boolean shouldCheckBookmarkStar(Tab currentTab) {
         if (sItemBookmarkedForTesting != null) return sItemBookmarkedForTesting;
 
-        if (!mBookmarkModelSupplier.hasValue()) return false;
-        return mBookmarkModelSupplier.get().hasBookmarkIdForTab(currentTab);
+        var bookmarkModel = mBookmarkModelSupplier.get();
+        if (bookmarkModel == null) return false;
+        return bookmarkModel.hasBookmarkIdForTab(currentTab);
     }
 
     @VisibleForTesting
@@ -970,14 +970,14 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
      */
     protected void updateBookmarkMenuItemShortcut(
             PropertyModel bookmarkMenuModel, @Nullable Tab currentTab) {
-        if (!mBookmarkModelSupplier.hasValue() || currentTab == null) {
+        var bookmarkModel = mBookmarkModelSupplier.get();
+        if (bookmarkModel == null || currentTab == null) {
             // If the BookmarkModel still isn't available, assume the bookmark menu item is not
             // editable.
             bookmarkMenuModel.set(AppMenuItemProperties.ENABLED, false);
         } else {
             bookmarkMenuModel.set(
-                    AppMenuItemProperties.ENABLED,
-                    mBookmarkModelSupplier.get().isEditBookmarksEnabled());
+                    AppMenuItemProperties.ENABLED, bookmarkModel.isEditBookmarksEnabled());
         }
 
         if (currentTab != null && shouldCheckBookmarkStar(currentTab)) {
@@ -1049,7 +1049,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         // If price tracking isn't enabled or the page isn't eligible, then hide both items.
         if (!CommerceFeatureUtils.isShoppingListEligible(service)
                 || !PowerBookmarkUtils.isPriceTrackingEligible(currentTab)
-                || !mBookmarkModelSupplier.hasValue()) {
+                || mBookmarkModelSupplier.get() == null) {
             return null;
         }
 

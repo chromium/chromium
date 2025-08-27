@@ -69,7 +69,7 @@ public class TabModelSelectorProfileSupplierTest {
     @Test
     public void testInitialTabModelHasNoProfile_initializedLater() {
         mTabModelSelectorSupplier.set(mSelector);
-        Assert.assertFalse(mSupplier.hasValue());
+        Assert.assertNull(mSupplier.get());
 
         mSelector.initializeTabModels(mNormalModel, mIncognitoModel);
         mSelector.markTabStateInitialized();
@@ -82,7 +82,7 @@ public class TabModelSelectorProfileSupplierTest {
         mSupplier.addObserver(mProfileCallback2);
 
         mTabModelSelectorSupplier.set(mSelector);
-        Assert.assertFalse(mSupplier.hasValue());
+        Assert.assertNull(mSupplier.get());
         mSelector.initializeTabModels(mNormalModel, mIncognitoModel);
         mSelector.markTabStateInitialized();
 
@@ -127,7 +127,7 @@ public class TabModelSelectorProfileSupplierTest {
         mTabModelSelectorSupplier.set(mSelector);
         mSelector.initializeTabModels(mNormalModel, mIncognitoModel);
         mSelector.markTabStateInitialized();
-        Assert.assertFalse(mSupplier.hasValue());
+        Assert.assertNull(mSupplier.get());
     }
 
     @Test
@@ -137,7 +137,7 @@ public class TabModelSelectorProfileSupplierTest {
 
         mSelector.initializeTabModels(mNormalModel, mIncognitoModel);
         mSelector.markTabStateInitialized();
-        Assert.assertFalse(mSupplier.hasValue());
+        Assert.assertNull(mSupplier.get());
     }
 
     @Test

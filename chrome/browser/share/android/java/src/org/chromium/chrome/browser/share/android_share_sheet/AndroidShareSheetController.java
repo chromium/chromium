@@ -151,9 +151,8 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
     private void showShareSheetWithCustomAction(
             ShareParams params, ChromeShareExtras chromeShareExtras, boolean showCustomActions) {
         Profile profile = mProfileSupplier.get();
-        boolean isIncognito =
-                mTabModelSelectorSupplier.hasValue()
-                        && mTabModelSelectorSupplier.get().isIncognitoSelected();
+        TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
+        boolean isIncognito = tabModelSelector != null && tabModelSelector.isIncognitoSelected();
         Activity activity = assumeNonNull(params.getWindow().getActivity().get());
         ChromeCustomShareAction.Provider provider = null;
 

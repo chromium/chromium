@@ -185,7 +185,8 @@ public abstract class Condition {
         StringBuilder suppliersMissing = null;
         for (var kv : mDependentSuppliers.entrySet()) {
             Supplier<?> supplier = kv.getValue();
-            if (!supplier.hasValue()) {
+            var value = supplier.get();
+            if (value == null) {
                 if (suppliersMissing == null) {
                     suppliersMissing = new StringBuilder("waiting for suppliers of: ");
                 } else {

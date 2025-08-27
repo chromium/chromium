@@ -1624,7 +1624,6 @@ public class LocationBarMediatorTest {
 
         GURL url = new GURL("https://foo.com");
         when(mTemplateUrlService.getComposeplateUrl()).thenReturn(url);
-        when(mTabModelSelectorSupplier.hasValue()).thenReturn(true);
         when(mTabModelSelector.getCurrentTab()).thenReturn(mTab);
         when(mTab.isIncognito()).thenReturn(false);
         HistogramWatcher histogramWatcher =

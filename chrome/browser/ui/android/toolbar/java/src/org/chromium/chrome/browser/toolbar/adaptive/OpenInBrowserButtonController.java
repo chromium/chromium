@@ -66,9 +66,10 @@ public class OpenInBrowserButtonController extends BaseButtonDataProvider {
     @Override
     public void onClick(View view) {
         mOpenInBrowserRunnable.run();
-        if (mTrackerSupplier.hasValue()) {
+        var tracker = mTrackerSupplier.get();
+        if (tracker != null) {
             String event = EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_OPEN_IN_BROWSER_OPENED;
-            mTrackerSupplier.get().notifyEvent(event);
+            tracker.notifyEvent(event);
         }
         RecordUserAction.record("MobileTopToolbarOpenInBrowserButton");
     }

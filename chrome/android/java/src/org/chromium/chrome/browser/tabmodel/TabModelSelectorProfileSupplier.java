@@ -69,8 +69,9 @@ public class TabModelSelectorProfileSupplier extends ObservableSupplierImpl<Prof
         mSelectorSupplierCallback = this::setSelector;
         mSelectorSupplier.addObserver(mSelectorSupplierCallback);
 
-        if (mSelectorSupplier.hasValue()) {
-            setSelector(mSelectorSupplier.get());
+        var selector = mSelectorSupplier.get();
+        if (selector != null) {
+            setSelector(selector);
         }
     }
 

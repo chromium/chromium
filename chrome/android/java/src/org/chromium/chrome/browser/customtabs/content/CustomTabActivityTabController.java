@@ -164,10 +164,11 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         int mode = mTabProvider.getInitialTabCreationMode();
         if (mode == TabCreationMode.EARLY || mode == TabCreationMode.HIDDEN) return false;
         if (hasSpeculated) return false;
-        if (!mProfileProviderSupplier.hasValue()) return true;
+        var profileProvider = mProfileProviderSupplier.get();
+        if (profileProvider == null) return true;
         Profile profile =
                 ProfileProvider.getOrCreateProfile(
-                        mProfileProviderSupplier.get(), mIntentDataProvider.isOffTheRecord());
+                        profileProvider, mIntentDataProvider.isOffTheRecord());
         return !WarmupManager.getInstance()
                 .hasSpareTab(profile, mIntentDataProvider.hasTargetNetwork());
     }

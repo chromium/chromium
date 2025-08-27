@@ -60,18 +60,19 @@ public class ActivityRecreationController {
      */
     public void prepareUiState() {
         mRetainedUiState = new ActivityRecreationUiState();
-        if (mToolbarManagerSupplier.hasValue() && mToolbarManagerSupplier.get().isUrlBarFocused()) {
+        var toolbarManager = mToolbarManagerSupplier.get();
+        if (toolbarManager != null && toolbarManager.isUrlBarFocused()) {
             mRetainedUiState.mIsUrlBarFocused = true;
-            mRetainedUiState.mUrlBarEditText =
-                    mToolbarManagerSupplier.get().getUrlBarTextWithoutAutocomplete();
+            mRetainedUiState.mUrlBarEditText = toolbarManager.getUrlBarTextWithoutAutocomplete();
         }
 
         if (getKeyboardVisibilityState()) {
             mRetainedUiState.mIsKeyboardShown = true;
         }
 
-        if (mLayoutManagerSupplier.hasValue()) {
-            if (mLayoutManagerSupplier.get().isLayoutVisible(LayoutType.TAB_SWITCHER)) {
+        var layoutManager = mLayoutManagerSupplier.get();
+        if (layoutManager != null) {
+            if (layoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER)) {
                 mRetainedUiState.mIsTabSwitcherShown = true;
             }
         }
@@ -98,7 +99,8 @@ public class ActivityRecreationController {
      * @param savedInstanceState The {@link Bundle} that is used to restore the UI state.
      */
     public void restoreUiState(Bundle savedInstanceState) {
-        if (savedInstanceState == null || !mLayoutManagerSupplier.hasValue()) {
+        LayoutManager layoutManager = mLayoutManagerSupplier.get();
+        if (savedInstanceState == null || layoutManager == null) {
             return;
         }
 
@@ -108,13 +110,9 @@ public class ActivityRecreationController {
             return;
         }
         restoreOmniboxState(
-                uiState,
-                mToolbarManagerSupplier.get(),
-                mLayoutManagerSupplier.get(),
-                mLayoutStateHandler);
-        restoreKeyboardState(
-                uiState, mActivityTabProvider, mLayoutManagerSupplier.get(), mLayoutStateHandler);
-        restoreTabSwitcherState(uiState, mLayoutManagerSupplier.get());
+                uiState, mToolbarManagerSupplier.get(), layoutManager, mLayoutStateHandler);
+        restoreKeyboardState(uiState, mActivityTabProvider, layoutManager, mLayoutStateHandler);
+        restoreTabSwitcherState(uiState, layoutManager);
     }
 
     private boolean getKeyboardVisibilityState() {

@@ -464,15 +464,11 @@ public class NewTabPageLayout extends LinearLayout
 
         mComposeplateButtonClickListener =
                 view -> {
-                    if (mComposeplateUrlSupplier == null
-                            || !mComposeplateUrlSupplier.hasValue()
-                            || mComposeplateUrlSupplier.get() == null) {
-                        return;
-                    }
+                    if (mComposeplateUrlSupplier == null) return;
+                    GURL composeplateUrl = mComposeplateUrlSupplier.get();
+                    if (composeplateUrl == null) return;
                     mManager.getNativePageHost()
-                            .loadUrl(
-                                    new LoadUrlParams(mComposeplateUrlSupplier.get()),
-                                    /* incognito= */ false);
+                            .loadUrl(new LoadUrlParams(composeplateUrl), /* incognito= */ false);
                     ComposeplateMetricsUtils.recordFakeSearchBoxComposeplateButtonClick();
                 };
         mSearchBoxCoordinator.setComposeplateButtonClickListener(mComposeplateButtonClickListener);

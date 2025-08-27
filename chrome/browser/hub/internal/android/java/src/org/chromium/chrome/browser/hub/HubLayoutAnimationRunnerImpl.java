@@ -16,7 +16,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.hub.HubLayoutAnimationRunner.AnimationState;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -61,7 +60,8 @@ public class HubLayoutAnimationRunnerImpl implements HubLayoutAnimationRunner {
         mAnimationState = AnimationState.WAITING_FOR_ANIMATOR;
         SyncOneshotSupplier<HubLayoutAnimator> animatorSupplier =
                 mAnimatorProvider.getAnimatorSupplier();
-        if (animatorSupplier.hasValue()) {
+        HubLayoutAnimator animator = animatorSupplier.get();
+        if (animator != null) {
             // Post the callback so we don't run immediately and any other setup work can complete
             // first.
             animatorSupplier.onAvailable(this::postOnAnimatorReady);
@@ -92,9 +92,8 @@ public class HubLayoutAnimationRunnerImpl implements HubLayoutAnimationRunner {
         mWasForcedToFinish = true;
         SyncOneshotSupplier<HubLayoutAnimator> animatorSupplier =
                 mAnimatorProvider.getAnimatorSupplier();
-        if (animatorSupplier.hasValue()) {
-            HubLayoutAnimator animator = animatorSupplier.get();
-            assumeNonNull(animator);
+        HubLayoutAnimator animator = animatorSupplier.get();
+        if (animator != null) {
             if (mAnimationState == AnimationState.STARTED) {
                 animator.getAnimatorSet().end();
             } else {
@@ -127,7 +126,7 @@ public class HubLayoutAnimationRunnerImpl implements HubLayoutAnimationRunner {
 
         SyncOneshotSupplier<HubLayoutAnimator> animatorSupplier =
                 mAnimatorProvider.getAnimatorSupplier();
-        assert animatorSupplier.hasValue()
+        assert animatorSupplier.get() != null
                 : "HubAnimatorProvider#supplyAnimatorNow() failed to provide an animation for "
                         + getAnimationType();
 

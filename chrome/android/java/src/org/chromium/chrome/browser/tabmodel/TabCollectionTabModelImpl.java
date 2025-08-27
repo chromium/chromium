@@ -167,7 +167,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             WebContents webContents = tab.getWebContents();
             if (webContents != null) webContents.setAudioMuted(false);
 
-            boolean noTabIsActivated = !mCurrentTabSupplier.hasValue();
+            boolean noTabIsActivated = !(mCurrentTabSupplier.get() != null);
             if (noTabIsActivated) {
                 mCurrentTabSupplier.set(tab);
             }
@@ -486,7 +486,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         }
 
         mModelDelegate.openMostRecentlyClosedEntry(this);
-        if (!mCurrentTabSupplier.hasValue()) {
+        Tab oldSelectedTab = mCurrentTabSupplier.get();
+        if (oldSelectedTab == null) {
             setIndex(0, TabSelectionType.FROM_NEW);
         }
     }
@@ -634,7 +635,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         for (TabModelObserver obs : mTabModelObservers) obs.willAddTab(tab, type);
         // Clear the multi-selection set before adding the tab.
         clearMultiSelection(/* notifyObservers= */ false);
-        boolean hasAnyTabs = mCurrentTabSupplier.hasValue();
+        boolean hasAnyTabs = mCurrentTabSupplier.get() != null;
         boolean selectTab =
                 mOrderController.willOpenInForeground(type, isIncognito())
                         || (!hasAnyTabs && type == TabLaunchType.FROM_LONGPRESS_BACKGROUND);
@@ -739,7 +740,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     @Override
     public int getMultiSelectedTabsCount() {
         assertOnUiThread();
-        if (!mCurrentTabSupplier.hasValue()) return 0;
+        Tab oldSelectedTab = mCurrentTabSupplier.get();
+        if (oldSelectedTab == null) return 0;
         // If no other tabs are in multi-selection, this returns 1, as the active tab is always
         // considered selected.
         return mMultiSelectedTabs.isEmpty() ? 1 : mMultiSelectedTabs.size();
@@ -881,7 +883,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         assert !mInitializationComplete : "TabCollectionTabModelImpl initialized multiple times.";
         mInitializationComplete = true;
 
-        if (getCount() != 0 && !mCurrentTabSupplier.hasValue()) {
+        if (getCount() != 0 && mCurrentTabSupplier.get() == null) {
             if (isActiveModel()) {
                 setIndex(0, TabSelectionType.FROM_USER);
             } else {

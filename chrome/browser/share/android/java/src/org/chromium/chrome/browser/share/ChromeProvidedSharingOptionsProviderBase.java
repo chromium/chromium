@@ -310,7 +310,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
     }
 
     private void maybeAddLongScreenshotFirstPartyOption() {
-        if (!mTabProvider.hasValue()) {
+        if (mTabProvider.get() == null) {
             return;
         }
         FirstPartyOption option = createLongScreenshotsFirstPartyOption();
@@ -322,7 +322,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
     private void maybeAddPrintFirstPartyOption() {
         // For the desktop case, the Print action will be showed in the main menu.
         if (!DeviceInfo.isDesktop()
-                && mTabProvider.hasValue()
+                && mTabProvider.get() != null
                 && UserPrefs.get(mProfile).getBoolean(Pref.PRINTING_ENABLED)) {
             mOrderedFirstPartyOptions.add(createPrintingFirstPartyOption());
         }
@@ -336,9 +336,8 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
     }
 
     private boolean isPdfTab() {
-        return mTabProvider.hasValue()
-                && assumeNonNull(mTabProvider.get()).isNativePage()
-                && assumeNonNull(mTabProvider.get().getNativePage()).isPdf();
+        Tab tab = mTabProvider.get();
+        return tab != null && tab.isNativePage() && assumeNonNull(tab.getNativePage()).isPdf();
     }
 
     private static boolean isAutomotive() {

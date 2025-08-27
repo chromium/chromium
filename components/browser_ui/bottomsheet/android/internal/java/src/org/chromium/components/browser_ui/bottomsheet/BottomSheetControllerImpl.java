@@ -349,9 +349,10 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
     public void setBottomControlsHeight(int bottomControlsHeight) {
         if (mBottomControlsHeight == bottomControlsHeight) return;
         mBottomControlsHeight = bottomControlsHeight;
-        if (mScrimManagerSupplier.hasValue()) {
+        var scrimManager = mScrimManagerSupplier.get();
+        if (scrimManager != null) {
             // Set the appropriate offset for the current scrim state.
-            scrimVisibilityChanged(mScrimManagerSupplier.get().isShowingScrim());
+            scrimVisibilityChanged(scrimManager.isShowingScrim());
         }
     }
 

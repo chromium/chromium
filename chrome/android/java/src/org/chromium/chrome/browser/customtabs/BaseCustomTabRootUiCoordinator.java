@@ -472,8 +472,9 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             mBrandingController.onToolbarInitialized(toolbar.getBrandingDelegate());
         }
         toolbar.setCloseButtonPosition(mIntentDataProvider.get().getCloseButtonPosition());
-        if (mMinimizeDelegateSupplier.hasValue()) {
-            toolbar.setMinimizeDelegate(mMinimizeDelegateSupplier.get());
+        var minimizeDelegate = mMinimizeDelegateSupplier.get();
+        if (minimizeDelegate != null) {
+            toolbar.setMinimizeDelegate(minimizeDelegate);
         }
         if (!MinimizedFeatureUtils.shouldEnableMinimizedCustomTabs(mIntentDataProvider.get())) {
             toolbar.setMinimizeButtonEnabled(false);

@@ -230,7 +230,8 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
 
     private boolean tabIdExistsInSecondaryModel(int tabId) {
         for (Supplier<TabModel> tabModelSupplier : mSecondaryTabModelSuppliers) {
-            if (tabModelSupplier.hasValue() && tabModelSupplier.get().getTabById(tabId) != null) {
+            var tabModel = tabModelSupplier.get();
+            if (tabModel != null && tabModel.getTabById(tabId) != null) {
                 return true;
             }
         }

@@ -99,7 +99,6 @@ public class TabSwitcherActionMenuRenderTest {
 
         mActivityTestRule.launchActivity(null);
 
-        when(mTabModelSelectorSupplier.hasValue()).thenReturn(true);
         when(mTabModelSelectorSupplier.get()).thenReturn(mTabModelSelector);
         when(mTabModelSelector.getModel(true)).thenReturn(mModel);
         when(mModel.getCount()).thenReturn(0);

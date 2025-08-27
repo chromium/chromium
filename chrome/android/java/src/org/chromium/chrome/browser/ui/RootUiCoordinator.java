@@ -685,8 +685,9 @@ public class RootUiCoordinator
 
         if (mFindToolbarManager != null) mFindToolbarManager.removeObserver(mFindToolbarObserver);
 
-        if (mModalDialogManagerObserver != null && mModalDialogManagerSupplier.hasValue()) {
-            mModalDialogManagerSupplier.get().removeObserver(mModalDialogManagerObserver);
+        var modalDialogManager = mModalDialogManagerSupplier.get();
+        if (mModalDialogManagerObserver != null && modalDialogManager != null) {
+            modalDialogManager.removeObserver(mModalDialogManagerObserver);
         }
 
         if (mBottomSheetManager != null) mBottomSheetManager.onDestroy();
@@ -706,8 +707,9 @@ public class RootUiCoordinator
             mCaptureController = null;
         }
 
-        if (mMerchantTrustSignalsCoordinatorSupplier.hasValue()) {
-            mMerchantTrustSignalsCoordinatorSupplier.get().destroy();
+        var merchantTrustSignalsCoordinator = mMerchantTrustSignalsCoordinatorSupplier.get();
+        if (merchantTrustSignalsCoordinator != null) {
+            merchantTrustSignalsCoordinator.destroy();
             mMerchantTrustSignalsCoordinatorSupplier.set(null);
         }
 
@@ -738,19 +740,20 @@ public class RootUiCoordinator
             mRestoreTabsFeatureHelper = null;
         }
 
-        if (mReadAloudControllerSupplier.hasValue()) {
+        var readAloudController = mReadAloudControllerSupplier.get();
+        if (readAloudController != null) {
             ContextualSearchManager contextualSearchManager =
                     mContextualSearchManagerSupplier.get();
             if (contextualSearchManager != null) {
                 contextualSearchManager.removeObserver(mReadAloudContextualSearchObserver);
             }
-            var readAloudController = mReadAloudControllerSupplier.get();
             mReadAloudControllerSupplier.set(null);
             readAloudController.destroy();
         }
 
-        if (mContextualSearchManagerSupplier.hasValue()) {
-            mContextualSearchManagerSupplier.get().destroy();
+        var manager = mContextualSearchManagerSupplier.get();
+        if (manager != null) {
+            manager.destroy();
             mContextualSearchManagerSupplier.set(null);
         }
 
@@ -769,8 +772,9 @@ public class RootUiCoordinator
             mEdgeToEdgeBottomChin.destroy();
         }
 
-        if (mTopInsetCoordinatorSupplier.hasValue()) {
-            mTopInsetCoordinatorSupplier.get().destroy();
+        var topInsetCoordinator = mTopInsetCoordinatorSupplier.get();
+        if (topInsetCoordinator != null) {
+            topInsetCoordinator.destroy();
         }
 
         if (mBoardingPassController != null) {
@@ -822,7 +826,8 @@ public class RootUiCoordinator
         initBottomSheetObserver();
         initSnackbarObserver();
         initBrowserControlsObserver();
-        if (mAppMenuCoordinator != null && mModalDialogManagerSupplier.hasValue()) {
+        var modalDialogManager = mModalDialogManagerSupplier.get();
+        if (mAppMenuCoordinator != null && modalDialogManager != null) {
             mModalDialogManagerObserver =
                     new ModalDialogManagerObserver() {
                         @Override
@@ -830,7 +835,7 @@ public class RootUiCoordinator
                             mAppMenuCoordinator.getAppMenuHandler().hideAppMenu();
                         }
                     };
-            mModalDialogManagerSupplier.get().addObserver(mModalDialogManagerObserver);
+            modalDialogManager.addObserver(mModalDialogManagerObserver);
         }
         new ChromeActionModeHandler(
                 mActivityTabProvider,
@@ -1042,13 +1047,14 @@ public class RootUiCoordinator
 
     /** Whether contextual search panel is opened. */
     public boolean isContextualSearchOpened() {
-        return mContextualSearchManagerSupplier.hasValue()
-                && mContextualSearchManagerSupplier.get().isSearchPanelOpened();
+        var manager = mContextualSearchManagerSupplier.get();
+        return manager != null && manager.isSearchPanelOpened();
     }
 
     /** Hide contextual search panel. */
     public void hideContextualSearch() {
-        if (mContextualSearchManagerSupplier.hasValue()) {
+        var manager = mContextualSearchManagerSupplier.get();
+        if (manager != null) {
             mContextualSearchManagerSupplier
                     .get()
                     .hideContextualSearch(OverlayPanel.StateChangeReason.UNKNOWN);
@@ -1359,8 +1365,8 @@ public class RootUiCoordinator
         // EphemeralTabCoordinator, and FindToolbarManager will all be owned by this class.
 
         // Do not show the menu if Contextual Search panel is opened.
-        if (mContextualSearchManagerSupplier.get() != null
-                && mContextualSearchManagerSupplier.get().isSearchPanelOpened()) {
+        var manager = mContextualSearchManagerSupplier.get();
+        if (manager != null && manager.isSearchPanelOpened()) {
             return false;
         }
 
@@ -1625,8 +1631,10 @@ public class RootUiCoordinator
                         if (layoutType != LayoutType.BROWSING
                                 && layoutType != LayoutType.SIMPLE_ANIMATION) {
                             // Hide contextual search.
-                            if (mContextualSearchManagerSupplier.get() != null) {
-                                mContextualSearchManagerSupplier.get().dismissContextualSearchBar();
+                            ContextualSearchManager contextualSearchManager =
+                                    mContextualSearchManagerSupplier.get();
+                            if (contextualSearchManager != null) {
+                                contextualSearchManager.dismissContextualSearchBar();
                             }
                         }
 
@@ -1765,10 +1773,9 @@ public class RootUiCoordinator
      * cross-feature interaction, e.g. hide other features when this feature is shown.
      */
     protected void onFindToolbarShown() {
-        if (mContextualSearchManagerSupplier.get() != null) {
-            mContextualSearchManagerSupplier
-                    .get()
-                    .hideContextualSearch(OverlayPanel.StateChangeReason.UNKNOWN);
+        ContextualSearchManager contextualSearchManager = mContextualSearchManagerSupplier.get();
+        if (contextualSearchManager != null) {
+            contextualSearchManager.hideContextualSearch(OverlayPanel.StateChangeReason.UNKNOWN);
         }
     }
 
@@ -1825,12 +1832,10 @@ public class RootUiCoordinator
 
         Supplier<OverlayPanelManager> panelManagerSupplier =
                 () -> {
-                    if (mCompositorViewHolderSupplier.get() != null
-                            && mCompositorViewHolderSupplier.get().getLayoutManager() != null) {
-                        return mCompositorViewHolderSupplier
-                                .get()
-                                .getLayoutManager()
-                                .getOverlayPanelManager();
+                    var compositorViewHolder = mCompositorViewHolderSupplier.get();
+                    if (compositorViewHolder != null
+                            && compositorViewHolder.getLayoutManager() != null) {
+                        return compositorViewHolder.getLayoutManager().getOverlayPanelManager();
                     }
                     return null;
                 };
@@ -1850,9 +1855,10 @@ public class RootUiCoordinator
                             return null;
                         },
                         () -> {
-                            return mEdgeToEdgeControllerSupplier.get() == null
+                            var edgeToEdgeController = mEdgeToEdgeControllerSupplier.get();
+                            return edgeToEdgeController == null
                                     ? 0
-                                    : mEdgeToEdgeControllerSupplier.get().getBottomInset();
+                                    : edgeToEdgeController.getBottomInset();
                         },
                         getDesktopWindowStateManager());
         BottomSheetControllerFactory.setExceptionReporter(
@@ -2131,7 +2137,7 @@ public class RootUiCoordinator
      * @param outState The {@link Bundle} that is used to save state information.
      */
     public void onSaveInstanceState(Bundle outState) {
-        assert mTabModelSelectorSupplier.hasValue();
+        assert mTabModelSelectorSupplier.get() != null;
         mActivityRecreationController.saveUiState(outState);
     }
 
@@ -2151,19 +2157,19 @@ public class RootUiCoordinator
 
         Supplier<Integer> gtsTabListModelSizeSupplier =
                 () -> {
-                    if (mTabSwitcherSupplier.get() != null) {
-                        return mTabSwitcherSupplier.get().getTabSwitcherTabListModelSize();
+                    var tabSwitcher = mTabSwitcherSupplier.get();
+                    if (tabSwitcher != null) {
+                        return tabSwitcher.getTabSwitcherTabListModelSize();
                     }
                     return 0;
                 };
 
         Callback<Integer> scrollGTSToRestoredTabsCallback =
                 (tabListModelSize) -> {
-                    if (mTabSwitcherSupplier.get() != null) {
-                        mTabSwitcherSupplier
-                                .get()
-                                .setTabSwitcherRecyclerViewPosition(
-                                        new RecyclerViewPosition(tabListModelSize, 0));
+                    var tabSwitcher = mTabSwitcherSupplier.get();
+                    if (tabSwitcher != null) {
+                        tabSwitcher.setTabSwitcherRecyclerViewPosition(
+                                new RecyclerViewPosition(tabListModelSize, 0));
                     }
                 };
 

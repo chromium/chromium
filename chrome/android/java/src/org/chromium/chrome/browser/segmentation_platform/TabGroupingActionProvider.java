@@ -30,7 +30,8 @@ public class TabGroupingActionProvider implements ContextualPageActionController
 
     @Override
     public void onActionShown(@Nullable Tab tab, @AdaptiveToolbarButtonVariant int action) {
-        if (!mGroupSuggestionsButtonControllerSupplier.hasValue()) {
+        var groupSuggestionsButtonController = mGroupSuggestionsButtonControllerSupplier.get();
+        if (groupSuggestionsButtonController == null) {
             return;
         }
 
@@ -49,7 +50,7 @@ public class TabGroupingActionProvider implements ContextualPageActionController
                 () -> {
                     if (tab == null
                             || tab.getWindowAndroid() == null
-                            || !mGroupSuggestionsButtonControllerSupplier.hasValue()) {
+                            || !(mGroupSuggestionsButtonControllerSupplier.get() != null)) {
                         signalAccumulator.setSignal(
                                 AdaptiveToolbarButtonVariant.TAB_GROUPING, false);
                         return;
