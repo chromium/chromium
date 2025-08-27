@@ -286,19 +286,19 @@ mojom("mojom_shared_storage") {
       types = [
         {
           mojom = "network.mojom.SharedStorageKeyArgument"
-          cpp = "::WTF::String"
+          cpp = "::blink::String"
         },
         {
           mojom = "network.mojom.SharedStorageValueArgument"
-          cpp = "::WTF::String"
+          cpp = "::blink::String"
         },
         {
           mojom = "network.mojom.LockName"
-          cpp = "::WTF::String"
+          cpp = "::blink::String"
         },
         {
           mojom = "network.mojom.SharedStorageBatchUpdateMethodsArgument"
-          cpp = "::WTF::Vector<::network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr>"
+          cpp = "::blink::Vector<::network::mojom::blink::SharedStorageModifierMethodWithOptionsPtr>"
           move_only = true
         },
       ]
