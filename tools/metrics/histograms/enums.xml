@@ -9862,6 +9862,8 @@ from previous Chrome versions.
   <int value="-1578603271" label="GameDashboardGamepadSupport:disabled"/>
   <int value="-1578503491" label="EnableContinueReading:disabled"/>
   <int value="-1578295753" label="UserMediaScreenCapturing:disabled"/>
+  <int value="-1576962482"
+      label="ClientSideDetectionSendIntelligentScanInfoAndroid:enabled"/>
   <int value="-1576943648" label="JourneysPersistCachesToPrefs:enabled"/>
   <int value="-1576895096"
       label="ContextualSearchWithCredentialsForDebug:disabled"/>
@@ -12375,6 +12377,8 @@ from previous Chrome versions.
   <int value="-674185337" label="GlicZOrderChanges:enabled"/>
   <int value="-673804828" label="EnablePlayStoreAppSearch:disabled"/>
   <int value="-673149604" label="RelatedSearches:enabled"/>
+  <int value="-672212526"
+      label="ClientSideDetectionShowScamVerdictWarningAndroid:enabled"/>
   <int value="-672179392" label="CCTAdaptiveButton:disabled"/>
   <int value="-672031550" label="HttpsFirstModeV2ForEngagedSites:enabled"/>
   <int value="-671992446" label="TranslateRankerEnforcement:disabled"/>
@@ -16676,6 +16680,8 @@ from previous Chrome versions.
   <int value="886990840" label="ImeMojoDecoder:enabled"/>
   <int value="887011602" label="enable-spelling-auto-correct"/>
   <int value="887129902" label="AdvancedPeripheralsSupportTabStrip:disabled"/>
+  <int value="887373859"
+      label="ClientSideDetectionSendIntelligentScanInfoAndroid:disabled"/>
   <int value="889098303"
       label="SafeBrowsingSyncCheckerCheckAllowlist:disabled"/>
   <int value="889816966"
@@ -18209,6 +18215,8 @@ from previous Chrome versions.
   <int value="1443830588" label="VerticalSnap:disabled"/>
   <int value="1443836294"
       label="AboutThisSitePersistentSidePanelEntry:enabled"/>
+  <int value="1443936857"
+      label="ClientSideDetectionShowScamVerdictWarningAndroid:disabled"/>
   <int value="1444066555" label="MessagesForAndroidSyncError:disabled"/>
   <int value="1444102509" label="FedCmRevoke:enabled"/>
   <int value="1444347795"

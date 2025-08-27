@@ -1771,6 +1771,14 @@
     "expiry_milestone": 139
   },
   {
+    "name": "client-side-detection-send-intelligent-scan-info-android",
+    "owners": [
+      "xinghuilu@chromium.org",
+      "chrome-counter-abuse-alerts@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "client-side-detection-show-scam-verdict-warning",
     "owners": [
       "andysjlim@chromium.org",
@@ -1778,6 +1786,14 @@
       "chrome-counter-abuse-alerts@google.com"
     ],
     "expiry_milestone": 141
+  },
+  {
+    "name": "client-side-detection-show-scam-verdict-warning-android",
+    "owners": [
+      "xinghuilu@chromium.org",
+      "chrome-counter-abuse-alerts@google.com"
+    ],
+    "expiry_milestone": 150
   },
   {
     "name": "clipboard-history-longpress",

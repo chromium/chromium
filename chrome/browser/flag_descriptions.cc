@@ -4997,6 +4997,18 @@ const char kChimeAndroidSdkDescription[] =
     "Enable Chime SDK to receive push notification.";
 const char kChimeAndroidSdkName[] = "Use Chime SDK";
 
+const char kClientSideDetectionSendIntelligentScanInfoAndroidName[] =
+    "Client Side Detection Send Brand and Intent on Android";
+const char kClientSideDetectionSendIntelligentScanInfoAndroidDescription[] =
+    "Enables on device LLM output on pages to inquire for brand and intent of "
+    "the page on Android.";
+
+const char kClientSideDetectionShowScamVerdictWarningAndroidName[] =
+    "Client Side Detection Show Scam Verdict Warning on Android";
+const char kClientSideDetectionShowScamVerdictWarningAndroidDescription[] =
+    "Show warnings based on the scam verdict field in Client Side Detection "
+    "response on Android.";
+
 const char kClankDefaultBrowserPromoName[] = "Clank default browser promo 2";
 const char kClankDefaultBrowserPromoDescription[] =
     "When enabled, show additional non-intrusive entry points to allow users "

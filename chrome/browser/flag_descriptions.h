@@ -2893,6 +2893,12 @@ extern const char kChimeAlwaysShowNotificationName[];
 extern const char kChimeAndroidSdkDescription[];
 extern const char kChimeAndroidSdkName[];
 
+extern const char kClientSideDetectionSendIntelligentScanInfoAndroidName[];
+extern const char kClientSideDetectionSendIntelligentScanInfoAndroidDescription[];
+
+extern const char kClientSideDetectionShowScamVerdictWarningAndroidName[];
+extern const char kClientSideDetectionShowScamVerdictWarningAndroidDescription[];
+
 extern const char kClankDefaultBrowserPromoName[];
 extern const char kClankDefaultBrowserPromoDescription[];
 

@@ -12003,12 +12003,32 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          safe_browsing::kClientSideDetectionBrandAndIntentForScamDetection)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"client-side-detection-send-intelligent-scan-info-android",
+     flag_descriptions::kClientSideDetectionSendIntelligentScanInfoAndroidName,
+     flag_descriptions::
+         kClientSideDetectionSendIntelligentScanInfoAndroidDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         safe_browsing::kClientSideDetectionSendIntelligentScanInfoAndroid)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     {"client-side-detection-show-scam-verdict-warning",
      flag_descriptions::kClientSideDetectionShowScamVerdictWarningName,
      flag_descriptions::kClientSideDetectionShowScamVerdictWarningDescription,
      kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(
          safe_browsing::kClientSideDetectionShowScamVerdictWarning)},
+
+#if BUILDFLAG(IS_ANDROID)
+    {"client-side-detection-show-scam-verdict-warning-android",
+     flag_descriptions::kClientSideDetectionShowScamVerdictWarningAndroidName,
+     flag_descriptions::
+         kClientSideDetectionShowScamVerdictWarningAndroidDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         safe_browsing::kClientSideDetectionShowScamVerdictWarningAndroid)},
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
     {"enable-keyboard-used-palm-suppression",
