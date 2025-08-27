@@ -9,7 +9,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <unordered_set>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -29,6 +28,7 @@
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/processor_entity_tracker.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace sync_pb {
 class DataTypeState;
@@ -212,7 +212,7 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
   // Caches EntityData from the `data_batch` in the entity and checks
   // that every entity in `storage_keys_to_load` was successfully loaded (or is
   // not tracked by the processor any more). Reports failed checks to UMA.
-  void ConsumeDataBatch(std::unordered_set<std::string> storage_keys_to_load,
+  void ConsumeDataBatch(absl::flat_hash_set<std::string> storage_keys_to_load,
                         std::unique_ptr<DataBatch> data_batch);
 
   // Prepares Commit requests and passes them to the GetLocalChanges callback.
