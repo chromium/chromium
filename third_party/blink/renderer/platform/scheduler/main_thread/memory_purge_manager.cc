@@ -124,7 +124,19 @@ void MemoryPurgeManager::SetRendererBackgrounded(bool backgrounded) {
 }
 
 void MemoryPurgeManager::OnRendererBackgrounded() {
-  if (!kPurgeOnBackgroundingEnabled || purge_disabled_for_testing_) {
+  if (purge_disabled_for_testing_) {
+    return;
+  }
+
+  if (!kPurgeOnBackgroundingEnabled) {
+#if BUILDFLAG(IS_ANDROID)
+    // If we do not freeze renderers, we want to trigger compaction directly
+    // when we are backgrounded here.
+    if (!base::FeatureList::IsEnabled(features::kStopInBackground)) {
+      base::android::SelfCompactionManager::RequestRunningCompactWithDelay(
+          GetTimeToPurgeAfterBackgrounded());
+    }
+#endif
     return;
   }
 

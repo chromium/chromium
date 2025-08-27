@@ -32,6 +32,7 @@ class BASE_EXPORT SelfCompactionManager {
   using CompactCancellationReason = CompactCancellationReason;
   static void OnSelfFreeze();
   static void OnRunningCompact();
+  static void RequestRunningCompactWithDelay(const TimeDelta delay);
 
   // If we are currently doing self compaction, cancel it. If it was running,
   // record a metric with the reason for the cancellation.
@@ -159,6 +160,8 @@ class BASE_EXPORT SelfCompactionManager {
   void OnTriggerCompact(scoped_refptr<SequencedTaskRunner> task_runner);
   void OnTriggerCompact(std::unique_ptr<CompactionState> state)
       EXCLUSIVE_LOCKS_REQUIRED(lock());
+  static void OnTriggerRunningCompact(std::unique_ptr<CompactionState> state)
+      LOCKS_EXCLUDED(lock());
   void StartCompaction(std::unique_ptr<CompactionState> state)
       LOCKS_EXCLUDED(lock());
   void MaybePostCompactionTask(std::unique_ptr<CompactionState> state,
