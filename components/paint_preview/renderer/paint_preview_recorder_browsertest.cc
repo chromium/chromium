@@ -277,7 +277,7 @@ TEST_P(PaintPreviewRecorderRenderViewTest,
   // Scroll offset should be within the [0, 500] bounds.
   EXPECT_THAT(out_response->geometry_metadata->scroll_offsets.x(),
               AllOf(Gt(0), Lt(500)));
-  EXPECT_THAT(out_response->geometry_metadata->scroll_offsets.x(),
+  EXPECT_THAT(out_response->geometry_metadata->scroll_offsets.y(),
               AllOf(Gt(0), Lt(500)));
 
   // Both frame offsets should be > 0 in this case.
@@ -335,7 +335,7 @@ TEST_P(PaintPreviewRecorderRenderViewTest,
   // Scroll offset should be within the [0, 500] bounds.
   EXPECT_THAT(out_response->geometry_metadata->scroll_offsets.x(),
               AllOf(Gt(0), Lt(500)));
-  EXPECT_THAT(out_response->geometry_metadata->scroll_offsets.x(),
+  EXPECT_THAT(out_response->geometry_metadata->scroll_offsets.y(),
               AllOf(Gt(0), Lt(500)));
 
   // Only Y frame offset should be > 0 in this case.
@@ -394,7 +394,7 @@ TEST_P(PaintPreviewRecorderRenderViewTest,
   // Scroll offset should be within the [0, 500] bounds.
   EXPECT_THAT(out_response->geometry_metadata->scroll_offsets.x(),
               AllOf(Gt(0), Lt(500)));
-  EXPECT_THAT(out_response->geometry_metadata->scroll_offsets.x(),
+  EXPECT_THAT(out_response->geometry_metadata->scroll_offsets.y(),
               AllOf(Gt(0), Lt(500)));
 
   // Only X frame offset should be > 0 in this case.
