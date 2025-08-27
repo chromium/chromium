@@ -16,6 +16,7 @@
 #include "base/task/current_thread.h"
 #include "base/test/android/content_uri_test_utils.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
 #include "base/uuid.h"
@@ -78,20 +79,6 @@ class MockStorage : public DevToolsFileHelper::Storage {
               (const GURL&),
               (override));
 };
-
-// testing::InvokeArgument<N> does not work with base::OnceCallback. Use this
-// gmock action template to invoke base::OnceCallback. `k` is the k-th argument
-// and `T` is the callback's type.
-ACTION_TEMPLATE(InvokeCallbackArgument,
-                HAS_2_TEMPLATE_PARAMS(int, k, typename, T),
-                AND_0_VALUE_PARAMS()) {
-  std::move(const_cast<T&>(std::get<k>(args))).Run();
-}
-ACTION_TEMPLATE(InvokeCallbackArgument,
-                HAS_2_TEMPLATE_PARAMS(int, k, typename, T),
-                AND_1_VALUE_PARAMS(p0)) {
-  std::move(const_cast<T&>(std::get<k>(args))).Run(p0);
-}
 
 }  // namespace
 
@@ -270,7 +257,7 @@ TEST_F(DevToolsFileHelperTest, AppendContentUri) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(DevToolsFileHelperTest, AddFileSystemWithIllegalTypeAutomatic) {
-  EXPECT_CALL(delegate(), FileSystemAdded("<illegal type>", IsNull())).Times(1);
+  EXPECT_CALL(delegate(), FileSystemAdded("<illegal type>", IsNull()));
 
   file_helper()->AddFileSystem("automatic", base::DoNothing(),
                                base::DoNothing());
@@ -280,7 +267,7 @@ TEST_F(DevToolsFileHelperTest, AddFileSystemWithIllegalTypeAutomatic) {
 }
 
 TEST_F(DevToolsFileHelperTest, AddFileSystemWithIllegalTypeUUID) {
-  EXPECT_CALL(delegate(), FileSystemAdded("<illegal type>", IsNull())).Times(1);
+  EXPECT_CALL(delegate(), FileSystemAdded("<illegal type>", IsNull()));
 
   file_helper()->AddFileSystem(
       base::Uuid::GenerateRandomV4().AsLowercaseString(), base::DoNothing(),
@@ -292,10 +279,8 @@ TEST_F(DevToolsFileHelperTest, AddFileSystemWithIllegalTypeUUID) {
 
 TEST_F(DevToolsFileHelperTest, AddFileSystemWithSelectionCanceled) {
   base::MockCallback<DevToolsFileHelper::SelectFileCallback> select_file_cb;
-  EXPECT_CALL(select_file_cb, Run)
-      .WillOnce(InvokeCallbackArgument<1, base::OnceCallback<void(void)>>());
-  EXPECT_CALL(delegate(), FileSystemAdded("<selection cancelled>", IsNull()))
-      .Times(1);
+  EXPECT_CALL(select_file_cb, Run).WillOnce(base::test::RunOnceClosure<1>());
+  EXPECT_CALL(delegate(), FileSystemAdded("<selection cancelled>", IsNull()));
 
   file_helper()->AddFileSystem("", select_file_cb.Get(), base::DoNothing());
 
@@ -305,8 +290,8 @@ TEST_F(DevToolsFileHelperTest, AddFileSystemWithSelectionCanceled) {
 
 TEST_F(DevToolsFileHelperTest, ConnectAutomaticFileSystemWithRelativePath) {
   base::MockCallback<DevToolsFileHelper::ConnectCallback> connect_cb;
-  EXPECT_CALL(connect_cb, Run(false)).Times(1);
-  EXPECT_CALL(delegate(), FileSystemAdded("<illegal path>", IsNull())).Times(1);
+  EXPECT_CALL(connect_cb, Run(false));
+  EXPECT_CALL(delegate(), FileSystemAdded("<illegal path>", IsNull()));
 
   file_helper()->ConnectAutomaticFileSystem(
       "path/to/folder", base::Uuid::GenerateRandomV4(),
@@ -321,8 +306,8 @@ TEST_F(DevToolsFileHelperTest, ConnectAutomaticFileSystemWithNonExistentPath) {
   ASSERT_TRUE(td.CreateUniqueTempDir());
   base::FilePath path = td.GetPath().AppendASCII("NonExistent");
   base::MockCallback<DevToolsFileHelper::ConnectCallback> connect_cb;
-  EXPECT_CALL(connect_cb, Run(false)).Times(1);
-  EXPECT_CALL(delegate(), FileSystemAdded("<illegal path>", IsNull())).Times(1);
+  EXPECT_CALL(connect_cb, Run(false));
+  EXPECT_CALL(delegate(), FileSystemAdded("<illegal path>", IsNull()));
 
   base::RunLoop run_loop;
   ON_CALL(delegate(), FileSystemAdded).WillByDefault([&] { run_loop.Quit(); });
@@ -340,7 +325,7 @@ TEST_F(DevToolsFileHelperTest, ConnectAutomaticFileSystemButNotAddingMissing) {
   ASSERT_TRUE(td.CreateUniqueTempDir());
   base::FilePath path = td.GetPath();
   base::MockCallback<DevToolsFileHelper::ConnectCallback> connect_cb;
-  EXPECT_CALL(connect_cb, Run(false)).Times(1);
+  EXPECT_CALL(connect_cb, Run(false));
 
   file_helper()->ConnectAutomaticFileSystem(
       path.AsUTF8Unsafe(), base::Uuid::GenerateRandomV4(),
@@ -357,12 +342,10 @@ TEST_F(DevToolsFileHelperTest, ConnectAutomaticFileSystemInfoBarDenied) {
   base::MockCallback<DevToolsFileHelper::HandlePermissionsCallback>
       handle_permissions_callback;
   EXPECT_CALL(handle_permissions_callback, Run)
-      .WillOnce(
-          InvokeCallbackArgument<2, base::OnceCallback<void(bool)>>(false));
+      .WillOnce(base::test::RunOnceCallback<2>(false));
   base::MockCallback<DevToolsFileHelper::ConnectCallback> connect_cb;
-  EXPECT_CALL(connect_cb, Run(false)).Times(1);
-  EXPECT_CALL(delegate(), FileSystemAdded("<permission denied>", IsNull()))
-      .Times(1);
+  EXPECT_CALL(connect_cb, Run(false));
+  EXPECT_CALL(delegate(), FileSystemAdded("<permission denied>", IsNull()));
 
   base::RunLoop run_loop;
   ON_CALL(delegate(), FileSystemAdded).WillByDefault([&] { run_loop.Quit(); });
@@ -393,11 +376,10 @@ TEST_F(DevToolsFileHelperTest, ConnectAutomaticFileSystemAlreadyKnown) {
       handle_permissions_callback;
   EXPECT_CALL(handle_permissions_callback, Run).Times(0);
   base::MockCallback<DevToolsFileHelper::ConnectCallback> connect_cb;
-  EXPECT_CALL(connect_cb, Run(true)).Times(1);
+  EXPECT_CALL(connect_cb, Run(true));
   EXPECT_CALL(storage(), RegisterFileSystem(path, "automatic"))
       .WillOnce(Return(file_system));
-  EXPECT_CALL(delegate(), FileSystemAdded(IsEmpty(), Pointee(file_system)))
-      .Times(1);
+  EXPECT_CALL(delegate(), FileSystemAdded(IsEmpty(), Pointee(file_system)));
 
   base::RunLoop run_loop;
   ON_CALL(delegate(), FileSystemAdded).WillByDefault([&] { run_loop.Quit(); });
@@ -425,14 +407,12 @@ TEST_F(DevToolsFileHelperTest, ConnectAutomaticFileSystemNewlyAdded) {
   base::MockCallback<DevToolsFileHelper::HandlePermissionsCallback>
       handle_permissions_callback;
   EXPECT_CALL(handle_permissions_callback, Run)
-      .WillOnce(
-          InvokeCallbackArgument<2, base::OnceCallback<void(bool)>>(true));
+      .WillOnce(base::test::RunOnceCallback<2>(true));
   base::MockCallback<DevToolsFileHelper::ConnectCallback> connect_cb;
-  EXPECT_CALL(connect_cb, Run(true)).Times(1);
+  EXPECT_CALL(connect_cb, Run(true));
   EXPECT_CALL(storage(), RegisterFileSystem(path, "automatic"))
       .WillOnce(Return(file_system));
-  EXPECT_CALL(delegate(), FileSystemAdded(IsEmpty(), Pointee(file_system)))
-      .Times(1);
+  EXPECT_CALL(delegate(), FileSystemAdded(IsEmpty(), Pointee(file_system)));
 
   base::RunLoop run_loop;
   ON_CALL(delegate(), FileSystemAdded).WillByDefault([&] { run_loop.Quit(); });
@@ -466,11 +446,10 @@ TEST_F(DevToolsFileHelperTest, ConnectAndDisconnectKnownAutomaticFileSystem) {
       handle_permissions_callback;
   EXPECT_CALL(handle_permissions_callback, Run).Times(0);
   base::MockCallback<DevToolsFileHelper::ConnectCallback> connect_cb;
-  EXPECT_CALL(connect_cb, Run(true)).Times(1);
+  EXPECT_CALL(connect_cb, Run(true));
   EXPECT_CALL(storage(), RegisterFileSystem(path, "automatic"))
       .WillOnce(Return(file_system));
-  EXPECT_CALL(delegate(), FileSystemAdded(IsEmpty(), Pointee(file_system)))
-      .Times(1);
+  EXPECT_CALL(delegate(), FileSystemAdded(IsEmpty(), Pointee(file_system)));
 
   {
     // Connect the known automatic file system.
@@ -487,8 +466,8 @@ TEST_F(DevToolsFileHelperTest, ConnectAndDisconnectKnownAutomaticFileSystem) {
     EXPECT_TRUE(file_helper()->IsFileSystemAdded(path.AsUTF8Unsafe()));
   }
 
-  EXPECT_CALL(storage(), UnregisterFileSystem(path)).Times(1);
-  EXPECT_CALL(delegate(), FileSystemRemoved(path.AsUTF8Unsafe())).Times(1);
+  EXPECT_CALL(storage(), UnregisterFileSystem(path));
+  EXPECT_CALL(delegate(), FileSystemRemoved(path.AsUTF8Unsafe()));
 
   {
     // Disconnect the previously connected automatic file system.

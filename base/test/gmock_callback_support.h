@@ -104,6 +104,9 @@ auto RunOnceClosure() {
 // the N-th (0-based) argument of the mock function, with arguments p1, p2, ...,
 // p_k.
 //
+// Since testing::InvokeArgument<N> does not work with base::OnceCallback, use
+// this and other helpers in this header to support mocking callbacks.
+//
 // Notes:
 //
 //   1. The arguments are passed by value by default.  If you need to
