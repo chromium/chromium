@@ -39,7 +39,7 @@ public class AddToBookmarksToolbarButtonController extends BaseButtonDataProvide
         implements ConfigurationChangedObserver {
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final Supplier<TabBookmarker> mTabBookmarkerSupplier;
-    private final Supplier<Tracker> mTrackerSupplier;
+    private final Supplier<@Nullable Tracker> mTrackerSupplier;
     private final ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
     private final ButtonSpec mFilledButtonSpec;
     private final ButtonSpec mEmptyButtonSpec;
@@ -86,7 +86,7 @@ public class AddToBookmarksToolbarButtonController extends BaseButtonDataProvide
             Context context,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             Supplier<TabBookmarker> tabBookmarkerSupplier,
-            Supplier<Tracker> trackerSupplier,
+            Supplier<@Nullable Tracker> trackerSupplier,
             ObservableSupplier<BookmarkModel> bookmarkModelSupplier) {
         // By default use the empty star drawable with an "Add to bookmarks" description.
         super(
@@ -187,12 +187,10 @@ public class AddToBookmarksToolbarButtonController extends BaseButtonDataProvide
         Tab activeTab = mActiveTabSupplier.get();
         if (tabBookmarker == null || activeTab == null) return;
 
-        var tracker = mTrackerSupplier.get();
+        Tracker tracker = mTrackerSupplier.get();
         if (tracker != null) {
-            mTrackerSupplier
-                    .get()
-                    .notifyEvent(
-                            EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_ADD_TO_BOOKMARKS_OPENED);
+            tracker.notifyEvent(
+                    EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_ADD_TO_BOOKMARKS_OPENED);
         }
 
         RecordUserAction.record("MobileTopToolbarAddToBookmarksButton");

@@ -36,7 +36,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 @NullMarked
 public class ShareButtonController extends BaseButtonDataProvider {
     private final ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
-    private final Supplier<Tracker> mTrackerSupplier;
+    private final Supplier<@Nullable Tracker> mTrackerSupplier;
     private final Runnable mOnShareRunnable;
 
     /**
@@ -57,7 +57,7 @@ public class ShareButtonController extends BaseButtonDataProvider {
             Drawable buttonDrawable,
             ActivityTabProvider tabProvider,
             ObservableSupplier<ShareDelegate> shareDelegateSupplier,
-            Supplier<Tracker> trackerSupplier,
+            Supplier<@Nullable Tracker> trackerSupplier,
             ModalDialogManager modalDialogManager,
             Runnable onShareRunnable) {
         super(
@@ -94,11 +94,9 @@ public class ShareButtonController extends BaseButtonDataProvider {
         }
         shareDelegate.share(tab, /* shareDirectly= */ false, ShareOrigin.TOP_TOOLBAR);
 
-        var tracker = mTrackerSupplier.get();
+        Tracker tracker = mTrackerSupplier.get();
         if (tracker != null) {
-            mTrackerSupplier
-                    .get()
-                    .notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SHARE_OPENED);
+            tracker.notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SHARE_OPENED);
         }
     }
 

@@ -9,6 +9,7 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -36,6 +37,7 @@ import org.chromium.url.GURL;
  * A class that manages activity-specific interactions with the BottomSheet component that it
  * otherwise shouldn't know about.
  */
+@NullMarked
 class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObserver {
     /** A means of accessing the focus state of the omnibox. */
     private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
@@ -52,7 +54,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
     private final CallbackController mCallbackController;
 
     private final OneshotSupplier<LayoutStateProvider> mLayoutStateProviderSupplier;
-    private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
+    private final LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
 
     private final ExpandedSheetHelper mExpandedSheetHelper;
 
@@ -76,7 +78,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
     private final Callback<@Nullable Tab> mOnActiveTabChanged = this::setActivityTab;
 
     /** The last known activity tab, if available. */
-    private Tab mLastActivityTab;
+    private @Nullable Tab mLastActivityTab;
 
     /**
      * Used to track whether the active content has a custom scrim lifecycle. This is kept here
@@ -106,9 +108,23 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
         mCallbackController = new CallbackController();
         mExpandedSheetHelper = expandedSheetHelper;
 
+        mLayoutStateObserver =
+                new LayoutStateObserver() {
+                    // On switching to a new layout act as though this is a tab switch by clearing
+                    // all state. Use onStartedHiding to avoid the bottom sheet being visible
+                    // during the transition if there is one.
+                    @Override
+                    public void onStartedHiding(int layoutType) {
+                        if (layoutType != LayoutType.SIMPLE_ANIMATION) {
+                            mSheetController.clearRequestsAndHide();
+                        }
+                    }
+                };
+
         mLayoutStateProviderSupplier = layoutStateProviderSupplier;
         mLayoutStateProviderSupplier.onAvailable(
-                mCallbackController.makeCancelable(this::addLayoutStateObserver));
+                mCallbackController.makeCancelable(
+                        (provider) -> provider.addObserver(mLayoutStateObserver)));
 
         mSheetController.addObserver(this);
 
@@ -184,7 +200,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
         mOmniboxFocusStateSupplier.addObserver(mOmniboxFocusObserver);
     }
 
-    private void setActivityTab(Tab tab) {
+    private void setActivityTab(@Nullable Tab tab) {
         if (tab == null) return;
         if (mLastActivityTab == tab) return;
 
@@ -193,23 +209,6 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
         mLastActivityTab = tab;
         mLastActivityTab.addObserver(mTabObserver);
         mSheetController.clearRequestsAndHide();
-    }
-
-    private void addLayoutStateObserver(LayoutStateProvider layoutStateProvider) {
-        mLayoutStateObserver =
-                new LayoutStateObserver() {
-                    // On switching to a new layout act as though this is a tab switch by clearing
-                    // all state. Use onStartedHiding to avoid the bottom sheet being visible
-                    // during the transition if there is one.
-                    @Override
-                    public void onStartedHiding(int layoutType) {
-                        if (layoutType != LayoutType.SIMPLE_ANIMATION) {
-                            mSheetController.clearRequestsAndHide();
-                        }
-                    }
-                };
-
-        layoutStateProvider.addObserver(mLayoutStateObserver);
     }
 
     @Override

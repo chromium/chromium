@@ -39,26 +39,31 @@ import java.util.Locale;
 @NullMarked
 public class DiscountsBottomSheetContentMediator {
     private final Context mContext;
-    private final Supplier<Tab> mTabSupplier;
+    private final Supplier<@Nullable Tab> mTabSupplier;
     private final ModelList mModelList;
 
     private boolean mCopyButtonClickedHistogramRecorded;
 
     public DiscountsBottomSheetContentMediator(
-            Context context, Supplier<Tab> tabSupplier, ModelList modelList) {
+            Context context, Supplier<@Nullable Tab> tabSupplier, ModelList modelList) {
         mContext = context;
         mTabSupplier = tabSupplier;
         mModelList = modelList;
     }
 
     public void requestShowContent(Callback<Boolean> contentReadyCallback) {
-        ShoppingService shoppingService =
-                ShoppingServiceFactory.getForProfile(mTabSupplier.get().getProfile());
+        Tab tab = mTabSupplier.get();
+        if (tab == null) {
+            contentReadyCallback.onResult(false);
+            return;
+        }
+        ShoppingService shoppingService = ShoppingServiceFactory.getForProfile(tab.getProfile());
         if (shoppingService == null || !shoppingService.isDiscountEligibleToShowOnNavigation()) {
             contentReadyCallback.onResult(false);
+            return;
         }
         shoppingService.getDiscountInfoForUrl(
-                mTabSupplier.get().getUrl(),
+                tab.getUrl(),
                 (url, infoList) -> {
                     updateModelList(infoList);
                     contentReadyCallback.onResult(mModelList.size() > 0);

@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.Window;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 
@@ -18,6 +17,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -54,6 +55,7 @@ import org.chromium.ui.util.ColorUtils;
  *
  * <p>TODO(crbug.com/40915553): Prevent initialization of StatusBarColorController for automotive.
  */
+@NullMarked
 public class StatusBarColorController
         implements DestroyObserver,
                 StatusIndicatorCoordinator.StatusIndicatorObserver,
@@ -67,17 +69,16 @@ public class StatusBarColorController
     /** Provides the base status bar color. */
     public interface StatusBarColorProvider {
         /**
-         * @return The base status bar color to override default colors used in the
-         *         {@link StatusBarColorController}. If this returns
-         *         {@link #DEFAULT_STATUS_BAR_COLOR}, {@link StatusBarColorController} will use the
-         *         default status bar color.
-         *         If this returns a color other than {@link #UNDEFINED_STATUS_BAR_COLOR} and
-         *         {@link #DEFAULT_STATUS_BAR_COLOR}, the {@link StatusBarColorController} will
-         *         always use the color provided by this method to adjust the status bar color.
-         *         This color may be used as-is or adjusted due to a scrim overlay.
+         * @return The base status bar color to override default colors used in the {@link
+         *     StatusBarColorController}. If this returns {@link #DEFAULT_STATUS_BAR_COLOR}, {@link
+         *     StatusBarColorController} will use the default status bar color. If this returns a
+         *     color other than {@link #UNDEFINED_STATUS_BAR_COLOR} and {@link
+         *     #DEFAULT_STATUS_BAR_COLOR}, the {@link StatusBarColorController} will always use the
+         *     color provided by this method to adjust the status bar color. This color may be used
+         *     as-is or adjusted due to a scrim overlay.
          */
         @ColorInt
-        int getBaseStatusBarColor(Tab tab);
+        int getBaseStatusBarColor(@Nullable Tab tab);
     }
 
     private final Window mWindow;
@@ -120,10 +121,10 @@ public class StatusBarColorController
     private boolean mAllowToolbarColorOnTablets;
 
     // Desktop window states.
-    private DesktopWindowStateManager mDesktopWindowStateManager;
+    private @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private boolean mIsTopResumedActivity;
 
-    private @Nullable NtpCustomizationConfigManager.HomepageStateListener mHomepageStateListener;
+    private NtpCustomizationConfigManager.@Nullable HomepageStateListener mHomepageStateListener;
 
     private final LayoutStateObserver mLayoutStateObserver =
             new LayoutStateObserver() {
@@ -236,7 +237,7 @@ public class StatusBarColorController
                     }
 
                     @Override
-                    protected void onObservingDifferentTab(Tab tab, boolean hint) {
+                    protected void onObservingDifferentTab(@Nullable Tab tab, boolean hint) {
                         mCurrentTab = tab;
                         mShouldUpdateStatusBarColorForNtp = isStandardNtp();
 
@@ -299,6 +300,7 @@ public class StatusBarColorController
 
     // DestroyObserver implementation.
     @Override
+    @SuppressWarnings("NullAway")
     public void onDestroy() {
         mStatusBarColorTabObserver.destroy();
         if (mLayoutStateProvider != null) {

@@ -9,6 +9,8 @@ import android.view.View;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
@@ -19,6 +21,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.commerce.core.ShoppingService.PriceInsightsInfo;
 
+@NullMarked
 public class PriceInsightsDelegateImpl implements PriceInsightsDelegate {
 
     private final Context mContext;
@@ -68,7 +71,7 @@ public class PriceInsightsDelegateImpl implements PriceInsightsDelegate {
     }
 
     @Override
-    public View getPriceHistoryChartForPriceInsightsInfo(PriceInsightsInfo info) {
+    public @Nullable View getPriceHistoryChartForPriceInsightsInfo(PriceInsightsInfo info) {
         return AppHooks.get().getLineChartForPriceInsightsInfo(mContext, info);
     }
 }

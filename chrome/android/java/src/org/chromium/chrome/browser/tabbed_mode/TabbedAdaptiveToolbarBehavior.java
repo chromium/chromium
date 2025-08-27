@@ -75,7 +75,8 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
 
     @Override
     public void registerPerSurfaceButtons(
-            AdaptiveToolbarButtonController controller, Supplier<Tracker> trackerSupplier) {
+            AdaptiveToolbarButtonController controller,
+            Supplier<@Nullable Tracker> trackerSupplier) {
         var newTabButton =
                 new OptionalNewTabButtonController(
                         mContext,

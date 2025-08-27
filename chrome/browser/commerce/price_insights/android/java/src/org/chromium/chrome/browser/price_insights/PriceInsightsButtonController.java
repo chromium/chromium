@@ -51,7 +51,7 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
     private @Nullable PriceInsightsBottomSheetCoordinator mBottomSheetCoordinator;
     private @Nullable PriceInsightsBottomSheetCoordinator mBottomSheetCoordinatorForTesting;
 
-    Supplier<CommerceBottomSheetContentController> mCommerceBottomSheetContentController;
+    Supplier<@Nullable CommerceBottomSheetContentController> mCommerceBottomSheetContentController;
 
     public PriceInsightsButtonController(
             Context context,
@@ -63,7 +63,8 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
             SnackbarManager snackbarManager,
             PriceInsightsDelegate priceInsightsDelegate,
             Drawable buttonDrawable,
-            Supplier<CommerceBottomSheetContentController> commerceBottomSheetContentController) {
+            Supplier<@Nullable CommerceBottomSheetContentController>
+                    commerceBottomSheetContentController) {
         super(
                 tabSupplier,
                 modalDialogManager,

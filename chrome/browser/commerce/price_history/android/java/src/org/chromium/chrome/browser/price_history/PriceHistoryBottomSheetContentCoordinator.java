@@ -29,7 +29,7 @@ public class PriceHistoryBottomSheetContentCoordinator
 
     public PriceHistoryBottomSheetContentCoordinator(
             Context context,
-            Supplier<Tab> tabSupplier,
+            Supplier<@Nullable Tab> tabSupplier,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             PriceInsightsDelegate priceInsightsDelegate) {
         mPriceHistoryContentContainer =

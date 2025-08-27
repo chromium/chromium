@@ -31,7 +31,7 @@ public final class UrlFormatter {
      *  - "0x100.0" -> "http://0x100.0/" (invalid)
      * </pre>
      */
-    public static GURL fixupUrl(String uri) {
+    public static GURL fixupUrl(@Nullable String uri) {
         if (TextUtils.isEmpty(uri)) return GURL.emptyGURL();
         GURL.ensureNativeInitializedForGURL();
         return UrlFormatterJni.get().fixupUrl(uri);

@@ -1102,7 +1102,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     }
 
     @Override
-    public int getBaseStatusBarColor(Tab tab) {
+    public int getBaseStatusBarColor(@Nullable Tab tab) {
         return StatusBarColorController.UNDEFINED_STATUS_BAR_COLOR;
     }
 

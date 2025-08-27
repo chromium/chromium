@@ -41,7 +41,8 @@ public class DiscountsBottomSheetContentCoordinator implements CommerceBottomShe
     private final RecyclerView mContentRecyclerView;
     private final DiscountsBottomSheetContentMediator mMediator;
 
-    public DiscountsBottomSheetContentCoordinator(Context context, Supplier<Tab> tabSupplier) {
+    public DiscountsBottomSheetContentCoordinator(
+            Context context, Supplier<@Nullable Tab> tabSupplier) {
         mContext = context;
         mModelList = new ModelList();
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(mModelList);

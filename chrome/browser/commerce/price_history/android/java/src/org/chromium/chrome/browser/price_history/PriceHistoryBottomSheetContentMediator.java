@@ -39,7 +39,7 @@ import org.chromium.url.GURL;
 @NullMarked
 public class PriceHistoryBottomSheetContentMediator {
     private final Context mContext;
-    private final Supplier<Tab> mTabSupplier;
+    private final Supplier<@Nullable Tab> mTabSupplier;
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final PropertyModel mPropertyModel;
     private final PriceInsightsDelegate mPriceInsightsDelegate;
@@ -48,7 +48,7 @@ public class PriceHistoryBottomSheetContentMediator {
 
     public PriceHistoryBottomSheetContentMediator(
             Context context,
-            Supplier<Tab> tabSupplier,
+            Supplier<@Nullable Tab> tabSupplier,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             PropertyModel propertyModel,
             PriceInsightsDelegate priceInsightsDelegate) {
@@ -60,17 +60,22 @@ public class PriceHistoryBottomSheetContentMediator {
     }
 
     public void requestShowContent(Callback<Boolean> contentReadyCallback) {
-        ShoppingService shoppingService =
-                ShoppingServiceFactory.getForProfile(mTabSupplier.get().getProfile());
+        Tab tab = mTabSupplier.get();
+        if (tab == null) {
+            contentReadyCallback.onResult(false);
+            return;
+        }
+        ShoppingService shoppingService = ShoppingServiceFactory.getForProfile(tab.getProfile());
         if (shoppingService == null || !shoppingService.isPriceInsightsEligible()) {
             contentReadyCallback.onResult(false);
+            return;
         }
         shoppingService.getPriceInsightsInfoForUrl(
-                mTabSupplier.get().getUrl(),
+                tab.getUrl(),
                 (url, info) -> {
                     boolean hasPriceInsightInfo = isValidPriceInsightsInfo(info);
                     if (hasPriceInsightInfo) {
-                        updatePriceInsightsInfo(assertNonNull(info));
+                        updatePriceInsightsInfo(assertNonNull(info), tab);
                     }
                     contentReadyCallback.onResult(hasPriceInsightInfo);
                 });
@@ -84,8 +89,8 @@ public class PriceHistoryBottomSheetContentMediator {
                 && !info.catalogHistoryPrices.isEmpty();
     }
 
-    private void updatePriceInsightsInfo(PriceInsightsInfo info) {
-        mPropertyModel.set(PRICE_HISTORY_CHART_CONTENT_DESCRIPTION, mTabSupplier.get().getTitle());
+    private void updatePriceInsightsInfo(PriceInsightsInfo info, Tab tab) {
+        mPropertyModel.set(PRICE_HISTORY_CHART_CONTENT_DESCRIPTION, tab.getTitle());
         mPriceBucket = info.priceBucket;
         @StringRes int priceHistoryTitleResId = R.string.price_history_title;
         boolean hasMultipleCatalogs =

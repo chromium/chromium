@@ -24,6 +24,7 @@ import androidx.browser.customtabs.ExperimentalOpenInBrowser;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
@@ -97,7 +98,8 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
     @ExperimentalOpenInBrowser
     @Override
     public void registerPerSurfaceButtons(
-            AdaptiveToolbarButtonController controller, Supplier<Tracker> trackerSupplier) {
+            AdaptiveToolbarButtonController controller,
+            Supplier<@Nullable Tracker> trackerSupplier) {
         if (ChromeFeatureList.sCctAdaptiveButtonEnableVoice.getValue()) {
             mRegisterVoiceSearchRunnable.run();
         }

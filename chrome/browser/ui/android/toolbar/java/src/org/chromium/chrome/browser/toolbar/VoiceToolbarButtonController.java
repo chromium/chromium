@@ -36,7 +36,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
  */
 @NullMarked
 public class VoiceToolbarButtonController extends BaseButtonDataProvider {
-    private final Supplier<Tracker> mTrackerSupplier;
+    private final Supplier<@Nullable Tracker> mTrackerSupplier;
 
     private final VoiceSearchDelegate mVoiceSearchDelegate;
 
@@ -57,7 +57,7 @@ public class VoiceToolbarButtonController extends BaseButtonDataProvider {
      * @param context The context for retrieving string resources.
      * @param buttonDrawable Drawable for the voice button.
      * @param activeTabSupplier Provides the currently displayed {@link Tab}.
-     * @param trackerSupplier  Supplier for the current profile tracker.
+     * @param trackerSupplier Supplier for the current profile tracker.
      * @param modalDialogManager Dispatcher for modal lifecycle events
      * @param voiceSearchDelegate Provides interaction with voice search.
      */
@@ -65,7 +65,7 @@ public class VoiceToolbarButtonController extends BaseButtonDataProvider {
             Context context,
             Drawable buttonDrawable,
             Supplier<@Nullable Tab> activeTabSupplier,
-            Supplier<Tracker> trackerSupplier,
+            Supplier<@Nullable Tracker> trackerSupplier,
             ModalDialogManager modalDialogManager,
             VoiceSearchDelegate voiceSearchDelegate) {
         super(
@@ -87,11 +87,9 @@ public class VoiceToolbarButtonController extends BaseButtonDataProvider {
         RecordUserAction.record("MobileTopToolbarVoiceButton");
         mVoiceSearchDelegate.startVoiceRecognition();
 
-        var tracker = mTrackerSupplier.get();
+        Tracker tracker = mTrackerSupplier.get();
         if (tracker != null) {
-            mTrackerSupplier
-                    .get()
-                    .notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_VOICE_SEARCH_OPENED);
+            tracker.notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_VOICE_SEARCH_OPENED);
         }
     }
 

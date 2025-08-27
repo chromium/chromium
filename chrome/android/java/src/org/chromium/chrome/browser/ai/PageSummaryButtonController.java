@@ -33,7 +33,7 @@ public class PageSummaryButtonController extends BaseButtonDataProvider {
 
     private final Context mContext;
     private final AiAssistantService mAiAssistantService;
-    private final Supplier<Tracker> mTrackerSupplier;
+    private final Supplier<@Nullable Tracker> mTrackerSupplier;
 
     private final ButtonSpec mPageSummarySpec;
     private final ButtonSpec mReviewPdfSpec;
@@ -50,7 +50,7 @@ public class PageSummaryButtonController extends BaseButtonDataProvider {
             ModalDialogManager modalDialogManager,
             Supplier<@Nullable Tab> activeTabSupplier,
             AiAssistantService aiAssistantService,
-            Supplier<Tracker> tracker) {
+            Supplier<@Nullable Tracker> tracker) {
         super(
                 activeTabSupplier,
                 /* modalDialogManager= */ modalDialogManager,
@@ -101,7 +101,10 @@ public class PageSummaryButtonController extends BaseButtonDataProvider {
                 isPdfPage(activeTab)
                         ? EventConstants.ADAPTIVE_TOOLBAR_PAGE_SUMMARY_PDF_USED
                         : EventConstants.ADAPTIVE_TOOLBAR_PAGE_SUMMARY_WEB_USED;
-        mTrackerSupplier.get().notifyEvent(trackerEvent);
+        Tracker tracker = mTrackerSupplier.get();
+        if (tracker != null) {
+            tracker.notifyEvent(trackerEvent);
+        }
 
         mAiAssistantService.showAi(mContext, activeTab);
     }

@@ -61,7 +61,7 @@ public class PriceInsightsBottomSheetCoordinator {
          * @param info The price insights info data.
          * @return The view of the price history chart.
          */
-        View getPriceHistoryChartForPriceInsightsInfo(PriceInsightsInfo info);
+        @Nullable View getPriceHistoryChartForPriceInsightsInfo(PriceInsightsInfo info);
     }
 
     private final BottomSheetController mBottomSheetController;

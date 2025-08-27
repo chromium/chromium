@@ -32,7 +32,7 @@ public class PriceTrackingBottomSheetContentCoordinator
 
     public PriceTrackingBottomSheetContentCoordinator(
             Context context,
-            Supplier<Tab> tabSupplier,
+            Supplier<@Nullable Tab> tabSupplier,
             PriceInsightsDelegate priceInsightsDelegate) {
         mContext = context;
         mPriceTrackingContentContainer =

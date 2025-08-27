@@ -2909,7 +2909,7 @@ public class ToolbarManager
      * @param text The URL bar text. {@code null} if no text is to be set.
      */
     public void setUrlBarFocusAndText(
-            boolean focused, @OmniboxFocusReason int reason, String text) {
+            boolean focused, @OmniboxFocusReason int reason, @Nullable String text) {
         if (!mInitializedWithNative) return;
         if (mLocationBar.getOmniboxStub() == null) return;
         boolean wasFocused = mLocationBar.getOmniboxStub().isUrlBarFocused();

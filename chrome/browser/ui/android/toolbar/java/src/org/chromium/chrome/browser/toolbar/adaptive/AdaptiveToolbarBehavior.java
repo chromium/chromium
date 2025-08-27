@@ -8,6 +8,7 @@ import android.content.Context;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -60,7 +61,8 @@ public interface AdaptiveToolbarBehavior {
      * @param trackerSupplier {@link Tracker} supplier buttons need for instantiation.
      */
     void registerPerSurfaceButtons(
-            AdaptiveToolbarButtonController controller, Supplier<Tracker> trackerSupplier);
+            AdaptiveToolbarButtonController controller,
+            Supplier<@Nullable Tracker> trackerSupplier);
 
     /**
      * Filter the segmentation results and pick the one to display on the UI.
@@ -89,7 +91,8 @@ public interface AdaptiveToolbarBehavior {
         return new AdaptiveToolbarBehavior() {
             @Override
             public void registerPerSurfaceButtons(
-                    AdaptiveToolbarButtonController controller, Supplier<Tracker> trackerSupplier) {
+                    AdaptiveToolbarButtonController controller,
+                    Supplier<@Nullable Tracker> trackerSupplier) {
                 // Not implemented by design. Default behavior object is used for
                 // AdaptiveToolbarStatePredictor while this method is used by
                 // AdaptiveToolbarUiCoordinator only.

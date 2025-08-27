@@ -9,26 +9,30 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** This class is the java version of the commerce component's feature_utils. */
 @JNINamespace("commerce")
 @NullMarked
 public class CommerceFeatureUtils {
-
-    public static boolean isShoppingListEligible(ShoppingService shoppingService) {
+    @Contract("null -> false")
+    public static boolean isShoppingListEligible(@Nullable ShoppingService shoppingService) {
         return shoppingService != null
                 && CommerceFeatureUtilsJni.get()
                         .isShoppingListEligible(shoppingService.getNativePtr());
     }
 
-    public static boolean isDiscountInfoApiEnabled(ShoppingService shoppingService) {
+    @Contract("null -> false")
+    public static boolean isDiscountInfoApiEnabled(@Nullable ShoppingService shoppingService) {
         return shoppingService != null
                 && CommerceFeatureUtilsJni.get()
                         .isDiscountInfoApiEnabled(shoppingService.getNativePtr());
     }
 
-    public static boolean isPriceAnnotationsEnabled(ShoppingService shoppingService) {
+    @Contract("null -> false")
+    public static boolean isPriceAnnotationsEnabled(@Nullable ShoppingService shoppingService) {
         return shoppingService != null
                 && CommerceFeatureUtilsJni.get()
                         .isPriceAnnotationsEnabled(shoppingService.getNativePtr());
