@@ -990,6 +990,28 @@ TEST(AccessTokenTest, AddSecurityAttribute) {
   std::wstring name = L"TEST://CHROMEATTR";
   ASSERT_TRUE(dup->AddSecurityAttribute(name, /*inherit=*/false));
   CheckSecurityAttribute(*dup, name);
+  EXPECT_TRUE(dup->HasSecurityAttribute(name).value_or(false));
+}
+
+TEST(AccessTokenTest, HasSecurityAttribute) {
+  std::optional<AccessToken> token = AccessToken::FromCurrentProcess();
+  ASSERT_TRUE(token);
+  // Empirically, this SA is present on every process token.
+  EXPECT_TRUE(token->HasSecurityAttribute(L"TSA://ProcUnique").value_or(false));
+  EXPECT_FALSE(token->HasSecurityAttribute(L"InvalidSA").value_or(true));
+}
+
+TEST(AccessTokenTest, AnonymousTokenHasNoSecurityAttributes) {
+  ATL::CAccessToken atl_anon_token;
+  ASSERT_TRUE(::ImpersonateAnonymousToken(::GetCurrentThread()));
+  bool result = atl_anon_token.GetThreadToken(TOKEN_QUERY);
+  ASSERT_TRUE(result);
+  ::RevertToSelf();
+  std::optional<AccessToken> anon_token =
+      AccessToken::FromToken(atl_anon_token.GetHandle());
+  ASSERT_TRUE(anon_token);
+  EXPECT_FALSE(
+      anon_token->HasSecurityAttribute(L"TSA://ProcUnique").value_or(true));
 }
 
 }  // namespace base::win

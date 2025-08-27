@@ -326,6 +326,11 @@ class BASE_EXPORT AccessToken {
   // have SeTcbPrivilege enabled to successfully add the attribute.
   bool AddSecurityAttribute(const std::wstring& name, bool inherit);
 
+  // Returns whether or not the token has the specified security attribute. The
+  // value of the security attribute is ignored. Returns std::nullopt if the
+  // token's security attributes could not be queried.
+  std::optional<bool> HasSecurityAttribute(const std::wstring& name) const;
+
   // Indicates if the AccessToken object is valid.
   bool is_valid() const;
 

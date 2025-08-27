@@ -286,6 +286,17 @@ std::optional<DWORD> AdjustPrivilege(const ScopedHandle& token,
   return attributes;
 }
 
+inline std::optional<std::wstring> UnicodeStringToWString(
+    const UNICODE_STRING& us) {
+  if (!us.Buffer || !us.Length) {
+    return std::nullopt;
+  }
+
+  const size_t length = us.Length / sizeof(wchar_t);
+
+  return std::wstring(us.Buffer, us.Buffer + length);
+}
+
 }  // namespace
 
 bool AccessToken::Group::IsIntegrity() const {
@@ -759,6 +770,33 @@ bool AccessToken::AddSecurityAttribute(const std::wstring& name, bool inherit) {
   info.Operations = &op;
 
   return Set(token_, TokenSecurityAttributes, info);
+}
+
+std::optional<bool> AccessToken::HasSecurityAttribute(
+    const std::wstring& name) const {
+  std::optional<std::vector<char>> buffer =
+      GetTokenInfo(token_.get(), TokenSecurityAttributes);
+  if (!buffer) {
+    return std::nullopt;
+  }
+
+  const auto* info = GetType<TOKEN_SECURITY_ATTRIBUTES_INFORMATION>(buffer);
+
+  if (info->Version != TOKEN_SECURITY_ATTRIBUTES_INFORMATION_VERSION_V1) {
+    return std::nullopt;
+  }
+
+  for (ULONG i = 0; i < info->AttributeCount; ++i) {
+    const auto attr_name = UnicodeStringToWString(info->pAttributeV1[i].Name);
+    if (!attr_name) {
+      return false;
+    }
+    if (*attr_name == name) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 bool AccessToken::is_valid() const {
