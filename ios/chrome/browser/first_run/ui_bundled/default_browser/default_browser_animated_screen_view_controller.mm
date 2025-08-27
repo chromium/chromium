@@ -99,7 +99,16 @@ const CGFloat kTitleTopMarginWhenNoHeaderImage = 30;
 
   UIStackView* contentStack = [self contentStack];
   [self.specificContentView addSubview:contentStack];
-  AddSameConstraints(contentStack, self.specificContentView);
+  [NSLayoutConstraint activateConstraints:@[
+    [contentStack.leadingAnchor
+        constraintEqualToAnchor:self.specificContentView.leadingAnchor],
+    [contentStack.trailingAnchor
+        constraintEqualToAnchor:self.specificContentView.trailingAnchor],
+    [contentStack.bottomAnchor
+        constraintEqualToAnchor:self.specificContentView.bottomAnchor],
+    [contentStack.topAnchor
+        constraintGreaterThanOrEqualToAnchor:self.specificContentView.topAnchor]
+  ]];
 
   [super viewDidLoad];
 }
@@ -133,6 +142,12 @@ const CGFloat kTitleTopMarginWhenNoHeaderImage = 30;
   UIStackView* stack = [[UIStackView alloc] initWithArrangedSubviews:@[
     _animationViewWrapper.animationView,
     _animationViewWrapperDarkMode.animationView
+  ]];
+  [NSLayoutConstraint activateConstraints:@[
+    [_animationViewWrapper.animationView.widthAnchor
+        constraintEqualToAnchor:stack.widthAnchor],
+    [_animationViewWrapperDarkMode.animationView.widthAnchor
+        constraintEqualToAnchor:stack.widthAnchor],
   ]];
 
   if ([self shouldShowInstructions]) {
