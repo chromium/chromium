@@ -355,6 +355,10 @@ class CreditCardSaveManager {
   // the server.
   bool ShouldRequestCvcInclusiveLegalMessage() const;
 
+  // Returns true if the CVC save flow is allowed. This is the case if CVC
+  // storage is enabled and the client supports saving CVC.
+  bool IsCvcSaveFlowAllowed() const;
+
   PaymentsDataManager& payments_data_manager();
   const PaymentsDataManager& payments_data_manager() const;
 

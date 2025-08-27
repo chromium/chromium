@@ -455,7 +455,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   void IncrementPaymentMethodsMandatoryReauthPromoShownCounter();
 
   // Returns true if the user pref to store CVC is enabled.
-  virtual bool IsPaymentCvcStorageEnabled();
+  virtual bool IsPaymentCvcStorageEnabled() const;
   // Config the user pref to enable CVC storage.
   void SetPaymentsCvcStorageEnabled(bool enabled);
 

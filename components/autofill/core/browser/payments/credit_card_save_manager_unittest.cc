@@ -1417,10 +1417,10 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_FeatureNotEnabled) {
   histogram_tester.ExpectTotalCount("Autofill.CardUploadDecisionMetric", 0);
 }
 
-// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
-// permanently if the test doesn't apply to iOS flow.
-#if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_CvcUnavailable) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnableCvcStorageAndFilling);
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
@@ -1462,12 +1462,11 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_CvcUnavailable) {
   ExpectCardUploadDecisionUkm(autofill_metrics::UPLOAD_OFFERED |
                               autofill_metrics::CVC_VALUE_NOT_FOUND);
 }
-#endif
 
-// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
-// permanently if the test doesn't apply to iOS flow.
-#if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_CvcInvalidLength) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnableCvcStorageAndFilling);
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
@@ -1506,12 +1505,11 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_CvcInvalidLength) {
   ExpectCardUploadDecisionUkm(autofill_metrics::UPLOAD_OFFERED |
                               autofill_metrics::INVALID_CVC_VALUE);
 }
-#endif
 
-// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
-// permanently if the test doesn't apply to iOS flow.
-#if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_MultipleCvcFields) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnableCvcStorageAndFilling);
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
@@ -1566,12 +1564,11 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_MultipleCvcFields) {
   // Verify that the correct UKM was logged.
   ExpectCardUploadDecisionUkm(autofill_metrics::UPLOAD_OFFERED);
 }
-#endif
 
-// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
-// permanently if the test doesn't apply to iOS flow.
-#if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoCvcFieldOnForm) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnableCvcStorageAndFilling);
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
@@ -1624,13 +1621,12 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoCvcFieldOnForm) {
   ExpectCardUploadDecisionUkm(autofill_metrics::UPLOAD_OFFERED |
                               autofill_metrics::CVC_FIELD_NOT_FOUND);
 }
-#endif
 
-// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
-// permanently if the test doesn't apply to iOS flow.
-#if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_NoCvcFieldOnForm_InvalidCvcInNonCvcField) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnableCvcStorageAndFilling);
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
@@ -1686,13 +1682,12 @@ TEST_F(CreditCardSaveManagerTest,
   ExpectCardUploadDecisionUkm(autofill_metrics::UPLOAD_OFFERED |
                               autofill_metrics::CVC_FIELD_NOT_FOUND);
 }
-#endif
 
-// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
-// permanently if the test doesn't apply to iOS flow.
-#if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_NoCvcFieldOnForm_CvcInNonCvcField) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnableCvcStorageAndFilling);
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
@@ -1750,13 +1745,12 @@ TEST_F(CreditCardSaveManagerTest,
       autofill_metrics::UPLOAD_OFFERED |
       autofill_metrics::FOUND_POSSIBLE_CVC_VALUE_IN_NON_CVC_FIELD);
 }
-#endif
 
-// TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
-// permanently if the test doesn't apply to iOS flow.
-#if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_NoCvcFieldOnForm_CvcInAddressField) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnableCvcStorageAndFilling);
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
   FormData address_form = CreateTestAddressFormData();
@@ -1812,7 +1806,6 @@ TEST_F(CreditCardSaveManagerTest,
   ExpectCardUploadDecisionUkm(autofill_metrics::UPLOAD_OFFERED |
                               autofill_metrics::CVC_FIELD_NOT_FOUND);
 }
-#endif
 
 // TODO(crbug.com/40710040): Create an equivalent test for iOS, or skip
 // permanently if the test doesn't apply to iOS flow.
@@ -5876,8 +5869,12 @@ TEST_F(CreditCardSaveManagerTest, LocallySaveCreditCard_ClearStrikesOnAdd) {
   EXPECT_EQ(0, credit_card_save_strike_database.GetStrikes("1111"));
 }
 
-#if !BUILDFLAG(IS_IOS)
 TEST_F(CreditCardSaveManagerTest, LocallySaveCreditCard_WithCvc_PrefOn) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnableCvcStorageAndFilling);
+  // On iOS WebView, save with cvc is not enabled.
+  autofill_client_.set_is_cvc_saving_supported(true);
   prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(), true);
   credit_card_save_manager_->SetCreditCardUploadEnabled(false);
 
@@ -5908,6 +5905,11 @@ TEST_F(CreditCardSaveManagerTest, LocallySaveCreditCard_WithCvc_PrefOn) {
 }
 
 TEST_F(CreditCardSaveManagerTest, LocallySaveCreditCard_WithCvc_PrefOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnableCvcStorageAndFilling);
+  // On iOS WebView, save with cvc is not enabled.
+  autofill_client_.set_is_cvc_saving_supported(true);
   prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(), false);
   credit_card_save_manager_->SetCreditCardUploadEnabled(false);
 
@@ -5936,7 +5938,46 @@ TEST_F(CreditCardSaveManagerTest, LocallySaveCreditCard_WithCvc_PrefOff) {
                      .front()
                      ->cvc());
 }
-#endif  // !BUILDFLAG(IS_IOS)
+
+#if BUILDFLAG(IS_IOS)
+// Verify CVC is not saved in iOS WebView, even when the pref is on.
+TEST_F(CreditCardSaveManagerTest,
+       LocallySaveCreditCard_WithCvc_PrefOn_UnsupportedClient) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnableCvcStorageAndFilling);
+  // Simulate the iOS WebView context.
+  autofill_client_.set_is_cvc_saving_supported(false);
+  prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(), true);
+  credit_card_save_manager_->SetCreditCardUploadEnabled(false);
+
+  // Set up our credit card form data.
+  FormData credit_card_form = CreateTestCreditCardFormData();
+  FormsSeen(std::vector<FormData>(1, credit_card_form));
+  ExpectFillableFormParsedUkm(1 /* num_fillable_forms_parsed */);
+
+  // Edit the data, and submit.
+  test_api(credit_card_form).field(0).set_value(u"Jane Doe");
+  test_api(credit_card_form).field(1).set_value(u"4111111111111111");
+  test_api(credit_card_form)
+      .field(2)
+      .set_value(ASCIIToUTF16(test::NextMonth()));
+  test_api(credit_card_form).field(3).set_value(ASCIIToUTF16(test::NextYear()));
+  test_api(credit_card_form).field(4).set_value(u"123");
+
+  FormSubmitted(credit_card_form);
+
+  EXPECT_FALSE(credit_card_save_manager_->CreditCardWasUploaded());
+  EXPECT_EQ(
+      1u, personal_data().payments_data_manager().GetLocalCreditCards().size());
+  // CVC should be empty because it should have been cleared for iOS WebView.
+  EXPECT_EQ(u"", personal_data()
+                     .payments_data_manager()
+                     .GetLocalCreditCards()
+                     .front()
+                     ->cvc());
+}
+#endif
 
 // Tests that adding a card clears all strikes for that card.
 TEST_F(CreditCardSaveManagerTest, UploadCreditCard_ClearStrikesOnAdd) {
@@ -6343,11 +6384,13 @@ TEST_F(CreditCardSaveManagerTest, ExistingServerCard_DifferentExpiration) {
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 }
 
-class SaveCvcTest
-    : public CreditCardSaveManagerTest,
-      public testing::WithParamInterface<
-          std::
-              tuple<bool, bool, FormDataImporter::CreditCardImportType, bool>> {
+class SaveCvcTest : public CreditCardSaveManagerTest,
+                    public testing::WithParamInterface<
+                        std::tuple<bool,
+                                   bool,
+                                   FormDataImporter::CreditCardImportType,
+                                   bool,
+                                   bool>> {
  public:
   SaveCvcTest() {
     feature_list.InitWithFeatureState(
@@ -6355,18 +6398,26 @@ class SaveCvcTest
         IsSaveCvcFeatureEnabled());
     prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(),
                                 IsSaveCvcPrefEnabled());
+    autofill_client_.set_is_cvc_saving_supported(IsCvcSavingSupported());
   }
+
   // This bool indicates if save CVC storage flag is enabled.
   bool IsSaveCvcFeatureEnabled() const { return std::get<0>(GetParam()); }
+
   // This bool indicates if user has opted-in to the features on the settings
   // page.
   bool IsSaveCvcPrefEnabled() const { return std::get<1>(GetParam()); }
+
   // Returns the credit card import type.
   FormDataImporter::CreditCardImportType CreditCardImportType() const {
     return std::get<2>(GetParam());
   }
+
   // This bool indicates whether the user has credit card upload enabled.
   bool IsCreditCardUpstreamEnabled() const { return std::get<3>(GetParam()); }
+
+  // This bool indicates whether the client supports saving CVC.
+  bool IsCvcSavingSupported() const { return std::get<4>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList feature_list;
@@ -6390,7 +6441,8 @@ TEST_P(SaveCvcTest, OnDidUploadCard_SaveServerCvc) {
 
   // Confirm CVC is added to PaymentsAutofillTable only if CVC storage feature
   // and pref were enabled.
-  if (IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled()) {
+  if (IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled() &&
+      IsCvcSavingSupported()) {
     EXPECT_CALL(payments_data_manager(), AddServerCvc(kInstrumentId, kCvc));
   } else {
     EXPECT_CALL(payments_data_manager(), AddServerCvc).Times(0);
@@ -6470,7 +6522,8 @@ TEST_P(SaveCvcTest, ShouldOfferCvcLocalSave) {
   CreditCard card = test::WithCvc(test::GetCreditCard(), u"123");
   personal_data().payments_data_manager().AddCreditCard(card);
   card.set_cvc(u"234");
-  if (IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled()) {
+  if (IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled() &&
+      IsCvcSavingSupported()) {
     EXPECT_TRUE(credit_card_save_manager_->ShouldOfferCvcSave(
         card, FormDataImporter::CreditCardImportType::kLocalCard,
         IsCreditCardUpstreamEnabled()));
@@ -6489,7 +6542,7 @@ TEST_P(SaveCvcTest, ShouldOfferCvcUploadSave) {
   personal_data().test_payments_data_manager().AddServerCreditCard(card);
   card.set_cvc(u"234");
   if (IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled() &&
-      IsCreditCardUpstreamEnabled()) {
+      IsCreditCardUpstreamEnabled() && IsCvcSavingSupported()) {
     EXPECT_TRUE(credit_card_save_manager_->ShouldOfferCvcSave(
         card, FormDataImporter::CreditCardImportType::kServerCard,
         IsCreditCardUpstreamEnabled()));
@@ -6516,13 +6569,22 @@ INSTANTIATE_TEST_SUITE_P(
             FormDataImporter::CreditCardImportType::kServerCard,
             FormDataImporter::CreditCardImportType::kLocalCard,
             FormDataImporter::CreditCardImportType::kDuplicateLocalServerCard),
-        testing::Bool()));
+        testing::Bool(),
+#if BUILDFLAG(IS_IOS)
+        testing::Bool()
+#else
+        testing::Values(false)
+#endif
+            ));
 
 class ProceedWithSavingIfApplicableTest
     : public CreditCardSaveManagerTest,
       public testing::WithParamInterface<
-          std::
-              tuple<bool, bool, FormDataImporter::CreditCardImportType, bool>> {
+          std::tuple<bool,
+                     bool,
+                     FormDataImporter::CreditCardImportType,
+                     bool,
+                     bool>> {
  public:
   ProceedWithSavingIfApplicableTest() {
     feature_list_.InitWithFeatureState(
@@ -6530,18 +6592,26 @@ class ProceedWithSavingIfApplicableTest
         IsSaveCvcFeatureEnabled());
     prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(),
                                 IsSaveCvcPrefEnabled());
+    autofill_client_.set_is_cvc_saving_supported(IsCvcSavingSupported());
   }
+
   // This bool indicates if save CVC storage flag is enabled.
   bool IsSaveCvcFeatureEnabled() const { return std::get<0>(GetParam()); }
+
   // This bool indicates if user has opted-in to the features on the settings
   // page.
   bool IsSaveCvcPrefEnabled() const { return std::get<1>(GetParam()); }
+
   // Returns the credit card import type.
   FormDataImporter::CreditCardImportType CreditCardImportType() const {
     return std::get<2>(GetParam());
   }
+
   // This bool indicates whether the user has credit card upload enabled.
   bool IsCreditCardUpstreamEnabled() const { return std::get<3>(GetParam()); }
+
+  // This bool indicates whether the client supports saving CVC.
+  bool IsCvcSavingSupported() const { return std::get<4>(GetParam()); }
 
   ukm::SourceId ukm_source_id() {
     return autofill_driver_->GetPageUkmSourceId();
@@ -6553,6 +6623,7 @@ class ProceedWithSavingIfApplicableTest
 
 // Tests that the correct SaveCardOption is passed.
 TEST_P(ProceedWithSavingIfApplicableTest, CardWithCorrectSaveCardOption) {
+  autofill_client_.set_is_cvc_saving_supported(IsCvcSavingSupported());
   prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(),
                               IsSaveCvcPrefEnabled());
   credit_card_save_manager_->SetCreditCardUploadEnabled(
@@ -6572,7 +6643,8 @@ TEST_P(ProceedWithSavingIfApplicableTest, CardWithCorrectSaveCardOption) {
   test_api(credit_card_form).field(4).set_value(u"123");
 
   auto card_save_type =
-      (IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled())
+      (IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled() &&
+       IsCvcSavingSupported())
           ? payments::PaymentsAutofillClient::CardSaveType::kCardSaveWithCvc
           : payments::PaymentsAutofillClient::CardSaveType::kCardSaveOnly;
 
@@ -6635,7 +6707,7 @@ TEST_P(ProceedWithSavingIfApplicableTest, ProceedWithSavingIfApplicable_Cvc) {
       IsCreditCardUpstreamEnabled(), ukm_source_id());
   EXPECT_EQ(credit_card_save_manager_->CvcLocalSaveStarted(),
             IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled() &&
-                !IsCreditCardUpstreamEnabled());
+                !IsCreditCardUpstreamEnabled() && IsCvcSavingSupported());
 
   CreditCard server_card = test::WithCvc(test::GetMaskedServerCard(), u"123");
   personal_data().test_payments_data_manager().AddServerCreditCard(server_card);
@@ -6646,7 +6718,7 @@ TEST_P(ProceedWithSavingIfApplicableTest, ProceedWithSavingIfApplicable_Cvc) {
       IsCreditCardUpstreamEnabled(), ukm_source_id());
   EXPECT_EQ(credit_card_save_manager_->CvcUploadSaveStarted(),
             IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled() &&
-                IsCreditCardUpstreamEnabled());
+                IsCreditCardUpstreamEnabled() && IsCvcSavingSupported());
 }
 
 // Tests that ProceedWithSavingIfApplicable should initiate CVC save flow with
@@ -6669,7 +6741,8 @@ TEST_P(ProceedWithSavingIfApplicableTest,
       FormDataImporter::CreditCardImportType::kDuplicateLocalServerCard,
       /*is_credit_card_upstream_enabled=*/true, ukm_source_id());
   EXPECT_EQ(credit_card_save_manager_->CvcLocalSaveStarted(),
-            IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled());
+            IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled() &&
+                IsCvcSavingSupported());
   EXPECT_FALSE(credit_card_save_manager_->CvcUploadSaveStarted());
 }
 
@@ -6694,7 +6767,7 @@ TEST_P(ProceedWithSavingIfApplicableTest,
       IsCreditCardUpstreamEnabled(), ukm_source_id());
   EXPECT_EQ(credit_card_save_manager_->CvcUploadSaveStarted(),
             IsSaveCvcFeatureEnabled() && IsSaveCvcPrefEnabled() &&
-                IsCreditCardUpstreamEnabled());
+                IsCreditCardUpstreamEnabled() && IsCvcSavingSupported());
   EXPECT_FALSE(credit_card_save_manager_->CvcLocalSaveStarted());
 }
 
@@ -6709,7 +6782,13 @@ INSTANTIATE_TEST_SUITE_P(
             FormDataImporter::CreditCardImportType::kLocalCard,
             FormDataImporter::CreditCardImportType::kNewCard,
             FormDataImporter::CreditCardImportType::kDuplicateLocalServerCard),
-        testing::Bool()));
+        testing::Bool(),
+#if BUILDFLAG(IS_IOS)
+        testing::Bool()
+#else
+        testing::Values(false)
+#endif
+            ));
 
 // Tests that server CVC is not added to PaymentsAutofillTable during credit
 // card upload save if CVC was empty.

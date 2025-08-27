@@ -62,7 +62,7 @@ class TestPaymentsDataManager : public PaymentsDataManager {
   void SetPaymentMethodsMandatoryReauthEnabled(bool enabled) override;
   std::string SaveImportedCreditCard(
       const CreditCard& imported_credit_card) override;
-  bool IsPaymentCvcStorageEnabled() override;
+  bool IsPaymentCvcStorageEnabled() const override;
   bool IsSyncFeatureEnabledForPaymentsServerMetrics() const override;
   bool IsAutofillBnplPrefEnabled() const override;
   CoreAccountInfo GetAccountInfoForPaymentsServer() const override;

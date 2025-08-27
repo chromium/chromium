@@ -1313,7 +1313,7 @@ void PaymentsDataManager::
   prefs::IncrementPaymentMethodsMandatoryReauthPromoShownCounter(pref_service_);
 }
 
-bool PaymentsDataManager::IsPaymentCvcStorageEnabled() {
+bool PaymentsDataManager::IsPaymentCvcStorageEnabled() const {
   return base::FeatureList::IsEnabled(
              features::kAutofillEnableCvcStorageAndFilling) &&
          prefs::IsPaymentCvcStorageEnabled(pref_service_);

@@ -212,7 +212,7 @@ bool CreditCardSaveManager::ShouldOfferCvcSave(
     FormDataImporter::CreditCardImportType credit_card_import_type,
     bool is_credit_card_upstream_enabled) {
   // Only offer CVC save if CVC storage is enabled.
-  if (!payments_data_manager().IsPaymentCvcStorageEnabled()) {
+  if (!IsCvcSaveFlowAllowed()) {
     return false;
   }
 
@@ -279,8 +279,7 @@ bool CreditCardSaveManager::ProceedWithSavingIfApplicable(
 
   // If card upload is not allowed, we check if CVC save should be offer and
   // attempt to offer CVC save.
-  if (payments_data_manager().IsPaymentCvcStorageEnabled() &&
-      !card.cvc().empty()) {
+  if (!card.cvc().empty() && IsCvcSaveFlowAllowed()) {
     // We will only offer CVC-only save if the card is known to Autofill.
     const CreditCard* existing_credit_card = nullptr;
     if (card.record_type() == CreditCard::RecordType::kLocalCard) {
@@ -501,8 +500,7 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
 
   // Check if we should request the CVC-inclusive legal message and if the user
   // has enabled CVC storage.
-  if (ShouldRequestCvcInclusiveLegalMessage() &&
-      payments_data_manager().IsPaymentCvcStorageEnabled()) {
+  if (ShouldRequestCvcInclusiveLegalMessage() && IsCvcSaveFlowAllowed()) {
     upload_request_.client_behavior_signals.push_back(
         ClientBehaviorConstants::kOfferingToSaveCvc);
   }
@@ -571,9 +569,9 @@ void CreditCardSaveManager::OnDidUploadCard(
     GetCreditCardSaveStrikeDatabase()->ClearStrikes(
         base::UTF16ToUTF8(upload_request_.card.LastFourDigits()));
 
-    if (payments_data_manager().IsPaymentCvcStorageEnabled() &&
-        !upload_request_.card.cvc().empty() &&
-        upload_card_response_details.instrument_id.has_value()) {
+    if (!upload_request_.card.cvc().empty() &&
+        upload_card_response_details.instrument_id.has_value() &&
+        IsCvcSaveFlowAllowed()) {
       // After a card is successfully saved to server, if CVC storage is
       // enabled, save server CVC to PaymentsAutofillTable if it exists.
       payments_data_manager().AddServerCvc(
@@ -787,8 +785,7 @@ void CreditCardSaveManager::OfferCardLocalSave() {
   payments::PaymentsAutofillClient::CardSaveType card_save_type =
       payments::PaymentsAutofillClient::CardSaveType::kCardSaveOnly;
   // Show `kCardSaveWithCvc` prompt if flag is on and CVC is not empty.
-  if (!card_save_candidate_.cvc().empty() &&
-      payments_data_manager().IsPaymentCvcStorageEnabled()) {
+  if (!card_save_candidate_.cvc().empty() && IsCvcSaveFlowAllowed()) {
     card_save_type =
         payments::PaymentsAutofillClient::CardSaveType::kCardSaveWithCvc;
   }
@@ -849,8 +846,7 @@ void CreditCardSaveManager::OfferCardUploadSave(ukm::SourceId ukm_source_id) {
   payments::PaymentsAutofillClient::CardSaveType card_save_type =
       payments::PaymentsAutofillClient::CardSaveType::kCardSaveOnly;
   // Show `kCardSaveWithCvc` prompt if flag is on and CVC is not empty.
-  if (!upload_request_.card.cvc().empty() &&
-      payments_data_manager().IsPaymentCvcStorageEnabled()) {
+  if (!upload_request_.card.cvc().empty() && IsCvcSaveFlowAllowed()) {
     card_save_type =
         payments::PaymentsAutofillClient::CardSaveType::kCardSaveWithCvc;
   }
@@ -940,8 +936,7 @@ void CreditCardSaveManager::OnUserDidDecideOnLocalSave(
 
       // Clear the CVC value from the `card_save_candidate_` if CVC storage
       // isn't enabled.
-      if (!card_save_candidate_.cvc().empty() &&
-          !payments_data_manager().IsPaymentCvcStorageEnabled()) {
+      if (!card_save_candidate_.cvc().empty() && !IsCvcSaveFlowAllowed()) {
         card_save_candidate_.clear_cvc();
       }
 
@@ -1619,6 +1614,11 @@ bool CreditCardSaveManager::ShouldRequestCvcInclusiveLegalMessage() const {
   // was present in the form.
   return !upload_request_.card.cvc().empty();
 #endif  // BUILDFLAG(IS_IOS)
+}
+
+bool CreditCardSaveManager::IsCvcSaveFlowAllowed() const {
+  return client_->IsCvcSavingSupported() &&
+         payments_data_manager().IsPaymentCvcStorageEnabled();
 }
 
 PaymentsDataManager& CreditCardSaveManager::payments_data_manager() {

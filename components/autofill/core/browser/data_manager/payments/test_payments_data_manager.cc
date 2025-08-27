@@ -263,7 +263,7 @@ void TestPaymentsDataManager::SetPaymentMethodsMandatoryReauthEnabled(
   PaymentsDataManager::SetPaymentMethodsMandatoryReauthEnabled(enabled);
 }
 
-bool TestPaymentsDataManager::IsPaymentCvcStorageEnabled() {
+bool TestPaymentsDataManager::IsPaymentCvcStorageEnabled() const {
   if (payments_cvc_storage_enabled_.has_value()) {
     return payments_cvc_storage_enabled_.value();
   }
