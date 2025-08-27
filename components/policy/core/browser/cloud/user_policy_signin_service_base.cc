@@ -10,6 +10,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
@@ -48,6 +49,9 @@ em::DeviceRegisterRequest::Type GetCloudPolicyRegistrationType() {
 }
 
 }  // namespace
+
+constexpr char kRegisterCloudPolicyServiceHistogramName[] =
+    "Enterprise.RegisterCloudPolicyService";
 
 UserPolicySigninServiceBase::UserPolicySigninServiceBase(
     PrefService* local_state,
@@ -103,6 +107,7 @@ void UserPolicySigninServiceBase::FetchPolicyForSignedInUser(
     // `CloudPolicyManager` will initiate a policy fetch right after
     // initialization. Invoke `callback` after the policy is fetched.
     policy_fetch_callbacks().AddUnsafe(std::move(callback));
+    should_record_re_register_event = false;
     return;
   }
 
@@ -327,6 +332,7 @@ void UserPolicySigninServiceBase::RegisterForPolicyWithAccountId(
       base::Unretained(this), std::move(policy_client), std::move(callback));
   registration_helper_for_temporary_client_->StartRegistration(
       identity_manager(), account_id, std::move(registration_callback));
+  should_record_re_register_event = false;
 }
 
 void UserPolicySigninServiceBase::SetDeviceDMTokenCallbackForTesting(
@@ -347,6 +353,15 @@ void UserPolicySigninServiceBase::RegisterCloudPolicyService() {
     return;
 
   UpdateLastPolicyCheckTime();
+
+  if (should_record_re_register_event) {
+    base::UmaHistogramEnumeration(
+        kRegisterCloudPolicyServiceHistogramName,
+        user_policy_manager_
+            ? RegisterCloudPolicyServiceEvent::kRegistrationWithGaia
+            : RegisterCloudPolicyServiceEvent::kRegistrationWithoutGaia);
+    should_record_re_register_event = false;
+  }
 
   // Start the process of registering the CloudPolicyClient. Once it completes,
   // policy fetch will automatically happen.
@@ -382,6 +397,13 @@ void UserPolicySigninServiceBase::
   if (manager->IsClientRegistered()) {
     DVLOG_POLICY(1, POLICY_FETCHING)
         << "Client already registered - not fetching DMToken";
+    if (should_record_re_register_event) {
+      base::UmaHistogramEnumeration(
+          kRegisterCloudPolicyServiceHistogramName,
+          RegisterCloudPolicyServiceEvent::kNoRegistration);
+      should_record_re_register_event = false;
+    }
+
     return;
   }
 

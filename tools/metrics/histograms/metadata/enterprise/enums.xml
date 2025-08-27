@@ -2628,6 +2628,12 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Timeout"/>
 </enum>
 
+<enum name="RegisterCloudPolicyServiceEvent">
+  <int value="0" label="No re-registration"/>
+  <int value="1" label="Re-registeringg with Gaia account"/>
+  <int value="2" label="Re-registeringg without Gaia account"/>
+</enum>
+
 <enum name="RemoteCommandExecutionStatus">
   <int value="0" label="Not initialized"/>
   <int value="1" label="Invalid"/>

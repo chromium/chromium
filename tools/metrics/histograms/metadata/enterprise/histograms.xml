@@ -3034,6 +3034,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.RegisterCloudPolicyService"
+    enum="RegisterCloudPolicyServiceEvent" expires_after="2026-08-01">
+  <owner>zmin@chromium.org</owner>
+  <owner>ydago@chromium.org</owner>
+  <summary>
+    Record number of the re-registration event when profile is loaded, likely
+    due to policy cache loading failure. The event is categorized by Gaia
+    account presence and existing registration status. This is different than
+    the re-registrations on CrOS that are triggered with the device not found
+    error.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.RegularUserSession.SessionLength" units="minutes"
     expires_after="2025-12-28">
   <owner>bfranz@chromium.org</owner>

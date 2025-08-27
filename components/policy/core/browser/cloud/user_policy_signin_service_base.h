@@ -36,6 +36,20 @@ class CloudPolicyClientRegistrationHelper;
 class CloudPolicyClient;
 class ProfileCloudPolicyManager;
 
+// Used to record the type of re-registration that happens when the browser is
+// restarted while the user is signed in but no cached DM token exists.
+// This is different than the re-registrations that happen on CrOS that are
+// triggered with the device not found error.
+extern const char POLICY_EXPORT kRegisterCloudPolicyServiceHistogramName[];
+// This enum is used for metrics. Entries should not be
+// renumbered and numeric values should never be reused.
+enum class RegisterCloudPolicyServiceEvent {
+  kNoRegistration = 0,
+  kRegistrationWithGaia,
+  kRegistrationWithoutGaia,
+  kMaxValue = kRegistrationWithoutGaia,
+};
+
 // The UserPolicySigninService is responsible for interacting with the policy
 // infrastructure (mainly CloudPolicyManager) to load policy for the signed
 // in user. This is the base class that contains shared behavior.
@@ -250,6 +264,11 @@ class POLICY_EXPORT UserPolicySigninServiceBase
   // `RegisterForPolicyWithAccountId()`.
   std::unique_ptr<CloudPolicyClientRegistrationHelper>
       registration_helper_for_temporary_client_;
+  // Used to track if we have tried registerd the profile before and publish
+  // metrics.
+  // It prevent logging re-register event for normal signin flow.
+  // It prevent logging re-register event multiple times.
+  bool should_record_re_register_event = true;
 
   // Callback to start the delayed registration. Cancelled when the service is
   // shut down.

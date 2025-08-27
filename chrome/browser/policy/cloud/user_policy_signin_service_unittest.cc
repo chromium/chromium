@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -313,6 +314,8 @@ class UserPolicySigninServiceTest : public testing::Test {
   // True if OnRegisterCompleted() was called.
   bool register_completed_;
 
+  base::HistogramTester histogram_tester_;
+
   testing::StrictMock<MockJobCreationHandler> job_creation_handler_;
   FakeDeviceManagementService device_management_service_{
       &job_creation_handler_};
@@ -507,6 +510,10 @@ TEST_F(UserPolicySigninServiceTest, UnregisteredClient) {
   // Client registration should be in progress since we have an oauth token.
   ASSERT_TRUE(IsRequestActive());
   EXPECT_TRUE(manager_->ArePoliciesRequired());
+
+  histogram_tester_.ExpectUniqueSample(
+      kRegisterCloudPolicyServiceHistogramName,
+      RegisterCloudPolicyServiceEvent::kRegistrationWithGaia, 1);
 }
 
 TEST_F(UserPolicySigninServiceTest, RegisteredClient) {
@@ -562,6 +569,10 @@ TEST_F(UserPolicySigninServiceTest, RegisteredClient) {
             job_type_1);
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
             job_type_2);
+
+  histogram_tester_.ExpectUniqueSample(
+      kRegisterCloudPolicyServiceHistogramName,
+      RegisterCloudPolicyServiceEvent::kNoRegistration, 1);
 }
 
 // Tests that the explicit policy registration can coexist with registration
@@ -972,6 +983,9 @@ TEST_F(UserPolicySigninServiceTest, SignOutThenSignInAgain) {
 
   // Now sign in again.
   ASSERT_NO_FATAL_FAILURE(TestSuccessfulSignin());
+
+  histogram_tester_.ExpectTotalCount(kRegisterCloudPolicyServiceHistogramName,
+                                     0);
 }
 
 }  // namespace
