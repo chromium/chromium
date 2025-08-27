@@ -115,7 +115,6 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
         {{optimization_guide::features::kOptimizationTargetPrediction, {}},
          {features::kSegmentationPlatformFeature, {}},
          {features::kSegmentationPlatformUkmEngine, {}},
-         {features::kContextualPageActionShareModel, {}},
          {features::kSegmentationPlatformTimeDelaySampling,
           {{"SamplingRate", "1"}}},
          {features::kSegmentationPlatformTabResumptionRanker, {}},
@@ -535,45 +534,6 @@ TEST_F(SegmentationPlatformServiceFactoryTest,
       /*expected_status=*/PredictionStatus::kSucceeded,
       /*expected_labels=*/
       std::vector<std::string>(1, kTabletProductivityUserModelLabelNone));
-}
-
-TEST_F(SegmentationPlatformServiceFactoryTest, TestContextualPageActionsShare) {
-  InitService();
-
-  PredictionOptions prediction_options;
-  prediction_options.on_demand_execution = true;
-
-  auto input_context = base::MakeRefCounted<InputContext>();
-  input_context->metadata_args.emplace(
-      segmentation_platform::kContextualPageActionModelInputDiscounts,
-      segmentation_platform::processing::ProcessedValue::FromFloat(1));
-  input_context->metadata_args.emplace(
-      segmentation_platform::kContextualPageActionModelInputPriceInsights,
-      segmentation_platform::processing::ProcessedValue::FromFloat(0));
-  input_context->metadata_args.emplace(
-      segmentation_platform::kContextualPageActionModelInputPriceTracking,
-      segmentation_platform::processing::ProcessedValue::FromFloat(0));
-  input_context->metadata_args.emplace(
-      segmentation_platform::kContextualPageActionModelInputReaderMode,
-      segmentation_platform::processing::ProcessedValue::FromFloat(0));
-  input_context->metadata_args.emplace(
-      segmentation_platform::kContextualPageActionModelInputTabGrouping,
-      segmentation_platform::processing::ProcessedValue::FromFloat(0));
-
-  ExpectGetClassificationResult(
-      kContextualPageActionsKey, prediction_options, input_context,
-      /*expected_status=*/PredictionStatus::kSucceeded,
-      /*expected_labels=*/
-      std::vector<std::string>(1, kContextualPageActionModelLabelDiscounts));
-  clock()->Advance(base::Seconds(
-      ContextualPageActionsModel::kShareOutputCollectionDelayInSec));
-
-  // TODO(crbug.com/40254472): Clean this up.
-  WaitAndCheckUkmRecord(
-      proto::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING,
-      /*inputs=*/
-      {SegmentationUkmHelper::FloatToInt64(1.f), 0, 0, 0, 0, 0, 0, 0},
-      /*outputs=*/{0, 0, 0, 0, 0, 0});
 }
 
 TEST_F(SegmentationPlatformServiceFactoryTest, TestFrequentFeatureModel) {

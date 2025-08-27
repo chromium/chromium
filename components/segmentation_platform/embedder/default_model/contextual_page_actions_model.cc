@@ -23,27 +23,6 @@ constexpr int kLabelInputSize = 5;
 constexpr SegmentId kSegmentId =
     SegmentId::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING;
 constexpr int64_t kOneDayInSeconds = 86400;
-// Parameters for share action model.
-constexpr std::array<MetadataWriter::UMAFeature, 6> kShareUMAFeatures = {
-    MetadataWriter::UMAFeature::FromUserAction(
-        "MobileMenuShare",
-        ContextualPageActionsModel::kShareOutputCollectionDelayInSec),
-    MetadataWriter::UMAFeature::FromUserAction(
-        "Omnibox.EditUrlSuggestion.Share",
-        ContextualPageActionsModel::kShareOutputCollectionDelayInSec),
-    MetadataWriter::UMAFeature::FromUserAction(
-        "MobileActionMode.Share",
-        ContextualPageActionsModel::kShareOutputCollectionDelayInSec),
-    MetadataWriter::UMAFeature::FromUserAction(
-        "MobileMenuDirectShare",
-        ContextualPageActionsModel::kShareOutputCollectionDelayInSec),
-    MetadataWriter::UMAFeature::FromUserAction(
-        "Omnibox.EditUrlSuggestion.Copy",
-        ContextualPageActionsModel::kShareOutputCollectionDelayInSec),
-    MetadataWriter::UMAFeature::FromUserAction(
-        "Tab.Screenshot",
-        ContextualPageActionsModel::kShareOutputCollectionDelayInSec),
-};
 
 constexpr std::array<const char*, kLabelInputSize>
     kContextualPageActionModelLabels = {
@@ -105,20 +84,6 @@ ContextualPageActionsModel::GetModelConfig() {
   (*tab_grouping_input->mutable_additional_args())["name"] =
       kContextualPageActionModelInputTabGrouping;
 
-  if (base::FeatureList::IsEnabled(features::kContextualPageActionShareModel)) {
-    // Add share related input features.
-    writer.AddUmaFeatures(kShareUMAFeatures.data(), kShareUMAFeatures.size(),
-                          false);
-
-    metadata.set_upload_tensors(true);
-
-    // Add share output collection with delay.
-    writer.AddDelayTrigger(
-        ContextualPageActionsModel::kShareOutputCollectionDelayInSec);
-    writer.AddUmaFeatures(kShareUMAFeatures.data(), kShareUMAFeatures.size(),
-                          true);
-  }
-
   // A threshold used to differentiate labels with score zero from non-zero
   // values.
   const float threshold = 0.1f;
@@ -135,13 +100,8 @@ ContextualPageActionsModel::GetModelConfig() {
 void ContextualPageActionsModel::ExecuteModelWithInput(
     const ModelProvider::Request& inputs,
     ExecutionCallback callback) {
-  size_t expected_input_size =
-      base::FeatureList::IsEnabled(features::kContextualPageActionShareModel)
-          ? kShareUMAFeatures.size() + kLabelInputSize
-          : kLabelInputSize;
-
   // Invalid inputs.
-  if (inputs.size() != expected_input_size) {
+  if (inputs.size() != kLabelInputSize) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;

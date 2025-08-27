@@ -5574,12 +5574,6 @@ const FeatureEntry kFeatureEntries[] = {
          chrome::android::kAdaptiveButtonInTopToolbarPageSummary,
          kAdaptiveButtonInTopToolbarPageSummaryVariations,
          "AdaptiveButtonInTopToolbarPageSummary")},
-    {"contextual-page-actions-share-model",
-     flag_descriptions::kContextualPageActionsShareModelName,
-     flag_descriptions::kContextualPageActionsShareModelDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         segmentation_platform::features::kContextualPageActionShareModel)},
-
     {"reader-mode-distill-in-app",
      flag_descriptions::kReaderModeDistillInAppName,
      flag_descriptions::kReaderModeDistillInAppDescription, kOsAndroid,

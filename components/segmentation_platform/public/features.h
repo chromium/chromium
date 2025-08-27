@@ -45,9 +45,6 @@ BASE_DECLARE_FEATURE(kSegmentationPlatformSearchUser);
 // Feature flag for device switcher segment.
 BASE_DECLARE_FEATURE(kSegmentationPlatformDeviceSwitcher);
 
-// Feature flag for enabling reader mode action feature.
-BASE_DECLARE_FEATURE(kContextualPageActionShareModel);
-
 // Feature flag for enabling tab grouping action feature.
 BASE_DECLARE_FEATURE(kContextualPageActionTabGrouping);
 
