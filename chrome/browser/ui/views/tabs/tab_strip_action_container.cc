@@ -1004,7 +1004,7 @@ void TabStripActionContainer::UpdateButtonBorders(
   if (glic_button_) {
     gfx::Insets glic_border;
     // GlicActorTaskIcon will only ever be shown alongside the GlicButton.
-    if (glic_actor_task_icon_) {
+    if (glic_actor_task_icon_ && glic_actor_task_icon_->IsDrawn()) {
       gfx::Insets task_icon_border =
           gfx::Insets().set_left_right(kOutsideBorderAroundGlicButtons,
                                        kInsideBorderAroundGlicButtons) +
