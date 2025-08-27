@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstring>
 #include <memory>
@@ -37,8 +38,7 @@
 #include "components/update_client/network.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
-#include "crypto/secure_hash.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -95,14 +95,10 @@ std::string GetCrxIdFromPublicKeyHash(base::span<const uint8_t> pk_hash) {
 
 bool VerifyFileHash256(const base::FilePath& filepath,
                        const std::string& expected_hash_str) {
-  std::vector<uint8_t> expected_hash;
-  if (!base::HexStringToBytes(expected_hash_str, &expected_hash) ||
-      expected_hash.size() != crypto::kSHA256Length) {
+  std::array<uint8_t, crypto::hash::kSha256Size> expected_hash;
+  if (!base::HexStringToSpan(expected_hash_str, expected_hash)) {
     return false;
   }
-
-  std::unique_ptr<crypto::SecureHash> hasher(
-      crypto::SecureHash::Create(crypto::SecureHash::SHA256));
 
   base::File file(filepath, base::File::FLAG_OPEN |
                                 base::File::FLAG_WIN_SEQUENTIAL_SCAN |
@@ -110,19 +106,13 @@ bool VerifyFileHash256(const base::FilePath& filepath,
   if (!file.IsValid()) {
     return false;
   }
-  auto buffer = base::HeapArray<uint8_t>::Uninit(4096);
-  std::optional<size_t> bytes_read = file.ReadAtCurrentPos(buffer);
-  while (bytes_read.value_or(0) > 0) {
-    hasher->Update(buffer.first(*bytes_read));
-    bytes_read = file.ReadAtCurrentPos(buffer);
-  }
-  if (!bytes_read) {
+
+  std::array<uint8_t, crypto::hash::kSha256Size> hash;
+  if (!crypto::hash::HashFile(crypto::hash::kSha256, &file, hash)) {
     return false;
   }
-  std::array<uint8_t, crypto::kSHA256Length> sha256_hash;
-  hasher->Finish(sha256_hash);
 
-  return base::span(sha256_hash) == base::span(expected_hash);
+  return base::span(hash) == base::span(expected_hash);
 }
 
 bool IsValidBrand(const std::string& brand) {
