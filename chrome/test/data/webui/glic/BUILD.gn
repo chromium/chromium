@@ -31,6 +31,7 @@ ts_library("build_extra_ts") {
     "test_client/page_element_types.ts",
     "test_client/sections/audio_capture.ts",
     "test_client/sections/get_page_context.ts",
+    "test_client/sections/page_metadata.ts",
     "test_client/sections/apc.ts",
     "test_client/sections/multi_tab.ts",
     "test_client/sections/scroll_to.ts",
@@ -63,6 +64,7 @@ preprocess_if_expr("move_html") {
     "browser_tests/test.html",
     "test_client/fre.html",
     "test_client/index.html",
+    "test_client/metadata_test_page.html",
   ]
   out_folder = out_dir
 }
