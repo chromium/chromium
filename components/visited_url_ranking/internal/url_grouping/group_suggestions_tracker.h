@@ -54,12 +54,25 @@ class GroupSuggestionsTracker {
       std::vector<scoped_refptr<segmentation_platform::InputContext>> inputs);
 
   // Retrieves a copy of the last cached suggestions. Does not clear the cache.
-  std::optional<CachedSuggestionsAndInputs> GetCachedSuggestions() const;
+  std::optional<CachedSuggestionsAndInputs> GetCachedSuggestions();
 
   // Invalidates the cached suggestions.
   void InvalidateCache();
 
  private:
+  struct CachedSuggestionsData {
+    CachedSuggestionsData(
+        GroupSuggestions suggestions,
+        std::vector<scoped_refptr<segmentation_platform::InputContext>> inputs);
+    ~CachedSuggestionsData();
+    CachedSuggestionsData(CachedSuggestionsData&&);
+    CachedSuggestionsData& operator=(CachedSuggestionsData&&);
+
+    GroupSuggestions suggestions;
+    std::vector<scoped_refptr<segmentation_platform::InputContext>> inputs;
+    base::Time cache_time;
+  };
+
   struct ShownSuggestion {
     ShownSuggestion();
     ~ShownSuggestion();
@@ -91,7 +104,7 @@ class GroupSuggestionsTracker {
 
   // Holds the last set of computed suggestions and their input contexts for the
   // GetCachedSuggestions API.
-  std::optional<CachedSuggestionsAndInputs> last_cached_suggestions_and_inputs_;
+  std::optional<CachedSuggestionsData> last_cached_suggestions_;
 };
 
 }  // namespace visited_url_ranking
