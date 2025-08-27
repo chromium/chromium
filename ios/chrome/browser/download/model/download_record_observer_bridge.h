@@ -11,7 +11,6 @@
 #import <string_view>
 
 #import "ios/chrome/browser/download/model/download_record_observer.h"
-#import "ios/web/public/download/download_task.h"
 
 struct DownloadRecord;
 
@@ -22,8 +21,10 @@ struct DownloadRecord;
 - (void)downloadRecordWasAdded:(const DownloadRecord&)record;
 
 // Called when a download record is updated.
-- (void)downloadRecordWasUpdatedWithID:(NSString*)downloadID
-                                 state:(int)newState;
+- (void)downloadRecordWasUpdated:(const DownloadRecord&)record;
+
+// Called when download records are removed.
+- (void)downloadsWereRemovedWithIDs:(NSArray<NSString*>*)downloadIDs;
 
 @end
 
@@ -42,8 +43,9 @@ class DownloadRecordObserverBridge : public DownloadRecordObserver {
 
   // DownloadRecordObserver implementation.
   void OnDownloadAdded(const DownloadRecord& record) override;
-  void OnDownloadUpdated(std::string_view download_id,
-                         web::DownloadTask::State new_state) override;
+  void OnDownloadUpdated(const DownloadRecord& record) override;
+  void OnDownloadsRemoved(
+      const std::vector<std::string_view>& download_ids) override;
 
  private:
   __weak id<DownloadRecordObserverDelegate> delegate_;

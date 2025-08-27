@@ -145,8 +145,11 @@
   [self updateConsumer];
 }
 
-- (void)downloadRecordWasUpdatedWithID:(NSString*)downloadID
-                                 state:(int)newState {
+- (void)downloadRecordWasUpdated:(const DownloadRecord&)record {
+  [self updateConsumer];
+}
+
+- (void)downloadsWereRemovedWithIDs:(NSArray<NSString*>*)downloadIDs {
   [self updateConsumer];
 }
 

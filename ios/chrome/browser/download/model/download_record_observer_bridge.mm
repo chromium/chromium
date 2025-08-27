@@ -6,7 +6,6 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/download/model/download_record.h"
-#import "ios/web/public/download/download_task.h"
 
 DownloadRecordObserverBridge::DownloadRecordObserverBridge(
     id<DownloadRecordObserverDelegate> delegate)
@@ -20,9 +19,20 @@ void DownloadRecordObserverBridge::OnDownloadAdded(
 }
 
 void DownloadRecordObserverBridge::OnDownloadUpdated(
-    std::string_view download_id,
-    web::DownloadTask::State new_state) {
-  NSString* ns_download_id = base::SysUTF8ToNSString(std::string(download_id));
-  [delegate_ downloadRecordWasUpdatedWithID:ns_download_id
-                                      state:static_cast<int>(new_state)];
+    const DownloadRecord& record) {
+  [delegate_ downloadRecordWasUpdated:record];
+}
+
+void DownloadRecordObserverBridge::OnDownloadsRemoved(
+    const std::vector<std::string_view>& download_ids) {
+  NSMutableArray<NSString*>* ns_download_ids =
+      [NSMutableArray arrayWithCapacity:download_ids.size()];
+
+  for (const auto& download_id : download_ids) {
+    NSString* ns_download_id =
+        base::SysUTF8ToNSString(std::string(download_id));
+    [ns_download_ids addObject:ns_download_id];
+  }
+
+  [delegate_ downloadsWereRemovedWithIDs:ns_download_ids];
 }

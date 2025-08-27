@@ -6,9 +6,9 @@
 #define IOS_CHROME_BROWSER_DOWNLOAD_MODEL_DOWNLOAD_RECORD_OBSERVER_H_
 
 #import <string_view>
+#import <vector>
 
 #import "base/observer_list_types.h"
-#import "ios/web/public/download/download_task.h"
 
 struct DownloadRecord;
 
@@ -18,9 +18,12 @@ class DownloadRecordObserver : public base::CheckedObserver {
   // Called when a new download started.
   virtual void OnDownloadAdded(const DownloadRecord& record) {}
 
-  // Called when a download's state changed.
-  virtual void OnDownloadUpdated(std::string_view download_id,
-                                 web::DownloadTask::State new_state) {}
+  // Called when a download updated.
+  virtual void OnDownloadUpdated(const DownloadRecord& record) {}
+
+  // Called when downloads were removed.
+  virtual void OnDownloadsRemoved(
+      const std::vector<std::string_view>& download_ids) {}
 };
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_MODEL_DOWNLOAD_RECORD_OBSERVER_H_
