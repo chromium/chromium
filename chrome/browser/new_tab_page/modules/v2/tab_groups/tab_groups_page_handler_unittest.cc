@@ -479,6 +479,37 @@ TEST_F(TabGroupsPageHandlerTest, GetSavedTabGroups_NoCacheGuid) {
   EXPECT_EQ(std::nullopt, result.value()[0]->device_name);
 }
 
+TEST_F(TabGroupsPageHandlerTest,
+       GetSavedTabGroups_DoNotReturnDeviceNameForCurrentDevice) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      ntp_features::kNtpTabGroupsModule, {});
+
+  // Create a tab group with a specific cache GUID.
+  const std::string kLocalCacheGuid = "local_device_guid";
+  std::vector<tab_groups::SavedTabGroup> groups;
+  groups.emplace_back(u"Group Title", tab_groups::TabGroupColorId::kGrey,
+                      std::vector<tab_groups::SavedTabGroupTab>{});
+  groups.back().SetUpdateTime(base::Time::Now());
+  groups.back().SetLastUpdaterCacheGuid(kLocalCacheGuid);
+
+  std::vector<const tab_groups::SavedTabGroup*> groups_ptr;
+  groups_ptr.push_back(&groups[0]);
+
+  ON_CALL(*mock_device_info_tracker(), IsRecentLocalCacheGuid(kLocalCacheGuid))
+      .WillByDefault(testing::Return(true));
+  EXPECT_CALL(*mock_device_info_tracker(), GetDeviceInfo(kLocalCacheGuid))
+      .Times(0);
+  EXPECT_CALL(*service(), ReadAllGroups())
+      .WillOnce(testing::Return(groups_ptr));
+
+  auto result = RunGetTabGroups();
+
+  ASSERT_TRUE(result.has_value());
+  ASSERT_EQ(1u, result->size());
+  EXPECT_EQ(std::nullopt, result.value()[0]->device_name);
+}
+
 TEST_F(TabGroupsPageHandlerTest, GetSavedTabGroups_Empty) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(

@@ -28,6 +28,7 @@
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
+#include "components/sync_device_info/local_device_info_provider.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -144,7 +145,9 @@ std::optional<std::string> TabGroupsPageHandler::GetDeviceName(
 
   syncer::DeviceInfoTracker* device_info_tracker =
       device_info_sync_service->GetDeviceInfoTracker();
-  if (!device_info_tracker) {
+  // Return nothing if the tab group was last updated by the current device.
+  if (!device_info_tracker ||
+      device_info_tracker->IsRecentLocalCacheGuid(cache_guid.value())) {
     return std::nullopt;
   }
 
