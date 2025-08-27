@@ -732,6 +732,8 @@ chromium-metrics-reviews@google.com.
   <int value="41" label="Lens Overlay Query controller"/>
   <int value="42" label="Trusted Vault Frontend"/>
   <int value="43" label="Feed Network"/>
+  <int value="44" label="Autofill Payments"/>
+  <int value="45" label="Payments Access Token Fetcher"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/identity_manager/oauth_consumer_ids.h:OAuthConsumerId) -->

@@ -66,6 +66,9 @@ constexpr char kLensOverlayQueryControllerName[] =
     "lens_overlay_query_controller";
 constexpr char kTrustedVaultFrontendName[] = "trusted_vault_frontend";
 constexpr char kFeedNetworkName[] = "feed_network";
+constexpr char kAutofillPaymentsName[] = "autofill_payments";
+constexpr char kPaymentsAccessTokenFetcherName[] =
+    "payments_access_token_fetcher";
 
 }  // namespace
 
@@ -279,6 +282,14 @@ OAuthConsumer GetOAuthConsumerFromId(OAuthConsumerId oauth_consumer_id) {
       return OAuthConsumer(
           /*name=*/kFeedNetworkName,
           /*scopes=*/{GaiaConstants::kFeedOAuth2Scope});
+    case OAuthConsumerId::kAutofillPayments:
+      return OAuthConsumer(
+          /*name=*/kAutofillPaymentsName,
+          /*scopes=*/{GaiaConstants::kPaymentsOAuth2Scope});
+    case OAuthConsumerId::kPaymentsAccessTokenFetcher:
+      return OAuthConsumer(
+          /*name=*/kPaymentsAccessTokenFetcherName,
+          /*scopes=*/{GaiaConstants::kPaymentsOAuth2Scope});
   }
   NOTREACHED();
 }
