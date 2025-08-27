@@ -984,6 +984,9 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 // Sets the background based on the current NTP background, current color
 // palette, or defaults if neither are set.
 - (void)applyBackgroundTheme {
+  // Fakebox coloring looks at image/color/default to determine correct colors.
+  [self setFakeboxColorsWithProgress:_lastAnimationPercent];
+
   BOOL hasBlurredBackground =
       [self.traitCollection boolForNewTabPageImageBackgroundTrait];
   if (hasBlurredBackground) {
@@ -998,8 +1001,6 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
   NewTabPageColorPalette* colorPalette =
       [self.traitCollection objectForNewTabPageTrait];
-
-  [self setFakeboxColorsWithProgress:_lastAnimationPercent];
 
   if (colorPalette) {
     _miaAnimationView.hidden = YES;
