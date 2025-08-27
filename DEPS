@@ -2844,7 +2844,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/robolectric',
-              'version': 'FVHssvN9xmmE8NIVUTfX0soOdkQtT5xaNtiCB47LOogC',
+              'version': 'dr-aJxRAPYDTBJXnjfht-bdxyywD6BP1lrcjZZPnRG0C',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -3223,7 +3223,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/autorolled',
-              'version': 'zwcveXia4KpucqIe3gYvotFt4b1OV9RhZkr-jArdLpYC',
+              'version': 'cai-y0YavwXCvGU3VgjhI_Nb8Xx8y2M9aNBrbWpoXmIC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
