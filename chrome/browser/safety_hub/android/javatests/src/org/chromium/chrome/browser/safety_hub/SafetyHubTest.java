@@ -2527,7 +2527,7 @@ public final class SafetyHubTest {
 
     private void signIn() {
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
-        PasswordManagerTestHelper.setAccountForPasswordStore(SigninTestRule.TEST_ACCOUNT_EMAIL);
+        PasswordManagerTestHelper.setAccountForPasswordStore(TestAccounts.ACCOUNT1.getEmail());
     }
 
     private void addCredentialToAccountStore() {

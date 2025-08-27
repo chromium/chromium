@@ -48,9 +48,6 @@ public class AccountManagerTestRule implements TestRule {
     public static final Matcher<View> CANCEL_ADD_ACCOUNT_BUTTON_MATCHER =
             withId(FakeAccountManagerFacade.AddAccountActivityStub.CANCEL_BUTTON_ID);
 
-    // TODO(crbug.com/40890215): Use TEST_ACCOUNT_1 instead.
-    @Deprecated public static final String TEST_ACCOUNT_EMAIL = "test@gmail.com";
-
     private final @NonNull FakeAccountManagerFacade mFakeAccountManagerFacade;
     // TODO(crbug.com/40234741): Revise this test rule and make this non-nullable.
     private final @Nullable FakeAccountInfoService mFakeAccountInfoService;

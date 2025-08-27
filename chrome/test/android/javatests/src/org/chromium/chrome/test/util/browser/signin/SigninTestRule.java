@@ -72,10 +72,11 @@ public class SigninTestRule extends AccountManagerTestRule {
     @Deprecated
     public CoreAccountInfo addTestAccountThenSignin() {
         assert !mIsSignedIn : "An account is already signed in!";
-        CoreAccountInfo coreAccountInfo = addAccount(TEST_ACCOUNT_EMAIL);
-        SigninTestUtil.signin(coreAccountInfo);
+        AccountInfo accountInfo = TestAccounts.ACCOUNT1;
+        addAccount(accountInfo);
+        SigninTestUtil.signin(accountInfo);
         mIsSignedIn = true;
-        return coreAccountInfo;
+        return accountInfo;
     }
 
     /** Adds and signs in with the provided account. */
@@ -107,10 +108,11 @@ public class SigninTestRule extends AccountManagerTestRule {
     // TODO(crbug.com/40066949): Remove once Sync-the-feature is fully removed.
     public CoreAccountInfo addTestAccountThenSigninWithConsentLevelSync() {
         assert !mIsSignedIn : "An account is already signed in!";
-        CoreAccountInfo coreAccountInfo = addAccount(TEST_ACCOUNT_EMAIL);
-        SigninTestUtil.signinWithConsentLevelSync(coreAccountInfo);
+        AccountInfo accountInfo = TestAccounts.ACCOUNT1;
+        addAccount(accountInfo);
+        SigninTestUtil.signinWithConsentLevelSync(accountInfo);
         mIsSignedIn = true;
-        return coreAccountInfo;
+        return accountInfo;
     }
 
     /** Waits for the account corresponding to coreAccountInfo to finish signin. */

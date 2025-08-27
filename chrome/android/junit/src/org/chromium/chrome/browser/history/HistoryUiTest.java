@@ -694,7 +694,7 @@ public class HistoryUiTest {
         final MenuItem infoMenuItem = toolbar.getItemById(R.id.info_menu_id);
 
         // Sign in and set has other forms of browsing data to true.
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         setHasOtherFormsOfBrowsingData(true);
 
         toolbar.onSignInStateChange();
@@ -747,7 +747,7 @@ public class HistoryUiTest {
                 toolbar.getItemById(R.id.search_menu_id); // The magnifier button
 
         // Sign in and set has other forms of browsing data to true.
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         setHasOtherFormsOfBrowsingData(true);
 
         ShadowLooper.idleMainLooper();
@@ -988,7 +988,7 @@ public class HistoryUiTest {
     private void signInToSupervisedAccount() {
         // Sign in to account. Note that if supervised user is set before sign in, the supervised
         // user setting will be reset.
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         doReturn(true).when(mProfile).isChild();
         doReturn("ChildAccountSUID").when(mPrefService).getString(Pref.SUPERVISED_USER_ID);
         IncognitoUtils.setEnabledForTesting(false);
