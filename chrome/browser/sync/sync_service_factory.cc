@@ -21,6 +21,7 @@
 #include "chrome/browser/commerce/product_specifications/product_specifications_service_factory.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
+#include "chrome/browser/data_sharing/personal_collaboration_data/personal_collaboration_data_service_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -203,6 +204,9 @@ syncer::DataTypeController::TypeVector CreateCommonControllers(
       collaboration::CollaborationServiceFactory::GetForProfile(profile));
   builder.SetDataSharingService(
       data_sharing::DataSharingServiceFactory::GetForProfile(profile));
+  builder.SetPersonalCollaborationDataService(
+      data_sharing::personal_collaboration_data::
+          PersonalCollaborationDataServiceFactory::GetForProfile(profile));
   builder.SetDeviceInfoSyncService(
       DeviceInfoSyncServiceFactory::GetForProfile(profile));
   builder.SetDualReadingListModel(
@@ -518,6 +522,8 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(data_sharing::DataSharingServiceFactory::GetInstance());
+  DependsOn(data_sharing::personal_collaboration_data::
+                PersonalCollaborationDataServiceFactory::GetInstance());
   DependsOn(FaviconServiceFactory::GetInstance());
   DependsOn(gcm::GCMProfileServiceFactory::GetInstance());
   DependsOn(GoogleGroupsManagerFactory::GetInstance());

@@ -147,6 +147,11 @@ bool PersonalCollaborationDataServiceImpl::IsInitialized() const {
   return bridge_->IsInitialized();
 }
 
+base::WeakPtr<syncer::DataTypeControllerDelegate>
+PersonalCollaborationDataServiceImpl::GetControllerDelegate() {
+  return bridge_->change_processor()->GetControllerDelegate();
+}
+
 void PersonalCollaborationDataServiceImpl::OnInitialized() {
   for (auto& observer : observers_) {
     observer.OnInitialized();

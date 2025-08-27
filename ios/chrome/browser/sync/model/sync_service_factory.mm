@@ -41,6 +41,7 @@
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/consent_auditor/model/consent_auditor_factory.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
+#import "ios/chrome/browser/data_sharing/model/personal_collaboration_data/personal_collaboration_data_service_factory.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/gcm/model/ios_chrome_gcm_profile_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
@@ -102,6 +103,9 @@ syncer::DataTypeController::TypeVector CreateControllers(
       collaboration::CollaborationServiceFactory::GetForProfile(profile));
   builder.SetDataSharingService(
       data_sharing::DataSharingServiceFactory::GetForProfile(profile));
+  builder.SetPersonalCollaborationDataService(
+      data_sharing::personal_collaboration_data::
+          PersonalCollaborationDataServiceFactory::GetForProfile(profile));
   builder.SetDeviceInfoSyncService(
       DeviceInfoSyncServiceFactory::GetForProfile(profile));
   builder.SetDualReadingListModel(
@@ -323,6 +327,8 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(collaboration::CollaborationServiceFactory::GetInstance());
   DependsOn(data_sharing::DataSharingServiceFactory::GetInstance());
+  DependsOn(data_sharing::personal_collaboration_data::
+                PersonalCollaborationDataServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(GoogleGroupsManagerFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());

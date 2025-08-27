@@ -48,6 +48,10 @@ namespace data_sharing {
 class DataSharingService;
 }  // namespace data_sharing
 
+namespace data_sharing::personal_collaboration_data {
+class PersonalCollaborationDataService;
+}  // namespace data_sharing::personal_collaboration_data
+
 namespace favicon {
 class FaviconService;
 }  // namespace favicon
@@ -151,6 +155,10 @@ class CommonControllerBuilder {
   void SetConsentAuditor(consent_auditor::ConsentAuditor* consent_auditor);
   void SetCollaborationService(
       collaboration::CollaborationService* collaboration_service);
+  void SetPersonalCollaborationDataService(
+      data_sharing::personal_collaboration_data::
+          PersonalCollaborationDataService*
+              personal_collaboration_data_service);
   void SetDataSharingService(
       data_sharing::DataSharingService* data_sharing_service);
   void SetDeviceInfoSyncService(
@@ -304,6 +312,9 @@ class CommonControllerBuilder {
       product_specifications_service_;
   SafeOptional<raw_ptr<collaboration::CollaborationService>>
       collaboration_service_;
+  SafeOptional<raw_ptr<data_sharing::personal_collaboration_data::
+                           PersonalCollaborationDataService>>
+      personal_collaboration_data_service_;
   SafeOptional<raw_ptr<data_sharing::DataSharingService>> data_sharing_service_;
   SafeOptional<raw_ptr<SharingMessageBridge>> sharing_message_bridge_;
   SafeOptional<raw_ptr<tab_groups::TabGroupSyncService>>

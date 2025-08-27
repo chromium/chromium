@@ -14,6 +14,7 @@
 #include "base/uuid.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/base/collaboration_id.h"
+#include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/protocol/shared_tab_group_account_data_specifics.pb.h"
 
 namespace data_sharing::personal_collaboration_data {
@@ -103,6 +104,11 @@ class PersonalCollaborationDataService : public KeyedService,
 
   // Returns whether the service has fully initialized.
   virtual bool IsInitialized() const = 0;
+
+  // Returns the controller delegate for the SHARED_TAB_GROUP_ACCOUNT_DATA data
+  // type.
+  virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
+  GetControllerDelegate() = 0;
 };
 
 }  // namespace data_sharing::personal_collaboration_data

@@ -37,6 +37,7 @@ static_library("browser_sync") {
     "//components/commerce/core/product_specifications",
     "//components/consent_auditor",
     "//components/data_sharing/public",
+    "//components/data_sharing/public:personal_collaboration_data",
     "//components/history/core/browser",
     "//components/history/core/common",
     "//components/password_manager/core/browser",

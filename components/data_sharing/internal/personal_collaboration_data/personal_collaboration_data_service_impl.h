@@ -10,6 +10,7 @@
 #include "components/data_sharing/internal/personal_collaboration_data/personal_collaboration_data_sync_bridge.h"
 #include "components/data_sharing/public/personal_collaboration_data/personal_collaboration_data_service.h"
 #include "components/sync/base/collaboration_id.h"
+#include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/data_type_store.h"
 
@@ -49,6 +50,8 @@ class PersonalCollaborationDataServiceImpl
   void DeleteSpecifics(SpecificsType specifics_type,
                        const std::string& storage_key) override;
   bool IsInitialized() const override;
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
+      override;
 
   // PersonalCollaborationDataSyncBridge::Observer implementation.
   void OnInitialized() override;

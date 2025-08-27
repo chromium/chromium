@@ -38,6 +38,7 @@
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/features.h"
+#include "components/data_sharing/public/personal_collaboration_data/personal_collaboration_data_service.h"
 #include "components/history/core/browser/sync/history_data_type_controller.h"
 #include "components/history/core/browser/sync/history_delete_directives_data_type_controller.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -242,6 +243,12 @@ void CommonControllerBuilder::SetConsentAuditor(
 void CommonControllerBuilder::SetCollaborationService(
     collaboration::CollaborationService* collaboration_service) {
   collaboration_service_.Set(collaboration_service);
+}
+
+void CommonControllerBuilder::SetPersonalCollaborationDataService(
+    data_sharing::personal_collaboration_data::PersonalCollaborationDataService*
+        personal_collaboration_data_service) {
+  personal_collaboration_data_service_.Set(personal_collaboration_data_service);
 }
 
 void CommonControllerBuilder::SetDataSharingService(
@@ -837,22 +844,30 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
 
   if (!disabled_types.Has(syncer::SHARED_TAB_GROUP_ACCOUNT_DATA) &&
       base::FeatureList::IsEnabled(syncer::kSyncSharedTabGroupAccountData) &&
-      tab_group_sync_service_.value() && data_sharing_enabled) {
-    syncer::DataTypeControllerDelegate* delegate =
-        tab_group_sync_service_.value()
-            ->GetSharedTabGroupAccountControllerDelegate()
-            .get();
+      data_sharing_enabled) {
+    syncer::DataTypeControllerDelegate* delegate = nullptr;
+    if (personal_collaboration_data_service_.value()) {
+      delegate = personal_collaboration_data_service_.value()
+                     ->GetControllerDelegate()
+                     .get();
+    } else if (tab_group_sync_service_.value()) {
+      delegate = tab_group_sync_service_.value()
+                     ->GetSharedTabGroupAccountControllerDelegate()
+                     .get();
+    }
 
-    controllers.push_back(
-        std::make_unique<
-            collaboration::SharedTabGroupAccountDataTypeController>(
-            /*delegate_for_full_sync_mode=*/
-            std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
-                delegate),
-            /*delegate_for_transport_mode=*/
-            std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
-                delegate),
-            sync_service, collaboration_service_.value()));
+    if (delegate) {
+      controllers.push_back(
+          std::make_unique<
+              collaboration::SharedTabGroupAccountDataTypeController>(
+              /*delegate_for_full_sync_mode=*/
+              std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+                  delegate),
+              /*delegate_for_transport_mode=*/
+              std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+                  delegate),
+              sync_service, collaboration_service_.value()));
+    }
   }
 
   if (!disabled_types.Has(syncer::SHARED_COMMENT) &&
