@@ -108,6 +108,27 @@ source_set("core") {
     "upload_client_error.cc",
   ]
 
+  deps = [
+    ":cloud_management_delegate",
+    ":dm_server_client",
+    "//components/enterprise/browser/identifiers",
+    "//components/policy/core/common",
+    "//components/policy/proto",
+    "//components/prefs",
+    "//net",
+    "//services/network/public/cpp",
+    "//third_party/boringssl",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/enterprise/client_certificates/proto:db_client_certs",
+    "//components/enterprise/core",
+    "//components/keyed_service/core",
+    "//components/leveldb_proto",
+    "//crypto",
+  ]
+
   if (is_win) {
     public += [ "win/windows_software_private_key_factory.h" ]
 
@@ -126,31 +147,10 @@ source_set("core") {
     ]
 
     deps += [
-      "//base/android:jni_zero",
-      "//components/enterprise/client_certificates/android:browser_binding",
+      "//components/enterprise/client_certificates/android/browser_binding",
+      "//third_party/jni_zero",
     ]
   }
-
-  public_deps = [
-    "//base",
-    "//components/enterprise/client_certificates/proto:db_client_certs",
-    "//components/enterprise/core",
-    "//components/keyed_service/core",
-    "//components/leveldb_proto",
-    "//crypto",
-  ]
-
-  deps = [
-    ":cloud_management_delegate",
-    ":dm_server_client",
-    "//components/enterprise/browser/identifiers",
-    "//components/policy/core/common",
-    "//components/policy/proto",
-    "//components/prefs",
-    "//net",
-    "//services/network/public/cpp",
-    "//third_party/boringssl",
-  ]
 
   friend = [
     ":test_support",
@@ -197,7 +197,7 @@ source_set("test_support") {
 
   if (is_android) {
     deps += [
-      "//components/enterprise/client_certificates/android:browser_binding",
+      "//components/enterprise/client_certificates/android/browser_binding",
     ]
   }
 }
