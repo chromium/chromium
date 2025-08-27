@@ -15,7 +15,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.ViewGroup;
 
 import org.junit.Before;
@@ -141,10 +140,25 @@ public class NavigationAttachmentsMediatorUnitTest {
     }
 
     @Test
-    public void onGalleryButtonClicked_launchesImagePicker() {
-        mModel.get(NavigationAttachmentsProperties.POPUP_GALLERY_CLICKED).run();
-        verify(mPopup).dismiss();
-        verify(mWindowAndroid).showCancelableIntent(any(Intent.class), any(), any());
+    public void onImagePickerClicked_permissionGranted_launchesImagePicker() {
+        doReturn(true).when(mWindowAndroid).hasPermission(any());
+        doNothing().when(mMediator).launchImagePicker();
+
+        mMediator.onImagePickerClicked();
+
+        verify(mMediator).launchImagePicker();
+        verify(mWindowAndroid, never()).requestPermissions(any(), any());
+    }
+
+    @Test
+    public void onImagePickerClicked_permissionDenied_requestsPermission() {
+        doReturn(false).when(mWindowAndroid).hasPermission(any());
+        doNothing().when(mMediator).launchImagePicker();
+
+        mMediator.onImagePickerClicked();
+
+        verify(mMediator, never()).launchImagePicker();
+        verify(mWindowAndroid).requestPermissions(any(), any());
     }
 
     @Test
