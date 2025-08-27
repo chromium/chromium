@@ -166,7 +166,7 @@ public interface NativePage {
         NativePageType.PDF
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface NativePageType {
+    @interface NativePageType {
         int NONE = 0;
         int CANDIDATE = 1;
         int NTP = 2;

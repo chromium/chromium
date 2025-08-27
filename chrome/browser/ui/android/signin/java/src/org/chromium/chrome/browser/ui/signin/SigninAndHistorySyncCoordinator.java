@@ -82,7 +82,7 @@ public interface SigninAndHistorySyncCoordinator {
      *
      * @param profile The current profile.
      */
-    public static boolean willShowSigninUi(Profile profile) {
+    static boolean willShowSigninUi(Profile profile) {
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
         assumeNonNull(signinManager);
         return signinManager.isSigninAllowed();
@@ -98,7 +98,7 @@ public interface SigninAndHistorySyncCoordinator {
      * @param historyOptInMode Whether the history opt-in should be always, optionally or never
      *     shown.
      */
-    public static boolean willShowHistorySyncUi(
+    static boolean willShowHistorySyncUi(
             Profile profile, @HistorySyncConfig.OptInMode int historyOptInMode) {
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);

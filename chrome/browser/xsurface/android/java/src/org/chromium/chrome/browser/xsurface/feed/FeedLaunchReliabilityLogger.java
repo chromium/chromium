@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 public interface FeedLaunchReliabilityLogger {
     @IntDef({SurfaceType.UNSPECIFIED, SurfaceType.NEW_TAB_PAGE, SurfaceType.START_SURFACE})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface SurfaceType {
+    @interface SurfaceType {
         int UNSPECIFIED = 0;
         int NEW_TAB_PAGE = 1;
         @Deprecated int START_SURFACE = 2;

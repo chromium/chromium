@@ -27,7 +27,7 @@ class TaskManagerProperties {
         RowType.TASK,
     })
     @Retention(RetentionPolicy.SOURCE)
-    static @interface RowType {
+    @interface RowType {
         /** Represents a task. Each item with this key has prorperties of the corresponding task. */
         int TASK = 1;
     }

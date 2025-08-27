@@ -31,7 +31,7 @@ public interface ShareDelegate {
         ShareOrigin.TAB_STRIP_CONTEXT_MENU,
         ShareOrigin.COUNT
     })
-    public @interface ShareOrigin {
+    @interface ShareOrigin {
         int OVERFLOW_MENU = 0;
         int TOP_TOOLBAR = 1;
         int CONTEXT_MENU = 2;

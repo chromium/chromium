@@ -33,13 +33,14 @@ public class ProfileManager {
          *
          * @param profile The profile that has just been created.
          */
-        public void onProfileAdded(Profile profile);
+        void onProfileAdded(Profile profile);
 
         /**
          * Called whenever a profile is destroyed.
+         *
          * @param profile The profile that has just been created.
          */
-        public void onProfileDestroyed(Profile profile);
+        void onProfileDestroyed(Profile profile);
     }
 
     /** Add an observer to be notified when profiles get created. */

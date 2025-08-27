@@ -24,7 +24,7 @@ import org.chromium.url.GURL;
 @NullMarked
 public interface SearchActivityClient {
     /** Interface for building intents to request Omnibox-powered Search Activity. */
-    public interface IntentBuilder {
+    interface IntentBuilder {
         /**
          * Sets the search type for the intent. The default value is SearchType.TEXT.
          *
@@ -76,7 +76,7 @@ public interface SearchActivityClient {
     }
 
     /** Construct an intent starting SearchActivity that opens Chrome browser. */
-    public IntentBuilder newIntentBuilder();
+    IntentBuilder newIntentBuilder();
 
     /**
      * Call up SearchActivity/Omnibox on behalf of the Activity the client is associated with.
@@ -86,7 +86,7 @@ public interface SearchActivityClient {
      *
      * @param intent The intent to send.
      */
-    public void requestOmniboxForResult(Intent intent);
+    void requestOmniboxForResult(Intent intent);
 
     /**
      * Utility method to determine whether the {@link Activity#onActivityResult} payload carries the
@@ -96,7 +96,7 @@ public interface SearchActivityClient {
      * @param intent the intent data received in {@link Activity#onActivityResult}
      * @return true if the response captures legitimate Omnibox result.
      */
-    public boolean isOmniboxResult(int requestCode, Intent intent);
+    boolean isOmniboxResult(int requestCode, Intent intent);
 
     /**
      * Process the {@link Activity#onActivityResult} payload for Omnibox navigation result.
@@ -106,5 +106,5 @@ public interface SearchActivityClient {
      * @param intent the intent data received in {@link Activity#onActivityResult}
      * @return null, if result is not a valid Omnibox result, otherwise valid LoadUrlParams object
      */
-    public @Nullable LoadUrlParams getOmniboxResult(int requestCode, int resultCode, Intent intent);
+    @Nullable LoadUrlParams getOmniboxResult(int requestCode, int resultCode, Intent intent);
 }

@@ -50,7 +50,7 @@ public @interface SearchActivityExtras {
         IntentOrigin.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface IntentOrigin {
+    @interface IntentOrigin {
         /** Calling component is unknown or unspecified. */
         int UNKNOWN = 0;
 
@@ -81,7 +81,7 @@ public @interface SearchActivityExtras {
     /** The requested typ of service. */
     @IntDef({SearchType.TEXT, SearchType.VOICE, SearchType.LENS, SearchType.COUNT})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface SearchType {
+    @interface SearchType {
         /** Regular text search / Omnibox aided Search. */
         int TEXT = 0;
 

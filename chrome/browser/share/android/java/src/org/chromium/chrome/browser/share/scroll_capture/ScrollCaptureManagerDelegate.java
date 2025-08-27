@@ -13,11 +13,11 @@ import org.chromium.chrome.browser.tab.Tab;
 @NullMarked
 public interface ScrollCaptureManagerDelegate {
     /** Sets up scroll capture API for a {@link View}. */
-    public void addScrollCaptureBindings(View view);
+    void addScrollCaptureBindings(View view);
 
     /** Removes the scroll capture API bindings from a {@link View}. */
-    public void removeScrollCaptureBindings(View view);
+    void removeScrollCaptureBindings(View view);
 
     /** Updates the current tab. */
-    public void setCurrentTab(Tab tab);
+    void setCurrentTab(Tab tab);
 }

@@ -21,26 +21,24 @@ import java.util.List;
 @NullMarked
 public @interface BaseCarouselSuggestionViewProperties {
     /** Action Icons description. */
-    public static final WritableObjectPropertyKey<List<ListItem>> TILES =
-            new WritableObjectPropertyKey<>();
+    WritableObjectPropertyKey<List<ListItem>> TILES = new WritableObjectPropertyKey<>();
 
     /** Specifies the width of a carousel element. */
-    static final ReadableObjectPropertyKey<SpacingRecyclerViewItemDecoration> ITEM_DECORATION =
+    ReadableObjectPropertyKey<SpacingRecyclerViewItemDecoration> ITEM_DECORATION =
             new ReadableObjectPropertyKey<>();
 
     /** Specifies the audible description of the carousel type. */
-    public static final ReadableObjectPropertyKey<String> CONTENT_DESCRIPTION =
-            new ReadableObjectPropertyKey<>();
+    ReadableObjectPropertyKey<String> CONTENT_DESCRIPTION = new ReadableObjectPropertyKey<>();
 
     /** Specifies carousel padding dimensions. */
-    static final ReadableIntPropertyKey TOP_PADDING = new ReadableIntPropertyKey();
+    ReadableIntPropertyKey TOP_PADDING = new ReadableIntPropertyKey();
 
-    static final ReadableIntPropertyKey BOTTOM_PADDING = new ReadableIntPropertyKey();
+    ReadableIntPropertyKey BOTTOM_PADDING = new ReadableIntPropertyKey();
 
     /** Specifies whether carousel's background should match this used by all suggestions. */
-    static final ReadableBooleanPropertyKey APPLY_BACKGROUND = new ReadableBooleanPropertyKey();
+    ReadableBooleanPropertyKey APPLY_BACKGROUND = new ReadableBooleanPropertyKey();
 
-    static final PropertyKey[] ALL_UNIQUE_KEYS =
+    PropertyKey[] ALL_UNIQUE_KEYS =
             new PropertyKey[] {
                 TOP_PADDING,
                 BOTTOM_PADDING,
@@ -50,6 +48,6 @@ public @interface BaseCarouselSuggestionViewProperties {
                 CONTENT_DESCRIPTION
             };
 
-    public static final PropertyKey[] ALL_KEYS =
+    PropertyKey[] ALL_KEYS =
             PropertyModel.concatKeys(ALL_UNIQUE_KEYS, SuggestionCommonProperties.ALL_KEYS);
 }

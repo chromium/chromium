@@ -26,7 +26,7 @@ public interface AppMenuHandler {
         AppMenuItemType.DIVIDER
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface AppMenuItemType {
+    @interface AppMenuItemType {
         /** Regular Android menu item that contains a title and an icon if icon is specified. */
         int STANDARD = 0;
 

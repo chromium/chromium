@@ -25,23 +25,23 @@ public interface TinkerTankDelegate {
         return ServiceLoaderUtil.maybeCreate(TinkerTankDelegate.class);
     }
 
-    public static TinkerTankDelegate create() {
+    static TinkerTankDelegate create() {
         TinkerTankDelegate ret = maybeCreate();
         assert ret != null;
         return ret;
     }
 
-    public static boolean isEnabled() {
+    static boolean isEnabled() {
         return maybeCreate() != null
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.TINKER_TANK_BOTTOM_SHEET);
     }
 
-    public void maybeShowBottomSheet(
+    void maybeShowBottomSheet(
             Activity activity,
             Profile profile,
             BottomSheetController bottomSheetController,
             Supplier<TabModelSelector> tabModelSelectorSupplier);
 
-    public void maybeShowForSelectedTabs(
+    void maybeShowForSelectedTabs(
             Activity activity, BottomSheetController bottomSheetController, List<Tab> tabs);
 }

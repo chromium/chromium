@@ -23,9 +23,10 @@ import java.util.List;
 @NullMarked
 public interface Stream {
     /** The mediator of multiple Streams. */
-    public interface StreamsMediator {
+    interface StreamsMediator {
         /**
          * Allows the switching to another Stream.
+         *
          * @param streamKind The {@link StreamKind} of the stream to switch to.
          */
         default void switchToStreamKind(@StreamKind int streamKind) {}

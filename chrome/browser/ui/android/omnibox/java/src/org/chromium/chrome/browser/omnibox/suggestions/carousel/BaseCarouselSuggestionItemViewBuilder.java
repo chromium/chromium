@@ -37,7 +37,7 @@ public class BaseCarouselSuggestionItemViewBuilder {
     @Retention(RetentionPolicy.SOURCE)
     public @interface ViewType {
         /** Carousel item is a TileView instance. */
-        public int TILE_VIEW = 0;
+        int TILE_VIEW = 0;
     }
 
     /**

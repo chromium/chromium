@@ -59,7 +59,7 @@ public interface Tab extends TabLifecycle {
     })
     @Target(ElementType.TYPE_USE)
     @Retention(RetentionPolicy.SOURCE)
-    public @interface MediaState {
+    @interface MediaState {
         int NONE = 0;
         int AUDIBLE = 1;
         int MUTED = 2;
@@ -84,7 +84,7 @@ public interface Tab extends TabLifecycle {
     }
 
     @FunctionalInterface
-    public interface SelectionStateSupplier {
+    interface SelectionStateSupplier {
         /**
          * @param tabId The ID of the tab to check.
          * @return True if the tab is selected.

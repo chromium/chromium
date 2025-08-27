@@ -14,13 +14,13 @@ import org.chromium.content_public.browser.LoadUrlParams;
 @NullMarked
 public interface FeedActionDelegate {
     /** Information about a page visit. */
-    public class VisitResult {
+    class VisitResult {
         // Total page visit time.
         public long visitTimeMs;
     }
 
     /** Observing page load events. */
-    public interface PageLoadObserver {
+    interface PageLoadObserver {
         /**
          * Called when the page starts loading.
          *

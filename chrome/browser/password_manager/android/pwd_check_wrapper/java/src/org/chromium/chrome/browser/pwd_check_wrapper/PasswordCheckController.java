@@ -35,7 +35,7 @@ public interface PasswordCheckController {
         int ACCOUNT_STORAGE = 2;
     }
 
-    public static class PasswordCheckResult {
+    class PasswordCheckResult {
         private OptionalInt mTotalPasswordsCount = OptionalInt.empty();
         private OptionalInt mBreachedCount = OptionalInt.empty();
         private @Nullable Exception mError;

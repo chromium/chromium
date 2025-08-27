@@ -41,7 +41,7 @@ public class BookmarkBarUtils {
     /** Enumeration of view type identifiers for views which are rendered in the bookmark bar. */
     @IntDef({ViewType.ITEM})
     @Retention(RetentionPolicy.SOURCE)
-    static @interface ViewType {
+    @interface ViewType {
         int ITEM = 1;
     }
 

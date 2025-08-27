@@ -27,7 +27,7 @@ public interface FeedCardOpeningReliabilityLogger {
         PageLoadError.PAGE_LOAD_ERROR
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface PageLoadError {
+    @interface PageLoadError {
         /** The Internet connection has been lost. */
         int INTERNET_DISCONNECTED = 0;
 

@@ -13,7 +13,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** List of properties recognized by Omnibox MostVisitedTiles. */
 @NullMarked
 public interface MostVisitedTileViewProperties {
-    public static final PropertyKey[] ALL_KEYS =
+    PropertyKey[] ALL_KEYS =
             PropertyModel.concatKeys(
                     TileViewProperties.ALL_KEYS, SuggestionCommonProperties.ALL_KEYS);
 }

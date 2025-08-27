@@ -34,7 +34,7 @@ public interface CustomButtonParams {
         ButtonType.EXTERNAL
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface ButtonType {
+    @interface ButtonType {
         int OTHER = 0;
 
         /** Share button, created by Chrome. */

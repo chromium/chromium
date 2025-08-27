@@ -21,7 +21,7 @@ import java.util.Set;
 public interface AdaptiveToolbarBehavior {
 
     /** List of the button variants both BrApp/CCT have in common. */
-    public static final Set<Integer> COMMON_BUTTONS =
+    Set<Integer> COMMON_BUTTONS =
             Set.of(
                     AdaptiveToolbarButtonVariant.SHARE,
                     AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS,
@@ -33,7 +33,7 @@ public interface AdaptiveToolbarBehavior {
                     AdaptiveToolbarButtonVariant.PAGE_SUMMARY);
 
     /** Default list of valid button variants used for BrApp. */
-    public static Set<Integer> sValidButtons = new HashSet<>();
+    Set<Integer> sValidButtons = new HashSet<>();
 
     /** Returns {@code true} if adaptive toolbar button feature is enabled. */
     default boolean shouldInitialize() {
@@ -85,7 +85,7 @@ public interface AdaptiveToolbarBehavior {
      *
      * @param context {@link Context} object.
      */
-    public static AdaptiveToolbarBehavior getDefaultBehavior(Context context) {
+    static AdaptiveToolbarBehavior getDefaultBehavior(Context context) {
         return new AdaptiveToolbarBehavior() {
             @Override
             public void registerPerSurfaceButtons(
@@ -125,7 +125,7 @@ public interface AdaptiveToolbarBehavior {
      * @param segmentationResults An ordered list of predicted toolbar button ID.
      * @return The top choice made from the input results.
      */
-    public static int defaultResultFilter(Context context, List<Integer> segmentationResults) {
+    static int defaultResultFilter(Context context, List<Integer> segmentationResults) {
         if (sValidButtons.isEmpty()) {
             sValidButtons.addAll(COMMON_BUTTONS);
             sValidButtons.add(AdaptiveToolbarButtonVariant.NEW_TAB);

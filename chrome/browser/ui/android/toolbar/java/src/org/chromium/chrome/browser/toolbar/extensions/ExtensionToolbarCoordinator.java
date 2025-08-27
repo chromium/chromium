@@ -36,7 +36,7 @@ import org.chromium.ui.base.WindowAndroid;
 public interface ExtensionToolbarCoordinator extends Destroyable {
     /** Instantiates the implementation if it is available. */
     @Nullable
-    public static ExtensionToolbarCoordinator maybeCreate(
+    static ExtensionToolbarCoordinator maybeCreate(
             Context context,
             ViewStub extensionToolbarStub,
             WindowAndroid windowAndroid,

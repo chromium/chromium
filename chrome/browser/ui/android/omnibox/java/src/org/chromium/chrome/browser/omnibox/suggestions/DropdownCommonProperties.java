@@ -12,20 +12,16 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 @NullMarked
 public @interface DropdownCommonProperties {
     /** Whether the suggestion background's top corners should be rounded. */
-    public static final WritableBooleanPropertyKey BG_TOP_CORNER_ROUNDED =
-            new WritableBooleanPropertyKey();
+    WritableBooleanPropertyKey BG_TOP_CORNER_ROUNDED = new WritableBooleanPropertyKey();
 
     /** Whether the suggestion background's bottom corners should be rounded. */
-    public static final WritableBooleanPropertyKey BG_BOTTOM_CORNER_ROUNDED =
-            new WritableBooleanPropertyKey();
+    WritableBooleanPropertyKey BG_BOTTOM_CORNER_ROUNDED = new WritableBooleanPropertyKey();
 
     /** Whether a divider should be shown at the bottom of the suggestion. */
-    public static final WritableBooleanPropertyKey SHOW_DIVIDER = new WritableBooleanPropertyKey();
+    WritableBooleanPropertyKey SHOW_DIVIDER = new WritableBooleanPropertyKey();
 
-    public static final PropertyKey[] ALL_KEYS =
+    PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                BG_TOP_CORNER_ROUNDED,
-                BG_BOTTOM_CORNER_ROUNDED,
-                SHOW_DIVIDER,
+                BG_TOP_CORNER_ROUNDED, BG_BOTTOM_CORNER_ROUNDED, SHOW_DIVIDER,
             };
 }

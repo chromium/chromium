@@ -20,7 +20,7 @@ public interface ResourceFetcher {
      * Represents the key portion of an http header field. Header keys should be compared
      * case-insensitively.
      */
-    public class Header {
+    class Header {
         public String name;
         public String value;
 
@@ -32,7 +32,7 @@ public interface ResourceFetcher {
 
     /** Data structure to encapsulate the fetch request. */
     @SuppressWarnings("NullAway") // Uninitialized non-null fields.
-    public class Request {
+    class Request {
         /** Uri of the resource to be fetched. */
         public String uri;
 
@@ -47,28 +47,25 @@ public interface ResourceFetcher {
     }
 
     /** Data structure to encapsulate the fetch response. */
-    public interface Response {
+    interface Response {
         /** Whether the request was successful. */
-        public boolean getSuccess();
+        boolean getSuccess();
 
         /** HTTP status code. */
-        public int getStatusCode();
+        int getStatusCode();
 
         /** List of headers for this response. */
-        public @Nullable List<Header> getHeaders();
+        @Nullable List<Header> getHeaders();
 
         /** Raw data received. */
-        public byte @Nullable [] getRawData();
+        byte @Nullable [] getRawData();
     }
 
     /** Notify that a request has responded. */
-    public interface ResponseCallback {
-        public void onResponse(Response response);
+    interface ResponseCallback {
+        void onResponse(Response response);
     }
 
-    /**
-     * Fetches a given url resource.
-     * Can be called from any thread.
-     */
-    public void fetch(Request request, ResponseCallback responseCallback);
+    /** Fetches a given url resource. Can be called from any thread. */
+    void fetch(Request request, ResponseCallback responseCallback);
 }

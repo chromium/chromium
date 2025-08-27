@@ -12,5 +12,5 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public interface PaneOrderController {
     /** Returns an ordered set of {@link PaneId} representing the order of Panes in the Hub. */
-    public ImmutableSet<Integer> getPaneOrder();
+    ImmutableSet<Integer> getPaneOrder();
 }

@@ -14,7 +14,7 @@ import org.chromium.build.annotations.Nullable;
 @NullMarked
 public interface ThumbnailProvider {
     /** Used to request the retrieval of a thumbnail. */
-    public interface ThumbnailRequest {
+    interface ThumbnailRequest {
         /** Local storage path to the file. */
         @Nullable String getFilePath();
 

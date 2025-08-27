@@ -13,7 +13,7 @@ import org.chromium.build.annotations.NullMarked;
  */
 @NullMarked
 public interface AndroidAutofillAccessibilityFieldTrial {
-    static final String AUTOFILL_VIA_A11Y_DEPRECATION_DEFAULT = "Default";
+    String AUTOFILL_VIA_A11Y_DEPRECATION_DEFAULT = "Default";
 
     /**
      * Determine whether a server-provided config affects this client. If so, enroll the client into

@@ -18,28 +18,27 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 @NullMarked
 public @interface SuggestionViewProperties {
     /** Whether suggestion is a search suggestion. */
-    static final WritableBooleanPropertyKey IS_SEARCH_SUGGESTION = new WritableBooleanPropertyKey();
+    WritableBooleanPropertyKey IS_SEARCH_SUGGESTION = new WritableBooleanPropertyKey();
 
     /** The actual text content for the first line of text. */
     @VisibleForTesting
-    static final WritableObjectPropertyKey<SuggestionSpannable> TEXT_LINE_1_TEXT =
+    WritableObjectPropertyKey<SuggestionSpannable> TEXT_LINE_1_TEXT =
             new WritableObjectPropertyKey<>();
 
     /** The actual text content for the second line of text. */
     @VisibleForTesting
-    static final WritableObjectPropertyKey<SuggestionSpannable> TEXT_LINE_2_TEXT =
+    WritableObjectPropertyKey<SuggestionSpannable> TEXT_LINE_2_TEXT =
             new WritableObjectPropertyKey<>();
 
     /** Whether suggestions can wrap-around long search query to second line. */
     @VisibleForTesting
-    static final WritableBooleanPropertyKey ALLOW_WRAP_AROUND = new WritableBooleanPropertyKey();
+    WritableBooleanPropertyKey ALLOW_WRAP_AROUND = new WritableBooleanPropertyKey();
 
     /** The custom content description for the suggestion view. */
     @VisibleForTesting
-    static final WritableObjectPropertyKey<String> CONTENT_DESCRIPTION =
-            new WritableObjectPropertyKey<>();
+    WritableObjectPropertyKey<String> CONTENT_DESCRIPTION = new WritableObjectPropertyKey<>();
 
-    static final PropertyKey[] ALL_UNIQUE_KEYS =
+    PropertyKey[] ALL_UNIQUE_KEYS =
             new PropertyKey[] {
                 IS_SEARCH_SUGGESTION,
                 TEXT_LINE_1_TEXT,
@@ -48,6 +47,6 @@ public @interface SuggestionViewProperties {
                 CONTENT_DESCRIPTION
             };
 
-    static final PropertyKey[] ALL_KEYS =
+    PropertyKey[] ALL_KEYS =
             PropertyModel.concatKeys(ALL_UNIQUE_KEYS, BaseSuggestionViewProperties.ALL_KEYS);
 }

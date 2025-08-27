@@ -15,5 +15,6 @@ public interface RegionalCapabilitiesServiceClientDelegate {
      * See regional_capabilities::RegionalCapabilitiesService::Client::GetDeviceProgram() for more
      * details.
      */
-    public @RegionalProgram int getDeviceProgram();
+    @RegionalProgram
+    int getDeviceProgram();
 }

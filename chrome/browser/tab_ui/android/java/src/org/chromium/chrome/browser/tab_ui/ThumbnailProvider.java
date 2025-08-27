@@ -27,7 +27,7 @@ public interface ThumbnailProvider {
      * urlList may be empty for non-SavedTabGroup groups as they will be parsed via the model filter
      * in {@link MultiThumbnailFetcher}.
      */
-    public static class MultiThumbnailMetadata {
+    class MultiThumbnailMetadata {
         public final int tabId;
         public final List<GURL> urlList;
         public final boolean isInTabGroup;

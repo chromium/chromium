@@ -17,25 +17,23 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 @NullMarked
 @interface AnswerSuggestionViewProperties {
     /** The maximum number of lines to be shown for the first line of text. */
-    static final WritableIntPropertyKey TEXT_LINE_1_MAX_LINES = new WritableIntPropertyKey();
+    WritableIntPropertyKey TEXT_LINE_1_MAX_LINES = new WritableIntPropertyKey();
 
     /** The actual text content for the first line of text. */
-    static final WritableObjectPropertyKey<Spannable> TEXT_LINE_1_TEXT =
-            new WritableObjectPropertyKey<>();
+    WritableObjectPropertyKey<Spannable> TEXT_LINE_1_TEXT = new WritableObjectPropertyKey<>();
 
     /** The accessibility description to be announced with this line. */
-    static final WritableObjectPropertyKey<String> TEXT_LINE_1_ACCESSIBILITY_DESCRIPTION =
+    WritableObjectPropertyKey<String> TEXT_LINE_1_ACCESSIBILITY_DESCRIPTION =
             new WritableObjectPropertyKey<>();
 
     /** The maximum number of lines to be shown for the second line of text. */
-    static final WritableIntPropertyKey TEXT_LINE_2_MAX_LINES = new WritableIntPropertyKey();
+    WritableIntPropertyKey TEXT_LINE_2_MAX_LINES = new WritableIntPropertyKey();
 
     /** The actual text content for the second line of text. */
-    static final WritableObjectPropertyKey<Spannable> TEXT_LINE_2_TEXT =
-            new WritableObjectPropertyKey<>();
+    WritableObjectPropertyKey<Spannable> TEXT_LINE_2_TEXT = new WritableObjectPropertyKey<>();
 
     /** The accessibility description to be announced with this line. */
-    static final WritableObjectPropertyKey<String> TEXT_LINE_2_ACCESSIBILITY_DESCRIPTION =
+    WritableObjectPropertyKey<String> TEXT_LINE_2_ACCESSIBILITY_DESCRIPTION =
             new WritableObjectPropertyKey<>();
 
     /**
@@ -44,7 +42,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
      */
     WritableIntPropertyKey RIGHT_PADDING = new WritableIntPropertyKey();
 
-    static final PropertyKey[] ALL_UNIQUE_KEYS =
+    PropertyKey[] ALL_UNIQUE_KEYS =
             new PropertyKey[] {
                 TEXT_LINE_1_TEXT,
                 TEXT_LINE_1_MAX_LINES,
@@ -55,6 +53,6 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
                 RIGHT_PADDING,
             };
 
-    static final PropertyKey[] ALL_KEYS =
+    PropertyKey[] ALL_KEYS =
             PropertyModel.concatKeys(ALL_UNIQUE_KEYS, BaseSuggestionViewProperties.ALL_KEYS);
 }

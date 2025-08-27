@@ -20,7 +20,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 /** Binds ActionChipsView properties. */
 @NullMarked
 public interface ActionChipsBinder {
-    public static void bind(PropertyModel model, ActionChipsView view, PropertyKey propertyKey) {
+    static void bind(PropertyModel model, ActionChipsView view, PropertyKey propertyKey) {
         if (ActionChipsProperties.ACTION_CHIPS == propertyKey) {
             var isIncognito =
                     model.get(SuggestionCommonProperties.COLOR_SCHEME)

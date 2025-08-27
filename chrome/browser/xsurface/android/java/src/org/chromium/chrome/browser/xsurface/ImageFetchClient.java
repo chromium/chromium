@@ -9,13 +9,13 @@ import org.jspecify.annotations.NullMarked;
 /**
  * Implemented in Chromium.
  *
- * An object that can send an HTTP GET request and receive bytes in response. This interface should
- * only be used for fetching images.
+ * <p>An object that can send an HTTP GET request and receive bytes in response. This interface
+ * should only be used for fetching images.
  */
 @NullMarked
 public interface ImageFetchClient {
     /** HTTP response. */
-    public interface HttpResponse {
+    interface HttpResponse {
         /** HTTP status code if there was a response, or a net::Error if not. */
         default int status() {
             return -2; // net::FAILED
@@ -27,7 +27,7 @@ public interface ImageFetchClient {
     }
 
     /** HTTP response callback interface. */
-    public interface HttpResponseConsumer {
+    interface HttpResponseConsumer {
         default void requestComplete(HttpResponse response) {}
     }
 

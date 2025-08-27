@@ -32,7 +32,7 @@ public interface CredentialManagerLauncher {
         CredentialManagerError.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface CredentialManagerError {
+    @interface CredentialManagerError {
         // There is no application context.
         // Obsolete.
         // int NO_CONTEXT = 0;

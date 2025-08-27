@@ -26,7 +26,7 @@ public interface TabGroupModelFilterObserver {
         DidRemoveTabGroupReason.CLOSE
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface DidRemoveTabGroupReason {
+    @interface DidRemoveTabGroupReason {
         /** Groups are merged together. */
         int MERGE = 0;
 

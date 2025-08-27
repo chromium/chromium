@@ -33,7 +33,7 @@ public interface SigninManager {
     /** What type of data to delete when data deletion is requested. */
     @IntDef({DataWipeOption.WIPE_SYNC_DATA, DataWipeOption.WIPE_ALL_PROFILE_DATA})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface DataWipeOption {
+    @interface DataWipeOption {
         /* Delete all syncable data from the profile (history, passwords, form data, as well as */
         /* cache and cookies. */
         int WIPE_SYNC_DATA = 0;

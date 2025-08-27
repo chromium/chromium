@@ -14,10 +14,10 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 @NullMarked
 @interface HeaderViewProperties {
     /** The text content to be displayed as a header text. */
-    static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
+    WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
 
-    static final PropertyKey[] ALL_UNIQUE_KEYS = new PropertyKey[] {TITLE};
+    PropertyKey[] ALL_UNIQUE_KEYS = new PropertyKey[] {TITLE};
 
-    static final PropertyKey[] ALL_KEYS =
+    PropertyKey[] ALL_KEYS =
             PropertyModel.concatKeys(ALL_UNIQUE_KEYS, SuggestionCommonProperties.ALL_KEYS);
 }

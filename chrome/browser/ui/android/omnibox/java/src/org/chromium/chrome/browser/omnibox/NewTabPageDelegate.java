@@ -113,5 +113,5 @@ public interface NewTabPageDelegate {
     }
 
     /** Empty implementation of NewTabDelegate. Used for a default before initialization. */
-    public static final NewTabPageDelegate EMPTY = new NewTabPageDelegate() {};
+    NewTabPageDelegate EMPTY = new NewTabPageDelegate() {};
 }

@@ -35,7 +35,7 @@ public interface SurfaceActionsHandler {
         OpenMode.NEW_TAB_IN_GROUP
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface OpenMode {
+    @interface OpenMode {
         int UNKNOWN = 0;
         // The URL is opened in the same tab (default).
         int SAME_TAB = 1;
@@ -62,7 +62,7 @@ public interface SurfaceActionsHandler {
         OpenWebFeedEntryPoint.MAX_VALUE
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface OpenWebFeedEntryPoint {
+    @interface OpenWebFeedEntryPoint {
         /** Other */
         int OTHER = 0;
 

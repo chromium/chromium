@@ -45,7 +45,7 @@ public class FaviconHelper {
          * @param iconUrl Favicon image's icon url.
          */
         @CalledByNative("FaviconImageCallback")
-        public void onFaviconAvailable(Bitmap image, @JniType("GURL") GURL iconUrl);
+        void onFaviconAvailable(Bitmap image, @JniType("GURL") GURL iconUrl);
     }
 
     /** Helper for generating default favicons and sharing the same icon between multiple views. */

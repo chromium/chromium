@@ -29,7 +29,7 @@ public interface BaseCarouselSuggestionViewBinder {
     /**
      * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
      */
-    public static void bind(PropertyModel model, BaseCarouselSuggestionView view, PropertyKey key) {
+    static void bind(PropertyModel model, BaseCarouselSuggestionView view, PropertyKey key) {
 
         if (key == BaseCarouselSuggestionViewProperties.TILES) {
             var items = model.get(BaseCarouselSuggestionViewProperties.TILES);

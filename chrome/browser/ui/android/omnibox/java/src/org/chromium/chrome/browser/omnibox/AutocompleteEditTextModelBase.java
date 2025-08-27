@@ -22,7 +22,7 @@ import java.util.Optional;
 @NullMarked
 public interface AutocompleteEditTextModelBase {
     /** An embedder should implement this. */
-    public interface Delegate {
+    interface Delegate {
         /**
          * @see TextView#getText()
          */

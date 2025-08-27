@@ -18,17 +18,17 @@ import java.lang.annotation.RetentionPolicy;
 interface EmptyProperties {
     @IntDef({State.LOADING, State.EMPTY, State.GONE})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface State {
+    @interface State {
         int LOADING = 0;
         int EMPTY = 1;
         int GONE = 2;
     }
 
     /** The current state of the empty view. */
-    public static final WritableIntPropertyKey STATE = new WritableIntPropertyKey();
+    WritableIntPropertyKey STATE = new WritableIntPropertyKey();
 
     /** The current text resource to use for the empty view. */
-    public static final WritableIntPropertyKey EMPTY_TEXT_RES_ID = new WritableIntPropertyKey();
+    WritableIntPropertyKey EMPTY_TEXT_RES_ID = new WritableIntPropertyKey();
 
-    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {STATE, EMPTY_TEXT_RES_ID};
+    PropertyKey[] ALL_KEYS = new PropertyKey[] {STATE, EMPTY_TEXT_RES_ID};
 }
