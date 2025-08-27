@@ -262,6 +262,7 @@ if (!limit_android_deps) {
       ":androidx_core_core_java",
       ":androidx_test_core_java",
       ":androidx_test_ext_junit_java",
+      ":androidx_test_runner_java",
       ":androidx_test_uiautomator_uiautomator_java",
       ":androidx_tracing_tracing_ktx_java",
       ":androidx_tracing_tracing_perfetto_binary_java",
