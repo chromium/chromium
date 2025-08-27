@@ -307,7 +307,11 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                                 // Post task to allow the tab to be unregistered.
                                 PostTask.postTask(
                                         TaskTraits.UI_DEFAULT,
-                                        () -> mOnTabSelectingListener.onTabSelecting(tab.getId()));
+                                        () -> {
+                                            if (mOnTabSelectingListener != null) {
+                                                mOnTabSelectingListener.onTabSelecting(tab.getId());
+                                            }
+                                        });
                                 RecordUserAction.record("Tabs.RestoreSingleTab");
                             });
                 }
@@ -428,7 +432,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     private WeakReference<TabListRecyclerView> mTabSwitcherRecyclerView;
     private @TabActionState int mTabActionState = TabActionState.CLOSABLE;
     private @Nullable TabListEditorCoordinator mTabListEditorCoordinator;
-    private OnTabSelectingListener mOnTabSelectingListener;
+    private @Nullable OnTabSelectingListener mOnTabSelectingListener;
     private @Nullable PropertyModel mIphMessagePropertyModel;
     private int mSnackbarOverrideToken;
     private boolean mIsOpeningLastItem;
@@ -732,11 +736,15 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         animateOut(
                 animationDuration,
                 () -> {
-                    assumeNonNull(mTabListEditorCoordinator);
-                    mTabListEditorCoordinator.removeTabListItemSizeChangedObserver(
-                            mTabListItemSizeChangedObserver);
-                    TabListEditorController controller = mTabListEditorCoordinator.getController();
-                    controller.hide();
+                    // The mTabListEditorCoordinator may be teared down and destroyed after
+                    // the animation finished.
+                    if (mTabListEditorCoordinator != null) {
+                        mTabListEditorCoordinator.removeTabListItemSizeChangedObserver(
+                                mTabListItemSizeChangedObserver);
+                        TabListEditorController controller =
+                                mTabListEditorCoordinator.getController();
+                        controller.hide();
+                    }
                     animationFinishCallback.run();
                 });
     }
