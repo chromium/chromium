@@ -1230,9 +1230,15 @@ void WindowPerformance::NotifyAndAddEventTimingBuffer(
     TRACE_EVENT_INSTANT("latency", "EventCreation", parent_track,
                         entryInfo->creation_time, flow_id);
     auto enqueued_to_main_thread_time = entryInfo->enqueued_to_main_thread_time;
-    CHECK(!enqueued_to_main_thread_time.is_null(), base::NotFatalUntil(143));
-    TRACE_EVENT_INSTANT("latency", "EventEnqueuedToMainThread", parent_track,
-                        enqueued_to_main_thread_time, flow_id);
+    if (!enqueued_to_main_thread_time.is_null()) {
+      TRACE_EVENT_INSTANT("latency", "EventEnqueuedToMainThread", parent_track,
+                          enqueued_to_main_thread_time, flow_id);
+    } else {
+      // TODO(crbug.com/422215352): Add a Histogram to report the event name
+      // when `enqueued_to_main_thread_time` is null.  All events should have
+      // this timestamp set-- but we're not observing some forms of event
+      // dispatch for which we support EventTiming.  This might be due to IME.
+    }
 
     TRACE_EVENT_BEGIN(
         "latency", "EventProcessing", parent_track,
