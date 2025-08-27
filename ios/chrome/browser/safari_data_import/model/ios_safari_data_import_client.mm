@@ -72,6 +72,9 @@ NSArray<PasswordImportItem*>* GetPasswordImportItemsFromImportResults(
     const ImportResults& results) {
   NSMutableArray* password_items = [NSMutableArray array];
   for (const ImportEntry& entry : results.displayed_entries) {
+    if (entry.url.empty() && entry.username.empty()) {
+      continue;
+    }
     PasswordImportItem* item = [[PasswordImportItem alloc]
         initWithURL:GetURLWithTitleForURLString(entry.url)
            username:base::SysUTF8ToNSString(entry.username)
