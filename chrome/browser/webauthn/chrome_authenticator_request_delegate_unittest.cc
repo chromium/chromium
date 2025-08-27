@@ -29,9 +29,11 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/chrome_web_authentication_delegate.h"
+#include "chrome/browser/webauthn/fake_password_credential_fetcher.h"
 #include "chrome/browser/webauthn/immediate_request_rate_limiter_factory.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
-#include "chrome/browser/webauthn/password_credential_controller.h"
+#include "chrome/browser/webauthn/password_credential_fetcher.h"
+#include "chrome/browser/webauthn/password_credential_ui_controller.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/browser/webauthn/webauthn_switches.h"
 #include "chrome/common/pref_names.h"
@@ -108,19 +110,14 @@ class Observer : public testing::NiceMock<
               (override));
 };
 
-class MockPasswordCredentialController : public PasswordCredentialController {
+class MockPasswordCredentialUIController
+    : public PasswordCredentialUIController {
  public:
-  MockPasswordCredentialController(
+  MockPasswordCredentialUIController(
       content::GlobalRenderFrameHostId render_frame_host_id,
       AuthenticatorRequestDialogModel* model)
-      : PasswordCredentialController(render_frame_host_id, model) {}
+      : PasswordCredentialUIController(render_frame_host_id, model) {}
 
-  MOCK_METHOD(
-      void,
-      FetchPasswords,
-      (const GURL&,
-       PasswordCredentialController::PasswordCredentialsReceivedCallback),
-      (override));
   MOCK_METHOD(
       void,
       SetPasswordSelectedCallback,
@@ -705,48 +702,62 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
 
 #endif  // BUILDFLAG(IS_MAC)
 
-TEST_F(ChromeAuthenticatorRequestDelegateTest, DiscoverPasswords) {
-  for (const auto enable_password : {false, true}) {
-    content::WebContentsTester::For(web_contents())
-        ->NavigateAndCommit(GURL(kOrigin));
-    ChromeAuthenticatorRequestDelegate delegate(main_rfh());
-    auto password_controller =
-        std::make_unique<testing::NiceMock<MockPasswordCredentialController>>(
-            main_rfh()->GetGlobalId(), delegate.dialog_model());
-    auto raw_password_controller = password_controller.get();
-    delegate.SetPasswordControllerForTesting(std::move(password_controller));
-    delegate.SetUIPresentation(enable_password ? UIPresentation::kModalImmediate
-                                               : UIPresentation::kModal);
-    delegate.SetCredentialTypes((enable_password
-                                     ? (kRequestPassword | kRequestPublicKey)
-                                     : (kRequestPublicKey)));
-    delegate.SetRelyingPartyId(kRpId);
-    MockCableDiscoveryFactory discovery_factory;
+class ChromeAuthenticatorRequestDelegateTestWithPassword
+    : public ChromeAuthenticatorRequestDelegateTest,
+      public testing::WithParamInterface<bool> {};
 
-    EXPECT_CALL(*raw_password_controller, FetchPasswords)
-        .Times(enable_password);
-    delegate.ConfigureDiscoveries(
-        url::Origin::Create(GURL(kOrigin)), kOrigin,
-        content::AuthenticatorRequestClientDelegate::RequestSource::
-            kWebAuthentication,
-        device::FidoRequestType::kGetAssertion,
-        device::ResidentKeyRequirement::kPreferred,
-        device::UserVerificationRequirement::kRequired,
-        /*user_name=*/std::nullopt, {},
-        /*is_enclave_authenticator_available=*/false, &discovery_factory);
+TEST_P(ChromeAuthenticatorRequestDelegateTestWithPassword, DiscoverPasswords) {
+  bool enable_password = GetParam();
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL(kOrigin));
+  ChromeAuthenticatorRequestDelegate delegate(main_rfh());
+  auto* password_fetcher = new FakePasswordCredentialFetcher(main_rfh());
+  PasswordCredentialFetcher::SetInstanceForTesting(password_fetcher);
+  auto password_ui_controller =
+      std::make_unique<testing::NiceMock<MockPasswordCredentialUIController>>(
+          main_rfh()->GetGlobalId(), delegate.dialog_model());
+  delegate.SetPasswordUIControllerForTesting(std::move(password_ui_controller));
+  delegate.SetUIPresentation(enable_password ? UIPresentation::kModalImmediate
+                                             : UIPresentation::kModal);
+  delegate.SetCredentialTypes((enable_password
+                                   ? (kRequestPassword | kRequestPublicKey)
+                                   : (kRequestPublicKey)));
+  delegate.SetRelyingPartyId(kRpId);
+  MockCableDiscoveryFactory discovery_factory;
+
+  delegate.ConfigureDiscoveries(url::Origin::Create(GURL(kOrigin)), kOrigin,
+                                content::AuthenticatorRequestClientDelegate::
+                                    RequestSource::kWebAuthentication,
+                                device::FidoRequestType::kGetAssertion,
+                                device::ResidentKeyRequirement::kPreferred,
+                                device::UserVerificationRequirement::kRequired,
+                                /*user_name=*/std::nullopt, {},
+                                /*is_enclave_authenticator_available=*/false,
+                                &discovery_factory);
+  EXPECT_EQ(password_fetcher->fetch_passwords_called(), enable_password);
+
+  PasswordCredentialFetcher::SetInstanceForTesting(nullptr);
+  // when passwords are not requested, the fetcher is not used.
+  if (!enable_password) {
+    delete password_fetcher;
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ChromeAuthenticatorRequestDelegateTestWithPassword,
+                         testing::Bool());
 
 TEST_F(ChromeAuthenticatorRequestDelegateTest,
        TryToShowUiNoImmediateCredentials) {
   content::WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL(kOrigin));
   ChromeAuthenticatorRequestDelegate delegate(main_rfh());
-  auto password_controller =
-      std::make_unique<testing::NiceMock<MockPasswordCredentialController>>(
+  auto* password_fetcher = new FakePasswordCredentialFetcher(main_rfh());
+  PasswordCredentialFetcher::SetInstanceForTesting(password_fetcher);
+  auto password_ui_controller =
+      std::make_unique<testing::NiceMock<MockPasswordCredentialUIController>>(
           main_rfh()->GetGlobalId(), delegate.dialog_model());
-  auto raw_password_controller = password_controller.get();
-  delegate.SetPasswordControllerForTesting(std::move(password_controller));
+  delegate.SetPasswordUIControllerForTesting(std::move(password_ui_controller));
   base::MockCallback<base::OnceClosure> mock_closure;
   delegate.RegisterActionCallbacks(
       base::DoNothing(), mock_closure.Get(), base::DoNothing(),
@@ -756,11 +767,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
   delegate.SetCredentialTypes(kRequestPassword | kRequestPublicKey);
   delegate.SetRelyingPartyId(kRpId);
   MockCableDiscoveryFactory discovery_factory;
-  PasswordCredentialController::PasswordCredentialsReceivedCallback callback;
-  EXPECT_CALL(*raw_password_controller, FetchPasswords)
-      .WillOnce([&callback](auto _, auto receive_callback) {
-        callback = std::move(receive_callback);
-      });
+  PasswordCredentialFetcher::PasswordCredentialsReceivedCallback callback;
   delegate.ConfigureDiscoveries(url::Origin::Create(GURL(kOrigin)), kOrigin,
                                 content::AuthenticatorRequestClientDelegate::
                                     RequestSource::kWebAuthentication,
@@ -778,7 +785,9 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
   delegate.OnTransportAvailabilityEnumerated(std::move(transports_info));
 
   EXPECT_CALL(mock_closure, Run).Times(1);
-  std::move(callback).Run({});
+  password_fetcher->InvokeCallback();
+
+  PasswordCredentialFetcher::SetInstanceForTesting(nullptr);
 }
 
 TEST_F(ChromeAuthenticatorRequestDelegateTest,
@@ -786,11 +795,12 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
   content::WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL(kOrigin));
   ChromeAuthenticatorRequestDelegate delegate(main_rfh());
-  auto password_controller =
-      std::make_unique<testing::NiceMock<MockPasswordCredentialController>>(
+  auto* password_fetcher = new FakePasswordCredentialFetcher(main_rfh());
+  PasswordCredentialFetcher::SetInstanceForTesting(password_fetcher);
+  auto password_ui_controller =
+      std::make_unique<testing::NiceMock<MockPasswordCredentialUIController>>(
           main_rfh()->GetGlobalId(), delegate.dialog_model());
-  auto raw_password_controller = password_controller.get();
-  delegate.SetPasswordControllerForTesting(std::move(password_controller));
+  delegate.SetPasswordUIControllerForTesting(std::move(password_ui_controller));
   base::MockCallback<base::OnceClosure> mock_closure;
   delegate.RegisterActionCallbacks(
       base::DoNothing(), mock_closure.Get(), base::DoNothing(),
@@ -800,11 +810,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
   delegate.SetCredentialTypes(kRequestPassword | kRequestPublicKey);
   delegate.SetRelyingPartyId(kRpId);
   MockCableDiscoveryFactory discovery_factory;
-  PasswordCredentialController::PasswordCredentialsReceivedCallback callback;
-  EXPECT_CALL(*raw_password_controller, FetchPasswords)
-      .WillOnce([&callback](auto _, auto receive_callback) {
-        callback = std::move(receive_callback);
-      });
   delegate.ConfigureDiscoveries(url::Origin::Create(GURL(kOrigin)), kOrigin,
                                 content::AuthenticatorRequestClientDelegate::
                                     RequestSource::kWebAuthentication,
@@ -829,7 +834,9 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
 
   EXPECT_CALL(mock_closure, Run).Times(0);
   EXPECT_CALL(observer_, OnTransportAvailabilityEnumerated).Times(1);
-  std::move(callback).Run({});
+  password_fetcher->InvokeCallback();
+
+  PasswordCredentialFetcher::SetInstanceForTesting(nullptr);
 }
 
 TEST_F(ChromeAuthenticatorRequestDelegateTest, ImmediateMediationRateLimit) {

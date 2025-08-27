@@ -32,7 +32,7 @@ namespace password_manager {
 class KeyboardReplacingSurfaceVisibilityController;
 }
 
-class PasswordCredentialController;
+class PasswordCredentialFetcher;
 class TouchToFillController;
 
 // Helper class for connecting the autofill implementation to the WebAuthn
@@ -120,12 +120,12 @@ class WebAuthnRequestDelegateAndroid
       password_manager::KeyboardReplacingSurfaceVisibilityController>
       visibility_controller_;
 
+  std::unique_ptr<PasswordCredentialFetcher> password_fetcher_;
+
   // The WebContents that has this object in its userdata.
   raw_ptr<content::WebContents> web_contents_;
 
   bool conditional_request_in_progress_ = false;
-
-  std::unique_ptr<PasswordCredentialController> password_controller_;
 
   base::WeakPtrFactory<WebAuthnRequestDelegateAndroid> weak_ptr_factory_{this};
 };

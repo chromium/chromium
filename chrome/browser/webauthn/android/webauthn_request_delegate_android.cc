@@ -17,7 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller_webauthn_delegate.h"
-#include "chrome/browser/webauthn/password_credential_controller.h"
+#include "chrome/browser/webauthn/password_credential_fetcher.h"
 #include "chrome/browser/webauthn/webauthn_metrics_util.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/keyboard_replacing_surface_visibility_controller_impl.h"
@@ -111,16 +111,15 @@ void WebAuthnRequestDelegateAndroid::OnWebAuthnRequestPending(
     }
     case webauthn::AssertionMediationType::kImmediateWithPasswords: {
       // Only valid for the main frame.
-      if (!password_controller_ && frame_host->IsInPrimaryMainFrame()) {
-        password_controller_ = std::make_unique<PasswordCredentialController>(
-            frame_host->GetGlobalId());
+      if (frame_host->IsInPrimaryMainFrame()) {
+        password_fetcher_ = PasswordCredentialFetcher::Create(frame_host);
+        password_fetcher_->FetchPasswords(
+            frame_host->GetLastCommittedURL(),
+            base::BindOnce(
+                &WebAuthnRequestDelegateAndroid::MaybeShowTouchToFillSheet,
+                weak_ptr_factory_.GetWeakPtr(), frame_host->GetGlobalId(),
+                /*is_immediate=*/true, std::move(passkey_credentials)));
       }
-      password_controller_->FetchPasswords(
-          frame_host->GetLastCommittedURL(),
-          base::BindOnce(
-              &WebAuthnRequestDelegateAndroid::MaybeShowTouchToFillSheet,
-              weak_ptr_factory_.GetWeakPtr(), frame_host->GetGlobalId(),
-              /*is_immediate=*/true, std::move(passkey_credentials)));
       return;
     }
     case webauthn::AssertionMediationType::kImmediatePasskeysOnly:

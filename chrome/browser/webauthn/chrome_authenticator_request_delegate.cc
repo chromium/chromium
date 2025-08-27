@@ -115,7 +115,7 @@
 #include "ui/aura/window.h"
 #endif
 
-using PasswordCredentials = PasswordCredentialController::PasswordCredentials;
+using PasswordCredentials = PasswordCredentialFetcher::PasswordCredentials;
 using UIPresentation = ChromeAuthenticatorRequestDelegate::UIPresentation;
 using TransportAvailabilityInfo =
     device::FidoRequestHandlerBase::TransportAvailabilityInfo;
@@ -464,8 +464,8 @@ void ChromeAuthenticatorRequestDelegate::RegisterActionCallbacks(
       bluetooth_adapter_power_on_callback);
   dialog_controller_->SetRequestBlePermissionCallback(
       request_ble_permission_callback);
-  if (password_controller_) {
-    password_controller_->SetPasswordSelectedCallback(
+  if (password_ui_controller_) {
+    password_ui_controller_->SetPasswordSelectedCallback(
         password_selected_callback_);
   }
 }
@@ -630,16 +630,15 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
 #endif
 
   if (PasswordsUsable(credential_types_,
-                      dialog_controller_->ui_presentation())) {
-    // Only valid for the main frame.
-    if (!password_controller_ && GetRenderFrameHost()->IsInPrimaryMainFrame()) {
-      password_controller_ = std::make_unique<PasswordCredentialController>(
-          render_frame_host_id_, dialog_model_.get());
+                      dialog_controller_->ui_presentation()) &&
+      GetRenderFrameHost()->IsInPrimaryMainFrame()) {
+    if (!password_ui_controller_) {
+      password_ui_controller_ =
+          std::make_unique<PasswordCredentialUIController>(
+              render_frame_host_id_, dialog_model_.get());
     }
-    if (!password_controller_) {
-      return;
-    }
-    password_controller_->FetchPasswords(
+    password_fetcher_ = PasswordCredentialFetcher::Create(GetRenderFrameHost());
+    password_fetcher_->FetchPasswords(
         origin.GetURL(),
         base::BindOnce(
             &ChromeAuthenticatorRequestDelegate::OnPasswordCredentialsReceived,
@@ -825,9 +824,14 @@ void ChromeAuthenticatorRequestDelegate::OnCancelRequest() {
   std::move(cancel_callback_).Run();
 }
 
-void ChromeAuthenticatorRequestDelegate::SetPasswordControllerForTesting(
-    std::unique_ptr<PasswordCredentialController> controller) {
-  password_controller_ = std::move(controller);
+void ChromeAuthenticatorRequestDelegate::SetPasswordUIControllerForTesting(
+    std::unique_ptr<PasswordCredentialUIController> controller) {
+  password_ui_controller_ = std::move(controller);
+}
+
+void ChromeAuthenticatorRequestDelegate::SetPasswordFetcherForTesting(
+    std::unique_ptr<PasswordCredentialFetcher> fetcher) {
+  password_fetcher_ = std::move(fetcher);
 }
 
 content::RenderFrameHost*
@@ -1247,6 +1251,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureICloudKeychain(
 
 void ChromeAuthenticatorRequestDelegate::OnPasswordCredentialsReceived(
     PasswordCredentials credentials) {
+  password_fetcher_.reset();
   pending_password_credentials_ =
       std::make_unique<PasswordCredentials>(std::move(credentials));
   TryToShowUI();
