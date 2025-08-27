@@ -4,26 +4,18 @@
 
 source_set("credit_card_scanner") {
   sources = [
-    "credit_card_scanned_image_delegate.h",
-    "credit_card_scanner_camera_controller.h",
-    "credit_card_scanner_camera_controller.mm",
-    "credit_card_scanner_camera_controller_delegate.h",
     "credit_card_scanner_consumer.h",
     "credit_card_scanner_coordinator.h",
     "credit_card_scanner_coordinator.mm",
     "credit_card_scanner_mediator.h",
     "credit_card_scanner_mediator.mm",
     "credit_card_scanner_mediator_delegate.h",
-    "credit_card_scanner_view.h",
-    "credit_card_scanner_view.mm",
     "credit_card_scanner_view_controller.h",
     "credit_card_scanner_view_controller.mm",
   ]
   deps = [
     "//base",
     "//components/autofill/core/browser",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/scanner/ui_bundled",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ui/base",

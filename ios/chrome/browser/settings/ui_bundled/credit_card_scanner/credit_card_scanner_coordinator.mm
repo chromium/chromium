@@ -4,16 +4,13 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_coordinator.h"
 
-#import "base/ios/block_types.h"
-#import "ios/chrome/browser/scanner/ui_bundled/scanner_presenting.h"
 #import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_mediator.h"
 #import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_mediator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 
-@interface CreditCardScannerCoordinator () <CreditCardScannerMediatorDelegate,
-                                            ScannerPresenting>
+@interface CreditCardScannerCoordinator () <CreditCardScannerMediatorDelegate>
 
 @end
 
@@ -50,9 +47,8 @@
       initWithDelegate:self
               consumer:_creditCardScannerConsumer];
 
-  _creditCardScannerViewController = [[CreditCardScannerViewController alloc]
-      initWithPresentationProvider:self
-                          delegate:_creditCardScannerMediator];
+  _creditCardScannerViewController =
+      [[CreditCardScannerViewController alloc] init];
 
   _creditCardScannerViewController.modalPresentationStyle =
       UIModalPresentationPageSheet;
@@ -68,13 +64,6 @@
                                                        completion:nil];
   _creditCardScannerViewController = nil;
   _creditCardScannerMediator = nil;
-}
-
-#pragma mark - ScannerPresenting
-
-- (void)dismissScannerViewController:(UIViewController*)controller
-                          completion:(ProceduralBlock)completion {
-  [self stop];
 }
 
 #pragma mark - CreditCardScannerMediatorDelegate

@@ -40,11 +40,4 @@
       creditCardScannerMediatorDidFinishScan:self];
 }
 
-#pragma mark - CreditCardScannedImageDelegate
-
-- (void)processOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
-                         viewport:(CGRect)viewport {
-  // TODO(crbug.com/435324025): Process image and extract credit card details.
-}
-
 @end
