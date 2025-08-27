@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] cross shadow CommandEvent retargets source to host element
-  assert_equals: composed is false expected false but got true
-Harness: the test ran to completion.
-

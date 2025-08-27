@@ -27,7 +27,12 @@ CommandEvent::CommandEvent(const AtomicString& type,
 CommandEvent::CommandEvent(const AtomicString& type,
                            const String& command,
                            Element* source)
-    : Event(type, Bubbles::kNo, Cancelable::kYes, ComposedMode::kComposed),
+    : Event(type,
+            Bubbles::kNo,
+            Cancelable::kYes,
+            RuntimeEnabledFeatures::CommandEventNotComposedEnabled()
+                ? ComposedMode::kScoped
+                : ComposedMode::kComposed),
       source_(source) {
   command_ = command;
 }
