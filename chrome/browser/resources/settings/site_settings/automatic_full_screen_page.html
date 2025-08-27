@@ -1,0 +1,12 @@
+  <style include="settings-shared site-settings-shared"></style>
+  <div class="content-settings-header secondary">
+    $i18n{siteSettingsAutomaticFullscreenDescription}
+  </div>
+  <category-setting-exceptions read-only-list
+      category="[[contentSettingsTypesEnum_.AUTOMATIC_FULLSCREEN]]"
+      allow-header=
+          "$i18n{siteSettingsAutomaticFullscreenAllowedExceptions}"
+      block-header=
+          "$i18n{siteSettingsAutomaticFullscreenBlockedExceptions}"
+          search-filter="[[searchTerm]]">
+  </category-setting-exceptions>

@@ -223,7 +223,8 @@ suite('PrivacyPage', function() {
     await flushTasks();
 
     const categorySettingExceptions =
-        page.shadowRoot!.querySelector('category-setting-exceptions');
+        page.shadowRoot!.querySelector('settings-automatic-full-screen-page')!
+            .shadowRoot!.querySelector('category-setting-exceptions');
     assertTrue(!!categorySettingExceptions);
     assertTrue(isVisible(categorySettingExceptions));
     assertEquals(

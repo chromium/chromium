@@ -973,17 +973,8 @@
             page-title="$i18n{siteSettingsCategoryAutomaticFullscreen}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <div class="content-settings-header secondary">
-            $i18n{siteSettingsAutomaticFullscreenDescription}
-          </div>
-          <category-setting-exceptions read-only-list
-              category="[[contentSettingsTypesEnum_.AUTOMATIC_FULLSCREEN]]"
-              allow-header=
-                  "$i18n{siteSettingsAutomaticFullscreenAllowedExceptions}"
-              block-header=
-                  "$i18n{siteSettingsAutomaticFullscreenBlockedExceptions}"
-                  search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
+          <settings-automatic-full-screen-page search-term="[[searchFilter_]]">
+          </settings-automatic-full-screen-page>
         </settings-subpage>
       </template>
       <template is="dom-if" if="[[enableKeyboardLockPrompt_]]">
@@ -991,25 +982,8 @@
           <settings-subpage page-title="$i18n{siteSettingsKeyboardLock}"
               search-label="$i18n{siteSettingsAllSitesSearch}"
               search-term="{{searchFilter_}}">
-            <div class="content-settings-header secondary">
-              $i18n{siteSettingsKeyboardLockDescription}
-            </div>
-            <settings-category-default-radio-group
-                category="[[contentSettingsTypesEnum_.KEYBOARD_LOCK]]"
-                allow-option-label=
-                    "$i18n{siteSettingsKeyboardLockAllowed}"
-                allow-option-icon="settings20:keyboard-lock"
-                block-option-label="$i18n{siteSettingsKeyboardLockBlocked}"
-                block-option-icon="settings20:keyboard-lock-off">
-            </settings-category-default-radio-group>
-            <category-setting-exceptions
-                category="[[contentSettingsTypesEnum_.KEYBOARD_LOCK]]"
-                allow-header=
-                    "$i18n{siteSettingsKeyboardLockAllowedExceptions}"
-                block-header=
-                    "$i18n{siteSettingsKeyboardLockBlockedExceptions}"
-                search-filter="[[searchFilter_]]">
-            </category-setting-exceptions>
+            <settings-keyboard-lock-page search-term="[[searchFilter_]]">
+            </settings-keyboard-lock-page>
           </settings-subpage>
         </template>
       </template>
@@ -1018,24 +992,8 @@
           <settings-subpage page-title="$i18n{siteSettingsWebAppInstallation}"
               search-label="$i18n{siteSettingsAllSitesSearch}"
               search-term="{{searchFilter_}}">
-            <div class="content-settings-header secondary">
-              $i18n{siteSettingsWebAppInstallationDescription}
-            </div>
-            <settings-category-default-radio-group
-                category="[[contentSettingsTypesEnum_.WEB_APP_INSTALLATION]]"
-                allow-option-label="$i18n{siteSettingsWebAppInstallationAsk}"
-                allow-option-icon="settings:install-desktop"
-                block-option-label="$i18n{siteSettingsWebAppInstallationBlock}"
-                block-option-icon="settings:install-desktop-off">
-            </settings-category-default-radio-group>
-            <category-setting-exceptions
-                category="[[contentSettingsTypesEnum_.WEB_APP_INSTALLATION]]"
-                block-header=
-                    "$i18n{siteSettingsWebAppInstallationBlockedExceptions}"
-                allow-header=
-                    "$i18n{siteSettingsWebAppInstallationAllowedExceptions}"
-                search-filter="[[searchFilter_]]">
-            </category-setting-exceptions>
+            <settings-web-applications-page search-term="[[searchFilter_]]">
+            </settings-web-applications-page>
           </settings-subpage>
         </template>
       </template>
@@ -1045,24 +1003,8 @@
           <settings-subpage page-title="$i18n{siteSettingsLocalNetworkAccess}"
               search-label="$i18n{siteSettingsAllSitesSearch}"
               search-term="{{searchFilter_}}">
-            <div class="content-settings-header secondary">
-              $i18n{siteSettingsLocalNetworkAccessDescription}
-            </div>
-            <settings-category-default-radio-group
-                category="[[contentSettingsTypesEnum_.LOCAL_NETWORK_ACCESS]]"
-                allow-option-label="$i18n{siteSettingsLocalNetworkAccessAsk}"
-                allow-option-icon="settings20:router"
-                block-option-label="$i18n{siteSettingsLocalNetworkAccessBlock}"
-                block-option-icon="settings20:router-off">
-            </settings-category-default-radio-group>
-            <category-setting-exceptions
-                category="[[contentSettingsTypesEnum_.LOCAL_NETWORK_ACCESS]]"
-                block-header=
-                    "$i18n{siteSettingsLocalNetworkAccessBlockedExceptions}"
-                allow-header=
-                    "$i18n{siteSettingsLocalNetworkAccessAllowedExceptions}"
-                search-filter="[[searchFilter_]]">
-            </category-setting-exceptions>
+            <settings-local-network-access-page search-term="[[searchFilter_]]">
+            </settings-local-network-access-page>
           </settings-subpage>
         </template>
       </template>
