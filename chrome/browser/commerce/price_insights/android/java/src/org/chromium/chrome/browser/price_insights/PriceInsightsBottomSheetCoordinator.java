@@ -64,7 +64,6 @@ public class PriceInsightsBottomSheetCoordinator {
         View getPriceHistoryChartForPriceInsightsInfo(PriceInsightsInfo info);
     }
 
-    private final Context mContext;
     private final BottomSheetController mBottomSheetController;
 
     private @Nullable PriceInsightsBottomSheetContent mBottomSheetContent;
@@ -85,18 +84,17 @@ public class PriceInsightsBottomSheetCoordinator {
             TabModelSelector tabModelSelector,
             ShoppingService shoppingService,
             PriceInsightsDelegate priceInsightsDelegate) {
-        mContext = context;
         mBottomSheetController = bottomSheetController;
         PropertyModel propertyModel =
                 new PropertyModel(PriceInsightsBottomSheetProperties.ALL_KEYS);
         mPriceInsightsView =
-                LayoutInflater.from(mContext)
+                LayoutInflater.from(context)
                         .inflate(R.layout.price_insights_container, /* root= */ null);
         PropertyModelChangeProcessor.create(
                 propertyModel, mPriceInsightsView, PriceInsightsBottomSheetViewBinder::bind);
         mBottomSheetMediator =
                 new PriceInsightsBottomSheetMediator(
-                        mContext,
+                        context,
                         tab,
                         tabModelSelector,
                         shoppingService,
@@ -108,7 +106,7 @@ public class PriceInsightsBottomSheetCoordinator {
                     @Override
                     public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {
                         if (mSheetOpenTimeMs != null) {
-                            Long durationMs = SystemClock.elapsedRealtime() - mSheetOpenTimeMs;
+                            long durationMs = SystemClock.elapsedRealtime() - mSheetOpenTimeMs;
                             RecordHistogram.recordTimesHistogram(
                                     "Commerce.PriceInsights.BottomSheetBrowsingTime", durationMs);
                             mSheetOpenTimeMs = null;

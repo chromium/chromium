@@ -47,16 +47,15 @@ public class DiscountsButtonControllerTest {
 
     @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
 
-    private Context mContext;
     private DiscountsButtonController mDiscountsButtonController;
 
     @Before
     public void setUp() {
-        mContext = Robolectric.buildActivity(Activity.class).get();
+        Context context = Robolectric.buildActivity(Activity.class).get();
 
         mDiscountsButtonController =
                 new DiscountsButtonController(
-                        mContext,
+                        context,
                         () -> mMockTab,
                         mMockModalDialogManager,
                         mMockBottomSheetController,

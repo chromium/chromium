@@ -24,7 +24,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 @NullMarked
 public class PriceHistoryBottomSheetContentCoordinator
         implements CommerceBottomSheetContentProvider {
-    private final Context mContext;
     private final View mPriceHistoryContentContainer;
     private final PriceHistoryBottomSheetContentMediator mMediator;
 
@@ -33,9 +32,8 @@ public class PriceHistoryBottomSheetContentCoordinator
             Supplier<Tab> tabSupplier,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             PriceInsightsDelegate priceInsightsDelegate) {
-        mContext = context;
         mPriceHistoryContentContainer =
-                LayoutInflater.from(mContext)
+                LayoutInflater.from(context)
                         .inflate(R.layout.price_history_layout_v2, /* root= */ null);
         PropertyModel propertyModel =
                 new PropertyModel(PriceHistoryBottomSheetContentProperties.ALL_KEYS);
