@@ -1601,15 +1601,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // Sec-Purpose: "prefetch" header.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSecPurposePrefetchHeaderRelPrefetch);
 
-// If enabled, parser-blocking scripts are loaded asynchronously. The target
-// scripts are selectively applied via the allowlist provided from the feature
-// param. See https://crbug.com/1356396
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSelectiveInOrderScript);
-// Note: declared without BASE_DECLARE_FEATURE_PARAM because the production code
-// gets this value only once to construct a static local variable.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
-    kSelectiveInOrderScriptAllowList;
-
 // Performs additional SubresourceFilter checks when CNAME aliases are found
 // for the host of a requested URL.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
