@@ -1418,9 +1418,10 @@ mojom::PanelState GlicWindowControllerImpl::ComputePanelState() const {
 
 bool GlicWindowControllerImpl::IsActive() {
   if (IsAttached()) {
-    // TODO(crbug.com/439745838): Get Sidepanel active status
-    NOTIMPLEMENTED();
-    return true;
+    auto* browser_view =
+        BrowserView::GetBrowserViewForBrowser(attached_browser_);
+    DCHECK(browser_view->unified_side_panel());
+    return browser_view->unified_side_panel()->HasFocus();
   }
   return IsDetached() && GetGlicWidget()->IsActive();
 }
