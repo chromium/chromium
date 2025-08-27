@@ -448,15 +448,16 @@ bool VariationsIdsProvider::AddVariationIdsToSet(
     const std::vector<std::string>& variation_ids,
     bool should_dedupe,
     std::set<VariationIDEntry>* target_set) {
-  for (const std::string& entry : variation_ids) {
+  for (const std::string& entry_string : variation_ids) {
+    std::string_view entry = entry_string;
     if (entry.empty()) {
       target_set->clear();
       return false;
     }
-    bool trigger_id =
+    bool is_trigger_id =
         base::StartsWith(entry, "t", base::CompareCase::SENSITIVE);
     // Remove the "t" prefix if it's there.
-    std::string trimmed_entry = trigger_id ? entry.substr(1) : entry;
+    std::string_view trimmed_entry = is_trigger_id ? entry.substr(1) : entry;
 
     int variation_id = 0;
     if (!base::StringToInt(trimmed_entry, &variation_id)) {
@@ -471,9 +472,9 @@ bool VariationsIdsProvider::AddVariationIdsToSet(
       return false;
     }
 
-    target_set->insert(VariationIDEntry(
-        variation_id, trigger_id ? GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT
-                                 : GOOGLE_WEB_PROPERTIES_ANY_CONTEXT));
+    target_set->emplace(
+        variation_id, is_trigger_id ? GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT
+                                    : GOOGLE_WEB_PROPERTIES_ANY_CONTEXT);
   }
   return true;
 }
