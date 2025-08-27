@@ -11,11 +11,12 @@
 #include "third_party/blink/renderer/core/scheduler/task_attribution_task_state.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 
 namespace blink {
 
-inline scheduler::TaskAttributionInfo* CaptureCurrentTaskState(
+[[nodiscard]] inline scheduler::TaskAttributionInfo* CaptureCurrentTaskState(
     ExecutionContext* context) {
   if (!context) {
     return nullptr;
@@ -27,15 +28,15 @@ inline scheduler::TaskAttributionInfo* CaptureCurrentTaskState(
   return tracker ? tracker->CurrentTaskState() : nullptr;
 }
 
-inline scheduler::TaskAttributionInfo* CaptureCurrentTaskStateIfMainWorld(
-    ScriptState* script_state) {
+[[nodiscard]] inline scheduler::TaskAttributionInfo*
+CaptureCurrentTaskStateIfMainWorld(ScriptState* script_state) {
   if (!script_state || !script_state->World().IsMainWorld()) {
     return nullptr;
   }
   return CaptureCurrentTaskState(ExecutionContext::From(script_state));
 }
 
-inline std::optional<scheduler::TaskAttributionTracker::TaskScope>
+[[nodiscard]] inline std::optional<scheduler::TaskAttributionTracker::TaskScope>
 SetCurrentTaskStateIfTopLevel(scheduler::TaskAttributionInfo* task_state,
                               ExecutionContext* context,
                               TaskScopeType type) {

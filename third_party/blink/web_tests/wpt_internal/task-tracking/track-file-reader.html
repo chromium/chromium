@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Verify that FileReader events are tracked</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/task-ids.js"></script>
+
+<script>
+'use strict'
+
+for (let method of ['readAsText', 'readAsDataURL', 'readAsArrayBuffer', 'readAsBinaryString']) {
+  promise_test(async () => {
+    const events = ['loadstart', 'progress', 'loadend', 'load'];
+    const detected = {}
+    const testTaskId = initializeTaskId();
+
+    await new Promise(resolve => {
+      let reader = new FileReader();
+
+      for (const e of events) {
+        reader.addEventListener(e, () => {
+          detected[e] = scheduler.taskId;
+        });
+      }
+      reader.addEventListener('loadend', resolve);
+
+      const blob = new Blob(["Blob Loblaw"]);
+      reader[method](blob);
+    });
+
+    for (const e of events) {
+      assert_true(e in detected);
+      assert_equals(detected[e], testTaskId);
+    }
+  }, 'Task state is propagated to FileReader events: ' + method);
+}
+
+promise_test(async () => {
+  let lastId = 0;
+  let reader = new FileReader();
+
+  for (let i = 0; i < 2; i++) {
+    const testTaskId = initializeTaskId();
+    assert_not_equals(testTaskId, lastId);
+    lastId = testTaskId;
+
+    let detected = 0;
+    await new Promise(resolve => {
+      reader.addEventListener('loadend', () => {
+        detected = scheduler.taskId;
+        resolve();
+      });
+      const blob = new Blob(["Blob Loblaw"]);
+      reader.readAsText(blob);
+    });
+    assert_equals(detected, testTaskId);
+  }
+}, 'Task state changes when FileReader is reused');
+
+promise_test(async () => {
+  const reader = new FileReader();
+  const testTaskId = initializeTaskId();
+  const detected = [];
+
+  await new Promise(resolve => {
+    let count = 0;
+    const blob = new Blob(["Blob Loblaw"]);
+    reader.addEventListener('loadend', () => {
+      detected.push(scheduler.taskId);
+      if (++count == 1) {
+        // Initiate another read and check if the task state continues to be
+        // propgagted. This would fail, for example, if the reader's task state
+        // is cleared after dispatching the event.
+        reader.readAsText(blob);
+      } else {
+        resolve();
+      }
+    });
+    reader.readAsText(blob);
+  });
+  assert_equals(detected.length, 2);
+  assert_equals(detected[0], testTaskId);
+  assert_equals(detected[1], testTaskId);
+}, 'FileReader propagation works when the reader is reused during loadend event');
+
+</script>
