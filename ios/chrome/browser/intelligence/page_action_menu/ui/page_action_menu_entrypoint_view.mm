@@ -24,12 +24,12 @@ const CGFloat kIconPointSize = 18.0;
 const CGFloat kNewFeatureBadgeSize = 16.0;
 const CGFloat kNewFeatureFontSize = 9;
 const CGFloat kNewBadgeOffsetFromButtonCenterX = 14.0;
-const CGFloat kNewBadgeOffsetFromButtonCenterY = 12.0;
+const CGFloat kNewBadgeOffsetFromButtonCenterY = 8.0;
 
 // Constants for button shadow.
-const CGFloat kButtonShadowOpacity = 0.35;
+const CGFloat kButtonShadowOpacity = 0.05;
 const CGFloat kButtonShadowRadius = 1.0;
-const CGFloat kButtonShadowVerticalOffset = 1.0;
+const CGFloat kButtonShadowVerticalOffset = 3.0;
 
 // The width of the extended button's tappable area.
 const CGFloat kMinimumWidth = 44;
@@ -140,7 +140,7 @@ NSTimeInterval kAnimationDuration = 0.3;
 
 // Creates a new badge and positions the badge relative to the button.
 - (void)setUpButtonWithNewFeatureBadge {
-  self.tintColor = [UIColor colorNamed:kBlueColor];
+  self.tintColor = [UIColor colorNamed:kBlue600Color];
   _backgroundView.backgroundColor = [UIColor colorNamed:kSolidWhiteColor];
   _backgroundView.hidden = NO;
   self.layer.shadowColor = [UIColor blackColor].CGColor;
