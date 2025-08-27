@@ -108,6 +108,7 @@
 #include "remoting/base/logging.h"
 #include "remoting/host/base/loggable.h"
 #include "remoting/host/linux/ei_keymap.h"
+#include "remoting/host/linux/gnome_input_injector.h"
 #include "remoting/host/linux/gnome_keyboard_layout_monitor.h"
 #include "remoting/proto/event.pb.h"
 #include "third_party/libei/cipd/include/libei-1.0/libei.h"
@@ -165,6 +166,13 @@ void EiSenderSession::SetKeyboardLayoutMonitor(
   keyboard_layout_monitor_ = monitor;
   keyboard_layout_monitor_->OnKeymapChanged(
       keyboards_.empty() ? nullptr : std::get<1>(keyboards_.back()).get());
+}
+
+void EiSenderSession::SetInputInjector(
+    base::WeakPtr<GnomeInputInjector> input_injector) {
+  input_injector_ = input_injector;
+  input_injector_->SetKeymap(
+      keyboards_.empty() ? nullptr : std::get<1>(keyboards_.back())->GetWeakPtr());
 }
 
 void EiSenderSession::InjectKeyEvent(std::uint32_t usb_keycode, bool is_press) {
@@ -495,8 +503,13 @@ void EiSenderSession::OnKeymapLoaded(EiDevicePtr keyboard) {
   // client.
   if (!keyboards_.empty()) {
     auto& [most_recent_keyboard, keymap] = keyboards_.back();
-    if (keyboard == most_recent_keyboard && keyboard_layout_monitor_) {
-      keyboard_layout_monitor_->OnKeymapChanged(keymap.get());
+    if (keyboard == most_recent_keyboard) {
+      if (keyboard_layout_monitor_) {
+        keyboard_layout_monitor_->OnKeymapChanged(keymap.get());
+      }
+      if (input_injector_) {
+        input_injector_->SetKeymap(keymap->GetWeakPtr());
+      }
     }
   }
 }

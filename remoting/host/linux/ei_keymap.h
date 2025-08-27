@@ -8,7 +8,7 @@
 #include <xkbcommon/xkbcommon.h>
 
 #include <memory>
-#include <vector>
+#include <set>
 
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
@@ -31,6 +31,8 @@ class EiKeymap {
   EiKeymap& operator=(const EiKeymap&) = delete;
   ~EiKeymap();
 
+  base::WeakPtr<EiKeymap> GetWeakPtr();
+
   // Load the keymap from the specified device asynchronously. Errors are
   // logged internally; the callback should check IsValid to see if the load
   // succeeded.
@@ -41,7 +43,23 @@ class EiKeymap {
 
   const protocol::KeyboardLayout& GetLayoutProto() const;
 
+  struct Recipe {
+    explicit Recipe(uint32_t usb_code);
+    Recipe(const Recipe& other);
+    ~Recipe();
+
+    // All values are USB keycodes.
+    uint32_t usb_code;
+    std::set<uint32_t> modifiers;
+  };
+
+  // Returns the USB keycode and modifiers for the specified codepoint. If
+  // the codepoint is not supported, sets usb_code to 0.
+  Recipe GetRecipeForCodepoint(uint32_t codepoint) const;
+
  private:
+  struct UsbCodeAndShiftLevel { uint32_t usb_code; int shift_level; };
+
   void OnKeymapLoaded(base::OnceClosure callback,
                       base::expected<std::string, Loggable> result);
   static void ProcessKey(xkb_keymap* keymap,
@@ -54,6 +72,11 @@ class EiKeymap {
   std::unique_ptr<xkb_state, ui::XkbStateDeleter> xkb_state_;
   protocol::KeyboardLayout layout_proto_;
   std::map<int, int> shift_level_to_mask_;
+  uint32_t shift_key_usb_code_;
+  uint32_t altgr_key_usb_code_;
+  std::map<uint32_t, UsbCodeAndShiftLevel> codepoint_to_usb_code_and_shift_level_;
+
+  base::WeakPtrFactory<EiKeymap> weak_factory_{this};
 };
 
 }  // namespace remoting

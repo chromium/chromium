@@ -23,6 +23,10 @@ EiKeymap::EiKeymap(EiDevicePtr keyboard) : keyboard_(keyboard) {}
 
 EiKeymap::~EiKeymap() = default;
 
+base::WeakPtr<EiKeymap> EiKeymap::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void EiKeymap::Load(base::OnceClosure callback) {
   base::ScopedClosureRunner closure_runner(std::move(callback));
   // Get the keymap file descriptor and verify that it's (at time of writing)
@@ -62,6 +66,27 @@ xkb_keymap* EiKeymap::Get() {
 
 const protocol::KeyboardLayout& EiKeymap::GetLayoutProto() const {
   return layout_proto_;
+}
+
+EiKeymap::Recipe::Recipe(uint32_t usb_code) : usb_code(usb_code) {}
+EiKeymap::Recipe::Recipe(const EiKeymap::Recipe& other) = default;
+EiKeymap::Recipe::~Recipe() = default;
+
+EiKeymap::Recipe EiKeymap::GetRecipeForCodepoint(
+    uint32_t codepoint) const {
+  auto it = codepoint_to_usb_code_and_shift_level_.find(codepoint);
+  if (it == codepoint_to_usb_code_and_shift_level_.end()) {
+    return Recipe(0);
+  }
+  const auto& [usb_code, shift_level] = it->second;
+  Recipe result(usb_code);
+  if (shift_level & 1) {
+    result.modifiers.insert(shift_key_usb_code_);
+  }
+  if (shift_level & 2) {
+    result.modifiers.insert(altgr_key_usb_code_);
+  }
+  return result;
 }
 
 void EiKeymap::OnKeymapLoaded(base::OnceClosure callback,
@@ -121,24 +146,56 @@ void EiKeymap::ProcessKey(xkb_keymap* keymap,
     auto usb_keycode = ui::KeycodeConverter::NativeKeycodeToUsbKeycode(keycode);
     auto& actions =
         *(*self->layout_proto_.mutable_keys())[usb_keycode].mutable_actions();
-    // See if this is a function key.
+    // Convert the key to a function and a codepoint. Keys may have either,
+    // both, or neither of these.
     auto function = KeyvalToFunction(keysym);
+    auto codepoint = xkb_keysym_to_utf32(keysym);
+    // Use the function to update the modifier map. Note that we assume that
+    // modifier keys do the same thing regardless of shift level, so we don't
+    // record the shift level.
+    switch (function) {
+      case protocol::LayoutKeyFunction::SHIFT:
+        self->shift_key_usb_code_ = usb_keycode;
+        break;
+      case protocol::LayoutKeyFunction::ALT_GR:
+        self->altgr_key_usb_code_ = usb_keycode;
+        break;
+      default:
+        break;
+    }
+    // Use the character to update the character map if it doesn't already
+    // exist with a lower shift level. Because of the way shift levels are
+    // numbered and the fact that we only support Shift and AltGr, a lower
+    // shift level indicates fewer modifiers, which is better for synthesizing
+    // input using key presses.
+    //
+    // TODO(crbug.com/440652982): We've previously assumed that NumLock is on
+    // when computing key actions. This means that injecting text events will
+    // not work correctly if NumLock is off.
+    if (codepoint) {
+      auto& existing = self->codepoint_to_usb_code_and_shift_level_[codepoint];
+      if (existing.usb_code == 0 || existing.shift_level > level) {
+        existing.usb_code = usb_keycode;
+        existing.shift_level = level;
+      }
+    }
+    // The function takes precedence over the character so that the correct
+    // symbol is displayed by the client for things like the Enter key.
     if (function != protocol::LayoutKeyFunction::UNKNOWN) {
       actions[level].set_function(function);
       continue;
     }
-    // See if this is a character key.
-    auto codepoint = xkb_keysym_to_utf32(keysym);
+    // Handle regular characters next.
     if (codepoint) {
       std::string utf8;
       base::WriteUnicodeCharacter(codepoint, &utf8);
       actions[level].set_character(utf8);
       continue;
     }
-    // See if this is a dead key.
-    const char* utf8 = DeadKeyToUtf8String(keysym);
-    if (utf8) {
-      actions[level].set_character(utf8);
+    // Handle dead keys last.
+    const char* dead_key_utf8 = DeadKeyToUtf8String(keysym);
+    if (dead_key_utf8) {
+      actions[level].set_character(dead_key_utf8);
       continue;
     }
     // Delete the entry that was implicitly added by the []-operator if

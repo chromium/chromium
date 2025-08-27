@@ -6,7 +6,9 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
+#include "base/strings/utf_string_conversion_utils.h"
 #include "remoting/base/logging.h"
+#include "remoting/host/linux/ei_keymap.h"
 #include "remoting/host/linux/ei_sender_session.h"
 #include "remoting/host/linux/pipewire_capture_stream.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
@@ -24,6 +26,14 @@ GnomeInputInjector::GnomeInputInjector(
 
 GnomeInputInjector::~GnomeInputInjector() = default;
 
+base::WeakPtr<GnomeInputInjector> GnomeInputInjector::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
+void GnomeInputInjector::SetKeymap(base::WeakPtr<EiKeymap> keymap) {
+  keymap_ = keymap;
+}
+
 void GnomeInputInjector::Start(
     std::unique_ptr<protocol::ClipboardStub> client_clipboard) {
   clipboard_.Start(std::move(client_clipboard));
@@ -37,11 +47,71 @@ void GnomeInputInjector::InjectKeyEvent(const protocol::KeyEvent& event) {
     LOG(WARNING) << "Key event with no key info";
     return;
   }
+  if (event.pressed()) {
+    pressed_keys_.insert(event.usb_keycode());
+  } else {
+    pressed_keys_.erase(event.usb_keycode());
+  }
   ei_session_->InjectKeyEvent(event.usb_keycode(), event.pressed());
 }
 
 void GnomeInputInjector::InjectTextEvent(const protocol::TextEvent& event) {
-  NOTIMPLEMENTED();
+  if (!keymap_) {
+    return;
+  }
+  if (!ei_session_) {
+    return;
+  }
+  // Release all keys before injecting text event. This is necessary to avoid
+  // any interference with the currently pressed keys. E.g. if Shift is pressed
+  // when TextEvent is received.
+  for (const auto key : pressed_keys_) {
+    ei_session_->InjectKeyEvent(key, false);
+  }
+  pressed_keys_.clear();
+  std::vector<EiKeymap::Recipe> recipes;
+  const std::string& text = event.text();
+  for (size_t index = 0; index < text.size(); ++index) {
+    base_icu::UChar32 code_point;
+    if (!base::ReadUnicodeCharacter(text.c_str(), text.size(), &index,
+                                    &code_point)) {
+      LOG(ERROR) << "Invalid encoding at index: " << index
+                 << " for text: " << text << ". Not injecting any text.";
+      return;
+    }
+    auto recipe = keymap_->GetRecipeForCodepoint(code_point);
+    // Skip unsupported codepoints. Ideally we'd ignore the whole string in this
+    // case so that it's obvious to the user that something is wrong, but since
+    // the client splits the string into individual characters it's not possible
+    // to know when two text events are part of the same entry.
+    if (recipe.usb_code == 0) {
+      LOG(WARNING) << "Unsupported codepoint: " << code_point
+                   << " for text: " << text;
+      continue;
+    }
+    recipes.push_back(recipe);
+  }
+  std::set<uint32_t> pressed_modifiers;
+  for (const auto& recipe : recipes) {
+    // Release any modifiers that are no longer needed.
+    for (const auto key : pressed_modifiers) {
+      if (!recipe.modifiers.contains(key)) {
+        ei_session_->InjectKeyEvent(key, false);
+      }
+    }
+    // Press any new modifiers that are now needed.
+    for (const auto key : recipe.modifiers) {
+      if (!pressed_modifiers.contains(key)) {
+        ei_session_->InjectKeyEvent(key, true);
+      }
+    }
+    pressed_modifiers = recipe.modifiers;
+    ei_session_->InjectKeyEvent(recipe.usb_code, true);
+    ei_session_->InjectKeyEvent(recipe.usb_code, false);
+  }
+  for (const auto key : pressed_modifiers) {
+    ei_session_->InjectKeyEvent(key, false);
+  }
 }
 
 void GnomeInputInjector::InjectMouseEvent(const protocol::MouseEvent& event) {

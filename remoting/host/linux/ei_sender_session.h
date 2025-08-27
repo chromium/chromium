@@ -29,6 +29,7 @@ namespace remoting {
 
 class EiKeymap;
 class GnomeKeyboardLayoutMonitor;
+class GnomeInputInjector;
 
 // Manages a sender-client connection to an EIS implementation to allow
 // injecting input events.
@@ -43,6 +44,7 @@ class EiSenderSession {
 
   void SetKeyboardLayoutMonitor(
       base::WeakPtr<GnomeKeyboardLayoutMonitor> monitor);
+  void SetInputInjector(base::WeakPtr<GnomeInputInjector> input_injector);
 
   // Injects an event for the provided |usb_keycode|. |is_press| should be true
   // for key-down and repeat events, and false for release events.
@@ -195,6 +197,7 @@ class EiSenderSession {
   std::unique_ptr<base::FileDescriptorWatcher::Controller> fd_watcher_;
 
   base::WeakPtr<GnomeKeyboardLayoutMonitor> keyboard_layout_monitor_;
+  base::WeakPtr<GnomeInputInjector> input_injector_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -120,9 +120,11 @@ std::unique_ptr<InputInjector> GnomeInteractionStrategy::CreateInputInjector() {
   // after the EI session is initialized.
   DCHECK(ei_session_);
 
-  return std::make_unique<GnomeInputInjector>(
+  auto result = std::make_unique<GnomeInputInjector>(
       ei_session_->GetWeakPtr(), capture_stream_manager_.GetWeakPtr(),
       connection_, session_path_);
+  ei_session_->SetInputInjector(result->GetWeakPtr());
+  return result;
 }
 
 std::unique_ptr<DesktopResizer>
