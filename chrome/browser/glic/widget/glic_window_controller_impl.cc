@@ -1552,10 +1552,6 @@ GlicWindowController::State GlicWindowControllerImpl::state() const {
   return state_;
 }
 
-bool GlicWindowControllerImpl::IsDragging() {
-  return in_move_loop_;
-}
-
 Profile* GlicWindowControllerImpl::profile() {
   return profile_;
 }

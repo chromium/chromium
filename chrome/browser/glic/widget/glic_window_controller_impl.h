@@ -121,7 +121,6 @@ class GlicWindowControllerImpl
   State state() const override;
   GlicWindowAnimator* window_animator() override;
   Profile* profile() override;
-  bool IsDragging() override;
   gfx::Rect GetInitialBounds(Browser* browser) override;
   void ShowDetachedForTesting() override;
   void SetPreviousPositionForTesting(gfx::Point position) override;

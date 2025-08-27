@@ -215,8 +215,6 @@ class GlicWindowController : public Host::Delegate {
 
   virtual Profile* profile() = 0;
 
-  virtual bool IsDragging() = 0;
-
   virtual gfx::Rect GetInitialBounds(Browser* browser) = 0;
 
   virtual void ShowDetachedForTesting() = 0;

@@ -222,10 +222,6 @@ Profile* GlicPanelCoordinatorImpl::profile() {
   return glic_window_controller_impl_->profile();
 }
 
-bool GlicPanelCoordinatorImpl::IsDragging() {
-  return glic_window_controller_impl_->IsDragging();
-}
-
 gfx::Rect GlicPanelCoordinatorImpl::GetInitialBounds(Browser* browser) {
   return glic_window_controller_impl_->GetInitialBounds(browser);
 }
