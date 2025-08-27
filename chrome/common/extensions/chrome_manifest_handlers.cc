@@ -8,7 +8,6 @@
 
 #include "build/build_config.h"
 #include "chrome/common/extensions/api/omnibox/omnibox_handler.h"
-#include "chrome/common/extensions/api/speech/tts_engine_manifest_handler.h"
 #include "chrome/common/extensions/api/storage/storage_schema_manifest_handler.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/extensions/manifest_handlers/minimum_chrome_version_checker.h"
@@ -44,7 +43,6 @@ void RegisterChromeManifestHandlers() {
   registry->RegisterHandler(std::make_unique<SettingsOverridesHandler>());
   registry->RegisterHandler(std::make_unique<StorageSchemaManifestHandler>());
   registry->RegisterHandler(std::make_unique<ThemeHandler>());
-  registry->RegisterHandler(std::make_unique<TtsEngineManifestHandler>());
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   registry->RegisterHandler(std::make_unique<SidePanelManifestHandler>());

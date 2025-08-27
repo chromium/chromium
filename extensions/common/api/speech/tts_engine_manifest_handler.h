@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_COMMON_EXTENSIONS_API_SPEECH_TTS_ENGINE_MANIFEST_HANDLER_H_
-#define CHROME_COMMON_EXTENSIONS_API_SPEECH_TTS_ENGINE_MANIFEST_HANDLER_H_
+#ifndef EXTENSIONS_COMMON_API_SPEECH_TTS_ENGINE_MANIFEST_HANDLER_H_
+#define EXTENSIONS_COMMON_API_SPEECH_TTS_ENGINE_MANIFEST_HANDLER_H_
 
 #include <set>
 #include <string>
@@ -30,15 +30,12 @@ struct TtsVoice {
   std::set<std::string> event_types;
 };
 
-// TODO(dtseng): Rename this to TtsEngine, as it encapsulates all data regarding
-// an engine, not just its voices.
-struct TtsVoices : public Extension::ManifestData {
-  TtsVoices();
-  ~TtsVoices() override;
+struct TtsEngine : public Extension::ManifestData {
+  TtsEngine();
+  ~TtsEngine() override;
   static bool Parse(const base::Value::List& tts_voices,
-                    TtsVoices* out_voices,
-                    std::u16string* error,
-                    Extension* extension);
+                    TtsEngine* out_engine,
+                    std::u16string* error);
 
   std::vector<extensions::TtsVoice> voices;
 
@@ -49,7 +46,7 @@ struct TtsVoices : public Extension::ManifestData {
   std::optional<int> buffer_size;
 
   static const std::vector<TtsVoice>* GetTtsVoices(const Extension* extension);
-  static const TtsVoices* GetTtsEngineInfo(const Extension* extension);
+  static const TtsEngine* GetTtsEngineInfo(const Extension* extension);
 };
 
 // Parses the "tts_engine" manifest key.
@@ -70,4 +67,4 @@ class TtsEngineManifestHandler : public ManifestHandler {
 
 }  // namespace extensions
 
-#endif  // CHROME_COMMON_EXTENSIONS_API_SPEECH_TTS_ENGINE_MANIFEST_HANDLER_H_
+#endif  // EXTENSIONS_COMMON_API_SPEECH_TTS_ENGINE_MANIFEST_HANDLER_H_

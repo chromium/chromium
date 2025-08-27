@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/extensions/api/speech/tts_engine_manifest_handler.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
+#include "extensions/common/api/speech/tts_engine_manifest_handler.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/manifest_test.h"
 #include "media/base/limits.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
 
-using TtsManifestTest = ChromeManifestTest;
+using TtsManifestTest = ManifestTest;
 
 namespace errors = manifest_errors;
 

@@ -494,6 +494,10 @@
     "extension_types": ["extension"],
     "min_manifest_version": 3
   },
+  "tts_engine": {
+    "channel": "stable",
+    "extension_types": ["extension", "legacy_packaged_app"]
+  },
   "update_url": {
     "channel": "stable",
     "extension_types": "all"

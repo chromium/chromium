@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/extensions/api/speech/tts_engine_manifest_handler.h"
+#include "extensions/common/api/speech/tts_engine_manifest_handler.h"
 
 #include <stddef.h>
 
@@ -23,21 +23,20 @@ namespace extensions {
 namespace keys = manifest_keys;
 namespace errors = manifest_errors;
 
-
 TtsVoice::TtsVoice() : remote(false) {}
 
 TtsVoice::TtsVoice(const TtsVoice& other) = default;
 
 TtsVoice::~TtsVoice() = default;
 
-TtsVoices::TtsVoices() = default;
-TtsVoices::~TtsVoices() = default;
+TtsEngine::TtsEngine() = default;
+TtsEngine::~TtsEngine() = default;
 
 //  static
-bool TtsVoices::Parse(const base::Value::List& tts_voices,
-                      TtsVoices* out_voices,
-                      std::u16string* error,
-                      Extension* extension) {
+bool TtsEngine::Parse(const base::Value::List& tts_voices,
+                      TtsEngine* out_engine,
+                      std::u16string* error) {
+  CHECK(out_engine->voices.empty());
   for (const base::Value& one_tts_voice_val : tts_voices) {
     if (!one_tts_voice_val.is_dict()) {
       *error = errors::kInvalidTtsVoices;
@@ -104,22 +103,22 @@ bool TtsVoices::Parse(const base::Value::List& tts_voices,
         voice_data.event_types.insert(event_type);
       }
     }
-    out_voices->voices.push_back(voice_data);
+    out_engine->voices.push_back(voice_data);
   }
   return true;
 }
 
 // static
-const std::vector<TtsVoice>* TtsVoices::GetTtsVoices(
+const std::vector<TtsVoice>* TtsEngine::GetTtsVoices(
     const Extension* extension) {
-  const TtsVoices* engine = TtsVoices::GetTtsEngineInfo(extension);
+  const TtsEngine* engine = TtsEngine::GetTtsEngineInfo(extension);
   return engine ? &engine->voices : nullptr;
 }
 
 // static
-const TtsVoices* TtsVoices::GetTtsEngineInfo(const Extension* extension) {
-  TtsVoices* info =
-      static_cast<TtsVoices*>(extension->GetManifestData(keys::kTtsVoices));
+const TtsEngine* TtsEngine::GetTtsEngineInfo(const Extension* extension) {
+  TtsEngine* info =
+      static_cast<TtsEngine*>(extension->GetManifestData(keys::kTtsVoices));
   return info;
 }
 
@@ -129,7 +128,7 @@ TtsEngineManifestHandler::~TtsEngineManifestHandler() = default;
 
 bool TtsEngineManifestHandler::Parse(Extension* extension,
                                      std::u16string* error) {
-  auto info = std::make_unique<TtsVoices>();
+  auto info = std::make_unique<TtsEngine>();
   const base::Value::Dict* tts_dict =
       extension->manifest()->available_values().FindDict(keys::kTtsEngine);
   if (!tts_dict) {
@@ -138,16 +137,18 @@ bool TtsEngineManifestHandler::Parse(Extension* extension,
   }
 
   const base::Value* tts_voices = tts_dict->Find(keys::kTtsVoices);
-  if (!tts_voices)
+  if (!tts_voices) {
     return true;
+  }
 
   if (!tts_voices->is_list()) {
     *error = errors::kInvalidTtsVoices;
     return false;
   }
 
-  if (!TtsVoices::Parse(tts_voices->GetList(), info.get(), error, extension))
+  if (!TtsEngine::Parse(tts_voices->GetList(), info.get(), error)) {
     return false;
+  }
 
   const base::Value* tts_engine_sample_rate =
       tts_dict->Find(keys::kTtsEngineSampleRate);

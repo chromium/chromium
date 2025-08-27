@@ -13,7 +13,6 @@ source_set("extensions") {
   public = [
     "api/notifications/notification_style.h",
     "api/omnibox/omnibox_handler.h",
-    "api/speech/tts_engine_manifest_handler.h",
     "api/storage/storage_schema_manifest_handler.h",
     "chrome_extensions_client.h",
     "extension_constants.h",
@@ -34,7 +33,6 @@ source_set("extensions") {
   sources = [
     "api/notifications/notification_style.cc",
     "api/omnibox/omnibox_handler.cc",
-    "api/speech/tts_engine_manifest_handler.cc",
     "api/storage/storage_schema_manifest_handler.cc",
     "chrome_extensions_api_provider.cc",
     "chrome_extensions_api_provider.h",

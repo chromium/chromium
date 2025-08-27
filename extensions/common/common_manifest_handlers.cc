@@ -13,6 +13,7 @@
 #include "extensions/common/api/declarative_net_request/dnr_manifest_handler.h"
 #include "extensions/common/api/printer_provider/usb_printer_manifest_handler.h"
 #include "extensions/common/api/sockets/sockets_manifest_handler.h"
+#include "extensions/common/api/speech/tts_engine_manifest_handler.h"
 #include "extensions/common/manifest_handler.h"
 #include "extensions/common/manifest_handler_registry.h"
 #include "extensions/common/manifest_handlers/app_display_info.h"
@@ -93,6 +94,7 @@ void RegisterCommonManifestHandlers() {
   registry->RegisterHandler(std::make_unique<SharedModuleHandler>());
   registry->RegisterHandler(std::make_unique<SocketsManifestHandler>());
   registry->RegisterHandler(std::make_unique<TrialTokensHandler>());
+  registry->RegisterHandler(std::make_unique<TtsEngineManifestHandler>());
   registry->RegisterHandler(std::make_unique<UpdateURLHandler>());
   registry->RegisterHandler(std::make_unique<URLOverridesHandler>());
   registry->RegisterHandler(std::make_unique<UsbPrinterManifestHandler>());
