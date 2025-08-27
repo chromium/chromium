@@ -118,10 +118,12 @@ GLenum GetGLFormatForPlaneTexture(VideoPixelFormat format,
       // a dual-channel format.
       return (plane == VideoFrame::Plane::kUV) ? GL_RG : GL_RED;
     case PIXEL_FORMAT_XRGB:
+    case PIXEL_FORMAT_ARGB:
       // PIXEL_FORMAT_XRGB corresponds to GL_BGRA_EXT because the byte order
       // in memory is B, G, R, A.
       return GL_BGRA_EXT;
     case PIXEL_FORMAT_XBGR:
+    case PIXEL_FORMAT_ABGR:
       // PIXEL_FORMAT_XBGR corresponds to GL_RGBA, with byte order R, G, B, A.
       return GL_RGBA;
     default:
@@ -218,6 +220,8 @@ EncoderStatus VideoFrameGLSurfaceRenderer::RenderVideoFrame(
       break;
     case PIXEL_FORMAT_XRGB:
     case PIXEL_FORMAT_XBGR:
+    case PIXEL_FORMAT_ARGB:
+    case PIXEL_FORMAT_ABGR:
       if (auto status = RenderRGBVideoFrame(frame); !status.is_ok()) {
         return status;
       }
