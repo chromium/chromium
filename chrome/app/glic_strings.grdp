@@ -104,13 +104,13 @@
   <message name="IDS_SETTINGS_GLIC_ROW_SUBLABEL" desc="Sublabel of the Gemini row button leading to the Gemini subpage.">
     AI assistant that gives key takeaways, clarifies concepts, finds answers and more
   </message>
-  <message name="IDS_SETTINGS_GLIC_POLICY_DISABLED_MESSAGE" translateable="false" desc="Message shown when Gemini is disabled by enterprise policy.">
+  <message name="IDS_SETTINGS_GLIC_POLICY_DISABLED_MESSAGE" desc="Message shown when Gemini is disabled by enterprise policy.">
     This feature is disabled by your organization
   </message>
   <message name="IDS_SETTINGS_GLIC_PREFERENCES_SECTION" desc="Heading on settings page for basic preferences.">
     Preferences
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_SECTION" translateable="false" desc="Heading on settings page for permissions-related preferences.">
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_SECTION" desc="Heading on settings page for permissions-related preferences.">
     Permissions
   </message>
   <message name="IDS_SETTINGS_GLIC_BUTTON_TOGGLE" desc="Name of the toggle that controls whether the Gemini icon is shown in the tabstrip.">
@@ -159,7 +159,7 @@
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_LOCATION_TOGGLE_SUBLABEL" desc="Sublabel describing that this setting will share location data with Gemini for location-aware answers">
     Use your precise location for the most accurate Gemini results, instead of an estimated location based on your IP address.
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_LOCATION_TOGGLE_SUBLABEL_DATA_PROTECTED" translateable="false" desc="Sublabel describing that this setting will share location data with Gemini for location-aware answers, but the user's data is not used to improve the model">
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_LOCATION_TOGGLE_SUBLABEL_DATA_PROTECTED" desc="Sublabel describing that this setting will share location data with Gemini for location-aware answers, but the user's data is not used to improve the model">
     Use your precise location for the most accurate Gemini results, instead of an estimated location based on your IP address. Your data is not used to improve generative AI models
   </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_MICROPHONE_TOGGLE" desc="Name of the microphone setting.">
@@ -168,7 +168,7 @@
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_MICROPHONE_TOGGLE_SUBLABEL" desc="Sublabel describing that this setting will enable using the microphone to have a voice chat with Gemini">
     Use your microphone to chat with Gemini. When you speak to Gemini, audio is stored in Gemini Apps Activity (if it's on)
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_MICROPHONE_TOGGLE_SUBLABEL_DATA_PROTECTED" translateable="false" desc="Sublabel describing that this setting will enable using the microphone to have a voice chat with Gemini, but the user's data is not used to improve the model">
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_MICROPHONE_TOGGLE_SUBLABEL_DATA_PROTECTED" desc="Sublabel describing that this setting will enable using the microphone to have a voice chat with Gemini, but the user's data is not used to improve the model">
     Use your microphone to chat with Gemini. When you speak to Gemini, audio is stored in Gemini Apps Activity (if it's on). Your data is not used to improve generative AI models
   </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_TOGGLE" desc="Name of the enable current tab access setting.">
@@ -177,7 +177,7 @@
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_TOGGLE_SUBLABEL" desc="Sublabel describing that this setting will enable sharing the current tab's content with Gemini">
     Shares the current tab with Gemini, even as you switch tabs
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_TOGGLE_SUBLABEL_DATA_PROTECTED" translateable="false" desc="Sublabel describing that this setting will enable sharing the current tab's content with Gemini, but the user's data is not used to improve the model">
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_TOGGLE_SUBLABEL_DATA_PROTECTED" desc="Sublabel describing that this setting will enable sharing the current tab's content with Gemini, but the user's data is not used to improve the model">
     Share page content with Gemini to get more relevant answers. Your data is not used to improve generative AI models.
   </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON" desc="Name of the Gemini Apps Activity link out.">
@@ -189,10 +189,10 @@
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON_URL" translateable="false" desc="URL to navigate when clicking the 'manage your activity' button.">
     https://myactivity.google.com/product/gemini?utm_source=gemini
   </message>
-  <message name="IDS_SETTINGS_GLIC_EXTENSIONS_BUTTON" translateable="false" desc="Name of the Gemini Extensions link out.">
+  <message name="IDS_SETTINGS_GLIC_EXTENSIONS_BUTTON" desc="Name of the Gemini Extensions link out.">
     Manage connected apps
   </message>
-  <message name="IDS_SETTINGS_GLIC_EXTENSIONS_BUTTON_SUBLABEL" translateable="false" desc="Sublabel describing that this link allows the user to manage Gemini connected apps.">
+  <message name="IDS_SETTINGS_GLIC_EXTENSIONS_BUTTON_SUBLABEL" desc="Sublabel describing that this link allows the user to manage Gemini connected apps.">
     Manage which apps Gemini connects to
   </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_WHEN_ON_1" desc="First point in the 'when on' column of the 'tab access' expando">
@@ -206,10 +206,10 @@
   </message>
 
   <!-- Glic button and tab strip context menu -->
-  <message name="IDS_GLIC_PIN" translateable="false" desc="Name of the context menu item for toggling Gemini pinning, when Gemini is unpinned.">
+  <message name="IDS_GLIC_PIN" desc="Name of the context menu item for toggling Gemini pinning, when Gemini is unpinned.">
     Pin Gemini
   </message>
-  <message name="IDS_GLIC_UNPIN" translateable="false" desc="Name of the context menu item for toggling Gemini pinning, when Gemini is pinned.">
+  <message name="IDS_GLIC_UNPIN" desc="Name of the context menu item for toggling Gemini pinning, when Gemini is pinned.">
     Unpin Gemini
   </message>
 
@@ -228,13 +228,13 @@
   </message>
 
   <!-- Glic Window -->
-  <message name="IDS_GLIC_WINDOW_TITLE" desc="Accessible title for the Gemini Window." translateable="false">
+  <message name="IDS_GLIC_WINDOW_TITLE" desc="Accessible title for the Gemini Window." is_accessibility_with_no_ui="true">
     Gemini
   </message>
-  <message name="IDS_GLIC_WINDOW_TITLE_FIRST_LOAD" desc="Accessible title for the Gemini Window. Only included on first load." translateable="false">
+  <message name="IDS_GLIC_WINDOW_TITLE_FIRST_LOAD" desc="Accessible title for the Gemini Window. Only included on first load." is_accessibility_with_no_ui="true">
     Gemini. To return to where you were on the page press <ph name="FOCUS_TOGGLE_HOTKEY">$1<ex>Ctrl+⌘+G</ex></ph>
   </message>
-  <message name="IDS_GLIC_WINDOW_FIRST_FOCUS_LOST_ANNOUNCEMENT" desc="Announcement triggered the first time the Gemini window loses focus." translateable="false">
+  <message name="IDS_GLIC_WINDOW_FIRST_FOCUS_LOST_ANNOUNCEMENT" desc="Announcement triggered the first time the Gemini window loses focus." is_accessibility_with_no_ui="true">
     To return to Gemini, press <ph name="FOCUS_TOGGLE_HOTKEY">$1<ex>Ctrl+⌘+G</ex></ph>
   </message>
 
