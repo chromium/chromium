@@ -5964,6 +5964,27 @@
             ]
         }
     ],
+    "ChromnientTextSelectionContextMenuEntrypoint": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Contextualized",
+                    "params": {
+                        "contextualize": "true"
+                    },
+                    "enable_features": [
+                        "LensOverlayTextSelectionContextMenuEntrypoint"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromnientUpdatedClientContext": [
         {
             "platforms": [
