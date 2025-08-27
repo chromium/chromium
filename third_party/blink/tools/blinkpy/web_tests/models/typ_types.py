@@ -42,6 +42,7 @@ ExpectationType = expectations_parser.Expectation
 TestExpectationsType = expectations_parser.TestExpectations
 Artifacts = artifacts.Artifacts
 ResultSinkReporter = result_sink.ResultSinkReporter
+ModuleScheme = result_sink.ModuleScheme
 RESULT_TAGS = expectations_parser.RESULT_TAGS
 # This type has a different name to avoid naming clashes with
 # `blinkpy.common.host.Host` when imported.
