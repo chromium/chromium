@@ -43,6 +43,14 @@ class AbusiveNotificationPermissionsManager {
 
   ~AbusiveNotificationPermissionsManager();
 
+  // Handles the auto-revocation of abusive notification permissions for both
+  // social engineering blocklist and manual enforcement. This includes updating
+  // the settings with the correct expiration, and logging metrics.
+  static void ExecuteAbusiveNotificationAutoRevocation(
+      HostContentSettingsMap* hcsm,
+      GURL url,
+      const raw_ptr<const base::Clock> clock);
+
   // Calls `PerformSafeBrowsingChecks` on URLs which have notifications
   // enabled and haven't been marked as a URL to be ignored.
   void CheckNotificationPermissionOrigins();

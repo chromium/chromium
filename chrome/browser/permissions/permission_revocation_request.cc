@@ -33,13 +33,10 @@ struct OriginStatus {
   bool has_been_previously_revoked = false;
 };
 
-OriginStatus GetOriginStatus(Profile* profile, const GURL& origin) {
-  const base::Value stored_value =
-      permissions::PermissionsClient::Get()
-          ->GetSettingsMap(profile)
-          ->GetWebsiteSetting(
-              origin, GURL(),
-              ContentSettingsType::PERMISSION_AUTOREVOCATION_DATA);
+OriginStatus GetOriginStatusFromSettingsMap(HostContentSettingsMap* hcsm,
+                                            const GURL& origin) {
+  const base::Value stored_value = hcsm->GetWebsiteSetting(
+      origin, GURL(), ContentSettingsType::PERMISSION_AUTOREVOCATION_DATA);
 
   OriginStatus status;
 
@@ -63,9 +60,14 @@ OriginStatus GetOriginStatus(Profile* profile, const GURL& origin) {
   return status;
 }
 
-void SetOriginStatus(Profile* profile,
-                     const GURL& origin,
-                     const OriginStatus& status) {
+OriginStatus GetOriginStatus(Profile* profile, const GURL& origin) {
+  return GetOriginStatusFromSettingsMap(
+      permissions::PermissionsClient::Get()->GetSettingsMap(profile), origin);
+}
+
+void SetOriginStatusFromHostContentSettingsMap(HostContentSettingsMap* hcsm,
+                                               const GURL& origin,
+                                               const OriginStatus& status) {
   base::Value::Dict dict;
   base::Value::Dict permission_dict;
   permission_dict.Set(kExcludedKey, status.is_exempt_from_future_revocations);
@@ -73,11 +75,17 @@ void SetOriginStatus(Profile* profile,
                       status.has_been_previously_revoked);
   dict.Set(kPermissionName, std::move(permission_dict));
 
-  permissions::PermissionsClient::Get()
-      ->GetSettingsMap(profile)
-      ->SetWebsiteSettingDefaultScope(
-          origin, GURL(), ContentSettingsType::PERMISSION_AUTOREVOCATION_DATA,
-          base::Value(std::move(dict)));
+  hcsm->SetWebsiteSettingDefaultScope(
+      origin, GURL(), ContentSettingsType::PERMISSION_AUTOREVOCATION_DATA,
+      base::Value(std::move(dict)));
+}
+
+void SetOriginStatus(Profile* profile,
+                     const GURL& origin,
+                     const OriginStatus& status) {
+  SetOriginStatusFromHostContentSettingsMap(
+      permissions::PermissionsClient::Get()->GetSettingsMap(profile), origin,
+      status);
 }
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -116,9 +124,26 @@ PermissionRevocationRequest::~PermissionRevocationRequest() = default;
 void PermissionRevocationRequest::ExemptOriginFromFutureRevocations(
     Profile* profile,
     const GURL& origin) {
-  OriginStatus status = GetOriginStatus(profile, origin);
+  ExemptOriginFromFutureRevocations(
+      permissions::PermissionsClient::Get()->GetSettingsMap(profile), origin);
+}
+
+// static
+void PermissionRevocationRequest::ExemptOriginFromFutureRevocations(
+    HostContentSettingsMap* hcsm,
+    const GURL& origin) {
+  OriginStatus status = GetOriginStatusFromSettingsMap(hcsm, origin);
   status.is_exempt_from_future_revocations = true;
-  SetOriginStatus(profile, origin, status);
+  SetOriginStatusFromHostContentSettingsMap(hcsm, origin, status);
+}
+
+// static
+void PermissionRevocationRequest::UndoExemptOriginFromFutureRevocations(
+    HostContentSettingsMap* hcsm,
+    const GURL& origin) {
+  OriginStatus status = GetOriginStatusFromSettingsMap(hcsm, origin);
+  status.is_exempt_from_future_revocations = false;
+  SetOriginStatusFromHostContentSettingsMap(hcsm, origin, status);
 }
 
 // static

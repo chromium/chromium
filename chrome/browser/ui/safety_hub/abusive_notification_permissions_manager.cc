@@ -44,6 +44,26 @@ AbusiveNotificationPermissionsManager::AbusiveNotificationPermissionsManager(
 AbusiveNotificationPermissionsManager::
     ~AbusiveNotificationPermissionsManager() = default;
 
+// static
+void AbusiveNotificationPermissionsManager::
+    ExecuteAbusiveNotificationAutoRevocation(
+        HostContentSettingsMap* hcsm,
+        GURL url,
+        const raw_ptr<const base::Clock> clock) {
+  UpdateNotificationPermission(hcsm, url,
+                               ContentSetting::CONTENT_SETTING_DEFAULT);
+  // Set the default constraint to the current time and lifetime defined by
+  // the clean up threshold. Use this to set the expiration time of the
+  // revocation permission.
+  content_settings::ContentSettingConstraints default_constraint(clock->Now());
+  default_constraint.set_lifetime(safety_hub_util::GetCleanUpThreshold());
+  safety_hub_util::SetRevokedAbusiveNotificationPermission(
+      hcsm, url, /*is_ignored=*/false, default_constraint);
+  content_settings_uma_util::RecordContentSettingsHistogram(
+      "Settings.SafetyHub.UnusedSitePermissionsModule.AutoRevoked2",
+      ContentSettingsType::NOTIFICATIONS);
+}
+
 void AbusiveNotificationPermissionsManager::
     CheckNotificationPermissionOrigins() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -231,16 +251,7 @@ void AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
   // we got a blocklist check result in time.
   timer_.Stop();
   if (threat_type == safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING) {
-    UpdateNotificationPermission(hcsm_.get(), url,
-                                 ContentSetting::CONTENT_SETTING_DEFAULT);
-    content_settings::ContentSettingConstraints default_constraint(
-        clock_->Now());
-    default_constraint.set_lifetime(safety_hub_util::GetCleanUpThreshold());
-    safety_hub_util::SetRevokedAbusiveNotificationPermission(
-        hcsm_.get(), url, /*is_ignored=*/false, default_constraint);
-    content_settings_uma_util::RecordContentSettingsHistogram(
-        "Settings.SafetyHub.UnusedSitePermissionsModule.AutoRevoked2",
-        ContentSettingsType::NOTIFICATIONS);
+    ExecuteAbusiveNotificationAutoRevocation(hcsm_.get(), url, clock_);
   }
   // Update user pref that stores the time of the last successful blocklist
   // check.

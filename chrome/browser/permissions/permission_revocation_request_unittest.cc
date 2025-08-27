@@ -416,6 +416,32 @@ TEST_F(PermissionRevocationRequestTest, ExemptAbusiveOriginTest) {
   VerifyNotificationsPermission(origin_to_revoke, CONTENT_SETTING_ASK);
 }
 
+TEST_F(PermissionRevocationRequestTest, UndoExemptAbusiveOriginTest) {
+  const GURL origin_to_exempt = GURL("https://origin-allow.com/");
+
+  PermissionRevocationRequest::ExemptOriginFromFutureRevocations(
+      GetTestingProfile(), origin_to_exempt);
+
+  SetPermission(origin_to_exempt, CONTENT_SETTING_ALLOW);
+
+  AddToPreloadDataBlocklist(origin_to_exempt, SiteReputation::ABUSIVE_CONTENT,
+                            /*has_warning=*/false);
+  AddToSafeBrowsingBlocklist(origin_to_exempt);
+
+  // The origin added to the exempt list will not be revoked.
+  QueryAndExpectDecisionForUrl(origin_to_exempt,
+                               Outcome::PERMISSION_NOT_REVOKED);
+
+  PermissionRevocationRequest::UndoExemptOriginFromFutureRevocations(
+      HostContentSettingsMapFactory::GetForProfile(GetTestingProfile()),
+      origin_to_exempt);
+
+  // The origin will be revoked after undoing the revocation exemption.
+  QueryAndExpectDecisionForUrl(origin_to_exempt,
+                               Outcome::PERMISSION_REVOKED_DUE_TO_ABUSE);
+  VerifyNotificationsPermission(origin_to_exempt, CONTENT_SETTING_ASK);
+}
+
 TEST_F(PermissionRevocationRequestTest, SafeBrowsingDisabledTest) {
   const GURL origin_to_revoke = GURL("https://origin.com/");
 
