@@ -619,6 +619,10 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
       synced_offset->set_clobber_active_value();
   }
 
+  bool SetElasticOverscroll(const ScrollNode& scroll_node,
+                            const gfx::Vector2dF& elastic_overscroll);
+  gfx::Vector2dF GetElasticOverscroll(const ScrollNode& scroll_node) const;
+
   // Sets the painting cull rect of scrolling contents of a scroll. If set, the
   // painting of scrolling contents in this cull rect is guaranteed to be
   // complete. It's in the space of `transform_id` of the corresponding scroll
@@ -690,6 +694,13 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
     return scrolling_contents_cull_rects_;
   }
 
+  const base::flat_map<ElementId, gfx::Vector2dF>& elastic_overscroll() const {
+    return elastic_overscroll_;
+  }
+  base::flat_map<ElementId, gfx::Vector2dF>& elastic_overscroll() {
+    return elastic_overscroll_;
+  }
+
  private:
   // ScrollTree doesn't use the needs_update flag.
   using PropertyTree::needs_update;
@@ -704,6 +715,10 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   // and impl threads.
   ScrollOffsetMap scroll_offset_map_;
   SyncedScrollOffsetMap synced_scroll_offset_map_;
+
+  // Maps from scroll element id to the current elastic overscroll on that
+  // element.
+  base::flat_map<ElementId, gfx::Vector2dF> elastic_overscroll_;
 
   // Maps from scroll element id to scrolling contents cull rect.
   base::flat_map<ElementId, gfx::Rect> scrolling_contents_cull_rects_;
