@@ -9,6 +9,7 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
@@ -72,6 +73,8 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
     /** The manager for overlay panels to attach listeners to. */
     private final Supplier<OverlayPanelManager> mOverlayPanelManager;
 
+    private final Callback<@Nullable Tab> mOnActiveTabChanged = this::setActivityTab;
+
     /** The last known activity tab, if available. */
     private Tab mLastActivityTab;
 
@@ -110,8 +113,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
         mSheetController.addObserver(this);
 
         // TODO(crbug.com/40134698): We should wait to instantiate all of these observers until the
-        // bottom
-        //                sheet is actually used.
+        // bottom sheet is actually used.
         mTabObserver =
                 new EmptyTabObserver() {
                     @Override
@@ -135,8 +137,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
                     }
                 };
 
-        mTabProvider.addObserver(this::setActivityTab);
-        setActivityTab(mTabProvider.get());
+        mTabProvider.addSyncObserverAndCallIfNonNull(mOnActiveTabChanged);
 
         mBrowserControlsObserver =
                 new BrowserControlsStateProvider.Observer() {
@@ -185,7 +186,6 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
 
     private void setActivityTab(Tab tab) {
         if (tab == null) return;
-
         if (mLastActivityTab == tab) return;
 
         // Move the observer to the new activity tab and clear the sheet.
@@ -280,6 +280,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
         mCallbackController.destroy();
         if (mLastActivityTab != null) mLastActivityTab.removeObserver(mTabObserver);
         mSheetController.removeObserver(this);
+        mTabProvider.removeObserver(mOnActiveTabChanged);
         mBrowserControlsVisibilityManager.removeObserver(mBrowserControlsObserver);
         mOmniboxFocusStateSupplier.removeObserver(mOmniboxFocusObserver);
         if (mLayoutStateProviderSupplier.get() != null) {
