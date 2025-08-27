@@ -11,7 +11,7 @@
 #include "base/mac/mac_util.h"
 #import "testing/gtest_mac.h"
 #import "ui/base/cocoa/views_hostable.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_window_types.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/controls/native/native_view_host_test_base.h"

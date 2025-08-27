@@ -8,7 +8,7 @@
 #include <memory>
 #include <set>
 
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_window_types.h"
 #include "ui/views/cocoa/native_widget_mac_event_monitor.h"
 #include "ui/views/event_monitor.h"
 

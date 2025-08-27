@@ -17,7 +17,7 @@
 
 #include "base/functional/callback.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_window_types.h"
 #include "ui/views/buildflags.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/widget.h"

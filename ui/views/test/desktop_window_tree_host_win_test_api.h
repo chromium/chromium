@@ -9,7 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_window_types.h"
 
 namespace ui {
 class AXSystemCaretWin;

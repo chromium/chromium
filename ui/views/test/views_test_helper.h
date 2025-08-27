@@ -8,7 +8,7 @@
 #include <memory>
 #include <optional>
 
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_window_types.h"
 #include "ui/views/views_delegate.h"
 
 namespace views {

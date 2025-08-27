@@ -7,7 +7,7 @@
 
 #include "base/win/windows_types.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_window_types.h"
 #include "ui/views/views_export.h"
 
 class SkPath;

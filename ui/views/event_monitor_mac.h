@@ -10,7 +10,7 @@
 
 #include "base/auto_reset.h"
 #include "base/memory/weak_ptr.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_window_types.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/views_export.h"
 

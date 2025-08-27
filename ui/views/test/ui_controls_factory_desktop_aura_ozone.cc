@@ -20,7 +20,7 @@
 #include "ui/aura/test/aura_test_utils.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/test/ui_controls.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_window_types.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/ozone_ui_controls_test_helper.h"
 #include "ui/views/test/test_desktop_screen_ozone.h"

@@ -17,7 +17,7 @@
 #include "build/build_config.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_window_types.h"
 
 namespace views {
 

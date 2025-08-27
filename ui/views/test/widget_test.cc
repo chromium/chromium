@@ -8,7 +8,7 @@
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_window_types.h"
 #include "ui/views/test/native_widget_factory.h"
 #include "ui/views/widget/root_view.h"
 
