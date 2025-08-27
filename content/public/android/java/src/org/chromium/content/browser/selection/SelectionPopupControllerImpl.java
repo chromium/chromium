@@ -55,8 +55,8 @@ import org.chromium.content.browser.PopupController.HideablePopup;
 import org.chromium.content.browser.WindowEventObserver;
 import org.chromium.content.browser.WindowEventObserverManager;
 import org.chromium.content.browser.input.ImeAdapterImpl;
-import org.chromium.content.browser.selection.SelectActionMenuHelper.SelectActionMenuDelegate;
 import org.chromium.content.browser.selection.SelectActionMenuHelper.TextProcessingIntentHandler;
+import org.chromium.content.browser.selection.SelectActionMenuHelper.TextSelectionCapabilitiesDelegate;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.ActionModeCallback;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
@@ -100,7 +100,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                 HideablePopup,
                 ContainerViewObserver,
                 UserData,
-                SelectActionMenuDelegate {
+                TextSelectionCapabilitiesDelegate {
     private static final String TAG = "SelectionPopupCtlr"; // 20 char limit
     private static final boolean DEBUG = false;
 

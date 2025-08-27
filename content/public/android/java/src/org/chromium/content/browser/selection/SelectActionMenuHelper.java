@@ -102,8 +102,8 @@ public class SelectActionMenuHelper {
         char SELECT_ALL = 'a';
     }
 
-    /** Delegate for the select action menu. */
-    public interface SelectActionMenuDelegate {
+    /** Delegate for determining which default actions can be taken. */
+    public interface TextSelectionCapabilitiesDelegate {
         boolean canCut();
 
         boolean canCopy();
@@ -139,13 +139,17 @@ public class SelectActionMenuHelper {
     /**
      * Returns all items for the text selection menu when there is text selected.
      *
+     * @param delegate a delegate used to determine which default actions can be taken.
      * @param context the context used by the menu.
      * @param classificationResult the text classification result.
+     * @param isSelectionPassword true if the selection is a password.
      * @param isSelectionReadOnly true if the selection is non-editable.
+     * @param selectedText the text that is currently selected for this menu.
      * @param textProcessingIntentHandler the intent handler for text processing actions.
+     * @param selectionActionMenuDelegate a delegate which can edit or add additional menu items.
      */
     public static SortedSet<SelectionMenuGroup> getMenuItems(
-            SelectActionMenuDelegate delegate,
+            TextSelectionCapabilitiesDelegate delegate,
             Context context,
             SelectionClient.@Nullable Result classificationResult,
             boolean isSelectionPassword,
@@ -216,7 +220,7 @@ public class SelectActionMenuHelper {
     @VisibleForTesting
     static SelectionMenuGroup getDefaultItems(
             @Nullable Context context,
-            SelectActionMenuDelegate delegate,
+            TextSelectionCapabilitiesDelegate delegate,
             @Nullable SelectionActionMenuDelegate selectionActionMenuDelegate,
             boolean isSelectionPassword,
             boolean isSelectionReadOnly,

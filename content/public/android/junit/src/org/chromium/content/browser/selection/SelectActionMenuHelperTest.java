@@ -41,7 +41,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SelectActionMenuHelperTest {
-    @Mock private SelectActionMenuHelper.SelectActionMenuDelegate mDelegate;
+    @Mock private SelectActionMenuHelper.TextSelectionCapabilitiesDelegate mDelegate;
     @Mock private Context mContext;
 
     private static class TestSelectionActionMenuDelegate implements SelectionActionMenuDelegate {
