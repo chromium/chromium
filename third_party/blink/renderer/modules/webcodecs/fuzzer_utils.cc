@@ -62,7 +62,7 @@ constexpr uint32_t kMaxVideoFrameDimension = 1024;
 
 base::ScopedClosureRunner MakeScopedGarbageCollectionRequest(
     v8::Isolate* isolate) {
-  return base::ScopedClosureRunner(WTF::BindOnce(
+  return base::ScopedClosureRunner(BindOnce(
       [](v8::Isolate* isolate) {
         // Request a V8 GC. Oilpan will be invoked by the GC epilogue.
         //
@@ -74,7 +74,7 @@ base::ScopedClosureRunner MakeScopedGarbageCollectionRequest(
         isolate->RequestGarbageCollectionForTesting(
             v8::Isolate::kFullGarbageCollection);
       },
-      WTF::Unretained(isolate)));
+      Unretained(isolate)));
 }
 
 FakeFunction::FakeFunction(std::string name) : name_(std::move(name)) {}

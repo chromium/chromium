@@ -239,9 +239,8 @@ class AudioContextTest : public PageTestBase {
 
     GetFrame().DomWindow()->GetBrowserInterfaceBroker().SetBinderForTesting(
         mojom::blink::MediaDevicesDispatcherHost::Name_,
-        WTF::BindRepeating(
-            &MockMediaDevicesDispatcherHost::BindRequest,
-            WTF::Unretained(mock_media_devices_dispatcher_host_.get())));
+        BindRepeating(&MockMediaDevicesDispatcherHost::BindRequest,
+                      Unretained(mock_media_devices_dispatcher_host_.get())));
   }
 
   void TearDown() override {

@@ -9,18 +9,18 @@
 
 namespace blink {
 
-// Create WTF::String from a null-terminated char string. Treat the provided
+// Create blink::String from a null-terminated char string. Treat the provided
 // message as UTF-8 string, with Latin1 as fallback if the string is not valid
 // UTF-8. Parts of Dawn's messages are user-defined strings like identifiers
-// that could possibly be invalid UTF8, and WTF::String::FromUTF8 would result
+// that could possibly be invalid UTF8, and blink::String::FromUTF8 would result
 // in a null string in this case. So use the FromUTF8WithLatin1Fallback methods
 // that fallbacks to Latin1 for invalid UTF8 strings so that we are always able
 // to display something.
-WTF::String StringFromASCIIAndUTF8(std::string_view message);
+String StringFromASCIIAndUTF8(std::string_view message);
 
-// Create a utf8 std::string from a WTF:String and replace `\0` with `\0xFFFD`
-// which is the unicode replacement codepoint. This used for some strings passed
-// to Dawn which expects null terminated strings.
+// Create a utf8 std::string from a blink::String and replace `\0` with
+// `\0xFFFD` which is the unicode replacement codepoint. This used for some
+// strings passed to Dawn which expects null terminated strings.
 std::string UTF8StringFromUSVStringWithNullReplacedByReplacementCodePoint(
     const String& s);
 

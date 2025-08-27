@@ -316,11 +316,10 @@ bool DecoderTemplate<Traits>::ProcessConfigureRequest(Request* request) {
   if (!request->media_config) {
     main_thread_task_runner_->PostTask(
         FROM_HERE,
-        WTF::BindOnce(&DecoderTemplate<Traits>::Shutdown,
-                      WrapWeakPersistent(this),
-                      WrapPersistent(MakeGarbageCollected<DOMException>(
-                          DOMExceptionCode::kNotSupportedError,
-                          request->js_error_message))));
+        BindOnce(&DecoderTemplate<Traits>::Shutdown, WrapWeakPersistent(this),
+                 WrapPersistent(MakeGarbageCollected<DOMException>(
+                     DOMExceptionCode::kNotSupportedError,
+                     request->js_error_message))));
     return false;
   }
 
@@ -374,10 +373,9 @@ void DecoderTemplate<Traits>::ContinueConfigureWithGpuFactories(
     initializing_sync_ = true;
     Traits::InitializeDecoder(
         *decoder(), request->low_delay.value(), *request->media_config,
-        WTF::BindOnce(&DecoderTemplate::OnInitializeDone,
-                      WrapWeakPersistent(this)),
-        WTF::BindRepeating(&DecoderTemplate::OnOutput, WrapWeakPersistent(this),
-                           reset_generation_));
+        BindOnce(&DecoderTemplate::OnInitializeDone, WrapWeakPersistent(this)),
+        blink::BindRepeating(&DecoderTemplate::OnOutput,
+                             WrapWeakPersistent(this), reset_generation_));
     initializing_sync_ = false;
     return;
   }
@@ -385,7 +383,7 @@ void DecoderTemplate<Traits>::ContinueConfigureWithGpuFactories(
   // Processing continues in OnFlushDone().
   decoder()->Decode(
       media::DecoderBuffer::CreateEOSBuffer(),
-      WTF::BindOnce(&DecoderTemplate::OnFlushDone, WrapWeakPersistent(this)));
+      BindOnce(&DecoderTemplate::OnFlushDone, WrapWeakPersistent(this)));
 }
 
 template <typename Traits>
@@ -438,10 +436,9 @@ bool DecoderTemplate<Traits>::ProcessDecodeRequest(Request* request) {
         GetTraceNames()->decode.c_str(), *request->decoder_buffer);
   }
 
-  decoder()->Decode(
-      std::move(request->decoder_buffer),
-      WTF::BindOnce(&DecoderTemplate::OnDecodeDone, WrapWeakPersistent(this),
-                    pending_decode_id_));
+  decoder()->Decode(std::move(request->decoder_buffer),
+                    BindOnce(&DecoderTemplate::OnDecodeDone,
+                             WrapWeakPersistent(this), pending_decode_id_));
   return true;
 }
 
@@ -470,7 +467,7 @@ bool DecoderTemplate<Traits>::ProcessFlushRequest(Request* request) {
 
   decoder()->Decode(
       media::DecoderBuffer::CreateEOSBuffer(),
-      WTF::BindOnce(&DecoderTemplate::OnFlushDone, WrapWeakPersistent(this)));
+      BindOnce(&DecoderTemplate::OnFlushDone, WrapWeakPersistent(this)));
   return true;
 }
 
@@ -491,7 +488,7 @@ bool DecoderTemplate<Traits>::ProcessResetRequest(Request* request) {
 
     // Processing continues in OnResetDone().
     decoder()->Reset(
-        WTF::BindOnce(&DecoderTemplate::OnResetDone, WrapWeakPersistent(this)));
+        BindOnce(&DecoderTemplate::OnResetDone, WrapWeakPersistent(this)));
   }
 
   return true;
@@ -630,10 +627,9 @@ void DecoderTemplate<Traits>::OnFlushDone(media::DecoderStatus status) {
   Traits::InitializeDecoder(
       *decoder(), is_flush ? low_delay_ : pending_request_->low_delay.value(),
       is_flush ? *active_config_ : *pending_request_->media_config,
-      WTF::BindOnce(&DecoderTemplate::OnInitializeDone,
-                    WrapWeakPersistent(this)),
-      WTF::BindRepeating(&DecoderTemplate::OnOutput, WrapWeakPersistent(this),
-                         reset_generation_));
+      BindOnce(&DecoderTemplate::OnInitializeDone, WrapWeakPersistent(this)),
+      blink::BindRepeating(&DecoderTemplate::OnOutput, WrapWeakPersistent(this),
+                           reset_generation_));
 }
 
 template <typename Traits>
@@ -792,9 +788,8 @@ void DecoderTemplate<Traits>::ScheduleDequeueEvent() {
   event->async_task_context()->Schedule(GetExecutionContext(), event->type());
 
   main_thread_task_runner_->PostTask(
-      FROM_HERE,
-      WTF::BindOnce(&DecoderTemplate<Traits>::DispatchDequeueEvent,
-                    WrapWeakPersistent(this), WrapPersistent(event)));
+      FROM_HERE, BindOnce(&DecoderTemplate<Traits>::DispatchDequeueEvent,
+                          WrapWeakPersistent(this), WrapPersistent(event)));
 }
 
 template <typename Traits>

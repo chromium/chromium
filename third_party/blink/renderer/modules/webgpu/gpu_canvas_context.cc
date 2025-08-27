@@ -724,7 +724,7 @@ GPUTexture* GPUCanvasContext::getCurrentTexture(
         String::FromUTF8(texture_descriptor_.label));
     // If the user manually destroys the texture before yielding control back
     // to the browser, do the copy just prior to the texture destruction.
-    texture_->SetBeforeDestroyCallback(WTF::BindOnce(
+    texture_->SetBeforeDestroyCallback(blink::BindOnce(
         [](GPUCanvasContext* context, GPUTexture* texture) {
           context->CopyToSwapTexture();
           texture->ClearBeforeDestroyCallback();

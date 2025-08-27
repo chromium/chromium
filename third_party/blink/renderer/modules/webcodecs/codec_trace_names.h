@@ -10,7 +10,7 @@
 namespace blink {
 
 // Holds the names of various codec operations for tracing. Uses std::string
-// instead of WTF::String for ease of use with the tracing macros.
+// instead of blink::String for ease of use with the tracing macros.
 struct CodecTraceNames {
   explicit CodecTraceNames(const std::string& codec_name) {
     configure = codec_name + "::Configure";

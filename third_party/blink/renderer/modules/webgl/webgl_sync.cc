@@ -72,7 +72,7 @@ void WebGLSync::ScheduleAllowCacheUpdate() {
     return;
   task_handle_ = PostCancellableTask(
       *task_runner_, FROM_HERE,
-      WTF::BindOnce(&WebGLSync::AllowCacheUpdate, WrapWeakPersistent(this)));
+      BindOnce(&WebGLSync::AllowCacheUpdate, WrapWeakPersistent(this)));
 }
 
 void WebGLSync::AllowCacheUpdate() {

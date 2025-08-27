@@ -296,8 +296,8 @@ class CachedVideoFramePool : public GarbageCollected<CachedVideoFramePool>,
     task_handle_ = PostDelayedCancellableTask(
         *GetSupplementable()->GetTaskRunner(TaskType::kInternalMedia),
         FROM_HERE,
-        WTF::BindOnce(&CachedVideoFramePool::PurgeIdleFramePool,
-                      WrapWeakPersistent(this)),
+        BindOnce(&CachedVideoFramePool::PurgeIdleFramePool,
+                 WrapWeakPersistent(this)),
         kIdleTimeout);
   }
 
@@ -413,8 +413,8 @@ class CanvasResourceProviderCache
     task_handle_ = PostDelayedCancellableTask(
         *GetSupplementable()->GetTaskRunner(TaskType::kInternalMedia),
         FROM_HERE,
-        WTF::BindOnce(&CanvasResourceProviderCache::PurgeIdleFramePool,
-                      WrapWeakPersistent(this)),
+        BindOnce(&CanvasResourceProviderCache::PurgeIdleFramePool,
+                 WrapWeakPersistent(this)),
         kIdleTimeout);
   }
 
@@ -1341,8 +1341,8 @@ bool VideoFrame::CopyToAsync(
           resolver->Reject();
         }
       };
-  auto done_cb = WTF::BindOnce(readback_done_handler, std::move(contents),
-                               WrapPersistent(resolver), dest_layout);
+  auto done_cb = BindOnce(readback_done_handler, std::move(contents),
+                          WrapPersistent(resolver), dest_layout);
 
   auto buffer = AsSpan<uint8_t>(destination);
   background_readback->ReadbackTextureBackedFrameToBuffer(

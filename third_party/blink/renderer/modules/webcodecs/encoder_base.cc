@@ -252,8 +252,8 @@ void EncoderBase<Traits>::ResetInternal(DOMException* ex) {
 template <typename Traits>
 void EncoderBase<Traits>::QueueHandleError(DOMException* ex) {
   callback_runner_->PostTask(
-      FROM_HERE, WTF::BindOnce(&EncoderBase<Traits>::HandleError,
-                               WrapWeakPersistent(this), WrapPersistent(ex)));
+      FROM_HERE, BindOnce(&EncoderBase<Traits>::HandleError,
+                          WrapWeakPersistent(this), WrapPersistent(ex)));
 }
 
 template <typename Traits>
@@ -423,9 +423,8 @@ void EncoderBase<Traits>::ScheduleDequeueEvent() {
   event->async_task_context()->Schedule(GetExecutionContext(), event->type());
 
   callback_runner_->PostTask(
-      FROM_HERE,
-      WTF::BindOnce(&EncoderBase<Traits>::DispatchDequeueEvent,
-                    WrapWeakPersistent(this), WrapPersistent(event)));
+      FROM_HERE, BindOnce(&EncoderBase<Traits>::DispatchDequeueEvent,
+                          WrapWeakPersistent(this), WrapPersistent(event)));
 }
 
 template <typename Traits>

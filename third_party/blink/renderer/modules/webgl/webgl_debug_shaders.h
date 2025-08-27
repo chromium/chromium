@@ -45,7 +45,7 @@ class WebGLDebugShaders final : public WebGLExtension {
 
   WebGLExtensionName GetName() const override;
 
-  WTF::String getTranslatedShaderSource(WebGLShader*);
+  String getTranslatedShaderSource(WebGLShader*);
 };
 
 }  // namespace blink

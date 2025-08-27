@@ -114,7 +114,7 @@ ScriptPromise<WebInstallResult> NavigatorWebInstall::InstallImpl(
   if (!manifest_id && !install_url) {
     GetService()->Install(
         /*options=*/nullptr,
-        WTF::BindOnce(&blink::OnInstallResponse, WrapPersistent(resolver)));
+        BindOnce(&blink::OnInstallResponse, WrapPersistent(resolver)));
     return promise;
   }
 
@@ -140,9 +140,8 @@ ScriptPromise<WebInstallResult> NavigatorWebInstall::InstallImpl(
     options->manifest_id = resolved_id;
   }
 
-  GetService()->Install(
-      std::move(options),
-      WTF::BindOnce(&blink::OnInstallResponse, WrapPersistent(resolver)));
+  GetService()->Install(std::move(options), BindOnce(&blink::OnInstallResponse,
+                                                     WrapPersistent(resolver)));
   return promise;
 }
 
@@ -171,7 +170,7 @@ NavigatorWebInstall::GetService() {
             context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
     // In case the other endpoint gets disconnected, we want to reset our end of
     // the pipe as well so that we don't remain connected to a half-open pipe.
-    service_.set_disconnect_handler(WTF::BindOnce(
+    service_.set_disconnect_handler(BindOnce(
         &NavigatorWebInstall::OnConnectionError, WrapWeakPersistent(this)));
   }
   return service_;

@@ -307,7 +307,7 @@ void GPU::RequestAdapterImpl(
   }
 
   if (!dawn_control_client_ || dawn_control_client_->IsContextLost()) {
-    dawn_control_client_initialized_callbacks_.push_back(WTF::BindOnce(
+    dawn_control_client_initialized_callbacks_.push_back(BindOnce(
         [](GPU* gpu, ScriptState* script_state,
            const GPURequestAdapterOptions* options,
            ScriptPromiseResolver<IDLNullable<GPUAdapter>>* resolver) {
@@ -365,7 +365,7 @@ void GPU::RequestAdapterImpl(
                     execution_context->GetTaskRunner(TaskType::kWebGPU));
               }
 
-              WTF::Vector<base::OnceCallback<void()>> callbacks =
+              Vector<base::OnceCallback<void()>> callbacks =
                   std::move(gpu->dawn_control_client_initialized_callbacks_);
               for (auto& callback : callbacks) {
                 std::move(callback).Run();
@@ -406,8 +406,8 @@ void GPU::RequestAdapterImpl(
   wgpu::RequestAdapterOptions dawn_options =
       AsDawnType(options, execution_context);
   auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
-      WTF::BindOnce(&GPU::OnRequestAdapterCallback, WrapPersistent(this),
-                    WrapPersistent(script_state), WrapPersistent(options))));
+      BindOnce(&GPU::OnRequestAdapterCallback, WrapPersistent(this),
+               WrapPersistent(script_state), WrapPersistent(options))));
 
   if (dawn_options.featureLevel == wgpu::FeatureLevel::Compatibility) {
     UseCounter::Count(execution_context,

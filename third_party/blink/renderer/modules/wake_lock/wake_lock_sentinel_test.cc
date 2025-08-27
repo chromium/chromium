@@ -106,7 +106,7 @@ TEST(WakeLockSentinelTest, MultipleReleaseCalls) {
   EXPECT_EQ(nullptr, sentinel->manager_);
   EXPECT_TRUE(sentinel->released());
 
-  event_listener = MakeGarbageCollected<SyncEventListener>(WTF::BindOnce([]() {
+  event_listener = MakeGarbageCollected<SyncEventListener>(BindOnce([]() {
     EXPECT_TRUE(false) << "This event handler should not be reached.";
   }));
   sentinel->addEventListener(event_type_names::kRelease, event_listener);
@@ -139,10 +139,9 @@ TEST(WakeLockSentinelTest, ContextDestruction) {
       context.GetScriptState()->GetIsolate(), screen_promise);
   ASSERT_TRUE(sentinel);
 
-  auto* event_listener =
-      MakeGarbageCollected<SyncEventListener>(WTF::BindOnce([]() {
-        EXPECT_TRUE(false) << "This event handler should not be reached.";
-      }));
+  auto* event_listener = MakeGarbageCollected<SyncEventListener>(BindOnce([]() {
+    EXPECT_TRUE(false) << "This event handler should not be reached.";
+  }));
   sentinel->addEventListener(event_type_names::kRelease, event_listener);
   EXPECT_TRUE(sentinel->HasPendingActivity());
 

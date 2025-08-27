@@ -960,8 +960,8 @@ void WebGLRenderingContextBase::MakeXrCompatibleAsync() {
   if (XRSystem* xr = GetXrSystemFromHost(Host())) {
     // The promise will be completed on the callback.
     xr->MakeXrCompatibleAsync(
-        WTF::BindOnce(&WebGLRenderingContextBase::OnMakeXrCompatibleFinished,
-                      WrapWeakPersistent(this)));
+        blink::BindOnce(&WebGLRenderingContextBase::OnMakeXrCompatibleFinished,
+                        WrapWeakPersistent(this)));
   } else {
     xr_compatible_ = false;
     CompleteXrCompatiblePromiseIfPending(DOMExceptionCode::kAbortError);
@@ -1442,13 +1442,13 @@ void WebGLRenderingContextBase::InitializeNewContext() {
                        scissor_box_[3]);
 
   GetDrawingBuffer()->ContextProvider()->SetLostContextCallback(
-      WTF::BindRepeating(&WebGLRenderingContextBase::ForceLostContext,
-                         WrapWeakPersistent(this),
-                         WebGLRenderingContextBase::kRealLostContext,
-                         WebGLRenderingContextBase::kAuto));
+      blink::BindRepeating(&WebGLRenderingContextBase::ForceLostContext,
+                           WrapWeakPersistent(this),
+                           WebGLRenderingContextBase::kRealLostContext,
+                           WebGLRenderingContextBase::kAuto));
   GetDrawingBuffer()->ContextProvider()->SetErrorMessageCallback(
-      WTF::BindRepeating(&WebGLRenderingContextBase::OnErrorMessage,
-                         WrapWeakPersistent(this)));
+      blink::BindRepeating(&WebGLRenderingContextBase::OnErrorMessage,
+                           WrapWeakPersistent(this)));
 
   // This ensures that the context has a valid "lastFlushID" and won't be
   // mistakenly identified as the "least recently used" context.
@@ -7502,9 +7502,9 @@ void WebGLRenderingContextBase::ForceLostContext(
     // a reference to the DrawingBuffer until this function is done executing.
     GetContextTaskRunner()->PostTask(
         FROM_HERE,
-        WTF::BindOnce(&WebGLRenderingContextBase::HoldReferenceToDrawingBuffer,
-                      WrapWeakPersistent(this),
-                      WTF::RetainedRef(drawing_buffer_)));
+        blink::BindOnce(
+            &WebGLRenderingContextBase::HoldReferenceToDrawingBuffer,
+            WrapWeakPersistent(this), blink::RetainedRef(drawing_buffer_)));
   }
 
   // Always destroy the context, regardless of context loss mode. This will
@@ -8957,7 +8957,7 @@ void WebGLRenderingContextBase::MaybeRestoreContext(TimerBase*) {
 
 String WebGLRenderingContextBase::EnsureNotNull(const String& text) const {
   if (text.IsNull())
-    return WTF::g_empty_string;
+    return g_empty_string;
   return text;
 }
 

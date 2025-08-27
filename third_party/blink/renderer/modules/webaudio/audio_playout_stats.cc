@@ -91,8 +91,8 @@ void AudioPlayoutStats::MaybeUpdateStats(ScriptState* script_state) {
   // Queue a microtask to let us know when we are on a new task again, ensuring
   // that we get fresh stats in the next task execution cycle.
   ToEventLoop(script_state)
-      .EnqueueMicrotask(WTF::BindOnce(&AudioPlayoutStats::OnMicrotask,
-                                      WrapWeakPersistent(this)));
+      .EnqueueMicrotask(
+          BindOnce(&AudioPlayoutStats::OnMicrotask, WrapWeakPersistent(this)));
 }
 
 void AudioPlayoutStats::OnMicrotask() {

@@ -311,8 +311,8 @@ ScriptPromise<GPUDevice> GPUAdapter::requestDevice(
   device->SetDescriptorCallbacks(dawn_desc);
 
   auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
-      WTF::BindOnce(&GPUAdapter::OnRequestDeviceCallback, WrapPersistent(this),
-                    WrapPersistent(device), WrapPersistent(descriptor))));
+      BindOnce(&GPUAdapter::OnRequestDeviceCallback, WrapPersistent(this),
+               WrapPersistent(device), WrapPersistent(descriptor))));
 
   GetHandle().RequestDevice(&dawn_desc, wgpu::CallbackMode::AllowSpontaneous,
                             callback->UnboundCallback(),

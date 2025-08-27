@@ -14,8 +14,8 @@
 
 namespace blink {
 
-// Performs a query for a string on GLES2Interface and returns a WTF::String. If
-// it is unable to query the string, it wil return an empty WTF::String.
+// Performs a query for a string on GLES2Interface and returns a blink::String.
+// If it is unable to query the string, it will return an empty blink::String.
 class GLStringQuery {
  public:
   struct ProgramInfoLog {
@@ -69,11 +69,11 @@ class GLStringQuery {
   GLStringQuery(gpu::gles2::GLES2Interface* gl) : gl_(gl) {}
 
   template <class Traits>
-  WTF::String Run(GLuint id) {
+  String Run(GLuint id) {
     GLint length = 0;
     Traits::LengthFunction(gl_, id, &length);
     if (!length)
-      return WTF::g_empty_string;
+      return g_empty_string;
     GLsizei returned_length = 0;
     StringBuffer<LChar> log_buffer(length);
     Traits::LogFunction(gl_, id, length, &returned_length,

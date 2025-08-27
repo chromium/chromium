@@ -139,8 +139,8 @@ void ExternalTextureCache::ExpireAtEndOfTask(
   device()
       ->GetExecutionContext()
       ->GetTaskRunner(TaskType::kWebGPU)
-      ->PostTask(FROM_HERE, WTF::BindOnce(&ExternalTextureCache::ExpireTask,
-                                          WrapWeakPersistent(this)));
+      ->PostTask(FROM_HERE, BindOnce(&ExternalTextureCache::ExpireTask,
+                                     WrapWeakPersistent(this)));
   expire_task_scheduled_ = true;
 }
 
@@ -446,8 +446,8 @@ void GPUExternalTexture::OnSourceInvalidated() {
   if (status_ == Status::Active && video_) {
     if (!remove_from_cache_task_scheduled_) {
       task_runner_->PostTask(FROM_HERE,
-                             WTF::BindOnce(&GPUExternalTexture::RemoveFromCache,
-                                           WrapWeakPersistent(this)));
+                             BindOnce(&GPUExternalTexture::RemoveFromCache,
+                                      WrapWeakPersistent(this)));
     }
     remove_from_cache_task_scheduled_ = true;
   } else {

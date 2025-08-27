@@ -134,10 +134,10 @@ GPUBuffer* GPUBuffer::Create(GPUDevice* device,
   // 4, which is a requirement for all mappings.
   if (dawn_desc.mappedAtCreation && buffer_size % 4 != 0) {
     exception_state.ThrowRangeError(
-        WTF::String::Format("createBuffer failed, size (%" PRIu64
-                            ") is not a multiple of 4 when "
-                            "mappedAtCreation == true",
-                            buffer_size));
+        String::Format("createBuffer failed, size (%" PRIu64
+                       ") is not a multiple of 4 when "
+                       "mappedAtCreation == true",
+                       buffer_size));
     return nullptr;
   }
 
@@ -157,11 +157,11 @@ GPUBuffer* GPUBuffer::Create(GPUDevice* device,
   if (wgpuBuffer == nullptr) {
     DCHECK(dawn_desc.mappedAtCreation);
     exception_state.ThrowRangeError(
-        WTF::String::Format("createBuffer failed, size (%" PRIu64
-                            ") is too large for "
-                            "the implementation when "
-                            "mappedAtCreation == true",
-                            buffer_size));
+        String::Format("createBuffer failed, size (%" PRIu64
+                       ") is too large for "
+                       "the implementation when "
+                       "mappedAtCreation == true",
+                       buffer_size));
     return nullptr;
   }
 
@@ -310,7 +310,7 @@ ScriptPromise<IDLUndefined> GPUBuffer::MapAsyncImpl(
 
   // And send the command, leaving remaining validation to Dawn.
   auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
-      WTF::BindOnce(&GPUBuffer::OnMapAsyncCallback, WrapPersistent(this))));
+      BindOnce(&GPUBuffer::OnMapAsyncCallback, WrapPersistent(this))));
 
   GetHandle().MapAsync(static_cast<wgpu::MapMode>(mode), map_offset, map_size,
                        wgpu::CallbackMode::AllowSpontaneous,
@@ -347,7 +347,7 @@ DOMArrayBuffer* GPUBuffer::GetMappedRangeImpl(ScriptState* script_state,
   if (range_size > std::numeric_limits<size_t>::max() - range_offset) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kOperationError,
-        WTF::String::Format(
+        String::Format(
             "getMappedRange failed, offset(%zu) + size(%zu) overflows size_t",
             range_offset, range_size));
     return nullptr;
@@ -364,10 +364,10 @@ DOMArrayBuffer* GPUBuffer::GetMappedRangeImpl(ScriptState* script_state,
     if (range_end > candidate_start && range_offset < candidate_end) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kOperationError,
-          WTF::String::Format("getMappedRange [%zu, %zu) overlaps with "
-                              "previously returned range [%zu, %zu).",
-                              range_offset, range_end, candidate_start,
-                              candidate_end));
+          String::Format("getMappedRange [%zu, %zu) overlaps with "
+                         "previously returned range [%zu, %zu).",
+                         range_offset, range_end, candidate_start,
+                         candidate_end));
       return nullptr;
     }
   }
@@ -395,9 +395,9 @@ DOMArrayBuffer* GPUBuffer::GetMappedRangeImpl(ScriptState* script_state,
   // be done before the creation of ArrayBuffer.
   if (range_size > v8::TypedArray::kMaxByteLength) {
     exception_state.ThrowRangeError(
-        WTF::String::Format("getMappedRange failed, size (%zu) is too large "
-                            "for the implementation. max size = %zu",
-                            range_size, v8::TypedArray::kMaxByteLength));
+        String::Format("getMappedRange failed, size (%zu) is too large "
+                       "for the implementation. max size = %zu",
+                       range_size, v8::TypedArray::kMaxByteLength));
     return nullptr;
   }
 

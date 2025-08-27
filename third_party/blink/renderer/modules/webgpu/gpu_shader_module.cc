@@ -27,7 +27,7 @@ GPUShaderModule* GPUShaderModule::Create(
   DCHECK(webgpu_desc);
 
   wgpu::ShaderSourceWGSL wgsl_desc = {};
-  const WTF::String& wtf_wgsl_code = webgpu_desc->code();
+  const String& wtf_wgsl_code = webgpu_desc->code();
   std::string wgsl_code = wtf_wgsl_code.Utf8();
   wgsl_desc.code = wgsl_code.c_str();
 
@@ -139,7 +139,7 @@ ScriptPromise<GPUCompilationInfo> GPUShaderModule::getCompilationInfo(
   auto promise = resolver->Promise();
 
   auto* callback =
-      MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+      MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(BindOnce(
           &GPUShaderModule::OnCompilationInfoCallback, WrapPersistent(this))));
 
   GetHandle().GetCompilationInfo(wgpu::CallbackMode::AllowSpontaneous,

@@ -583,8 +583,8 @@ ScriptPromise<GPURenderPipeline> GPUDevice::createRenderPipelineAsync(
           script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
-      WTF::BindOnce(&GPUDevice::OnCreateRenderPipelineAsyncCallback,
-                    WrapPersistent(this), descriptor->label())));
+      BindOnce(&GPUDevice::OnCreateRenderPipelineAsyncCallback,
+               WrapPersistent(this), descriptor->label())));
 
   GetHandle().CreateRenderPipelineAsync(
       &dawn_desc_info.dawn_desc, wgpu::CallbackMode::AllowSpontaneous,
@@ -610,8 +610,8 @@ ScriptPromise<GPUComputePipeline> GPUDevice::createComputePipelineAsync(
       AsDawnType(this, descriptor, &desc_label, &computeStage);
 
   auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
-      WTF::BindOnce(&GPUDevice::OnCreateComputePipelineAsyncCallback,
-                    WrapPersistent(this), descriptor->label())));
+      BindOnce(&GPUDevice::OnCreateComputePipelineAsyncCallback,
+               WrapPersistent(this), descriptor->label())));
 
   GetHandle().CreateComputePipelineAsync(
       &dawn_desc, wgpu::CallbackMode::AllowSpontaneous,
@@ -664,9 +664,8 @@ ScriptPromise<IDLNullable<GPUError>> GPUDevice::popErrorScope(
           script_state);
   auto promise = resolver->Promise();
 
-  auto* callback =
-      MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(WTF::BindOnce(
-          &GPUDevice::OnPopErrorScopeCallback, WrapPersistent(this))));
+  auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
+      BindOnce(&GPUDevice::OnPopErrorScopeCallback, WrapPersistent(this))));
 
   GetHandle().PopErrorScope(wgpu::CallbackMode::AllowSpontaneous,
                             callback->UnboundCallback(),
@@ -805,8 +804,8 @@ void GPUDevice::SetDescriptorCallbacks(wgpu::DeviceDescriptor& dawn_desc) {
                                        error_callback->AsUserdata());
 
   auto* lost_callback = MakeWGPUOnceCallback(
-      WTF::BindOnce(&GPUDevice::OnDeviceLost, WrapWeakPersistent(this),
-                    std::move(error_callback)));
+      BindOnce(&GPUDevice::OnDeviceLost, WrapWeakPersistent(this),
+               std::move(error_callback)));
   dawn_desc.SetDeviceLostCallback(wgpu::CallbackMode::AllowSpontaneous,
                                   lost_callback->UnboundCallback(),
                                   lost_callback->AsUserdata());

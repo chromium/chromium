@@ -55,7 +55,7 @@ constexpr uint32_t kDefaultOpusComplexity = 9;
 template <typename T>
 bool VerifyParameterValues(const T& value,
                            String error_message_base_base,
-                           WTF::Vector<T> supported_values,
+                           Vector<T> supported_values,
                            String* js_error_message) {
   if (base::Contains(supported_values, value)) {
     return true;

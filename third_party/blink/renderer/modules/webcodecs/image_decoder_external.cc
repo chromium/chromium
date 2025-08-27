@@ -517,7 +517,7 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
     ++num_submitted_decodes_;
     decoder_->AsyncCall(&ImageDecoderCore::Decode)
         .WithArgs(request->frame_index, request->complete_frames_only,
-                  WTF::CrossThreadUnretained(request->abort_flag.get()))
+                  CrossThreadUnretained(request->abort_flag.get()))
         .Then(CrossThreadBindOnce(&ImageDecoderExternal::OnDecodeReady,
                                   MakeUnwrappingCrossThreadHandle(
                                       decode_weak_factory_.GetWeakCell())));

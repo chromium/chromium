@@ -113,8 +113,8 @@ class FakeInterfaceFactory : public media::mojom::InterfaceFactory {
   void BindRequest(mojo::ScopedMessagePipeHandle handle) {
     receiver_.Bind(mojo::PendingReceiver<media::mojom::InterfaceFactory>(
         std::move(handle)));
-    receiver_.set_disconnect_handler(WTF::BindOnce(
-        &FakeInterfaceFactory::OnConnectionError, base::Unretained(this)));
+    receiver_.set_disconnect_handler(
+        BindOnce(&FakeInterfaceFactory::OnConnectionError, Unretained(this)));
   }
 
   void OnConnectionError() { receiver_.reset(); }
@@ -235,8 +235,8 @@ class VideoDecoderBrokerTest : public testing::Test {
     EXPECT_TRUE(
         Platform::Current()->GetBrowserInterfaceBroker()->SetBinderForTesting(
             media::mojom::InterfaceFactory::Name_,
-            WTF::BindRepeating(&FakeInterfaceFactory::BindRequest,
-                               base::Unretained(interface_factory_.get()))));
+            BindRepeating(&FakeInterfaceFactory::BindRequest,
+                          Unretained(interface_factory_.get()))));
 
     // |gpu_factories_| requires API calls be made using it's GetTaskRunner().
     // We use a separate |media_thread_| (as opposed to a separate task runner
@@ -281,10 +281,10 @@ class VideoDecoderBrokerTest : public testing::Test {
     }
     decoder_broker_->Initialize(
         config, false /*low_delay*/, nullptr /* cdm_context */,
-        WTF::BindOnce(&VideoDecoderBrokerTest::OnInitWithClosure,
-                      WTF::Unretained(this), run_loop.QuitClosure()),
-        WTF::BindRepeating(&VideoDecoderBrokerTest::OnOutput,
-                           WTF::Unretained(this)),
+        blink::BindOnce(&VideoDecoderBrokerTest::OnInitWithClosure,
+                        Unretained(this), run_loop.QuitClosure()),
+        blink::BindRepeating(&VideoDecoderBrokerTest::OnOutput,
+                             Unretained(this)),
         media::WaitingCB());
     run_loop.Run();
     testing::Mock::VerifyAndClearExpectations(this);
@@ -296,8 +296,9 @@ class VideoDecoderBrokerTest : public testing::Test {
     base::RunLoop run_loop;
     EXPECT_CALL(*this, OnDecodeDone(HasStatusCode(expected_status)));
     decoder_broker_->Decode(
-        buffer, WTF::BindOnce(&VideoDecoderBrokerTest::OnDecodeDoneWithClosure,
-                              WTF::Unretained(this), run_loop.QuitClosure()));
+        buffer,
+        blink::BindOnce(&VideoDecoderBrokerTest::OnDecodeDoneWithClosure,
+                        Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
     testing::Mock::VerifyAndClearExpectations(this);
   }
@@ -306,8 +307,8 @@ class VideoDecoderBrokerTest : public testing::Test {
     base::RunLoop run_loop;
     EXPECT_CALL(*this, OnResetDone());
     decoder_broker_->Reset(
-        WTF::BindOnce(&VideoDecoderBrokerTest::OnResetDoneWithClosure,
-                      WTF::Unretained(this), run_loop.QuitClosure()));
+        blink::BindOnce(&VideoDecoderBrokerTest::OnResetDoneWithClosure,
+                        Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
     testing::Mock::VerifyAndClearExpectations(this);
   }

@@ -50,8 +50,8 @@ ScriptPromise<MIDIAccess> MIDIAccessInitializer::Start(LocalDOMWindow* window) {
               ? true
               : options_->hasSysex() && options_->sysex()),
       LocalFrame::HasTransientUserActivation(window->GetFrame()),
-      WTF::BindOnce(&MIDIAccessInitializer::OnPermissionsUpdated,
-                    WrapPersistent(this)));
+      BindOnce(&MIDIAccessInitializer::OnPermissionsUpdated,
+               WrapPersistent(this)));
 
   return resolver_->Promise();
 }

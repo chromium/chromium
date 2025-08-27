@@ -79,9 +79,9 @@ class ScriptProcessorHandler final : public AudioHandler {
   uint32_t double_buffer_index_ = 0;
 
   mutable base::Lock buffer_lock_;
-  WTF::Vector<std::unique_ptr<SharedAudioBuffer>> shared_input_buffers_
+  Vector<std::unique_ptr<SharedAudioBuffer>> shared_input_buffers_
       GUARDED_BY(buffer_lock_);
-  WTF::Vector<std::unique_ptr<SharedAudioBuffer>> shared_output_buffers_
+  Vector<std::unique_ptr<SharedAudioBuffer>> shared_output_buffers_
       GUARDED_BY(buffer_lock_);
 
   uint32_t buffer_size_;

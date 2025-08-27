@@ -112,8 +112,8 @@ class FakeInterfaceFactory : public media::mojom::InterfaceFactory {
   void BindRequest(mojo::ScopedMessagePipeHandle handle) {
     receiver_.Bind(mojo::PendingReceiver<media::mojom::InterfaceFactory>(
         std::move(handle)));
-    receiver_.set_disconnect_handler(WTF::BindOnce(
-        &FakeInterfaceFactory::OnConnectionError, base::Unretained(this)));
+    receiver_.set_disconnect_handler(
+        BindOnce(&FakeInterfaceFactory::OnConnectionError, Unretained(this)));
   }
 
   void OnConnectionError() { receiver_.reset(); }
@@ -220,8 +220,8 @@ class AudioDecoderBrokerTest : public testing::Test {
     EXPECT_TRUE(
         Platform::Current()->GetBrowserInterfaceBroker()->SetBinderForTesting(
             media::mojom::InterfaceFactory::Name_,
-            WTF::BindRepeating(&FakeInterfaceFactory::BindRequest,
-                               base::Unretained(interface_factory_.get()))));
+            BindRepeating(&FakeInterfaceFactory::BindRequest,
+                          Unretained(interface_factory_.get()))));
   }
 
   void ConstructDecoder(ExecutionContext& execution_context) {
@@ -235,10 +235,10 @@ class AudioDecoderBrokerTest : public testing::Test {
                            media::DecoderStatus::Codes::kOk))));
     decoder_broker_->Initialize(
         config, nullptr /* cdm_context */,
-        WTF::BindOnce(&AudioDecoderBrokerTest::OnInitWithClosure,
-                      WTF::Unretained(this), run_loop.QuitClosure()),
-        WTF::BindRepeating(&AudioDecoderBrokerTest::OnOutput,
-                           WTF::Unretained(this)),
+        blink::BindOnce(&AudioDecoderBrokerTest::OnInitWithClosure,
+                        Unretained(this), run_loop.QuitClosure()),
+        blink::BindRepeating(&AudioDecoderBrokerTest::OnOutput,
+                             Unretained(this)),
         media::WaitingCB());
     run_loop.Run();
     testing::Mock::VerifyAndClearExpectations(this);
@@ -250,8 +250,9 @@ class AudioDecoderBrokerTest : public testing::Test {
     base::RunLoop run_loop;
     EXPECT_CALL(*this, OnDecodeDone(HasStatusCode(expected_status)));
     decoder_broker_->Decode(
-        buffer, WTF::BindOnce(&AudioDecoderBrokerTest::OnDecodeDoneWithClosure,
-                              WTF::Unretained(this), run_loop.QuitClosure()));
+        buffer,
+        blink::BindOnce(&AudioDecoderBrokerTest::OnDecodeDoneWithClosure,
+                        Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
     testing::Mock::VerifyAndClearExpectations(this);
   }
@@ -260,8 +261,8 @@ class AudioDecoderBrokerTest : public testing::Test {
     base::RunLoop run_loop;
     EXPECT_CALL(*this, OnResetDone());
     decoder_broker_->Reset(
-        WTF::BindOnce(&AudioDecoderBrokerTest::OnResetDoneWithClosure,
-                      WTF::Unretained(this), run_loop.QuitClosure()));
+        blink::BindOnce(&AudioDecoderBrokerTest::OnResetDoneWithClosure,
+                        Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
     testing::Mock::VerifyAndClearExpectations(this);
   }

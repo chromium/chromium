@@ -122,8 +122,7 @@ class MODULES_EXPORT GPU final : public ScriptWrappable,
   Member<WGSLLanguageFeatures> wgsl_language_features_;
 
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
-  WTF::Vector<base::OnceCallback<void()>>
-      dawn_control_client_initialized_callbacks_;
+  Vector<base::OnceCallback<void()>> dawn_control_client_initialized_callbacks_;
   HeapHashSet<WeakMember<GPUBuffer>> mappable_buffers_;
   // Mappable buffers remove themselves from this set on destruction.
   // It is boxed in a scoped_refptr so GPUBuffer can access it in its

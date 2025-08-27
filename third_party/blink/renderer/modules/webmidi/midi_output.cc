@@ -98,7 +98,7 @@ class MessageValidator {
   explicit MessageValidator(DOMUint8Array* array) : data_(array->ByteSpan()) {}
 
   bool Process(ExceptionState& exception_state, bool sysex_enabled) {
-    // data_ is put into a WTF::Vector eventually, which only has wtf_size_t
+    // data_ is put into a Vector eventually, which only has wtf_size_t
     // space.
     if (!base::CheckedNumeric<wtf_size_t>(data_.size()).IsValid()) {
       exception_state.ThrowRangeError(

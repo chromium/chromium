@@ -34,7 +34,7 @@ namespace blink {
 // from sources that have global limits in the number of in-flight frames
 // allowed. Thus, frames are monitored per source. Sources are identified with
 // a nonempty std::string, so any way to group frames can be used as long as a
-// source ID is given. std::string is chosen over the Blink-standard WTF::String
+// source ID is given. std::string is chosen over the Blink-standard String
 // because:
 //   1. source IDs often come from outside Blink (e.g., camera and screen
 //      device IDs)

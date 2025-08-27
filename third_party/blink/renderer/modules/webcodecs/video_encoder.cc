@@ -1083,7 +1083,7 @@ void VideoEncoder::ProcessEncode(Request* request) {
     // resolve synchronously.
     blocking_request_in_progress_ = request;
 
-    auto readback_done_callback = WTF::BindOnce(
+    auto readback_done_callback = blink::BindOnce(
         &VideoEncoder::OnReadbackDone, WrapWeakPersistent(this),
         WrapPersistent(request), frame, std::move(encode_done_callback));
 
@@ -1385,10 +1385,10 @@ void VideoEncoder::ProcessReconfigure(Request* request) {
   };
 
   blocking_request_in_progress_ = request;
-  media_encoder_->Flush(WTF::BindOnce(
-      flush_done_callback, MakeUnwrappingCrossThreadWeakHandle(this),
-      MakeUnwrappingCrossThreadHandle(request), std::move(reconf_done_callback),
-      is_platform_encoder_));
+  media_encoder_->Flush(
+      BindOnce(flush_done_callback, MakeUnwrappingCrossThreadWeakHandle(this),
+               MakeUnwrappingCrossThreadHandle(request),
+               std::move(reconf_done_callback), is_platform_encoder_));
 }
 
 void VideoEncoder::OnMediaEncoderInfoChanged(
@@ -1623,8 +1623,7 @@ static void isConfigSupportedWithSoftwareOnly(
 
   auto done_callback =
       [](std::unique_ptr<media::VideoEncoder> encoder,
-         WTF::CrossThreadOnceFunction<void(blink::VideoEncoderSupport*)>
-             callback,
+         CrossThreadOnceFunction<void(blink::VideoEncoderSupport*)> callback,
          scoped_refptr<base::SingleThreadTaskRunner> runner,
          VideoEncoderSupport* support, media::EncoderStatus status) {
         support->setSupported(status.is_ok());
@@ -1645,7 +1644,7 @@ static void isConfigSupportedWithSoftwareOnly(
 }
 
 static void isConfigSupportedWithHardwareOnly(
-    WTF::CrossThreadOnceFunction<void(blink::VideoEncoderSupport*)> callback,
+    CrossThreadOnceFunction<void(blink::VideoEncoderSupport*)> callback,
     VideoEncoderSupport* support,
     VideoEncoderTraits::ParsedConfig* config,
     media::GpuVideoAcceleratorFactories* gpu_factories) {
@@ -1695,8 +1694,7 @@ ScriptPromise<VideoEncoderSupport> VideoEncoder::isConfigSupported(
           script_state);
   auto promise = resolver->Promise();
   auto find_any_callback = HeapBarrierCallback<VideoEncoderSupport>(
-      num_callbacks,
-      WTF::BindOnce(&FindAnySupported, WrapPersistent(resolver)));
+      num_callbacks, BindOnce(&FindAnySupported, WrapPersistent(resolver)));
 
   if (parsed_config->hw_pref != HardwarePreference::kPreferSoftware ||
       media::MayHaveAndAllowSelectOSSoftwareEncoder(parsed_config->codec)) {

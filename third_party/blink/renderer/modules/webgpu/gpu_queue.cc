@@ -477,7 +477,7 @@ ScriptPromise<IDLUndefined> GPUQueue::onSubmittedWorkDone(
   auto promise = resolver->Promise();
 
   auto* callback = MakeWGPUOnceCallback(
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(&OnWorkDoneCallback)));
+      resolver->WrapCallbackInScriptScope(BindOnce(&OnWorkDoneCallback)));
 
   GetHandle().OnSubmittedWorkDone(wgpu::CallbackMode::AllowSpontaneous,
                                   callback->UnboundCallback(),
