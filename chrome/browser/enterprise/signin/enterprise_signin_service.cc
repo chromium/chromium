@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/prefs/pref_service.h"
@@ -27,21 +28,27 @@ namespace enterprise_signin {
 
 namespace {
 
-bool IsNormalBrowserWithProfile(Browser* browser, Profile* profile) {
-  return profile == browser->profile() && !browser->is_delete_scheduled() &&
-         browser->type() == Browser::TYPE_NORMAL;
+bool IsNormalBrowserWithProfile(BrowserWindowInterface* browser,
+                                Profile* profile) {
+  return profile == browser->GetProfile() &&
+         !browser->GetBrowserForMigrationOnly()->is_delete_scheduled() &&
+         browser->GetType() == Browser::TYPE_NORMAL;
 }
 
 // Returns the Browser associated with `profile` that was most recently
 // activated, or nullptr if none exists.
-Browser* GetRecentBrowserForProfile(Profile* profile) {
-  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    // When tab switching, only look at same profile and anonymity level.
-    if (IsNormalBrowserWithProfile(browser, profile)) {
-      return browser;
-    }
-  }
-  return nullptr;
+BrowserWindowInterface* GetRecentBrowserForProfile(Profile* profile) {
+  BrowserWindowInterface* recent_browser = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        // When tab switching, only look at same profile and anonymity level.
+        if (IsNormalBrowserWithProfile(browser, profile)) {
+          recent_browser = browser;
+          return false;  // stop iterating
+        }
+        return true;  // continue iterating
+      });
+  return recent_browser;
 }
 
 }  // namespace
@@ -113,7 +120,7 @@ void EnterpriseSigninService::OnPrefChanged(const std::string& pref_name) {
 
 void EnterpriseSigninService::OpenOrActivateGaiaReauthTab() {
   VLOG(2) << "Trying to open or activate a reauth tab...";
-  Browser* browser = GetRecentBrowserForProfile(profile_.get());
+  BrowserWindowInterface* browser = GetRecentBrowserForProfile(profile_.get());
   if (!browser) {
     VLOG(2) << "No browsers open.";
     if (!browser_list_observation_.IsObserving()) {
@@ -126,15 +133,18 @@ void EnterpriseSigninService::OpenOrActivateGaiaReauthTab() {
   browser_list_observation_.Reset();
 
   content::WebContents* tab =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetFeatures().tab_strip_model()->GetActiveWebContents();
   const GURL& tab_url = tab->GetVisibleURL();
   if (tab_url.SchemeIsHTTPOrHTTPS() &&
       GaiaUrls::GetInstance()->gaia_origin().IsSameOriginWith(tab_url)) {
     VLOG(2) << "Focused tab is a login page, nothing to do.";
   } else {
     VLOG(2) << "Focused tab is not a login page, opening a new one.";
-    browser->command_controller()->ExecuteCommandWithDisposition(
-        IDC_SHOW_SIGNIN_WHEN_PAUSED, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+    browser->GetFeatures()
+        .browser_command_controller()
+        ->ExecuteCommandWithDisposition(
+            IDC_SHOW_SIGNIN_WHEN_PAUSED,
+            WindowOpenDisposition::NEW_FOREGROUND_TAB);
   }
 }
 
