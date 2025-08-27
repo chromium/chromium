@@ -21,7 +21,7 @@
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_window_types.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget.h"

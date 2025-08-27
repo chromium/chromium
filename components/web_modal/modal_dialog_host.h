@@ -6,7 +6,7 @@
 #define COMPONENTS_WEB_MODAL_MODAL_DIALOG_HOST_H_
 
 #include "components/web_modal/web_modal_export.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_window_types.h"
 
 namespace gfx {
 class Point;
