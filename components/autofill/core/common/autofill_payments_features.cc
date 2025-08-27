@@ -274,7 +274,7 @@ BASE_FEATURE(kAutofillLocalSaveCardBottomSheet,
 // card.
 BASE_FEATURE(kAutofillRequireCvcForPossibleCardUpdate,
              "AutofillRequireCvcForPossibleCardUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, Chrome will try to fetch payment account image resources again
 // upon failure. The number of attempts is a controllable parameter. This is a
