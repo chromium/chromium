@@ -9188,7 +9188,10 @@ TEST_P(HttpNetworkTransactionTest,
       CreateMockRead(second_trans_endpoint_connect_resp, 9),
       CreateMockRead(second_trans_wrapped_get_resp, 11, ASYNC),
       CreateMockRead(second_trans_wrapped_body, 12, ASYNC),
-      MockRead(ASYNC, 0, 13),
+      // Pause reads so that the socket will remain open (so we can see whether
+      // it gets reused below).
+      MockRead(ASYNC, ERR_IO_PENDING, 13),
+      MockRead(ASYNC, 0, 14),
   };
 
   SequencedSocketData spdy_data1(spdy_reads1, spdy_writes1);
@@ -9326,6 +9329,9 @@ TEST_P(HttpNetworkTransactionTest,
 
   EXPECT_EQ(proxy_delegate->on_before_tunnel_request_call_count(), 4u);
 
+  // Wait for the socket we left open to close so all data is consumed.
+  spdy_data1.RunUntilPaused();
+  spdy_data1.Resume();
   EXPECT_TRUE(spdy_data1.AllReadDataConsumed());
   EXPECT_TRUE(spdy_data1.AllWriteDataConsumed());
   EXPECT_TRUE(spdy_data2.AllReadDataConsumed());
