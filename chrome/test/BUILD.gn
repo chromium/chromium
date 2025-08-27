@@ -10166,7 +10166,7 @@ test("unit_tests") {
       "../browser/ui/views/save_to_drive/mock_account_chooser_radio_button_delegate.cc",
       "../browser/ui/views/save_to_drive/mock_account_chooser_radio_button_delegate.h",
     ]
-    deps += [ "//chrome/browser/ui/save_to_drive:test_support" ]
+    deps += [ "//chrome/browser/ui/views/save_to_drive:test_support" ]
   }
 
   if (enable_plugins) {

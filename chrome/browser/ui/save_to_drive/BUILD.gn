@@ -7,32 +7,6 @@ import("//pdf/features.gni")
 
 assert(enable_pdf_save_to_drive)
 
-source_set("save_to_drive") {
-  sources = [
-    "account_chooser_controller_delegate.h",
-    "account_chooser_view_delegate.h",
-  ]
-  public_deps = [
-    "//components/signin/public/identity_manager",
-    "//content/public/browser",
-  ]
-  deps = [ "//ui/display" ]
-}
-
-source_set("test_support") {
-  testonly = true
-  sources = [
-    "mock_account_chooser_controller_delegate.cc",
-    "mock_account_chooser_controller_delegate.h",
-    "mock_account_chooser_view_delegate.cc",
-    "mock_account_chooser_view_delegate.h",
-  ]
-  deps = [
-    ":save_to_drive",
-    "//testing/gmock",
-  ]
-}
-
 source_set("get_account") {
   sources = [ "get_account.h" ]
   public_deps = [ "//components/signin/public/identity_manager" ]

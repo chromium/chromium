@@ -28,12 +28,10 @@
 
 namespace save_to_drive {
 AccountChooserView::AccountChooserView(
-    AccountChooserControllerDelegate* account_chooser_controller_delegate,
     AccountChooserViewDelegate* parent_dialog,
     const std::vector<AccountInfo>& accounts,
     std::optional<CoreAccountId> primary_account_id)
-    : account_chooser_controller_delegate_(account_chooser_controller_delegate),
-      parent_dialog_(parent_dialog) {
+    : parent_dialog_(parent_dialog) {
   SetOrientation(views::LayoutOrientation::kVertical);
   header_view_ = AddChildView(CreateHeaderView(accounts));
   body_view_ = AddChildView(CreateBodyView(accounts, primary_account_id));
@@ -142,8 +140,8 @@ std::unique_ptr<views::View> AccountChooserView::CreateFooterView() {
   auto add_account_button_container = std::make_unique<views::FlexLayoutView>();
   auto use_other_account_button = std::make_unique<views::MdTextButton>(
       base::BindRepeating(
-          &AccountChooserControllerDelegate::ShowAddAccountDialog,
-          base::Unretained(account_chooser_controller_delegate_)),
+          &AccountChooserViewDelegate::OnAddAccountButtonClicked,
+          base::Unretained(parent_dialog_)),
       l10n_util::GetStringUTF16(IDS_ACCOUNT_CHOOSER_ADD_ACCOUNT));
   use_other_account_button->SetStyle(ui::ButtonStyle::kDefault);
   use_other_account_button->SetAppearDisabledInInactiveWidget(true);
@@ -159,7 +157,7 @@ std::unique_ptr<views::View> AccountChooserView::CreateFooterView() {
   // Add the "Cancel" button.
   auto cancel_button = std::make_unique<views::MdTextButton>(
       base::BindRepeating(
-          &AccountChooserViewDelegate::OnUserClosedDialog,
+          &AccountChooserViewDelegate::OnFlowCancelled,
           base::Unretained(parent_dialog_),
           static_cast<int32_t>(
               views::Widget::ClosedReason::kCancelButtonClicked)),

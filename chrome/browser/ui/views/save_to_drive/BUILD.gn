@@ -14,3 +14,24 @@ source_set("get_account_impl") {
     "//content/public/browser",
   ]
 }
+
+source_set("account_chooser") {
+  sources = [ "account_chooser_view_delegate.h" ]
+  public_deps = [
+    "//components/signin/public/identity_manager",
+    "//content/public/browser",
+  ]
+  deps = [ "//ui/display" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_account_chooser_view_delegate.cc",
+    "mock_account_chooser_view_delegate.h",
+  ]
+  deps = [
+    ":account_chooser",
+    "//testing/gmock",
+  ]
+}

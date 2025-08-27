@@ -5103,8 +5103,8 @@ static_library("ui") {
       "views/save_to_drive/account_chooser_view.h",
     ]
     deps += [
-      "//chrome/browser/ui/save_to_drive",
       "//chrome/browser/ui/save_to_drive:get_account",
+      "//chrome/browser/ui/views/save_to_drive:account_chooser",
       "//chrome/browser/ui/views/save_to_drive:get_account_impl",
     ]
   }
