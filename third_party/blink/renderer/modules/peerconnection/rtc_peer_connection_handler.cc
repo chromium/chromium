@@ -461,8 +461,7 @@ class RtcDataChannelEventSink : public GarbageCollectedMixin {
  public:
   virtual ~RtcDataChannelEventSink() = default;
 
-  virtual void OnWebRtcDataChannelLogWrite(
-      const WTF::Vector<uint8_t>& output) = 0;
+  virtual void OnWebRtcDataChannelLogWrite(const Vector<uint8_t>& output) = 0;
 };
 
 // Receives notifications from a PeerConnection object about state changes. The
@@ -509,7 +508,7 @@ class RTCPeerConnectionHandler::Observer
   }
 
   // When an RTC event log is sent back from PeerConnection, it arrives here.
-  void OnWebRtcEventLogWrite(const WTF::Vector<uint8_t>& output) override {
+  void OnWebRtcEventLogWrite(const Vector<uint8_t>& output) override {
     if (!main_thread_->BelongsToCurrentThread()) {
       PostCrossThreadTask(
           *main_thread_.get(), FROM_HERE,
@@ -752,15 +751,14 @@ class RtcDataChannelLogOutputSinkProxy
     // Write a double since a unix timestamp may overflow an int.
     json->SetDouble("unix_timestamp_ms", message.unix_timestamp_ms());
     json->SetInteger("datachannel_id", message.datachannel_id());
-    json->SetString("label",
-                    WTF::String(base::span<const char>(message.label())));
+    json->SetString("label", String(base::span<const char>(message.label())));
     json->SetString(
         "direction",
         message.direction() == Message::Direction::kSend ? "send" : "receive");
     if (message.data_type() == Message::DataType::kString) {
       json->SetString("data_type", "string");
-      json->SetString(
-          "data", WTF::String(base::span<const unsigned char>(message.data())));
+      json->SetString("data",
+                      String(base::span<const unsigned char>(message.data())));
     } else {
       json->SetString("data_type", "binary");
       json->SetString("data", Base64Encode(message.data()));
@@ -1750,7 +1748,7 @@ void RTCPeerConnectionHandler::StopEventLog() {
 }
 
 void RTCPeerConnectionHandler::OnWebRtcEventLogWrite(
-    const WTF::Vector<uint8_t>& output) {
+    const Vector<uint8_t>& output) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   if (peer_connection_tracker_) {
     peer_connection_tracker_->TrackRtcEventLogWrite(this, output);

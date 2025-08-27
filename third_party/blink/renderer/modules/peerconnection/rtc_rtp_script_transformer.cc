@@ -161,7 +161,7 @@ bool RTCRtpScriptTransformer::IsOptionsDirty() const {
 }
 
 void RTCRtpScriptTransformer::SetUpAudio(
-    WTF::CrossThreadOnceClosure disconnect_callback_source,
+    CrossThreadOnceClosure disconnect_callback_source,
     scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
         encoded_audio_transformer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -176,7 +176,7 @@ void RTCRtpScriptTransformer::SetUpAudio(
 }
 
 void RTCRtpScriptTransformer::SetUpVideo(
-    WTF::CrossThreadOnceClosure disconnect_callback_source,
+    CrossThreadOnceClosure disconnect_callback_source,
     scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
         encoded_video_transformer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -106,9 +106,9 @@ ScriptPromise<PermissionStatus> Permissions::query(
   base::TimeTicks query_start_time;
   GetService(context)->HasPermission(
       std::move(descriptor),
-      WTF::BindOnce(&Permissions::QueryTaskComplete, WrapPersistent(this),
-                    WrapPersistent(resolver), std::move(descriptor_copy),
-                    query_start_time));
+      blink::BindOnce(&Permissions::QueryTaskComplete, WrapPersistent(this),
+                      WrapPersistent(resolver), std::move(descriptor_copy),
+                      query_start_time));
   return promise;
 }
 
@@ -134,9 +134,9 @@ ScriptPromise<PermissionStatus> Permissions::request(
 
   GetService(context)->RequestPermission(
       std::move(descriptor), LocalFrame::HasTransientUserActivation(frame),
-      WTF::BindOnce(&Permissions::VerifyPermissionAndReturnStatus,
-                    WrapPersistent(this), WrapPersistent(resolver),
-                    std::move(descriptor_copy)));
+      BindOnce(&Permissions::VerifyPermissionAndReturnStatus,
+               WrapPersistent(this), WrapPersistent(resolver),
+               std::move(descriptor_copy)));
   return promise;
 }
 
@@ -158,8 +158,8 @@ ScriptPromise<PermissionStatus> Permissions::revoke(
   GetService(ExecutionContext::From(script_state))
       ->RevokePermission(
           std::move(descriptor),
-          WTF::BindOnce(&Permissions::TaskComplete, WrapPersistent(this),
-                        WrapPersistent(resolver), std::move(descriptor_copy)));
+          BindOnce(&Permissions::TaskComplete, WrapPersistent(this),
+                   WrapPersistent(resolver), std::move(descriptor_copy)));
   return promise;
 }
 
@@ -212,7 +212,7 @@ ScriptPromise<IDLSequence<PermissionStatus>> Permissions::requestAll(
   GetService(context)->RequestPermissions(
       std::move(internal_permissions),
       LocalFrame::HasTransientUserActivation(frame),
-      WTF::BindOnce(
+      BindOnce(
           &Permissions::VerifyPermissionsAndReturnStatus, WrapPersistent(this),
           WrapPersistent(resolver), std::move(internal_permissions_copy),
           std::move(caller_index_to_internal_index),
@@ -240,7 +240,7 @@ PermissionService* Permissions::GetService(
         execution_context,
         service_.BindNewPipeAndPassReceiver(
             execution_context->GetTaskRunner(TaskType::kPermission)));
-    service_.set_disconnect_handler(WTF::BindOnce(
+    service_.set_disconnect_handler(BindOnce(
         &Permissions::ServiceConnectionError, WrapWeakPersistent(this)));
   }
   return service_.get();
@@ -322,12 +322,12 @@ void Permissions::VerifyPermissionsAndReturnStatus(
       auto descriptor_copy = descriptors[internal_index]->Clone();
       service_->HasPermission(
           std::move(descriptor_copy),
-          WTF::BindOnce(&Permissions::PermissionVerificationComplete,
-                        WrapPersistent(this), WrapPersistent(resolver),
-                        std::move(descriptors),
-                        std::move(caller_index_to_internal_index),
-                        std::move(results), std::move(verification_descriptor),
-                        internal_index, is_bulk_request));
+          BindOnce(&Permissions::PermissionVerificationComplete,
+                   WrapPersistent(this), WrapPersistent(resolver),
+                   std::move(descriptors),
+                   std::move(caller_index_to_internal_index),
+                   std::move(results), std::move(verification_descriptor),
+                   internal_index, is_bulk_request));
       return;
     }
 

@@ -151,8 +151,8 @@ TEST(PaymentResponseTest, PaymentResponseDetailsContainsSpcExtensionsPRF) {
   input->get_assertion_authenticator_response->extensions->prf_results =
       mojom::blink::PRFValues::New(
           /*id=*/std::nullopt,
-          /*first=*/WTF::Vector<uint8_t>{1, 2, 3},
-          /*second=*/WTF::Vector<uint8_t>{4, 5, 6});
+          /*first=*/Vector<uint8_t>{1, 2, 3},
+          /*second=*/Vector<uint8_t>{4, 5, 6});
   MockPaymentStateResolver* complete_callback =
       MakeGarbageCollected<MockPaymentStateResolver>();
 
@@ -171,9 +171,9 @@ TEST(PaymentResponseTest, PaymentResponseDetailsContainsSpcExtensionsPRF) {
           .ToLocalChecked()
           .As<v8::Object>();
   EXPECT_THAT(GetArrayBuffer(scope, results, "first"),
-              ArrayBufferEqualTo(WTF::Vector{1, 2, 3}));
+              ArrayBufferEqualTo(Vector{1, 2, 3}));
   EXPECT_THAT(GetArrayBuffer(scope, results, "second"),
-              ArrayBufferEqualTo(WTF::Vector{4, 5, 6}));
+              ArrayBufferEqualTo(Vector{4, 5, 6}));
 }
 
 TEST(PaymentResponseTest,

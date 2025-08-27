@@ -1083,7 +1083,7 @@ void PeerConnectionTracker::TrackSessionId(RTCPeerConnectionHandler* pc_handler,
   }
 
   String non_null_session_id =
-      session_id.IsNull() ? WTF::g_empty_string : session_id;
+      session_id.IsNull() ? g_empty_string : session_id;
   peer_connection_tracker_host_->OnPeerConnectionSessionIdSet(
       local_id, non_null_session_id);
 }
@@ -1191,7 +1191,7 @@ void PeerConnectionTracker::TrackGetDisplayMediaFailure(
 
 void PeerConnectionTracker::TrackRtcEventLogWrite(
     RTCPeerConnectionHandler* pc_handler,
-    const WTF::Vector<uint8_t>& output) {
+    const Vector<uint8_t>& output) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
@@ -1202,7 +1202,7 @@ void PeerConnectionTracker::TrackRtcEventLogWrite(
 
 void PeerConnectionTracker::TrackRtcDataChannelLogWrite(
     RTCPeerConnectionHandler* pc_handler,
-    const WTF::Vector<uint8_t>& output) {
+    const Vector<uint8_t>& output) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1) {

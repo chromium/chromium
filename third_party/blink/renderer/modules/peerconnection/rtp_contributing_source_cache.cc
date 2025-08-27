@@ -186,17 +186,16 @@ void RtpContributingSourceCache::MaybeUpdateRtpSources(
       *worker_thread_runner_, FROM_HERE,
       CrossThreadBindOnce(
           &RtpContributingSourceCache::UpdateRtpSourcesOnWorkerThread,
-          WTF::CrossThreadUnretained(this),
-          WTF::CrossThreadUnretained(&receivers),
-          WTF::CrossThreadUnretained(cached_sources_by_receiver),
-          WTF::CrossThreadUnretained(&event)));
+          CrossThreadUnretained(this), CrossThreadUnretained(&receivers),
+          CrossThreadUnretained(cached_sources_by_receiver),
+          CrossThreadUnretained(&event)));
   event.Wait();
 
   ExecutionContext::From(script_state)
       ->GetAgent()
       ->event_loop()
-      ->EnqueueMicrotask(WTF::BindOnce(&RtpContributingSourceCache::ClearCache,
-                                       weak_factory_.GetWeakPtr()));
+      ->EnqueueMicrotask(blink::BindOnce(
+          &RtpContributingSourceCache::ClearCache, weak_factory_.GetWeakPtr()));
 }
 
 void RtpContributingSourceCache::UpdateRtpSourcesOnWorkerThread(

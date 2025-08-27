@@ -171,7 +171,7 @@ class MockPeerConnectionTracker : public PeerConnectionTracker {
   MOCK_METHOD1(TrackOnRenegotiationNeeded,
                void(RTCPeerConnectionHandler* pc_handler));
   MOCK_METHOD2(TrackRtcDataChannelLogWrite,
-               void(RTCPeerConnectionHandler*, const WTF::Vector<uint8_t>&));
+               void(RTCPeerConnectionHandler*, const Vector<uint8_t>&));
 };
 
 class DummyRTCVoidRequest final : public RTCVoidRequest {
@@ -532,7 +532,7 @@ class RTCPeerConnectionHandlerTest : public SimTest {
     return false;
   }
 
-  void InvokeOnSignalingThread(WTF::CrossThreadOnceFunction<void()> callback) {
+  void InvokeOnSignalingThread(CrossThreadOnceFunction<void()> callback) {
     mock_dependency_factory_->GetWebRtcSignalingTaskRunner()->PostTask(
         FROM_HERE, ConvertToBaseOnceCallback(std::move(callback)));
     RunMessageLoopsUntilIdle();

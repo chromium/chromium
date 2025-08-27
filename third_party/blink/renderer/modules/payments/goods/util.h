@@ -12,7 +12,7 @@ class ScriptState;
 
 namespace digital_goods_util {
 
-void LogConsoleError(ScriptState*, const WTF::String& message);
+void LogConsoleError(ScriptState*, const String& message);
 
 }  // namespace digital_goods_util
 }  // namespace blink

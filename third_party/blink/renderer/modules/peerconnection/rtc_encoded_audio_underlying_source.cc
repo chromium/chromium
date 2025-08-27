@@ -27,7 +27,7 @@ const int RTCEncodedAudioUnderlyingSource::kMinQueueDesiredSize = -60;
 
 RTCEncodedAudioUnderlyingSource::RTCEncodedAudioUnderlyingSource(
     ScriptState* script_state,
-    WTF::CrossThreadOnceClosure disconnect_callback)
+    CrossThreadOnceClosure disconnect_callback)
     : blink::RTCEncodedAudioUnderlyingSource(
           script_state,
           std::move(disconnect_callback),
@@ -37,7 +37,7 @@ RTCEncodedAudioUnderlyingSource::RTCEncodedAudioUnderlyingSource(
 
 RTCEncodedAudioUnderlyingSource::RTCEncodedAudioUnderlyingSource(
     ScriptState* script_state,
-    WTF::CrossThreadOnceClosure disconnect_callback,
+    CrossThreadOnceClosure disconnect_callback,
     bool enable_frame_restrictions,
     base::UnguessableToken owner_id,
     ReadableStreamDefaultControllerWithScriptScope* override_controller)

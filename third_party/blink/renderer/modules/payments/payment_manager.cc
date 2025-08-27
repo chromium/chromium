@@ -67,8 +67,8 @@ ScriptPromise<IDLBoolean> PaymentManager::enableDelegations(
 
   manager_->EnableDelegations(
       std::move(mojo_delegations),
-      WTF::BindOnce(&PaymentManager::OnEnableDelegationsResponse,
-                    WrapPersistent(this)));
+      BindOnce(&PaymentManager::OnEnableDelegationsResponse,
+               WrapPersistent(this)));
   enable_delegations_resolver_ =
       MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(
           script_state, exception_state.GetContext());
@@ -93,7 +93,7 @@ PaymentManager::PaymentManager(ServiceWorkerRegistration* registration)
             context->GetTaskRunner(TaskType::kUserInteraction)));
   }
 
-  manager_.set_disconnect_handler(WTF::BindOnce(
+  manager_.set_disconnect_handler(BindOnce(
       &PaymentManager::OnServiceConnectionError, WrapWeakPersistent(this)));
   manager_->Init(registration_->GetExecutionContext()->Url(),
                  registration_->scope());

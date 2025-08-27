@@ -116,7 +116,7 @@ ScriptPromise<IDLSequence<ItemDetails>> DigitalGoodsService::getDetails(
   }
 
   mojo_service_->GetDetails(
-      item_ids, WTF::BindOnce(&OnGetDetailsResponse, WrapPersistent(resolver)));
+      item_ids, BindOnce(&OnGetDetailsResponse, WrapPersistent(resolver)));
   return promise;
 }
 
@@ -127,8 +127,8 @@ ScriptPromise<IDLSequence<PurchaseDetails>> DigitalGoodsService::listPurchases(
           script_state);
   auto promise = resolver->Promise();
 
-  mojo_service_->ListPurchases(WTF::BindOnce(&ResolveWithPurchaseReferenceList,
-                                             WrapPersistent(resolver)));
+  mojo_service_->ListPurchases(
+      BindOnce(&ResolveWithPurchaseReferenceList, WrapPersistent(resolver)));
   return promise;
 }
 
@@ -139,8 +139,8 @@ DigitalGoodsService::listPurchaseHistory(ScriptState* script_state) {
           script_state);
   auto promise = resolver->Promise();
 
-  mojo_service_->ListPurchaseHistory(WTF::BindOnce(
-      &ResolveWithPurchaseReferenceList, WrapPersistent(resolver)));
+  mojo_service_->ListPurchaseHistory(
+      BindOnce(&ResolveWithPurchaseReferenceList, WrapPersistent(resolver)));
   return promise;
 }
 
@@ -157,8 +157,7 @@ ScriptPromise<IDLUndefined> DigitalGoodsService::consume(
   }
 
   mojo_service_->Consume(
-      purchase_token,
-      WTF::BindOnce(&OnConsumeResponse, WrapPersistent(resolver)));
+      purchase_token, BindOnce(&OnConsumeResponse, WrapPersistent(resolver)));
   return promise;
 }
 

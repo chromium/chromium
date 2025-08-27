@@ -24,7 +24,7 @@ class MockPaymentProvider : public payments::mojom::blink::PaymentRequest {
  public:
   void Init(
       mojo::PendingRemote<payments::mojom::blink::PaymentRequestClient> client,
-      WTF::Vector<payments::mojom::blink::PaymentMethodDataPtr> method_data,
+      Vector<payments::mojom::blink::PaymentMethodDataPtr> method_data,
       payments::mojom::blink::PaymentDetailsPtr details,
       payments::mojom::blink::PaymentOptionsPtr options) override {
     client_.Bind(std::move(client));

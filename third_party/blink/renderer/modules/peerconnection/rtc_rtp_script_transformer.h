@@ -54,10 +54,10 @@ class MODULES_EXPORT RTCRtpScriptTransformer : public ScriptWrappable {
 
   // These methods are called when an
   // RTCRtpScriptTransform is assigned to an RTCRtpSender or RTCRtpReceiver.
-  void SetUpAudio(WTF::CrossThreadOnceClosure disconnect_callback_source,
+  void SetUpAudio(CrossThreadOnceClosure disconnect_callback_source,
                   scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
                       encoded_audio_transformer);
-  void SetUpVideo(WTF::CrossThreadOnceClosure disconnect_callback_source,
+  void SetUpVideo(CrossThreadOnceClosure disconnect_callback_source,
                   scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
                       encoded_video_transformer);
 

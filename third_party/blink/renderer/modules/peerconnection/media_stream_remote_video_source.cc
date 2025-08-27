@@ -333,8 +333,8 @@ MediaStreamRemoteVideoSource::MediaStreamRemoteVideoSource(
       observer_(std::move(observer)) {
   // The callback will be automatically cleared when 'observer_' goes out of
   // scope and no further callbacks will occur.
-  observer_->SetCallback(WTF::BindRepeating(
-      &MediaStreamRemoteVideoSource::OnChanged, WTF::Unretained(this)));
+  observer_->SetCallback(BindRepeating(&MediaStreamRemoteVideoSource::OnChanged,
+                                       Unretained(this)));
 }
 
 MediaStreamRemoteVideoSource::~MediaStreamRemoteVideoSource() {

@@ -19,7 +19,7 @@ class MODULES_EXPORT RtcEncodedVideoSenderSinkOptimizer
     : public WritableStreamTransferringOptimizer {
  public:
   using UnderlyingSinkSetter =
-      WTF::CrossThreadOnceFunction<void(RTCEncodedVideoUnderlyingSink*)>;
+      CrossThreadOnceFunction<void(RTCEncodedVideoUnderlyingSink*)>;
   RtcEncodedVideoSenderSinkOptimizer(
       UnderlyingSinkSetter,
       scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>

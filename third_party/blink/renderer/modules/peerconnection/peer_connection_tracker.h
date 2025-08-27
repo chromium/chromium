@@ -235,11 +235,11 @@ class MODULES_EXPORT PeerConnectionTracker
                                            const String& error_message);
   // Sends a new fragment on an RtcEventLog.
   virtual void TrackRtcEventLogWrite(RTCPeerConnectionHandler* pc_handler,
-                                     const WTF::Vector<uint8_t>& output);
+                                     const Vector<uint8_t>& output);
 
   // Sends a sent/received DataChannel message.
   virtual void TrackRtcDataChannelLogWrite(RTCPeerConnectionHandler* pc_handler,
-                                           const WTF::Vector<uint8_t>& output);
+                                           const Vector<uint8_t>& output);
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(peer_connection_tracker_host_);
@@ -324,7 +324,7 @@ class MODULES_EXPORT PeerConnectionTracker
   void AddStandardStats(int lid, base::Value::List value);
 
   // This map stores the local ID assigned to each RTCPeerConnectionHandler.
-  typedef WTF::HashMap<RTCPeerConnectionHandler*, int> PeerConnectionLocalIdMap;
+  typedef HashMap<RTCPeerConnectionHandler*, int> PeerConnectionLocalIdMap;
   PeerConnectionLocalIdMap peer_connection_local_id_map_;
   mojom::blink::DeviceThermalState current_thermal_state_ =
       mojom::blink::DeviceThermalState::kUnknown;

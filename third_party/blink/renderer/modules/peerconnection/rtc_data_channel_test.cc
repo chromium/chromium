@@ -481,7 +481,7 @@ TEST_F(RTCDataChannelTest, TransferAllowedOnlyOnce) {
 TEST_F(RTCDataChannelTest, SendPreventsTransfers) {
   {
     SCOPED_TRACE("RTCDataChannel::send(const string&)");
-    VerifyNoTransfersAfterSend(WTF::BindOnce([](RTCDataChannel* channel) {
+    VerifyNoTransfersAfterSend(BindOnce([](RTCDataChannel* channel) {
       String message(std::string(100, 'A').c_str());
       channel->send(message, IGNORE_EXCEPTION_FOR_TESTING);
     }));
@@ -489,7 +489,7 @@ TEST_F(RTCDataChannelTest, SendPreventsTransfers) {
 
   {
     SCOPED_TRACE("RTCDataChannel::send(DOMArrayBuffer*)");
-    VerifyNoTransfersAfterSend(WTF::BindOnce([](RTCDataChannel* channel) {
+    VerifyNoTransfersAfterSend(BindOnce([](RTCDataChannel* channel) {
       DOMArrayBuffer* buffer = DOMArrayBuffer::Create(10, 4);
       channel->send(buffer, IGNORE_EXCEPTION_FOR_TESTING);
     }));
@@ -497,7 +497,7 @@ TEST_F(RTCDataChannelTest, SendPreventsTransfers) {
 
   {
     SCOPED_TRACE("RTCDataChannel::send(NotShared<DOMArrayBufferView>)");
-    VerifyNoTransfersAfterSend(WTF::BindOnce([](RTCDataChannel* channel) {
+    VerifyNoTransfersAfterSend(BindOnce([](RTCDataChannel* channel) {
       DOMArrayBuffer* buffer = DOMArrayBuffer::Create(10, 4);
       channel->send(
           NotShared<DOMArrayBufferView>(DOMDataView::Create(buffer, 0, 10)),
@@ -507,7 +507,7 @@ TEST_F(RTCDataChannelTest, SendPreventsTransfers) {
 
   {
     SCOPED_TRACE("RTCDataChannel::send(Blob*)");
-    VerifyNoTransfersAfterSend(WTF::BindOnce([](RTCDataChannel* channel) {
+    VerifyNoTransfersAfterSend(BindOnce([](RTCDataChannel* channel) {
       const char kHelloWorld[] = "Hello world!";
       Blob* blob = Blob::Create(
           base::as_bytes(base::span_with_nul_from_cstring(kHelloWorld)),

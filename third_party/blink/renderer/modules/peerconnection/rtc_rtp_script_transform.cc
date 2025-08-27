@@ -109,7 +109,7 @@ RTCRtpScriptTransform* RTCRtpScriptTransform::Create(
 }
 
 void RTCRtpScriptTransform::CreateAudioUnderlyingSourceAndSink(
-    WTF::CrossThreadOnceClosure disconnect_callback_source,
+    CrossThreadOnceClosure disconnect_callback_source,
     scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
         encoded_audio_transformer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -125,7 +125,7 @@ void RTCRtpScriptTransform::CreateAudioUnderlyingSourceAndSink(
 }
 
 void RTCRtpScriptTransform::CreateVideoUnderlyingSourceAndSink(
-    WTF::CrossThreadOnceClosure disconnect_callback_source,
+    CrossThreadOnceClosure disconnect_callback_source,
     scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
         encoded_video_transformer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -141,7 +141,7 @@ void RTCRtpScriptTransform::CreateVideoUnderlyingSourceAndSink(
 }
 
 void RTCRtpScriptTransform::SetUpAudioRtpTransformer(
-    WTF::CrossThreadOnceClosure disconnect_callback_source,
+    CrossThreadOnceClosure disconnect_callback_source,
     scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
         encoded_audio_transformer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -156,7 +156,7 @@ void RTCRtpScriptTransform::SetUpAudioRtpTransformer(
 }
 
 void RTCRtpScriptTransform::SetUpVideoRtpTransformer(
-    WTF::CrossThreadOnceClosure disconnect_callback_source,
+    CrossThreadOnceClosure disconnect_callback_source,
     scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
         encoded_video_transformer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

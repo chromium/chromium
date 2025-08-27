@@ -101,7 +101,7 @@ void WebRtcSetDescriptionObserverHandlerImpl::OnSetDescriptionComplete(
       *main_task_runner_, FROM_HERE,
       CrossThreadBindOnce(&WebRtcSetDescriptionObserverHandlerImpl::
                               OnSetDescriptionCompleteOnMainThread,
-                          WTF::RetainedRef(this), std::move(error),
+                          blink::RetainedRef(this), std::move(error),
                           pc_->signaling_state(),
                           std::move(transceiver_state_surfacer),
                           std::move(pending_local_description),

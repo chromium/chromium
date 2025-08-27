@@ -22,8 +22,7 @@ RtpTransceiverState::RtpTransceiverState(
     webrtc::RtpTransceiverDirection direction,
     std::optional<webrtc::RtpTransceiverDirection> current_direction,
     std::optional<webrtc::RtpTransceiverDirection> fired_direction,
-    WTF::Vector<webrtc::RtpHeaderExtensionCapability>
-        header_extensions_negotiated)
+    Vector<webrtc::RtpHeaderExtensionCapability> header_extensions_negotiated)
     : main_task_runner_(std::move(main_task_runner)),
       signaling_task_runner_(std::move(signaling_task_runner)),
       webrtc_transceiver_(std::move(webrtc_transceiver)),

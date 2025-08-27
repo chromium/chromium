@@ -27,10 +27,10 @@ class MODULES_EXPORT RTCEncodedVideoUnderlyingSource
   // RTCEncodedUnderlyingSourceWrapper.
   explicit RTCEncodedVideoUnderlyingSource(
       ScriptState*,
-      WTF::CrossThreadOnceClosure disconnect_callback);
+      CrossThreadOnceClosure disconnect_callback);
   explicit RTCEncodedVideoUnderlyingSource(
       ScriptState*,
-      WTF::CrossThreadOnceClosure disconnect_callback,
+      CrossThreadOnceClosure disconnect_callback,
       bool enable_frame_restrictions,
       base::UnguessableToken owner_id,
       ReadableStreamDefaultControllerWithScriptScope* controller_override =
@@ -66,7 +66,7 @@ class MODULES_EXPORT RTCEncodedVideoUnderlyingSource
   static const int kMinQueueDesiredSize;
 
   const Member<ScriptState> script_state_;
-  WTF::CrossThreadOnceClosure disconnect_callback_;
+  CrossThreadOnceClosure disconnect_callback_;
   // Count of frames dropped due to the queue being full, for logging.
   int dropped_frames_ = 0;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

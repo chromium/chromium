@@ -301,8 +301,8 @@ RTCDataChannel::RTCDataChannel(
     // to be transferred. See:
     // https://w3c.github.io/webrtc-extensions/#rtcdatachannel-transferable
     context->GetTaskRunner(TaskType::kNetworking)
-        ->PostTask(FROM_HERE, WTF::BindOnce(&RTCDataChannel::RegisterObserver,
-                                            WrapWeakPersistent(this)));
+        ->PostTask(FROM_HERE, BindOnce(&RTCDataChannel::RegisterObserver,
+                                       WrapWeakPersistent(this)));
   } else {
     RegisterObserver();
   }

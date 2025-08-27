@@ -93,9 +93,8 @@ RTCRtpReceiver::RTCRtpReceiver(RTCPeerConnection* pc,
     // step 12.
 
     encoded_transform_shortcircuit_runner->PostTask(
-        FROM_HERE,
-        WTF::BindOnce(&RTCRtpReceiver::MaybeShortCircuitEncodedStreams,
-                      WrapPersistent(this)));
+        FROM_HERE, BindOnce(&RTCRtpReceiver::MaybeShortCircuitEncodedStreams,
+                            WrapPersistent(this)));
   }
 }
 
@@ -176,8 +175,8 @@ ScriptPromise<RTCStatsReport> RTCRtpReceiver::getStats(
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<RTCStatsReport>>(script_state);
   auto promise = resolver->Promise();
-  receiver_->GetStats(WTF::BindOnce(WebRTCStatsReportCallbackResolver,
-                                    WrapPersistent(resolver)));
+  receiver_->GetStats(
+      BindOnce(WebRTCStatsReportCallbackResolver, WrapPersistent(resolver)));
   return promise;
 }
 
@@ -302,7 +301,7 @@ RTCRtpCapabilities* RTCRtpReceiver::getCapabilities(ScriptState* state,
       base::checked_cast<wtf_size_t>(rtc_capabilities->codecs.size()));
   for (const auto& rtc_codec : rtc_capabilities->codecs) {
     auto* codec = RTCRtpCodecCapability::Create();
-    codec->setMimeType(WTF::String::FromUTF8(rtc_codec.mime_type()));
+    codec->setMimeType(String::FromUTF8(rtc_codec.mime_type()));
     if (rtc_codec.clock_rate)
       codec->setClockRate(rtc_codec.clock_rate.value());
     if (rtc_codec.num_channels)
@@ -329,7 +328,7 @@ RTCRtpCapabilities* RTCRtpReceiver::getCapabilities(ScriptState* state,
       rtc_capabilities->header_extensions.size()));
   for (const auto& rtc_header_extension : rtc_capabilities->header_extensions) {
     auto* header_extension = RTCRtpHeaderExtensionCapability::Create();
-    header_extension->setUri(WTF::String::FromUTF8(rtc_header_extension.uri));
+    header_extension->setUri(String::FromUTF8(rtc_header_extension.uri));
     header_extensions.push_back(header_extension);
   }
   capabilities->setHeaderExtensions(header_extensions);
