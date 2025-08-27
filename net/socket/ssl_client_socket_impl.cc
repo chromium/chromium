@@ -685,6 +685,9 @@ int SSLClientSocketImpl::Init() {
   }
 
   if (IsCachingEnabled()) {
+    initial_session_cache_generation_number_ =
+        context_->ssl_client_session_cache()->generation_number();
+
     bssl::UniquePtr<SSL_SESSION> session =
         context_->ssl_client_session_cache()->Lookup(
             GetSessionCacheKey(/*dest_ip_addr=*/std::nullopt));
@@ -1575,7 +1578,8 @@ int SSLClientSocketImpl::NewSessionCallback(SSL_SESSION* session) {
   // OpenSSL optionally passes ownership of |session|. Returning one signals
   // that this function has claimed it.
   context_->ssl_client_session_cache()->Insert(
-      GetSessionCacheKey(ip_addr), bssl::UniquePtr<SSL_SESSION>(session));
+      initial_session_cache_generation_number_, GetSessionCacheKey(ip_addr),
+      bssl::UniquePtr<SSL_SESSION>(session));
   return 1;
 }
 

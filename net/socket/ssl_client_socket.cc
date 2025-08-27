@@ -303,6 +303,9 @@ void SSLClientContext::OnTrustStoreChanged() {
 void SSLClientContext::OnClientCertStoreChanged() {
   base::flat_set<HostPortPair> servers =
       ssl_client_auth_cache_.GetCachedServers();
+  if (servers.empty()) {
+    return;
+  }
   ssl_client_auth_cache_.Clear();
   if (ssl_client_session_cache_) {
     ssl_client_session_cache_->FlushForServers(servers);

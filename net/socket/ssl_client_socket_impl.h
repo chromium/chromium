@@ -252,6 +252,10 @@ class NET_EXPORT_PRIVATE SSLClientSocketImpl
 
   const raw_ptr<SSLClientContext> context_;
 
+  // Stores the value of SSLClientSessionCache's generation number at the time
+  // this socket was initialized.
+  uint64_t initial_session_cache_generation_number_ = 0;
+
   std::unique_ptr<CertVerifier::Request> cert_verifier_request_;
 
   // Result from Cert Verifier.

@@ -3098,6 +3098,92 @@ TEST_P(SSLClientSocketVersionTest, SessionResumption) {
   ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
 }
 
+// Tests that when the session cache is flushed during a connection handshake,
+// that session does not get cached, and that connections started after the
+// flush are still cached.
+TEST_P(SSLClientSocketVersionTest, FlushSessionCacheDuringHandshake) {
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
+
+  // First, perform a full handshake.
+  SSLConfig ssl_config;
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
+  ASSERT_THAT(rv, IsOk());
+  SSLInfo ssl_info;
+  ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
+  EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, ssl_info.handshake_type);
+
+  // TLS 1.2 with False Start and TLS 1.3 cause the ticket to arrive later, so
+  // use the socket to ensure the session ticket has been picked up.
+  EXPECT_THAT(MakeHTTPRequest(sock_.get()), IsOk());
+  sock_.reset();
+  EXPECT_EQ(ssl_client_session_cache_->size(), 1u);
+
+  // Start a 2nd connection with a FakeBlockingStreamSocket, but block it
+  // before it completes.
+  HostPortPair second_host("b.com", 443);
+  auto real_transport = std::make_unique<TCPClientSocket>(
+      addr(), nullptr, nullptr, NetLog::Get(), NetLogSource());
+  auto transport =
+      std::make_unique<FakeBlockingStreamSocket>(std::move(real_transport));
+  FakeBlockingStreamSocket* raw_transport = transport.get();
+  TestCompletionCallback callback;
+  ASSERT_THAT(callback.GetResult(transport->Connect(callback.callback())),
+              IsOk());
+  auto sock2 =
+      CreateSSLClientSocket(std::move(transport), second_host, ssl_config);
+  raw_transport->BlockReadResult();
+  EXPECT_THAT(sock2->Connect(callback.callback()), IsError(ERR_IO_PENDING));
+  EXPECT_EQ(ssl_client_session_cache_->size(), 1u);
+
+  // Flush the session cache while the 2nd connection is pending.
+  ssl_client_session_cache_->Flush();
+  // The 1st connection's session should be removed.
+  EXPECT_EQ(ssl_client_session_cache_->size(), 0u);
+
+  // Continue the 2nd connection. It should complete successfully, but not be
+  // added to session cache.
+  raw_transport->UnblockReadResult();
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+  ASSERT_TRUE(sock2->GetSSLInfo(&ssl_info));
+  EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, ssl_info.handshake_type);
+  EXPECT_THAT(MakeHTTPRequest(sock2.get()), IsOk());
+  EXPECT_EQ(ssl_client_session_cache_->size(), 0u);
+
+  // Connecting again with the 2nd host should not resume.
+  ASSERT_TRUE(
+      CreateAndConnectSSLClientSocketWithHost(ssl_config, second_host, &rv));
+  ASSERT_THAT(rv, IsOk());
+  ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
+  EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, ssl_info.handshake_type);
+  EXPECT_THAT(MakeHTTPRequest(sock_.get()), IsOk());
+  // The new session should be cached.
+  EXPECT_EQ(ssl_client_session_cache_->size(), 1u);
+
+  // Since the session cache was cleared, handshake with the same host as the
+  // 1st connection doesn't resume either.
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
+  ASSERT_THAT(rv, IsOk());
+  ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
+  EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, ssl_info.handshake_type);
+  EXPECT_THAT(MakeHTTPRequest(sock_.get()), IsOk());
+  // Both new sessions should be cached.
+  EXPECT_EQ(ssl_client_session_cache_->size(), 2u);
+
+  // Session resumption should work for sessions cached after the flush.
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
+  ASSERT_THAT(rv, IsOk());
+  ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
+  EXPECT_EQ(SSLInfo::HANDSHAKE_RESUME, ssl_info.handshake_type);
+
+  ASSERT_TRUE(
+      CreateAndConnectSSLClientSocketWithHost(ssl_config, second_host, &rv));
+  ASSERT_THAT(rv, IsOk());
+  ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
+  EXPECT_EQ(SSLInfo::HANDSHAKE_RESUME, ssl_info.handshake_type);
+}
+
 namespace {
 
 // FakePeerAddressSocket wraps a |StreamSocket|, forwarding all calls except
@@ -3930,12 +4016,30 @@ TEST_F(SSLClientSocketTest, ClearSessionCacheOnClientCertDatabaseChange) {
   EXPECT_TRUE(sock_->IsConnected());
 
   EXPECT_EQ(1U, context_->ssl_client_session_cache()->size());
+  const uint64_t generation_number_0 =
+      context_->ssl_client_session_cache()->generation_number();
 
   CertDatabase::GetInstance()->NotifyObserversClientCertStoreChanged();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(0U, context_->GetClientCertificateCachedServersForTesting().size());
   EXPECT_EQ(0U, context_->ssl_client_session_cache()->size());
+
+  const uint64_t generation_number_1 =
+      context_->ssl_client_session_cache()->generation_number();
+  EXPECT_NE(generation_number_0, generation_number_1);
+
+  // Simulate another ClientCertStoreChanged while the client auth cache is
+  // empty.
+  CertDatabase::GetInstance()->NotifyObserversClientCertStoreChanged();
+  base::RunLoop().RunUntilIdle();
+
+  // Since there were no entries in the SSLClientAuthCache, the database
+  // changed event should not have triggered a SSLClientSessionCache flush nor
+  // an observer OnSSLConfigForServersChanged call (which is verified since the
+  // StrictMock has no more expectations left to satisfy.)
+  EXPECT_EQ(generation_number_1,
+            context_->ssl_client_session_cache()->generation_number());
 
   context_->RemoveObserver(&observer);
 }
