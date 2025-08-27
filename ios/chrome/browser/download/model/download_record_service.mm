@@ -40,7 +40,12 @@ DownloadRecordService::DownloadRecordService(const base::FilePath& profile_path)
                      weak_ptr_factory_.GetWeakPtr(), profile_path));
 }
 
-DownloadRecordService::~DownloadRecordService() {}
+DownloadRecordService::~DownloadRecordService() {
+  // Ensure database is destroyed on the correct thread.
+  if (database_) {
+    database_task_runner_->DeleteSoon(FROM_HERE, std::move(database_));
+  }
+}
 
 void DownloadRecordService::RecordDownload(web::DownloadTask* task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);

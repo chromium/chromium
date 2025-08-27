@@ -68,6 +68,7 @@ class FakeDownloadTask final : public DownloadTask {
   void SetPerformedBackgroundDownload(bool flag);
   void SetOriginatingHost(NSString* originating_host);
   void SetRedirectedURL(const GURL& redirected_url);
+  void SetIdentifier(NSString* identifier);
 
  private:
   // Called when download task was updated.

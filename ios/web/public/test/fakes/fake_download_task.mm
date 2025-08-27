@@ -245,6 +245,11 @@ void FakeDownloadTask::SetRedirectedURL(const GURL& redirected_url) {
   redirected_url_ = redirected_url;
 }
 
+void FakeDownloadTask::SetIdentifier(NSString* identifier) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  identifier_ = [identifier copy];
+}
+
 void FakeDownloadTask::OnDownloadUpdated() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : observers_) {
