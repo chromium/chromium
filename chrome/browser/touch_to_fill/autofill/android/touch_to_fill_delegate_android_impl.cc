@@ -248,9 +248,7 @@ bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
                          return payments_client.ShowTouchToFillCreditCard(
                              GetWeakPtr(),
                              GetCreditCardSuggestionsForTouchToFill(
-                                 std::move(items_to_suggest),
-                                 manager_->client(),
-                                 manager_->GetCreditCardFormEventLogger()));
+                                 std::move(items_to_suggest), *manager_));
                        },
                        [&](std::vector<Iban> items_to_suggest) {
                          return payments_client.ShowTouchToFillIban(

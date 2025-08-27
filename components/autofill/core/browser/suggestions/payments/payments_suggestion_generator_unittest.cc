@@ -195,6 +195,21 @@ auto SuggestionWithGuidPayload(const Suggestion::Guid& guid) {
   return Property(&Suggestion::GetPayload<Suggestion::Guid>, guid);
 }
 
+class MockBrowserAutofillManager : public TestBrowserAutofillManager {
+ public:
+  explicit MockBrowserAutofillManager(TestAutofillDriver* driver)
+      : TestBrowserAutofillManager(driver) {}
+  MockBrowserAutofillManager(const MockBrowserAutofillManager&) = delete;
+  MockBrowserAutofillManager& operator=(const MockBrowserAutofillManager&) =
+      delete;
+  ~MockBrowserAutofillManager() override = default;
+
+  MOCK_METHOD(autofill_metrics::CreditCardFormEventLogger&,
+              GetCreditCardFormEventLogger,
+              (),
+              (override));
+};
+
 class MockCreditCardFormEventLogger
     : public autofill_metrics::CreditCardFormEventLogger {
  public:
@@ -222,6 +237,8 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
     credit_card_form_event_logger_ =
         std::make_unique<NiceMock<MockCreditCardFormEventLogger>>(
             &autofill_manager_);
+    ON_CALL(autofill_manager_, GetCreditCardFormEventLogger())
+        .WillByDefault(testing::ReturnRef(*credit_card_form_event_logger_));
   }
 
   void TearDown() override { credit_card_form_event_logger_->OnDestroyed(); }
@@ -283,10 +300,10 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
   syncer::TestSyncService sync_service_;
   TestAutofillClient autofill_client_;
   TestAutofillDriver autofill_driver_{&autofill_client_};
-  TestBrowserAutofillManager autofill_manager_{&autofill_driver_};
 
  protected:
   std::unique_ptr<MockCreditCardFormEventLogger> credit_card_form_event_logger_;
+  MockBrowserAutofillManager autofill_manager_{&autofill_driver_};
 };
 
 // The card benefits label generation currently varies across operating systems.
@@ -874,8 +891,8 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
                         expected_instrument_ids_to_available_benefit_sources)))
       .Times(1);
 
-  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
-      cards, *autofill_client(), *credit_card_form_event_logger_);
+  std::vector<Suggestion> suggestions =
+      GetCreditCardSuggestionsForTouchToFill(cards, autofill_manager_);
 
   EXPECT_EQ(suggestions[0].type, SuggestionType::kCreditCardEntry);
   if (IsCreditCardBenefitsSourceSyncEnabled() &&
@@ -912,8 +929,8 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
                         expected_instrument_ids_to_available_benefit_sources)))
       .Times(1);
 
-  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
-      cards, *autofill_client(), *credit_card_form_event_logger_);
+  std::vector<Suggestion> suggestions =
+      GetCreditCardSuggestionsForTouchToFill(cards, autofill_manager_);
 
   EXPECT_EQ(suggestions[0].type, SuggestionType::kVirtualCreditCardEntry);
   if (IsCreditCardBenefitsSourceSyncEnabled() &&
@@ -949,8 +966,8 @@ TEST_P(
       GURL("https://random-url.com"));
   std::vector<CreditCard> cards = {card()};
 
-  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
-      cards, *autofill_client(), *credit_card_form_event_logger_);
+  std::vector<Suggestion> suggestions =
+      GetCreditCardSuggestionsForTouchToFill(cards, autofill_manager_);
 
   // Merchant benefit description is not returned.
   EXPECT_THAT(suggestions[0],
@@ -978,8 +995,8 @@ TEST_P(
           CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory));
   std::vector<CreditCard> cards = {card()};
 
-  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
-      cards, *autofill_client(), *credit_card_form_event_logger_);
+  std::vector<Suggestion> suggestions =
+      GetCreditCardSuggestionsForTouchToFill(cards, autofill_manager_);
 
   // Category benefit description is not returned.
   EXPECT_THAT(suggestions[0],
@@ -1004,8 +1021,8 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
       .WillByDefault(testing::Return(true));
   std::vector<CreditCard> cards = {card()};
 
-  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
-      cards, *autofill_client(), *credit_card_form_event_logger_);
+  std::vector<Suggestion> suggestions =
+      GetCreditCardSuggestionsForTouchToFill(cards, autofill_manager_);
 
   // Benefit description is not returned for flat rate benefits.
   EXPECT_THAT(suggestions[0],
@@ -1032,8 +1049,7 @@ TEST_P(
                         expected_instrument_ids_to_available_benefit_sources)))
       .Times(1);
 
-  GetCreditCardSuggestionsForTouchToFill(cards, *autofill_client(),
-                                         *credit_card_form_event_logger_);
+  GetCreditCardSuggestionsForTouchToFill(cards, autofill_manager_);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -4375,8 +4391,8 @@ TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
   CreditCard server_card = CreateServerCard();
   std::vector<CreditCard> cards = {virtual_card, server_card};
 
-  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
-      cards, *autofill_client(), *credit_card_form_event_logger_);
+  std::vector<Suggestion> suggestions =
+      GetCreditCardSuggestionsForTouchToFill(cards, autofill_manager_);
 
   ASSERT_EQ(suggestions.size(), 2U);
   EXPECT_EQ(suggestions[0].main_text.value,
@@ -4401,8 +4417,8 @@ TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
   CreditCard server_card = CreateServerCard();
   std::vector<CreditCard> cards = {virtual_card, server_card};
 
-  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
-      cards, *autofill_client(), *credit_card_form_event_logger_);
+  std::vector<Suggestion> suggestions =
+      GetCreditCardSuggestionsForTouchToFill(cards, autofill_manager_);
 
   ASSERT_EQ(suggestions.size(), 2U);
   // Virtual card displays `Virtual card` label. If the merchant has opted out
@@ -4433,8 +4449,8 @@ TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
   server_card.SetNetworkForMaskedCard(kVisaCard);
   std::vector<CreditCard> cards = {server_card};
 
-  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
-      cards, *autofill_client(), *credit_card_form_event_logger_);
+  std::vector<Suggestion> suggestions =
+      GetCreditCardSuggestionsForTouchToFill(cards, autofill_manager_);
 
   ASSERT_EQ(suggestions.size(), 1U);
   EXPECT_EQ(
@@ -4453,8 +4469,8 @@ TEST_P(
   server_card.SetNetworkForMaskedCard(kVisaCard);
   std::vector<CreditCard> cards = {server_card};
 
-  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
-      cards, *autofill_client(), *credit_card_form_event_logger_);
+  std::vector<Suggestion> suggestions =
+      GetCreditCardSuggestionsForTouchToFill(cards, autofill_manager_);
 
   ASSERT_EQ(suggestions.size(), 1U);
   EXPECT_EQ(suggestions[0]
@@ -4469,8 +4485,8 @@ TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
   server_card.SetNetworkForMaskedCard(kVisaCard);
   std::vector<CreditCard> cards = {server_card};
 
-  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
-      cards, *autofill_client(), *credit_card_form_event_logger_);
+  std::vector<Suggestion> suggestions =
+      GetCreditCardSuggestionsForTouchToFill(cards, autofill_manager_);
 
   ASSERT_EQ(suggestions.size(), 1U);
   EXPECT_EQ(suggestions[0].icon, Suggestion::Icon::kCardVisa);
@@ -4484,8 +4500,8 @@ TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
   server_card.set_card_art_url(expected_custom_icon_url);
   std::vector<CreditCard> cards = {server_card};
 
-  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
-      cards, *autofill_client(), *credit_card_form_event_logger_);
+  std::vector<Suggestion> suggestions =
+      GetCreditCardSuggestionsForTouchToFill(cards, autofill_manager_);
 
   ASSERT_EQ(suggestions.size(), 1U);
   const Suggestion::CustomIconUrl* custom_icon_url =
@@ -4505,8 +4521,8 @@ TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
   payments_data().AddCreditCard(local_card);
   std::vector<CreditCard> cards = {server_card, local_card};
 
-  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
-      cards, *autofill_client(), *credit_card_form_event_logger_);
+  std::vector<Suggestion> suggestions =
+      GetCreditCardSuggestionsForTouchToFill(cards, autofill_manager_);
 
   ASSERT_EQ(suggestions.size(), 2U);
   EXPECT_EQ(
