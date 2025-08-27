@@ -477,4 +477,39 @@ public class TabModelImplUnitTest {
         assertEquals(1, tabModel.getCount());
         assertEquals(tab1, tabModel.getTabAt(0));
     }
+
+    @Test
+    public void testObserveTabCountSupplierActiveNormal() {
+        TabModel activeNormal = createTabModel(true, false);
+        // Unused but required for correct mocking of mTabModelDelegate to avoid NPE.
+        createTabModel(false, true);
+
+        assertEquals(0, activeNormal.getTabCountSupplier().get().intValue());
+
+        Tab tab0 = createTab(activeNormal);
+        assertEquals(1, activeNormal.getTabCountSupplier().get().intValue());
+
+        Tab tab1 = createTab(activeNormal);
+        assertEquals(2, activeNormal.getTabCountSupplier().get().intValue());
+
+        Tab tab2 = createTab(activeNormal);
+        assertEquals(3, activeNormal.getTabCountSupplier().get().intValue());
+
+        Tab tab3 = createTab(activeNormal);
+        assertEquals(4, activeNormal.getTabCountSupplier().get().intValue());
+
+        activeNormal
+                .getTabRemover()
+                .closeTabs(
+                        TabClosureParams.closeTabs(List.of(tab0, tab1)).allowUndo(false).build(),
+                        /* allowDialog= */ false);
+        assertEquals(2, activeNormal.getTabCountSupplier().get().intValue());
+
+        activeNormal
+                .getTabRemover()
+                .closeTabs(
+                        TabClosureParams.closeAllTabs().allowUndo(false).build(),
+                        /* allowDialog= */ false);
+        assertEquals(0, activeNormal.getTabCountSupplier().get().intValue());
+    }
 }

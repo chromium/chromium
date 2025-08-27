@@ -724,6 +724,7 @@ public class TabModelImpl extends TabModelJniBridge {
                         tabClosureParams.allowUndo,
                         tabClosureParams.tabClosingSource,
                         tabClosureParams.undoRunnable);
+                mTabCountSupplier.set(mTabs.size());
                 return true;
             default:
                 assert false : "Not reached.";
@@ -900,7 +901,10 @@ public class TabModelImpl extends TabModelJniBridge {
         mTabs.remove(tab);
         tab.onRemovedFromTabModel(mCurrentTabSupplier);
         mTabIdToTabs.remove(tab.getId());
-        mTabCountSupplier.set(mTabs.size());
+        // Close all tabs should update the mTabCountSupplier after all tabs are closed.
+        if (tabCloseType != TabCloseType.ALL) {
+            mTabCountSupplier.set(mTabs.size());
+        }
 
         boolean nextIsIncognito = nextTab == null ? false : nextTab.isIncognito();
         int nextTabId = nextTab == null ? Tab.INVALID_TAB_ID : nextTab.getId();
