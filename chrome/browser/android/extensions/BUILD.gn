@@ -1,0 +1,38 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+source_set("android") {
+  sources = [
+    "extensions_url_override_registry_manager.cc",
+    "extensions_url_override_registry_manager.h",
+  ]
+
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//content/public/browser",
+    "//third_party/jni_zero",
+  ]
+}
+
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/chrome/browser/extensions/ExtensionsUrlOverrideRegistryManager.java" ]
+}
+
+android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
+  resources_package = "org.chromium.chrome.browser.extensions"
+  sources = [ "java/src/org/chromium/chrome/browser/extensions/ExtensionsUrlOverrideRegistryManager.java" ]
+
+  deps = [
+    "//base:base_java",
+    "//build/android:build_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+}

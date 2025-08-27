@@ -3407,6 +3407,8 @@ static_library("browser") {
       "//chrome/browser/android:tabs_impl",
       "//chrome/browser/android:tabs_public",
       "//chrome/browser/android/content:jni_headers",
+      "//chrome/browser/android/extensions:android",
+      "//chrome/browser/android/extensions:jni_headers",
       "//chrome/browser/android/httpclient:android",
       "//chrome/browser/android/httpclient:jni_headers",
       "//chrome/browser/android/locale",
