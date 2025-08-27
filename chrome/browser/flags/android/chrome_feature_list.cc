@@ -283,6 +283,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTGoogleBottomBarVariantLayouts,
     &kCCTOpenInBrowserButtonIfAllowedByEmbedder,
     &kCCTOpenInBrowserButtonIfEnabledByEmbedder,
+    &kCCTNavigationMetrics,
     &kCCTPredictiveBackGesture,
     &kCCTRealtimeEngagementEventsInBackground,
     &kCCTReportParallelRequestStatus,
@@ -892,6 +893,10 @@ BASE_FEATURE(kHubBackButton,
 BASE_FEATURE(kHubSlideAnimation,
              "HubSlideAnimation",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCCTNavigationMetrics,
+             "CCTNavigationMetrics",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTRealtimeEngagementEventsInBackground,
              "CCTRealtimeEngagementEventsInBackground",

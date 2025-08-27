@@ -666,6 +666,8 @@ extern const char kBorealisZinkGlDriverDescription[];
 extern const char kAndroidSettingsContainmentName[];
 extern const char kAndroidSettingsContainmentDescription[];
 
+extern const char kCCTNavigationMetricsName[];
+extern const char kCCTNavigationMetricsDescription[];
 extern const char kCCTResetTimeoutEnabledName[];
 extern const char kCCTResetTimeoutEnabledDescription[];
 extern const char kSearchInCCTName[];

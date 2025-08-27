@@ -1118,6 +1118,10 @@ const char kAndroidSettingsContainmentName[] = "Android Settings Containment";
 const char kAndroidSettingsContainmentDescription[] =
     "Enables the Android Settings Containment feature.";
 
+const char kCCTNavigationMetricsName[] = "CCT Navigation Metrics";
+const char kCCTNavigationMetricsDescription[] =
+    "Enables detailed navigation-related metrics in CustomTabsCallback.";
+
 const char kCCTResetTimeoutEnabledName[] = "CCT Reset Timeout Enabled";
 const char kCCTResetTimeoutEnabledDescription[] =
     "Enables the reset timeout for CCTs. This flag allows embedder to "

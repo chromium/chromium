@@ -8136,6 +8136,9 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          chrome::android::kCCTOpenInBrowserButtonIfEnabledByEmbedder)},
+    {"cct-navigation-metrics", flag_descriptions::kCCTNavigationMetricsName,
+     flag_descriptions::kCCTNavigationMetricsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kCCTNavigationMetrics)},
     {"cct-predictive-back-gesture",
      flag_descriptions::kCCTPredictiveBackGestureName,
      flag_descriptions::kCCTPredictiveBackGestureDescription, kOsAndroid,

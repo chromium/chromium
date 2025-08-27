@@ -11032,6 +11032,7 @@ from previous Chrome versions.
   <int value="-1162636562" label="ReduceHorizontalFlingVelocity:disabled"/>
   <int value="-1161983339"
       label="MinorModeRestrictionsForHistorySyncOptIn:disabled"/>
+  <int value="-1161828250" label="CCTNavigationMetrics:enabled"/>
   <int value="-1161409696" label="MediaRemotingEncrypted:enabled"/>
   <int value="-1161384421" label="ContextualSuggestionsAboveArticles:enabled"/>
   <int value="-1160941363" label="AffiliationBasedMatching:disabled"/>
@@ -15632,6 +15633,7 @@ from previous Chrome versions.
   <int value="511392922" label="SharedClipboardReceiver:enabled"/>
   <int value="511522097" label="CrostiniTerminaDlcForceOta:enabled"/>
   <int value="512508240" label="WebViewExtraHeadersSameDomainOnly:disabled"/>
+  <int value="513056949" label="CCTNavigationMetrics:disabled"/>
   <int value="513258875" label="WinrtSensorsImplementation:disabled"/>
   <int value="513356954" label="InstantTethering:disabled"/>
   <int value="513372959" label="ViewsProfileChooser:enabled"/>

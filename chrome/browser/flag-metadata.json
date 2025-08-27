@@ -1609,6 +1609,11 @@
     "expiry_milestone": 180
   },
   {
+    "name": "cct-navigation-metrics",
+    "owners": ["jinsukkim@chromium.org", "twellington@chromium.org"],
+    "expiry_milestone": 155
+  },
+  {
     "name": "cct-nested-security-icon",
     "owners": ["sinansahin@google.com"],
     "expiry_milestone": 140

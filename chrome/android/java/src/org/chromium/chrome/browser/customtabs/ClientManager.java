@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactory;
 import org.chromium.chrome.browser.customtabs.content.EngagementSignalsHandler;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.components.content_relationship_verification.OriginVerifier.OriginVerificationListener;
 import org.chromium.components.embedder_support.util.Origin;
@@ -825,7 +826,8 @@ class ClientManager {
     }
 
     public boolean shouldGetPageLoadMetrics(SessionHolder<?> session) {
-        return callOnSession(session, false, params -> params.mShouldGetPageLoadMetrics);
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_NAVIGATION_METRICS)
+                || callOnSession(session, false, params -> params.mShouldGetPageLoadMetrics);
     }
 
     /** Returns the uid associated with the session, {@code -1} if there is no matching session. */

@@ -329,6 +329,7 @@ public abstract class ChromeFeatureList {
             "CCTIncognitoAvailableToThirdParty";
     public static final String CCT_MINIMIZED_ENABLED_BY_DEFAULT = "CCTMinimizedEnabledByDefault";
     public static final String CCT_NAVIGATIONAL_PREFETCH = "CCTNavigationalPrefetch";
+    public static final String CCT_NAVIGATION_METRICS = "CCTNavigationMetrics";
     public static final String CCT_NESTED_SECURITY_ICON = "CCTNestedSecurityIcon";
     public static final String CCT_OPEN_IN_BROWSER_BUTTON_IF_ALLOWED_BY_EMBEDDER =
             "CCTOpenInBrowserButtonIfAllowedByEmbedder";
