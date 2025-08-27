@@ -233,9 +233,7 @@ class ThemeProperties {
 
   // Returns the default color for the given color |id| COLOR_* enum value.
   // Returns gfx::kPlaceholderColor if |id| is invalid.
-  static SkColor GetDefaultColor(int id,
-                                 bool incognito,
-                                 bool dark_mode = false);
+  static SkColor GetDefaultColor(int id, bool incognito);
 };
 
 #endif  // CHROME_BROWSER_THEMES_THEME_PROPERTIES_H_

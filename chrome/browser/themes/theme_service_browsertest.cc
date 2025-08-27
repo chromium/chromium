@@ -42,13 +42,6 @@ const ui::ColorProvider* GetColorProviderFor(Browser* browser) {
 
 class ThemeServiceBrowserTest : public extensions::ExtensionBrowserTest {
  public:
-  ThemeServiceBrowserTest() = default;
-
-  ThemeServiceBrowserTest(const ThemeServiceBrowserTest&) = delete;
-  ThemeServiceBrowserTest& operator=(const ThemeServiceBrowserTest&) = delete;
-
-  ~ThemeServiceBrowserTest() override = default;
-
   void SetUp() override {
     extensions::ComponentLoader::EnableBackgroundExtensionsForTesting();
     extensions::ExtensionBrowserTest::SetUp();
@@ -158,9 +151,11 @@ IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest, GetColorForToolbarButton) {
   // This test relies on toolbar buttons having no tint, which is not currently
-  // true in dark mode when using the system theme.
+  // true in dark mode.
   ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(false);
 #if BUILDFLAG(IS_LINUX)
+  // This test relies on toolbar buttons having no tint, which is not currently
+  // true when using the system theme.
   ui::LinuxUiGetter::set_instance(nullptr);
 #endif
   ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();

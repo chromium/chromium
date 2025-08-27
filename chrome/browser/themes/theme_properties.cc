@@ -116,10 +116,12 @@ SkColor GetLightModeColor(int id) {
         COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INCOGNITO_ACTIVE:
     case ThemeProperties::
         COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INCOGNITO_INACTIVE:
-      NOTREACHED() << "This color should be queried via its non-incognito "
-                      "equivalent and an appropriate |incognito| value.";
+      NOTREACHED() << "Color " << id
+                   << " should be queried via its non-incognito equivalent and "
+                      "an appropriate |incognito| value.";
     default:
-      NOTREACHED() << "This color should only be queried through ThemeService.";
+      NOTREACHED() << "Color " << id
+                   << " should only be queried through ThemeService.";
   }
 }
 
@@ -153,14 +155,6 @@ std::optional<SkColor> GetIncognitoColor(int id) {
     default:
       return std::nullopt;
   }
-}
-
-std::optional<SkColor> GetDarkModeColor(int id) {
-  // Current UX thinking is to use the same colors for dark mode and incognito,
-  // but this is very subject to change. Additionally, dark mode incognito may
-  // end up having a different look. For now, just call into GetIncognitoColor
-  // for convenience, but maintain a separate interface.
-  return GetIncognitoColor(id);
 }
 
 }  // namespace
@@ -278,19 +272,11 @@ color_utils::HSL ThemeProperties::GetDefaultTint(int id,
 }
 
 // static
-SkColor ThemeProperties::GetDefaultColor(int id,
-                                         bool incognito,
-                                         bool dark_mode) {
+SkColor ThemeProperties::GetDefaultColor(int id, bool incognito) {
   if (incognito) {
     std::optional<SkColor> incognito_color = GetIncognitoColor(id);
     if (incognito_color.has_value()) {
       return incognito_color.value();
-    }
-  }
-  if (dark_mode) {
-    std::optional<SkColor> dark_mode_color = GetDarkModeColor(id);
-    if (dark_mode_color.has_value()) {
-      return dark_mode_color.value();
     }
   }
   return GetLightModeColor(id);

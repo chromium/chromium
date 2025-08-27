@@ -1805,10 +1805,9 @@ void BrowserThemePack::CreateToolbarImageAndColors(ImageCache* images) {
 
   auto image = image_it->second.AsImageSkia();
 
-  constexpr int kToolbarColorId = TP::COLOR_TOOLBAR;
   SkColor toolbar_color;
-  if (!GetColor(kToolbarColorId, &toolbar_color)) {
-    toolbar_color = TP::GetDefaultColor(kToolbarColorId, false);
+  if (!GetColor(TP::COLOR_TOOLBAR, &toolbar_color)) {
+    toolbar_color = TP::GetDefaultColor(TP::COLOR_TOOLBAR, false);
   }
 
   // Generate a composite image by drawing the toolbar image on top of the
@@ -1822,7 +1821,7 @@ void BrowserThemePack::CreateToolbarImageAndColors(ImageCache* images) {
   const gfx::Image dest_image(gfx::ImageSkia(std::move(source), dest_size));
   temp_output[kSrcImageId] = dest_image;
 
-  SetColorIfUnspecified(kToolbarColorId,
+  SetColorIfUnspecified(TP::COLOR_TOOLBAR,
                         ComputeImageColor(dest_image, dest_size.height()));
 
   MergeImageCaches(temp_output, images);
