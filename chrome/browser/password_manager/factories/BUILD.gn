@@ -37,6 +37,8 @@ source_set("factories") {
     sources += [
       "bulk_leak_check_service_factory.cc",
       "bulk_leak_check_service_factory.h",
+      "password_counter_factory.cc",
+      "password_counter_factory.h",
     ]
   }
 

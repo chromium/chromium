@@ -20,17 +20,19 @@
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/test_signin_client_builder.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/interactions_stats.h"
-#include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/mock_smart_bubble_stats_store.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/sync/test/test_sync_service.h"
@@ -66,6 +68,28 @@ constexpr char kUIDismissalReasonSaveMetric[] =
 constexpr char kUIDismissalReasonUpdateMetric[] =
     "PasswordManager.UpdateUIDismissalReason";
 
+class TestPasswordStoreWithStatsStore
+    : public password_manager::TestPasswordStore {
+ public:
+  TestPasswordStoreWithStatsStore() = default;
+
+  TestPasswordStoreWithStatsStore(const TestPasswordStoreWithStatsStore&) =
+      delete;
+  TestPasswordStoreWithStatsStore& operator=(
+      const TestPasswordStoreWithStatsStore&) = delete;
+
+  password_manager::MockSmartBubbleStatsStore* GetSmartBubbleStatsStore()
+      override {
+    return &smart_buble_stats_store_;
+  }
+
+ protected:
+  ~TestPasswordStoreWithStatsStore() override = default;
+
+  testing::NiceMock<password_manager::MockSmartBubbleStatsStore>
+      smart_buble_stats_store_;
+};
+
 std::unique_ptr<KeyedService> BuildTestSyncService(
     content::BrowserContext* context) {
   return std::make_unique<syncer::TestSyncService>();
@@ -93,8 +117,6 @@ class SaveUpdateBubbleControllerTest : public ChromeRenderViewHostTestHarness {
         .WillByDefault(Return(&password_feature_manager_));
     ON_CALL(*mock_delegate_, GetPasswordFormMetricsRecorder())
         .WillByDefault(Return(nullptr));
-    EXPECT_CALL(*GetStore(), GetSmartBubbleStatsStore)
-        .WillRepeatedly(Return(&mock_smart_bubble_stats_store_));
     pending_password_.url = GURL(kSiteOrigin);
     pending_password_.signon_realm = kSiteOrigin;
     pending_password_.username_value = kUsername;
@@ -117,10 +139,9 @@ class SaveUpdateBubbleControllerTest : public ChromeRenderViewHostTestHarness {
                 base::BindRepeating(&BuildTestSyncService)),
             TestingProfile::TestingFactory(
                 ProfilePasswordStoreFactory::GetInstance(),
-                base::BindRepeating(
-                    &password_manager::BuildPasswordStoreInterface<
-                        content::BrowserContext,
-                        password_manager::MockPasswordStoreInterface>))};
+                base::BindRepeating(&password_manager::BuildPasswordStore<
+                                    content::BrowserContext,
+                                    TestPasswordStoreWithStatsStore>))};
   }
 
   PrefService* prefs() { return profile()->GetPrefs(); }
@@ -130,15 +151,15 @@ class SaveUpdateBubbleControllerTest : public ChromeRenderViewHostTestHarness {
         SyncServiceFactory::GetForProfile(profile()));
   }
 
-  password_manager::MockPasswordStoreInterface* GetStore() {
-    return static_cast<password_manager::MockPasswordStoreInterface*>(
+  TestPasswordStoreWithStatsStore* GetStore() {
+    return static_cast<TestPasswordStoreWithStatsStore*>(
         ProfilePasswordStoreFactory::GetInstance()
             ->GetForProfile(profile(), ServiceAccessType::EXPLICIT_ACCESS)
             .get());
   }
 
   password_manager::MockSmartBubbleStatsStore* mock_smart_bubble_stats_store() {
-    return &mock_smart_bubble_stats_store_;
+    return GetStore()->GetSmartBubbleStatsStore();
   }
 
   PasswordsModelDelegateMock* delegate() { return mock_delegate_.get(); }
@@ -176,8 +197,6 @@ class SaveUpdateBubbleControllerTest : public ChromeRenderViewHostTestHarness {
   testing::NiceMock<password_manager::MockPasswordFeatureManager>
       password_feature_manager_;
   std::unique_ptr<PasswordsModelDelegateMock> mock_delegate_;
-  testing::NiceMock<password_manager::MockSmartBubbleStatsStore>
-      mock_smart_bubble_stats_store_;
   password_manager::PasswordForm pending_password_;
 };
 
@@ -426,12 +445,6 @@ TEST_F(SaveUpdateBubbleControllerTest, GetInitialUsername_MatchedUsername) {
 }
 
 TEST_F(SaveUpdateBubbleControllerTest, ClickSaveWhenNoCredentialsExisted) {
-  ASSERT_FALSE(prefs()->GetBoolean(
-      password_manager::prefs::
-          kAutofillableCredentialsProfileStoreLoginDatabase));
-  ASSERT_FALSE(prefs()->GetBoolean(
-      password_manager::prefs::
-          kAutofillableCredentialsAccountStoreLoginDatabase));
   base::HistogramTester histogram_tester;
   PretendPasswordWaiting();
 
@@ -445,9 +458,15 @@ TEST_F(SaveUpdateBubbleControllerTest, ClickSaveWhenNoCredentialsExisted) {
 }
 
 TEST_F(SaveUpdateBubbleControllerTest, ClickSaveWhenCredentialsExisted) {
-  prefs()->SetBoolean(password_manager::prefs::
-                          kAutofillableCredentialsProfileStoreLoginDatabase,
-                      true);
+  password_manager::PasswordStoreWaiter add_waiter(GetStore());
+  password_manager::PasswordForm form;
+  form.username_value = u"user";
+  form.password_value = u"password";
+  form.signon_realm = "https://google.com";
+  form.url = GURL(form.signon_realm);
+  GetStore()->AddLogin(form);
+  add_waiter.WaitOrReturn();
+
   base::HistogramTester histogram_tester;
   PretendPasswordWaiting();
 

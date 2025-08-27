@@ -19,6 +19,7 @@ source_set("bubble_controllers") {
   ]
   public_deps = [
     "//base",
+    "//chrome/browser/password_manager/factories",
     "//chrome/browser/ui/passwords",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:metrics_util",

@@ -168,14 +168,16 @@
 #include "components/password_manager/core/browser/password_credential_filler_impl.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate_factory.h"
-#else
+#else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/password_manager/factories/password_counter_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/survey_config.h"
+#include "components/password_manager/core/browser/password_counter.h"
 #include "components/policy/core/common/features.h"
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/constants.h"
@@ -2153,13 +2155,11 @@ void ChromePasswordManagerClient::ShowPasswordGenerationPopup(
 void ChromePasswordManagerClient::MaybeShowSavePasswordPrimingPromo(
     const GURL& current_url) {
   // If the user has any stored passwords do not show the promo.
-  auto* const prefs = GetPrefs();
-  if (prefs->GetBoolean(
-          password_manager::prefs::
-              kAutofillableCredentialsProfileStoreLoginDatabase) ||
-      prefs->GetBoolean(
-          password_manager::prefs::
-              kAutofillableCredentialsAccountStoreLoginDatabase)) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  password_manager::PasswordCounter* counter =
+      PasswordCounterFactory::GetForProfile(profile);
+  if (counter && counter->autofillable_passwords() > 0) {
     return;
   }
 

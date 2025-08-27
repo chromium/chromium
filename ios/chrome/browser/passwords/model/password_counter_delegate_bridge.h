@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_PASSWORDS_MODEL_PASSWORD_COUNTER_DELEGATE_BRIDGE_H_
 #define IOS_CHROME_BROWSER_PASSWORDS_MODEL_PASSWORD_COUNTER_DELEGATE_BRIDGE_H_
 
+#import "base/scoped_observation.h"
 #import "components/password_manager/core/browser/password_counter.h"
 
 // Protocol to be notified when number of passwords in the store changes.
@@ -15,7 +16,7 @@
 @end
 
 class PasswordCounterDelegateBridge
-    : public password_manager::PasswordCounter::Delegate {
+    : public password_manager::PasswordCounter::Observer {
  public:
   explicit PasswordCounterDelegateBridge(
       id<PasswordCounterObserver> observer,
@@ -24,13 +25,17 @@ class PasswordCounterDelegateBridge
   PasswordCounterDelegateBridge(const PasswordCounterDelegateBridge&) = delete;
   PasswordCounterDelegateBridge& operator=(
       const PasswordCounterDelegateBridge&) = delete;
+  ~PasswordCounterDelegateBridge() override;
 
-  // PasswordCounter::Delegate:
+  // PasswordCounter::Observer:
   void OnPasswordCounterChanged() override;
 
  private:
   __weak id<PasswordCounterObserver> observer_ = nil;
   password_manager::PasswordCounter counter_;
+  base::ScopedObservation<password_manager::PasswordCounter,
+                          password_manager::PasswordCounter::Observer>
+      counter_observation_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_PASSWORD_COUNTER_DELEGATE_BRIDGE_H_

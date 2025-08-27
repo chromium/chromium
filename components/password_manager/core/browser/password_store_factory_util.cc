@@ -109,29 +109,13 @@ void SanitizeAndMigrateCredentials(
 
 void IntermediateCallbackForSettingPrefs(
     base::WeakPtr<PasswordStoreBackend> backend,
-    base::RepeatingCallback<void(LoginDatabase::LoginDatabaseEmptinessState)>
-        set_prefs_callback,
-    LoginDatabase::LoginDatabaseEmptinessState value) {
+    LoginDatabase::IsEmptyCallback set_prefs_callback,
+    bool value) {
   // When a `PasswordStoreBackend` is shut down, the weak pointers are
   // invalidated.
   if (backend) {
     set_prefs_callback.Run(value);
   }
-}
-
-void SetEmptyStorePref(PrefService* prefs,
-                       const std::string& pref,
-                       LoginDatabase::LoginDatabaseEmptinessState value) {
-  CHECK(prefs);
-  prefs->SetBoolean(pref, value.no_login_found);
-}
-
-void SetAutofillableCredentialsStorePref(
-    PrefService* prefs,
-    const std::string& pref,
-    LoginDatabase::LoginDatabaseEmptinessState value) {
-  CHECK(prefs);
-  prefs->SetBoolean(pref, value.autofillable_credentials_exist);
 }
 
 }  // namespace password_manager

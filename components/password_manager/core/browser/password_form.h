@@ -167,12 +167,13 @@ struct PasswordForm {
   // Enum to differentiate between HTML form based authentication, and dialogs
   // using basic or digest schemes. Default is kHtml. Only PasswordForms of the
   // same Scheme will be matched/autofilled against each other.
+  // This is persisted to disk, do not renumber entries.
   enum class Scheme {
-    kHtml,
-    kBasic,
-    kDigest,
-    kOther,
-    kUsernameOnly,
+    kHtml = 0,
+    kBasic = 1,
+    kDigest = 2,
+    kOther = 3,
+    kUsernameOnly = 4,
     kMinValue = kHtml,
     kMaxValue = kUsernameOnly,
   };

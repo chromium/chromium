@@ -1111,6 +1111,14 @@ constexpr char kObsoleteAccountStorageNoticeShown[] =
     "password_manager.account_storage_notice_shown";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+// Deprecated 08/2025.
+constexpr char kObsoleteAutofillableCredentialsProfileStoreLoginDatabase[] =
+    "password_manager.autofillable_credentials_profile_store_login_database";
+constexpr char kObsoleteAutofillableCredentialsAccountStoreLoginDatabase[] =
+    "password_manager.autofillable_credentials_account_store_login_database";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS)
 // Deprecated 08/2025.
 constexpr char kAutoScreenBrightnessMetricsDailySample[] =
@@ -1619,6 +1627,14 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 08/2025.
   registry->RegisterBooleanPref(kObsoleteAccountStorageNoticeShown, false);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Deprecated 08/2025.
+  registry->RegisterBooleanPref(
+      kObsoleteAutofillableCredentialsProfileStoreLoginDatabase, false);
+  registry->RegisterBooleanPref(
+      kObsoleteAutofillableCredentialsAccountStoreLoginDatabase, false);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace
@@ -2938,6 +2954,14 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 08/2025.
   profile_prefs->ClearPref(kObsoleteAccountStorageNoticeShown);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Deprecated 08/2025.
+  profile_prefs->ClearPref(
+      kObsoleteAutofillableCredentialsProfileStoreLoginDatabase);
+  profile_prefs->ClearPref(
+      kObsoleteAutofillableCredentialsAccountStoreLoginDatabase);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

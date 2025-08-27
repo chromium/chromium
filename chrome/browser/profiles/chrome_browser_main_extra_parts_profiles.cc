@@ -338,6 +338,7 @@
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_service_factory.h"
 #include "chrome/browser/new_tab_page/promos/promo_service_factory.h"
 #include "chrome/browser/password_manager/factories/bulk_leak_check_service_factory.h"
+#include "chrome/browser/password_manager/factories/password_counter_factory.h"
 #include "chrome/browser/payments/payment_request_display_manager_factory.h"
 #include "chrome/browser/prefs/persistent_renderer_prefs_manager_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_survey_desktop_controller_factory.h"
@@ -1123,6 +1124,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   PasswordFieldClassificationModelHandlerFactory::GetInstance();
 #endif
   PasswordChangeServiceFactory::GetInstance();
+#if !BUILDFLAG(IS_ANDROID)
+  PasswordCounterFactory::GetInstance();
+#endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
   PasswordManagerBlocklistPolicyFactory::GetInstance();
