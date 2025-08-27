@@ -16,6 +16,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//gpu:gpu_unittests/",
+        "module_scheme": "gtest",
         "name": "gpu_memory_buffer_impl_tests",
         "swarming": {
           "containment_type": "AUTO",
@@ -90,6 +91,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//gpu:gpu_unittests/",
+        "module_scheme": "gtest",
         "name": "gpu_memory_buffer_impl_tests",
         "swarming": {
           "containment_type": "AUTO",

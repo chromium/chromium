@@ -11,6 +11,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chrome/enterprise_companion:enterprise_companion_integration_tests/",
+        "module_scheme": "gtest",
         "name": "enterprise_companion_integration_tests",
         "swarming": {
           "dimensions": {
@@ -29,6 +30,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chrome/enterprise_companion:enterprise_companion_tests/",
+        "module_scheme": "gtest",
         "name": "enterprise_companion_tests",
         "swarming": {
           "dimensions": {

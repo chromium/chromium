@@ -6,6 +6,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//headless:headless_browsertests/",
+        "module_scheme": "gtest",
         "name": "headless_browsertests",
         "swarming": {
           "dimensions": {
@@ -21,6 +22,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//headless:headless_unittests/",
+        "module_scheme": "gtest",
         "name": "headless_unittests",
         "swarming": {
           "dimensions": {

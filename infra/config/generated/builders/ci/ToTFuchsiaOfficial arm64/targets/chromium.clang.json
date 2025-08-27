@@ -24,6 +24,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//third_party/highway:highway_tests/",
+        "module_scheme": "gtest",
         "name": "highway_tests",
         "swarming": {
           "dimensions": {
@@ -43,6 +44,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//third_party/angle/src/tests:angle_unittests/",
+        "module_scheme": "gtest",
         "name": "angle_unittests",
         "swarming": {
           "dimensions": {

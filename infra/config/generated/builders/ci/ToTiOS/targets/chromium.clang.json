@@ -70,6 +70,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//third_party/highway:highway_tests/",
+        "module_scheme": "gtest",
         "name": "highway_tests iPhone 14 17.5",
         "resultdb": {
           "enable": true,

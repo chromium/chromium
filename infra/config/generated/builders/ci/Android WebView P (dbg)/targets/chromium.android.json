@@ -16,6 +16,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//android_webview/test:android_webview_unittests/",
+        "module_scheme": "gtest",
         "name": "android_webview_unittests",
         "resultdb": {
           "enable": true,

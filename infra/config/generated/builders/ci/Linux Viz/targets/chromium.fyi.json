@@ -21,6 +21,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//content/test:content_browsertests/",
+        "module_scheme": "gtest",
         "name": "vulkan_swiftshader_content_browsertests",
         "swarming": {
           "dimensions": {

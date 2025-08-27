@@ -9,6 +9,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chrome/test:browser_tests/",
+        "module_scheme": "gtest",
         "name": "bf_cache_browser_tests",
         "swarming": {
           "dimensions": {
@@ -28,6 +29,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//content/test:content_browsertests/",
+        "module_scheme": "gtest",
         "name": "bf_cache_content_browsertests",
         "swarming": {
           "dimensions": {

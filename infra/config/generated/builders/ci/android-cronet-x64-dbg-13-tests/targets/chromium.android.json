@@ -261,6 +261,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//components/cronet/android:cronet_tests_android/",
+        "module_scheme": "gtest",
         "name": "cronet_tests_android",
         "resultdb": {
           "enable": true,
@@ -308,6 +309,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//components/cronet/android:cronet_unittests_android/",
+        "module_scheme": "gtest",
         "name": "cronet_unittests_android",
         "resultdb": {
           "enable": true,

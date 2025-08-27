@@ -107,6 +107,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//components:components_browsertests/",
+        "module_scheme": "gtest",
         "name": "site_per_process_components_browsertests",
         "resultdb": {
           "enable": true,
@@ -162,6 +163,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//content/test:content_browsertests/",
+        "module_scheme": "gtest",
         "name": "site_per_process_content_browsertests",
         "resultdb": {
           "enable": true,
@@ -217,6 +219,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//content/test:content_unittests/",
+        "module_scheme": "gtest",
         "name": "site_per_process_content_unittests",
         "resultdb": {
           "enable": true,
@@ -243,6 +246,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chrome/test:unit_tests/",
+        "module_scheme": "gtest",
         "name": "site_per_process_unit_tests",
         "resultdb": {
           "enable": true,

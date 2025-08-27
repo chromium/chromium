@@ -129,6 +129,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//extensions:extensions_unittests/",
+        "module_scheme": "gtest",
         "name": "extensions_unittests",
         "resultdb": {
           "enable": true,
@@ -178,6 +179,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//chrome/test:unit_tests/",
+        "module_scheme": "gtest",
         "name": "unit_tests",
         "resultdb": {
           "enable": true,
@@ -227,6 +229,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//media/gpu/test:video_encode_accelerator_tests/",
+        "module_scheme": "gtest",
         "name": "video_encode_accelerator_tests",
         "resultdb": {
           "enable": true,

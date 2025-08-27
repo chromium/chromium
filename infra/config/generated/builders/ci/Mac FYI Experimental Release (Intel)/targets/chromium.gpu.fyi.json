@@ -6,6 +6,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//third_party/angle/src/tests:angle_unittests/",
+        "module_scheme": "gtest",
         "name": "angle_unittests",
         "swarming": {
           "containment_type": "AUTO",
@@ -34,6 +35,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//gpu:gl_tests/",
+        "module_scheme": "gtest",
         "name": "gl_tests_passthrough",
         "swarming": {
           "containment_type": "AUTO",
@@ -61,6 +63,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//ui/gl:gl_unittests/",
+        "module_scheme": "gtest",
         "name": "gl_unittests",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -88,6 +91,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//gpu:gpu_unittests/",
+        "module_scheme": "gtest",
         "name": "gpu_unittests",
         "swarming": {
           "containment_type": "AUTO",
@@ -114,6 +118,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//services:services_unittests/",
+        "module_scheme": "gtest",
         "name": "services_unittests",
         "swarming": {
           "containment_type": "AUTO",
@@ -142,6 +147,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chrome/test:browser_tests/",
+        "module_scheme": "gtest",
         "name": "tab_capture_end2end_tests",
         "swarming": {
           "containment_type": "AUTO",

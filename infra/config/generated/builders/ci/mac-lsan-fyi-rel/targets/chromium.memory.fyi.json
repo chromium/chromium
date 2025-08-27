@@ -29,6 +29,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//ui/accessibility:accessibility_unittests/",
+        "module_scheme": "gtest",
         "name": "accessibility_unittests",
         "swarming": {
           "dimensions": {
@@ -48,6 +49,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//extensions/shell:app_shell_unittests/",
+        "module_scheme": "gtest",
         "name": "app_shell_unittests",
         "swarming": {
           "dimensions": {
@@ -87,6 +89,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//third_party/blink/renderer/platform/heap:blink_heap_unittests/",
+        "module_scheme": "gtest",
         "name": "blink_heap_unittests",
         "swarming": {
           "dimensions": {
@@ -107,6 +110,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//third_party/blink/renderer/platform:blink_platform_unittests/",
+        "module_scheme": "gtest",
         "name": "blink_platform_unittests",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -131,6 +135,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//third_party/blink/renderer/controller:blink_unittests/",
+        "module_scheme": "gtest",
         "name": "blink_unittests",
         "swarming": {
           "dimensions": {
@@ -150,6 +155,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//cc:cc_unittests/",
+        "module_scheme": "gtest",
         "name": "cc_unittests",
         "swarming": {
           "dimensions": {
@@ -189,6 +195,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//content/test:content_unittests/",
+        "module_scheme": "gtest",
         "name": "content_unittests",
         "swarming": {
           "dimensions": {
@@ -208,6 +215,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//third_party/crashpad/crashpad:crashpad_tests/",
+        "module_scheme": "gtest",
         "name": "crashpad_tests",
         "swarming": {
           "dimensions": {
@@ -227,6 +235,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//components/cronet:cronet_unittests/",
+        "module_scheme": "gtest",
         "name": "cronet_unittests",
         "swarming": {
           "dimensions": {
@@ -246,6 +255,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//device:device_unittests/",
+        "module_scheme": "gtest",
         "name": "device_unittests",
         "swarming": {
           "dimensions": {

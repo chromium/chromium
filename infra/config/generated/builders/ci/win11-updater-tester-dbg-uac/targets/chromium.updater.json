@@ -6,6 +6,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chrome/updater:updater_tests_system/",
+        "module_scheme": "gtest",
         "name": "updater_tests_system",
         "swarming": {
           "dimensions": {
@@ -26,6 +27,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chrome/updater:updater_tests_win_uac/",
+        "module_scheme": "gtest",
         "name": "updater_tests_win_uac",
         "swarming": {
           "dimensions": {

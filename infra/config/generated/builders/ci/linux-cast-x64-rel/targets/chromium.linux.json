@@ -12,6 +12,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chromecast/media/cma/backend:cast_audio_backend_unittests/",
+        "module_scheme": "gtest",
         "name": "cast_audio_backend_unittests",
         "swarming": {
           "dimensions": {
@@ -27,6 +28,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chromecast/base:cast_base_unittests/",
+        "module_scheme": "gtest",
         "name": "cast_base_unittests",
         "swarming": {
           "dimensions": {
@@ -42,6 +44,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chromecast/cast_core:cast_cast_core_unittests/",
+        "module_scheme": "gtest",
         "name": "cast_cast_core_unittests",
         "swarming": {
           "dimensions": {
@@ -57,6 +60,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chromecast/crash:cast_crash_unittests/",
+        "module_scheme": "gtest",
         "name": "cast_crash_unittests",
         "swarming": {
           "dimensions": {
@@ -72,6 +76,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chromecast/ui/display_settings:cast_display_settings_unittests/",
+        "module_scheme": "gtest",
         "name": "cast_display_settings_unittests",
         "swarming": {
           "dimensions": {
@@ -87,6 +92,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chromecast/graphics:cast_graphics_unittests/",
+        "module_scheme": "gtest",
         "name": "cast_graphics_unittests",
         "swarming": {
           "dimensions": {
@@ -102,6 +108,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chromecast/media:cast_media_unittests/",
+        "module_scheme": "gtest",
         "name": "cast_media_unittests",
         "swarming": {
           "dimensions": {
@@ -117,6 +124,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chromecast:cast_shell_browsertests/",
+        "module_scheme": "gtest",
         "name": "cast_shell_browsertests",
         "swarming": {
           "dimensions": {
@@ -132,6 +140,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chromecast:cast_shell_unittests/",
+        "module_scheme": "gtest",
         "name": "cast_shell_unittests",
         "swarming": {
           "dimensions": {
@@ -147,6 +156,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//media/cast:cast_unittests/",
+        "module_scheme": "gtest",
         "name": "cast_unittests",
         "swarming": {
           "dimensions": {
@@ -162,6 +172,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//sandbox/linux:sandbox_linux_unittests/",
+        "module_scheme": "gtest",
         "name": "sandbox_linux_unittests",
         "swarming": {
           "dimensions": {

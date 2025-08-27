@@ -215,6 +215,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//cc:cc_unittests/",
+        "module_scheme": "gtest",
         "name": "layer_list_mode_cc_unittests",
         "resultdb": {
           "enable": true,
@@ -286,6 +287,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//chrome/browser/android/vr:vr_android_unittests/",
+        "module_scheme": "gtest",
         "name": "vr_android_unittests",
         "resultdb": {
           "enable": true,

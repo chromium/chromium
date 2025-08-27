@@ -68,6 +68,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//chrome/test:android_sync_integration_tests/",
+        "module_scheme": "gtest",
         "name": "android_sync_integration_tests",
         "resultdb": {
           "enable": true,
@@ -115,6 +116,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//android_webview/test:android_webview_unittests/",
+        "module_scheme": "gtest",
         "name": "android_webview_unittests",
         "resultdb": {
           "enable": true,
@@ -261,6 +263,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//gpu:gl_tests/",
+        "module_scheme": "gtest",
         "name": "gl_tests_validating",
         "resultdb": {
           "enable": true,
@@ -308,6 +311,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//ui/gl:gl_unittests/",
+        "module_scheme": "gtest",
         "name": "gl_unittests",
         "resultdb": {
           "enable": true,
@@ -403,6 +407,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//ui/android:ui_android_unittests/",
+        "module_scheme": "gtest",
         "name": "ui_android_unittests",
         "resultdb": {
           "enable": true,
@@ -450,6 +455,7 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "module_name": "//media/gpu/test:video_encode_accelerator_tests/",
+        "module_scheme": "gtest",
         "name": "video_encode_accelerator_tests",
         "resultdb": {
           "enable": true,

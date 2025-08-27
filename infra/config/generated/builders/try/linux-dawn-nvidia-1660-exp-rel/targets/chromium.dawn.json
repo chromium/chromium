@@ -16,6 +16,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//third_party/dawn/src/dawn/tests:dawn_end2end_tests/",
+        "module_scheme": "gtest",
         "name": "dawn_end2end_implicit_device_sync_tests",
         "swarming": {
           "dimensions": {
@@ -45,6 +46,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//third_party/dawn/src/dawn/tests:dawn_end2end_tests/",
+        "module_scheme": "gtest",
         "name": "dawn_end2end_skip_validation_tests",
         "swarming": {
           "dimensions": {
@@ -73,6 +75,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//third_party/dawn/src/dawn/tests:dawn_end2end_tests/",
+        "module_scheme": "gtest",
         "name": "dawn_end2end_tests",
         "swarming": {
           "dimensions": {
@@ -102,6 +105,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//third_party/dawn/src/dawn/tests:dawn_end2end_tests/",
+        "module_scheme": "gtest",
         "name": "dawn_end2end_validation_layers_tests",
         "swarming": {
           "dimensions": {
@@ -131,6 +135,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//third_party/dawn/src/dawn/tests:dawn_end2end_tests/",
+        "module_scheme": "gtest",
         "name": "dawn_end2end_wire_tests",
         "swarming": {
           "dimensions": {
@@ -158,6 +163,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//gpu:gl_tests/",
+        "module_scheme": "gtest",
         "name": "gl_tests_passthrough",
         "swarming": {
           "dimensions": {
@@ -184,6 +190,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//ui/gl:gl_unittests/",
+        "module_scheme": "gtest",
         "name": "gl_unittests",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",

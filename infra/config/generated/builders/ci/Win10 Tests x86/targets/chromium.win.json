@@ -25,6 +25,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//sandbox/win:sbox_integration_tests/",
+        "module_scheme": "gtest",
         "name": "sbox_integration_tests",
         "swarming": {
           "dimensions": {
@@ -43,6 +44,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//sandbox/win:sbox_unittests/",
+        "module_scheme": "gtest",
         "name": "sbox_unittests",
         "swarming": {
           "dimensions": {
@@ -60,6 +62,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//sandbox/win:sbox_validation_tests/",
+        "module_scheme": "gtest",
         "name": "sbox_validation_tests",
         "swarming": {
           "dimensions": {

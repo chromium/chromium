@@ -6,6 +6,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//gpu:gpu_unittests/",
+        "module_scheme": "gtest",
         "name": "gpu_unittests 10de:2184",
         "swarming": {
           "dimensions": {
@@ -25,6 +26,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//gpu:gpu_unittests/",
+        "module_scheme": "gtest",
         "name": "gpu_unittests 8086:9bc5",
         "swarming": {
           "containment_type": "AUTO",
@@ -49,6 +51,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chrome/test:browser_tests/",
+        "module_scheme": "gtest",
         "name": "media_foundation_browser_tests 8086:9bc5",
         "swarming": {
           "containment_type": "AUTO",
@@ -73,6 +76,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//services:services_unittests/",
+        "module_scheme": "gtest",
         "name": "services_webnn_unittests 10de:2184",
         "swarming": {
           "dimensions": {
@@ -96,6 +100,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//services:services_unittests/",
+        "module_scheme": "gtest",
         "name": "services_webnn_unittests 8086:9bc5",
         "swarming": {
           "containment_type": "AUTO",
@@ -119,6 +124,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chrome/test:xr_browser_tests/",
+        "module_scheme": "gtest",
         "name": "xr_browser_tests 10de:2184",
         "swarming": {
           "dimensions": {
@@ -142,6 +148,7 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "module_name": "//chrome/test:xr_browser_tests/",
+        "module_scheme": "gtest",
         "name": "xr_browser_tests 8086:9bc5",
         "swarming": {
           "containment_type": "AUTO",
