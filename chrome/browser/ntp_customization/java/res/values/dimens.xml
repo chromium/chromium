@@ -36,4 +36,5 @@ found in the LICENSE file.
   <dimen name="ntp_customization_chrome_colors_grid_spacing">24dp</dimen>
   <dimen name="ntp_customization_chrome_colors_grid_half_spacing">12dp</dimen>
   <dimen name="ntp_customization_chrome_colors_selector_size">64dp</dimen>
+  <dimen name="ntp_customization_pinch_to_resize_icon_size">20dp</dimen>
 </resources>

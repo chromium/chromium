@@ -1428,6 +1428,9 @@
       <message name="IDS_NTP_CUSTOMIZATION_CHROME_COLORS_BOTTOM_SHEET" desc="Accessibility string to announce the currently displaying bottom sheet is the Chrome Colors bottom sheet." is_accessibility_with_no_ui="true">
         Chrome Colors bottom sheet
       </message>
+      <message name="IDS_NTP_CUSTOMIZATION_THEME_IMAGE_PREVIEW_PINCH_TO_RESIZE" desc="Text explaining the image could be resized by pinching it.">
+        Pinch to resize
+      </message>
 
       <!-- Time Last Accessed strings -->
       <message name="IDS_TIME_LAST_ACCESSED_TODAY" desc="A subtitle explaining that a given component was last accessed today.">
