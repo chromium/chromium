@@ -268,7 +268,7 @@ BASE_FEATURE(kAutofillEnableVcn3dsAuthentication,
 // when the user has not previously rejected the offer to save the card.
 BASE_FEATURE(kAutofillLocalSaveCardBottomSheet,
              "AutofillLocalSaveCardBottomSheet",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // When enabled, if credit card upload save encounters a card with the same four
