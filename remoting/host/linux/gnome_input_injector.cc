@@ -149,15 +149,15 @@ void GnomeInputInjector::InjectMouseEvent(const protocol::MouseEvent& event) {
     event_sent = true;
   }
 
-  if (event.has_wheel_delta_x() || event.has_wheel_delta_y()) {
-    ei_session_->InjectScrollDelta(
-        event.has_wheel_delta_x() ? event.wheel_delta_x() : 0,
-        event.has_wheel_delta_y() ? event.wheel_delta_y() : 0);
-    event_sent = true;
-  } else if (event.has_wheel_ticks_x() || event.has_wheel_ticks_y()) {
+  if (event.has_wheel_ticks_x() || event.has_wheel_ticks_y()) {
     ei_session_->InjectScrollDiscrete(
         event.has_wheel_ticks_x() ? event.wheel_ticks_x() : 0,
         event.has_wheel_ticks_y() ? event.wheel_ticks_y() : 0);
+    event_sent = true;
+  } else if (event.has_wheel_delta_x() || event.has_wheel_delta_y()) {
+    ei_session_->InjectScrollDelta(
+        event.has_wheel_delta_x() ? event.wheel_delta_x() : 0,
+        event.has_wheel_delta_y() ? event.wheel_delta_y() : 0);
     event_sent = true;
   }
 
