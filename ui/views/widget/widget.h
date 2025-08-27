@@ -920,10 +920,13 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // MakeCloseSynchronous() for more details.
   void SetBlockCloseForTesting(bool block_close) { block_close_ = block_close; }
 
-  // TODO(beng): Move off public API.
   // Closes the widget immediately. Compare to |Close|. This will destroy the
   // window handle associated with this Widget, so should not be called from
   // any code that expects it to be valid beyond this call.
+  // This should generally be avoided for Widgets (typically top-level) that
+  // want to animate when closed, or fullscreen Widgets where the platform may
+  // want to manipulate the NativeWidget's layer post-close (see
+  // crbug.com/40619853).
   void CloseNow();
 
   // Whether the widget has been asked to close itself. In particular this is
