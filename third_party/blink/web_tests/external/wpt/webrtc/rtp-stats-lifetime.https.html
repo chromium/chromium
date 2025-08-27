@@ -3,6 +3,8 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="RTCPeerConnection-helper.js"></script>
+<script src="third_party/sdp/sdp.js"></script>
+<script src="simulcast/simulcast.js"></script>
 <script>
 'use strict';
 
@@ -69,6 +71,29 @@ promise_test(async t => {
   assert_true(await hasStats(pc1, 'outbound-rtp'),
               'outbound-rtp exists after offerer returns to stable');
 }, `RTCOutboundRtpStreamStats exists after returning to stable`);
+
+promise_test(async t => {
+  const pc1 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+
+  pc1.addTransceiver('video', {sendEncodings: [{rid: 'foo'}, {rid: 'bar'}]});
+  // O/A with tweaks to accept simulcast.
+  await doOfferToSendSimulcastAndAnswer(pc1, pc2, ['foo', 'bar']);
+
+  // Despite not sending anything (ICE not connected) both outbound-rtp stats
+  // objects should appear immediately.
+  const report = await pc1.getStats();
+  const outboundRtpFoo =
+      report.values().find(s => s.type == 'outbound-rtp' && s.rid == 'foo');
+  const outboundRtpBar =
+      report.values().find(s => s.type == 'outbound-rtp' && s.rid == 'bar');
+  assert_not_equals(outboundRtpFoo, undefined);
+  assert_not_equals(outboundRtpFoo.ssrc, undefined);
+  assert_not_equals(outboundRtpBar, undefined);
+  assert_not_equals(outboundRtpBar.ssrc, undefined);
+}, `RTCOutboundRtpStreamStats exists per simulcast encoding`);
 
 promise_test(async t => {
   const pc1 = new RTCPeerConnection();
