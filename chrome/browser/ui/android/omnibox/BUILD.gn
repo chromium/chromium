@@ -53,6 +53,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/omnibox/geo/GeolocationHeader.java",
     "java/src/org/chromium/chrome/browser/omnibox/geo/GeolocationTracker.java",
     "java/src/org/chromium/chrome/browser/omnibox/navattach/AttachmentDetailsFetcher.java",
+    "java/src/org/chromium/chrome/browser/omnibox/navattach/ComposeBoxQueryControllerBridge.java",
     "java/src/org/chromium/chrome/browser/omnibox/navattach/NavigationAttachmentItemProperties.java",
     "java/src/org/chromium/chrome/browser/omnibox/navattach/NavigationAttachmentItemViewBinder.java",
     "java/src/org/chromium/chrome/browser/omnibox/navattach/NavigationAttachmentsCoordinator.java",
@@ -288,6 +289,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/omnibox/OmniboxPrerender.java",
     "java/src/org/chromium/chrome/browser/omnibox/OmniboxViewUtil.java",
     "java/src/org/chromium/chrome/browser/omnibox/geo/GeolocationHeader.java",
+    "java/src/org/chromium/chrome/browser/omnibox/navattach/ComposeBoxQueryControllerBridge.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/AutocompleteController.java",
   ]
 }

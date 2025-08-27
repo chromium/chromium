@@ -2878,6 +2878,8 @@ static_library("browser") {
       "android/omnibox/autocomplete_controller_android.h",
       "android/omnibox/chrome_omnibox_navigation_observer_android.cc",
       "android/omnibox/chrome_omnibox_navigation_observer_android.h",
+      "android/omnibox/composebox_query_controller_bridge.cc",
+      "android/omnibox/composebox_query_controller_bridge.h",
       "android/omnibox/geolocation_header.cc",
       "android/omnibox/geolocation_header.h",
       "android/omnibox/omnibox_prerender.cc",
