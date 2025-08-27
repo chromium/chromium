@@ -17,6 +17,7 @@
 #include "cc/trees/layer_tree_frame_sink_client.h"
 #include "cc/trees/single_thread_proxy.h"
 #include "cc/trees/task_runner_provider.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/service/display/direct_renderer.h"
 #include "components/viz/service/display/output_surface.h"
@@ -93,6 +94,9 @@ class TestLayerTreeFrameSink::TestCompositorFrameSinkSupport
     }
     if (params->auto_needs_begin_frame) {
       SetAutoNeedsBeginFrame();
+    }
+    if (params->no_compositor_frame_acks) {
+      SetNoCompositorFrameAcks();
     }
   }
 
@@ -265,6 +269,8 @@ bool TestLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
       frame_sink_id_, is_root, display_.get());
   auto params = viz::mojom::CompositorFrameSinkParams::New();
   params->wants_animate_only_begin_frames = true;
+  params->no_compositor_frame_acks =
+      base::FeatureList::IsEnabled(::features::kNoCompositorFrameAcks);
   support_->SetParams(std::move(params));
   client_->SetBeginFrameSource(&external_begin_frame_source_);
   if (display_begin_frame_source_) {

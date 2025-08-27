@@ -148,6 +148,9 @@ void CompositorFrameSinkImpl::SetParams(
   if (params->auto_needs_begin_frame) {
     support_->SetAutoNeedsBeginFrame();
   }
+  if (params->no_compositor_frame_acks) {
+    support_->SetNoCompositorFrameAcks();
+  }
 }
 
 void CompositorFrameSinkImpl::SubmitCompositorFrame(

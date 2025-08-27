@@ -99,6 +99,10 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
     // `auto_needs_begin_frame` is.
     bool auto_needs_begin_frame = false;
 
+    // If true, the client will not receive DidReceiveCompositorFrameAck() and
+    // should not wait for it before submitting another CompositorFrame.
+    bool no_compositor_frame_acks = false;
+
     // If it has value(n), internal begin frame source will be used when n
     // consecutive "did not produce frame" are observed. It will stop using
     // internal begin frame source when there's a submitted compositor frame.
@@ -216,6 +220,9 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
 
   // Please see comment of `InitParams::auto_needs_begin_frame`.
   const bool auto_needs_begin_frame_;
+
+  // Please see comment of `InitParams::no_compositor_frame_acks`.
+  const bool no_compositor_frame_acks_;
 
   viz::HitTestRegionList last_hit_test_data_;
 

@@ -234,6 +234,12 @@ class StateMachine : public SchedulerStateMachine {
     active_tree_needs_first_draw_ = needs_first_draw;
   }
 
+  void DidReceiveCompositorFrameAck() {
+    if (!base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks)) {
+      SchedulerStateMachine::DidReceiveCompositorFrameAck();
+    }
+  }
+
   bool CanDraw() const { return can_draw_; }
   bool Visible() const { return visible_; }
 

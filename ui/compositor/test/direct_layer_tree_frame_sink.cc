@@ -12,6 +12,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -183,6 +184,9 @@ void DirectLayerTreeFrameSink::DidReceiveCompositorFrameAck(
 void DirectLayerTreeFrameSink::DidReceiveCompositorFrameAckInternal(
     std::vector<viz::ReturnedResource> resources) {
   client_->ReclaimResources(std::move(resources));
+  if (base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks)) {
+    return;
+  }
   client_->DidReceiveCompositorFrameAck();
 }
 

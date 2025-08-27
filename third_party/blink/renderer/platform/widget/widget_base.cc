@@ -751,6 +751,8 @@ void WidgetBase::RequestNewLayerTreeFrameSink(
 
   // The renderer runs animations and layout for animate_only BeginFrames.
   params->wants_animate_only_begin_frames = true;
+  params->no_compositor_frame_acks =
+      base::FeatureList::IsEnabled(::features::kNoCompositorFrameAcks);
 
   // In disable frame rate limit mode, also let the renderer tick as fast as it
   // can. The top level begin frame source will also be running as a back to

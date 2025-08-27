@@ -2907,12 +2907,14 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
 
     layer_tree_frame_sink_->ExportFrameTiming();
 
-    // For the display compositor we should have already submitted at display
-    // Immediately queue a DidReceiveCompositorFrameAck.
-    GetTaskRunner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&LayerTreeHostImpl::DidReceiveCompositorFrameAck,
-                       weak_factory_.GetWeakPtr()));
+    if (!base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks)) {
+      // For the display compositor we should have already submitted at display
+      // Immediately queue a DidReceiveCompositorFrameAck.
+      GetTaskRunner()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&LayerTreeHostImpl::DidReceiveCompositorFrameAck,
+                         weak_factory_.GetWeakPtr()));
+    }
   } else {
     TRACE_EVENT(
         "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",

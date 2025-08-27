@@ -507,7 +507,8 @@ void SynchronousLayerTreeFrameSink::InvokeComposite(
   client_->OnDraw(adjusted_transform, gfx::Rect(viewport.size()),
                   in_software_draw_, false /*skip_draw*/);
 
-  if (did_submit_frame_) {
+  if (did_submit_frame_ &&
+      !base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks)) {
     // This must happen after unwinding the stack and leaving the compositor.
     // Usually it is a separate task but we just defer it until OnDraw
     // completes instead.

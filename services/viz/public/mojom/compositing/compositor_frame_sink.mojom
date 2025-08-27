@@ -29,6 +29,9 @@ struct CompositorFrameSinkParams {
   // indicate that it wants to receive subsequent BeginFrame events, as if
   // SetNeedsBeginFrame(true) is called.
   bool auto_needs_begin_frame;
+  // If true, the client will not receive DidReceiveCompositorFrameAck() and
+  // should not wait for it before submitting another CompositorFrame.
+  bool no_compositor_frame_acks;
 };
 
 // A CompositorFrameSink is an interface for receiving CompositorFrame

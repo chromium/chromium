@@ -44,6 +44,7 @@
 #include "cc/trees/proxy_main.h"
 #include "cc/trees/single_thread_proxy.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
 #include "components/viz/service/display/skia_output_surface.h"
@@ -128,8 +129,11 @@ class SynchronousLayerTreeFrameSink : public TestLayerTreeFrameSink {
 
  private:
   void InvalidateIfPossible() {
-    if (!frame_request_pending_ || frame_ack_pending_)
+    if (!frame_request_pending_ ||
+        (frame_ack_pending_ &&
+         !base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks))) {
       return;
+    }
     compositor_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&SynchronousLayerTreeFrameSink::DispatchInvalidation,

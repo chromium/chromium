@@ -581,6 +581,10 @@ void CompositorFrameSinkSupport::SetAutoNeedsBeginFrame() {
   auto_needs_begin_frame_ = true;
 }
 
+void CompositorFrameSinkSupport::SetNoCompositorFrameAcks() {
+  no_compositor_frame_acks_ = true;
+}
+
 bool CompositorFrameSinkSupport::WantsAnimateOnlyBeginFrames() const {
   return wants_animate_only_begin_frames_;
 }
@@ -972,6 +976,12 @@ void CompositorFrameSinkSupport::DidReceiveCompositorFrameAck() {
 
   if (!client_)
     return;
+
+  if (no_compositor_frame_acks_) {
+    client_->ReclaimResources(std::move(surface_returned_resources_));
+    surface_returned_resources_.clear();
+    return;
+  }
 
   // TODO(https://crbug.com/40902503): Drawing from a layer context is indeed
   // local, but we'll likely want to use a different resource return policy.

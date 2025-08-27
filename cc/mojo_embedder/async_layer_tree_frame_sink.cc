@@ -83,6 +83,7 @@ AsyncLayerTreeFrameSink::AsyncLayerTreeFrameSink(
       pipes_(std::move(params->pipes)),
       wants_animate_only_begin_frames_(params->wants_animate_only_begin_frames),
       auto_needs_begin_frame_(params->auto_needs_begin_frame),
+      no_compositor_frame_acks_(params->no_compositor_frame_acks),
       use_begin_frame_presentation_feedback_(
           params->use_begin_frame_presentation_feedback),
       num_did_not_produce_frame_before_internal_begin_frame_source_(
@@ -132,10 +133,12 @@ bool AsyncLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
     client->SetBeginFrameSource(begin_frame_source_.get());
   }
 
-  if (wants_animate_only_begin_frames_ || auto_needs_begin_frame_) {
+  if (wants_animate_only_begin_frames_ || auto_needs_begin_frame_ ||
+      no_compositor_frame_acks_) {
     auto params = viz::mojom::CompositorFrameSinkParams::New();
     params->wants_animate_only_begin_frames = wants_animate_only_begin_frames_;
     params->auto_needs_begin_frame = auto_needs_begin_frame_;
+    params->no_compositor_frame_acks = no_compositor_frame_acks_;
     compositor_frame_sink_ptr_->SetParams(std::move(params));
   }
   if (num_did_not_produce_frame_before_internal_begin_frame_source_) {
@@ -349,7 +352,8 @@ void AsyncLayerTreeFrameSink::DidReceiveCompositorFrameAck(
     std::vector<viz::ReturnedResource> resources) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   client_->ReclaimResources(std::move(resources));
-  if (!base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks)) {
+  if (!no_compositor_frame_acks_ &&
+      !base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks)) {
     client_->DidReceiveCompositorFrameAck();
   }
 }
