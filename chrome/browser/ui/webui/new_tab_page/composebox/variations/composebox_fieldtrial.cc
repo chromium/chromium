@@ -166,6 +166,10 @@ const base::FeatureParam<bool> kShowComposeboxTypedSuggest(
     "ShowComposeboxTypedSuggest",
     false);
 
+const base::FeatureParam<bool> kShowContextMenu(&kNtpComposebox,
+                                                "ShowContextMenu",
+                                                false);
+
 FeatureConfig::FeatureConfig() : config(GetNTPComposeboxConfig()) {}
 
 FeatureConfig::FeatureConfig(const FeatureConfig&) = default;
