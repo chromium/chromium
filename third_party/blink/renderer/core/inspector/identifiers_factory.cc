@@ -27,6 +27,7 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/process/process_handle.h"
+#include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/weak_identifier_map.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
