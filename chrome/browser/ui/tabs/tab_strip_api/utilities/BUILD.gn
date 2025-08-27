@@ -4,6 +4,8 @@
 
 source_set("utilities") {
   sources = [
+    "event_filters.cc",
+    "event_filters.h",
     "tab_strip_api_utilities.cc",
     "tab_strip_api_utilities.h",
   ]
@@ -14,7 +16,10 @@ source_set("utilities") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "tab_strip_api_utilities_unittest.cc" ]
+  sources = [
+    "event_filters_unittest.cc",
+    "tab_strip_api_utilities_unittest.cc",
+  ]
 
   deps = [
     ":utilities",
