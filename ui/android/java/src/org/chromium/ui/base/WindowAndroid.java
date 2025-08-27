@@ -156,7 +156,7 @@ public class WindowAndroid
         // The color of the hairline.
         public int hairlineColor;
 
-        public static interface Provider {
+        public interface Provider {
             ProgressBarConfig getProgressBarConfig();
         }
     }

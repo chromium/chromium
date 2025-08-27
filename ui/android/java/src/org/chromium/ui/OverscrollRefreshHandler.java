@@ -13,7 +13,7 @@ import org.chromium.ui.base.BackGestureEventSwipeEdge;
 @NullMarked
 public interface OverscrollRefreshHandler {
     // LINT.IfChange
-    public static final int DEFAULT_NAVIGATION_EDGE_WIDTH = 24;
+    int DEFAULT_NAVIGATION_EDGE_WIDTH = 24;
 
     // LINT.ThenChange(//ui/android/overscroll_refresh.h:kDefaultNavigationEdgeWidth)
 
@@ -27,7 +27,7 @@ public interface OverscrollRefreshHandler {
      * @return Whether the handler will consume the overscroll sequence.
      */
     @CalledByNative
-    public boolean start(@OverscrollAction int type, @BackGestureEventSwipeEdge int initiatingEdge);
+    boolean start(@OverscrollAction int type, @BackGestureEventSwipeEdge int initiatingEdge);
 
     /**
      * Signals a pull update.
@@ -37,23 +37,25 @@ public interface OverscrollRefreshHandler {
      * @param yDelta The change in vertical pull distance.
      */
     @CalledByNative
-    public void pull(float xDelta, float yDelta);
+    void pull(float xDelta, float yDelta);
 
     /**
      * Signals the release of the pull.
+     *
      * @param allowRefresh Whether the release signal should be allowed to trigger a refresh.
      */
     @CalledByNative
-    public void release(boolean allowRefresh);
+    void release(boolean allowRefresh);
 
     /** Reset the active pull state. */
     @CalledByNative
-    public void reset();
+    void reset();
 
     /**
      * Toggle whether the effect is active.
-     * @param enabled Whether to enable the effect.
-     *                If disabled, the effect should deactive itself apropriately.
+     *
+     * @param enabled Whether to enable the effect. If disabled, the effect should deactive itself
+     *     apropriately.
      */
-    public void setEnabled(boolean enabled);
+    void setEnabled(boolean enabled);
 }

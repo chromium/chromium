@@ -37,7 +37,7 @@ public class Clipboard {
     /** Interface to be implemented for sharing image through FileProvider. */
     public interface ImageFileProvider {
         /** The helper class to load Clipboard file metadata. */
-        public class ClipboardFileMetadata {
+        class ClipboardFileMetadata {
             public static final long INVALID_TIMESTAMP = 0;
             public final Uri uri;
             public final long timestamp;

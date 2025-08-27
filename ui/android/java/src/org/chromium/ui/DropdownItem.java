@@ -12,15 +12,13 @@ import org.chromium.url.GURL;
 @NullMarked
 public interface DropdownItem {
     // A stand in for a resource ID which indicates no icon should be shown.
-    public static final int NO_ICON = 0;
+    int NO_ICON = 0;
 
     /** Returns the first part of the first line that should be shown in the dropdown. */
-    @Nullable
-    String getLabel();
+    @Nullable String getLabel();
 
     /** Returns the second part of the first line that should be shown in the dropdown. */
-    @Nullable
-    String getSecondaryLabel();
+    @Nullable String getSecondaryLabel();
 
     /** Returns the first part of the second line that should be shown in the dropdown. */
     @Nullable String getSublabel();

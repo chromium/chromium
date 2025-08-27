@@ -54,7 +54,7 @@ public class ListMenuUtils {
          * @return A List of pairs of the parent ListItems and their corresponding dialog popups of
          *     type T.
          */
-        public List<Pair<@Nullable ListItem, T>> getFlyoutWindows();
+        List<Pair<@Nullable ListItem, T>> getFlyoutWindows();
 
         /**
          * Adds a flyout popup.
@@ -62,14 +62,14 @@ public class ListMenuUtils {
          * @param item The ListItem that got the hover.
          * @param view The View that got the hover.
          */
-        public void addFlyoutWindow(ListItem item, View view);
+        void addFlyoutWindow(ListItem item, View view);
 
         /**
          * Remove popups with indices above removeFromIndex.
          *
          * @param removeFromIndex The minimum index of the popup to be removed.
          */
-        public void removeFlyoutWindows(int removeFromIndex);
+        void removeFlyoutWindows(int removeFromIndex);
     }
 
     /**

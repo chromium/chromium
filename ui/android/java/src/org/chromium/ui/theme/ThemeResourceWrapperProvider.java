@@ -40,7 +40,7 @@ public interface ThemeResourceWrapperProvider {
      * @param context The context to get the ThemeResourceWrapperProvider from.
      * @return The ThemeResourceWrapperProvider if found, otherwise null.
      */
-    public static @Nullable ThemeResourceWrapperProvider getFromContext(Context context) {
+    static @Nullable ThemeResourceWrapperProvider getFromContext(Context context) {
         while (context instanceof ContextWrapper) {
             if (context instanceof ThemeResourceWrapperProvider) {
                 return (ThemeResourceWrapperProvider) context;
