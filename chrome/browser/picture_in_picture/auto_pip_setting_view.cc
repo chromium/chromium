@@ -206,11 +206,13 @@ void AutoPipSettingView::InitBubbleTitleView(const GURL& origin) {
 }
 
 void AutoPipSettingView::OnButtonPressed(UiResult result) {
-  CHECK(result_cb_);
+  if (!result_cb_) {
+    CHECK(GetWidget()->IsClosed());
+    return;
+  }
 
+  // Notify of the result and close the widget.
   std::move(result_cb_).Run(result);
-
-  // Close the widget.
   GetWidget()->Close();
 }
 
