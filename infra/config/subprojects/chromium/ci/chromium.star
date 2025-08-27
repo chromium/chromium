@@ -390,9 +390,6 @@ ci.builder(
     ),
     builderless = False,
     cores = 32,
-    # TODO(crbug.com/420639761): Enable gardening and tree closing when stable.
-    gardener_rotations = args.ignore_default(None),
-    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "android|desktop",
         short_name = "arm64-off",
@@ -445,9 +442,6 @@ ci.builder(
     ),
     builderless = False,
     cores = 32,
-    # TODO(crbug.com/420639761): Enable gardening and tree closing when stable.
-    gardener_rotations = args.ignore_default(None),
-    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "android|desktop",
         short_name = "x64-off",
