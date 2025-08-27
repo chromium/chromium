@@ -129,23 +129,6 @@ public class AccountManagerTestRule implements TestRule {
      * Adds an account to the fake AccountManagerFacade and {@link AccountInfo} to {@link
      * FakeAccountInfoService}.
      */
-    @Deprecated
-    public AccountInfo addAccount(
-            String email, String fullName, String givenName, @Nullable Bitmap avatar) {
-        AccountInfo accountInfo =
-                new AccountInfo.Builder(email, FakeAccountManagerFacade.toGaiaId(email))
-                        .fullName(fullName)
-                        .givenName(givenName)
-                        .accountImage(avatar)
-                        .build();
-        addAccount(accountInfo);
-        return accountInfo;
-    }
-
-    /**
-     * Adds an account to the fake AccountManagerFacade and {@link AccountInfo} to {@link
-     * FakeAccountInfoService}.
-     */
     public void addAccount(AccountInfo accountInfo) {
         mFakeAccountManagerFacade.addAccount(accountInfo);
         // TODO(crbug.com/40234741): Revise this test rule and remove the condition here.
