@@ -9488,11 +9488,6 @@
     "expiry_milestone": 143
   },
   {
-    "name": "sync-point-graph-validation",
-    "owners": ["vmiura@google.com", "vtelezhnikov@google.com", "chrome-compositor@google.com"],
-    "expiry_milestone": 140
-  },
-  {
     "name": "sync-trusted-vault-infobar-message-improvements",
     "owners": ["ylahodiuk@google.com", "rgod@google.com"],
     "expiry_milestone": 144
