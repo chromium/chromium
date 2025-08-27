@@ -54,24 +54,6 @@ void LogPromoCompleted(const NtpPromoIdentifier& id) {
 
 }  // namespace
 
-// static
-std::string GetShowNtpPromosResultName(ShowNtpPromosResult result) {
-  // LINT.IfChange(show_ntp_promos_result_names)
-  constexpr static std::array<const char*, ShowNtpPromosResult::kMaxValue + 1>
-      kResultNames{"Shown", "NotShownNoPromos", "NotShownDueToPolicy"};
-  // LINT.ThenChange(//components/user_education/common/ntp_promo/ntp_promo_controller.h:show_ntp_promos_result_enum)
-  return kResultNames[result];
-}
-
-std::ostream& operator<<(std::ostream& os, ShowNtpPromosResult result) {
-  os << GetShowNtpPromosResultName(result);
-  return os;
-}
-
-void RecordShowNtpPromosResult(ShowNtpPromosResult result) {
-  UMA_HISTOGRAM_ENUMERATION("UserEducation.NtpPromos.ShowResult", result);
-}
-
 NtpPromoControllerParams GetNtpPromoControllerParams() {
   NtpPromoControllerParams params;
   params.max_top_spot_sessions =

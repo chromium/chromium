@@ -630,25 +630,35 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   return source;
 }
 
-// Based on a profile and a controller, determine if NTP promos should be shown.
-user_education::features::NtpBrowserPromoType GetNtpPromoType(
+// Constants sent to the UI to ensure that the correct promo is shown and the
+// correct metrics are recorded. The distinction between empty and disabled is
+// that empty means that promos would have been shown, whereas disabled
+// indicates that no promo is allowed for the current page.
+constexpr std::string_view kSimpleBrowserPromo = "simple";
+constexpr std::string_view kSetupListBrowserPromo = "setuplist";
+constexpr std::string_view kEmptyBrowserPromo = "empty";
+constexpr std::string_view kDisabledBrowserPromo = "disabled";
+
+// Based on a profile and a controller (or lack thereof), determine if NTP
+// promos could be shown.
+std::string_view GetNtpPromoType(
     Profile* profile,
     user_education::NtpPromoController* controller) {
-  const auto type = user_education::features::GetNtpBrowserPromoType();
-  bool can_show = false;
-  switch (type) {
-    case user_education::features::NtpBrowserPromoType::kSimple:
-      can_show =
-          controller->HasShowablePromos(profile, /*include_completed=*/false);
-      break;
-    case user_education::features::NtpBrowserPromoType::kSetupList:
-      can_show =
-          controller->HasShowablePromos(profile, /*include_completed=*/true);
-      break;
-    case user_education::features::NtpBrowserPromoType::kNone:
-      break;
+  if (!controller) {
+    return kDisabledBrowserPromo;
   }
-  return can_show ? type : user_education::features::NtpBrowserPromoType::kNone;
+  switch (user_education::features::GetNtpBrowserPromoType()) {
+    case user_education::features::NtpBrowserPromoType::kSimple:
+      return controller->HasShowablePromos(profile, /*include_completed=*/false)
+                 ? kSimpleBrowserPromo
+                 : kEmptyBrowserPromo;
+    case user_education::features::NtpBrowserPromoType::kSetupList:
+      return controller->HasShowablePromos(profile, /*include_completed=*/true)
+                 ? kSetupListBrowserPromo
+                 : kEmptyBrowserPromo;
+    case user_education::features::NtpBrowserPromoType::kNone:
+      return kDisabledBrowserPromo;
+  }
 }
 
 }  // namespace
@@ -1119,12 +1129,6 @@ void NewTabPageUI::DidStartNavigation(
 
     OnLoad();
 
-    // Only record NTP promo metrics on actual page load, not at construction.
-    if (last_ntp_promo_result_) {
-      user_education::RecordShowNtpPromosResult(*last_ntp_promo_result_);
-      last_ntp_promo_result_.reset();
-    }
-
     auto prev_navigation_time =
         profile_->GetPrefs()->GetTime(kPrevNavigationTimePrefName);
     if (!prev_navigation_time.is_null()) {
@@ -1170,36 +1174,12 @@ void NewTabPageUI::OnLoad() {
       module_id_details_, IdentityManagerFactory::GetForProfile(profile_));
   update.Set("modulesEnabled", modules_enabled);
 
-  // Set up the NTP promo, if any. This is only relevant in windows that have an
-  // NtpPromoController.
-  last_ntp_promo_result_.reset();
-  std::string browser_promo_type;
-  if (auto* const controller =
-          UserEducationServiceFactory::GetForBrowserContext(profile_)
-              ->ntp_promo_controller()) {
-    // Current policy is not to show NTP promos when modules are enabled.
-    if (modules_enabled) {
-      last_ntp_promo_result_ =
-          user_education::ShowNtpPromosResult::kNotShownDueToPolicy;
-    } else {
-      switch (GetNtpPromoType(profile_, controller)) {
-        case user_education::features::NtpBrowserPromoType::kSimple:
-          browser_promo_type = "simple";
-          last_ntp_promo_result_ = user_education::ShowNtpPromosResult::kShown;
-          break;
-        case user_education::features::NtpBrowserPromoType::kSetupList:
-          browser_promo_type = "setuplist";
-          last_ntp_promo_result_ = user_education::ShowNtpPromosResult::kShown;
-          break;
-        case user_education::features::NtpBrowserPromoType::kNone:
-          last_ntp_promo_result_ =
-              user_education::ShowNtpPromosResult::kNotShownNoPromos;
-          break;
-      }
-    }
-  }
-  // Note that other promo parameters are set elsewhere with NTP properties.
-  update.Set("browserPromoType", browser_promo_type);
+  // Set up the NTP promo, if any.
+  update.Set(
+      "browserPromoType",
+      GetNtpPromoType(
+          profile_, UserEducationServiceFactory::GetForBrowserContext(profile_)
+                        ->ntp_promo_controller()));
 
   content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
                                    std::move(update));

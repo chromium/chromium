@@ -315,9 +315,6 @@ class NewTabPageUI
   // The counter for NewTabPage.Count UMA metrics.
   static int instance_count_;
 
-  // The most recent NTP promo result. Used for logging.
-  std::optional<user_education::ShowNtpPromosResult> last_ntp_promo_result_;
-
   std::unique_ptr<NewTabPageHandler> page_handler_;
   mojo::Receiver<new_tab_page::mojom::PageHandlerFactory>
       page_factory_receiver_;

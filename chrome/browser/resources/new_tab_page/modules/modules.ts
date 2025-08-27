@@ -262,6 +262,7 @@ export class ModulesElement extends CrLitElement {
         await ModuleRegistry.getInstance().initializeModulesHavingIds(
             modulesIdNames.map((m: ModuleIdName) => m.id),
             loadTimeData.getInteger('modulesLoadTimeout'));
+    let modulesLoaded: number|null = null;
     if (modules) {
       this.pageHandler_.onModulesLoadedWithData(
           modules.map(module => module.descriptor.id));
@@ -273,8 +274,10 @@ export class ModulesElement extends CrLitElement {
                                   .flat();
 
       this.recordInitialLoadMetrics_(modules, modulesIdNames);
-      this.dispatchEvent(new Event('modules-loaded'));
+      modulesLoaded = this.moduleInstances_.length;
     }
+    this.dispatchEvent(new CustomEvent<number|null>(
+        'modules-loaded', {detail: modulesLoaded}));
   }
 
   private recordInitialLoadMetrics_(

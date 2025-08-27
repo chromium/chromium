@@ -24706,7 +24706,7 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="NotShownDueToPolicy"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/user_education/common/ntp_promo/ntp_promo_controller.h:show_ntp_promos_result_enum) -->
+<!-- LINT.ThenChange(//chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo.mojom:show_ntp_promos_result_enum) -->
 
 <enum name="ShutdownReason">
   <summary>

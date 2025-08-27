@@ -44,9 +44,13 @@ import type {PageCallbackRouter, PageHandlerRemote, Theme} from './new_tab_page.
 import {IphFeature, NtpBackgroundImageSource} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import type {MicrosoftAuthUntrustedDocumentRemote} from './ntp_microsoft_auth_shared_ui.mojom-webui.js';
+import {ShowNtpPromosResult} from './ntp_promo.mojom-webui.js';
 import {$$} from './utils.js';
 import {Action as VoiceAction, recordVoiceAction} from './voice_search_overlay.js';
 import {WindowProxy} from './window_proxy.js';
+
+const MODULE_LOAD_IN_PROGRESS = -2;
+const MODULE_LOAD_NOT_ATTEMPTED = -1;
 
 interface ExecutePromoBrowserCommandData {
   commandId: Command;
@@ -131,6 +135,12 @@ function ensureLazyLoaded() {
   script.type = 'module';
   script.src = getTrustedScriptURL`./lazy_load.js`;
   document.body.appendChild(script);
+}
+
+function recordShowBrowserPromosResult(result: ShowNtpPromosResult) {
+  recordEnumeration(
+      'UserEducation.NtpPromos.ShowResult', result,
+      ShowNtpPromosResult.MAX_VALUE + 1);
 }
 
 const AppElementBase = HelpBubbleMixinLit(CrLitElement);
@@ -222,7 +232,7 @@ export class AppElement extends AppElementBase {
       middleSlotPromoEnabled_: {type: Boolean},
       modulesEnabled_: {type: Boolean},
       middleSlotPromoLoaded_: {type: Boolean},
-      modulesLoaded_: {type: Boolean},
+      modulesLoaded_: {type: Number},
 
       modulesShownToUser: {
         type: Boolean,
@@ -306,7 +316,7 @@ export class AppElement extends AppElementBase {
   protected accessor browserPromoCompletedLimit_: number =
       loadTimeData.getInteger('browserPromoCompletedLimit');
   private accessor middleSlotPromoLoaded_: boolean = false;
-  private accessor modulesLoaded_: boolean = false;
+  private accessor modulesLoaded_: number = MODULE_LOAD_IN_PROGRESS;
   protected accessor modulesShownToUser: boolean = false;
   protected accessor microsoftModuleEnabled_: boolean =
       loadTimeData.getBoolean('microsoftModuleEnabled');
@@ -344,6 +354,9 @@ export class AppElement extends AppElementBase {
   private backgroundImageLoadStartEpoch_: number = 0;
   private backgroundImageLoadStart_: number = 0;
   private showWebstoreToastListenerId_: number|null = null;
+
+  // Protected for testing only.
+  protected browserPromoMetricsRecorded_: boolean = false;
 
   constructor() {
     performance.mark('app-creation-start');
@@ -655,7 +668,8 @@ export class AppElement extends AppElementBase {
   private computePromoAndModulesLoaded_(): boolean {
     return (!loadTimeData.getBoolean('middleSlotPromoEnabled') ||
             this.middleSlotPromoLoaded_) &&
-        (!loadTimeData.getBoolean('modulesEnabled') || this.modulesLoaded_);
+        (!loadTimeData.getBoolean('modulesEnabled') ||
+         this.modulesLoaded_ >= 0);
   }
 
   private onRealboxCanShowSecondarySideChanged_(e: MediaQueryListEvent) {
@@ -991,8 +1005,41 @@ export class AppElement extends AppElementBase {
     this.middleSlotPromoLoaded_ = true;
   }
 
-  protected onModulesLoaded_() {
-    this.modulesLoaded_ = true;
+  protected onModulesLoaded_(e: CustomEvent<number|null>) {
+    this.modulesLoaded_ =
+        e.detail === null ? MODULE_LOAD_NOT_ATTEMPTED : e.detail;
+  }
+
+  protected getBrowserPromoType_(): string {
+    let result: string = '';
+    if (!this.modulesEnabled_ ||
+        this.modulesLoaded_ === MODULE_LOAD_NOT_ATTEMPTED ||
+        this.modulesLoaded_ === 0) {
+      // If we know for sure there are no modules to show, the promo can show.
+      result = this.browserPromoType_;
+    } else if (this.modulesLoaded_ > 0) {
+      // If at least one module was loaded, block the promo.
+      result = 'blocked';
+    }
+    if (result !== '' && !this.browserPromoMetricsRecorded_) {
+      this.browserPromoMetricsRecorded_ = true;
+      switch (result) {
+        case 'blocked':
+          recordShowBrowserPromosResult(
+              ShowNtpPromosResult.kNotShownDueToPolicy);
+          break;
+        case 'empty':
+          recordShowBrowserPromosResult(ShowNtpPromosResult.kNotShownNoPromos);
+          break;
+        case 'simple':
+        case 'setuplist':
+          recordShowBrowserPromosResult(ShowNtpPromosResult.kShown);
+          break;
+        default:
+          break;
+      }
+    }
+    return result;
   }
 
   protected onCustomizeModule_() {

@@ -10,16 +10,24 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/new_tab_page/modules/modules_constants.h"
+#include "chrome/browser/new_tab_page/modules/modules_switches.h"
+#include "chrome/browser/new_tab_page/modules/test_support.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
+#include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo.mojom.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/prefs/scoped_user_pref_update.h"
+#include "components/search/ntp_features.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_controller.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_registry.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_specification.h"
@@ -39,11 +47,12 @@
 
 namespace {
 
-using user_education::ShowNtpPromosResult;
+using ntp_promo::mojom::ShowNtpPromosResult;
 using user_education::features::NtpBrowserPromoType;
 using Eligibility = user_education::NtpPromoSpecification::Eligibility;
 
 inline constexpr char kTestPromoName[] = "test_promo";
+const InteractiveBrowserTestApi::DeepQuery kPathToNtp = {"ntp-app"};
 const InteractiveBrowserTestApi::DeepQuery kPathToSimplePromo = {
     "ntp-app", "individual-promos"};
 const InteractiveBrowserTestApi::DeepQuery kPathToSetupList = {
@@ -56,8 +65,20 @@ constexpr char kIconName[] = "account_circle";
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNtpElementId);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kTestPromoShownEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kTestPromoClickedEvent);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kMetricsRecordedEvent);
 
 }  // namespace
+
+#define INSTANTIATE_NTP_PROMO_TEST_P(TestName)                      \
+  INSTANTIATE_TEST_SUITE_P(                                         \
+      , TestName,                                                   \
+      testing::Values(NtpBrowserPromoType::kSimple,                 \
+                      NtpBrowserPromoType::kSetupList),             \
+      [](const testing::TestParamInfo<NtpBrowserPromoType>& info) { \
+        std::ostringstream oss;                                     \
+        oss << info.param;                                          \
+        return oss.str();                                           \
+      })
 
 class NtpPromoUiTest : public InteractiveBrowserTest,
                        public testing::WithParamInterface<NtpBrowserPromoType> {
@@ -66,6 +87,11 @@ class NtpPromoUiTest : public InteractiveBrowserTest,
   ~NtpPromoUiTest() override = default;
 
   void SetUp() override {
+    feature_list_.InitWithFeaturesAndParameters(GetFeatures(), {});
+    InteractiveBrowserTest::SetUp();
+  }
+
+  virtual std::vector<base::test::FeatureRefAndParams> GetFeatures() {
     std::string param_value;
     switch (GetParam()) {
       case NtpBrowserPromoType::kSimple:
@@ -77,10 +103,9 @@ class NtpPromoUiTest : public InteractiveBrowserTest,
       default:
         NOTREACHED();
     }
-    feature_list_.InitAndEnableFeatureWithParameters(
-        user_education::features::kEnableNtpBrowserPromos,
-        {{user_education::features::kNtpBrowserPromoType.name, param_value}});
-    InteractiveBrowserTest::SetUp();
+    return {
+        {user_education::features::kEnableNtpBrowserPromos,
+         {{user_education::features::kNtpBrowserPromoType.name, param_value}}}};
   }
 
   void SetUpOnMainThread() override {
@@ -187,16 +212,23 @@ class NtpPromoUiTest : public InteractiveBrowserTest,
   static constexpr std::string_view kShowResultHistogramName =
       "UserEducation.NtpPromos.ShowResult";
 
-  auto CheckShowMetrics(std::optional<ShowNtpPromosResult> expected_result) {
-    return Do([this, expected_result]() {
-             if (expected_result) {
-               histogram_tester_.ExpectBucketCount(kShowResultHistogramName,
-                                                   *expected_result, 1);
-             }
-             histogram_tester_.ExpectTotalCount(kShowResultHistogramName,
-                                                expected_result ? 1 : 0);
-           })
-        .AddDescriptionPrefix(__func__);
+  auto CheckShowMetrics(ShowNtpPromosResult expected_result) {
+    StateChange state_change;
+    state_change.type = StateChange::Type::kExistsAndConditionTrue;
+    state_change.where = kPathToNtp;
+    state_change.test_function = "el => el.browserPromoMetricsRecorded_";
+    state_change.event = kMetricsRecordedEvent;
+    auto steps = Steps(
+        WaitForStateChange(kNtpElementId, std::move(state_change)), Do([]() {
+          metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+        }),
+        Do([this, expected_result]() {
+          histogram_tester_.ExpectBucketCount(kShowResultHistogramName,
+                                              expected_result, 1);
+          histogram_tester_.ExpectTotalCount(kShowResultHistogramName, 1);
+        }));
+    AddDescriptionPrefix(steps, __func__);
+    return steps;
   }
 
  private:
@@ -220,16 +252,7 @@ class NtpPromoUiTest : public InteractiveBrowserTest,
   base::HistogramTester histogram_tester_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    NtpPromoUiTest,
-    testing::Values(NtpBrowserPromoType::kSimple,
-                    NtpBrowserPromoType::kSetupList),
-    [](const testing::TestParamInfo<NtpBrowserPromoType>& info) {
-      std::ostringstream oss;
-      oss << info.param;
-      return oss.str();
-    });
+INSTANTIATE_NTP_PROMO_TEST_P(NtpPromoUiTest);
 
 IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, TestPromoEligible) {
   InstallTestPromo(Eligibility::kEligible);
@@ -264,6 +287,52 @@ IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, TestPromoCompleted) {
               CheckShowMetrics(ShowNtpPromosResult::kShown)),
          Else(EnsureNotVisible(kNtpElementId, GetFirstPromoPath()),
               CheckShowMetrics(ShowNtpPromosResult::kNotShownNoPromos))));
+}
+
+namespace {
+const InteractiveBrowserTestApi::DeepQuery kPathToModules = {"ntp-app",
+                                                             "ntp-modules"};
+}  // namespace
+
+class NtpPromoWithModuleUiTest : public NtpPromoUiTest {
+ protected:
+  std::vector<base::test::FeatureRefAndParams> GetFeatures() override {
+    auto result = NtpPromoUiTest::GetFeatures();
+    result.push_back(
+        {ntp_features::kNtpTabGroupsModule,
+         {{ntp_features::kNtpTabGroupsModuleDataParam, "Fake Data"}}});
+    return result;
+  }
+};
+
+INSTANTIATE_NTP_PROMO_TEST_P(NtpPromoWithModuleUiTest);
+
+IN_PROC_BROWSER_TEST_P(NtpPromoWithModuleUiTest, ModuleEnabled) {
+  InstallTestPromo(Eligibility::kEligible);
+  RunTestSequence(
+      InstrumentTab(kNtpElementId),
+      NavigateWebContents(kNtpElementId, GURL(chrome::kChromeUINewTabPageURL)),
+      WaitForElementVisible(kNtpElementId, kPathToModules),
+      EnsureNotVisible(kNtpElementId, GetFirstPromoPath()),
+      CheckShowMetrics(ShowNtpPromosResult::kNotShownDueToPolicy));
+}
+
+IN_PROC_BROWSER_TEST_P(NtpPromoWithModuleUiTest, ModuleDisabled) {
+  // Disable the Tab Groups module in prefs.
+  {
+    ScopedListPrefUpdate update(browser()->profile()->GetPrefs(),
+                                prefs::kNtpDisabledModules);
+    base::Value::List& list = update.Get();
+    base::Value module_id_value(ntp_modules::kTabGroupsModuleId);
+    list.Append(std::move(module_id_value));
+  }
+  InstallTestPromo(Eligibility::kEligible);
+  RunTestSequence(
+      InstrumentTab(kNtpElementId),
+      NavigateWebContents(kNtpElementId, GURL(chrome::kChromeUINewTabPageURL)),
+      WaitForElementVisible(kNtpElementId, GetFirstPromoPath()),
+      EnsureNotVisible(kNtpElementId, kPathToModules),
+      CheckShowMetrics(ShowNtpPromosResult::kShown));
 }
 
 // Tests in this block rely on the fact that the top priority promotion is

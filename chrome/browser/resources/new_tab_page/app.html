@@ -73,7 +73,7 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
         </ntp-modules>
       `}
     ` : ''}
-    ${ (() => { switch (this.browserPromoType_) {
+    ${ (() => { switch (this.getBrowserPromoType_()) {
      case "simple":
       return html`
         <individual-promos maxPromos="${this.browserPromoLimit_}">
