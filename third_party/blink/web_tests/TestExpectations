@@ -9628,6 +9628,4 @@ crbug.com/440589865 [ Mac15-arm64 ] virtual/webnn-service-with-gpu/external/wpt/
 
 # Gardener 2025-08-27
 crbug.com/419705502 [ Win10.20h2 ] http/tests/devtools/elements/styles-2/nested-pseudo-elements.js [ Failure Pass ]
-crbug.com/441521332 [ Mac12 ] fast/forms/validation-bubble-appearance-escape.html [ Failure Pass ]
-crbug.com/441521332 [ Mac13 ] fast/forms/validation-bubble-appearance-escape.html [ Failure Pass ]
 
