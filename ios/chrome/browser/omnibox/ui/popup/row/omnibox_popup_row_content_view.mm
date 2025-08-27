@@ -227,12 +227,10 @@ const CGFloat kTopGradientColorOpacity = 0.85;
     self.configuration = configuration;
 
     [self adjustIconDimensionsForContentSize];
-    if (@available(iOS 17, *)) {
-      [self
-          registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.self ]
-                       withAction:@selector
-                       (adjustIconDimensionsForContentSize)];
-    }
+
+    [self
+        registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.self ]
+                     withAction:@selector(adjustIconDimensionsForContentSize)];
   }
   return self;
 }
@@ -245,20 +243,6 @@ const CGFloat kTopGradientColorOpacity = 0.85;
         kLeadingIconViewSize * multiplier;
   }
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  if (self.traitCollection.preferredContentSizeCategory !=
-      previousTraitCollection.preferredContentSizeCategory) {
-    [self setNeedsLayout];
-  }
-}
-#endif
 
 - (void)didMoveToWindow {
   if (self.window) {

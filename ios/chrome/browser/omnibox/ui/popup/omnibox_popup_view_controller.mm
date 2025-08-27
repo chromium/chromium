@@ -176,17 +176,6 @@ const CGFloat kHeaderTopPadding = 16.0f;
   self.view = self.tableView;
 }
 
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self updateUIOnTraitChange];
-}
-#endif
-
 - (void)toggleOmniboxDebuggerView {
   if (self.debugInfoViewController.viewIfLoaded.window) {
     [self dismissViewControllerAnimated:YES completion:nil];
@@ -289,11 +278,9 @@ const CGFloat kHeaderTopPadding = 16.0f;
   self.shouldUpdateVisibleSuggestionCount = YES;
   self.tableView.sectionHeaderTopPadding = 0;
 
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(nil);
-    [self registerForTraitChanges:traits
-                       withAction:@selector(updateUIOnTraitChange)];
-  }
+  NSArray<UITrait>* traits = TraitCollectionSetForTraits(nil);
+  [self registerForTraitChanges:traits
+                     withAction:@selector(updateUIOnTraitChange)];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
