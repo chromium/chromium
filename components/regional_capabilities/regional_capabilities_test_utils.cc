@@ -5,9 +5,13 @@
 #include "components/regional_capabilities/regional_capabilities_test_utils.h"
 
 #include <memory>
+#include <string_view>
+#include <variant>
 
 #include "base/functional/callback.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace regional_capabilities {
 
@@ -46,6 +50,30 @@ Program FakeRegionalCapabilitiesServiceClient::GetDeviceProgram() {
 }
 #endif
 
-namespace testing {}  // namespace testing
+void CheckHistogramExpectation(const base::HistogramTester& histogram_tester,
+                               std::string_view histogram_name,
+                               const HistogramExpectation& expectation,
+                               const base::Location& location) {
+  std::visit(absl::Overload{
+                 [&](const base::HistogramBase::Count32& expected_total_count) {
+                   histogram_tester.ExpectTotalCount(
+                       histogram_name, expected_total_count, location);
+                 },
+                 [&](const std::tuple<base::HistogramBase::Sample32,
+                                      base::HistogramBase::Count32, bool>&
+                         expected_samples) {
+                   if (std::get<2>(expected_samples)) {
+                     histogram_tester.ExpectUniqueSample(
+                         histogram_name, std::get<0>(expected_samples),
+                         std::get<1>(expected_samples), location);
+                   } else {
+                     histogram_tester.ExpectBucketCount(
+                         histogram_name, std::get<0>(expected_samples),
+                         std::get<1>(expected_samples), location);
+                   }
+                 },
+             },
+             expectation);
+}
 
 }  // namespace regional_capabilities

@@ -28,7 +28,6 @@
 #include "regional_capabilities_metrics.h"
 #include "regional_capabilities_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/device_form_factor.h"
 
 namespace regional_capabilities {
@@ -199,58 +198,6 @@ class RegionalCapabilitiesServiceTest : public ::testing::Test {
 
   base::HistogramTester histogram_tester_;
 };
-
-using HistogramExpectation =
-    std::variant<base::HistogramBase::Count32,
-                 std::tuple<base::HistogramBase::Sample32,
-                            base::HistogramBase::Count32,
-                            bool>>;
-
-inline HistogramExpectation ExpectHistogramNever() {
-  return 0;
-}
-
-template <typename T>
-HistogramExpectation ExpectHistogramBucket(
-    T sample,
-    base::HistogramBase::Count32 count = 1) {
-  return std::make_tuple(static_cast<base::HistogramBase::Sample32>(sample),
-                         count, /* unique= */ false);
-}
-
-template <typename T>
-HistogramExpectation ExpectHistogramUnique(
-    T sample,
-    base::HistogramBase::Count32 count = 1) {
-  return std::make_tuple(static_cast<base::HistogramBase::Sample32>(sample),
-                         count, /* unique= */ false);
-}
-
-void CheckHistogramExpectation(const base::HistogramTester& histogram_tester,
-                               std::string_view histogram_name,
-                               const HistogramExpectation& expectation,
-                               const base::Location& location = FROM_HERE) {
-  std::visit(absl::Overload{
-                 [&](const base::HistogramBase::Count32& expected_total_count) {
-                   histogram_tester.ExpectTotalCount(
-                       histogram_name, expected_total_count, location);
-                 },
-                 [&](const std::tuple<base::HistogramBase::Sample32,
-                                      base::HistogramBase::Count32, bool>&
-                         expected_samples) {
-                   if (std::get<2>(expected_samples)) {
-                     histogram_tester.ExpectUniqueSample(
-                         histogram_name, std::get<0>(expected_samples),
-                         std::get<1>(expected_samples), location);
-                   } else {
-                     histogram_tester.ExpectBucketCount(
-                         histogram_name, std::get<0>(expected_samples),
-                         std::get<1>(expected_samples), location);
-                   }
-                 },
-             },
-             expectation);
-}
 
 struct ProgramDeterminationTestParam {
   // Identifier of the test, will be used as parameterized test name suffix.

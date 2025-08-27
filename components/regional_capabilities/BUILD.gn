@@ -113,7 +113,9 @@ source_set("test_support") {
     ":country_access_reason",
     ":data",
     ":regional_capabilities",
+    "//base/test:test_support",
     "//components/country_codes",
+    "//testing/gtest",
   ]
 }
 

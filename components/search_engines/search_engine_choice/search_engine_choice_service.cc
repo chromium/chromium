@@ -33,6 +33,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/regional_capabilities/access/country_access_reason.h"
 #include "components/regional_capabilities/regional_capabilities_country_id.h"
+#include "components/regional_capabilities/regional_capabilities_metrics.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/regional_capabilities/regional_capabilities_utils.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_metrics_service_accessor.h"
@@ -237,6 +238,41 @@ void RecordWipeOnMissingDse(bool will_wipe) {
                             will_wipe);
 }
 
+regional_capabilities::FunnelStage ToFunnelStage(
+    SearchEngineChoiceScreenConditions condition) {
+  switch (condition) {
+    case SearchEngineChoiceScreenConditions::kEligible:
+      return regional_capabilities::FunnelStage::kEligible;
+
+    case SearchEngineChoiceScreenConditions::kNotInRegionalScope:
+      return regional_capabilities::FunnelStage::kNotInRegionalScope;
+
+    case SearchEngineChoiceScreenConditions::kAlreadyCompleted:
+      return regional_capabilities::FunnelStage::kAlreadyCompleted;
+
+    // TODO(crbug.com/438717568): Do these 2 need to have a dedicated bucket?
+    case SearchEngineChoiceScreenConditions::kFeatureSuppressed:
+    case SearchEngineChoiceScreenConditions::kUnsupportedBrowserType:
+
+    case SearchEngineChoiceScreenConditions::kHasCustomSearchEngine:
+    case SearchEngineChoiceScreenConditions::kSearchProviderOverride:
+    case SearchEngineChoiceScreenConditions::kControlledByPolicy:
+    case SearchEngineChoiceScreenConditions::kProfileOutOfScope:
+    case SearchEngineChoiceScreenConditions::kExtensionControlled:
+    case SearchEngineChoiceScreenConditions::kSuppressedByOtherDialog:
+    case SearchEngineChoiceScreenConditions::kBrowserWindowTooSmall:
+    case SearchEngineChoiceScreenConditions::kHasDistributionCustomSearchEngine:
+    case SearchEngineChoiceScreenConditions::
+        kHasRemovedPrepopulatedSearchEngine:
+    case SearchEngineChoiceScreenConditions::kHasNonGoogleSearchEngine:
+    case SearchEngineChoiceScreenConditions::kAppStartedByExternalIntent:
+    case SearchEngineChoiceScreenConditions::kAlreadyBeingShown:
+    case SearchEngineChoiceScreenConditions::kUsingPersistedGuestSessionChoice:
+      return regional_capabilities::FunnelStage::kNotEligible;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 // -- SearchEngineChoiceService::Client ---------------------------------------
@@ -392,6 +428,12 @@ void SearchEngineChoiceService::RecordStaticEligibility(
 
   base::UmaHistogramEnumeration(
       kSearchEngineChoiceScreenProfileInitConditionsHistogram, condition);
+  if (condition != SearchEngineChoiceScreenConditions::kEligible) {
+    // Static eligibility is not a conclusive funnel state. We don't record it
+    // here, we instead rely on dynamic eligibility, which is expected to be
+    // recorded shortly after, to record a funnel stage.
+    regional_capabilities::RecordFunnelStage(ToFunnelStage(condition));
+  }
 }
 
 void SearchEngineChoiceService::RecordDynamicEligibility(
@@ -405,6 +447,8 @@ void SearchEngineChoiceService::RecordDynamicEligibility(
 
   base::UmaHistogramEnumeration(
       kSearchEngineChoiceScreenNavigationConditionsHistogram, condition);
+
+  regional_capabilities::RecordFunnelStage(ToFunnelStage(condition));
 }
 
 void SearchEngineChoiceService::RecordChoiceScreenEvent(

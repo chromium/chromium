@@ -66,6 +66,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="RegionalCapabilities.FunnelStage.Reported"
+    enum="RegionalCapabilitiesFunnelStage" expires_after="2025-12-28">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
+  <summary>
+    Reports on which stage of the regional capabilities funnel a given profile
+    is in. (Internal-only: see go/chrome-taiyaki-metrics-dd for more info)
+
+    Can be recorded by profiles on some key events like profile load or attempt
+    to trigger a choice screen.
+  </summary>
+</histogram>
+
 <histogram name="RegionalCapabilities.LoadedCountrySource"
     enum="LoadedCapabilitiesCountrySource" expires_after="2025-12-28">
   <owner>dgn@chromium.org</owner>

@@ -75,4 +75,9 @@ void RecordProgramAndLocationMatch(
       program_and_location_match);
 }
 
+void RecordFunnelStage(FunnelStage stage) {
+  base::UmaHistogramEnumeration("RegionalCapabilities.FunnelStage.Reported",
+                                stage);
+}
+
 }  // namespace regional_capabilities

@@ -50,6 +50,21 @@ enum class ProgramAndLocationMatch {
 void RecordProgramAndLocationMatch(
     ProgramAndLocationMatch program_and_location_match);
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(FunnelStage)
+enum class FunnelStage {
+  kNotInRegionalScope = 0,
+  kAlreadyCompleted = 1,
+  kEligible = 2,
+  kNotEligible = 3,
+  kMaxValue = kNotEligible,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/regional_capabilities/enums.xml:RegionalCapabilitiesFunnelStage)
+
+void RecordFunnelStage(FunnelStage stage);
+
 }  // namespace regional_capabilities
 
 #endif  // COMPONENTS_REGIONAL_CAPABILITIES_REGIONAL_CAPABILITIES_METRICS_H_

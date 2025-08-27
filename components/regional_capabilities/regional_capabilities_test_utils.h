@@ -6,8 +6,12 @@
 #define COMPONENTS_REGIONAL_CAPABILITIES_REGIONAL_CAPABILITIES_TEST_UTILS_H_
 
 #include <memory>
+#include <string_view>
+#include <utility>
+#include <variant>
 
 #include "base/functional/callback_forward.h"
+#include "base/metrics/histogram_base.h"
 #include "components/country_codes/country_codes.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 
@@ -15,6 +19,11 @@
 // we forward this include here so tests can keep referencing
 // `kEeaChoiceCountriesIds`.
 #include "components/regional_capabilities/eea_countries_ids.h"  // IWYU pragma: export
+
+namespace base {
+class HistogramTester;
+class Location;
+}  // namespace base
 
 namespace regional_capabilities {
 
@@ -51,6 +60,37 @@ class FakeRegionalCapabilitiesServiceClient
  private:
   const CountryId country_id_;
 };
+
+using HistogramExpectation =
+    std::variant<base::HistogramBase::Count32,
+                 std::tuple<base::HistogramBase::Sample32,
+                            base::HistogramBase::Count32,
+                            bool>>;
+
+inline HistogramExpectation ExpectHistogramNever() {
+  return 0;
+}
+
+template <typename T>
+HistogramExpectation ExpectHistogramBucket(
+    T sample,
+    base::HistogramBase::Count32 count = 1) {
+  return std::make_tuple(static_cast<base::HistogramBase::Sample32>(sample),
+                         count, /* unique= */ false);
+}
+
+template <typename T>
+HistogramExpectation ExpectHistogramUnique(
+    T sample,
+    base::HistogramBase::Count32 count = 1) {
+  return std::make_tuple(static_cast<base::HistogramBase::Sample32>(sample),
+                         count, /* unique= */ false);
+}
+
+void CheckHistogramExpectation(const base::HistogramTester& histogram_tester,
+                               std::string_view histogram_name,
+                               const HistogramExpectation& expectation,
+                               const base::Location& location = FROM_HERE);
 
 }  // namespace regional_capabilities
 

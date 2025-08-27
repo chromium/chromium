@@ -29,6 +29,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/regional_capabilities/regional_capabilities_metrics.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/regional_capabilities/regional_capabilities_test_utils.h"
@@ -54,6 +55,11 @@
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
 using ::country_codes::CountryId;
+using regional_capabilities::CheckHistogramExpectation;
+using regional_capabilities::ExpectHistogramBucket;
+using regional_capabilities::ExpectHistogramNever;
+using regional_capabilities::FunnelStage;
+using regional_capabilities::HistogramExpectation;
 using ::search_engines::RepromptResult;
 using ::search_engines::SearchEngineChoiceWipeReason;
 using ::testing::NiceMock;
@@ -1335,5 +1341,155 @@ constexpr RepromptTestParam kRepromptTestParams[] = {
 INSTANTIATE_TEST_SUITE_P(,
                          SearchEngineChoiceUtilsParamTest,
                          ::testing::ValuesIn(kRepromptTestParams));
+
+struct FunnelTestParam {
+  std::string test_suffix;
+  SearchEngineChoiceScreenConditions condition;
+  HistogramExpectation expected_if_static;
+  HistogramExpectation expected_if_dynamic;
+};
+
+class SearchEngineChoiceServiceFunnelTest
+    : public SearchEngineChoiceServiceTest,
+      public testing::WithParamInterface<FunnelTestParam> {
+ public:
+  static std::string GetTestSuffix(
+      const testing::TestParamInfo<FunnelTestParam>& info) {
+    return info.param.test_suffix;
+  }
+};
+
+TEST_P(SearchEngineChoiceServiceFunnelTest, RecordsFunnelStage) {
+  InitService({.force_reset = true});
+
+  {
+    base::HistogramTester scoped_histogram_tester;
+    search_engine_choice_service().RecordStaticEligibility(
+        GetParam().condition);
+    CheckHistogramExpectation(scoped_histogram_tester,
+                              "RegionalCapabilities.FunnelStage.Reported",
+                              GetParam().expected_if_static);
+  }
+
+  {
+    base::HistogramTester scoped_histogram_tester;
+    search_engine_choice_service().RecordDynamicEligibility(
+        GetParam().condition);
+    CheckHistogramExpectation(scoped_histogram_tester,
+                              "RegionalCapabilities.FunnelStage.Reported",
+                              GetParam().expected_if_dynamic);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SearchEngineChoiceServiceFunnelTest,
+    testing::ValuesIn<FunnelTestParam>({
+        {.test_suffix = "NotInRegionalScope",
+         .condition = SearchEngineChoiceScreenConditions::kNotInRegionalScope,
+         .expected_if_static =
+             ExpectHistogramUnique(FunnelStage::kNotInRegionalScope),
+         .expected_if_dynamic =
+             ExpectHistogramUnique(FunnelStage::kNotInRegionalScope)},
+
+        {.test_suffix = "AlreadyCompleted",
+         .condition = SearchEngineChoiceScreenConditions::kAlreadyCompleted,
+         .expected_if_static =
+             ExpectHistogramUnique(FunnelStage::kAlreadyCompleted),
+         .expected_if_dynamic =
+             ExpectHistogramUnique(FunnelStage::kAlreadyCompleted)},
+
+        {.test_suffix = "Eligible",
+         .condition = SearchEngineChoiceScreenConditions::kEligible,
+         .expected_if_static = ExpectHistogramNever(),
+         .expected_if_dynamic = ExpectHistogramUnique(FunnelStage::kEligible)},
+
+        {.test_suffix = "HasCustomSearchEngine",
+         .condition =
+             SearchEngineChoiceScreenConditions::kHasCustomSearchEngine,
+         .expected_if_static = ExpectHistogramUnique(FunnelStage::kNotEligible),
+         .expected_if_dynamic =
+             ExpectHistogramUnique(FunnelStage::kNotEligible)},
+        {.test_suffix = "SearchProviderOverride",
+         .condition =
+             SearchEngineChoiceScreenConditions::kSearchProviderOverride,
+         .expected_if_static = ExpectHistogramUnique(FunnelStage::kNotEligible),
+         .expected_if_dynamic =
+             ExpectHistogramUnique(FunnelStage::kNotEligible)},
+        {.test_suffix = "ControlledByPolicy",
+         .condition = SearchEngineChoiceScreenConditions::kControlledByPolicy,
+         .expected_if_static = ExpectHistogramUnique(FunnelStage::kNotEligible),
+         .expected_if_dynamic =
+             ExpectHistogramUnique(FunnelStage::kNotEligible)},
+        {.test_suffix = "ProfileOutOfScope",
+         .condition = SearchEngineChoiceScreenConditions::kProfileOutOfScope,
+         .expected_if_static = ExpectHistogramUnique(FunnelStage::kNotEligible),
+         .expected_if_dynamic =
+             ExpectHistogramUnique(FunnelStage::kNotEligible)},
+        {.test_suffix = "ExtensionControlled",
+         .condition = SearchEngineChoiceScreenConditions::kExtensionControlled,
+         .expected_if_static = ExpectHistogramUnique(FunnelStage::kNotEligible),
+         .expected_if_dynamic =
+             ExpectHistogramUnique(FunnelStage::kNotEligible)},
+        {.test_suffix = "UnsupportedBrowserType",
+         .condition =
+             SearchEngineChoiceScreenConditions::kUnsupportedBrowserType,
+         .expected_if_static = ExpectHistogramUnique(FunnelStage::kNotEligible),
+         .expected_if_dynamic =
+             ExpectHistogramUnique(FunnelStage::kNotEligible)},
+        {.test_suffix = "FeatureSuppressed",
+         .condition = SearchEngineChoiceScreenConditions::kFeatureSuppressed,
+         .expected_if_static = ExpectHistogramUnique(FunnelStage::kNotEligible),
+         .expected_if_dynamic =
+             ExpectHistogramUnique(FunnelStage::kNotEligible)},
+        {.test_suffix = "SuppressedByOtherDialog",
+         .condition =
+             SearchEngineChoiceScreenConditions::kSuppressedByOtherDialog,
+         .expected_if_static = ExpectHistogramUnique(FunnelStage::kNotEligible),
+         .expected_if_dynamic =
+             ExpectHistogramUnique(FunnelStage::kNotEligible)},
+        {.test_suffix = "BrowserWindowTooSmall",
+         .condition =
+             SearchEngineChoiceScreenConditions::kBrowserWindowTooSmall,
+         .expected_if_static = ExpectHistogramUnique(FunnelStage::kNotEligible),
+         .expected_if_dynamic =
+             ExpectHistogramUnique(FunnelStage::kNotEligible)},
+        {.test_suffix = "HasDistributionCustomSearchEngine",
+         .condition = SearchEngineChoiceScreenConditions::
+             kHasDistributionCustomSearchEngine,
+         .expected_if_static = ExpectHistogramUnique(FunnelStage::kNotEligible),
+         .expected_if_dynamic =
+             ExpectHistogramUnique(FunnelStage::kNotEligible)},
+        {.test_suffix = "HasRemovedPrepopulatedSearchEngine",
+         .condition = SearchEngineChoiceScreenConditions::
+             kHasRemovedPrepopulatedSearchEngine,
+         .expected_if_static = ExpectHistogramUnique(FunnelStage::kNotEligible),
+         .expected_if_dynamic =
+             ExpectHistogramUnique(FunnelStage::kNotEligible)},
+        {.test_suffix = "HasNonGoogleSearchEngine",
+         .condition =
+             SearchEngineChoiceScreenConditions::kHasNonGoogleSearchEngine,
+         .expected_if_static = ExpectHistogramUnique(FunnelStage::kNotEligible),
+         .expected_if_dynamic =
+             ExpectHistogramUnique(FunnelStage::kNotEligible)},
+        {.test_suffix = "AppStartedByExternalIntent",
+         .condition =
+             SearchEngineChoiceScreenConditions::kAppStartedByExternalIntent,
+         .expected_if_static = ExpectHistogramUnique(FunnelStage::kNotEligible),
+         .expected_if_dynamic =
+             ExpectHistogramUnique(FunnelStage::kNotEligible)},
+        {.test_suffix = "AlreadyBeingShown",
+         .condition = SearchEngineChoiceScreenConditions::kAlreadyBeingShown,
+         .expected_if_static = ExpectHistogramUnique(FunnelStage::kNotEligible),
+         .expected_if_dynamic =
+             ExpectHistogramUnique(FunnelStage::kNotEligible)},
+        {.test_suffix = "UsingPersistedGuestSessionChoice",
+         .condition = SearchEngineChoiceScreenConditions::
+             kUsingPersistedGuestSessionChoice,
+         .expected_if_static = ExpectHistogramUnique(FunnelStage::kNotEligible),
+         .expected_if_dynamic =
+             ExpectHistogramUnique(FunnelStage::kNotEligible)},
+    }),
+    &SearchEngineChoiceServiceFunnelTest::GetTestSuffix);
 
 }  // namespace search_engines

@@ -51,6 +51,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/regional_capabilities/regional_capabilities_metrics.h:LoadedCountrySource) -->
 
+<!-- LINT.IfChange(RegionalCapabilitiesFunnelStage) -->
+
+<enum name="RegionalCapabilitiesFunnelStage">
+  <int value="0" label="NotInRegionalScope"/>
+  <int value="1" label="AlreadyCompleted"/>
+  <int value="2" label="Eligible"/>
+  <int value="3" label="NotEligible"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/regional_capabilities/regional_capabilities_metrics.h:FunnelStage) -->
+
 <!-- LINT.IfChange(RegionalProgramAndLocationMatch) -->
 
 <enum name="RegionalProgramAndLocationMatch">
