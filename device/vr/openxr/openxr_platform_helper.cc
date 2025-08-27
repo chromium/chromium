@@ -159,6 +159,8 @@ XrResult OpenXrPlatformHelper::CreateInstance(XrInstance* instance,
     }
   }
 
+  EnableExtensionIfSupported(XR_EXT_FUTURE_EXTENSION_NAME);
+
   for (const auto& extension : handled_extensions) {
     EnableExtensionIfSupported(extension.c_str());
   }
