@@ -1,0 +1,24 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("assist_ranker") {
+  sources = [ "assist_ranker_service_factory.h" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+  ]
+}
+
+source_set("impl") {
+  sources = [ "assist_ranker_service_factory.cc" ]
+  deps = [
+    ":assist_ranker",
+    "//chrome/browser:browser_process",
+    "//components/assist_ranker",
+    "//components/keyed_service/core",
+    "//content/public/browser",
+    "//services/network/public/cpp",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}

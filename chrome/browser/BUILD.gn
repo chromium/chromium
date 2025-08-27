@@ -201,8 +201,6 @@ static_library("browser") {
     "accessibility/prefers_default_scrollbar_styles_prefs.h",
     "after_startup_task_utils.cc",
     "after_startup_task_utils.h",
-    "assist_ranker/assist_ranker_service_factory.cc",
-    "assist_ranker/assist_ranker_service_factory.h",
     "autocomplete/autocomplete_classifier_factory.cc",
     "autocomplete/chrome_autocomplete_provider_client.cc",
     "autocomplete/chrome_autocomplete_provider_client.h",
@@ -1869,6 +1867,10 @@ static_library("browser") {
     # headers get componentized:
     # - c/b/password_manager/chrome_password_manager_client.h
     "//chrome/browser/ui/passwords:impl",
+
+    # TODO(crbug.com/): Remove this circular dependency when
+    # c/b/net/system_network_context_manager.h gets componentized.
+    "//chrome/browser/assist_ranker:impl",
   ]
 
   public_deps = [
@@ -2097,6 +2099,8 @@ static_library("browser") {
 
     # TODO(417228688): Remove this dependency when both chrome/browser/serial and
     # chrome/browser/profiles/profile_manager.h get modularized.
+    "//chrome/browser/assist_ranker",
+    "//chrome/browser/assist_ranker:impl",
     "//chrome/browser/infobars",
     "//chrome/browser/ui/serial",
     "//chrome/browser/ui/serial:impl",
