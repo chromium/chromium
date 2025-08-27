@@ -1381,6 +1381,19 @@ void TestResponseProvider::GetLanguageResponse(
 
   // Verify page is translated.
   [ChromeEarlGrey waitForWebStateContainingText:"Translated"];
+
+  // Close Reader Mode.
+  [ChromeEarlGrey hideReaderMode];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+
+  // Verify badge is shown and page is translated.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBadgeButtonTranslateAcceptedAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateContainingText:"Translated"];
 }
 
 @end

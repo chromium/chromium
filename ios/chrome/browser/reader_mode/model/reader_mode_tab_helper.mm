@@ -75,6 +75,12 @@ ReaderModeHeuristicResult GetReaderModeHeuristicResult(
   return ReaderModeHeuristicResult::kMalformedResponse;
 }
 
+bool IsTranslateEnabled(ChromeIOSTranslateClient* translate_client) {
+  return translate_client && translate_client->GetTranslateManager()
+                                 ->GetLanguageState()
+                                 ->IsPageTranslated();
+}
+
 }  // namespace
 
 ReaderModeTabHelper::ReaderModeTabHelper(web::WebState* web_state,
@@ -527,6 +533,21 @@ void ReaderModeTabHelper::DestroyReaderModeContent(
 
   // Cancel any ongoing distillation task.
   distiller_viewer_.reset();
+
+  // Display translation badge if a translation was applied before or during
+  // Reading Mode activation.
+  if (base::FeatureList::IsEnabled(kEnableReaderModeTranslation)) {
+    ChromeIOSTranslateClient* translate_client =
+        ChromeIOSTranslateClient::FromWebState(web_state_.get());
+    ChromeIOSTranslateClient* content_translate_client =
+        ChromeIOSTranslateClient::FromWebState(reader_mode_web_state_.get());
+    if (IsTranslateEnabled(translate_client) ||
+        IsTranslateEnabled(content_translate_client)) {
+      translate_client->GetTranslateManager()->ShowTranslateUI(
+          /*auto_translate=*/true,
+          /*triggered_from_menu=*/true);
+    }
+  }
 
   SnapshotSourceTabHelper::FromWebState(web_state_)
       ->SetOverridingSourceWebState(nullptr);

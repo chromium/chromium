@@ -77,8 +77,11 @@ translate::TranslateManager* ChromeIOSTranslateClient::GetTranslateManager() {
 
 std::unique_ptr<infobars::InfoBar> ChromeIOSTranslateClient::CreateInfoBar(
     std::unique_ptr<translate::TranslateInfoBarDelegate> delegate) const {
-  bool skip_banner = delegate->translate_step() ==
-                     translate::TranslateStep::TRANSLATE_STEP_TRANSLATING;
+  bool skip_banner =
+      delegate->translate_step() ==
+          translate::TranslateStep::TRANSLATE_STEP_TRANSLATING ||
+      delegate->translate_step() ==
+          translate::TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE;
   return std::make_unique<InfoBarIOS>(InfobarType::kInfobarTypeTranslate,
                                       std::move(delegate), skip_banner);
 }

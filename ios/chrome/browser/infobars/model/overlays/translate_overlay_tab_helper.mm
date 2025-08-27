@@ -104,8 +104,13 @@ void TranslateOverlayTabHelper::TranslateDidFinish(infobars::InfoBar* infobar,
   }
 }
 
-void TranslateOverlayTabHelper::TranslateInfoBarAdded(InfoBarIOS* infobar) {
+void TranslateOverlayTabHelper::TranslateInfoBarAdded(
+    InfoBarIOS* infobar,
+    translate::TranslateStep step) {
   translate_step_observer_.SetTranslateInfoBar(infobar);
+  if (step == translate::TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE) {
+    infobar->set_accepted(true);
+  }
 }
 
 void TranslateOverlayTabHelper::UpdateForWebStateDestroyed() {
@@ -203,7 +208,8 @@ void TranslateOverlayTabHelper::TranslateInfobarObserver::OnInfoBarAdded(
   translate::TranslateInfoBarDelegate* delegate =
       infobar->delegate()->AsTranslateInfoBarDelegate();
   if (delegate) {
-    tab_helper_->TranslateInfoBarAdded(static_cast<InfoBarIOS*>(infobar));
+    tab_helper_->TranslateInfoBarAdded(static_cast<InfoBarIOS*>(infobar),
+                                       delegate->translate_step());
   }
 
   // Records a visit to a website in a language different from the user's

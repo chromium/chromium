@@ -130,7 +130,8 @@ class TranslateOverlayTabHelper
   // Observer::TranslationFinished() to cancel the placeholder if one exists.
   void TranslateDidFinish(infobars::InfoBar* infobar, bool success);
   // Indicates the addition of a Translate infobar.
-  void TranslateInfoBarAdded(InfoBarIOS* infobar);
+  void TranslateInfoBarAdded(InfoBarIOS* infobar,
+                             translate::TranslateStep step);
   // Indicates that this TabHelper's WebState has been destroyed.
   void UpdateForWebStateDestroyed();
 
