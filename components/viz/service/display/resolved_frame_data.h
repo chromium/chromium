@@ -241,7 +241,7 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
 
   ResolvedFrameData(DisplayResourceProvider* resource_provider,
                     Surface* surface,
-                    uint64_t prev_frame_index,
+                    uint32_t prev_frame_index,
                     AggregatedRenderPassId prev_root_pass_id);
   ~ResolvedFrameData();
   ResolvedFrameData(ResolvedFrameData&& other) = delete;
@@ -250,7 +250,7 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
   const SurfaceId& surface_id() const { return surface_id_; }
   Surface* surface() const { return surface_; }
   bool is_valid() const { return valid_; }
-  uint64_t previous_frame_index() const { return previous_frame_index_; }
+  uint32_t previous_frame_index() const { return previous_frame_index_; }
 
   gfx::Size size_in_pixels() const;
   float device_scale_factor() const;
@@ -375,8 +375,8 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
 
   // Data associated with CompositorFrame with |frame_index_|.
   bool valid_ = false;
-  uint64_t frame_index_ = kInvalidFrameIndex;
-  uint64_t previous_frame_index_ = kInvalidFrameIndex;
+  uint32_t frame_index_ = kInvalidFrameIndex;
+  uint32_t previous_frame_index_ = kInvalidFrameIndex;
 
   base::flat_map<OffsetTag, OffsetTagData> offset_tag_data_;
   // Additional damage that is due to OffsetTag changes between aggregations

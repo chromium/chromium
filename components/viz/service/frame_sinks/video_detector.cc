@@ -39,7 +39,7 @@ class VideoDetector::ClientInfo {
   // Called when a Surface belonging to this client is drawn. Returns true if we
   // determine that video is playing in this client.
   bool ReportDrawnAndCheckForVideo(Surface* surface, base::TimeTicks now) {
-    uint64_t frame_index = surface->GetActiveFrameIndex();
+    uint32_t frame_index = surface->GetActiveFrameIndex();
 
     // If |frame_index| hasn't increased, then no new frame was submitted since
     // the last draw.
@@ -114,7 +114,7 @@ class VideoDetector::ClientInfo {
   // Frame index of the last drawn Surface. We use this number to determine
   // whether a new frame was submitted since the last time the Surface was
   // drawn.
-  uint64_t last_drawn_frame_index_ = 0;
+  uint32_t last_drawn_frame_index_ = 0;
 };
 
 VideoDetector::VideoDetector(

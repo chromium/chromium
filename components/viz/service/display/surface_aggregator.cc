@@ -688,7 +688,7 @@ ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
     }
 
     AggregatedRenderPassId prev_root_pass_id;
-    uint64_t prev_frame_index = 0u;
+    uint32_t prev_frame_index = 0u;
     // If this is the first frame in a new surface there might be damage
     // compared to the previous frame in a different surface.
     if (surface->surface_id() != surface->previous_frame_surface_id()) {

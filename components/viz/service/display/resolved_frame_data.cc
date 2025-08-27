@@ -108,7 +108,7 @@ void ResolvedPassData::ResetCompositorRenderPass() {
 
 ResolvedFrameData::ResolvedFrameData(DisplayResourceProvider* resource_provider,
                                      Surface* surface,
-                                     uint64_t previous_frame_index,
+                                     uint32_t previous_frame_index,
                                      AggregatedRenderPassId prev_root_pass_id)
     : resource_provider_(resource_provider),
       surface_id_(surface->surface_id()),

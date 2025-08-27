@@ -82,7 +82,7 @@ class VIZ_SERVICE_EXPORT HitTestAggregator : public HitTestQuery::DataProvider {
   // This is used in order to ensure that the flow between receiving hit-test
   // data and aggregating is included only once per submission.
   std::optional<int64_t> GetTraceIdIfUpdated(const SurfaceId& surface_id,
-                                             uint64_t active_frame_index);
+                                             uint32_t active_frame_index);
 
   const raw_ptr<const HitTestManager> hit_test_manager_;
 
@@ -112,7 +112,7 @@ class VIZ_SERVICE_EXPORT HitTestAggregator : public HitTestQuery::DataProvider {
   // but only at the same hierarchy level.
   base::flat_set<FrameSinkId> referenced_child_regions_;
 
-  base::flat_map<FrameSinkId, uint64_t> last_active_frame_index_;
+  base::flat_map<FrameSinkId, uint32_t> last_active_frame_index_;
   uint64_t last_submit_hit_test_region_list_index_ = 0;
 
   // Handles the case when this object is deleted after

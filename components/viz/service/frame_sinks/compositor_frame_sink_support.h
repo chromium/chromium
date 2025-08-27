@@ -412,7 +412,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // Used for tests only.
   AggregatedDamageCallback aggregated_damage_callback_;
 
-  uint64_t last_frame_index_ = kFrameIndexStart - 1;
+  uint32_t last_frame_index_ = kFrameIndexStart - 1;
 
   // The video capture clients hooking into this instance to observe frame
   // begins and damage, and then make CopyOutputRequests on the appropriate
@@ -509,7 +509,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // has been drawn.
   static_assert(kFrameIndexStart > 1,
                 "|last_drawn_frame_index| relies on kFrameIndexStart > 1");
-  uint64_t last_drawn_frame_index_ = kFrameIndexStart - 1;
+  uint32_t last_drawn_frame_index_ = kFrameIndexStart - 1;
 
   // This value represents throttling on sending a BeginFrame. If non-zero, it
   // represents the duration of time in between sending two consecutive frames.

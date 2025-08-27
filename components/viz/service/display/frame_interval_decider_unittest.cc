@@ -122,7 +122,7 @@ class FrameIntervalDeciderTest : public testing::Test,
 
   void UpdateFrame(Surface* surface,
                    FrameIntervalInputs frame_interval_inputs) {
-    uint64_t frame_index = surface->GetActiveFrameIndex() + 1u;
+    uint32_t frame_index = surface->GetActiveFrameIndex() + 1u;
     auto frame = MakeDefaultCompositorFrame();
     frame.metadata.frame_interval_inputs = std::move(frame_interval_inputs);
     ASSERT_TRUE(surface->QueueFrame(std::move(frame), frame_index,

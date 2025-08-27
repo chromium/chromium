@@ -195,7 +195,7 @@ void Surface::ActivateIfDeadlinePassed() {
 
 Surface::QueueFrameResult Surface::QueueFrame(
     CompositorFrame frame,
-    uint64_t frame_index,
+    uint32_t frame_index,
     base::ScopedClosureRunner frame_rejected_callback) {
   if (frame.size_in_pixels() != surface_info_.size_in_pixels() ||
       frame.device_scale_factor() != surface_info_.device_scale_factor()) {
@@ -389,7 +389,7 @@ void Surface::ActivatePendingFrameForDeadline() {
   ActivatePendingFrame();
 }
 
-Surface::FrameData::FrameData(CompositorFrame&& frame, uint64_t frame_index)
+Surface::FrameData::FrameData(CompositorFrame&& frame, uint32_t frame_index)
     : frame(std::move(frame)), frame_index(frame_index) {}
 
 Surface::FrameData::FrameData(FrameData&& other) = default;
@@ -468,14 +468,14 @@ void Surface::CommitFramesRecursively(const CommitPredicate& predicate) {
   }
 }
 
-std::optional<uint64_t> Surface::GetFirstUncommitedFrameIndex() {
+std::optional<uint32_t> Surface::GetFirstUncommitedFrameIndex() {
   if (uncommitted_frames_.empty())
     return std::nullopt;
   return uncommitted_frames_.front().frame_index;
 }
 
-std::optional<uint64_t> Surface::GetUncommitedFrameIndexNewerThan(
-    uint64_t frame_index) {
+std::optional<uint32_t> Surface::GetUncommitedFrameIndexNewerThan(
+    uint32_t frame_index) {
   for (auto& frame : uncommitted_frames_) {
     if (frame.frame_index > frame_index) {
       return frame.frame_index;

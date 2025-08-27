@@ -1300,7 +1300,7 @@ TEST_P(CompositorFrameSinkSupportTest, FrameIndexCarriedOverToNewSurface) {
   support_->SubmitCompositorFrame(local_surface_id1,
                                   MakeDefaultInteractiveCompositorFrame());
   Surface* surface1 = GetSurfaceForId(id1);
-  uint64_t frame_index = surface1->GetActiveFrameIndex();
+  uint32_t frame_index = surface1->GetActiveFrameIndex();
 
   // Submit a frame to |id2| and verify that the new frame index is one more
   // than what we had before.

@@ -161,7 +161,7 @@ class VIZ_SERVICE_EXPORT Surface final {
   // called once if the frame will not be displayed.
   QueueFrameResult QueueFrame(
       CompositorFrame frame,
-      uint64_t frame_index,
+      uint32_t frame_index,
       base::ScopedClosureRunner frame_rejected_callback);
 
   // Commits frame(s) in this Surface and its dependencies. For each affected
@@ -223,7 +223,7 @@ class VIZ_SERVICE_EXPORT Surface final {
   const CompositorFrame& GetPendingFrame();
 
   // Returns a number that increments by 1 every time a new frame is enqueued.
-  uint64_t GetActiveFrameIndex() const {
+  uint32_t GetActiveFrameIndex() const {
     return active_frame_data_ ? active_frame_data_->frame_index
                               : kInvalidFrameIndex;
   }
@@ -319,12 +319,12 @@ class VIZ_SERVICE_EXPORT Surface final {
       CompositorRenderPassId render_pass_id);
 
   // Returns frame id of the oldest uncommitted frame if any,
-  std::optional<uint64_t> GetFirstUncommitedFrameIndex();
+  std::optional<uint32_t> GetFirstUncommitedFrameIndex();
 
   // Returns frame index of the oldest uncommitted frame that is newer than
   // provided `frame_index`.
-  std::optional<uint64_t> GetUncommitedFrameIndexNewerThan(
-      uint64_t frame_index);
+  std::optional<uint32_t> GetUncommitedFrameIndexNewerThan(
+      uint32_t frame_index);
 
   // Called when `pending_copy_surface_id_` no longer needs to be referenced
   // from `this`. `activation_dependencies_` will also recomputed.
@@ -338,7 +338,7 @@ class VIZ_SERVICE_EXPORT Surface final {
 
  private:
   struct FrameData {
-    FrameData(CompositorFrame&& frame, uint64_t frame_index);
+    FrameData(CompositorFrame&& frame, uint32_t frame_index);
     FrameData(FrameData&& other);
     ~FrameData();
     FrameData& operator=(FrameData&& other);
@@ -352,7 +352,7 @@ class VIZ_SERVICE_EXPORT Surface final {
     void SendAckIfNeeded(SurfaceClient* client);
 
     CompositorFrame frame;
-    uint64_t frame_index;
+    uint32_t frame_index;
     // Whether the frame has been displayed or not.
     bool frame_drawn = false;
     bool frame_acked = false;
