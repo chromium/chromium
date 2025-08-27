@@ -86,6 +86,8 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     // not in search mode when app filter is in effect.
     private boolean mShowSourceApp;
 
+    private boolean mIsLargeScreenWithKeyboard;
+
     public HistoryAdapter(
             HistoryContentManager manager,
             HistoryProvider provider,
@@ -99,6 +101,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         mShowAppFilter = mManager.showAppFilter();
         mShowSourceApp = mShowAppFilter; // defaults to BrApp full history
         mHistorySyncPromoCoordinator = historySyncPromoCoordinator;
+        mIsLargeScreenWithKeyboard = false;
     }
 
     /** Called when the activity/native page is destroyed. */
@@ -278,16 +281,17 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
             clear(true);
             mClearOnNextQueryComplete = false;
         }
+
+        removeFooter();
+
+        loadItems(items);
+
         boolean isEmpty = items.size() > 0 || mHistorySyncPromoVisible;
         if ((!mAreHeadersInitialized && isEmpty && !mIsSearching)
                 || (mIsSearching && mShowAppFilter)) {
             setHeaders();
             mAreHeadersInitialized = true;
         }
-
-        removeFooter();
-
-        loadItems(items);
 
         mIsLoadingItems = false;
         mHasMorePotentialItems = hasMorePotentialMatches;
@@ -523,6 +527,10 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
 
     /** Pass header items to {@link #setHeaders(HeaderItem...)} as parameters. */
     private void setHeaders() {
+        if (mIsLargeScreenWithKeyboard) {
+            setLFFHeaders();
+            return;
+        }
         ArrayList<HeaderItem> args = new ArrayList<>();
         if (mIsSearching) {
             // Query for apps could be still pending. |setHeaders()| will be invoked
@@ -541,6 +549,27 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
             if (mHistorySyncPromoVisible) {
                 args.add(mHistorySyncPromoHeaderItem);
             }
+        }
+        setHeaders(args.toArray(new HeaderItem[args.size()]));
+    }
+
+    /** For LFF devices w/ physical keyboard attached, there's only search mode. */
+    private void setLFFHeaders() {
+        ArrayList<HeaderItem> args = new ArrayList<>();
+        if (mShowAppFilter && mManager.hasFilterList()) args.add(mAppFilterHeaderItem);
+        if (isNormalContentAvailable()) {
+            if (mPrivacyDisclaimersVisible) {
+                args.add(mPrivacyDisclaimerHeaderItem);
+            }
+            if (mClearBrowsingDataButtonVisible) {
+                args.add(mClearBrowsingDataButtonHeaderItem);
+            }
+        }
+        if (mManager.launchedForApp()) {
+            args.add(mHistoryOpenInChromeHeaderItem);
+        }
+        if (mHistorySyncPromoVisible) {
+            args.add(mHistorySyncPromoHeaderItem);
         }
         setHeaders(args.toArray(new HeaderItem[args.size()]));
     }
@@ -601,6 +630,10 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
      */
     public void setAppId(@Nullable String appId) {
         mAppId = appId;
+    }
+
+    public void setIsLargeScreenWithKeyboard(boolean isLargeScreenWithKeyboard) {
+        mIsLargeScreenWithKeyboard = isLargeScreenWithKeyboard;
     }
 
     void updateHistorySyncPromoVisibility() {
