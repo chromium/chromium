@@ -157,6 +157,17 @@ void MaybeRegisterNtpPromos(user_education::NtpPromoRegistry& registry) {
           "Promotes sign-in capability on the New Tab Page")));
 
   registry.AddPromo(NtpPromoSpecification(
+      kNtpCustomizationPromoId,
+      NtpPromoContent("palette", IDS_NTP_CUSTOMIZATION_PROMO,
+                      IDS_NTP_CUSTOMIZATION_PROMO_ACTION_BUTTON),
+      base::BindRepeating(&CheckCustomizationPromoEligibility),
+      /*show_callback=*/base::DoNothing(),
+      base::BindRepeating(&InvokeCustomizationPromo),
+      /*show_after=*/{},
+      user_education::Metadata(141, "cjgrant@google.com",
+                               "Promotes customization of the New Tab Page")));
+
+  registry.AddPromo(NtpPromoSpecification(
       kNtpExtensionsPromoId,
       NtpPromoContent("my_extensions", IDS_NTP_EXTENSIONS_PROMO,
                       IDS_NTP_EXTENSIONS_PROMO_ACTION_BUTTON),
@@ -167,15 +178,4 @@ void MaybeRegisterNtpPromos(user_education::NtpPromoRegistry& registry) {
       user_education::Metadata(
           141, "cjgrant@google.com",
           "Promotes Chrome extensions on the New Tab Page")));
-
-  registry.AddPromo(NtpPromoSpecification(
-      kNtpCustomizationPromoId,
-      NtpPromoContent("palette", IDS_NTP_CUSTOMIZATION_PROMO,
-                      IDS_NTP_CUSTOMIZATION_PROMO_ACTION_BUTTON),
-      base::BindRepeating(&CheckCustomizationPromoEligibility),
-      /*show_callback=*/base::DoNothing(),
-      base::BindRepeating(&InvokeCustomizationPromo),
-      /*show_after=*/{},
-      user_education::Metadata(141, "cjgrant@google.com",
-                               "Promotes customization of the New Tab Page")));
 }
