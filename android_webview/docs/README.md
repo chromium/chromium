@@ -21,5 +21,4 @@ See [//android\_webview/README.md](/android\_webview/README.md).
 
 ## File a bug report for Android WebView
 
-The best way to file a bug report is here:
-https://issues.chromium.org/issues/new?component=1456456&template=1923373
+Please see [Reporting bugs in WebView](/android_webview/docs/bugreport.md).

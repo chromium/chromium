@@ -8,10 +8,8 @@ and have discussions about technical changes to the Android WebView open source
 code.
 
 This mailing list is not intended to be a way of reporting bugs, making feature
-requests, etc. Those topics are better raised on
-https://issues.chromium.org/issues/new?component=1456456&template=1923373,
-https://issuetracker.google.com/issues/new?component=460423, or another public
-forum.
+requests, etc. Those topics are better raised by [reporting a bug in
+WebView](/android_webview/docs/bugreport.md) or on another public form.
 
 ## Code of conduct
 
