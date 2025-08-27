@@ -27,6 +27,7 @@
 #include "chrome/browser/android/compositor/layer_title_cache.h"
 #include "chrome/browser/android/compositor/tab_content_manager.h"
 #include "chrome/browser/ui/android/layouts/scene_layer.h"
+#include "components/viz/common/viz_utils.h"
 #include "content/public/browser/android/compositor.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/peak_gpu_memory_tracker_factory.h"
@@ -67,6 +68,10 @@ jlong JNI_CompositorView_Init(
   }
 
   return reinterpret_cast<intptr_t>(view);
+}
+
+jboolean JNI_CompositorView_PreferRgb565ForDisplay(JNIEnv* env) {
+  return viz::PreferRGB565ResourcesForDisplay();
 }
 
 CompositorView::CompositorView(JNIEnv* env,

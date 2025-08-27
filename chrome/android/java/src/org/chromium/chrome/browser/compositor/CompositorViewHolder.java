@@ -46,7 +46,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.InputHintChecker;
 import org.chromium.base.ObserverList;
-import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -656,8 +655,7 @@ public class CompositorViewHolder extends FrameLayout
             TabContentManager tabContentManager,
             PrefService prefService) {
         mActivity = assumeNonNull(windowAndroid.getActivity().get());
-        mCompositorView.initNativeCompositor(
-                SysUtils.isLowEndDevice(), windowAndroid, tabContentManager);
+        mCompositorView.initNativeCompositor(windowAndroid, tabContentManager);
 
         if (mControlContainer != null) {
             mCompositorView
