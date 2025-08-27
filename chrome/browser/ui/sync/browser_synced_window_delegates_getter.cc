@@ -21,13 +21,15 @@ BrowserSyncedWindowDelegatesGetter::SyncedWindowDelegateMap
 BrowserSyncedWindowDelegatesGetter::GetSyncedWindowDelegates() {
   SyncedWindowDelegateMap synced_window_delegates;
   // Add all the browser windows.
-  for (auto* browser : GetBrowserWindowInterfacesOrderedByActivation()) {
-    if (browser->GetProfile() != profile_) {
-      continue;
-    }
-    auto* const delegate = browser->GetFeatures().synced_window_delegate();
-    synced_window_delegates[delegate->GetSessionId()] = delegate;
-  }
+  ForEachCurrentAndNewBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (browser->GetProfile() != profile_) {
+          return true;  // continue iterating
+        }
+        auto* const delegate = browser->GetFeatures().synced_window_delegate();
+        synced_window_delegates[delegate->GetSessionId()] = delegate;
+        return true;  // continue iterating
+      });
   return synced_window_delegates;
 }
 
