@@ -299,7 +299,7 @@ TEST(NotificationDataTest, DirectionValues) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
-  WTF::HashMap<String, mojom::blink::NotificationDirection> mappings;
+  HashMap<String, mojom::blink::NotificationDirection> mappings;
   mappings.insert("ltr", mojom::blink::NotificationDirection::LEFT_TO_RIGHT);
   mappings.insert("rtl", mojom::blink::NotificationDirection::RIGHT_TO_LEFT);
   mappings.insert("auto", mojom::blink::NotificationDirection::AUTO);

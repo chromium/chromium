@@ -199,8 +199,8 @@ ScriptPromise<IDLUndefined> NDEFReader::scan(ScriptState* script_state,
   GetPermissionService()->RequestPermission(
       CreatePermissionDescriptor(PermissionName::NFC),
       LocalFrame::HasTransientUserActivation(DomWindow()->GetFrame()),
-      WTF::BindOnce(&NDEFReader::ReadOnRequestPermission, WrapPersistent(this),
-                    WrapPersistent(options)));
+      BindOnce(&NDEFReader::ReadOnRequestPermission, WrapPersistent(this),
+               WrapPersistent(options)));
   return scan_resolver_->Promise();
 }
 
@@ -227,9 +227,8 @@ void NDEFReader::ReadOnRequestPermission(
 
   DCHECK(!scan_signal_ || !scan_signal_->aborted());
 
-  nfc_proxy_->StartReading(
-      this,
-      WTF::BindOnce(&NDEFReader::ReadOnRequestCompleted, WrapPersistent(this)));
+  nfc_proxy_->StartReading(this, BindOnce(&NDEFReader::ReadOnRequestCompleted,
+                                          WrapPersistent(this)));
 }
 
 void NDEFReader::ReadOnRequestCompleted(
@@ -349,9 +348,9 @@ ScriptPromise<IDLUndefined> NDEFReader::write(
   GetPermissionService()->RequestPermission(
       CreatePermissionDescriptor(PermissionName::NFC),
       LocalFrame::HasTransientUserActivation(DomWindow()->GetFrame()),
-      WTF::BindOnce(&NDEFReader::WriteOnRequestPermission, WrapPersistent(this),
-                    WrapPersistent(resolver), std::move(scoped_abort_state),
-                    WrapPersistent(options), std::move(message)));
+      BindOnce(&NDEFReader::WriteOnRequestPermission, WrapPersistent(this),
+               WrapPersistent(resolver), std::move(scoped_abort_state),
+               WrapPersistent(options), std::move(message)));
 
   return resolver->Promise();
 }
@@ -387,8 +386,8 @@ void NDEFReader::WriteOnRequestPermission(
   }
 
   auto callback =
-      WTF::BindOnce(&NDEFReader::WriteOnRequestCompleted, WrapPersistent(this),
-                    WrapPersistent(resolver), std::move(scoped_abort_state));
+      BindOnce(&NDEFReader::WriteOnRequestCompleted, WrapPersistent(this),
+               WrapPersistent(resolver), std::move(scoped_abort_state));
   nfc_proxy_->Push(std::move(message),
                    device::mojom::blink::NDEFWriteOptions::From(options),
                    std::move(callback));
@@ -464,9 +463,9 @@ ScriptPromise<IDLUndefined> NDEFReader::makeReadOnly(
   GetPermissionService()->RequestPermission(
       CreatePermissionDescriptor(PermissionName::NFC),
       LocalFrame::HasTransientUserActivation(DomWindow()->GetFrame()),
-      WTF::BindOnce(&NDEFReader::MakeReadOnlyOnRequestPermission,
-                    WrapPersistent(this), WrapPersistent(resolver),
-                    std::move(scoped_abort_state), WrapPersistent(options)));
+      BindOnce(&NDEFReader::MakeReadOnlyOnRequestPermission,
+               WrapPersistent(this), WrapPersistent(resolver),
+               std::move(scoped_abort_state), WrapPersistent(options)));
 
   return resolver->Promise();
 }
@@ -500,9 +499,9 @@ void NDEFReader::MakeReadOnlyOnRequestPermission(
     return;
   }
 
-  auto callback = WTF::BindOnce(&NDEFReader::MakeReadOnlyOnRequestCompleted,
-                                WrapPersistent(this), WrapPersistent(resolver),
-                                std::move(scoped_abort_state));
+  auto callback = BindOnce(&NDEFReader::MakeReadOnlyOnRequestCompleted,
+                           WrapPersistent(this), WrapPersistent(resolver),
+                           std::move(scoped_abort_state));
   nfc_proxy_->MakeReadOnly(std::move(callback));
 }
 

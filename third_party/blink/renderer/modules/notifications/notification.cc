@@ -201,7 +201,7 @@ void Notification::PrepareShow(TimerBase*) {
   }
 
   loader_ = MakeGarbageCollected<NotificationResourcesLoader>(
-      WTF::BindOnce(&Notification::DidLoadResources, WrapWeakPersistent(this)));
+      BindOnce(&Notification::DidLoadResources, WrapWeakPersistent(this)));
   loader_->Start(GetExecutionContext(), *data_);
 }
 

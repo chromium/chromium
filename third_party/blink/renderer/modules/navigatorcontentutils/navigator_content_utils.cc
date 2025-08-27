@@ -227,9 +227,9 @@ void NavigatorContentUtils::registerProtocolHandler(
   if (!document->IsPrerendering()) {
     client->RegisterProtocolHandler(scheme, window->CompleteURL(url));
   } else {
-    document->AddPostPrerenderingActivationStep(WTF::BindOnce(
-        &NavigatorContentUtilsClient::RegisterProtocolHandler,
-        WrapWeakPersistent(client), scheme, window->CompleteURL(url)));
+    document->AddPostPrerenderingActivationStep(
+        BindOnce(&NavigatorContentUtilsClient::RegisterProtocolHandler,
+                 WrapWeakPersistent(client), scheme, window->CompleteURL(url)));
   }
 }
 
@@ -269,9 +269,9 @@ void NavigatorContentUtils::unregisterProtocolHandler(
   if (!document->IsPrerendering()) {
     client->UnregisterProtocolHandler(scheme, window->CompleteURL(url));
   } else {
-    document->AddPostPrerenderingActivationStep(WTF::BindOnce(
-        &NavigatorContentUtilsClient::UnregisterProtocolHandler,
-        WrapWeakPersistent(client), scheme, window->CompleteURL(url)));
+    document->AddPostPrerenderingActivationStep(
+        BindOnce(&NavigatorContentUtilsClient::UnregisterProtocolHandler,
+                 WrapWeakPersistent(client), scheme, window->CompleteURL(url)));
   }
 }
 

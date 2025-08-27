@@ -19,7 +19,7 @@ device::mojom::blink::NDEFRawMessagePtr ConvertNFCDefRawMessage(
   if (!message) {
     return nullptr;
   }
-  WTF::Vector<device::mojom::blink::NDEFRawRecordPtr> records;
+  Vector<device::mojom::blink::NDEFRawRecordPtr> records;
   for (NFCNDEFPayload* record : [message records]) {
     device::mojom::blink::NDEFRawRecordPtr mojo_record =
         device::mojom::blink::NDEFRawRecord::New();
@@ -37,7 +37,7 @@ device::mojom::blink::NDEFRawMessagePtr ConvertNFCDefRawMessage(
 }
 
 device::mojom::blink::NDEFRawMessagePtr ConvertNFCDefMessage(
-    const WTF::Vector<uint8_t>& payload) {
+    const Vector<uint8_t>& payload) {
   return ConvertNFCDefRawMessage([NFCNDEFMessage
       ndefMessageWithData:[NSData dataWithBytes:payload.data()
                                          length:payload.size()]]);
@@ -52,7 +52,7 @@ device::mojom::blink::NDEFRecordPtr CreateEmptyRecord() {
 }
 
 device::mojom::blink::NDEFRecordPtr CreateUnknownRecord(
-    const WTF::Vector<uint8_t>& payload) {
+    const Vector<uint8_t>& payload) {
   auto result = device::mojom::blink::NDEFRecord::New();
   result->category =
       device::mojom::blink::NDEFRecordTypeCategory::kStandardized;
@@ -63,7 +63,7 @@ device::mojom::blink::NDEFRecordPtr CreateUnknownRecord(
 
 device::mojom::blink::NDEFRecordPtr CreateExternalRecord(
     const String& type,
-    const WTF::Vector<uint8_t>& payload) {
+    const Vector<uint8_t>& payload) {
   auto result = device::mojom::blink::NDEFRecord::New();
   result->category = device::mojom::blink::NDEFRecordTypeCategory::kExternal;
   result->record_type = type;
@@ -75,7 +75,7 @@ device::mojom::blink::NDEFRecordPtr CreateExternalRecord(
 
 device::mojom::blink::NDEFRecordPtr CreateMediaRecord(
     const String& type,
-    const WTF::Vector<uint8_t>& payload) {
+    const Vector<uint8_t>& payload) {
   auto result = device::mojom::blink::NDEFRecord::New();
   result->category =
       device::mojom::blink::NDEFRecordTypeCategory::kStandardized;
@@ -87,7 +87,7 @@ device::mojom::blink::NDEFRecordPtr CreateMediaRecord(
 
 device::mojom::blink::NDEFRecordPtr CreateUrlRecord(
     bool absolute,
-    const WTF::Vector<uint8_t>& payload) {
+    const Vector<uint8_t>& payload) {
   auto result = device::mojom::blink::NDEFRecord::New();
   result->category =
       device::mojom::blink::NDEFRecordTypeCategory::kStandardized;
@@ -97,7 +97,7 @@ device::mojom::blink::NDEFRecordPtr CreateUrlRecord(
 }
 
 device::mojom::blink::NDEFRecordPtr CreateTextRecord(
-    const WTF::Vector<uint8_t>& payload) {
+    const Vector<uint8_t>& payload) {
   if (payload.empty()) {
     return nullptr;
   }
@@ -118,7 +118,7 @@ device::mojom::blink::NDEFRecordPtr CreateTextRecord(
 }
 
 device::mojom::blink::NDEFRecordPtr CreateSmartPosterRecord(
-    const WTF::Vector<uint8_t>& payload) {
+    const Vector<uint8_t>& payload) {
   auto result = device::mojom::blink::NDEFRecord::New();
   result->category =
       device::mojom::blink::NDEFRecordTypeCategory::kStandardized;
@@ -131,7 +131,7 @@ device::mojom::blink::NDEFRecordPtr CreateSmartPosterRecord(
 
 device::mojom::blink::NDEFRecordPtr CreateLocalRecord(
     const String& type,
-    const WTF::Vector<uint8_t>& payload) {
+    const Vector<uint8_t>& payload) {
   auto result = device::mojom::blink::NDEFRecord::New();
   result->category = device::mojom::blink::NDEFRecordTypeCategory::kLocal;
   result->record_type = StrCat({":", type});
@@ -143,7 +143,7 @@ device::mojom::blink::NDEFRecordPtr CreateLocalRecord(
 
 device::mojom::blink::NDEFRecordPtr CreateWellKnownRecord(
     const String& type,
-    const WTF::Vector<uint8_t>& payload) {
+    const Vector<uint8_t>& payload) {
   if (type == "U") {
     return CreateUrlRecord(/*absolute=*/false, payload);
   } else if (type == "T") {
