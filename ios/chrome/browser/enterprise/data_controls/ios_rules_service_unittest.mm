@@ -117,8 +117,8 @@ TEST_F(IOSRulesServiceTest, NoRuleSet) {
 }
 
 TEST_F(IOSRulesServiceTest, SourceURL) {
-  // Restriction level is set as `BLOCK`.
   {
+    // Restriction level is set as `BLOCK`.
     SetDataControls(profile_->GetTestingPrefService(), {R"({
                         "name": "block",
                         "rule_id": "1234",
@@ -152,8 +152,8 @@ TEST_F(IOSRulesServiceTest, SourceURL) {
             ->GetCopyRestrictedBySourceVerdict(/*source*/ google_url()));
   }
 
-  // Restriction level is set as `WARN`.
   {
+    // Restriction level is set as `WARN`.
     SetDataControls(profile_->GetTestingPrefService(), {R"({
                         "name": "warn",
                         "rule_id": "1234",
@@ -187,9 +187,9 @@ TEST_F(IOSRulesServiceTest, SourceURL) {
                               /*source*/ google_url()));
   }
 
-  // When multiple rules are triggered, "ALLOW" should have precedence over
-  // any other value.
   {
+    // When multiple rules are triggered, "ALLOW" should have precedence over
+    // any other value.
     SetDataControls(profile_->GetTestingPrefService(), {R"({
                               "name": "allow",
                               "rule_id": "1234",
@@ -204,7 +204,7 @@ TEST_F(IOSRulesServiceTest, SourceURL) {
                               "name": "warn",
                               "rule_id": "5678",
                               "sources": {
-                                "urls": ["https://*"]
+                                "urls": ["google.com"]
                               },
                               "restrictions": [
                                 {"class": "CLIPBOARD", "level": "WARN"}
@@ -234,8 +234,8 @@ TEST_F(IOSRulesServiceTest, SourceURL) {
 }
 
 TEST_F(IOSRulesServiceTest, DestinationURL) {
-  // Restriction level is set as "BLOCK".
   {
+    // Restriction level is set as "BLOCK".
     SetDataControls(profile_->GetTestingPrefService(), {R"({
                               "name": "block",
                               "rule_id": "1234",
@@ -267,8 +267,8 @@ TEST_F(IOSRulesServiceTest, DestinationURL) {
             ->GetCopyRestrictedBySourceVerdict(/*source*/ google_url()));
   }
 
-  // Restriction level is set as "WARN".
   {
+    // Restriction level is set as "WARN".
     SetDataControls(profile_->GetTestingPrefService(), {R"({
                               "name": "warn",
                               "rule_id": "1234",
@@ -300,9 +300,9 @@ TEST_F(IOSRulesServiceTest, DestinationURL) {
             ->GetCopyRestrictedBySourceVerdict(/*source*/ google_url()));
   }
 
-  // When multiple rules are triggered, "ALLOW" should have precedence over
-  // any other value.
   {
+    // When multiple rules are triggered, "ALLOW" should have precedence over
+    // any other value.
     SetDataControls(profile_->GetTestingPrefService(), {R"({
                              "name": "allow",
                              "rule_id": "1234",
@@ -317,7 +317,7 @@ TEST_F(IOSRulesServiceTest, DestinationURL) {
                              "name": "warn",
                              "rule_id": "5678",
                              "destinations": {
-                               "urls": ["https://*"]
+                               "urls": ["google.com"]
                              },
                              "restrictions": [
                                {"class": "CLIPBOARD", "level": "WARN"}
@@ -346,8 +346,8 @@ TEST_F(IOSRulesServiceTest, DestinationURL) {
 }
 
 TEST_F(IOSRulesServiceTest, SourceIncognito) {
-  // Restriction level is set as `BLOCK`.
   {
+    // Restriction level is set as `BLOCK`.
     SetDataControls(profile_->GetTestingPrefService(), {R"({
                                   "name": "block",
                                   "rule_id": "1234",
@@ -387,8 +387,8 @@ TEST_F(IOSRulesServiceTest, SourceIncognito) {
             ->GetCopyRestrictedBySourceVerdict(/*source*/ google_url()));
   }
 
-  // Restriction level is set as `WARN`.
   {
+    // Restriction level is set as `WARN`.
     SetDataControls(profile_->GetTestingPrefService(), {R"({
                                     "name": "warn",
                                     "rule_id": "1234",
@@ -428,9 +428,9 @@ TEST_F(IOSRulesServiceTest, SourceIncognito) {
             ->GetCopyRestrictedBySourceVerdict(/*source*/ google_url()));
   }
 
-  // When multiple rules are triggered, "ALLOW" should have precedence over
-  // any other value.
   {
+    // When multiple rules are triggered, "ALLOW" should have precedence over
+    // any other value.
     SetDataControls(profile_->GetTestingPrefService(), {R"({
                               "name": "allow",
                               "rule_id": "1234",
@@ -482,8 +482,8 @@ TEST_F(IOSRulesServiceTest, SourceIncognito) {
 }
 
 TEST_F(IOSRulesServiceTest, DestinationIncognito) {
-  // Restriction level is set as `BLOCK`.
   {
+    // Restriction level is set as `BLOCK`.
     SetDataControls(profile_->GetTestingPrefService(), {R"({
                                       "name": "block",
                                       "rule_id": "1234",
@@ -515,8 +515,8 @@ TEST_F(IOSRulesServiceTest, DestinationIncognito) {
             ->GetCopyRestrictedBySourceVerdict(/*source*/ google_url()));
   }
 
-  // Restriction level is set as `WARN`.
   {
+    // Restriction level is set as `WARN`.
     SetDataControls(profile_->GetTestingPrefService(), {R"({
                                         "name": "warn",
                                         "rule_id": "1234",
@@ -548,9 +548,9 @@ TEST_F(IOSRulesServiceTest, DestinationIncognito) {
             ->GetCopyRestrictedBySourceVerdict(/*source*/ google_url()));
   }
 
-  // When multiple rules are triggered, "ALLOW" should have precedence over
-  // any other value.
   {
+    // When multiple rules are triggered, "ALLOW" should have precedence over
+    // any other value.
     SetDataControls(profile_->GetTestingPrefService(), {R"({
                                   "name": "allow",
                                   "rule_id": "1234",
@@ -594,8 +594,8 @@ TEST_F(IOSRulesServiceTest, DestinationIncognito) {
 }
 
 TEST_F(IOSRulesServiceTest, SourceOtherProfile) {
-  // Restriction level is set as `BLOCK`.
   {
+    // Restriction level is set as `BLOCK`.
     SetDataControls(profile_->GetTestingPrefService(), {R"({
                             "name": "block",
                             "rule_id": "1234",
@@ -628,8 +628,8 @@ TEST_F(IOSRulesServiceTest, SourceOtherProfile) {
             ->GetCopyRestrictedBySourceVerdict(/*source*/ google_url()));
   }
 
-  // Restriction level is set as `WARN`.
   {
+    // Restriction level is set as `WARN`.
     SetDataControls(profile_->GetTestingPrefService(), {R"({
                                "name": "warn",
                                "rule_id": "1234",
@@ -663,9 +663,9 @@ TEST_F(IOSRulesServiceTest, SourceOtherProfile) {
                             /*source*/ google_url()));
   }
 
-  // When multiple rules are triggered, "ALLOW" should have precedence over
-  // any other value.
   {
+    // When multiple rules are triggered, "ALLOW" should have precedence over
+    // any other value.
     SetDataControls(profile_->GetTestingPrefService(), {R"({
                                      "name": "allow",
                                      "rule_id": "1234",
@@ -709,8 +709,8 @@ TEST_F(IOSRulesServiceTest, SourceOtherProfile) {
 }
 
 TEST_F(IOSRulesServiceTest, DestinationOtherProfile) {
-  // Restriction level is set as `BLOCK`.
   {
+    // Restriction level is set as `BLOCK`.
     SetDataControls(profile_->GetTestingPrefService(), {R"({
                             "name": "block",
                             "rule_id": "1234",
@@ -743,8 +743,8 @@ TEST_F(IOSRulesServiceTest, DestinationOtherProfile) {
             ->GetCopyRestrictedBySourceVerdict(/*source*/ google_url()));
   }
 
-  // Restriction level is set as `WARN`.
   {
+    // Restriction level is set as `WARN`.
     SetDataControls(profile_->GetTestingPrefService(), {R"({
                                "name": "warn",
                                "rule_id": "1234",
@@ -778,9 +778,9 @@ TEST_F(IOSRulesServiceTest, DestinationOtherProfile) {
                             /*source*/ google_url()));
   }
 
-  // When multiple rules are triggered, "ALLOW" should have precedence over
-  // any other value.
   {
+    // When multiple rules are triggered, "ALLOW" should have precedence over
+    // any other value.
     SetDataControls(profile_->GetTestingPrefService(), {R"({
                                      "name": "allow",
                                      "rule_id": "1234",
