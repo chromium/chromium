@@ -476,8 +476,7 @@ void GWSPageLoadMetricsObserver::OnCustomUserTimingMarkObserved(
          is_prerendered_ ? internal::kHistogramPrerenderSuffix
                          : internal::kHistogramNonPrerenderSuffix,
          IsIncognitoProfile() ? internal::kHistogramIncognitoSuffix : "",
-         page_load_metrics::IsServiceWorkerControlled(GetDelegate()) &&
-                 is_header_from_synthetic_response_
+         is_header_from_synthetic_response_
              ? internal::kHistogramSyntheticResponseSuffix
              : ""});
     PAGE_LOAD_HISTOGRAM(histogram_name, timing);

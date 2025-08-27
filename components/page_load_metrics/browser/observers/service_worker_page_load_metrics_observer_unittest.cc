@@ -452,8 +452,6 @@ TEST_F(ServiceWorkerPageLoadMetricsObserverTest,
   NavigateAndCommit(GURL(kDefaultTestUrl));
 
   page_load_metrics::mojom::FrameMetadata metadata;
-  metadata.behavior_flags |=
-      blink::LoadingBehaviorFlag::kLoadingBehaviorServiceWorkerControlled;
   metadata.behavior_flags |= blink::LoadingBehaviorFlag::
       kLoadingBehaviorServiceWorkerSyntheticResponse;
   tester()->SimulateTimingAndMetadataUpdate(timing, metadata);

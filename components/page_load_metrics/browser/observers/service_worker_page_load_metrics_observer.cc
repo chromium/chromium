@@ -121,6 +121,28 @@ enum class ServiceWorkerResourceLoadStatus {
   kMainResourceNotFallbackAndNoSubResource = 7,
 };
 
+bool IsServiceWorkerSyntheticResponseEnabled(
+    const page_load_metrics::PageLoadMetricsObserverDelegate& delegate) {
+  if ((delegate.GetMainFrameMetadata().behavior_flags &
+       blink::LoadingBehaviorFlag::
+           kLoadingBehaviorServiceWorkerSyntheticResponse) != 0) {
+    // TODO(crbug.com/40240298): This is added to ensure the tests correctly set
+    // expected loading behaviors. Remove this CHECK once
+    // `ControllerServiceWorkerMode` is updated.
+    CHECK(!page_load_metrics::IsServiceWorkerControlled(delegate));
+    return true;
+  }
+  return false;
+}
+
+// TODO(crbug.com/40240298): Remove this once `ControllerServiceWorkerMode` is
+// updated.
+bool IsServiceWorkerControlledOrSyntheticResponseEnabled(
+    const page_load_metrics::PageLoadMetricsObserverDelegate& delegate) {
+  return page_load_metrics::IsServiceWorkerControlled(delegate) ||
+         IsServiceWorkerSyntheticResponseEnabled(delegate);
+}
+
 }  // namespace
 
 ServiceWorkerPageLoadMetricsObserver::ServiceWorkerPageLoadMetricsObserver() =
@@ -170,7 +192,7 @@ void ServiceWorkerPageLoadMetricsObserver::OnFirstPaintInPage(
 
 void ServiceWorkerPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  if (!page_load_metrics::IsServiceWorkerControlled(GetDelegate())) {
+  if (!IsServiceWorkerControlledOrSyntheticResponseEnabled(GetDelegate())) {
     if (!page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
             timing.paint_timing->first_contentful_paint, GetDelegate())) {
       return;
@@ -234,7 +256,7 @@ void ServiceWorkerPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
         timing.paint_timing->first_contentful_paint.value());
   }
 
-  if (IsServiceWorkerSyntheticResponseEnabled()) {
+  if (IsServiceWorkerSyntheticResponseEnabled(GetDelegate())) {
     PAGE_LOAD_HISTOGRAM(
         base::StrCat({internal::kHistogramServiceWorkerFirstContentfulPaint,
                       internal::kHistogramSyntheticResponseSuffix}),
@@ -279,7 +301,7 @@ void ServiceWorkerPageLoadMetricsObserver::OnFirstInputInPage(
 
 void ServiceWorkerPageLoadMetricsObserver::OnParseStart(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  if (!page_load_metrics::IsServiceWorkerControlled(GetDelegate())) {
+  if (!IsServiceWorkerControlledOrSyntheticResponseEnabled(GetDelegate())) {
     return;
   }
 
@@ -297,7 +319,7 @@ void ServiceWorkerPageLoadMetricsObserver::OnParseStart(
             timing.parse_timing->parse_start.value());
       }
     }
-    if (IsServiceWorkerSyntheticResponseEnabled()) {
+    if (IsServiceWorkerSyntheticResponseEnabled(GetDelegate())) {
       PAGE_LOAD_HISTOGRAM(
           base::StrCat({internal::kHistogramServiceWorkerParseStart,
                         internal::kHistogramSyntheticResponseSuffix}),
@@ -338,7 +360,7 @@ ServiceWorkerPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
 }
 
 void ServiceWorkerPageLoadMetricsObserver::RecordTimingHistograms() {
-  if (!page_load_metrics::IsServiceWorkerControlled(GetDelegate())) {
+  if (!IsServiceWorkerControlledOrSyntheticResponseEnabled(GetDelegate())) {
     return;
   }
 
@@ -369,7 +391,7 @@ void ServiceWorkerPageLoadMetricsObserver::RecordTimingHistograms() {
               kHistogramServiceWorkerLargestContentfulPaintRaceNetworkRequestEligible,
           all_frames_largest_contentful_paint.Time().value());
     }
-    if (IsServiceWorkerSyntheticResponseEnabled()) {
+    if (IsServiceWorkerSyntheticResponseEnabled(GetDelegate())) {
       PAGE_LOAD_HISTOGRAM(
           base::StrCat({internal::kHistogramServiceWorkerLargestContentfulPaint,
                         internal::kHistogramSyntheticResponseSuffix}),
@@ -381,7 +403,7 @@ void ServiceWorkerPageLoadMetricsObserver::RecordTimingHistograms() {
 
 bool ServiceWorkerPageLoadMetricsObserver::
     IsServiceWorkerFetchHandlerSkippable() {
-  DCHECK(page_load_metrics::IsServiceWorkerControlled(GetDelegate()));
+  CHECK(IsServiceWorkerControlledOrSyntheticResponseEnabled(GetDelegate()));
   return (GetDelegate().GetMainFrameMetadata().behavior_flags &
           blink::LoadingBehaviorFlag::
               kLoadingBehaviorServiceWorkerFetchHandlerSkippable) != 0;
@@ -389,18 +411,10 @@ bool ServiceWorkerPageLoadMetricsObserver::
 
 bool ServiceWorkerPageLoadMetricsObserver::
     IsServiceWorkerEligibleForRaceNetworkRequest() {
-  CHECK(page_load_metrics::IsServiceWorkerControlled(GetDelegate()));
+  CHECK(IsServiceWorkerControlledOrSyntheticResponseEnabled(GetDelegate()));
   return (GetDelegate().GetMainFrameMetadata().behavior_flags &
           blink::LoadingBehaviorFlag::
               kLoadingBehaviorServiceWorkerRaceNetworkRequest);
-}
-
-bool ServiceWorkerPageLoadMetricsObserver::
-    IsServiceWorkerSyntheticResponseEnabled() {
-  CHECK(page_load_metrics::IsServiceWorkerControlled(GetDelegate()));
-  return (GetDelegate().GetMainFrameMetadata().behavior_flags &
-          blink::LoadingBehaviorFlag::
-              kLoadingBehaviorServiceWorkerSyntheticResponse) != 0;
 }
 
 void ServiceWorkerPageLoadMetricsObserver::RecordSubresourceLoad() {
