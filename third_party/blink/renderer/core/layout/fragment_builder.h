@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/animation/animation_trigger.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/named_animation_trigger_map.h"
+#include "third_party/blink/renderer/core/layout/anchor_evaluator_impl.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/break_appeal.h"
 #include "third_party/blink/renderer/core/layout/break_token.h"
@@ -69,6 +70,9 @@ class CORE_EXPORT FragmentBuilder {
     return writing_direction_.GetWritingMode();
   }
   TextDirection Direction() const { return writing_direction_.Direction(); }
+
+  PhysicalAnchorQuery::SetOptions AnchorQuerySetOptionsForChild(
+      const PhysicalFragment&) const;
 
   // Return true if this is a builder for the root fragment.
   bool IsRoot() const;
@@ -200,6 +204,12 @@ class CORE_EXPORT FragmentBuilder {
   // propagated to the |child| from its descendants.
   void PropagateChildAnchors(const PhysicalFragment& child,
                              const LogicalOffset& child_offset);
+  static void PropagateChildAnchors(const PhysicalFragment& child,
+                                    const LogicalOffset& child_offset,
+                                    const LayoutObject& container_object,
+                                    LogicalSize container_logical_size,
+                                    PhysicalAnchorQuery::SetOptions options,
+                                    PhysicalAnchorQuery** out_anchor_query);
 
   const PhysicalAnchorQuery* AnchorQuery() const { return anchor_query_; }
 
@@ -539,7 +549,6 @@ class CORE_EXPORT FragmentBuilder {
 
   GCedHeapVector<Member<LayoutBoxModelObject>>& EnsureStickyDescendants();
   GCedHeapVector<Member<Element>>& EnsureSnapAreas();
-  PhysicalAnchorQuery& EnsureAnchorQuery();
 
   void PropagateFromLayoutResultAndFragment(
       const LayoutResult&,

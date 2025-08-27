@@ -913,7 +913,7 @@ void PhysicalBoxFragment::MutableForOofFragmentation::Merge(
     PhysicalAnchorQuery& anchor_query =
         fragment_.oof_data_->EnsureAnchorQuery();
     for (auto entry : *query) {
-      anchor_query.insert(entry.key, entry.value);
+      anchor_query.Set(entry.key, entry.value);
     }
   }
 

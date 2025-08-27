@@ -206,8 +206,10 @@ class CORE_EXPORT PhysicalAnchorQuery
   // Find and return a valid anchor reference for the specified anchor key.
   // Unless nullptr is returned, the returned anchor reference is guaranteed to
   // have a valid LayoutObject.
-  const PhysicalAnchorReference* AnchorReference(const LayoutBox& query_box,
-                                                 const AnchorKey&) const;
+  const PhysicalAnchorReference* AnchorReference(
+      const LayoutBox& query_box,
+      const LayoutObject* query_box_actual_containing_block,
+      const AnchorKey&) const;
   const LayoutObject* AnchorLayoutObject(const LayoutBox& query_box,
                                          const AnchorKey&) const;
 
@@ -242,11 +244,13 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   AnchorEvaluatorImpl(const LayoutBox& query_box,
                       const PhysicalAnchorQuery& anchor_query,
                       const LayoutObject* implicit_anchor,
+                      const LayoutObject* css_containing_block,
                       WritingDirectionMode container_writing_direction,
                       const PhysicalRect& container_rect)
       : query_box_(&query_box),
         anchor_query_(&anchor_query),
         implicit_anchor_(implicit_anchor),
+        query_box_actual_containing_block_(css_containing_block),
         container_writing_direction_(container_writing_direction),
         container_rect_(container_rect),
         display_locks_affected_by_anchors_(
@@ -359,7 +363,18 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   mutable const PhysicalAnchorQuery* anchor_query_ = nullptr;
   mutable const StitchedAnchorQueries* anchor_queries_ = nullptr;
   const LayoutObject* implicit_anchor_ = nullptr;
+
+  // TODO(crbug.com/436305267): Remove this when StitchedAnchorQueries is
+  // removed.
   const LayoutObject* containing_block_ = nullptr;
+
+  // The (CSS) containing block of the querying element. This should only be set
+  // if the containing block in the physical fragment tree is not the same as
+  // this. This inconsistency happens when OOFs participate in block
+  // fragmentation. If specified, some additional tree-walking will be performed
+  // when looking for acceptable anchors.
+  const LayoutObject* query_box_actual_containing_block_ = nullptr;
+
   WritingDirectionMode container_writing_direction_{WritingMode::kHorizontalTb,
                                                     TextDirection::kLtr};
 

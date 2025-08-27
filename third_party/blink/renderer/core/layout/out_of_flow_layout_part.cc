@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -386,10 +387,22 @@ const Element* GetPositionAnchorElement(
     return nullptr;
   }
   if (const ScopedCSSName* specifier = style.PositionAnchor()) {
+    const LayoutBox& anchored_box = *node.GetLayoutBox();
+
+    // OOFs in fragmentation do not follow the actual containing block structure
+    // (instead they become direct children of a fragmentainer). We need to pass
+    // the actual (CSS) containing block in such cases, in order to determine
+    // which anchors in the list are acceptable.
+    const LayoutObject* actual_containing_block = nullptr;
+    if (anchored_box.MightBeInsideFragmentationContext() &&
+        RuntimeEnabledFeatures::CSSAnchorSimplifiedFragmentationEnabled()) {
+      actual_containing_block = anchored_box.Container();
+    }
+
     if (const PhysicalAnchorReference* reference =
             anchor_query->AnchorReference(
-                *node.GetLayoutBox(),
-                ToAnchorScopedName(*specifier, *node.GetLayoutBox()))) {
+                anchored_box, actual_containing_block,
+                ToAnchorScopedName(*specifier, anchored_box))) {
       DCHECK(!reference->element || reference->GetLayoutObject());
       return reference->element;
     }
@@ -1190,7 +1203,10 @@ void OutOfFlowLayoutPart::LayoutCandidates(
         }
 
         NodeInfo node_info = SetupNodeInfo(candidate);
-        NodeToLayout node_to_layout = {node_info, CalculateOffset(node_info)};
+        NodeToLayout node_to_layout = {
+            node_info,
+            CalculateOffset(node_info,
+                            /*is_inside_fragmentation_context=*/false)};
         const LayoutResult* result = LayoutOOFNode(node_to_layout);
         PhysicalBoxStrut physical_margins =
             node_to_layout.offset_info.node_dimensions.margins
@@ -1404,8 +1420,12 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
 
   // Layout the OOF positioned elements inside the inner multicol.
   OutOfFlowLayoutPart inner_part(&limited_multicol_container_builder);
-  inner_part.outer_oof_layout_part_ =
-      outer_oof_layout_part_ ? outer_oof_layout_part_ : this;
+  if (!RuntimeEnabledFeatures::CSSAnchorSimplifiedFragmentationEnabled()) {
+    // TODO(crbug.com/436305267): Remove `outer_oof_layout_part_` when the
+    // runtime flag is removed.
+    inner_part.outer_oof_layout_part_ =
+        outer_oof_layout_part_ ? outer_oof_layout_part_ : this;
+  }
   inner_part.LayoutFragmentainerDescendants(
       &oof_nodes_to_layout, fragmentainer_progression,
       multicol_info->fixedpos_containing_block.Fragment(), &multicol_children);
@@ -1494,27 +1514,31 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
   DCHECK(multicol_children_ || !outer_context_has_fixedpos_container_);
 
   OutOfFlowLayoutPart* layout_part_for_anchor_query = this;
-  if (outer_oof_layout_part_) {
-    // If this is an inner layout of the nested block fragmentation, and if this
-    // block fragmentation context is block fragmented, |multicol_children|
-    // doesn't have correct block offsets of fragmentainers anchor query needs.
-    // Calculate the anchor query from the outer block fragmentation context
-    // instead in order to get the correct offsets.
-    for (const MulticolChildInfo& multicol_child : *multicol_children) {
-      if (multicol_child.parent_break_token) {
-        layout_part_for_anchor_query = outer_oof_layout_part_;
-        break;
+  std::optional<StitchedAnchorQueries> stitched_anchor_queries;
+  if (!RuntimeEnabledFeatures::CSSAnchorSimplifiedFragmentationEnabled()) {
+    if (outer_oof_layout_part_) {
+      // If this is an inner layout of the nested block fragmentation, and if
+      // this block fragmentation context is block fragmented,
+      // |multicol_children| doesn't have correct block offsets of
+      // fragmentainers anchor query needs.  Calculate the anchor query from the
+      // outer block fragmentation context instead in order to get the correct
+      // offsets.
+      for (const MulticolChildInfo& multicol_child : *multicol_children) {
+        if (multicol_child.parent_break_token) {
+          layout_part_for_anchor_query = outer_oof_layout_part_;
+          break;
+        }
       }
     }
-  }
 
-  BoxFragmentBuilder* builder_for_anchor_query =
-      layout_part_for_anchor_query->container_builder_;
-  StitchedAnchorQueries stitched_anchor_queries(
-      *builder_for_anchor_query->Node().GetLayoutBox(),
-      builder_for_anchor_query->SizeForAnchorQueries(),
-      layout_part_for_anchor_query->FragmentationContextChildren(),
-      builder_for_anchor_query->GetWritingDirection());
+    BoxFragmentBuilder* builder_for_anchor_query =
+        layout_part_for_anchor_query->container_builder_;
+    stitched_anchor_queries.emplace(
+        *builder_for_anchor_query->Node().GetLayoutBox(),
+        builder_for_anchor_query->SizeForAnchorQueries(),
+        layout_part_for_anchor_query->FragmentationContextChildren(),
+        builder_for_anchor_query->GetWritingDirection());
+  }
 
   const bool may_have_anchors_on_oof =
       std::any_of(descendants->begin(), descendants->end(),
@@ -1590,7 +1614,8 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
         //
         // Note |descendant.containing_block.fragment| is |ContainingBlock|, not
         // the CSS containing block.
-        if (!stitched_anchor_queries.IsEmpty() || may_have_anchors_on_oof) {
+        if ((stitched_anchor_queries && !stitched_anchor_queries->IsEmpty()) ||
+            may_have_anchors_on_oof) {
           const LayoutObject* css_containing_block =
               descendant.box->Container();
           DCHECK(css_containing_block);
@@ -1611,7 +1636,11 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
 
         NodeInfo node_info = SetupNodeInfo(descendant);
         NodeToLayout node_to_layout = {
-            node_info, CalculateOffset(node_info, &stitched_anchor_queries)};
+            node_info, CalculateOffset(node_info,
+                                       /*is_inside_fragmentation_context=*/true,
+                                       stitched_anchor_queries
+                                           ? &stitched_anchor_queries.value()
+                                           : nullptr)};
         node_to_layout.containing_block_fragment =
             descendant.containing_block.Fragment();
         node_to_layout.offset_info.original_offset =
@@ -1735,8 +1764,8 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
       // If laying out by containing blocks and there are more containing blocks
       // to be laid out, move on to the next containing block. Before laying
       // them out, if OOFs have anchors, update the anchor queries.
-      if (may_have_anchors_on_oof) {
-        stitched_anchor_queries.SetChildren(
+      if (stitched_anchor_queries && may_have_anchors_on_oof) {
+        stitched_anchor_queries->SetChildren(
             layout_part_for_anchor_query->FragmentationContextChildren());
       }
     }
@@ -1769,6 +1798,7 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
 AnchorEvaluatorImpl OutOfFlowLayoutPart::CreateAnchorEvaluator(
     const ContainingBlockInfo& container_info,
     const BlockNode& candidate,
+    bool is_inside_fragmentation_context,
     const StitchedAnchorQueries* anchor_queries) const {
   const LayoutObject* implicit_anchor = nullptr;
   const LayoutBox& candidate_layout_box = *candidate.GetLayoutBox();
@@ -1783,10 +1813,11 @@ AnchorEvaluatorImpl OutOfFlowLayoutPart::CreateAnchorEvaluator(
   const WritingModeConverter container_converter(
       container_info.writing_direction,
       container_builder_->SizeForAnchorQueries());
-  const PhysicalRect container_rect =
+  PhysicalRect container_rect =
       container_converter.ToPhysical(container_info.rect);
 
   if (anchor_queries) {
+    DCHECK(!RuntimeEnabledFeatures::CSSAnchorSimplifiedFragmentationEnabled());
     // When the containing block is block-fragmented, the |container_builder_|
     // is the fragmentainer, not the containing block, and the coordinate system
     // is stitched. Use the given |anchor_query|.
@@ -1797,12 +1828,81 @@ AnchorEvaluatorImpl OutOfFlowLayoutPart::CreateAnchorEvaluator(
                                container_info.writing_direction,
                                container_rect);
   }
-  if (const PhysicalAnchorQuery* anchor_query =
-          container_builder_->AnchorQuery()) {
-    // Otherwise the |container_builder_| is the containing block.
-    return AnchorEvaluatorImpl(
-        candidate_layout_box, *anchor_query, implicit_anchor,
-        container_info.writing_direction, container_rect);
+
+  const PhysicalAnchorQuery* anchor_query = nullptr;
+  const LayoutObject* actual_containing_block = nullptr;
+  if (is_inside_fragmentation_context &&
+      RuntimeEnabledFeatures::CSSAnchorSimplifiedFragmentationEnabled()) {
+    // The containing block of the OOF is part of the fragmentation context
+    // established by this container. Imagine that fragmentainers are stitched
+    // together, for the purpose of calculating the bounding box of anchors.
+    // This is similar to how OOF insets are treated, and this is why we have to
+    // do the same here, in order to resolve `anchor()` correctly.
+    DCHECK(container_builder_->IsBlockFragmentationContextRoot());
+    wtf_size_t child_count = ChildCount();
+
+    // First calculate the size of all the fragmentainers stitched together.
+    // This is needed in order to convert between physical and logical values.
+    // Note that we only need the block-size. Let's not calculate a bogus
+    // inline-size (the inline-size may not be uniform across all
+    // fragmentainers).
+    LogicalSize stitched_container_size;
+    for (wtf_size_t idx = 0; idx < child_count; idx++) {
+      const PhysicalBoxFragment& fragment = GetChildFragment(idx);
+      if (!fragment.IsFragmentainerBox()) {
+        continue;
+      }
+      LogicalFragment logical_fragment(container_info.writing_direction,
+                                       fragment);
+      stitched_container_size.block_size += logical_fragment.BlockSize();
+    }
+
+    // Reconvert `container_rect`, this time based on the correct block-size.
+    const WritingModeConverter modified_container_converter(
+        container_info.writing_direction, stitched_container_size);
+    container_rect =
+        modified_container_converter.ToPhysical(container_info.rect);
+
+    // Then propagate all descendant anchors to a temporary PhysicalAnchorQuery,
+    // that will be used in place of the PhysicalAnchorQuery of the builder
+    // (which is in the visual coordinate space, which would be wrong here,
+    // since this OOF is containined within the fragmentation context).
+    PhysicalAnchorQuery* stitched_anchor_query = nullptr;
+    LogicalOffset stitched_offset;
+    for (wtf_size_t idx = 0; idx < child_count; idx++) {
+      const PhysicalBoxFragment& fragment = GetChildFragment(idx);
+      if (!fragment.IsFragmentainerBox()) {
+        // Non-fragmentainers, such as column spanners, are not part of the
+        // fragmentation context, and must therefore be ignored here.
+        continue;
+      }
+
+      PhysicalAnchorQuery::SetOptions options =
+          container_builder_->AnchorQuerySetOptionsForChild(fragment);
+
+      const LayoutObject* container_object =
+          container_builder_->GetLayoutObject();
+      CHECK(container_object);
+
+      FragmentBuilder::PropagateChildAnchors(
+          fragment, stitched_offset, *container_object, stitched_container_size,
+          options, &stitched_anchor_query);
+      if (const auto* break_token =
+              To<BlockBreakToken>(fragment.GetBreakToken())) {
+        stitched_offset.block_offset = break_token->ConsumedBlockSize();
+      }
+    }
+    anchor_query = stitched_anchor_query;
+    actual_containing_block = candidate_layout_box.Container();
+  } else {
+    anchor_query = container_builder_->AnchorQuery();
+  }
+
+  if (anchor_query) {
+    return AnchorEvaluatorImpl(candidate_layout_box, *anchor_query,
+                               implicit_anchor, actual_containing_block,
+                               container_info.writing_direction,
+                               container_rect);
   }
   return AnchorEvaluatorImpl();
 }
@@ -1936,7 +2036,9 @@ const LayoutResult* OutOfFlowLayoutPart::LayoutOOFNode(
         // token, causing major confusion everywhere.
         //
         // [1] https://drafts.csswg.org/css-break/#varying-size-boxes
-        offset_info = CalculateOffset(node_info);
+        offset_info = CalculateOffset(
+            node_info,
+            /*is_inside_fragmentation_context=*/fragmentainer_constraint_space);
       }
 
       layout_result = Layout(oof_node_to_layout, fragmentainer_constraint_space,
@@ -2055,14 +2157,16 @@ void SortNonOverflowingCandidates(
 
 OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     const NodeInfo& node_info,
+    bool is_inside_fragmentation_context,
     const StitchedAnchorQueries* anchor_queries) {
   // See non_overflowing_scroll_range.h for documentation.
   HeapVector<NonOverflowingScrollRange> non_overflowing_scroll_ranges;
 
   // Note: This assumes @position-try rounds can't affect
   // writing-mode/position-anchor.
-  AnchorEvaluatorImpl anchor_evaluator = CreateAnchorEvaluator(
-      node_info.base_container_info, node_info.node, anchor_queries);
+  AnchorEvaluatorImpl anchor_evaluator =
+      CreateAnchorEvaluator(node_info.base_container_info, node_info.node,
+                            is_inside_fragmentation_context, anchor_queries);
 
   OOFCandidateStyleIterator iter(
       *node_info.node.GetLayoutBox(), anchor_evaluator,

@@ -495,6 +495,20 @@ bool LayoutObject::IsDescendantOf(const LayoutObject* obj) const {
   return false;
 }
 
+bool LayoutObject::IsContainedBy(const LayoutObject* obj) const {
+  NOT_DESTROYED();
+  AncestorSkipInfo skip_info(obj);
+  for (const LayoutObject* r = this; r; r = r->Container(&skip_info)) {
+    if (r == obj) {
+      return true;
+    }
+    if (skip_info.AncestorSkipped()) {
+      return false;
+    }
+  }
+  return false;
+}
+
 bool LayoutObject::IsInlineRuby() const {
   NOT_DESTROYED();
   return IsLayoutInline() && StyleRef().Display() == EDisplay::kRuby;

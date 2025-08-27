@@ -355,6 +355,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
   bool IsDescendantOf(const LayoutObject*) const;
 
+  // Return true if the specified object is `this`, or in the containing block
+  // chain of `this` object.
+  bool IsContainedBy(const LayoutObject*) const;
+
   LayoutObject* PreviousSibling() const {
     NOT_DESTROYED();
     return previous_.Get();
