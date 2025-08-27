@@ -7095,8 +7095,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SharedDictionaryManagerOnDisk.CacheMaxSize" units="MB"
-    expires_after="2026-01-11">
-  <owner>horo@chromium.org</owner>
+    expires_after="2026-07-01">
+  <owner>pmeenan@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
     The maximum total size of dictionaries that can be stored in the Shared
@@ -7107,8 +7107,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SharedDictionaryManagerOnDisk.DictionarySize"
-    units="bytes" expires_after="2025-12-20">
-  <owner>horo@chromium.org</owner>
+    units="bytes" expires_after="2026-07-01">
+  <owner>pmeenan@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
     The size of shared dictionary written on disk. Emitted when
@@ -7119,8 +7119,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.SharedDictionaryManagerOnDisk.DiskCacheEntryMissingDictionaryCount"
-    units="count" expires_after="2025-08-31">
-  <owner>horo@chromium.org</owner>
+    units="count" expires_after="2026-07-01">
+  <owner>pmeenan@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
     The number of dictionaries evicted as there is no matching disk cache entry.
@@ -7129,8 +7129,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SharedDictionaryManagerOnDisk.InvalidDiskCacheEntryCount"
-    units="count" expires_after="2025-08-31">
-  <owner>horo@chromium.org</owner>
+    units="count" expires_after="2026-07-01">
+  <owner>pmeenan@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
     The number of disk cache entries evicted as the key is invalid for token.
@@ -7140,18 +7140,21 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.SharedDictionaryManagerOnDisk.MetadataMissingDictionaryCount"
-    units="count" expires_after="2025-06-29">
-  <owner>horo@chromium.org</owner>
+    units="count" expires_after="2026-07-01">
+  <owner>pmeenan@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
     The number of disk cache entries evicted as there is no matching metadata.
     Emitted when MismatchingEntryDeletionTask finishes.
+
+    Warning: this histogram was expired from 2024-06-29 to 2024-08-27; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Net.SharedDictionaryManagerOnDisk.PolicySpecifiedCacheMaxSize"
-    units="MB" expires_after="2026-01-11">
-  <owner>horo@chromium.org</owner>
+    units="MB" expires_after="2026-07-01">
+  <owner>pmeenan@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
     The maximum total size of dictionaries that can be stored in the Shared
@@ -7163,8 +7166,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.SharedDictionaryManagerOnDisk.TotalDictionaryCountWhenAdded"
-    units="count" expires_after="2026-01-04">
-  <owner>horo@chromium.org</owner>
+    units="count" expires_after="2026-07-01">
+  <owner>pmeenan@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
     The total count of shared dictionary on disk. Emitted when
@@ -7175,8 +7178,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.SharedDictionaryManagerOnDisk.TotalDictionarySizeWhenAdded"
-    units="MB" expires_after="2026-01-11">
-  <owner>horo@chromium.org</owner>
+    units="MB" expires_after="2026-07-01">
+  <owner>pmeenan@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
     The total size of shared dictionary on disk. Emitted when
@@ -7187,8 +7190,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.SharedDictionaryOnDisk.OpenEntryLatency.{SuccessOrFailure}"
-    units="ms" expires_after="2026-01-11">
-  <owner>horo@chromium.org</owner>
+    units="ms" expires_after="2026-07-01">
+  <owner>pmeenan@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
     The time taken to open a disk cache entry of a shared dictionary. Recorded
@@ -7198,8 +7201,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SharedDictionaryOnDisk.ReadDataLatency.{SuccessOrFailure}"
-    units="ms" expires_after="2026-01-11">
-  <owner>horo@chromium.org</owner>
+    units="ms" expires_after="2026-07-01">
+  <owner>pmeenan@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
     The time taken to read the data of a shared dictionary's disk cache entry.
@@ -7209,8 +7212,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse"
-    enum="Boolean" expires_after="2025-11-02">
-  <owner>horo@chromium.org</owner>
+    enum="Boolean" expires_after="2026-07-01">
+  <owner>pmeenan@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
     Records whether the shared dictionary metadata has been read when
@@ -7219,8 +7222,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SharedDictionaryStorageOnDisk.MetadataReadTime.{Result}"
-    units="ms" expires_after="2026-01-11">
-  <owner>horo@chromium.org</owner>
+    units="ms" expires_after="2026-07-01">
+  <owner>pmeenan@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
     The time taken to read shared dictionary metadata from the database.
@@ -7234,19 +7237,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SharedDictionaryStore.DictionaryCountPerSiteWhenAdded"
-    units="count" expires_after="2024-12-20">
-  <owner>horo@chromium.org</owner>
+    units="count" expires_after="2026-07-01">
+  <owner>pmeenan@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
     The count of shared dictionary per top frame site on metadata. Emitted when
     SQLitePersistentSharedDictionaryStore is writing a dictionary in the
     database.
+
+    Warning: this histogram was expired from 2024-12-20 to 2024-08-27; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Net.SharedDictionaryStore.DictionarySizeKBPerSiteWhenAdded"
-    units="KB" expires_after="2026-01-04">
-  <owner>horo@chromium.org</owner>
+    units="KB" expires_after="2026-07-01">
+  <owner>pmeenan@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
     The size of shared dictionary per top frame site on metadata. Emitted when
@@ -7256,8 +7262,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SharedDictionaryStore.{MethodName}.Error"
-    enum="SharedDictionaryStoreError" expires_after="2026-01-11">
-  <owner>horo@chromium.org</owner>
+    enum="SharedDictionaryStoreError" expires_after="2026-07-01">
+  <owner>pmeenan@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
     Records the status (OK or error code) returned by
@@ -7282,8 +7288,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.SharedDictionaryTransaction.AbortedWhileReadingDictionary.{SuccessOrFailure}"
-    units="ms" expires_after="2026-01-11">
-  <owner>horo@chromium.org</owner>
+    units="ms" expires_after="2026-07-01">
+  <owner>pmeenan@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
     The delay to read a shared dictionary from a SharedDictionaryTransaction
@@ -7296,8 +7302,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.SharedDictionaryTransaction.DictionaryReadLatency.{SuccessOrFailure}"
-    units="ms" expires_after="2026-01-11">
-  <owner>horo@chromium.org</owner>
+    units="ms" expires_after="2026-07-01">
+  <owner>pmeenan@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
     The delay of SharedDictionaryTransaction caused by reading a shared
@@ -7308,8 +7314,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SharedDictionaryTransaction.NetResultWithDict.{CertState}"
-    enum="NetErrorCodes" expires_after="2025-09-07">
-  <owner>horo@chromium.org</owner>
+    enum="NetErrorCodes" expires_after="2026-07-01">
+  <owner>pmeenan@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
     Positive net error codes returned from the network layer for requests with
@@ -7325,8 +7331,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.SharedDictionaryUsedByResponseWhenAvailable2.MainFrame.{ConnectionType}.{CertState}"
-    enum="Boolean" expires_after="2026-01-11">
-  <owner>horo@chromium.org</owner>
+    enum="Boolean" expires_after="2026-07-01">
+  <owner>pmeenan@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
     Records whether the response used a shared dictionary when it was available.
@@ -7348,8 +7354,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.SharedDictionaryUsedResponseErrorCodes2.{DestinationType}.{CertState}"
-    enum="NetErrorCodes" expires_after="2025-09-07">
-  <owner>horo@chromium.org</owner>
+    enum="NetErrorCodes" expires_after="2026-07-01">
+  <owner>pmeenan@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
     Positive net error codes of responses which used shared dictionaries.
@@ -7368,12 +7374,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SharedDictionaryWriterInMemory.DictionarySize"
-    units="bytes" expires_after="2024-12-20">
-  <owner>horo@chromium.org</owner>
+    units="bytes" expires_after="2026-07-01">
+  <owner>pmeenan@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
     The size of shared dictionary written in memory. Emitted when
     SharedDictionaryWriterInMemory succeeded to store the dictionary in memory.
+
+    Warning: this histogram was expired from 2024-12-20 to 2024-08-27; data may
+    be missing.
   </summary>
 </histogram>
 

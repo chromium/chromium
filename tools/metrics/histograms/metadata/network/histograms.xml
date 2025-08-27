@@ -2397,8 +2397,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Network.SharedDictionary.CreateBrotliSourceStreamWithDictionary"
-    units="microseconds" expires_after="2025-08-24">
-  <owner>horo@chromium.org</owner>
+    units="microseconds" expires_after="2026-07-01">
+  <owner>pmeenan@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
     The time spent creating a brotli source stream with a dictionary. Logged
@@ -2411,8 +2411,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.SharedDictionary.CreateZstdSourceStreamWithDictionary"
-    units="microseconds" expires_after="2025-06-08">
-  <owner>horo@chromium.org</owner>
+    units="microseconds" expires_after="2026-07-01">
+  <owner>pmeenan@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
     The time spent creating a zstd source stream with a dictionary. Logged when
@@ -2421,6 +2421,9 @@ chromium-metrics-reviews@google.com.
 
     Note that clients without high-resolution clocks will report 0 for very
     short times.
+
+    Warning: this histogram was expired from 2025-06-08 to 2024-08-27; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -5994,8 +5997,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.TimeToGrantSharedDictionaryAccess" units="ms"
-    expires_after="2026-03-01">
-  <owner>horo@chromium.org</owner>
+    expires_after="2026-07-01">
+  <owner>pmeenan@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
     The time taken to permit the sandbox access to the shared dictionary
