@@ -29,9 +29,9 @@ import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** Unit tests for {@link NavigationAttachmentsMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -173,7 +173,7 @@ public class NavigationAttachmentsMediatorUnitTest {
         mMediator =
                 new NavigationAttachmentsMediator(
                         mContext, mWindowAndroid, mModel, mViewHolder, modelList);
-        modelList.add(new SimpleRecyclerViewAdapter.ListItem(0, new PropertyModel()));
+        modelList.add(new MVCListAdapter.ListItem(0, new PropertyModel()));
         assertEquals(1, modelList.size());
 
         mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, true);

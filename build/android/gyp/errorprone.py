@@ -45,7 +45,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'IdentityHashMapUsage',
     'JavaUtilDate',
     'OverrideThrowableToString',
-    'NonCanonicalType',
     'PatternMatchingInstanceof',
     'RedundantControlFlow',
     'StatementSwitchToExpressionSwitch',

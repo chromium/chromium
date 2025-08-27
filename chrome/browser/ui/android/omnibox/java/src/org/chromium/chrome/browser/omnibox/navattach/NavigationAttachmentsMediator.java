@@ -25,9 +25,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
 import java.util.ArrayList;
@@ -249,7 +249,7 @@ class NavigationAttachmentsMediator {
                         .with(NavigationAttachmentItemProperties.TITLE, title)
                         .with(NavigationAttachmentItemProperties.DESCRIPTION, description)
                         .build();
-        mModelList.add(new SimpleRecyclerViewAdapter.ListItem(itemType, model));
+        mModelList.add(new MVCListAdapter.ListItem(itemType, model));
     }
 
     // Parse GET_CONTENT response, extracting single- or multiple image selections.

@@ -25,7 +25,6 @@ import org.chromium.extensions.ShowAction;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
 @NullMarked
@@ -145,7 +144,7 @@ class ExtensionActionListMediator implements Destroyable {
             Bitmap icon = extensionActionsBridge.getActionIcon(actionId, tabId);
             assert icon != null;
 
-            return new ModelListAdapter.ListItem(
+            return new ListItem(
                     ListItemType.EXTENSION_ACTION,
                     new PropertyModel.Builder(ExtensionActionButtonProperties.ALL_KEYS)
                             .with(ExtensionActionButtonProperties.ICON, icon)

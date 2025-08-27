@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionAction;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridge;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -92,7 +91,7 @@ class ExtensionsMenuMediator implements Destroyable {
             assert action != null;
             Bitmap icon = extensionActionsBridge.getActionIcon(actionId, tabId);
             assert icon != null;
-            return new ModelListAdapter.ListItem(
+            return new ListItem(
                     0,
                     new PropertyModel.Builder(ExtensionsMenuItemProperties.ALL_KEYS)
                             .with(ExtensionsMenuItemProperties.TITLE, action.getTitle())
