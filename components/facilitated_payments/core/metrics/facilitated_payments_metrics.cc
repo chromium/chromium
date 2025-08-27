@@ -109,7 +109,7 @@ void LogPixCodeCopied(ukm::SourceId ukm_source_id) {
 }
 
 void LogPaymentLinkDetected(ukm::SourceId ukm_source_id) {
-  base::UmaHistogramBoolean("FacilitatedPayments.Ewallet.PaymentLinkDetected",
+  base::UmaHistogramBoolean("FacilitatedPayments.PaymentLinkDetected",
                             /*sample=*/true);
   ukm::builders::FacilitatedPayments_PaymentLinkDetected(ukm_source_id)
       .SetPaymentLinkDetected(true)

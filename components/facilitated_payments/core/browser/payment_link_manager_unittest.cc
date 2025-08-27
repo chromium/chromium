@@ -145,10 +145,9 @@ TEST_F(PaymentLinkManagerTest, LogPaymentLinkDetected) {
       supported_payment_link, GURL("https://www.example.com"),
       ukm::UkmRecorder::GetNewSourceID());
 
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Ewallet.PaymentLinkDetected",
-      /*sample=*/true,
-      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample("FacilitatedPayments.PaymentLinkDetected",
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
   auto ukm_entries = ukm_recorder_.GetEntries(
       ukm::builders::FacilitatedPayments_PaymentLinkDetected::kEntryName,
       {ukm::builders::FacilitatedPayments_PaymentLinkDetected::

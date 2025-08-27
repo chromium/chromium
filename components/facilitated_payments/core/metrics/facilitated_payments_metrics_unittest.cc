@@ -62,10 +62,9 @@ TEST(FacilitatedPaymentsMetricsTest, LogEwalletPaymentLinkDetected) {
 
   LogPaymentLinkDetected(ukm::UkmRecorder::GetNewSourceID());
 
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Ewallet.PaymentLinkDetected",
-      /*sample=*/true,
-      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample("FacilitatedPayments.PaymentLinkDetected",
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
 }
 
 TEST(FacilitatedPaymentsMetricsTest, LogPixFopSelectedAndLatency) {
