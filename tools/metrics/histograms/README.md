@@ -37,13 +37,13 @@ Instead of logging in Chromium, custom queries or dashboard analysis over
 existing data can be used. Those should be used only if what you want can be
 trivially derived from a single histogram (plus their `client_id`). For example,
 suppose you have a "feature used" histogram. If you want to measure the number
-of clients who use a feature in a day, you can compute the number of clients who
-uploaded the "feature used = True" value. You don't need to write code to emit
-"did this Chrome client use this feature this day". (It's not even clear how to
-emit that histogram that correctly and reliably. Do you emit it when the browser
-closes? Periodically, every 24 hours? On startup, about the previous day(s)?) In
-some narrow circumstances, if you're careful, server-side analysis is an
-acceptable way to compute metrics.
+of clients who use a feature in a day, you can compute the number of clients
+that uploaded the "feature used = True" value. You don't need to write code to
+emit "did this Chrome client use this feature this day". (It's not even clear
+how to emit that histogram that correctly and reliably. Do you emit it when the
+browser closes? Periodically, every 24 hours? On startup, about the previous
+day(s)?) In some narrow circumstances, if you're careful, server-side analysis
+is an acceptable way to compute metrics.
 
 In short, directly measure what you care about; don't try to derive it from
 other data unless it can be derived trivially.
@@ -169,7 +169,7 @@ won't count the user unless you're analyzing about a year of data.  If you're
 analyzing less than a year of data, people with short sessions are effectively
 unrepresented or underrepresented.
 
-There are two substitute approaches people have taken here:
+There are three substitute approaches people have taken here:
 
 -   Use a `MetricsProvider` to emit at each UMA record, but keep in mind that
     each UMA record may represent different lengths of time. See details in
@@ -177,19 +177,42 @@ There are two substitute approaches people have taken here:
 
 -   Use a
     [`base::RepeatingTimer`](https://source.chromium.org/chromium/chromium/src/+/main:base/timer/timer.h?q=RepeatingTimer)
-    to emit periodically. Reasonable emission intervals are every 1 hour or
-    every 24 hours. Despite what the timer implies, each emit may cover a
-    different length of time. For example, a client who opens Chrome once at
-    10am for one minute, once the next day at 11am for one minute, and once the
-    following day at 12pm for one minute, will emit three times, once per each
-    day. (That's because each day's session is more than 24 hours since the last
-    emit. A `RepeatingTimer` emits on startup if it's been more than the elapsed
-    time since the last emit.) Consequently, there are three data points, each
-    covering a minute, whereas client who used Chrome for 23 hours straight will
-    have a single data point covering 23 hours of hours usage.
+    to emit periodically. This is not perfect. If you emit startup (and then
+    periodically thereafter), the result is overweighting people who restart
+    their browser frequently. If you don't emit on startup, only emitting
+    periodically, then you omit people who have short browsing settings.
 
-    Reminder: it's possible that an active client doesn't emit the histogram in
-    a day.
+    Another possible issue (depending on the type of analysis planned) is that
+    it's possible an active client doesn't emit the histogram in a day. For
+    example, suppose a user starts using Chrome at 11:50pm and uses it for
+    thirty minutes. This user used Chrome over two days. A repeating timer
+    that emits upon startup and every hour thereafter will only be emitted on
+    the first day.
+
+-   Use a
+    [`signin::PersistentRepeatingTimer`](https://source.chromium.org/chromium/chromium/src/+/main:components/signin/public/base/persistent_repeating_timer.h) to emit periodically. Reasonable emission
+    intervals are every 1 hour or every 24 hours.
+
+    This is a marginal improvement from `base::RepeatingTimer` but still far
+    from perfect.
+
+    Despite what the timer implies, each emit may cover a different length of
+    time. For example, suppose the timer is set to emit every 24 hours. Further
+    suppose, a user opens Chrome once at 10am for one minute, once the next
+    day at 11am for one minute, and once the following day at 12pm for one
+    minute. That user will emit three times, once per each day. (That's
+    because each day's session is more than 24 hours since the last emit. A
+    `signin::PersistentRepeatingTimer` emits on startup if it's been more than
+    the elapsed time since the last emit.) Consequently, there are three data
+    points, each covering a minute, whereas a user who used Chrome for 23 hours
+    straight will have a single data point covering 23 hours of hours usage.
+
+    Another possible issue (depending on the type of analysis planned) is that
+    it's possible an active client doesn't emit the histogram in a day. For
+    example, suppose a user starts using Chrome at 11:50pm and uses it for
+    thirty minutes. This user used Chrome over two days. A persistent
+    repeating timer that emits upon startup and every hour thereafter will only
+    be emitted on the first day.
 
 #### Discouraged: Emit when Chrome is conceptually opened
 
