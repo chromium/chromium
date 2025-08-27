@@ -56,14 +56,14 @@ found in the LICENSE file.
         <TextView
             android:id="@+id/promo_title_text"
             android:layout_width="match_parent"
-            android:layout_height="28dp"
+            android:layout_height="31dp"
             android:textAppearance="@style/TextAppearance.Headline"
             android:gravity="center_horizontal|top"
             android:text="@string/archived_tabs_auto_delete_promo_title"/>
         <ScrollView
             android:id="@+id/promo_description_scrollview"
             android:layout_width="match_parent"
-            android:layout_height="41dp"
+            android:layout_height="43dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="24dp"
             android:scrollbars="none"
