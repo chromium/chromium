@@ -65,7 +65,7 @@ class DeveloperPrivateEventRouterShared : public ExtensionRegistryObserver,
   // has changed in a way that may affect the chrome://extensions UI.
   void OnExtensionConfigurationChanged(const ExtensionId& extension_id);
 
-  // TODO(crbug.com/392777363): Make them all private after moving all the
+  // TODO(crbug.com/441212085): Make them all private after moving all the
   // usages to shared.cc.
  protected:
   raw_ptr<Profile> profile_;

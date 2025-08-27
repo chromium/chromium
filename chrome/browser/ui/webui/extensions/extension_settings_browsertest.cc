@@ -31,7 +31,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/test/extension_test_message_listener.h"
 
-// TODO(crbug.com/392777363): Enable on desktop android.
+// TODO(crbug.com/439448148): Enable on desktop android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"  // nogncheck
@@ -48,7 +48,7 @@
 #endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
 class ExtensionSettingsUIBrowserTest : public ExtensionSettingsTestBase {
-// TODO(crbug.com/392777363): Enable on desktop android.
+// TODO(crbug.com/439448148): Enable on desktop android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
  public:
   guest_view::TestGuestViewManager* GetGuestViewManager() {
@@ -62,7 +62,7 @@ class ExtensionSettingsUIBrowserTest : public ExtensionSettingsTestBase {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 };
 
-// TODO(crbug.com/392777363): Enable on desktop android.
+// TODO(crbug.com/439448148): Enable on desktop android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests that viewing a source of the options page works fine.
 // This is a regression test for https://crbug.com/796080.
@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest,
   ASSERT_FALSE(activity_log->is_active());
 }
 
-// TODO(crbug.com/392777363): Enable on desktop android.
+// TODO(crbug.com/439448148): Enable on desktop android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 class ExtensionsActivityLogTest : public ExtensionSettingsUIBrowserTest {
  protected:

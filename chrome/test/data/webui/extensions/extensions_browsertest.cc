@@ -563,7 +563,7 @@ class CrExtensionsManagerTestWithMultipleExtensionTypesInstalled
   }
 };
 
-// TODO(crbug.com/392777363): Enable on desktop android.
+// TODO(crbug.com/439447730): Enable on desktop android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(
     CrExtensionsManagerTestWithMultipleExtensionTypesInstalled,
@@ -642,7 +642,7 @@ class CrExtensionsManagerTestWithIdQueryParam
   }
 };
 
-// TODO(crbug.com/392777363): Enable on desktop android.
+// TODO(crbug.com/439447730): Enable on desktop android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(CrExtensionsManagerTestWithIdQueryParam,
                        UrlNavigationToDetails) {
@@ -730,7 +730,7 @@ class CrExtensionsErrorConsoleTest : public ExtensionSettingsTestBase {
   }
 };
 
-// TODO(crbug.com/392777363): Enable on desktop android.
+// TODO(crbug.com/439447730): Enable on desktop android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(CrExtensionsErrorConsoleTest, TestUpDownErrors) {
   SetDevModeEnabled(true);

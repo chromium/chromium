@@ -1461,7 +1461,7 @@ bool ExtensionTabUtil::OpenOptionsPageFromWebContents(
   const bool open_in_tab = ShouldOpenInTab(extension);
 // Opens the url as instructed by `open_in_tab`. On android we take a different
 // path because the `Browser` object is not available.
-// TODO(crbug.com/392777363): Unify the path on android after browser
+// TODO(crbug.com/441209530): Unify the path on android after browser
 // abstraction is introduced.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   return WindowControllerFromBrowser(chrome::FindBrowserWithTab(web_contents))

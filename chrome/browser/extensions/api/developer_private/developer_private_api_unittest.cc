@@ -93,7 +93,7 @@
 #include "services/service_manager/public/cpp/test/test_connector_factory.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
-// TODO(crbug.com/392777363): Enable on desktop android.
+// TODO(crbug.com/439448250): Enable on desktop android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/extensions/extension_install_ui.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -585,7 +585,7 @@ void DeveloperPrivateApiUnitTest::TestExtensionPrefSetting(
   }
 }
 
-// TODO(crbug.com/392777363): Enable on desktop android.
+// TODO(crbug.com/439448250): Enable on desktop android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 testing::AssertionResult DeveloperPrivateApiUnitTest::TestPackExtensionFunction(
     const base::Value::List& args,
@@ -789,7 +789,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateReload) {
   EXPECT_EQ(extension_id, reloaded_extension->id());
 }
 
-// TODO(crbug.com/392777363): Enable on desktop android.
+// TODO(crbug.com/439448250): Enable on desktop android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test developerPrivate.packDirectory.
 TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivatePackFunction) {
@@ -903,7 +903,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateChoosePath) {
   EXPECT_EQ(std::string("File selection was canceled."), function->GetError());
 }
 
-// TODO(crbug.com/392777363): Enable on desktop android.
+// TODO(crbug.com/439448250): Enable on desktop android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test developerPrivate.loadUnpacked.
 TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateLoadUnpacked) {
@@ -1638,7 +1638,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateDevMode) {
   }
 }
 
-// TODO(crbug.com/392777363): Enable on desktop android.
+// TODO(crbug.com/439448250): Enable on desktop android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedFailsWithoutDevMode) {
   std::unique_ptr<content::WebContents> web_contents(
@@ -1710,7 +1710,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
   EXPECT_TRUE(info.can_load_unpacked);
 }
 
-// TODO(crbug.com/392777363): Enable on desktop android.
+// TODO(crbug.com/439448250): Enable on desktop android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(DeveloperPrivateApiUnitTest, InstallDroppedFileNoDraggedPath) {
   base::AutoReset<bool> disable_ui =
@@ -2224,7 +2224,7 @@ class DeveloperPrivateApiZipFileUnitTest
   base::FilePath expected_extension_install_directory_;
 };
 
-// TODO(crbug.com/392777363): Enable on desktop android.
+// TODO(crbug.com/439448250): Enable on desktop android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(DeveloperPrivateApiZipFileUnitTest, InstallDroppedFileZip) {
   base::FilePath zip_path = data_dir().AppendASCII("simple_empty.zip");
@@ -3032,7 +3032,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
       permissions_manager->HasGrantedHostPermission(*extension_2, kGoogleCom));
 }
 
-// TODO(crbug.com/392777363): Enable on desktop android.
+// TODO(crbug.com/439448250): Enable on desktop android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test uninstalling multiple extensions.
 TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateRemoveMultipleExtensions) {
@@ -3297,7 +3297,7 @@ class DeveloperPrivateApiSupervisedUserUnitTest
   bool ProfileIsSupervised() const override { return true; }
 };
 
-// TODO(crbug.com/392777363): Enable on desktop android.
+// TODO(crbug.com/439448250): Enable on desktop android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests trying to call loadUnpacked when the profile shouldn't be allowed to.
 TEST_F(DeveloperPrivateApiSupervisedUserUnitTest,
@@ -3348,7 +3348,7 @@ class DeveloperPrivateApiWithMV2DeprecationDisabledUnitTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/392777363): Enable on desktop android.
+// TODO(crbug.com/439448250): Enable on desktop android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(DeveloperPrivateApiWithMV2DeprecationWarningUnitTest,
        TestAcknowledgingAnExtension) {
@@ -3420,7 +3420,7 @@ TEST_F(DeveloperPrivateApiWithMV2DeprecationWarningUnitTest,
   EXPECT_TRUE(experiment_manager->DidUserAcknowledgeNoticeGlobally());
 }
 
-// TODO(crbug.com/392777363): Enable on desktop android.
+// TODO(crbug.com/439448250): Enable on desktop android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(DeveloperPrivateApiWithMV2DeprecationDisabledUnitTest,
        TestAcknowledgingAnExtension) {
@@ -3553,7 +3553,7 @@ class DeveloperPrivateApiTransportModeUnitTest
       identity_test_env_profile_adaptor_;
 };
 
-// TODO(crbug.com/392777363): Enable on desktop android. Currently all the
+// TODO(crbug.com/439448250): Enable on desktop android. Currently all the
 // DeveloperPrivateApiTransportModeUnitTest tests block forever on WaitForEvent.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Test that extensions cannot be uploaded if the user is signed out.

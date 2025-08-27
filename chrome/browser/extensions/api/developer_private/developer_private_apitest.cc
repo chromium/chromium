@@ -42,7 +42,7 @@
 #include "extensions/browser/app_window/app_window_registry.h"
 #endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
-// TODO(crbug.com/392777363): Enable on desktop android.
+// TODO(crbug.com/439447971): Enable on desktop android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -121,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectAppWindowView) {
 }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
-// TODO(crbug.com/392777363): Enable on desktop android.
+// TODO(crbug.com/439447971): Enable on desktop android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectEmbeddedOptionsPage) {
   base::FilePath dir;
@@ -290,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   EXPECT_TRUE(DevToolsWindow::FindDevToolsWindow(service_worker_host.get()));
 }
 
-// TODO(crbug.com/392777363): Enable on desktop android.
+// TODO(crbug.com/439447971): Enable on desktop android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // TODO(crbug.com/40882269): The test is flaky on MSAN and Linux. Re-enable it.
 #if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_LINUX)
@@ -480,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectOffscreenDocument) {
   DevToolsWindowTesting::CloseDevToolsWindowSync(dev_tools_window);
 }
 
-// TODO(crbug.com/392777363): Enable on desktop android.
+// TODO(crbug.com/439447971): Enable on desktop android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, UninstallMultipleExtensions) {
   // Load first extension.
@@ -577,7 +577,7 @@ class DeveloperPrivateApiWithMV2DeprecationApiTest
   MV2ExperimentStage experiment_stage_;
 };
 
-// TODO(crbug.com/392777363): Enable on desktop android.
+// TODO(crbug.com/439447971): Enable on desktop android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 INSTANTIATE_TEST_SUITE_P(
     ,
