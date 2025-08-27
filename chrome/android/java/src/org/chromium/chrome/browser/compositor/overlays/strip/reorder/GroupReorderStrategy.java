@@ -300,7 +300,7 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
             movePastAdjacentGroup(stripTabs, interactingTabGroupId, adjTitle, towardEnd);
         } else {
             // Case B: Attempt to drab past ungrouped tab.
-            if (Math.abs(offset) <= getTabSwapThreshold()) return false;
+            if (Math.abs(offset) <= getTabSwapThreshold(/* isPinned= */ false)) return false;
 
             @TabId int tabId = mTabGroupModelFilter.getGroupLastShownTabId(interactingTabGroupId);
             mTabGroupModelFilter.moveRelatedTabs(tabId, adjTabIndex);

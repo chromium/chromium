@@ -56,6 +56,10 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
     // tab reorder threshold = (width(50) - overlap(28)) * constant(0.53) = 11.66
     private static final float DRAG_PAST_TAB_FAIL = 10.f;
     private static final float DRAG_PAST_TAB_SUCCESS = 15.f;
+
+    // pinned tab reorder threshold = (width(108) - overlap(28)) * constant(0.53) = 42.4
+    private static final float DRAG_PAST_PINNED_TAB_SUCCESS = 43.f;
+
     // collapsed group reorder threshold = width(50) * constant(0.53) = 26.5
     private static final float DRAG_PAST_COLLAPSED_GROUP_FAIL = 20.f;
     private static final float DRAG_PAST_COLLAPSED_GROUP_SUCCESS = 30.f;
@@ -172,7 +176,7 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
 
         String message = "Unexpected group margin.";
         float expectedMargin =
-                StripLayoutUtils.getHalfTabWidth(mTabWidthSupplier)
+                StripLayoutUtils.getHalfTabWidth(mTabWidthSupplier, /* isPinned= */ false)
                         * StripLayoutUtils.REORDER_OVERLAP_SWITCH_PERCENTAGE;
         verify(mScrollDelegate).setReorderStartMargin(expectedMargin);
         assertEquals(message, 0, mCollapsedTab.getTrailingMargin(), DELTA);
@@ -235,7 +239,7 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
         tab1.setIsPinned(true);
         tab2.setIsPinned(true);
         testUpdateReorder_success(
-                mUngroupedTab1, TAB_WIDTH, DRAG_PAST_TAB_SUCCESS, /* expectedIndex= */ 2);
+                mUngroupedTab1, TAB_WIDTH, DRAG_PAST_PINNED_TAB_SUCCESS, /* expectedIndex= */ 2);
         verifyMoved();
     }
 
@@ -249,7 +253,7 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
 
         // Though the drag threshold is reached, but pinned tab cannot trigger reorder for an
         // unpinned tab.
-        testUpdateReorder_fail(mUngroupedTab1, DRAG_PAST_TAB_SUCCESS);
+        testUpdateReorder_fail(mUngroupedTab1, DRAG_PAST_PINNED_TAB_SUCCESS);
     }
 
     @Test

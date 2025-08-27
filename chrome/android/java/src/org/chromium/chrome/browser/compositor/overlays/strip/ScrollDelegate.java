@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller;
+import org.chromium.chrome.browser.compositor.overlays.strip.reorder.TabStripDragHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.LocalizationUtils;
 
@@ -247,6 +248,9 @@ public class ScrollDelegate {
     public void setReorderStartMargin(float newStartMargin) {
         float delta = newStartMargin - mReorderStartMargin;
         mReorderStartMargin = newStartMargin;
+
+        // Do not update scroll for pinned tabs.
+        if (TabStripDragHandler.isDraggedTabPinned()) return;
 
         // Adjusts the scrollOffSetLimit here, since the next update cycle (which accounts for the
         // new reorderStartMargin) will not yet have run.

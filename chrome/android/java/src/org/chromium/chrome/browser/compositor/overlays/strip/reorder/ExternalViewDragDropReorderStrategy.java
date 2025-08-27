@@ -88,6 +88,7 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
         mAnimationHost.startAnimations(animationList, null);
     }
 
+    // TODO(crbug.com/441144131): Investigate supporting mixed pin state for multi-select.
     @Override
     public void updateReorderPosition(
             StripLayoutView[] stripViews,
@@ -97,7 +98,9 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
             float deltaX,
             @ReorderType int reorderType) {
         // 1. Adjust by a half tab-width so that we target the nearest tab gap.
-        float adjustedXForDrop = StripLayoutUtils.adjustXForTabDrop(endX, mTabWidthSupplier);
+        boolean isDraggedTabPinned = TabStripDragHandler.isDraggedTabPinned();
+        float adjustedXForDrop =
+                StripLayoutUtils.adjustXForTabDrop(endX, mTabWidthSupplier, isDraggedTabPinned);
 
         // 2. Clear previous "interacting" view if inserting at the start of the strip.
         final float leftEdge;
@@ -115,9 +118,12 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
                         ? adjustedXForDrop > rightEdge
                         : adjustedXForDrop < leftEdge;
 
-        if (inStartGap && mInteractingView != null) {
+        if (inStartGap
+                && mInteractingView != null
+                && isDraggedTabPinned == isHoveredViewPinned(stripViews[0])) {
             mScrollDelegate.setReorderStartMargin(
-                    /* newStartMargin= */ StripLayoutUtils.getHalfTabWidth(mTabWidthSupplier));
+                    /* newStartMargin= */ StripLayoutUtils.getHalfTabWidth(
+                            mTabWidthSupplier, isDraggedTabPinned));
 
             mAnimationHost.finishAnimations();
             ArrayList<Animator> animationList = new ArrayList<>();
@@ -244,14 +250,14 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
                 animationList);
     }
 
-    //TODO:(crbug.com/438523986) Add trailing margin if an unpinned tab hovered on last hovered tab.
+    // TODO:(crbug.com/438523986) Add trailing margin if an unpinned tab hovered on pinned boundary.
     private boolean shouldHaveTrailingMargin(
             StripLayoutView interactingView, boolean isInteracting) {
         if (!isInteracting) return false;
 
-        boolean isHoveredViewPinned =
-                (interactingView instanceof StripLayoutTab tab) && tab.getIsPinned();
-        if (TabStripDragHandler.isDraggedTabPinned() != isHoveredViewPinned) return false;
+        if (TabStripDragHandler.isDraggedTabPinned() != isHoveredViewPinned(interactingView)) {
+            return false;
+        }
 
         if (TabStripDragHandler.canMergeIntoGroupOnDrop()) return true;
 
@@ -264,6 +270,10 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
             return !StripLayoutUtils.isNonTrailingTabInGroup(
                     mTabGroupModelFilter, mModel, (StripLayoutTab) interactingView);
         }
+    }
+
+    private boolean isHoveredViewPinned(StripLayoutView hoveredView) {
+        return (hoveredView instanceof StripLayoutTab tab) && tab.getIsPinned();
     }
 
     // ============================================================================================

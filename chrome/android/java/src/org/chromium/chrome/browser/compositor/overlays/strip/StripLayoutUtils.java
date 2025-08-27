@@ -43,6 +43,9 @@ public class StripLayoutUtils {
     public static final float MAX_TAB_WIDTH_DP = TabUiThemeUtil.getMaxTabStripTabWidthDp();
     public static final float TAB_OVERLAP_WIDTH_DP = 28.f;
 
+    // Pinned tab width.
+    public static final float PINNED_TAB_WIDTH_DP = MIN_TAB_WIDTH_DP;
+
     // Animation Constants.
     public static final int ANIM_TAB_MOVE_MS = 125;
     public static final int ANIM_TAB_SLIDE_OUT_MS = 250;
@@ -180,21 +183,36 @@ public class StripLayoutUtils {
     // Tab util methods
     // ============================================================================================
 
-    /** Returns half of {@code mEffectiveTabWidth}. */
-    public static float getHalfTabWidth(Supplier<Float> tabWidthSupplier) {
-        return getEffectiveTabWidth(tabWidthSupplier) / 2;
+    /**
+     * @param tabWidthSupplier supplies the cached tab width for non-pinned tabs
+     * @param isPinned Whether the tab is pinned; currently always false for grouped tabs.
+     * @return Returns half of {@code mEffectiveTabWidth}.
+     */
+    public static float getHalfTabWidth(Supplier<Float> tabWidthSupplier, boolean isPinned) {
+        return getEffectiveTabWidth(tabWidthSupplier, isPinned) / 2;
     }
 
-    /** Returns the current effective tab width (accounting for overlap). */
-    public static float getEffectiveTabWidth(Supplier<Float> tabWidthSupplier) {
-        return (tabWidthSupplier.get() - TAB_OVERLAP_WIDTH_DP);
+    /**
+     * @param tabWidthSupplier supplies the cached tab width for non-pinned tabs.
+     * @param isPinned Whether the tab is pinned; currently always false for grouped tabs.
+     * @return Returns the current effective tab width (accounting for overlap).
+     */
+    public static float getEffectiveTabWidth(Supplier<Float> tabWidthSupplier, boolean isPinned) {
+        float tabWidth = isPinned ? PINNED_TAB_WIDTH_DP : tabWidthSupplier.get();
+        return (tabWidth - TAB_OVERLAP_WIDTH_DP);
     }
 
-    /** Shifts x by half tab width to accommodate for tab drop. */
-    public static float adjustXForTabDrop(float x, Supplier<Float> tabWidthSupplier) {
+    /**
+     * @param x raw drag X in strip coordinates.
+     * @param tabWidthSupplier supplies the cached tab width for non-pinned tabs.
+     * @param isPinned Whether the tab is pinned; currently always false for grouped tabs.
+     * @return Returns x shifted by half tab width to accommodate for tab drop.
+     */
+    public static float adjustXForTabDrop(
+            float x, Supplier<Float> tabWidthSupplier, boolean isPinned) {
         return x
                 - MathUtils.flipSignIf(
-                        StripLayoutUtils.getHalfTabWidth(tabWidthSupplier),
+                        StripLayoutUtils.getHalfTabWidth(tabWidthSupplier, isPinned),
                         LocalizationUtils.isLayoutRtl());
     }
 

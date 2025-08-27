@@ -264,7 +264,9 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
 
         // Not interacting with tab groups.
         if (!mayDragInOrOutOfGroup) {
-            if (adjTab == null || Math.abs(offset) <= getTabSwapThreshold()) return false;
+            if (adjTab == null || Math.abs(offset) <= getTabSwapThreshold(/* isPinned= */ false)) {
+                return false;
+            }
             moveAdjacentTabPastBlock(adjTab, towardEnd);
             animateViewSliding(StripLayoutUtils.findTabById(stripTabs, adjTab.getId()));
             return true;

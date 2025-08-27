@@ -422,6 +422,7 @@ public class ReorderDelegate {
         return mActiveStrategy != null ? mActiveStrategy.getInteractingView() : null;
     }
 
+    // TODO:(crbug.com/441132620) Confirm whether to allow autoscroll when dropping pinned tab.
     private float computeScrollOffsetDeltaForAutoScroll(
             long time, float stripWidth, float leftMargin, float rightMargin) {
         // 1. Track the delta time since the last auto scroll.
@@ -437,7 +438,8 @@ public class ReorderDelegate {
         // than the interacting view's drawX.
         final float x =
                 isReorderingForTabDrop()
-                        ? StripLayoutUtils.adjustXForTabDrop(mLastReorderX, mTabWidthSupplier)
+                        ? StripLayoutUtils.adjustXForTabDrop(
+                                mLastReorderX, mTabWidthSupplier, /* isPinned= */ false)
                         : mActiveStrategy.getInteractingView().getDrawX();
 
         // 2. Calculate the gutters for accelerating the scroll speed.

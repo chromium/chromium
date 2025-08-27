@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutU
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.INVALID_TIME;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MAX_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MIN_TAB_WIDTH_DP;
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.PINNED_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_OVERLAP_WIDTH_DP;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil.FOLIO_FOOT_LENGTH_DP;
 
@@ -232,9 +233,6 @@ public class StripLayoutHelper
     @VisibleForTesting static final int MAX_HOVER_CARD_DELAY_MS = 800;
     @VisibleForTesting static final int MIN_HOVER_CARD_DELAY_MS = 300;
     private static final int SHOW_HOVER_CARD_WITHOUT_DELAY_TIME_BUFFER = 300;
-
-    // Pinned tab strip.
-    private static final float PINNED_TAB_WIDTH_DP = MIN_TAB_WIDTH_DP;
 
     // An observer that is notified of changes to a {@link TabGroupModelFilter} object.
     private final TabGroupModelFilterObserver mTabGroupModelFilterObserver =
@@ -945,7 +943,7 @@ public class StripLayoutHelper
                 width += getEffectiveTabWidth(/* isPinned= */ true) + tab.getTrailingMargin();
             }
         }
-        return width;
+        return width == 0.f ? 0.f : width + mScrollDelegate.getReorderStartMargin();
     }
 
     /** Returns The visual offset to be applied to the new tab button. */
@@ -4605,8 +4603,8 @@ public class StripLayoutHelper
     }
 
     private float getStartPositionForStripViews() {
-        // Shift all of the strip views over by the the left margin because we're
-        // no longer base lined at 0
+        // Shift all of the strip views over by the the left margin because we're no longer base
+        // lined at 0.
         if (!LocalizationUtils.isLayoutRtl()) {
             return mLeftMargin + mScrollDelegate.getReorderStartMargin();
         } else {
@@ -4942,7 +4940,7 @@ public class StripLayoutHelper
                         || StripLayoutTabDelegate.isTabVisible(stripLayoutTab));
     }
 
-    // TODO(crbug.com/436263003): Update to account for pinned tabs.
+    // TODO(crbug.com/441132620): Update to account for pinned tabs.
     private void handleReorderAutoScrolling(long time) {
         if (!mReorderDelegate.getInReorderMode()) return;
         mReorderDelegate.updateReorderPositionAutoScroll(
@@ -5390,7 +5388,11 @@ public class StripLayoutHelper
 
             // 2. StartX indicates where the external drag enters the  tab strip.
             // Adjust by a half tab-width so that we target the nearest tab gap.
-            float startX = StripLayoutUtils.adjustXForTabDrop(currX, mCachedTabWidthSupplier);
+            float startX =
+                    StripLayoutUtils.adjustXForTabDrop(
+                            currX,
+                            mCachedTabWidthSupplier,
+                            TabStripDragHandler.isDraggedTabPinned());
 
             // 3. Mark the "interacting" view. This is not the DnD dragged view, but rather the view
             // in the strip that is currently being hovered by the DnD drag.

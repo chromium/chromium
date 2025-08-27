@@ -271,7 +271,9 @@ public class TabReorderStrategy extends ReorderStrategyBase {
 
         // Case A: Not interacting with tab groups.
         if (!mayDragInOrOutOfGroup) {
-            if (adjTab == null || Math.abs(offset) <= getTabSwapThreshold()) return false;
+            if (adjTab == null || Math.abs(offset) <= getTabSwapThreshold(curTabPinned)) {
+                return false;
+            }
 
             int destIndex = towardEnd ? curIndex + 1 : curIndex - 1;
             mModel.moveTab(interactingTab.getTabId(), destIndex);
