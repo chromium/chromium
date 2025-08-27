@@ -934,6 +934,13 @@ static bool NeedsResolution(const CSSPrimitiveValue* value) {
     return true;
   }
 
+  // Computed values must be serialized in their canonical form.
+  // TODO(40620723): We could implement a function in the CSSPrimitiveValue
+  // hierarchy to determine if a value is already using canonical units.
+  if (value->IsAngle()) {
+    return true;
+  }
+
   return !value->IsComputationallyIndependent();
 }
 
@@ -944,6 +951,26 @@ static const CSSValue* ResolveLength(
   if (NeedsResolution(primitive_value)) {
     Length length = primitive_value->ConvertToLength(conversion_data);
     return CSSPrimitiveValue::CreateFromLength(length, conversion_data.Zoom());
+  }
+  return value;
+}
+
+static const CSSPrimitiveValue* ResolveAngle(
+    const CSSPrimitiveValue* value,
+    const CSSToLengthConversionData& conversion_data) {
+  if (NeedsResolution(value)) {
+    // The syntax expects an <angle-percentage>, hence <angle> | <percentage>.
+    // Percentages should be resolved against the length of the gradient line,
+    // but in terms of computed style it's serialized as the percentage value
+    // itself.
+    if (value->IsPercentage()) {
+      double percentage = value->ComputePercentage(conversion_data);
+      return CSSNumericLiteralValue::Create(
+          percentage, CSSPrimitiveValue::UnitType::kPercentage);
+    }
+    double angle = value->ComputeDegrees(conversion_data);
+    return CSSNumericLiteralValue::Create(
+        angle, CSSPrimitiveValue::UnitType::kDegrees);
   }
   return value;
 }
@@ -1363,9 +1390,7 @@ const CSSLinearGradientValue* CSSLinearGradientValue::ResolveValuesIfNeeded(
   const CSSValue* first_y = ResolveLength(first_y_, conversion_data);
   const CSSValue* second_x = ResolveLength(second_x_, conversion_data);
   const CSSValue* second_y = ResolveLength(second_y_, conversion_data);
-  // TODO(crbug.com/40620723): We may need a new Length category for degrees,
-  // so it's better to skip the resolution for now.
-  const CSSPrimitiveValue* angle = angle_;
+  const CSSPrimitiveValue* angle = ResolveAngle(angle_, conversion_data);
 
   bool stops_changed = false;
   HeapVector<CSSGradientColorStop> stops;
@@ -1892,10 +1917,10 @@ const CSSRadialGradientValue* CSSRadialGradientValue::ResolveValuesIfNeeded(
   const CSSValue* first_y = ResolveLength(first_y_, conversion_data);
   const CSSValue* second_x = ResolveLength(second_x_, conversion_data);
   const CSSValue* second_y = ResolveLength(second_y_, conversion_data);
-  // TODO(crbug.com/40620723): We may need a new Length category for degrees,
-  // so it's better to skip the resolution for now.
-  const CSSPrimitiveValue* first_radius = first_radius_;
-  const CSSPrimitiveValue* second_radius = second_radius_;
+  const CSSPrimitiveValue* first_radius = DynamicTo<CSSPrimitiveValue>(
+      ResolveLength(first_radius_, conversion_data));
+  const CSSPrimitiveValue* second_radius = DynamicTo<CSSPrimitiveValue>(
+      ResolveLength(second_radius_, conversion_data));
   const auto* end_horizontal_size = DynamicTo<CSSPrimitiveValue>(
       ResolveLength(end_horizontal_size_, conversion_data));
   const auto* end_vertical_size = DynamicTo<CSSPrimitiveValue>(
@@ -2067,18 +2092,13 @@ const CSSConicGradientValue* CSSConicGradientValue::ResolveValuesIfNeeded(
   const CSSValue* y = ResolveLength(y_, conversion_data);
   // TODO(crbug.com/40620723): We may need a new Length category for degrees,
   // so it's better to skip the resolution for now.
-  const CSSPrimitiveValue* from_angle = from_angle_;
+  const CSSPrimitiveValue* from_angle =
+      ResolveAngle(from_angle_, conversion_data);
 
   bool stops_changed = false;
   HeapVector<CSSGradientColorStop> stops;
   for (const auto& stop : stops_) {
-    // TODO(crbug.com/40620723): We may need a new Length category for degrees,
-    // so it's better to skip the resolution for now.
-    const CSSPrimitiveValue* offset = stop.offset_;
-    if (offset && !offset->IsAngle()) {
-      offset =
-          DynamicTo<CSSPrimitiveValue>(ResolveLength(offset, conversion_data));
-    }
+    const auto* offset = ResolveAngle(stop.offset_, conversion_data);
     stops_changed = stops_changed || (offset != stop.offset_);
     stops.push_back(CSSGradientColorStop(offset, stop.color_));
   }
