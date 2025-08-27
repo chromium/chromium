@@ -56,8 +56,12 @@ NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
 // Constants for the MIM configuration.
 CGFloat const kMIMStackSpacing = 16.0;
 CGFloat const kAccountRowHeight = 57.0;
-CGFloat const kMIMViewCornerRadius = 10;
+CGFloat const kMIMViewCornerRadius = 25.0;
+CGFloat const kAccountCellCornerRadius = 10.0;
 CGFloat const kAvatarImageDimension = 30.0;
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+CGFloat const kUpdatedMainViewCornerRadius = 32.0;
+#endif
 
 }  // namespace
 
@@ -386,6 +390,11 @@ CGFloat const kAvatarImageDimension = 30.0;
 
   mainView.backgroundColor = [UIColor colorNamed:kGrey100Color];
   mainView.layer.cornerRadius = kMainViewCornerRadius;
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    mainView.layer.cornerRadius = kUpdatedMainViewCornerRadius;
+  }
+#endif
 
   innerView.translatesAutoresizingMaskIntoConstraints = NO;
   mainView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -405,8 +414,13 @@ CGFloat const kAvatarImageDimension = 30.0;
 
 - (UIStackView*)createUnderTitleViewWithMIM {
   UIView* mainView = [self configureMainView];
-  mainView.backgroundColor = [UIColor colorNamed:kTertiaryBackgroundColor];
+  mainView.backgroundColor = [UIColor colorNamed:kGrey200Color];
   mainView.layer.cornerRadius = kMIMViewCornerRadius;
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    mainView.layer.cornerRadius = kUpdatedMainViewCornerRadius;
+  }
+#endif
 
   _accountTableView = [self createSelectedAccountTableView];
   UIStackView* underTitleView = [[UIStackView alloc]
@@ -421,7 +435,12 @@ CGFloat const kAvatarImageDimension = 30.0;
   UITableView* containerTable = [[UITableView alloc] initWithFrame:CGRectZero];
   containerTable.rowHeight = kAccountRowHeight;
   containerTable.separatorStyle = UITableViewCellSeparatorStyleNone;
-  containerTable.layer.cornerRadius = kMIMViewCornerRadius;
+  containerTable.layer.cornerRadius = kAccountCellCornerRadius;
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    containerTable.layer.cornerRadius = kUpdatedMainViewCornerRadius;
+  }
+#endif
   containerTable.scrollEnabled = NO;
   [containerTable registerClass:[UITableViewCell class]
          forCellReuseIdentifier:@"Account"];
