@@ -108,11 +108,7 @@ constexpr char kDefaultZip[] = "94102";
 constexpr char kDefaultCity[] = "Los Angeles";
 constexpr char kDefaultState[] = "California";
 constexpr char kDefaultCountry[] = "US";
-// Unlike phone numbers from other countries, US phone numbers are stored
-// without a leading "+". Formatting a US or CA phone number drops the leading
-// "+". As these tests check equality, we drop the "+" in the input as it would
-// be gone in the output.
-constexpr char kDefaultPhone[] = "1 650-555-0000";
+constexpr char kDefaultPhone[] = "+1 650-555-0000";
 constexpr char kDefaultPhoneAreaCode[] = "650";
 constexpr char kDefaultPhonePrefix[] = "555";
 constexpr char kDefaultPhoneSuffix[] = "0000";
@@ -125,7 +121,7 @@ constexpr char kSecondAddressLine1[] = "23 Main St";
 constexpr char kSecondZip[] = "94106";
 constexpr char kSecondCity[] = "Los Angeles";
 constexpr char kSecondState[] = "California";
-constexpr char kSecondPhone[] = "1 651-666-1111";
+constexpr char kSecondPhone[] = "+1 651-666-1111";
 constexpr char kSecondPhoneAreaCode[] = "651";
 constexpr char kSecondPhonePrefix[] = "666";
 constexpr char kSecondPhoneSuffix[] = "1111";
@@ -138,7 +134,7 @@ constexpr char kThirdAddressLine1[] = "742 Evergreen Terrace";
 constexpr char kThirdZip[] = "65619";
 constexpr char kThirdCity[] = "Springfield";
 constexpr char kThirdState[] = "Oregon";
-constexpr char kThirdPhone[] = "1 850-777-2222";
+constexpr char kThirdPhone[] = "+1 850-777-2222";
 
 constexpr char kDefaultCreditCardName[] = "Biggie Smalls";
 constexpr char kDefaultCreditCardNumber[] = "4111 1111 1111 1111";

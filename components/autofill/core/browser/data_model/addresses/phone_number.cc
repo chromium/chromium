@@ -196,8 +196,25 @@ std::u16string PhoneNumber::GetInfo(const AutofillType& autofill_type,
   };
 
   switch (type) {
-    case PHONE_HOME_WHOLE_NUMBER:
-      return cached_parsed_phone_.GetWholeNumber();
+    case PHONE_HOME_WHOLE_NUMBER: {
+      std::u16string whole_number_ = cached_parsed_phone_.GetWholeNumber();
+
+      // Drop the leading '+' for US/CA numbers as some sites can't handle the
+      // "+", and in these regions dialing "+1..." is the same as dialing
+      // "1...".
+      // TODO(crbug.com/40311205): Investigate whether the leading "+" is
+      // desirable in other regions. Closed bug crbug.com/98911 contains
+      // additional context.
+      std::string country_code = *profile_->GetAddressCountryCode();
+      if (country_code == "US" || country_code == "CA"){
+        std::string region_code = cached_parsed_phone_.GetRegionCode();
+        if ((region_code == "US" || region_code == "CA") &&
+            whole_number_[0] == u'+') {
+          whole_number_ = whole_number_.substr(1);
+        }
+      }
+      return whole_number_;
+    }
 
     case PHONE_HOME_NUMBER:
       return cached_parsed_phone_.number();

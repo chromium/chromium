@@ -69,18 +69,10 @@ void FormatValidatedNumber(const ::i18n::phonenumbers::PhoneNumber& number,
   std::string processed_number;
   phone_util->Format(number, format, &processed_number);
 
-  std::string region_code;
-  phone_util->GetRegionCodeForNumber(number, &region_code);
-
-  // Drop the leading '+' for US/CA numbers as some sites can't handle the "+",
-  // and in these regions dialing "+1..." is the same as dialing "1...".
-  // TODO(crbug.com/40311205): Investigate whether the leading "+" is desirable
-  // in other regions. Closed bug crbug/98911 contains additional context.
   std::string prefix;
   if (processed_number[0] == '+') {
     processed_number = processed_number.substr(1);
-    if (region_code != "US" && region_code != "CA")
-      prefix = "+";
+    prefix = "+";
   }
 
   if (formatted_number)
@@ -374,7 +366,7 @@ PhoneObject::PhoneObject(std::u16string_view number,
                        &region_, i18n_number.get())) {
     // The phone number was successfully parsed, so store the parsed version.
     // The formatted and normalized versions will be set on the first call to
-    // the coresponding methods.
+    // the corresponding methods.
     i18n_number_ = std::move(i18n_number);
     // `ParsePhoneNumber()` only sets `country_code_` for internationally
     // formatted numbers. `i18n_number_`'s country_code defaults to `region` in,
@@ -450,6 +442,15 @@ const std::u16string& PhoneObject::GetWholeNumber() const {
   }
 
   return whole_number_;
+}
+
+std::string PhoneObject::GetRegionCode() const {
+  std::string region_code;
+  if (i18n_number_){
+    PhoneNumberUtil* phone_util = PhoneNumberUtil::GetInstance();
+    phone_util->GetRegionCodeForNumber(*i18n_number_, &region_code);
+  }
+  return region_code;
 }
 
 }  // namespace i18n
