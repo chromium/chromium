@@ -103,7 +103,8 @@ class ClientSideDetectionIntelligentScanDelegateAndroidTest
  protected:
   ClientSideDetectionIntelligentScanDelegateAndroidTest() {
     feature_list_.InitWithFeatures(
-        {kClientSideDetectionSendIntelligentScanInfoAndroid},
+        {kClientSideDetectionSendIntelligentScanInfoAndroid,
+         kClientSideDetectionShowScamVerdictWarningAndroid},
         {kClientSideDetectionKillswitch});
   }
 };
@@ -261,12 +262,15 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
       IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_UNSPECIFIED));
   EXPECT_FALSE(delegate_->ShouldShowScamWarning(
       IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_TELEMETRY));
-  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
+  EXPECT_TRUE(delegate_->ShouldShowScamWarning(
       IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1));
-  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
+  EXPECT_TRUE(delegate_->ShouldShowScamWarning(
       IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2));
-  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
+  EXPECT_TRUE(delegate_->ShouldShowScamWarning(
       IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT));
+  // Do not show warnings if the enum value is unknown.
+  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
+      static_cast<IntelligentScanVerdict>(12345)));
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
@@ -415,6 +419,29 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTestWithFeatureDisabled,
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(delegate_->IsOnDeviceModelAvailable(
       /*log_failed_eligibility_reason=*/false));
+}
+
+class ClientSideDetectionIntelligentScanDelegateAndroidTestWithWarningDisabled
+    : public ClientSideDetectionIntelligentScanDelegateAndroidTestBase {
+ protected:
+  ClientSideDetectionIntelligentScanDelegateAndroidTestWithWarningDisabled() {
+    feature_list_.InitWithFeatures(
+        {kClientSideDetectionSendIntelligentScanInfoAndroid},
+        {kClientSideDetectionKillswitch,
+         kClientSideDetectionShowScamVerdictWarningAndroid});
+  }
+};
+
+TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTestWithWarningDisabled,
+       ShouldShowScamWarning) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true,
+                 ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SCAM_DETECTION);
+  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
+      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1));
+  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
+      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2));
+  EXPECT_FALSE(delegate_->ShouldShowScamWarning(
+      IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT));
 }
 
 class ClientSideDetectionIntelligentScanDelegateAndroidTestWithKillSwitchEnabled

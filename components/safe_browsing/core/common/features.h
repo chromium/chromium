@@ -100,6 +100,12 @@ BASE_DECLARE_FEATURE(kClientSideDetectionShowLlamaScamVerdictWarning);
 // ClientPhishingResponse.
 BASE_DECLARE_FEATURE(kClientSideDetectionShowScamVerdictWarning);
 
+#if BUILDFLAG(IS_ANDROID)
+// Show a warning to the user that factors in the IntelligentScanVerdict from
+// ClientPhishingResponse on Android.
+BASE_DECLARE_FEATURE(kClientSideDetectionShowScamVerdictWarningAndroid);
+#endif
+
 // Expand CSPP beyond phishing and trigger when vibration API is called on the
 // web page.
 BASE_DECLARE_FEATURE(kClientSideDetectionVibrationApi);
