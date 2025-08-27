@@ -23779,6 +23779,24 @@
             ]
         }
     ],
+    "SkiaGraphiteSmallPathAtlas": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "min_path_size_for_msaa": "32"
+                    },
+                    "enable_features": [
+                        "SkiaGraphiteSmallPathAtlas"
+                    ]
+                }
+            ]
+        }
+    ],
     "SkipDefaultBrowserPromoInFirstRun": [
         {
             "platforms": [
