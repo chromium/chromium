@@ -72,7 +72,6 @@ import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.omnibox.OmniboxFeatureList;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -241,17 +240,17 @@ public class HubToolbarViewUnitTest {
     @Test
     @DisableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS)
     public void testMenuButtonContainerVisibility() {
-        OmniboxFeatures.sAndroidHubSearchEnableOnTabGroupsPane.setForTesting(false);
         mPropertyModel.set(MENU_BUTTON_VISIBLE, false);
         assertEquals(View.INVISIBLE, mMenuButtonContainer.getVisibility());
 
         mPropertyModel.set(MENU_BUTTON_VISIBLE, true);
         assertEquals(View.VISIBLE, mMenuButtonContainer.getVisibility());
-        OmniboxFeatures.sAndroidHubSearchEnableOnTabGroupsPane.setForTesting(true);
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS)
+    @EnableFeatures({
+        OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS + ":enable_hub_search_tab_groups_pane/true"
+    })
     public void testMenuButtonWrapperVisibility() {
         mPropertyModel.set(MENU_BUTTON_VISIBLE, false);
         assertEquals(View.INVISIBLE, mMenuButtonWrapper.getVisibility());

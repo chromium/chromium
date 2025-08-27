@@ -440,7 +440,9 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS})
+    @EnableFeatures({
+        OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS + ":enable_hub_search_tab_groups_pane/true"
+    })
     public void testTypedSuggestionsFromTabGroupsPane_OpenTabGroupSearchSuggestion() {
         String tabGroupTitle = "Test";
         Tab firstTab = mPage.loadedTabElement.value();

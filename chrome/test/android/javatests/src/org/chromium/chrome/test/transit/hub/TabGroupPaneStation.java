@@ -49,7 +49,8 @@ public class TabGroupPaneStation extends HubBaseStation {
                     declareView(toolbarElement.descendant(withId(R.id.toolbar_action_button)));
         }
 
-        if (OmniboxFeatures.sAndroidHubSearchTabGroups.isEnabled()) {
+        if (OmniboxFeatures.sAndroidHubSearchTabGroups.isEnabled()
+                && OmniboxFeatures.sAndroidHubSearchEnableOnTabGroupsPane.getValue()) {
             declareElementFactory(
                     mActivityElement,
                     delayedElements -> {
