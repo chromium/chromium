@@ -178,23 +178,6 @@ class NavigationAttachmentsMediator {
 
     @VisibleForTesting
     void onFilePickerClicked() {
-        mPopup.dismiss();
-        if (mPermissionDelegate.hasPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-            launchFilePicker();
-        } else {
-            mPermissionDelegate.requestPermissions(
-                    new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
-                    (permissions, grantResults) -> {
-                        if (grantResults.length > 0
-                                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                            launchFilePicker();
-                        }
-                    });
-        }
-    }
-
-    @VisibleForTesting
-    void launchFilePicker() {
         var i =
                 new Intent(Intent.ACTION_OPEN_DOCUMENT)
                         .addCategory(Intent.CATEGORY_OPENABLE)

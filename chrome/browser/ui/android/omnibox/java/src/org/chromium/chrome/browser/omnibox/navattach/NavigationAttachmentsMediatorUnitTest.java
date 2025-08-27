@@ -118,28 +118,6 @@ public class NavigationAttachmentsMediatorUnitTest {
     }
 
     @Test
-    public void onFilePickerClicked_permissionGranted_launchesFilePicker() {
-        doReturn(true).when(mWindowAndroid).hasPermission(any());
-        doNothing().when(mMediator).launchFilePicker();
-
-        mMediator.onFilePickerClicked();
-
-        verify(mMediator).launchFilePicker();
-        verify(mWindowAndroid, never()).requestPermissions(any(), any());
-    }
-
-    @Test
-    public void onFilePickerClicked_permissionDenied_requestsPermission() {
-        doReturn(false).when(mWindowAndroid).hasPermission(any());
-        doNothing().when(mMediator).launchFilePicker();
-
-        mMediator.onFilePickerClicked();
-
-        verify(mMediator, never()).launchFilePicker();
-        verify(mWindowAndroid).requestPermissions(any(), any());
-    }
-
-    @Test
     public void onImagePickerClicked_permissionGranted_launchesImagePicker() {
         doReturn(true).when(mWindowAndroid).hasPermission(any());
         doNothing().when(mMediator).launchImagePicker();
