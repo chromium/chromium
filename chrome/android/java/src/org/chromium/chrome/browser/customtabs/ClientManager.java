@@ -138,7 +138,7 @@ class ClientManager {
 
     /** To be called when a client gets disconnected. */
     public interface DisconnectCallback {
-        public void run(SessionHolder<?> session);
+        void run(SessionHolder<?> session);
     }
 
     private static class KeepAliveServiceConnection implements ServiceConnection {

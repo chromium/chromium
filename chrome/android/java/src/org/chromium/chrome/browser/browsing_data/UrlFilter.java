@@ -13,5 +13,5 @@ public interface UrlFilter {
      * @param url The url to be matched.
      * @return Whether this filter matches |url|.
      */
-    public boolean matchesUrl(String url);
+    boolean matchesUrl(String url);
 }

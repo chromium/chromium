@@ -149,7 +149,7 @@ public class CompositorViewHolder extends FrameLayout
 
     /** Interface for the observer of frame requests. */
     public interface FrameRequestObserver {
-        public void onFrameRequested();
+        void onFrameRequested();
     }
 
     private final ObserverList<TouchEventObserver> mTouchEventObservers = new ObserverList<>();

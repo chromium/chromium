@@ -33,7 +33,7 @@ public class CookieControlsServiceBridge {
          * @param enforcement A CookieControlsEnforcement enum type indicating the enforcement rule
          *     for these cookie controls.
          */
-        public void sendCookieControlsUiChanges(
+        void sendCookieControlsUiChanges(
                 boolean checked, @CookieControlsEnforcement int enforcement);
     }
 

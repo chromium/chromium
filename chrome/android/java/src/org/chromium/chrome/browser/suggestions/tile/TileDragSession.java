@@ -52,13 +52,13 @@ class TileDragSession implements TileDragAutoScroll.Delegate {
     /** Listener for drag-and-drop UI stages, and to receive the final result. */
     interface EventListener {
         /** Called when the tile drag session starts. */
-        public void onDragStart();
+        void onDragStart();
 
         /**
          * Called when the tile drag session becomes the dominant UI mode. The implementation should
          * suppress competing UI, e.g., context menu.
          */
-        public void onDragDominate();
+        void onDragDominate();
 
         /**
          * Called when tile drag UI successfully produces result. The implementation should execute
@@ -75,7 +75,7 @@ class TileDragSession implements TileDragAutoScroll.Delegate {
                 SiteSuggestion toSuggestion);
 
         /** Called when the drag UI is cancelled (and no UI refresh takes place). */
-        public void onReorderCancel();
+        void onReorderCancel();
     }
 
     // Scaling factor to shrink the "from" tile in {START, DOMINATE}.

@@ -33,7 +33,7 @@ public class WebApkUpdateReportAbuseDialog implements ModalDialogProperties.Cont
     /** Interface for receiving notifications of user actions. */
     public interface Callback {
         /** Called when the user has selected to uninstall the app. */
-        public void onUninstall();
+        void onUninstall();
     }
 
     private static final String TAG = "UpdateReportAbuseDlg";

@@ -35,7 +35,7 @@ public class ServiceWorkerPaymentAppBridge {
          *
          * @param hasPaymentApps Indicates whether there is an installed SW payment app.
          */
-        public void onHasServiceWorkerPaymentAppsResponse(boolean hasPaymentApps);
+        void onHasServiceWorkerPaymentAppsResponse(boolean hasPaymentApps);
     }
 
     /** The interface for getting all installed SW payment apps' information. */
@@ -45,7 +45,7 @@ public class ServiceWorkerPaymentAppBridge {
          *
          * @param appsInfo Contains all installed SW payment apps' information.
          */
-        public void onGetServiceWorkerPaymentAppsInfo(Map<String, Pair<String, Bitmap>> appsInfo);
+        void onGetServiceWorkerPaymentAppsInfo(Map<String, Pair<String, Bitmap>> appsInfo);
     }
 
     /* package */ ServiceWorkerPaymentAppBridge() {}

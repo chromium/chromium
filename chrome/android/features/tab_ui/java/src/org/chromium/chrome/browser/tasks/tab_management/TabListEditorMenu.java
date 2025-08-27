@@ -48,7 +48,7 @@ public class TabListEditorMenu
                 ActionViewLayoutDelegate {
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({ListItemType.MENU_ITEM})
-    public static @interface ListItemType {
+    public @interface ListItemType {
         int MENU_ITEM = 0;
     }
 

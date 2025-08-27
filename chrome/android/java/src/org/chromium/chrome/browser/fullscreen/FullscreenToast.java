@@ -46,7 +46,7 @@ interface FullscreenToast {
     boolean isVisible();
 
     // Android widget-based fullscreen toast.
-    static class AndroidToast implements FullscreenToast {
+    class AndroidToast implements FullscreenToast {
         private final Activity mActivity;
         private final BooleanSupplier mIsPersistentFullscreenMode;
 

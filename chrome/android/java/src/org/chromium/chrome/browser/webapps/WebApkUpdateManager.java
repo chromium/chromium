@@ -124,7 +124,7 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
     /** Called with update result. */
     public interface WebApkUpdateCallback {
         @CalledByNative("WebApkUpdateCallback")
-        public void onResultFromNative(@WebApkInstallResult int result, boolean relaxUpdates);
+        void onResultFromNative(@WebApkInstallResult int result, boolean relaxUpdates);
     }
 
     public WebApkUpdateManager(
@@ -948,7 +948,7 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
 
     @NativeMethods
     interface Natives {
-        public void storeWebApkUpdateRequestToFile(
+        void storeWebApkUpdateRequestToFile(
                 @JniType("std::string") String updateRequestPath,
                 @JniType("std::string") String startUrl,
                 @JniType("std::string") String scope,
@@ -988,9 +988,9 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
                 int[] updateReasons,
                 Callback<Boolean> callback);
 
-        public void updateWebApkFromFile(
+        void updateWebApkFromFile(
                 @JniType("std::string") String updateRequestPath, WebApkUpdateCallback callback);
 
-        public int getWebApkTargetShellVersion();
+        int getWebApkTargetShellVersion();
     }
 }

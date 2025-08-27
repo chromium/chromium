@@ -132,10 +132,11 @@ public class WebappDataStorage {
 
     /**
      * Called after data has been retrieved from storage.
+     *
      * @param <T> The type of the data being retrieved.
      */
     public interface FetchCallback<T> {
-        public void onDataRetrieved(T readObject);
+        void onDataRetrieved(T readObject);
     }
 
     /**

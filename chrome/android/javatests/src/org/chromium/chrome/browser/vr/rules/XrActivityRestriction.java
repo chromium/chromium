@@ -32,7 +32,7 @@ public @interface XrActivityRestriction {
         SupportedActivity.ALL
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface SupportedActivity {
+    @interface SupportedActivity {
         int CTA = 0; // ChromeTabbedActivity/Normal Chrome
         int CCT = 1; // CustomTabActivity/Chrome Custom Tab
         int WAA = 2; // WebappActivity/Progressive Web App
@@ -43,5 +43,5 @@ public @interface XrActivityRestriction {
      * @return A list of activity restrictions.
      */
     @SupportedActivity
-    public int[] value();
+    int[] value();
 }

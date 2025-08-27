@@ -14,13 +14,14 @@ import java.util.List;
 @NullMarked
 public interface HistoryProvider {
     /** Observer to be notified of browsing history events. */
-    public interface BrowsingHistoryObserver {
+    interface BrowsingHistoryObserver {
         /**
          * Called after {@link BrowsingHistoryBridge#queryHistory(String, long)} is complete.
+         *
          * @param items The items that matched the #queryHistory() parameters.
          * @param hasMorePotentialMatches Whether there are more items that match the query text.
-         *                                This will be false once the entire local history database
-         *                                and remote web history has been searched.
+         *     This will be false once the entire local history database and remote web history has
+         *     been searched.
          */
         void onQueryHistoryComplete(List<HistoryItem> items, boolean hasMorePotentialMatches);
 

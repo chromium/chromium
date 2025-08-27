@@ -28,7 +28,7 @@ public class PageContentProviderMetrics {
         PageContentProviderEvent.QUERY_FAILED_EXCEPTION,
         PageContentProviderEvent.TIMEOUT,
     })
-    public static @interface PageContentProviderEvent {
+    public @interface PageContentProviderEvent {
 
         int GET_CONTENT_URI_FAILED = 0;
         int QUERY = 1;

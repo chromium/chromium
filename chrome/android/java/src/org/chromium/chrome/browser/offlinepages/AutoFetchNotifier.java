@@ -66,9 +66,9 @@ public class AutoFetchNotifier {
     /** Interface for testing. */
     @VisibleForTesting
     public interface TestHooks {
-        public void inProgressNotificationShown(Intent cancelButtonIntent, Intent deleteIntent);
+        void inProgressNotificationShown(Intent cancelButtonIntent, Intent deleteIntent);
 
-        public void completeNotificationShown(Intent clickIntent, Intent deleteIntent);
+        void completeNotificationShown(Intent clickIntent, Intent deleteIntent);
     }
 
     /*

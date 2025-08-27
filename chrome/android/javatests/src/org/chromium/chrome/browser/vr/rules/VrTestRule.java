@@ -15,5 +15,5 @@ public interface VrTestRule extends XrTestRule {
      *
      * @return True if the DON flow is enabled, false otherwise.
      */
-    public boolean isDonEnabled();
+    boolean isDonEnabled();
 }

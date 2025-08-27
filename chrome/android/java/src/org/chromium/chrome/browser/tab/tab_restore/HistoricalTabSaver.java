@@ -15,19 +15,19 @@ import java.util.List;
 @NullMarked
 public interface HistoricalTabSaver {
     /** Destroys the instance. */
-    public void destroy();
+    void destroy();
 
     /**
      * Adds a secondary {@link TabModel} supplier to check if a deleted tab should be added to
      * recent tabs.
      */
-    public void addSecondaryTabModelSupplier(Supplier<TabModel> tabModelSupplier);
+    void addSecondaryTabModelSupplier(Supplier<TabModel> tabModelSupplier);
 
     /**
      * Removes a secondary {@link TabModel} supplier to check if a deleted tab should be added to
      * recent tabs.
      */
-    public void removeSecondaryTabModelSupplier(Supplier<TabModel> tabModelSupplier);
+    void removeSecondaryTabModelSupplier(Supplier<TabModel> tabModelSupplier);
 
     /**
      * Creates a Tab entry in TabRestoreService.

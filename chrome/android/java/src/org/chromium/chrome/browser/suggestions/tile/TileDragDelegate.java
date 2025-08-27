@@ -29,7 +29,7 @@ interface TileDragDelegate {
         ReorderFlow.DRAG_FLOW,
         ReorderFlow.SWAP_FLOW,
     })
-    public @interface ReorderFlow {
+    @interface ReorderFlow {
         int DRAG_FLOW = 0;
         int SWAP_FLOW = 1;
         int NUM_ENTRIES = 2;

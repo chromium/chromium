@@ -80,30 +80,30 @@ import java.util.concurrent.atomic.AtomicReference;
     @Retention(RetentionPolicy.SOURCE)
     /* package */ @interface AppPresence {
         /** Flag for a factory without payment apps. */
-        static final int NO_APPS = 0;
+        int NO_APPS = 0;
 
         /** Flag for a factory with payment apps. */
-        static final int HAVE_APPS = 1;
+        int HAVE_APPS = 1;
     }
 
     @IntDef({AppSpeed.FAST_APP, AppSpeed.SLOW_APP})
     @Retention(RetentionPolicy.SOURCE)
     /* package */ @interface AppSpeed {
         /** Flag for installing a payment app that responds to its invocation fast. */
-        static final int FAST_APP = 0;
+        int FAST_APP = 0;
 
         /** Flag for installing a payment app that responds to its invocation slowly. */
-        static final int SLOW_APP = 1;
+        int SLOW_APP = 1;
     }
 
     @IntDef({FactorySpeed.FAST_FACTORY, FactorySpeed.SLOW_FACTORY})
     @Retention(RetentionPolicy.SOURCE)
     /* package */ @interface FactorySpeed {
         /** Flag for a factory that immediately creates a payment app. */
-        static final int FAST_FACTORY = 0;
+        int FAST_FACTORY = 0;
 
         /** Flag for a factory that creates a payment app with a delay. */
-        static final int SLOW_FACTORY = 1;
+        int SLOW_FACTORY = 1;
     }
 
     /** The expiration month dropdown index for December. */

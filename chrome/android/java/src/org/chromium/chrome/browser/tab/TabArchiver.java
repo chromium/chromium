@@ -17,7 +17,7 @@ import java.util.List;
 public interface TabArchiver extends Destroyable {
 
     /** Provides an interface to observer the declutter process. */
-    public interface Observer {
+    interface Observer {
         /** Called when a declutter pass is completed. */
         default void onDeclutterPassCompleted() {}
 

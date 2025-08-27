@@ -39,7 +39,7 @@ public class ReaderModeActionRateLimiter {
     private static final int INVALID_TIME = -1;
     @Nullable private static ReaderModeActionRateLimiter sInstance;
 
-    public static interface Observer {
+    public interface Observer {
         /** Called when the ac */
         void onWillStartSuppression();
     }

@@ -52,15 +52,15 @@ public class FullscreenVideoPictureInPictureController {
     // Metrics
 
     private @interface MetricsEndReason {
-        static final int RESUME = 0;
+        int RESUME = 0;
         // Obsolete: NAVIGATION = 1;
-        static final int CLOSE = 2;
-        static final int CRASH = 3;
-        static final int NEW_TAB = 4;
-        static final int REPARENT = 5;
-        static final int LEFT_FULLSCREEN = 6;
-        static final int WEB_CONTENTS_LEFT_FULLSCREEN = 7;
-        static final int START = 8;
+        int CLOSE = 2;
+        int CRASH = 3;
+        int NEW_TAB = 4;
+        int REPARENT = 5;
+        int LEFT_FULLSCREEN = 6;
+        int WEB_CONTENTS_LEFT_FULLSCREEN = 7;
+        int START = 8;
     }
 
     private static final float MIN_ASPECT_RATIO = 1 / 2.39f;

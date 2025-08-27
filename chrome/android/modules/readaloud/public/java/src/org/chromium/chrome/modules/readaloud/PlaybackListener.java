@@ -25,7 +25,7 @@ public interface PlaybackListener {
         State.PLAYBACK_CREATION,
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface State {
+    @interface State {
         /** Unknown. */
         int UNKNOWN = 0;
 

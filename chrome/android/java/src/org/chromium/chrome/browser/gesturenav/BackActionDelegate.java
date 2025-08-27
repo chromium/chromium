@@ -18,7 +18,7 @@ public interface BackActionDelegate {
     /** Type of actions triggered by back navigation gesture. */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({ActionType.NAVIGATE_BACK, ActionType.CLOSE_TAB, ActionType.EXIT_APP})
-    public @interface ActionType {
+    @interface ActionType {
         int NAVIGATE_BACK = 0;
         int CLOSE_TAB = 1;
         int EXIT_APP = 2;

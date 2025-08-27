@@ -49,9 +49,9 @@ public class TabListEditorActionViewLayout extends LinearLayout {
     public interface ActionViewLayoutDelegate {
         /**
          * @param visibleActions the list of {@link TabListEditorMenuItem}s with visible action
-         * views.
+         *     views.
          */
-        public void setVisibleActionViews(Set<TabListEditorMenuItem> visibleActions);
+        void setVisibleActionViews(Set<TabListEditorMenuItem> visibleActions);
     }
 
     public TabListEditorActionViewLayout(Context context, AttributeSet attrs) {

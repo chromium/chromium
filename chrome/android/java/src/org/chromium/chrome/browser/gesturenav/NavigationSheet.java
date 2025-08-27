@@ -37,7 +37,7 @@ public interface NavigationSheet {
      * @param bottomSheetController {@link BottomSheetController} object.
      * @return NavigationSheet object.
      */
-    public static NavigationSheet create(
+    static NavigationSheet create(
             View parentView,
             Context context,
             Supplier<BottomSheetController> bottomSheetController,
@@ -55,14 +55,14 @@ public interface NavigationSheet {
     /**
      * @return {@code true} if another instance of NavigationSheet is already showing.
      */
-    public static boolean isInstanceShowing(BottomSheetController controller) {
+    static boolean isInstanceShowing(BottomSheetController controller) {
         if (controller == null) return false;
         return (controller.getCurrentSheetContent() instanceof NavigationSheetCoordinator)
                 && controller.isSheetOpen();
     }
 
     /** Placeholder object that does nothing. Saves lots of null checks. */
-    static final NavigationSheet PLACEHOLDER =
+    NavigationSheet PLACEHOLDER =
             new NavigationSheet() {
                 @Override
                 public void setDelegate(Delegate delegate) {}

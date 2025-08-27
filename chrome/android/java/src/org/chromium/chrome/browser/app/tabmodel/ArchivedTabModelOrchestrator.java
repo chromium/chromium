@@ -81,7 +81,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
          *
          * @param archivedTabModel The {@link TabModel} that was created.
          */
-        public void onTabModelCreated(TabModel archivedTabModel);
+        void onTabModelCreated(TabModel archivedTabModel);
     }
 
     private static @Nullable ProfileKeyedMap<ArchivedTabModelOrchestrator> sProfileMap;

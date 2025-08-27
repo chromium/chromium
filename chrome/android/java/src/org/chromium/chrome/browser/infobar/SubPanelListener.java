@@ -11,10 +11,11 @@ public interface SubPanelListener {
 
     /**
      * Called whenever a sub panel is closed.
+     *
      * @param action one of the action types in {@code InfoBar}
      */
-    public void onPanelClosed(int action);
+    void onPanelClosed(int action);
 
     /** Called to indicate that the current options should be persisted. */
-    public void onOptionsChanged();
+    void onOptionsChanged();
 }

@@ -38,17 +38,18 @@ public class UrlSimilarityScorerUnitTest {
 
     /** Interface to reduce test boilerplate. */
     interface StringToInt {
-        public abstract int run(String s);
+        int run(String s);
     }
 
     /** Interface to reduce test boilerplate. */
     interface StringStringToInteger {
-        public abstract Integer run(String s1, String s2);
+        Integer run(String s1, String s2);
     }
 
     /** Interface to reduce test boilerplate. */
     interface Boolean4ToString {
-        public abstract @Nullable String run(boolean b1, boolean b2, boolean b3, boolean b4);
+        @Nullable
+        String run(boolean b1, boolean b2, boolean b3, boolean b4);
     }
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
