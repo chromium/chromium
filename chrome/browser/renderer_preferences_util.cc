@@ -111,25 +111,56 @@ namespace renderer_preferences_util {
 void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
                               Profile* profile) {
   const PrefService* pref_service = profile->GetPrefs();
-  prefs->accept_languages = GetLanguageListForProfile(
-      profile, pref_service->GetString(language::prefs::kAcceptLanguages));
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_WIN)
+  content::UpdateFontRendererPreferencesFromSystemSettings(prefs);
+#endif
+#if BUILDFLAG(IS_MAC)
+  prefs->focus_ring_color = SkColorSetRGB(0x00, 0x5F, 0xCC);
+#else
+  prefs->focus_ring_color = SkColorSetRGB(0x10, 0x10, 0x10);
+#endif
+#if defined(TOOLKIT_VIEWS)
+  prefs->caret_blink_interval = views::Textfield::GetCaretBlinkInterval();
+#endif
+#if defined(USE_AURA)
+#if BUILDFLAG(IS_CHROMEOS)
+  // This color is 0x544d90fe modulated with 0xffffff.
+  prefs->active_selection_bg_color = SkColorSetRGB(0xCB, 0xE4, 0xFA);
+  prefs->active_selection_fg_color = SK_ColorBLACK;
+  prefs->inactive_selection_bg_color = SkColorSetRGB(0xEA, 0xEA, 0xEA);
+  prefs->inactive_selection_fg_color = SK_ColorBLACK;
+#endif
+#endif
+
+#if defined(USE_AURA) && BUILDFLAG(IS_LINUX)
+  auto* linux_ui_theme = ui::LinuxUiTheme::GetForProfile(profile);
+  if (linux_ui_theme) {
+    if (ThemeServiceFactory::GetForProfile(profile)->UsingSystemTheme()) {
+      linux_ui_theme->GetFocusRingColor(&prefs->focus_ring_color);
+      linux_ui_theme->GetActiveSelectionBgColor(
+          &prefs->active_selection_bg_color);
+      linux_ui_theme->GetActiveSelectionFgColor(
+          &prefs->active_selection_fg_color);
+      linux_ui_theme->GetInactiveSelectionBgColor(
+          &prefs->inactive_selection_bg_color);
+      linux_ui_theme->GetInactiveSelectionFgColor(
+          &prefs->inactive_selection_fg_color);
+    }
+  }
+
+  // If we have a linux_ui object, set the caret blink interval regardless of
+  // whether we're in native theme mode.
+  if (auto* linux_ui = ui::LinuxUi::instance()) {
+    prefs->caret_blink_interval = linux_ui->GetCursorBlinkInterval();
+  }
+#endif
   prefs->enable_referrers = pref_service->GetBoolean(prefs::kEnableReferrers);
   prefs->enable_do_not_track =
       TrackingProtectionSettingsFactory::GetForProfile(profile)
           ->IsDoNotTrackEnabled();
   prefs->enable_encrypted_media =
       pref_service->GetBoolean(prefs::kEnableEncryptedMedia);
-
-#if BUILDFLAG(IS_ANDROID)
-  prefs->uses_platform_autofill = pref_service->GetBoolean(
-      autofill::prefs::kAutofillUsingVirtualViewStructure);
-#else  // if !BUILDFLAG(IS_ANDROID)
-  prefs->caret_browsing_enabled =
-      pref_service->GetBoolean(prefs::kCaretBrowsingEnabled);
-  ui::AXPlatform::GetInstance().SetCaretBrowsingState(
-      prefs->caret_browsing_enabled);
-#endif
-
   prefs->webrtc_ip_handling_policy = blink::ToWebRTCIPHandlingPolicy(
       pref_service->GetString(prefs::kWebRTCIPHandlingPolicy));
 
@@ -172,53 +203,21 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
   const base::Value::List& allowed_urls =
       pref_service->GetList(prefs::kWebRtcLocalIpsAllowedUrls);
   prefs->webrtc_local_ips_allowed_urls = GetLocalIpsAllowedUrls(allowed_urls);
-#if defined(USE_AURA)
-  prefs->focus_ring_color = SkColorSetRGB(0x4D, 0x90, 0xFE);
-#if BUILDFLAG(IS_CHROMEOS)
-  // This color is 0x544d90fe modulated with 0xffffff.
-  prefs->active_selection_bg_color = SkColorSetRGB(0xCB, 0xE4, 0xFA);
-  prefs->active_selection_fg_color = SK_ColorBLACK;
-  prefs->inactive_selection_bg_color = SkColorSetRGB(0xEA, 0xEA, 0xEA);
-  prefs->inactive_selection_fg_color = SK_ColorBLACK;
-#endif
-#endif
-
-#if defined(TOOLKIT_VIEWS)
-  prefs->caret_blink_interval = views::Textfield::GetCaretBlinkInterval();
-#endif
-
-#if defined(USE_AURA) && BUILDFLAG(IS_LINUX)
-  auto* linux_ui_theme = ui::LinuxUiTheme::GetForProfile(profile);
-  if (linux_ui_theme) {
-    if (ThemeServiceFactory::GetForProfile(profile)->UsingSystemTheme()) {
-      linux_ui_theme->GetFocusRingColor(&prefs->focus_ring_color);
-      linux_ui_theme->GetActiveSelectionBgColor(
-          &prefs->active_selection_bg_color);
-      linux_ui_theme->GetActiveSelectionFgColor(
-          &prefs->active_selection_fg_color);
-      linux_ui_theme->GetInactiveSelectionBgColor(
-          &prefs->inactive_selection_bg_color);
-      linux_ui_theme->GetInactiveSelectionFgColor(
-          &prefs->inactive_selection_fg_color);
-    }
-  }
-
-    // If we have a linux_ui object, set the caret blink interval regardless of
-    // whether we're in native theme mode.
-  if (auto* linux_ui = ui::LinuxUi::instance())
-    prefs->caret_blink_interval = linux_ui->GetCursorBlinkInterval();
-#endif
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_WIN)
-  content::UpdateFontRendererPreferencesFromSystemSettings(prefs);
-#endif
-
+  prefs->accept_languages = GetLanguageListForProfile(
+      profile, pref_service->GetString(language::prefs::kAcceptLanguages));
 #if !BUILDFLAG(IS_MAC)
   prefs->plugin_fullscreen_allowed =
       pref_service->GetBoolean(prefs::kFullscreenAllowed);
 #endif
-
+#if BUILDFLAG(IS_ANDROID)
+  prefs->uses_platform_autofill = pref_service->GetBoolean(
+      autofill::prefs::kAutofillUsingVirtualViewStructure);
+#else  // if !BUILDFLAG(IS_ANDROID)
+  prefs->caret_browsing_enabled =
+      pref_service->GetBoolean(prefs::kCaretBrowsingEnabled);
+  ui::AXPlatform::GetInstance().SetCaretBrowsingState(
+      prefs->caret_browsing_enabled);
+#endif
   PrefService* local_state = g_browser_process->local_state();
   if (local_state) {
     prefs->allow_cross_origin_auth_prompt =
@@ -227,12 +226,6 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
     prefs->explicitly_allowed_network_ports =
         ConvertExplicitlyAllowedNetworkPortsPref(local_state);
   }
-
-#if BUILDFLAG(IS_MAC)
-  prefs->focus_ring_color = SkColorSetRGB(0x00, 0x5F, 0xCC);
-#else
-  prefs->focus_ring_color = SkColorSetRGB(0x10, 0x10, 0x10);
-#endif
 
   prefs->view_source_line_wrap_enabled =
       pref_service->GetBoolean(prefs::kViewSourceLineWrappingEnabled);
