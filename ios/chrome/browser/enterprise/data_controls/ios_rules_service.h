@@ -5,7 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_IOS_RULES_SERVICE_H_
 #define IOS_CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_IOS_RULES_SERVICE_H_
 
+#import "components/enterprise/data_controls/core/browser/action_context.h"
 #import "components/enterprise/data_controls/core/browser/rules_service_base.h"
+#import "components/enterprise/data_controls/core/browser/verdict.h"
 
 class ProfileIOS;
 
@@ -21,9 +23,24 @@ class IOSRulesService : public RulesServiceBase {
 
   ~IOSRulesService() override;
 
+  // Returns a clipboard verdict to be applied to a paste action. A nullptr
+  // `source_profile` represents data coming from the OS clipboard.
+  // `destionation_profile` is always expected to have a valid profile.
+  Verdict GetPasteVerdict(const ActionContext& source_context,
+                          const ActionContext& destionation_context,
+                          ProfileIOS* source_profile,
+                          ProfileIOS* destionation_profile);
+
  private:
   // RulesServiceBase override.
   bool incognito_profile() const override;
+
+  // Helpers to help build ActionSource and ActionDestination.
+  ActionSource GetAsActionSource(const ActionContext& source_context,
+                                 ProfileIOS* source_profile) const;
+  ActionDestination GetAsActionDestination(
+      const ActionContext& destination_context,
+      ProfileIOS* destination_profile) const;
 
   const raw_ptr<ProfileIOS> profile_ = nullptr;
 };
