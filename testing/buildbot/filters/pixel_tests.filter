@@ -42,6 +42,7 @@ DiceMigrationServicePixelBrowserTest.*
 *DiceWebSigninInterceptionBubbleV1SyncPromoPixelTest.InvokeUi_*
 *DiceWebSigninInterceptionBubbleV2PixelTest.InvokeUi_*
 DeleteAddressProfileDialogControllerImplTest.InvokeUi_*
+DesktopBnplUiDelegateBrowserTest.*
 DesktopMediaPickerViewsBrowserTest.*
 DesktopPaymentsWindowManagerInteractiveUiTest*
 DocumentPictureInPicturePixelTest.*

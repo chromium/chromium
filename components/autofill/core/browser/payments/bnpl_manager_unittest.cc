@@ -33,6 +33,7 @@
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
+#include "components/autofill/core/browser/ui/payments/bnpl_ui_delegate.h"
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -138,14 +139,21 @@ class TestPaymentsAutofillClientMock : public TestPaymentsAutofillClient {
                base::OnceClosure cancel_callback),
               (override));
   MOCK_METHOD(void, CloseBnplTos, (), (override));
+};
+
+class MockBnplUiDelegate : public BnplUiDelegate {
+ public:
+  MockBnplUiDelegate() = default;
+  ~MockBnplUiDelegate() override = default;
+
   MOCK_METHOD(void,
-              ShowSelectBnplIssuerDialog,
-              (std::vector<BnplIssuerContext>,
-               std::string,
-               base::OnceCallback<void(BnplIssuer)>,
-               base::OnceClosure),
+              ShowSelectBnplIssuerUi,
+              (std::vector<BnplIssuerContext> bnpl_issuer_context,
+               std::string app_locale,
+               base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
+               base::OnceClosure cancel_callback),
               (override));
-  MOCK_METHOD(void, DismissSelectBnplIssuerDialog, (), (override));
+  MOCK_METHOD(void, DismissSelectBnplIssuerUi, (), (override));
 };
 }  // namespace
 
@@ -208,6 +216,10 @@ class BnplManagerTest : public Test {
             autofill_client_.get()));
     autofill_client_->GetPaymentsAutofillClient()
         ->set_payments_network_interface(std::move(payments_network_interface));
+
+    autofill_client_->GetPaymentsAutofillClient()->set_bnpl_ui_delegate(
+        std::make_unique<NiceMock<MockBnplUiDelegate>>());
+
     autofill_driver_ =
         std::make_unique<TestAutofillDriver>(autofill_client_.get());
     auto mock_manager_unique_ptr =
@@ -286,6 +298,11 @@ class BnplManagerTest : public Test {
   TestPaymentsAutofillClientMock& GetPaymentsAutofillClient() {
     return *static_cast<TestPaymentsAutofillClientMock*>(
         autofill_client_->GetPaymentsAutofillClient());
+  }
+
+  MockBnplUiDelegate& GetBnplUiDelegate() {
+    return *static_cast<MockBnplUiDelegate*>(
+        autofill_client_->GetPaymentsAutofillClient()->GetBnplUiDelegate());
   }
 
   void TearDown() override {
@@ -885,7 +902,7 @@ TEST_F(BnplManagerTest, OnPopupWindowCompleted_Failure) {
 }
 
 // Tests that FetchVcnDetails will display an autofill progress dialog.
-TEST_F(BnplManagerTest, FetchVcnDetails_ShowAutofillProgressDialog) {
+TEST_F(BnplManagerTest, FetchVcnDetails_ShowProgressUiForFetchingVcn) {
   bnpl_manager_->OnDidAcceptBnplSuggestion(1'000'000, base::DoNothing());
   test_api(*bnpl_manager_)
       .PopulateManagerWithUserAndBnplIssuerDetails(
@@ -1086,19 +1103,19 @@ TEST_F(BnplManagerTest, OnDidGetLegalMessageFromServer_RpcError) {
   EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
 }
 
-// Tests that `OnDidAcceptBnplSuggestion()` show trigger
-// `ShowSelectBnplIssuerDialog()` call.
-TEST_F(BnplManagerTest, OnDidAcceptBnplSuggestion_ShowSelectBnplIssuerDialog) {
-  EXPECT_CALL(GetPaymentsAutofillClient(), ShowSelectBnplIssuerDialog);
+// Tests that `OnDidAcceptBnplSuggestion()` calls `ShowSelectBnplIssuerUi()` on
+// the UI delegate.
+TEST_F(BnplManagerTest, OnDidAcceptBnplSuggestion_ShowSelectBnplIssuerUi) {
+  EXPECT_CALL(GetBnplUiDelegate(), ShowSelectBnplIssuerUi);
 
   bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
 }
 
 // Tests that the BNPL flow will be reset if the user cancels the select issuer
-// dialog.
-TEST_F(BnplManagerTest, ShowSelectBnplIssuerDialog_UserCancelled) {
+// UI.
+TEST_F(BnplManagerTest, ShowSelectBnplIssuerUi_UserCancelled) {
   InSequence s;
-  EXPECT_CALL(GetPaymentsAutofillClient(), ShowSelectBnplIssuerDialog)
+  EXPECT_CALL(GetBnplUiDelegate(), ShowSelectBnplIssuerUi)
       .WillOnce(base::test::RunOnceCallback<3>());
 
   bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
@@ -1106,21 +1123,21 @@ TEST_F(BnplManagerTest, ShowSelectBnplIssuerDialog_UserCancelled) {
   EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
 }
 
-// Tests that `OnDidGetLegalMessageFromServer` will dismiss
-// the showing issuer selection dialog.
+// Tests that `OnDidGetLegalMessageFromServer` will dismiss the showing issuer
+// selection UI.
 TEST_F(BnplManagerTest,
-       OnDidGetLegalMessageFromServer_DismissSelectBnplIssuerDialog) {
+       OnDidGetLegalMessageFromServer_DismissSelectBnplIssuerUi) {
   const BnplIssuer unlinked_issuer = test::GetTestUnlinkedBnplIssuer();
 
   InSequence s;
-  EXPECT_CALL(GetPaymentsAutofillClient(), ShowSelectBnplIssuerDialog)
+  EXPECT_CALL(GetBnplUiDelegate(), ShowSelectBnplIssuerUi)
       .WillOnce(base::test::RunOnceCallback<2>(unlinked_issuer));
   EXPECT_CALL(*payments_network_interface_,
               GetDetailsForCreateBnplPaymentInstrument)
       .WillOnce(base::test::RunOnceCallback<1>(
           PaymentsAutofillClient::PaymentsRpcResult::kSuccess, kContextToken,
           GetExpectedLegalMessageLines()));
-  EXPECT_CALL(GetPaymentsAutofillClient(), DismissSelectBnplIssuerDialog);
+  EXPECT_CALL(GetBnplUiDelegate(), DismissSelectBnplIssuerUi);
 
   bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
 
@@ -1209,9 +1226,9 @@ TEST_F(BnplManagerTest, OnBnplPaymentInstrumentUpdated_Failure) {
 }
 
 // Tests that `OnRedirectUrlFetched` will dismiss the showing issuer selection
-// dialog.
+// UI.
 TEST_F(BnplManagerTest,
-       OnRedirectUrlFetched_LinkedIssuer_DismissSelectBnplIssuerDialog) {
+       OnRedirectUrlFetched_LinkedIssuer_DismissSelectBnplIssuerUi) {
   BnplFetchUrlResponseDetails response;
   response.redirect_url = kRedirectUrl;
   response.success_url_prefix = GURL("success");
@@ -1219,14 +1236,14 @@ TEST_F(BnplManagerTest,
   response.context_token = kContextToken;
 
   InSequence s;
-  EXPECT_CALL(GetPaymentsAutofillClient(), ShowSelectBnplIssuerDialog)
+  EXPECT_CALL(GetBnplUiDelegate(), ShowSelectBnplIssuerUi)
       .WillOnce(
           base::test::RunOnceCallback<2>(test::GetTestLinkedBnplIssuer()));
   EXPECT_CALL(*payments_network_interface_,
               GetBnplPaymentInstrumentForFetchingUrl)
       .WillOnce(base::test::RunOnceCallback<1>(
           PaymentsAutofillClient::PaymentsRpcResult::kSuccess, response));
-  EXPECT_CALL(GetPaymentsAutofillClient(), DismissSelectBnplIssuerDialog);
+  EXPECT_CALL(GetBnplUiDelegate(), DismissSelectBnplIssuerUi);
 
   bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
 }
@@ -1837,7 +1854,7 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_OrdersEligibleFirst) {
       .WillByDefault(Return(true));
 
   std::vector<BnplIssuerContext> issuer_context;
-  EXPECT_CALL(GetPaymentsAutofillClient(), ShowSelectBnplIssuerDialog)
+  EXPECT_CALL(GetBnplUiDelegate(), ShowSelectBnplIssuerUi)
       .WillOnce(MoveArg<0>(&issuer_context));
 
   bnpl_manager_->OnDidAcceptBnplSuggestion(15'000'000, base::DoNothing());
@@ -1899,7 +1916,7 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_OrdersUneligibleLast) {
       .WillByDefault(Return(true));
 
   std::vector<BnplIssuerContext> issuer_context;
-  EXPECT_CALL(GetPaymentsAutofillClient(), ShowSelectBnplIssuerDialog)
+  EXPECT_CALL(GetBnplUiDelegate(), ShowSelectBnplIssuerUi)
       .WillOnce(MoveArg<0>(&issuer_context));
 
   bnpl_manager_->OnDidAcceptBnplSuggestion(15'000'000, base::DoNothing());
@@ -1933,7 +1950,7 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_IsEligible) {
       .WillByDefault(Return(true));
 
   std::vector<BnplIssuerContext> issuer_context;
-  EXPECT_CALL(GetPaymentsAutofillClient(), ShowSelectBnplIssuerDialog)
+  EXPECT_CALL(GetBnplUiDelegate(), ShowSelectBnplIssuerUi)
       .WillOnce(MoveArg<0>(&issuer_context));
 
   bnpl_manager_->OnDidAcceptBnplSuggestion(15'000'000, base::DoNothing());
@@ -1958,7 +1975,7 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_NotSupportedMerchant) {
       .WillByDefault(Return(false));
 
   std::vector<BnplIssuerContext> issuer_context;
-  EXPECT_CALL(GetPaymentsAutofillClient(), ShowSelectBnplIssuerDialog)
+  EXPECT_CALL(GetBnplUiDelegate(), ShowSelectBnplIssuerUi)
       .WillOnce(MoveArg<0>(&issuer_context));
 
   bnpl_manager_->OnDidAcceptBnplSuggestion(15'000'000, base::DoNothing());
@@ -1984,7 +2001,7 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_CheckoutAmountTooHigh) {
       .WillByDefault(Return(true));
 
   std::vector<BnplIssuerContext> issuer_context;
-  EXPECT_CALL(GetPaymentsAutofillClient(), ShowSelectBnplIssuerDialog)
+  EXPECT_CALL(GetBnplUiDelegate(), ShowSelectBnplIssuerUi)
       .WillOnce(MoveArg<0>(&issuer_context));
 
   bnpl_manager_->OnDidAcceptBnplSuggestion(1'001'000'000, base::DoNothing());
@@ -2010,7 +2027,7 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_CheckoutAmountTooLow) {
       .WillByDefault(Return(true));
 
   std::vector<BnplIssuerContext> issuer_context;
-  EXPECT_CALL(GetPaymentsAutofillClient(), ShowSelectBnplIssuerDialog)
+  EXPECT_CALL(GetBnplUiDelegate(), ShowSelectBnplIssuerUi)
       .WillOnce(MoveArg<0>(&issuer_context));
 
   bnpl_manager_->OnDidAcceptBnplSuggestion(1'001'000'000, base::DoNothing());

@@ -16,6 +16,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/test_utils/valuables_data_test_utils.h"
+#include "components/autofill/core/browser/ui/payments/bnpl_ui_delegate.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
@@ -751,6 +752,16 @@ TEST_F(ChromePaymentsAutofillClientTest, GetBnplStrategy) {
 
   // Test that the same instance is returned on subsequent calls.
   EXPECT_EQ(strategy, chrome_payments_client()->GetBnplStrategy());
+}
+
+// Test that BNPL UI delegate is created and returned correctly.
+TEST_F(ChromePaymentsAutofillClientTest, GetBnplUiDelegate) {
+  payments::BnplUiDelegate* ui_delegate =
+      chrome_payments_client()->GetBnplUiDelegate();
+  ASSERT_NE(ui_delegate, nullptr);
+
+  // Test that the same instance is returned on subsequent calls.
+  EXPECT_EQ(ui_delegate, chrome_payments_client()->GetBnplUiDelegate());
 }
 
 #if !BUILDFLAG(IS_ANDROID)

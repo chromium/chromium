@@ -33,6 +33,7 @@
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
+#include "components/autofill/core/browser/ui/payments/bnpl_ui_delegate.h"
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller_impl.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 
@@ -111,11 +112,12 @@ void BnplManager::OnDidAcceptBnplSuggestion(
               .GetBnplStrategy()
               ->GetNextActionOnBnplSuggestionAcceptance()) {
     case kShowSelectBnplIssuerDialog:
-      payments_autofill_client().ShowSelectBnplIssuerDialog(
-          GetSortedBnplIssuerContext(), ongoing_flow_state_->app_locale,
-          base::BindOnce(&BnplManager::OnIssuerSelected,
-                         weak_factory_.GetWeakPtr()),
-          base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()));
+      CHECK_DEREF(payments_autofill_client().GetBnplUiDelegate())
+          .ShowSelectBnplIssuerUi(
+              GetSortedBnplIssuerContext(), ongoing_flow_state_->app_locale,
+              base::BindOnce(&BnplManager::OnIssuerSelected,
+                             weak_factory_.GetWeakPtr()),
+              base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()));
       break;
     case kCheckAmountExtractionBeforeContinuingFlow:
       // TODO(crbug.com/430575808): Implement Android flow logic to show
@@ -335,9 +337,10 @@ void BnplManager::OnDidGetLegalMessageFromServer(
     PaymentsAutofillClient::PaymentsRpcResult result,
     std::string context_token,
     LegalMessageLines legal_message) {
-  // Dismiss the loading throbber in the issuer selection dialog after the
-  // server call completion to show the next dialog.
-  payments_autofill_client().DismissSelectBnplIssuerDialog();
+  // Dismiss the loading throbber in the issuer selection UI after the server
+  // call completion to show the next UI.
+  CHECK(payments_autofill_client().GetBnplUiDelegate());
+  payments_autofill_client().GetBnplUiDelegate()->DismissSelectBnplIssuerUi();
 
   if (result == payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
     ongoing_flow_state_->context_token = std::move(context_token);
@@ -404,11 +407,12 @@ void BnplManager::FetchRedirectUrl() {
 void BnplManager::OnRedirectUrlFetched(
     PaymentsAutofillClient::PaymentsRpcResult result,
     const BnplFetchUrlResponseDetails& response) {
+  CHECK(payments_autofill_client().GetBnplUiDelegate());
   if (ongoing_flow_state_->issuer.payment_instrument().has_value() &&
       !AcceptTosActionRequired()) {
     // If the BNPL issuer selected is linked and doesn't require ToS acceptance,
-    // then the issuer selection dialog must be showing, so close it.
-    payments_autofill_client().DismissSelectBnplIssuerDialog();
+    // then the issuer selection UI must be showing, so close it.
+    payments_autofill_client().GetBnplUiDelegate()->DismissSelectBnplIssuerUi();
   } else {
     // If the BNPL issuer selected is not linked, or is linked but requires ToS
     // acceptance, then the ToS dialog must be showing, so close it.

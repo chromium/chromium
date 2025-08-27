@@ -208,6 +208,7 @@ if (!is_android) {
     sources = [
       "card_unmask_prompt_view_browsertest.cc",
       "chrome_payments_autofill_client_browsertest.cc",
+      "desktop_bnpl_ui_delegate_browsertest.cc",
     ]
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]

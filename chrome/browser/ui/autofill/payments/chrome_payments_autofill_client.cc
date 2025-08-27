@@ -64,8 +64,6 @@
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #include "components/autofill/core/browser/ui/payments/save_and_fill_dialog_controller_impl.h"
-#include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller_impl.h"
-#include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_view.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -91,6 +89,7 @@
 #include "chrome/browser/ui/android/autofill/card_name_fix_flow_view_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/autofill/autofill_snackbar_controller_impl.h"
+#include "chrome/browser/ui/autofill/payments/android_bnpl_ui_delegate.h"
 #include "chrome/browser/ui/autofill/payments/autofill_message_controller.h"
 #include "chrome/browser/ui/autofill/payments/autofill_message_model.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_controller_android.h"
@@ -100,6 +99,7 @@
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_view.h"
 #include "components/webauthn/android/internal_authenticator_android.h"
 #else  // !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/autofill/payments/desktop_bnpl_ui_delegate.h"
 #include "chrome/browser/ui/autofill/payments/desktop_payments_window_manager.h"
 #include "chrome/browser/ui/autofill/payments/filled_card_information_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
@@ -1076,30 +1076,6 @@ SaveAndFillManager* ChromePaymentsAutofillClient::GetSaveAndFillManager() {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-void ChromePaymentsAutofillClient::ShowSelectBnplIssuerDialog(
-    std::vector<BnplIssuerContext> bnpl_issuer_context,
-    std::string app_locale,
-    base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
-    base::OnceClosure cancel_callback) {
-#if !BUILDFLAG(IS_ANDROID)
-  select_bnpl_issuer_dialog_controller_ =
-      std::make_unique<SelectBnplIssuerDialogControllerImpl>();
-  select_bnpl_issuer_dialog_controller_->ShowDialog(
-      base::BindOnce(&CreateAndShowBnplIssuerSelectionDialog,
-                     select_bnpl_issuer_dialog_controller_->GetWeakPtr(),
-                     base::Unretained(web_contents())),
-      std::move(bnpl_issuer_context), std::move(app_locale),
-      std::move(selected_issuer_callback), std::move(cancel_callback));
-#endif  // !BUILDFLAG(IS_ANDROID)
-}
-
-void ChromePaymentsAutofillClient::DismissSelectBnplIssuerDialog() {
-  if (select_bnpl_issuer_dialog_controller_) {
-    select_bnpl_issuer_dialog_controller_->Dismiss();
-    select_bnpl_issuer_dialog_controller_.reset();
-  }
-}
-
 bool ChromePaymentsAutofillClient::IsTabModalPopupDeprecated() const {
 #if !BUILDFLAG(IS_ANDROID)
   tabs::TabInterface* const tab_interface =
@@ -1211,6 +1187,17 @@ BnplStrategy* ChromePaymentsAutofillClient::GetBnplStrategy() {
 #endif  // BUILDFLAG(IS_ANDROID)
   }
   return bnpl_strategy_.get();
+}
+
+BnplUiDelegate* ChromePaymentsAutofillClient::GetBnplUiDelegate() {
+  if (!bnpl_ui_delegate_) {
+#if BUILDFLAG(IS_ANDROID)
+    bnpl_ui_delegate_ = std::make_unique<AndroidBnplUiDelegate>();
+#else   // !BUILDFLAG(IS_ANDROID)
+    bnpl_ui_delegate_ = std::make_unique<DesktopBnplUiDelegate>(&client_.get());
+#endif  // BUILDFLAG(IS_ANDROID)
+  }
+  return bnpl_ui_delegate_.get();
 }
 
 }  // namespace autofill::payments

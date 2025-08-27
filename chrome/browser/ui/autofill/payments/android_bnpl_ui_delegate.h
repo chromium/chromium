@@ -5,11 +5,21 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_ANDROID_BNPL_UI_DELEGATE_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_ANDROID_BNPL_UI_DELEGATE_H_
 
+#include <string>
+#include <vector>
+
+#include "base/functional/callback_forward.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_ui_delegate.h"
 
-namespace autofill::payments {
+namespace autofill {
 
-// Android implementation of the `BnplUiDelegate` interface. This class handles
+class BnplIssuer;
+
+namespace payments {
+
+struct BnplIssuerContext;
+
+// Android implementation of the BnplUiDelegate interface. This class handles
 // the UI for the BNPL autofill flow on the Android platform.
 class AndroidBnplUiDelegate : public BnplUiDelegate {
  public:
@@ -17,8 +27,18 @@ class AndroidBnplUiDelegate : public BnplUiDelegate {
   AndroidBnplUiDelegate(const AndroidBnplUiDelegate& other) = delete;
   AndroidBnplUiDelegate& operator=(const AndroidBnplUiDelegate& other) = delete;
   ~AndroidBnplUiDelegate() override;
+
+  // BnplUiDelegate:
+  void ShowSelectBnplIssuerUi(
+      std::vector<BnplIssuerContext> bnpl_issuer_context,
+      std::string app_locale,
+      base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
+      base::OnceClosure cancel_callback) override;
+  void DismissSelectBnplIssuerUi() override;
 };
 
-}  // namespace autofill::payments
+}  // namespace payments
+
+}  // namespace autofill
 
 #endif  // CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_ANDROID_BNPL_UI_DELEGATE_H_

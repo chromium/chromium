@@ -71,12 +71,11 @@ class VirtualCardEnrollmentManager;
 
 namespace payments {
 
-struct BnplIssuerContext;
 class BnplStrategy;
+class BnplUiDelegate;
 class MandatoryReauthManager;
 class MultipleRequestPaymentsNetworkInterface;
 class PaymentsWindowManager;
-class SelectBnplIssuerDialogControllerImpl;
 
 // Chrome implementation of PaymentsAutofillClient. Used for Chrome Desktop
 // and Clank. Owned by the ChromeAutofillClient. Created lazily in the
@@ -220,15 +219,10 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   void ShowCreditCardSaveAndFillPendingDialog() override;
   void HideCreditCardSaveAndFillDialog() override;
   payments::SaveAndFillManager* GetSaveAndFillManager() override;
-  void ShowSelectBnplIssuerDialog(
-      std::vector<BnplIssuerContext> bnpl_issuer_context,
-      std::string app_locale,
-      base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
-      base::OnceClosure cancel_callback) override;
-  void DismissSelectBnplIssuerDialog() override;
   bool IsTabModalPopupDeprecated() const override;
   bool IsRiskBasedAuthEffectivelyAvailable() const override;
   BnplStrategy* GetBnplStrategy() override;
+  BnplUiDelegate* GetBnplUiDelegate() override;
 
 #if BUILDFLAG(IS_ANDROID)
   // The AutofillMessageController is used to show a message notification
@@ -356,13 +350,15 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
 
   std::unique_ptr<SaveAndFillManager> save_and_fill_manager_;
 
-  std::unique_ptr<SelectBnplIssuerDialogControllerImpl>
-      select_bnpl_issuer_dialog_controller_;
-
   // The BnplStrategy used to determine the next step in a BNPL flow depending
   // on the platform.
-  // Lazily initialized: access only through GetBnplStrategy().
+  // Lazily initialized: access only through `GetBnplStrategy()`.
   std::unique_ptr<BnplStrategy> bnpl_strategy_;
+
+  // The BnplUiDelegate used to handle the UI in the BNPL flow depending on the
+  // platform.
+  // Lazily initialized: access only through `GetBnplUiDelegate()`.
+  std::unique_ptr<BnplUiDelegate> bnpl_ui_delegate_;
 
   // Used to cache client side risk data. The cache is invalidated when the
   // chrome browser tab is closed.

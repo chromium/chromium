@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/single_field_fillers/payments/merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/ui/payments/bnpl_ui_delegate.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/test/gmock_callback_support.h"
@@ -324,6 +325,15 @@ BnplStrategy* TestPaymentsAutofillClient::GetBnplStrategy() {
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   }
   return bnpl_strategy_.get();
+}
+
+BnplUiDelegate* TestPaymentsAutofillClient::GetBnplUiDelegate() {
+  return bnpl_ui_delegate_.get();
+}
+
+void TestPaymentsAutofillClient::set_bnpl_ui_delegate(
+    std::unique_ptr<BnplUiDelegate> bnpl_ui_delegate) {
+  bnpl_ui_delegate_ = std::move(bnpl_ui_delegate);
 }
 
 }  // namespace autofill::payments
