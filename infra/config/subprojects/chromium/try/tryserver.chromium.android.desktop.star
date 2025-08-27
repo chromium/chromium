@@ -4,7 +4,7 @@
 """Definitions of builders in the tryserver.chromium.android builder group."""
 
 load("@chromium-luci//branches.star", "branches")
-load("@chromium-luci//builders.star", "os")
+load("@chromium-luci//builders.star", "builders", "os")
 load("@chromium-luci//consoles.star", "consoles")
 load("@chromium-luci//gn_args.star", "gn_args")
 load("@chromium-luci//try.star", "try_")
@@ -16,9 +16,8 @@ try_.defaults.set(
     builder_group = "tryserver.chromium.android",
     pool = try_constants.DEFAULT_POOL,
     builderless = True,
-    cores = 32,
+    cores = 8,
     os = os.LINUX_DEFAULT,
-    ssd = True,
     compilator_cores = 32,
     contact_team_email = "clank-engprod@google.com",
     execution_timeout = try_constants.DEFAULT_EXECUTION_TIMEOUT,
@@ -45,6 +44,8 @@ try_.builder(
             "chrome_with_codecs",
         ],
     ),
+    cores = 32,
+    ssd = True,
 )
 
 try_.builder(
@@ -59,6 +60,8 @@ try_.builder(
             "chrome_with_codecs",
         ],
     ),
+    cores = 32,
+    ssd = True,
 )
 
 try_.builder(
@@ -72,6 +75,8 @@ try_.builder(
             "release_try_builder",
         ],
     ),
+    cores = 32,
+    ssd = True,
 )
 
 try_.orchestrator_builder(
@@ -116,6 +121,8 @@ try_.builder(
             "debug_try_builder",
         ],
     ),
+    cores = 32,
+    ssd = True,
 )
 
 try_.builder(
@@ -129,6 +136,8 @@ try_.builder(
             "debug_try_builder",
         ],
     ),
+    cores = 32,
+    ssd = True,
 )
 
 try_.builder(
@@ -152,6 +161,7 @@ try_.builder(
             "ci/android-desktop-arm64-deterministic-dbg",
         ],
     ),
+    free_space = builders.free_space.high,
     execution_timeout = 6 * time.hour,
 )
 
@@ -176,6 +186,7 @@ try_.builder(
             "ci/android-desktop-x64-deterministic-dbg",
         ],
     ),
+    free_space = builders.free_space.high,
     execution_timeout = 6 * time.hour,
 )
 
