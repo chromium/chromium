@@ -41,12 +41,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeAura : public NativeThemeBase {
       const gfx::Size& size,
       const MenuBackgroundExtraParams& menu_background,
       ColorScheme color_scheme) const override;
-  void PaintMenuItemBackground(cc::PaintCanvas* canvas,
-                               const ColorProvider* color_provider,
-                               State state,
-                               const gfx::Rect& rect,
-                               const MenuItemExtraParams& menu_item,
-                               ColorScheme color_scheme) const override;
   void PaintArrowButton(
       cc::PaintCanvas* gc,
       const ColorProvider* color_provider,

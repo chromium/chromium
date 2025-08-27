@@ -29,7 +29,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/native_theme/common_theme.h"
 #include "ui/native_theme/features/native_theme_features.h"
 #include "ui/native_theme/native_theme_fluent.h"
 #include "ui/native_theme/native_theme_utils.h"
@@ -172,17 +171,6 @@ void NativeThemeAura::PaintMenuPopupBackground(
   } else {
     canvas->drawColor(color, SkBlendMode::kSrc);
   }
-}
-
-void NativeThemeAura::PaintMenuItemBackground(
-    cc::PaintCanvas* canvas,
-    const ColorProvider* color_provider,
-    State state,
-    const gfx::Rect& rect,
-    const MenuItemExtraParams& menu_item,
-    ColorScheme color_scheme) const {
-  CommonThemePaintMenuItemBackground(this, color_provider, canvas, state, rect,
-                                     menu_item);
 }
 
 void NativeThemeAura::PaintArrowButton(

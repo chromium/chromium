@@ -36,7 +36,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/native_theme/common_theme.h"
 #include "ui/native_theme/features/native_theme_features.h"
 #include "ui/native_theme/native_theme.h"
 
@@ -265,8 +264,7 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
       break;
     case kMenuItemBackground:
       PaintMenuItemBackground(canvas, color_provider, state, rect,
-                              std::get<MenuItemExtraParams>(extra),
-                              color_scheme);
+                              std::get<MenuItemExtraParams>(extra));
       break;
     case kProgressBar:
       PaintProgressBar(canvas, color_provider, state, rect,
@@ -1033,16 +1031,6 @@ void NativeThemeBase::PaintMenuPopupBackground(
   canvas->drawColor(
       SkColor4f::FromColor(GetColor(kMenuPopupBackgroundColor, color_scheme)),
       SkBlendMode::kSrc);
-}
-
-void NativeThemeBase::PaintMenuItemBackground(
-    cc::PaintCanvas* canvas,
-    const ColorProvider* color_provider,
-    State state,
-    const gfx::Rect& rect,
-    const MenuItemExtraParams& menu_item,
-    ColorScheme color_scheme) const {
-  // By default don't draw anything over the normal background.
 }
 
 void NativeThemeBase::PaintMenuSeparator(

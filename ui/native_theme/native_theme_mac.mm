@@ -511,8 +511,7 @@ void NativeThemeMac::PaintMenuItemBackground(
     const ColorProvider* color_provider,
     State state,
     const gfx::Rect& rect,
-    const MenuItemExtraParams& menu_item,
-    ColorScheme color_scheme) const {
+    const MenuItemExtraParams& menu_item) const {
   switch (state) {
     case NativeTheme::kNormal:
     case NativeTheme::kDisabled:

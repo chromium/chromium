@@ -54,12 +54,12 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
       const gfx::Size& size,
       const MenuBackgroundExtraParams& menu_background,
       ColorScheme color_scheme) const override;
-  void PaintMenuItemBackground(cc::PaintCanvas* canvas,
-                               const ColorProvider* color_provider,
-                               State state,
-                               const gfx::Rect& rect,
-                               const MenuItemExtraParams& menu_item,
-                               ColorScheme color_scheme) const override;
+  void PaintMenuItemBackground(
+      cc::PaintCanvas* canvas,
+      const ColorProvider* color_provider,
+      State state,
+      const gfx::Rect& rect,
+      const MenuItemExtraParams& menu_item) const override;
   void PaintMacScrollbarThumb(cc::PaintCanvas* canvas,
                               Part part,
                               State state,

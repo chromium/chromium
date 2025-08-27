@@ -183,13 +183,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeBase : public NativeTheme {
       const MenuBackgroundExtraParams& menu_background,
       ColorScheme color_scheme) const;
 
-  virtual void PaintMenuItemBackground(cc::PaintCanvas* canvas,
-                                       const ColorProvider* color_provider,
-                                       State state,
-                                       const gfx::Rect& rect,
-                                       const MenuItemExtraParams& menu_item,
-                                       ColorScheme color_scheme) const;
-
   virtual void PaintMenuSeparator(
       cc::PaintCanvas* canvas,
       const ColorProvider* color_provider,

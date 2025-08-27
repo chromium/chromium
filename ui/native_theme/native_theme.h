@@ -627,6 +627,14 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
       ui::SystemTheme system_theme = ui::SystemTheme::kDefault);
   virtual ~NativeTheme();
 
+  // Common implementation used by several subclasses.
+  virtual void PaintMenuItemBackground(
+      cc::PaintCanvas* canvas,
+      const ColorProvider* color_provider,
+      State state,
+      const gfx::Rect& rect,
+      const MenuItemExtraParams& extra_params) const;
+
   // Calculates and returns the current user preferred contrast.
   virtual PreferredContrast CalculatePreferredContrast() const;
 

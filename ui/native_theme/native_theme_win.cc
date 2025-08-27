@@ -56,7 +56,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
-#include "ui/native_theme/common_theme.h"
 #include "ui/native_theme/native_theme.h"
 
 // This was removed from Winvers.h but is still used.
@@ -292,9 +291,8 @@ void NativeThemeWin::Paint(cc::PaintCanvas* canvas,
       PaintMenuBackground(canvas, color_provider, rect);
       return;
     case kMenuItemBackground:
-      CommonThemePaintMenuItemBackground(this, color_provider, canvas, state,
-                                         rect,
-                                         std::get<MenuItemExtraParams>(extra));
+      PaintMenuItemBackground(canvas, color_provider, state, rect,
+                              std::get<MenuItemExtraParams>(extra));
       return;
     default:
       PaintIndirect(canvas, part, state, rect, extra);

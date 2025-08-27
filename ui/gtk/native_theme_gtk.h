@@ -41,12 +41,12 @@ class NativeThemeGtk : public ui::NativeThemeBase {
       State state,
       const gfx::Rect& rect,
       const MenuSeparatorExtraParams& menu_separator) const override;
-  void PaintMenuItemBackground(cc::PaintCanvas* canvas,
-                               const ui::ColorProvider* color_provider,
-                               State state,
-                               const gfx::Rect& rect,
-                               const MenuItemExtraParams& menu_item,
-                               ColorScheme color_scheme) const override;
+  void PaintMenuItemBackground(
+      cc::PaintCanvas* canvas,
+      const ui::ColorProvider* color_provider,
+      State state,
+      const gfx::Rect& rect,
+      const MenuItemExtraParams& menu_item) const override;
   void PaintFrameTopArea(cc::PaintCanvas* canvas,
                          State state,
                          const gfx::Rect& rect,

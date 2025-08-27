@@ -9,8 +9,6 @@ component("native_theme") {
   sources = [
     "caption_style.cc",
     "caption_style.h",
-    "common_theme.cc",
-    "common_theme.h",
     "native_theme.cc",
     "native_theme.h",
     "native_theme_base.cc",

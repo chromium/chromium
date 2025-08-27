@@ -20,7 +20,6 @@
 #include "ui/gtk/gtk_color_mixers.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_util.h"
-#include "ui/native_theme/common_theme.h"
 #include "ui/native_theme/native_theme_aura.h"
 #include "ui/native_theme/native_theme_utils.h"
 
@@ -194,8 +193,7 @@ void NativeThemeGtk::PaintMenuItemBackground(
     const ui::ColorProvider* color_provider,
     State state,
     const gfx::Rect& rect,
-    const MenuItemExtraParams& menu_item,
-    ColorScheme color_scheme) const {
+    const MenuItemExtraParams& menu_item) const {
   auto context =
       GetStyleContextFromCss(StrCat({GtkCssMenu(), " ", GtkCssMenuItem()}));
   gtk_style_context_set_state(context, StateToStateFlags(state));
