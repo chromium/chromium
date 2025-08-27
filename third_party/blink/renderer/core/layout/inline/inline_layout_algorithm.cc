@@ -1312,7 +1312,7 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
     }
 
     bool should_scale_line_height =
-        apply_fit_text_ && LineFitter(Node(), &line_info).FitLine();
+        apply_fit_text_ && LineFitter(Node(), &line_info).MeasureAndFitLine();
 
     PrepareBoxStates(line_info, should_scale_line_height, break_token);
 

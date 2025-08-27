@@ -37,9 +37,15 @@ class LineFitter {
 
   // Updates text scaling factor of InlineItemResults in `line_info`.
   // Returns true if LogicalLineBuilder needs to scale line-height.
-  bool FitLine();
+  bool FitLine(float scale_factor);
+
+  // Measures the scaling factor for the current line, and applies it.
+  bool MeasureAndFitLine();
 
  private:
+  // Measures the scaling factor for the current line.
+  float MeasureScale();
+
   const InlineNode node_;
   LineInfo& line_info_;
   const InlineItemsData& items_data_;

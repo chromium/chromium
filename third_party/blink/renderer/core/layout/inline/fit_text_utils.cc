@@ -204,12 +204,12 @@ LineFitter::LineFitter(const InlineNode node, LineInfo* line_info)
       device_pixel_ratio_(node.GetDocument().GetFrame()->DevicePixelRatio()),
       epsilon_(2.0 * device_pixel_ratio_) {}
 
-bool LineFitter::FitLine() {
+float LineFitter::MeasureScale() {
   LayoutUnit original_width = line_info_.Width();
   LayoutUnit container_width = line_info_.AvailableWidth();
   LayoutUnit diff = container_width - original_width;
   if (diff.Abs() < epsilon_) {
-    return false;
+    return 1.0f;
   }
   const FitText& text_grow = node_.Style().TextGrow();
   const FitText& text_shrink = node_.Style().TextShrink();
@@ -217,7 +217,7 @@ bool LineFitter::FitLine() {
   bool apply_text_shrink = text_shrink.Target() == FitTextTarget::kPerLine;
   if ((diff > LayoutUnit() && !apply_text_grow) ||
       (diff < LayoutUnit() && !apply_text_shrink)) {
-    return false;
+    return 1.0f;
   }
   const bool is_grow = diff > LayoutUnit();
   const FitText& fit_text = is_grow ? text_grow : text_shrink;
@@ -245,11 +245,16 @@ bool LineFitter::FitLine() {
     }
   }
   if (flexible_total_size <= 0) {
-    return false;
+    return std::numeric_limits<float>::infinity();
   }
 
-  float scale_factor =
-      (container_width - static_total_size) / flexible_total_size;
+  return (container_width - static_total_size) / flexible_total_size;
+}
+
+bool LineFitter::FitLine(float scale_factor) {
+  const bool is_grow = scale_factor > 1.0f;
+  const FitText& fit_text =
+      is_grow ? node_.Style().TextGrow() : node_.Style().TextShrink();
   auto limit = fit_text.SizeLimit();
   if (!is_grow) {
     if (const auto* settings = node_.GetDocument().GetSettings()) {
@@ -270,10 +275,12 @@ bool LineFitter::FitLine() {
                        /* is_scaled_inline_only */ true, limit, line_info_);
 
     case FitTextMethod::kFontSize: {
-      flexible_total_size = LayoutUnit();
+      LayoutUnit static_total_size;
+      LayoutUnit flexible_total_size;
       bool restricted = false;
       for (auto& item : *line_info_.MutableResults()) {
         if (item.item->Type() != InlineItem::kText) {
+          static_total_size += item.inline_size;
           continue;
         }
         float item_scale = scale_factor;
@@ -302,6 +309,7 @@ bool LineFitter::FitLine() {
         if (spacing_.SetSpacing(scaled_desc)) {
           shape_result->ApplySpacing(spacing_);
           item.inline_size = shape_result->SnappedWidth().ClampNegativeToZero();
+          static_total_size += item.inline_size - size_without_spacing;
         } else {
           item.inline_size = size_without_spacing;
         }
@@ -317,6 +325,7 @@ bool LineFitter::FitLine() {
       // Final adjustment by paint-time scaling. We skip it if font-size
       // scaling for an item was restricted by specifying a minimum or maximum
       // value.
+      LayoutUnit container_width = line_info_.AvailableWidth();
       if (!restricted &&
           (container_width - line_info_.ComputeWidth()).Abs() >= epsilon_) {
         scale_factor =
@@ -335,6 +344,12 @@ bool LineFitter::FitLine() {
       break;
   }
   return false;
+}
+
+bool LineFitter::MeasureAndFitLine() {
+  float scale_factor = MeasureScale();
+  return std::isfinite(scale_factor) && scale_factor != 1.0f &&
+         FitLine(scale_factor);
 }
 
 }  // namespace blink
