@@ -336,36 +336,6 @@ void SidePanelCoordinator::OpenMoreInfoMenu() {
                           ui::mojom::MenuSourceType::kNone);
 }
 
-std::optional<SidePanelEntry::Id> SidePanelCoordinator::GetCurrentEntryId()
-    const {
-  // We intentionally override with a trivial pass-through to the intermediate
-  // class's implementation to make this a local definition and prevent a linker
-  // error in component builds.
-  return SidePanelUIBase::GetCurrentEntryId();
-}
-
-int SidePanelCoordinator::GetCurrentEntryDefaultContentWidth() const {
-  // We intentionally override with a trivial pass-through to the intermediate
-  // class's implementation to make this a local definition and prevent a linker
-  // error in component builds.
-  return SidePanelUIBase::GetCurrentEntryDefaultContentWidth();
-}
-
-bool SidePanelCoordinator::IsSidePanelShowing() const {
-  // We intentionally override with a trivial pass-through to the intermediate
-  // class's implementation to make this a local definition and prevent a linker
-  // error in component builds.
-  return SidePanelUIBase::IsSidePanelShowing();
-}
-
-bool SidePanelCoordinator::IsSidePanelEntryShowing(
-    const SidePanelEntry::Key& entry_key) const {
-  // We intentionally override with a trivial pass-through to the intermediate
-  // class's implementation to make this a local definition and prevent a linker
-  // error in component builds.
-  return SidePanelUIBase::IsSidePanelEntryShowing(entry_key);
-}
-
 content::WebContents* SidePanelCoordinator::GetWebContentsForTest(
     SidePanelEntryId id) {
   if (auto* entry = GetEntryForKey(SidePanelEntryKey(id))) {

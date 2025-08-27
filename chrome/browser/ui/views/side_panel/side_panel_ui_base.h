@@ -8,11 +8,9 @@
 #include <memory>
 #include <optional>
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/browser/ui/views/chrome_views_export.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
@@ -29,8 +27,7 @@ class View;
 
 // Base class for Side Panel UIs that contains the common logic for managing
 // side panel entries and state.
-class CHROME_VIEWS_EXPORT SidePanelUIBase : public SidePanelUI,
-                                            public TabStripModelObserver {
+class SidePanelUIBase : public SidePanelUI, public TabStripModelObserver {
  public:
   explicit SidePanelUIBase(Browser* browser);
   ~SidePanelUIBase() override;
@@ -50,23 +47,18 @@ class CHROME_VIEWS_EXPORT SidePanelUIBase : public SidePanelUI,
   };
 
   // SidePanelUI:
-  //
-  // Use NOINLINE for these exported virtual overrides. On the one hand, it's
-  // necessary to export this class in order to have it available across
-  // component boundaries, but on the other, we need to prevent the methods from
-  // being both locally defined and imported in some tests for component builds.
   using SidePanelUI::Close;
   using SidePanelUI::Show;
-  NOINLINE void Show(
+  void Show(
       SidePanelEntry::Id entry_id,
       std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) override;
-  NOINLINE void Show(
+  void Show(
       SidePanelEntry::Key entry_key,
       std::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) override;
-  NOINLINE std::optional<SidePanelEntry::Id> GetCurrentEntryId() const override;
-  NOINLINE int GetCurrentEntryDefaultContentWidth() const override;
-  NOINLINE bool IsSidePanelShowing() const override;
-  NOINLINE bool IsSidePanelEntryShowing(
+  std::optional<SidePanelEntry::Id> GetCurrentEntryId() const override;
+  int GetCurrentEntryDefaultContentWidth() const override;
+  bool IsSidePanelShowing() const override;
+  bool IsSidePanelEntryShowing(
       const SidePanelEntry::Key& entry_key) const override;
 
   // Similar to IsSidePanelEntryShowing, but restricts to either the tab-scoped

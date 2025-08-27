@@ -71,11 +71,6 @@ class SidePanelCoordinator final : public SidePanelUIBase,
               SidePanelUtil::SidePanelOpenTrigger open_trigger) override;
   void OpenInNewTab() override;
   void UpdatePinState() override;
-  std::optional<SidePanelEntry::Id> GetCurrentEntryId() const override;
-  int GetCurrentEntryDefaultContentWidth() const override;
-  bool IsSidePanelShowing() const override;
-  bool IsSidePanelEntryShowing(
-      const SidePanelEntry::Key& entry_key) const override;
   void SetNoDelaysForTesting(bool no_delays_for_testing) override;
 
   // Returns the web contents in a side panel if one exists.
@@ -103,7 +98,6 @@ class SidePanelCoordinator final : public SidePanelUIBase,
   SidePanelEntry* GetLoadingEntryForTesting() const;
 
   // SidePanelUIBase:
-  using SidePanelUIBase::IsSidePanelEntryShowing;
   using SidePanelUIBase::Show;
   void Close(bool suppress_animations) override;
   void Show(const UniqueKey& entry,

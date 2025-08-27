@@ -94,7 +94,6 @@ source_set("side_panel") {
     "side_panel_web_ui_view.cc",
     "side_panel_web_ui_view.h",
   ]
-  defines = [ "CHROME_VIEWS_IMPLEMENTATION" ]
   public_deps = [
     "//base",
     "//chrome/browser:browser_public_dependencies",
