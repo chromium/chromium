@@ -76,12 +76,10 @@ class IOSWebViewPaymentsAutofillClient;
 class WebViewAutofillClientIOS : public AutofillClientIOS {
  public:
   static std::unique_ptr<WebViewAutofillClientIOS> Create(
-      FromWebStateImpl from_web_state_impl,
       web::WebState* web_state,
       id<CWVAutofillClientIOSBridge, AutofillDriverIOSBridge> bridge);
 
   WebViewAutofillClientIOS(
-      FromWebStateImpl from_web_state_impl,
       PrefService* pref_service,
       PersonalDataManager* personal_data_manager,
       AutocompleteHistoryManager* autocomplete_history_manager,

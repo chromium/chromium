@@ -38,13 +38,12 @@ namespace autofill {
 
 // static
 std::unique_ptr<WebViewAutofillClientIOS> WebViewAutofillClientIOS::Create(
-    FromWebStateImpl from_web_state_impl,
     web::WebState* web_state,
     id<CWVAutofillClientIOSBridge, AutofillDriverIOSBridge> bridge) {
   auto* browser_state = ios_web_view::WebViewBrowserState::FromBrowserState(
       web_state->GetBrowserState());
   return std::make_unique<autofill::WebViewAutofillClientIOS>(
-      from_web_state_impl, browser_state->GetPrefs(),
+      browser_state->GetPrefs(),
       ios_web_view::WebViewPersonalDataManagerFactory::GetForBrowserState(
           browser_state->GetRecordingBrowserState()),
       ios_web_view::WebViewAutocompleteHistoryManagerFactory::
@@ -61,7 +60,6 @@ std::unique_ptr<WebViewAutofillClientIOS> WebViewAutofillClientIOS::Create(
 }
 
 WebViewAutofillClientIOS::WebViewAutofillClientIOS(
-    FromWebStateImpl from_web_state_impl,
     PrefService* pref_service,
     PersonalDataManager* personal_data_manager,
     AutocompleteHistoryManager* autocomplete_history_manager,
@@ -71,7 +69,7 @@ WebViewAutofillClientIOS::WebViewAutofillClientIOS(
     StrikeDatabase* strike_database,
     syncer::SyncService* sync_service,
     LogRouter* log_router)
-    : AutofillClientIOS(from_web_state_impl, web_state, bridge),
+    : AutofillClientIOS(web_state, bridge),
       bridge_(bridge),
       pref_service_(pref_service),
       personal_data_manager_(personal_data_manager),

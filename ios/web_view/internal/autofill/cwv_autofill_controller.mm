@@ -144,18 +144,10 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
     _formActivityObserverBridge =
         std::make_unique<autofill::FormActivityObserverBridge>(webState, self);
 
-    auto from_web_state_impl =
-        [](web::WebState* web_state) -> autofill::AutofillClientIOS* {
-      if (CWVWebView* web_view = [CWVWebView webViewForWebState:web_state]) {
-        CWVAutofillController* controller = web_view.autofillController;
-        return [controller autofillClient];
-      }
-      return nullptr;
-    };
-    _autofillClient = autofillClientForTest
-                          ? std::move(autofillClientForTest)
-                          : autofill::WebViewAutofillClientIOS::Create(
-                                from_web_state_impl, _webState, self);
+    _autofillClient =
+        autofillClientForTest
+            ? std::move(autofillClientForTest)
+            : autofill::WebViewAutofillClientIOS::Create(_webState, self);
 
     _passwordManagerClient = std::move(passwordManagerClient);
     _passwordManagerClient->set_bridge(self);

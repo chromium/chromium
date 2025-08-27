@@ -61,7 +61,6 @@ enum class SuggestionType;
 class ChromeAutofillClientIOS : public AutofillClientIOS {
  public:
   ChromeAutofillClientIOS(
-      FromWebStateImpl from_web_state_impl,
       ProfileIOS* profile,
       web::WebState* web_state,
       infobars::InfoBarManager* infobar_manager,

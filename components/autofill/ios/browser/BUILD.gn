@@ -128,7 +128,6 @@ source_set("test_support") {
     "new_frame_catcher.h",
     "new_frame_catcher.mm",
     "test_autofill_client_ios.h",
-    "test_autofill_client_ios.mm",
     "test_autofill_java_script_feature_container.h",
     "test_autofill_java_script_feature_container.mm",
     "test_autofill_manager_injector.h",
