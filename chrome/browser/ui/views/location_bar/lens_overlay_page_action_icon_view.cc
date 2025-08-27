@@ -165,11 +165,7 @@ void LensOverlayPageActionIconView::OnExecuting(
   // enabled, we want to open Lens Web in a new tab.
   if (source == PageActionIconView::EXECUTE_SOURCE_KEYBOARD &&
       !lens::features::IsLensOverlayKeyboardSelectionEnabled()) {
-    if (!lens_region_search_controller_) {
-      lens_region_search_controller_ =
-          std::make_unique<lens::LensRegionSearchController>();
-    }
-    lens_region_search_controller_->Start(
+    browser_->GetFeatures().lens_region_search_controller()->Start(
         GetWebContents(), /*use_fullscreen_capture=*/true,
         /*is_google_default_search_provider=*/true,
         lens::AmbientSearchEntryPoint::

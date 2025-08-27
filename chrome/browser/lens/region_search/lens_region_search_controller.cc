@@ -65,12 +65,6 @@ views::Widget* OpenLensRegionSearchInstructions(
 
 namespace lens {
 
-LensRegionSearchControllerData::LensRegionSearchControllerData() = default;
-LensRegionSearchControllerData::~LensRegionSearchControllerData() = default;
-
-RegionSearchCapturedData::RegionSearchCapturedData() = default;
-RegionSearchCapturedData::~RegionSearchCapturedData() = default;
-
 LensRegionSearchController::LensRegionSearchController() {
   weak_this_ = weak_factory_.GetWeakPtr();
 }

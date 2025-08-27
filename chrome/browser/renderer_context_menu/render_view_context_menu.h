@@ -41,10 +41,6 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/menus/simple_menu_model.h"
 
-#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-#include "chrome/browser/lens/region_search/lens_region_search_controller.h"
-#endif
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/context_menu_matcher.h"
 #include "chrome/browser/extensions/menu_manager.h"
@@ -149,11 +145,9 @@ class RenderViewContextMenu
       base::OnceCallback<void(content::RenderFrameHost*,
                               blink::mojom::PluginActionType)> cb);
 
-#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-  lens::LensRegionSearchController* GetLensRegionSearchControllerForTesting() {
-    return lens_region_search_controller_.get();
+  bool lens_region_search_controller_started_for_testing() const {
+    return lens_region_search_controller_started_for_testing_;
   }
-#endif
 
   void AddObserverForTesting(RenderViewContextMenuObserver* observer);
   void RemoveObserverForTesting(RenderViewContextMenuObserver* observer);
@@ -559,16 +553,9 @@ class RenderViewContextMenu
   // executed from a given render frame.
   ExecutePluginActionCallback execute_plugin_action_callback_;
 
-#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-  // Controller for Lens Region Search feature. This controller will be
-  // destroyed as soon as the RenderViewContextMenu object is destroyed. The
-  // RenderViewContextMenu is reset every time it is shown, but persists between
-  // uses so that it doesn't go out of scope before finishing work. This means
-  // that when another context menu opens, the Lens Region Search feature will
-  // close if active.
-  std::unique_ptr<lens::LensRegionSearchController>
-      lens_region_search_controller_;
-#endif
+  // Used in testing to determine whether the lens region search controller has
+  // started due to interaction with the region search entrypoint in the menu.
+  bool lens_region_search_controller_started_for_testing_ = false;
 
   // Responsible for handling autofill related context menu items.
   autofill::AutofillContextMenuManager autofill_context_menu_manager_;

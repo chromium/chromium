@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_LENS_REGION_SEARCH_LENS_REGION_SEARCH_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/supports_user_data.h"
 #include "chrome/browser/image_editor/screenshot_flow.h"
 #include "components/lens/lens_metrics.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -102,34 +101,6 @@ class LensRegionSearchController : public content::WebContentsObserver {
   base::WeakPtr<LensRegionSearchController> weak_this_;
 
   base::WeakPtrFactory<LensRegionSearchController> weak_factory_{this};
-};
-
-// Class to associate region search controller data with Profile across
-// navigation. Used to support region search via keyboard shortcut.
-class LensRegionSearchControllerData : public base::SupportsUserData::Data {
- public:
-  LensRegionSearchControllerData();
-  ~LensRegionSearchControllerData() override;
-  LensRegionSearchControllerData(const LensRegionSearchControllerData&) =
-      delete;
-  LensRegionSearchControllerData& operator=(
-      const LensRegionSearchControllerData&) = delete;
-
-  static constexpr char kDataKey[] = "lens_region_search_controller_data";
-  std::unique_ptr<LensRegionSearchController> lens_region_search_controller;
-};
-
-// Class to associate region search captured data with Profile across
-// navigation. Used to support region search on a static WebUI page.
-class RegionSearchCapturedData : public base::SupportsUserData::Data {
- public:
-  RegionSearchCapturedData();
-  ~RegionSearchCapturedData() override;
-  RegionSearchCapturedData(const RegionSearchCapturedData&) = delete;
-  RegionSearchCapturedData& operator=(const RegionSearchCapturedData&) = delete;
-
-  static constexpr char kDataKey[] = "region_search_data";
-  gfx::Image image;
 };
 }  // namespace lens
 #endif  // CHROME_BROWSER_LENS_REGION_SEARCH_LENS_REGION_SEARCH_CONTROLLER_H_

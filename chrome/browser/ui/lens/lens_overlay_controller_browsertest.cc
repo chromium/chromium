@@ -5485,9 +5485,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
       IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, ui::EF_NONE,
       base::BindLambdaForTesting([&](RenderViewContextMenu* menu) {
         // Verify the normal region search flow activates.
-        lens::LensRegionSearchController* lens_region_search_controller =
-            menu->GetLensRegionSearchControllerForTesting();
-        ASSERT_NE(lens_region_search_controller, nullptr);
+        ASSERT_TRUE(menu->lens_region_search_controller_started_for_testing());
         run_observed = true;
       }));
 
