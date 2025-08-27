@@ -54,13 +54,16 @@ declare_args() {
   # For details on the current state of modules in Chromium see
   # https://chromium.googlesource.com/chromium/src/+/main/docs/modules.md
   # Currently we enables this only when building for linux x64.
+  #
+  # TODO(https://crbug.com/440260716): Enable for Cronet in AOSP once gn2bp
+  # supports copy targets.
   use_clang_modules =
       # Clang modules doesn't work with translation_unit used in codesearch
       # pipeline http://b/436082487.
       !enable_kythe_annotations && !is_official_build && is_clang &&
       current_os == "linux" && current_cpu == "x64" &&
       # reclient doesn't handle headers in modulemap config.
-      !use_reclient
+      !use_reclient && !is_cronet_for_aosp_build
 }
 
 # We don't really need to collect a corpus for the host tools, just for the target.
