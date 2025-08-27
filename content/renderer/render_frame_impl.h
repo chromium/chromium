@@ -952,7 +952,8 @@ class CONTENT_EXPORT RenderFrameImpl
   // see `MaybeInitializeWidget()` above.
   void InitializeWidgetAtSwap(blink::WebLocalFrame& previous_frame);
 
-  // Sends a FrameHostMsg_BeginNavigation to the browser
+  // Sends a `BeginNavigation()` mojo IPC via the mojom::FrameHost interface to
+  // the browser.
   void BeginNavigationInternal(std::unique_ptr<blink::WebNavigationInfo> info,
                                bool is_history_navigation_in_new_child_frame,
                                base::TimeTicks renderer_before_unload_start,
