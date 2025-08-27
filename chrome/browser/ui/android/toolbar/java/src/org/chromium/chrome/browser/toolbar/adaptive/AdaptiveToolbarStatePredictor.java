@@ -70,7 +70,7 @@ public class AdaptiveToolbarStatePredictor {
     /**
      * Constructs {@code AdaptiveToolbarStatePredictor}
      *
-     * @param Context to determine form-factor.
+     * @param context Used to determine form-factor.
      * @param profile The {@link Profile} associated with the toolbar state.
      * @param androidPermissionDelegate used for determining if voice search can be used
      * @param behavior Embedder-specific toolbar behavior. The default one is used if {@code null}

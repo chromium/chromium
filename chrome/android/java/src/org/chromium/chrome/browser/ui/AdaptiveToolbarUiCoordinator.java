@@ -222,8 +222,8 @@ public class AdaptiveToolbarUiCoordinator {
     /**
      * Add voice search action button.
      *
-     * @param Supplies {@link VoiceRecognitionHandler} object.
-     * @param Supplies {@link Tracker} object.
+     * @param voiceRecognitionHandler Supplies {@link VoiceRecognitionHandler} object.
+     * @param trackerSupplier Supplies {@link Tracker} object.
      */
     public void addVoiceSearchAdaptiveButton(
             Supplier<VoiceRecognitionHandler> voiceRecognitionHandler,

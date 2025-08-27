@@ -45,13 +45,12 @@ public class AndroidSessionDurationsServiceState {
     }
 
     /**
-     * Restores the Android session duration service on Native from serialized data.
-     * This function does not supported regular profiles.
+     * Restores the Android session duration service on Native from serialized data. This function
+     * does not supported regular profiles.
      *
-     * @param Bundle inState, saved Incognito session duration service state.
-     * @param profile Profile, the Incognito profile for which the duration
-     *   service will be restored.
-     *
+     * @param inState Saved Incognito session duration service state.
+     * @param profile Profile, the Incognito profile for which the duration service will be
+     *     restored.
      */
     public static void restoreNativeFromSerialized(Bundle inState, Profile profile) {
         long sessionStartTime = inState.getLong(INCOGNITO_SESSION_STARTUP_TIME, -1);
@@ -70,12 +69,12 @@ public class AndroidSessionDurationsServiceState {
     }
 
     /**
-     * Serializes the data from Android session duration service on native.
-     * This function is ONLY supported for Incognito profiles.
+     * Serializes the data from Android session duration service on native. This function is ONLY
+     * supported for Incognito profiles.
      *
-     * @param Bundle outState, bundle to save Incognito session duration service state.
-     * @param profile Profile, the Incognito profile for which the duration
-     *   service will be serialized.
+     * @param outState Bundle to save Incognito session duration service state.
+     * @param profile Profile, the Incognito profile for which the duration service will be
+     *     serialized.
      */
     public static void serializeFromNative(Bundle outState, Profile profile) {
         AndroidSessionDurationsServiceState data =

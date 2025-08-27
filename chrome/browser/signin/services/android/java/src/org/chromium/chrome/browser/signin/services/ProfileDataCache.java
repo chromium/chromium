@@ -269,7 +269,7 @@ public class ProfileDataCache implements AccountInfoService.Observer {
     /**
      * Sets a default {@link BadgeConfig} and then populates the cache with the new Badge.
      *
-     * @param BadgeConfig The badge configuration. If null then the current badge is removed.
+     * @param badgeConfig The badge configuration. If null then the current badge is removed.
      *     <p>If both a per-account and default badge are set, the per-account badge takes
      *     precedence.
      *     <p>TODO(crbug.com/40798208): replace usages of this method with the per-account config
@@ -290,7 +290,7 @@ public class ProfileDataCache implements AccountInfoService.Observer {
      * Badge.
      *
      * @param accountEmail The account email for which to set this badge.
-     * @param BadgeConfig The badge configuration. If null then the current badge is removed.
+     * @param badgeConfig The badge configuration. If null then the current badge is removed.
      *     <p>If both a per-account and default badge are set, the per-account badge takes
      *     precedence.
      *     <p>TODO(crbug.com/40274844): Replace accountEmail with CoreAccountId or CoreAccountInfo.

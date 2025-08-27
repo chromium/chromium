@@ -50,14 +50,14 @@ interface TouchToFillPaymentMethodComponent {
         /**
          * Called when the user selects a local IBAN.
          *
-         * @param GUID of the selected local IBAN.
+         * @param guid The selected local IBAN.
          */
         void localIbanSuggestionSelected(String guid);
 
         /**
          * Called when the user selects a server IBAN.
          *
-         * @param InstrumentId of the selected server IBAN.
+         * @param instrumentId The selected server IBAN.
          */
         void serverIbanSuggestionSelected(long instrumentId);
 

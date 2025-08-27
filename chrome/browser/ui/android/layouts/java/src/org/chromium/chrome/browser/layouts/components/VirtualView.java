@@ -20,7 +20,7 @@ public interface VirtualView {
     String getAccessibilityDescription();
 
     /**
-     * @param A rect that will be populated with the clickable area of the object in dp.
+     * @param outTarget A rect that will be populated with the clickable area of the object in dp.
      */
     void getTouchTarget(RectF outTarget);
 

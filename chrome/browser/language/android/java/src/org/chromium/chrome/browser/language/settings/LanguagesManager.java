@@ -184,7 +184,7 @@ public class LanguagesManager {
      * which list or preference a language will be added to. By default the potential languages for
      * the Accept-Language list is returned.
      *
-     * @param LanguageListType key to select which languages to get.
+     * @param potentialLanguages Key to select which languages to get.
      * @return A list of LanguageItems to choose from for the given preference.
      */
     public List<LanguageItem> getPotentialLanguages(@LanguageListType int potentialLanguages) {

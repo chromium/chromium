@@ -153,8 +153,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
      * @param idpMetadata is the metadata of the IDP.
      * @param rpContext is a {@link String} representing the desired text to be used in the title of
      *     the FedCM prompt: "signin", "continue", etc.
-     * @param IdentityCredentialTokenError is contains the error code and url to display in the
-     *     FedCM prompt.
+     * @param error Contains the error code and url to display in the FedCM prompt.
      * @return whether the invocation is successful. If false is returned, the caller must assume
      *     that onDismiss was called and must return early.
      */

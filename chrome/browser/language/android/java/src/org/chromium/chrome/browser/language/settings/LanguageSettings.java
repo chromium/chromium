@@ -341,10 +341,11 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
 
     /**
      * Set preference's OnPreferenceClickListener to launch the Select Language Fragment.
-     * @param Preference preference The Preference to set listener on.
-     * @param int launchCode The language options code to filter selectable languages.
-     * @param int requestCode The code to return from the select language fragment with.
-     * @param int pageType The LanguageSettingsPageType to record impression for.
+     *
+     * @param preference The Preference to set listener on.
+     * @param languageListType The language options code to filter selectable languages.
+     * @param requestCode The code to return from the select language fragment with.
+     * @param pageType The LanguageSettingsPageType to record impression for.
      */
     private void setSelectLanguageLauncher(
             Preference preference,
@@ -365,8 +366,8 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
     /**
      * Launch the SelectLanguageFragment with launch and request codes to select a single language.
      *
-     * @param int launchCode The language options code to filter selectable languages.
-     * @param int requestCode The code to return from the select language fragment with.
+     * @param languageListType The language options code to filter selectable languages.
+     * @param requestCode The code to return from the select language fragment with.
      */
     private void launchSelectLanguage(
             @LanguagesManager.LanguageListType int languageListType, int requestCode) {

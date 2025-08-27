@@ -35,7 +35,8 @@ public class LanguageItemPickerPreference extends ChromeBasePreference {
 
     /**
      * Set the LanguageItem value.
-     * @param LanguageItem The LanguageItem to use for this preference
+     *
+     * @param languageItem The LanguageItem to use for this preference
      */
     public void setLanguageItem(@Nullable LanguageItem languageItem) {
         mLanguageItem = languageItem;

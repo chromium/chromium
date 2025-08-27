@@ -92,7 +92,7 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
     /**
      * Sets an object to handle tab drag events.
      *
-     * @param DragHandlerDelegate Instance of {@link DragHandlerDelegate}
+     * @param dragHandlerDelegate Instance of {@link DragHandlerDelegate}
      */
     public void setDragHandlerDelegate(DragHandlerDelegate dragHandlerDelegate) {
         mDragHandlerDelegate = dragHandlerDelegate;
