@@ -204,13 +204,15 @@ SuccessfulPasswordChangeView::SuccessfulPasswordChangeView(
   // width.
   set_margins(gfx::Insets());
 
-  root_view->AddChildView(CreateUsernamePasswordWithEyeIcon(controller_.get()));
+  views::View* username_password_row = root_view->AddChildView(
+      CreateUsernamePasswordWithEyeIcon(controller_.get()));
   root_view->AddChildView(std::make_unique<views::Separator>());
   root_view->AddChildView(CreateManagePasswordsView(base::BindRepeating(
       &SuccessfulPasswordChangeBubbleController::OpenPasswordManager,
       controller_->GetWeakPtr())));
 
   SetShowIcon(true);
+  SetInitiallyFocusedView(username_password_row->GetViewByID(kEyeIconButtonId));
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetCloseCallback(base::BindRepeating(
       [](SuccessfulPasswordChangeView* view) {
