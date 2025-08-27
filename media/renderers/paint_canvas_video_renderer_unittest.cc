@@ -267,6 +267,30 @@ static scoped_refptr<VideoFrame> CreateCroppedFrame() {
   return cropped_frame;
 }
 
+static scoped_refptr<VideoFrame> CreateRGBA16TestFrame(
+    const gfx::Size& coded_size) {
+  auto frame = VideoFrame::CreateFrame(PIXEL_FORMAT_RGBAF16, coded_size,
+                                       gfx::Rect(coded_size), coded_size,
+                                       base::TimeDelta());
+  CHECK(frame);
+  frame->set_color_space(gfx::ColorSpace::CreateSRGBLinear());
+
+  // Draw full red in RGBA F16 frame.
+  for (int y = 0; y < kHeight; ++y) {
+    for (int x = 0; x < kWidth; ++x) {
+      // Fill the frame with red color.
+      uint16_t* pixel_data = reinterpret_cast<uint16_t*>(
+          frame->writable_data(0) + y * frame->stride(0) + x * 8);
+
+      pixel_data[0] = fp16_ieee_from_fp32_value(1);
+      pixel_data[1] = fp16_ieee_from_fp32_value(0);
+      pixel_data[2] = fp16_ieee_from_fp32_value(0);
+      pixel_data[3] = fp16_ieee_from_fp32_value(1);
+    }
+  }
+  return frame;
+}
+
 PaintCanvasVideoRendererTest::PaintCanvasVideoRendererTest()
     : natural_frame_(VideoFrame::CreateBlackFrame(gfx::Size(kWidth, kHeight))),
       larger_frame_(
@@ -411,24 +435,23 @@ TEST_F(PaintCanvasVideoRendererTest, RGBAF16) {
   SkBitmap bitmap = AllocBitmap(kWidth, kHeight, kRGBA_F16_SkColorType);
   cc::SkiaPaintCanvas canvas(bitmap);
 
-  auto size = gfx::Size(kWidth, kHeight);
-  auto frame = VideoFrame::CreateFrame(
-      PIXEL_FORMAT_RGBAF16, size, gfx::Rect(size), size, base::TimeDelta());
-  frame->set_color_space(gfx::ColorSpace::CreateSRGBLinear());
+  auto frame = CreateRGBA16TestFrame(gfx::Size(kWidth, kHeight));
 
-  // Draw full red in RGBA F16 frame.
-  for (int y = 0; y < kHeight; ++y) {
-    for (int x = 0; x < kWidth; ++x) {
-      // Fill the frame with red color.
-      uint16_t* pixel_data = reinterpret_cast<uint16_t*>(
-          frame->writable_data(0) + y * frame->stride(0) + x * 8);
+  cc::PaintFlags flags;
+  flags.setBlendMode(SkBlendMode::kSrcOver);
+  flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
 
-      pixel_data[0] = fp16_ieee_from_fp32_value(1);
-      pixel_data[1] = fp16_ieee_from_fp32_value(0);
-      pixel_data[2] = fp16_ieee_from_fp32_value(0);
-      pixel_data[3] = fp16_ieee_from_fp32_value(1);
-    }
-  }
+  PaintCanvasVideoRenderer::PaintParams params;
+  params.dest_rect = kNaturalRect;
+  renderer_.Paint(frame, &canvas, flags, params, nullptr);
+  EXPECT_EQ(SK_ColorRED, bitmap.getColor(0, 0));
+}
+
+TEST_F(PaintCanvasVideoRendererTest, RGBAF16_N32_Output) {
+  SkBitmap bitmap = AllocBitmap(kWidth, kHeight, kN32_SkColorType);
+  cc::SkiaPaintCanvas canvas(bitmap);
+
+  auto frame = CreateRGBA16TestFrame(gfx::Size(kWidth, kHeight));
 
   cc::PaintFlags flags;
   flags.setBlendMode(SkBlendMode::kSrcOver);

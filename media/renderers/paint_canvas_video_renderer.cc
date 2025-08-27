@@ -328,7 +328,7 @@ void ConvertRGBA8FamilyToDest(uint8_t* pixels,
   }
 }
 
-// Extracted helper for handling RGBAF16 format into kRGBA_F16_SkColorType.
+// Extracted helper for handling RGBAF16 format.
 void ConvertRGBAF16ToDest(uint8_t* pixels,
                           size_t row_bytes,
                           const uint8_t* src_data,
@@ -337,9 +337,7 @@ void ConvertRGBAF16ToDest(uint8_t* pixels,
                           size_t rows,
                           bool premultiply_alpha,
                           SkColorType dst_color_type) {
-  // Dest must be kRGBA_F16_SkColorType.
   CHECK_LE(width, static_cast<int>(row_bytes));
-  CHECK_EQ(dst_color_type, kRGBA_F16_SkColorType);
 
   auto data = base::span(src_data, src_stride * rows);
   auto dest = base::span(pixels, row_bytes * rows);
@@ -347,8 +345,10 @@ void ConvertRGBAF16ToDest(uint8_t* pixels,
   for (size_t i = 0; i < rows; i++) {
     auto bytes_len = static_cast<size_t>(width) * 8;
     auto data_row = data.subspan(i * src_stride, bytes_len);
-    auto dest_row = dest.subspan(i * row_bytes, bytes_len);
-    if (premultiply_alpha) {
+    auto dest_row = dest.subspan(
+        i * row_bytes,
+        dst_color_type == kRGBA_F16_SkColorType ? bytes_len : bytes_len / 2);
+    if (premultiply_alpha || dst_color_type != kRGBA_F16_SkColorType) {
       auto reader = base::SpanReader(data_row);
       auto writer = base::SpanWriter(dest_row);
       for (int w = 0; w < width; ++w) {
@@ -368,10 +368,27 @@ void ConvertRGBAF16ToDest(uint8_t* pixels,
         b *= a;
 
         // Convert back to half-float
-        writer.WriteU16NativeEndian(fp16_ieee_from_fp32_value(r));
-        writer.WriteU16NativeEndian(fp16_ieee_from_fp32_value(g));
-        writer.WriteU16NativeEndian(fp16_ieee_from_fp32_value(b));
-        writer.WriteU16NativeEndian(a_u16);
+        if (dst_color_type == kRGBA_F16_SkColorType) {
+          writer.WriteU16NativeEndian(fp16_ieee_from_fp32_value(r));
+          writer.WriteU16NativeEndian(fp16_ieee_from_fp32_value(g));
+          writer.WriteU16NativeEndian(fp16_ieee_from_fp32_value(b));
+          writer.WriteU16NativeEndian(a_u16);
+        } else if (dst_color_type == kN32_SkColorType) {
+          // Not very efficient and should be replaced if this becomes common.
+          constexpr uint8_t kFloatToUint8 = 255;
+#if OUTPUT_ARGB
+          writer.WriteU8NativeEndian(b * kFloatToUint8);
+          writer.WriteU8NativeEndian(g * kFloatToUint8);
+          writer.WriteU8NativeEndian(r * kFloatToUint8);
+#else
+          writer.WriteU8NativeEndian(r * kFloatToUint8);
+          writer.WriteU8NativeEndian(g * kFloatToUint8);
+          writer.WriteU8NativeEndian(b * kFloatToUint8);
+#endif
+          writer.WriteU8NativeEndian(a * kFloatToUint8);
+        } else {
+          NOTREACHED();
+        }
       }
     } else {
       // Direct copy when no alpha processing needed
