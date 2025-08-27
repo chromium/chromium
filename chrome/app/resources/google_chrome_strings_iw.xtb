@@ -167,7 +167,7 @@
 <translation id="2994465299455873643">השירות מספק הצפנה ודרך מאובטחת לשחזור של <ph name="BROWSER_NAME" /> אם הוא לא מעודכן. אם השירות הזה מושבת, ייתכן שהגישה של <ph name="BROWSER_NAME" /> לנתונים מוצפנים תאבד, ויכול להיות ש-<ph name="BROWSER_NAME" /> לא יוכל לשחזר אותה.</translation>
 <translation id="3003694935412297923">כל המשימות</translation>
 <translation id="3018957014024118866">‏אני רוצה למחוק את הנתונים גם מ-Chrome (<ph name="URL" />)</translation>
-<translation id="3019382870990049182">‏צריך להפעיל מחדש כדי לעדכן את ChromeOS Flex</translation>
+<translation id="3019382870990049182">‏הפעלה מחדש כדי לעדכן את ChromeOS Flex</translation>
 <translation id="3037838751736561277">‏Google Chrome נמצא במצב רקע.</translation>
 <translation id="3038232873781883849">בהמתנה להתקנה…</translation>
 <translation id="3045032126857188731">שפת התרגום: <ph name="LANGUAGE" /></translation>
@@ -192,7 +192,7 @@
 <translation id="3242123554343253302">‏הוספת פרופיל Chrome</translation>
 <translation id="3245429137663807393">‏אם בנוסף ישותפו דוחות שימוש ב-Chrome, הדוחות האלה יכללו את כתובות ה-URL שבהן ביקרת</translation>
 <translation id="3282568296779691940">‏כניסה ל-Chrome</translation>
-<translation id="3286538390144397061">הפעל מחדש כעת</translation>
+<translation id="3286538390144397061">הפעלה מחדש עכשיו</translation>
 <translation id="3292333338048274092">‏לאחר מכן יהיה עליך להפעיל מחדש את Chrome.</translation>
 <translation id="3324218984287646518">‏רוצה לשאול ב-Google Lens על הסרטון הזה?</translation>
 <translation id="3327226547491422998">‏בהמשך, תוצג לך שאלה ב-Chrome אם להשתמש במידע השמור כדי למלא בשבילך טפסים באופן אוטומטי</translation>
@@ -210,9 +210,9 @@
 <translation id="3503306920980160878">‏דפדפן Chrome צריך גישה למיקום שלך כדי לשתף אותו עם האתר הזה</translation>
 <translation id="3533694711092285624">‏אין סיסמאות שמורות. Chrome יכול לבדוק את הסיסמאות שלך רק אם שמרת אותן.</translation>
 <translation id="3541482654983822893">‏Chrome לא יכול לבדוק את הסיסמאות שלך. יש לנסות שוב בעוד 24 שעות.</translation>
-<translation id="3576528680708590453">‏לפי הגדרת מנהל המערכת, Google Chrome יפתח דפדפן חלופי כדי לגשת אל <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="3576528680708590453">‏האדמין הגדיר את Google Chrome כך שיפתח דפדפן חלופי כדי לגשת אל <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">‏סינכרון והתאמה אישית של Chrome בכל המכשירים שלך</translation>
-<translation id="3583751698304738917">‏כבר נכנסת לחשבון בתור <ph name="USER_EMAIL_ADDRESS" /> בפרופיל Chrome אחר</translation>
+<translation id="3583751698304738917">‏כבר נכנסת לחשבון עם <ph name="USER_EMAIL_ADDRESS" /> בפרופיל Chrome אחר</translation>
 <translation id="358381413217813387">‏חיפוש הדף הזה באמצעות Google Lens</translation>
 <translation id="3589519427766620380">‏רוצה לשאול שאלה ב-Google Lens על הדף הזה?</translation>
 <translation id="3595784445906693824">‏להיכנס ל-Chrome בפרופיל חדש?</translation>
@@ -220,7 +220,7 @@
 <translation id="3597003331831379823">הפעלת ההגדרה נכשלה עם הרשאות מורחבות. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3622716124581627104">‏אתם יכולים לנסות לזהות דברים או מקומות ולהעתיק או לתרגם טקסטים. כשמשתמשים ב-Google Lens, צילום מסך של הדף נשלח אל Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">‏קל יותר כעת להשתמש ב-Chrome באמצעות חשבון Google שלך ובמחשבים משותפים.</translation>
-<translation id="3635073343384702370">‏ל-Chrome יש אפשרות לבדוק את הסיסמאות שלך רק אם שמרת אותן</translation>
+<translation id="3635073343384702370">‏כשיהיו סיסמאות שמורות, ל-Chrome תהיה אפשרות לבדוק אותן</translation>
 <translation id="3667616615096815454">אין אפשרות להתקין, האפליקציה לא מוכרת לשרת.</translation>
 <translation id="3673813398384385993">‏הפריט "<ph name="EXTENSION_NAME" />" שנמצא ב-Chrome מכיל תכונה זדונית</translation>
 <translation id="3697952514309507634">‏פרופילים אחרים ב-Chrome</translation>
@@ -242,7 +242,7 @@
 <translation id="3889417619312448367">‏הסרת Google Chrome</translation>
 <translation id="3892148308691398805">העתקת הטקסט</translation>
 <translation id="3941890832296813527">שגיאת התקנה: שם הקובץ של מנהל ההתקנה לא תקין או לא נתמך.</translation>
-<translation id="395904275706073188">לא ניתן לקרוא דפים מוגנים. כדאי לנסות דף אחר.</translation>
+<translation id="395904275706073188">אי אפשר לקרוא דפים מוגנים. כדאי לנסות דף אחר.</translation>
 <translation id="3968962723676998462">‏כדי להשתמש בנתונים של Chrome ולשמור אותם בחשבון <ph name="ACCOUNT_EMAIL" />, צריך להזין את ביטוי הסיסמה</translation>
 <translation id="3973161977468201858">‏‫Google Chrome רוצה למחוק את הנתונים שלך במנהל הסיסמאות של Google. כדי לאפשר זאת, צריך להזין את הסיסמה שלך ל-Windows.</translation>
 <translation id="400161754580828648">‏כדי לשתף את המסך, צריך לאפשר הקלטת מסך ב-Chrome בקטע "הגדרות המערכת".</translation>
@@ -254,7 +254,7 @@
 <translation id="408393047846373801">‏כדי לקבל גישה לסיסמאות ולנתונים נוספים בכל המכשירים שלך, צריך להיכנס ל-Chrome. לאחר הכניסה, הסיסמה הזו תישמר בחשבון שלך ב-Google.</translation>
 <translation id="409936259433005390">‏רוצה לשדרג בקרוב ל-Windows 11? כדאי להתכונן ולהוריד את תוכנת ההתקנה של Chrome ל-OneDrive.</translation>
 <translation id="4110895483821904099">‏הגדרת הפרופיל החדש שלך ב-Chrome</translation>
-<translation id="4111566860456076004">‏‫Chrome לא יכול לאמת את מקור התוסף הזה, ויכול להיות שהוא לא בטוח. צריך להסיר אותו מ-Chrome כדי לא לאפשר לו יותר לראות ולשנות את הנתונים שלך באתרים שאליהם תתבצע כניסה, כולל הפרטים האישיים שלך.</translation>
+<translation id="4111566860456076004">‏‫Chrome לא יכול לאמת את מקור התוסף הזה, ויכול להיות שהוא לא בטוח. צריך להסיר אותו מ-Chrome כדי שלא תהיה לו אפשרות לראות ולשנות נתונים באתרים שמבקרים בהם, כולל הפרטים האישיים.</translation>
 <translation id="4128488089242627000">‏דפדפן Chrome פועל מהר יותר ותכונות שמשתמשות ב-JavaScript אמורות לפעול כמו שצריך (מומלץ)</translation>
 <translation id="4147555960264124640">‏בחרת להיכנס לחשבון מנוהל, ומנהל המערכת שלו יקבל שליטה על הפרופיל שלך ב-Chrome. הנתונים שלך ב-Chrome, כגון אפליקציות, סימניות, היסטוריה, סיסמאות והגדרות אחרות ייקשרו באופן קבוע ל-<ph name="USER_NAME" />. ניתן למחוק את הנתונים האלה באמצעות מרכז השליטה של חשבונות Google, אבל לא ניתן יהיה לשייך את הנתונים האלה לחשבון אחר. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">מתקין...</translation>
@@ -354,7 +354,7 @@
 <translation id="5334487786912937552">‏נדרשת הרשאת גישה לאחסון ב-Chrome כדי להוריד את קבצים</translation>
 <translation id="5337648990166757586">‏אופציונלי: שליחה אוטומטית של נתוני אבחון ונתוני שימוש במכשיר אל Google תעזור לשפר את התכונות ואת הביצועים של ChromeOS.</translation>
 <translation id="5368118228313795342">קוד נוסף: <ph name="EXTRA_CODE" />.</translation>
-<translation id="5386244825306882791">‏הגדרה זו גם קובעת איזה דף מוצג כשמפעילים את Chrome או כשמבצעים חיפוש מסרגל הכתובות.</translation>
+<translation id="5386244825306882791">‏ההגדרה הזו גם קובעת איזה דף מוצג כשמפעילים את Chrome או כשמבצעים חיפוש מסרגל הכתובות.</translation>
 <translation id="5394833366792865639">‏שיתוף כרטיסיית Chrome</translation>
 <translation id="5412485296464121825">‏אתרים יכולים לשמור מידע ב-Chrome לגבי תחומי העניין שלך. לדוגמה, אם ביקרת באתר כדי לקנות נעליים למרתון, האתר עשוי להגדיר 'ריצת מרתון' כתחום עניין שלך. לאחר מכן, בביקור באתר שונה, למשל כדי להירשם למרוץ, יכול להיות שתוצג לך מודעה לנעלי ריצה על סמך תחומי העניין שלך.</translation>
 <translation id="5430073640787465221">‏קובץ ההעדפות שלך פגום או לא חוקי. Google Chrome לא יכול לשחזר את ההגדרות שלך.</translation>
@@ -394,7 +394,7 @@
 <translation id="5925596746603389877">‏הורדת תוכנת ההתקנה של Chrome</translation>
 <translation id="5940385492829620908">‏היסטוריית האתרים, הסימניות ופריטים נוספים מ-Chrome נמצאים כאן.</translation>
 <translation id="5941711191222866238">מזעור</translation>
-<translation id="5941830788786076944">‏Google Chrome יהיה דפדפן ברירת המחדל</translation>
+<translation id="5941830788786076944">‏הגדרת Google Chrome כדפדפן ברירת המחדל</translation>
 <translation id="5947104538377036631">‏קיצור דרך ב-Chrome</translation>
 <translation id="5968400720580217226">‏מצב AI</translation>
 <translation id="5980111191913430208">‏תוספים, אפליקציות ועיצובים ממקורות לא מוכרים עלולים להזיק למכשיר. ההמלצה של Chromium היא להתקין אותם רק מ<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
@@ -402,7 +402,7 @@
 <translation id="6008161919456049856">‏הסיסמאות, אמצעי התשלום והכתובות ששמרת בחשבון שלך ב-Google יוסרו מהמכשיר הזה. כדי להשתמש בהם שוב ב-Chrome, צריך להיכנס שוב לחשבון.</translation>
 <translation id="6009821354356307391">הוספה של שאילתת המשך</translation>
 <translation id="6014316319780893079">‏בעזרת <ph name="BEGIN_LINK" />הכלים של Chrome<ph name="END_LINK" /> אפשר לגלוש בבטחה ובשליטה</translation>
-<translation id="6022659036123304283">‏אפשר להתאים אישית את Chrome בדרך שנוחה לך</translation>
+<translation id="6022659036123304283">‏להתאים אישית את Chrome. בדרך שלך.</translation>
 <translation id="6025087594896450715">‏Google Chrome יופעל מחדש בעוד <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">סגירה</translation>
 <translation id="604424701295382420">‏התכונה הוצמדה. מעכשיו אפשר לגשת אל Google Lens דרך הכפתור החדש בסרגל הכלים</translation>
@@ -440,7 +440,7 @@
 <translation id="6412673304250309937">‏המערכת בודקת כתובות URL ששמורות ב-Chrome ומכילות רשימות של אתרים לא בטוחים. אם אתר מסוים מנסה לגנוב סיסמה או אם המערכת מזהה הורדה של קובץ מזיק, Chrome עשוי גם לשלוח כתובות URL לבדיקה באמצעות 'גלישה בטוחה'. הנתונים שנשלחים לבדיקה כוללים ביטים מהתוכן של הדף.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{‏לפי הגדרת הארגון, Chrome נסגר אוטומטית כשלא משתמשים בו במשך דקה. נתוני הגלישה נמחקים. אלה כוללים היסטוריה, מילוי אוטומטי והורדות.}one{‏לפי הגדרת הארגון, Chrome נסגר אוטומטית כשלא משתמשים בו במשך # דקות. נתוני הגלישה נמחקים. אלה כוללים היסטוריה, מילוי אוטומטי והורדות.}two{‏לפי הגדרת הארגון, Chrome נסגר אוטומטית כשלא משתמשים בו במשך # דקות. נתוני הגלישה נמחקים. אלה כוללים היסטוריה, מילוי אוטומטי והורדות.}other{‏לפי הגדרת הארגון, Chrome נסגר אוטומטית כשלא משתמשים בו במשך # דקות. נתוני הגלישה נמחקים. אלה כוללים היסטוריה, מילוי אוטומטי והורדות.}}</translation>
 <translation id="6418662306461808273">‏לעבור לפרופיל Chrome קיים?</translation>
-<translation id="6473905796280459355">‏מעבר לדף 'מידע על Chrome'</translation>
+<translation id="6473905796280459355">‏אל הדף :"מידע כללי על Chrome"</translation>
 <translation id="6481963882741794338">‏אפשר לקשר את Chrome לשירותי Google אחרים לצורך התאמה אישית ולמטרות אחרות</translation>
 <translation id="648319183876919572">הגרסה המשופרת של הגלישה הבטוחה מגנה עליך טוב יותר מפני הורדות ואתרים מסוכנים</translation>
 <translation id="6489302989675808168">‏מופעל • Chrome לא יכול לאמת את מקור התוסף הזה</translation>
@@ -499,7 +499,7 @@
 <translation id="7155997830309522122">‏אם שינית את הסיסמה הזו, יש לערוך את הסיסמה השמורה ב-Chrome כך שהיא תתאים לסיסמה החדשה שלך.</translation>
 <translation id="7161904924553537242">‏ברוך הבא ל-Google Chrome</translation>
 <translation id="7193885263065350793">‏לפי הגדרת הארגון שלכם, Chrome נסגר אוטומטית כשלא משתמשים בו במשך <ph name="TIMEOUT_DURATION" />.</translation>
-<translation id="7242029209006116544">‏בחרת להיכנס לחשבון מנוהל, ויינתן למנהל המערכת שלו שליטה על הפרופיל שלך ב-Google Chrome. הנתונים שלך ב-Chrome, כגון אפליקציות, סימניות, היסטוריה, סיסמאות והגדרות אחרות ייקשרו באופן קבוע ל-<ph name="USER_NAME" />. ניתן למחוק את הנתונים האלה באמצעות מרכז השליטה של חשבונות Google, אבל לא ניתן יהיה לשייך את הנתונים האלה לחשבון אחר. <ph name="LEARN_MORE" /></translation>
+<translation id="7242029209006116544">‏נכנסת עם חשבון מנוהל שנותן לאדמין שלו שליטה על הפרופיל שלך ב-Google Chrome. הנתונים שלך ב-Chrome, כמו אפליקציות, סימניות, היסטוריה, סיסמאות והגדרות אחרות יקושרו באופן קבוע ל-<ph name="USER_NAME" />. אפשר למחוק את הנתונים האלה דרך לוח הבקרה של חשבונות Google, אבל אי אפשר לשייך אותם לחשבון אחר. לחלופין, יש לך אפשרות ליצור פרופיל חדש כדי לשמור את הנתונים הקיימים שלך ב-Chrome בנפרד.<ph name="LEARN_MORE" /></translation>
 <translation id="7285616922384953075">‏הארגון '<ph name="MANAGER" />' מנהל את Chrome</translation>
 <translation id="7288567540154601580">כרטיסיות ותוספים</translation>
 <translation id="7296210096911315575">מידע חשוב על בטיחות ועל אופן השימוש</translation>
@@ -627,7 +627,7 @@
 <translation id="8725440680697264016">‏אפשר לשאול את Google על הסרטון הזה</translation>
 <translation id="873133009373065397">‏Google Chrome אינו יכול לקבוע או להגדיר את דפדפן ברירת המחדל</translation>
 <translation id="8747073452963259673">‏הפינה השמאלית התחתונה של אזור החיפוש: ‎<ph name="LEFT" />%‎ משמאל, ‎<ph name="BOTTOM" />%‎ מלמטה</translation>
-<translation id="8748735421235723888">‏‫Chrome מפנה מקום בזיכרון שמוקצה לכרטיסיות לא פעילות. כך, לכרטיסיות הפעילות ולאפליקציות אחרות יש יותר משאבים מהמחשב ו-Chrome פועל מהר. כשחוזרים לכרטיסיות הלא פעילות, הן מופעלות מחדש באופן אוטומטי. <ph name="BEGIN_LINK" />מידע נוסף על מצב חיסכון בזיכרון<ph name="END_LINK" /></translation>
+<translation id="8748735421235723888">‏‫Chrome מפנה מקום בזיכרון שמוקצה לכרטיסיות לא פעילות. כך, לכרטיסיות הפעילות ולאפליקציות אחרות יש יותר משאבים מהמחשב ו-Chrome פועל מהר. אפשר לחזור לכרטיסיות הלא פעילות והן יופעלו מחדש באופן אוטומטי. <ph name="BEGIN_LINK" />מידע נוסף על מצב חיסכון בזיכרון<ph name="END_LINK" /></translation>
 <translation id="8753189155654018347">‏הסרת הנתונים של האפליקציות האלה מ-Chrome</translation>
 <translation id="8765470054473112089">‏כשמקלידים טקסט בסרגל הכתובות או בתיבת החיפוש, Chrome שולח את הטקסט הזה למנוע החיפוש שמוגדר כברירת מחדל כדי לקבל הצעות טובות יותר. האפשרות הזו מושבתת במצב הפרטי.</translation>
 <translation id="8781673607513845160">‏כדי להשתמש במצלמה, צריך להיכנס אל <ph name="BEGIN_LINK" />הגדרות המערכת<ph name="END_LINK" /> ולתת ל-Chrome גישה</translation>
