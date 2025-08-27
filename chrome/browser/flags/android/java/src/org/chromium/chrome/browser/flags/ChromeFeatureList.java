@@ -824,8 +824,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCctDestroyTabWhenModelIsEmpty =
             newCachedFlag(CCT_DESTROY_TAB_WHEN_MODEL_IS_EMPTY, true);
     public static final CachedFlag sCctFixWarmup =
-            newCachedFlag(
-                    CCT_FIX_WARMUP, /* defaultValue= */ false, /* defaultValueInTests= */ true);
+            newCachedFlag(CCT_FIX_WARMUP, /* defaultValue= */ true);
     public static final CachedFlag sCctFreInSameTask = newCachedFlag(CCT_FRE_IN_SAME_TASK, true);
     public static final CachedFlag sCctGoogleBottomBar =
             newCachedFlag(

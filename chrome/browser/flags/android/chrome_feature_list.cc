@@ -829,13 +829,13 @@ BASE_FEATURE(kCCTDestroyTabWhenModelIsEmpty,
              "CCTDestroyTabWhenModelIsEmpty",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCCTEarlyNav, "CCTEarlyNav", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCCTEarlyNav, "CCTEarlyNav", base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTExtendTrustedCdnPublisher,
              "CCTExtendTrustedCdnPublisher",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCCTFixWarmup, "CCTFixWarmup", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCCTFixWarmup, "CCTFixWarmup", base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTFreInSameTask,
              "CCTFreInSameTask",
