@@ -28,8 +28,7 @@ void SendTabToSelfToolbarBubbleController::ShowBubble(
     return;
   }
   auto bubble_view = std::make_unique<SendTabToSelfToolbarBubbleView>(
-      bwi_->GetBrowserForMigrationOnly(), anchor_view, entry,
-      base::BindOnce(base::IgnoreResult(&Navigate)));
+      *bwi_, anchor_view, entry, base::BindOnce(base::IgnoreResult(&Navigate)));
   bubble_tracker_.SetView(bubble_view.get());
   views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view))->Show();
 }
