@@ -49,8 +49,7 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
     private boolean mIsIncognito;
     private boolean mIsModeBUi;
     private final boolean mIsSiteSettingsAvailable;
-    private int mDaysUntilExpirationForTesting;
-    private boolean mFixedExpirationForTesting;
+    private @Nullable Integer mDaysUntilExpirationForTesting;
     private @Nullable Collection<Website> mRwsInfoForTesting;
 
     public PageInfoCookiesController(
@@ -114,7 +113,6 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
                         /* blockAll3pc= */ mBlockAll3pc,
                         /* isIncognito= */ mIsIncognito,
                         /* isModeBUi= */ mIsModeBUi,
-                        /* fixedExpirationForTesting= */ mFixedExpirationForTesting,
                         /* daysUntilExpirationForTesting= */ mDaysUntilExpirationForTesting);
         mSubPage.setParams(params, delegate);
         mSubPage.updateState(mControlsState, mEnforcement, mExpiration);
@@ -267,12 +265,8 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
         return null;
     }
 
-    public void setDaysUntilExpirationForTesting(int days) {
+    public void setDaysUntilExpirationForTesting(Integer days) {
         mDaysUntilExpirationForTesting = days;
-    }
-
-    public void setFixedExceptionExpirationForTesting(boolean fixed) {
-        mFixedExpirationForTesting = fixed;
     }
 
     public void setEnforcementForTesting(@CookieControlsEnforcement int enforcement) {

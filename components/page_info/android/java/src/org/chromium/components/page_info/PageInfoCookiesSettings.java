@@ -71,8 +71,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     private boolean mBlockAll3pc;
     private boolean mIsIncognito;
     // Sets a constant # of days until expiration to prevent test flakiness.
-    private boolean mFixedExpirationForTesting;
-    private int mDaysUntilExpirationForTesting;
+    private @Nullable Integer mDaysUntilExpirationForTesting;
 
     /** Parameters to configure the cookie controls view. */
     static class PageInfoCookiesViewParams {
@@ -87,8 +86,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         public final boolean blockAll3pc;
         public final boolean isIncognito;
         public final boolean isModeBUi;
-        public final boolean fixedExpirationForTesting;
-        public final int daysUntilExpirationForTesting;
+        public final @Nullable Integer daysUntilExpirationForTesting;
 
         public PageInfoCookiesViewParams(
                 Callback<Boolean> onThirdPartyCookieToggleChanged,
@@ -102,8 +100,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                 boolean blockAll3pc,
                 boolean isIncognito,
                 boolean isModeBUi,
-                boolean fixedExpirationForTesting,
-                int daysUntilExpirationForTesting) {
+                @Nullable Integer daysUntilExpirationForTesting) {
             this.onThirdPartyCookieToggleChanged = onThirdPartyCookieToggleChanged;
             this.onTrackingProtectionsButtonPressed = onTrackingProtectionsButtonPressed;
             this.onClearCallback = onClearCallback;
@@ -115,7 +112,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
             this.blockAll3pc = blockAll3pc;
             this.isIncognito = isIncognito;
             this.isModeBUi = isModeBUi;
-            this.fixedExpirationForTesting = fixedExpirationForTesting;
             this.daysUntilExpirationForTesting = daysUntilExpirationForTesting;
         }
     }
@@ -165,7 +161,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     public void setParams(PageInfoCookiesViewParams params, PageInfoControllerDelegate delegate) {
         mOnCookieSettingsLinkClicked = params.onCookieSettingsLinkClicked;
         mOnIncognitoSettingsLinkClicked = params.onIncognitoSettingsLinkClicked;
-        mFixedExpirationForTesting = params.fixedExpirationForTesting;
         mBlockAll3pc = params.blockAll3pc;
         mIsIncognito = params.isIncognito;
         mIsModeBUi = params.isModeBUi;
@@ -443,7 +438,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
      */
     @VisibleForTesting
     public int daysUntilExpiration(long currentTime, long expiration) {
-        if (mFixedExpirationForTesting) return mDaysUntilExpirationForTesting;
+        if (mDaysUntilExpirationForTesting != null) return mDaysUntilExpirationForTesting;
         long currentMidnight = CalendarUtils.getStartOfDay(currentTime).getTime().getTime();
         long expirationMidnight = CalendarUtils.getStartOfDay(expiration).getTime().getTime();
         return (int) ((expirationMidnight - currentMidnight) / DateUtils.DAY_IN_MILLIS);
