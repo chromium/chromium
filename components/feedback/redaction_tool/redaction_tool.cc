@@ -362,10 +362,11 @@ CustomPatternWithAlias kCustomPatternsWithContext[] = {
 
     // Redacts PII from kernel logs for virtual input devices (e.g., Bluetooth).
     // Matches lines like:
-    //   input: Edman Paes dos Anjos’s Keyboard as /devices/virtual/...
+    //   input: Edman Paes dos Anjos’s Keyboard as
+    //   /devices/virtual/misc/uhid/0005:...
     // Redacts the name part only.
     {"Bluetooth HID Device",
-     "(input: )([^\\r\\n]+?)(\\s+as\\s+/devices/virtual/misc/uhid/.*?)",
+     "(input: )([^\\r\\n]+?)(\\s+as\\s+/devices/virtual/misc/uhid/0005:.*?)",
      PIIType::kBluetoothHidDevice},
 
     // Redacts PII from kernel logs for explicit Bluetooth HID devices.
