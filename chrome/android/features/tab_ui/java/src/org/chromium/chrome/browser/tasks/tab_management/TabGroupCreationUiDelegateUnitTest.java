@@ -119,7 +119,7 @@ public class TabGroupCreationUiDelegateUnitTest {
                         });
         mTabGroupCreationUiDelegate.newTabGroupFlow();
         openTabGroupUiContainer.get().run();
-        verify(mTabSwitcherPane).requestOpenTabGroupDialog(mTab.getId());
+        verify(mTabSwitcherPane).requestOpenTabGroupDialog(1);
     }
 
     @Test
@@ -141,7 +141,7 @@ public class TabGroupCreationUiDelegateUnitTest {
                         });
         mTabGroupCreationUiDelegate.newTabGroupFlow();
         openTabGroupUiContainer.get().run();
-        verify(mTabSwitcherPane).requestOpenTabGroupDialog(mTab.getId());
+        verify(mTabSwitcherPane).requestOpenTabGroupDialog(1);
     }
 
     @Test

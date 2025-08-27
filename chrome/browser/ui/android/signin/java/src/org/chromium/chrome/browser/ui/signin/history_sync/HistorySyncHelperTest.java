@@ -154,6 +154,7 @@ public class HistorySyncHelperTest {
 
     @Test
     @SmallTest
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testRecordHistorySyncDeclinedPrefs() {
         final int someIntegerValue =
                 mPrefServiceMock.getInteger(Pref.HISTORY_SYNC_SUCCESSIVE_DECLINE_COUNT);

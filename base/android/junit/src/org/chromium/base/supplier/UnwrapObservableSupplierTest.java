@@ -31,8 +31,21 @@ public class UnwrapObservableSupplierTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private @Mock Callback<Integer> mOnChangeCallback;
-    private @Mock Object mObject1;
-    private @Mock Object mObject2;
+
+    private final Object mObject1 =
+            new Object() {
+                @Override
+                public int hashCode() {
+                    return 1;
+                }
+            };
+    private final Object mObject2 =
+            new Object() {
+                @Override
+                public int hashCode() {
+                    return 2;
+                }
+            };
 
     private static ObservableSupplier<Integer> make(ObservableSupplier<Object> parentSupplier) {
         return new UnwrapObservableSupplier(parentSupplier, UnwrapObservableSupplierTest::unwrap);
@@ -50,11 +63,11 @@ public class UnwrapObservableSupplierTest {
         assertFalse(parentSupplier.hasObservers());
 
         parentSupplier.set(mObject1);
-        assertEquals(mObject1.hashCode(), unwrapSupplier.get().intValue());
+        assertEquals(1, unwrapSupplier.get().intValue());
         assertFalse(parentSupplier.hasObservers());
 
         parentSupplier.set(mObject2);
-        assertEquals(mObject2.hashCode(), unwrapSupplier.get().intValue());
+        assertEquals(2, unwrapSupplier.get().intValue());
         assertFalse(parentSupplier.hasObservers());
 
         parentSupplier.set(null);
@@ -73,10 +86,10 @@ public class UnwrapObservableSupplierTest {
         verify(mOnChangeCallback, never()).onResult(anyInt());
 
         parentSupplier.set(mObject1);
-        verify(mOnChangeCallback).onResult(eq(mObject1.hashCode()));
+        verify(mOnChangeCallback).onResult(eq(1));
 
         parentSupplier.set(mObject2);
-        verify(mOnChangeCallback).onResult(eq(mObject2.hashCode()));
+        verify(mOnChangeCallback).onResult(eq(2));
 
         parentSupplier.set(null);
         verify(mOnChangeCallback, times(1)).onResult(eq(0));
@@ -94,7 +107,7 @@ public class UnwrapObservableSupplierTest {
         assertTrue(parentSupplier.hasObservers());
 
         ShadowLooper.idleMainLooper();
-        verify(mOnChangeCallback).onResult(eq(mObject1.hashCode()));
+        verify(mOnChangeCallback).onResult(eq(1));
     }
 
     @Test
@@ -108,7 +121,7 @@ public class UnwrapObservableSupplierTest {
         verify(mOnChangeCallback).onResult(eq(3));
 
         parentSupplier.set(mObject1);
-        verify(mOnChangeCallback).onResult(eq(mObject1.hashCode()));
+        verify(mOnChangeCallback).onResult(eq(1));
     }
 
     @Test
@@ -121,6 +134,6 @@ public class UnwrapObservableSupplierTest {
         verifyNoInteractions(mOnChangeCallback);
 
         parentSupplier.set(mObject1);
-        verify(mOnChangeCallback).onResult(eq(mObject1.hashCode()));
+        verify(mOnChangeCallback).onResult(eq(1));
     }
 }

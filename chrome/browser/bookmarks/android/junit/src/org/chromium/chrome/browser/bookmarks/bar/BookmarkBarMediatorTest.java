@@ -176,6 +176,7 @@ public class BookmarkBarMediatorTest {
 
     @Test
     @SmallTest
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testBuildMenuModelListFromIds_showsOnlyHiddenItems() {
         // Create 5 bookmarks in the desktop folder.
         BookmarkId desktopFolder = mBookmarkModel.getDesktopFolderId();

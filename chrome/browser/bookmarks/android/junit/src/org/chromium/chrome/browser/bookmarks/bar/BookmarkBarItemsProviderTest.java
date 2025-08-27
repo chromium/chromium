@@ -86,6 +86,7 @@ public class BookmarkBarItemsProviderTest {
     private BookmarkBarItemsProvider mProvider;
 
     @Before
+    @SuppressWarnings("DirectInvocationOnMock")
     public void setUp() {
         mAccountFolderItems = List.of(mAccountFolderItem1, mAccountFolderItem2);
         mLocalFolderItems = List.of(mLocalFolderItem1, mLocalFolderItem2);
@@ -133,6 +134,7 @@ public class BookmarkBarItemsProviderTest {
         mProvider =
                 new BookmarkBarItemsProvider(mModel, mObserver) {
                     @Override
+                    @SuppressWarnings("DirectInvocationOnMock")
                     protected @NonNull ScopedBookmarkModelObservation createObservation(
                             @ObservationId int observationId,
                             @NonNull BookmarkId folderId,
@@ -268,6 +270,7 @@ public class BookmarkBarItemsProviderTest {
 
     @Test
     @SmallTest
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testOnBookmarkItemAddedToLocalFolder() {
         final int index = 10;
         final int startIndex = mAccountFolderItems.size();
@@ -288,6 +291,7 @@ public class BookmarkBarItemsProviderTest {
 
     @Test
     @SmallTest
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testOnBookmarkItemMovedWithinLocalFolder() {
         final int index = 10;
         final int oldIndex = 27;
@@ -308,6 +312,7 @@ public class BookmarkBarItemsProviderTest {
 
     @Test
     @SmallTest
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testOnBookmarkItemRemovedFromLocalFolder() {
         final int index = 10;
         final int startIndex = mAccountFolderItems.size();
@@ -327,6 +332,7 @@ public class BookmarkBarItemsProviderTest {
 
     @Test
     @SmallTest
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testOnBookmarkItemUpdatedWithinLocalFolder() {
         final int index = 10;
         final int startIndex = mAccountFolderItems.size();
@@ -345,6 +351,7 @@ public class BookmarkBarItemsProviderTest {
 
     @Test
     @SmallTest
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testOnBookmarkItemsChangedToEmptyLocalFolder() {
         final int startIndex = mAccountFolderItems.size();
         mLocalFolderObserver.onBookmarkItemsChanged(LOCAL, Collections.emptyList());
@@ -367,6 +374,7 @@ public class BookmarkBarItemsProviderTest {
 
     @Test
     @SmallTest
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testOnBookmarkItemsChangedToPopulateLocalFolder() {
         final int startIndex = mAccountFolderItems.size();
         final var localFolderItems = mLocalFolderItems;
@@ -392,6 +400,7 @@ public class BookmarkBarItemsProviderTest {
 
     @Test
     @SmallTest
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testOnBookmarkItemsChangedToSwapLocalFolder() {
         final int startIndex = mAccountFolderItems.size();
         final int oldSize = mLocalFolderItems.size();

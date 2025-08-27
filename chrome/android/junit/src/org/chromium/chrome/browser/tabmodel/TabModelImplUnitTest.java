@@ -145,6 +145,7 @@ public class TabModelImplUnitTest {
     }
 
     /** Create a {@link TabModel} to use for the test. */
+    @SuppressWarnings("DirectInvocationOnMock")
     private TabModelImpl createTabModel(boolean isActive, boolean isIncognito) {
         AsyncTabParamsManager realAsyncTabParamsManager =
                 AsyncTabParamsManagerFactory.createAsyncTabParamsManager();

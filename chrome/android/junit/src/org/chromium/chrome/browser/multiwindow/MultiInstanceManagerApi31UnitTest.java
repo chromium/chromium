@@ -373,7 +373,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         mTabGroupModelFilter,
                         mGroupedTabs,
                         INSTANCE_ID_1,
-                        mTab1.getId(),
+                        TAB_ID_1,
                         /* isGroupShared= */ false);
 
         when(mActivityTask56.getTaskId()).thenReturn(TASK_ID_56);
@@ -498,6 +498,7 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testAllocInstanceId_reachesMaximum() {
         assertTrue(mMultiInstanceManager.mMaxInstances < mActivityPool.length);
         int index = 0;
@@ -512,12 +513,12 @@ public class MultiInstanceManagerApi31UnitTest {
 
         // We allocated max number of instances already. Activity Id 1 is was removed but
         // remains mapped to a task still alive. No more new allocation is possible.
-        assertIsNewTask(mActivityTask60.getTaskId());
+        assertIsNewTask(TASK_ID_60);
         assertEquals(-1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask60));
 
         // New allocation becomes possible only after a task is gone.
         removeTaskOnRecentsScreen(mActivityPool[2]);
-        assertIsNewTask(mActivityTask61.getTaskId());
+        assertIsNewTask(TASK_ID_61);
         assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask61));
     }
 
@@ -536,6 +537,7 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testAllocInstanceId_removeTaskOnRecentScreen() {
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
@@ -558,8 +560,7 @@ public class MultiInstanceManagerApi31UnitTest {
         // New instantiation picks up the smallest available ID.
         // assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
         Pair<Integer, Integer> instanceIdInfo =
-                mMultiInstanceManager.allocInstanceId(
-                        PASSED_ID_INVALID, mActivityTask57.getTaskId(), false);
+                mMultiInstanceManager.allocInstanceId(PASSED_ID_INVALID, TASK_ID_57, false);
         int index = instanceIdInfo.first;
 
         // Does what TabModelOrchestrator.createTabModels() would do to simulate production code.
@@ -589,8 +590,7 @@ public class MultiInstanceManagerApi31UnitTest {
         // New instantiation picks up the smallest available ID.
         // assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
         Pair<Integer, Integer> instanceIdInfo =
-                mMultiInstanceManager.allocInstanceId(
-                        PASSED_ID_INVALID, mActivityTask57.getTaskId(), false);
+                mMultiInstanceManager.allocInstanceId(PASSED_ID_INVALID, TASK_ID_57, false);
         int index = instanceIdInfo.first;
 
         // Does what TabModelOrchestrator.createTabModels() would do to simulate production code.
@@ -664,10 +664,7 @@ public class MultiInstanceManagerApi31UnitTest {
         // Trying to allocate a new instance with preferNew should fail.
         Pair<Integer, Integer> instanceIdInfo =
                 createMultiInstanceManager(mActivityTask59)
-                        .allocInstanceId(
-                                PASSED_ID_INVALID,
-                                mActivityTask59.getTaskId(),
-                                /* preferNew= */ true);
+                        .allocInstanceId(PASSED_ID_INVALID, TASK_ID_59, /* preferNew= */ true);
         assertEquals(
                 "Should not allocate valid instance id when at limit.",
                 INVALID_WINDOW_ID,
@@ -736,11 +733,11 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(3, mMultiInstanceManager.getInstanceInfo().size());
 
         // Activity destroyed in the background due to memory constraint has no impact either.
-        closeInstanceOnly(mActivityTask57, mActivityTask57.getTaskId());
+        closeInstanceOnly(mActivityTask57, TASK_ID_57);
         assertEquals(3, mMultiInstanceManager.getInstanceInfo().size());
 
         // Closing an instance removes the entry.
-        mMultiInstanceManager.closeInstance(1, mActivityTask57.getTaskId());
+        mMultiInstanceManager.closeInstance(1, TASK_ID_57);
         assertEquals(2, mMultiInstanceManager.getInstanceInfo().size());
     }
 
@@ -1739,7 +1736,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         mMenuOrKeyboardActionController,
                         mDesktopWindowStateManagerSupplier);
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask62));
-        multiInstanceManager0.initialize(0, mTabbedActivityTask62.getTaskId());
+        multiInstanceManager0.initialize(0, TASK_ID_62);
         multiInstanceManager0.onTopResumedActivityChanged(true);
         long instance0CreationTime = MultiInstanceManagerApi31.readLastAccessedTime(0);
 
@@ -1755,7 +1752,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         mMenuOrKeyboardActionController,
                         mDesktopWindowStateManagerSupplier);
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask63));
-        multiInstanceManager1.initialize(1, mTabbedActivityTask63.getTaskId());
+        multiInstanceManager1.initialize(1, TASK_ID_63);
         multiInstanceManager0.onTopResumedActivityChanged(false);
         multiInstanceManager1.onTopResumedActivityChanged(true);
         long instance1CreationTime = MultiInstanceManagerApi31.readLastAccessedTime(1);

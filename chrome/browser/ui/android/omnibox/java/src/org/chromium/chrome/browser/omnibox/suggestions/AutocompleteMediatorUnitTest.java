@@ -704,6 +704,7 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
+    @SuppressWarnings("DirectInvocationOnMock")
     public void onSuggestionsReceived_sendsOnSuggestionsChanged() {
         mMediator.onNativeInitialized();
         mMediator.onOmniboxSessionStateChange(true);
@@ -1018,6 +1019,7 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
+    @SuppressWarnings("DirectInvocationOnMock")
     public void switchToTab_invalidTabModelAssociation() {
         mMediator.setAutocompleteProfile(mProfile);
 

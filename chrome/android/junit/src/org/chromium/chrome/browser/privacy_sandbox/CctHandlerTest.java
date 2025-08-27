@@ -44,6 +44,7 @@ public class CctHandlerTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testPrepareIntentSuccess() {
         Intent expectedIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(TEST_URL));
         expectedIntent.setPackage(mContext.getPackageName());

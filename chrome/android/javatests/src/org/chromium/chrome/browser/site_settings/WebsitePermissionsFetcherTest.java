@@ -603,6 +603,7 @@ public class WebsitePermissionsFetcherTest {
     @Test
     @SmallTest
     @UseMethodParameter(BrowsingDataModelEnabled.class)
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testFetchAllPreferencesForSingleOrigin(boolean isBdmEnabled) {
         Mockito.doReturn(isBdmEnabled)
                 .when(mSiteSettingsDelegate)

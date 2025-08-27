@@ -714,6 +714,7 @@ public class AppMenuTest {
 
     @Test
     @MediumTest
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testAppMenuButtonHelper_DownUp() throws Exception {
         // Use a mock app menu handler so we don't actually show the menu (which blocks the button)
         AppMenuButtonHelperImpl buttonHelper = new AppMenuButtonHelperImpl(mMockAppMenuHandler);
@@ -744,6 +745,7 @@ public class AppMenuTest {
 
     @Test
     @MediumTest
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testAppMenuButtonHelper_DownCancel() throws Exception {
         // Use a mock app menu handler so we don't actually show the menu (which blocks the button)
         AppMenuButtonHelperImpl buttonHelper = new AppMenuButtonHelperImpl(mMockAppMenuHandler);

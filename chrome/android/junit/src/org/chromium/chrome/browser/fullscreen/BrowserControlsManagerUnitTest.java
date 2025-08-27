@@ -550,6 +550,7 @@ public class BrowserControlsManagerUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testShowAndroidControlsObserver() {
         remakeWithoutSpy();
 

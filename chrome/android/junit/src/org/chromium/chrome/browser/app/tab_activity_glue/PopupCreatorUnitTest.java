@@ -183,7 +183,7 @@ public class PopupCreatorUnitTest {
 
         Assert.assertEquals(
                 "The launch display ID specified in ActivityOptions is incorrect",
-                mDisplay.getDisplayId(),
+                DISPLAY_ID,
                 activityOptions.getLaunchDisplayId());
         Assert.assertNotNull(
                 "The launch bounds specified in ActivityOptions are null",

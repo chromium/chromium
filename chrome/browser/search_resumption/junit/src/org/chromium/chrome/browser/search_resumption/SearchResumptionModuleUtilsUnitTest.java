@@ -186,6 +186,7 @@ public class SearchResumptionModuleUtilsUnitTest {
 
     @Test
     @SmallTest
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testMayGetCachedResults() {
         doReturn(false).when(mTab).canGoForward();
         Assert.assertNull(SearchResumptionModuleUtils.mayGetCachedResults(mTab, mTabToTrack));

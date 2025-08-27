@@ -257,9 +257,7 @@ public class AppMenuPropertiesDelegateUnitTest {
     public void testShouldShowDownloadPageMenuItem_Tablet_WithFeatureOnAndEnabledDownloadPage() {
         when(mAppMenuPropertiesDelegate.shouldEnableDownloadPage(any(Tab.class))).thenReturn(true);
         when(mActivityTabProvider.get()).thenReturn(mTab);
-        assertTrue(
-                mAppMenuPropertiesDelegate.shouldShowDownloadPageMenuItem(
-                        mActivityTabProvider.get()));
+        assertTrue(mAppMenuPropertiesDelegate.shouldShowDownloadPageMenuItem(mTab));
     }
 
     @Test
@@ -267,9 +265,7 @@ public class AppMenuPropertiesDelegateUnitTest {
     public void testShouldShowDownloadPageMenuItem_Tablet_WithFeatureOnAndDisabledDownloadPage() {
         when(mAppMenuPropertiesDelegate.shouldEnableDownloadPage(any(Tab.class))).thenReturn(false);
         when(mActivityTabProvider.get()).thenReturn(mTab);
-        assertFalse(
-                mAppMenuPropertiesDelegate.shouldShowDownloadPageMenuItem(
-                        mActivityTabProvider.get()));
+        assertFalse(mAppMenuPropertiesDelegate.shouldShowDownloadPageMenuItem(mTab));
     }
 
     @Test
@@ -277,9 +273,7 @@ public class AppMenuPropertiesDelegateUnitTest {
     public void testShouldShowDownloadPageMenuItem_Phone_WithFeatureOnAndEnabledDownloadPage() {
         when(mAppMenuPropertiesDelegate.shouldEnableDownloadPage(any(Tab.class))).thenReturn(true);
         when(mActivityTabProvider.get()).thenReturn(mTab);
-        assertFalse(
-                mAppMenuPropertiesDelegate.shouldShowDownloadPageMenuItem(
-                        mActivityTabProvider.get()));
+        assertFalse(mAppMenuPropertiesDelegate.shouldShowDownloadPageMenuItem(mTab));
     }
 
     @Test

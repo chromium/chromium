@@ -128,6 +128,7 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testSupportsEnableEdgeToEdgeOnTop() {
         assertFalse(NtpCustomizationUtils.supportsEnableEdgeToEdgeOnTop(null));
 

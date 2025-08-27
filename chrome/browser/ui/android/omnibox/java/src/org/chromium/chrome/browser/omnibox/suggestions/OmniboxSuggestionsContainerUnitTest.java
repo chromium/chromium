@@ -218,6 +218,7 @@ public class OmniboxSuggestionsContainerUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testAlignmentProvider_bottomPaddingChange() {
         mContainer.setEmbedder(mEmbedder);
         mContainer.onOmniboxSessionStateChange(true);

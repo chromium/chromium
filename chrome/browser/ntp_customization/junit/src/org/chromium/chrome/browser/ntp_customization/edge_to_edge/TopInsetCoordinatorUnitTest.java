@@ -91,6 +91,7 @@ public class TopInsetCoordinatorUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testOnApplyWindowInsets_ConsumeTopInset() {
         Mockito.clearInvocations(mObserver);
         mTopInsetCoordinator.onTabSwitched(mNtpTab);

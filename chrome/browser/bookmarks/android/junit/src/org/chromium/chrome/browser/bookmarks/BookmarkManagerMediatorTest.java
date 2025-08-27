@@ -364,6 +364,7 @@ public class BookmarkManagerMediatorTest {
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     private void onActivity(Activity activity) {
         mActivity = spy(activity);
 
@@ -670,7 +671,7 @@ public class BookmarkManagerMediatorTest {
         verify(mBookmarkModel, times(0)).getTopLevelFolderIds(anyInt());
 
         finishLoading();
-        mMediator.openFolder(mBookmarkModel.getRootFolderId());
+        mMediator.openFolder(mRootFolderId);
         verify(mBookmarkModel, times(1))
                 .getTopLevelFolderIds(
                         BookmarkBarUtils.isDeviceBookmarkBarCompatible(mActivity)

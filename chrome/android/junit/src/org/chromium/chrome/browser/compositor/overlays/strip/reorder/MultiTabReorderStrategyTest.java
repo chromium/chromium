@@ -155,6 +155,7 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
 
     // startReorderMode tests
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testStartReorder_gatherUngroupedTabs() {
         // Select two non-contiguous ungrouped tabs
         selectTabs(mUngroupedTab1, mUngroupedTab3);
@@ -176,6 +177,7 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testStartReorder_mergeUngroupedTabOnGroupedPrimary() {
         // Select a grouped tab and an ungrouped tab
         selectTabs(mGroupedTab2, mUngroupedTab2);
@@ -203,6 +205,7 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testStartReorder_ungroupAndGather_ungroupedPrimaryTab() {
         // Select a grouped tab and an ungrouped tab
         selectTabs(mGroupedTab1, mUngroupedTab2);
@@ -250,6 +253,7 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testUpdateReorder_success_dragOutOfGroup() {
         // Setup a group with 3 tabs, select 2 of them to drag out.
         reset(mTabGroupModelFilter);
@@ -274,6 +278,7 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
 
     // updateReorderPosition failure tests
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testUpdateReorder_fail_pastTab() {
         selectTabs(mUngroupedTab2);
         startReorder(mUngroupedTab2);
@@ -282,6 +287,7 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testUpdateReorder_fail_pastCollapsedGroup() {
         selectTabs(mUngroupedTab2, mUngroupedTab3);
         startReorder(mUngroupedTab2);
@@ -290,6 +296,7 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testUpdateReorder_fail_mergeIntoGroup() {
         selectTabs(mUngroupedTab1);
         startReorder(mUngroupedTab1);
@@ -298,6 +305,7 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testUpdateReorder_fail_dragOutOfGroup() {
         selectTabs(mGroupedTab1, mGroupedTab2);
         startReorder(mGroupedTab1);
@@ -425,6 +433,7 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
         verify(mTabGroupModelFilter, times(1)).moveRelatedTabs(anyInt(), anyInt());
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     private void verifyFailedDrag(float expectedOffset) {
         verify(mModel, never()).moveTab(anyInt(), anyInt());
         verify(mTabGroupModelFilter, never()).moveRelatedTabs(anyInt(), anyInt());

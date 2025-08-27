@@ -278,6 +278,7 @@ public class GroupReorderStrategyTest extends ReorderStrategyTestBase {
     // Verification helpers
     // ============================================================================================
 
+    @SuppressWarnings("DirectInvocationOnMock")
     private void verifySuccessfulDrag(int expectedIndex, float expectedOffset) {
         @TabId
         int lastShownTabId =
@@ -290,6 +291,7 @@ public class GroupReorderStrategyTest extends ReorderStrategyTestBase {
         }
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     private void verifyFailedDrag(float expectedOffset) {
         @TabId
         int lastShownTabId =

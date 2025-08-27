@@ -222,7 +222,7 @@ public class ReaderModeManagerTest {
     @Feature("ReaderMode")
     public void testUi_notTriggered_muted() {
         when(mTab.isCustomTab()).thenReturn(true);
-        mManager.muteSiteForTesting(mTab.getUrl());
+        mManager.muteSiteForTesting(MOCK_URL);
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
         assertEquals(
                 "Distillation should be possible.",

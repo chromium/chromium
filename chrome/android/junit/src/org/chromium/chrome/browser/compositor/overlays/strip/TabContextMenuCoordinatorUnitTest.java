@@ -185,6 +185,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @Mock private ServiceStatus mServiceStatus;
     @Mock private WeakReference<Activity> mWeakReferenceActivity;
     @Mock private View mView;
+    private Activity mActivity;
 
     @Before
     public void setUp() {
@@ -196,9 +197,10 @@ public class TabContextMenuCoordinatorUnitTest {
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
 
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        mActivity = activity;
         when(mWindowAndroid.getKeyboardDelegate()).thenReturn(mKeyboardVisibilityDelegate);
         when(mWindowAndroid.getActivity()).thenReturn(mWeakReferenceActivity);
-        when(mWeakReferenceActivity.get()).thenReturn(activity);
+        when(mWeakReferenceActivity.get()).thenReturn(mActivity);
         List<Tab> tabList = List.of(mTab1, mTabOutsideOfGroup);
         when(mTabList.iterator()).thenAnswer(invocation -> tabList.iterator());
         when(mTabList.getCount()).thenReturn(2);
@@ -275,12 +277,13 @@ public class TabContextMenuCoordinatorUnitTest {
                         mMultiInstanceManager,
                         () -> mShareDelegate,
                         mWindowAndroid,
-                        mWeakReferenceActivity.get());
+                        mActivity);
     }
 
     @Test
     @Feature("Tab Strip Context Menu")
     @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testListMenuItems_tabInGroup() {
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
@@ -307,10 +310,7 @@ public class TabContextMenuCoordinatorUnitTest {
                 "Expected 1st submenu item to be a back header", SUBMENU_HEADER, headerItem.type);
         assertEquals(
                 "Expected submenu back header to have the same text as submenu parent item",
-                mWeakReferenceActivity
-                        .get()
-                        .getResources()
-                        .getQuantityString(R.plurals.add_tab_to_group_menu_item, 1),
+                mActivity.getResources().getQuantityString(R.plurals.add_tab_to_group_menu_item, 1),
                 headerItem.model.get(TITLE));
         assertEquals(
                 "Expected 2nd submenu item to have MENU_ITEM type",
@@ -325,8 +325,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 2
         assertEquals(
-                mWeakReferenceActivity
-                        .get()
+                mActivity
                         .getResources()
                         .getQuantityString(R.plurals.remove_tabs_from_group_menu_item, 1),
                 modelList.get(1).model.get(TITLE));
@@ -358,6 +357,7 @@ public class TabContextMenuCoordinatorUnitTest {
         ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP,
         ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING
     })
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testListMenuItems_tabInGroup_multipleTabs() {
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
@@ -384,10 +384,7 @@ public class TabContextMenuCoordinatorUnitTest {
                 "Expected 1st submenu item to be a back header", SUBMENU_HEADER, headerItem.type);
         assertEquals(
                 "Expected submenu back header to have the same text as submenu parent item",
-                mWeakReferenceActivity
-                        .get()
-                        .getResources()
-                        .getQuantityString(R.plurals.add_tab_to_group_menu_item, 2),
+                mActivity.getResources().getQuantityString(R.plurals.add_tab_to_group_menu_item, 2),
                 headerItem.model.get(TITLE));
         assertEquals(
                 "Expected 2nd submenu item to have MENU_ITEM type",
@@ -402,8 +399,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 2
         assertEquals(
-                mWeakReferenceActivity
-                        .get()
+                mActivity
                         .getResources()
                         .getQuantityString(R.plurals.remove_tabs_from_group_menu_item, 2),
                 modelList.get(1).model.get(TITLE));
@@ -427,6 +423,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @Test
     @Feature("Tab Strip Context Menu")
     @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testListMenuItems_tabOutsideOfGroup() {
         MultiWindowUtils.setInstanceCountForTesting(1);
         var modelList = new ModelList();
@@ -440,11 +437,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 2
         StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
-                modelList,
-                1,
-                R.plurals.move_tab_to_another_window,
-                List.of(),
-                mWeakReferenceActivity.get());
+                modelList, 1, R.plurals.move_tab_to_another_window, List.of(), mActivity);
 
         // List item 3
         assertEquals(DIVIDER, modelList.get(2).type);
@@ -466,6 +459,7 @@ public class TabContextMenuCoordinatorUnitTest {
         ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP,
         ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING
     })
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testListMenuItems_tabOutsideOfGroup_multipleTabs() {
         MultiWindowUtils.setInstanceCountForTesting(1);
         var modelList = new ModelList();
@@ -479,11 +473,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 2
         StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
-                modelList,
-                1,
-                R.plurals.move_tabs_to_another_window,
-                List.of(),
-                mWeakReferenceActivity.get());
+                modelList, 1, R.plurals.move_tabs_to_another_window, List.of(), mActivity);
 
         // List item 3
         assertEquals(DIVIDER, modelList.get(2).type);
@@ -497,6 +487,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @Test
     @Feature("Tab Strip Context Menu")
     @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testAddToGroupSubmenu_fallbackTabGroupName() {
         when(mTabGroupModelFilter.getTabGroupTitle(TAB_GROUP_ID)).thenReturn("");
         MultiWindowUtils.setInstanceCountForTesting(1);
@@ -514,6 +505,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @Test
     @Feature("Tab Strip Context Menu")
     @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testListMenuItems_tabOutsideOfGroup_multipleWindows() {
         MultiWindowUtils.setInstanceCountForTesting(3);
         when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
@@ -534,7 +526,7 @@ public class TabContextMenuCoordinatorUnitTest {
                 1,
                 R.plurals.move_tab_to_another_window,
                 Collections.singletonList(WINDOW_TITLE_2),
-                mWeakReferenceActivity.get());
+                mActivity);
 
         // List item 3
         assertEquals(DIVIDER, modelList.get(2).type);
@@ -556,6 +548,7 @@ public class TabContextMenuCoordinatorUnitTest {
         ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP,
         ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING
     })
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testListMenuItems_tabOutsideOfGroup_multipleWindows_multipleTabs() {
         MultiWindowUtils.setInstanceCountForTesting(3);
         when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
@@ -576,7 +569,7 @@ public class TabContextMenuCoordinatorUnitTest {
                 1,
                 R.plurals.move_tabs_to_another_window,
                 Collections.singletonList(WINDOW_TITLE_2),
-                mWeakReferenceActivity.get());
+                mActivity);
 
         // List item 3
         assertEquals(DIVIDER, modelList.get(2).type);
@@ -590,6 +583,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @Test
     @Feature("Tab Strip Context Menu")
     @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testListMenuItems_belowApi31() {
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
         var modelList = new ModelList();
@@ -621,6 +615,7 @@ public class TabContextMenuCoordinatorUnitTest {
         ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP,
         ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING
     })
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testListMenuItems_belowApi31_multipleTabs() {
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
         var modelList = new ModelList();
@@ -644,6 +639,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @Test
     @Feature("Tab Strip Context Menu")
     @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testListMenuItems_nonShareableUrl() {
         MultiWindowUtils.setInstanceCountForTesting(1);
         var modelList = new ModelList();
@@ -669,6 +665,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testListMenuItems_incognito() {
         setupWithIncognito(/* incognito= */ true);
         initializeCoordinator();
@@ -715,6 +712,7 @@ public class TabContextMenuCoordinatorUnitTest {
         ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP,
         ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING
     })
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testListMenuItems_incognito_multipleTabs() {
         setupWithIncognito(/* incognito= */ true);
         initializeCoordinator();
@@ -752,6 +750,7 @@ public class TabContextMenuCoordinatorUnitTest {
         ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP,
         ChromeFeatureList.ANDROID_PINNED_TABS
     })
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testListMenuItems_tabOutsideOfGroup_pinnedTabs_showPinTabOption() {
         MultiWindowUtils.setInstanceCountForTesting(1);
         var modelList = new ModelList();
@@ -776,10 +775,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 5
         assertEquals(
-                mWeakReferenceActivity
-                        .get()
-                        .getResources()
-                        .getQuantityString(R.plurals.pin_tabs_menu_item, 1),
+                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 1),
                 modelList.get(4).model.get(TITLE));
         assertEquals(
                 R.id.pin_tab_menu_id,
@@ -798,6 +794,7 @@ public class TabContextMenuCoordinatorUnitTest {
         ChromeFeatureList.ANDROID_PINNED_TABS,
         ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING
     })
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testListMenuItems_tabOutsideOfGroup_pinnedTabs_showPinTabOption_multipleTabs() {
         MultiWindowUtils.setInstanceCountForTesting(1);
         var modelList = new ModelList();
@@ -811,21 +808,14 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 2
         StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
-                modelList,
-                1,
-                R.plurals.move_tabs_to_another_window,
-                List.of(),
-                mWeakReferenceActivity.get());
+                modelList, 1, R.plurals.move_tabs_to_another_window, List.of(), mActivity);
 
         // List item 3
         assertEquals(DIVIDER, modelList.get(2).type);
 
         // List item 4
         assertEquals(
-                mWeakReferenceActivity
-                        .get()
-                        .getResources()
-                        .getQuantityString(R.plurals.pin_tabs_menu_item, 2),
+                mActivity.getResources().getQuantityString(R.plurals.pin_tabs_menu_item, 2),
                 modelList.get(3).model.get(TITLE));
         assertEquals(
                 R.id.pin_tab_menu_id,
@@ -843,6 +833,7 @@ public class TabContextMenuCoordinatorUnitTest {
         ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP,
         ChromeFeatureList.ANDROID_PINNED_TABS
     })
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testListMenuItems_tabOutsideOfGroup_pinnedTabs_showUnpinTabOption() {
         MultiWindowUtils.setInstanceCountForTesting(1);
         var modelList = new ModelList();
@@ -870,10 +861,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 5
         assertEquals(
-                mWeakReferenceActivity
-                        .get()
-                        .getResources()
-                        .getQuantityString(R.plurals.unpin_tabs_menu_item, 1),
+                mActivity.getResources().getQuantityString(R.plurals.unpin_tabs_menu_item, 1),
                 modelList.get(4).model.get(TITLE));
         assertEquals(
                 R.id.unpin_tab_menu_id,
@@ -892,6 +880,7 @@ public class TabContextMenuCoordinatorUnitTest {
         ChromeFeatureList.ANDROID_PINNED_TABS,
         ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING
     })
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testListMenuItems_tabOutsideOfGroup_pinnedTabs_showUnpinTabOption_multipleTabs() {
         MultiWindowUtils.setInstanceCountForTesting(1);
         var modelList = new ModelList();
@@ -908,21 +897,14 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 2
         StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
-                modelList,
-                1,
-                R.plurals.move_tabs_to_another_window,
-                List.of(),
-                mWeakReferenceActivity.get());
+                modelList, 1, R.plurals.move_tabs_to_another_window, List.of(), mActivity);
 
         // List item 3
         assertEquals(DIVIDER, modelList.get(2).type);
 
         // List item 4
         assertEquals(
-                mWeakReferenceActivity
-                        .get()
-                        .getResources()
-                        .getQuantityString(R.plurals.unpin_tabs_menu_item, 2),
+                mActivity.getResources().getQuantityString(R.plurals.unpin_tabs_menu_item, 2),
                 modelList.get(3).model.get(TITLE));
         assertEquals(
                 R.id.unpin_tab_menu_id,
@@ -1063,6 +1045,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testAnchorWidth() {
         StripLayoutContextMenuCoordinatorTestUtils.testAnchorWidth(
                 mWeakReferenceActivity, mTabContextMenuCoordinator::getMenuWidth);
@@ -1110,8 +1093,7 @@ public class TabContextMenuCoordinatorUnitTest {
                 "Expected 1st submenu item to be a back header", SUBMENU_HEADER, headerItem.type);
         assertEquals(
                 "Expected submenu back header to have the same text as submenu parent item",
-                mWeakReferenceActivity
-                        .get()
+                mActivity
                         .getResources()
                         .getQuantityString(R.plurals.add_tab_to_group_menu_item, expectedTabCount),
                 headerItem.model.get(TITLE));
@@ -1177,10 +1159,7 @@ public class TabContextMenuCoordinatorUnitTest {
                 "Expected first item to have SUBMENU_HEADER type", SUBMENU_HEADER, headerItem.type);
         assertEquals(
                 "Expected submenu back header to have the same text as submenu parent item",
-                mWeakReferenceActivity
-                        .get()
-                        .getResources()
-                        .getQuantityString(R.plurals.move_tab_to_another_window, 2),
+                mActivity.getResources().getQuantityString(R.plurals.move_tab_to_another_window, 2),
                 headerItem.model.get(TITLE));
         assertTrue("Expected submenu header to be enabled", headerItem.model.get(ENABLED));
         assertEquals("Expected 2nd item to have MENU_ITEM type", MENU_ITEM, modelList.get(1).type);

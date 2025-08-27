@@ -304,6 +304,7 @@ public class TabListEditorLegacyGroupActionUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testGroupActionWithTabGroups_MergeIndividalTabsToExistingGroup() {
         List<TabIdGroup> tabIdGroups = new ArrayList<>();
         tabIdGroups.add(
@@ -370,6 +371,7 @@ public class TabListEditorLegacyGroupActionUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testGroupActionWithTabGroups_MergeGroupToExistingGroup() {
         List<TabIdGroup> tabIdGroups = new ArrayList<>();
         tabIdGroups.add(
@@ -436,6 +438,7 @@ public class TabListEditorLegacyGroupActionUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testGroupActionWithTabGroups_MergeTabsAndGroupsToExistingGroup() {
         List<TabIdGroup> tabIdGroups = new ArrayList<>();
         tabIdGroups.add(
@@ -514,6 +517,7 @@ public class TabListEditorLegacyGroupActionUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testGroupActionWithTabGroups_MergeTabsAndGroupsToCollaborationGroup() {
         List<TabIdGroup> tabIdGroups = new ArrayList<>();
         tabIdGroups.add(
@@ -596,6 +600,7 @@ public class TabListEditorLegacyGroupActionUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testGroupActionWithTabGroups_MergeCollaborationIsFirst() {
         List<TabIdGroup> tabIdGroups = new ArrayList<>();
         tabIdGroups.add(
@@ -637,6 +642,7 @@ public class TabListEditorLegacyGroupActionUnitTest {
     }
 
     @Test(expected = AssertionError.class)
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testGroupActionWithTabGroups_MergeCollaborationsAsserts() {
         List<TabIdGroup> tabIdGroups = new ArrayList<>();
         tabIdGroups.add(

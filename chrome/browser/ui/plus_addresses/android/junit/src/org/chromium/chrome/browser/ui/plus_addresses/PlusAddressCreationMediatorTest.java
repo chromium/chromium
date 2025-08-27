@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.ui.plus_addresses;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -37,7 +39,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.plus_addresses.PlusAddressCreationBottomSheetErrorType;
-import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -226,14 +227,16 @@ public final class PlusAddressCreationMediatorTest {
 
     @Test
     public void testOpenUrl_openNewTab() {
-        GURL url = new GURL("manage.com");
-        mMediator.openUrl(url);
+        String urlSpec = "http://manage.com/";
+        Tab tab = mock(Tab.class);
+        doReturn(tab).when(mTabModelSelector).getCurrentTab();
+        mMediator.openUrl(new GURL(urlSpec));
 
         verify(mTabModelSelector)
                 .openNewTab(
-                        new LoadUrlParams(url),
-                        TabLaunchType.FROM_LINK,
-                        mTabModelSelector.getCurrentTab(),
-                        false);
+                        argThat(p -> urlSpec.equals(p.getUrl())),
+                        eq(TabLaunchType.FROM_LINK),
+                        eq(tab),
+                        eq(false));
     }
 }

@@ -67,13 +67,14 @@ public class ReaderModeToolbarButtonControllerTest {
     private final ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
     private UserDataHost mUserDataHost;
     private UnownedUserDataHost mUnownedUserDataHost;
+    private Context mContext;
 
     @Before
     public void setUp() throws Exception {
         mUserDataHost = new UserDataHost();
         mUnownedUserDataHost = new UnownedUserDataHost();
 
-        Context context =
+        mContext =
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
 
@@ -84,7 +85,7 @@ public class ReaderModeToolbarButtonControllerTest {
         when(mMockTab.getProfile()).thenReturn(mProfile);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         mProfileSupplier.set(mProfile);
-        when(mMockTab.getContext()).thenReturn(context);
+        when(mMockTab.getContext()).thenReturn(mContext);
         when(mMockActivityTabProvider.get()).thenReturn(mMockTab);
         when(mMockTab.getUserDataHost()).thenReturn(mUserDataHost);
         mUserDataHost.setUserData(ReaderModeManager.USER_DATA_KEY, mMockReaderModeManager);
@@ -99,10 +100,7 @@ public class ReaderModeToolbarButtonControllerTest {
 
     private ReaderModeToolbarButtonController createController() {
         return new ReaderModeToolbarButtonController(
-                mMockTab.getContext(),
-                mProfileSupplier,
-                mMockActivityTabProvider,
-                mMockModalDialogManager);
+                mContext, mProfileSupplier, mMockActivityTabProvider, mMockModalDialogManager);
     }
 
     @Test

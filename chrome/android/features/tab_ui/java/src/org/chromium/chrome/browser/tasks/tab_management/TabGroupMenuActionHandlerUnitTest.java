@@ -118,6 +118,7 @@ public class TabGroupMenuActionHandlerUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testOnTabGroupCreation_withCoordinator() {
         when(mFilter.getTabGroupCount()).thenReturn(1);
         mHandler.handleAddToGroupAction(mTab);

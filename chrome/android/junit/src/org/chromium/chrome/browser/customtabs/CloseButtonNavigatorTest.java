@@ -79,6 +79,7 @@ public class CloseButtonNavigatorTest {
     private Callback<@FinishReason Integer> mFinishCallback;
 
     @Before
+    @SuppressWarnings("DirectInvocationOnMock")
     public void setUp() {
 
         if (!mIsWebapp) {

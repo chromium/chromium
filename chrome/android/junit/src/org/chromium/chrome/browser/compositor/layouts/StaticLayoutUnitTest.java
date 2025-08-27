@@ -209,6 +209,7 @@ public class StaticLayoutUnitTest {
                 mStaticLayout.getBrowserControlsStateProviderForTesting());
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     private void initAndAssertAllProperties() {
         assertEquals(mTab1, mTabModelSelector.getCurrentTab());
         assertEquals(TAB1_ID, mModel.get(LayoutTab.TAB_ID));

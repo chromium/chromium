@@ -70,6 +70,7 @@ public class MenuButtonMediatorTest {
     private MenuButtonMediator mMenuButtonMediator;
 
     @Before
+    @SuppressWarnings("DirectInvocationOnMock")
     public void setUp() {
         mPropertyModel =
                 new PropertyModel.Builder(MenuButtonProperties.ALL_KEYS)

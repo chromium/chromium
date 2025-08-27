@@ -63,7 +63,7 @@ public class TabModelSelectorTabModelObserverUnitTest {
         // ASSERT
         registrationCompleteCallback.waitForCallback(0);
         verify(mTabModel).addObserver(arg1.capture());
-        assertEquals(1, mSelector.getModels().size());
+        assertEquals(1, mTabModels.size());
         assertSame(observer, arg1.getValue());
     }
 
@@ -91,7 +91,7 @@ public class TabModelSelectorTabModelObserverUnitTest {
         // ASSERT
         registrationCompleteCallback.waitForCallback(0);
         verify(mTabModel).addObserver(arg2.capture());
-        assertEquals(1, mSelector.getModels().size());
+        assertEquals(1, mTabModels.size());
         assertSame(observer, arg2.getValue());
     }
 

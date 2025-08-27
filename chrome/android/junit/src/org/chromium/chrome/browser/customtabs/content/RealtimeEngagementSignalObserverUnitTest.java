@@ -960,6 +960,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         SystemClock.setCurrentTimeMillis(CURRENT_TIME_MS + millis);
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     private void initializeTabForTest(boolean hadScrollDown) {
         Tab initialTab = env.prepareTab();
         doAnswer(

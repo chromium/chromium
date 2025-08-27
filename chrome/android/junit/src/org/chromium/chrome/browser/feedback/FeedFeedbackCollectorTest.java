@@ -125,6 +125,7 @@ public class FeedFeedbackCollectorTest {
 
     @Test
     @Feature({"Feed"})
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testFeedSynchronousData() {
         @SuppressWarnings("unchecked")
         Callback<FeedbackCollector> callback = mock(Callback.class);

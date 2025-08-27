@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.password_manager;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.Intent;
@@ -27,6 +28,7 @@ public class GmsUpdateLauncherTest {
     @Test
     public void testSendsIntentOnLaunchGmsUpdate() {
         Context mockContext = mock(Context.class);
+        when(mockContext.getPackageName()).thenReturn("org.chromium.chrome");
 
         GmsUpdateLauncher.launch(mockContext);
         ArgumentCaptor<Intent> intentArgumentCaptor = ArgumentCaptor.forClass(Intent.class);
@@ -35,7 +37,7 @@ public class GmsUpdateLauncherTest {
 
         assertEquals(Intent.ACTION_VIEW, intent.getAction());
         assertEquals("com.android.vending", intent.getPackage());
-        assertEquals(intent.getStringExtra("callerId"), mockContext.getPackageName());
+        assertEquals("org.chromium.chrome", intent.getStringExtra("callerId"));
         assertEquals(Intent.FLAG_ACTIVITY_NEW_TASK, intent.getFlags());
         assertEquals(
                 intent.getData(),

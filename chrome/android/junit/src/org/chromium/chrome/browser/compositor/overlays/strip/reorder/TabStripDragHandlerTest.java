@@ -176,6 +176,7 @@ public class TabStripDragHandlerTest {
 
     /** Resets the environment before each test. */
     @Before
+    @SuppressWarnings("DirectInvocationOnMock")
     public void beforeTest() {
         mActivity = Robolectric.setupActivity(Activity.class);
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);

@@ -906,6 +906,7 @@ public class ManualFillingControllerTest {
      * the accessory sheet's height is shrunken.
      */
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testRestrictsSheetSizeIfVerticalSpaceChanges() {
         final int density = 2;
         final int accessorySheetHeightDp = 100; // The height of a large keyboard.
@@ -968,6 +969,7 @@ public class ManualFillingControllerTest {
      * WebContents height is insetted by the keyboard and its accessories.
      */
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testRestrictsSheetSizeIfVerticalSpaceChangesWithResizesContent() {
         final int density = 2;
         final int accessorySheetHeightDp = 100; // The height of a large keyboard.
@@ -1685,6 +1687,7 @@ public class ManualFillingControllerTest {
      * @param vkMode The current virtual keyboard mode, affecting how WebContents reacts to the View
      *     size.
      */
+    @SuppressWarnings("DirectInvocationOnMock")
     private void simulateLayoutSizeChange(
             float density,
             int width,

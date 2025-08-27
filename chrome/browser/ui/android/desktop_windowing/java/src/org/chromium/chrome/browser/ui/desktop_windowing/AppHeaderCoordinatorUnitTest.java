@@ -364,6 +364,7 @@ public class AppHeaderCoordinatorUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void initializeWithDesktopWindowingThenExit() {
         setupWithLeftAndRightBoundingRect();
         doAnswer(
@@ -950,6 +951,7 @@ public class AppHeaderCoordinatorUnitTest {
         doReturn(blockedRects).when(mInsetsRectProvider).getBoundingRects();
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     private void notifyInsetsRectConsumer() {
         verify(mInsetsRectProvider, atLeastOnce()).setConsumer(mInsetRectConsumerCaptor.capture());
         mInsetsRectUpdateConsumed =

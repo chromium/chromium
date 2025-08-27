@@ -164,6 +164,7 @@ public class LogoMediatorUnitTest {
         verify(mTemplateUrlService).addObserver(logoMediator);
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     @Test
     public void testInitWithoutNativeWhenDseDoesNotHaveLogo() {
         LogoMediator logoMediator = createMediatorWithoutNative();

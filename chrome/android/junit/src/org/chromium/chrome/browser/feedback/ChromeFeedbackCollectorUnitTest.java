@@ -290,6 +290,7 @@ public class ChromeFeedbackCollectorUnitTest {
 
     @Test
     @Feature({"Feedback"})
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testRecordLatencyHistogram() {
         @SuppressWarnings("unchecked")
         Callback<FeedbackCollector> callback = mock(Callback.class);
@@ -316,6 +317,7 @@ public class ChromeFeedbackCollectorUnitTest {
 
     @Test
     @Feature({"Feedback"})
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testNoMetaData() {
         @SuppressWarnings("unchecked")
         Callback<FeedbackCollector> callback = mock(Callback.class);
@@ -346,6 +348,7 @@ public class ChromeFeedbackCollectorUnitTest {
 
     @Test
     @Feature({"Feedback"})
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testBasicSynchronousData() {
         @SuppressWarnings("unchecked")
         Callback<FeedbackCollector> callback = mock(Callback.class);
@@ -387,6 +390,7 @@ public class ChromeFeedbackCollectorUnitTest {
 
     @Test
     @Feature({"Feedback"})
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testNullIdentityService() {
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         when(IdentityServicesProvider.get().getIdentityManager(any())).thenReturn(null);
@@ -422,6 +426,7 @@ public class ChromeFeedbackCollectorUnitTest {
 
     @Test
     @Feature({"Feedback"})
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testBasicSynchronousDataWithFeedbackContext() {
         @SuppressWarnings("unchecked")
         Callback<FeedbackCollector> callback = mock(Callback.class);
@@ -472,6 +477,7 @@ public class ChromeFeedbackCollectorUnitTest {
 
     @Test
     @Feature({"Feedback"})
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testBasicAsynchronousData() {
         @SuppressWarnings("unchecked")
         Callback<FeedbackCollector> callback = mock(Callback.class);
@@ -510,6 +516,7 @@ public class ChromeFeedbackCollectorUnitTest {
 
     @Test
     @Feature({"Feedback"})
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testBasicMixedData() {
         @SuppressWarnings("unchecked")
         Callback<FeedbackCollector> callback = mock(Callback.class);
@@ -557,6 +564,7 @@ public class ChromeFeedbackCollectorUnitTest {
 
     @Test
     @Feature({"Feedback"})
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testAsynchronousDataTimeout() {
         @SuppressWarnings("unchecked")
         Callback<FeedbackCollector> callback = mock(Callback.class);
@@ -596,6 +604,7 @@ public class ChromeFeedbackCollectorUnitTest {
 
     @Test
     @Feature({"Feedback"})
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testScreenshot() {
         @SuppressWarnings("unchecked")
         Callback<FeedbackCollector> callback = mock(Callback.class);
@@ -632,6 +641,7 @@ public class ChromeFeedbackCollectorUnitTest {
 
     @Test
     @Feature({"Feedback"})
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testScreenshotBypassesTimeout() {
         @SuppressWarnings("unchecked")
         Callback<FeedbackCollector> callback = mock(Callback.class);
@@ -673,6 +683,7 @@ public class ChromeFeedbackCollectorUnitTest {
 
     @Test
     @Feature({"Feedback"})
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testNullScreenshotOverrideStillTriggersCallback() {
         @SuppressWarnings("unchecked")
         Callback<FeedbackCollector> callback = mock(Callback.class);
@@ -707,6 +718,7 @@ public class ChromeFeedbackCollectorUnitTest {
 
     @Test
     @Feature({"Feedback"})
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testScreenshotOverrideStillTriggersCallback() {
         @SuppressWarnings("unchecked")
         Callback<FeedbackCollector> callback = mock(Callback.class);
@@ -744,6 +756,7 @@ public class ChromeFeedbackCollectorUnitTest {
 
     @Test
     @Feature({"Feedback"})
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testScreenshotOverrideWithNoOriginalScreenshot() {
         @SuppressWarnings("unchecked")
         Callback<FeedbackCollector> callback = mock(Callback.class);
@@ -772,6 +785,7 @@ public class ChromeFeedbackCollectorUnitTest {
 
     @Test
     @Feature({"Feedback"})
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testScreenshotOverrideAfterCallback() {
         @SuppressWarnings("unchecked")
         Callback<FeedbackCollector> callback = mock(Callback.class);
@@ -815,6 +829,7 @@ public class ChromeFeedbackCollectorUnitTest {
 
     @Test
     @Feature({"Feedback"})
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testOldScreenshotDoesNotOverrideNewOne() {
         @SuppressWarnings("unchecked")
         Callback<FeedbackCollector> callback = mock(Callback.class);

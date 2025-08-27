@@ -394,7 +394,7 @@ public class ImprovedBookmarkQueryHandlerTest {
                 .when(mBookmarkUiPrefs)
                 .getBookmarkRowSortOrder();
         List<BookmarkListEntry> result =
-                mHandler.buildBookmarkListForFolderSelect(mBookmarkModel.getRootFolderId());
+                mHandler.buildBookmarkListForFolderSelect(ROOT_BOOKMARK_ID);
         List<BookmarkId> expected =
                 Arrays.asList(
                         fakeBookmarkModel.getDesktopFolderId(),
@@ -420,7 +420,7 @@ public class ImprovedBookmarkQueryHandlerTest {
                 .when(mBookmarkUiPrefs)
                 .getBookmarkRowSortOrder();
         List<BookmarkListEntry> result =
-                mHandler.buildBookmarkListForFolderSelect(mBookmarkModel.getRootFolderId());
+                mHandler.buildBookmarkListForFolderSelect(ROOT_BOOKMARK_ID);
         List<BookmarkId> expected =
                 Arrays.asList(
                         null,
@@ -449,7 +449,7 @@ public class ImprovedBookmarkQueryHandlerTest {
 
         doReturn(BookmarkRowSortOrder.MANUAL).when(mBookmarkUiPrefs).getBookmarkRowSortOrder();
         List<BookmarkListEntry> result =
-                mHandler.buildBookmarkListForFolderSelect(mBookmarkModel.getRootFolderId());
+                mHandler.buildBookmarkListForFolderSelect(ROOT_BOOKMARK_ID);
         List<BookmarkId> expected =
                 Arrays.asList(
                         null,

@@ -485,6 +485,7 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
                 .moveTab(anyInt(), anyInt());
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     private void mockMergeToGroup() {
         ArgumentCaptor<Integer> captor = ArgumentCaptor.forClass(Integer.class);
         doAnswer(
@@ -501,6 +502,7 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
                 .mergeTabsToGroup(anyInt(), captor.capture(), anyBoolean());
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     private void mockUnGroup() {
         @SuppressWarnings("unchecked")
         ArgumentCaptor<List<Tab>> captor = ArgumentCaptor.forClass(List.class);

@@ -223,6 +223,7 @@ public class TabGroupUiMediatorUnitTest {
                 .setBottomControlsVisible(isVisible);
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     private void initAndAssertProperties(@Nullable Tab currentTab) {
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
         if (currentTab == null) {
@@ -501,6 +502,7 @@ public class TabGroupUiMediatorUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void tabSelection_NotSameGroup_SingleTabToGroup() {
         initAndAssertProperties(mTab1);
 
@@ -550,6 +552,7 @@ public class TabGroupUiMediatorUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void tabSelection_ScrollToSelectedIndex() {
         initAndAssertProperties(mTab1);
         assertThat(mModel.get(TabGroupUiProperties.INITIAL_SCROLL_INDEX), equalTo(null));
@@ -711,6 +714,7 @@ public class TabGroupUiMediatorUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void tabAddition_TabGroup_ScrollToTheLast() {
         initAndAssertProperties(mTab2);
         assertThat(mModel.get(TabGroupUiProperties.INITIAL_SCROLL_INDEX), equalTo(0));

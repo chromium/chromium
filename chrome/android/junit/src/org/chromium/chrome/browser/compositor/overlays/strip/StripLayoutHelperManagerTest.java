@@ -727,6 +727,7 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testGetUpdatedSceneOverlayTree() {
         ToolbarFeatures.setIsTabStripLayoutOptimizationEnabledForTesting(true);
         initializeTest();
@@ -812,6 +813,7 @@ public class StripLayoutHelperManagerTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testTabStripHeightTransition_Hide() {
         mStripLayoutHelperManager.setTabStripTreeProviderForTesting(mTabStripTreeProvider);
 
@@ -875,6 +877,7 @@ public class StripLayoutHelperManagerTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testTabStripHeightTransition_Show() {
         doTestTabStripHeightTransition_Show(mToolbarPrimaryColor);
     }
@@ -968,6 +971,7 @@ public class StripLayoutHelperManagerTest {
         mStripLayoutHelperManager.onHeightTransitionFinished();
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     private void doTestTabStripHeightTransition_Show(int scrimColor) {
         // Assume tab strip is hidden from the beginning.
         mTabStripHeightSupplier.set(0);
@@ -1486,6 +1490,7 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testVisibilityConstraintAndOffsetOverride() {
         mStripLayoutHelperManager.setTabStripTreeProviderForTesting(mTabStripTreeProvider);
         doReturn(false).when(mBrowserControlStateProvider).isVisibilityForced();

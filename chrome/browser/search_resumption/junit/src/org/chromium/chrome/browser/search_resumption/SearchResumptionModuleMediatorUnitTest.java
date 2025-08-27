@@ -156,6 +156,7 @@ public class SearchResumptionModuleMediatorUnitTest {
 
     @Test
     @MediumTest
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testShowModuleWithEnoughResults() {
         createMediator(null, /* useNewServiceEnabled= */ false);
         List<AutocompleteMatch> list =
@@ -173,6 +174,7 @@ public class SearchResumptionModuleMediatorUnitTest {
 
     @Test
     @SmallTest
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testShowModuleWithCachedResults() {
         List<AutocompleteMatch> list =
                 Arrays.asList(mNonSearchSuggest1, mSearchSuggest1, mSearchSuggest2);
@@ -210,6 +212,7 @@ public class SearchResumptionModuleMediatorUnitTest {
 
     @Test
     @MediumTest
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testShowModuleWithEnoughResults_newServiceAPI() {
         initSuggestions();
 
@@ -233,6 +236,7 @@ public class SearchResumptionModuleMediatorUnitTest {
 
     @Test
     @SmallTest
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testShowModuleWithCachedResults_newServiceAPI() {
         initSuggestions();
         SuggestionResult suggestionResult = createCachedSuggestions();
@@ -249,6 +253,7 @@ public class SearchResumptionModuleMediatorUnitTest {
 
     @Test
     @MediumTest
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testModuleVisibility() {
         testShowModuleWithEnoughResults();
         mMediator.onSignedOut();

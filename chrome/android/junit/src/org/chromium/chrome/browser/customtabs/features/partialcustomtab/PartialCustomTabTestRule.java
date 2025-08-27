@@ -318,6 +318,7 @@ public class PartialCustomTabTestRule implements TestRule {
         return mAttributeResults.get(mAttributeResults.size() - 1);
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     public float getDisplayDensity() {
         return mActivity.getResources().getDisplayMetrics().density;
     }

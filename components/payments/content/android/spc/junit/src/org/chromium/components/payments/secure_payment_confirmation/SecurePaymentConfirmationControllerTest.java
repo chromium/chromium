@@ -229,7 +229,7 @@ public class SecurePaymentConfirmationControllerTest {
 
     @Test
     public void testInitModel() {
-        Context context = mWindow.getContext().get();
+        Context context = RuntimeEnvironment.getApplication();
         createController(/* showOptOut= */ false, /* informOnly= */ false);
         PropertyModel model = mController.getModelForTesting();
 
@@ -291,7 +291,7 @@ public class SecurePaymentConfirmationControllerTest {
 
     @Test
     public void testInitModel_withOptOut() {
-        Context context = mWindow.getContext().get();
+        Context context = RuntimeEnvironment.getApplication();
         createController(/* showOptOut= */ true, /* informOnly= */ false);
 
         String deviceString =
@@ -317,7 +317,7 @@ public class SecurePaymentConfirmationControllerTest {
 
     @Test
     public void testInitModel_withInformOnly() {
-        Context context = mWindow.getContext().get();
+        Context context = RuntimeEnvironment.getApplication();
         createController(/* showOptOut= */ false, /* informOnly= */ true);
         PropertyModel model = mController.getModelForTesting();
 

@@ -119,7 +119,7 @@ public class PageContentProviderImplUnitTest {
 
         var contentUri =
                 PageContentProviderImpl.getContentUriForUrl(
-                        mTab.getUrl().getSpec(), mActivityTabProvider);
+                        JUnitTestGURLs.GOOGLE_URL.getSpec(), mActivityTabProvider);
         // Wait 300ms between creating URI and querying it.
         mFakeTimeTestRule.advanceMillis(300);
         Cursor resultCursor;
@@ -140,7 +140,9 @@ public class PageContentProviderImplUnitTest {
             resultCursor = mProvider.query(Uri.parse(contentUri), null, null, null, null);
         }
         assertCursorContainsValues(
-                resultCursor, mTab.getUrl().getSpec(), /* contents= */ "Page contents!");
+                resultCursor,
+                JUnitTestGURLs.GOOGLE_URL.getSpec(),
+                /* contents= */ "Page contents!");
         verify(mInnerTextNatives).getInnerText(eq(mRenderFrameHost), any());
     }
 
@@ -150,7 +152,7 @@ public class PageContentProviderImplUnitTest {
 
         var contentUri =
                 PageContentProviderImpl.getContentUriForUrl(
-                        mTab.getUrl().getSpec(), mActivityTabProvider);
+                        JUnitTestGURLs.GOOGLE_URL.getSpec(), mActivityTabProvider);
         mFakeTimeTestRule.advanceMillis(300);
         Cursor resultCursor = mProvider.query(Uri.parse(contentUri), null, null, null, null);
         assertCursorContainsErrorMessage(resultCursor, "Error during extraction");

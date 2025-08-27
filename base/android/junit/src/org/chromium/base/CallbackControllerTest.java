@@ -68,8 +68,7 @@ public class CallbackControllerTest {
     public void testLambdaCallback() {
         CallbackController callbackController = new CallbackController();
         CallbackTarget target = Mockito.mock(CallbackTarget.class);
-        Callback<Boolean> wrapped =
-                callbackController.makeCancelable(value -> target.callbackTarget(value));
+        Callback<Boolean> wrapped = callbackController.makeCancelable(target::callbackTarget);
 
         wrapped.onResult(true);
         verify(target).callbackTarget(true);
@@ -88,7 +87,7 @@ public class CallbackControllerTest {
     public void testLambdaRunnable() {
         CallbackController callbackController = new CallbackController();
         CallbackTarget target = Mockito.mock(CallbackTarget.class);
-        Runnable wrapped = callbackController.makeCancelable(() -> target.runnableTarget());
+        Runnable wrapped = callbackController.makeCancelable(target::runnableTarget);
 
         wrapped.run();
         verify(target).runnableTarget();

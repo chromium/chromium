@@ -165,6 +165,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     @Mock private WeakReference<Activity> mWeakReferenceActivity;
     @Mock private MultiInstanceManager mMultiInstanceManager;
+    private Activity mActivity;
 
     @Before
     public void setUp() {
@@ -175,6 +176,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
 
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        mActivity = activity;
         activity.setTheme(R.style.Theme_Chromium_Activity);
         LayoutInflater inflater = LayoutInflater.from(activity);
         mMenuView = inflater.inflate(R.layout.tab_strip_group_menu_layout, null);
@@ -220,6 +222,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     @Test
     @Feature("Tab Strip Group Context Menu")
     @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testListMenuItems() {
         when(mTabModel.isIncognitoBranded()).thenReturn(false);
         mTabGroupContextMenuCoordinator.setTabGroupSyncServiceForTesting(mTabGroupSyncService);
@@ -579,7 +582,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                 4,
                 R.plurals.move_group_to_another_window_context_menu_item,
                 List.of(),
-                mWeakReferenceActivity.get());
+                mActivity);
 
         StripLayoutContextMenuCoordinatorTestUtils.clickMoveToNewWindow(modelList, 4, mMenuView);
 
@@ -623,6 +626,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         return tabsInGroup;
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     private void verifyNormalListItems(ModelList modelList, int closeGroupPosition) {
         verifyDivider(modelList.get(0));
         assertEquals(
@@ -638,9 +642,10 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                 closeGroupPosition + 1,
                 R.plurals.move_group_to_another_window_context_menu_item,
                 List.of(WINDOW_TITLE_2),
-                mWeakReferenceActivity.get());
+                mActivity);
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     private void verifyCollaborationListItems(ModelList modelList, @MemberRole int memberRole) {
         verifyDivider(modelList.get(0));
         assertEquals(
@@ -664,7 +669,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                 5,
                 R.plurals.move_group_to_another_window_context_menu_item,
                 List.of(WINDOW_TITLE_2),
-                mWeakReferenceActivity.get());
+                mActivity);
         verifyDivider(modelList.get(6));
 
         // Verify delete group or leave group depending on the member role.

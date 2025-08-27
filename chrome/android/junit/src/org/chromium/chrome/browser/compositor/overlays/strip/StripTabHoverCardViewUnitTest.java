@@ -140,6 +140,7 @@ public class StripTabHoverCardViewUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void show() {
         var url = JUnitTestGURLs.EXAMPLE_URL;
         var title = "Tab 1";
@@ -195,6 +196,7 @@ public class StripTabHoverCardViewUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void hoveredTabUsesChromeScheme() {
         var url = JUnitTestGURLs.NTP_URL;
         var title = "Tab 1";

@@ -436,6 +436,7 @@ public class BookmarkBarCoordinatorTest {
 
     @Test
     @SmallTest
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testOnTopControlsHeightChanged() {
         // Initialize browser controls manager.
         final int topControlsHeight = 1;
@@ -457,6 +458,7 @@ public class BookmarkBarCoordinatorTest {
 
     @Test
     @SmallTest
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testOnTopControlsOffsetChanged() {
         // Initialize browser controls manager.
         final var topControlOffset = new AtomicInteger(-1);

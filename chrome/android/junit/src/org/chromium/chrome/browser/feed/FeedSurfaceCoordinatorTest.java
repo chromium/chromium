@@ -205,6 +205,7 @@ public class FeedSurfaceCoordinatorTest {
             new ObservableSupplierImpl<>();
 
     @Before
+    @SuppressWarnings("DirectInvocationOnMock")
     public void setUp() {
         Configuration config = new Configuration();
         config.setLocale(new Locale("en", "US"));

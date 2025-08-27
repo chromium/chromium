@@ -484,6 +484,7 @@ public final class PageViewObserverTest {
         observer.notifySiteSuspensionChanged(STARTING_FQDN, true);
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     private PageViewObserver createPageViewObserver() {
         PageViewObserver observer =
                 new PageViewObserver(

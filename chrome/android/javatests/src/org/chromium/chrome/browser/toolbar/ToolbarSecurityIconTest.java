@@ -58,6 +58,7 @@ import java.util.concurrent.ExecutionException;
 /** Instrumentation tests for the toolbar security icon. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
+@SuppressWarnings("DirectInvocationOnMock")
 public final class ToolbarSecurityIconTest {
     private static final boolean IS_SMALL_DEVICE = true;
     private static final boolean IS_OFFLINE_PAGE = true;

@@ -913,6 +913,7 @@ public final class ToolbarTabletUnitTest {
         assertToolbarComponentsReceivedWidth(Set.of());
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     private void assertToolbarComponentsReceivedWidth(
             @ToolbarComponentId Set<Integer> visibleComponents) {
         int buttonWidth =

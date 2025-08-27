@@ -463,6 +463,7 @@ public class MultiWindowUtilsTest {
                         /* openInOtherWindowActivity= */ ChromeTabbedActivity.class));
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     public boolean doTestIsOpenInOtherWindowSupported(
             boolean isAutomotive,
             boolean isInMultiWindowMode,
@@ -527,6 +528,7 @@ public class MultiWindowUtilsTest {
                         /* customMultiWindowModeSupported= */ true));
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     public boolean doTestCanEnterMultiWindowMode(
             boolean isAutomotive,
             boolean aospMultiWindowModeSupported,

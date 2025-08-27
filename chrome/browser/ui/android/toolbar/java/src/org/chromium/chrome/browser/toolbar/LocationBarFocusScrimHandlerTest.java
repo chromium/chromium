@@ -104,8 +104,10 @@ public class LocationBarFocusScrimHandlerTest {
         ArgumentCaptor<Callback<Integer>> captor = ArgumentCaptor.forClass(Callback.class);
         verify(mTabStripHeightSupplier).addObserver(captor.capture());
         Callback<Integer> tabStripHeightChangeCallback = captor.getValue();
-        int newTabStripHeight =
-                mContext.getResources().getDimensionPixelSize(R.dimen.tab_strip_height);
+        int newTabStripHeight = 10;
+        doReturn(newTabStripHeight)
+                .when(mResources)
+                .getDimensionPixelSize(R.dimen.tab_strip_height);
         tabStripHeightChangeCallback.onResult(newTabStripHeight);
         assertEquals(
                 "Scrim top margin should be updated when tab strip height changes.",

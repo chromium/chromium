@@ -239,6 +239,7 @@ public class TabListEditorAddToGroupActionUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testPerformAction_NoTabGroups() {
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(0);

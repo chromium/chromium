@@ -117,6 +117,7 @@ public class FeedSurfaceMediatorTest {
     private FeedSurfaceMediator mFeedSurfaceMediator;
 
     @Before
+    @SuppressWarnings("DirectInvocationOnMock")
     public void setUp() {
         // Print logs to stdout.
         ShadowLog.stream = System.out;

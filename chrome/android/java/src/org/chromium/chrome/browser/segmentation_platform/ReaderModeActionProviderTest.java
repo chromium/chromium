@@ -88,6 +88,7 @@ public class ReaderModeActionProviderTest {
     @Mock private ReaderModeActionRateLimiter mReaderModeActionRateLimiter;
 
     @Before
+    @SuppressWarnings("DirectInvocationOnMock")
     public void setUp() {
         initializeReaderModeBackend();
         ReaderModeActionRateLimiter.setInstanceForTesting(mReaderModeActionRateLimiter);
@@ -119,7 +120,7 @@ public class ReaderModeActionProviderTest {
         TabDistillabilityProvider tabDistillabilityProvider =
                 TabDistillabilityProvider.get(mMockTab);
         tabDistillabilityProvider.onIsPageDistillableResult(
-                mMockTab.getUrl(),
+                TEST_URL,
                 isDistillable,
                 /* isLast= */ true,
                 /* isLongArticle= */ false,

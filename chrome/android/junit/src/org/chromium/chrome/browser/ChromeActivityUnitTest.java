@@ -242,8 +242,9 @@ public class ChromeActivityUnitTest {
         when(chromeActivity.getActivityTabProvider()).thenReturn(mActivityTabProvider);
         when(mActivityTabProvider.get()).thenReturn(mActivityTab);
         when(mActivityTab.getUrl()).thenReturn(JUnitTestGURLs.GOOGLE_URL);
-        when(mActivityTab.getWebContents()).thenReturn(mock(WebContents.class));
-        when(mActivityTab.getWebContents().getMainFrame()).thenReturn(mock(RenderFrameHost.class));
+        WebContents webContents = mock(WebContents.class);
+        when(webContents.getMainFrame()).thenReturn(mock(RenderFrameHost.class));
+        when(mActivityTab.getWebContents()).thenReturn(webContents);
         UkmRecorderJni.setInstanceForTesting(mUkmRecorderJniMock);
 
         // Set enterprise info to report as enterprise owned.

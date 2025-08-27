@@ -265,6 +265,7 @@ public class DisplayCutoutControllerTest {
 
     @Test
     @SmallTest
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testGetIsViewportFitCover() {
         // Go through the live creation of DisplayCutoutTabHelper.from(Tab) with our mock Tab.
         UserDataHost tabDataHost = new UserDataHost();

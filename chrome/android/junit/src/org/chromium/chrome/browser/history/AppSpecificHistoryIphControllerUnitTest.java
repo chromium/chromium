@@ -75,6 +75,7 @@ public class AppSpecificHistoryIphControllerUnitTest {
 
     @Test
     @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testShowsIphOnPageLoad() {
         mController.maybeShowIph();
         var captor = ArgumentCaptor.forClass(IphCommand.class);
