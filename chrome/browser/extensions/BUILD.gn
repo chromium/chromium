@@ -782,10 +782,6 @@ source_set("extensions") {
       "api/system_private/system_private_api.h",
       "api/tab_capture/tab_capture_registry.cc",
       "api/tab_capture/tab_capture_registry.h",
-      "api/tabs/app_base_window.cc",
-      "api/tabs/app_base_window.h",
-      "api/tabs/app_window_controller.cc",
-      "api/tabs/app_window_controller.h",
       "api/tabs/tabs_event_router.cc",
       "api/tabs/tabs_event_router.h",
       "app_tab_helper.cc",
@@ -1569,6 +1565,10 @@ source_set("extensions") {
 
   if (enable_platform_apps) {
     sources += [
+      "api/tabs/app_base_window.cc",
+      "api/tabs/app_base_window.h",
+      "api/tabs/app_window_controller.cc",
+      "api/tabs/app_window_controller.h",
       "api/tabs/app_window_helper.cc",
       "api/tabs/app_window_helper.h",
     ]
