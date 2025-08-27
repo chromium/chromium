@@ -4727,9 +4727,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ACCESSIBILITY_NEW_INCOGNITO_TAB_PAGE" desc="Accessibility text to read aloud when the user focuses the new Incognito tab view.">
         New Incognito tab
       </message>
-      <message name="IDS_ACCESSIBILITY_INCOGNITO_3PC_SETTINGS" desc="Content description of the cookie controls icon displayed on the new incognito tab which navigates to the third-party cookies settings.">
-        Third-party cookies settings
-      </message>
       <message name="IDS_ACCESSIBILITY_TOOLBAR_BTN_NEW_TAB" desc="Content description for the new tab button.">
         New tab
       </message>

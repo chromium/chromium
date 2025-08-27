@@ -162,7 +162,6 @@ public abstract class ChromeFeatureList {
             "AdaptiveButtonInTopToolbarPageSummary";
     public static final String ALLOW_TAB_CLOSING_UPON_MINIMIZATION =
             "AllowTabClosingUponMinimization";
-    public static final String ALWAYS_BLOCK_3PCS_INCOGNITO = "AlwaysBlock3pcsIncognito";
     public static final String ANDROID_ANIMATED_COMPOSITED_PROGRESS_BAR =
             "AndroidAnimatedCompositedProgressBar";
     public static final String ANDROID_APPEARANCE_SETTINGS = "AndroidAppearanceSettings";

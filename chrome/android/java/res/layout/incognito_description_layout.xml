@@ -71,7 +71,7 @@ found in the LICENSE file.
         android:contentDescription="@string/incognito_tab_learn_more_accessibility_label"
         style="@style/IncognitoNewTabLearnMoreLinkModernTextView" />
 
-    <!-- Placeholder for a Cookie Controls or a Tracking Protection card. -->
+    <!-- Placeholder for a Tracking Protection card. -->
     <ViewStub
         android:id="@+id/cookie_card_stub"
         android:layout_width="match_parent"

@@ -8,7 +8,6 @@ import static org.chromium.ui.base.ViewUtils.dpToPx;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ForegroundColorSpan;
@@ -16,17 +15,14 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.StringRes;
-import androidx.appcompat.widget.SwitchCompat;
 
 import org.chromium.base.Callback;
-import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -35,7 +31,6 @@ import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
-import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.privacy_sandbox.IncognitoTrackingProtectionsFragment;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.text.ChromeClickableSpan;
@@ -57,10 +52,6 @@ public class IncognitoDescriptionView extends LinearLayout {
     private TextViewWithClickableSpans mLearnMore;
     private TextView[] mParagraphs;
     private @Nullable ViewGroup mCookieControlsCard;
-    private @Nullable SwitchCompat mCookieControlsToggle;
-    private @Nullable ImageView mCookieControlsManagedIcon;
-    private @Nullable TextView mCookieControlsTitle;
-    private @Nullable TextView mCookieControlsSubtitle;
 
     private static final int BULLETPOINTS_HORIZONTAL_SPACING_DP = 40;
     private static final int BULLETPOINTS_MARGIN_BOTTOM_DP = 12;
@@ -78,21 +69,6 @@ public class IncognitoDescriptionView extends LinearLayout {
 
     public void setLearnMoreOnclickListener(OnClickListener listener) {
         mLearnMore.setOnClickListener(listener);
-    }
-
-    public void setCookieControlsToggleOnCheckedChangeListener(OnCheckedChangeListener listener) {
-        if (!findCookieControlElements()) return;
-        mCookieControlsToggle.setOnCheckedChangeListener(listener);
-    }
-
-    public void setCookieControlsToggle(boolean enabled) {
-        if (!findCookieControlElements()) return;
-        mCookieControlsToggle.setChecked(enabled);
-    }
-
-    public void setCookieControlsIconOnclickListener(OnClickListener listener) {
-        if (!findCookieControlElements()) return;
-        mCookieControlsManagedIcon.setOnClickListener(listener);
     }
 
     private void showIncognitoTrackingProtectionSettings() {
@@ -142,14 +118,10 @@ public class IncognitoDescriptionView extends LinearLayout {
 
     public void formatTrackingProtectionText(Context context, View layout) {
         TextViewWithClickableSpans view =
-                layout.findViewById(R.id.tracking_protection_description_two);
-        if (view == null) {
-            adjustCookieControlsCard();
-            return;
-        }
-
-        TextView title = layout.findViewById(R.id.tracking_protection_card_title);
-        String text = context.getString(R.string.new_tab_otr_third_party_blocked_cookie_part_two);
+                layout.findViewById(R.id.tracking_protection_card_description);
+        String text =
+                context.getString(
+                        R.string.incognito_ntp_block_third_party_cookies_description_android);
         Callback<View> spanOnClickCallback =
                 (unused) -> {
                     new ChromeAsyncTabLauncher(/* incognito= */ true)
@@ -158,6 +130,7 @@ public class IncognitoDescriptionView extends LinearLayout {
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_UX)
                 || ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_UX)) {
+            TextView title = layout.findViewById(R.id.tracking_protection_card_title);
             title.setText(
                     context.getString(
                             R.string.incognito_ntp_incognito_tracking_protections_header));
@@ -169,15 +142,6 @@ public class IncognitoDescriptionView extends LinearLayout {
                     (unused) -> {
                         showIncognitoTrackingProtectionSettings();
                     };
-        } else if (ChromeFeatureList.isEnabled(ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO)) {
-            title.setText(
-                    context.getString(R.string.incognito_ntp_block_third_party_cookies_header));
-            text =
-                    context.getString(
-                            R.string.incognito_ntp_block_third_party_cookies_description_android);
-        } else {
-            layout.findViewById(R.id.tracking_protection_description_one)
-                    .setVisibility(View.VISIBLE);
         }
         ChromeClickableSpan span =
                 new ChromeClickableSpan(view.getSpanColor(), spanOnClickCallback);
@@ -462,10 +426,7 @@ public class IncognitoDescriptionView extends LinearLayout {
 
     /** Adjust the Cookie Controls Card. */
     private void adjustCookieControlsCard() {
-        mCookieControlsCard = findViewById(R.id.cookie_controls_card);
-        if (mCookieControlsCard == null) {
-            mCookieControlsCard = findViewById(R.id.tracking_protection_card);
-        }
+        mCookieControlsCard = findViewById(R.id.tracking_protection_card);
         // Still null - not inflated yet.
         if (mCookieControlsCard == null) return;
         if (mWidthDp <= WIDE_LAYOUT_THRESHOLD_DP) {
@@ -475,64 +436,5 @@ public class IncognitoDescriptionView extends LinearLayout {
             // Landscape
             mCookieControlsCard.getLayoutParams().width = dpToPx(getContext(), CONTENT_WIDTH_DP);
         }
-    }
-
-    public void setCookieControlsEnforcement(@CookieControlsEnforcement int enforcement) {
-        // No cookie controls toggle on the page.
-        if (!findCookieControlElements()) return;
-
-        boolean enforced = enforcement != CookieControlsEnforcement.NO_ENFORCEMENT;
-        mCookieControlsToggle.setEnabled(!enforced);
-        mCookieControlsManagedIcon.setVisibility(enforced ? View.VISIBLE : View.GONE);
-        mCookieControlsTitle.setEnabled(!enforced);
-        mCookieControlsSubtitle.setEnabled(!enforced);
-
-        Resources resources = getContext().getResources();
-        StringBuilder subtitleText = new StringBuilder();
-        subtitleText.append(resources.getString(R.string.new_tab_otr_third_party_cookie_sublabel));
-        if (!enforced) {
-            mCookieControlsSubtitle.setText(subtitleText.toString());
-            return;
-        }
-
-        int iconRes;
-        String addition;
-        switch (enforcement) {
-            case CookieControlsEnforcement.ENFORCED_BY_POLICY:
-                iconRes = R.drawable.ic_business_small;
-                addition = resources.getString(R.string.managed_by_your_organization);
-                break;
-            case CookieControlsEnforcement.ENFORCED_BY_COOKIE_SETTING:
-                iconRes = R.drawable.settings_cog;
-                addition =
-                        resources.getString(
-                                R.string.new_tab_otr_cookie_controls_controlled_tooltip_text);
-                break;
-            default:
-                return;
-        }
-        mCookieControlsManagedIcon.setImageResource(iconRes);
-        subtitleText.append("\n");
-        subtitleText.append(addition);
-        mCookieControlsSubtitle.setText(subtitleText.toString());
-    }
-
-    /** Finds the 3PC controls and returns true if they exist. */
-    @EnsuresNonNullIf({
-        "mCookieControlsToggle",
-        "mCookieControlsManagedIcon",
-        "mCookieControlsTitle",
-        "mCookieControlsSubtitle"
-    })
-    private boolean findCookieControlElements() {
-        mCookieControlsToggle = findViewById(R.id.cookie_controls_card_toggle);
-        if (mCookieControlsToggle == null) return false;
-        mCookieControlsManagedIcon = findViewById(R.id.cookie_controls_card_managed_icon);
-        mCookieControlsTitle = findViewById(R.id.cookie_controls_card_title);
-        mCookieControlsSubtitle = findViewById(R.id.cookie_controls_card_subtitle);
-        assert mCookieControlsManagedIcon != null
-                && mCookieControlsTitle != null
-                && mCookieControlsSubtitle != null;
-        return true;
     }
 }

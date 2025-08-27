@@ -24,9 +24,6 @@ found in the LICENSE file.
         <item name="android:scaleY">@fraction/material_switch_scale_fraction</item>
         <item name="android:minHeight">@dimen/switch_pre_scale_min_height</item>
     </style>
-    <style name="Widget.BrowserUI.Switch.Incognito">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.BrowserUI.Switch.Incognito</item>
-    </style>
     <!-- TextInputLayout style -->
     <style name="Widget.BrowserUI.TextInputLayout" parent="Widget.Design.TextInputLayout">
         <item name="errorTextAppearance">@style/TextAppearance.ErrorCaption</item>

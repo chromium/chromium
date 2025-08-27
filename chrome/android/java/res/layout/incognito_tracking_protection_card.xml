@@ -20,25 +20,15 @@ found in the LICENSE file.
 
     <org.chromium.ui.widget.TextViewWithLeading
         android:id="@+id/tracking_protection_card_title"
-        android:text="@string/new_tab_otr_third_party_blocked_cookie"
+        android:text="@string/incognito_ntp_block_third_party_cookies_header"
         android:textAppearance="@style/TextAppearance.TextLarge.Primary.Baseline.Light"
         android:layout_marginBottom="@dimen/md_incognito_ntp_line_spacing"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:paddingHorizontal="@dimen/md_incognito_ntp_view_horizontal_offset" />
 
-    <org.chromium.ui.widget.TextViewWithLeading
-        android:id="@+id/tracking_protection_description_one"
-        android:text="@string/new_tab_otr_third_party_blocked_cookie_part_one"
-        android:layout_marginBottom="@dimen/md_incognito_ntp_line_spacing"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:paddingHorizontal="@dimen/md_incognito_ntp_view_horizontal_offset"
-        android:visibility="gone"
-        style="@style/IncognitoNewTabTextView" />
-
     <org.chromium.ui.widget.TextViewWithClickableSpans
-        android:id="@+id/tracking_protection_description_two"
+        android:id="@+id/tracking_protection_card_description"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:paddingHorizontal="@dimen/md_incognito_ntp_view_horizontal_offset"

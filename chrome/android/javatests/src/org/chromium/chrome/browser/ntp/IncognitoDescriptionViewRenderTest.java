@@ -42,7 +42,7 @@ import java.util.List;
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
 @EnableFeatures({
-    ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO,
+    ChromeFeatureList.IP_PROTECTION_UX,
     ChromeFeatureList.FINGERPRINTING_PROTECTION_UX
 })
 public class IncognitoDescriptionViewRenderTest {
@@ -79,46 +79,6 @@ public class IncognitoDescriptionViewRenderTest {
                 () -> {
                     sActivity.setContentView(R.layout.incognito_description_layout);
                 });
-    }
-
-    // TODO(crbug.com/370008370): Remove once AlwaysBlock3pcsIncognito launched.
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    @DisableFeatures({
-        ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO,
-        ChromeFeatureList.FINGERPRINTING_PROTECTION_UX
-    })
-    public void testRender_IncognitoDescriptionView() throws IOException {
-        View view = sActivity.findViewById(android.R.id.content);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    view.setBackgroundResource(R.color.ntp_bg_incognito);
-                    ViewStub cardStub = sActivity.findViewById(R.id.cookie_card_stub);
-                    cardStub.setLayoutResource(R.layout.incognito_cookie_controls_card);
-                    cardStub.inflate();
-                });
-        mRenderTestRule.render(view, "incognito_description_view");
-    }
-
-    // TODO(crbug.com/370008370): Remove once AlwaysBlock3pcsIncognito launched.
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    @DisableFeatures({
-        ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO,
-        ChromeFeatureList.FINGERPRINTING_PROTECTION_UX
-    })
-    public void testRender_IncognitoDescriptionViewTrackingProtection() throws IOException {
-        View view = sActivity.findViewById(android.R.id.content);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    view.setBackgroundResource(R.color.ntp_bg_incognito);
-                    ViewStub cardStub = sActivity.findViewById(R.id.cookie_card_stub);
-                    cardStub.setLayoutResource(R.layout.incognito_tracking_protection_card);
-                    cardStub.inflate();
-                });
-        mRenderTestRule.render(view, "incognito_description_view_tracking_protection");
     }
 
     // TODO(crbug.com/408036586): Remove once FingerprintingProtectionUx launched.

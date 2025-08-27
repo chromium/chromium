@@ -189,53 +189,8 @@
           <ph name="LIST_ITEM">&lt;li&gt;</ph>Your internet service provider
         <ph name="END_LIST">&lt;/ul&gt;</ph>
       </message>
-      <message name="IDS_NEW_TAB_OTR_COOKIE_CONTROLS_CONTROLLED_TOOLTIP_TEXT"
-               desc="Text displayed in the settings tooltip when third-party cookie blocking is managed or turned on by the user."
-               formatter_data="android_java">
-        This setting is controlled in Cookies settings.
-      </message>
-      <message name="IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE" desc="Label for the Block 3rd-party cookie checkbox on the Cookies category." formatter_data="android_java">
-        Block third-party cookies
-      </message>
-      <message name="IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE_SUBLABEL" desc="A sub-label below the Block 3rd-party cookie checkbox." formatter_data="android_java">
-        When on, sites can't use cookies that track you across the web. Features on some sites may break.
-      </message>
-
-      <!-- 3P Cookie Depreciation  -->
-      <message name="IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE" desc="Text informing users that 3rd-party cookies are blocked." formatter_data="android_java">
-        Third-party cookies are blocked
-      </message>
       <message name="IDS_NEW_TAB_OPENS_HC_ARTICLE_IN_NEW_TAB" desc="ARIA (accessibility) label describing a link which opens a help center article in a new tab.">
         Opens a Help Center article in a new tab
       </message>
-      <if expr="not is_android">
-        <if expr="_google_chrome">
-          <message name="IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE_SUBLABEL" desc="Sub-text explaining 3rd-party cookie blocking with a help center link to re-enabling 3rd-party cookies for specific sites." formatter_data="android_java">
-            Chrome blocks sites from using third-party cookies to track you as you browse.
-            <ph name="NEW_LINE">&lt;br/&gt;</ph>If site features aren’t working <ph name="START_LINK">&lt;a target="_blank" href="$1" aria-description="$2"&gt;</ph>try temporarily allowing third-party cookies<ph name="END_LINK">&lt;/a&gt;</ph>.
-          </message>
-        </if>
-        <if expr="not _google_chrome">
-          <message name="IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE_SUBLABEL" desc="Sub-text explaining 3rd-party cookie blocking with a help center link to re-enabling 3rd-party cookies for specific sites." formatter_data="android_java">
-            Chromium blocks sites from using third-party cookies to track you as you browse.
-            <ph name="NEW_LINE">&lt;br/&gt;</ph>If site features aren’t working <ph name="START_LINK">&lt;a target="_blank" href="$1" aria-description="$2"&gt;</ph>try temporarily allowing third-party cookies<ph name="END_LINK">&lt;/a&gt;</ph>.
-          </message>
-        </if>
-      </if>
-      <if expr="is_android">
-        <if expr="_google_chrome">
-          <message name="IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE_PART_ONE" desc="Sub-text explaining 3rd-party cookie blocking with a help center link to re-enabling 3rd-party cookies for specific sites. Part 1/2." formatter_data="android_java">
-            Chrome blocks sites from using third-party cookies to track you as you browse.
-          </message>
-        </if>
-        <if expr="not _google_chrome">
-          <message name="IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE_PART_ONE" desc="Sub-text explaining 3rd-party cookie blocking with a help center link to re-enabling 3rd-party cookies for specific sites. Part 1/2." formatter_data="android_java">
-            Chromium blocks sites from using third-party cookies to track you as you browse.
-          </message>
-        </if>
-        <message name="IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE_PART_TWO" desc="Sub-text explaining 3rd-party cookie blocking with a help center link to re-enabling 3rd-party cookies for specific sites. Part 2/2." formatter_data="android_java">
-          If site features aren’t working <ph name="BEGIN_LINK">&lt;link&gt;</ph>try temporarily allowing third-party cookies<ph name="END_LINK">&lt;/link&gt;</ph>.
-        </message>
-      </if>
 
 </grit-part>

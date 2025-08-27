@@ -513,7 +513,6 @@ chrome_java_resources = [
   "java/res/layout/improved_bookmark_row_layout.xml",
   "java/res/layout/improved_bookmark_row_layout_visual.xml",
   "java/res/layout/improved_bookmark_save_flow.xml",
-  "java/res/layout/incognito_cookie_controls_card.xml",
   "java/res/layout/incognito_description_layout.xml",
   "java/res/layout/incognito_history_placeholder.xml",
   "java/res/layout/incognito_indicator.xml",
