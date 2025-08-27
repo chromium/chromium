@@ -75,6 +75,10 @@ class AutofillSaveCardInfoBarDelegateIOS
       autofill_metrics::SaveCreditCardPromptResultIOS metric,
       autofill_metrics::SaveCreditCardPromptOverlayType overlay_type);
 
+  // Logs metric for CVC Infobar banner shown, accepted or dismissed (how).
+  void LogSaveCvcInfoBarResultMetric(
+      autofill_metrics::SaveCvcPromptResultIOS metric);
+
  private:
   base::OnceCallback<void(bool card_saved)>
       credit_card_upload_completion_callback_;

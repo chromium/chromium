@@ -58,9 +58,8 @@
 
   _bannerButtonWasPressed = YES;
 
-  delegate->LogSaveCreditCardInfoBarResultMetric(
-      autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kAccepted,
-      autofill::autofill_metrics::SaveCreditCardPromptOverlayType::kBanner);
+  delegate->LogSaveCvcInfoBarResultMetric(
+      autofill::autofill_metrics::SaveCvcPromptResultIOS::kAccepted);
 
   // For both local and upload CVC saves, accept immediately without showing a
   // modal.
@@ -76,14 +75,12 @@
   if (delegate) {
     if (!userInitiated) {
       // Banner is dismissed without user interaction when it times out.
-      delegate->LogSaveCreditCardInfoBarResultMetric(
-          autofill::autofill_metrics::SaveCreditCardPromptResultIOS::KTimedOut,
-          autofill::autofill_metrics::SaveCreditCardPromptOverlayType::kBanner);
+      delegate->LogSaveCvcInfoBarResultMetric(
+          autofill::autofill_metrics::SaveCvcPromptResultIOS::kTimedOut);
     } else if (userInitiated && !_bannerButtonWasPressed) {
       // Banner is dismissed by swiping.
-      delegate->LogSaveCreditCardInfoBarResultMetric(
-          autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kSwiped,
-          autofill::autofill_metrics::SaveCreditCardPromptOverlayType::kBanner);
+      delegate->LogSaveCvcInfoBarResultMetric(
+          autofill::autofill_metrics::SaveCvcPromptResultIOS::kSwiped);
     }
   }
   [super dismissInfobarBannerForUserInteraction:userInitiated];

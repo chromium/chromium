@@ -41,6 +41,13 @@ std::string_view SaveCreditCardPromptFixFlowSuffix(
   return ".NoFixFlow";
 }
 
+// Returns the histogram suffix stating if the save destination is `Upload` or
+// `Local`.
+std::string SaveCvcPromptSaveDestinationSuffix(std::string_view base_name,
+                                               bool is_uploading) {
+  return base::StrCat({base_name, is_uploading ? ".Upload" : ".Local"});
+}
+
 }  // namespace
 
 void LogSaveCreditCardPromptResultIOS(
@@ -69,6 +76,23 @@ void LogSaveCreditCardPromptResultIOS(
                     SaveCreditCardPromptFixFlowSuffix(
                         options.should_request_name_from_user,
                         options.should_request_expiration_date_from_user)}),
+      metric);
+}
+
+void LogSaveCvcPromptOfferedIOS(bool is_uploading) {
+  base::UmaHistogramEnumeration(
+      SaveCvcPromptSaveDestinationSuffix("Autofill.SaveCvcPromptOffer",
+                                         is_uploading),
+      SaveCardPromptOffer::kShown);
+}
+
+void LogSaveCvcPromptResultIOS(
+    SaveCvcPromptResultIOS metric,
+    bool is_uploading,
+    const payments::PaymentsAutofillClient::SaveCreditCardOptions& options) {
+  base::UmaHistogramEnumeration(
+      SaveCvcPromptSaveDestinationSuffix("Autofill.SaveCvcPromptResult",
+                                         is_uploading),
       metric);
 }
 

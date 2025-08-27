@@ -10,6 +10,7 @@
 #import <string>
 #import <string_view>
 
+#import "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace autofill::autofill_metrics {
@@ -41,6 +42,18 @@ enum class SaveCreditCardPromptResultIOS {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:SaveCreditCardPromptResultIOS)
 
+// LINT.IfChange(SaveCvcPromptResultIOS)
+enum class SaveCvcPromptResultIOS {
+  // CVC save banner accepted.
+  kAccepted = 0,
+  // CVC save banner swiped away.
+  kSwiped = 1,
+  // CVC save banner timed out.
+  kTimedOut = 2,
+  kMaxValue = kTimedOut,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:SaveCvcPromptResultIOS)
+
 // Enum describing the types of overlays displayed for saving a card on iOS.
 enum class SaveCreditCardPromptOverlayType {
   kBanner,
@@ -58,6 +71,16 @@ void LogSaveCreditCardPromptResultIOS(
     bool is_uploading,
     const payments::PaymentsAutofillClient::SaveCreditCardOptions& options,
     SaveCreditCardPromptOverlayType overlay_type);
+
+// Logs when a CVC save prompt is offered on iOS.
+void LogSaveCvcPromptOfferedIOS(bool is_uploading);
+
+// Logs events that happen when the prompt to save a security code (locally or
+// to the server) is shown and user's subsequent action for that prompt.
+void LogSaveCvcPromptResultIOS(
+    SaveCvcPromptResultIOS metric,
+    bool is_uploading,
+    const payments::PaymentsAutofillClient::SaveCreditCardOptions& options);
 
 }  // namespace autofill::autofill_metrics
 
