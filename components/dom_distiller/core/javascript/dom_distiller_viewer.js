@@ -296,10 +296,10 @@ class Pincher {
   // TODO(wychen): Improve scroll position when elementFromPoint is body.
 
   constructor() {
-    // This has to be in sync with 'font-size' in distilledpage.css.
+    // This has to be in sync with largest 'font-size' in distilledpage_{}.css.
     // This value is hard-coded because JS might be injected before CSS is
     // ready. See crbug.com/1004663.
-    this.baseSize = 14;
+    this.baseSize = 16;
     this.pinching = false;
     this.fontSizeAnchor = 1.0;
 
