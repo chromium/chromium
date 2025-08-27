@@ -9,9 +9,9 @@ import static android.view.View.VISIBLE;
 
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.HOVER_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.START_ICON_BITMAP;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
-import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.ON_HOVER;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -49,10 +49,10 @@ class ListMenuItemWithSubmenuViewBinder {
             }
         } else if (propertyKey == ENABLED) {
             textView.setEnabled(model.get(ENABLED));
-        } else if (propertyKey == ON_HOVER) {
-            // TODO(crbug.com/424580483): Implement flyout submenus.
         } else if (propertyKey == CLICK_LISTENER) {
             view.setOnClickListener(model.get(CLICK_LISTENER));
+        } else if (propertyKey == HOVER_LISTENER) {
+            view.setOnHoverListener(model.get(HOVER_LISTENER));
         } else if (propertyKey == ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END) {
             if (model.get(ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END)) {
                 textView.setMaxLines(1);
