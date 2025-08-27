@@ -3344,8 +3344,8 @@ extern const char kNtpSearchboxComposeEntrypointDescription[];
 extern const char kNtpDriveModuleName[];
 extern const char kNtpDriveModuleDescription[];
 
-extern const char kNtpDriveModuleNoSyncRequirementName[];
-extern const char kNtpDriveModuleNoSyncRequirementDescription[];
+extern const char kNtpDriveModuleHistorySyncRequirementName[];
+extern const char kNtpDriveModuleHistorySyncRequirementDescription[];
 
 extern const char kNtpDriveModuleSegmentationName[];
 extern const char kNtpDriveModuleSegmentationDescription[];

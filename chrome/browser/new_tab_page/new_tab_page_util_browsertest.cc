@@ -69,6 +69,12 @@ class NewTabPageUtilBrowserTest : public SigninBrowserTestBase,
                                           : signin::ConsentLevel::kSignin);
   }
 
+  void SetHistorySync(bool sync_enabled) {
+    GetTestSyncService()->SetSignedIn(signin::ConsentLevel::kSignin);
+    GetTestSyncService()->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kHistory, sync_enabled);
+  }
+
   void SetUpCommandLine(base::CommandLine* cmd) override {
     // Disable the field trial testing config as the tests in this file care
     // about whether features are overridden or not.
@@ -119,8 +125,7 @@ class NewTabPageUtilEnableFlagBrowserTest : public NewTabPageUtilBrowserTest {
          ntp_features::kNtpCalendarModule,
          ntp_features::kNtpMicrosoftAuthenticationModule,
          ntp_features::kNtpOutlookCalendarModule,
-         ntp_features::kNtpSharepointModule,
-         ntp_features::kNtpDriveModuleNoSyncRequirement},
+         ntp_features::kNtpSharepointModule},
         {});
   }
 };
@@ -133,8 +138,16 @@ class NewTabPageUtilDisableFlagBrowserTest : public NewTabPageUtilBrowserTest {
              ntp_features::kNtpCalendarModule,
              ntp_features::kNtpMicrosoftAuthenticationModule,
              ntp_features::kNtpOutlookCalendarModule,
-             ntp_features::kNtpSharepointModule,
-             ntp_features::kNtpDriveModuleNoSyncRequirement});
+             ntp_features::kNtpSharepointModule});
+  }
+};
+
+class NewTabPageUtilDriveHistorySyncBrowserTest
+    : public NewTabPageUtilBrowserTest {
+ public:
+  NewTabPageUtilDriveHistorySyncBrowserTest() {
+    features().InitWithFeatures(
+        {ntp_features::kNtpDriveModuleHistorySyncRequirement}, {});
   }
 };
 
@@ -174,6 +187,41 @@ IN_PROC_BROWSER_TEST_P(NewTabPageUtilBrowserTest, EnableDriveByToT) {
   CheckInternalsLog(std::string(ntp_features::kNtpDriveModule.name) +
                     (GetParam() ? " enabled: default feature flag value"
                                 : " disabled: not signed in"));
+#else
+  EXPECT_FALSE(IsDriveModuleEnabledForProfile(/*is_managed_profile=*/true,
+                                              GetProfile()));
+  CheckInternalsLog(std::string(ntp_features::kNtpDriveModule.name) +
+                    " disabled: default feature flag value");
+#endif
+}
+
+IN_PROC_BROWSER_TEST_P(NewTabPageUtilDriveHistorySyncBrowserTest,
+                       DriveHistory_SyncEnabled) {
+  SetHistorySync(true);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  EXPECT_EQ(
+      IsDriveModuleEnabledForProfile(/*is_managed_profile=*/true, GetProfile()),
+      GetParam());
+  CheckInternalsLog(std::string(ntp_features::kNtpDriveModule.name) +
+                    (GetParam() ? " enabled: default feature flag value"
+                                : " disabled: not signed in"));
+#else
+  EXPECT_FALSE(IsDriveModuleEnabledForProfile(/*is_managed_profile=*/true,
+                                              GetProfile()));
+  CheckInternalsLog(std::string(ntp_features::kNtpDriveModule.name) +
+                    " disabled: default feature flag value");
+#endif
+}
+
+IN_PROC_BROWSER_TEST_P(NewTabPageUtilDriveHistorySyncBrowserTest,
+                       DriveHistory_SyncDisabled) {
+  SetHistorySync(false);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  EXPECT_FALSE(IsDriveModuleEnabledForProfile(/*is_managed_profile=*/true,
+                                              GetProfile()));
+  CheckInternalsLog(
+      std::string(ntp_features::kNtpDriveModule.name) +
+      (GetParam() ? " disabled: no history sync" : " disabled: not signed in"));
 #else
   EXPECT_FALSE(IsDriveModuleEnabledForProfile(/*is_managed_profile=*/true,
                                               GetProfile()));
@@ -321,4 +369,8 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          NewTabPageUtilDisableFlagBrowserTest,
+                         testing::Bool());
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         NewTabPageUtilDriveHistorySyncBrowserTest,
                          testing::Bool());

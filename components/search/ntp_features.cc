@@ -109,8 +109,8 @@ BASE_FEATURE(kNtpDriveModule,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the NTP Drive module does not require sync.
-BASE_FEATURE(kNtpDriveModuleNoSyncRequirement,
-             "NtpDriveModuleNoSyncRequirement",
+BASE_FEATURE(kNtpDriveModuleHistorySyncRequirement,
+             "NtpDriveModuleHistorySyncRequirement",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, segmentation data will be collected to decide whether or not to

@@ -327,7 +327,7 @@ void DriveService::GetDriveFilesInternal() {
                      weak_factory_.GetWeakPtr()),
       signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
       base::FeatureList::IsEnabled(
-          ntp_features::kNtpDriveModuleNoSyncRequirement)
+          ntp_features::kNtpDriveModuleHistorySyncRequirement)
           ? signin::ConsentLevel::kSignin
           : signin::ConsentLevel::kSync);
 }

@@ -19,7 +19,9 @@
 #include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/variations/service/variations_service.h"
 
 namespace {
@@ -79,9 +81,17 @@ bool IsDriveModuleEnabledForProfile(bool is_managed_profile, Profile* profile) {
     return false;
   }
 
-  if (!base::FeatureList::IsEnabled(
-          ntp_features::kNtpDriveModuleNoSyncRequirement)) {
-    auto* sync_service = SyncServiceFactory::GetForProfile(profile);
+  auto* sync_service = SyncServiceFactory::GetForProfile(profile);
+  if (base::FeatureList::IsEnabled(
+          ntp_features::kNtpDriveModuleHistorySyncRequirement)) {
+    if (!sync_service ||
+        !sync_service->GetUserSettings()->GetSelectedTypes().Has(
+            syncer::UserSelectableType::kHistory)) {
+      LogModuleEnablement(ntp_features::kNtpDriveModule, false,
+                          "no history sync");
+      return false;
+    }
+  } else {
     if (!sync_service || !sync_service->IsSyncFeatureEnabled()) {
       LogModuleEnablement(ntp_features::kNtpDriveModule, false, "no sync");
       return false;
