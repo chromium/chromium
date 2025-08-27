@@ -12,6 +12,7 @@
 #include "base/uuid.h"
 #include "components/sync/base/collaboration_id.h"
 #include "components/sync/base/deletion_origin.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
@@ -64,10 +65,13 @@ sync_pb::SharedTabGroupAccountDataSpecifics TrimSpecifics(
 
 // Create new EntityData object to contain specifics for writing changes.
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromSpecifics(
+    const std::string& storage_key,
     const sync_pb::SharedTabGroupAccountDataSpecifics& specifics) {
   auto entity_data = std::make_unique<syncer::EntityData>();
   *entity_data->specifics.mutable_shared_tab_group_account_data() = specifics;
   entity_data->name = specifics.guid();
+  entity_data->client_tag_hash = syncer::ClientTagHash::FromUnhashed(
+      syncer::SHARED_TAB_GROUP_ACCOUNT_DATA, storage_key);
   return entity_data;
 }
 
@@ -199,8 +203,8 @@ PersonalCollaborationDataSyncBridge::GetDataForCommit(
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const std::string& storage_key : storage_keys) {
     if (specifics_.contains(storage_key)) {
-      batch->Put(storage_key,
-                 CreateEntityDataFromSpecifics(specifics_[storage_key]));
+      batch->Put(storage_key, CreateEntityDataFromSpecifics(
+                                  storage_key, specifics_[storage_key]));
     }
   }
   return batch;
@@ -212,7 +216,8 @@ PersonalCollaborationDataSyncBridge::GetAllDataForDebugging() {
 
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const auto& [storage_key, specifics] : specifics_) {
-    batch->Put(storage_key, CreateEntityDataFromSpecifics(specifics));
+    batch->Put(storage_key,
+               CreateEntityDataFromSpecifics(storage_key, specifics));
   }
   return batch;
 }
@@ -364,7 +369,8 @@ void PersonalCollaborationDataSyncBridge::CreateOrUpdateSpecifics(
     return;
   }
 
-  WriteEntityToSync(storage_key, CreateEntityDataFromSpecifics(specifics));
+  WriteEntityToSync(storage_key,
+                    CreateEntityDataFromSpecifics(storage_key, specifics));
 }
 
 void PersonalCollaborationDataSyncBridge::RemoveSpecifics(
