@@ -8,7 +8,7 @@
 #include <variant>
 
 #include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
-#include "chrome/browser/ui/views/tab_sharing/tab_sharing_infobar_utils.h"
+#include "chrome/browser/ui/views/screen_sharing_util.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"

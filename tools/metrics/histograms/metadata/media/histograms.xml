@@ -6331,6 +6331,31 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Media.Ui.GetDisplayMedia.{Type}.UserInteractionWithControls"
+    enum="GetDisplayMediaUserInteractionWithControls"
+    expires_after="2026-08-20">
+  <owner>eladalon@chromium.org</owner>
+  <owner>tovep@chromium.org</owner>
+  <summary>
+    When the user shares a tab, window or screen, the browser shows the user
+    some UX elements which can control the session - stop sharing, hide
+    controls, share something else, change active tab, etc. Which UX elements
+    are available depends on what is shared as well as other factors. The
+    histograms defined here track which controls the user interacted with, if
+    any. Recording takes place when the interaction happens; if no interaction
+    occurs, this is recorded when the controls are hidden from the user
+    (typically when the capture session ends through other means). It should be
+    noted that, while the name indicates getDisplayMedia(), this histogram is
+    actually recorded for any screen-sharing session, including casting and
+    extension APIs.
+  </summary>
+  <token key="Type">
+    <variant name="Screens"/>
+    <variant name="Tabs"/>
+    <variant name="Windows"/>
+  </token>
+</histogram>
+
 <histogram name="Media.UnderflowDuration2.{PlaybackType}" units="ms"
     expires_after="never">
 <!-- expires-never: Media pipeline health metric. -->
