@@ -71,7 +71,6 @@ using ::blink::mojom::CapturedSurfaceControlResult;
 using ::blink::mojom::MediaStreamType;
 using ::testing::_;
 using ::testing::InSequence;
-using ::testing::Invoke;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
 
@@ -358,7 +357,7 @@ class MediaStreamDispatcherHostTest : public testing::Test {
     stub_video_device_ids_.emplace_back(kRegularVideoDeviceId1);
     stub_video_device_ids_.emplace_back(kDepthVideoDeviceId);
     ON_CALL(*mock_video_capture_provider_, GetDeviceInfosAsync(_))
-        .WillByDefault(Invoke(
+        .WillByDefault(
             [this](
                 VideoCaptureProvider::GetDeviceInfosCallback result_callback) {
               std::vector<media::VideoCaptureDeviceInfo> result;
@@ -370,7 +369,7 @@ class MediaStreamDispatcherHostTest : public testing::Test {
               }
               std::move(result_callback)
                   .Run(media::mojom::DeviceEnumerationResult::kSuccess, result);
-            }));
+            });
 
     base::RunLoop run_loop;
     MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
@@ -1486,10 +1485,10 @@ TEST_F(MediaStreamDispatcherHostMultiCaptureTest,
   int main_render_process_id = main_rfh_global_id.child_id;
   int render_frame_id = main_rfh_global_id.frame_routing_id;
   EXPECT_CALL(content_browser_client_, CheckGetAllScreensMediaAllowed(_, _))
-      .WillOnce(testing::Invoke([](content::RenderFrameHost* render_frame_host,
-                                   base::OnceCallback<void(bool)> callback) {
+      .WillOnce([](content::RenderFrameHost* render_frame_host,
+                   base::OnceCallback<void(bool)> callback) {
         std::move(callback).Run(false);
-      }));
+      });
 
   base::test::TestFuture<
       MediaStreamDispatcherHost::GenerateStreamsUIThreadCheckResult>
@@ -1514,10 +1513,10 @@ TEST_F(MediaStreamDispatcherHostMultiCaptureTest,
   int main_render_process_id = main_rfh_global_id.child_id;
   int render_frame_id = main_rfh_global_id.frame_routing_id;
   EXPECT_CALL(content_browser_client_, CheckGetAllScreensMediaAllowed(_, _))
-      .WillOnce(testing::Invoke([](content::RenderFrameHost* render_frame_host,
-                                   base::OnceCallback<void(bool)> callback) {
+      .WillOnce([](content::RenderFrameHost* render_frame_host,
+                   base::OnceCallback<void(bool)> callback) {
         std::move(callback).Run(true);
-      }));
+      });
 
   base::test::TestFuture<
       MediaStreamDispatcherHost::GenerateStreamsUIThreadCheckResult>

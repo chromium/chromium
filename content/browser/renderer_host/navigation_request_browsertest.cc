@@ -3799,12 +3799,12 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
     TestNavigationManager navigation_manager(web_contents, same_doc_url);
     testing::NiceMock<MockWebContentsObserver> observer(web_contents);
     EXPECT_CALL(observer, DidFinishNavigation(testing::_))
-        .WillOnce(testing::Invoke([](NavigationHandle* navigation_handle) {
+        .WillOnce([](NavigationHandle* navigation_handle) {
           NavigationRequest* request =
               NavigationRequest::From(navigation_handle);
           EXPECT_TRUE(request->is_synchronous_renderer_commit());
           EXPECT_TRUE(navigation_handle->GetRenderFrameHost());
-        }));
+        });
     EXPECT_TRUE(ExecJs(web_contents, "location.href = '#foo';"));
     ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
   }
@@ -3822,12 +3822,12 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   {
     testing::NiceMock<MockWebContentsObserver> observer(popup);
     EXPECT_CALL(observer, DidFinishNavigation(testing::_))
-        .WillOnce(testing::Invoke([](NavigationHandle* navigation_handle) {
+        .WillOnce([](NavigationHandle* navigation_handle) {
           NavigationRequest* request =
               NavigationRequest::From(navigation_handle);
           EXPECT_TRUE(request->is_synchronous_renderer_commit());
           EXPECT_TRUE(navigation_handle->GetRenderFrameHost());
-        }));
+        });
     TestNavigationManager navigation_manager(popup, GURL("about:blank#foo"));
     EXPECT_TRUE(
         ExecJs(web_contents, "w.history.replaceState({}, '', '#foo');"));
@@ -3849,12 +3849,12 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   {
     testing::NiceMock<MockWebContentsObserver> observer(web_contents);
     EXPECT_CALL(observer, DidFinishNavigation(testing::_))
-        .WillOnce(testing::Invoke([](NavigationHandle* navigation_handle) {
+        .WillOnce([](NavigationHandle* navigation_handle) {
           NavigationRequest* request =
               NavigationRequest::From(navigation_handle);
           EXPECT_TRUE(request->is_synchronous_renderer_commit());
           EXPECT_TRUE(navigation_handle->GetRenderFrameHost());
-        }));
+        });
     CreateSubframe(web_contents, "subframe", GURL(),
                    /*wait_for_navigation*/ true);
   }
@@ -3871,7 +3871,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   {
     testing::NiceMock<MockWebContentsObserver> observer(popup);
     EXPECT_CALL(observer, DidFinishNavigation(testing::_))
-        .WillOnce(testing::Invoke([](NavigationHandle* navigation_handle) {
+        .WillOnce([](NavigationHandle* navigation_handle) {
           NavigationRequest* request =
               NavigationRequest::From(navigation_handle);
           EXPECT_TRUE(request->is_synchronous_renderer_commit());
@@ -3880,7 +3880,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
           // Ensure that response_should_be_rendered() is true even for pages
           // that do not require a URLLoader.
           EXPECT_TRUE(request->response_should_be_rendered());
-        }));
+        });
     CreateSubframe(popup, "popup_subframe", GURL(),
                    /*wait_for_navigation*/ true);
   }

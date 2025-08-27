@@ -35,7 +35,6 @@ using testing::_;
 using testing::AtLeast;
 using testing::Bool;
 using testing::Combine;
-using testing::Invoke;
 using testing::InvokeWithoutArgs;
 using testing::Values;
 
@@ -314,7 +313,7 @@ IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest,
   EXPECT_CALL(mock_controller_event_handler_, DoOnNewBuffer(_, _, _))
       .Times(AtLeast(1));
   EXPECT_CALL(mock_controller_event_handler_, OnBufferReady(_, _))
-      .WillRepeatedly(Invoke(
+      .WillRepeatedly(
           [this, &received_frame_infos, &must_wait_for_gpu_decode_to_start,
            &finish_test_cb](const VideoCaptureControllerID& id,
                             const ReadyBuffer& buffer) {
@@ -335,7 +334,7 @@ IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest,
                 (received_frame_infos.size() == kMaxFramesToReceive)) {
               std::move(finish_test_cb).Run();
             }
-          }));
+          });
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,

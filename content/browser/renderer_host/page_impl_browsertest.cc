@@ -171,14 +171,13 @@ IN_PROC_BROWSER_TEST_F(PageImplTest, RenderFrameHostDeleted) {
   // RenderFrameDeleted callback is invoked.
   testing::NiceMock<MockWebContentsObserver> observer(shell()->web_contents());
   EXPECT_CALL(observer, RenderFrameDeleted(testing::_))
-      .WillOnce(
-          testing::Invoke([data, rfh_a](RenderFrameHost* render_frame_host) {
-            // Both PageUserData and Page objects should be accessible before
-            // RenderFrameHost deletion.
-            EXPECT_EQ(rfh_a, render_frame_host);
-            DCHECK(&render_frame_host->GetPage());
-            EXPECT_TRUE(data);
-          }));
+      .WillOnce([data, rfh_a](RenderFrameHost* render_frame_host) {
+        // Both PageUserData and Page objects should be accessible before
+        // RenderFrameHost deletion.
+        EXPECT_EQ(rfh_a, render_frame_host);
+        DCHECK(&render_frame_host->GetPage());
+        EXPECT_TRUE(data);
+      });
 
   // Test needs rfh_a to be deleted after navigating but it doesn't happen with
   // BackForwardCache as it is stored in cache.
@@ -371,8 +370,8 @@ IN_PROC_BROWSER_TEST_F(PageImplTest, PrimaryPageChangedOnCrossSiteNavigation) {
     // LastCommittedUrl, HttpStatusCode to match with ones inside
     // DidFinishNavigation and page after navigation.
     EXPECT_CALL(web_contents_observer, PrimaryPageChanged(testing::_))
-        .WillOnce(testing::Invoke([&invoked_page, &last_committed_url,
-                                   &http_status_code, url_b, this](Page& page) {
+        .WillOnce([&invoked_page, &last_committed_url, &http_status_code, url_b,
+                   this](Page& page) {
           invoked_page = &page;
           last_committed_url = page.GetMainDocument().GetLastCommittedURL();
           http_status_code = web_contents()
@@ -382,17 +381,17 @@ IN_PROC_BROWSER_TEST_F(PageImplTest, PrimaryPageChangedOnCrossSiteNavigation) {
           EXPECT_EQ(last_committed_url, url_b);
           EXPECT_TRUE(page.IsPrimary());
           EXPECT_EQ(&web_contents()->GetPrimaryPage(), &page);
-        }));
+        });
 
     EXPECT_CALL(web_contents_observer, DidFinishNavigation(testing::_))
-        .WillOnce(testing::Invoke([&last_committed_url, &http_status_code](
-                                      NavigationHandle* navigation_handle) {
+        .WillOnce([&last_committed_url,
+                   &http_status_code](NavigationHandle* navigation_handle) {
           EXPECT_EQ(navigation_handle->GetURL(), last_committed_url);
           EXPECT_EQ(http_status_code, navigation_handle->GetWebContents()
                                           ->GetController()
                                           .GetVisibleEntry()
                                           ->GetHttpStatusCode());
-        }));
+        });
   }
 
   // 4) Navigate to B. PrimaryPageChanged and DidFinishNavigation should be

@@ -76,7 +76,6 @@ using ::blink::mojom::StreamSelectionInfo;
 using ::blink::mojom::StreamSelectionInfoPtr;
 using ::testing::_;
 using testing::ElementsAre;
-using ::testing::Invoke;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 using ::blink::mojom::CapturedWheelAction;
@@ -721,13 +720,13 @@ class MediaStreamManagerTest : public ::testing::Test {
   void SetVideoCaptureDevices(
       const std::vector<media::VideoCaptureDeviceInfo>& devices) {
     ON_CALL(*video_capture_provider_, GetDeviceInfosAsync(_))
-        .WillByDefault(Invoke(
+        .WillByDefault(
             [devices](
                 VideoCaptureProvider::GetDeviceInfosCallback result_callback) {
               std::move(result_callback)
                   .Run(media::mojom::DeviceEnumerationResult::kSuccess,
                        devices);
-            }));
+            });
   }
 
   std::unique_ptr<MockAudioManager> audio_manager_;
@@ -1090,14 +1089,12 @@ TEST_F(MediaStreamManagerTest, GetDisplayMediaRequestCallsUIProxy) {
       [](base::RunLoop* run_loop) {
         auto mock_ui = std::make_unique<MockMediaStreamUIProxy>();
         EXPECT_CALL(*mock_ui, MockRequestAccess(_, _))
-            .WillOnce(testing::Invoke(
-                [run_loop](std::unique_ptr<MediaStreamRequest>& request,
-                           testing::Unused) {
-                  EXPECT_EQ(
-                      blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
-                      request->video_type);
-                  run_loop->Quit();
-                }));
+            .WillOnce([run_loop](std::unique_ptr<MediaStreamRequest>& request,
+                                 testing::Unused) {
+              EXPECT_EQ(blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
+                        request->video_type);
+              run_loop->Quit();
+            });
         return std::unique_ptr<FakeMediaStreamUIProxy>(std::move(mock_ui));
       },
       &run_loop_));
