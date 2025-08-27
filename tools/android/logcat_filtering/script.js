@@ -36,9 +36,15 @@ const pasteLogcatButton = document.getElementById('paste-logcat-button');
 const pasteLogcatButtonLabel = document.querySelector(
   'label[for="paste-logcat-button"]');
 const nextExceptionButton = document.getElementById('next-exception-button');
-const exceptionFeedbackSpan = document.getElementById('exception-feedback');
+const nextExceptionFeedback = document.getElementById(
+  'next-exception-feedback');
+const prevExceptionButton = document.getElementById('prev-exception-button');
+const prevExceptionFeedback = document.getElementById(
+  'prev-exception-feedback');
 const nextTestButton = document.getElementById('next-test-button');
-const testFeedbackSpan = document.getElementById('test-feedback');
+const nextTestFeedback = document.getElementById('next-test-feedback');
+const prevTestButton = document.getElementById('prev-test-button');
+const prevTestFeedback = document.getElementById('prev-test-feedback');
 const dropdownHeaderProcess = document.getElementById(
   'dropdown-header-process');
 const dropdownSearchProcess = document.getElementById(
@@ -66,7 +72,11 @@ pasteLogcatButton.addEventListener('click', handlePasteLogcatButtonClick);
 
 nextExceptionButton.addEventListener('click', jumpToNextException);
 
+prevExceptionButton.addEventListener('click', jumpToPreviousException);
+
 nextTestButton.addEventListener('click', jumpToNextTest);
+
+prevTestButton.addEventListener('click', jumpToPreviousTest);
 
 dropdownHeaderProcess.addEventListener('click', (event) => {
   // Prevent this click from propagating to the document
@@ -1013,10 +1023,43 @@ function jumpToNextException() {
   }
 
   // If no next exception is found, display a feedback text.
-  exceptionFeedbackSpan.textContent = 'There is no next exception';
-  exceptionFeedbackSpan.classList.remove('hidden-element');
+  nextExceptionFeedback.textContent = 'There is no next exception';
+  nextExceptionFeedback.classList.remove('hidden-element');
   setTimeout(() => {
-    exceptionFeedbackSpan.classList.add('hidden-element');
+    nextExceptionFeedback.classList.add('hidden-element');
+  }, 5000);
+}
+
+/**
+ * Scroll to the previous logcat line that represents a program exception.
+ */
+function jumpToPreviousException() {
+  // Find the first logcat line that is fully visible to the user.
+  const [firstVisibleLineNumber, _] = findFirstVisibleLine();
+  if (firstVisibleLineNumber === -1) {
+    return;
+  }
+
+  // Find the last line before the firstVisibleLine that represents
+  // a program exception and scroll to that line.
+  const logcatLines = Array.from(textDisplayArea.children);
+  for (let i = logcatLines.length - 1; i >= 0; i--) {
+    const logcatLine = logcatLines[i];
+    const lineNumber = parseInt(logcatLine.dataset.lineNumber, 10);
+    if (!isNaN(lineNumber) && lineNumber < firstVisibleLineNumber) {
+      const parsedLine = currentFileParsedLines[lineNumber];
+      if (isStartOfStackTrace(parsedLine)) {
+        scrollToLine(logcatLine);
+        return;
+      }
+    }
+  }
+
+  // If no previous exception is found, display a feedback text.
+  prevExceptionFeedback.textContent = 'There is no previous exception';
+  prevExceptionFeedback.classList.remove('hidden-element');
+  setTimeout(() => {
+    prevExceptionFeedback.classList.add('hidden-element');
   }, 5000);
 }
 
@@ -1058,10 +1101,43 @@ function jumpToNextTest() {
   }
 
   // If no next test is found, display a feedback text.
-  testFeedbackSpan.textContent = 'There is no next test';
-  testFeedbackSpan.classList.remove('hidden-element');
+  nextTestFeedback.textContent = 'There is no next test';
+  nextTestFeedback.classList.remove('hidden-element');
   setTimeout(() => {
-    testFeedbackSpan.classList.add('hidden-element');
+    nextTestFeedback.classList.add('hidden-element');
+  }, 5000);
+}
+
+/**
+ * Scroll to the previous logcat line that represents the start of a test.
+ */
+function jumpToPreviousTest() {
+  // Find the first logcat line that is fully visible to the user.
+  const [firstVisibleLineNumber, _] = findFirstVisibleLine();
+  if (firstVisibleLineNumber === -1) {
+    return;
+  }
+
+  // Find the last line before the firstVisibleLine that represents
+  // the start of a test and scroll to that line.
+  const logcatLines = Array.from(textDisplayArea.children);
+  for (let i = logcatLines.length - 1; i >= 0; i--) {
+    const logcatLine = logcatLines[i];
+    const lineNumber = parseInt(logcatLine.dataset.lineNumber, 10);
+    if (!isNaN(lineNumber) && lineNumber < firstVisibleLineNumber) {
+      const parsedLine = currentFileParsedLines[lineNumber];
+      if (isStartOfTest(parsedLine)) {
+        scrollToLine(logcatLine);
+        return;
+      }
+    }
+  }
+
+  // If no previous test is found, display a feedback text.
+  prevTestFeedback.textContent = 'There is no previous test';
+  prevTestFeedback.classList.remove('hidden-element');
+  setTimeout(() => {
+    prevTestFeedback.classList.add('hidden-element');
   }, 5000);
 }
 
