@@ -144,6 +144,21 @@ crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_EncodingModes_offscreen_av0
 crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_EncodingModes_offscreen_av01.0.04M.08_variable_quality [ Failure ]
 crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_EncodingModes_offscreen_av01.0.04M.08_variable_realtime [ Failure ]
 crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_MixedSourceEncoding_av01.0.04M.08 [ Failure ]
+crbug.com/441102570 [ win nvidia ] WebCodecs_D3D12_EncodeColorSpace_hvc1.1.6.L123.00 [ Failure ]
+crbug.com/441102570 [ win nvidia ] WebCodecs_D3D12_EncodeDecode_arraybuffer_hvc1.1.6.L123.00 [ Failure ]
+crbug.com/441102570 [ win nvidia ] WebCodecs_D3D12_EncodeDecode_camera_hvc1.1.6.L123.00 [ Failure ]
+crbug.com/441102570 [ win nvidia ] WebCodecs_D3D12_EncodeDecode_capture_hvc1.1.6.L123.00 [ Failure ]
+crbug.com/441102570 [ win nvidia ] WebCodecs_D3D12_EncodeDecode_hw_decoder_hvc1.1.6.L123.00 [ Failure ]
+crbug.com/441102570 [ win nvidia ] WebCodecs_D3D12_EncodeDecode_offscreen_hvc1.1.6.L123.00 [ Failure ]
+crbug.com/441102570 [ win nvidia ] WebCodecs_D3D12_EncodeDecode_sw_decoder_hvc1.1.6.L123.00 [ Failure ]
+crbug.com/441102570 [ win nvidia ] WebCodecs_D3D12_SVC_hvc1.1.6.L123.00_layers_2 [ Failure ]
+crbug.com/441102570 [ win nvidia ] WebCodecs_EncodeColorSpace_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+crbug.com/441102570 [ win nvidia ] WebCodecs_EncodeDecode_arraybuffer_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+crbug.com/441102570 [ win nvidia ] WebCodecs_EncodeDecode_camera_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+crbug.com/441102570 [ win nvidia ] WebCodecs_EncodeDecode_capture_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+crbug.com/441102570 [ win nvidia ] WebCodecs_EncodeDecode_hw_decoder_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+crbug.com/441102570 [ win nvidia ] WebCodecs_EncodeDecode_offscreen_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+crbug.com/441102570 [ win nvidia ] WebCodecs_EncodeDecode_sw_decoder_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
 
 
 # AVC, HEVC, and VP8 VBR seems to be unreliable on some Android devices
