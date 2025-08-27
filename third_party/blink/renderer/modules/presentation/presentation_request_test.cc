@@ -24,7 +24,7 @@ TEST(PresentationRequestTest, TestSingleUrlConstructor) {
       scope.GetExceptionState());
   ASSERT_FALSE(scope.GetExceptionState().HadException());
 
-  WTF::Vector<KURL> request_urls = request->Urls();
+  Vector<KURL> request_urls = request->Urls();
   EXPECT_EQ(static_cast<size_t>(1), request_urls.size());
   EXPECT_TRUE(request_urls[0].IsValid());
   EXPECT_EQ("https://example.com/", request_urls[0].GetString());
@@ -32,7 +32,7 @@ TEST(PresentationRequestTest, TestSingleUrlConstructor) {
 
 TEST(PresentationRequestTest, TestMultipleUrlConstructor) {
   test::TaskEnvironment task_environment;
-  WTF::Vector<String> urls;
+  Vector<String> urls;
   urls.push_back("https://example.com");
   urls.push_back("cast://deadbeef?param=foo");
   V8TestingScope scope;
@@ -41,7 +41,7 @@ TEST(PresentationRequestTest, TestMultipleUrlConstructor) {
       scope.GetExecutionContext(), urls, scope.GetExceptionState());
   ASSERT_FALSE(scope.GetExceptionState().HadException());
 
-  WTF::Vector<KURL> request_urls = request->Urls();
+  Vector<KURL> request_urls = request->Urls();
   EXPECT_EQ(static_cast<size_t>(2), request_urls.size());
   EXPECT_TRUE(request_urls[0].IsValid());
   EXPECT_EQ("https://example.com/", request_urls[0].GetString());
@@ -52,7 +52,7 @@ TEST(PresentationRequestTest, TestMultipleUrlConstructor) {
 TEST(PresentationRequestTest, TestMultipleUrlConstructorInvalidUrl) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  WTF::Vector<String> urls;
+  Vector<String> urls;
   urls.push_back("https://example.com");
   urls.push_back("");
 
@@ -71,7 +71,7 @@ TEST(PresentationRequestTest, TestMixedContentNotCheckedForNonHttpFamily) {
       scope.GetExceptionState());
   ASSERT_FALSE(scope.GetExceptionState().HadException());
 
-  WTF::Vector<KURL> request_urls = request->Urls();
+  Vector<KURL> request_urls = request->Urls();
   EXPECT_EQ(static_cast<size_t>(1), request_urls.size());
   EXPECT_TRUE(request_urls[0].IsValid());
   EXPECT_EQ("cast://deadbeef?param=foo", request_urls[0].GetString());
@@ -91,7 +91,7 @@ TEST(PresentationRequestTest, TestMultipleUrlConstructorMixedContent) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope(KURL("https://example.test"));
 
-  WTF::Vector<String> urls;
+  Vector<String> urls;
   urls.push_back("http://example.com");
   urls.push_back("https://example1.com");
 
@@ -104,7 +104,7 @@ TEST(PresentationRequestTest, TestMultipleUrlConstructorMixedContent) {
 TEST(PresentationRequestTest, TestMultipleUrlConstructorEmptySequence) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  WTF::Vector<String> urls;
+  Vector<String> urls;
 
   PresentationRequest::Create(scope.GetExecutionContext(), urls,
                               scope.GetExceptionState());
@@ -125,7 +125,7 @@ TEST(PresentationRequestTest, TestMultipleUrlConstructorSomeUnknownSchemes) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
-  WTF::Vector<String> urls;
+  Vector<String> urls;
   urls.push_back("foobar:unknown");
   urls.push_back("https://example.com");
   urls.push_back("cast://deadbeef?param=foo");
@@ -135,7 +135,7 @@ TEST(PresentationRequestTest, TestMultipleUrlConstructorSomeUnknownSchemes) {
       scope.GetExecutionContext(), urls, scope.GetExceptionState());
   ASSERT_THAT(scope.GetExceptionState(), HadNoException());
 
-  WTF::Vector<KURL> request_urls = request->Urls();
+  Vector<KURL> request_urls = request->Urls();
   EXPECT_EQ(static_cast<size_t>(2), request_urls.size());
   EXPECT_TRUE(request_urls[0].IsValid());
   EXPECT_EQ("https://example.com/", request_urls[0].GetString());
@@ -147,7 +147,7 @@ TEST(PresentationRequestTest, TestMultipleUrlConstructorAllUnknownSchemes) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
-  WTF::Vector<String> urls;
+  Vector<String> urls;
   urls.push_back("foobar:unknown");
   urls.push_back("deadbeef:random");
 

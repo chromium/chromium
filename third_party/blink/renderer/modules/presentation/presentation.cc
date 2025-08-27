@@ -67,7 +67,7 @@ void Presentation::setDefaultRequest(PresentationRequest* request) {
 
   PresentationController* controller = PresentationController::From(*window);
   controller->GetPresentationService()->SetDefaultPresentationUrls(
-      request ? request->Urls() : WTF::Vector<KURL>());
+      request ? request->Urls() : Vector<KURL>());
 }
 
 void Presentation::MaybeInitReceiver() {

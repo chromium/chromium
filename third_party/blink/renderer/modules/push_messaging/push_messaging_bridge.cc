@@ -77,8 +77,8 @@ ScriptPromise<V8PermissionState> PushMessagingBridge::GetPermissionState(
 
   permission_service_->HasPermission(
       CreatePermissionDescriptor(mojom::blink::PermissionName::NOTIFICATIONS),
-      WTF::BindOnce(&PushMessagingBridge::DidGetPermissionState,
-                    WrapPersistent(this), WrapPersistent(resolver)));
+      BindOnce(&PushMessagingBridge::DidGetPermissionState,
+               WrapPersistent(this), WrapPersistent(resolver)));
 
   return promise;
 }

@@ -70,8 +70,8 @@ void PushProvider::Subscribe(
   GetPushMessagingRemote()->Subscribe(
       GetSupplementable()->RegistrationId(), std::move(content_options_ptr),
       user_gesture,
-      WTF::BindOnce(&PushProvider::DidSubscribe, WrapPersistent(this),
-                    WrapPersistent(resolver)));
+      BindOnce(&PushProvider::DidSubscribe, WrapPersistent(this),
+               WrapPersistent(resolver)));
 }
 
 void PushProvider::DidSubscribe(
@@ -101,14 +101,14 @@ void PushProvider::Unsubscribe(ScriptPromiseResolver<IDLBoolean>* resolver) {
 
   GetPushMessagingRemote()->Unsubscribe(
       GetSupplementable()->RegistrationId(),
-      WTF::BindOnce(&PushProvider::DidUnsubscribe, WrapPersistent(this),
-                    WrapPersistent(resolver)));
+      BindOnce(&PushProvider::DidUnsubscribe, WrapPersistent(this),
+               WrapPersistent(resolver)));
 }
 
 void PushProvider::DidUnsubscribe(ScriptPromiseResolver<IDLBoolean>* resolver,
                                   mojom::blink::PushErrorType error_type,
                                   bool did_unsubscribe,
-                                  const WTF::String& error_message) {
+                                  const String& error_message) {
   DCHECK(resolver);
 
   // ErrorTypeNone indicates success.
@@ -125,8 +125,8 @@ void PushProvider::GetSubscription(
 
   GetPushMessagingRemote()->GetSubscription(
       GetSupplementable()->RegistrationId(),
-      WTF::BindOnce(&PushProvider::DidGetSubscription, WrapPersistent(this),
-                    WrapPersistent(resolver)));
+      BindOnce(&PushProvider::DidGetSubscription, WrapPersistent(this),
+               WrapPersistent(resolver)));
 }
 
 void PushProvider::Trace(Visitor* visitor) const {

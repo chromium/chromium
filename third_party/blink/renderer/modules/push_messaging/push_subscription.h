@@ -38,9 +38,9 @@ class MODULES_EXPORT PushSubscription final : public ScriptWrappable {
 
   PushSubscription(const KURL& endpoint,
                    bool user_visible_only,
-                   const WTF::Vector<uint8_t>& application_server_key,
-                   const WTF::Vector<unsigned char>& p256dh,
-                   const WTF::Vector<unsigned char>& auth,
+                   const Vector<uint8_t>& application_server_key,
+                   const Vector<unsigned char>& p256dh,
+                   const Vector<unsigned char>& auth,
                    const std::optional<DOMTimeStamp>& expiration_time,
                    ServiceWorkerRegistration* service_worker_registration);
 

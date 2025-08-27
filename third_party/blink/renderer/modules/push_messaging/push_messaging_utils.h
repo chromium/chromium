@@ -15,8 +15,7 @@ enum class PushErrorType;
 enum class PushRegistrationStatus;
 }  // namespace mojom
 
-WTF::String PushRegistrationStatusToString(
-    mojom::PushRegistrationStatus status);
+String PushRegistrationStatusToString(mojom::PushRegistrationStatus status);
 
 mojom::PushErrorType PushRegistrationStatusToPushErrorType(
     mojom::PushRegistrationStatus status);

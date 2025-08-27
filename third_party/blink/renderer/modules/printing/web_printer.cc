@@ -111,7 +111,7 @@ ScriptPromise<WebPrinterAttributes> WebPrinter::fetchAttributes(
           script_state, exception_state.GetContext());
   printer_->FetchAttributes(
       fetch_attributes_resolver_->WrapCallbackInScriptScope(
-          WTF::BindOnce(&WebPrinter::OnFetchAttributes, WrapPersistent(this))));
+          BindOnce(&WebPrinter::OnFetchAttributes, WrapPersistent(this))));
   return fetch_attributes_resolver_->Promise();
 }
 
@@ -139,8 +139,8 @@ ScriptPromise<WebPrintJob> WebPrinter::submitPrintJob(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<WebPrintJob>>(
       script_state, exception_state.GetContext());
   printer_->Print(document->data()->AsMojoBlob(), std::move(attributes),
-                  resolver->WrapCallbackInScriptScope(WTF::BindOnce(
-                      &WebPrinter::OnPrint, WrapPersistent(this))));
+                  resolver->WrapCallbackInScriptScope(
+                      BindOnce(&WebPrinter::OnPrint, WrapPersistent(this))));
   return resolver->Promise();
 }
 

@@ -38,10 +38,10 @@ class MODULES_EXPORT PresentationAvailability final
       "recommended to try to blindly start a presentation in that case.";
 
   static PresentationAvailability* Take(ExecutionContext*,
-                                        const WTF::Vector<KURL>&,
+                                        const Vector<KURL>&,
                                         bool);
 
-  PresentationAvailability(ExecutionContext*, const WTF::Vector<KURL>&, bool);
+  PresentationAvailability(ExecutionContext*, const Vector<KURL>&, bool);
   ~PresentationAvailability() override;
 
   // EventTarget implementation.

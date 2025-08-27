@@ -84,7 +84,7 @@ ScriptPromise<IDLSequence<WebPrinter>> WebPrintingManager::getPrinters(
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<WebPrinter>>>(
           script_state, exception_state.GetContext());
-  service->GetPrinters(resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+  service->GetPrinters(resolver->WrapCallbackInScriptScope(BindOnce(
       &WebPrintingManager::OnPrintersRetrieved, WrapPersistent(this))));
   return resolver->Promise();
 }

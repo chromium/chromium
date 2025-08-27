@@ -26,7 +26,7 @@ TEST(PresentationAvailabilityTest, NoPageVisibilityChangeAfterDetach) {
   Page* page = nullptr;
   {
     V8TestingScope scope;
-    WTF::Vector<KURL> urls;
+    Vector<KURL> urls;
     urls.push_back(url_test_helpers::ToKURL("https://example.com"));
     urls.push_back(url_test_helpers::ToKURL("https://another.com"));
 

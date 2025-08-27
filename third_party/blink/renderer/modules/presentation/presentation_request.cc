@@ -150,7 +150,7 @@ ScriptPromise<PresentationConnection> PresentationRequest::start(
 
   controller->GetPresentationService()->StartPresentation(
       urls_,
-      WTF::BindOnce(
+      BindOnce(
           &PresentationConnectionCallbacks::HandlePresentationResponse,
           std::make_unique<PresentationConnectionCallbacks>(resolver, this)));
   return resolver->Promise();
@@ -178,14 +178,13 @@ ScriptPromise<PresentationConnection> PresentationRequest::reconnect(
   if (existing_connection) {
     controller->GetPresentationService()->ReconnectPresentation(
         urls_, id,
-        WTF::BindOnce(
-            &PresentationConnectionCallbacks::HandlePresentationResponse,
-            std::make_unique<PresentationConnectionCallbacks>(
-                resolver, existing_connection)));
+        BindOnce(&PresentationConnectionCallbacks::HandlePresentationResponse,
+                 std::make_unique<PresentationConnectionCallbacks>(
+                     resolver, existing_connection)));
   } else {
     controller->GetPresentationService()->ReconnectPresentation(
         urls_, id,
-        WTF::BindOnce(
+        BindOnce(
             &PresentationConnectionCallbacks::HandlePresentationResponse,
             std::make_unique<PresentationConnectionCallbacks>(resolver, this)));
   }
