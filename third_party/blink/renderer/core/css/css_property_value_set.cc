@@ -166,7 +166,11 @@ static bool IsPropertyMatch(const CSSPropertyValue& property,
                             uint16_t id,
                             const AtomicString& custom_property_name) {
   DCHECK_EQ(id, static_cast<uint16_t>(CSSPropertyID::kVariable));
-  return property.Name() == CSSPropertyName(custom_property_name);
+  if (property.PropertyID() == CSSPropertyID::kVariable) {
+    return property.CustomPropertyName() == custom_property_name;
+  } else {
+    return false;
+  }
 }
 
 static bool IsPropertyMatch(const CSSPropertyValue& property,
@@ -534,7 +538,7 @@ MutableCSSPropertyValueSet::SetLonghandProperty(CSSPropertyValue property) {
   CSSPropertyValue* to_replace;
   if (id == CSSPropertyID::kVariable) {
     to_replace = const_cast<CSSPropertyValue*>(
-        FindPropertyPointer(property.Name().ToAtomicString()));
+        FindPropertyPointer(property.CustomPropertyName()));
   } else {
     to_replace = FindInsertionPointForID(id);
   }

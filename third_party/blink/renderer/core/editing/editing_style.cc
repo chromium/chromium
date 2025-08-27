@@ -1570,9 +1570,14 @@ static MutableCSSPropertyValueSet* StyleFromMatchedRulesForElement(
   StyleRuleList* matched_rules =
       element->GetDocument().GetStyleResolver().StyleRulesForElement(
           element, rules_to_include);
-  if (matched_rules) {
-    for (unsigned i = 0; i < matched_rules->size(); ++i)
+  if (matched_rules && !matched_rules->empty()) {
+    // Initialize the style using the first matched_rule to reduce the number of
+    // merges and the overall time consumption.
+    style = MakeGarbageCollected<MutableCSSPropertyValueSet>(
+        matched_rules->at(0)->Properties());
+    for (unsigned i = 1; i < matched_rules->size(); ++i) {
       style->MergeAndOverrideOnConflict(&matched_rules->at(i)->Properties());
+    }
   }
   return style;
 }
