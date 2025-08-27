@@ -77,7 +77,7 @@ class ReadingListModelBridge : public ReadingListModelObserver {
   void ReadingListDidUpdateEntry(const ReadingListModel* model,
                                  const GURL& url) override;
 
-  __unsafe_unretained id<ReadingListModelBridgeObserver> observer_;
+  __weak id<ReadingListModelBridgeObserver> observer_;
 
   raw_ptr<ReadingListModel> model_;  // weak
 };
