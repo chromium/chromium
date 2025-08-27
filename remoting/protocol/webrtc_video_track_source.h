@@ -5,15 +5,16 @@
 #ifndef REMOTING_PROTOCOL_WEBRTC_VIDEO_TRACK_SOURCE_H_
 #define REMOTING_PROTOCOL_WEBRTC_VIDEO_TRACK_SOURCE_H_
 
+#include <memory>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "remoting/codec/webrtc_video_encoder.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
 #include "third_party/webrtc/api/notifier.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
-
-#include <memory>
 
 namespace remoting::protocol {
 
@@ -59,13 +60,21 @@ class WebrtcVideoTrackSource
       std::unique_ptr<WebrtcVideoEncoder::FrameStats> frame_stats);
 
  private:
+  void SendPendingFrame();
+
   raw_ptr<webrtc::VideoSinkInterface<webrtc::VideoFrame>> sink_ = nullptr;
   AddSinkCallback add_sink_callback_;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
+  // Last frame that is received before the sink is set. Once the sink is set,
+  // the pending frame will be sent to the sink.
+  std::unique_ptr<webrtc::VideoFrame> pending_frame_;
+
   // Incrementing ID to be attached to each VideoFrame, so that the
   // encoder-wrapper can detect if a frame was dropped.
   uint16_t frame_id_ = 0;
+
+  base::WeakPtrFactory<WebrtcVideoTrackSource> weak_ptr_factory_{this};
 };
 
 }  // namespace remoting::protocol
