@@ -20,10 +20,23 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider
 import org.chromium.ui.base.ActivityWindowAndroid;
 
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
+import java.util.Map;
 
 /** Supports Robolectric and native unit tests relevant to {@link ChromeAndroidTask}. */
 @NullMarked
 public final class ChromeAndroidTaskUnitTestSupport {
+
+    /**
+     * It's common for callers of {@link #createMockActivityWindowAndroid()} or {@link
+     * #createActivityWindowAndroidMocks()} to pass the resulting mocks into a {@link
+     * ChromeAndroidTaskImpl}, which only holds it as a weak reference. Pinning the mocks here
+     * ensures that they don't get garbage collected in the middle of a unit test.
+     *
+     * <p>The key to the map is an Android Task ID.
+     */
+    private static final Map<Integer, ActivityWindowAndroidMocks> sActivityWindowAndroidMocks =
+            new HashMap<>();
 
     /**
      * Holds a real {@link ChromeAndroidTask} and its mock dependencies.
@@ -132,11 +145,14 @@ public final class ChromeAndroidTaskUnitTestSupport {
                 .thenReturn(mockActivityLifecycleDispatcher);
         when(mockActivityWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mockActivity));
 
-        return new ActivityWindowAndroidMocks(
-                mockActivityWindowAndroid,
-                mockActivity,
-                mockActivityLifecycleDispatcher,
-                mockWindowManager);
+        var mocks =
+                new ActivityWindowAndroidMocks(
+                        mockActivityWindowAndroid,
+                        mockActivity,
+                        mockActivityLifecycleDispatcher,
+                        mockWindowManager);
+        sActivityWindowAndroidMocks.put(taskId, mocks);
+        return mocks;
     }
 
     /**
