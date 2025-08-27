@@ -145,7 +145,9 @@ class ScrollMarkerGroupData : public GarbageCollected<ScrollMarkerGroupData>,
                         const HeapVector<Member<Element>>& candidates);
   Element* ChooseMarkerRecursively();
 
-  // TODO(332396355): Add spec link, once it's created.
+  // https://drafts.csswg.org/css-overflow-5/#scroll-marker-grouping
+  // Vector of scroll markers, which are either ::scroll-marker pseudo-elements
+  // or HTML anchor elements.
   HeapVector<Member<Element>> focus_group_;
 
   // True, if some <a> scroll markers have been added or removed. It signals
