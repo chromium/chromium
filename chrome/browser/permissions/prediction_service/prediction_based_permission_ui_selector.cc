@@ -425,6 +425,11 @@ void PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel(
     ModelExecutionCallback model_execution_callback,
     std::unique_ptr<content_extraction::InnerTextResult> result) {
   VLOG(1) << "[PermissionsAI] OnGetInnerTextForOnDeviceModel";
+  if (result) {
+    PermissionUmaUtil::RecordRenderedTextSize(
+        model_data.model_type, model_data.request_metadata.request_type,
+        result->inner_text.size());
+  }
 
   bool rendered_text_useful =
       result && result->inner_text.size() > kPageContentMinLength;

@@ -881,6 +881,12 @@ class PermissionUmaUtil {
       PredictionModelType model_type,
       bool success);
 
+  // Records the size of the rendered text when it was fetched successfully and
+  // was suitable as input for model execution.
+  static void RecordRenderedTextSize(PredictionModelType model_type,
+                                     RequestType request_type,
+                                     size_t text_size);
+
   // Records whether we needed to cancel the previous passage embeddings model
   // call before starting a new one.
   static void RecordTryCancelPreviousEmbeddingsModelExecution(

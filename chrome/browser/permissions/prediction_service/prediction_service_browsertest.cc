@@ -194,6 +194,10 @@ constexpr char kAiv4NotificationsPermissionRequestRelevanceHistogram[] =
     "Permissions.AIv4.Notifications.PermissionRequestRelevance";
 constexpr char kAiv4GeolocationPermissionRequestRelevanceHistogram[] =
     "Permissions.AIv4.Geolocation.PermissionRequestRelevance";
+constexpr char kAiv4NotificationsRenderedTextSizeHistogram[] =
+    "Permissions.AIv4.Notifications.RenderedTextSize";
+constexpr char kAiv4GeolocationRenderedTextSizeHistogram[] =
+    "Permissions.AIv4.Geolocation.RenderedTextSize";
 // A CPSSv1 model that returns a constant value of 0.5;
 // its meaning is defined by the max_likely threshold we use in the
 // signature_model_executor to differentiate between
@@ -1427,7 +1431,6 @@ IN_PROC_BROWSER_TEST_F(Aiv4ModelTimeoutBrowserTest,
   PushModelFileToModelExecutor(ModelFilePath(kOneReturnAiv4Model));
 
   set_dummy_inner_text_for_testing();
-  set_dummy_inner_text_for_testing();
   DelayedPassageEmbedderMock passage_embedder;
   model_handler_provider()->set_passage_embedder_for_testing(&passage_embedder);
 
@@ -1649,6 +1652,13 @@ IN_PROC_BROWSER_TEST_P(Aiv4ModelPredictionServiceBrowserTest,
           : kAIv4GeolocationHoldbackResponseHistogram,
       /*sample=*/false,
       /*expected_count=*/1);
+
+  histogram_tester().ExpectUniqueSample(
+      request_type() == RequestType::kNotifications
+          ? kAiv4NotificationsRenderedTextSizeHistogram
+          : kAiv4GeolocationRenderedTextSizeHistogram,
+      /*sample=*/55,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace permissions

@@ -2108,6 +2108,16 @@ void PermissionUmaUtil::RecordActionBrowserAlwaysActive(
 }
 
 // static
+void PermissionUmaUtil::RecordRenderedTextSize(PredictionModelType model_type,
+                                               RequestType request_type,
+                                               size_t text_size) {
+  base::UmaHistogramCounts10000(
+      base::StrCat({"Permissions.", GetPredictionModelString(model_type), ".",
+                    GetRequestTypeString(request_type), ".RenderedTextSize"}),
+      text_size);
+}
+
+// static
 void PermissionUmaUtil::RecordPredictionModelInquireTime(
     PredictionModelType model_type,
     base::TimeTicks model_inquire_start_time) {

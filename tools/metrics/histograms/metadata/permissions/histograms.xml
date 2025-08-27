@@ -2019,6 +2019,22 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Permissions.{PredictionModel}.{PermissionType}.RenderedTextSize"
+    units="characters" expires_after="2026-02-01">
+  <owner>elklm@chromium.org</owner>
+  <owner>hempjudith@google.com</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the size of the rendered text when it was fetched successfully and
+    was suitable as input for model execution. Specifically, we require it to be
+    longer than 10 characters to be used as input for the {PredictionModel}
+    model.
+  </summary>
+  <token key="PredictionModel" variants="RenderedTextBasedPredictionModels"/>
+  <token key="PermissionType" variants="CpssSupportedTypes"/>
+</histogram>
+
 <histogram name="SiteEngagementService.EngagementScore" units="units"
     expires_after="2026-01-18">
   <owner>calamity@chromium.org</owner>
