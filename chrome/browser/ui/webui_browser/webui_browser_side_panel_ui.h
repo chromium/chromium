@@ -12,10 +12,6 @@
 class Browser;
 class WebUIBrowserWindow;
 
-namespace views {
-class View;
-}  // namespace views
-
 class WebUIBrowserSidePanelUI : public SidePanelUIBase {
  public:
   explicit WebUIBrowserSidePanelUI(Browser* browser);
@@ -48,11 +44,6 @@ class WebUIBrowserSidePanelUI : public SidePanelUIBase {
       SidePanelRegistry* new_contextual_registry) override;
 
   WebUIBrowserWindow* GetWebUIBrowserWindow();
-
-  // Owns the WebView of this side panel. The WebView itself is never rendered.
-  // Instead, WebViews containing WebContents will be hosted by Webium in a
-  // guest contents.
-  std::unique_ptr<views::View> current_side_panel_view_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_BROWSER_WEBUI_BROWSER_SIDE_PANEL_UI_H_
