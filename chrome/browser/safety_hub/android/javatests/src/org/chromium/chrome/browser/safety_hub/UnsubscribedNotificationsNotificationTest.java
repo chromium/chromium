@@ -34,6 +34,7 @@ import org.chromium.components.browser_ui.notifications.MockNotificationManagerP
 import org.chromium.components.browser_ui.notifications.NotificationFeatureMap;
 import org.chromium.ui.test.util.DeviceRestriction;
 
+import java.util.EnumSet;
 import java.util.List;
 
 /** Tests for the Safety Hub notification about unsubscribed notifications. */
@@ -65,7 +66,15 @@ public final class UnsubscribedNotificationsNotificationTest {
         SettingsActivity settingsActivity =
                 ApplicationTestUtils.waitForActivityWithClass(
                         SettingsActivity.class,
-                        Stage.CREATED,
+                        // In SettingsSingleActivity mode, if there already
+                        // exists the settings activity, it will be reused.
+                        // In such cases, the activity state is set to
+                        // PAUSED, rather than CREATED.
+                        // Because there's no guarantee of the existing
+                        // settings activity, we wait for either condition.
+                        ChromeFeatureList.sSettingsSingleActivity.isEnabled()
+                                ? EnumSet.of(Stage.PAUSED, Stage.CREATED)
+                                : EnumSet.of(Stage.CREATED),
                         () -> {
                             try {
                                 notification.actions[0].actionIntent.send();
@@ -91,7 +100,7 @@ public final class UnsubscribedNotificationsNotificationTest {
         SettingsActivity settingsActivity =
                 ApplicationTestUtils.waitForActivityWithClass(
                         SettingsActivity.class,
-                        Stage.CREATED,
+                        EnumSet.of(Stage.PAUSED, Stage.CREATED),
                         () -> {
                             try {
                                 notification.contentIntent.send();
