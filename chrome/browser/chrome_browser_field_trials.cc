@@ -198,6 +198,11 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // Disables the enhanced pip transition and uses the default animation.
   // TODO(crbug.com/440384447): Remove when enhanced pip transition is fixed.
   feature_overrides.DisableFeature(media::kAllowEnhancedPipTransition);
+  // Enable by default for desktop platforms, pending a phone / foldable /
+  // tablet rollout using the same flag.
+  // TODO(crbug.com/413776899): Remove when rollout on other form factors is
+  // complete.
+  feature_overrides.EnableFeature(chrome::android::kInstanceSwitcherV2);
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.
