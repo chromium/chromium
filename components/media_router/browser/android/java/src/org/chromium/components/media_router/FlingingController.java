@@ -7,24 +7,23 @@ package org.chromium.components.media_router;
 import org.chromium.build.annotations.NullMarked;
 
 /**
- * Interface that groups all the necessary hooks to control media being flung to a Cast device,
- * as part of RemotePlayback.
- * This interface should be the same as media/base/flinging_controller.h.
+ * Interface that groups all the necessary hooks to control media being flung to a Cast device, as
+ * part of RemotePlayback. This interface should be the same as media/base/flinging_controller.h.
  */
 @NullMarked
 public interface FlingingController {
     /** Gets the media controller through which we can send commands to the Cast device. */
-    public MediaController getMediaController();
+    MediaController getMediaController();
 
     /** Subscribe or unsubscribe to changes in the MediaStatus. */
-    public void setMediaStatusObserver(MediaStatusObserver observer);
+    void setMediaStatusObserver(MediaStatusObserver observer);
 
-    public void clearMediaStatusObserver();
+    void clearMediaStatusObserver();
 
     /**
      * Gets the current media time. Implementers may sacrifice precision in order to avoid a
      * round-trip query to Cast devices (see gms.cast.RemoteMediaPlayer's
      * getApproximateStreamPosition() for example).
      */
-    public long getApproximateCurrentTime();
+    long getApproximateCurrentTime();
 }

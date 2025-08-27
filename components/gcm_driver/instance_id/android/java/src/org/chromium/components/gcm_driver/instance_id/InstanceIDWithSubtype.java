@@ -101,6 +101,6 @@ public class InstanceIDWithSubtype {
     /** Fake subclasses can set {@link #sFakeFactoryForTesting} to an implementation of this. */
     @VisibleForTesting
     public interface FakeFactory {
-        public InstanceIDWithSubtype create(String subtype);
+        InstanceIDWithSubtype create(String subtype);
     }
 }

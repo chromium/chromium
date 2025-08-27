@@ -24,8 +24,8 @@ import java.util.List;
 @NullMarked
 class TranslateMessageSecondaryMenu implements ListMenu, OnItemClickListener {
     @FunctionalInterface
-    public static interface Handler {
-        public MenuItem @Nullable [] handleSecondaryMenuItemClicked(MenuItem menuItem);
+    public interface Handler {
+        MenuItem @Nullable [] handleSecondaryMenuItemClicked(MenuItem menuItem);
     }
 
     private final Handler mHandler;

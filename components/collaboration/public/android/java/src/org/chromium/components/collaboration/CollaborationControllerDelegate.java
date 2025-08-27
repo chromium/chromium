@@ -18,5 +18,5 @@ public interface CollaborationControllerDelegate {
     long getNativePtr();
 
     /** Cleans up any outstanding resources. */
-    public void destroy();
+    void destroy();
 }

@@ -33,7 +33,7 @@ public abstract class BaseSessionController {
     private static final String TAG = "BaseSessionCtrl";
 
     /** Callback class for listening to state changes. */
-    public static interface Callback {
+    public interface Callback {
         /** Called when session started. */
         void onSessionStarted();
 

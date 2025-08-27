@@ -86,7 +86,7 @@ public class CredManHelper {
     // A callback that provides an AuthenticatorStatus error in the first argument, and optionally a
     // metrics recording outcome in the second.
     public interface ErrorCallback {
-        public void onResult(int error, @Nullable Integer metricsOutcome);
+        void onResult(int error, @Nullable Integer metricsOutcome);
     }
 
     public CredManHelper(

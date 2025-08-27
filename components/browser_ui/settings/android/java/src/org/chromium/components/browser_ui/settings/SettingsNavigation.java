@@ -34,7 +34,7 @@ public interface SettingsNavigation {
         SettingsFragment.NON_CARD_PAYMENT_METHODS
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface SettingsFragment {
+    @interface SettingsFragment {
         /// Main settings page.
         int MAIN = 0;
         /// Browsing Data management.

@@ -9,5 +9,5 @@ import org.chromium.build.annotations.NullMarked;
 /** Callback interface for handling any errors from register or sign requests. */
 @NullMarked
 public interface AuthenticatorErrorResponseCallback {
-    public void onError(int status);
+    void onError(int status);
 }

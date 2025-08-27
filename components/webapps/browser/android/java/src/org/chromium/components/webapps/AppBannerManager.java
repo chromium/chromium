@@ -47,8 +47,8 @@ public class AppBannerManager {
         }
     }
 
-    public static interface Observer {
-        public void onInstallabilityUpdated(AppBannerManager manager);
+    public interface Observer {
+        void onInstallabilityUpdated(AppBannerManager manager);
     }
 
     public static final InstallStringPair PWA_PAIR =

@@ -64,7 +64,7 @@ public class AddExceptionPreference extends Preference
          *     sites the primary pattern is affected. Usually the wildcard or a specific host (for
          *     third-party cookies).
          */
-        public void onAddSite(String primaryPattern, String secondaryPattern);
+        void onAddSite(String primaryPattern, String secondaryPattern);
     }
 
     /**

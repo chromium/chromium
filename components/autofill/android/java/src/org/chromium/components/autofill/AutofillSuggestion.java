@@ -31,7 +31,7 @@ public class AutofillSuggestion extends DropdownItemBase {
     private final @Nullable GURL mCustomIconUrl;
     private final @Nullable Payload mPayload;
 
-    public static sealed interface Payload permits AutofillProfilePayload, PaymentsPayload {}
+    public sealed interface Payload permits AutofillProfilePayload, PaymentsPayload {}
 
     /**
      * Constructs a Autofill suggestion container. Use the {@link AutofillSuggestion.Builder}

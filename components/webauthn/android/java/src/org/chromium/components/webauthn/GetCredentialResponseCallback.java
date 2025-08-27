@@ -15,7 +15,7 @@ import org.chromium.build.annotations.Nullable;
  */
 @NullMarked
 public interface GetCredentialResponseCallback {
-    public void onCredentialResponse(
+    void onCredentialResponse(
             @Nullable GetAssertionAuthenticatorResponse assertionResponse,
             @Nullable CredentialInfo passwordCredential);
 }

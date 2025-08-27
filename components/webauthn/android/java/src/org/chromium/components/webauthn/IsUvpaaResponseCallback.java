@@ -12,5 +12,5 @@ import org.chromium.build.annotations.NullMarked;
  */
 @NullMarked
 public interface IsUvpaaResponseCallback {
-    public void onIsUserVerifyingPlatformAuthenticatorAvailableResponse(boolean isUVPAA);
+    void onIsUserVerifyingPlatformAuthenticatorAvailableResponse(boolean isUVPAA);
 }

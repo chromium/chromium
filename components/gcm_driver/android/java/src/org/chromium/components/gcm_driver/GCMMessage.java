@@ -303,11 +303,11 @@ public class GCMMessage {
     }
 
     private interface Reader<T> {
-        public boolean hasKey(T in, String key);
+        boolean hasKey(T in, String key);
 
-        public @Nullable String readString(T in, String key);
+        @Nullable String readString(T in, String key);
 
-        public @Nullable String @Nullable [] readStringArray(T in, String key);
+        @Nullable String @Nullable [] readStringArray(T in, String key);
     }
 
     private static class BundleReader implements Reader<Bundle> {
@@ -373,11 +373,11 @@ public class GCMMessage {
     }
 
     private interface Writer<T> {
-        public T createOutputObject();
+        T createOutputObject();
 
-        public void writeString(T out, String key, @Nullable String value);
+        void writeString(T out, String key, @Nullable String value);
 
-        public void writeStringArray(T out, String key, String @Nullable [] value);
+        void writeStringArray(T out, String key, String @Nullable [] value);
     }
 
     private static class PersistableBundleWriter implements Writer<PersistableBundle> {

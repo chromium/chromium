@@ -38,7 +38,7 @@ import java.util.Optional;
 public class SensitiveContentClient implements ViewAndroidDelegate.ContainerViewObserver {
     /** Used to update the content sensitivity of the current container view. */
     @VisibleForTesting
-    static interface ContentSensitivitySetter {
+    interface ContentSensitivitySetter {
         /**
          * Updates the content sensitivity of the given {@code containerView} to {@code
          * contentIsSensitive}.
@@ -225,7 +225,7 @@ public class SensitiveContentClient implements ViewAndroidDelegate.ContainerView
 
     /** Observes changes made by the {@link SensitiveContentClient}. */
     @FunctionalInterface
-    public static interface Observer {
+    public interface Observer {
         /**
          * Called when the content sensitivity changed.
          *

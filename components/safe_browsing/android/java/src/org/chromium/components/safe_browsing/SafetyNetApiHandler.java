@@ -20,7 +20,7 @@ public interface SafetyNetApiHandler {
         SafetyNetApiState.INITIALIZED,
         SafetyNetApiState.INITIALIZED_FIRST_PARTY,
     })
-    public @interface SafetyNetApiState {
+    @interface SafetyNetApiState {
         // The API handler is not initialized. Calls to methods below will not work.
         int NOT_AVAILABLE = 0;
         // The API handler is initialized for most usages, but calls to {@link getSafetyNetId} will

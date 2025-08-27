@@ -17,9 +17,13 @@ public interface RoutePublisher {
     /** Publish routes (sinks). */
     void publishRoutes();
 
-    /** @return Whether the publisher supports the given route. */
+    /**
+     * @return Whether the publisher supports the given route.
+     */
     boolean supportsRoute(String routeId);
 
-    /** @return A {@link RouteController} created for {@link routeId}. */
-    public MediaRouteProvider.RouteController onCreateRouteController(String routeId);
+    /**
+     * @return A {@link RouteController} created for {@link routeId}.
+     */
+    MediaRouteProvider.RouteController onCreateRouteController(String routeId);
 }

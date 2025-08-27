@@ -34,7 +34,7 @@ public class WebsitePreferenceBridge {
     /** Interface for an object that listens to storage info is cleared callback. */
     public interface StorageInfoClearedCallback {
         @CalledByNative("StorageInfoClearedCallback")
-        public void onStorageInfoCleared();
+        void onStorageInfoCleared();
     }
 
     /**

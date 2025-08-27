@@ -65,7 +65,7 @@ public class AutofillProvider {
      * Factory interface for testing. AutofillManagerWrapper must be created in AutofillProvider
      * constructor.
      */
-    public static interface AutofillManagerWrapperFactoryForTesting {
+    public interface AutofillManagerWrapperFactoryForTesting {
         AutofillManagerWrapper create(Context context);
     }
 

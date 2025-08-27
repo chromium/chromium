@@ -26,7 +26,7 @@ public interface DeviceLockActivityLauncher {
     // LINT.IfChange(DeviceLockSource)
     @StringDef({Source.FIRST_RUN, Source.ACCOUNT_PICKER, Source.AUTOFILL, Source.FULLSCREEN_SIGNIN})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface Source {
+    @interface Source {
         String FIRST_RUN = "FirstRun";
         String ACCOUNT_PICKER = "AccountPicker";
         String AUTOFILL = "Autofill";
@@ -35,7 +35,7 @@ public interface DeviceLockActivityLauncher {
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/histograms.xml:DeviceLockSource)
 
-    public static boolean isSignInFlow(@Source String source) {
+    static boolean isSignInFlow(@Source String source) {
         return source.equals(Source.FIRST_RUN)
                 || source.equals(Source.ACCOUNT_PICKER)
                 || source.equals(Source.FULLSCREEN_SIGNIN);

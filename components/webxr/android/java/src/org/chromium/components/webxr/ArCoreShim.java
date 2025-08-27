@@ -30,28 +30,30 @@ public interface ArCoreShim {
      */
     @IntDef({InstallStatus.INSTALLED, InstallStatus.INSTALL_REQUESTED})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface InstallStatus {
+    @interface InstallStatus {
         int INSTALLED = 0;
         int INSTALL_REQUESTED = 1;
     }
 
     /** Equivalent of ArCoreApk.checkAvailability. */
-    public @ArCoreAvailability int checkAvailability(Context applicationContext);
+    @ArCoreAvailability
+    int checkAvailability(Context applicationContext);
 
     /** Equivalent of ArCoreApk.requestInstall. */
-    public @InstallStatus int requestInstall(Activity activity, boolean userRequestedInstall)
+    @InstallStatus
+    int requestInstall(Activity activity, boolean userRequestedInstall)
             throws UnavailableDeviceNotCompatibleException,
                     UnavailableUserDeclinedInstallationException;
 
     /** Thrown by requestInstall() when device is not compatible with ARCore. */
-    public class UnavailableDeviceNotCompatibleException extends Exception {
+    class UnavailableDeviceNotCompatibleException extends Exception {
         public UnavailableDeviceNotCompatibleException(Exception cause) {
             super(cause);
         }
     }
 
     /** Thrown by requestInstall() when user declined to install ARCore. */
-    public class UnavailableUserDeclinedInstallationException extends Exception {
+    class UnavailableUserDeclinedInstallationException extends Exception {
         UnavailableUserDeclinedInstallationException(Exception cause) {
             super(cause);
         }

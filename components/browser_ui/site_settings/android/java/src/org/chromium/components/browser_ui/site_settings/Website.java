@@ -508,7 +508,7 @@ public final class Website implements WebsiteEntry {
 
     /** An interface to implement to get a callback when storage info has been cleared. */
     public interface StoredDataClearedCallback {
-        public void onStoredDataCleared();
+        void onStoredDataCleared();
     }
 
     /** Add information about an object the user has granted permission for this site to access. */

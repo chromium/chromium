@@ -38,12 +38,12 @@ public class LoginPrompt {
     private AlertDialogEditText mPasswordView;
 
     /** This is a public interface that provides the result of the prompt. */
-    public static interface Observer {
+    public interface Observer {
         /** Cancel the authorization request. */
-        public void cancel();
+        void cancel();
 
         /** Proceed with the authorization with the given credentials. */
-        public void proceed(String username, String password);
+        void proceed(String username, String password);
     }
 
     /**

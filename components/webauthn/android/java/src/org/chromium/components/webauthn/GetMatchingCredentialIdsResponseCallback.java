@@ -14,5 +14,5 @@ import java.util.List;
  */
 @NullMarked
 public interface GetMatchingCredentialIdsResponseCallback {
-    public void onResponse(List<byte[]> matchingCredentialIds);
+    void onResponse(List<byte[]> matchingCredentialIds);
 }

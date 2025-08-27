@@ -27,7 +27,7 @@ public interface DataSharingUIDelegate {
      * @param url The URL of the current share action.
      */
     @CalledByNative
-    public void handleShareURLIntercepted(GURL url);
+    void handleShareURLIntercepted(GURL url);
 
     /**
      * Method to show create flow.

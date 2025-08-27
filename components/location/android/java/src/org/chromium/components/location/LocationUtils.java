@@ -139,7 +139,7 @@ public class LocationUtils {
      * LocationUtils.getInstance().
      */
     public interface Factory {
-        public LocationUtils create();
+        LocationUtils create();
     }
 
     /**

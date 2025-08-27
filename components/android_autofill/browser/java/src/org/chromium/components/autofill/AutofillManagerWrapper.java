@@ -43,7 +43,7 @@ public class AutofillManagerWrapper {
             "com.google.android.gms/com.google.android.gms.autofill.service.AutofillService";
 
     /** The observer of suggestion window. */
-    public static interface InputUiObserver {
+    public interface InputUiObserver {
         void onInputUiShown();
     }
 

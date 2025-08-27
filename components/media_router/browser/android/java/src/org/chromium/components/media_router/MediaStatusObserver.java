@@ -10,11 +10,10 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public interface MediaStatusObserver {
     /**
-     * Called when there is a MediaStatus update.
-     * NOTE: At the moment, FlingingControllerBridge is the only implementer. Sending a
-     * MediaStatusBridge directly reduces boilerplate code. If a second implementer
-     * were added, adding a ChromeMediaStatus interface and using here instead might
-     * make more sense.
+     * Called when there is a MediaStatus update. NOTE: At the moment, FlingingControllerBridge is
+     * the only implementer. Sending a MediaStatusBridge directly reduces boilerplate code. If a
+     * second implementer were added, adding a ChromeMediaStatus interface and using here instead
+     * might make more sense.
      */
-    public void onMediaStatusUpdate(MediaStatusBridge status);
+    void onMediaStatusUpdate(MediaStatusBridge status);
 }

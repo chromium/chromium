@@ -16,17 +16,18 @@ import org.chromium.build.annotations.Nullable;
 @NullMarked
 public interface PlayerFrameMediatorDelegate {
     /** Gets the visual viewport of the player. */
-    public PlayerFrameViewport getViewport();
+    PlayerFrameViewport getViewport();
 
     /** Gets the size of the content shown in the mediator. */
-    public Size getContentSize();
+    Size getContentSize();
 
     /** Gets the min scale factor at the last computed viewport width. */
-    public float getMinScaleFactor();
+    float getMinScaleFactor();
 
     /**
      * Triggers an update of the visual contents of the PlayerFrameView. This fetches updates the
      * model and fetches any new bitmaps asynchronously.
+     *
      * @param scaleChanged Indicates that the scale changed so all current bitmaps need to be
      *     discarded.
      */

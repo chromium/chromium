@@ -15,7 +15,7 @@ public interface IpProtectionAuthServiceCallback {
      *
      * @param client will not be null.
      */
-    public void onResult(IpProtectionAuthClient client);
+    void onResult(IpProtectionAuthClient client);
 
     /**
      * Called if/when IpProtectionAuthClient.CreateConnectedInstance fails.
@@ -24,5 +24,5 @@ public interface IpProtectionAuthServiceCallback {
      *
      * @param error unstructured description of error.
      */
-    public void onError(String error);
+    void onError(String error);
 }

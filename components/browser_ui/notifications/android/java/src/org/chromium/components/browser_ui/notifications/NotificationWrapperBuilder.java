@@ -24,7 +24,7 @@ import org.chromium.build.annotations.Nullable;
 public interface NotificationWrapperBuilder {
     // Android strips images > ~5mb (crbug.com/390677997), so resize bitmaps to be smaller than
     // this to reduce memory and to avoid them from getting stripped.
-    public static final int BIG_PICTURE_BITMAP_MAX_SIZE_IN_KB = 4500;
+    int BIG_PICTURE_BITMAP_MAX_SIZE_IN_KB = 4500;
 
     NotificationWrapperBuilder setAutoCancel(boolean autoCancel);
 

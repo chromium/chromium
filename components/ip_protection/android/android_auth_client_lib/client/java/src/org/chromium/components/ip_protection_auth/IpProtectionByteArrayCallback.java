@@ -9,8 +9,8 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public interface IpProtectionByteArrayCallback {
     // Result contains a serialized com.google.privacy.ppn.proto protobuf.
-    public void onResult(byte[] result);
+    void onResult(byte[] result);
 
     // Error is an auth request error defined in IpProtectionAuthClent.AuthRequestError
-    public void onError(int authRequestError);
+    void onError(int authRequestError);
 }

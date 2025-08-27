@@ -10,17 +10,18 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public interface InfoBarInteractionHandler {
     /** Handles click on the infobar. It is invoked before one of the following functions. */
-    public void onClick();
+    void onClick();
 
     /** Takes some action related to the link being clicked. */
-    public void onLinkClicked();
+    void onLinkClicked();
 
     /** Takes some action related to the close button being clicked. */
-    public void onCloseButtonClicked();
+    void onCloseButtonClicked();
 
     /**
      * Performs some action related to either the primary or secondary button being pressed.
+     *
      * @param isPrimaryButton True if the primary button was clicked, false otherwise.
      */
-    public void onButtonClicked(boolean isPrimaryButton);
+    void onButtonClicked(boolean isPrimaryButton);
 }

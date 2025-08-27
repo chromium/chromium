@@ -109,14 +109,17 @@ public class ShareServiceImpl implements ShareService {
 
     /** Delegate class that provides embedder-specific functionality. */
     public interface WebShareDelegate {
-        /** @return true if sharing is currently possible. */
-        public boolean canShare();
+        /**
+         * @return true if sharing is currently possible.
+         */
+        boolean canShare();
 
         /**
          * Overridden by the embedder to execute the share.
+         *
          * @param params the share data.
          */
-        public void share(ShareParams params);
+        void share(ShareParams params);
 
         /**
          * @return The current {@link WindowAndroid} used to perform sharing.

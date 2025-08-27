@@ -84,20 +84,19 @@ public class IdentityMutator {
 
     @NativeMethods
     interface Natives {
-        public @PrimaryAccountError int setPrimaryAccount(
+        @PrimaryAccountError
+        int setPrimaryAccount(
                 long nativeJniIdentityMutator,
                 @JniType("CoreAccountId") CoreAccountId accountId,
                 @ConsentLevel int consentLevel,
                 @SigninAccessPoint int accessPoint,
                 Runnable prefsSavedCallback);
 
-        public boolean clearPrimaryAccount(
-                long nativeJniIdentityMutator, @SignoutReason int sourceMetric);
+        boolean clearPrimaryAccount(long nativeJniIdentityMutator, @SignoutReason int sourceMetric);
 
-        public void revokeSyncConsent(
-                long nativeJniIdentityMutator, @SignoutReason int sourceMetric);
+        void revokeSyncConsent(long nativeJniIdentityMutator, @SignoutReason int sourceMetric);
 
-        public void seedAccountsThenReloadAllAccountsWithPrimaryAccount(
+        void seedAccountsThenReloadAllAccountsWithPrimaryAccount(
                 long nativeJniIdentityMutator,
                 AccountInfo[] accounts,
                 @Nullable CoreAccountId primaryAccountId);

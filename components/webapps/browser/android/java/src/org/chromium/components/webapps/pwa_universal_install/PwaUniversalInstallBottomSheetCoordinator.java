@@ -334,7 +334,6 @@ public class PwaUniversalInstallBottomSheetCoordinator {
 
     @NativeMethods
     interface Natives {
-        public void fetchAppData(
-                PwaUniversalInstallBottomSheetCoordinator self, WebContents webContents);
+        void fetchAppData(PwaUniversalInstallBottomSheetCoordinator self, WebContents webContents);
     }
 }
