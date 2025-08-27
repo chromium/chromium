@@ -32,6 +32,15 @@ class AutofillWebDataService;
 class ValuableSyncBridge : public base::SupportsUserData::Data,
                            public syncer::DataTypeSyncBridge {
  public:
+  // Result of a database operation in the `ValuableSyncBridge`.
+  enum class ValuableDatabaseOperationResult {
+    // The operation was successful and the database was changed.
+    kDataChanged,
+    // The operation was successful, but no changes were necessary.
+    kNoChange,
+    // An error occurred during the operation.
+    kDatabaseError,
+  };
   ValuableSyncBridge(
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
       AutofillWebDataBackend* backend);
@@ -74,6 +83,14 @@ class ValuableSyncBridge : public base::SupportsUserData::Data,
   // Synchronously load sync metadata from the `ValuablesTable` and pass it to
   // the processor.
   void LoadMetadata();
+
+  // Sets `loyalty_cards` in the database.
+  ValuableDatabaseOperationResult SetLoyaltyCards(
+      std::vector<LoyaltyCard> loyalty_cards);
+
+  // Sets `entities` in the database.
+  ValuableDatabaseOperationResult SetEntities(
+      std::vector<EntityInstance> entities);
 
   // Sets the Wallet data from `entity_data` to this client and records metrics
   // about added/deleted data. Returns a ModelError if any errors occured.
