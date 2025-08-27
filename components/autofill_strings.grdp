@@ -765,8 +765,8 @@
   <message name="IDS_AUTOFILL_AI_VEHICLE_ENTITY_NAME" desc="The label for something that a user can save when submitting a form. For context, a user has been able to save credit cards within Chrome for many users. Now a user can also save a “Vehicle”.">
     Vehicle
   </message>
-  <message name="IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_ENTITY_NAME" desc="The label for something that a user can save when submitting a form. For context, a user has been able to save credit cards within Chrome for many users. Now a user can also save a “Known Traveler Number”. This field is designed for known traveler numbers issued by the United States only. For more info, see https://www.tsa.gov/travel/frequently-asked-questions/what-known-traveler-number-ktn.">
-    Known traveler number
+  <message name="IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_ENTITY_NAME" desc="The label for something that a user can save when submitting a form. For context, a user has been able to save credit cards within Chrome for many users. Now a user can also save a “Known Traveler Number”. This field is designed for Known Traveler Numbers issued by the United States only. For more info, see https://www.tsa.gov/travel/frequently-asked-questions/what-known-traveler-number-ktn.">
+    Known Traveler Number
   </message>
   <message name="IDS_AUTOFILL_AI_REDRESS_NUMBER_ENTITY_NAME" desc="The label for something that a user can save when submitting a form. For context, a user has been able to save credit cards within Chrome for many users. Now a user can also save a “Redress number”. This field is designed for redress numbers issued by the United States only. For more info, see https://www.dhs.gov/dhs-trip.">
     Redress number
@@ -785,8 +785,8 @@
   <message name="IDS_AUTOFILL_AI_ADD_VEHICLE_ENTITY" desc="A title of a dialog within Chrome settings that allows a user to explicitly create a vehicle. Beneath the title is a form. Instead of the autofill service prompting the user to save values at the moment they submit a form, the user can explicitly add data to the autofill service with this interface. This is similar to adding a Credit card to Chrome.">
     Add vehicle
   </message>
-  <message name="IDS_AUTOFILL_AI_ADD_KNOWN_TRAVELER_NUMBER_ENTITY" desc="A title of a dialog within settings that allows a user to explicitly create a nown Traveler Number. Beneath the title is a form. Instead of the autofill service prompting the user to save values at the moment they submit a form, the user can explicitly add data to the autofill service with this interface. This is similar to adding a Credit card to Chrome. This is designed for known traveler numbers issued by the United States only. For more info, see https://www.tsa.gov/travel/frequently-asked-questions/what-known-traveler-number-ktn.">
-    Add known traveler number
+  <message name="IDS_AUTOFILL_AI_ADD_KNOWN_TRAVELER_NUMBER_ENTITY" desc="A title of a dialog within settings that allows a user to explicitly create a nown Traveler Number. Beneath the title is a form. Instead of the autofill service prompting the user to save values at the moment they submit a form, the user can explicitly add data to the autofill service with this interface. This is similar to adding a Credit card to Chrome. This is designed for Known Traveler Numbers issued by the United States only. For more info, see https://www.tsa.gov/travel/frequently-asked-questions/what-known-traveler-number-ktn.">
+    Add Known Traveler Number
   </message>
   <message name="IDS_AUTOFILL_AI_ADD_REDRESS_NUMBER_ENTITY" desc="A title of a dialog within settings that allows a user to explicitly create a redress number. Beneath the title is a form. Instead of the autofill service prompting the user to save values at the moment they submit a form, the user can explicitly add data to the autofill service with this interface. This is similar to adding a Credit card to Chrome. Now a user can also save a “Redress number”. This is designed for redress numbers issued by the United States only. For more info, see https://www.dhs.gov/dhs-trip.">
     Add redress number
@@ -805,8 +805,8 @@
   <message name="IDS_AUTOFILL_AI_EDIT_VEHICLE_ENTITY" desc="The title of a dialog box that allows the user to edit their information.">
     Edit vehicle
   </message>
-  <message name="IDS_AUTOFILL_AI_EDIT_KNOWN_TRAVELER_NUMBER_ENTITY" desc="The title of a dialog box that allows the user to edit their information. This is designed for known traveler numbers issued by the United States only. For more info, see https://www.tsa.gov/travel/frequently-asked-questions/what-known-traveler-number-ktn.">
-    Edit known traveler number
+  <message name="IDS_AUTOFILL_AI_EDIT_KNOWN_TRAVELER_NUMBER_ENTITY" desc="The title of a dialog box that allows the user to edit their information. This is designed for Known Traveler Numbers issued by the United States only. For more info, see https://www.tsa.gov/travel/frequently-asked-questions/what-known-traveler-number-ktn.">
+    Edit Known Traveler Number
   </message>
   <message name="IDS_AUTOFILL_AI_EDIT_REDRESS_NUMBER_ENTITY" desc="The title of a dialog box that allows the user to edit their information. Now a user can also save a “Redress number”. This is designed for redress numbers issued by the United States only. For more info, see https://www.dhs.gov/dhs-trip.">
     Edit redress number
@@ -825,8 +825,8 @@
   <message name="IDS_AUTOFILL_AI_DELETE_VEHICLE_ENTITY" desc="A title of a dialog within settings that allows a user to delete a vehicle. The user opened this dialog by choosing 'Delete' from the more options menu.">
     Delete vehicle
   </message>
-  <message name="IDS_AUTOFILL_AI_DELETE_KNOWN_TRAVELER_NUMBER_ENTITY" desc="A title of a dialog within settings that allows a user to delete a known traveler number. The user opened this dialog by choosing 'Delete' from the more options menu. This is designed for known traveler numbers issued by the United States only. For more info, see https://www.tsa.gov/travel/frequently-asked-questions/what-known-traveler-number-ktn.">
-    Delete known traveler number
+  <message name="IDS_AUTOFILL_AI_DELETE_KNOWN_TRAVELER_NUMBER_ENTITY" desc="A title of a dialog within settings that allows a user to delete a Known Traveler Number. The user opened this dialog by choosing 'Delete' from the more options menu. This is designed for Known Traveler Numbers issued by the United States only. For more info, see https://www.tsa.gov/travel/frequently-asked-questions/what-known-traveler-number-ktn.">
+    Delete Known Traveler Number
   </message>
   <message name="IDS_AUTOFILL_AI_DELETE_REDRESS_NUMBER_ENTITY" desc="A title of a dialog within settings that allows a user to delete a redress number. The user opened this dialog by choosing 'Delete' from the more options menu.  Now a user can also save a “Redress number”. This is designed for redress numbers issued by the United States only. For more info, see https://www.dhs.gov/dhs-trip.">
     Delete redress number
@@ -866,14 +866,14 @@
     Issue date
   </message>
 
-  <!-- Attributes of the known traveler number entity -->
+  <!-- Attributes of the Known Traveler Number entity -->
   <message name="IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_NAME_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field  “First and last name” and Delta might label it “Full name”. Once the information is saved with enhanced autofill, we just call the value “Name”.">
     Name
   </message>
-  <message name="IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field “Traveler number” and Delta might label it “Known traveler number”. Once the information is saved with enhanced autofill, we just call the value “Number”.">
+  <message name="IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, United Airlines might label the field “Traveler number” and Delta might label it “Known Traveler Number”. Once the information is saved with enhanced autofill, we just call the value “Number”.">
     Number
   </message>
-  <message name="IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the known traveler number expiration date attribute.">
+  <message name="IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the Known Traveler Number expiration date attribute.">
     Expiration date
   </message>
 
@@ -922,7 +922,7 @@
     Plate state
   </message>
   <message name="IDS_AUTOFILL_AI_VEHICLE_VEHICLE_IDENTIFICATION_NUMBER_ATTRIBUTE_NAME" desc="A label that describes a piece of user data. This label loosely aligns with the original form the user submitted. For example, one website might label the field “Registration“ and another might label it “Vehicle Identification Number“. Once the information is saved with enhanced autofill, we just call the value “VIN (Vehicle Identification Number)“. Please use Glossary Manager or look up the official term for your country.">
-    VIN (vehicle identification number)
+    VIN (Vehicle Identification Number)
   </message>
 
   <!-- Manage suggestion -->
@@ -977,8 +977,8 @@
   <message name="IDS_AUTOFILL_AI_SAVE_VEHICLE_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to save information they just filled in on a form. For example, the user has filled in details related to their car. When they click Submit, we offer to save the data in Chrome. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data saved at this moment. This is a similar moment to saving a password or credit card with Chrome.">
     Save vehicle?
   </message>
-  <message name="IDS_AUTOFILL_AI_SAVE_KNOWN_TRAVELER_NUMBER_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to save information they just filled in on a form. For example, the user has filled in details related to their known traveler number. When they click Submit, we offer to save the data in Chrome. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data saved at this moment. This is a similar moment to saving a password or credit card with Chrome. This is designed for known traveler numbers issued by the United States only. For more info, see https://www.tsa.gov/travel/frequently-asked-questions/what-known-traveler-number-ktn.">
-    Save known traveler number?
+  <message name="IDS_AUTOFILL_AI_SAVE_KNOWN_TRAVELER_NUMBER_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to save information they just filled in on a form. For example, the user has filled in details related to their Known Traveler Number. When they click Submit, we offer to save the data in Chrome. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data saved at this moment. This is a similar moment to saving a password or credit card with Chrome. This is designed for Known Traveler Numbers issued by the United States only. For more info, see https://www.tsa.gov/travel/frequently-asked-questions/what-known-traveler-number-ktn.">
+    Save Known Traveler Number?
   </message>
   <message name="IDS_AUTOFILL_AI_SAVE_REDRESS_NUMBER_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to save information they just filled in on a form. For example, the user is booking a flight and is prompted to add their redress number. This field is designed for redress numbers issued by the United States only. When they click Submit, we offer to save the data in Chrome. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data saved at this moment. This is a similar moment to saving a password or credit card with Chrome.  This is similar to adding a Credit card to Chrome. Now a user can also save a “Redress number”. This is designed for redress numbers issued by the United States only. For more info, see https://www.dhs.gov/dhs-trip.">
     Save redress number?
@@ -996,8 +996,8 @@
   <message name="IDS_AUTOFILL_AI_UPDATE_VEHICLE_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to update information associated with something they have previously saved. For example, the user previously saved information related to their car. Now, the user is filling out a new form either with additional details associated with the car or with different values than what was previously saved. The interface shows new or modified values at the top with blue dots to indicate they’re new. Existing information associated with the vehicle that isn’t changing appears at the bottom without blue dots. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data updated at this moment. This is a similar moment to updating a password or credit card with Chrome.">
     Update vehicle?
   </message>
-  <message name="IDS_AUTOFILL_AI_UPDATE_KNOWN_TRAVELER_NUMBER_ENTITY_DIALOG_TITLE"  desc="The title of a dialog that prompts the user to update information associated with something they have previously saved. For example, the user previously saved information related to their known traveler number. Now, the user is filling out a new form either with additional details associated with the known traveler number or with different values than what was previously saved. The interface shows new or modified values at the top with blue dots to indicate they’re new. Existing information associated with the vehicle that isn’t changing appears at the bottom without blue dots. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data updated at this moment. This is a similar moment to updating a password or credit card with Chrome. This is designed for known traveler numbers issued by the United States only. For more info, see https://www.tsa.gov/travel/frequently-asked-questions/what-known-traveler-number-ktn.">
-    Update known traveler number?
+  <message name="IDS_AUTOFILL_AI_UPDATE_KNOWN_TRAVELER_NUMBER_ENTITY_DIALOG_TITLE"  desc="The title of a dialog that prompts the user to update information associated with something they have previously saved. For example, the user previously saved information related to their Known Traveler Number. Now, the user is filling out a new form either with additional details associated with the Known Traveler Number or with different values than what was previously saved. The interface shows new or modified values at the top with blue dots to indicate they’re new. Existing information associated with the vehicle that isn’t changing appears at the bottom without blue dots. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data updated at this moment. This is a similar moment to updating a password or credit card with Chrome. This is designed for Known Traveler Numbers issued by the United States only. For more info, see https://www.tsa.gov/travel/frequently-asked-questions/what-known-traveler-number-ktn.">
+    Update Known Traveler Number?
   </message>
   <message name="IDS_AUTOFILL_AI_UPDATE_REDRESS_NUMBER_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to update information associated with something they have previously saved. For example, the user previously saved information related to their known redress number. Now, the user is filling out a new form either with additional details associated with the redress number or with different values than what was previously saved. The interface shows new or modified values at the top with blue dots to indicate they’re new. Existing information associated with the redress number that isn’t changing appears at the bottom without blue dots. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data updated at this moment. This is a similar moment to updating a password or credit card with Chrome. Now a user can also save a “Redress number”. This is designed for redress numbers issued by the United States only. For more info, see https://www.dhs.gov/dhs-trip.">
     Update redress number?
