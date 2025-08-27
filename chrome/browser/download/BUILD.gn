@@ -12,6 +12,7 @@ source_set("download") {
     "download_ui_model.h",
   ]
   public_deps = [
+    ":status_text_builder_utils",
     "//base",
     "//components/download/public/common:public",
     "//components/offline_items_collection/core",
@@ -28,4 +29,16 @@ source_set("download") {
   if (!is_android) {
     sources += [ "download_commands.h" ]
   }
+}
+
+source_set("status_text_builder_utils") {
+  public = [ "status_text_builder_utils.h" ]
+
+  sources = [ "status_text_builder_utils.cc" ]
+
+  public_deps = [
+    "//base",
+    "//chrome/app:generated_resources",
+    "//ui/base",
+  ]
 }
