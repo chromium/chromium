@@ -99,6 +99,9 @@ class ProcessorEntityTracker {
   // Returns all entities including tombstones.
   std::vector<const ProcessorEntity*> GetAllEntitiesIncludingTombstones() const;
 
+  // Returns all storage keys.
+  std::vector<std::string> GetAllStorageKeys() const;
+
   // Returns all entities with local changes.
   // TODO(rushans): make it const, at this moment returned entities must be
   // initialized to commit.

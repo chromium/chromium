@@ -235,6 +235,15 @@ ProcessorEntityTracker::GetAllEntitiesIncludingTombstones() const {
   return entities;
 }
 
+std::vector<std::string> ProcessorEntityTracker::GetAllStorageKeys() const {
+  std::vector<std::string> storage_keys;
+  storage_keys.reserve(storage_key_to_tag_hash_.size());
+  for (const auto& [storage_key, client_tag_hash] : storage_key_to_tag_hash_) {
+    storage_keys.push_back(storage_key);
+  }
+  return storage_keys;
+}
+
 std::vector<ProcessorEntity*>
 ProcessorEntityTracker::GetEntitiesWithLocalChanges(size_t max_entries) {
   std::vector<ProcessorEntity*> entities;

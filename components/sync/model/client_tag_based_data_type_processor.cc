@@ -671,14 +671,10 @@ void ClientTagBasedDataTypeProcessor::UntrackEntityForClientTagHash(
 
 std::vector<std::string>
 ClientTagBasedDataTypeProcessor::GetAllTrackedStorageKeys() const {
-  std::vector<std::string> storage_keys;
   if (entity_tracker_) {
-    for (const ProcessorEntity* entity :
-         entity_tracker_->GetAllEntitiesIncludingTombstones()) {
-      storage_keys.push_back(entity->storage_key());
-    }
+    return entity_tracker_->GetAllStorageKeys();
   }
-  return storage_keys;
+  return {};
 }
 
 bool ClientTagBasedDataTypeProcessor::IsEntityUnsynced(
