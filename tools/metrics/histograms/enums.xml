@@ -9044,6 +9044,7 @@ from previous Chrome versions.
   <int value="-1876955850" label="EnablePciguardUi:enabled"/>
   <int value="-1876881908"
       label="disable-infobar-for-protected-media-identifier"/>
+  <int value="-1876715520" label="ShowTabGroupsMacSystemMenu:enabled"/>
   <int value="-1875836063" label="UserNotes:disabled"/>
   <int value="-1875383510" label="UseGoogleLocalNtp:disabled"/>
   <int value="-1875168316" label="UseMonitorColorSpace:disabled"/>
@@ -10277,6 +10278,7 @@ from previous Chrome versions.
   <int value="-1435804236" label="ThrottleIntersectionObserverUMA:enabled"/>
   <int value="-1435599609" label="TopControlsRefactor:enabled"/>
   <int value="-1434795339" label="SunfishFeature:disabled"/>
+  <int value="-1433937874" label="TabGroupMenuMoreEntryPoints:enabled"/>
   <int value="-1433719718" label="enable-webrtc-stun-origin"/>
   <int value="-1433452630" label="AllowRemoteContextForNotifications:enabled"/>
   <int value="-1433156012" label="AppListDragAndDropRefactor:disabled"/>
@@ -11110,6 +11112,7 @@ from previous Chrome versions.
   <int value="-1137442543" label="enable-slimming-paint"/>
   <int value="-1136627751" label="ignore-autocomplete-off-autofill"/>
   <int value="-1136509631" label="ssl-interstitial-v1"/>
+  <int value="-1136043915" label="ShowTabGroupsMacSystemMenu:disabled"/>
   <int value="-1135637622" label="DisplayEdgeToEdgeFullscreen:disabled"/>
   <int value="-1135200357" label="ViewTransitionOnNavigation:disabled"/>
   <int value="-1134420065" label="CriticalPersistedTabData:disabled"/>
@@ -12262,6 +12265,7 @@ from previous Chrome versions.
   <int value="-713136799" label="NearbySharingOnePageOnboarding:disabled"/>
   <int value="-713104676"
       label="DisablePeripheralDataAccessProtection:enabled"/>
+  <int value="-712886163" label="TabGroupMenuMoreEntryPoints:disabled"/>
   <int value="-712797285" label="WebAppPredictableAppUpdating:enabled"/>
   <int value="-712499441"
       label="PriceTrackingSubscriptionServiceProductVersion:enabled"/>
@@ -16512,6 +16516,7 @@ from previous Chrome versions.
   <int value="831988687" label="PrivacySandboxEqualizedPromptButtons:disabled"/>
   <int value="832142463" label="WebAssemblyStreaming:enabled"/>
   <int value="832711367" label="RequestDesktopSiteForTablets:enabled"/>
+  <int value="833478893" label="TabGroupMenuImprovements:disabled"/>
   <int value="834033186" label="enable-data-reduction-proxy-dev"/>
   <int value="834326277" label="enable-answers-in-suggest"/>
   <int value="835018878" label="disable-quic"/>
@@ -18721,6 +18726,7 @@ from previous Chrome versions.
   <int value="1631147591" label="PerformanceInterventionUI:enabled"/>
   <int value="1632112977" label="ash-disable-tablet-autohide-titlebars"/>
   <int value="1632176267" label="PDFViewerUpdate:enabled"/>
+  <int value="1632710463" label="TabGroupMenuImprovements:enabled"/>
   <int value="1632737896" label="AccessibilityFilterKeys:disabled"/>
   <int value="1633120342" label="VisitedURLRankingDeduplication:enabled"/>
   <int value="1633456034" label="chrome-home-swipe-logic"/>

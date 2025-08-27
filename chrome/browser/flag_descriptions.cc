@@ -4074,6 +4074,20 @@ const char kTabGroupShorcutsDescription[] =
     "Adds a few keyboard shortcuts for some tab group interactions.";
 
 #if !BUILDFLAG(IS_ANDROID)
+const char kTabGroupMenuImprovementsName[] =
+    "Add context menu when left-clicking a tab group";
+const char kTabGroupMenuImprovementsDescription[] =
+    "When clicking a tab group in the bookmarks bar, the left click will be"
+    "given a context menu, similar to the one that appears when right clicking "
+    "the tab group.";
+
+const char kTabGroupMenuMoreEntryPointsName[] =
+    "Make options menus to include more tab group actions";
+const char kTabGroupMenuMoreEntryPointsDescription[] =
+    "Add options to menus to facilitate tab group creation and interaction";
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID)
 const char kTabSearchPositionSettingId[] = "tab-search-position-setting";
 const char kTabSearchPositionSettingName[] = "Tab Search Position Setting";
 const char kTabSearchPositionSettingDescription[] =
@@ -4561,6 +4575,14 @@ const char kVulkanFromAngleDescription[] =
 const char kSharedHighlightingManagerName[] = "Refactoring Shared Highlighting";
 const char kSharedHighlightingManagerDescription[] =
     "Refactors Shared Highlighting by centralizing the IPC calls in a Manager.";
+
+#if BUILDFLAG(IS_MAC)
+const char kShowTabGroupsMacSystemMenuName[] =
+    "Show tab group colours of tabs in Mac top bar menu";
+const char kShowTabGroupsMacSystemMenuDescription[] =
+    "Show tab group colours of tabs that are in tab groups in the 'tabs' and"
+    "'windows' menu' of the Mac OS menu bar";
+#endif  // BUILDFLAG(IS_MAC)
 
 const char kUsePassthroughCommandDecoderName[] =
     "Use passthrough command decoder";

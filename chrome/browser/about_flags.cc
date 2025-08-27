@@ -13183,6 +13183,25 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(device::features::kWebSerialWiredDevicesAndroid)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"tab-group-menu-improvements",
+     flag_descriptions::kTabGroupMenuImprovementsName,
+     flag_descriptions::kTabGroupMenuImprovementsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kTabGroupMenuImprovements)},
+
+    {"tab-group-more-entry-points",
+     flag_descriptions::kTabGroupMenuMoreEntryPointsName,
+     flag_descriptions::kTabGroupMenuMoreEntryPointsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kTabGroupMenuMoreEntryPoints)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_MAC)
+    {"show-tab-groups-mac-system-menu",
+     flag_descriptions::kShowTabGroupsMacSystemMenuName,
+     flag_descriptions::kShowTabGroupsMacSystemMenuDescription, kOsMac,
+     FEATURE_VALUE_TYPE(features::kShowTabGroupsMacSystemMenu)},
+#endif  // BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(IS_ANDROID)
     {"autofill-update-context-for-web-contents",
      flag_descriptions::kAndroidAutofillUpdateContextForWebContentsName,

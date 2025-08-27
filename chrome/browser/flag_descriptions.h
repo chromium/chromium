@@ -2332,6 +2332,14 @@ extern const char kTabGroupShorcutsName[];
 extern const char kTabGroupShorcutsDescription[];
 
 #if !BUILDFLAG(IS_ANDROID)
+extern const char kTabGroupMenuImprovementsName[];
+extern const char kTabGroupMenuImprovementsDescription[];
+
+extern const char kTabGroupMenuMoreEntryPointsName[];
+extern const char kTabGroupMenuMoreEntryPointsDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID)
 extern const char kTabSearchPositionSettingId[];
 extern const char kTabSearchPositionSettingName[];
 extern const char kTabSearchPositionSettingDescription[];
@@ -2648,6 +2656,11 @@ extern const char kVulkanFromAngleDescription[];
 
 extern const char kSharedHighlightingManagerName[];
 extern const char kSharedHighlightingManagerDescription[];
+
+#if BUILDFLAG(IS_MAC)
+extern const char kShowTabGroupsMacSystemMenuName[];
+extern const char kShowTabGroupsMacSystemMenuDescription[];
+#endif  // BUILDFLAG(IS_MAC)
 
 extern const char kUsePassthroughCommandDecoderName[];
 extern const char kUsePassthroughCommandDecoderDescription[];

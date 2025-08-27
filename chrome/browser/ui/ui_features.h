@@ -202,6 +202,13 @@ BASE_DECLARE_FEATURE(kSidePanelSearchCompanion);
 
 BASE_DECLARE_FEATURE(kTabGroupsCollapseFreezing);
 
+#if !BUILDFLAG(IS_ANDROID)
+// General improvements to tab group menus
+BASE_DECLARE_FEATURE(kTabGroupMenuImprovements);
+BASE_DECLARE_FEATURE(kTabGroupMenuMoreEntryPoints);
+
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 BASE_DECLARE_FEATURE(kTabHoverCardImages);
 
 // These parameters control how long the hover card system waits before
@@ -366,6 +373,11 @@ BASE_DECLARE_FEATURE_PARAM(bool, kPageActionsMigrationClickToCall);
 // Determines whether the "save password" page action displays different UI if
 // the user has said to never save passwords for that site.
 BASE_DECLARE_FEATURE(kSavePasswordsContextualUi);
+
+#if BUILDFLAG(IS_MAC)
+// Add tab group colours when viewing tab groups using the top mac OS menu bar.
+BASE_DECLARE_FEATURE(kShowTabGroupsMacSystemMenu);
+#endif  // BUILDFLAG(IS_MAC)
 
 // Controls whether browser tab loading animations are driven by the compositor
 // vs. a repeating timer.

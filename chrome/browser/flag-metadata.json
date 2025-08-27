@@ -9217,6 +9217,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "show-tab-groups-mac-system-menu",
+    "owners": ["top-chrome-desktop-ui@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "show-tab-list-animations",
     "owners": [ "dregalo@google.com", "gurmeetk@google.com", "desiatyrikov@google.com" ],
     "expiry_milestone": 150
@@ -9548,6 +9553,16 @@
     "name": "tab-group-home",
     "owners": [ "chrome-shopping-eng@google.com" ],
     "expiry_milestone": 146
+  },
+  {
+    "name": "tab-group-menu-improvements",
+    "owners": [ "top-chrome-desktop-ui@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
+    "name": "tab-group-more-entry-points",
+    "owners": ["top-chrome-desktop-ui@google.com"],
+    "expiry_milestone": 150
   },
   {
     "name": "tab-group-parity-bottom-sheet-android",
