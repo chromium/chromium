@@ -150,6 +150,7 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
   config.require_low_delay =
       opts.latency_mode == VideoEncoder::LatencyMode::Realtime;
   config.required_encoder_type = required_encoder_type;
+  config.manual_reference_buffer_control = opts.manual_reference_buffer_control;
 
   return config;
 }

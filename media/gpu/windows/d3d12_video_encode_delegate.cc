@@ -195,12 +195,16 @@ EncoderStatus D3D12VideoEncodeDelegate::Initialize(
 
   output_profile_ = config.output_profile;
 
-  svc_layers_.emplace(
-      SVCLayers::Config({config.input_visible_size}, 0, 1,
-                        config.spatial_layers.empty()
-                            ? 1
-                            : config.spatial_layers[0].num_of_temporal_layers,
-                        SVCInterLayerPredMode::kOff));
+  if (!config.manual_reference_buffer_control) {
+    svc_layers_.emplace(
+        SVCLayers::Config({config.input_visible_size}, 0, 1,
+                          config.spatial_layers.empty()
+                              ? 1
+                              : config.spatial_layers[0].num_of_temporal_layers,
+                          SVCInterLayerPredMode::kOff));
+  } else {
+    svc_layers_.reset();
+  }
 
   input_size_.Width = config.input_visible_size.width();
   input_size_.Height = config.input_visible_size.height();

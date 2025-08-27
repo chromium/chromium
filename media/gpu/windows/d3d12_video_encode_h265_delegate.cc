@@ -196,7 +196,14 @@ size_t D3D12VideoEncodeH265Delegate::GetMaxNumOfRefFrames() const {
 size_t D3D12VideoEncodeH265Delegate::GetMaxNumOfManualRefBuffers() const {
   // We should have initialized.
   CHECK_GT(max_num_ref_frames_, 0u);
-  return max_num_ref_frames_;
+
+  // TODO(https://crbug.com/440117473): remove the limitation of 2.
+  // Some IHV driver reports MaxDPBCapacity as 16 regardless of current level
+  // used. Decoder will check the `vps|sps_max_dec_pic_buffering_minus1` value
+  // against level constraint, which for level 4.1-, is much smaller than 15
+  // but always >= 6. We further reduce this to <= 2 to simplify reference
+  // management and reordering.
+  return std::min(max_num_ref_frames_, 2u);
 }
 
 bool D3D12VideoEncodeH265Delegate::SupportsRateControlReconfiguration() const {
@@ -330,6 +337,9 @@ EncoderStatus D3D12VideoEncodeH265Delegate::EncodeImpl(
 
   if (is_keyframe) {
     H265VPS vps = ToVPS();
+    vps.vps_max_dec_pic_buffering_minus1[0] =
+        svc_layers_ ? max_num_ref_frames_ - 1
+                    : GetMaxNumOfManualRefBuffers() - 1;
     H265SPS sps = ToSPS(vps);
     // Values specified here equals to that in T-REC H.273 Table 3.
     if (IsRec601(input_color_space)) {

@@ -87,6 +87,8 @@ class MockVideoEncoderDelegateFactory
         .WillByDefault(Return(EncoderStatus::Codes::kOk));
     ON_CALL(*encoder_delegate, GetMaxNumOfRefFrames())
         .WillByDefault(Return(16));
+    ON_CALL(*encoder_delegate, GetMaxNumOfManualRefBuffers())
+        .WillByDefault(Return(0));
     ON_CALL(*encoder_delegate, Encode(_, _, _, _, _))
         .WillByDefault([](Microsoft::WRL::ComPtr<ID3D12Resource>, UINT,
                           const gfx::ColorSpace&,
@@ -445,6 +447,28 @@ TEST_F(D3D12VideoEncodeAcceleratorTest, SharedHandleCaching) {
   }
   WaitForEncoderTasksToComplete();
   EXPECT_EQ(GetSharedHandleCacheSizeForTesting(), 3u);
+}
+
+TEST_F(D3D12VideoEncodeAcceleratorTest,
+       InitializationFailForManualReferenceIfNotSupported) {
+  auto* d3d12_video_encode_accelerator =
+      static_cast<D3D12VideoEncodeAccelerator*>(
+          video_encode_accelerator_.get());
+  auto supported_profiles =
+      d3d12_video_encode_accelerator->GetSupportedProfiles();
+  EXPECT_FALSE(supported_profiles.empty());
+  auto profile = supported_profiles.front();
+  auto config = SupportedProfileToConfig(profile);
+  config.manual_reference_buffer_control = true;
+
+  // Initialization should return success, but later notified of failure.
+  EXPECT_TRUE(d3d12_video_encode_accelerator
+                  ->Initialize(config, client_.get(), media_log_->Clone())
+                  .is_ok());
+  EXPECT_CALL(*client_, NotifyEncoderInfoChange).Times(0);
+  EXPECT_CALL(*client_, NotifyErrorStatus(_));
+  WaitForEncoderTasksToComplete();
+  Mock::VerifyAndClearExpectations(&client_);
 }
 
 }  // namespace media

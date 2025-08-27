@@ -519,6 +519,14 @@ void D3D12VideoEncodeAccelerator::InitializeTask(const Config& config) {
     return NotifyError(status);
   }
 
+  size_t num_of_manual_reference_buffers =
+      encoder_->GetMaxNumOfManualRefBuffers();
+  if (config.manual_reference_buffer_control &&
+      num_of_manual_reference_buffers < 1) {
+    return NotifyError({EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                        "At least one manual reference buffer required."});
+  }
+
   num_frames_in_flight_ =
       kMinNumFramesInFlight + encoder_->GetMaxNumOfRefFrames();
 
@@ -534,7 +542,7 @@ void D3D12VideoEncodeAccelerator::InitializeTask(const Config& config) {
   encoder_info_.requested_resolution_alignment = 2;
   encoder_info_.apply_alignment_to_all_simulcast_layers = true;
   encoder_info_.number_of_manual_reference_buffers =
-      encoder_->GetMaxNumOfManualRefBuffers();
+      num_of_manual_reference_buffers;
 
   child_task_runner_->PostTask(
       FROM_HERE,

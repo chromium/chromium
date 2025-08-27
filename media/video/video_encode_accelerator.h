@@ -351,6 +351,11 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
     // Indicates what type of encoder is required. Useful when OS software
     // encoders may be present and/or superior to built-in encoders.
     EncoderType required_encoder_type = EncoderType::kHardware;
+
+    // When set to true, indicates that the frame reference structure is
+    // specified per frame by application, and ignores config item specified by
+    // `spatial_layers` and `inter_layer_pred`.
+    bool manual_reference_buffer_control = false;
   };
 
   // Interface for clients that use VideoEncodeAccelerator. These callbacks will

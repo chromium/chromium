@@ -469,4 +469,45 @@ TEST_F(D3D12VideoEncodeH264DelegateTest,
   }
 }
 
+TEST_F(D3D12VideoEncodeH264DelegateTest, EncodeWithManualReferenceControl) {
+  VideoEncodeAccelerator::Config config = GetDefaultH264Config();
+  config.manual_reference_buffer_control = true;
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  auto input_frame =
+      CreateResource(config.input_visible_size, config.input_format);
+  constexpr size_t kBufferSize = 1024;
+  constexpr size_t kStreamSize = 512;
+  auto shared_memory = base::UnsafeSharedMemoryRegion::Create(kBufferSize);
+  BitstreamBuffer bitstream_buffer(0, shared_memory.Duplicate(), kBufferSize);
+
+  EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncoderOutputMetadata)
+      .WillRepeatedly(
+          [&] { return GetEncoderOutputMetadataResourceMap(kStreamSize); });
+
+  // Pass reference_buffers and update_buffer in EncodeOptions for emulation of
+  // L1T2 encoding of 3 frames.
+  VideoEncoder::EncodeOptions encode_opts;
+  encode_opts.reference_buffers = {};
+  encode_opts.update_buffer = 0;
+  auto result_or_error =
+      encoder_delegate_->Encode(input_frame, 0, gfx::ColorSpace::CreateSRGB(),
+                                bitstream_buffer, encode_opts);
+  ASSERT_TRUE(result_or_error.has_value());
+
+  encode_opts.reference_buffers = {0};
+  encode_opts.update_buffer = std::nullopt;
+  result_or_error =
+      encoder_delegate_->Encode(input_frame, 0, gfx::ColorSpace::CreateSRGB(),
+                                bitstream_buffer, encode_opts);
+  ASSERT_TRUE(result_or_error.has_value());
+
+  encode_opts.reference_buffers = {0};
+  encode_opts.update_buffer = 0;
+  result_or_error =
+      encoder_delegate_->Encode(input_frame, 0, gfx::ColorSpace::CreateSRGB(),
+                                bitstream_buffer, encode_opts);
+  ASSERT_TRUE(result_or_error.has_value());
+}
+
 }  // namespace media

@@ -1275,7 +1275,12 @@ void VideoEncoder::ProcessConfigure(Request* request) {
   // getAllFrameBuffers() async and can asynchronously get the number of
   // encoder buffers.
   if (active_config_->options.manual_reference_buffer_control &&
-      active_config_->codec == media::VideoCodec::kAV1) {
+      (active_config_->codec == media::VideoCodec::kAV1 ||
+       active_config_->codec == media::VideoCodec::kH264
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+       || active_config_->codec == media::VideoCodec::kHEVC
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+       )) {
     frame_reference_buffers_.clear();
     for (size_t i = 0; i < 3; ++i) {
       auto* buffer = MakeGarbageCollected<VideoEncoderBuffer>(this, i);

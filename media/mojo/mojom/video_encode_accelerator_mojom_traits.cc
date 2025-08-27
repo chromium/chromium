@@ -183,7 +183,12 @@ bool StructTraits<media::mojom::VideoEncodeOptionsDataView,
   if (quantizer < 0) {
     out_options->quantizer.reset();
   } else {
-    out_options->quantizer = data.quantizer();
+    out_options->quantizer = quantizer;
+  }
+
+  out_options->update_buffer = data.update_buffer();
+  if (!data.ReadReferenceBuffers(&out_options->reference_buffers)) {
+    return false;
   }
 
   return true;
@@ -532,6 +537,14 @@ bool StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
   if (!input.ReadRequiredEncoderType(&required_encoder_type))
     return false;
 
+  bool manual_reference_buffer_control =
+      input.manual_reference_buffer_control();
+  if (manual_reference_buffer_control &&
+      (!spatial_layers.empty() ||
+       inter_layer_pred == media::SVCInterLayerPredMode::kOn)) {
+    return false;
+  }
+
   struct CheckVEAConfig {
     // The variable declaration order must be the same as
     // VideoEncodeAccelerator::Config.
@@ -551,6 +564,7 @@ bool StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
     media::SVCInterLayerPredMode inter_layer_pred;
     bool require_low_delay;
     media::VideoEncodeAccelerator::Config::EncoderType required_encoder_type;
+    bool manual_reference_buffer_control;
   };
   static_assert(
       sizeof(CheckVEAConfig) == sizeof(media::VideoEncodeAccelerator::Config),
@@ -569,6 +583,7 @@ bool StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
   output->inter_layer_pred = inter_layer_pred;
   output->require_low_delay = input.require_low_delay();
   output->required_encoder_type = required_encoder_type;
+  output->manual_reference_buffer_control = manual_reference_buffer_control;
 
   return true;
 }
