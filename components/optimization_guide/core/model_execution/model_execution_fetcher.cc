@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_fetcher.h"
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/optimization_guide/core/access_token_helper.h"
@@ -290,6 +291,33 @@ void AppendHeadersIfNeeded(network::ResourceRequest& request) {
       kOptimizationGuideModelExecutionDebugLogsHeaderKey, "");
 }
 
+// Returns whether model executions for the `feature` require an access token.
+bool IsAccessTokenRequiredForFeature(ModelBasedCapabilityKey feature) {
+  switch (feature) {
+    case ModelBasedCapabilityKey::kCompose:
+    case ModelBasedCapabilityKey::kTabOrganization:
+    case ModelBasedCapabilityKey::kWallpaperSearch:
+    case ModelBasedCapabilityKey::kTest:
+    case ModelBasedCapabilityKey::kTextSafety:
+    case ModelBasedCapabilityKey::kPromptApi:
+    case ModelBasedCapabilityKey::kHistorySearch:
+    case ModelBasedCapabilityKey::kSummarize:
+    case ModelBasedCapabilityKey::kHistoryQueryIntent:
+    case ModelBasedCapabilityKey::kBlingPrototyping:
+    case ModelBasedCapabilityKey::kPasswordChangeSubmission:
+    case ModelBasedCapabilityKey::kScamDetection:
+    case ModelBasedCapabilityKey::kPermissionsAi:
+    case ModelBasedCapabilityKey::kProofreaderApi:
+    case ModelBasedCapabilityKey::kWritingAssistanceApi:
+    case ModelBasedCapabilityKey::kEnhancedCalendar:
+    case ModelBasedCapabilityKey::kZeroStateSuggestions:
+      return true;
+    case ModelBasedCapabilityKey::kFormsClassifications:
+      return !base::FeatureList::IsEnabled(
+          features::kOptimizationGuideBypassFormsClassificationAuth);
+  }
+}
+
 }  // namespace
 
 using ModelExecutionError =
@@ -349,18 +377,19 @@ void ModelExecutionFetcher::ExecuteModel(
   execute_request.SerializeToString(&serialized_request);
 
   HandleTokenRequestFlow(
-      /*require_token=*/true, identity_manager,
+      IsAccessTokenRequiredForFeature(feature), identity_manager,
       signin::OAuthConsumerId::kOptimizationGuideModelExecution,
       base::BindOnce(&ModelExecutionFetcher::OnAccessTokenReceived,
-                     weak_ptr_factory_.GetWeakPtr(), serialized_request,
-                     timeout));
+                     weak_ptr_factory_.GetWeakPtr(), feature,
+                     serialized_request, timeout));
 }
 
 void ModelExecutionFetcher::OnAccessTokenReceived(
+    ModelBasedCapabilityKey feature,
     const std::string& serialized_request,
     std::optional<base::TimeDelta> timeout,
     const std::string& access_token) {
-  if (access_token.empty()) {
+  if (IsAccessTokenRequiredForFeature(feature) && access_token.empty()) {
     RecordRequestStatusHistogram(*model_execution_feature_,
                                  FetcherRequestStatus::kUserNotSignedIn);
     std::move(model_execution_callback_)

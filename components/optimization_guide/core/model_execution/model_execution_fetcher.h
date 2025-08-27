@@ -58,7 +58,8 @@ class ModelExecutionFetcher {
  private:
   // Invoked when the access token is received, to continue with the model
   // execution request.
-  void OnAccessTokenReceived(const std::string& serialized_request,
+  void OnAccessTokenReceived(ModelBasedCapabilityKey feature,
+                             const std::string& serialized_request,
                              std::optional<base::TimeDelta> timeout,
                              const std::string& access_token);
 

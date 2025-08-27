@@ -80,6 +80,8 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kAnnotatedPageContentWithMediaData);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOptimizationGuideProactivePersonalizedHintsFetching);
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+BASE_DECLARE_FEATURE(kOptimizationGuideBypassFormsClassificationAuth);
 
 // Allows setting feature params for model download configuration, such as
 // minimum performance class for download.
