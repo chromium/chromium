@@ -1472,9 +1472,6 @@ Response NetworkHandler::Enable(
           "Durable messages cannot be enabled without a valid "
           "storage partition and devtools token");
     }
-    if (durable_message_collector_.is_bound()) {
-      return Response::InvalidParams("Durable messages already enabled");
-    }
     if (!max_total_size.has_value()) {
       return Response::InvalidParams(
           "maxTotalBufferSize is required with enableDurableMessages");
@@ -3393,9 +3390,12 @@ void NetworkHandler::ConfigureDurableMessageCollector(
   CHECK(devtools_token_);
   network::mojom::NetworkContext* context =
       storage_partition_->GetNetworkContext();
-  context->ConfigureDurableMessageCollector(
-      devtools_token_, std::move(config),
-      durable_message_collector_.BindNewPipeAndPassReceiver());
+  if (!durable_message_collector_.is_bound()) {
+    context->EnableDurableMessageCollector(
+        devtools_token_,
+        durable_message_collector_.BindNewPipeAndPassReceiver());
+  }
+  durable_message_collector_->Configure(std::move(config));
 }
 
 namespace {

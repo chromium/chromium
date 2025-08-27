@@ -4,8 +4,6 @@
 
 #include "services/network/devtools_durable_msg_collector.h"
 
-#include "services/network/devtools_durable_msg_collector_config.h"
-
 namespace network {
 
 DevtoolsDurableMessageCollector::DevtoolsDurableMessageCollector(
@@ -19,14 +17,17 @@ DevtoolsDurableMessageCollector::DevtoolsDurableMessageCollector(
 }
 
 DevtoolsDurableMessageCollector::~DevtoolsDurableMessageCollector() {
-  // Explicitly clear the map to avoid a destruction ordering bug.
+  // DevtoolsDurableMessage destructor calls back into this class via
+  // WillRemoveBytes(). Explicitly clear the map to avoid a destruction
+  // ordering bug.
   request_id_to_message_map_.clear();
 }
 
 void DevtoolsDurableMessageCollector::Configure(
-    const DevtoolsDurableMessageCollectorConfig& params) {
+    mojom::NetworkDurableMessageConfigPtr mojo_config) {
   max_buffer_size_ =
-      std::max(max_buffer_size_, static_cast<int64_t>(params.max_storage_size));
+      std::max(max_buffer_size_,
+               static_cast<int64_t>(mojo_config->http_storage_max_size));
 }
 
 void DevtoolsDurableMessageCollector::Retrieve(

@@ -8,7 +8,6 @@
 #include <queue>
 
 #include "base/containers/queue.h"
-#include "devtools_durable_msg_collector_config.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/devtools_durable_msg.h"
@@ -26,7 +25,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DevtoolsDurableMessageCollector
       base::OnceClosure profile_last_disconnect_handler);
   ~DevtoolsDurableMessageCollector() override;
 
-  void Configure(const DevtoolsDurableMessageCollectorConfig& config);
+  void Configure(mojom::NetworkDurableMessageConfigPtr config) override;
   void Retrieve(const std::string& devtools_request_id,
                 RetrieveCallback callback) override;
   void AddReceiver(

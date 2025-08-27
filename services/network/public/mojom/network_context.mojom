@@ -951,6 +951,9 @@ struct URLLoaderFactoryParams {
 
 // Represents a Durable Message Collector instance tied to a throttling profile.
 interface DurableMessageCollector {
+    // Configures the collector instance.
+    Configure(NetworkDurableMessageConfig config);
+
     // Retrieve a collected Durable Message for the given DevTools request ID,
     // if one is available.
     Retrieve(string devtools_request_id) =>
@@ -1295,10 +1298,9 @@ interface NetworkContext {
   SetNetworkConditions(mojo_base.mojom.UnguessableToken throttling_profile_id,
                        NetworkConditions? conditions);
 
-  // Configures network level storage of HTTP request/response bodies.
-  ConfigureDurableMessageCollector(
+  // Enables network level storage of HTTP request/response bodies.
+  EnableDurableMessageCollector(
         mojo_base.mojom.UnguessableToken throttling_profile_id,
-        NetworkDurableMessageConfig config,
         pending_receiver<DurableMessageCollector> receiver);
 
   // Updates the Accept-Language header to be used for requests.

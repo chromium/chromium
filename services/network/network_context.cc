@@ -109,7 +109,6 @@
 #include "services/network/data_remover_util.h"
 #include "services/network/device_bound_session_manager.h"
 #include "services/network/devtools_durable_msg_collector.h"
-#include "services/network/devtools_durable_msg_collector_config.h"
 #include "services/network/disk_cache/mojo_backend_file_operations_factory.h"
 #include "services/network/host_resolver.h"
 #include "services/network/http_auth_cache_copier.h"
@@ -1759,14 +1758,9 @@ void NetworkContext::OnDevToolsDurableMessageClientsDisconnected(
   devtools_profile_to_durable_message_collectors_.erase(throttling_profile_id);
 }
 
-void NetworkContext::ConfigureDurableMessageCollector(
+void NetworkContext::EnableDurableMessageCollector(
     const base::UnguessableToken& throttling_profile_id,
-    mojom::NetworkDurableMessageConfigPtr mojo_config,
     mojo::PendingReceiver<network::mojom::DurableMessageCollector> receiver) {
-  CHECK(mojo_config);
-  DevtoolsDurableMessageCollectorConfig config(
-      mojo_config->http_storage_max_size);
-
   auto [it, inserted] =
       devtools_profile_to_durable_message_collectors_.try_emplace(
           throttling_profile_id);
@@ -1778,7 +1772,6 @@ void NetworkContext::ConfigureDurableMessageCollector(
         std::move(disconnect_callback));
   }
 
-  it->second->Configure(config);
   it->second->AddReceiver(std::move(receiver));
 }
 

@@ -49,7 +49,6 @@ component("network_service") {
     "devtools_durable_msg_accounting_delegate.h",
     "devtools_durable_msg_collector.cc",
     "devtools_durable_msg_collector.h",
-    "devtools_durable_msg_collector_config.h",
     "disk_cache/mojo_backend_file_operations.cc",
     "disk_cache/mojo_backend_file_operations.h",
     "disk_cache/mojo_backend_file_operations_factory.cc",

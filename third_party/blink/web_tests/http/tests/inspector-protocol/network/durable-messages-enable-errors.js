@@ -10,10 +10,5 @@
     {maxTotalBufferSize: 115025, enableDurableMessages: true});
   testRunner.log(ret2);
 
-  // Durable messages cannot be enabled twice.
-  const ret3 = await dp.Network.enable(
-    {maxTotalBufferSize: 115025, enableDurableMessages: true});
-  testRunner.log(ret3);
-
   testRunner.completeTest();
 })

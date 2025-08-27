@@ -7,7 +7,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "services/network/devtools_durable_msg_collector_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -84,9 +83,8 @@ class DevtoolsDurableMessageCollectorTest : public testing::Test {
 
 TEST_F(DevtoolsDurableMessageCollectorTest, CollectsMessageChunksCorrectly) {
   DevtoolsDurableMessageCollector collector(base::DoNothing());
-  DevtoolsDurableMessageCollectorConfig durable_messages_config(
-      /*max_storage_size=*/1000);
-  collector.Configure(std::move(durable_messages_config));
+  collector.Configure(network::mojom::NetworkDurableMessageConfig::New(
+      /*max_storage_size=*/1000));
   mojo::Remote<mojom::DurableMessageCollector> collector_remote;
   collector.AddReceiver(collector_remote.BindNewPipeAndPassReceiver());
 
@@ -114,9 +112,8 @@ TEST_F(DevtoolsDurableMessageCollectorTest, CollectsMessageChunksCorrectly) {
 
 TEST_F(DevtoolsDurableMessageCollectorTest, DoesntCollectChunksBeyondLimit) {
   DevtoolsDurableMessageCollector collector(base::DoNothing());
-  DevtoolsDurableMessageCollectorConfig durable_messages_config(
-      /*max_storage_size=*/10);
-  collector.Configure(std::move(durable_messages_config));
+  collector.Configure(network::mojom::NetworkDurableMessageConfig::New(
+      /*max_storage_size=*/10));
   mojo::Remote<mojom::DurableMessageCollector> collector_remote;
   collector.AddReceiver(collector_remote.BindNewPipeAndPassReceiver());
 
@@ -140,9 +137,8 @@ TEST_F(DevtoolsDurableMessageCollectorTest, DoesntCollectChunksBeyondLimit) {
 
 TEST_F(DevtoolsDurableMessageCollectorTest, DoesntCollectMessageBeyondLimit) {
   DevtoolsDurableMessageCollector collector(base::DoNothing());
-  DevtoolsDurableMessageCollectorConfig durable_messages_config(
-      /*max_storage_size=*/10);
-  collector.Configure(std::move(durable_messages_config));
+  collector.Configure(network::mojom::NetworkDurableMessageConfig::New(
+      /*max_storage_size=*/10));
   mojo::Remote<mojom::DurableMessageCollector> collector_remote;
   collector.AddReceiver(collector_remote.BindNewPipeAndPassReceiver());
 
@@ -165,9 +161,8 @@ TEST_F(DevtoolsDurableMessageCollectorTest, CorrectlyEvictsInOrder) {
   DevtoolsDurableMessageCollector collector(base::BindRepeating(
       &DevtoolsDurableMessageCollectorTest::OnAllClientsDisconnectedCallback,
       base::Unretained(this)));
-  DevtoolsDurableMessageCollectorConfig durable_messages_config(
-      /*max_storage_size=*/10);
-  collector.Configure(std::move(durable_messages_config));
+  collector.Configure(network::mojom::NetworkDurableMessageConfig::New(
+      /*max_storage_size=*/10));
   mojo::Remote<mojom::DurableMessageCollector> collector_remote;
   collector.AddReceiver(collector_remote.BindNewPipeAndPassReceiver());
 
@@ -214,9 +209,8 @@ TEST_F(DevtoolsDurableMessageCollectorTest, CorrectlyEvictsInOrder) {
 TEST_F(DevtoolsDurableMessageCollectorTest,
        CorrectlyHandlesRequestIdOverwrite) {
   DevtoolsDurableMessageCollector collector(base::DoNothing());
-  DevtoolsDurableMessageCollectorConfig durable_messages_config(
-      /*max_storage_size=*/10);
-  collector.Configure(std::move(durable_messages_config));
+  collector.Configure(network::mojom::NetworkDurableMessageConfig::New(
+      /*max_storage_size=*/10));
   mojo::Remote<mojom::DurableMessageCollector> collector_remote;
   collector.AddReceiver(collector_remote.BindNewPipeAndPassReceiver());
 

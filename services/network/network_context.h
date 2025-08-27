@@ -326,9 +326,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void CloseIdleConnections(CloseIdleConnectionsCallback callback) override;
   void SetNetworkConditions(const base::UnguessableToken& throttling_profile_id,
                             mojom::NetworkConditionsPtr conditions) override;
-  void ConfigureDurableMessageCollector(
+  void EnableDurableMessageCollector(
       const base::UnguessableToken& throttling_profile_id,
-      mojom::NetworkDurableMessageConfigPtr config,
       mojo::PendingReceiver<network::mojom::DurableMessageCollector> receiver)
       override;
   void SetAcceptLanguage(const std::string& new_accept_language) override;
