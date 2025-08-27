@@ -113,9 +113,6 @@ class InstantService : public KeyedService,
   // Getter for |theme_| that will also initialize it if necessary.
   NtpTheme* GetInitializedNtpTheme();
 
-  // Used for testing.
-  void SetNativeThemeForTesting(ui::NativeTheme* theme);
-
  private:
   friend class InstantExtendedTest;
   friend class InstantBrowserTestBase;
@@ -180,8 +177,6 @@ class InstantService : public KeyedService,
 
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       theme_observation_{this};
-
-  raw_ptr<ui::NativeTheme> native_theme_;
 
   base::TimeTicks background_updated_timestamp_;
 
