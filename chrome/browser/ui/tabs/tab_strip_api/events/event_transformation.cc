@@ -190,4 +190,24 @@ mojom::OnDataChangedEventPtr ToEvent(const TabGroupChange& tab_group_change) {
   return event;
 }
 
+mojom::OnTabMovedEventPtr ToTabGroupMovedEvent(
+    const TabGroupChange& tab_group_change) {
+  CHECK_EQ(tab_group_change.type, TabGroupChange::Type::kMoved);
+  const TabGroup* tab_group =
+      tab_group_change.model->group_model()->GetTabGroup(
+          tab_group_change.group);
+
+  auto event = mojom::OnTabMovedEvent::New();
+  event->id = NodeId(
+      NodeId::Type::kCollection,
+      base::NumberToString(tab_group->GetCollectionHandle().raw_value()));
+  // The position of a group is defined by the index of its first tab.
+  const gfx::Range tab_indices = tab_group->ListTabs();
+  CHECK(!tab_indices.is_empty());
+  // There is no start position for a TabGroup.
+  event->from = tabs_api::Position(0);
+  event->to = tabs_api::Position(tab_indices.start());
+  return event;
+}
+
 }  // namespace tabs_api::events

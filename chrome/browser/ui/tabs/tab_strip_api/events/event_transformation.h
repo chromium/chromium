@@ -52,6 +52,9 @@ mojom::OnTabMovedEventPtr FromTabGroupedStateChangedToTabMovedEvent(
     int index);
 mojom::OnDataChangedEventPtr ToEvent(const TabGroupChange& tab_group_change);
 
+mojom::OnTabMovedEventPtr ToTabGroupMovedEvent(
+    const TabGroupChange& tab_group_change);
+
 }  // namespace tabs_api::events
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_API_EVENTS_EVENT_TRANSFORMATION_H_

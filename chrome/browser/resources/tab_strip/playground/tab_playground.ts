@@ -80,7 +80,8 @@ export class TabElement extends CustomElement {
     this.tabEl_.addEventListener('click', () => this.onClick_());
     this.addEventListener(
         'dragend',
-        (event: MouseEvent) => this.dragHandler_(this, event.clientX));
+        (event: MouseEvent) =>
+            this.dragHandler_(this, event.clientX, event.clientY));
 
     this.closeButtonEl_.addEventListener('click', e => this.onClose_(e));
     this.onTabActivating_ = (tabId: NodeId) =>
@@ -96,7 +97,8 @@ export class TabElement extends CustomElement {
     return this.tab_;
   }
 
-  set dragEndHandler(handler: (element: TabElement, x: number) => void) {
+  set dragEndHandler(
+      handler: (element: TabElement, x: number, y: number) => void) {
     this.dragHandler_ = handler;
   }
 
