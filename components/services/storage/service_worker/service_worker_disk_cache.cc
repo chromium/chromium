@@ -58,7 +58,7 @@ ServiceWorkerDiskCacheEntry::ServiceWorkerDiskCacheEntry(
 
 ServiceWorkerDiskCacheEntry::~ServiceWorkerDiskCacheEntry() {
   if (disk_cache_entry_) {
-    disk_cache_entry_->Close();
+    disk_cache_entry_.ExtractAsDangling()->Close();
     cache_->RemoveOpenEntry(this);
   }
 }
@@ -95,7 +95,7 @@ int64_t ServiceWorkerDiskCacheEntry::GetSize(int index) {
 }
 
 void ServiceWorkerDiskCacheEntry::Abandon() {
-  disk_cache_entry_->Close();
+  disk_cache_entry_.ExtractAsDangling()->Close();
   disk_cache_entry_ = nullptr;
 }
 
