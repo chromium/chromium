@@ -14,4 +14,7 @@
 import("//build/config/fuchsia/size_optimized_cast_receiver_args.gn")
 
 chrome_pgo_phase = 2
-optimize_for_size = false
+
+# TODO(crbug.com/436861859): PGO and optimize for performance cannot be combined with
+# dcheck due to a known issue, which is why optimize for size is enabled instead.
+optimize_for_size = true

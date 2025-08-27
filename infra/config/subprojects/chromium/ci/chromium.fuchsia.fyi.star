@@ -434,9 +434,7 @@ ci.builder(
             "fuchsia",
             "cast_receiver_perf_optimized",
             "x64",
-            # TODO(crbug.com/420718775): Enable "dcheck_always_on", now there
-            # are multiple test failures needing extra investigation.
-            # See https://ci.chromium.org/ui/p/chromium/builders/try/fuchsia-x64-perf-cast-receiver-rel/170/overview
+            "dcheck_always_on",
         ],
     ),
     # Do not forget to update
