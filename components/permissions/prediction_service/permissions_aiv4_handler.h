@@ -12,6 +12,7 @@
 #include "components/optimization_guide/core/inference/model_handler.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/permissions/prediction_service/permissions_aiv4_executor.h"
+#include "components/permissions/prediction_service/permissions_aiv4_model_metadata.pb.h"
 #include "components/permissions/prediction_service/prediction_model_metadata.pb.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
 
@@ -63,6 +64,8 @@ class PermissionsAiv4Handler : public optimization_guide::ModelHandler<
   // Called when the model execution times out.
   void OnModelExecutionTimeout(
       const std::optional<PermissionRequestRelevance>& relevance);
+
+  std::optional<PermissionsAiv4ModelMetadata> model_metadata_;
 
   // Because there is no way to cancel a model execution once it has started, we
   // will return an empty response to the new callback if a new execution is

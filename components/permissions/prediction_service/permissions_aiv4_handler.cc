@@ -10,6 +10,7 @@
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/permissions/features.h"
 #include "components/permissions/prediction_service/permissions_aiv4_executor.h"
+#include "components/permissions/prediction_service/permissions_aiv4_model_metadata.pb.h"
 #include "components/version_info/version_info.h"
 
 namespace permissions {
@@ -61,6 +62,8 @@ void PermissionsAiv4Handler::OnModelUpdated(
     // The parent class should always set the model availability to true after
     // having received an updated model.
     DCHECK(ModelAvailable());
+    model_metadata_ =
+        ParsedSupportedFeaturesForLoadedModel<PermissionsAiv4ModelMetadata>();
   }
 }
 
@@ -87,6 +90,8 @@ void PermissionsAiv4Handler::ExecuteModel(ExecutionCallback callback,
   }
   is_execution_in_progress_ = true;
   is_callback_valid_ = true;
+
+  model_input.metadata = model_metadata_;
 
   // It is OK to save the callback here because there is only one model
   // execution allowed at a time.

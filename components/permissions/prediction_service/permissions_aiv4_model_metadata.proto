@@ -8,10 +8,10 @@ package permissions;
 
 option optimize_for = LITE_RUNTIME;
 
-// This message is used to provide metadata that is important for AIv3 models to
+// This message is used to provide metadata that is important for AIv4 models to
 // the chromium client. Please update the google3 version of this proto as well
 // if you change this file.
-message PermissionsAiv3ModelMetadata {
+message PermissionsAiv4ModelMetadata {
   // Message used to store the thresholds to convert the ML output to the
   // PermissionRequestRelevance values defined in:
   // components/permissions/permission_request_enums.h
@@ -51,4 +51,9 @@ message PermissionsAiv3ModelMetadata {
 
   // Thresholds used to discretized the permission relevance scores.
   optional RelevanceThresholds relevance_thresholds = 2;
+
+  // The input size that we expect the text embeddings to have for Aiv4.
+  // Depends on the output size of the passage embeddings model:
+  // services/passage_embeddings/passage_embedder.h
+  optional int32 text_embeddings_input_size = 3;
 }

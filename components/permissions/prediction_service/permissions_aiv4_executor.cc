@@ -9,15 +9,19 @@
 
 #include "base/types/optional_ref.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/permissions/prediction_service/permissions_aiv4_model_metadata.pb.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_utils.h"
 
 namespace permissions {
 
 using ModelInput = PermissionsAiv4Executor::ModelInput;
 using ModelOutput = PermissionsAiv4Executor::ModelOutput;
-constexpr int kTextInputSize = PermissionsAiv4Executor::kTextInputSize;
 using ::passage_embeddings::Embedding;
 using ::tflite::task::core::PopulateTensor;
+
+// The default size of the text input tensor for the model. This is
+// necessary if the model metadata does not provide this value.
+constexpr int kDefaultTextInputSize = 768;
 
 PermissionsAiv4ExecutorInput::PermissionsAiv4ExecutorInput(
     SkBitmap snapshot,
@@ -30,31 +34,27 @@ PermissionsAiv4ExecutorInput::PermissionsAiv4ExecutorInput(
 PermissionsAiv4ExecutorInput::PermissionsAiv4ExecutorInput(
     PermissionsAiv4ExecutorInput&&) = default;
 
-bool CopyPassageEmbeddingIntoInputTensor(TfLiteTensor* input_tensor,
-                                         const Embedding& embedding) {
-  if (embedding.Dimensions() != kTextInputSize) {
-    // TODO(crbug.com/382447738) We need to synchronize this via metadata with
-    // passage_embedder; the embedders output size might change in the future
-    // and at the moment information of their models output size is provided via
-    // model metadata. We should not use a constant here, but also provide the
-    // expected input size of our model via a metadata object.
-    VLOG(1)
-        << "[PermissionsAiv4Executor]: Input Size does not match expectations: "
-        << embedding.Dimensions() << " vs (expected) " << kTextInputSize;
-    return false;
-  }
-  return PopulateTensor<float>(embedding.GetData().data(), kTextInputSize,
-                               input_tensor)
-      .ok();
-}
-
 bool PermissionsAiv4Executor::Preprocess(
     const std::vector<TfLiteTensor*>& input_tensors,
     const ModelInput& input) {
   DCHECK(input_tensors.size() == 2);
 
-  if (!CopyPassageEmbeddingIntoInputTensor(input_tensors[0],
-                                           input.inner_text_embedding)) {
+  int expected_input_size = kDefaultTextInputSize;
+  if (input.metadata.has_value() &&
+      input.metadata.value().has_text_embeddings_input_size()) {
+    expected_input_size = input.metadata.value().text_embeddings_input_size();
+  }
+
+  const auto& embedding = input.inner_text_embedding;
+  if (static_cast<int>(embedding.Dimensions()) != expected_input_size) {
+    VLOG(1)
+        << "[PermissionsAiv4Executor]: Input Size does not match expectations: "
+        << embedding.Dimensions() << " vs (expected) " << expected_input_size;
+    return false;
+  }
+  if (!PopulateTensor<float>(embedding.GetData().data(), expected_input_size,
+                             input_tensors[0])
+           .ok()) {
     VLOG(1) << "[PermissionsAiv4Executor]: Failed to copy passage "
                "embedding.";
     return false;
@@ -66,25 +66,32 @@ bool PermissionsAiv4Executor::Preprocess(
     return false;
   }
   VLOG(1) << "[PermissionsAiv4Executor]: Successfully encoded input!";
-  SetThresholdValues();
+  SetThresholdValues(input.metadata);
   return true;
 }
 
-void PermissionsAiv4Executor::SetThresholdValues() {
-  DCHECK(request_type() == RequestType::kNotifications ||
-         request_type() == RequestType::kGeolocation);
+void PermissionsAiv4Executor::SetThresholdValues(
+    base::optional_ref<const PermissionsAiv4ModelMetadata> metadata) {
+  if (!metadata.has_value() || !metadata.value().has_relevance_thresholds()) {
+    DCHECK(request_type() == RequestType::kNotifications ||
+           request_type() == RequestType::kGeolocation);
 
-  // Empirically determined thresholds, that map to relevance enum vals as
-  // follows:
-  // val < thr[0] -> VeryLow
-  // ...
-  // val < thr[4] -> High
-  // val >= thr[4] -> VeryHigh
-  relevance_thresholds() = {0.008f, 0.024f, 0.11f, 0.32f};
-  if (request_type() == RequestType::kGeolocation) {
-    relevance_thresholds() = {0.033f, 0.077f, 0.2f, 0.49f};
+    // Empirically determined thresholds, that map to relevance enum vals as
+    // follows:
+    // val < thr[0] -> VeryLow
+    // ...
+    // val < thr[4] -> High
+    // val >= thr[4] -> VeryHigh
+    relevance_thresholds() = {0.008f, 0.024f, 0.11f, 0.32f};
+    if (request_type() == RequestType::kGeolocation) {
+      relevance_thresholds() = {0.033f, 0.077f, 0.2f, 0.49f};
+    }
+    return;
   }
-  return;
+  const auto& thresholds = metadata.value().relevance_thresholds();
+  relevance_thresholds() = {
+      thresholds.min_low_relevance(), thresholds.min_medium_relevance(),
+      thresholds.min_high_relevance(), thresholds.min_very_high_relevance()};
 }
 
 }  // namespace permissions

@@ -18,6 +18,7 @@
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/permissions/prediction_service/permissions_ai_encoder_base.h"
 #include "components/permissions/prediction_service/permissions_aiv4_executor.h"
+#include "components/permissions/prediction_service/permissions_aiv4_model_metadata.pb.h"
 #include "components/permissions/test/aivx_modelhandler_utils.h"
 #include "components/permissions/test/enums_to_string.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -40,21 +41,41 @@ constexpr OptimizationTarget kOptTargetNotifications = OptimizationTarget::
 constexpr std::string_view kZeroReturnModel = "aiv4_ret_0.tflite";
 constexpr std::string_view k0_023ReturnModel = "aiv4_ret_0_023.tflite";
 constexpr std::string_view kOneReturnModel = "aiv4_ret_1.tflite";
+constexpr std::string_view kExpects42InputModel =
+    "aiv4_ret_0_expects_42_input.tflite";
 
 constexpr SkColor kDefaultColor = SkColorSetRGB(0x1E, 0x1C, 0x0F);
 
 auto kImageInputWidth = PermissionsAiv4Executor::kImageInputWidth;
 auto kImageInputHeight = PermissionsAiv4Executor::kImageInputHeight;
-auto kTextInputSize = PermissionsAiv4Executor::kTextInputSize;
-
 constexpr char kModelExecutionTimeoutHistogram[] =
     "Permissions.AIv4.ModelExecutionTimeout";
 
+constexpr int kTestTextInputSize = 768;
+
+PermissionsAiv4ModelMetadata BuildMetadataFromValues(
+    const std::array<float, 4>& thresholds,
+    std::optional<int> text_embeddings_input_size = std::nullopt) {
+  PermissionsAiv4ModelMetadata metadata;
+  std::string serialized_metadata;
+  metadata.mutable_relevance_thresholds()->set_min_low_relevance(thresholds[0]);
+  metadata.mutable_relevance_thresholds()->set_min_medium_relevance(
+      thresholds[1]);
+  metadata.mutable_relevance_thresholds()->set_min_high_relevance(
+      thresholds[2]);
+  metadata.mutable_relevance_thresholds()->set_min_very_high_relevance(
+      thresholds[3]);
+  if (text_embeddings_input_size.has_value()) {
+    metadata.set_text_embeddings_input_size(text_embeddings_input_size.value());
+  }
+  return metadata;
+}
+
 passage_embeddings::Embedding GetDummyEmbeddings(
-    int input_size = kTextInputSize) {
-  return passage_embeddings::Embedding(
-      /*data=*/std::vector<float>(input_size, 42.f),
-      /*passage_word_count=*/42);
+    int input_size = kTestTextInputSize) {
+  std::vector<float> data(input_size, 42.f);
+  return passage_embeddings::Embedding(data,
+                                       /*passage_word_count=*/42);
 }
 
 class PermissionsAiv4ExecutorFake : public PermissionsAiv4Executor {
@@ -159,9 +180,25 @@ class Aiv4HandlerTestBase : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  void PushModelFileToModelExecutor(OptimizationTarget opt_target,
-                                    const base::FilePath& model_file_path) {
+  void PushModelFileToModelExecutor(
+      OptimizationTarget opt_target,
+      const base::FilePath& model_file_path,
+      std::optional<PermissionsAiv4ModelMetadata> metadata = std::nullopt) {
+    std::optional<optimization_guide::proto::Any> any;
+
+    if (metadata.has_value()) {
+      any = std::make_optional<optimization_guide::proto::Any>();
+      std::string serialized_metadata;
+      (metadata.value()).SerializeToString(&serialized_metadata);
+      any->set_value(serialized_metadata);
+      any->set_type_url(
+          "type.googleapis.com/"
+          "google.privacy.webpermissionpredictions.aiv4.v1."
+          "PermissionsAiv4ModelMetadata");
+    }
+
     auto model_metadata = optimization_guide::TestModelInfoBuilder()
+                              .SetModelMetadata(any)
                               .SetModelFilePath(model_file_path)
                               .SetVersion(123)
                               .Build();
@@ -198,6 +235,7 @@ struct RelevanceTestCase {
   base::FilePath model_file_path;
   float expected_model_return_value;
   PermissionRequestRelevance expected_relevance;
+  std::optional<PermissionsAiv4ModelMetadata> metadata;
 };
 
 class RelevanceAiv4HandlerTest
@@ -210,25 +248,48 @@ INSTANTIATE_TEST_SUITE_P(
     ValuesIn<RelevanceTestCase>({
         {kOptTargetNotifications, test::ModelFilePath(kZeroReturnModel),
          /*expected_model_return_value=*/0.0f,
-         PermissionRequestRelevance::kVeryLow},
+         PermissionRequestRelevance::kVeryLow, /*metadata=*/std::nullopt},
         {kOptTargetNotifications, test::ModelFilePath(k0_023ReturnModel),
          /*expected_model_return_value=*/0.023f,
-         PermissionRequestRelevance::kLow},
+         PermissionRequestRelevance::kLow, /*metadata=*/std::nullopt},
         {kOptTargetNotifications, test::ModelFilePath(kOneReturnModel),
          /*expected_model_return_value=*/1.0f,
-         PermissionRequestRelevance::kVeryHigh},
+         PermissionRequestRelevance::kVeryHigh, /*metadata=*/std::nullopt},
+        {kOptTargetNotifications, test::ModelFilePath(k0_023ReturnModel),
+         /*expected_model_return_value=*/0.023f,
+         PermissionRequestRelevance::kVeryLow,
+         BuildMetadataFromValues({0.6, 0.7, 0.8, 0.9})},
+        {kOptTargetNotifications, test::ModelFilePath(k0_023ReturnModel),
+         /*expected_model_return_value=*/0.023f,
+         PermissionRequestRelevance::kLow,
+         BuildMetadataFromValues({0.023, 0.6, 0.7, 0.8})},
+        {kOptTargetNotifications, test::ModelFilePath(k0_023ReturnModel),
+         /*expected_model_return_value=*/0.023f,
+         PermissionRequestRelevance::kMedium,
+         BuildMetadataFromValues({0.022, 0.023, 0.6, 0.7})},
+        {kOptTargetNotifications, test::ModelFilePath(k0_023ReturnModel),
+         /*expected_model_return_value=*/0.023f,
+         PermissionRequestRelevance::kHigh,
+         BuildMetadataFromValues({0.021, 0.022, 0.023, 0.6})},
+        {kOptTargetNotifications, test::ModelFilePath(k0_023ReturnModel),
+         /*expected_model_return_value=*/0.023f,
+         PermissionRequestRelevance::kVeryHigh,
+         BuildMetadataFromValues({0.020, 0.021, 0.022, 0.023})},
     }),
     /*name_generator=*/
     [](const testing::TestParamInfo<RelevanceAiv4HandlerTest::ParamType>&
            info) {
-      return base::StrCat({"NotificationsModelReturns",
-                           test::ToString(info.param.expected_relevance)});
+      return base::StrCat(
+          {"With",
+           info.param.metadata.has_value() ? "Metadata" : "DefaultThresholds",
+           "NotificationsModelReturns",
+           test::ToString(info.param.expected_relevance)});
     });
 
 TEST_P(RelevanceAiv4HandlerTest,
        RelevanceIsMatchedToTheCorrectModelThresholds) {
   PushModelFileToModelExecutor(GetParam().optimization_target,
-                               GetParam().model_file_path);
+                               GetParam().model_file_path, GetParam().metadata);
   auto* aiv4_handler = model_handler();
   EXPECT_TRUE(aiv4_handler->ModelAvailable());
 
@@ -368,8 +429,8 @@ TEST_F(Aiv4HandlerTest, TextEmbeddingGetsCopiedToTensor) {
         ASSERT_TRUE(
             tflite::task::core::PopulateVector<float>(input_tensors[0], &data)
                 .ok());
-        EXPECT_THAT(data, SizeIs(kTextInputSize));
-        for (int i = 0; i < kTextInputSize; i++) {
+        EXPECT_THAT(data, SizeIs(kTestTextInputSize));
+        for (int i = 0; i < kTestTextInputSize; i++) {
           EXPECT_FLOAT_EQ(data[i], 42.f);
         }
         flag = true;
@@ -382,6 +443,24 @@ TEST_F(Aiv4HandlerTest, TextEmbeddingGetsCopiedToTensor) {
       ModelInput{std::move(snapshot), GetDummyEmbeddings()});
   EXPECT_EQ(future.Take(), PermissionRequestRelevance::kVeryLow);
   EXPECT_TRUE(flag);
+}
+
+TEST_F(Aiv4HandlerTest, TextEmbeddingSizeMatchesMetadata) {
+  auto metadata = BuildMetadataFromValues({0.1, 0.2, 0.3, 0.4}, 42);
+  PushModelFileToModelExecutor(kOptTargetNotifications,
+                               test::ModelFilePath(kExpects42InputModel),
+                               metadata);
+
+  auto snapshot =
+      test::BuildBitmap(kImageInputWidth, kImageInputHeight, kDefaultColor);
+
+  ModelCallbackFuture future;
+  auto* aiv4_handler = model_handler();
+  aiv4_handler->ExecuteModel(
+      future.GetCallback(),
+      ModelInput{std::move(snapshot), GetDummyEmbeddings(/*input_size=*/42)});
+
+  EXPECT_EQ(future.Take(), PermissionRequestRelevance::kVeryLow);
 }
 
 TEST_F(Aiv4HandlerTest, TextEmbeddingSizeDoesNotMatchAiv4InputSize) {
