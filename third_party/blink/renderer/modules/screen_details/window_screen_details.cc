@@ -80,9 +80,9 @@ ScriptPromise<ScreenDetails> WindowScreenDetails::GetScreenDetails(
   const bool has_transient_user_activation =
       LocalFrame::HasTransientUserActivation(GetSupplementable()->GetFrame());
   auto callback =
-      WTF::BindOnce(&WindowScreenDetails::OnPermissionInquiryComplete,
-                    WrapPersistent(this), WrapPersistent(resolver),
-                    /*permission_requested=*/has_transient_user_activation);
+      BindOnce(&WindowScreenDetails::OnPermissionInquiryComplete,
+               WrapPersistent(this), WrapPersistent(resolver),
+               /*permission_requested=*/has_transient_user_activation);
 
   // Only request permission with transient activation, otherwise check quietly.
   // This lets sites with permission get screen details any time (e.g. on load),

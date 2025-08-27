@@ -109,7 +109,7 @@ bool CheckPrivateAggregationConfig(
     mojom::blink::PrivateAggregationConfigPtr& out_private_aggregation_config) {
   out_private_aggregation_config = mojom::blink::PrivateAggregationConfig::New();
 
-  WTF::String& out_context_id = out_private_aggregation_config->context_id;
+  String& out_context_id = out_private_aggregation_config->context_id;
   scoped_refptr<const SecurityOrigin>& out_aggregation_coordinator_origin =
       out_private_aggregation_config->aggregation_coordinator_origin;
   uint32_t& out_filtering_id_max_bytes =

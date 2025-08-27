@@ -191,7 +191,7 @@ ScriptPromise<IDLUndefined> DocumentStorageAccess::requestStorageAccess(
   return RequestStorageAccessImpl(
       script_state,
       /*request_unpartitioned_cookie_access=*/true,
-      WTF::BindOnce([](ScriptPromiseResolver<IDLUndefined>* resolver) {
+      BindOnce([](ScriptPromiseResolver<IDLUndefined>* resolver) {
         DCHECK(resolver);
         resolver->Resolve();
       }));
@@ -220,12 +220,12 @@ ScriptPromise<StorageAccessHandle> DocumentStorageAccess::requestStorageAccess(
       script_state,
       /*request_unpartitioned_cookie_access=*/storage_access_types->all() ||
           storage_access_types->cookies(),
-      WTF::BindOnce(
+      BindOnce(
           [](LocalDOMWindow* window,
              const StorageAccessTypes* storage_access_types,
              ScriptPromiseResolver<StorageAccessHandle>* resolver) {
             if (!window) {
-                return;
+              return;
             }
             DCHECK(storage_access_types);
             DCHECK(resolver);
@@ -367,7 +367,7 @@ ScriptPromise<T> DocumentStorageAccess::RequestStorageAccessImpl(
           std::move(descriptor),
           LocalFrame::HasTransientUserActivation(
               GetSupplementable()->GetFrame()),
-          WTF::BindOnce(
+          blink::BindOnce(
               &DocumentStorageAccess::ProcessStorageAccessPermissionState<T>,
               WrapPersistent(this), WrapPersistent(resolver),
               request_unpartitioned_cookie_access, std::move(on_resolve)));
@@ -540,9 +540,9 @@ ScriptPromise<IDLUndefined> DocumentStorageAccess::requestStorageAccessFor(
           std::move(descriptor),
           LocalFrame::HasTransientUserActivation(
               GetSupplementable()->GetFrame()),
-          WTF::BindOnce(&DocumentStorageAccess::
-                            ProcessTopLevelStorageAccessPermissionState,
-                        WrapPersistent(this), WrapPersistent(resolver)));
+          BindOnce(&DocumentStorageAccess::
+                       ProcessTopLevelStorageAccessPermissionState,
+                   WrapPersistent(this), WrapPersistent(resolver)));
 
   return promise;
 }

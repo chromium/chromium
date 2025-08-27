@@ -152,8 +152,8 @@ ScriptPromise<IDLSequence<SerialPort>> Serial::getPorts(
   get_ports_promises_.insert(resolver);
 
   EnsureServiceConnection();
-  service_->GetPorts(WTF::BindOnce(&Serial::OnGetPorts, WrapPersistent(this),
-                                   WrapPersistent(resolver)));
+  service_->GetPorts(BindOnce(&Serial::OnGetPorts, WrapPersistent(this),
+                              WrapPersistent(resolver)));
 
   return resolver->Promise();
 }
@@ -233,7 +233,7 @@ ScriptPromise<SerialPort> Serial::requestPort(
     }
   }
 
-  Vector<WTF::String> allowed_bluetooth_service_class_ids;
+  Vector<String> allowed_bluetooth_service_class_ids;
   if (options && options->hasAllowedBluetoothServiceClassIds()) {
     for (const auto& id : options->allowedBluetoothServiceClassIds()) {
       allowed_bluetooth_service_class_ids.push_back(
@@ -248,7 +248,7 @@ ScriptPromise<SerialPort> Serial::requestPort(
   EnsureServiceConnection();
   service_->RequestPort(std::move(filters),
                         std::move(allowed_bluetooth_service_class_ids),
-                        resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+                        resolver->WrapCallbackInScriptScope(BindOnce(
                             &Serial::OnRequestPort, WrapPersistent(this))));
 
   return resolver->Promise();
@@ -309,8 +309,8 @@ void Serial::EnsureServiceConnection() {
       GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI);
   GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
       service_.BindNewPipeAndPassReceiver(task_runner));
-  service_.set_disconnect_handler(WTF::BindOnce(
-      &Serial::OnServiceConnectionError, WrapWeakPersistent(this)));
+  service_.set_disconnect_handler(
+      BindOnce(&Serial::OnServiceConnectionError, WrapWeakPersistent(this)));
 
   service_->SetClient(receiver_.BindNewPipeAndPassRemote(task_runner));
 }

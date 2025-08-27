@@ -173,7 +173,7 @@ ServiceWorkerRegistration::ServiceWorkerRegistration(
 void ServiceWorkerRegistration::Attach(
     WebServiceWorkerRegistrationObjectInfo info) {
   DCHECK_EQ(registration_id_, info.registration_id);
-  DCHECK_EQ(scope_.GetString(), WTF::String(info.scope.GetString()));
+  DCHECK_EQ(scope_.GetString(), String(info.scope.GetString()));
 
   // If |host_| is bound, it already points to the same object host as
   // |info.host_remote|, so there is no need to bind again.
@@ -239,8 +239,7 @@ void ServiceWorkerRegistration::EnableNavigationPreload(
     return;
   }
   host_->EnableNavigationPreload(
-      enable,
-      WTF::BindOnce(&DidEnableNavigationPreload, WrapPersistent(resolver)));
+      enable, BindOnce(&DidEnableNavigationPreload, WrapPersistent(resolver)));
 }
 
 void ServiceWorkerRegistration::GetNavigationPreloadState(
@@ -249,7 +248,7 @@ void ServiceWorkerRegistration::GetNavigationPreloadState(
     return;
   }
   host_->GetNavigationPreloadState(
-      WTF::BindOnce(&DidGetNavigationPreloadState, WrapPersistent(resolver)));
+      BindOnce(&DidGetNavigationPreloadState, WrapPersistent(resolver)));
 }
 
 void ServiceWorkerRegistration::SetNavigationPreloadHeader(
@@ -260,7 +259,7 @@ void ServiceWorkerRegistration::SetNavigationPreloadHeader(
   }
   host_->SetNavigationPreloadHeader(
       value,
-      WTF::BindOnce(&DidSetNavigationPreloadHeader, WrapPersistent(resolver)));
+      BindOnce(&DidSetNavigationPreloadHeader, WrapPersistent(resolver)));
 }
 
 ScriptPromise<ServiceWorkerRegistration> ServiceWorkerRegistration::update(
@@ -298,7 +297,7 @@ ScriptPromise<ServiceWorkerRegistration> ServiceWorkerRegistration::update(
   if (GetExecutionContext()->IsWindow()) {
     Document* document = To<LocalDOMWindow>(GetExecutionContext())->document();
     if (document->IsPrerendering()) {
-      document->AddPostPrerenderingActivationStep(WTF::BindOnce(
+      document->AddPostPrerenderingActivationStep(BindOnce(
           &ServiceWorkerRegistration::UpdateInternal, WrapWeakPersistent(this),
           std::move(mojom_settings_object), WrapPersistent(resolver)));
       return resolver->Promise();
@@ -329,8 +328,8 @@ ScriptPromise<IDLBoolean> ServiceWorkerRegistration::unregister(
     Document* document = To<LocalDOMWindow>(GetExecutionContext())->document();
     if (document->IsPrerendering()) {
       document->AddPostPrerenderingActivationStep(
-          WTF::BindOnce(&ServiceWorkerRegistration::UnregisterInternal,
-                        WrapWeakPersistent(this), WrapPersistent(resolver)));
+          BindOnce(&ServiceWorkerRegistration::UnregisterInternal,
+                   WrapWeakPersistent(this), WrapPersistent(resolver)));
       return resolver->Promise();
     }
   }
@@ -402,9 +401,9 @@ void ServiceWorkerRegistration::UpdateInternal(
   if (!host_.is_bound()) {
     return;
   }
-  host_->Update(std::move(mojom_settings_object),
-                WTF::BindOnce(&DidUpdate, WrapPersistent(resolver),
-                              WrapPersistent(this)));
+  host_->Update(
+      std::move(mojom_settings_object),
+      BindOnce(&DidUpdate, WrapPersistent(resolver), WrapPersistent(this)));
 }
 
 void ServiceWorkerRegistration::UnregisterInternal(
@@ -412,7 +411,7 @@ void ServiceWorkerRegistration::UnregisterInternal(
   if (!host_.is_bound()) {
     return;
   }
-  host_->Unregister(WTF::BindOnce(&DidUnregister, WrapPersistent(resolver)));
+  host_->Unregister(BindOnce(&DidUnregister, WrapPersistent(resolver)));
 }
 
 }  // namespace blink

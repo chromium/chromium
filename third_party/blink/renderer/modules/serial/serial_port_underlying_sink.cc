@@ -30,8 +30,8 @@ SerialPortUnderlyingSink::SerialPortUnderlyingSink(
       serial_port_(serial_port) {
   watcher_.Watch(data_pipe_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
                  MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
-                 WTF::BindRepeating(&SerialPortUnderlyingSink::OnHandleReady,
-                                    WrapWeakPersistent(this)));
+                 BindRepeating(&SerialPortUnderlyingSink::OnHandleReady,
+                               WrapWeakPersistent(this)));
 }
 
 ScriptPromise<IDLUndefined> SerialPortUnderlyingSink::start(
@@ -101,8 +101,8 @@ ScriptPromise<IDLUndefined> SerialPortUnderlyingSink::close(
   pending_operation_ =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
           script_state, exception_state.GetContext());
-  serial_port_->Drain(WTF::BindOnce(&SerialPortUnderlyingSink::OnFlushOrDrain,
-                                    WrapPersistent(this)));
+  serial_port_->Drain(BindOnce(&SerialPortUnderlyingSink::OnFlushOrDrain,
+                               WrapPersistent(this)));
   return pending_operation_->Promise();
 }
 
@@ -129,8 +129,8 @@ ScriptPromise<IDLUndefined> SerialPortUnderlyingSink::abort(
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
           script_state, exception_state.GetContext());
   serial_port_->Flush(device::mojom::blink::SerialPortFlushMode::kTransmit,
-                      WTF::BindOnce(&SerialPortUnderlyingSink::OnFlushOrDrain,
-                                    WrapPersistent(this)));
+                      BindOnce(&SerialPortUnderlyingSink::OnFlushOrDrain,
+                               WrapPersistent(this)));
   return pending_operation_->Promise();
 }
 

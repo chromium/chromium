@@ -245,7 +245,7 @@ void SharedStorageWorklet::AddModuleHelper(
           options->credentials().AsEnum());
   auto* window = DynamicTo<LocalDOMWindow>(execution_context);
   if (window->document() && window->document()->IsPrerendering()) {
-    window->document()->AddPostPrerenderingActivationStep(WTF::BindOnce(
+    window->document()->AddPostPrerenderingActivationStep(blink::BindOnce(
         &SharedStorageWorklet::AddModuleOnLocalDomWindow,
         WrapWeakPersistent(this), WrapWeakPersistent(window),
         std::move(script_source_url), std::move(shared_storage_security_origin),
@@ -283,7 +283,7 @@ void SharedStorageWorklet::AddModuleOnLocalDomWindow(
                                 : Vector<mojom::blink::OriginTrialFeature>(),
           worklet_host_.BindNewEndpointAndPassReceiver(
               dom_window->GetTaskRunner(TaskType::kMiscPlatformAPI)),
-          WTF::BindOnce(
+          blink::BindOnce(
               [](ScriptPromiseResolverBase* resolver,
                  SharedStorageWorklet* shared_storage_worklet,
                  base::TimeTicks start_time, bool resolve_to_worklet,
@@ -513,7 +513,7 @@ ScriptPromise<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
 
   auto* window = DynamicTo<LocalDOMWindow>(execution_context);
   if (window->document() && window->document()->IsPrerendering()) {
-    window->document()->AddPostPrerenderingActivationStep(WTF::BindOnce(
+    window->document()->AddPostPrerenderingActivationStep(blink::BindOnce(
         &SharedStorageWorklet::SelectUrlInternal, WrapWeakPersistent(this),
         WrapPersistent(script_state), name, std::move(converted_urls),
         std::move(serialized_data.value()), WrapPersistent(options), start_time,
@@ -605,7 +605,7 @@ void SharedStorageWorklet::SelectUrlInternal(
       name, std::move(converted_urls), std::move(serialized_data), keep_alive,
       std::move(private_aggregation_config), resolve_to_config,
       options->savedQuery(), start_time,
-      WTF::BindOnce(
+      blink::BindOnce(
           [](ScriptPromiseResolver<V8SharedStorageResponse>* resolver,
              SharedStorageWorklet* shared_storage_worklet,
              base::TimeTicks start_time, bool resolve_to_config, bool success,
@@ -692,7 +692,7 @@ ScriptPromise<IDLAny> SharedStorageWorklet::run(
   auto promise = resolver->Promise();
   auto* window = DynamicTo<LocalDOMWindow>(execution_context);
   if (window->document() && window->document()->IsPrerendering()) {
-    window->document()->AddPostPrerenderingActivationStep(WTF::BindOnce(
+    window->document()->AddPostPrerenderingActivationStep(blink::BindOnce(
         &SharedStorageWorklet::RunInternal, WrapWeakPersistent(this),
         WrapPersistent(script_state), name, std::move(serialized_data.value()),
         WrapPersistent(options), start_time, WrapPersistent(resolver)));
@@ -755,7 +755,7 @@ void SharedStorageWorklet::RunInternal(
   worklet_host_->Run(
       name, std::move(serialized_data), keep_alive,
       std::move(private_aggregation_config), start_time,
-      WTF::BindOnce(
+      blink::BindOnce(
           [](ScriptPromiseResolver<IDLAny>* resolver,
              SharedStorageWorklet* shared_storage_worklet,
              base::TimeTicks start_time, bool success,

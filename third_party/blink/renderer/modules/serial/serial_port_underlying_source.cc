@@ -32,8 +32,8 @@ SerialPortUnderlyingSource::SerialPortUnderlyingSource(
       serial_port_(serial_port) {
   watcher_.Watch(data_pipe_.get(), MOJO_HANDLE_SIGNAL_READABLE,
                  MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
-                 WTF::BindRepeating(&SerialPortUnderlyingSource::OnHandleReady,
-                                    WrapWeakPersistent(this)));
+                 BindRepeating(&SerialPortUnderlyingSource::OnHandleReady,
+                               WrapWeakPersistent(this)));
 }
 
 ScriptPromise<IDLUndefined> SerialPortUnderlyingSource::Pull(
@@ -66,10 +66,9 @@ ScriptPromise<IDLUndefined> SerialPortUnderlyingSource::Cancel() {
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state_);
-  serial_port_->Flush(
-      device::mojom::blink::SerialPortFlushMode::kReceive,
-      WTF::BindOnce(&SerialPortUnderlyingSource::OnFlush, WrapPersistent(this),
-                    WrapPersistent(resolver)));
+  serial_port_->Flush(device::mojom::blink::SerialPortFlushMode::kReceive,
+                      BindOnce(&SerialPortUnderlyingSource::OnFlush,
+                               WrapPersistent(this), WrapPersistent(resolver)));
   return resolver->Promise();
 }
 

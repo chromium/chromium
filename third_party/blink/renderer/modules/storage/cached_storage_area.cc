@@ -62,8 +62,8 @@ base::OnceCallback<void(bool)> MakeSuccessCallback(
           "CachedStorageArea",
           WebScopedVirtualTimePauser::VirtualTaskDuration::kNonInstant);
   virtual_time_pauser.PauseVirtualTime();
-  return WTF::BindOnce([](WebScopedVirtualTimePauser, bool) {},
-                       std::move(virtual_time_pauser));
+  return BindOnce([](WebScopedVirtualTimePauser, bool) {},
+                  std::move(virtual_time_pauser));
 }
 
 }  // namespace
@@ -506,10 +506,10 @@ bool CachedStorageArea::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
   using base::trace_event::MemoryAllocatorDump;
 
-  WTF::String dump_name = WTF::String::Format(
-      "site_storage/%s/0x%" PRIXPTR "/cache_size",
-      IsSessionStorage() ? "session_storage" : "local_storage",
-      reinterpret_cast<uintptr_t>(this));
+  String dump_name =
+      String::Format("site_storage/%s/0x%" PRIXPTR "/cache_size",
+                     IsSessionStorage() ? "session_storage" : "local_storage",
+                     reinterpret_cast<uintptr_t>(this));
   MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name.Utf8());
   dump->AddScalar(MemoryAllocatorDump::kNameSize,
                   MemoryAllocatorDump::kUnitsBytes, memory_used());
@@ -802,10 +802,10 @@ Vector<uint8_t> CachedStorageArea::StringToUint8Vector(
       }
       // Handle 8 bit case where it's not only ascii.
       if (input.Is8Bit()) {
-        // This code is copied from WTF::String::Utf8(), except the vector
+        // This code is copied from String::Utf8(), except the vector
         // doesn't have a stack-allocated capacity.
         // We do this because there isn't a way to transform the std::string we
-        // get from WTF::String::Utf8() to a Vector without an extra copy.
+        // get from String::Utf8() to a Vector without an extra copy.
         if (length > std::numeric_limits<unsigned>::max() / 3)
           return Vector<uint8_t>();
         Vector<uint8_t> buffer_vector(length * 3);

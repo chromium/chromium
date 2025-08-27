@@ -485,9 +485,9 @@ void SharedStorageWorkletGlobalScope::AddModule(
 
   module_script_downloader_ = std::make_unique<ModuleScriptDownloader>(
       url_loader_factory.get(), GURL(script_source_url),
-      WTF::BindOnce(&SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded,
-                    WrapWeakPersistent(this), script_source_url,
-                    std::move(callback)));
+      blink::BindOnce(
+          &SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded,
+          WrapWeakPersistent(this), script_source_url, std::move(callback)));
 
   // Create a ResourceRequest and populate only the fields needed by
   // `CodeCacheFetcher`.
@@ -505,8 +505,8 @@ void SharedStorageWorkletGlobalScope::AddModule(
   code_cache_fetcher_ = CodeCacheFetcher::TryCreateAndStart(
       *resource_request, GetCodeCacheHost(),
       GetTaskRunner(blink::TaskType::kMiscPlatformAPI),
-      WTF::BindOnce(&SharedStorageWorkletGlobalScope::DidReceiveCachedCode,
-                    WrapWeakPersistent(this)));
+      BindOnce(&SharedStorageWorkletGlobalScope::DidReceiveCachedCode,
+               WrapWeakPersistent(this)));
 }
 
 void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
@@ -750,7 +750,7 @@ SharedStorageWorkletGlobalScope::interestGroups(
   auto promise = resolver->Promise();
 
   GetSharedStorageWorkletServiceClient()->GetInterestGroups(
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+      resolver->WrapCallbackInScriptScope(blink::BindOnce(
           [](base::ElapsedTimer timer,
              ScriptPromiseResolver<IDLSequence<StorageInterestGroup>>* resolver,
              mojom::blink::GetInterestGroupsResultPtr result) {
@@ -1153,11 +1153,12 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
 
   // If we haven't received the code cache data, defer handing the response.
   if (code_cache_fetcher_ && code_cache_fetcher_->IsWaiting()) {
-    handle_script_download_response_after_code_cache_response_ = WTF::BindOnce(
-        &SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded,
-        WrapPersistent(this), script_source_url, std::move(callback),
-        std::move(response_body), std::move(error_message),
-        std::move(response_head));
+    handle_script_download_response_after_code_cache_response_ =
+        blink::BindOnce(
+            &SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded,
+            WrapPersistent(this), script_source_url, std::move(callback),
+            std::move(response_body), std::move(error_message),
+            std::move(response_head));
     return;
   }
 
@@ -1173,9 +1174,9 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
   code_cache_fetcher_.reset();
 
   mojom::blink::SharedStorageWorkletService::AddModuleCallback
-      add_module_finished_callback = std::move(callback).Then(WTF::BindOnce(
-          &SharedStorageWorkletGlobalScope::RecordAddModuleFinished,
-          WrapPersistent(this)));
+      add_module_finished_callback = std::move(callback).Then(
+          BindOnce(&SharedStorageWorkletGlobalScope::RecordAddModuleFinished,
+                   WrapPersistent(this)));
 
   if (!response_body.has_value()) {
     std::move(add_module_finished_callback)
@@ -1325,8 +1326,8 @@ SharedStorageWorkletGlobalScope::StartOperation(
         operation_id, std::move(pa_operation_details));
   }
 
-  return WTF::BindOnce(&SharedStorageWorkletGlobalScope::FinishOperation,
-                       WrapPersistent(this), operation_id);
+  return BindOnce(&SharedStorageWorkletGlobalScope::FinishOperation,
+                  WrapPersistent(this), operation_id);
 }
 
 void SharedStorageWorkletGlobalScope::FinishOperation(

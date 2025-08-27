@@ -122,7 +122,7 @@ ScriptPromise<ServiceWorkerClient> ServiceWorkerClients::get(
       MakeGarbageCollected<ScriptPromiseResolver<ServiceWorkerClient>>(
           script_state);
   global_scope->GetServiceWorkerHost()->GetClient(
-      id, WTF::BindOnce(&DidGetClient, WrapPersistent(resolver)));
+      id, BindOnce(&DidGetClient, WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
@@ -141,7 +141,7 @@ ScriptPromise<IDLSequence<ServiceWorkerClient>> ServiceWorkerClients::matchAll(
       mojom::blink::ServiceWorkerClientQueryOptions::New(
           options->includeUncontrolled(),
           GetClientType(options->type().AsEnum())),
-      WTF::BindOnce(&DidGetClients, WrapPersistent(resolver)));
+      BindOnce(&DidGetClients, WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
@@ -157,7 +157,7 @@ ScriptPromise<IDLUndefined> ServiceWorkerClients::claim(
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   global_scope->GetServiceWorkerHost()->ClaimClients(
-      WTF::BindOnce(&DidClaim, WrapPersistent(resolver)));
+      BindOnce(&DidClaim, WrapPersistent(resolver)));
   return resolver->Promise();
 }
 

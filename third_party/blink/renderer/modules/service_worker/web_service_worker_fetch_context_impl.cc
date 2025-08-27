@@ -53,7 +53,7 @@ WebServiceWorkerFetchContext::Create(
       base::checked_cast<wtf_size_t>(web_cors_exempt_header_list.size()));
   std::ranges::transform(web_cors_exempt_header_list,
                          cors_exempt_header_list.begin(),
-                         &WebString::operator WTF::String);
+                         &WebString::operator String);
   return base::MakeRefCounted<WebServiceWorkerFetchContextImpl>(
       renderer_preferences, KURL(worker_script_url.GetString()),
       std::move(pending_url_loader_factory),

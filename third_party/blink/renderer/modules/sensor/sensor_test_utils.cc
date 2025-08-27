@@ -50,8 +50,8 @@ SensorTestContext::SensorTestContext()
 
   testing_scope_.GetFrame().GetBrowserInterfaceBroker().SetBinderForTesting(
       mojom::blink::WebSensorProvider::Name_,
-      WTF::BindRepeating(&SensorTestContext::BindSensorProviderRequest,
-                         WTF::Unretained(this)));
+      BindRepeating(&SensorTestContext::BindSensorProviderRequest,
+                    Unretained(this)));
 }
 
 SensorTestContext::~SensorTestContext() {

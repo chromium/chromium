@@ -90,8 +90,8 @@ StorageArea::StorageArea(LocalDOMWindow* window,
   cached_area_->RegisterSource(this);
   if (cached_area_->is_session_storage_for_prerendering()) {
     DomWindow()->document()->AddWillDispatchPrerenderingchangeCallback(
-        WTF::BindOnce(&StorageArea::OnDocumentActivatedForPrerendering,
-                      WrapWeakPersistent(this)));
+        BindOnce(&StorageArea::OnDocumentActivatedForPrerendering,
+                 WrapWeakPersistent(this)));
   }
 }
 

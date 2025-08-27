@@ -184,8 +184,7 @@ std::unique_ptr<protocol::DOMStorage::StorageId>
 InspectorDOMStorageAgent::GetStorageId(const BlinkStorageKey& storage_key,
                                        bool is_local_storage) {
   return protocol::DOMStorage::StorageId::create()
-      .setStorageKey(
-          WTF::String(static_cast<StorageKey>(storage_key).Serialize()))
+      .setStorageKey(String(static_cast<StorageKey>(storage_key).Serialize()))
       .setSecurityOrigin(storage_key.GetSecurityOrigin()->ToRawString())
       .setIsLocalStorage(is_local_storage)
       .build();

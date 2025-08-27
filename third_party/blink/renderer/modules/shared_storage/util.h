@@ -42,10 +42,8 @@ enum class SharedStorageDataOrigin {
   kInvalid = 3,
 };
 
-// Helper method to convert v8 string to WTF::String.
-bool StringFromV8(v8::Isolate* isolate,
-                  v8::Local<v8::Value> val,
-                  WTF::String* out);
+// Helper method to convert v8 string to blink::String.
+bool StringFromV8(v8::Isolate* isolate, v8::Local<v8::Value> val, String* out);
 
 // Whether `lock_name` is a reserved lock resource name.
 // See https://w3c.github.io/web-locks/#resource-name

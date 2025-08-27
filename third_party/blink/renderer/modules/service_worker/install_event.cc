@@ -107,8 +107,8 @@ ScriptPromise<IDLUndefined> InstallEvent::addRoutes(
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   global_scope->GetServiceWorkerHost()->AddRoutes(
-      rules, WTF::BindOnce(&DidAddRoutes, WrapPersistent(resolver),
-                           WrapPersistent(lifetime_resolver)));
+      rules, BindOnce(&DidAddRoutes, WrapPersistent(resolver),
+                      WrapPersistent(lifetime_resolver)));
   return resolver->Promise();
 }
 

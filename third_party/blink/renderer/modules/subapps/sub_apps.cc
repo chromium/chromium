@@ -123,7 +123,7 @@ HeapMojoRemote<SubAppsService>& SubApps::GetService() {
     // In case the other endpoint gets disconnected, we want to reset our end of
     // the pipe as well so that we don't remain connected to a half-open pipe.
     service_.set_disconnect_handler(
-        WTF::BindOnce(&SubApps::OnConnectionError, WrapWeakPersistent(this)));
+        BindOnce(&SubApps::OnConnectionError, WrapWeakPersistent(this)));
   }
   return service_;
 }
@@ -189,7 +189,7 @@ ScriptPromise<IDLRecord<IDLString, V8SubAppsResultCode>> SubApps::add(
       script_state);
   GetService()->Add(
       AddOptionsToMojo(std::move(sub_apps_to_add)),
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+      resolver->WrapCallbackInScriptScope(BindOnce(
           [](ScriptPromiseResolver<IDLRecord<IDLString, V8SubAppsResultCode>>*
                  resolver,
              Vector<SubAppsServiceAddResultPtr> results_mojo) {
@@ -216,7 +216,7 @@ ScriptPromise<IDLRecord<IDLString, SubAppsListResult>> SubApps::list(
   auto* resolver = MakeGarbageCollected<
       ScriptPromiseResolver<IDLRecord<IDLString, SubAppsListResult>>>(
       script_state);
-  GetService()->List(resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+  GetService()->List(resolver->WrapCallbackInScriptScope(BindOnce(
       [](ScriptPromiseResolver<IDLRecord<IDLString, SubAppsListResult>>*
              resolver,
          SubAppsServiceListResultPtr result) {
@@ -258,7 +258,7 @@ ScriptPromise<IDLRecord<IDLString, V8SubAppsResultCode>> SubApps::remove(
       script_state);
   GetService()->Remove(
       manifest_id_paths,
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+      resolver->WrapCallbackInScriptScope(BindOnce(
           [](ScriptPromiseResolver<IDLRecord<IDLString, V8SubAppsResultCode>>*
                  resolver,
              Vector<SubAppsServiceRemoveResultPtr> results_mojo) {

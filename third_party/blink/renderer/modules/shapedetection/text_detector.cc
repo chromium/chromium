@@ -30,7 +30,7 @@ TextDetector::TextDetector(ExecutionContext* context) : text_service_(context) {
   context->GetBrowserInterfaceBroker().GetInterface(
       text_service_.BindNewPipeAndPassReceiver(task_runner));
 
-  text_service_.set_disconnect_handler(WTF::BindOnce(
+  text_service_.set_disconnect_handler(BindOnce(
       &TextDetector::OnTextServiceConnectionError, WrapWeakPersistent(this)));
 }
 
@@ -60,8 +60,8 @@ ScriptPromise<IDLSequence<DetectedText>> TextDetector::detect(
   text_service_requests_.insert(resolver);
   text_service_->Detect(
       std::move(*bitmap),
-      WTF::BindOnce(&TextDetector::OnDetectText, WrapPersistent(this),
-                    WrapPersistent(resolver)));
+      BindOnce(&TextDetector::OnDetectText, WrapPersistent(this),
+               WrapPersistent(resolver)));
   return promise;
 }
 

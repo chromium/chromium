@@ -813,8 +813,8 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
     mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
         url_loader_factory;
   };
-  // TODO(crbug.com/918702) WTF::HashMap cannot use base::UnguessableToken as a
-  // key. As a workaround uses WTF::String as a key instead.
+  // TODO(crbug.com/918702) HashMap cannot use base::UnguessableToken as a
+  // key. As a workaround uses String as a key instead.
   HashMap<String, std::unique_ptr<RaceNetworkRequestInfo>>
       race_network_requests_;
   HashMap<int, RaceNetworkRequestInfo*> race_network_request_fetch_event_ids_;

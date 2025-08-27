@@ -55,8 +55,8 @@ BarcodeDetectorStatics::EnumerateSupportedFormats(ScriptState* script_state) {
   get_supported_format_requests_.insert(resolver);
   EnsureServiceConnection();
   service_->EnumerateSupportedFormats(
-      WTF::BindOnce(&BarcodeDetectorStatics::OnEnumerateSupportedFormats,
-                    WrapPersistent(this), WrapPersistent(resolver)));
+      BindOnce(&BarcodeDetectorStatics::OnEnumerateSupportedFormats,
+               WrapPersistent(this), WrapPersistent(resolver)));
   return promise;
 }
 
@@ -76,7 +76,7 @@ void BarcodeDetectorStatics::EnsureServiceConnection() {
   auto task_runner = context->GetTaskRunner(TaskType::kMiscPlatformAPI);
   context->GetBrowserInterfaceBroker().GetInterface(
       service_.BindNewPipeAndPassReceiver(task_runner));
-  service_.set_disconnect_handler(WTF::BindOnce(
+  service_.set_disconnect_handler(BindOnce(
       &BarcodeDetectorStatics::OnConnectionError, WrapWeakPersistent(this)));
 }
 

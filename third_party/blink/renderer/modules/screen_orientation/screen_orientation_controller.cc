@@ -60,8 +60,8 @@ ScreenOrientationController::ScreenOrientationController(LocalDOMWindow& window)
   // binding the interface until activation because no one would use it.
   if (page && page->IsPrerendering()) {
     DomWindow()->document()->AddPostPrerenderingActivationStep(
-        WTF::BindOnce(&ScreenOrientationController::BuildMojoConnection,
-                      WrapWeakPersistent(this)));
+        BindOnce(&ScreenOrientationController::BuildMojoConnection,
+                 WrapWeakPersistent(this)));
     return;
   }
   BuildMojoConnection();
@@ -200,7 +200,7 @@ void ScreenOrientationController::NotifyOrientationChangedInternal() {
   GetExecutionContext()
       ->GetTaskRunner(TaskType::kMiscPlatformAPI)
       ->PostTask(FROM_HERE,
-                 WTF::BindOnce(
+                 BindOnce(
                      [](ScreenOrientation* orientation) {
                        ScopedAllowFullscreen allow_fullscreen(
                            ScopedAllowFullscreen::kOrientationChange);
@@ -229,9 +229,9 @@ void ScreenOrientationController::lock(
   // prerendering browsing context, then append the following steps to this's
   // post-prerendering activation steps list and return promise.
   if (DomWindow()->document()->IsPrerendering()) {
-    DomWindow()->document()->AddPostPrerenderingActivationStep(WTF::BindOnce(
-        &ScreenOrientationController::LockOrientationInternal,
-        WrapWeakPersistent(this), orientation, std::move(callback)));
+    DomWindow()->document()->AddPostPrerenderingActivationStep(
+        BindOnce(&ScreenOrientationController::LockOrientationInternal,
+                 WrapWeakPersistent(this), orientation, std::move(callback)));
     return;
   }
 
@@ -249,8 +249,8 @@ void ScreenOrientationController::unlock() {
   // post-prerendering activation steps list and return promise.
   if (DomWindow()->document()->IsPrerendering()) {
     DomWindow()->document()->AddPostPrerenderingActivationStep(
-        WTF::BindOnce(&ScreenOrientationController::UnlockOrientationInternal,
-                      WrapWeakPersistent(this)));
+        BindOnce(&ScreenOrientationController::UnlockOrientationInternal,
+                 WrapWeakPersistent(this)));
     return;
   }
 
@@ -344,8 +344,8 @@ void ScreenOrientationController::LockOrientationInternal(
   pending_callback_ = std::move(callback);
   screen_orientation_service_->LockOrientation(
       orientation,
-      WTF::BindOnce(&ScreenOrientationController::OnLockOrientationResult,
-                    WrapWeakPersistent(this), ++request_id_));
+      BindOnce(&ScreenOrientationController::OnLockOrientationResult,
+               WrapWeakPersistent(this), ++request_id_));
 
   active_lock_ = true;
 }

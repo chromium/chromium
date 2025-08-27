@@ -322,8 +322,8 @@ ScriptPromise<FileSystemDirectoryHandle> StorageAccessHandle::getDirectory(
           kStorageAccessAPI_requestStorageAccess_BeyondCookies_getDirectory_Use);
   return StorageManagerFileSystemAccess::CheckStorageAccessIsAllowed(
       script_state, exception_state,
-      WTF::BindOnce(&StorageAccessHandle::GetDirectoryImpl,
-                    WrapWeakPersistent(this)));
+      BindOnce(&StorageAccessHandle::GetDirectoryImpl,
+               WrapWeakPersistent(this)));
 }
 
 void StorageAccessHandle::GetDirectoryImpl(
@@ -336,8 +336,8 @@ void StorageAccessHandle::GetDirectoryImpl(
     return;
   }
   remote->GetDirectory(
-      WTF::BindOnce(&StorageManagerFileSystemAccess::DidGetSandboxedFileSystem,
-                    WrapPersistent(resolver)));
+      BindOnce(&StorageManagerFileSystemAccess::DidGetSandboxedFileSystem,
+               WrapPersistent(resolver)));
 }
 
 ScriptPromise<StorageEstimate> StorageAccessHandle::estimate(
@@ -361,8 +361,8 @@ ScriptPromise<StorageEstimate> StorageAccessHandle::estimate(
         DOMExceptionCode::kInvalidStateError));
     return promise;
   }
-  remote->Estimate(WTF::BindOnce(&EstimateImplAfterRemoteEstimate,
-                                 WrapPersistent(resolver)));
+  remote->Estimate(blink::BindOnce(&EstimateImplAfterRemoteEstimate,
+                                   WrapPersistent(resolver)));
   return promise;
 }
 
