@@ -349,6 +349,13 @@ class QueryResults {
 
 // QueryOptions ----------------------------------------------------------------
 
+// Used to specify how to handle visits that had an HTTP response code of 404,
+// when making History queries that involve visits.
+enum class VisitQuery404sPolicy {
+  kInclude404s = 0,
+  kExclude404s,
+};
+
 struct QueryOptions {
   QueryOptions();
   QueryOptions(const QueryOptions&);
