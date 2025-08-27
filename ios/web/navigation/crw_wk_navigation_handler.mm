@@ -692,6 +692,27 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
                             userInfo:userInfo];
   }
 
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    if ([error.domain isEqualToString:@(web::kWebKitErrorDomain)] &&
+        error.code == web::kWebKitErrorCannotShowUrl &&
+        !error.userInfo[NSURLErrorFailingURLStringErrorKey]) {
+      // URL is expected in these errors, but it broke on iOS 26. Apply
+      // workaround until WebKit fix is shipped.
+      // TODO(crbug.com/441372052): Remove workaround.
+      NSString* urlString =
+          base::SysUTF8ToNSString(navigationContext->GetUrl().spec());
+
+      NSMutableDictionary* userInfo = [error.userInfo mutableCopy];
+      userInfo[NSURLErrorFailingURLStringErrorKey] = urlString;
+      userInfo[web::kNSErrorFailingURLKey] = urlString;
+      error = [NSError errorWithDomain:error.domain
+                                  code:error.code
+                              userInfo:userInfo];
+    }
+  }
+#endif
+
   // Handle load cancellation for directly cancelled navigations without
   // handling their potential errors. Otherwise, handle the error.
   if (self.pendingNavigationInfo.cancelled) {

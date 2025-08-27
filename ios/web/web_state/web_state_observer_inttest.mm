@@ -1260,42 +1260,51 @@ TEST_F(WebStateObserverTest, WebViewUnsupportedSchemeNavigation) {
 // Tests failed navigation because URL with a space is not supported by
 // WKWebView (crbug.com/934379).
 TEST_F(WebStateObserverTest, WebViewUnsupportedUrlNavigation) {
-// TODO(crbug.com/432002521): Re-enable the test on iOS26.
+  GURL url("http:// .test");
+
+  NavigationContext* context = nullptr;
+  int32_t nav_id = 0;
+
+  BOOL ios26 = NO;
 #if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
-    return;
+    ios26 = YES;
   }
 #endif
 
-  GURL url("http:// .test");
+  // iOS 26 fails earlier and does not issue these callbacks.
+  if (!ios26) {
+    // Perform a navigation to url with unsupported url, which will fail.
+    EXPECT_CALL(observer_, DidStartLoading(web_state()));
+    const WebStatePolicyDecider::RequestInfo expected_request_info(
+        ui::PageTransition::PAGE_TRANSITION_TYPED,
+        /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+        /*target_window_is_cross_origin=*/false,
+        /*is_user_initiated=*/false, /*user_tapped_recently=*/false);
+    EXPECT_CALL(*decider_, MockShouldAllowRequest(
+                               _, RequestInfoMatch(expected_request_info), _))
+        .WillOnce(
+            RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
+    EXPECT_CALL(observer_, DidStartNavigation(web_state(), _))
+        .WillOnce(VerifyPageStartedContext(
+            web_state(), url, ui::PageTransition::PAGE_TRANSITION_TYPED,
+            &context, &nav_id));
 
-  // Perform a navigation to url with unsupported url, which will fail.
-  NavigationContext* context = nullptr;
-  int32_t nav_id = 0;
-  EXPECT_CALL(observer_, DidStartLoading(web_state()));
-  const WebStatePolicyDecider::RequestInfo expected_request_info(
-      ui::PageTransition::PAGE_TRANSITION_TYPED,
-      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
-      /*target_window_is_cross_origin=*/false,
-      /*is_user_initiated=*/false, /*user_tapped_recently=*/false);
-  EXPECT_CALL(*decider_, MockShouldAllowRequest(
-                             _, RequestInfoMatch(expected_request_info), _))
-      .WillOnce(
-          RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
-  EXPECT_CALL(observer_, DidStartNavigation(web_state(), _))
-      .WillOnce(VerifyPageStartedContext(
-          web_state(), url, ui::PageTransition::PAGE_TRANSITION_TYPED, &context,
-          &nav_id));
+    EXPECT_CALL(observer_, DidStopLoading(web_state()));
+  }
 
-  EXPECT_CALL(observer_, DidStopLoading(web_state()));
   // Load placeholder by [WKWebView loadRequest].
   EXPECT_CALL(observer_, DidStartLoading(web_state()));
   EXPECT_CALL(observer_, DidStopLoading(web_state()));
 
-  EXPECT_CALL(observer_, DidFinishNavigation(web_state(), _))
-      .WillOnce(VerifyErrorFinishedContext(web_state(), url, &context, &nav_id,
-                                           /*committed=*/true,
-                                           net::ERR_FAILED));
+  if (ios26) {
+    EXPECT_CALL(observer_, DidFinishNavigation(web_state(), _));
+  } else {
+    EXPECT_CALL(observer_, DidFinishNavigation(web_state(), _))
+        .WillOnce(
+            VerifyErrorFinishedContext(web_state(), url, &context, &nav_id,
+                                       /*committed=*/true, net::ERR_FAILED));
+  }
 
   EXPECT_CALL(observer_,
               PageLoaded(web_state(), PageLoadCompletionStatus::FAILURE));
