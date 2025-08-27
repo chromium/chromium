@@ -53,7 +53,6 @@ declare_args() {
   # (https://crbug.com/40440396).
   # For details on the current state of modules in Chromium see
   # https://chromium.googlesource.com/chromium/src/+/main/docs/modules.md
-  # We explicitly need this flag in this file because it's read by this file.
   # Currently we enables this only when building for linux x64.
   use_clang_modules =
       # Clang modules doesn't work with translation_unit used in codesearch
