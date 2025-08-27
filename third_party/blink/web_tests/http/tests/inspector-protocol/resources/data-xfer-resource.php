@@ -48,9 +48,9 @@ while ($sent_data_size < $size) {
     $flush_size = $flush_every_x_bytes - ($sent_data_size % $flush_every_x_bytes);
     $wait_size = $wait_every_x_bytes - ($sent_data_size % $wait_every_x_bytes);
 
-    $send_size = min($flish_size, $wait_size);
+    $send_size = min($flush_size, $wait_size);
     if (!$send_size)
-        $send_size = max($flish_size, $wait_size);
+        $send_size = max($flush_size, $wait_size);
 
     send_data($send_size);
     if ($sent_data_size % $flush_every_x_bytes === 0)

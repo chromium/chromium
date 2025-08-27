@@ -9,6 +9,7 @@ url: http://127.0.0.1:8000/inspector-protocol/resources/data-xfer-resource.php?s
   headersSize: 171
   receivedDataSize: 4
   reportedTotalSize: 175
+  payload: {"body":"aaaa","base64Encoded":false}
 
 url: http://127.0.0.1:8000/inspector-protocol/resources/data-xfer-resource.php?size=4&flush_header_with_x_bytes=1&wait_after_headers_packet=25&flush_every=1&wait_every_x_bytes=1&wait_duration_every_x_bytes=25
   isChunked: false
@@ -17,6 +18,7 @@ url: http://127.0.0.1:8000/inspector-protocol/resources/data-xfer-resource.php?s
   headersSize: 171
   receivedDataSize: 4
   reportedTotalSize: 175
+  payload: {"body":"aaaa","base64Encoded":false}
 
 url: http://127.0.0.1:8000/inspector-protocol/resources/data-xfer-resource.php?redirect=1
   isChunked: null
@@ -24,6 +26,7 @@ url: http://127.0.0.1:8000/inspector-protocol/resources/data-xfer-resource.php?r
   redirected: true
   headersSize: 0
   receivedDataSize: 0
+  payload: undefined
 
 url: http://127.0.0.1:8000/inspector-protocol/resources/data-xfer-resource.php?cached=1
   isChunked: false
@@ -32,6 +35,7 @@ url: http://127.0.0.1:8000/inspector-protocol/resources/data-xfer-resource.php?c
   headersSize: 101
   receivedDataSize: 0
   reportedTotalSize: 101
+  payload: {"body":"","base64Encoded":false}
 
 url: http://127.0.0.1:8000/inspector-protocol/resources/data-xfer-resource.php?
   isChunked: false
@@ -40,5 +44,6 @@ url: http://127.0.0.1:8000/inspector-protocol/resources/data-xfer-resource.php?
   headersSize: 171
   receivedDataSize: 0
   reportedTotalSize: 171
+  payload: {"body":"","base64Encoded":false}
 
 
