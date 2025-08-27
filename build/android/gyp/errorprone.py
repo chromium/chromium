@@ -208,6 +208,16 @@ def main():
     errorprone_flags += [
         '-XepOpt:NullAway:KnownInitializers=' + ','.join(init_methods)
     ]
+    # Exclude fields with these annotations from null-checking.
+    mock_annotations = [
+        'org.mockito.Captor',
+        'org.mockito.Mock',
+        'org.mockito.Spy',
+    ]
+    errorprone_flags += [
+        '-XepOpt:NullAway:ExcludedFieldAnnotations=' +
+        ','.join(mock_annotations)
+    ]
 
   # Make everything a warning so that when treat_warnings_as_errors is false,
   # they do not fail the build.
