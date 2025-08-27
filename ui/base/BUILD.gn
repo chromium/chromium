@@ -383,8 +383,8 @@ component("base") {
       "base_window.h",
       "emoji/emoji_panel_helper.h",
       "owned_window_anchor.h",
+      "pointer/pointer_device.cc",
       "pointer/pointer_device.h",
-      "pointer/pointer_device_util.cc",
       "text/bytes_formatting.cc",
       "text/bytes_formatting.h",
       "themed_vector_icon.cc",
@@ -435,8 +435,7 @@ component("base") {
       sources += [ "pointer/pointer_device_web_engine.cc" ]
     } else {
       # Empty implementation for all other cases.
-      sources += [ "pointer/pointer_device.cc" ]
-      sources -= [ "pointer/pointer_device_util.cc" ]
+      sources += [ "pointer/pointer_device_default.cc" ]
     }
   }
 

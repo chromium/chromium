@@ -4,33 +4,63 @@
 
 #include "ui/base/pointer/pointer_device.h"
 
+#include <utility>
+
+#include "base/check.h"
+#include "base/check_op.h"
+#include "build/build_config.h"
+
 namespace ui {
 
-// Platforms supporting touch link in an alternate implementation of this
-// method.
-TouchScreensAvailability GetTouchScreensAvailability() {
-  return TouchScreensAvailability::NONE;
-}
+// Platform-specific files implement this.
+std::pair<int, int> GetAvailablePointerAndHoverTypesImpl();
 
-int MaxTouchPoints() {
-  return 0;
-}
+namespace {
+
+int available_pointer_types_for_testing = POINTER_TYPE_NONE;
+int available_hover_types_for_testing = HOVER_TYPE_NONE;
+bool return_available_pointer_and_hover_types_for_testing = false;
+
+}  // namespace
 
 std::pair<int, int> GetAvailablePointerAndHoverTypes() {
-  // Assume a non-touch-device with a mouse
-  return std::make_pair(POINTER_TYPE_FINE, HOVER_TYPE_HOVER);
+  return return_available_pointer_and_hover_types_for_testing
+             ? std::make_pair(available_pointer_types_for_testing,
+                              available_hover_types_for_testing)
+             : GetAvailablePointerAndHoverTypesImpl();
 }
 
-PointerType GetPrimaryPointerType(int available_pointer_types) {
-  // Assume a non-touch-device with a mouse
-  return POINTER_TYPE_FINE;
+void SetAvailablePointerAndHoverTypesForTesting(int available_pointer_types,
+                                                int available_hover_types) {
+  return_available_pointer_and_hover_types_for_testing = true;
+  available_pointer_types_for_testing = available_pointer_types;
+  available_hover_types_for_testing = available_hover_types;
 }
 
-HoverType GetPrimaryHoverType(int available_hover_types) {
-  // Assume a non-touch-device with a mouse
-  return HOVER_TYPE_HOVER;
+#if !BUILDFLAG(IS_ANDROID)
+PointerType GetPrimaryPointerType() {
+  const int available_pointer_types = GetAvailablePointerAndHoverTypes().first;
+  if (available_pointer_types & POINTER_TYPE_FINE) {
+    return POINTER_TYPE_FINE;
+  }
+  if (available_pointer_types & POINTER_TYPE_COARSE) {
+    return POINTER_TYPE_COARSE;
+  }
+  DCHECK_EQ(available_pointer_types, POINTER_TYPE_NONE);
+  return POINTER_TYPE_NONE;
 }
 
+HoverType GetPrimaryHoverType() {
+  const int available_hover_types = GetAvailablePointerAndHoverTypes().second;
+  if (available_hover_types & HOVER_TYPE_HOVER) {
+    return HOVER_TYPE_HOVER;
+  }
+  DCHECK_EQ(available_hover_types, HOVER_TYPE_NONE);
+  return HOVER_TYPE_NONE;
+}
+#endif
+
+#if !BUILDFLAG(IS_WIN)
 std::optional<PointerDevice> GetPointerDevice(PointerDevice::Key key) {
   return std::nullopt;
 }
@@ -38,5 +68,6 @@ std::optional<PointerDevice> GetPointerDevice(PointerDevice::Key key) {
 std::vector<PointerDevice> GetPointerDevices() {
   return {};
 }
+#endif
 
 }  // namespace ui

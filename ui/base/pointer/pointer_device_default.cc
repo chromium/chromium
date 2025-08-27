@@ -2,27 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <utility>
+#include <vector>
 
-#include "build/build_config.h"
 #include "ui/base/pointer/pointer_device.h"
-
-#if !BUILDFLAG(IS_FUCHSIA)
-#error WebEngine only supports Fuchsia.
-#endif
 
 namespace ui {
 
 std::pair<int, int> GetAvailablePointerAndHoverTypesImpl() {
-  return {POINTER_TYPE_COARSE, HOVER_TYPE_NONE};
+  return {POINTER_TYPE_FINE, HOVER_TYPE_HOVER};
 }
 
 TouchScreensAvailability GetTouchScreensAvailability() {
-  return TouchScreensAvailability::ENABLED;
+  return TouchScreensAvailability::NONE;
 }
 
 int MaxTouchPoints() {
-  return 2;
+  return 0;
 }
 
 }  // namespace ui

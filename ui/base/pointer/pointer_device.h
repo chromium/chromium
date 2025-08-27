@@ -96,17 +96,13 @@ struct COMPONENT_EXPORT(UI_BASE) PointerDevice final {
   int32_t max_active_contacts;
 };
 
-int GetAvailablePointerTypes();
-int GetAvailableHoverTypes();
 COMPONENT_EXPORT(UI_BASE)
 std::pair<int, int> GetAvailablePointerAndHoverTypes();
 COMPONENT_EXPORT(UI_BASE)
 void SetAvailablePointerAndHoverTypesForTesting(int available_pointer_types,
                                                 int available_hover_types);
-COMPONENT_EXPORT(UI_BASE)
-PointerType GetPrimaryPointerType(int available_pointer_types);
-COMPONENT_EXPORT(UI_BASE)
-HoverType GetPrimaryHoverType(int available_hover_types);
+COMPONENT_EXPORT(UI_BASE) PointerType GetPrimaryPointerType();
+COMPONENT_EXPORT(UI_BASE) HoverType GetPrimaryHoverType();
 
 COMPONENT_EXPORT(UI_BASE)
 std::optional<PointerDevice> GetPointerDevice(PointerDevice::Key key);
