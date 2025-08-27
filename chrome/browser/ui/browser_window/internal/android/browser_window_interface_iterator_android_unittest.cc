@@ -19,6 +19,9 @@ bool VectorContains(const std::vector<BrowserWindowInterface*>& vector,
 }
 }  // namespace
 
+std::vector<BrowserWindowInterface*>
+GetBrowserWindowInterfacesOrderedByActivationForTesting();
+
 class BrowserWindowInterfaceIteratorAndroidUnitTest : public testing::Test {
  public:
   BrowserWindowInterfaceIteratorAndroidUnitTest() = default;
@@ -86,7 +89,7 @@ TEST_F(
     BrowserWindowInterfaceIteratorAndroidUnitTest,
     GetBrowserWindowInterfaceOrderedByActivationReturnsEmptyVectorWhenNoWindowsExist) {
   std::vector<BrowserWindowInterface*> browser_windows_ordered_by_activation =
-      GetBrowserWindowInterfacesOrderedByActivation();
+      GetBrowserWindowInterfacesOrderedByActivationForTesting();
   EXPECT_TRUE(browser_windows_ordered_by_activation.empty());
 }
 
@@ -106,7 +109,7 @@ TEST_F(
                                     /*is_top_resumed_activity=*/true);
 
   std::vector<BrowserWindowInterface*> browser_windows_ordered_by_activation =
-      GetBrowserWindowInterfacesOrderedByActivation();
+      GetBrowserWindowInterfacesOrderedByActivationForTesting();
 
   EXPECT_EQ(2u, browser_windows_ordered_by_activation.size());
   EXPECT_EQ(browser_window2, browser_windows_ordered_by_activation[0]);

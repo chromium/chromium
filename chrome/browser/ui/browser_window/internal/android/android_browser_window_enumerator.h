@@ -27,7 +27,8 @@ class BrowserWindowInterface;
 // This class is only safe to use as a thread-local variable.
 class AndroidBrowserWindowEnumerator {
  public:
-  explicit AndroidBrowserWindowEnumerator(
+  AndroidBrowserWindowEnumerator(
+      std::vector<BrowserWindowInterface*> browser_windows,
       bool enumerate_new_browser_windows = false);
   AndroidBrowserWindowEnumerator(const AndroidBrowserWindowEnumerator&) =
       delete;

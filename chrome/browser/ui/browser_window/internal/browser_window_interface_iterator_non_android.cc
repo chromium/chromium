@@ -16,13 +16,6 @@ std::vector<BrowserWindowInterface*> GetAllBrowserWindowInterfaces() {
   return results;
 }
 
-std::vector<BrowserWindowInterface*>
-GetBrowserWindowInterfacesOrderedByActivation() {
-  return std::vector<BrowserWindowInterface*>(
-      BrowserList::GetInstance()->begin_browsers_ordered_by_activation(),
-      BrowserList::GetInstance()->end_browsers_ordered_by_activation());
-}
-
 void ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
     base::FunctionRef<bool(BrowserWindowInterface*)> on_browser) {
   // Make a copy of the BrowserList to simplify the case where we need to

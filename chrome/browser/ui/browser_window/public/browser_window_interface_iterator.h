@@ -22,11 +22,6 @@ class BrowserWindowInterface;
 // or removed after the vector is returned.
 std::vector<BrowserWindowInterface*> GetAllBrowserWindowInterfaces();
 
-// Deprecated. Please use
-// ForEachCurrentBrowserWindowInterfaceOrderedByActivation() instead.
-std::vector<BrowserWindowInterface*>
-GetBrowserWindowInterfacesOrderedByActivation();
-
 // For these 2 functions, we chose not to simply return
 // std::vector<BrowserWindowInterface*> because doing so would open up the
 // possibility that a browser could be created or destroyed during iteration,

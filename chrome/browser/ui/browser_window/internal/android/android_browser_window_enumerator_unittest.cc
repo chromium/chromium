@@ -11,6 +11,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+std::vector<BrowserWindowInterface*>
+GetBrowserWindowInterfacesOrderedByActivationForTesting();
+
 // Heavily based on chrome/browser/ui/browser_list_enumerator_browsertest.h.
 class AndroidBrowserWindowEnumeratorTest : public ::testing::Test {
  public:
@@ -44,7 +47,8 @@ class AndroidBrowserWindowEnumeratorTest : public ::testing::Test {
 };
 
 TEST_F(AndroidBrowserWindowEnumeratorTest, EmptyEnumerator) {
-  AndroidBrowserWindowEnumerator enumerator;
+  AndroidBrowserWindowEnumerator enumerator(
+      GetBrowserWindowInterfacesOrderedByActivationForTesting());
   EXPECT_TRUE(enumerator.empty());
 }
 
@@ -54,7 +58,8 @@ TEST_F(AndroidBrowserWindowEnumeratorTest, BasicIterator) {
   BrowserWindowInterface* browser_window_3 = CreateBrowserWindow(/*task_id=*/3);
 
   std::set<BrowserWindowInterface*> visited;
-  AndroidBrowserWindowEnumerator enumerator;
+  AndroidBrowserWindowEnumerator enumerator(
+      GetBrowserWindowInterfacesOrderedByActivationForTesting());
   while (!enumerator.empty()) {
     visited.insert(enumerator.Next());
   }
@@ -70,7 +75,9 @@ TEST_F(AndroidBrowserWindowEnumeratorTest, IteratorWithInsertions) {
 
   // Start to scan the list.
   constexpr bool kEnumerateNewBrowser = true;
-  AndroidBrowserWindowEnumerator enumerator(kEnumerateNewBrowser);
+  AndroidBrowserWindowEnumerator enumerator(
+      GetBrowserWindowInterfacesOrderedByActivationForTesting(),
+      kEnumerateNewBrowser);
   std::set<BrowserWindowInterface*> visited;
 
   if (!enumerator.empty()) {
@@ -95,7 +102,9 @@ TEST_F(AndroidBrowserWindowEnumeratorTest, IteratorWithSkipInsertions) {
 
   // Start to scan the list.
   constexpr bool kEnumerateNewBrowser = false;
-  AndroidBrowserWindowEnumerator enumerator(kEnumerateNewBrowser);
+  AndroidBrowserWindowEnumerator enumerator(
+      GetBrowserWindowInterfacesOrderedByActivationForTesting(),
+      kEnumerateNewBrowser);
   std::set<BrowserWindowInterface*> visited;
 
   if (!enumerator.empty()) {
@@ -119,7 +128,8 @@ TEST_F(AndroidBrowserWindowEnumeratorTest, IteratorWithRemovals) {
   BrowserWindowInterface* browser_window_3 = CreateBrowserWindow(/*task_id=*/3);
 
   // Start to scan the list.
-  AndroidBrowserWindowEnumerator enumerator;
+  AndroidBrowserWindowEnumerator enumerator(
+      GetBrowserWindowInterfacesOrderedByActivationForTesting());
   std::set<BrowserWindowInterface*> visited;
 
   if (!enumerator.empty()) {

@@ -24,20 +24,29 @@ std::vector<BrowserWindowInterface*> CastBrowserWindowPtrValues(
 
   return browser_windows;
 }
-}  // namespace
-
-std::vector<BrowserWindowInterface*> GetAllBrowserWindowInterfaces() {
-  std::vector<int64_t> browser_window_ptr_values =
-      Java_BrowserWindowInterfaceIteratorAndroid_getAllBrowserWindowInterfaces(
-          AttachCurrentThread());
-
-  return CastBrowserWindowPtrValues(browser_window_ptr_values);
-}
 
 std::vector<BrowserWindowInterface*>
 GetBrowserWindowInterfacesOrderedByActivation() {
   std::vector<int64_t> browser_window_ptr_values =
       Java_BrowserWindowInterfaceIteratorAndroid_getBrowserWindowInterfacesOrderedByActivation(
+          AttachCurrentThread());
+
+  return CastBrowserWindowPtrValues(browser_window_ptr_values);
+}
+}  // namespace
+
+// Exposed here, but not in any header file. Unit tests need to declare this
+// function manually to use it. It's unusual, yes, but this is an Android-only
+// implementation detail for a cross-platform interface, so exposing it in a
+// header doesn't make sense.
+std::vector<BrowserWindowInterface*>
+GetBrowserWindowInterfacesOrderedByActivationForTesting() {
+  return GetBrowserWindowInterfacesOrderedByActivation();
+}
+
+std::vector<BrowserWindowInterface*> GetAllBrowserWindowInterfaces() {
+  std::vector<int64_t> browser_window_ptr_values =
+      Java_BrowserWindowInterfaceIteratorAndroid_getAllBrowserWindowInterfaces(
           AttachCurrentThread());
 
   return CastBrowserWindowPtrValues(browser_window_ptr_values);
@@ -48,7 +57,8 @@ void ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
   // Make a copy of the BrowserWindows from Java to simplify the case where we
   // need to add or remove a Browser during the loop.
   constexpr bool kEnumerateNewBrowser = false;
-  AndroidBrowserWindowEnumerator browser_windows_copy(kEnumerateNewBrowser);
+  AndroidBrowserWindowEnumerator browser_windows_copy(
+      GetBrowserWindowInterfacesOrderedByActivation(), kEnumerateNewBrowser);
   while (!browser_windows_copy.empty()) {
     if (!on_browser(browser_windows_copy.Next())) {
       break;
@@ -61,7 +71,8 @@ void ForEachCurrentAndNewBrowserWindowInterfaceOrderedByActivation(
   // Make a copy of the BrowserWindows from Java to simplify the case where we
   // need to add or remove a Browser during the loop.
   constexpr bool kEnumerateNewBrowser = true;
-  AndroidBrowserWindowEnumerator browser_windows_copy(kEnumerateNewBrowser);
+  AndroidBrowserWindowEnumerator browser_windows_copy(
+      GetBrowserWindowInterfacesOrderedByActivation(), kEnumerateNewBrowser);
   while (!browser_windows_copy.empty()) {
     if (!on_browser(browser_windows_copy.Next())) {
       break;

@@ -13,11 +13,12 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 
 AndroidBrowserWindowEnumerator::AndroidBrowserWindowEnumerator(
-    bool enumerate_new_browser_windows) {
+    std::vector<BrowserWindowInterface*> browser_windows,
+    bool enumerate_new_browser_windows)
+    : browser_windows_(browser_windows) {
   JNIEnv* env = base::android::AttachCurrentThread();
   j_enumerator_.Reset(Java_AndroidBrowserWindowEnumerator_create(
       env, reinterpret_cast<int64_t>(this), enumerate_new_browser_windows));
-  browser_windows_ = GetBrowserWindowInterfacesOrderedByActivation();
 }
 
 AndroidBrowserWindowEnumerator::~AndroidBrowserWindowEnumerator() {
