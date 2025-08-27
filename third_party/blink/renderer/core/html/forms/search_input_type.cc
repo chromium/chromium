@@ -104,8 +104,8 @@ void SearchInputType::StartSearchEventTimer() {
     GetElement()
         .GetDocument()
         .GetTaskRunner(TaskType::kUserInteraction)
-        ->PostTask(FROM_HERE, WTF::BindOnce(&HTMLInputElement::OnSearch,
-                                            WrapPersistent(&GetElement())));
+        ->PostTask(FROM_HERE, BindOnce(&HTMLInputElement::OnSearch,
+                                       WrapPersistent(&GetElement())));
     return;
   }
 

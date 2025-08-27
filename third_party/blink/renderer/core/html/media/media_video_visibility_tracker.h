@@ -70,7 +70,7 @@ class CORE_EXPORT MediaVideoVisibilityTracker final
 
   using ReportVisibilityCb = base::RepeatingCallback<void(bool)>;
   using TrackerAttachedToDocument = WeakMember<Document>;
-  using ClientIdsSet = WTF::HashSet<DisplayItemClientId>;
+  using ClientIdsSet = HashSet<DisplayItemClientId>;
 
   // `RequestVisibilityCallback` is used to enable computing video visibility
   // on-demand, in response to calls to the MediaPlayer interface

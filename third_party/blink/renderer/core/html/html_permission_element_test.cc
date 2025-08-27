@@ -270,7 +270,7 @@ class TestPermissionService : public PermissionService {
     }
 
     if (should_defer_registered_callback_) {
-      pepc_registered_callback_ = WTF::BindOnce(
+      pepc_registered_callback_ = BindOnce(
           &TestPermissionService::RegisterPageEmbeddedPermissionControlInternal,
           base::Unretained(this), std::move(permissions),
           std::move(pending_client));
@@ -398,8 +398,8 @@ class RegistrationWaiter {
   void PostDelayedTask() {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        WTF::BindOnce(&RegistrationWaiter::VerifyRegistration,
-                      base::Unretained(this)),
+        BindOnce(&RegistrationWaiter::VerifyRegistration,
+                 base::Unretained(this)),
         base::Milliseconds(100));
   }
   void VerifyRegistration() {
@@ -478,8 +478,8 @@ class DeferredChecker {
     test::RunPendingTasks();
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        WTF::BindOnce(&DeferredChecker::CheckClickingEnabled,
-                      base::Unretained(this), expected_enabled),
+        BindOnce(&DeferredChecker::CheckClickingEnabled, base::Unretained(this),
+                 expected_enabled),
         time);
     run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
@@ -497,8 +497,8 @@ class DeferredChecker {
     size_t current_size = ConsoleMessages().size();
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
-        WTF::BindOnce(&DeferredChecker::CheckConsoleMessagesSize,
-                      base::Unretained(this), current_size),
+        BindOnce(&DeferredChecker::CheckConsoleMessagesSize,
+                 base::Unretained(this), current_size),
         time);
     run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();

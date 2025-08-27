@@ -623,9 +623,8 @@ bool MediaVideoVisibilityTracker::MeetsVisibilityThreshold(
 
     HitTestResult result(HitTestForOcclusionRatio(
         VideoElement(), rect,
-        WTF::BindRepeating(&MediaVideoVisibilityTracker::ComputeOcclusion,
-                           WrapPersistent(this), client_ids_set,
-                           std::ref(counts))));
+        BindRepeating(&MediaVideoVisibilityTracker::ComputeOcclusion,
+                      WrapPersistent(this), client_ids_set, std::ref(counts))));
   }
 
   return HasEnoughVisibleAreaRemaining(occlusion_state_.occluded_area,

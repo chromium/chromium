@@ -198,7 +198,7 @@ class CORE_EXPORT AtomicHTMLToken {
     return dom_part_data_->type_;
   }
 
-  WTF::Vector<String> DOMPartMetadata() const {
+  Vector<String> DOMPartMetadata() const {
     DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
     DCHECK_EQ(type_, HTMLToken::kDOMPart);
     return dom_part_data_->metadata_;

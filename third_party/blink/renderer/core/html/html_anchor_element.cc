@@ -730,7 +730,7 @@ void HTMLAnchorElementBase::HandleClick(MouseEvent& event) {
     return;
   }
 
-  base::OnceClosure navigate_closure = WTF::BindOnce(
+  base::OnceClosure navigate_closure = blink::BindOnce(
       &HTMLAnchorElementBase::NavigateToHyperlink, WrapWeakPersistent(this),
       std::move(request), navigation_policy, event.isTrusted(),
       event.PlatformTimeStamp(), std::move(completed_url));

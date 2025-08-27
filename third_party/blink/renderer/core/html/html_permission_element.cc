@@ -452,8 +452,8 @@ void HTMLPermissionElement::AttachLayoutTree(AttachContext& context) {
   if (!intersection_observer_) {
     intersection_observer_ = IntersectionObserver::Create(
         GetDocument(),
-        WTF::BindRepeating(&HTMLPermissionElement::OnIntersectionChanged,
-                           WrapWeakPersistent(this)),
+        BindRepeating(&HTMLPermissionElement::OnIntersectionChanged,
+                      WrapWeakPersistent(this)),
         LocalFrameUkmAggregator::kPermissionElementIntersectionObserver,
         IntersectionObserver::Params{
             .margin = {Length::Fixed(kMarginVisibleContent)},
@@ -655,9 +655,9 @@ PermissionService* HTMLPermissionElement::GetPermissionService() {
   if (!permission_service_.is_bound()) {
     GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
         permission_service_.BindNewPipeAndPassReceiver(GetTaskRunner()));
-    permission_service_.set_disconnect_handler(WTF::BindOnce(
-        &HTMLPermissionElement::OnPermissionServiceConnectionFailed,
-        WrapWeakPersistent(this)));
+    permission_service_.set_disconnect_handler(
+        BindOnce(&HTMLPermissionElement::OnPermissionServiceConnectionFailed,
+                 WrapWeakPersistent(this)));
   }
 
   return permission_service_.get();
@@ -1064,8 +1064,8 @@ void HTMLPermissionElement::RequestPageEmbededPermissions() {
 
   GetPermissionService()->RequestPageEmbeddedPermission(
       std::move(descriptor),
-      WTF::BindOnce(&HTMLPermissionElement::OnEmbeddedPermissionsDecided,
-                    WrapWeakPersistent(this)));
+      BindOnce(&HTMLPermissionElement::OnEmbeddedPermissionsDecided,
+               WrapWeakPersistent(this)));
 }
 
 void HTMLPermissionElement::OnPermissionStatusChange(
@@ -1408,11 +1408,11 @@ void HTMLPermissionElement::UpdateText() {
           GetDocument().GetExecutionContext())) {
     GetTaskRunner()->PostTask(
         FROM_HERE,
-        WTF::BindOnce(&HTMLPermissionIconElement::SetIcon,
-                      WrapWeakPersistent(permission_internal_icon_.Get()),
-                      permission_count == 1 ? permission_name
-                                            : PermissionName::VIDEO_CAPTURE,
-                      is_precise_location_));
+        BindOnce(&HTMLPermissionIconElement::SetIcon,
+                 WrapWeakPersistent(permission_internal_icon_.Get()),
+                 permission_count == 1 ? permission_name
+                                       : PermissionName::VIDEO_CAPTURE,
+                 is_precise_location_));
   }
   AtomicString language_string = ComputeInheritedLanguage().LowerASCII();
 

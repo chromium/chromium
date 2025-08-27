@@ -178,8 +178,8 @@ void HTMLDetailsElement::ParseAttribute(
                             old_state, new_state, /*source=*/nullptr);
     pending_event_task_ = PostCancellableTask(
         *GetDocument().GetTaskRunner(TaskType::kDOMManipulation), FROM_HERE,
-        WTF::BindOnce(&HTMLDetailsElement::DispatchPendingEvent,
-                      WrapPersistent(this), params.reason));
+        BindOnce(&HTMLDetailsElement::DispatchPendingEvent,
+                 WrapPersistent(this), params.reason));
 
     Element* content =
         EnsureUserAgentShadowRoot(SlotAssignmentMode::kManual)

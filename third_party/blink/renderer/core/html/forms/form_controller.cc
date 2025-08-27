@@ -529,10 +529,9 @@ void FormController::RestoreControlStateOnUpgrade(ListedElement& control) {
 
 void FormController::ScheduleRestore() {
   document_->GetTaskRunner(TaskType::kInternalLoading)
-      ->PostTask(
-          FROM_HERE,
-          WTF::BindOnce(&FormController::RestoreAllControlsInDocumentOrder,
-                        WrapPersistent(this)));
+      ->PostTask(FROM_HERE,
+                 BindOnce(&FormController::RestoreAllControlsInDocumentOrder,
+                          WrapPersistent(this)));
 }
 
 void FormController::RestoreImmediately() {

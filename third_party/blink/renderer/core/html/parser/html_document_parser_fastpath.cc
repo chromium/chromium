@@ -303,11 +303,10 @@ struct ScanTextResult {
   String TryCanonicalizeString() const {
     DCHECK(!text.empty());
     if (is_newline_then_whitespace_string &&
-        text.size() < WTF::NewlineThenWhitespaceStringsTable::kTableSize) {
-      DCHECK(WTF::NewlineThenWhitespaceStringsTable::IsNewlineThenWhitespaces(
+        text.size() < NewlineThenWhitespaceStringsTable::kTableSize) {
+      DCHECK(NewlineThenWhitespaceStringsTable::IsNewlineThenWhitespaces(
           String(text)));
-      return WTF::NewlineThenWhitespaceStringsTable::GetStringForLength(
-          text.size());
+      return NewlineThenWhitespaceStringsTable::GetStringForLength(text.size());
     }
     return TextToString();
   }

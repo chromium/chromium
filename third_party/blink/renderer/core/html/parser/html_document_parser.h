@@ -286,7 +286,7 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   SequenceBound<BackgroundHTMLScanner> background_script_scanner_;
   HTMLPreloadScanner::BackgroundPtr background_scanner_;
   using BackgroundScanFn =
-      WTF::CrossThreadRepeatingFunction<void(const KURL&, const String&)>;
+      CrossThreadRepeatingFunction<void(const KURL&, const String&)>;
   BackgroundScanFn background_scan_fn_;
 
   scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner_;

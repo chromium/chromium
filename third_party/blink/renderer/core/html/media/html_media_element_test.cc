@@ -234,7 +234,7 @@ class TestMediaPlayerObserver final
 
   void OnPictureInPictureAvailabilityChanged(bool available) override {}
 
-  void OnAudioOutputSinkChanged(const WTF::String& hashed_device_id) override {}
+  void OnAudioOutputSinkChanged(const String& hashed_device_id) override {}
 
   void OnUseAudioServiceChanged(bool uses_audio_service) override {
     received_uses_audio_service_ = uses_audio_service;
@@ -1383,17 +1383,17 @@ TEST_P(HTMLMediaElementTest, SendMediaMetadataChangedToObserver) {
                              media_content_type, is_encrypted_media);
   EXPECT_TRUE(ReceivedRemotePlaybackMetadataChange(
       media_session::mojom::blink::RemotePlaybackMetadata::New(
-          "unknown", WTF::String(media::GetCodecName(audio_codec)), false,
-          false, WTF::String(), is_encrypted_media)));
+          "unknown", String(media::GetCodecName(audio_codec)), false, false,
+          String(), is_encrypted_media)));
 
   has_video = true;
   NotifyMediaMetadataChanged(has_audio, has_video, audio_codec, video_codec,
                              media_content_type, is_encrypted_media);
   EXPECT_TRUE(ReceivedRemotePlaybackMetadataChange(
       media_session::mojom::blink::RemotePlaybackMetadata::New(
-          WTF::String(media::GetCodecName(video_codec)),
-          WTF::String(media::GetCodecName(audio_codec)), false, false,
-          WTF::String(), is_encrypted_media)));
+          String(media::GetCodecName(video_codec)),
+          String(media::GetCodecName(audio_codec)), false, false, String(),
+          is_encrypted_media)));
 }
 
 TEST_P(HTMLMediaElementTest, SendMediaSizeChangeToObserver) {
@@ -1417,10 +1417,9 @@ TEST_P(HTMLMediaElementTest, SendRemotePlaybackMetadataChangeToObserver) {
   NotifyRemotePlaybackDisabled(is_remote_playback_disabled);
   EXPECT_TRUE(ReceivedRemotePlaybackMetadataChange(
       media_session::mojom::blink::RemotePlaybackMetadata::New(
-          WTF::String(media::GetCodecName(video_codec)),
-          WTF::String(media::GetCodecName(audio_codec)),
-          is_remote_playback_disabled, is_remote_playback_started,
-          WTF::String(), is_encrypted_media)));
+          String(media::GetCodecName(video_codec)),
+          String(media::GetCodecName(audio_codec)), is_remote_playback_disabled,
+          is_remote_playback_started, String(), is_encrypted_media)));
 }
 
 TEST_P(HTMLMediaElementTest, SendUseAudioServiceChangedToObserver) {

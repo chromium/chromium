@@ -893,9 +893,9 @@ void HTMLDocumentParser::SchedulePumpTokenizer(bool from_finish_append) {
   }
   loading_task_runner_->PostDelayedTask(
       FROM_HERE,
-      WTF::BindOnce(&HTMLDocumentParser::DeferredPumpTokenizerIfPossible,
-                    WrapPersistent(this), from_finish_append,
-                    base::TimeTicks::Now()),
+      blink::BindOnce(&HTMLDocumentParser::DeferredPumpTokenizerIfPossible,
+                      WrapPersistent(this), from_finish_append,
+                      base::TimeTicks::Now()),
       delay);
   task_runner_state_->SetState(
       HTMLDocumentParserState::DeferredParserState::kScheduled);
@@ -915,9 +915,9 @@ void HTMLDocumentParser::ScheduleEndIfDelayed() {
   if (!task_runner_state_->IsScheduled()) {
     loading_task_runner_->PostTask(
         FROM_HERE,
-        WTF::BindOnce(&HTMLDocumentParser::DeferredPumpTokenizerIfPossible,
-                      WrapPersistent(this),
-                      /*from_finish_append=*/false, base::TimeTicks::Now()));
+        blink::BindOnce(&HTMLDocumentParser::DeferredPumpTokenizerIfPossible,
+                        WrapPersistent(this),
+                        /*from_finish_append=*/false, base::TimeTicks::Now()));
     yield_timer_ = std::make_unique<base::ElapsedTimer>();
   }
   // If a pump is already scheduled, it's OK to just upgrade it to one

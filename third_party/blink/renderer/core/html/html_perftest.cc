@@ -63,7 +63,7 @@ TEST(HTMLParsePerfTest, Speedometer) {
     base::ElapsedTimer html_timer;
     for (int i = 0; i < html_parse_iterations; ++i) {
       for (const base::Value& html : json->GetList()) {
-        WTF::String html_wtf(html.GetString());
+        String html_wtf(html.GetString());
         document.body()->SetInnerHTMLWithoutTrustedTypes(html_wtf);
       }
     }

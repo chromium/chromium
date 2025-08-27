@@ -114,7 +114,7 @@ class MockCanvasAsyncBlobCreatorWithoutComplete
   void ScheduleInitiateEncoding(double quality) override {
     PostDelayedTaskToCurrentThread(
         FROM_HERE,
-        WTF::BindOnce(
+        blink::BindOnce(
             &MockCanvasAsyncBlobCreatorWithoutComplete::InitiateEncoding,
             WrapPersistent(this), quality, base::TimeTicks::Max()),
         /*delay_ms=*/0);

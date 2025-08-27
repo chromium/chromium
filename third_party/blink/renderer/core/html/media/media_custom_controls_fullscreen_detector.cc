@@ -92,7 +92,7 @@ void MediaCustomControlsFullscreenDetector::Attach() {
 
   viewport_intersection_observer_ = IntersectionObserver::Create(
       video_element_->GetDocument(),
-      WTF::BindRepeating(
+      BindRepeating(
           &MediaCustomControlsFullscreenDetector::OnIntersectionChanged,
           WrapWeakPersistent(this)),
       LocalFrameUkmAggregator::kMediaIntersectionObserver,
@@ -185,10 +185,10 @@ void MediaCustomControlsFullscreenDetector::UpdateDominantAndFullscreenStatus(
   VideoElement()
       .GetDocument()
       .GetTaskRunner(TaskType::kInternalMedia)
-      ->PostTask(FROM_HERE, WTF::BindOnce(update_dominant_and_fullscreen,
-                                          WrapWeakPersistent(this),
-                                          is_dominant_visible_content,
-                                          is_effectively_fullscreen));
+      ->PostTask(
+          FROM_HERE,
+          BindOnce(update_dominant_and_fullscreen, WrapWeakPersistent(this),
+                   is_dominant_visible_content, is_effectively_fullscreen));
 }
 
 void MediaCustomControlsFullscreenDetector::OnIntersectionChanged(

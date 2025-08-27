@@ -669,8 +669,8 @@ void ListedElement::SetNeedsValidityCheck() {
     element.GetDocument()
         .GetTaskRunner(TaskType::kDOMManipulation)
         ->PostTask(FROM_HERE,
-                   WTF::BindOnce(&ListedElement::UpdateVisibleValidationMessage,
-                                 WrapPersistent(this)));
+                   BindOnce(&ListedElement::UpdateVisibleValidationMessage,
+                            WrapPersistent(this)));
   }
 }
 

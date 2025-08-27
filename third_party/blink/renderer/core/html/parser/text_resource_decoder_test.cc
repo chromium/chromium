@@ -27,7 +27,7 @@ TEST(TextResourceDecoderTest, UTF8Decode) {
       std::make_unique<TextResourceDecoder>(
           TextResourceDecoderOptions::CreateUTF8Decode());
   const unsigned char kFooUTF8WithBOM[] = {0xef, 0xbb, 0xbf, 0x66, 0x6f, 0x6f};
-  WTF::String decoded = decoder->Decode(base::span(kFooUTF8WithBOM));
+  String decoded = decoder->Decode(base::span(kFooUTF8WithBOM));
   decoded = decoded + decoder->Flush();
   EXPECT_EQ(Utf8Encoding(), decoder->Encoding());
   EXPECT_EQ("foo", decoded);
@@ -39,7 +39,7 @@ TEST(TextResourceDecoderTest, UTF8DecodeWithoutBOM) {
       std::make_unique<TextResourceDecoder>(
           TextResourceDecoderOptions::CreateUTF8DecodeWithoutBOM());
   const unsigned char kFooUTF8WithBOM[] = {0xef, 0xbb, 0xbf, 0x66, 0x6f, 0x6f};
-  WTF::String decoded = decoder->Decode(base::span(kFooUTF8WithBOM));
+  String decoded = decoder->Decode(base::span(kFooUTF8WithBOM));
   decoded = decoded + decoder->Flush();
   EXPECT_EQ(Utf8Encoding(), decoder->Encoding());
   EXPECT_EQ(
@@ -53,7 +53,7 @@ TEST(TextResourceDecoderTest, BasicUTF16) {
   std::unique_ptr<TextResourceDecoder> decoder =
       std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
           TextResourceDecoderOptions::kPlainTextContent));
-  WTF::String decoded;
+  String decoded;
 
   const unsigned char kFooLE[] = {0xff, 0xfe, 0x66, 0x00,
                                   0x6f, 0x00, 0x6f, 0x00};

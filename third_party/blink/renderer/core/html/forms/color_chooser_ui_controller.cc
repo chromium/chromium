@@ -100,7 +100,7 @@ void ColorChooserUIController::OpenColorChooser() {
       chooser_.BindNewPipeAndPassReceiver(runner),
       receiver_.BindNewPipeAndPassRemote(runner), client_->CurrentColor().Rgb(),
       client_->Suggestions());
-  receiver_.set_disconnect_handler(WTF::BindOnce(
+  receiver_.set_disconnect_handler(BindOnce(
       &ColorChooserUIController::EndChooser, WrapWeakPersistent(this)));
 }
 #endif

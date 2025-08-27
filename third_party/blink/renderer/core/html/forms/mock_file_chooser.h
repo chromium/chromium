@@ -28,8 +28,8 @@ class MockFileChooser : public mojom::blink::FileChooser {
       : broker_(broker), reached_callback_(std::move(reached_callback)) {
     broker.SetBinderForTesting(
         FileChooser::Name_,
-        WTF::BindRepeating(&MockFileChooser::BindFileChooserReceiver,
-                           WTF::Unretained(this)));
+        BindRepeating(&MockFileChooser::BindFileChooserReceiver,
+                      Unretained(this)));
   }
 
   ~MockFileChooser() override {

@@ -46,7 +46,7 @@ class CORE_EXPORT DateTimeChooserClient : public GarbageCollectedMixin {
 
   virtual Element& OwnerElement() const = 0;
   // Called when user picked a value.
-  virtual void DidChooseValue(const WTF::String&) = 0;
+  virtual void DidChooseValue(const String&) = 0;
   // Called when user picked a value.
   virtual void DidChooseValue(double) = 0;
   // Called when chooser has ended.

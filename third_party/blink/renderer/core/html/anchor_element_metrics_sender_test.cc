@@ -61,16 +61,14 @@ class MockAnchorElementMetricsHost
   }
 
   void ReportAnchorElementsEnteredViewport(
-      WTF::Vector<mojom::blink::AnchorElementEnteredViewportPtr> elements)
-      override {
+      Vector<mojom::blink::AnchorElementEnteredViewportPtr> elements) override {
     for (auto& element : elements) {
       entered_viewport_.emplace_back(std::move(element));
     }
   }
 
   void ReportAnchorElementsLeftViewport(
-      WTF::Vector<mojom::blink::AnchorElementLeftViewportPtr> elements)
-      override {
+      Vector<mojom::blink::AnchorElementLeftViewportPtr> elements) override {
     for (auto& element : elements) {
       left_viewport_.emplace_back(std::move(element));
     }
@@ -98,16 +96,16 @@ class MockAnchorElementMetricsHost
   }
 
   void ReportAnchorElementsPositionUpdate(
-      WTF::Vector<mojom::blink::AnchorElementPositionUpdatePtr>
-          position_updates) override {
+      Vector<mojom::blink::AnchorElementPositionUpdatePtr> position_updates)
+      override {
     for (auto& position_update : position_updates) {
       positions_[position_update->anchor_id] = std::move(position_update);
     }
   }
 
   void ReportNewAnchorElements(
-      WTF::Vector<mojom::blink::AnchorElementMetricsPtr> elements,
-      const WTF::Vector<uint32_t>& removed_elements) override {
+      Vector<mojom::blink::AnchorElementMetricsPtr> elements,
+      const Vector<uint32_t>& removed_elements) override {
     for (auto& element : elements) {
       auto [it, inserted] = anchor_ids_.insert(element->anchor_id);
       // Ignore duplicates.
@@ -177,8 +175,7 @@ class AnchorElementMetricsSenderTest : public SimTest {
 
     MainFrame().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
         mojom::blink::AnchorElementMetricsHost::Name_,
-        WTF::BindRepeating(&AnchorElementMetricsSenderTest::Bind,
-                           WTF::Unretained(this)));
+        BindRepeating(&AnchorElementMetricsSenderTest::Bind, Unretained(this)));
   }
 
   void TearDown() override {

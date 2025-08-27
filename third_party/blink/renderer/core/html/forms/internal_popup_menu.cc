@@ -731,7 +731,7 @@ void InternalPopupMenu::DisconnectClient() {
 }
 
 void InternalPopupMenu::SetMenuListOptionsBoundsInAXTree(
-    WTF::Vector<gfx::Rect>& options_bounds,
+    Vector<gfx::Rect>& options_bounds,
     gfx::Point popup_origin) {
   WebFrameWidgetImpl* widget =
       WebLocalFrameImpl::FromFrame(owner_element_->GetDocument().GetFrame())

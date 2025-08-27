@@ -92,7 +92,7 @@ RenderingContextDescriptionCodec::RenderingContextDescriptionCodec(
   key_.set<RenderingAPIField>(
       static_cast<uint32_t>(context->GetRenderingAPI()));
   // The padding field ensures at least one bit is set in the key in order
-  // to avoid a key == 0, which is not supported by WTF::HashSet
+  // to avoid a key == 0, which is not supported by blink::HashSet.
   key_.set<PaddingField>(true);
 }
 

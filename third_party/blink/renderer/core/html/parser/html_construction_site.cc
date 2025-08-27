@@ -180,11 +180,10 @@ static String CheckWhitespaceAndConvertToString(const StringView& string,
                                                 RecomputeMode recompute_mode) {
   switch (whitespace_mode) {
     case WhitespaceMode::kNewlineThenWhitespace:
-      DCHECK(WTF::NewlineThenWhitespaceStringsTable::IsNewlineThenWhitespaces(
-          string));
-      if (string.length() <
-          WTF::NewlineThenWhitespaceStringsTable::kTableSize) {
-        return WTF::NewlineThenWhitespaceStringsTable::GetStringForLength(
+      DCHECK(
+          NewlineThenWhitespaceStringsTable::IsNewlineThenWhitespaces(string));
+      if (string.length() < NewlineThenWhitespaceStringsTable::kTableSize) {
+        return NewlineThenWhitespaceStringsTable::GetStringForLength(
             string.length());
       }
       [[fallthrough]];

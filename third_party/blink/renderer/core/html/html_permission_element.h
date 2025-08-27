@@ -274,9 +274,8 @@ class CORE_EXPORT HTMLPermissionElement
     void Fired() final { (element_->*function_)(this); }
 
     base::OnceClosure BindTimerClosure() final {
-      return WTF::BindOnce(&DisableReasonExpireTimer::RunInternalTrampoline,
-                           WTF::Unretained(this),
-                           WrapWeakPersistent(element_.Get()));
+      return BindOnce(&DisableReasonExpireTimer::RunInternalTrampoline,
+                      Unretained(this), WrapWeakPersistent(element_.Get()));
     }
 
    private:

@@ -701,8 +701,8 @@ bool HTMLDialogElement::DispatchToggleEvents(bool opening,
                           old_state, new_state, source);
   pending_toggle_event_task_ = PostCancellableTask(
       *GetDocument().GetTaskRunner(TaskType::kDOMManipulation), FROM_HERE,
-      WTF::BindOnce(&HTMLDialogElement::DispatchPendingToggleEvent,
-                    WrapPersistent(this)));
+      BindOnce(&HTMLDialogElement::DispatchPendingToggleEvent,
+               WrapPersistent(this)));
   return true;
 }
 
