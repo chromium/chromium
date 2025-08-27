@@ -118,6 +118,7 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="In progress">MountError::kInProgress</int>
   <int value="19" label="Cancelled">MountError::kCancelled</int>
   <int value="20" label="Busy">MountError::kBusy</int>
+  <int value="21" label="Corrupted">MountError::kCorrupted</int>
 </enum>
 
 <enum name="CrosDisksDeviceMediaType">
@@ -207,6 +208,9 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="Invalid - Busy">
     100 * MountType::kInvalid + MountError::kBusy
   </int>
+  <int value="21" label="Invalid - Corrupted">
+    100 * MountType::kInvalid + MountError::kCorrupted
+  </int>
   <int value="100" label="Device - Success">
     100 * MountType::kDevice + MountError::kNone
   </int>
@@ -269,6 +273,9 @@ chromium-metrics-reviews@google.com.
   </int>
   <int value="120" label="Device - Busy">
     100 * MountType::kDevice + MountError::kBusy
+  </int>
+  <int value="121" label="Device - Corrupted">
+    100 * MountType::kDevice + MountError::kCorrupted
   </int>
   <int value="200" label="Archive - Success">
     100 * MountType::kArchive + MountError::kNone
@@ -333,6 +340,9 @@ chromium-metrics-reviews@google.com.
   <int value="220" label="Archive - Busy">
     100 * MountType::kArchive + MountError::kBusy
   </int>
+  <int value="221" label="Archive - Corrupted">
+    100 * MountType::kArchive + MountError::kCorrupted
+  </int>
   <int value="300" label="Network - Success">
     100 * MountType::kNetworkStorage + MountError::kNone
   </int>
@@ -395,6 +405,9 @@ chromium-metrics-reviews@google.com.
   </int>
   <int value="320" label="Network - Busy">
     100 * MountType::kNetworkStorage + MountError::kBusy
+  </int>
+  <int value="321" label="Network - Corrupted">
+    100 * MountType::kNetworkStorage + MountError::kCorrupted
   </int>
 </enum>
 
