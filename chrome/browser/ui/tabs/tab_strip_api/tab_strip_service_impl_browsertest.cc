@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_impl.h"
 
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -50,25 +51,35 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
     move_events.push_back(std::move(event));
   }
 
-  void OnTabDataChanged(tabs_api::mojom::OnTabDataChangedEventPtr& event) {
-    auto& id = event->tab->id;
+  void OnDataChanged(tabs_api::mojom::OnDataChangedEventPtr& event) {
     // TODO(crbug.com/412738255): this is a hack, because we are not correctly
     // adding the initial tab that is created by the tab strip. We should have
     // a test for GetTabSnapshot and properly populate the initial tab.
-    if (!tabs.contains(std::string(id.Id()))) {
-      return;
+    const auto& data = event->data;
+    switch (data->which()) {
+      case tabs_api::mojom::Data::Tag::kTab: {
+        const auto& tab = data->get_tab();
+        std::string id_str = std::string(tab->id.Id());
+        if (tabs.contains(id_str)) {
+          tabs.at(id_str) = tab.Clone();
+        }
+        break;
+      }
+      case tabs_api::mojom::Data::Tag::kTabGroup:
+      case tabs_api::mojom::Data::Tag::kSplitTab:
+        // TODO(crbug.com/412955607): implement this.
+        break;
+      case tabs_api::mojom::Data::Tag::kTabStrip:
+      case tabs_api::mojom::Data::Tag::kPinnedTabs:
+      case tabs_api::mojom::Data::Tag::kUnpinnedTabs:
+        NOTIMPLEMENTED();
+        break;
     }
-    tabs.at(std::string(id.Id())) = std::move(event->tab);
   }
 
   void OnTabGroupCreated(tabs_api::mojom::OnTabGroupCreatedEventPtr& event) {
     // TODO(crbug.com/412955607): implement this.
     group_events.push_back(std::move(event));
-  }
-
-  void OnTabGroupVisualsChanged(
-      tabs_api::mojom::OnTabGroupVisualsChangedEventPtr& event) {
-    // TODO(crbug.com/412955607): implement this.
   }
 
   void OnTabEvents(std::vector<tabs_api::mojom::TabsEventPtr> events) override {
@@ -83,15 +94,11 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
         case tabs_api::mojom::TabsEvent::Tag::kTabMovedEvent:
           OnTabMoved(event->get_tab_moved_event());
           break;
-        case tabs_api::mojom::TabsEvent::Tag::kTabDataChangedEvent:
-          OnTabDataChanged(event->get_tab_data_changed_event());
+        case tabs_api::mojom::TabsEvent::Tag::kDataChangedEvent:
+          OnDataChanged(event->get_data_changed_event());
           break;
         case tabs_api::mojom::TabsEvent::Tag::kTabGroupCreatedEvent:
           OnTabGroupCreated(event->get_tab_group_created_event());
-          break;
-        case tabs_api::mojom::TabsEvent::Tag::kTabGroupVisualsChangedEvent:
-          OnTabGroupVisualsChanged(
-              event->get_tab_group_visuals_changed_event());
           break;
       }
     }

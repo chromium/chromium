@@ -85,14 +85,11 @@ union TabsEvent {
   // When a tab has been moved.
   OnTabMovedEvent tab_moved_event;
 
-  // When tab data has been updated.
-  OnTabDataChangedEvent tab_data_changed_event;
+  // When data has been updated.
+  OnDataChangedEvent data_changed_event;
 
   // When a new tab group has been created.
   OnTabGroupCreatedEvent tab_group_created_event;
-
-  // When a tab group's visuals have been changed.
-  OnTabGroupVisualsChangedEvent tab_group_visuals_changed_event;
 };
 
 // TabsObserver is an interface a client can implement to receive events

@@ -64,18 +64,19 @@ mojom::OnTabMovedEventPtr ToEvent(const TabStripModelChange::Move& move) {
   return event;
 }
 
-mojom::OnTabDataChangedEventPtr ToEvent(
+mojom::OnDataChangedEventPtr ToEvent(
     const tabs_api::TabStripModelAdapter* adapter,
     size_t index,
     TabChangeType change_type) {
-  auto event = mojom::OnTabDataChangedEvent::New();
+  auto event = mojom::OnDataChangedEvent::New();
   auto tabs = adapter->GetTabs();
   if (index < tabs.size()) {
     auto& handle = tabs.at(index);
     auto renderer_data = adapter->GetTabRendererData(index);
     const ui::ColorProvider& color_provider = adapter->GetColorProvider();
-    event->tab = tabs_api::converters::BuildMojoTab(
+    auto mojo_tab = tabs_api::converters::BuildMojoTab(
         handle, renderer_data, color_provider, adapter->GetTabStates(handle));
+    event->data = mojom::Data::NewTab(std::move(mojo_tab));
   }
 
   return event;
@@ -119,13 +120,14 @@ std::vector<Event> ToEvent(const TabStripSelectionChange& selection,
     if (!adapter->GetIndexForHandle(affected_tab).has_value()) {
       continue;
     }
-    auto event = mojom::OnTabDataChangedEvent::New();
+    auto event = mojom::OnDataChangedEvent::New();
     auto renderer_data = adapter->GetTabRendererData(
         adapter->GetIndexForHandle(affected_tab).value());
     const ui::ColorProvider& color_provider = adapter->GetColorProvider();
-    event->tab = tabs_api::converters::BuildMojoTab(
+    auto mojo_tab = tabs_api::converters::BuildMojoTab(
         affected_tab, renderer_data, color_provider,
         adapter->GetTabStates(affected_tab));
+    event->data = mojom::Data::NewTab(std::move(mojo_tab));
     events.push_back(std::move(event));
   }
   return events;
@@ -178,12 +180,11 @@ mojom::OnTabMovedEventPtr FromTabGroupedStateChangedToTabMovedEvent(
   return event;
 }
 
-mojom::OnTabGroupVisualsChangedEventPtr ToTabGroupVisualsChangedEvent(
-    const TabGroupChange& tab_group_change) {
+mojom::OnDataChangedEventPtr ToEvent(const TabGroupChange& tab_group_change) {
   CHECK_EQ(tab_group_change.type, TabGroupChange::Type::kVisualsChanged);
   TabGroup* tab_group = tab_group_change.model->group_model()->GetTabGroup(
       tab_group_change.group);
-  auto event = mojom::OnTabGroupVisualsChangedEvent::New();
+  auto event = mojom::OnDataChangedEvent::New();
   event->data = tabs_api::converters::BuildMojoTabCollectionData(
       tab_group->GetCollectionHandle());
   return event;

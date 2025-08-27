@@ -9,7 +9,7 @@ import '../tab_group.js';
 import {TabStripService} from '/tab_strip_api/tab_strip_api.mojom-webui.js';
 import type {TabsSnapshot, TabStripServiceRemote} from '/tab_strip_api/tab_strip_api.mojom-webui.js';
 import type {Container, Data, Tab, TabCreatedContainer, TabGroup} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
-import type {OnTabDataChangedEvent, OnTabGroupCreatedEvent, OnTabGroupVisualsChangedEvent, OnTabMovedEvent, OnTabsClosedEvent, OnTabsCreatedEvent} from '/tab_strip_api/tab_strip_api_events.mojom-webui.js';
+import type {OnDataChangedEvent, OnTabGroupCreatedEvent, OnTabMovedEvent, OnTabsClosedEvent, OnTabsCreatedEvent} from '/tab_strip_api/tab_strip_api_events.mojom-webui.js';
 import type {NodeId, Position} from '/tab_strip_api/tab_strip_api_types.mojom-webui.js';
 import {TabStripObservation} from '/tab_strip_api/tab_strip_observation.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
@@ -97,14 +97,12 @@ export class TabListPlaygroundElement extends CustomElement {
         this.onTabsCreated_.bind(this));
     this.tabStripObservation_.onTabsClosed.addListener(
         this.onTabsClosed_.bind(this));
-    this.tabStripObservation_.onTabDataChanged.addListener(
-        this.onTabDataChanged_.bind(this));
+    this.tabStripObservation_.onDataChanged.addListener(
+        this.onDataChanged_.bind(this));
     this.tabStripObservation_.onTabMoved.addListener(
         this.onTabMoved_.bind(this));
     this.tabStripObservation_.onTabGroupCreated.addListener(
         this.onTabGroupCreated_.bind(this));
-    this.tabStripObservation_.onTabGroupVisualsChanged.addListener(
-        this.onTabGroupVisualsChanged_.bind(this));
   }
 
   private addAnimationPromise_(promise: Promise<void>) {
@@ -134,13 +132,22 @@ export class TabListPlaygroundElement extends CustomElement {
     });
   }
 
-  private onTabDataChanged_(onTabDataChangedEvent: OnTabDataChangedEvent) {
-    const tab = onTabDataChangedEvent.tab;
-    const tabElement = this.findTabElement_(tab.id);
-    if (!tabElement) {
-      return;
+  private onDataChanged_(onDataChangedEvent: OnDataChangedEvent) {
+    const data = onDataChangedEvent.data;
+    if (data.tab) {
+      const tab = data.tab;
+      const tabElement = this.findTabElement_(tab.id);
+      if (!tabElement) {
+        return;
+      }
+      tabElement.tab = tab;
+    } else if (data.tabGroup) {
+      const tabGroup = data.tabGroup;
+      if (tabGroup) {
+        this.findOrCreateTabGroupElement_(tabGroup.id)
+            .updateVisuals(this.toTabGroupVisualData_(tabGroup));
+      }
     }
-    tabElement.tab = tab;
   }
 
   private onTabMoved_(event: OnTabMovedEvent) {
@@ -155,15 +162,6 @@ export class TabListPlaygroundElement extends CustomElement {
     // Intentionally not creating a TabGroupElement here. The TabGroupElement
     // will be created when a tab is added to the group in onTabMoved_, which
     // is fired after this event.
-  }
-
-  private onTabGroupVisualsChanged_(event: OnTabGroupVisualsChangedEvent) {
-    console.info('onTabGroupVisualsChanged_', event);
-    const {tabGroup} = event.data;
-    if (tabGroup) {
-      this.findOrCreateTabGroupElement_(tabGroup.id)
-          .updateVisuals(this.toTabGroupVisualData_(tabGroup));
-    }
   }
 
   private createTabElement_(tab: Tab, isPinned: boolean): TabElement {

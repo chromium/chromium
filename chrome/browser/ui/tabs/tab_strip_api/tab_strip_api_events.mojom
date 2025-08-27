@@ -17,20 +17,16 @@ struct OnTabsClosedEvent {
   array<NodeId> tabs;
 };
 
-struct OnTabDataChangedEvent {
-  // Tab data of the updated tab. For now just apply a broad update rather than
-  // granular tab data.
-  Tab tab;
+struct OnDataChangedEvent {
+  // The updated data for the node in the tab strip. The client can use the ID
+  // within the data union to identify which node was updated.
+  Data data;
 };
 
 struct OnTabGroupCreatedEvent {
   Data data;
   // Position of the group in the tab strip.
   Position position;
-};
-
-struct OnTabGroupVisualsChangedEvent {
-  Data data;
 };
 
 struct OnTabMovedEvent {

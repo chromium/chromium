@@ -24,18 +24,13 @@ class EventVisitor {
     return mojom::TabsEvent::NewTabMovedEvent(event.Clone());
   }
 
-  mojom::TabsEventPtr operator()(const mojom::OnTabDataChangedEventPtr& event) {
-    return mojom::TabsEvent::NewTabDataChangedEvent(event.Clone());
+  mojom::TabsEventPtr operator()(const mojom::OnDataChangedEventPtr& event) {
+    return mojom::TabsEvent::NewDataChangedEvent(event.Clone());
   }
 
   mojom::TabsEventPtr operator()(
       const mojom::OnTabGroupCreatedEventPtr& event) {
     return mojom::TabsEvent::NewTabGroupCreatedEvent(event.Clone());
-  }
-
-  mojom::TabsEventPtr operator()(
-      const mojom::OnTabGroupVisualsChangedEventPtr& event) {
-    return mojom::TabsEvent::NewTabGroupVisualsChangedEvent(event.Clone());
   }
 };
 

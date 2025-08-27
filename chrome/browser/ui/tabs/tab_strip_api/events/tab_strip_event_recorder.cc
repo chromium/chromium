@@ -95,7 +95,7 @@ void TabStripEventRecorder::OnTabGroupChanged(const TabGroupChange& change) {
       NOTIMPLEMENTED();
       break;
     case TabGroupChange::Type::kVisualsChanged:
-      Handle(ToTabGroupVisualsChangedEvent(change));
+      Handle(ToEvent(change));
       break;
     case TabGroupChange::Type::kMoved:
       NOTIMPLEMENTED();
