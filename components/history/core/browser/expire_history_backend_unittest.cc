@@ -49,7 +49,7 @@ namespace history {
 
 namespace {
 
-const std::string kTestAppId = "org.chromium.dino";
+constexpr char kTestAppId[] = "org.chromium.dino";
 
 base::Time PretendNow() {
   static constexpr base::Time::Exploded kReferenceTime = {.year = 2015,

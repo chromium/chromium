@@ -29,8 +29,8 @@
 
 namespace history {
 
-const std::string kTestAppId1 = "org.chromium.dino.Pteranodon";
-const std::string kTestAppId2 = "org.chromium.dino.Trext";
+constexpr char kTestAppId1[] = "org.chromium.dino.Pteranodon";
+constexpr char kTestAppId2[] = "org.chromium.dino.Trext";
 
 namespace {
 

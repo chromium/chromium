@@ -40,8 +40,8 @@
 
 namespace history {
 
-const std::string kTestAppId = "org.chromium.dino.stegosaurus";
-const std::string kTestAppId2 = "org.chromium.dino.velociraptor";
+constexpr char kTestAppId[] = "org.chromium.dino.stegosaurus";
+constexpr char kTestAppId2[] = "org.chromium.dino.velociraptor";
 
 namespace {
 
