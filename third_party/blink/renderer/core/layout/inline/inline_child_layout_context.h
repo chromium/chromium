@@ -75,8 +75,6 @@ class CORE_EXPORT InlineChildLayoutContext {
 
   // FitText: Enable the measuring mode if `paragraph_scale` is std::nullopt.
   void EnableMeasuringModeIfNecessary(std::optional<float> paragraph_scale);
-  // FitText: This should be called whenever measuring a line scale is finished.
-  void UpdateMeasuredScale(float new_scale);
   bool IsMeasuringScale() const { return is_measuring_scale_; }
   // FitText: Returns the minimum scale handled in the measuring mode.
   float MeasuredScale() const;

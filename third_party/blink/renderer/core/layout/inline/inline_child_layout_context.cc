@@ -102,11 +102,6 @@ void InlineChildLayoutContext::EnableMeasuringModeIfNecessary(
   }
 }
 
-void InlineChildLayoutContext::UpdateMeasuredScale(float new_scale) {
-  DCHECK(is_measuring_scale_);
-  minimum_scale_ = std::min(minimum_scale_, new_scale);
-}
-
 float InlineChildLayoutContext::MeasuredScale() const {
   return minimum_scale_ == std::numeric_limits<float>::max() ? 1.0f
                                                              : minimum_scale_;

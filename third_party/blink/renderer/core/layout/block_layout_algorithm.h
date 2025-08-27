@@ -167,16 +167,16 @@ class CORE_EXPORT BlockLayoutAlgorithm
 
   const LayoutResult* LayoutInlineChild(const InlineNode& child);
   // A helper for the above.
-  // If `paragraph_scale` is std::nullopt, this computes the paragraph scaling
-  // factor and returns it. Otherwise, it lays out inline children with
-  // `*paragraph_scale`.
-  NOINLINE std::pair<const LayoutResult*, float> LayoutInlineChild(
+  // If `paragraph_scale` is std::nullopt, this lays out inline children
+  // without any fit-text handling. We can use its result to compute the
+  // paragraph scaling factor.
+  // Otherwise, it lays out inline children with `*paragraph_scale`.
+  NOINLINE const LayoutResult* LayoutInlineChild(
       const InlineNode& node,
       std::optional<float> paragraph_scale);
   // Ditto, for OptimalInlineChildLayoutContext.
   template <wtf_size_t capacity>
-  NOINLINE std::pair<const LayoutResult*, float>
-  LayoutWithOptimalInlineChildLayoutContext(
+  NOINLINE const LayoutResult* LayoutWithOptimalInlineChildLayoutContext(
       const InlineNode& child,
       std::optional<float> paragraph_scale);
 

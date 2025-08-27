@@ -677,7 +677,7 @@ const LayoutResult* BlockLayoutAlgorithm::LayoutInlineChild(
       cloned_param.previous_result = previous_result_;
       BlockLayoutAlgorithm cloned_algorithm(cloned_param);
       const LayoutResult* result =
-          cloned_algorithm.LayoutInlineChild(node, std::nullopt).first;
+          cloned_algorithm.LayoutInlineChild(node, std::nullopt);
       paragraph_scale = MeasurePerBlockScale(
           InlineNode(To<LayoutBlockFlow>(Node().GetLayoutBox())),
           result->GetPhysicalFragment(), ChildAvailableSize().inline_size);
@@ -687,12 +687,12 @@ const LayoutResult* BlockLayoutAlgorithm::LayoutInlineChild(
       }
     }
   }
-  return LayoutInlineChild(node, paragraph_scale).first;
+  return LayoutInlineChild(node, paragraph_scale);
 }
 
-NOINLINE std::pair<const LayoutResult*, float>
-BlockLayoutAlgorithm::LayoutInlineChild(const InlineNode& node,
-                                        std::optional<float> paragraph_scale) {
+NOINLINE const LayoutResult* BlockLayoutAlgorithm::LayoutInlineChild(
+    const InlineNode& node,
+    std::optional<float> paragraph_scale) {
   const TextWrapStyle wrap = node.Style().GetTextWrapStyle();
   if (wrap == TextWrapStyle::kPretty) [[unlikely]] {
     UseCounter::Count(node.GetDocument(), WebFeature::kTextWrapPretty);
@@ -712,19 +712,17 @@ BlockLayoutAlgorithm::LayoutInlineChild(const InlineNode& node,
 
   SimpleInlineChildLayoutContext context(node, &container_builder_);
   context.EnableMeasuringModeIfNecessary(paragraph_scale);
-  const LayoutResult* result = Layout(&context);
-  return {result, context.MeasuredScale()};
+  return Layout(&context);
 }
 
 template <wtf_size_t capacity>
-NOINLINE std::pair<const LayoutResult*, float>
+NOINLINE const LayoutResult*
 BlockLayoutAlgorithm::LayoutWithOptimalInlineChildLayoutContext(
     const InlineNode& child,
     std::optional<float> paragraph_scale) {
   OptimalInlineChildLayoutContext<capacity> context(child, &container_builder_);
   context.EnableMeasuringModeIfNecessary(paragraph_scale);
-  const LayoutResult* result = Layout(&context);
-  return {result, context.MeasuredScale()};
+  return Layout(&context);
 }
 
 NOINLINE const LayoutResult* BlockLayoutAlgorithm::RelayoutIgnoringLineClamp() {
