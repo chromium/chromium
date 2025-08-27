@@ -69,11 +69,27 @@ void CleanupOldUpdaterVersions(UpdaterScope scope) {
                 scope, item.Append(GetExecutableRelativePath())),
             {});
         if (process.IsValid()) {
-          process.WaitForExitWithTimeout(base::Minutes(5), nullptr);
+          int exit_code = 0;
+          process.WaitForExitWithTimeout(base::Minutes(5), &exit_code);
+          VLOG_IF(1, exit_code != 0) << "Failed to uninstall " << item
+                                     << " with exit code " << exit_code;
+        } else {
+          VLOG(1) << "Failed to launch uninstall process for " << item;
         }
 
-        // Recursively delete the directory in case uninstall fails.
-        base::DeletePathRecursively(item);
+        // Give time for any child processes to finish.
+        base::PlatformThread::Sleep(base::Seconds(3));
+
+        // Recursively delete the directory in case uninstall fails with
+        // retries, in cases where a file cannot be deleted because it is
+        // locked by another process.
+        int num_delete_retries = 5;
+        // base::DeletePathRecursively returns true if the item does not exist.
+        while (!base::DeletePathRecursively(item) && --num_delete_retries > 0) {
+          base::PlatformThread::Sleep(base::Seconds(30));
+        }
+
+        VLOG_IF(1, num_delete_retries == 0) << "Failed to delete " << item;
       });
 }
 
