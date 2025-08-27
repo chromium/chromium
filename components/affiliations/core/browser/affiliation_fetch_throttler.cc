@@ -33,10 +33,8 @@ constexpr auto kRetryableHttpErrors =
 // Empty |response_code_optional| is treated as a retryable error.
 bool IsHttpErrorNonRetryable(
     std::optional<net::HttpStatusCode> response_code_optional) {
-  return response_code_optional
-             ? !base::Contains(kRetryableHttpErrors,
-                               response_code_optional.value())
-             : false;
+  return response_code_optional.has_value() &&
+         !base::Contains(kRetryableHttpErrors, response_code_optional.value());
 }
 }  // namespace
 // static
