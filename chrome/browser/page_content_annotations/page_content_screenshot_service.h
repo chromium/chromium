@@ -9,7 +9,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/types/expected.h"
 #include "components/paint_preview/browser/paint_preview_base_service.h"
 #include "components/paint_preview/common/mojom/paint_preview_types.mojom.h"
 #include "components/paint_preview/public/paint_preview_compositor_service.h"
@@ -25,8 +24,7 @@ class ScreenshotRequest;
 class PageContentScreenshotService
     : public paint_preview::PaintPreviewBaseService {
  public:
-  using BitmapCallback =
-      base::OnceCallback<void(base::expected<const SkBitmap*, std::string>)>;
+  using BitmapCallback = base::OnceCallback<void(const SkBitmap&)>;
 
   PageContentScreenshotService();
   PageContentScreenshotService(const PageContentScreenshotService&) = delete;

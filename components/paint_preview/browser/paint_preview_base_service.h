@@ -174,8 +174,6 @@ class PaintPreviewBaseService : public KeyedService {
   PaintPreviewBaseService& operator=(const PaintPreviewBaseService&) = delete;
 };
 
-std::string ToString(PaintPreviewBaseService::CaptureStatus status);
-
 }  // namespace paint_preview
 
 #endif  // COMPONENTS_PAINT_PREVIEW_BROWSER_PAINT_PREVIEW_BASE_SERVICE_H_

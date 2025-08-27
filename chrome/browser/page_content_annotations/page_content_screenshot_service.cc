@@ -8,9 +8,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "components/paint_preview/browser/compositor_utils.h"
 #include "components/paint_preview/browser/paint_preview_base_service.h"
@@ -86,14 +84,17 @@ class ScreenshotRequest {
       paint_preview::PaintPreviewBaseService::CaptureStatus status,
       std::unique_ptr<paint_preview::CaptureResult> result) {
     if (!screenshot_service_) {
-      std::move(callback_).Run(base::unexpected("Service deallocated"));
+      VLOG(2) << "Failed to capture a screenshot (service deallocated)";
+      std::move(callback_).Run({});
       return;
     }
 
     if (status != paint_preview::PaintPreviewBaseService::CaptureStatus::kOk ||
         !result->capture_success) {
-      std::move(callback_).Run(
-          base::unexpected(paint_preview::ToString(status)));
+      VLOG(2) << base::StringPrintf(
+          "Failed to capture a screenshot (CaptureStatus=%d)",
+          static_cast<int>(status));
+      std::move(callback_).Run({});
       return;
     }
     paint_preview::mojom::PaintPreviewBeginCompositeRequestPtr
@@ -115,12 +116,13 @@ class ScreenshotRequest {
       paint_preview::mojom::PaintPreviewBeginCompositeRequestPtr
           begin_composite_request) {
     if (!screenshot_service_) {
-      std::move(callback_).Run(base::unexpected("Service Deallocated"));
+      VLOG(2) << "Failed to capture a screenshot (service deallocated)";
+      std::move(callback_).Run({});
       return;
     }
     if (!begin_composite_request) {
-      std::move(callback_).Run(
-          base::unexpected("Invalid begin_composite_request"));
+      VLOG(2) << "Invalid begin_composite_request";
+      std::move(callback_).Run({});
       return;
     }
 
@@ -137,13 +139,17 @@ class ScreenshotRequest {
     using enum paint_preview::mojom::PaintPreviewCompositor::
         BeginCompositeStatus;
     if (status != kSuccess && status != kPartialSuccess) {
-      std::move(callback_).Run(base::unexpected(base::ToString(status)));
+      VLOG(2) << base::StringPrintf(
+          "Failed to composite (BeginCompositeStatus=%d)",
+          static_cast<int>(status));
+      std::move(callback_).Run({});
       return;
     }
 
     // Start converting to a bitmap.
     if (!screenshot_service_) {
-      std::move(callback_).Run(base::unexpected("Service deallocated"));
+      VLOG(2) << "Failed to capture a screenshot (service deallocated)";
+      std::move(callback_).Run({});
       return;
     }
     screenshot_service_->compositor_client(PassKey())->BitmapForMainFrame(
@@ -158,11 +164,13 @@ class ScreenshotRequest {
     if (status != paint_preview::mojom::PaintPreviewCompositor::BitmapStatus::
                       kSuccess ||
         bitmap.empty()) {
-      std::move(callback_).Run(base::unexpected(base::ToString(status)));
+      VLOG(2) << base::StringPrintf("Failed to get bitmap (BitmapStatus=%d)",
+                                    static_cast<int>(status));
+      std::move(callback_).Run({});
       return;
     }
 
-    std::move(callback_).Run(&bitmap);
+    std::move(callback_).Run(bitmap);
   }
 
   base::PassKey<ScreenshotRequest> PassKey() const {
@@ -197,8 +205,8 @@ void PageContentScreenshotService::RequestScreenshot(
     BitmapCallback callback) {
   CHECK(callback);
   if (!web_contents) {
-    std::move(callback).Run(
-        base::unexpected("The given web contents is no longer valid"));
+    VLOG(2) << "The given web contents no longer valid";
+    std::move(callback).Run({});
     return;
   }
 
@@ -207,16 +215,14 @@ void PageContentScreenshotService::RequestScreenshot(
 
   auto* raw_request = request.get();
   raw_request->TakeScreenshot(
-      web_contents,
-      base::BindOnce(
-          // Bind `request` to the callback to keep it in scope
-          // until the callback returns.
-          [](std::unique_ptr<ScreenshotRequest> request,
-             BitmapCallback callback,
-             base::expected<const SkBitmap*, std::string> result) {
-            std::move(callback).Run(result);
-          },
-          std::move(request), std::move(callback)));
+      web_contents, base::BindOnce(
+                        // Bind `request` to the callback to keep it in scope
+                        // until the callback returns.
+                        [](std::unique_ptr<ScreenshotRequest> request,
+                           BitmapCallback callback, const SkBitmap& result) {
+                          std::move(callback).Run(std::move(result));
+                        },
+                        std::move(request), std::move(callback)));
 }
 
 std::unique_ptr<paint_preview::PaintPreviewCompositorService,

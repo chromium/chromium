@@ -83,7 +83,7 @@ void HandleFetchPageResult(
     journal = &journal_entry->GetJournal();
     task_id = journal_entry->GetTaskId();
   }
-  if (page_context.screenshot_result.has_value()) {
+  if (page_context.screenshot_result) {
     if (journal) {
       journal->LogScreenshot(tab_context->tab_data->url, task_id, "image/jpeg",
                              page_context.screenshot_result->jpeg_data);
