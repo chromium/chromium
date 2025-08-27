@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.download.home.DownloadManagerUiConfigHelper;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorNotificationBridgeUiFactory;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -86,6 +87,10 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
                         .setIsSeparateActivity(true)
                         .setShowPaginationHeaders(DownloadUtils.shouldShowPaginationHeaders())
                         .setStartWithPrefetchedContent(showPrefetchContent)
+                        .setEdgeToEdgePadAdjusterGenerator(
+                                view ->
+                                        EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
+                                                view, getEdgeToEdgeSupplier()))
                         .build();
 
         mModalDialogManager =

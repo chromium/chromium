@@ -20,9 +20,13 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.AllOf.allOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -31,6 +35,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Pair;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import androidx.test.espresso.action.ViewActions;
@@ -47,8 +52,11 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -63,15 +71,20 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.download.home.list.ListUtils;
 import org.chromium.chrome.browser.download.home.list.holder.ListItemViewHolder;
 import org.chromium.chrome.browser.download.home.rename.RenameUtils;
 import org.chromium.chrome.browser.download.home.toolbar.DownloadHomeToolbar;
 import org.chromium.chrome.browser.download.internal.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
+import org.chromium.chrome.test.util.browser.edge_to_edge.TestEdgeToEdgeController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.components.browser_ui.util.date.StringUtils;
@@ -86,6 +99,7 @@ import org.chromium.components.offline_items_collection.RenameResult;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.url.GURL;
@@ -113,10 +127,14 @@ public class DownloadActivityV2Test {
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private UrlFormatter.Natives mUrlFormatterJniMock;
     @Mock private DownloadHelpPageLauncher mHelpPageLauncher;
+    @Spy private TestEdgeToEdgeController mEdgeToEdgeController;
+    private @Captor ArgumentCaptor<EdgeToEdgePadAdjuster> mPadAdjusterCaptor;
 
     @Rule
     public OverrideContextWrapperTestRule mOverrideContextWrapperTestRule =
             new OverrideContextWrapperTestRule();
+
+    private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier;
 
     private ModalDialogManager.Presenter mAppModalPresenter;
 
@@ -203,6 +221,10 @@ public class DownloadActivityV2Test {
 
     private void setUpUi(
             boolean showDangerousItems, boolean inlineSearchBar, boolean autoFocusSearchBox) {
+        // Initialize this here to avoid "wrong thread" assertion.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mEdgeToEdgeSupplier = new ObservableSupplierImpl<>());
+
         DownloadManagerUiConfig config =
                 DownloadManagerUiConfigHelper.fromFlags(sActivity)
                         .setOtrProfileId(null)
@@ -210,6 +232,10 @@ public class DownloadActivityV2Test {
                         .setShowDangerousItems(showDangerousItems)
                         .setInlineSearchBar(inlineSearchBar)
                         .setAutoFocusSearchBox(autoFocusSearchBox)
+                        .setEdgeToEdgePadAdjusterGenerator(
+                                view ->
+                                        EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
+                                                view, mEdgeToEdgeSupplier))
                         .build();
 
         mAppModalPresenter = new AppModalPresenter(sActivity);
@@ -908,6 +934,33 @@ public class DownloadActivityV2Test {
                 .perform(ViewActions.typeText("Google"));
         // Check no any downloaded item.
         onView(withText(containsString("Using 0.00 KB of"))).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
+    public void testEdgeToEdge() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    setUpUi();
+                    // This should call SimpleEdgeToEdgePadAdjuster#mControllerChangedCallback.
+                    mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
+                });
+
+        verify(mEdgeToEdgeController).registerAdjuster(mPadAdjusterCaptor.capture());
+        EdgeToEdgePadAdjuster padAdjuster = mPadAdjusterCaptor.getValue();
+
+        padAdjuster.overrideBottomInset(100);
+        ViewGroup listView = mDownloadCoordinator.getListViewForTesting();
+        assertEquals("Bottom insets should have been applied.", 100, listView.getPaddingBottom());
+        assertFalse(listView.getClipToPadding());
+
+        padAdjuster.overrideBottomInset(0);
+        assertEquals("Bottom insets should have been reset.", 0, listView.getPaddingBottom());
+        assertTrue(listView.getClipToPadding());
+
+        ThreadUtils.runOnUiThreadBlocking(mDownloadCoordinator::destroy);
+        verify(mEdgeToEdgeController).unregisterAdjuster(padAdjuster);
     }
 
     /**
