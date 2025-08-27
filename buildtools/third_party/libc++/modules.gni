@@ -33,6 +33,8 @@ if (use_clang_modules) {
         toolchain = "//build/toolchain/mac:clang_$target_cpu"
         if (is_ios) {
           toolchain = "//build/toolchain/ios:ios_clang_$target_cpu"
+        } else if (target_os == "ios" && is_mac) {
+          toolchain = "//build/toolchain/mac:clang_$host_cpu"
         }
         public_deps += [
           "//buildtools/third_party/libc++:copy_sysroot_modulemaps($toolchain)",
