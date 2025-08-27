@@ -78,3 +78,6 @@
 
 # crbug.com/402773550
 -org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testTriggeringContextualSearchHidesFindInPageOverlay
+
+# crbug.com/441501312
+-org.chromium.chrome.browser.history.HistoryPaneTest.testOpenedHistoryItem_SingleClickOpensInSameTab

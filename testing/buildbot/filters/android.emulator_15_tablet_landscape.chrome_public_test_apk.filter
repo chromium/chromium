@@ -70,3 +70,6 @@
 
 # crbug.com/409581327
 -org.chromium.chrome.browser.webid.DigitalCredentialProviderTest.testRequestMDoc
+
+# crbug.com/441501312
+-org.chromium.chrome.browser.history.HistoryPaneTest.testOpenedHistoryItem_SingleClickOpensInSameTab
