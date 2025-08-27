@@ -359,7 +359,7 @@ struct HttpCache::PendingOp {
   PendingOp() = default;
   ~PendingOp() = default;
 
-  raw_ptr<disk_cache::Entry, AcrossTasksDanglingUntriaged> entry = nullptr;
+  raw_ptr<disk_cache::Entry> entry = nullptr;
   bool entry_opened = false;  // rather than created.
 
   std::unique_ptr<disk_cache::Backend> backend;
@@ -1565,7 +1565,7 @@ void HttpCache::OnIOComplete(int result, PendingOp* pending_op) {
         pending_op->entry->Doom();
       }
 
-      pending_op->entry->Close();
+      pending_op->entry.ExtractAsDangling()->Close();
       pending_op->entry = nullptr;
       try_restart_requests = true;
     }
