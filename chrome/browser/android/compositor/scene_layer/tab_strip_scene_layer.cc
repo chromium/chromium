@@ -15,6 +15,7 @@
 #include "chrome/browser/android/compositor/layer_title_cache.h"
 #include "ui/android/resources/nine_patch_resource.h"
 #include "ui/android/resources/resource_manager_impl.h"
+#include "ui/base/l10n/l10n_util_android.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -82,15 +83,32 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
   foreground_layer_->AddChild(foreground_group_titles_);
   foreground_layer_->AddChild(foreground_tabs_);
 
-  tab_strip_layer_->AddChild(left_fade_);
-  tab_strip_layer_->AddChild(right_fade_);
-  tab_strip_layer_->AddChild(left_padding_layer_);
-  tab_strip_layer_->AddChild(right_padding_layer_);
+  // Z-order matters: left_padding_layer_(right in rtl) acts as the background
+  // for pinned tabs, so insert pinned_tabs_layer_ (and later foreground_layer_)
+  // after padding_layer_. Then insert the opposite side padding after
+  // pinned_tabs_layer_ and foreground_layer_, because the new tab button used
+  // the fade layer as its background, and the minimize button(desktop) uses
+  // the padding layer. Pinned tabs must render beneath these backgrounds to
+  // avoid overlapping the buttons.
+  if (l10n_util::IsLayoutRtl()) {
+    tab_strip_layer_->AddChild(right_fade_);
+    tab_strip_layer_->AddChild(right_padding_layer_);
 
-  // Z-order matters: padding_layer_ acts as the background for pinned tabs, so
-  // add pinned_tabs_layer_ (and later foreground_layer_) after padding_layer_.
-  tab_strip_layer_->AddChild(pinned_tabs_layer_);
-  tab_strip_layer_->AddChild(foreground_layer_);
+    tab_strip_layer_->AddChild(pinned_tabs_layer_);
+    tab_strip_layer_->AddChild(foreground_layer_);
+
+    tab_strip_layer_->AddChild(left_fade_);
+    tab_strip_layer_->AddChild(left_padding_layer_);
+  } else {
+    tab_strip_layer_->AddChild(left_fade_);
+    tab_strip_layer_->AddChild(left_padding_layer_);
+
+    tab_strip_layer_->AddChild(pinned_tabs_layer_);
+    tab_strip_layer_->AddChild(foreground_layer_);
+
+    tab_strip_layer_->AddChild(right_fade_);
+    tab_strip_layer_->AddChild(right_padding_layer_);
+  }
 
   tab_strip_layer_->AddChild(model_selector_button_background_);
   tab_strip_layer_->AddChild(new_tab_button_background_);
