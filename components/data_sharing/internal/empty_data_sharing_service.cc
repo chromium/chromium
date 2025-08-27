@@ -128,6 +128,10 @@ void EmptyDataSharingService::GetAvatarImageForURL(
 void EmptyDataSharingService::SetSDKDelegate(
     std::unique_ptr<DataSharingSDKDelegate> sdk_delegate) {}
 
+DataSharingSDKDelegate* EmptyDataSharingService::GetSDKDelegate() {
+  return nullptr;
+}
+
 void EmptyDataSharingService::SetUIDelegate(
     std::unique_ptr<DataSharingUIDelegate> ui_delegate) {}
 

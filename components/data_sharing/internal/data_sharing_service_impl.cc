@@ -680,6 +680,11 @@ void DataSharingServiceImpl::SetSDKDelegate(
   OnSDKDelegateUpdated();
 }
 
+DataSharingSDKDelegate* DataSharingServiceImpl::GetSDKDelegate() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return sdk_delegate_.get();
+}
+
 void DataSharingServiceImpl::SetUIDelegate(
     std::unique_ptr<DataSharingUIDelegate> ui_delegate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

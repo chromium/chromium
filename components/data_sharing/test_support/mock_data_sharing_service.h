@@ -92,6 +92,7 @@ class MockDataSharingService : public DataSharingService {
                base::OnceCallback<void(const gfx::Image&)>,
                image_fetcher::ImageFetcher*));
   MOCK_METHOD1(SetSDKDelegate, void(std::unique_ptr<DataSharingSDKDelegate>));
+  MOCK_METHOD0(GetSDKDelegate, DataSharingSDKDelegate*());
   MOCK_METHOD1(SetUIDelegate, void(std::unique_ptr<DataSharingUIDelegate>));
   MOCK_METHOD0(GetUiDelegate, DataSharingUIDelegate*());
   MOCK_METHOD0(GetLogger, Logger*());

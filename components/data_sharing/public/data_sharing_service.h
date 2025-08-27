@@ -275,6 +275,9 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
   virtual void SetSDKDelegate(
       std::unique_ptr<DataSharingSDKDelegate> sdk_delegate) = 0;
 
+  // Get the current SDK Delegate instance.
+  virtual DataSharingSDKDelegate* GetSDKDelegate() = 0;
+
   // Sets the current DataSharingUIDelegate instance.
   virtual void SetUIDelegate(
       std::unique_ptr<DataSharingUIDelegate> ui_delegate) = 0;

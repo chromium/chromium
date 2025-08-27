@@ -136,6 +136,7 @@ class DataSharingServiceImpl : public DataSharingService,
       image_fetcher::ImageFetcher* image_fetcher) override;
   void SetSDKDelegate(
       std::unique_ptr<DataSharingSDKDelegate> sdk_delegate) override;
+  DataSharingSDKDelegate* GetSDKDelegate() override;
   void SetUIDelegate(
       std::unique_ptr<DataSharingUIDelegate> ui_delegate) override;
   DataSharingUIDelegate* GetUiDelegate() override;

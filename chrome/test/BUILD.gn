@@ -3203,6 +3203,7 @@ if (!is_android) {
       "../browser/custom_handlers/protocol_handler_registry_browsertest.cc",
       "../browser/data_saver/data_saver_browsertest.cc",
       "../browser/data_saver/data_saver_webapis_browsertest.cc",
+      "../browser/data_sharing/desktop/data_sharing_sdk_delegate_desktop_browsertest.cc",
       "../browser/data_sharing/desktop/data_sharing_service_browsertest.cc",
       "../browser/device_api/managed_configuration_api_browsertest.cc",
       "../browser/devtools/device/adb/adb_client_socket_browsertest.cc",
