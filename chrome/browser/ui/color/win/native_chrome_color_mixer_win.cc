@@ -44,32 +44,19 @@ class FrameColorHelper {
 
   static FrameColorHelper* Get();
 
+  static void UpdateUserColorWhenAccentColorStateChanges();
+
  private:
   // Returns the Tint for the given |id|. If there is no tint, the identity tint
   // {-1, -1, -1} is returned and won't tint the color on which it is used.
   color_utils::HSL GetTint(int id, const ui::ColorProviderKey& key) const;
 
   // Callback executed when the accent color is updated. This re-reads the
-  // accent color and updates |dwm_frame_color_| and
-  // |dwm_inactive_frame_color_|.
+  // accent color and updates the NativeTheme instances.
   void OnAccentColorUpdated();
 
   // Re-reads the accent colors and updates member variables.
   void FetchAccentColors();
-
-  base::CallbackListSubscription subscription_ =
-      ui::AccentColorObserver::Get()->Subscribe(
-          base::BindRepeating(&FrameColorHelper::OnAccentColorUpdated,
-                              base::Unretained(this)));
-
-  // The frame color when active. If empty the default colors should be used.
-  std::optional<SkColor> dwm_frame_color_;
-
-  // The frame color when inactive. If empty the default colors should be used.
-  std::optional<SkColor> dwm_inactive_frame_color_;
-
-  // The DWM accent border color, if available; white otherwise.
-  SkColor dwm_accent_border_color_ = SK_ColorWHITE;
 };
 
 FrameColorHelper::FrameColorHelper() {
@@ -107,12 +94,20 @@ void FrameColorHelper::AddNativeChromeColors(
       (key.frame_type == ui::ColorProviderKey::FrameType::kChromium &&
        key.frame_style == ui::ColorProviderKey::FrameStyle::kSystem);
 
+  std::optional<SkColor> dwm_frame_color;
+  std::optional<SkColor> dwm_inactive_frame_color;
+  if (const auto* const accent_color_observer = ui::AccentColorObserver::Get();
+      accent_color_observer->use_dwm_frame_color()) {
+    dwm_frame_color = accent_color_observer->accent_color();
+    dwm_inactive_frame_color = accent_color_observer->accent_color_inactive();
+  }
+
   std::optional<ui::ColorTransform> active_frame_transform;
   if (auto color = get_theme_color(TP::COLOR_FRAME_ACTIVE)) {
     active_frame_transform = {color.value()};
   } else if (use_native_colors) {
-    if (dwm_frame_color_) {
-      active_frame_transform = {dwm_frame_color_.value()};
+    if (dwm_frame_color) {
+      active_frame_transform = {dwm_frame_color.value()};
     } else if (ShouldDefaultThemeUseMicaTitlebar()) {
       active_frame_transform = {key.color_mode == ColorMode::kDark
                                     ? kSystemMicaDarkFrameColor
@@ -124,11 +119,11 @@ void FrameColorHelper::AddNativeChromeColors(
   if (auto color = get_theme_color(TP::COLOR_FRAME_INACTIVE)) {
     inactive_frame_transform = {color.value()};
   } else if (use_native_colors) {
-    if (dwm_inactive_frame_color_) {
-      inactive_frame_transform = {dwm_inactive_frame_color_.value()};
-    } else if (dwm_frame_color_) {
+    if (dwm_inactive_frame_color) {
+      inactive_frame_transform = {dwm_inactive_frame_color.value()};
+    } else if (dwm_frame_color) {
       inactive_frame_transform =
-          ui::HSLShift({dwm_frame_color_.value()},
+          ui::HSLShift({dwm_frame_color.value()},
                        GetTint(ThemeProperties::TINT_FRAME_INACTIVE, key));
     } else if (ShouldDefaultThemeUseMicaTitlebar()) {
       inactive_frame_transform = {key.color_mode == ColorMode::kDark
@@ -177,23 +172,37 @@ void FrameColorHelper::AddNativeChromeColors(
   }
 }
 
+SkColor GetAccentBorderColor() {
+  if (const auto* const accent_color_observer = ui::AccentColorObserver::Get();
+      accent_color_observer->use_dwm_frame_color() &&
+      accent_color_observer->accent_border_color().has_value()) {
+    return accent_color_observer->accent_border_color().value();
+  }
+
+  // Windows 10 pre-version 1809 native active borders default to white, while
+  // in version 1809 and onwards they default to #262626 with 66% alpha.
+  const bool pre_1809 = base::win::GetVersion() < base::win::Version::WIN10_RS5;
+  return pre_1809 ? SK_ColorWHITE : SkColorSetARGB(0xa8, 0x26, 0x26, 0x26);
+}
+
 void FrameColorHelper::AddBorderAccentColors(ui::ColorMixer& mixer) const {
+  mixer[kColorAccentBorderActive] = {GetAccentBorderColor()};
   // In Windows 10, native inactive borders are #555555 with 50% alpha.
-  // Prior to version 1809, native active borders use the accent color.
-  // In version 1809 and following, the active border is #262626 with 66%
-  // alpha unless the accent color is also used for the frame.
-  mixer[kColorAccentBorderActive] = {
-      (base::win::GetVersion() >= base::win::Version::WIN10_RS5 &&
-       !dwm_frame_color_)
-          ? SkColorSetARGB(0xa8, 0x26, 0x26, 0x26)
-          : dwm_accent_border_color_};
   mixer[kColorAccentBorderInactive] = {SkColorSetARGB(0x80, 0x55, 0x55, 0x55)};
 }
 
 // static
 FrameColorHelper* FrameColorHelper::Get() {
-  static base::NoDestructor<FrameColorHelper> g_frame_color_helper;
-  return g_frame_color_helper.get();
+  static FrameColorHelper g_frame_color_helper;
+  return &g_frame_color_helper;
+}
+
+// static
+void FrameColorHelper::UpdateUserColorWhenAccentColorStateChanges() {
+  static base::NoDestructor<base::CallbackListSubscription> subscription(
+      ui::AccentColorObserver::Get()->Subscribe(
+          base::BindRepeating(&FrameColorHelper::OnAccentColorUpdated,
+                              base::Unretained(FrameColorHelper::Get()))));
 }
 
 color_utils::HSL FrameColorHelper::GetTint(
@@ -224,19 +233,6 @@ void FrameColorHelper::FetchAccentColors() {
   const auto accent_color = accent_color_observer->accent_color();
   ui::NativeTheme::GetInstanceForNativeUi()->set_user_color(accent_color);
   ui::NativeTheme::GetInstanceForWeb()->set_user_color(accent_color);
-
-  if (!accent_color_observer->use_dwm_frame_color()) {
-    dwm_accent_border_color_ = SK_ColorWHITE;
-    dwm_frame_color_.reset();
-    dwm_inactive_frame_color_.reset();
-    return;
-  }
-
-  dwm_accent_border_color_ =
-      accent_color_observer->accent_border_color().value_or(SK_ColorWHITE);
-
-  dwm_frame_color_ = accent_color;
-  dwm_inactive_frame_color_ = accent_color_observer->accent_color_inactive();
 }
 
 ui::ColorTransform GetCaptionForegroundColor(
@@ -261,6 +257,8 @@ ui::ColorTransform GetCaptionForegroundColor(
 
 void AddNativeChromeColorMixer(ui::ColorProvider* provider,
                                const ui::ColorProviderKey& key) {
+  FrameColorHelper::UpdateUserColorWhenAccentColorStateChanges();
+
   ui::ColorMixer& mixer = provider->AddMixer();
 
   // NOTE: These cases are always handled, even on Win7, in order to ensure the
