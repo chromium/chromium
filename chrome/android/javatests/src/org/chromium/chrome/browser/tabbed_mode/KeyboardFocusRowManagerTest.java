@@ -92,28 +92,16 @@ public class KeyboardFocusRowManagerTest {
                 InstrumentationRegistry.getInstrumentation(), mActivity, false, true);
 
         // Switch the first time.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mActivity.onMenuOrKeyboardAction(R.id.switch_keyboard_focus_row, false));
-        assertEquals(
-                "Expected focus to be on toolbar after 1st invocation of keyboard focus row switch",
-                KeyboardFocusRow.TOOLBAR,
-                mKeyboardFocusRowManager.getKeyboardFocusRowForTesting());
+        switchRow();
+        assertOnToolbar();
 
         // Switch a 2nd time.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mActivity.onMenuOrKeyboardAction(R.id.switch_keyboard_focus_row, false));
-        assertEquals(
-                "Expected focus to be on tab strip after 2nd keyboard focus row switch",
-                KeyboardFocusRow.TAB_STRIP,
-                mKeyboardFocusRowManager.getKeyboardFocusRowForTesting());
+        switchRow();
+        assertOnTabStrip();
 
         // Switch a 3rd time.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mActivity.onMenuOrKeyboardAction(R.id.switch_keyboard_focus_row, false));
-        assertEquals(
-                "Expected focus to not be in top rows after 3rd keyboard focus row switch",
-                KeyboardFocusRow.NONE,
-                mKeyboardFocusRowManager.getKeyboardFocusRowForTesting());
+        switchRow();
+        assertOnNone();
     }
 
     @Test
@@ -126,20 +114,12 @@ public class KeyboardFocusRowManagerTest {
                 InstrumentationRegistry.getInstrumentation(), mActivity, false, true);
 
         // Switch the first time.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mActivity.onMenuOrKeyboardAction(R.id.switch_keyboard_focus_row, false));
-        assertEquals(
-                "Expected focus to be on toolbar after 1st invocation of keyboard focus row switch",
-                KeyboardFocusRow.TOOLBAR,
-                mKeyboardFocusRowManager.getKeyboardFocusRowForTesting());
+        switchRow();
+        assertOnToolbar();
 
         // Switch a 2nd time.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mActivity.onMenuOrKeyboardAction(R.id.switch_keyboard_focus_row, false));
-        assertEquals(
-                "Expected focus to not be in top rows after 2nd keyboard focus row switch",
-                KeyboardFocusRow.NONE,
-                mKeyboardFocusRowManager.getKeyboardFocusRowForTesting());
+        switchRow();
+        assertOnNone();
     }
 
     @Test
@@ -153,36 +133,20 @@ public class KeyboardFocusRowManagerTest {
                 InstrumentationRegistry.getInstrumentation(), mActivity, false, true);
 
         // Switch the first time.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mActivity.onMenuOrKeyboardAction(R.id.switch_keyboard_focus_row, false));
-        assertEquals(
-                "Expected focus to be on toolbar after 1st invocation of keyboard focus row switch",
-                KeyboardFocusRow.TOOLBAR,
-                mKeyboardFocusRowManager.getKeyboardFocusRowForTesting());
+        switchRow();
+        assertOnToolbar();
 
         // Switch a 2nd time.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mActivity.onMenuOrKeyboardAction(R.id.switch_keyboard_focus_row, false));
-        assertEquals(
-                "Expected focus to be on tab strip after 2nd keyboard focus row switch",
-                KeyboardFocusRow.TAB_STRIP,
-                mKeyboardFocusRowManager.getKeyboardFocusRowForTesting());
+        switchRow();
+        assertOnTabStrip();
 
         // Switch a 3rd time.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mActivity.onMenuOrKeyboardAction(R.id.switch_keyboard_focus_row, false));
-        assertEquals(
-                "Expected focus to be on bookmarks bar after 3rd keyboard focus row switch",
-                KeyboardFocusRow.BOOKMARKS_BAR,
-                mKeyboardFocusRowManager.getKeyboardFocusRowForTesting());
+        switchRow();
+        assertOnBookmarksBar();
 
         // Switch a 4th time.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mActivity.onMenuOrKeyboardAction(R.id.switch_keyboard_focus_row, false));
-        assertEquals(
-                "Expected focus to not be in top rows after 4th keyboard focus row switch",
-                KeyboardFocusRow.NONE,
-                mKeyboardFocusRowManager.getKeyboardFocusRowForTesting());
+        switchRow();
+        assertOnNone();
     }
 
     @Test
@@ -199,24 +163,16 @@ public class KeyboardFocusRowManagerTest {
                 InstrumentationRegistry.getInstrumentation(), mActivity, false, true);
 
         // Start out by using the keyboard shortcut to switch focus rows.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mActivity.onMenuOrKeyboardAction(R.id.switch_keyboard_focus_row, false));
+        switchRow();
 
         // Focus directly on bookmarks bar with shortcut even though it's not next in cycle order.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mActivity.onMenuOrKeyboardAction(R.id.focus_bookmarks, false));
-        assertEquals(
-                "Expected focus to be on bookmarks bar after focus_bookmarks",
-                KeyboardFocusRow.BOOKMARKS_BAR,
-                mKeyboardFocusRowManager.getKeyboardFocusRowForTesting());
+        assertOnBookmarksBar();
 
         // Now switch and make sure we appropriately switch given our new cycle position.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mActivity.onMenuOrKeyboardAction(R.id.switch_keyboard_focus_row, false));
-        assertEquals(
-                "Expected focus to not be on top controls after focus row switch",
-                KeyboardFocusRow.NONE,
-                mKeyboardFocusRowManager.getKeyboardFocusRowForTesting());
+        switchRow();
+        assertOnNone();
     }
 
     @Test
@@ -236,20 +192,12 @@ public class KeyboardFocusRowManagerTest {
                 InstrumentationRegistry.getInstrumentation(), mActivity, false, true);
 
         // Switch the first time.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mActivity.onMenuOrKeyboardAction(R.id.switch_keyboard_focus_row, false));
-        assertEquals(
-                "Expected focus to be on toolbar after 1st invocation of keyboard focus row switch",
-                KeyboardFocusRow.TOOLBAR,
-                mKeyboardFocusRowManager.getKeyboardFocusRowForTesting());
+        switchRow();
+        assertOnToolbar();
 
         // Switch a 2nd time.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mActivity.onMenuOrKeyboardAction(R.id.switch_keyboard_focus_row, false));
-        assertEquals(
-                "Expected focus to not be in top rows after 2nd keyboard focus row switch",
-                KeyboardFocusRow.NONE,
-                mKeyboardFocusRowManager.getKeyboardFocusRowForTesting());
+        switchRow();
+        assertOnNone();
     }
 
     @Test
@@ -315,15 +263,47 @@ public class KeyboardFocusRowManagerTest {
         callbackHelper.waitForOnly();
 
         // Try to switch focus rows.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mActivity.onMenuOrKeyboardAction(R.id.switch_keyboard_focus_row, false));
+        switchRow();
         // Assert we haven't moved focus.
-        assertEquals(
-                "Expected no keyboard focus row switch if app modal is open",
-                KeyboardFocusRow.NONE,
-                mKeyboardFocusRowManager.getKeyboardFocusRowForTesting());
+        assertOnNone();
 
         // Clean up.
         ThreadUtils.runOnUiThreadBlocking(() -> modalDialogManager.dismissAllDialogs(UNKNOWN));
+    }
+
+    // Helper methods for readability
+
+    private void switchRow() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mActivity.onMenuOrKeyboardAction(R.id.switch_keyboard_focus_row, false));
+    }
+
+    private void assertOnToolbar() {
+        assertEquals(
+                "Expected focus to be on toolbar after invocation of keyboard focus row switch",
+                KeyboardFocusRow.TOOLBAR,
+                mKeyboardFocusRowManager.getKeyboardFocusRowForTesting());
+    }
+
+    private void assertOnTabStrip() {
+        assertEquals(
+                "Expected focus to be on tab strip after invocation of keyboard focus row switch",
+                KeyboardFocusRow.TAB_STRIP,
+                mKeyboardFocusRowManager.getKeyboardFocusRowForTesting());
+    }
+
+    private void assertOnBookmarksBar() {
+        assertEquals(
+                "Expected focus to be on bookmarks bar after invocation of keyboard focus row"
+                    + " switch",
+                KeyboardFocusRow.BOOKMARKS_BAR,
+                mKeyboardFocusRowManager.getKeyboardFocusRowForTesting());
+    }
+
+    private void assertOnNone() {
+        assertEquals(
+                "Expected focus to be on none after invocation of keyboard focus row switch",
+                KeyboardFocusRow.NONE,
+                mKeyboardFocusRowManager.getKeyboardFocusRowForTesting());
     }
 }
