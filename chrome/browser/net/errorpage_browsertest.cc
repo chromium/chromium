@@ -121,13 +121,6 @@ namespace {
       text);
 }
 
-// Expands the more box on the currently displayed error page.
-void ToggleHelpBox(Browser* browser) {
-  EXPECT_TRUE(
-      content::ExecJs(browser->tab_strip_model()->GetActiveWebContents(),
-                      "document.getElementById('details-button').click();"));
-}
-
 // Returns true if the diagnostics link suggestion is displayed.
 [[nodiscard]] bool IsDisplayingDiagnosticsLink(Browser* browser) {
   std::string command = base::StringPrintf(
@@ -747,33 +740,6 @@ IN_PROC_BROWSER_TEST_F(ErrorPageAutoReloadTest, AutoReload) {
   SetRequestsToFail(2);
   NavigateToURLAndWaitForTitle(GetMagicUrl(), kSuccessTitle);
   EXPECT_EQ(requests(), 3);
-}
-
-// TODO(crbug.com/40856405): Test is flaky.
-IN_PROC_BROWSER_TEST_F(ErrorPageAutoReloadTest,
-                       DISABLED_ManualReloadNotSuppressed) {
-  SetRequestsToFail(3);
-
-  // Wait for the error page and first autoreload.
-  NavigateAndWaitForFailureWithAutoReload(GetMagicUrl());
-
-  EXPECT_EQ(2, requests());
-
-  ToggleHelpBox(browser());
-  EXPECT_TRUE(IsDisplayingText(
-      browser(), l10n_util::GetStringUTF8(
-                     IDS_ERRORPAGES_SUGGESTION_CHECK_CONNECTION_HEADER)));
-
-  content::WebContents* web_contents =
-    browser()->tab_strip_model()->GetActiveWebContents();
-  content::TestNavigationObserver nav_observer(web_contents, 1);
-  web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      u"document.getElementById('reload-button').click();",
-      base::NullCallback(), content::ISOLATED_WORLD_ID_GLOBAL);
-  nav_observer.Wait();
-  EXPECT_FALSE(IsDisplayingText(
-      browser(), l10n_util::GetStringUTF8(
-                     IDS_ERRORPAGES_SUGGESTION_CHECK_CONNECTION_HEADER)));
 }
 
 // Make sure that a same document navigation does not cause issues with the
