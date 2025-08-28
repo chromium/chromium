@@ -7,8 +7,10 @@
 #include "base/check_is_test.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -44,6 +46,8 @@ namespace {
 constexpr char kHelpCenterUrl[] =
     "https://support.google.com/chrome/answer/185277";
 
+constexpr base::TimeDelta kForcedSigninToastDelay = base::Seconds(5);
+
 constexpr char kDialogCloseReasonHistogram[] =
     "Signin.DiceMigrationDialog.CloseReason";
 constexpr char kDialogTimerStartedHistogram[] =
@@ -63,6 +67,10 @@ constexpr char kDialogNotShownReasonHistogram[] =
 constexpr char kRestoredFromBackupHistogram[] =
     "Signin.DiceMigration.RestoredFromBackup";
 constexpr char kForceMigratedHistogram[] = "Signin.DiceMigration.ForceMigrated";
+constexpr char kForcedMigrationAccountManagedHistogram[] =
+    "Signin.ForcedDiceMigration.HasAcceptedAccountManagement";
+constexpr char kForcedSigninBrowserInstanceAvailableAfterTimerHistogram[] =
+    "Signin.ForcedDiceMigration.BrowserInstanceAvailableAfterTimer";
 
 void LogDialogCloseReason(DiceMigrationService::DialogCloseReason reason) {
   base::UmaHistogramEnumeration(kDialogCloseReasonHistogram, reason);
@@ -163,22 +171,6 @@ bool MaybeShowToast(Browser* browser) {
   return true;
 }
 
-bool ForceMigrateUserIfEligible(Profile* profile) {
-  if (!IsUserEligibleForDiceMigration(profile)) {
-    return false;
-  }
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  CHECK(identity_manager);
-  // Remove the primary account, but keep the tokens. This will make the user
-  // signed in only to the web.
-  // TODO(crbug.com/437083916): DICe users with account management should
-  // instead be migrated to explicitly signed-in state.
-  return identity_manager->GetPrimaryAccountMutator()
-      ->RemovePrimaryAccountButKeepTokens(
-          signin_metrics::ProfileSignout::kForcedDiceMigration);
-}
-
 }  // namespace
 
 const char kDiceMigrationDialogShownCount[] =
@@ -247,8 +239,11 @@ DiceMigrationService::DiceMigrationService(
   CHECK(profile_);
   if (base::FeatureList::IsEnabled(switches::kForcedDiceMigration)) {
     // Force migration all implicitly signed-in users.
-    const bool migrated = ForceMigrateUserIfEligible(profile_);
+    const bool migrated = ForceMigrateUserIfEligible();
     base::UmaHistogramBoolean(kForceMigratedHistogram, migrated);
+    // By now, the user should have been force migrated and is no longer in the
+    // DICe state.
+    CHECK(!IsUserEligibleForDiceMigration(profile_));
     return;
   }
 
@@ -632,4 +627,54 @@ void DiceMigrationService::BrowserDidClose(BrowserWindowInterface* browser) {
   if (dialog_widget_) {
     dialog_widget_->CloseNow();
   }
+}
+
+bool DiceMigrationService::ForceMigrateUserIfEligible() {
+  if (!IsUserEligibleForDiceMigration(profile_)) {
+    return false;
+  }
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+  CHECK(identity_manager);
+  const bool has_accepted_account_management =
+      enterprise_util::UserAcceptedAccountManagement(profile_);
+  base::UmaHistogramBoolean(kForcedMigrationAccountManagedHistogram,
+                            has_accepted_account_management);
+  if (!has_accepted_account_management) {
+    // This is either a consumer account or an enterprise account that has not
+    // accepted the account management.
+    // Remove the primary account, but keep the tokens. This will make the user
+    // signed in only to the web.
+    CHECK(identity_manager->GetPrimaryAccountMutator()
+              ->RemovePrimaryAccountButKeepTokens(
+                  signin_metrics::ProfileSignout::kForcedDiceMigration));
+    return true;
+  }
+  // The user is an enterprise account that has accepted the account management.
+  // Such users cannot be signed out. Migrate these users to explicitly
+  // signed-in state.
+  CHECK(MaybeMigrateUser(profile_));
+
+  // Trigger the timer to show the toast.
+  auto show_toast = [](Profile* profile) {
+    Browser* browser = chrome::FindBrowserWithProfile(profile);
+    base::UmaHistogramBoolean(
+        kForcedSigninBrowserInstanceAvailableAfterTimerHistogram, browser);
+    if (browser) {
+      CHECK(MaybeShowToast(browser));
+    } else {
+      // The profile is under creation and hence no browser instance is tied to
+      // it yet. Wait for the browser to be created before trying to show the
+      // toast.
+      // This object deletes itself when done.
+      new profiles::BrowserAddedForProfileObserver(
+          profile, base::BindOnce(base::IgnoreResult(&MaybeShowToast)));
+    }
+  };
+  // TODO(crbug.com/437083916): Rename the timer to reflect that it is also used
+  // for showing this toast.
+  CHECK(!dialog_trigger_timer_.IsRunning());
+  dialog_trigger_timer_.Start(FROM_HERE, kForcedSigninToastDelay,
+                              base::BindOnce(std::move(show_toast), profile_));
+  return true;
 }

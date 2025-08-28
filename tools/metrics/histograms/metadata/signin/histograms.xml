@@ -1571,6 +1571,34 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.ForcedDiceMigration.BrowserInstanceAvailableAfterTimer"
+    enum="BooleanAvailable" expires_after="2026-08-24">
+  <owner>ankushkush@google.com</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    Records whether the browser instance was available after the timer to show
+    the toast was fired. The toast is shown to confirm the user's migration to
+    explicitly signed-in state, which happens early during the startup. This is
+    recorded for all implicitly signed-in users with account management enabled.
+    Since this is recorded during the migration of implicitly signed-in users to
+    explicitly signed-in state which can happen only once per user lifetime,
+    this histogram is recorded exactly once per user lifetime.
+  </summary>
+</histogram>
+
+<histogram name="Signin.ForcedDiceMigration.HasAcceptedAccountManagement"
+    enum="Boolean" expires_after="2026-08-24">
+  <owner>ankushkush@google.com</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    Records whether the user has account management enabled. This is recorded
+    for all implicitly signed-in users early during the startup. Since this is
+    recorded during the migration of implicitly signed-in users to explicitly
+    signed-in state which can happen only once per user lifetime, this histogram
+    is recorded exactly once per user lifetime.
+  </summary>
+</histogram>
+
 <histogram name="Signin.GaiaCookieManager.Logout"
     enum="SigninGaiaCookieManagerLogout" expires_after="never">
 <!-- expires-never: monitors logout requests to http://accounts.google.com/Logout endpoint -->

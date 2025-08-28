@@ -142,6 +142,8 @@ class DiceMigrationService : public KeyedService,
   // Invoked when `browser_` is closed.
   void BrowserDidClose(BrowserWindowInterface* browser);
 
+  bool ForceMigrateUserIfEligible();
+
   raw_ptr<Profile> profile_ = nullptr;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

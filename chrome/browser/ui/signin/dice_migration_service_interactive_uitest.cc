@@ -5,6 +5,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -21,6 +22,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/interactive_test.h"
@@ -40,6 +42,7 @@ constexpr char kToastActionButtonUserAction[] =
     "Toast.ActionButtonClicked.DiceUserMigrated";
 constexpr char kToastCloseButtonUserAction[] =
     "Toast.CloseButtonClicked.DiceUserMigrated";
+constexpr char kForceMigratedHistogram[] = "Signin.DiceMigration.ForceMigrated";
 
 // Utility macro to implicitly sign in the user in a PRE test.
 // NOTE: `test_suite` must be a subclass of
@@ -536,6 +539,49 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceInteractiveUiTest,
       // The identity pill is collapsed again.
       CheckViewProperty(kToolbarAvatarButtonElementId,
                         &views::LabelButton::GetText, u""));
+}
+
+class DiceMigrationServiceForcedMigrationInteractiveUiTest
+    : public DiceMigrationServiceInteractiveUiTest {
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kForcedDiceMigration};
+};
+
+IN_PROC_BROWSER_TEST_F(DiceMigrationServiceForcedMigrationInteractiveUiTest,
+                       PRE_AccountWithAccountManagement) {
+  ImplicitlySignIn();
+
+  // The user has accepted account management.
+  enterprise_util::SetUserAcceptedAccountManagement(GetProfile(), true);
+  ASSERT_TRUE(enterprise_util::UserAcceptedAccountManagement(GetProfile()));
+}
+
+IN_PROC_BROWSER_TEST_F(DiceMigrationServiceForcedMigrationInteractiveUiTest,
+                       AccountWithAccountManagement) {
+  // The user is explicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_TRUE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+  histogram_tester_.ExpectUniqueSample(kForceMigratedHistogram, true, 1);
+
+  RunTestSequence(If(
+                      [&]() {
+                        return GetDiceMigrationService()
+                            ->GetDialogTriggerTimerForTesting()
+                            .IsRunning();
+                      },
+                      Then(TriggerDialog())),
+
+                  // The toast should be shown following the forced migration.
+                  WaitForShow(toasts::ToastView::kToastViewId),
+
+                  // The toast should auto dismiss when the timer goes off.
+                  FireToastCloseTimer(),
+                  WaitForHide(toasts::ToastView::kToastViewId));
+
+  histogram_tester_.ExpectUniqueSample(kToastTriggerToShowHistogram,
+                                       ToastId::kDiceUserMigrated, 1);
 }
 
 }  // namespace

@@ -213,6 +213,7 @@ if (!is_android) {
         "signin_view_controller_browsertest.cc",
       ]
       deps += [
+        "//chrome/browser/ui/toasts/api:toasts",
         "//chrome/browser/ui/webui/signin/signout_confirmation",
         "//chrome/browser/web_applications:web_applications_test_support",
         "//chrome/test:sync_integration_test_support",
