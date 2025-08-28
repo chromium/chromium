@@ -144,6 +144,18 @@ crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_EncodingModes_offscreen_av0
 crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_EncodingModes_offscreen_av01.0.04M.08_variable_quality [ Failure ]
 crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_EncodingModes_offscreen_av01.0.04M.08_variable_realtime [ Failure ]
 crbug.com/430338387 [ win11 nvidia ] WebCodecs_D3D12_MixedSourceEncoding_av01.0.04M.08 [ Failure ]
+crbug.com/441743840 [ win10 amd-0x7340 ] WebCodecs_FrameSizeChange_avc1.42001E_arraybuffer [ Failure ]
+crbug.com/441743840 [ win10 amd-0x7340 ] WebCodecs_FrameSizeChange_avc1.42001E_camera [ Failure ]
+crbug.com/441743840 [ win10 amd-0x7340 ] WebCodecs_FrameSizeChange_avc1.42001E_capture [ Failure ]
+crbug.com/441743840 [ win10 amd-0x7340 ] WebCodecs_FrameSizeChange_avc1.42001E_hw_decoder [ Failure ]
+crbug.com/441743840 [ win10 amd-0x7340 ] WebCodecs_FrameSizeChange_avc1.42001E_offscreen [ Failure ]
+crbug.com/441743840 [ win10 amd-0x7340 ] WebCodecs_FrameSizeChange_avc1.42001E_sw_decoder [ Failure ]
+crbug.com/441743840 [ win11 amd-0x7480 ] WebCodecs_FrameSizeChange_avc1.42001E_arraybuffer [ Failure ]
+crbug.com/441743840 [ win11 amd-0x7480 ] WebCodecs_FrameSizeChange_avc1.42001E_camera [ Failure ]
+crbug.com/441743840 [ win11 amd-0x7480 ] WebCodecs_FrameSizeChange_avc1.42001E_capture [ Failure ]
+crbug.com/441743840 [ win11 amd-0x7480 ] WebCodecs_FrameSizeChange_avc1.42001E_hw_decoder [ Failure ]
+crbug.com/441743840 [ win11 amd-0x7480 ] WebCodecs_FrameSizeChange_avc1.42001E_offscreen [ Failure ]
+crbug.com/441743840 [ win11 amd-0x7480 ] WebCodecs_FrameSizeChange_avc1.42001E_sw_decoder [ Failure ]
 
 
 # AVC, HEVC, and VP8 VBR seems to be unreliable on some Android devices
