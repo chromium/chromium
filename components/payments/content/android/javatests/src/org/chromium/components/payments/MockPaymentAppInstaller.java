@@ -38,6 +38,7 @@ import java.util.Set;
 public class MockPaymentAppInstaller {
     private final Set<String> mMethodNames = new HashSet<>();
     private final List<MockPaymentApp> mApps = new ArrayList<>();
+    private boolean mIsReadyToPay = true;
 
     /**
      * Adds a mock payment app to the list of apps to be installed.
@@ -51,6 +52,18 @@ public class MockPaymentAppInstaller {
                 : "Each mock payment app should have a different payment method name.";
         mMethodNames.add(app.getMethod());
         mApps.add(app);
+        return this;
+    }
+
+    /**
+     * Simulates the IS_READY_TO_PAY services response for all payment apps. If not set, the default
+     * is true.
+     *
+     * @param isReadyToPay The simulated return value of the IS_READY_TO_PAY service.
+     * @return A refence to this {@link MockPaymentAppInstaller} instance.
+     */
+    public MockPaymentAppInstaller setReadyToPay(boolean isReadyToPay) {
+        mIsReadyToPay = isReadyToPay;
         return this;
     }
 
@@ -72,6 +85,9 @@ public class MockPaymentAppInstaller {
                     getSupportedDelegations(app),
                     app.getSignature(),
                     app.getPackageInfoState());
+            if (app.hasReadyToPayService()) {
+                packageManagerDelegate.addIsReadyToPayService(app.getPackage());
+            }
             downloader.serveManifestFor(app);
             launcher.handleLaunchingApp(app);
         }
@@ -80,7 +96,8 @@ public class MockPaymentAppInstaller {
         AndroidPaymentAppFinder.setDownloaderForTest(downloader);
         AndroidPaymentAppFinder.setAndroidIntentLauncherForTest(launcher);
 
-        AndroidPaymentAppFinder.bypassIsReadyToPayServiceInTest();
+        AndroidPaymentAppFinder.bypassIsReadyToPayServiceInTest(true);
+        AndroidPaymentAppFinder.setIsReadyToPayResponseInTest(mIsReadyToPay);
     }
 
     private static String[] getSupportedDelegations(MockPaymentApp app) {
@@ -106,6 +123,8 @@ public class MockPaymentAppInstaller {
         AndroidPaymentAppFinder.setPackageManagerDelegateForTest(null);
         AndroidPaymentAppFinder.setDownloaderForTest(null);
         AndroidPaymentAppFinder.setAndroidIntentLauncherForTest(null);
+        AndroidPaymentAppFinder.bypassIsReadyToPayServiceInTest(false);
+        AndroidPaymentAppFinder.setIsReadyToPayResponseInTest(true);
         mApps.clear();
     }
 }

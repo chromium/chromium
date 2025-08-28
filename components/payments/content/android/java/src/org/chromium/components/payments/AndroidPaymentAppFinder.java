@@ -68,6 +68,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
     private static @Nullable PackageManagerDelegate sPackageManagerDelegateForTest;
     private static @Nullable PaymentManifestDownloader sDownloaderForTest;
     private static boolean sBypassIsReadyToPayServiceInTest;
+    private static boolean sIsReadyToPayResponseInTest = true;
     private static @Nullable AndroidIntentLauncher sAndroidIntentLauncherForTest;
 
     /**
@@ -190,6 +191,13 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
     @VisibleForTesting
     public static void bypassIsReadyToPayServiceInTest() {
         sBypassIsReadyToPayServiceInTest = true;
+    }
+
+    /**
+     * @param isReadyToPay The response of IS_READY_TO_PAY in test. The default is true.
+     */
+    public static void setIsReadyToPayResponseInTest(boolean isReadyToPay) {
+        sIsReadyToPayResponseInTest = isReadyToPay;
     }
 
     /**
@@ -765,7 +773,10 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
         mPendingIsReadyToPayQueries = mValidApps.size();
         for (Map.Entry<String, AndroidPaymentApp> entry : mValidApps.entrySet()) {
             AndroidPaymentApp app = entry.getValue();
-            if (sBypassIsReadyToPayServiceInTest) app.bypassIsReadyToPayServiceInTest();
+            if (sBypassIsReadyToPayServiceInTest) {
+                app.bypassIsReadyToPayServiceInTest();
+                app.setIsReadyToPayResponseInTest(sIsReadyToPayResponseInTest);
+            }
             app.maybeQueryIsReadyToPayService(
                     filterMethodDataForApp(
                             mFactoryDelegate.getParams().getMethodData(),
@@ -825,10 +836,9 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
      * Enables the given payment app to use this method name.
      *
      * @param resolveInfo The payment app that's allowed to use the method name.
-     * @param methodName  The method name that can be used by the app.
+     * @param methodName The method name that can be used by the app.
      */
-    private void onValidPaymentAppForPaymentMethodName(
-            ResolveInfo resolveInfo, String methodName) {
+    private void onValidPaymentAppForPaymentMethodName(ResolveInfo resolveInfo, String methodName) {
         if (mFactoryDelegate.getParams().hasClosed()) return;
         String packageName = resolveInfo.activityInfo.packageName;
 

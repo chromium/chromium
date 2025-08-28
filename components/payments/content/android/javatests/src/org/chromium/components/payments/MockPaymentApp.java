@@ -33,6 +33,7 @@ public class MockPaymentApp {
     private PackageInfoState mPackageInfoState = PackageInfoState.ONE_VALID_SIGNATURE;
     private boolean mHandlesShippingAddress;
     private boolean mHandlesContactInformation;
+    private boolean mHasReadyToPayService;
 
     /**
      * @param label The app's user visible label, e.g., "Test Payments App". Must be non-empty for
@@ -117,6 +118,15 @@ public class MockPaymentApp {
     }
 
     /**
+     * @param hasReadyToPayService Whether this mock payment app has an IS_READY_TO_PAY service.
+     * @return A reference to this {@link MockPaymentApp} instance.
+     */
+    public MockPaymentApp setHasReadyToPayService(boolean hasReadyToPayService) {
+        mHasReadyToPayService = hasReadyToPayService;
+        return this;
+    }
+
+    /**
      * @return The app's user visible label, e.g., "Test Payments App".
      */
     public String getLabel() {
@@ -170,5 +180,12 @@ public class MockPaymentApp {
      */
     public boolean getHandlesContactInformation() {
         return mHandlesContactInformation;
+    }
+
+    /**
+     * @return Whether this mock payment app has an IS_READY_TO_PAY service.
+     */
+    public boolean hasReadyToPayService() {
+        return mHasReadyToPayService;
     }
 }
