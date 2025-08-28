@@ -53,6 +53,7 @@
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/verifier_formats.h"
 #include "kiosk_app_data_base.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image.h"
@@ -371,11 +372,6 @@ void KioskAppData::SetStatus(Status status) {
   }
 }
 
-network::mojom::URLLoaderFactory* KioskAppData::GetURLLoaderFactory() {
-  return g_browser_process->system_network_context_manager()
-      ->GetURLLoaderFactory();
-}
-
 bool KioskAppData::LoadFromCache() {
   PrefService* local_state = g_browser_process->local_state();
   const base::Value::Dict& dict = local_state->GetDict(dictionary_name());
@@ -467,11 +463,14 @@ void KioskAppData::StartFetch() {
     return;
   }
 
+  // TODO(crbug.com/404129026): Remove g_browser_process usage.
+  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
+      g_browser_process->shared_url_loader_factory();
+
   webstore_fetcher_ =
       std::make_unique<extensions::WebstoreDataFetcher>(this, GURL(), app_id());
   webstore_fetcher_->set_max_auto_retries(3);
-  webstore_fetcher_->Start(g_browser_process->system_network_context_manager()
-                               ->GetURLLoaderFactory());
+  webstore_fetcher_->Start(shared_url_loader_factory.get());
 }
 
 void KioskAppData::OnWebstoreRequestFailure(const std::string& extension_id) {
@@ -504,10 +503,14 @@ void KioskAppData::OnFetchItemSnippetParseSuccess(
 
   name_ = item_snippet.title();
 
+  // TODO(crbug.com/404129026): Remove g_browser_process usage.
+  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
+      g_browser_process->shared_url_loader_factory();
+
   // WebstoreDataParser deletes itself when done.
   (new WebstoreDataParser(weak_factory_.GetWeakPtr()))
       ->Start(app_id(), item_snippet.manifest(), icon_url,
-              GetURLLoaderFactory());
+              shared_url_loader_factory.get());
 }
 
 void KioskAppData::OnWebstoreResponseParseFailure(

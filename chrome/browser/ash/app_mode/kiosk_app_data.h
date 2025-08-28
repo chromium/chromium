@@ -31,10 +31,6 @@ namespace gfx {
 class Image;
 }
 
-namespace network::mojom {
-class URLLoaderFactory;
-}  // namespace network::mojom
-
 namespace ash {
 
 class KioskAppDataDelegate;
@@ -97,9 +93,6 @@ class KioskAppData : public KioskAppDataBase,
   class WebstoreDataParser;
 
   void SetStatus(Status status);
-
-  // Returns URLLoaderFactory to use for fetching web store data.
-  network::mojom::URLLoaderFactory* GetURLLoaderFactory();
 
   // Loads the locally cached data. Return false if there is none.
   bool LoadFromCache();

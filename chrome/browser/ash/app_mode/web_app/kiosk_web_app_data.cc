@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_data_delegate.h"
 #include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -33,6 +32,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/fetch_api.mojom-data-view.h"
 #include "skia/ext/image_operations.h"
@@ -115,10 +115,9 @@ class KioskWebAppData::IconFetcher {
         network::SimpleURLLoader::RETRY_ON_5XX |
             network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
 
-    SystemNetworkContextManager* system_network_context_manager =
-        g_browser_process->system_network_context_manager();
-    network::mojom::URLLoaderFactory* loader_factory =
-        system_network_context_manager->GetURLLoaderFactory();
+    // TODO(crbug.com/404129026): Remove g_browser_process usage.
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
+        g_browser_process->shared_url_loader_factory();
 
     // Assuming maximum image size is 256x256.
     constexpr int kMaxIconFileSize = (2 * KioskWebAppData::kIconSize) *
@@ -126,7 +125,7 @@ class KioskWebAppData::IconFetcher {
                                      1000;
 
     simple_loader_->DownloadToString(
-        loader_factory,
+        shared_url_loader_factory.get(),
         base::BindOnce(&IconFetcher::OnDownloadCompleted,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
         kMaxIconFileSize);
