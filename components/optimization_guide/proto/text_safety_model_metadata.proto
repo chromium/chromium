@@ -58,9 +58,26 @@ message LanguageCheck {
   optional double partial_threshold = 2;
 }
 
+enum RegexFilterType {
+  REGEX_FILTER_TYPE_UNSPECIFIED = 0;
+  REGEX_FILTER_TYPE_BLOCK_ON_MATCH = 1;
+  REGEX_FILTER_TYPE_BLOCK_ON_NO_MATCH = 2;
+}
+
+message RegexFilter {
+  // The blocking logic for the filter.
+  optional RegexFilterType type = 1;
+
+  // The regex string to match against.
+  optional string regex = 2;
+}
+
 message RequestSafetyCheck {
   // How to generate input for the text safety check from the request message.
   repeated SubstitutedString input_template = 1;
+
+  // Block requests based on regex match result.
+  optional RegexFilter regex_filter = 6;
 
   // The set of thresholds to apply per category, overriding those in the
   // parent.
@@ -93,6 +110,9 @@ message RawOutputCheck {
   // output.
   repeated SubstitutedString input_template = 1;
 
+  // Block raw output based on regex match result.
+  optional RegexFilter regex_filter = 3;
+
   // Specify a requirement on the output language.
   // If unspecified, the language will be checked with a default threshold.
   optional LanguageCheck language_check = 2;
@@ -102,6 +122,9 @@ message ResponseSafetyCheck {
   // How to generate input for the text safety check based on the request and
   // response.
   repeated CheckInput inputs = 1;
+
+  // Block responses based on regex match result.
+  optional RegexFilter regex_filter = 6;
 
   // The set of thresholds to apply per category, overriding those in the
   // parent.
