@@ -45,6 +45,7 @@
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -148,7 +149,8 @@ class ChromePermissionRequestManagerTest
     user_manager->LoginUser(account_id);
 
     auto kiosk_app_manager = std::make_unique<ash::KioskWebAppManager>(
-        TestingBrowserProcess::GetGlobal()->local_state());
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
     kiosk_app_manager->AddAppForTesting(account_id, app_url);
 
     NavigateAndCommit(url);

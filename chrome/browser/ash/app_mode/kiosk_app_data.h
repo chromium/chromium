@@ -32,6 +32,10 @@ namespace gfx {
 class Image;
 }
 
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
 namespace ash {
 
 class KioskAppDataDelegate;
@@ -49,12 +53,14 @@ class KioskAppData : public KioskAppDataBase,
   };
 
   // `local_state` must be non-null, and must outlive `this`.
-  KioskAppData(PrefService* local_state,
-               KioskAppDataDelegate& delegate,
-               const std::string& app_id,
-               const AccountId& account_id,
-               const GURL& update_url,
-               const base::FilePath& cached_crx);
+  KioskAppData(
+      PrefService* local_state,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      KioskAppDataDelegate& delegate,
+      const std::string& app_id,
+      const AccountId& account_id,
+      const GURL& update_url,
+      const base::FilePath& cached_crx);
   KioskAppData(const KioskAppData&) = delete;
   KioskAppData& operator=(const KioskAppData&) = delete;
   ~KioskAppData() override;
@@ -87,6 +93,7 @@ class KioskAppData : public KioskAppDataBase,
   // `local_state` must be non-null, and must outlive the returned object.
   static std::unique_ptr<KioskAppData> CreateForTest(
       PrefService* local_state,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       KioskAppDataDelegate& delegate,
       const std::string& app_id,
       const AccountId& account_id,
@@ -141,6 +148,9 @@ class KioskAppData : public KioskAppDataBase,
   void OnCrxLoadFinished(const CrxLoader* crx_loader);
 
   void OnIconLoadDone(std::optional<gfx::ImageSkia> icon);
+
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
 
   const raw_ref<KioskAppDataDelegate> delegate_;
   Status status_;

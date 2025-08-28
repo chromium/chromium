@@ -17,7 +17,6 @@ include_rules = [
   "+chrome/browser/apps/app_service",
   "+chrome/browser/ash/app_mode",
   "+chrome/browser/ash/policy/core",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/chromeos/app_mode",
   "+chrome/browser/extensions/extension_special_storage_policy.h",
   "+chrome/browser/net",
@@ -38,3 +37,9 @@ include_rules = [
   "+chrome/common/pref_names.h",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "kiosk_web_app_data_browsertest\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ],
+}

@@ -945,7 +945,8 @@ class DeviceAPIServiceWithKioskUserTest : public DeviceAPIServiceParamTest {
     command_line_.GetProcessCommandLine()->AppendSwitch(
         switches::kForceAppMode);
     app_manager_ = std::make_unique<ash::KioskWebAppManager>(
-        TestingBrowserProcess::GetGlobal()->local_state());
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
   }
 
   void TearDown() override {

@@ -222,7 +222,8 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
 
     user_activity_detector_ = ui::UserActivityDetector::Get();
     kiosk_web_app_manager_ = std::make_unique<ash::KioskWebAppManager>(
-        TestingBrowserProcess::GetGlobal()->local_state());
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
     kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>(
         TestingBrowserProcess::GetGlobal()->local_state(),
         TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());

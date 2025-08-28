@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_web_app_update_observer.h"
@@ -19,6 +20,10 @@
 class PrefRegistrySimple;
 class PrefService;
 class Profile;
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace web_app {
 struct WebAppInstallInfo;
@@ -40,7 +45,9 @@ class KioskWebAppManager : public KioskAppManagerBase {
   static KioskWebAppManager* Get();
 
   // `local_state` must be non-null, and must outlive `this`.
-  explicit KioskWebAppManager(PrefService* local_state);
+  KioskWebAppManager(
+      PrefService* local_state,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
   KioskWebAppManager(const KioskWebAppManager&) = delete;
   KioskWebAppManager& operator=(const KioskWebAppManager&) = delete;
   ~KioskWebAppManager() override;
@@ -86,6 +93,9 @@ class KioskWebAppManager : public KioskAppManagerBase {
   // `KioskAppManagerBase` implementation.
   // Updates `apps_` based on CrosSettings.
   void UpdateAppsFromPolicy() override;
+
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
 
   std::vector<std::unique_ptr<KioskWebAppData>> apps_;
   AccountId auto_launch_account_id_;

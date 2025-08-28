@@ -124,7 +124,8 @@ class KioskWebAppManagerTest : public BrowserWithTestWindowTest {
         std::make_unique<FakePublisher>(app_service_, apps::AppType::kWeb);
 
     app_manager_ = std::make_unique<KioskWebAppManager>(
-        TestingBrowserProcess::GetGlobal()->local_state());
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
 
     app_manager()->StartObservingAppUpdate(profile(), account_id());
     app_manager()->AddObserver(&app_manager_observer_);

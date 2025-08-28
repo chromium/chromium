@@ -119,7 +119,8 @@ class KioskWebAppServiceLauncherTest : public BrowserWithTestWindowTest {
         ->SetOnLaunchWebAppCallback(app_launch_future_.GetRepeatingCallback());
 
     app_manager_ = std::make_unique<KioskWebAppManager>(
-        TestingBrowserProcess::GetGlobal()->local_state());
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
     account_id_ = AccountId::FromUserEmail(kAppEmail);
     app_manager_->AddAppForTesting(account_id_, GURL(kAppInstallUrl));
 

@@ -106,6 +106,7 @@ class KioskWebAppDataTest : public InProcessBrowserTest,
   KioskWebAppData CreateTestData(const std::string& title = std::string(),
                                  const GURL& icon_url = GURL()) {
     return {g_browser_process->local_state(),
+            g_browser_process->shared_url_loader_factory(),
             *this,
             kAppId,
             EmptyAccountId(),

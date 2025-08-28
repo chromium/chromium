@@ -102,7 +102,8 @@ class DeviceCommandFetchSupportPacketTest : public ash::DeviceSettingsTestBase {
     cros_settings_helper_.ReplaceDeviceSettingsProviderWithStub();
 
     kiosk_web_app_manager_ = std::make_unique<ash::KioskWebAppManager>(
-        TestingBrowserProcess::GetGlobal()->local_state());
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
     kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>(
         TestingBrowserProcess::GetGlobal()->local_state(),
         TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());

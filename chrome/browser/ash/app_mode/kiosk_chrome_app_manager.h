@@ -259,6 +259,9 @@ class KioskChromeAppManager : public KioskAppManagerBase,
   // App.
   App ConstructApp(const KioskAppData& data) const;
 
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
+
   std::vector<std::unique_ptr<KioskAppData>> apps_;
   std::string auto_launch_app_id_;
   std::string currently_auto_launched_with_zero_delay_app_;

@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_data_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_delegate.h"
 #include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -57,7 +56,9 @@ class KioskWebAppData::IconFetcher {
  public:
   using ResultCallback = base::OnceCallback<void(SkBitmap)>;
 
-  IconFetcher() = default;
+  explicit IconFetcher(
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
+      : shared_url_loader_factory_(std::move(shared_url_loader_factory)) {}
   IconFetcher(const IconFetcher&) = delete;
   IconFetcher& operator=(const IconFetcher&) = delete;
   ~IconFetcher() = default;
@@ -115,17 +116,13 @@ class KioskWebAppData::IconFetcher {
         network::SimpleURLLoader::RETRY_ON_5XX |
             network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
 
-    // TODO(crbug.com/404129026): Remove g_browser_process usage.
-    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
-        g_browser_process->shared_url_loader_factory();
-
     // Assuming maximum image size is 256x256.
     constexpr int kMaxIconFileSize = (2 * KioskWebAppData::kIconSize) *
                                          (2 * KioskWebAppData::kIconSize) * 4 +
                                      1000;
 
     simple_loader_->DownloadToString(
-        shared_url_loader_factory.get(),
+        shared_url_loader_factory_.get(),
         base::BindOnce(&IconFetcher::OnDownloadCompleted,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
         kMaxIconFileSize);
@@ -187,22 +184,28 @@ class KioskWebAppData::IconFetcher {
     std::move(callback).Run(bitmap);
   }
 
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
+
   bool started_ = false;
   std::unique_ptr<network::SimpleURLLoader> simple_loader_;
   base::WeakPtrFactory<IconFetcher> weak_ptr_factory_{this};
 };
 
-KioskWebAppData::KioskWebAppData(PrefService* local_state,
-                                 KioskAppDataDelegate& delegate,
-                                 const std::string& app_id,
-                                 const AccountId& account_id,
-                                 const GURL url,
-                                 const std::string& title,
-                                 const GURL icon_url)
+KioskWebAppData::KioskWebAppData(
+    PrefService* local_state,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    KioskAppDataDelegate& delegate,
+    const std::string& app_id,
+    const AccountId& account_id,
+    const GURL url,
+    const std::string& title,
+    const GURL icon_url)
     : KioskAppDataBase(local_state,
                        KioskWebAppManager::kWebKioskDictionaryName,
                        app_id,
                        account_id),
+      shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       delegate_(delegate),
       status_(Status::kInit),
       install_url_(url),
@@ -256,7 +259,7 @@ void KioskWebAppData::LoadIcon() {
   status_ = Status::kLoading;
 
   DCHECK(!icon_fetcher_);
-  icon_fetcher_ = std::make_unique<IconFetcher>();
+  icon_fetcher_ = std::make_unique<IconFetcher>(shared_url_loader_factory_);
   icon_fetcher_->Start(icon_url_,
                        base::BindOnce(&KioskWebAppData::OnDidDownloadIcon,
                                       weak_ptr_factory_.GetWeakPtr()));

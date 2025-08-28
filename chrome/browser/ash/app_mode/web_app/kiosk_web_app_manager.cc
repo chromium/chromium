@@ -28,6 +28,7 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -64,8 +65,11 @@ KioskAppManagerBase::App KioskWebAppManager::CreateAppByData(
   return app;
 }
 
-KioskWebAppManager::KioskWebAppManager(PrefService* local_state)
+KioskWebAppManager::KioskWebAppManager(
+    PrefService* local_state,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
     : KioskAppManagerBase(local_state),
+      shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       auto_launch_account_id_(EmptyAccountId()) {
   CHECK(!g_web_kiosk_app_manager);  // Only one instance is allowed.
   g_web_kiosk_app_manager = this;
@@ -137,7 +141,8 @@ void KioskWebAppManager::AddAppForTesting(const AccountId& account_id,
   const std::string app_id =
       web_app::GenerateAppId(/*manifest_id_path=*/std::nullopt, install_url);
   apps_.push_back(std::make_unique<KioskWebAppData>(
-      &local_state_.get(), *this, app_id, account_id, install_url,
+      &local_state_.get(), shared_url_loader_factory_, *this, app_id,
+      account_id, install_url,
       /*title*/ std::string(),
       /*icon_url*/ GURL()));
   NotifyKioskAppsChanged();
@@ -191,8 +196,8 @@ void KioskWebAppManager::UpdateAppsFromPolicy() {
       old_apps.erase(old_it);
     } else {
       apps_.push_back(std::make_unique<KioskWebAppData>(
-          &local_state_.get(), *this, app_id, account_id, std::move(url), title,
-          std::move(icon_url)));
+          &local_state_.get(), shared_url_loader_factory_, *this, app_id,
+          account_id, std::move(url), title, std::move(icon_url)));
       apps_.back()->LoadFromCache();
     }
 

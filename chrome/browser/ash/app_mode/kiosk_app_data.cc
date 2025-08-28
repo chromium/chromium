@@ -25,7 +25,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_delegate.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/cws_item_service.pb.h"
 #include "chrome/browser/extensions/webstore_data_fetcher.h"
 #include "chrome/browser/extensions/webstore_install_helper.h"
@@ -268,16 +267,19 @@ class KioskAppData::WebstoreDataParser
 ////////////////////////////////////////////////////////////////////////////////
 // KioskAppData
 
-KioskAppData::KioskAppData(PrefService* local_state,
-                           KioskAppDataDelegate& delegate,
-                           const std::string& app_id,
-                           const AccountId& account_id,
-                           const GURL& update_url,
-                           const base::FilePath& cached_crx)
+KioskAppData::KioskAppData(
+    PrefService* local_state,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    KioskAppDataDelegate& delegate,
+    const std::string& app_id,
+    const AccountId& account_id,
+    const GURL& update_url,
+    const base::FilePath& cached_crx)
     : KioskAppDataBase(local_state,
                        KioskChromeAppManager::kKioskDictionaryName,
                        app_id,
                        account_id),
+      shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       delegate_(delegate),
       status_(Status::kInit),
       update_url_(update_url),
@@ -344,13 +346,15 @@ void KioskAppData::SetStatusForTest(Status status) {
 // static
 std::unique_ptr<KioskAppData> KioskAppData::CreateForTest(
     PrefService* local_state,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     KioskAppDataDelegate& delegate,
     const std::string& app_id,
     const AccountId& account_id,
     const GURL& update_url,
     const std::string& required_platform_version) {
   std::unique_ptr<KioskAppData> data(new KioskAppData(
-      local_state, delegate, app_id, account_id, update_url, base::FilePath()));
+      local_state, std::move(shared_url_loader_factory), delegate, app_id,
+      account_id, update_url, base::FilePath()));
   data->status_ = Status::kLoaded;
   data->required_platform_version_ = required_platform_version;
   return data;
@@ -464,14 +468,10 @@ void KioskAppData::StartFetch() {
     return;
   }
 
-  // TODO(crbug.com/404129026): Remove g_browser_process usage.
-  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
-      g_browser_process->shared_url_loader_factory();
-
   webstore_fetcher_ =
       std::make_unique<extensions::WebstoreDataFetcher>(this, GURL(), app_id());
   webstore_fetcher_->set_max_auto_retries(3);
-  webstore_fetcher_->Start(shared_url_loader_factory.get());
+  webstore_fetcher_->Start(shared_url_loader_factory_.get());
 }
 
 void KioskAppData::OnWebstoreRequestFailure(const std::string& extension_id) {
@@ -504,14 +504,10 @@ void KioskAppData::OnFetchItemSnippetParseSuccess(
 
   name_ = item_snippet.title();
 
-  // TODO(crbug.com/404129026): Remove g_browser_process usage.
-  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
-      g_browser_process->shared_url_loader_factory();
-
   // WebstoreDataParser deletes itself when done.
   (new WebstoreDataParser(weak_factory_.GetWeakPtr()))
       ->Start(app_id(), item_snippet.manifest(), icon_url,
-              shared_url_loader_factory.get());
+              shared_url_loader_factory_.get());
 }
 
 void KioskAppData::OnWebstoreResponseParseFailure(
