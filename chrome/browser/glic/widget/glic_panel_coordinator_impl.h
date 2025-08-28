@@ -34,8 +34,6 @@ class Size;
 class Point;
 }  // namespace gfx
 namespace glic {
-class GlicWindowControllerImpl;
-
 class GlicPanelCoordinatorImpl : public GlicWindowController {
  public:
   GlicPanelCoordinatorImpl(const GlicPanelCoordinatorImpl&) = delete;
@@ -108,7 +106,15 @@ class GlicPanelCoordinatorImpl : public GlicWindowController {
       FloatyStateChangeCallback callback) override;
 
  private:
-  std::unique_ptr<GlicWindowControllerImpl> glic_window_controller_impl_;
+  // List of callbacks to be notified when window activation has changed.
+  base::RepeatingCallbackList<void(bool)> window_activation_callback_list_;
+
+  using FloatyStateChangeCallbackList =
+      base::RepeatingCallbackList<void(State, mojom::CurrentView view)>;
+  FloatyStateChangeCallbackList floaty_state_change_callback_list_;
+
+  mojom::PanelState panel_state_;
+  const raw_ptr<Profile> profile_;
 };
 }  // namespace glic
 

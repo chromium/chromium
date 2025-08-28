@@ -123,7 +123,7 @@ class GlicKeyedService : public KeyedService {
 
   GlicMetrics* metrics() { return metrics_.get(); }
   GlicFreController& fre_controller();
-  GlicWindowController& window_controller();
+  GlicWindowController& window_controller() const;
   GlicSharingManager& sharing_manager();
 
   // Called when a webview guest is created within a chrome://glic WebUI.
@@ -259,7 +259,8 @@ class GlicKeyedService : public KeyedService {
   std::unique_ptr<GlicMetrics> metrics_;
   std::unique_ptr<GlicFreController> fre_controller_;
   std::unique_ptr<Host> host_;
-  std::unique_ptr<GlicPanelCoordinatorImpl> panel_controller_;
+  // Is either a GlicWindowControllerImpl or GlicPanelCoordinatorImpl.
+  std::unique_ptr<GlicWindowController> window_controller_;
   std::unique_ptr<GlicSharingManagerImpl> sharing_manager_;
   std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
   std::unique_ptr<AuthController> auth_controller_;

@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -41,210 +42,254 @@
 #include "ui/views/widget/widget_observer.h"
 
 namespace glic {
+
 GlicPanelCoordinatorImpl::GlicPanelCoordinatorImpl(
     Profile* profile,
     signin::IdentityManager* identity_manager,
     GlicKeyedService* service,
     GlicEnabling* enabling)
-    : glic_window_controller_impl_(
-          std::make_unique<GlicWindowControllerImpl>(profile,
-                                                     identity_manager,
-                                                     service,
-                                                     enabling)) {}
+    : profile_(profile) {}
 
 GlicPanelCoordinatorImpl::~GlicPanelCoordinatorImpl() = default;
 
 void GlicPanelCoordinatorImpl::Toggle(BrowserWindowInterface* browser,
                                       bool prevent_close,
                                       mojom::InvocationSource source) {
-  glic_window_controller_impl_->Toggle(browser, prevent_close, source);
+  NOTIMPLEMENTED();
 }
 
 bool GlicPanelCoordinatorImpl::ActivateBrowser() {
-  return glic_window_controller_impl_->ActivateBrowser();
+  // Method should only be called on individual panels not the coordinator.
+  NOTIMPLEMENTED();
+  return false;
 }
 
 void GlicPanelCoordinatorImpl::ShowAfterSignIn(base::WeakPtr<Browser> browser) {
-  glic_window_controller_impl_->ShowAfterSignIn(browser);
+  NOTIMPLEMENTED();
 }
 
 void GlicPanelCoordinatorImpl::ToggleWhenNotAlwaysDetached(
     Browser* new_attached_browser,
     bool prevent_close,
     mojom::InvocationSource source) {
-  glic_window_controller_impl_->ToggleWhenNotAlwaysDetached(
-      new_attached_browser, prevent_close, source);
+  NOTIMPLEMENTED();
 }
 
 void GlicPanelCoordinatorImpl::FocusIfOpen() {
-  glic_window_controller_impl_->FocusIfOpen();
+  NOTIMPLEMENTED();
 }
 
 void GlicPanelCoordinatorImpl::Attach() {
-  glic_window_controller_impl_->Attach();
+  NOTIMPLEMENTED();
 }
 
 void GlicPanelCoordinatorImpl::Detach() {
-  glic_window_controller_impl_->Detach();
+  NOTIMPLEMENTED();
 }
 
 void GlicPanelCoordinatorImpl::Shutdown() {
-  glic_window_controller_impl_->Shutdown();
+  // Method should only be called on individual panels not the coordinator.
+  NOTIMPLEMENTED();
 }
 
 void GlicPanelCoordinatorImpl::Resize(const gfx::Size& size,
                                       base::TimeDelta duration,
                                       base::OnceClosure callback) {
-  glic_window_controller_impl_->Resize(size, duration, std::move(callback));
+  // Method should only be called on individual panels not the coordinator.
+  NOTIMPLEMENTED();
 }
 
 void GlicPanelCoordinatorImpl::EnableDragResize(bool enabled) {
-  glic_window_controller_impl_->EnableDragResize(enabled);
+  // Method should only be called on individual panels not the coordinator.
+  NOTIMPLEMENTED();
 }
 
 void GlicPanelCoordinatorImpl::MaybeSetWidgetCanResize() {
-  glic_window_controller_impl_->MaybeSetWidgetCanResize();
+  // Method should only be called on individual panels not the coordinator.
+  NOTIMPLEMENTED();
 }
 
 gfx::Size GlicPanelCoordinatorImpl::GetSize() {
-  return glic_window_controller_impl_->GetSize();
+  // Method should only be called on individual panels not the coordinator.
+  NOTIMPLEMENTED();
+  return gfx::Size();
 }
 
 void GlicPanelCoordinatorImpl::SetDraggableAreas(
     const std::vector<gfx::Rect>& draggable_areas) {
-  glic_window_controller_impl_->SetDraggableAreas(draggable_areas);
+  // Method should only be called on individual panels not the coordinator.
+  NOTIMPLEMENTED();
 }
 
 void GlicPanelCoordinatorImpl::SetMinimumWidgetSize(const gfx::Size& size) {
-  glic_window_controller_impl_->SetMinimumWidgetSize(size);
+  // Method should only be called on individual panels not the coordinator.
+  NOTIMPLEMENTED();
 }
 
 void GlicPanelCoordinatorImpl::Close() {
-  glic_window_controller_impl_->Close();
+  // Method should only be called on individual panels not the coordinator.
+  NOTIMPLEMENTED();
 }
 
 void GlicPanelCoordinatorImpl::CloseWithReason(
     views::Widget::ClosedReason reason) {
-  glic_window_controller_impl_->CloseWithReason(reason);
+  // Method should only be called on individual panels not the coordinator.
+  NOTIMPLEMENTED();
 }
 
 void GlicPanelCoordinatorImpl::ShowTitleBarContextMenuAt(gfx::Point event_loc) {
-  glic_window_controller_impl_->ShowTitleBarContextMenuAt(event_loc);
+  // Method should only be called on individual panels not the coordinator.
+  NOTIMPLEMENTED();
 }
 
 bool GlicPanelCoordinatorImpl::ShouldStartDrag(
     const gfx::Point& initial_press_loc,
     const gfx::Point& mouse_location) {
-  return glic_window_controller_impl_->ShouldStartDrag(initial_press_loc,
-                                                       mouse_location);
+  // Method should only be called on individual panels not the coordinator.
+  NOTIMPLEMENTED();
+  return false;
 }
 
 const mojom::PanelState& GlicPanelCoordinatorImpl::GetPanelState() const {
-  return glic_window_controller_impl_->GetPanelState();
+  // Method should only be called on individual panels not the coordinator.
+  NOTIMPLEMENTED();
+  return panel_state_;
 }
 
 void GlicPanelCoordinatorImpl::AddStateObserver(StateObserver* observer) {
-  glic_window_controller_impl_->AddStateObserver(observer);
+  // The StateObserver needs to be split into two: one for if the floating
+  // window is showing and one for the state of an individual panel.
+  NOTIMPLEMENTED();
 }
 
 void GlicPanelCoordinatorImpl::RemoveStateObserver(StateObserver* observer) {
-  glic_window_controller_impl_->RemoveStateObserver(observer);
+  // The StateObserver needs to be split into two: one for if the floating
+  // window is showing and one for the state of an individual panel.
+  NOTIMPLEMENTED();
 }
 
 bool GlicPanelCoordinatorImpl::IsActive() {
-  return glic_window_controller_impl_->IsActive();
+  // Method should only be called on individual panels not the coordinator.
+  NOTIMPLEMENTED();
+  return false;
 }
 
 bool GlicPanelCoordinatorImpl::IsShowing() const {
-  return glic_window_controller_impl_->IsShowing();
+  // Method should only be called on individual panels not the coordinator.
+  NOTIMPLEMENTED();
+  return false;
 }
 
 bool GlicPanelCoordinatorImpl::IsAttached() const {
-  return glic_window_controller_impl_->IsAttached();
+  // Method should only be called on individual panels not the coordinator.
+  NOTIMPLEMENTED();
+  return false;
 }
 
 bool GlicPanelCoordinatorImpl::IsDetached() const {
-  return glic_window_controller_impl_->IsDetached();
+  // Method should only be called on individual panels not the coordinator.
+  NOTIMPLEMENTED();
+  return false;
 }
 
 base::CallbackListSubscription
 GlicPanelCoordinatorImpl::AddWindowActivationChangedCallback(
     WindowActivationChangedCallback callback) {
-  return glic_window_controller_impl_->AddWindowActivationChangedCallback(
-      std::move(callback));
+  return window_activation_callback_list_.Add(std::move(callback));
 }
 
 void GlicPanelCoordinatorImpl::Preload() {
-  glic_window_controller_impl_->Preload();
+  // Method should only be called on individual panels not the coordinator.
+  NOTIMPLEMENTED();
 }
 
 void GlicPanelCoordinatorImpl::Reload() {
-  glic_window_controller_impl_->Reload();
+  // Method should only be called on individual panels not the coordinator.
+  NOTIMPLEMENTED();
 }
 
 bool GlicPanelCoordinatorImpl::IsWarmed() const {
-  return glic_window_controller_impl_->IsWarmed();
+  // Method should only be called on individual panels not the coordinator.
+  NOTIMPLEMENTED();
+  return false;
 }
 
 base::WeakPtr<GlicWindowController> GlicPanelCoordinatorImpl::GetWeakPtr() {
-  return glic_window_controller_impl_->GetWeakPtr();
+  // TODO(crbug.com/441542357) - remove from public interface.
+  // Method should only be called on individual panels not the coordinator.
+  NOTREACHED();
 }
 
 GlicView* GlicPanelCoordinatorImpl::GetGlicView() const {
-  return glic_window_controller_impl_->GetGlicView();
+  // Method should only be called on individual panels not the coordinator.
+  NOTREACHED();
 }
 
 base::WeakPtr<views::View> GlicPanelCoordinatorImpl::GetGlicViewAsView() {
-  return glic_window_controller_impl_->GetGlicViewAsView();
+  // Method should only be called on individual panels not the coordinator.
+  NOTREACHED();
 }
 
 GlicWidget* GlicPanelCoordinatorImpl::GetGlicWidget() const {
-  return glic_window_controller_impl_->GetGlicWidget();
+  // Method should only be called on individual panels not the coordinator.
+  NOTREACHED();
 }
 
 gfx::NativeWindow GlicPanelCoordinatorImpl::GetHostNativeWindow() {
-  return glic_window_controller_impl_->GetHostNativeWindow();
+  // Method should only be called on individual panels not the coordinator.
+  NOTREACHED();
 }
 
 Browser* GlicPanelCoordinatorImpl::attached_browser() {
-  return glic_window_controller_impl_->attached_browser();
+  // Method should only be called on individual panels not the coordinator.
+  NOTREACHED();
 }
 
 GlicWindowController::State GlicPanelCoordinatorImpl::state() const {
-  return glic_window_controller_impl_->state();
+  // Method should only be called on individual panels not the coordinator.
+  NOTIMPLEMENTED();
+  return GlicWindowController::State::kClosed;
 }
 
 GlicWindowAnimator* GlicPanelCoordinatorImpl::window_animator() {
-  return glic_window_controller_impl_->window_animator();
+  // TODO(crbug.com/441545112) - Remove from GlicWindowController.
+  // Method should only be called on individual panels not the coordinator.
+  NOTREACHED();
 }
 
 Profile* GlicPanelCoordinatorImpl::profile() {
-  return glic_window_controller_impl_->profile();
+  return profile_;
 }
 
 gfx::Rect GlicPanelCoordinatorImpl::GetInitialBounds(Browser* browser) {
-  return glic_window_controller_impl_->GetInitialBounds(browser);
+  // TODO(crbug.com/441546104) - Remove from GlicWindowController.
+  // Method should only be called on individual panels not the coordinator.
+  NOTIMPLEMENTED();
+  return gfx::Rect();
 }
 
 void GlicPanelCoordinatorImpl::ShowDetachedForTesting() {
-  glic_window_controller_impl_->ShowDetachedForTesting();  // IN-TEST
+  // Method should only be called on individual panels not the coordinator.
+  NOTIMPLEMENTED();
 }
 
 void GlicPanelCoordinatorImpl::SetPreviousPositionForTesting(
     gfx::Point position) {
-  glic_window_controller_impl_->SetPreviousPositionForTesting(  // IN-TEST
-      position);
+  // Method should only be called on individual panels not the coordinator.
+  NOTIMPLEMENTED();
 }
 
 std::unique_ptr<GlicView>
 GlicPanelCoordinatorImpl::CreateGlicViewForSidePanel() {
-  return glic_window_controller_impl_->CreateGlicViewForSidePanel();
+  // Method should only be called on individual panels not the coordinator.
+  NOTREACHED();
 }
 
 base::CallbackListSubscription
 GlicPanelCoordinatorImpl::RegisterFloatyStateChange(
     FloatyStateChangeCallback callback) {
-  return glic_window_controller_impl_->RegisterFloatyStateChange(
-      std::move(callback));
+  // Method should only be called on individual panels not the coordinator.
+  NOTIMPLEMENTED();
+  return floaty_state_change_callback_list_.Add(std::move(callback));
 }
 }  // namespace glic

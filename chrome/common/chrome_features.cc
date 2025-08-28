@@ -345,6 +345,9 @@ BASE_FEATURE(Glic, base::FEATURE_DISABLED_BY_DEFAULT);
 // Controls whether the Glic feature is always detached.
 BASE_FEATURE(GlicDetached, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether the Glic feature uses multiple instances or not.
+BASE_FEATURE(GlicMultiInstance, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether the Glic feature's z order changes based on the webclient
 // mode.
 BASE_FEATURE(GlicZOrderChanges, base::FEATURE_DISABLED_BY_DEFAULT);
