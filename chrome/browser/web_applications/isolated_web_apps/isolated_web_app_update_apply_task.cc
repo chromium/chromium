@@ -98,7 +98,7 @@ void IsolatedWebAppUpdateApplyTask::OnUpdateApplied(CompletionStatus result) {
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (result.has_value() && IsIwaBundleCacheEnabledInCurrentSession()) {
-    CopyUpdatedBundleToCache(result.value());
+    CopyUpdatedBundleToCache();
     return;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -107,23 +107,21 @@ void IsolatedWebAppUpdateApplyTask::OnUpdateApplied(CompletionStatus result) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-void IsolatedWebAppUpdateApplyTask::CopyUpdatedBundleToCache(
-    const IsolatedWebAppApplyUpdateCommandSuccess& apply_success_result) {
+void IsolatedWebAppUpdateApplyTask::CopyUpdatedBundleToCache() {
   command_scheduler_->CopyIsolatedWebAppBundleToCache(
       url_info_, IwaCacheClient::GetCurrentSessionType(),
       base::BindOnce(&IsolatedWebAppUpdateApplyTask::OnBundleCopiedToCache,
-                     weak_factory_.GetWeakPtr(), apply_success_result));
+                     weak_factory_.GetWeakPtr()));
 }
 
 void IsolatedWebAppUpdateApplyTask::OnBundleCopiedToCache(
-    const IsolatedWebAppApplyUpdateCommandSuccess& apply_success_result,
     CopyBundleToCacheResult result) {
   web_app::UmaLogExpectedStatus(kCopyBundleToCacheAfterUpdateMetric, result);
   if (result.has_value()) {
     debug_log_.Set(kCopyToCacheResult,
                    "Successfully copied bundle to: " +
                        result->cached_bundle_path().MaybeAsASCII());
-    std::move(callback_).Run(apply_success_result);
+    std::move(callback_).Run(base::ok());
     return;
   }
   debug_log_.Set(kCopyToCacheResult,

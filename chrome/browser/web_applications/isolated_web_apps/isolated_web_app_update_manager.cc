@@ -794,11 +794,7 @@ void IsolatedWebAppUpdateManager::OnLocalUpdateApplyTaskCreated(
   auto transform_status =
       [](IwaVersion update_version,
          IsolatedWebAppUpdateApplyTask::CompletionStatus status) {
-        return status
-            .transform(
-                [&](const IsolatedWebAppApplyUpdateCommandSuccess& success) {
-                  return update_version;
-                })
+        return status.transform([&]() { return update_version; })
             .transform_error(
                 [](const IsolatedWebAppApplyUpdateCommandError& error) {
                   return error.message;

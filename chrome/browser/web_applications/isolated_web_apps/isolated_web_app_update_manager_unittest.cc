@@ -132,9 +132,9 @@ class MockCommandScheduler : public WebAppCommandScheduler {
       (const IsolatedWebAppUrlInfo& url_info,
        std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
        std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
-       base::OnceCallback<void(
-           base::expected<IsolatedWebAppApplyUpdateCommandSuccess,
-                          IsolatedWebAppApplyUpdateCommandError>)> callback,
+       base::OnceCallback<
+           void(base::expected<void, IsolatedWebAppApplyUpdateCommandError>)>
+           callback,
        const base::Location& call_location),
       (override));
 
@@ -152,15 +152,15 @@ class MockCommandScheduler : public WebAppCommandScheduler {
   void DelegateToRealImpl() {
     ON_CALL(*this, ApplyPendingIsolatedWebAppUpdate)
         .WillByDefault(
-            [this](const IsolatedWebAppUrlInfo& url_info,
-                   std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
-                   std::unique_ptr<ScopedProfileKeepAlive>
-                       optional_profile_keep_alive,
-                   base::OnceCallback<void(
-                       base::expected<IsolatedWebAppApplyUpdateCommandSuccess,
-                                      IsolatedWebAppApplyUpdateCommandError>)>
-                       callback,
-                   const base::Location& call_location) {
+            [this](
+                const IsolatedWebAppUrlInfo& url_info,
+                std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
+                std::unique_ptr<ScopedProfileKeepAlive>
+                    optional_profile_keep_alive,
+                base::OnceCallback<void(
+                    base::expected<
+                        void, IsolatedWebAppApplyUpdateCommandError>)> callback,
+                const base::Location& call_location) {
               return this
                   ->WebAppCommandScheduler::ApplyPendingIsolatedWebAppUpdate(
                       url_info, std::move(optional_keep_alive),
@@ -1270,13 +1270,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest, UpdateDiscoveryTaskFails) {
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest, UpdateApplyTaskSuccess) {
   base::HistogramTester histogram_tester;
-  IsolatedWebAppUpdateApplyTask::CompletionStatus status =
-      IsolatedWebAppApplyUpdateCommandSuccess(
-          IsolatedWebAppApplyUpdateCommandSuccess(
-              base::Version(kInitialIwaVersion),
-              IwaStorageOwnedBundle{"iwa1", /*dev_mode=*/false}));
-
-  update_manager().TrackResultOfUpdateApplyTaskForTesting(status);
+  update_manager().TrackResultOfUpdateApplyTaskForTesting(base::ok());
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples("WebApp.Isolated.UpdateSuccess"),

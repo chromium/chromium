@@ -6,7 +6,6 @@
 #include <optional>
 #include <string>
 
-#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/gmock_expected_support.h"
@@ -15,7 +14,6 @@
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_apply_update_command.h"
@@ -46,7 +44,6 @@ namespace {
 
 using base::test::ErrorIs;
 using base::test::HasValue;
-using base::test::ValueIs;
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::Field;
@@ -62,8 +59,7 @@ class IsolatedWebAppInstallPrepareApplyUpdateCommandBrowserTest
   using PrepareAndStoreUpdateResult =
       IsolatedWebAppUpdatePrepareAndStoreCommandResult;
   using ApplyUpdateResult =
-      base::expected<IsolatedWebAppApplyUpdateCommandSuccess,
-                     IsolatedWebAppApplyUpdateCommandError>;
+      base::expected<void, IsolatedWebAppApplyUpdateCommandError>;
 
   IsolatedWebAppInstallSource GetInstallSource(
       const base::FilePath& bundle_path) const {
@@ -208,10 +204,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // Step 3: Apply the update and ensure that pending info has been successfully
   // transferred.
-  EXPECT_THAT(
-      ApplyUpdate(web_bundle_id),
-      ValueIs(IsolatedWebAppApplyUpdateCommandSuccess(
-          update_iwa->version().version(), prep_store_update_result.location)));
+  EXPECT_THAT(ApplyUpdate(web_bundle_id), HasValue());
 
   ASSERT_THAT(
       GetIsolatedWebAppFor(web_bundle_id),
@@ -304,9 +297,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // Step 5: Apply the update and ensure that pending info has been
   // successfully transferred.
-  EXPECT_THAT(ApplyUpdate(web_bundle_id),
-              ValueIs(IsolatedWebAppApplyUpdateCommandSuccess(
-                  version.version(), prep_store_update_result.location)));
+  EXPECT_THAT(ApplyUpdate(web_bundle_id), HasValue());
 
   ASSERT_THAT(
       GetIsolatedWebAppFor(web_bundle_id),

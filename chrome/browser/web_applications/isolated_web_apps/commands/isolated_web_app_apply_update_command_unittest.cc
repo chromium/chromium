@@ -53,7 +53,6 @@ namespace {
 
 using base::test::ErrorIs;
 using base::test::HasValue;
-using base::test::ValueIs;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
@@ -144,12 +143,10 @@ class IsolatedWebAppApplyUpdateCommandTest : public WebAppTest {
     base::WriteFile(installed_path, "");
   }
 
-  base::expected<IsolatedWebAppApplyUpdateCommandSuccess,
-                 IsolatedWebAppApplyUpdateCommandError>
+  base::expected<void, IsolatedWebAppApplyUpdateCommandError>
   ApplyPendingUpdate() {
     base::test::TestFuture<
-        base::expected<IsolatedWebAppApplyUpdateCommandSuccess,
-                       IsolatedWebAppApplyUpdateCommandError>>
+        base::expected<void, IsolatedWebAppApplyUpdateCommandError>>
         future;
     fake_provider().scheduler().ApplyPendingIsolatedWebAppUpdate(
         url_info_, /*optional_keep_alive=*/nullptr,
@@ -242,9 +239,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, Succeeds) {
       url_info_.origin().GetURL().Resolve(kIconPath));
   icon_state.bitmaps = {web_app::CreateSquareIcon(32, SK_ColorWHITE)};
 
-  EXPECT_THAT(ApplyPendingUpdate(),
-              ValueIs(IsolatedWebAppApplyUpdateCommandSuccess(
-                  update_version_, update_bundle_location_)));
+  EXPECT_THAT(ApplyPendingUpdate(), HasValue());
 
   const WebApp* web_app =
       fake_provider().registrar_unsafe().GetAppById(url_info_.app_id());

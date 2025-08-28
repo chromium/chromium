@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "base/version.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 
@@ -26,7 +25,6 @@ class ScopedProfileKeepAlive;
 namespace web_app {
 
 struct IsolatedWebAppApplyUpdateCommandError;
-class IsolatedWebAppApplyUpdateCommandSuccess;
 class WebAppCommandScheduler;
 
 // This task is responsible for applying a pending Isolated Web App update by
@@ -34,8 +32,7 @@ class WebAppCommandScheduler;
 class IsolatedWebAppUpdateApplyTask {
  public:
   using CompletionStatus =
-      base::expected<IsolatedWebAppApplyUpdateCommandSuccess,
-                     IsolatedWebAppApplyUpdateCommandError>;
+      base::expected<void, IsolatedWebAppApplyUpdateCommandError>;
   using CompletionCallback = base::OnceCallback<void(CompletionStatus status)>;
 
   IsolatedWebAppUpdateApplyTask(
@@ -67,12 +64,9 @@ class IsolatedWebAppUpdateApplyTask {
   void OnUpdateApplied(CompletionStatus result);
 
 #if BUILDFLAG(IS_CHROMEOS)
-  void CopyUpdatedBundleToCache(
-      const IsolatedWebAppApplyUpdateCommandSuccess& apply_success_result);
+  void CopyUpdatedBundleToCache();
 
-  void OnBundleCopiedToCache(
-      const IsolatedWebAppApplyUpdateCommandSuccess& apply_success_result,
-      CopyBundleToCacheResult result);
+  void OnBundleCopiedToCache(CopyBundleToCacheResult result);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   IsolatedWebAppUrlInfo url_info_;

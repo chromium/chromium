@@ -165,7 +165,7 @@ void ExpectTestAppUpdatedToVersion(
     const web_app::IwaVersion& expected_version) {
   const auto update_apply_status = WaitForTestAppUpdateApply();
   EXPECT_THAT(update_apply_status, HasValue());
-  EXPECT_EQ(update_apply_status->updated_version(), expected_version.version());
+  ExpectTestAppInstalledAtVersion(expected_version);
 }
 
 void ExpectAppUpdateSkipped() {
