@@ -426,6 +426,8 @@ class LayerTreeHostImplTestBase : public testing::Test,
         /* next_bmf */ false, /* main_frame_applied_deltas */ false);
     tree->bottom_controls_shown_ratio()->AbortCommit(
         /* next_bmf */ false, /* main_frame_applied_deltas */ false);
+    tree->elastic_overscroll()->AbortCommit(
+        /* next_bmf */ false, /* main_frame_applied_deltas */ false);
   }
 
   static void ExpectClearedScrollDeltasRecursive(LayerImpl* root) {
