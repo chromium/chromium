@@ -5,8 +5,10 @@
 # found in the LICENSE file.
 
 import argparse
+import json
 import logging
-import sys
+import pathlib
+import tempfile
 from util import jj_log
 from util import run_command
 from util import run_jj
@@ -76,9 +78,8 @@ def main(args):
       fatal('Attempting to upload change with no Change-Id %s', name)
     if '\nBug: ' not in desc and '\nFixed: ' not in desc:
       logging.warning(
-          'Change %s has no associated Bug. If this change ' +
-          'has an associated bug, add Bug: [bug number] or Fixed: [bug number].',
-          name)
+          'Change %s has no associated Bug. If this change has an associated' +
+          'bug, add Bug: [bug number] or Fixed: [bug number].', name)
 
   if args.presubmit:
     # Find the commits that `git cl presubmit` will actually run on
@@ -127,15 +128,24 @@ def main(args):
       # This isn't any worse with jj than with git, but it is very annoying.
       # In particular, if you're uploading any commit except @-, expect some
       # weirdness.
-      run_command([
-          'git',
-          'cl',
-          'presubmit',
-          # Allows it to run with a dirty tree and on no branch
-          '--force',
-          '--parallel',
-          next(iter(immutable_parents))
-      ])
+      with tempfile.NamedTemporaryFile(suffix='.json') as out:
+        run_command([
+            'git',
+            'cl',
+            'presubmit',
+            # Allows it to run with a dirty tree and on no branch
+            '--force',
+            '--parallel',
+            # TODO(crbug.com//40253731): Remove --upload once this is fixed
+            '--upload',
+            f'--json={out}',
+            next(iter(immutable_parents))
+        ])
+        results = json.loads(out.read_text())
+        if results.get('errors', []) or results.get('warnings', []):
+          if not args.allow_warnings:
+            fatal('git cl presubmit had warnings.\n' +
+                  'Hint: maybe you want --allow-warnings?')
     else:
       fatal('git cl presubmit only supports running on the revision @. ' +
             'Please either run `jj new/edit` to check out the change before ' +
@@ -144,7 +154,6 @@ def main(args):
   # This could be simplified by another call to jj_log on heads(...),
   # but this is more performant.
   mutable_parents = _collect_ids(c['mutable_parents'] for c in to_upload)
-  upload_heads = [c for c in to_upload if c['commit_id'] not in mutable_parents]
 
   if not to_upload:
     fatal('%s resolved to the empty set', rev)
@@ -193,6 +202,12 @@ if __name__ == '__main__':
       help='Skips running presubmits before uploading',
       action='store_false',
       dest='presubmit',
+  )
+
+  parser.add_argument(
+      '--allow-warnings',
+      help='Prevents presubmit warnings from blocking upload',
+      action='store_true',
   )
 
   main(parser.parse_args())
