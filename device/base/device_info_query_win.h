@@ -44,7 +44,7 @@ class DEVICE_BASE_EXPORT DeviceInfoQueryWin {
  private:
   HDEVINFO device_info_list_ = INVALID_HANDLE_VALUE;
   // When device_info_data_.cbSize != 0, |device_info_data_| is valid.
-  SP_DEVINFO_DATA device_info_data_;
+  SP_DEVINFO_DATA device_info_data_ = {};
 };
 
 }  // namespace device

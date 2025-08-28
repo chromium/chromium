@@ -174,8 +174,7 @@ class TestNetworkContext : public network::TestNetworkContext {
           in_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL),
           out_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL),
           handshake_client_(std::move(pending_handshake_client)) {
-      MojoCreateDataPipeOptions options;
-      UNSAFE_TODO(memset(&options, 0, sizeof(options)));
+      MojoCreateDataPipeOptions options = {};
       options.struct_size = sizeof(options);
       options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
       options.element_num_bytes = sizeof(uint8_t);
