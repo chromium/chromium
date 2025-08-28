@@ -12,12 +12,12 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_view_util.h"
 #include "build/build_config.h"
 #include "chrome/common/safe_browsing/binary_feature_extractor.h"
 #include "chrome/common/safe_browsing/download_type_util.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
-#include "crypto/secure_hash.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -167,38 +167,14 @@ void SetLengthAndDigestForContainedFile(
     int file_length,
     ClientDownloadRequest::ArchivedBinary* archived_binary) {
   archived_binary->set_length(file_length);
-
-  std::unique_ptr<crypto::SecureHash> hasher =
-      crypto::SecureHash::Create(crypto::SecureHash::SHA256);
-
-  const size_t kReadBufferSize = 4096;
-  uint8_t block[kReadBufferSize];
-
-  size_t bytes_read_previously = 0;
+  std::array<uint8_t, crypto::hash::kSha256Size> hash;
   temp_file->Seek(base::File::Whence::FROM_BEGIN, 0);
-  while (true) {
-    std::optional<size_t> bytes_read_now =
-        temp_file->ReadAtCurrentPos(base::span(block));
-
-    if (!bytes_read_now) {
-      break;
-    }
-
-    if (*bytes_read_now > file_length - bytes_read_previously) {
-      bytes_read_now = file_length - bytes_read_previously;
-    }
-
-    if (*bytes_read_now <= 0) {
-      break;
-    }
-
-    hasher->Update(base::span(block).first(*bytes_read_now));
-    bytes_read_previously += *bytes_read_now;
+  if (!crypto::hash::HashFile(crypto::hash::kSha256, temp_file, hash)) {
+    // If HashFile() returns false, it zeroes the resulting hash, so we'll
+    // compute an all-zero hash here and keep going.
+    LOG(WARNING) << "IO failed during hash computation";
   }
-
-  uint8_t digest[crypto::kSHA256Length];
-  hasher->Finish(digest, std::size(digest));
-  archived_binary->mutable_digests()->set_sha256(digest, std::size(digest));
+  archived_binary->mutable_digests()->set_sha256(base::as_string_view(hash));
 }
 
 }  // namespace safe_browsing
