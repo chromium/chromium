@@ -27,8 +27,8 @@ Change-Id: I39dd9b5a417b3f72772d104a6c495b59599bd2e4
 
 diff --git a/third_party/libxslt/src/libxslt/transform.c b/third_party/libxslt/src/libxslt/transform.c
 index 1ac2471d6441b..6ce73d2526e32 100644
---- a/third_party/libxslt/src/libxslt/transform.c
-+++ b/third_party/libxslt/src/libxslt/transform.c
+--- a/libxslt/transform.c
++++ b/libxslt/transform.c
 @@ -5763,7 +5763,7 @@ xsltCleanupSourceDoc(xmlDocPtr doc) {
      void **psviPtr;
  
@@ -50,8 +50,8 @@ index 1ac2471d6441b..6ce73d2526e32 100644
              }
 diff --git a/third_party/libxslt/src/libxslt/xsltutils.c b/third_party/libxslt/src/libxslt/xsltutils.c
 index b431fafbbb441..cb0a63fd13e15 100644
---- a/third_party/libxslt/src/libxslt/xsltutils.c
-+++ b/third_party/libxslt/src/libxslt/xsltutils.c
+--- a/libxslt/xsltutils.c
++++ b/libxslt/xsltutils.c
 @@ -1929,17 +1929,17 @@ xsltGetSourceNodeFlags(xmlNodePtr node) {
      switch (node->type) {
          case XML_DOCUMENT_NODE:
@@ -189,10 +189,10 @@ index b431fafbbb441..cb0a63fd13e15 100644
  
  #endif /* WITH_DEBUGGER */
 -
-diff --git a/third_party/libxslt/src/libxslt/xsltutils.h b/third_party/libxslt/src/libxslt/xsltutils.h
+diff --git a/libxslt/xsltutils.h b/libxslt/xsltutils.h
 index 1e753eebadd98..186133babade6 100644
---- a/third_party/libxslt/src/libxslt/xsltutils.h
-+++ b/third_party/libxslt/src/libxslt/xsltutils.h
+--- a/libxslt/xsltutils.h
++++ b/libxslt/xsltutils.h
 @@ -261,9 +261,8 @@ XSLTPUBFUN xmlXPathCompExprPtr XSLTCALL
  #define XSLT_SOURCE_NODE_MASK       15u
  #define XSLT_SOURCE_NODE_HAS_KEY    1u

@@ -1,7 +1,7 @@
 diff --git a/third_party/libxslt/src/libxslt/functions.c b/third_party/libxslt/src/libxslt/functions.c
 index 72a58dc4d6592..309af458c22f7 100644
---- a/third_party/libxslt/src/libxslt/functions.c
-+++ b/third_party/libxslt/src/libxslt/functions.c
+--- a/libxslt/functions.c
++++ b/libxslt/functions.c
 @@ -760,7 +760,7 @@ xsltGenerateIdFunction(xmlXPathParserContextPtr ctxt, int nargs){
      }
  
@@ -31,8 +31,8 @@ index 72a58dc4d6592..309af458c22f7 100644
  
 diff --git a/third_party/libxslt/src/libxslt/transform.c b/third_party/libxslt/src/libxslt/transform.c
 index 54ef821b5016f..1ac2471d6441b 100644
---- a/third_party/libxslt/src/libxslt/transform.c
-+++ b/third_party/libxslt/src/libxslt/transform.c
+--- a/libxslt/transform.c
++++ b/libxslt/transform.c
 @@ -5772,7 +5772,8 @@ xsltCleanupSourceDoc(xmlDocPtr doc) {
              xmlAttrPtr prop = cur->properties;
  
@@ -43,10 +43,10 @@ index 54ef821b5016f..1ac2471d6441b 100644
                  prop->psvi = NULL;
                  prop = prop->next;
              }
-diff --git a/third_party/libxslt/src/libxslt/xsltutils.c b/third_party/libxslt/src/libxslt/xsltutils.c
+diff --git a/libxslt/xsltutils.c b/libxslt/xsltutils.c
 index a20da96182289..b431fafbbb441 100644
---- a/third_party/libxslt/src/libxslt/xsltutils.c
-+++ b/third_party/libxslt/src/libxslt/xsltutils.c
+--- a/libxslt/xsltutils.c
++++ b/libxslt/xsltutils.c
 @@ -1920,26 +1920,26 @@ xsltSaveResultToString(xmlChar **doc_txt_ptr, int * doc_txt_len,
  int
  xsltGetSourceNodeFlags(xmlNodePtr node) {
@@ -178,10 +178,10 @@ index a20da96182289..b431fafbbb441 100644
              return 0;
  
          default:
-diff --git a/third_party/libxslt/src/libxslt/xsltutils.h b/third_party/libxslt/src/libxslt/xsltutils.h
+diff --git a/libxslt/xsltutils.h b/libxslt/xsltutils.h
 index 2514774b3f11a..1e753eebadd98 100644
---- a/third_party/libxslt/src/libxslt/xsltutils.h
-+++ b/third_party/libxslt/src/libxslt/xsltutils.h
+--- a/libxslt/xsltutils.h
++++ b/libxslt/xsltutils.h
 @@ -261,6 +261,10 @@ XSLTPUBFUN xmlXPathCompExprPtr XSLTCALL
  #define XSLT_SOURCE_NODE_MASK       15u
  #define XSLT_SOURCE_NODE_HAS_KEY    1u
