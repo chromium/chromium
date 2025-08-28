@@ -34,7 +34,7 @@ class SaveToDriveEventDispatcher {
   // Dispatches a save to drive progress event to the PDF viewer extension.
   // `progress` must have a status and error type that is not none.
   void Notify(
-      const extensions::api::pdf_viewer_private::SaveToDriveProgress& progress);
+      extensions::api::pdf_viewer_private::SaveToDriveProgress progress);
 
  private:
   SaveToDriveEventDispatcher(content::RenderFrameHost* render_frame_host,

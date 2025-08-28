@@ -61,6 +61,9 @@ namespace pdfViewerPrivate {
 
     // The number of bytes that have been uploaded.
     long? uploadedBytes;
+
+    // The localized metadata and progress of the file.
+    DOMString? fileMetadata;
   };
 
   // Nearly identical to mimeHandlerPrivate.StreamInfo, but without a mime type

@@ -57,6 +57,7 @@ declare global {
         driveItemId?: string;
         fileSizeBytes?: number;
         uploadedBytes?: number;
+        fileMetadata?: string;
       }
       // </if>
 

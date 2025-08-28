@@ -6,7 +6,9 @@
 
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chrome/browser/download/status_text_builder_utils.h"
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "content/public/browser/render_frame_host.h"
@@ -18,6 +20,31 @@
 
 namespace save_to_drive {
 namespace {
+
+using extensions::api::pdf_viewer_private::SaveToDriveStatus;
+
+// Returns a string for the current upload state.
+// Example: "100/120 MB • 10 seconds left", "100 MB • Done"
+std::optional<std::string> GetFileMetadataString(
+    const extensions::api::pdf_viewer_private::SaveToDriveProgress& progress) {
+  if (progress.status == SaveToDriveStatus::kUploadInProgress) {
+    // TODO(crbug.com/427451594): Replace `PLACEHOLDER` with the time remaining.
+    // The final string should be "100/120 MB • 10 seconds left".
+    std::u16string file_metadata_string =
+        StatusTextBuilderUtils::GetBubbleProgressSizesString(
+            progress.uploaded_bytes.value(), progress.file_size_bytes.value());
+    file_metadata_string =
+        StatusTextBuilderUtils::GetBubbleStatusMessageWithBytes(
+            file_metadata_string, u"PLACEHOLDER");
+    return base::UTF16ToUTF8(file_metadata_string);
+  }
+  if (progress.status == SaveToDriveStatus::kUploadCompleted) {
+    return base::UTF16ToUTF8(
+        StatusTextBuilderUtils::GetCompletedTotalSizeString(
+            progress.file_size_bytes.value_or(0)));
+  }
+  return std::nullopt;
+}
 
 GURL GetStreamUrl(content::RenderFrameHost* render_frame_host) {
   base::WeakPtr<extensions::StreamContainer> stream;
@@ -59,11 +86,11 @@ std::unique_ptr<SaveToDriveEventDispatcher> SaveToDriveEventDispatcher::Create(
 SaveToDriveEventDispatcher::~SaveToDriveEventDispatcher() = default;
 
 void SaveToDriveEventDispatcher::Notify(
-    const extensions::api::pdf_viewer_private::SaveToDriveProgress& progress) {
+    extensions::api::pdf_viewer_private::SaveToDriveProgress progress) {
   CHECK_NE(progress.error_type,
            extensions::api::pdf_viewer_private::SaveToDriveErrorType::kNone);
-  CHECK_NE(progress.status,
-           extensions::api::pdf_viewer_private::SaveToDriveStatus::kNone);
+  CHECK_NE(progress.status, SaveToDriveStatus::kNone);
+  progress.file_metadata = GetFileMetadataString(progress);
   base::Value::List args;
   args.Append(stream_url_.spec());
   args.Append(progress.ToValue());
