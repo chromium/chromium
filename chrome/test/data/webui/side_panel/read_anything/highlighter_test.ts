@@ -56,17 +56,6 @@ suite('Highlighter', () => {
     wordBoundaries.resetToDefaultState();
   });
 
-  test('isInvalidHighlightForWordHighlighting', () => {
-    assertTrue(highlighter.isInvalidHighlightForWordHighlighting());
-    assertTrue(highlighter.isInvalidHighlightForWordHighlighting(''));
-    assertTrue(highlighter.isInvalidHighlightForWordHighlighting(' '));
-    assertTrue(highlighter.isInvalidHighlightForWordHighlighting('  '));
-    assertTrue(highlighter.isInvalidHighlightForWordHighlighting('!'));
-    assertTrue(highlighter.isInvalidHighlightForWordHighlighting('()?!?'));
-    assertFalse(highlighter.isInvalidHighlightForWordHighlighting('hello !!!'));
-    assertFalse(highlighter.isInvalidHighlightForWordHighlighting('(psst);'));
-  });
-
   test('sentence highlight', () => {
     chrome.readingMode.onHighlightGranularityChanged(
         chrome.readingMode.sentenceHighlighting);

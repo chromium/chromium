@@ -4,20 +4,17 @@
 
 import {assert} from '//resources/js/assert.js';
 
-import {getCurrentSpeechRate, isRectVisible} from '../common.js';
+import {isRectVisible} from '../common.js';
 import {NodeStore} from '../node_store.js';
 import {isEspeak} from '../voice_language_util.js';
 
-import {AxReadAloudNode} from './read_aloud_types.js';
-import type {Segment} from './read_aloud_types.js';
 import {getReadAloudModel} from './read_aloud_model_browser_proxy.js';
 import type {ReadAloudModelBrowserProxy} from './read_aloud_model_browser_proxy.js';
+import {AxReadAloudNode} from './read_aloud_types.js';
+import type {Segment} from './read_aloud_types.js';
+import {getCurrentSpeechRate, isInvalidHighlightForWordHighlighting} from './speech_presentation_rules.js';
 import {VoiceLanguageController} from './voice_language_controller.js';
 import {WordBoundaries} from './word_boundaries.js';
-
-// Characters that should be ignored for word highlighting when not accompanied
-// by other characters.
-const IGNORED_HIGHLIGHT_CHARACTERS_REGEX: RegExp = /^[.,!?'"(){}\[\]]+$/;
 
 export const previousReadHighlightClass = 'previous-read-highlight';
 export const currentReadHighlightClass = 'current-read-highlight';
@@ -143,15 +140,6 @@ export class ReadAloudHighlighter {
       }
     });
     this.previousHighlights_ = [];
-  }
-
-
-  isInvalidHighlightForWordHighlighting(textToHighlight?: string): boolean {
-    // If a highlight is just white space or punctuation, we can skip
-    // highlighting.
-    const text = textToHighlight?.trim();
-    return !text || text === '' ||
-        IGNORED_HIGHLIGHT_CHARACTERS_REGEX.test(text);
   }
 
   private getCurrentHighlightBounds_(): DOMRect {
@@ -284,7 +272,7 @@ export class ReadAloudHighlighter {
       // If the remaining text is just punctuation, don't show it as a current
       // highlight, but do fade it out as 'before the current highlight.'
       const previousHighlightOnly =
-          this.isInvalidHighlightForWordHighlighting(textContent);
+          isInvalidHighlightForWordHighlighting(textContent);
       const element = domNode as HTMLElement;
       const highlightedNode = this.highlightCurrentText_(
           start, endIndex, element, previousHighlightOnly);

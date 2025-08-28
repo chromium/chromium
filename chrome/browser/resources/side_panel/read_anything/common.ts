@@ -54,10 +54,6 @@ const ACTIVE_CSS_CLASS = 'active';
 // reading mode panel.
 export const MOSTLY_VISIBLE_PERCENT = 0.8;
 
-export function getCurrentSpeechRate(): number {
-  return parseFloat(chrome.readingMode.speechRate.toFixed(1));
-}
-
 // Propagates a custom event with the given name and any details.
 export function emitEvent(
     target: EventTarget, name: string, eventDetail?: any) {
@@ -101,11 +97,6 @@ export function openMenu(
       }
     });
   });
-}
-
-// Returns true is the given string can be considered whitespace.
-export function isWhitespace(s: string): boolean {
-  return /\s+/g.test(s);
 }
 
 // Estimate the word count of the given text using the TextSegmenter class.

@@ -10,7 +10,7 @@ export {PageCallbackRouter} from '//resources/cr_components/color_change_listene
 export type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 export type {AppElement} from './app.js';
 export {AppStyleUpdater} from './app_style_updater.js';
-export {getCurrentSpeechRate, getWordCount, isRectMostlyVisible, isRectVisible, MOSTLY_VISIBLE_PERCENT, playFromSelectionTimeout, spinnerDebounceTimeout, ToolbarEvent} from './common.js';
+export {getWordCount, isRectMostlyVisible, isRectVisible, MOSTLY_VISIBLE_PERCENT, playFromSelectionTimeout, spinnerDebounceTimeout, ToolbarEvent} from './common.js';
 export {ContentController, HIGHLIGHTED_LINK_CLASS} from './content_controller.js';
 export {getNewIndex, isArrow, isForwardArrow, isHorizontalArrow} from './keyboard_util.js';
 export type {LanguageMenuElement} from './language_menu.js';
@@ -29,6 +29,7 @@ export {getReadAloudModel, ReadAloudModelBrowserProxy, setInstance} from './read
 export {AxReadAloudNode, ReadAloudNode, Segment} from './read_aloud/read_aloud_types.js';
 export {MAX_SPEECH_LENGTH, SpeechController, SpeechListener} from './read_aloud/speech_controller.js';
 export {PauseActionSource, SpeechEngineState, SpeechModel} from './read_aloud/speech_model.js';
+export {getCurrentSpeechRate, isInvalidHighlightForWordHighlighting} from './read_aloud/speech_presentation_rules.js';
 export {TextSegmenter} from './read_aloud/text_segmenter.js';
 export {TsReadModelImpl} from './read_aloud/ts_model_impl.js';
 export {V8ModelImpl} from './read_aloud/v8_model_impl.js';

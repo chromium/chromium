@@ -4,19 +4,20 @@
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
-import {getCurrentSpeechRate, getWordCount, playFromSelectionTimeout} from '../common.js';
+import {getWordCount, playFromSelectionTimeout} from '../common.js';
 import {NodeStore} from '../node_store.js';
 import {ReadAnythingLogger} from '../read_anything_logger.js';
 import type {SpeechBrowserProxy} from '../speech_browser_proxy.js';
 import {SpeechBrowserProxyImpl} from '../speech_browser_proxy.js';
 
 import {ReadAloudHighlighter} from './highlighter.js';
-import {AxReadAloudNode} from './read_aloud_types.js';
-import type {ReadAloudNode, Segment} from './read_aloud_types.js';
 import {getReadAloudModel} from './read_aloud_model_browser_proxy.js';
 import type {ReadAloudModelBrowserProxy} from './read_aloud_model_browser_proxy.js';
+import {AxReadAloudNode} from './read_aloud_types.js';
+import type {ReadAloudNode, Segment} from './read_aloud_types.js';
 import {PauseActionSource, SpeechEngineState, SpeechModel} from './speech_model.js';
 import type {SpeechPlayingState} from './speech_model.js';
+import {getCurrentSpeechRate, isInvalidHighlightForWordHighlighting} from './speech_presentation_rules.js';
 import {VoiceLanguageController} from './voice_language_controller.js';
 import {WordBoundaries} from './word_boundaries.js';
 
@@ -460,7 +461,7 @@ export class SpeechController {
           utteranceText.substring(this.wordBoundaries_.getResumeBoundary());
       // If we paused right at the end of the sentence, no need to speak the
       // ending punctuation.
-      if (this.highlighter_.isInvalidHighlightForWordHighlighting(
+      if (isInvalidHighlightForWordHighlighting(
               utteranceTextForWordBoundary.trim())) {
         this.wordBoundaries_.resetToDefaultState();
         return this.skipCurrentPosition_(isInterrupted, isMovingBackward);
@@ -659,8 +660,7 @@ export class SpeechController {
         const text = message.text;
         const end = event.charIndex + (event.charLength || text.length);
         const possibleWord = text.substring(event.charIndex, end).trim();
-        if (!this.highlighter_.isInvalidHighlightForWordHighlighting(
-                possibleWord)) {
+        if (!isInvalidHighlightForWordHighlighting(possibleWord)) {
           // TODO(crbug.com/c/372890165): Consider adding a heuristic to ensure
           // we aren't counting the same word multiple times, if the TTS engine
           // word boundaries are inaccurate.
