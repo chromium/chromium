@@ -272,6 +272,7 @@ targets.binaries.generated_script(
     resultdb = targets.resultdb(
         enable = True,
     ),
+    module_scheme = "pyunit",
 )
 
 targets.binaries.script(
@@ -1303,6 +1304,7 @@ targets.binaries.script(
     resultdb = targets.resultdb(
         enable = True,
     ),
+    module_scheme = "pyunit",
 )
 
 targets.binaries.console_test_launcher(
@@ -1681,6 +1683,7 @@ targets.binaries.script(
     resultdb = targets.resultdb(
         enable = True,
     ),
+    module_scheme = "pyunit",
 )
 
 targets.binaries.console_test_launcher(
@@ -1734,6 +1737,7 @@ targets.binaries.script(
         "--monochrome-pathmap",
         "apks/MonochromePublic.apk.pathmap.txt",
     ],
+    module_scheme = "pyunit",
 )
 
 targets.binaries.console_test_launcher(
@@ -1963,6 +1967,7 @@ targets.binaries.script(
     args = [
         "../../tools/polymer/run_polymer_tools_tests.py",
     ],
+    module_scheme = "pyunit",
 )
 
 targets.binaries.generated_script(
@@ -1970,6 +1975,7 @@ targets.binaries.generated_script(
     label = "//ui/webui/resources/tools:webui_resources_tools_python_unittests",
     # All references are in starlark.
     skip_usage_check = True,
+    module_scheme = "pyunit",
 )
 
 targets.binaries.console_test_launcher(

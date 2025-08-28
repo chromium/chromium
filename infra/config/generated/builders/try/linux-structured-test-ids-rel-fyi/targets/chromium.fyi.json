@@ -744,6 +744,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//:blink_python_tests/",
+        "module_scheme": "pyunit",
         "name": "blink_python_tests",
         "resultdb": {
           "enable": true
@@ -887,6 +888,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//tools/grit:grit_python_unittests/",
+        "module_scheme": "pyunit",
         "name": "grit_python_unittests",
         "resultdb": {
           "enable": true
@@ -933,6 +935,25 @@
         },
         "test": "headless_shell_wpt",
         "test_id_prefix": "ninja://:headless_shell_wpt/"
+      },
+      {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//mojo/public/tools:mojo_python_unittests/",
+        "module_scheme": "pyunit",
+        "name": "mojo_python_unittests",
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "mojo_python_unittests",
+        "test_id_prefix": "ninja://mojo/public/tools:mojo_python_unittests/"
       },
       {
         "merge": {

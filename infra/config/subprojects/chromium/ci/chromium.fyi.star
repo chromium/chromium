@@ -1515,6 +1515,8 @@ ci.builder(
             "desktop_chromium_isolated_scripts",  # webtest module scheme
             "flatbuffers_unittests",  # single module scheme
             "variations_smoke_tests",  # single module scheme
+            "mojo_python_unittests",  # pyunit scheme
+            "grit_python_unittests",  # pyunit scheme
         ],
         mixins = [
             "linux-jammy",
