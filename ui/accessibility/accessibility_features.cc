@@ -554,7 +554,7 @@ bool IsBlockRootWindowAccessibleNameChangeEventEnabled() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 BASE_FEATURE(kWasmTtsComponentUpdaterV3Enabled,
              "WasmTtsComponentUpdaterV3Enabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsWasmTtsComponentUpdaterV3Enabled() {
   return base::FeatureList::IsEnabled(
       ::features::kWasmTtsComponentUpdaterV3Enabled);
