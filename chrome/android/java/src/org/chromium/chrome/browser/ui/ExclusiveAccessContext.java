@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui;
 
+import android.app.Activity;
+
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.lifetime.Destroyable;
@@ -23,18 +25,24 @@ import org.chromium.content_public.browser.WebContents;
  */
 @NullMarked
 public class ExclusiveAccessContext implements Destroyable {
+    private final Activity mActivity;
     private final FullscreenManager mFullscreenManager;
     private final ActivityTabProvider.ActivityTabTabObserver mActiveTabObserver;
     @Nullable private Tab mActiveTab;
 
     @CalledByNative
     public static ExclusiveAccessContext create(
-            FullscreenManager fullscreenManager, ActivityTabProvider activityTabProvider) {
-        return new ExclusiveAccessContext(fullscreenManager, activityTabProvider);
+            Activity activity,
+            FullscreenManager fullscreenManager,
+            ActivityTabProvider activityTabProvider) {
+        return new ExclusiveAccessContext(activity, fullscreenManager, activityTabProvider);
     }
 
     public ExclusiveAccessContext(
-            FullscreenManager fullscreenManager, ActivityTabProvider activityTabProvider) {
+            Activity activity,
+            FullscreenManager fullscreenManager,
+            ActivityTabProvider activityTabProvider) {
+        mActivity = activity;
         mFullscreenManager = fullscreenManager;
         mActiveTabObserver =
                 new ActivityTabProvider.ActivityTabTabObserver(activityTabProvider) {
@@ -43,6 +51,10 @@ public class ExclusiveAccessContext implements Destroyable {
                         mActiveTab = tab;
                     }
                 };
+    }
+
+    Activity getActivity() {
+        return mActivity;
     }
 
     @Override

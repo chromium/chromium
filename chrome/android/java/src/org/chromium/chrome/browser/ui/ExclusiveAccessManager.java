@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui;
 
+import android.app.Activity;
+
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.lifetime.Destroyable;
@@ -28,9 +30,12 @@ public class ExclusiveAccessManager implements Destroyable {
     private long mExclusiveAccessManagerAndroidNativePointer;
 
     public ExclusiveAccessManager(
-            FullscreenManager fullscreenManager, ActivityTabProvider activityTabProvider) {
+            Activity activity,
+            FullscreenManager fullscreenManager,
+            ActivityTabProvider activityTabProvider) {
         mExclusiveAccessManagerAndroidNativePointer =
-                ExclusiveAccessManagerJni.get().init(this, fullscreenManager, activityTabProvider);
+                ExclusiveAccessManagerJni.get()
+                        .init(this, activity, fullscreenManager, activityTabProvider);
     }
 
     /**
@@ -134,6 +139,7 @@ public class ExclusiveAccessManager implements Destroyable {
     public interface Natives {
         long init(
                 ExclusiveAccessManager caller,
+                Activity activity,
                 FullscreenManager fullscreenManager,
                 ActivityTabProvider activityTabProvider);
 

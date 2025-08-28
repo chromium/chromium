@@ -575,7 +575,7 @@ public class RootUiCoordinator
 
         if (ChromeFeatureList.sEnableExclusiveAccessManager.isEnabled()) {
             mExclusiveAccessManager =
-                    new ExclusiveAccessManager(mFullscreenManager, mActivityTabProvider);
+                    new ExclusiveAccessManager(mActivity, mFullscreenManager, mActivityTabProvider);
         } else {
             mExclusiveAccessManager = null;
         }
