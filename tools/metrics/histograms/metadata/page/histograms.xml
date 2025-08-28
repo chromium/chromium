@@ -994,6 +994,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2025-10-08">
   <owner>toyoshim@chromium.org</owner>
   <owner>mparch-dev@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time from navigation timing's navigation start to the time the
     first paint is performed, for FencedFrames' main frame documents. Recorded
@@ -1006,6 +1007,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2025-10-08">
   <owner>toyoshim@chromium.org</owner>
   <owner>mparch-dev@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time from navigation timing's navigation start to the time the
     largest content (text or image) is first painted, across all frames under
@@ -1025,6 +1027,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-01-11">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time for {NavigationCountType} ({BrowserInitializationStatus})
     from navigation start to the time the domain lookup ended, for Google
@@ -1045,6 +1048,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-02-09">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time for {NavigationCountType} ({BrowserInitializationStatus})
     from navigation start to the time the domain lookup started, for Google
@@ -1065,6 +1069,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-01-11">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time for {NavigationCountType} ({BrowserInitializationStatus})
     from navigation start to connect start, for Google Homepage loads. Only
@@ -1085,6 +1090,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-02-22">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time for {NavigationCountType} ({BrowserInitializationStatus})
     from navigation start to parse start, for Google Homepage loads. Only
@@ -1122,6 +1128,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2025-12-28">
   <owner>horo@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The delay caused by connection establishment for the final HTTP request
     which is sent for the main resource of a main frame navigation, for Google
@@ -1137,6 +1144,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-02-22">
   <owner>horo@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The delay caused by domain lookup for the final HTTP request which is sent
     for the main resource of a main frame navigation, for Google Search page
@@ -1152,6 +1160,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2025-12-28">
   <owner>horo@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The delay caused by SSL handshake for the final HTTP request which is sent
     for the main resource of a main frame navigation, for Google Search page
@@ -1167,6 +1176,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2025-12-28">
   <owner>horo@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The delay caused by connection establishment for the first HTTP request
     which is sent for the main resource of a main frame navigation, for Google
@@ -1182,6 +1192,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2025-12-28">
   <owner>horo@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The delay caused by domain lookup for the first HTTP request which is sent
     for the main resource of a main frame navigation, for Google Search page
@@ -1197,6 +1208,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2025-12-28">
   <owner>horo@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The delay caused by SSL handshake for the first HTTP request which is sent
     for the main resource of a main frame navigation, for Google Search page
@@ -1240,6 +1252,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-02-09">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time from navigation timing's navigation start to the time the
     domain lookup ended of {NavigationCountType} ({BrowserInitializationStatus},
@@ -1261,6 +1274,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-02-09">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time from navigation timing's navigation start to the time the
     domain lookup started of {NavigationCountType}
@@ -1339,6 +1353,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-02-01">
   <owner>hayato@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time taken to call http network transaction connected callback,
     for Google Search page loads. Recorded every time the connected callback is
@@ -1352,6 +1367,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-02-01">
   <owner>hayato@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The time taken for HTTP stream creation to finish, for Google Search page
     loads. Recorded every time HttpStream::CreateStream() is called, for Google
@@ -1365,6 +1381,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-02-22">
   <owner>hayato@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time from navigation timing's first fetch start, the browser is
     ready to fetch the first HTTP request, to the first request start, the time
@@ -1380,6 +1397,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-01-04">
   <owner>hayato@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The time taken for HTTP stream initialization to finish if the
     initialization was blocked, otherwise zero, for Google Search page loads.
@@ -1394,6 +1412,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-02-22">
   <owner>nidhijaju@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The time relative to navigation start that a callback for the navigation
     loader is last invoked for the main resource of a main frame navigation, for
@@ -1408,6 +1427,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-02-22">
   <owner>nidhijaju@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The time relative to navigation start that the final HTTP request is sent
     for the main resource of a main frame navigation, for Google Search page
@@ -1422,6 +1442,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-02-22">
   <owner>nidhijaju@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The time relative to navigation start that the headers of the final HTTP
     response is received for the main resource of a main frame navigation, for
@@ -1436,6 +1457,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-02-22">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The time relative to navigation start that a callback for the navigation
     loader is first invoked for the main resource of a main frame navigation,
@@ -1450,6 +1472,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-02-22">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The time relative to navigation start that the first HTTP request is sent
     for the main resource of a main frame navigation, for Google Search page
@@ -1464,6 +1487,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-02-22">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The time relative to navigation start that the headers of the first HTTP
     response is received for the main resource of a main frame navigation, for
@@ -1478,6 +1502,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2025-12-28">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The time relative to navigation start that the page load metrics observer is
     destructed (i.e. the page is closed), for Google Search page loads. The
@@ -1490,6 +1515,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-02-09">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time from navigation timing's navigation start to the time the
     navigation start of {NavigationCountType} ({BrowserInitializationStatus},
@@ -1511,6 +1537,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-02-15">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time in milliseconds from navigation timing's navigation start
     to the time when the page first paints content, for Google Search page
@@ -1563,6 +1590,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2025-10-05">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time from navigation timing's navigation start to the time the
     parser started, for Google Search page loads. Only recorded for Search
@@ -1578,6 +1606,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-08-17">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time from when a prerendered page is activated to the first
     contentful paint, for GWS page loads for {IncognitoSuffix}. Only recorded
@@ -1617,6 +1646,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-02-22">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time in milliseconds from navigation timing's navigation start
     to the time when the page first paints the experimental largest content
@@ -1639,6 +1669,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-08-17">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the time from when a prerendered page is activated to the largest
     contentful paint, for GWS page loads for {IncognitoSuffix}. Only recorded
