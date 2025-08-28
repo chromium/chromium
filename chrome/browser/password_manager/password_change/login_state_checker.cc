@@ -51,16 +51,18 @@ void LogBoolean(password_manager::PasswordManagerClient* client,
 LoginStateChecker::LoginStateChecker(
     content::WebContents* web_contents,
     password_manager::PasswordManagerClient* client,
-    InitialLoginCheckFailedCallback first_check_callback,
-    LoginStateResultCallback final_check_callback)
+    LoginStateResultCallback callback)
     : content::WebContentsObserver(web_contents),
       client_(client),
-      first_check_callback_(std::move(first_check_callback)),
-      final_check_callback_(std::move(final_check_callback)) {
+      result_check_callback_(std::move(callback)) {
   CheckLoginState();
 }
 
 LoginStateChecker::~LoginStateChecker() = default;
+
+bool LoginStateChecker::ReachedAttemptsLimit() const {
+  return state_checks_count_ >= kMaxLoginChecks;
+}
 
 void LoginStateChecker::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
@@ -69,16 +71,15 @@ void LoginStateChecker::DidFinishNavigation(
 }
 
 void LoginStateChecker::TerminateLoginChecks() {
-  std::move(final_check_callback_).Run(false);
+  state_checks_count_ = kMaxLoginChecks;
+  result_check_callback_.Run(false);
 }
 
 void LoginStateChecker::CheckLoginState() {
-  CHECK(final_check_callback_);
-
   LogMessage(client_,
              SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_STARTED);
   // Checks if the maximum number of attempts has been reached.
-  if (state_checks_count_ >= LoginStateChecker::kMaxLoginChecks) {
+  if (ReachedAttemptsLimit()) {
     LogMessage(client_, SavePasswordProgressLogger::
                             STRING_LOGIN_STATE_CHECK_MAX_ATTEMPTS_REACHED);
     TerminateLoginChecks();
@@ -129,7 +130,6 @@ void LoginStateChecker::OnExecutionResponseCallback(
     std::unique_ptr<
         optimization_guide::proto::PasswordChangeSubmissionLoggingData>
         logging_data) {
-  CHECK(final_check_callback_);
   LogMessage(
       client_,
       SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_RESPONSE_RECEIVED);
@@ -155,9 +155,5 @@ void LoginStateChecker::OnExecutionResponseCallback(
   LogBoolean(client_,
              SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_RESULT,
              is_logged_in);
-  if (is_logged_in) {
-    std::move(final_check_callback_).Run(true);
-  } else if (first_check_callback_) {
-    std::move(first_check_callback_).Run();
-  }
+  result_check_callback_.Run(is_logged_in);
 }

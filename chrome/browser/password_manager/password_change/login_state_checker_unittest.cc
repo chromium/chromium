@@ -59,11 +59,9 @@ class LoginStateCheckerTest : public ChromeRenderViewHostTestHarness {
   }
 
   std::unique_ptr<LoginStateChecker> CreateChecker(
-      LoginStateChecker::InitialLoginCheckFailedCallback first_check_callback,
-      LoginStateChecker::LoginStateResultCallback final_check_callback) {
+      LoginStateChecker::LoginStateResultCallback callback) {
     return std::make_unique<LoginStateChecker>(web_contents(), nullptr,
-                                               std::move(first_check_callback),
-                                               std::move(final_check_callback));
+                                               std::move(callback));
   }
 
   MockOptimizationGuideKeyedService* optimization_service() {
@@ -73,23 +71,19 @@ class LoginStateCheckerTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(LoginStateCheckerTest, UserIsLoggedInOnFirstAttempt) {
-  base::test::TestFuture<void> first_future;
-  base::test::TestFuture<bool> last_future;
+  base::test::TestFuture<bool> future;
   EXPECT_CALL(*optimization_service(), ExecuteModel)
       .WillOnce(WithArg<3>(Invoke(&PostResponse<true>)));
 
-  auto checker =
-      CreateChecker(first_future.GetCallback(), last_future.GetCallback());
+  auto checker = CreateChecker(future.GetRepeatingCallback());
   ASSERT_TRUE(checker->capturer());
   checker->capturer()->ReplyWithContent(
       optimization_guide::AIPageContentResult());
-  EXPECT_TRUE(last_future.Get());
-  EXPECT_FALSE(first_future.IsReady());
+  EXPECT_TRUE(future.Take());
 }
 
 TEST_F(LoginStateCheckerTest, UserIsLoggedInOnSecondAttempt) {
-  base::test::TestFuture<void> first_future;
-  base::test::TestFuture<bool> last_future;
+  base::test::TestFuture<bool> future;
   {
     InSequence s;
     EXPECT_CALL(*optimization_service(), ExecuteModel)
@@ -98,14 +92,11 @@ TEST_F(LoginStateCheckerTest, UserIsLoggedInOnSecondAttempt) {
         .WillOnce(WithArg<3>(Invoke(&PostResponse<true>)));
   }
 
-  auto checker =
-      CreateChecker(first_future.GetCallback(), last_future.GetCallback());
+  auto checker = CreateChecker(future.GetRepeatingCallback());
   // First model call should be negative, the user is not logged in.
   checker->capturer()->ReplyWithContent(
       optimization_guide::AIPageContentResult());
-  task_environment()->RunUntilIdle();
-  EXPECT_TRUE(first_future.IsReady());
-  EXPECT_FALSE(last_future.IsReady());
+  EXPECT_FALSE(future.Take());
 
   // Simulate finishing a navigation in the main frame.
   static_cast<content::WebContentsObserver*>(checker.get())
@@ -113,43 +104,39 @@ TEST_F(LoginStateCheckerTest, UserIsLoggedInOnSecondAttempt) {
   // Second model call should be positive, the user is logged in.
   checker->capturer()->ReplyWithContent(
       optimization_guide::AIPageContentResult());
-  EXPECT_TRUE(last_future.Get());
+  EXPECT_TRUE(future.Take());
 }
 
 TEST_F(LoginStateCheckerTest, FailsAfterPageContentCaptureFailure) {
-  base::test::TestFuture<void> first_future;
-  base::test::TestFuture<bool> last_future;
-  auto checker =
-      CreateChecker(first_future.GetCallback(), last_future.GetCallback());
+  base::test::TestFuture<bool> future;
+  auto checker = CreateChecker(future.GetRepeatingCallback());
   ASSERT_TRUE(checker->capturer());
   checker->capturer()->ReplyWithContent(std::nullopt);
-  task_environment()->RunUntilIdle();
-  EXPECT_FALSE(first_future.IsReady());
-  EXPECT_FALSE(last_future.Get());
+  EXPECT_FALSE(future.Take());
 }
 
 TEST_F(LoginStateCheckerTest, ExceedsMaxLoginChecksAndFails) {
-  base::test::TestFuture<void> first_future;
-  base::test::TestFuture<bool> last_future;
+  base::test::TestFuture<bool> future;
   EXPECT_CALL(*optimization_service(), ExecuteModel)
       .Times(LoginStateChecker::kMaxLoginChecks)
       .WillRepeatedly(WithArg<3>(Invoke(&PostResponse<false>)));
 
-  auto checker =
-      CreateChecker(first_future.GetCallback(), last_future.GetCallback());
-  for (int i = 0; i < LoginStateChecker::kMaxLoginChecks - 1; ++i) {
+  auto checker = CreateChecker(future.GetRepeatingCallback());
+  for (int i = 0; i < LoginStateChecker::kMaxLoginChecks; ++i) {
     checker->capturer()->ReplyWithContent(
         optimization_guide::AIPageContentResult());
-    static_cast<content::WebContentsObserver*>(checker.get())
-        ->DidFinishNavigation(nullptr);
-    EXPECT_FALSE(last_future.IsReady());
+    EXPECT_FALSE(future.Take());
+
+    if (i < LoginStateChecker::kMaxLoginChecks - 1) {
+      EXPECT_FALSE(checker->ReachedAttemptsLimit());
+      static_cast<content::WebContentsObserver*>(checker.get())
+          ->DidFinishNavigation(nullptr);
+    }
   }
-  // This last call should return false because it exceeded the maximum number
-  // of login checks.
-  checker->capturer()->ReplyWithContent(
-      optimization_guide::AIPageContentResult());
+  // The next check should fail immediately without calling the model.
+  EXPECT_CALL(*optimization_service(), ExecuteModel).Times(0);
+  EXPECT_TRUE(checker->ReachedAttemptsLimit());
   static_cast<content::WebContentsObserver*>(checker.get())
       ->DidFinishNavigation(nullptr);
-  EXPECT_FALSE(last_future.Get());
-  EXPECT_FALSE(first_future.IsReady());
+  EXPECT_FALSE(future.Take());
 }

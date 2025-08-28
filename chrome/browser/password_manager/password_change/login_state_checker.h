@@ -31,23 +31,21 @@ class LoginStateChecker : public content::WebContentsObserver {
  public:
   // Maximum amount of login state checks.
   static constexpr int kMaxLoginChecks = 5;
-  using InitialLoginCheckFailedCallback = base::OnceCallback<void()>;
-  using LoginStateResultCallback = base::OnceCallback<void(bool)>;
+  using LoginStateResultCallback = base::RepeatingCallback<void(bool)>;
 
   LoginStateChecker(content::WebContents* web_contents,
                     password_manager::PasswordManagerClient* client,
-                    InitialLoginCheckFailedCallback first_check_callback,
-                    LoginStateResultCallback final_check_callback);
+                    LoginStateResultCallback callback);
 
   ~LoginStateChecker() override;
+
+  bool ReachedAttemptsLimit() const;
 
 #if defined(UNIT_TEST)
   AnnotatedPageContentCapturer* capturer() { return capturer_.get(); }
   void RespondWithLoginStatus(bool is_logged_in) {
-    std::move(final_check_callback_).Run(is_logged_in);
-  }
-  void ResponseWithLoginStatusFirstCheck() {
-    std::move(first_check_callback_).Run();
+    result_check_callback_.Run(is_logged_in);
+    state_checks_count_++;
   }
 #endif
 
@@ -81,8 +79,7 @@ class LoginStateChecker : public content::WebContentsObserver {
 
   raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
 
-  InitialLoginCheckFailedCallback first_check_callback_;
-  LoginStateResultCallback final_check_callback_;
+  LoginStateResultCallback result_check_callback_;
 
   // The number of login state checks performed.
   int state_checks_count_ = 0;

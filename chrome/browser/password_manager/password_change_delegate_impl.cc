@@ -302,26 +302,32 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
     login_state_checker_ = std::make_unique<LoginStateChecker>(
         originator_.get(),
         ChromePasswordManagerClient::FromWebContents(originator_),
-        // Callback for the first check's result.
-        base::BindOnce(&PasswordChangeDelegateImpl::UpdateState,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       State::kLoginFormDetected),
-        // Callback for the final, definitive result.
-        base::BindOnce(&PasswordChangeDelegateImpl::OnLoginStateCheckResult,
-                       weak_ptr_factory_.GetWeakPtr()));
+        base::BindRepeating(
+            &PasswordChangeDelegateImpl::OnLoginStateCheckResult,
+            weak_ptr_factory_.GetWeakPtr()));
   } else {
     StartBackgroundTab();
   }
 }
 
 void PasswordChangeDelegateImpl::OnLoginStateCheckResult(bool is_logged_in) {
-  login_state_checker_.reset();
-  if (!is_logged_in) {
-    UpdateState(State::kChangePasswordFormNotFound);
+  if (is_logged_in) {
+    // User is logged in, start password change process.
+    login_state_checker_.reset();
+    UpdateState(State::kWaitingForChangePasswordForm);
+    StartBackgroundTab();
     return;
   }
-  UpdateState(State::kWaitingForChangePasswordForm);
-  StartBackgroundTab();
+
+  if (!login_state_checker_->ReachedAttemptsLimit()) {
+    // Update the UI to encourage user to complete sign in.
+    UpdateState(State::kLoginFormDetected);
+    return;
+  }
+
+  // Maximum number of retries reached. Show an error dialog.
+  login_state_checker_.reset();
+  UpdateState(State::kChangePasswordFormNotFound);
 }
 
 void PasswordChangeDelegateImpl::StartBackgroundTab() {

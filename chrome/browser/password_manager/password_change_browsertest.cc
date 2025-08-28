@@ -1501,11 +1501,13 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
 
-  delegate_impl->login_checker()->ResponseWithLoginStatusFirstCheck();
+  delegate_impl->login_checker()->RespondWithLoginStatus(false);
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kLoginFormDetected);
   // Verify that password change fails if the user is not logged in.
-  delegate_impl->login_checker()->RespondWithLoginStatus(false);
+  for (auto i = 0; i < LoginStateChecker::kMaxLoginChecks; i++) {
+    delegate_impl->login_checker()->RespondWithLoginStatus(false);
+  }
   EXPECT_FALSE(delegate_impl->login_checker());
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kChangePasswordFormNotFound);
@@ -1528,11 +1530,14 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
 
-  delegate_impl->login_checker()->ResponseWithLoginStatusFirstCheck();
+  delegate_impl->login_checker()->RespondWithLoginStatus(false);
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kLoginFormDetected);
-  // Verify that password change fails if the user is not logged in.
-  delegate_impl->login_checker()->RespondWithLoginStatus(false);
+  // Verify that password change fails if the user is not logged in after
+  // maximum amount of attempts.
+  for (auto i = 0; i < LoginStateChecker::kMaxLoginChecks; i++) {
+    delegate_impl->login_checker()->RespondWithLoginStatus(false);
+  }
   EXPECT_FALSE(delegate_impl->login_checker());
   EXPECT_FALSE(delegate_impl->executor());
   EXPECT_EQ(delegate->GetCurrentState(),
