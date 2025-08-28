@@ -348,7 +348,8 @@ void MaybeAddContextualSuggestParams(
     std::string_view contextual_url_suggest_param =
         omnibox_feature_configs::ContextualSearch::Get()
             .contextual_url_suggest_param;
-    if (!contextual_url_suggest_param.empty()) {
+    if (client->ShouldSendContextualUrlSuggestParam() &&
+        !contextual_url_suggest_param.empty()) {
       additional_query_params.push_back(
           base::StrCat({"ctxus=", contextual_url_suggest_param}));
     }
@@ -359,7 +360,7 @@ void MaybeAddContextualSuggestParams(
         client->IsPersonalizedUrlDataCollectionActive()) {
       std::string page_title = EncodeURIComponent(base::UTF16ToUTF8(
           TruncateUTF16(input.current_title(), kMaxPageTitleLength)));
-      if (!page_title.empty()) {
+      if (client->ShouldSendPageTitleSuggestParam() && !page_title.empty()) {
         additional_query_params.push_back(
             base::StrCat({"pageTitle=", page_title}));
       }

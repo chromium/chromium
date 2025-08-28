@@ -44,10 +44,6 @@ BASE_FEATURE(kLensOverlayContextualSearchbox,
              "LensOverlayContextualSearchbox",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensOverlayContextualSearchboxForOmniboxSuggestions,
-             "LensOverlayContextualSearchboxForOmniboxSuggestions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLensOverlaySuggestionsMigration,
              "LensOverlaySuggestionsMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -74,11 +70,7 @@ BASE_FEATURE(kLensOverlaySimplifiedSelection,
 
 BASE_FEATURE(kLensOverlayVisualSelectionUpdates,
              "LensOverlayVisualSelectionUpdates",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kLensOverlayVisualSelectionUpdatesForOmniboxSuggestions,
-             "LensOverlayVisualSelectionUpdatesForOmniboxSuggestions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlayUpdatedClientContext,
              "LensOverlayUpdatedClientContext",
@@ -410,11 +402,7 @@ constexpr base::FeatureParam<double> kUploadProgressBarShowHeuristic{
     0.1};
 
 constexpr base::FeatureParam<bool> kAutoFocusSearchbox{
-    &kLensOverlayContextualSearchbox, "auto-focus-searchbox", false};
-
-constexpr base::FeatureParam<bool> kAutoFocusSearchboxForOmniboxSuggestions{
-    &kLensOverlayContextualSearchboxForOmniboxSuggestions,
-    "auto-focus-searchbox", true};
+    &kLensOverlayContextualSearchbox, "auto-focus-searchbox", true};
 
 constexpr base::FeatureParam<bool> kUpdateViewportEachQuery{
     &kLensOverlayContextualSearchbox, "update-viewport-each-query", true};
@@ -1008,10 +996,6 @@ double GetUploadProgressBarShowHeuristic() {
 }
 
 bool ShouldAutoFocusSearchbox() {
-  if (base::FeatureList::IsEnabled(
-          kLensOverlayContextualSearchboxForOmniboxSuggestions)) {
-    return kAutoFocusSearchboxForOmniboxSuggestions.Get();
-  }
   return kAutoFocusSearchbox.Get();
 }
 
@@ -1036,9 +1020,7 @@ bool GetShouldCopyAsImage() {
 }
 
 bool IsLensOverlayVisualSelectionUpdatesEnabled() {
-  return base::FeatureList::IsEnabled(kLensOverlayVisualSelectionUpdates) ||
-         base::FeatureList::IsEnabled(
-             kLensOverlayVisualSelectionUpdatesForOmniboxSuggestions);
+  return base::FeatureList::IsEnabled(kLensOverlayVisualSelectionUpdates);
 }
 
 bool IsDynamicThemeDetectionEnabled() {

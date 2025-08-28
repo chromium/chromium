@@ -245,6 +245,14 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   // shown to the user.
   virtual std::optional<bool> IsPagePaywalled() const;
 
+  // Whether the client should send the `ctxus=` URL parameter to Suggest in
+  // order to request contextual search suggestions in the Omnibox.
+  virtual bool ShouldSendContextualUrlSuggestParam() const;
+
+  // Whether the client should send the `pageTitle=` URL parameter to Suggest
+  // when requesting ZPS suggestions in the Omnibox.
+  virtual bool ShouldSendPageTitleSuggestParam() const;
+
   // Returns whether the app is currently in the background state (Mobile only).
   virtual bool in_background_state() const;
 

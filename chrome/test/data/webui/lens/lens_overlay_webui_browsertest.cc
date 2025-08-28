@@ -38,9 +38,7 @@ class LensOverlayWebUIBrowserTest : public WebUIMochaBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{lens::features::kLensOverlay},
         /*disabled_features=*/{
-            lens::features::kLensOverlayContextualSearchbox,
-            lens::features::
-                kLensOverlayContextualSearchboxForOmniboxSuggestions});
+            lens::features::kLensOverlayContextualSearchbox});
   }
 
   void SetUp() override {

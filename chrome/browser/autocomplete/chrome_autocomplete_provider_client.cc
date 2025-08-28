@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/cstring_view.h"
 #include "base/strings/utf_string_conversions.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
@@ -52,6 +54,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/top_sites.h"
@@ -67,6 +70,7 @@
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/omnibox/browser/tab_matcher.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/prefs/pref_service.h"
@@ -76,6 +80,7 @@
 #include "components/sync/service/sync_service.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
+#include "components/variations/service/variations_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -163,6 +168,34 @@ lens::LensSearchboxController* GetLensSearchboxController(
   return nullptr;
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+// Whether the given contextual search `feature` is enabled for the specified
+// `country` and `locale`.
+bool IsContextualSearchFeatureEnabled(const base::Feature& feature,
+                                      const std::string& country,
+                                      const std::string& locale) {
+  // If the feature is overridden (e.g. via server-side config or command-line),
+  // use that state.
+  auto* feature_list = base::FeatureList::GetInstance();
+  if (feature_list && feature_list->IsFeatureOverridden(feature.name)) {
+    return base::FeatureList::IsEnabled(feature);
+  }
+
+  if (!g_browser_process) {
+    return false;
+  }
+
+  auto* variations_service = g_browser_process->variations_service();
+  auto* features = g_browser_process->GetFeatures();
+
+  if (!variations_service || !features) {
+    return false;
+  }
+
+  return variations_service->GetStoredPermanentCountry() == country &&
+         features->application_locale_storage() &&
+         features->application_locale_storage()->Get() == locale;
+}
 
 }  // namespace
 
@@ -604,6 +637,19 @@ std::optional<bool> ChromeAutocompleteProviderClient::IsPagePaywalled() const {
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
   return false;
+}
+
+bool ChromeAutocompleteProviderClient::ShouldSendContextualUrlSuggestParam()
+    const {
+  return IsContextualSearchFeatureEnabled(
+      omnibox_feature_configs::ContextualSearch::kSendContextualUrlSuggestParam,
+      /*country=*/"us", /*locale=*/"en-US");
+}
+
+bool ChromeAutocompleteProviderClient::ShouldSendPageTitleSuggestParam() const {
+  return IsContextualSearchFeatureEnabled(
+      omnibox_feature_configs::ContextualSearch::kSendPageTitleSuggestParam,
+      /*country=*/"us", /*locale=*/"en-US");
 }
 
 base::CallbackListSubscription

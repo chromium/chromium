@@ -8526,47 +8526,6 @@
             ]
         }
     ],
-    "DesktopOmniboxContextualSearch": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "_enabled_OnFocusZPS_NoPrefetch_ContextualSearch_LensAction",
-                    "params": {
-                        "OmniboxZpsMaxSearchSuggestions": "6",
-                        "OmniboxZpsMaxSuggestions": "6",
-                        "OmniboxZpsMaxUrlSuggestions": "0"
-                    },
-                    "enable_features": [
-                        "ContextualSuggestionsAblateOthersWhenPresent",
-                        "ContextualZeroSuggestLensFulfillment",
-                        "HappinessTrackingSurveyForOmniboxOnFocusZps",
-                        "LensOverlayContextualSearchboxForOmniboxSuggestions",
-                        "LensOverlayVisualSelectionUpdatesForOmniboxSuggestions",
-                        "OmniboxContextualSearchOnFocusSuggestions",
-                        "OmniboxFocusTriggersWebAndSRPZeroSuggest",
-                        "OmniboxHideSuggestionGroupHeaders",
-                        "OmniboxShowPopupOnMouseReleased",
-                        "OmniboxZpsSuggestionLimit",
-                        "SendContextualUrlSuggestParam",
-                        "SendPageTitleSuggestParam",
-                        "ShowSuggestionsOnNoApc",
-                        "SuggestionsFulfilledByLensSupported",
-                        "UseApcPaywallSignal"
-                    ],
-                    "disable_features": [
-                        "LensOverlayOmniboxEntryPoint",
-                        "OmniboxUrlSuggestionsOnFocus"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopOmniboxRichAutocompletionMinChar": [
         {
             "platforms": [

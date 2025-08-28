@@ -19,19 +19,13 @@ bool IsLensOverlayContextualSearchboxEnabled() {
   auto* feature_list = base::FeatureList::GetInstance();
   if (feature_list &&
       (feature_list->IsFeatureOverridden(
-           lens::features::kLensOverlayContextualSearchbox.name) ||
-       feature_list->IsFeatureOverridden(
-           lens::features::kLensOverlayContextualSearchboxForOmniboxSuggestions
-               .name))) {
+          lens::features::kLensOverlayContextualSearchbox.name))) {
     // Important: If a server-side config applies to this client (i.e. after
     // accounting for its filters), but the client gets assigned to the default
     // group, they will still take this code path and receive the state
     // specified via BASE_FEATURE() above.
     return base::FeatureList::IsEnabled(
-               lens::features::kLensOverlayContextualSearchbox) ||
-           base::FeatureList::IsEnabled(
-               lens::features::
-                   kLensOverlayContextualSearchboxForOmniboxSuggestions);
+        lens::features::kLensOverlayContextualSearchbox);
   }
 
   // Safety check since this is a CP'd change.

@@ -57,6 +57,14 @@ std::optional<bool> AutocompleteProviderClient::IsPagePaywalled() const {
   return std::nullopt;
 }
 
+bool AutocompleteProviderClient::ShouldSendContextualUrlSuggestParam() const {
+  return false;
+}
+
+bool AutocompleteProviderClient::ShouldSendPageTitleSuggestParam() const {
+  return false;
+}
+
 bool AutocompleteProviderClient::in_background_state() const {
   return false;
 }

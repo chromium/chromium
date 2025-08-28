@@ -3298,7 +3298,7 @@ TEST_F(LensOverlayQueryControllerTest, GetVsridForNewTab) {
 }
 
 TEST_F(LensOverlayQueryControllerTest,
-       RoutingInfo_FromFullImageReseponse_IncludedInRequestId) {
+       RoutingInfo_FromFullImageResponse_IncludedInRequestId) {
   // Disable the cluster info handshake flow.
   feature_list_.Reset();
   feature_list_.InitWithFeaturesAndParameters(

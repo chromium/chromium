@@ -85,7 +85,7 @@ AiModeOmniboxEntryPoint::AiModeOmniboxEntryPoint() {
 
 BASE_FEATURE(ContextualSearch::kContextualSuggestionsAblateOthersWhenPresent,
              "ContextualSuggestionsAblateOthersWhenPresent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Meta-feature that enables/disables the other related features if set.
 // When not overridden, each feature is enabled/disabled separately.
@@ -104,7 +104,7 @@ BASE_FEATURE(ContextualSearch::kStarterPackPage,
 // current page, by using more than the URL, i.e. the page content.
 BASE_FEATURE(ContextualSearch::kContextualZeroSuggestLensFulfillment,
              "ContextualZeroSuggestLensFulfillment",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the contextual search provider to wait for the Lens suggest inputs
 // to be ready before making the suggest request.
@@ -115,7 +115,7 @@ BASE_FEATURE(ContextualSearch::kContextualSearchProviderAsyncSuggestInputs,
 // Feature to enable use of the "ctxus" param on zero suggest requests.
 BASE_FEATURE(ContextualSearch::kSendContextualUrlSuggestParam,
              "SendContextualUrlSuggestParam",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(ContextualSearch::kOmniboxContextualSearchOnFocusSuggestions,
              "OmniboxContextualSearchOnFocusSuggestions",
@@ -135,7 +135,7 @@ BASE_FEATURE(ContextualSearch::kContextualSearchOpenLensActionUsesThumbnail,
 
 BASE_FEATURE(ContextualSearch::kSendPageTitleSuggestParam,
              "SendPageTitleSuggestParam",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(ContextualSearch::kContextualSearchAlternativeActionLabel,
              "ContextualSearchAlternativeActionLabel",
@@ -143,11 +143,11 @@ BASE_FEATURE(ContextualSearch::kContextualSearchAlternativeActionLabel,
 
 BASE_FEATURE(ContextualSearch::kUseApcPaywallSignal,
              "UseApcPaywallSignal",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(ContextualSearch::kShowSuggestionsOnNoApc,
              "ShowSuggestionsOnNoApc",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(ContextualSearch::kOpenLensActionUITweaks,
              "OpenLensActionUITweaks",

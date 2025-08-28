@@ -128,6 +128,8 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   bool IsLensEnabled() const override;
   bool AreLensEntrypointsVisible() const override;
   std::optional<bool> IsPagePaywalled() const override;
+  bool ShouldSendContextualUrlSuggestParam() const override;
+  bool ShouldSendPageTitleSuggestParam() const override;
   base::CallbackListSubscription GetLensSuggestInputsWhenReady(
       LensOverlaySuggestInputsCallback callback) const override;
   base::WeakPtr<AutocompleteProviderClient> GetWeakPtr() override;
