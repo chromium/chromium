@@ -548,6 +548,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/ui/messages/android:java",
       "//chrome/browser/ui/plus_addresses/android:java",
       "//chrome/browser/uid/android:java",
+      "//chrome/browser/url_constants/android:java",
       "//chrome/browser/usb/android:java",
       "//chrome/browser/user_education:java",
       "//chrome/browser/util:java",
