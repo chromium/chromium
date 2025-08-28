@@ -2048,7 +2048,7 @@ gfx::Rect BrowserView::GetBounds() const {
 gfx::Size BrowserView::GetContentsSize() const {
   DCHECK(initialized_);
   if (multi_contents_view_) {
-    return multi_contents_view_->GetContentsSize();
+    return multi_contents_view_->size();
   } else {
     return contents_container_view_->size();
   }
