@@ -135,9 +135,7 @@ static_library("search_engines") {
   ]
 
   if (enable_builtin_search_provider_assets) {
-    sources += [ "search_engine_choice/generated_marketing_snippets.cc" ]
-    deps +=
-        [ "//third_party/search_engines_data:search_engines_scaled_resources" ]
+    deps += [ "//third_party/search_engines_data:resources" ]
   }
 
   if (is_linux || is_win || is_mac || is_chromeos) {

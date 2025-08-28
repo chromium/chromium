@@ -1,8 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<!DOCTYPE translationbundle>
-<translationbundle lang="ru">
-  <!-- This file is generated using http://go/chrome-search-engines-marketing-snippets-script. Do not modify it manually. -->
-  <translation id="IDS_SEARCH_ENGINE_GOOGLE_DESCRIPTION">Найдите то, что вам нужно, вместе с Google</translation>
-  <translation id="IDS_SEARCH_ENGINE_PRIVACYWALL_DESCRIPTION">Поисковая система, которая защищает вашу конфиденциальность.</translation>
-  <translation id="IDS_SEARCH_ENGINE_YEP_DESCRIPTION">Система веб-поиска, цель которой - делиться доходами от рекламы с создателями.</translation>
-</translationbundle>
