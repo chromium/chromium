@@ -17,10 +17,10 @@ namespace blink {
 // We can create the bloom filter by adding identifier hashes (tag hash, id hash
 // and class hashes) of all elements in the :has() argument checking traversal.
 //
-// Once the filter have been created, we can cheaply check whether a :has()
-// argument selector possibly matches one of the elements in the :has() argument
-// checking traversal by checking whether the filter contains all the identifier
-// hashes from the :has() argument selector.
+// Once the filter has been created, we can cheaply check whether a :has()
+// argument selector could possibly atch any of the elements in the :has()
+// argument check traversal, by checking whether the filter contains all the
+// identifier hashes from the :has() argument selector.
 //
 // For example, assume this tree:
 //
@@ -28,13 +28,13 @@ namespace blink {
 //   <div id="child">
 //     <span class="a">
 //
-// When we check ':has(.a .b)' on '#has_anchor', the bloom filter will contain
+// When we check ':has(.a .b)' on '#has_anchor', the Bloom filter will contain
 // hashes corresponding to 'div', 'span', '#child' and '.a'. From the :has()
-// argument selector '.a .b', we will collect identifier hashes corresponding to
-// '.a' and '.b'. Then, we will look up the hashes from argument selector in the
-// bloom filter and get negative result proving that the argument selector
-// '.a .b' doesn't match any descendants of '#has_anchor' since the bloom filter
-// doesn't contain the hash for '.b'.
+// argument selector '.a .b', we collect identifier hashes corresponding to
+// '.a' and '.b'. Then, we look up the hashes from argument selector in the
+// Bloom filter and get a negative result, proving that the argument selector
+// '.a .b' doesn't match any descendants of '#has_anchor', since the Bloom
+// filter doesn't contain the hash for '.b'.
 class CORE_EXPORT CheckPseudoHasFastRejectFilter {
  public:
   using FastRejectFilter = BloomFilter<12>;

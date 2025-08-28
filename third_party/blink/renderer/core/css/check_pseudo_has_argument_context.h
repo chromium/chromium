@@ -13,51 +13,52 @@
 namespace blink {
 
 enum CheckPseudoHasArgumentTraversalScope {
-  // Case 1: :has() argument selector starts with child or descendant
+  // Case 1: The :has() argument selector starts with a child or descendant
   //         combinator, and depth is not fixed.
   //         (e.g. :has(.a), :has(.a > .b), :has(.a + .b), :has(> .a .b) ...))
   kSubtree,
 
-  // Case 2: :has() argument selector starts with direct or indirect adjacent
-  //         combinator and adjacent distance is not fixed and depth is fixed
-  //         and child combinator not exists.
-  //         (.e.g. :has(~ .a), :has(~ .a ~ .b), :has(~ .a + .b))
+  // Case 2: The :has() argument selector starts with a direct or indirect
+  //         adjacent combinator, the adjacent distance is not fixed,
+  //         depth is fixed, and no child combinator exists.
+  //         (e.g. :has(~ .a), :has(~ .a ~ .b), :has(~ .a + .b))
   kAllNextSiblings,
 
-  // Case 3: :has() argument selector starts with direct adjacent combinator
-  //         and adjacent distance is fixed and depth is not fixed.
-  //         (.e.g. :has(+ .a .b), :has(+ .a > .b .c)), :has(+ .a .b > .c)
+  // Case 3: The :has() argument selector starts with a direct adjacent
+  //         combinator, the adjacent distance is fixed, and depth is not fixed.
+  //         (e.g. :has(+ .a .b), :has(+ .a > .b .c)), :has(+ .a .b > .c)
   //                :has(+ .a .b ~ .c), :has(+ .a + .b .c))
   kOneNextSiblingSubtree,
 
-  // Case 4: :has() argument selector starts with direct or indirect adjacent
-  //         combinator and adjacent distance and depth are not fixed.
-  //         (.e.g. :has(~ .a .b), :has(+ .a ~ .b .c))
+  // Case 4: The :has() argument selector starts with a direct or indirect
+  // adjacent
+  //         combinator, and adjacent distance and depth are not fixed.
+  //         (e.g. :has(~ .a .b), :has(+ .a ~ .b .c))
   kAllNextSiblingSubtrees,
 
-  // Case 5: :has() argument selector starts with direct adjacent combinator
-  //         and both adjacent distance and depth are fixed and no child
-  //         combinator.
-  //          (.e.g. :has(+ .a), :has(+ .a + .b))
+  // Case 5: The :has() argument selector starts with a direct adjacent
+  //         combinator, both adjacent distance and depth are fixed,
+  //         and no child combinator exists.
+  //         (e.g. :has(+ .a), :has(+ .a + .b))
   kOneNextSibling,
 
-  // Case 6: :has() argument selector starts with child combinator and depth is
-  //         fixed.
-  //         (.e.g. :has(> .a), :has(> .a > .b), :has(> .a + .b),
-  //                :has(> .a ~ .b))
+  // Case 6: The :has() argument selector starts with a child combinator,
+  //         and depth is fixed.
+  //         (e.g. :has(> .a), :has(> .a > .b), :has(> .a + .b),
+  //               :has(> .a ~ .b))
   kFixedDepthDescendants,
 
-  // Case 7: :has() argument selector starts with direct adjacent combinator
-  //         and both adjacent distance and depth are fixed and child combinator
-  //         exists.
-  //          (.e.g. :has(+ .a > .b), :has(+ .a > .b ~ .c))
+  // Case 7: The :has() argument selector starts with a direct adjacent
+  //         combinator, both adjacent distance and depth are fixed,
+  //         and a child combinator exists.
+  //         (e.g. :has(+ .a > .b), :has(+ .a > .b ~ .c))
   kOneNextSiblingFixedDepthDescendants,
 
-  // Case 8: :has() argument selector starts with direct or indirect adjacent
-  //         combinator and adjacent distance is not fixed and depth is fixed
-  //         and child combinator exists.
-  //            (.e.g. :has(~ .a > .b), :has(+ .a ~ .b > .c),
-  //                   :has(~ .a > .b ~ .c), :has(+ .a ~ .b > .c ~ .d),
+  // Case 8: The :has() argument selector starts with a direct or indirect
+  //         adjacent combinator, the adjacent distance is not fixed,
+  //         depth is fixed, and a child combinator exists.
+  //         (e.g. :has(~ .a > .b), :has(+ .a ~ .b > .c),
+  //               :has(~ .a > .b ~ .c), :has(+ .a ~ .b > .c ~ .d),
   kAllNextSiblingsFixedDepthDescendants,
 
   // Case 9: Same as case 1, but the :has() argument selector needs to match
@@ -68,22 +69,23 @@ enum CheckPseudoHasArgumentTraversalScope {
   //          elements in the shadow tree. (e.g. :host:has(> .a))
   kShadowRootFixedDepthDescendants,
 
-  // Case 11: :has() argument selector starts with direct or indirect adjacent
-  //          combinator and the selector needs match in the shadow tree of the
-  //          :host, in which case the adjacent combinators could never match.
+  // Case 11: The :has() argument selector starts with a direct or indirect
+  //          adjacent combinator, and the selector needs match in the
+  //          shadow tree of the :host, in which case the adjacent combinators
+  //          could never match.
   //          (e.g. :host:has(~ .a), :host:has(+ .a))
   kInvalidShadowRootTraversalScope,
 
   kTraversalScopeMax = kInvalidShadowRootTraversalScope,
 };
 
-// Unique value of each traversal type. The value can be used as a key of
-// fast reject filter cache.
+// Unique value of each traversal type. The value can be used as a key into
+// the fast-reject filter cache.
 //
-// These 3 values are stored by dividing the 4-byte field by:
-// - depth limit : 0 ~ 13 (14bits)
-// - adjacent distance limit : 14 ~ 27 (14 bits)
-// - traversal scope : 28 ~ 31 (4 bits)
+// These three values are stored by dividing the 4-byte field by:
+// - depth limit: 0 ~ 13 (14 bits)
+// - adjacent distance limit: 14 ~ 27 (14 bits)
+// - traversal scope: 28 ~ 31 (4 bits)
 using CheckPseudoHasArgumentTraversalType = uint32_t;
 
 class CORE_EXPORT CheckPseudoHasArgumentContext {
@@ -102,7 +104,7 @@ class CORE_EXPORT CheckPseudoHasArgumentContext {
   inline int DepthLimit() const { return depth_limit_; }
 
   // Returns true if we are matching styles for a shadow host via a :host rule
-  // with :has(). In that case :has() is matching descendants in the shadow
+  // with :has(). In that case, :has() is matching descendants in the shadow
   // tree, not the light tree descendants of the host.
   inline bool MatchInShadowTree() const {
     DCHECK(!match_in_shadow_tree_ || traversal_scope_ == kShadowRootSubtree ||
@@ -158,9 +160,9 @@ class CORE_EXPORT CheckPseudoHasArgumentContext {
                     sizeof(CheckPseudoHasArgumentTraversalType) * 8,
                 "traversal type size check");
 
-  // Indicate the :has argument relative type and subtree traversal scope.
+  // Indicates the :has argument relative type and subtree traversal scope.
   // If 'adjacent_distance_limit' is integer max, it means that all the
-  // adjacent subtrees need to be traversed. otherwise, it means that it is
+  // adjacent subtrees need to be traversed. Otherwise, it means that it is
   // enough to traverse the adjacent subtree at that distance.
   // If 'descendant_traversal_depth_' is integer max, it means that all of the
   // descendant subtree need to be traversed. Otherwise, it means that it is
@@ -296,42 +298,43 @@ class CORE_EXPORT CheckPseudoHasArgumentContext {
 
 // Subtree traversal iterator class for :has() argument checking. To solve the
 // following issues, this traversal uses the reversed DOM tree order, and
-// provides a functionality to limit the traversal depth.
+// provides functionality to limit the traversal depth.
 //
 // 1. Cache 'Matched' and 'NotMatched' candidate elements while checking the
 //    :has() argument selector.
 //
 // SelectorChecker::CheckPseudoHas() can get all 'Matched' candidates (elements
 // that can be a :has() anchor element) while checking the :has() argument
-// selector on an element in the traversal range. And when it found the
-// elements, it caches those as 'Matched' candidates.
-// By following the reversed DOM tree order, we can get these two advantages.
+// selector on an element in the traversal range. When it finds the
+// elements, it caches them as 'Matched' candidates.
+// By following the reversed DOM tree order, we can get these two advantages:
+//
 // - Maximize the number of 'Matched' candidates that can be cached while
-//   checking :has() argument selector.
+//   checking the :has() argument selector.
 // - Can cache 'NotMatched' candidates (elements that cannot be a :has() anchor
-//   element) in case of these 4 traversal scope types:
+//   element) in case of these four traversal scope types:
 //   - kSubtree
 //   - kAllNextSiblings
 //   - kOneNextSiblingSubtree
 //   - kAllNextSiblingSubtrees
 //   While traversing, we can cache an element as 'NotMatched' if the element is
-//   not cached as 'Matched' because it must be cached as 'Matched' previously
-//   if it is a :has() anchor element. (Reversed DOM tree order guarantees that
-//   all the descendants, next siblings and next sibling subtrees were already
-//   traversed)
+//   not cached as 'Matched', because it must be cached as 'Matched' previously
+//   if it is a :has() anchor element. (The reversed DOM tree order guarantees
+//   that all the descendants, next siblings and next sibling subtrees were
+//   already traversed.)
 //
 // 2. Prevent unnecessary subtree traversal when it can be limited with
 //    child combinator or direct adjacent combinator.
 //
 // We can limit the tree traversal range when we count the leftmost combinators
 // of a :has() argument selector. For example, when we check ':has(> .a > .b)'
-// on an element, instead of traversing all the descendants of the :has() anchor
-// element, we can limit the traversal only for the elements at depth 2 of the
-// :has() anchor element. When we check ':has(+ .a > .b)', we can limit the
-// traversal only for the child elements of the direct adjacent sibling of the
-// :has() anchor element. To implement this, we need a way to limit the
-// traversal depth and a way to check whether the iterator is currently at the
-// fixed depth or not.
+// against an element, then instead of traversing all the descendants of the
+// :has() anchor element, we can limit the traversal only for the elements
+// two levels below the :has() anchor element. When we check ':has(+ .a > .b)',
+// we can limit the traversal to the child elements of the direct adjacent
+// sibling of the :has() anchor element. To implement this, we need a way to
+// limit the traversal depth and a way to check whether the iterator is
+// currently at the fixed depth or not.
 class CORE_EXPORT CheckPseudoHasArgumentTraversalIterator {
   STACK_ALLOCATED();
 

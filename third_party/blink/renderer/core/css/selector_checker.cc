@@ -1806,6 +1806,102 @@ bool MatchesExternalSVGUseTarget(Element& element) {
 
 }  // namespace
 
+// Check whether a :has() pseudo matches.
+//
+// The primary challenge in implementing :has() is performance; if we only
+// wanted a correct implementation, we could test every element (I'll call
+// these the “candidates”) to the right and below the element in question
+// (the “:has() anchor”[1]) and that would be it. However, it would be
+// far too slow to be usable in practice, so we need to add two mitigating
+// strategies.
+//
+// The first and simplest one is scoping. The type of the combinators used
+// inside :has() will determine the _traversal scope_ of the selector; for
+// instance, :has(> .a) can only match elements directly below the anchor, while
+// :has(+ .a .b) will match elements below something that is in the subtree
+// below the anchor's first sibling. You can think of it as a rough shape
+// of the subtree we need to search; we classify each :has() selector into
+// one of eleven such shapes (the enum CheckPseudoHasArgumentTraversalScope).
+// The traversal scope plus more concrete numerical bounds on how far out
+// (in width and depth) we need to search is called the _traversal type_.
+// This restricts the amount of candidates we need to search.
+//
+// The second one is caching. When we start a style recalc, we instantiate
+// two caches which are local to that style recalc (so that we do not ever need
+// to deal with invalidation), the _result cache_ (CheckPseudoHasResultCache)
+// and the _fast-reject cache_ (CheckPseudoHasFastRejectFilter). Each will
+// attempt to answer the question “does the given candidate match the given
+// selector against our anchor”, so they will be queried repeatedly and can
+// be reused across elements. The result cache can answer yes/no/unknown,
+// while the fast-reject cache can only answer no/unknown. We will deal with
+// the fast-reject cache first, since it is simpler to describe.
+//
+// The fast-reject cache is a Bloom filter similar in spirit to the normal
+// SelectorFilter, but it is not incrementally built and corresponds to
+// a single given element. When we decide to build it (typically when we've
+// had multiple queries against the same element), we look at every relevant
+// candidate element (e.g., the entire subtree under the anchor) and add
+// their tag/class/attribute names to the Bloom filter. This allows us to
+// quickly answer “could we have any element matching .a”, but only in the
+// negative. It is expensive to traverse all candidates just for this,
+// so to get any real use of the fast-reject filter, we need to reuse it
+// for many different :has() selectors (trivial, as long as they have
+// the same traversal type), and ideally also for many different elements.
+// The latter is only allowed for certain but rather common traversal
+// scopes, such as subtrees; if we have a fast-reject filter for a given
+// anchor, we can reuse it when styling its children (remember, the caches
+// are persistent for the entire style recalc), although of course with
+// increased risk of false positives.
+//
+// The result cache is simpler in itself, but interacts with more components
+// of the selector checker. At its core, it stores “would anchor element E
+// match selector S?” (where S is the serialized form of the inside of
+// :has(), in order to facilitate more sharing across similar selectors),
+// storing both positive and negative results. This cache wouldn't immediately
+// seem so useful (why would we ever try to check the same anchor repeatedly
+// against the same selector?), but there are two things to keep in mind:
+//
+// - First, :has() doesn't need to be in the subject. If we have a selector
+//   like “:has(.a) .b”, then each ancestor could indeed be checked a lot of
+//   times, and the cache would have a good hit rate without any trickery.
+//
+// - Second, when inserting positive results into the cache, we get some help
+//   from the selector checker. When getting a positive match for the inside
+//   of :has(), It identifies the element(s) that matched _the leftmost
+//   compound_ of the (sub)selector and return those as a side effect to the
+//   match result. Depending on the traversal scope, we can then propagate
+//   the positive match for free to other relevant elements.
+//
+//   E.g., in the simplest possible case, we could have a rule like “:has(.a)”,
+//   and once we find an .a, we know that not only our current anchor matches
+//   this rule, but every parent element of the matched .a would also match
+//   and can be inserted in the cache. Similarly, for a rule like
+//   “:has(.b ~ .c)”, .b would be our leftmost compound, and upon seeing
+//   which element matched .b, we could insert every sibling before it
+//   into the cache. Not all traversal scopes support such propagation,
+//   but many do.
+//
+// In order to get the most out of the latter optimization, the traversal
+// over candidates happen in _reverse_ DOM tree traversal order; that is,
+// the element furthest away from what we would normally expect is processed
+// first. (See CheckPseudoHasArgumentTraversalIterator for the implementation.
+// It also makes sure we check only candidates relevant for the traversal
+// type.) For instance, if we are in “all neighbors” traversal scope,
+// this is the rightmost sibling of our anchor. This is not what an author
+// would expect, but it maximizes the amounts of extra cache entries
+// we can add.
+//
+// There are, of course, many more details to these caches;
+// for instance, see check_pseudo_has_cache_scope.h for more information.
+// In particular, the result cache also automatically gets populated with
+// _negative_ results as we traverse the tree and don't find what we are
+// looking for.
+//
+//
+// [1] This gives rise to the variable name “has_anchor_element”, which sounds
+//     like it is a boolean for whether we have an anchor element or not.
+//     But we always do; “has_” comes from “:has()”, and it always stores
+//     the element we are testing from the selector checker's point of view.
 bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
                                      MatchResult& result) const {
   Element& element = *context.element;
