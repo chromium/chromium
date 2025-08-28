@@ -29,7 +29,6 @@
 
 using metrics::OmniboxEventProto;
 using testing::_;
-using testing::Invoke;
 using testing::Return;
 using testing::WithArg;
 
@@ -246,11 +245,10 @@ TEST_F(LocationBarModelImplTest, GetPageClassification) {
             model.GetPageClassification(/*is_prefetch=*/true));
 
   // Simulate the page being the 1P NTP.
-  EXPECT_CALL(delegate, GetURL(_))
-      .WillRepeatedly(WithArg<0>(Invoke([](GURL* url) {
-        *url = GURL("https://foobar.com");
-        return url->is_valid();
-      })));
+  EXPECT_CALL(delegate, GetURL(_)).WillRepeatedly(WithArg<0>([](GURL* url) {
+    *url = GURL("https://foobar.com");
+    return url->is_valid();
+  }));
   EXPECT_CALL(delegate, IsNewTabPage()).WillRepeatedly(Return(true));
 
   // Verify the page classification for prefetch and non-prefetch requests.
@@ -277,11 +275,11 @@ TEST_F(LocationBarModelImplTest, GetPageClassification) {
 
   // Simulate the page URL being successfully retrieved, and is the SRP.
   EXPECT_CALL(delegate, GetURL(_))
-      .WillRepeatedly(WithArg<0>(Invoke([&delegate](GURL* url) {
+      .WillRepeatedly(WithArg<0>([&delegate](GURL* url) {
         auto* turl_service = delegate.GetTemplateURLService();
         *url = turl_service->GenerateSearchURLForDefaultSearchProvider(u"foo");
         return url->is_valid();
-      })));
+      }));
   EXPECT_CALL(delegate, IsNewTabPageURL(_)).WillRepeatedly(Return(false));
 
   // Verify the page classification for prefetch and non-prefetch requests.
@@ -295,11 +293,10 @@ TEST_F(LocationBarModelImplTest, GetPageClassification) {
                                                      /*is_prefetch=*/true));
 
   // Simulate the page URL being successfully retrieved, and is non-empty.
-  EXPECT_CALL(delegate, GetURL(_))
-      .WillRepeatedly(WithArg<0>(Invoke([](GURL* url) {
-        *url = GURL("https://foobar.com");
-        return url->is_valid();
-      })));
+  EXPECT_CALL(delegate, GetURL(_)).WillRepeatedly(WithArg<0>([](GURL* url) {
+    *url = GURL("https://foobar.com");
+    return url->is_valid();
+  }));
 
   // Verify the page classification for prefetch and non-prefetch requests.
   EXPECT_EQ(OmniboxEventProto::OTHER, model.GetPageClassification());

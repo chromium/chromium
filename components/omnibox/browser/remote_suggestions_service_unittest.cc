@@ -31,7 +31,6 @@
 namespace {
 
 using testing::_;
-using testing::Invoke;
 using testing::NiceMock;
 
 class TestObserver : public RemoteSuggestionsService::Observer {
@@ -450,7 +449,7 @@ TEST_F(RemoteSuggestionsServiceTest, Delegate) {
   // Set up a delegate that will call the completion callback asynchronously.
   MockDelegate delegate3(&service);
   EXPECT_CALL(delegate3, OnRequestCompleted(_, _, _, _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [](const network::SimpleURLLoader* source, const int response_code,
              std::unique_ptr<std::string> response_body,
              RemoteSuggestionsService::CompletionCallback completion_callback) {
@@ -458,7 +457,7 @@ TEST_F(RemoteSuggestionsServiceTest, Delegate) {
                 FROM_HERE,
                 base::BindOnce(std::move(completion_callback), source,
                                response_code, std::move(response_body)));
-          }));
+          });
 
   auto loader = service.StartZeroPrefixSuggestionsRequest(
       RemoteRequestType::kZeroSuggest, /*is_off_the_record=*/false,
