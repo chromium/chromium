@@ -48,6 +48,7 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_import_utils.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_logger.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_attribute.h"
@@ -67,6 +68,7 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/strings/grit/components_strings.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
@@ -287,9 +289,14 @@ bool AutofillAiManager::MaybeImportForm(const FormStructure& form) {
       if (IsSaveBlockedByStrikeDatabase(form.source_url(), entity)) {
         continue;
       }
-      auto prompt_result_callback =
-          BindOnce(&AutofillAiManager::HandleSavePromptResult, GetWeakPtr(),
-                   form.source_url(), entity);
+      auto prompt_result_callback = BindOnce(
+          &AutofillAiManager::HandleSavePromptResult, GetWeakPtr(),
+          form.source_url(),
+          autofill_metrics::FormGlobalIdToHash64Bit(form.global_id()),
+          net::registry_controlled_domains::GetDomainAndRegistry(
+              form.main_frame_origin(),
+              net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES),
+          entity);
       client_->ShowEntitySaveOrUpdateBubble(std::move(entity),
                                             /*old_entity=*/std::nullopt,
                                             std::move(prompt_result_callback));
@@ -301,9 +308,13 @@ bool AutofillAiManager::MaybeImportForm(const FormStructure& form) {
       if (IsUpdateBlockedByStrikeDatabase(old_entity.guid())) {
         continue;
       }
-      auto prompt_result_callback =
-          BindOnce(&AutofillAiManager::HandleUpdatePromptResult, GetWeakPtr(),
-                   old_entity.guid());
+      auto prompt_result_callback = BindOnce(
+          &AutofillAiManager::HandleUpdatePromptResult, GetWeakPtr(),
+          autofill_metrics::FormGlobalIdToHash64Bit(form.global_id()),
+          net::registry_controlled_domains::GetDomainAndRegistry(
+              form.main_frame_origin(),
+              net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES),
+          old_entity.guid());
       client_->ShowEntitySaveOrUpdateBubble(std::move(new_entity),
                                             std::move(old_entity),
                                             std::move(prompt_result_callback));
@@ -315,8 +326,13 @@ bool AutofillAiManager::MaybeImportForm(const FormStructure& form) {
 
 void AutofillAiManager::HandleSavePromptResult(
     const GURL& form_url,
+    uint64_t form_session_id,
+    const std::string& domain,
     const EntityInstance& entity,
     AutofillClient::EntitySaveOrUpdatePromptResult result) {
+  logger_.OnSaveOrUpdatePromptResult(
+      AutofillClient::AutofillAiPromptTypes::kSave, entity.type(),
+      entity.record_type(), form_session_id, domain, result);
   if (!result.entity) {
     if (result.did_user_decline) {
       AddStrikeForSaveAttempt(form_url, entity);
@@ -334,8 +350,20 @@ void AutofillAiManager::HandleSavePromptResult(
 }
 
 void AutofillAiManager::HandleUpdatePromptResult(
+    uint64_t form_session_id,
+    const std::string& domain,
     const EntityInstance::EntityId& entity_uuid,
     AutofillClient::EntitySaveOrUpdatePromptResult result) {
+  if (const EntityDataManager* entity_manager =
+          client_->GetEntityDataManager()) {
+    if (base::optional_ref<const EntityInstance> entity =
+            entity_manager->GetEntityInstance(entity_uuid)) {
+      logger_.OnSaveOrUpdatePromptResult(
+          AutofillClient::AutofillAiPromptTypes::kUpdate, entity->type(),
+          entity->record_type(), form_session_id, domain, result);
+    }
+  }
+
   if (!result.entity) {
     if (result.did_user_decline) {
       AddStrikeForUpdateAttempt(entity_uuid);

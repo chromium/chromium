@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/memory/raw_ref.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_ukm_logger.h"
@@ -44,6 +45,14 @@ class AutofillAiLogger {
                       const AutofillField& field,
                       EntityType entity_type,
                       ukm::SourceId ukm_source_id);
+
+  void OnSaveOrUpdatePromptResult(
+      AutofillClient::AutofillAiPromptTypes prompt_type,
+      EntityType entity_type,
+      EntityInstance::RecordType record_type,
+      uint64_t form_session_id,
+      const std::string& domain,
+      AutofillClient::EntitySaveOrUpdatePromptResult result);
 
   // Function that records the contents of `form_states` for `form` into
   // appropriate metrics. `submission_state` denotes whether the form was

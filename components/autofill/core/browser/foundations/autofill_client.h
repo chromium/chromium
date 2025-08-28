@@ -236,6 +236,13 @@ class AutofillClient {
   using EntitySaveOrUpdatePromptResultCallback =
       base::OnceCallback<void(EntitySaveOrUpdatePromptResult result)>;
 
+  // The types of prompts that AutofillAi can show to the user after a form
+  // submission.
+  enum class AutofillAiPromptTypes {
+    kSave,
+    kUpdate,
+  };
+
   // Callback to run when the user makes a decision on whether to save the
   // profile. If the user edits the Autofill profile and then accepts edits, the
   // edited version of the profile should be passed as the second parameter. No

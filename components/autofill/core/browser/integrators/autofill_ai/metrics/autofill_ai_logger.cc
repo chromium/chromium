@@ -16,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "components/autofill/core/browser/autofill_ai_form_rationalization.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/form_processing/autofill_ai/determine_attribute_types.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_ukm_logger.h"
@@ -215,6 +216,17 @@ void AutofillAiLogger::RecordFunnelMetrics(
     LogFunnelMetric(base::StrCat({"CorrectionAfterFill.", type_str}),
                     submission_state, funnel_state.edited_autofilled_field);
   }
+}
+
+void AutofillAiLogger::OnSaveOrUpdatePromptResult(
+    AutofillClient::AutofillAiPromptTypes prompt_type,
+    EntityType entity_type,
+    EntityInstance::RecordType record_type,
+    uint64_t form_session_id,
+    const std::string& domain,
+    AutofillClient::EntitySaveOrUpdatePromptResult result) {
+  ukm_logger_.LogSaveOrUpdatePromptResult(prompt_type, entity_type, record_type,
+                                          form_session_id, domain, result);
 }
 
 void AutofillAiLogger::RecordKeyMetrics(
