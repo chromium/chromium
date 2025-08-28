@@ -266,7 +266,7 @@ def update_license(repo_path: str = _ROOT_CRONET,
     else:
         readme_for_top_level = get_all_readme(repo_path)
 
-    top_level_license_file = Path(os.path.join(repo_path, "LICENSE"))
+    top_level_license_file = Path(os.path.join(repo_path, "LICENSE.gn2bp"))
     license_aggregated = []
     for readme in sorted(readme_for_top_level):
         if should_skip_readme_file(readme):
