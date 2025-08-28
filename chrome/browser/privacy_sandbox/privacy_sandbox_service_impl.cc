@@ -371,6 +371,27 @@ std::optional<PromptType> GetRequiredPromptTypeOverride() {
   return std::nullopt;
 }
 
+// Helper to convert from std::vector of Notices to a PromptType.
+PromptType ToPromptType(const std::vector<PrivacySandboxNotice>& notices) {
+  if (notices.empty()) {
+    return PromptType::kNone;
+  }
+
+  // Only consider the first returned notice for the purposes of the migration.
+  switch (notices[0]) {
+    case PrivacySandboxNotice::kTopicsConsentNotice:
+      return PromptType::kM1Consent;
+    case PrivacySandboxNotice::kProtectedAudienceMeasurementNotice:
+      return PromptType::kM1NoticeEEA;
+    case PrivacySandboxNotice::kThreeAdsApisNotice:
+      return PromptType::kM1NoticeROW;
+    case PrivacySandboxNotice::kMeasurementNotice:
+      return PromptType::kM1NoticeRestricted;
+  }
+
+  return PromptType::kNone;
+}
+
 }  // namespace
 
 PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
@@ -682,10 +703,23 @@ PromptType PrivacySandboxServiceImpl::GetRequiredPromptTypeInternal(
 
 PromptType PrivacySandboxServiceImpl::GetRequiredPromptType(
     SurfaceType surface_type) {
-  // TODO(crbug.com/420707919) Call the NoticeService's GetRequiredNotices here
-  // and compare against the current implementation's output, and emit
-  // histograms on diffs.
-  return GetRequiredPromptTypeInternal(surface_type);
+  PromptType ps_prompt_type = GetRequiredPromptTypeInternal(surface_type);
+  PromptType notice_service_prompt_type = PromptType::kNone;
+  if (auto* notice_service =
+          PrivacySandboxNoticeServiceFactory::GetForProfile(profile_)) {
+    notice_service_prompt_type = ToPromptType(
+        notice_service->GetRequiredNotices(ToNoticeSurfaceType(surface_type)));
+  }
+
+  base::UmaHistogramEnumeration(
+      "PrivacySandbox.Notice.Migration.PromptTypeCombination",
+      static_cast<PromptTypeCombination>(
+          static_cast<int>(ps_prompt_type) |
+          (static_cast<int>(notice_service_prompt_type) << 3)));
+
+  // TODO(crbug.com/420707919) Conditionally return notice_service_prompt_type
+  // based on Feature check.
+  return ps_prompt_type;
 }
 
 void MaybeUpdateNoticeService(
@@ -1586,14 +1620,70 @@ bool PrivacySandboxServiceImpl::IsRestrictedNoticeRequired() {
 }
 
 EligibilityLevel PrivacySandboxServiceImpl::GetTopicsApiEligibility() {
-  return kNotEligible;
+  if (ShouldDisablePrompt() || UpdateAndGetSuppressionReason()) {
+    return kNotEligible;
+  }
+  if (privacy_sandbox_settings_->IsSubjectToM1NoticeRestricted()) {
+    return kNotEligible;
+  }
+
+  if (IsConsentRequired()) {
+    // Required to take into consideration profiles that were onboarded prior to
+    // the notice framework.
+    if (pref_service_->GetBoolean(
+            prefs::kPrivacySandboxM1ConsentDecisionMade)) {
+      return kNotEligible;
+    }
+    return kEligibleConsent;
+  }
+
+  if (IsNoticeRequired()) {
+    // Required to take into consideration profiles that were onboarded prior to
+    // the notice framework.
+    if (pref_service_->GetBoolean(
+            prefs::kPrivacySandboxM1ConsentDecisionMade) ||
+        pref_service_->GetBoolean(
+            prefs::kPrivacySandboxM1RowNoticeAcknowledged)) {
+      return kNotEligible;
+    }
+
+    return kEligibleNotice;
+  }
+  NOTREACHED();
 }
 
 EligibilityLevel
 PrivacySandboxServiceImpl::GetProtectedAudienceApiEligibility() {
-  return kNotEligible;
+  if (ShouldDisablePrompt() || UpdateAndGetSuppressionReason()) {
+    return kNotEligible;
+  }
+
+  if (privacy_sandbox_settings_->IsSubjectToM1NoticeRestricted()) {
+    return kNotEligible;
+  }
+
+  // Required to take into consideration profiles that were onboarded prior to
+  // the notice framework.
+  if (pref_service_->GetBoolean(
+          prefs::kPrivacySandboxM1RowNoticeAcknowledged) ||
+      pref_service_->GetBoolean(
+          prefs::kPrivacySandboxM1EEANoticeAcknowledged)) {
+    return kNotEligible;
+  }
+
+  return kEligibleNotice;
 }
 
 EligibilityLevel PrivacySandboxServiceImpl::GetAdMeasurementApiEligibility() {
-  return kNotEligible;
+  if (ShouldDisablePrompt() || UpdateAndGetSuppressionReason()) {
+    return kNotEligible;
+  }
+
+  // Required to take into consideration profiles that were onboarded prior to
+  // the notice framework.
+  if (HasAckedAnyMeasurementNotice(pref_service_)) {
+    return kNotEligible;
+  }
+
+  return kEligibleNotice;
 }
