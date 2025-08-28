@@ -176,7 +176,9 @@ bool ValuableSyncBridge::IsEntityDataValid(
     case sync_pb::AutofillValuableSpecifics::kLoyaltyCard:
       return AreAutofillLoyaltyCardSpecificsValid(autofill_valuable);
     case sync_pb::AutofillValuableSpecifics::kVehicleRegistration:
-      // TODO(crbug.com/436547381): Add stronger vehicle registration.
+    case sync_pb::AutofillValuableSpecifics::kFlightReservation:
+      // TODO(crbug.com/436547381): Add stronger validation for vehicle
+      // registration and flight reservation.
       return IsSyncWalletPublicPassesEnabled();
     case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
       // Ignore new entry types that the client doesn't know about.
@@ -321,6 +323,9 @@ std::optional<syncer::ModelError> ValuableSyncBridge::SetSyncData(
                     CreateEntityInstanceFromSpecifics(autofill_valuable)) {
               entities.push_back(std::move(*entity));
             }
+            break;
+          case sync_pb::AutofillValuableSpecifics::kFlightReservation:
+            // TODO(crbug.com/436547381): Handle flight reservation.
             break;
           case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
             // Ignore new entry types that the client doesn't know about.

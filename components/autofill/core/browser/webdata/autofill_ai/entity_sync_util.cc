@@ -200,6 +200,9 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
           /*are_attributes_read_only=*/
           EntityInstance::AreAttributesReadOnly(false));
     }
+    case sync_pb::AutofillValuableSpecifics::kFlightReservation:
+      // TODO(crbug.com/436547381): Handle flight reservations.
+      return std::nullopt;
     case sync_pb::AutofillValuableSpecifics::kLoyaltyCard:
     case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
       // Such specifics shouldn't reach this function as they aren't supported

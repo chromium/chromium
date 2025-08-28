@@ -71,6 +71,35 @@ message VehicleRegistration {
   optional string owner_name = 8;
 }
 
+// Represents a flight reservation from Google Wallet.
+message FlightReservation {
+  // The flight number.
+  optional string flight_number = 1;
+
+  // The flight ticket number.
+  optional string flight_ticket_number = 2;
+
+  // The flight confirmation code (normally ~6 digits made of alphanumeric
+  // characters).
+  optional string flight_confirmation_code = 3;
+
+  // The passenger's full name.
+  optional string passenger_name = 4;
+
+  // The departure airport in IATA format e.g AMS for Amsterdam Schiphol.
+  optional string departure_airport = 5;
+
+  // The arrival airport in IATA format e.g LHR for London Heathrow.
+  optional string arrival_airport = 6;
+
+  // The departure date. This is a server-provided timestamp in microseconds.
+  optional int64 departure_date_unix_epoch_micros = 7;
+
+  // The arrival date. This is a server-provided timestamp with units in
+  // microseconds.
+  optional int64 arrival_date_unix_epoch_micros = 8;
+}
+
 // Valuables coming from Google Wallet.
 message AutofillValuableSpecifics {
   // The valuable id.
@@ -79,6 +108,7 @@ message AutofillValuableSpecifics {
   oneof valuable_data {
     LoyaltyCard loyalty_card = 2;
     VehicleRegistration vehicle_registration = 3;
+    FlightReservation flight_reservation = 5;
     // add other valuable types here.
   }
 
