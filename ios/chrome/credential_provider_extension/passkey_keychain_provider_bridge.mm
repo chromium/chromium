@@ -300,6 +300,12 @@ bool ContainsValidKey(const PasskeyKeychainProvider::SharedKeyList keys,
   _passkeyKeychainProvider->Reauthenticate(
       gaia, _navigationController, _navigationItemTitleView, purpose,
       base::BindOnce(^(const PasskeyKeychainProvider::SharedKeyList& key_list) {
+        // If we got nonempty keys, that means the reauthentication was a
+        // success. Report this back to the delegate.
+        if (!key_list.empty()) {
+          [weakSelf.delegate providerDidCompleteReauthentication];
+        }
+
         [weakSelf onKeysFetchedForGaia:gaia
                             credential:credential
                     canMarkKeysAsStale:canMarkKeysAsStale

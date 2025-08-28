@@ -330,12 +330,15 @@ bool EncryptWebauthnCredentialSpecificsData(
   return true;
 }
 
-std::vector<uint8_t> MakeAuthenticatorDataForAssertion(std::string_view rp_id) {
+std::vector<uint8_t> MakeAuthenticatorDataForAssertion(std::string_view rp_id,
+                                                       bool did_complete_uv) {
   using Flag = device::AuthenticatorData::Flag;
   uint8_t flags = base::strict_cast<uint8_t>(Flag::kTestOfUserPresence) |
-                  base::strict_cast<uint8_t>(Flag::kTestOfUserVerification) |
                   base::strict_cast<uint8_t>(Flag::kBackupEligible) |
                   base::strict_cast<uint8_t>(Flag::kBackupState);
+  if (did_complete_uv) {
+    flags |= base::strict_cast<uint8_t>(Flag::kTestOfUserVerification);
+  }
   return device::AuthenticatorData(crypto::hash::Sha256(rp_id), flags,
                                    kSignatureCounter, /*data=*/std::nullopt,
                                    /*extensions=*/std::nullopt)
@@ -344,6 +347,7 @@ std::vector<uint8_t> MakeAuthenticatorDataForAssertion(std::string_view rp_id) {
 
 std::vector<uint8_t> MakeAttestationObjectForCreation(
     std::string_view rp_id,
+    bool did_complete_uv,
     base::span<const uint8_t> credential_id,
     base::span<const uint8_t> public_key_spki_der) {
   static constexpr std::array<const uint8_t, 16> kGpmAaguid{
@@ -358,10 +362,12 @@ std::vector<uint8_t> MakeAttestationObjectForCreation(
   device::AttestedCredentialData attested_credential_data(
       kGpmAaguid, credential_id, std::move(public_key));
   uint8_t flags = base::strict_cast<uint8_t>(Flag::kTestOfUserPresence) |
-                  base::strict_cast<uint8_t>(Flag::kTestOfUserVerification) |
                   base::strict_cast<uint8_t>(Flag::kBackupEligible) |
                   base::strict_cast<uint8_t>(Flag::kBackupState) |
                   base::strict_cast<uint8_t>(Flag::kAttestation);
+  if (did_complete_uv) {
+    flags |= base::strict_cast<uint8_t>(Flag::kTestOfUserVerification);
+  }
   device::AuthenticatorData authenticator_data(
       crypto::hash::Sha256(rp_id), flags, kSignatureCounter,
       std::move(attested_credential_data), /*extensions=*/std::nullopt);

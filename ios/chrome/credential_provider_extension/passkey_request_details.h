@@ -24,14 +24,16 @@
 - (instancetype)init NS_UNAVAILABLE;
 
 // Performs passkey creation and returns the new credential.
-- (ASPasskeyRegistrationCredential*)createPasskeyForGaia:(NSString*)gaia
-                                   securityDomainSecrets:
-                                       (NSArray<NSData*>*)securityDomainSecrets;
+- (ASPasskeyRegistrationCredential*)
+           createPasskeyForGaia:(NSString*)gaia
+          securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets
+    didCompleteUserVerification:(BOOL)didCompleteUserVerification;
 
 // Performs passkey assertion and returns the assertion response.
 - (ASPasskeyAssertionCredential*)
-    assertPasskeyCredential:(id<Credential>)credential
-      securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets;
+        assertPasskeyCredential:(id<Credential>)credential
+          securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets
+    didCompleteUserVerification:(BOOL)didCompleteUserVerification;
 
 // Returns whether the list of credentials contains a password of the same
 // domain and username as the passkey request.

@@ -39,9 +39,10 @@ NSArray<NSData*>* SecurityDomainSecrets() {
 - (void)userSelectedPasskey:(id<Credential>)passkey
       passkeyRequestDetails:(PasskeyRequestDetails*)passkeyRequestDetails {
   [self
-      userSelectedPasskey:[passkeyRequestDetails
-                              assertPasskeyCredential:passkey
-                                securityDomainSecrets:SecurityDomainSecrets()]];
+      userSelectedPasskey:
+          [passkeyRequestDetails assertPasskeyCredential:passkey
+                                   securityDomainSecrets:SecurityDomainSecrets()
+                             didCompleteUserVerification:NO]];
 }
 
 - (void)userCancelledRequestWithErrorCode:(ASExtensionErrorCode)errorCode {

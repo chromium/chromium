@@ -6,3 +6,10 @@ include_rules = [
   "+components/webauthn/core/browser",
   "+ios/components/credential_provider_extension",
 ]
+
+specific_include_rules = {
+  "passkey_util_unittest.mm": [
+    "+components/cbor",
+    "+device/fido",
+  ],
+}

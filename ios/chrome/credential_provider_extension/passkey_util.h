@@ -44,7 +44,8 @@ struct PasskeyCreationOutput {
 // `prf_inputs` is provided. Otherwise, returns a structure with nil members.
 //
 // `prf_inputs` is provided is PRF support is requested, otherwise, it should be
-// nil.
+// nil. `did_complete_uv` should be true iff user verification was completed for
+// this operation.
 PasskeyCreationOutput PerformPasskeyCreation(
     NSData* client_data_hash,
     NSString* rp_id,
@@ -52,7 +53,8 @@ PasskeyCreationOutput PerformPasskeyCreation(
     NSData* user_handle,
     NSString* gaia,
     NSArray<NSData*>* security_domain_secrets,
-    NSArray<NSData*>* prf_inputs);
+    NSArray<NSData*>* prf_inputs,
+    bool did_complete_uv);
 
 // Credential and extension data returned by the passkey assertion process.
 struct PasskeyAssertionOutput {
@@ -66,13 +68,15 @@ struct PasskeyAssertionOutput {
 // members.
 //
 // `prf_inputs` is provided if PRF support is requested, otherwise, it should be
-// nil.
+// nil. `did_complete_uv` should be true iff user verification was completed for
+// this operation.
 PasskeyAssertionOutput PerformPasskeyAssertion(
     id<Credential> credential,
     NSData* client_data_hash,
     NSArray<NSData*>* allowed_credentials,
     NSArray<NSData*>* security_domain_secrets,
-    NSArray<NSData*>* prf_inputs);
+    NSArray<NSData*>* prf_inputs,
+    bool did_complete_uv);
 
 // Returns whether or not the user should be asked to re-authenticate depending
 // on the provided `user_verification_preference_string` and whether biometric

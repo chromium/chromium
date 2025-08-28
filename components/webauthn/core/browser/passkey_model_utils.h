@@ -112,18 +112,23 @@ bool EncryptWebauthnCredentialSpecificsData(
     sync_pb::WebauthnCredentialSpecifics* out);
 
 // Returns the WebAuthn authenticator data for the GPM authenticator.
+// Set `did_complete_uv` iff the user has completed user verification (e.g.,
+// biometrics or PIN) during this operation.
 // For assertion signatures, the AT flag MUST NOT be set and the
 // attestedCredentialData MUST NOT be included. See
 // https://w3c.github.io/webauthn/#authenticator-data
-std::vector<uint8_t> MakeAuthenticatorDataForAssertion(
-    std::string_view rp_id);
+std::vector<uint8_t> MakeAuthenticatorDataForAssertion(std::string_view rp_id,
+                                                       bool did_complete_uv);
 
 // Returns the WebAuthn attestation object for the GPM authenticator.
+// Set `did_complete_uv` iff the user has completed user verification (e.g.,
+// biometrics or PIN) during this operation.
 // For attestation signatures, the authenticator MUST set the AT flag and
 // include the attestedCredentialData. See
 // https://w3c.github.io/webauthn/#authenticator-data
 std::vector<uint8_t> MakeAttestationObjectForCreation(
     std::string_view rp_id,
+    bool did_complete_uv,
     base::span<const uint8_t> credential_id,
     base::span<const uint8_t> public_key_spki_der);
 

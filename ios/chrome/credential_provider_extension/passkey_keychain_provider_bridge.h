@@ -25,6 +25,10 @@
 // Presents the passkey reauthentication welcome screen.
 - (void)showReauthenticationWelcomeScreen:(ProceduralBlock)reauthenticateBlock;
 
+// Informs the delegate that the user completed a reauthentication facilitated
+// by the provider.
+- (void)providerDidCompleteReauthentication;
+
 @end
 
 // Class to bridge the CredentialProviderViewController with the
