@@ -93,7 +93,6 @@
 #include "ui/gfx/switches.h"
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gl_switches.h"
-#include "ui/latency/janky_duration_tracker.h"
 #include "ui/latency/latency_info.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -287,7 +286,6 @@ static const char* const kSwitchNames[] = {
     switches::kUseAdapterLuid,
     switches::kUseFakeMjpegDecodeAccelerator,
     switches::kUseGpuInTests,
-    switches::kWatchDirForScrollJankReport,
     switches::kWebViewDrawFunctorUsesVulkan,
     switches::kSuppressPerformanceLogs,
 #if BUILDFLAG(IS_MAC)
