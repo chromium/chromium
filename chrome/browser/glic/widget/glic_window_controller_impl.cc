@@ -577,9 +577,9 @@ void GlicWindowControllerImpl::ToggleWhenNotAlwaysDetached(
         // active, new_attached_browser must not have been null.
         maybe_close();
       } else {
-        // Hotkey when neither attached browser nor glic are active: open
-        // detached.
-        CloseAndReopenDetached(source);
+        // Hotkey when neither attached browser nor glic are active: detach
+        // current side panel.
+        Detach();
       }
       return;
     }
@@ -1099,19 +1099,9 @@ void GlicWindowControllerImpl::SetMinimumWidgetSize(const gfx::Size& size) {
   GetGlicWidget()->SetMinimumSize(size);
 }
 
-void GlicWindowControllerImpl::CloseAndReopenDetached(
-    mojom::InvocationSource source) {
-  if (!IsAttached()) {
-    return;
-  }
-
-  SetWindowState(State::kClosingToReopenDetached);
-  CloseInternal(source);
-}
-
 void GlicWindowControllerImpl::CloseWithReason(
     views::Widget::ClosedReason reason) {
-  CloseInternal(std::nullopt);
+  Close();
 }
 
 bool GlicWindowControllerImpl::ActivateBrowser() {
@@ -1129,19 +1119,9 @@ bool GlicWindowControllerImpl::ActivateBrowser() {
 }
 
 void GlicWindowControllerImpl::Close() {
-  CloseInternal(std::nullopt);
-}
-
-void GlicWindowControllerImpl::CloseInternal(
-    std::optional<mojom::InvocationSource> reopen_detached_source) {
   if (state_ == State::kClosed) {
     return;
   }
-  const bool should_reopen_detached = state_ == State::kClosingToReopenDetached;
-  // If we should close and repopen detached then there should be a reopen
-  // detached source.
-  CHECK(!should_reopen_detached || reopen_detached_source.has_value());
-
   window_config_.SetLastCloseTime();
 
   if (IsDetached()) {

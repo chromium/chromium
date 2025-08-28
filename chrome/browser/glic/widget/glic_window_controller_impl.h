@@ -176,9 +176,6 @@ class GlicWindowControllerImpl
   void SetupAndShowGlicWidget(Browser* browser);
   void SetupGlicWidgetAccessibilityText();
 
-  void CloseAndReopenDetached(mojom::InvocationSource source);
-  void CloseInternal(std::optional<mojom::InvocationSource> source);
-
   // Reset all state associated with an open side panel or floating panel and
   // close the panel. Before opening the panel again all state must be reset.
   // No Glic metrics are recorded. This method can safely be called even when

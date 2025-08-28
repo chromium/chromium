@@ -200,14 +200,11 @@ class GlicWindowController : public Host::Delegate {
   //   * Open (aka showing, visible)
   //   * Detaching - the panel should not be considered open since the view
   //     might not exist.
-  //   * Closing to reopen detached when the global hotkey is used and glic is
-  //     attached to a non-active browser window.
   enum class State {
     kClosed,
     kWaitingForGlicToLoad,
     kOpen,
     kDetaching,
-    kClosingToReopenDetached,
   };
   virtual State state() const = 0;
 
