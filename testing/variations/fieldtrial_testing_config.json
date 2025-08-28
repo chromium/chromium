@@ -9517,6 +9517,22 @@
             ]
         }
     ],
+    "EnableA2APayments": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableSeparatePixPreferenceItem",
+                        "FacilitatedPaymentsEnableA2APayment"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableADPFSeparateRendererMainSession": [
         {
             "platforms": [
