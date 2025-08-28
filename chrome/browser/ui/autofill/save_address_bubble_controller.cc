@@ -153,8 +153,8 @@ std::u16string SaveAddressBubbleController::GetProfilePhone() const {
     return {};
   }
 
-  return address_profile_.GetInfo(
-      PHONE_HOME_WHOLE_NUMBER,
+  return autofill::i18n::GetFormattedPhoneNumberForDisplay(
+      address_profile_,
       g_browser_process->GetFeatures()->application_locale_storage()->Get());
 }
 
