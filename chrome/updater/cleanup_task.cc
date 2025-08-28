@@ -27,6 +27,7 @@
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/util.h"
 #include "components/update_client/crx_cache.h"
+#include "components/update_client/utils.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/updater/util/win_util.h"
@@ -83,13 +84,10 @@ void CleanupOldUpdaterVersions(UpdaterScope scope) {
         // Recursively delete the directory in case uninstall fails with
         // retries, in cases where a file cannot be deleted because it is
         // locked by another process.
-        int num_delete_retries = 5;
-        // base::DeletePathRecursively returns true if the item does not exist.
-        while (!base::DeletePathRecursively(item) && --num_delete_retries > 0) {
-          base::PlatformThread::Sleep(base::Seconds(30));
-        }
-
-        VLOG_IF(1, num_delete_retries == 0) << "Failed to delete " << item;
+        const bool success = update_client::RetryDeletePathRecursivelyCustom(
+            item, /*tries=*/5,
+            /*time_between_tries=*/base::Seconds(30));
+        VLOG_IF(1, !success) << "Failed to delete " << item;
       });
 }
 

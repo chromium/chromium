@@ -98,10 +98,10 @@ std::string GetArchitecture();
 bool RetryDeletePathRecursively(const base::FilePath& path);
 
 // Similar to `RetryDeletePathRecursively`above, but allows specifying the
-// number of `tries` and the `seconds_between_tries`.
+// number of `tries` and the `time_between_tries`.
 bool RetryDeletePathRecursivelyCustom(const base::FilePath& path,
                                       size_t tries,
-                                      base::TimeDelta seconds_between_tries);
+                                      base::TimeDelta time_between_tries);
 
 // Creates a temporary directory, with platform specific overrides
 // for ChromeOS where `/tmp` can have insufficient space.

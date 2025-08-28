@@ -48,6 +48,7 @@
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
+#include "components/update_client/utils.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_LINUX)
@@ -338,14 +339,10 @@ bool DeleteExcept(std::optional<base::FilePath> except) {
       .ForEach([&](const base::FilePath& item) {
         if (item != *except) {
           VLOG(2) << "DeleteExcept deleting: " << item;
-          for (size_t i = 0; i <= 2; ++i) {
-            if (delete_success = base::DeletePathRecursively(item);
-                delete_success) {
-              break;
-            }
-            VPLOG(1) << "DeleteExcept failed to delete: " << item;
-            base::PlatformThread::Sleep(base::Milliseconds(100));
-          }
+          const bool success = update_client::RetryDeletePathRecursivelyCustom(
+              item, /*tries=*/2,
+              /*time_between_tries=*/base::Milliseconds(100));
+          VPLOG_IF(1, !success) << "DeleteExcept failed to delete: " << item;
         }
       });
   return delete_success;
