@@ -85,10 +85,14 @@ class PdfCaret {
   // Draws `rect` as the caret on `region`.
   void Draw(const RegionData& region, const gfx::Rect& rect) const;
 
-  // Determines the next valid char, handling moving to a char on a different
-  // page and ignoring newlines. Does nothing if the current char cannot move to
-  // a valid page or char.
-  void MoveToNextChar(bool move_right);
+  // Determines the next valid char, handling moving horizontally to a char on a
+  // different page and ignoring newlines. Does nothing if the current char
+  // cannot move to a valid page or char.
+  void MoveHorizontallyToNextChar(bool move_right);
+
+  // Same as `MoveHorizontallyToNextChar()`, but moves in the vertical
+  // direction.
+  void MoveVerticallyToNextChar(bool move_down);
 
   // Returns whether moving the caret from `index` will cause it to exit the
   // page or not. Does not consider whether there are any adjacent pages.

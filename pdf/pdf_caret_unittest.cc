@@ -553,6 +553,10 @@ TEST_F(PdfCaretMoveTest, OnKeyDown) {
       caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_LEFT)));
   EXPECT_TRUE(
       caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_RIGHT)));
+  EXPECT_TRUE(
+      caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_UP)));
+  EXPECT_TRUE(
+      caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_DOWN)));
 
   caret().SetVisibility(true);
 
@@ -562,6 +566,10 @@ TEST_F(PdfCaretMoveTest, OnKeyDown) {
       caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_LEFT)));
   EXPECT_TRUE(
       caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_RIGHT)));
+  EXPECT_TRUE(
+      caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_UP)));
+  EXPECT_TRUE(
+      caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_DOWN)));
 }
 
 TEST_F(PdfCaretMoveTest, MoveCharLeftRight) {

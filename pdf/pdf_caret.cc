@@ -96,10 +96,16 @@ void PdfCaret::OnGeometryChanged() {
 bool PdfCaret::OnKeyDown(const blink::WebKeyboardEvent& event) {
   switch (event.windows_key_code) {
     case ui::KeyboardCode::VKEY_LEFT:
-      MoveToNextChar(/*move_right=*/false);
+      MoveHorizontallyToNextChar(/*move_right=*/false);
       return true;
     case ui::KeyboardCode::VKEY_RIGHT:
-      MoveToNextChar(/*move_right=*/true);
+      MoveHorizontallyToNextChar(/*move_right=*/true);
+      return true;
+    case ui::KeyboardCode::VKEY_UP:
+      MoveVerticallyToNextChar(/*move_down=*/false);
+      return true;
+    case ui::KeyboardCode::VKEY_DOWN:
+      MoveVerticallyToNextChar(/*move_down=*/true);
       return true;
     default:
       return false;
@@ -192,7 +198,7 @@ void PdfCaret::Draw(const RegionData& region, const gfx::Rect& rect) const {
   }
 }
 
-void PdfCaret::MoveToNextChar(bool move_right) {
+void PdfCaret::MoveHorizontallyToNextChar(bool move_right) {
   if (!WillCaretExitPage(index_, move_right)) {
     const int delta = move_right ? 1 : -1;
     PageCharacterIndex next_char = {index_.page_index,
@@ -233,6 +239,10 @@ void PdfCaret::MoveToNextChar(bool move_right) {
 
   --page_index;
   SetChar({page_index, client_->GetCharCount(page_index)});
+}
+
+void PdfCaret::MoveVerticallyToNextChar(bool move_down) {
+  // TODO(crbug.com/427139502): Handle moving the caret vertically.
 }
 
 bool PdfCaret::WillCaretExitPage(const PageCharacterIndex& index,
