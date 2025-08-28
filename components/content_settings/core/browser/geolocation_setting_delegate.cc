@@ -88,6 +88,7 @@ std::optional<PermissionSetting> GeolocationSettingDelegate::FromValue(
 
 bool GeolocationSettingDelegate::IsAnyPermissionAllowed(
     const PermissionSetting& setting) const {
+  DCHECK(std::holds_alternative<GeolocationSetting>(setting)) << setting;
   // When precise is allowed, then approximate must be allowed too so we only
   // need to check approximate here.
   return std::get<GeolocationSetting>(setting).approximate ==
@@ -96,6 +97,7 @@ bool GeolocationSettingDelegate::IsAnyPermissionAllowed(
 
 bool GeolocationSettingDelegate::IsUndecided(
     const PermissionSetting& setting) const {
+  DCHECK(std::holds_alternative<GeolocationSetting>(setting)) << setting;
   const auto& geo_setting = std::get<GeolocationSetting>(setting);
   return geo_setting.approximate == PermissionOption::kAsk &&
          geo_setting.precise == PermissionOption::kAsk;
@@ -127,6 +129,18 @@ PermissionSetting GeolocationSettingDelegate::CoalesceEphemeralState(
           : ephemeral_geo_setting.precise;
 
   return GeolocationSetting{approximate, precise};
+}
+
+PermissionSetting GeolocationSettingDelegate::ApplyPermissionEmbargo(
+    const PermissionSetting& setting) const {
+  GeolocationSetting geo_setting = std::get<GeolocationSetting>(setting);
+  if (geo_setting.approximate == PermissionOption::kAsk) {
+    geo_setting.approximate = PermissionOption::kDenied;
+  }
+  if (geo_setting.precise == PermissionOption::kAsk) {
+    geo_setting.precise = PermissionOption::kDenied;
+  }
+  return geo_setting;
 }
 
 }  // namespace content_settings

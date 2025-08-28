@@ -152,4 +152,31 @@ TEST_F(GeolocationSettingDelegateTest, VerifyOnlyBlocksInheritedToIncognito) {
   }
 }
 
+TEST_F(GeolocationSettingDelegateTest, ApplyPermissionEmbargo) {
+  // A default setting should be embargoed.
+  {
+    auto embargoed = std::get<GeolocationSetting>(
+        delegate().ApplyPermissionEmbargo(GeolocationSetting(
+            PermissionOption::kAsk, PermissionOption::kAsk)));
+    EXPECT_EQ(embargoed, GeolocationSetting(PermissionOption::kDenied,
+                                            PermissionOption::kDenied));
+  }
+  // A partially decided setting should only have the undecided part embargoed.
+  {
+    auto embargoed = std::get<GeolocationSetting>(
+        delegate().ApplyPermissionEmbargo(GeolocationSetting(
+            PermissionOption::kAllowed, PermissionOption::kAsk)));
+    EXPECT_EQ(embargoed, GeolocationSetting(PermissionOption::kAllowed,
+                                            PermissionOption::kDenied));
+  }
+  // A fully decided setting should not be affected by embargo.
+  {
+    auto embargoed = std::get<GeolocationSetting>(
+        delegate().ApplyPermissionEmbargo(GeolocationSetting(
+            PermissionOption::kAllowed, PermissionOption::kAllowed)));
+    EXPECT_EQ(embargoed, GeolocationSetting(PermissionOption::kAllowed,
+                                            PermissionOption::kAllowed));
+  }
+}
+
 }  // namespace content_settings

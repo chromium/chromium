@@ -56,6 +56,11 @@ class PermissionSettingsInfo {
     // ephemeral state from the OneTimePermissionProvider.
     virtual bool ShouldCoalesceEphemeralState() const = 0;
 
+    // Returns a PermissionSetting that represents the permission when under
+    // permission embargo. E.g. turns ASK into BLOCK.
+    virtual PermissionSetting ApplyPermissionEmbargo(
+        const PermissionSetting& setting) const = 0;
+
     // Returns the coalesced PermissionSetting based on the passed in persistent
     // and ephemeral state.
     virtual PermissionSetting CoalesceEphemeralState(

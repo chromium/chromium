@@ -1321,13 +1321,17 @@ void PageInfo::PopulatePermissionInfo(PermissionInfo& permission_info,
   // Check embargo status if the content setting supports embargo.
   if (permissions::PermissionDecisionAutoBlocker::IsEnabledForContentSetting(
           permission_info.type) &&
-      !permission_info.setting &&
       permission_info.source == content_settings::SettingSource::kUser) {
     if (delegate_->GetPermissionDecisionAutoblocker()->IsEmbargoed(
             site_url_, permission_info.type)) {
-      // TODO(crbug.com/439550565): Support embargoed PermissionSettings.
-      permission_info.setting = CONTENT_SETTING_BLOCK;
+      permission_info.setting = setting_info->delegate().ApplyPermissionEmbargo(
+          permission_info.setting.value_or(permission_info.default_setting));
     }
+    DCHECK(!permission_info.setting ||
+           setting_info->delegate().IsValid(*permission_info.setting))
+        << permission_info.setting;
+    DCHECK(setting_info->delegate().IsValid(permission_info.default_setting))
+        << permission_info.default_setting;
   }
 
 #if BUILDFLAG(IS_ANDROID)

@@ -83,8 +83,10 @@ using base::android::ScopedJavaLocalRef;
 using content::BrowserContext;
 using content::BrowserThread;
 using content_settings::CookieControlsUtil;
+using content_settings::PermissionSettingsRegistry;
 using content_settings::ToContentSetting;
 using content_settings::ToPermissionOption;
+using permissions::PermissionDecisionAutoBlocker;
 
 namespace {
 
@@ -105,7 +107,7 @@ HostContentSettingsMap* GetHostContentSettingsMap(
   return GetHostContentSettingsMap(unwrap(jbrowser_context_handle));
 }
 
-permissions::PermissionDecisionAutoBlocker* GetPermissionDecisionAutoBlocker(
+PermissionDecisionAutoBlocker* GetPermissionDecisionAutoBlocker(
     BrowserContext* browser_context) {
   return permissions::PermissionsClient::Get()
       ->GetPermissionDecisionAutoBlocker(browser_context);
@@ -169,8 +171,7 @@ void GetOrigins(JNIEnv* env,
   // Use a vector since the overall number of origins should be small.
   std::vector<std::string> seen_origins;
 
-  auto* info = content_settings::PermissionSettingsRegistry::GetInstance()->Get(
-      content_type);
+  auto* info = PermissionSettingsRegistry::GetInstance()->Get(content_type);
 
   // Now add all origins that have a non-default setting to the list.
   for (const auto& settings_it : all_settings) {
@@ -206,7 +207,7 @@ void GetOrigins(JNIEnv* env,
   // Add any origins which have a default content setting value (thus skipped
   // above), but have been automatically blocked for this permission type.
   // We use an empty embedder since embargo doesn't care about it.
-  permissions::PermissionDecisionAutoBlocker* auto_blocker =
+  PermissionDecisionAutoBlocker* auto_blocker =
       permissions::PermissionsClient::Get()->GetPermissionDecisionAutoBlocker(
           unwrap(jbrowser_context_handle));
   ScopedJavaLocalRef<jstring> jembedder;
@@ -227,6 +228,28 @@ void GetOrigins(JNIEnv* env,
   }
 }
 
+PermissionSetting GetPermissionSettingWithEmbargo(
+    BrowserContext* browser_context,
+    ContentSettingsType type,
+    GURL origin_url,
+    GURL embedder_url) {
+  content_settings::SettingInfo info;
+  PermissionSetting setting =
+      GetHostContentSettingsMap(browser_context)
+          ->GetPermissionSetting(origin_url, embedder_url, type, &info);
+
+  if (PermissionDecisionAutoBlocker::IsEnabledForContentSetting(type) &&
+      info.source == content_settings::SettingSource::kUser) {
+    if (GetPermissionDecisionAutoBlocker(browser_context)
+            ->IsEmbargoed(origin_url, type)) {
+      auto* permission_info =
+          PermissionSettingsRegistry::GetInstance()->Get(type);
+      setting = permission_info->delegate().ApplyPermissionEmbargo(setting);
+    }
+  }
+  return setting;
+}
+
 ContentSetting GetPermissionSettingForOrigin(
     JNIEnv* env,
     const JavaParamRef<jobject>& jbrowser_context_handle,
@@ -245,20 +268,10 @@ ContentSetting GetPermissionSettingForOrigin(
     embedding_origin = GURL(embedder_str);
   }
 
-  HostContentSettingsMap* host_content_settings_map =
-      GetHostContentSettingsMap(jbrowser_context_handle);
-  content_settings::SettingInfo info;
-  ContentSetting setting = host_content_settings_map->GetContentSetting(
-      requesting_origin, embedding_origin, content_type, &info);
-  if (permissions::PermissionDecisionAutoBlocker::IsEnabledForContentSetting(
-          content_type) &&
-      setting == CONTENT_SETTING_ASK &&
-      info.source == content_settings::SettingSource::kUser) {
-    if (GetPermissionDecisionAutoBlocker(unwrap(jbrowser_context_handle))
-            ->IsEmbargoed(requesting_origin, content_type)) {
-      setting = CONTENT_SETTING_BLOCK;
-    }
-  }
+  ContentSetting setting =
+      std::get<ContentSetting>(GetPermissionSettingWithEmbargo(
+          unwrap(jbrowser_context_handle), content_type, requesting_origin,
+          embedding_origin));
   return setting;
 }
 
@@ -313,8 +326,7 @@ bool GetBooleanForContentSetting(
     ContentSettingsType type) {
   HostContentSettingsMap* content_settings =
       GetHostContentSettingsMap(jbrowser_context_handle);
-  auto* info =
-      content_settings::PermissionSettingsRegistry::GetInstance()->Get(type);
+  auto* info = PermissionSettingsRegistry::GetInstance()->Get(type);
 
   return !info->delegate().IsBlocked(
       content_settings->GetDefaultPermissionSetting(type, nullptr));
@@ -342,7 +354,6 @@ bool IsContentSettingUserModifiable(
   return provider >= content_settings::ProviderType::kPrefProvider;
 }
 
-
 }  // anonymous namespace
 
 static jboolean JNI_WebsitePreferenceBridge_IsNotificationEmbargoedForOrigin(
@@ -351,7 +362,7 @@ static jboolean JNI_WebsitePreferenceBridge_IsNotificationEmbargoedForOrigin(
     const JavaParamRef<jstring>& origin) {
   GURL origin_url(ConvertJavaStringToUTF8(env, origin));
   BrowserContext* browser_context = unwrap(jbrowser_context_handle);
-  permissions::PermissionDecisionAutoBlocker* auto_blocker =
+  PermissionDecisionAutoBlocker* auto_blocker =
       GetPermissionDecisionAutoBlocker(browser_context);
 
   return auto_blocker->IsEmbargoed(origin_url,
@@ -472,16 +483,11 @@ JNI_WebsitePreferenceBridge_GetGeolocationSettingForOrigin(
   GURL origin_url(ConvertJavaStringToUTF8(env, origin));
   GURL embedder_url =
       embedder ? GURL(ConvertJavaStringToUTF8(env, embedder)) : GURL();
-
   BrowserContext* browser_context = unwrap(jbrowser_context_handle);
 
-  auto setting = GetHostContentSettingsMap(browser_context)
-                     ->GetPermissionSetting(origin_url, embedder_url, type);
-
-  DCHECK(std::holds_alternative<GeolocationSetting>(setting))
-      << content_settings_type << " " << setting;
-
-  auto& geo_setting = std::get<GeolocationSetting>(setting);
+  GeolocationSetting geo_setting =
+      std::get<GeolocationSetting>(GetPermissionSettingWithEmbargo(
+          browser_context, type, origin_url, embedder_url));
 
   return Java_GeolocationSetting_Constructor(
       env, ToContentSetting(geo_setting.approximate),
@@ -499,6 +505,8 @@ static void JNI_WebsitePreferenceBridge_SetGeolocationSettingForOrigin(
   GURL origin_url(ConvertJavaStringToUTF8(env, origin));
   GURL embedder_url =
       embedder ? GURL(ConvertJavaStringToUTF8(env, embedder)) : GURL();
+  ContentSettingsType type =
+      static_cast<ContentSettingsType>(content_settings_type);
 
   BrowserContext* browser_context = unwrap(jbrowser_context_handle);
 
@@ -510,10 +518,22 @@ static void JNI_WebsitePreferenceBridge_SetGeolocationSettingForOrigin(
         ToPermissionOption(static_cast<ContentSetting>(precise))};
   }
 
+  // The permission may have been blocked due to being under embargo, so if it
+  // was changed away from BLOCK, clear embargo status if it exists.
+  if (!setting || std::get<GeolocationSetting>(*setting).approximate !=
+                      PermissionOption::kDenied) {
+    GetPermissionDecisionAutoBlocker(browser_context)
+        ->RemoveEmbargoAndResetCounts(origin_url, type);
+  }
+
+  permissions::PermissionUmaUtil::ScopedRevocationReporter
+      scoped_revocation_reporter(
+          browser_context, origin_url, embedder_url, type,
+          permissions::PermissionSourceUI::SITE_SETTINGS);
+
   GetHostContentSettingsMap(browser_context)
-      ->SetPermissionSettingDefaultScope(
-          origin_url, embedder_url,
-          static_cast<ContentSettingsType>(content_settings_type), setting);
+      ->SetPermissionSettingDefaultScope(origin_url, embedder_url, type,
+                                         setting);
 }
 
 static void JNI_WebsitePreferenceBridge_SetEphemeralGrantForTesting(  // IN-TEST
@@ -1207,8 +1227,7 @@ static jboolean JNI_WebsitePreferenceBridge_GetLocationAllowedByPolicy(
       content_settings::SettingSource::kPolicy) {
     return false;
   }
-  auto* info =
-      content_settings::PermissionSettingsRegistry::GetInstance()->Get(type);
+  auto* info = PermissionSettingsRegistry::GetInstance()->Get(type);
   return info->delegate().IsAnyPermissionAllowed(
       GetHostContentSettingsMap(jbrowser_context_handle)
           ->GetDefaultPermissionSetting(type, nullptr));

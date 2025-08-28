@@ -2676,27 +2676,27 @@ public class SiteSettingsTest {
                 .run();
     }
 
-    void setGeolocationSetting(GeolocationSetting setting) {
+    void setGeolocationSetting(String url, GeolocationSetting setting) {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         WebsitePreferenceBridgeJni.get()
                                 .setGeolocationSettingForOrigin(
                                         getBrowserContextHandle(),
                                         ContentSettingsType.GEOLOCATION_WITH_OPTIONS,
-                                        "https://example.com",
+                                        url,
                                         "*",
                                         setting.mApproximate,
                                         setting.mPrecise));
     }
 
-    GeolocationSetting getGeolocationSetting() {
+    GeolocationSetting getGeolocationSetting(String url) {
         return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         WebsitePreferenceBridgeJni.get()
                                 .getGeolocationSettingForOrigin(
                                         getBrowserContextHandle(),
                                         ContentSettingsType.GEOLOCATION_WITH_OPTIONS,
-                                        "https://example.com",
+                                        url,
                                         "https://example.com"));
     }
 
@@ -2708,19 +2708,20 @@ public class SiteSettingsTest {
         PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION
     })
     public void testRemoveGeolocationWithOptions() {
+        String url = "https://example.com";
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         var allowSetting =
                 new GeolocationSetting(ContentSettingValues.ALLOW, ContentSettingValues.ALLOW);
-        setGeolocationSetting(allowSetting);
+        setGeolocationSetting(url, allowSetting);
         SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.DEVICE_LOCATION);
-        assertEquals(allowSetting, getGeolocationSetting());
+        assertEquals(allowSetting, getGeolocationSetting(url));
 
         onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
-        onView(withText("https://example.com")).check(matches(isDisplayed())).perform(click());
+        onView(withText(url)).check(matches(isDisplayed())).perform(click());
         onView(withText("Remove")).perform(click());
         assertEquals(
                 new GeolocationSetting(ContentSettingValues.ASK, ContentSettingValues.ASK),
-                getGeolocationSetting());
+                getGeolocationSetting(url));
     }
 
     @Test
@@ -2731,24 +2732,52 @@ public class SiteSettingsTest {
         PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION
     })
     public void testChangeGeolocationWithOptions() {
+        String url = "https://example.com";
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
         var allowSetting =
                 new GeolocationSetting(ContentSettingValues.ALLOW, ContentSettingValues.ALLOW);
-        setGeolocationSetting(allowSetting);
+        setGeolocationSetting(url, allowSetting);
         SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.DEVICE_LOCATION);
-        assertEquals(allowSetting, getGeolocationSetting());
+        assertEquals(allowSetting, getGeolocationSetting(url));
 
         onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
-        onView(withText("https://example.com")).check(matches(isDisplayed())).perform(click());
+        onView(withText(url)).check(matches(isDisplayed())).perform(click());
         onView(withText("Approximate")).perform(click());
         assertEquals(
                 new GeolocationSetting(ContentSettingValues.ALLOW, ContentSettingValues.BLOCK),
-                getGeolocationSetting());
+                getGeolocationSetting(url));
 
         onView(withText("Block")).perform(click());
         assertEquals(
                 new GeolocationSetting(ContentSettingValues.BLOCK, ContentSettingValues.BLOCK),
-                getGeolocationSetting());
+                getGeolocationSetting(url));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures({
+        ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON,
+        PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION
+    })
+    public void testEmbargoedGeolocationWithOptions() throws TimeoutException {
+        LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
+        final String url = mPermissionRule.getURL("/chrome/test/data/geolocation/simple.html");
+        final String origin = Origin.create(url).toString();
+        triggerEmbargoForOrigin(url);
+        assertEquals(
+                new GeolocationSetting(ContentSettingValues.BLOCK, ContentSettingValues.BLOCK),
+                getGeolocationSetting(url));
+
+        SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.DEVICE_LOCATION);
+
+        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
+        onView(withText("Automatically blocked")).check(matches(isDisplayed()));
+        onView(withText(origin)).perform(click());
+        onView(withText("Allow")).perform(click());
+        assertEquals(
+                new GeolocationSetting(ContentSettingValues.ALLOW, ContentSettingValues.ALLOW),
+                getGeolocationSetting(url));
     }
 
     @Test

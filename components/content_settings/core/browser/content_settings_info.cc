@@ -140,4 +140,16 @@ std::optional<PermissionSetting> ContentSettingsInfo::Delegate::FromValue(
   return ParseContentSettingValue(value);
 }
 
+PermissionSetting ContentSettingsInfo::Delegate::ApplyPermissionEmbargo(
+    const PermissionSetting& setting) const {
+  if (info_->website_settings_info()->type() ==
+      ContentSettingsType::FEDERATED_IDENTITY_API) {
+    return CONTENT_SETTING_BLOCK;
+  }
+  if (std::get<ContentSetting>(setting) == CONTENT_SETTING_ASK) {
+    return CONTENT_SETTING_BLOCK;
+  }
+  return setting;
+}
+
 }  // namespace content_settings
