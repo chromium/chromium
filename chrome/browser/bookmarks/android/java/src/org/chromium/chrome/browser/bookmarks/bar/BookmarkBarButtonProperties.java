@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.bookmarks.bar;
 
 import android.graphics.drawable.Drawable;
+import android.view.View;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -27,6 +28,13 @@ class BookmarkBarButtonProperties {
     public static final WritableObjectPropertyKey<ClickWithMetaStateCallback> CLICK_CALLBACK =
             new WritableObjectPropertyKey<>();
 
+    /**
+     * The callback to notify of keyboard events on the button. Used to handle key presses like
+     * Enter for navigation and actions.
+     */
+    public static final WritableObjectPropertyKey<View.OnKeyListener> KEY_LISTENER =
+            new WritableObjectPropertyKey<>();
+
     /** The supplier for the icon to render in the bookmark bar button. */
     public static final WritableObjectPropertyKey<LazyOneshotSupplier<Drawable>> ICON_SUPPLIER =
             new WritableObjectPropertyKey<>();
@@ -41,5 +49,7 @@ class BookmarkBarButtonProperties {
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {CLICK_CALLBACK, ICON_SUPPLIER, ICON_TINT_LIST_ID, TITLE};
+            new PropertyKey[] {
+                CLICK_CALLBACK, KEY_LISTENER, ICON_SUPPLIER, ICON_TINT_LIST_ID, TITLE
+            };
 }

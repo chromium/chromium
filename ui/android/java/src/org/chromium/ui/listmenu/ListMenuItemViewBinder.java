@@ -147,6 +147,8 @@ public class ListMenuItemViewBinder {
             } else {
                 textView.setEllipsize(null);
             }
+        } else if (propertyKey == ListMenuItemProperties.KEY_LISTENER) {
+            view.setOnKeyListener(model.get(ListMenuItemProperties.KEY_LISTENER));
         } else {
             assert false : "Supplied propertyKey not implemented in ListMenuItemProperties.";
         }

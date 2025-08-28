@@ -663,7 +663,12 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                         .with(ListMenuItemProperties.START_ICON_BITMAP, sFolderIconBitmap)
                         .with(ListMenuItemProperties.ENABLED, true)
                         .build();
-        return new ListItem(ListItemType.MENU_ITEM_WITH_SUBMENU, model);
+
+        ListItem listItem = new ListItem(ListItemType.MENU_ITEM_WITH_SUBMENU, model);
+        model.set(
+                ListMenuItemProperties.KEY_LISTENER,
+                createPopupMenuItemKeyListener(model, bookmarkItem));
+        return listItem;
     }
 
     // Bookmark leaves are web pages and not folders. They do not have any children (sub menu
@@ -694,7 +699,11 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                     });
         }
 
-        return new ListItem(ListItemType.MENU_ITEM, model);
+        ListItem listItem = new ListItem(ListItemType.MENU_ITEM, model);
+        model.set(
+                ListMenuItemProperties.KEY_LISTENER,
+                createPopupMenuItemKeyListener(model, bookmarkItem));
+        return listItem;
     }
 
     private static Bitmap drawableToBitmap(Drawable drawable) {
@@ -745,6 +754,42 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
             // Notify the observer that the rect has changed.
             notifyRectChanged();
         }
+    }
+
+    // Builds and returns an OnKeyListener for every item in the popup menu.
+    private View.OnKeyListener createPopupMenuItemKeyListener(
+            PropertyModel model, BookmarkItem bookmarkItem) {
+        return (view, keyCode, event) -> {
+            // Only proceed if the user has released the Enter key.
+            if (event.getAction() != KeyEvent.ACTION_UP || keyCode != KeyEvent.KEYCODE_ENTER) {
+                return false;
+            }
+
+            if (bookmarkItem == null) return false;
+
+            // Specify isCtrlPressed because if it's just Enter we want to open in the current tab.
+            if (event.isCtrlPressed() && !bookmarkItem.isFolder()) {
+                // Open bookmark in new tab.
+                mBookmarkOpener.openBookmarksInNewTabs(
+                        List.of(bookmarkItem.getId()),
+                        mProfileSupplier.get().isOffTheRecord(),
+                        Optional.of(TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND));
+                if (mAnchoredPopupWindow != null) mAnchoredPopupWindow.dismiss();
+                return true;
+            } else if (bookmarkItem.isFolder()) {
+                // Get the pre-made "open submenu" click listener from the model.
+                View.OnClickListener clickListener =
+                        model.get(ListMenuItemProperties.CLICK_LISTENER);
+                if (clickListener != null) {
+                    // Calls ListMenuUtils#onItemWithSubmenuClicked.
+                    clickListener.onClick(view);
+                }
+                return true;
+            }
+            // Plain Enter key press when bookmarkItem is not a folder. Default behavior (open
+            // webpage in current tab) takes over.
+            return false;
+        };
     }
 
     void setAnchoredPopupWindowForTesting(AnchoredPopupWindow anchoredPopupWindow) {

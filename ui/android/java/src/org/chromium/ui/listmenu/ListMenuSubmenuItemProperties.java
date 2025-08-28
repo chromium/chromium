@@ -8,6 +8,7 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.HOVER_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.KEY_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.START_ICON_BITMAP;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 
@@ -31,6 +32,7 @@ public class ListMenuSubmenuItemProperties {
         HOVER_LISTENER,
         ENABLED,
         SUBMENU_ITEMS,
-        IS_TEXT_ELLIPSIZED_AT_END
+        IS_TEXT_ELLIPSIZED_AT_END,
+        KEY_LISTENER
     };
 }

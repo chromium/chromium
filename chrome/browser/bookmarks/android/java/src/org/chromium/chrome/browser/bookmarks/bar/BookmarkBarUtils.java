@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.bookmarks.bar;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.view.KeyEvent;
+import android.view.View;
 
 import androidx.annotation.IntDef;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -195,11 +197,29 @@ public class BookmarkBarUtils {
             Context context,
             @Nullable BookmarkImageFetcher imageFetcher,
             BookmarkItem item) {
+
+        View.OnKeyListener keyListener =
+                (v, keyCode, event) -> {
+                    // Check whether the Enter key is released.
+                    if (event.getAction() == KeyEvent.ACTION_UP
+                            && keyCode == KeyEvent.KEYCODE_ENTER) {
+                        // clickCallback is an object that represents
+                        // BookmarkBarMediator#onBookmarkItemClick.
+                        clickCallback.accept(item, event.getMetaState());
+                        // Returning true handles the event, avoids triggering a normal click
+                        // (double action).
+                        return true;
+                    }
+                    // We do not handle other keys.
+                    return false;
+                };
+
         PropertyModel.Builder modelBuilder =
                 new PropertyModel.Builder(BookmarkBarButtonProperties.ALL_KEYS)
                         .with(
                                 BookmarkBarButtonProperties.CLICK_CALLBACK,
                                 (metaState) -> clickCallback.accept(item, metaState))
+                        .with(BookmarkBarButtonProperties.KEY_LISTENER, keyListener)
                         .with(
                                 BookmarkBarButtonProperties.ICON_TINT_LIST_ID,
                                 item.isFolder()

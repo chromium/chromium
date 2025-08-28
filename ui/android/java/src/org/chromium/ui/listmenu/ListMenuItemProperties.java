@@ -78,6 +78,9 @@ public class ListMenuItemProperties {
     public static final ReadableBooleanPropertyKey KEEP_START_ICON_SPACING_WHEN_HIDDEN =
             new ReadableBooleanPropertyKey();
 
+    public static final WritableObjectPropertyKey<View.OnKeyListener> KEY_LISTENER =
+            new WritableObjectPropertyKey<>();
+
     public static final PropertyKey[] ALL_KEYS = {
         TITLE_ID,
         TITLE,
@@ -97,6 +100,7 @@ public class ListMenuItemProperties {
         ICON_TINT_COLOR_STATE_LIST_ID,
         TEXT_APPEARANCE_ID,
         IS_TEXT_ELLIPSIZED_AT_END,
-        KEEP_START_ICON_SPACING_WHEN_HIDDEN
+        KEEP_START_ICON_SPACING_WHEN_HIDDEN,
+        KEY_LISTENER
     };
 }

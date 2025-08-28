@@ -10,6 +10,7 @@ import static android.view.View.VISIBLE;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.HOVER_LISTENER;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.KEY_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.START_ICON_BITMAP;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 
@@ -61,6 +62,8 @@ class ListMenuItemWithSubmenuViewBinder {
                 textView.setEllipsize(null);
                 textView.setMaxLines(Integer.MAX_VALUE);
             }
+        } else if (propertyKey == KEY_LISTENER) {
+            view.setOnKeyListener(model.get(KEY_LISTENER));
         }
     }
 }
