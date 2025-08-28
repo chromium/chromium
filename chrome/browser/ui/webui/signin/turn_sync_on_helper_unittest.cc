@@ -39,6 +39,7 @@
 #include "chrome/browser/signin/test_signin_client_builder.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_startup_tracker.h"
+#include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/test/base/fake_profile_manager.h"
@@ -1826,8 +1827,9 @@ TEST_F(TurnSyncOnHelperWithMockSigninManagerTest,
                   syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
   sync_confirmation_result_ = LoginUIService::SyncConfirmationUIClosedResult::
       SYNC_WITH_DEFAULT_SETTINGS;
-  sync_starter->OnSyncStartupStateChanged(
-      SyncStartupTracker::ServiceStartupState::kComplete);
+  sync_starter->GetSyncStartupStateObserverForTesting()
+      ->OnSyncStartupStateChanged(
+          SyncStartupTracker::ServiceStartupState::kComplete);
   EXPECT_EQ(account_id(), identity_manager()->GetPrimaryAccountId(
                               signin::ConsentLevel::kSync));
   CheckDelegateCalls();
@@ -1872,8 +1874,9 @@ TEST_F(TurnSyncOnHelperWithMockSigninManagerTest,
                   syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
   sync_confirmation_result_ = LoginUIService::SyncConfirmationUIClosedResult::
       SYNC_WITH_DEFAULT_SETTINGS;
-  sync_starter->OnSyncStartupStateChanged(
-      SyncStartupTracker::ServiceStartupState::kComplete);
+  sync_starter->GetSyncStartupStateObserverForTesting()
+      ->OnSyncStartupStateChanged(
+          SyncStartupTracker::ServiceStartupState::kComplete);
   EXPECT_EQ(account_id(), identity_manager()->GetPrimaryAccountId(
                               signin::ConsentLevel::kSync));
   CheckDelegateCalls();
@@ -1920,8 +1923,9 @@ TEST_F(TurnSyncOnHelperWithMockSigninManagerTest,
                   syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
   sync_confirmation_result_ = LoginUIService::SyncConfirmationUIClosedResult::
       SYNC_WITH_DEFAULT_SETTINGS;
-  sync_starter->OnSyncStartupStateChanged(
-      SyncStartupTracker::ServiceStartupState::kError);
+  sync_starter->GetSyncStartupStateObserverForTesting()
+      ->OnSyncStartupStateChanged(
+          SyncStartupTracker::ServiceStartupState::kError);
   EXPECT_EQ(account_id(), identity_manager()->GetPrimaryAccountId(
                               signin::ConsentLevel::kSignin));
   CheckDelegateCalls();
@@ -1964,8 +1968,9 @@ TEST_F(TurnSyncOnHelperTest,
                   syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
   sync_confirmation_result_ = LoginUIService::SyncConfirmationUIClosedResult::
       SYNC_WITH_DEFAULT_SETTINGS;
-  sync_starter->OnSyncStartupStateChanged(
-      SyncStartupTracker::ServiceStartupState::kError);
+  sync_starter->GetSyncStartupStateObserverForTesting()
+      ->OnSyncStartupStateChanged(
+          SyncStartupTracker::ServiceStartupState::kError);
   EXPECT_EQ(account_id(), identity_manager()->GetPrimaryAccountId(
                               signin::ConsentLevel::kSync));
   CheckDelegateCalls();

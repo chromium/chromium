@@ -6,16 +6,20 @@
 
 #include <memory>
 
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_capability_fetcher.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/signin/public/identity_manager/tribool.h"
+#include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,6 +30,10 @@ class MockHistorySyncOptinHelperDelegate
  public:
   MOCK_METHOD(void, ShowHistorySyncOptinScreen, (), (override));
 };
+
+std::unique_ptr<KeyedService> CreateTestSyncService(content::BrowserContext*) {
+  return std::make_unique<syncer::TestSyncService>();
+}
 }  // namespace
 
 class HistorySyncOptinHelperBrowserTest : public SigninBrowserTestBase {
@@ -57,7 +65,19 @@ class HistorySyncOptinHelperBrowserTest : public SigninBrowserTestBase {
     identity_test_env()->UpdateAccountInfoForAccount(account_info);
   }
 
+  syncer::TestSyncService* GetTestSyncService() {
+    return static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForProfile(GetProfile()));
+  }
+
  private:
+  void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) override {
+    SigninBrowserTestBaseT::OnWillCreateBrowserContextServices(context);
+    SyncServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&CreateTestSyncService));
+  }
+
   base::test::ScopedFeatureList scoped_features{
       switches::kEnableHistorySyncOptin};
 };
@@ -71,7 +91,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_CALL(delegate, ShowHistorySyncOptinScreen).Times(1);
 
   HistorySyncOptinHelper history_sync_optin_helper(
-      identity_test_env()->identity_manager(), account_info, &delegate);
+      identity_test_env()->identity_manager(), GetProfile(), account_info,
+      &delegate);
   history_sync_optin_helper.StartHistorySyncOptinFlow();
 
   // This triggers the flopw that reaches the delegate's
@@ -91,7 +112,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_CALL(delegate, ShowHistorySyncOptinScreen).Times(0);
 
   HistorySyncOptinHelper history_sync_optin_helper(
-      identity_test_env()->identity_manager(), account_info, &delegate);
+      identity_test_env()->identity_manager(), GetProfile(), account_info,
+      &delegate);
   history_sync_optin_helper.StartHistorySyncOptinFlow();
   testing::Mock::VerifyAndClearExpectations(&delegate);
 
@@ -101,4 +123,32 @@ IN_PROC_BROWSER_TEST_F(
 
   // After the timeout is reached, capability updates should have no impact.
   UpdateEnterprisePolicyCapabilities(account_info, /*is_managed=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(HistorySyncOptinHelperBrowserTest,
+                       WaitsForSyncServiceBeforeTriggeringHistorySyncScreen) {
+  // Set the sync service in pending state.
+  GetTestSyncService()->SetMaxTransportState(
+      syncer::SyncService::TransportState::INITIALIZING);
+
+  AccountInfo account_info = MakeAccountInfoAvailable();
+  UpdateEnterprisePolicyCapabilities(account_info, /*is_managed=*/false);
+  MockHistorySyncOptinHelperDelegate delegate;
+
+  HistorySyncOptinHelper history_sync_optin_helper(
+      identity_test_env()->identity_manager(), GetProfile(), account_info,
+      &delegate);
+
+  // The helper is waiting for the sync service to start before attempting
+  // to show the history sync optin screen.
+  EXPECT_CALL(delegate, ShowHistorySyncOptinScreen).Times(0);
+  history_sync_optin_helper.StartHistorySyncOptinFlow();
+  testing::Mock::VerifyAndClearExpectations(&delegate);
+
+  // When sync becomes active, the flow resumes to showing the history sync
+  // optin screen.
+  EXPECT_CALL(delegate, ShowHistorySyncOptinScreen).Times(1);
+  GetTestSyncService()->SetMaxTransportState(
+      syncer::SyncService::TransportState::ACTIVE);
+  GetTestSyncService()->FireStateChanged();
 }

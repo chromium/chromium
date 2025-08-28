@@ -35,6 +35,7 @@
 #include "chrome/browser/sync/sync_startup_tracker.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/sync/profile_signin_confirmation_helper.h"
+#include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
@@ -521,50 +522,16 @@ void TurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
     // dialog is shown to check whether sync was disabled by admin. Only wait
     // for cloud policies because local policies are instantly available. See
     // http://crbug.com/812546
-    bool may_have_cloud_policies =
-        signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
-            account_info_.email) ||
-        policy::ManagementServiceFactory::GetForProfile(profile_)
-            ->HasManagementAuthority(
-                policy::EnterpriseManagementAuthority::CLOUD) ||
-        policy::ManagementServiceFactory::GetForProfile(profile_)
-            ->HasManagementAuthority(
-                policy::EnterpriseManagementAuthority::CLOUD_DOMAIN) ||
-        policy::ManagementServiceFactory::GetForPlatform()
-            ->HasManagementAuthority(
-                policy::EnterpriseManagementAuthority::CLOUD) ||
-        policy::ManagementServiceFactory::GetForPlatform()
-            ->HasManagementAuthority(
-                policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
-
-    if (may_have_cloud_policies &&
-        SyncStartupTracker::GetServiceStartupState(sync_service) ==
-            SyncStartupTracker::ServiceStartupState::kPending) {
-      sync_startup_tracker_ = std::make_unique<SyncStartupTracker>(
-          sync_service,
-          base::BindOnce(&TurnSyncOnHelper::OnSyncStartupStateChanged,
-                         weak_pointer_factory_.GetWeakPtr()));
+    sync_startup_state_observer_ = SyncServiceStartupStateObserver::
+        MaybeCreateSyncServiceStateObserverForAccountWithClouldPolicies(
+            sync_service, profile_, account_info_,
+            base::BindOnce(&TurnSyncOnHelper::ShowSyncConfirmationUI,
+                           weak_pointer_factory_.GetWeakPtr()));
+    if (sync_startup_state_observer_) {
       return;
     }
   }
   ShowSyncConfirmationUI();
-}
-
-void TurnSyncOnHelper::OnSyncStartupStateChanged(
-    SyncStartupTracker::ServiceStartupState state) {
-  switch (state) {
-    case SyncStartupTracker::ServiceStartupState::kPending:
-      NOTREACHED();
-    case SyncStartupTracker::ServiceStartupState::kTimeout:
-      DVLOG(1) << "Waiting for Sync Service to start timed out.";
-      [[fallthrough]];
-    case SyncStartupTracker::ServiceStartupState::kError:
-    case SyncStartupTracker::ServiceStartupState::kComplete:
-      DCHECK(sync_startup_tracker_);
-      sync_startup_tracker_.reset();
-      ShowSyncConfirmationUI();
-      break;
-  }
 }
 
 // static
@@ -675,7 +642,7 @@ void TurnSyncOnHelper::SwitchToProfile(Profile* new_profile) {
   // the option to switch profiles, or it should have been properly cleaned up.
   DCHECK(!account_change_blocker_);
   DCHECK(!sync_blocker_);
-  DCHECK(!sync_startup_tracker_);
+  DCHECK(!sync_startup_state_observer_);
 
   policy::UserPolicySigninServiceFactory::GetForProfile(profile_)
       ->ShutdownCloudPolicyManager();

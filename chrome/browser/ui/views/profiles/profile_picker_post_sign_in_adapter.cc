@@ -109,7 +109,7 @@ void ProfilePickerPostSignInAdapter::Init(
 
   if (base::FeatureList::IsEnabled(switches::kEnableHistorySyncOptin)) {
     history_sync_optin_helper_ = std::make_unique<HistorySyncOptinHelper>(
-        identity_manager, account_info, /*delegate=*/this);
+        identity_manager, profile_, account_info, /*delegate=*/this);
 
     history_sync_optin_helper_->StartHistorySyncOptinFlow();
     return;

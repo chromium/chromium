@@ -14,7 +14,6 @@
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
-#include "chrome/browser/sync/sync_startup_tracker.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -32,6 +31,7 @@ class TurnSyncOnHelperPolicyFetchTracker;
 class AccountSelectionInProgressHandle;
 
 class DiceSignedInProfileCreator;
+class SyncServiceStartupStateObserver;
 
 namespace signin {
 class IdentityManager;
@@ -172,11 +172,11 @@ class TurnSyncOnHelper {
   // Returns true if a `TurnSyncOnHelper` is currently active for `profile`.
   static bool HasCurrentTurnSyncOnHelperForTesting(Profile* profile);
 
-  // Used as callback for `SyncStartupTracker`.
-  // Public for testing.
-  void OnSyncStartupStateChanged(SyncStartupTracker::ServiceStartupState state);
-
   static void EnsureFactoryBuilt();
+
+  SyncServiceStartupStateObserver* GetSyncStartupStateObserverForTesting() {
+    return sync_startup_state_observer_.get();
+  }
 
  private:
   enum class ProfileMode {
@@ -284,7 +284,7 @@ class TurnSyncOnHelper {
   // Called when this object is deleted.
   base::ScopedClosureRunner scoped_callback_runner_;
 
-  std::unique_ptr<SyncStartupTracker> sync_startup_tracker_;
+  std::unique_ptr<SyncServiceStartupStateObserver> sync_startup_state_observer_;
   std::unique_ptr<TurnSyncOnHelperPolicyFetchTracker> policy_fetch_tracker_;
   std::unique_ptr<DiceSignedInProfileCreator> dice_signed_in_profile_creator_;
 
