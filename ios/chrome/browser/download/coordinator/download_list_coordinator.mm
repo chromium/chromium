@@ -30,22 +30,23 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/web/public/navigation/referrer.h"
-#import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
 @interface DownloadListCoordinator () <DownloadRecordCommands> {
   // Mediator for handling download list logic.
   DownloadListMediator* _mediator;
-  // Navigation controller for the download list.
 
   // View controller for presenting Download List UI.
   DownloadListTableViewController* _downloadListViewController;
 
-  // Navigation controller for presenting the download list.
+  // Navigation controller for the download list.
   UINavigationController* _navigationController;
 
   // Coordinator for file preview functionality.
   DownloadFilePreviewCoordinator* _filePreviewCoordinator;
+
+  // Activity view controller for sharing downloads.
+  UIActivityViewController* _shareActivityController;
 
   // YES after start has been called.
   BOOL _started;
@@ -95,6 +96,7 @@
 
   _downloadListViewController = nil;
   _navigationController = nil;
+  _shareActivityController = nil;
 
   // Stop and clean up file preview coordinator
   if (_filePreviewCoordinator) {
@@ -160,6 +162,30 @@
                             mimeType:record.mime_type
                           fileExists:fileExists];
       }));
+}
+
+- (void)shareDownloadedFile:(const DownloadRecord&)record
+                 sourceView:(UIView*)sourceView {
+  base::FilePath filePath = [self filePathForDownloadRecord:record];
+  NSURL* fileURL =
+      [NSURL fileURLWithPath:base::SysUTF8ToNSString(filePath.value())];
+  if (!fileURL) {
+    return;
+  }
+
+  _shareActivityController =
+      [[UIActivityViewController alloc] initWithActivityItems:@[ fileURL ]
+                                        applicationActivities:nil];
+
+  // Configure popover presentation for iPad.
+  _shareActivityController.popoverPresentationController.sourceView =
+      sourceView;
+  _shareActivityController.popoverPresentationController.sourceRect =
+      sourceView.bounds;
+
+  [_downloadListViewController presentViewController:_shareActivityController
+                                            animated:YES
+                                          completion:nil];
 }
 
 #pragma mark - Private Helper Methods
