@@ -8486,23 +8486,6 @@ void NavigationRequest::UpdatePrivateNetworkRequestPolicy() {
   const PolicyContainerPolicies& policies =
       policy_container_builder_->FinalPolicies();
 
-  if (!policies.is_web_secure_context &&
-      base::FeatureList::IsEnabled(
-          features::kBlockInsecurePrivateNetworkRequestsDeprecationTrial) &&
-      // If there is no response or no headers in the response, there are
-      // definitely no trial token headers.
-      response_head_ && response_head_->headers &&
-      blink::TrialTokenValidator().RequestEnablesDeprecatedFeature(
-          common_params_->url, response_head_->headers.get(),
-          "PrivateNetworkAccessNonSecureContextsAllowed", base::Time::Now())) {
-    web_features_to_log_.push_back(
-        blink::mojom::WebFeature::
-            kPrivateNetworkAccessNonSecureContextsAllowedDeprecationTrial);
-    private_network_request_policy_ =
-        network::mojom::PrivateNetworkRequestPolicy::kAllow;
-    return;
-  }
-
   // Deprecation trial is to allow http sites to run LNA requests assuming the
   // user grants the permission to the web site.
   //

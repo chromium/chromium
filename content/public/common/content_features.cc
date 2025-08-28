@@ -176,12 +176,6 @@ BASE_FEATURE(BlockInsecurePrivateNetworkRequests,
 BASE_FEATURE(BlockInsecurePrivateNetworkRequestsFromPrivate,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables use of the PrivateNetworkAccessNonSecureContextsAllowed deprecation
-// trial. This is a necessary yet insufficient condition: documents that wish to
-// make use of the trial must additionally serve a valid origin trial token.
-BASE_FEATURE(BlockInsecurePrivateNetworkRequestsDeprecationTrial,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Broker file operations on disk cache in the Network Service.
 // This is no-op if the network service is hosted in the browser process.
 BASE_FEATURE(BrokerFileOperationsOnDiskCacheInNetworkService,

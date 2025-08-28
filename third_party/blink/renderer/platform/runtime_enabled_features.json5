@@ -3764,14 +3764,6 @@
       status: "stable",
     },
     {
-      name: "PrivateNetworkAccessNonSecureContextsAllowed",
-      origin_trial_feature_name: "PrivateNetworkAccessNonSecureContextsAllowed",
-      origin_trial_type: "deprecation",
-      origin_trial_allows_insecure: true,
-      status: "experimental",
-      base_feature: "none",
-    },
-    {
       name: "PrivateNetworkAccessNullIpAddress",
       status: "experimental",
       base_feature: "none",
