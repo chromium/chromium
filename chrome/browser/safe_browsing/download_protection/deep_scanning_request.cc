@@ -90,9 +90,8 @@ DownloadCheckResult GetHighestPrecedenceResult(DownloadCheckResult result_1,
   NOTREACHED();
 }
 
-void ResponseToDownloadCheckResult(
-    const enterprise_connectors::ContentAnalysisResponse& response,
-    DownloadCheckResult* download_result) {
+DownloadCheckResult ResponseToDownloadCheckResult(
+    const enterprise_connectors::ContentAnalysisResponse& response) {
   bool malware_scan_failure = false;
   bool dlp_scan_failure = false;
   auto malware_action =
@@ -128,11 +127,9 @@ void ResponseToDownloadCheckResult(
                             malware_action, dlp_action)) {
     switch (malware_action) {
       case enterprise_connectors::TriggeredRule::BLOCK:
-        *download_result = DownloadCheckResult::DANGEROUS;
-        return;
+        return DownloadCheckResult::DANGEROUS;
       case enterprise_connectors::TriggeredRule::WARN:
-        *download_result = DownloadCheckResult::POTENTIALLY_UNWANTED;
-        return;
+        return DownloadCheckResult::POTENTIALLY_UNWANTED;
       case enterprise_connectors::TriggeredRule::REPORT_ONLY:
       case enterprise_connectors::TriggeredRule::ACTION_UNSPECIFIED:
         break;
@@ -140,11 +137,9 @@ void ResponseToDownloadCheckResult(
   } else {
     switch (dlp_action) {
       case enterprise_connectors::TriggeredRule::BLOCK:
-        *download_result = DownloadCheckResult::SENSITIVE_CONTENT_BLOCK;
-        return;
+        return DownloadCheckResult::SENSITIVE_CONTENT_BLOCK;
       case enterprise_connectors::TriggeredRule::WARN:
-        *download_result = DownloadCheckResult::SENSITIVE_CONTENT_WARNING;
-        return;
+        return DownloadCheckResult::SENSITIVE_CONTENT_WARNING;
       case enterprise_connectors::TriggeredRule::REPORT_ONLY:
       case enterprise_connectors::TriggeredRule::ACTION_UNSPECIFIED:
         break;
@@ -152,11 +147,10 @@ void ResponseToDownloadCheckResult(
   }
 
   if (dlp_scan_failure || malware_scan_failure) {
-    *download_result = DownloadCheckResult::DEEP_SCANNED_FAILED;
-    return;
+    return DownloadCheckResult::DEEP_SCANNED_FAILED;
   }
 
-  *download_result = DownloadCheckResult::DEEP_SCANNED_SAFE;
+  return DownloadCheckResult::DEEP_SCANNED_SAFE;
 }
 
 enterprise_connectors::EventResult GetEventResult(
@@ -612,7 +606,7 @@ void DeepScanningRequest::OnConsumerScanComplete(
   DownloadCheckResult download_result = DownloadCheckResult::UNKNOWN;
   if (is_success) {
     request_tokens_.push_back(response.request_token());
-    ResponseToDownloadCheckResult(response, &download_result);
+    download_result = ResponseToDownloadCheckResult(response);
     LogDeepScanEvent(*metadata_, DeepScanEvent::kScanCompleted);
   } else if (is_invalid_password) {
     // Since we now prompt the user for a password for `DownloadItem` scans,
@@ -643,7 +637,7 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
   DownloadCheckResult download_result = DownloadCheckResult::UNKNOWN;
   if (result == BinaryUploadService::Result::SUCCESS) {
     request_tokens_.push_back(response.request_token());
-    ResponseToDownloadCheckResult(response, &download_result);
+    download_result = ResponseToDownloadCheckResult(response);
   } else if (result == BinaryUploadService::Result::FILE_TOO_LARGE &&
              analysis_settings_.block_large_files) {
     download_result = DownloadCheckResult::BLOCKED_TOO_LARGE;
