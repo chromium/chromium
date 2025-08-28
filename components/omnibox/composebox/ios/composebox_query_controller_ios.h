@@ -7,6 +7,8 @@
 
 #include "components/omnibox/composebox/composebox_query_controller.h"
 
+#include <vector>
+
 // iOS-specific subclass of ComposeboxQueryController.
 class ComposeboxQueryControllerIOS : public ComposeboxQueryController {
  public:
@@ -16,7 +18,7 @@ class ComposeboxQueryControllerIOS : public ComposeboxQueryController {
   // ComposeboxQueryController overrides:
   void CreateImageUploadRequest(
       const base::UnguessableToken& file_token,
-      scoped_refptr<base::RefCountedBytes> file_data,
+      const std::vector<uint8_t>& image_data,
       std::optional<composebox::ImageEncodingOptions> options,
       RequestBodyProtoCreatedCallback callback) override;
 };

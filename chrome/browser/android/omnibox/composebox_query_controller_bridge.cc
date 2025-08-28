@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/android/omnibox/jni_headers/ComposeBoxQueryControllerBridge_jni.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/common/channel_info.h"
+#include "components/lens/contextual_input.h"
 
 static jlong JNI_ComposeBoxQueryControllerBridge_Init(JNIEnv* env,
                                                       Profile* profile) {
@@ -52,23 +53,15 @@ void ComposeboxQueryControllerBridge::AddFile(
     std::string& file_name,
     std::string& file_type,
     const jni_zero::JavaParamRef<jobject>& file_data) {
-  base::span<const uint8_t> file_bytes_span =
-      base::android::JavaByteBufferToSpan(env, file_data);
-  scoped_refptr<base::RefCountedBytes> file_bytes =
-      base::MakeRefCounted<base::RefCountedBytes>(file_bytes_span);
-
-  auto file_info_metadata =
-      std::make_unique<ComposeboxQueryController::FileInfo>();
-  file_info_metadata->file_name = file_name;
-  file_info_metadata->file_size_bytes = file_bytes_span.size();
-  file_info_metadata->file_token_ = base::UnguessableToken::Create();
+  base::UnguessableToken file_token = base::UnguessableToken::Create();
 
   std::optional<composebox::ImageEncodingOptions> image_options = std::nullopt;
+  lens::MimeType mime_type;
 
   if (file_type.find("pdf") != std::string::npos) {
-    file_info_metadata->mime_type_ = lens::MimeType::kPdf;
+    mime_type = lens::MimeType::kPdf;
   } else if (file_type.find("image") != std::string::npos) {
-    file_info_metadata->mime_type_ = lens::MimeType::kImage;
+    mime_type = lens::MimeType::kImage;
     image_options =
         composebox::ImageEncodingOptions{.enable_webp_encoding = false,
                                          .max_size = 1500000,
@@ -79,14 +72,18 @@ void ComposeboxQueryControllerBridge::AddFile(
     NOTREACHED();
   }
 
-  if ((file_type).find("pdf") != std::string::npos) {
-    file_info_metadata->mime_type_ = lens::MimeType::kPdf;
-  } else if ((file_type).find("image") != std::string::npos) {
-    file_info_metadata->mime_type_ = lens::MimeType::kImage;
-  }
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  input_data->context_input = std::vector<lens::ContextualInput>();
+  input_data->primary_content_type = mime_type;
 
-  query_controller_->StartFileUploadFlow(std::move(file_info_metadata),
-                                         std::move(file_bytes),
+  base::span<const uint8_t> file_bytes_span =
+      base::android::JavaByteBufferToSpan(env, file_data);
+  std::vector<uint8_t> file_data_vector(file_bytes_span.begin(),
+                                        file_bytes_span.end());
+  input_data->context_input->push_back(
+      lens::ContextualInput(std::move(file_data_vector), mime_type));
+  query_controller_->StartFileUploadFlow(file_token, std::move(input_data),
                                          std::move(image_options));
 }
 

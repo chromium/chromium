@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/base64url.h"
 #include "base/memory/ref_counted_memory.h"
@@ -17,6 +18,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "components/lens/contextual_input.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_request_construction.h"
 #include "components/lens/lens_url_utils.h"
@@ -103,16 +105,14 @@ ComposeboxQueryController::FileInfo::~FileInfo() = default;
 
 namespace {
 // Creates a pdf file upload request payload.
-lens::Payload CreatePDFFileUploadPayload(
-    scoped_refptr<base::RefCountedBytes> file_data) {
+lens::Payload CreatePDFFileUploadPayload(const std::vector<uint8_t>& data) {
   lens::Payload payload;
   auto* content = payload.mutable_content();
   auto* content_data = content->add_content_data();
   content_data->set_content_type(lens::ContentData::CONTENT_TYPE_PDF);
 
   // TODO(crbug.com/427618282): Add compression for PDF bytes.
-  auto bytes = file_data->as_vector();
-  content_data->mutable_data()->assign(bytes.begin(), bytes.end());
+  content_data->mutable_data()->assign(data.begin(), data.end());
   return payload;
 }
 
@@ -245,11 +245,14 @@ void ComposeboxQueryController::RemoveObserver(FileUploadStatusObserver* obs) {
 }
 
 void ComposeboxQueryController::StartFileUploadFlow(
-    std::unique_ptr<FileInfo> file_info,
-    scoped_refptr<base::RefCountedBytes> file_data,
+    const base::UnguessableToken& file_token,
+    std::unique_ptr<lens::ContextualInputData> contextual_input_data,
     std::optional<composebox::ImageEncodingOptions> image_options) {
-  CHECK_EQ(file_info->upload_status_, FileUploadStatus::kNotUploaded);
-  const base::UnguessableToken& file_token = file_info->file_token_;
+  // Create a file info struct to hold the file upload data.
+  auto file_info = std::make_unique<FileInfo>();
+  file_info->file_token_ = file_token;
+  file_info->mime_type_ = contextual_input_data->primary_content_type.value();
+  file_info->upload_status_ = FileUploadStatus::kNotUploaded;
 
   auto [it, inserted] = active_files_.emplace(file_token, std::move(file_info));
   DCHECK(inserted);
@@ -285,7 +288,7 @@ void ComposeboxQueryController::StartFileUploadFlow(
 
   // Async Flow 3: Creating the file upload request.
   CreateFileUploadRequestBodyAndContinue(
-      file_token, std::move(file_data), image_options,
+      file_token, std::move(contextual_input_data), image_options,
       base::BindOnce(&ComposeboxQueryController::OnUploadFileRequestBodyReady,
                      weak_ptr_factory_.GetWeakPtr(), file_token));
 }
@@ -586,7 +589,7 @@ void ComposeboxQueryController::ProcessDecodedImageAndContinue(
 
 void ComposeboxQueryController::CreateImageUploadRequest(
     const base::UnguessableToken& file_token,
-    scoped_refptr<base::RefCountedBytes> file_data,
+    const std::vector<uint8_t>& image_data,
     std::optional<composebox::ImageEncodingOptions> image_options,
     RequestBodyProtoCreatedCallback callback) {
 #if !BUILDFLAG(IS_IOS)
@@ -597,7 +600,7 @@ void ComposeboxQueryController::CreateImageUploadRequest(
 
   CHECK(image_options.has_value());
   data_decoder::DecodeImageIsolated(
-      file_data->as_vector(), data_decoder::mojom::ImageCodec::kDefault,
+      image_data, data_decoder::mojom::ImageCodec::kDefault,
       /*shrink_to_fit=*/false,
       /*max_size_in_bytes=*/std::numeric_limits<int64_t>::max(),
       /*desired_image_frame_size=*/gfx::Size(),
@@ -609,7 +612,7 @@ void ComposeboxQueryController::CreateImageUploadRequest(
 
 void ComposeboxQueryController::CreateFileUploadRequestBodyAndContinue(
     const base::UnguessableToken& file_token,
-    scoped_refptr<base::RefCountedBytes> file_data,
+    std::unique_ptr<lens::ContextualInputData> contextual_input_data,
     std::optional<composebox::ImageEncodingOptions> image_options,
     RequestBodyProtoCreatedCallback callback) {
   FileInfo* file_info = GetFileInfo(file_token);
@@ -619,20 +622,30 @@ void ComposeboxQueryController::CreateFileUploadRequestBodyAndContinue(
 
   switch (file_info->mime_type_) {
     case lens::MimeType::kPdf:
+      CHECK(contextual_input_data->context_input.has_value() &&
+            contextual_input_data->context_input->size() == 1);
       // Call CreatePDFFileUploadPayload off the main thread to avoid blocking
       // the main thread on compression.
+      // TODO(crbug.com/441142997): Support multiple contextual inputs in one
+      // request.
       create_request_task_runner_->PostTaskAndReplyWithResult(
           FROM_HERE,
-          base::BindOnce(&CreatePDFFileUploadPayload, std::move(file_data)),
+          base::BindOnce(
+              &CreatePDFFileUploadPayload,
+              std::move(contextual_input_data->context_input->front().bytes_)),
           base::BindOnce(&CreateFileUploadRequestProtoWithPayloadAndContinue,
                          *file_info->request_id_, CreateClientContext(),
                          std::move(callback)));
       break;
-    case lens::MimeType::kImage: {
-      CreateImageUploadRequest(file_token, std::move(file_data),
-                               std::move(image_options), std::move(callback));
+    case lens::MimeType::kImage:
+      CHECK(contextual_input_data->context_input.has_value() &&
+            contextual_input_data->context_input->size() == 1);
+      // TODO(crbug.com/441142455): Support image context via SkBitmap.
+      CreateImageUploadRequest(
+          file_token,
+          std::move(contextual_input_data->context_input->front().bytes_),
+          std::move(image_options), std::move(callback));
       break;
-    }
     default:
       UpdateFileUploadStatus(file_info->file_token_,
                              FileUploadStatus::kValidationFailed,

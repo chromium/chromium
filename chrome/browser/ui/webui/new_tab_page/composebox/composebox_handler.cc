@@ -4,10 +4,16 @@
 
 #include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_handler.h"
 
+#include <optional>
+#include <utility>
+#include <vector>
+
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_omnibox_client.h"
+#include "components/lens/contextual_input.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/composebox/composebox_image_helper.h"
 #include "content/public/browser/page_navigator.h"
@@ -183,22 +189,15 @@ void ComposeboxHandler::AddFile(
     composebox::mojom::SelectedFileInfoPtr file_info_mojom,
     mojo_base::BigBuffer file_bytes,
     AddFileCallback callback) {
-  scoped_refptr<base::RefCountedBytes> file_data =
-      base::MakeRefCounted<base::RefCountedBytes>(file_bytes);
-
-  auto file_info_metadata =
-      std::make_unique<ComposeboxQueryController::FileInfo>();
-  file_info_metadata->file_name = file_info_mojom->file_name;
-  file_info_metadata->file_size_bytes = file_bytes.size();
-  file_info_metadata->webui_selection_time = file_info_mojom->selection_time;
-  file_info_metadata->file_token_ = base::UnguessableToken::Create();
+  base::UnguessableToken file_token = base::UnguessableToken::Create();
 
   std::optional<composebox::ImageEncodingOptions> image_options = std::nullopt;
+  lens::MimeType mime_type;
 
   if ((file_info_mojom->mime_type).find("pdf") != std::string::npos) {
-    file_info_metadata->mime_type_ = lens::MimeType::kPdf;
+    mime_type = lens::MimeType::kPdf;
   } else if ((file_info_mojom->mime_type).find("image") != std::string::npos) {
-    file_info_metadata->mime_type_ = lens::MimeType::kImage;
+    mime_type = lens::MimeType::kImage;
     auto image_upload_config =
         ntp_composebox::FeatureConfig::Get().config.composebox().image_upload();
     image_options = composebox::ImageEncodingOptions{
@@ -211,11 +210,20 @@ void ComposeboxHandler::AddFile(
     NOTREACHED();
   }
 
-  std::move(callback).Run(file_info_metadata->file_token_);
-  metrics_recorder_->RecordFileSizeMetric(file_info_metadata->mime_type_,
-                                          file_bytes.size());
-  query_controller_->StartFileUploadFlow(std::move(file_info_metadata),
-                                         std::move(file_data),
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  input_data->context_input = std::vector<lens::ContextualInput>();
+  input_data->primary_content_type = mime_type;
+
+  base::span<const uint8_t> file_data_span = base::span(file_bytes);
+  std::vector<uint8_t> file_data_vector(file_data_span.begin(),
+                                        file_data_span.end());
+  input_data->context_input->push_back(
+      lens::ContextualInput(std::move(file_data_vector), mime_type));
+
+  std::move(callback).Run(file_token);
+  metrics_recorder_->RecordFileSizeMetric(mime_type, file_bytes.size());
+  query_controller_->StartFileUploadFlow(file_token, std::move(input_data),
                                          std::move(image_options));
 }
 

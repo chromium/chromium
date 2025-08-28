@@ -6,6 +6,9 @@
 
 #import <UIKit/UIKit.h>
 
+#include <optional>
+#include <vector>
+
 #import "base/task/bind_post_task.h"
 #import "base/task/thread_pool.h"
 #import "components/lens/ref_counted_lens_overlay_client_logs.h"
@@ -14,7 +17,7 @@
 
 void ComposeboxQueryControllerIOS::CreateImageUploadRequest(
     const base::UnguessableToken& file_token,
-    scoped_refptr<base::RefCountedBytes> file_data,
+    const std::vector<uint8_t>& image_data,
     std::optional<composebox::ImageEncodingOptions> image_options,
     RequestBodyProtoCreatedCallback callback) {
   FileInfo* file_info = GetFileInfo(file_token);
@@ -24,8 +27,8 @@ void ComposeboxQueryControllerIOS::CreateImageUploadRequest(
 
   CHECK(image_options.has_value());
   // On iOS, we use UIImage for decoding and resizing.
-  NSData* image_ns_data = [NSData dataWithBytes:file_data->data()
-                                         length:file_data->size()];
+  NSData* image_ns_data = [NSData dataWithBytes:image_data.data()
+                                         length:image_data.size()];
   UIImage* image = [UIImage imageWithData:image_ns_data];
 
   if (!image) {

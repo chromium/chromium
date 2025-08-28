@@ -11,6 +11,7 @@ source_set("coordinator") {
   ]
   deps = [
     "//components/application_locale_storage",
+    "//components/lens",
     "//components/omnibox/composebox/ios",
     "//components/search_engines",
     "//ios/chrome/browser/aim/prototype/public:features",

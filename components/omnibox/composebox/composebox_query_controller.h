@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
+#include "components/lens/contextual_input.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_overlay_request_id_generator.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
@@ -87,6 +88,7 @@ using FileUploadStatusChangedCallback =
     base::RepeatingCallback<void(std::string file_token,
                                  FileUploadStatus status)>;
 
+// TODO(crbug.com/440427508): Move this class to components/lens and rename it.
 class ComposeboxQueryController {
  public:
   // Observer interface for the Page Handler to get updates on file upload
@@ -103,6 +105,7 @@ class ComposeboxQueryController {
   };
 
   // Struct containing file information for a file upload.
+  // TODO(crbug.com/441351005): Make this struct private and rename it.
   struct FileInfo {
    public:
     FileInfo();
@@ -210,9 +213,11 @@ class ComposeboxQueryController {
 
   // Triggers upload of the file with data and stores the file info in the
   // internal map. Call after setting the file info fields. Virtual for testing.
+  // TODO(crbug.com/441161325): Rename this method to reference
+  // "contextual inputs" instead of "files".
   virtual void StartFileUploadFlow(
-      std::unique_ptr<FileInfo> file_info,
-      scoped_refptr<base::RefCountedBytes> file_data,
+      const base::UnguessableToken& file_token,
+      std::unique_ptr<lens::ContextualInputData> contextual_input_data,
       std::optional<composebox::ImageEncodingOptions> image_options);
 
   // Removes file from file cache.
@@ -244,7 +249,7 @@ class ComposeboxQueryController {
   // request.
   virtual void CreateImageUploadRequest(
       const base::UnguessableToken& file_token,
-      scoped_refptr<base::RefCountedBytes> file_data,
+      const std::vector<uint8_t>& image_data,
       std::optional<composebox::ImageEncodingOptions> options,
       RequestBodyProtoCreatedCallback callback);
 
@@ -331,7 +336,7 @@ class ComposeboxQueryController {
   // Creates the request body proto and calls the callback with the request.
   void CreateFileUploadRequestBodyAndContinue(
       const base::UnguessableToken& file_token,
-      scoped_refptr<base::RefCountedBytes> file_data,
+      std::unique_ptr<lens::ContextualInputData> contextual_input_data,
       std::optional<composebox::ImageEncodingOptions> options,
       RequestBodyProtoCreatedCallback callback);
 

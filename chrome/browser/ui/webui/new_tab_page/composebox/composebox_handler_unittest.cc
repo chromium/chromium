@@ -97,12 +97,11 @@ class MockQueryController : public TestComposeboxQueryController {
 
   MOCK_METHOD(void, NotifySessionStarted, ());
   MOCK_METHOD(void, NotifySessionAbandoned, ());
-  MOCK_METHOD(
-      void,
-      StartFileUploadFlow,
-      (std::unique_ptr<ComposeboxQueryController::FileInfo> file_info_mojom,
-       scoped_refptr<base::RefCountedBytes> file_data,
-       std::optional<composebox::ImageEncodingOptions> image_options));
+  MOCK_METHOD(void,
+              StartFileUploadFlow,
+              (const base::UnguessableToken& file_token,
+               std::unique_ptr<lens::ContextualInputData> contextual_input,
+               std::optional<composebox::ImageEncodingOptions> image_options));
   MOCK_METHOD(bool, DeleteFile, (const base::UnguessableToken&));
   MOCK_METHOD(void, ClearFiles, ());
   MOCK_METHOD(FileInfo*,
@@ -333,14 +332,14 @@ TEST_F(ComposeboxHandlerTest, AddFile_Pdf) {
   mojo_base::BigBuffer file_data(test_data_span);
 
   base::MockCallback<ComposeboxHandler::AddFileCallback> callback;
-  std::unique_ptr<ComposeboxQueryController::FileInfo> controller_file_info;
+  base::UnguessableToken controller_file_info_token;
   base::UnguessableToken callback_token;
   EXPECT_CALL(query_controller(), StartFileUploadFlow)
-      .WillOnce(MoveArg<0>(&controller_file_info));
+      .WillOnce(testing::SaveArg<0>(&controller_file_info_token));
   EXPECT_CALL(callback, Run).WillOnce(testing::SaveArg<0>(&callback_token));
   handler().AddFile(std::move(file_info), std::move(file_data), callback.Get());
 
-  EXPECT_EQ(callback_token, controller_file_info->file_token_);
+  EXPECT_EQ(callback_token, controller_file_info_token);
 }
 
 TEST_F(ComposeboxHandlerTest, AddFile_Image) {
@@ -354,15 +353,13 @@ TEST_F(ComposeboxHandlerTest, AddFile_Image) {
   auto test_data_span = base::span<const uint8_t>(test_data);
   mojo_base::BigBuffer file_data(test_data_span);
 
-  std::unique_ptr<ComposeboxQueryController::FileInfo> controller_file_info;
   std::optional<composebox::ImageEncodingOptions> image_options;
+  base::UnguessableToken controller_file_info_token;
   EXPECT_CALL(query_controller(), StartFileUploadFlow)
       .WillOnce(
-          [&](std::unique_ptr<ComposeboxQueryController::FileInfo>
-                  file_info_arg,
-              auto,
+          [&](const base::UnguessableToken& file_token, auto,
               std::optional<composebox::ImageEncodingOptions> options_arg) {
-            controller_file_info = std::move(file_info_arg);
+            controller_file_info_token = file_token;
             image_options = std::move(options_arg);
           });
   base::MockCallback<ComposeboxHandler::AddFileCallback> callback;
@@ -371,7 +368,7 @@ TEST_F(ComposeboxHandlerTest, AddFile_Image) {
 
   handler().AddFile(std::move(file_info), std::move(file_data), callback.Get());
 
-  EXPECT_EQ(callback_token, controller_file_info->file_token_);
+  EXPECT_EQ(callback_token, controller_file_info_token);
   EXPECT_TRUE(image_options.has_value());
 
   auto image_upload = scoped_config().Get().config.composebox().image_upload();

@@ -14,6 +14,7 @@
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "base/unguessable_token.h"
+#import "components/lens/contextual_input.h"
 #import "components/omnibox/composebox/ios/composebox_file_upload_observer_bridge.h"
 #import "components/omnibox/composebox/ios/composebox_query_controller_ios.h"
 #import "components/search_engines/template_url_service.h"
@@ -208,16 +209,17 @@
 
 // Uploads the `image` for the given `item`.
 - (void)uploadImage:(UIImage*)image forItem:(AIMInputItem*)item {
-  auto file_info = std::make_unique<ComposeboxQueryController::FileInfo>();
-  file_info->file_token_ = item.fileToken;
-  file_info->file_name = "image.png";
-  file_info->mime_type_ = lens::MimeType::kImage;
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  input_data->context_input = std::vector<lens::ContextualInput>();
+  input_data->primary_content_type = lens::MimeType::kImage;
 
   NSData* data = UIImagePNGRepresentation(image);
   std::vector<uint8_t> vector_data([data length]);
   [data getBytes:vector_data.data() length:[data length]];
-  scoped_refptr<base::RefCountedBytes> bytes =
-      base::MakeRefCounted<base::RefCountedBytes>(std::move(vector_data));
+
+  input_data->context_input->push_back(
+      lens::ContextualInput(std::move(vector_data), lens::MimeType::kImage));
 
   // TODO(crbug.com/40280872): Plumb encoding options from a central config.
   composebox::ImageEncodingOptions image_options;
@@ -225,8 +227,8 @@
   image_options.max_height = 1024;
   image_options.compression_quality = 80;
 
-  _composeboxQueryController->StartFileUploadFlow(std::move(file_info), bytes,
-                                                  image_options);
+  _composeboxQueryController->StartFileUploadFlow(
+      item.fileToken, std::move(input_data), image_options);
 }
 
 // Returns the item with the given `token` or nil if not found.
