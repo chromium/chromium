@@ -46,74 +46,43 @@ FingerprintingProtectionChildNavigationThrottle::
     ~FingerprintingProtectionChildNavigationThrottle() {
   // Note: Changing the UMA_HISTOGRAM_CUSTOM_MICRO_TIMES params requires
   // renaming the emitted metrics.
-#define SUBFRAME_FILTERING_HISTOGRAM(name) \
-  UMA_HISTOGRAM_CUSTOM_MICRO_TIMES(        \
-      name, total_defer_time_, base::Microseconds(1), base::Seconds(10), 50)
+#define SUBFRAME_FILTERING_DELAY_HISTOGRAM(metric_suffix)                   \
+  do {                                                                      \
+    if (is_incognito_) {                                                    \
+      UMA_HISTOGRAM_CUSTOM_MICRO_TIMES(                                     \
+          "FingerprintingProtection.DocumentLoad."                          \
+          "SubframeFilteringDelay." metric_suffix ".Incognito",             \
+          total_defer_time_, base::Microseconds(1), base::Seconds(10), 50); \
+    }                                                                       \
+    UMA_HISTOGRAM_CUSTOM_MICRO_TIMES(                                       \
+        "FingerprintingProtection.DocumentLoad."                            \
+        "SubframeFilteringDelay." metric_suffix,                            \
+        total_defer_time_, base::Microseconds(1), base::Seconds(10), 50);   \
+  } while (false)
+
   if (did_alias_check_) {
-    if (is_incognito_) {
-      SUBFRAME_FILTERING_HISTOGRAM(
-          "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay."
-          "NameAlias.Checked.Incognito");
-    }
-    SUBFRAME_FILTERING_HISTOGRAM(
-        "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay."
-        "NameAlias.Checked");
+    SUBFRAME_FILTERING_DELAY_HISTOGRAM("NameAlias.Checked");
   }
+
   switch (load_policy_) {
     case subresource_filter::LoadPolicy::EXPLICITLY_ALLOW:
-      [[fallthrough]];
     case subresource_filter::LoadPolicy::ALLOW:
-      if (is_incognito_) {
-        SUBFRAME_FILTERING_HISTOGRAM(
-            "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay."
-            "Allowed.Incognito");
-      }
-      SUBFRAME_FILTERING_HISTOGRAM(
-          "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay."
-          "Allowed");
+      SUBFRAME_FILTERING_DELAY_HISTOGRAM("Allowed");
       break;
     case subresource_filter::LoadPolicy::WOULD_DISALLOW:
       if (did_alias_check_determine_load_policy_) {
-        if (is_incognito_) {
-          SUBFRAME_FILTERING_HISTOGRAM(
-              "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay."
-              "NameAlias.WouldDisallow.Incognito");
-        }
-        SUBFRAME_FILTERING_HISTOGRAM(
-            "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay."
-            "NameAlias.WouldDisallow");
+        SUBFRAME_FILTERING_DELAY_HISTOGRAM("NameAlias.WouldDisallow");
       }
-      if (is_incognito_) {
-        SUBFRAME_FILTERING_HISTOGRAM(
-            base::StrCat({"FingerprintingProtection.DocumentLoad."
-                          "SubframeFilteringDelay.WouldDisallow.Incognito"}));
-      }
-      SUBFRAME_FILTERING_HISTOGRAM(
-          "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay."
-          "WouldDisallow");
+      SUBFRAME_FILTERING_DELAY_HISTOGRAM("WouldDisallow");
       break;
     case subresource_filter::LoadPolicy::DISALLOW:
       if (did_alias_check_determine_load_policy_) {
-        if (is_incognito_) {
-          SUBFRAME_FILTERING_HISTOGRAM(
-              "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay."
-              "NameAlias.Disallowed.Incognito");
-        }
-        SUBFRAME_FILTERING_HISTOGRAM(
-            "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay."
-            "NameAlias.Disallowed");
+        SUBFRAME_FILTERING_DELAY_HISTOGRAM("NameAlias.Disallowed");
       }
-      if (is_incognito_) {
-        SUBFRAME_FILTERING_HISTOGRAM(
-            "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay."
-            "Disallowed.Incognito");
-      }
-      SUBFRAME_FILTERING_HISTOGRAM(
-          "FingerprintingProtection.DocumentLoad.SubframeFilteringDelay."
-          "Disallowed");
+      SUBFRAME_FILTERING_DELAY_HISTOGRAM("Disallowed");
       break;
   }
-#undef SUBFRAME_FILTERING_HISTOGRAM
+#undef SUBFRAME_FILTERING_DELAY_HISTOGRAM
 }
 
 const char*
