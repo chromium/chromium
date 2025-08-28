@@ -389,7 +389,7 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
   NSMutableAttributedString* attributedTitle =
       [[NSMutableAttributedString alloc]
           initWithString:l10n_util::GetNSString(
-                             IDS_IOS_READER_MODE_OPTIONS_HIDE_BUTTON_LABEL)
+                             IDS_IOS_AI_HUB_HIDE_BUTTON_LABEL)
               attributes:attributes];
   configuration.attributedTitle = attributedTitle;
 

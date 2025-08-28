@@ -1053,9 +1053,9 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
           grey_accessibilityID(kReaderModeOptionsViewAccessibilityIdentifier)];
 
   // Tap the hide button.
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::ButtonWithAccessibilityLabelId(
-                     IDS_IOS_READER_MODE_OPTIONS_HIDE_BUTTON_LABEL)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_AI_HUB_HIDE_BUTTON_LABEL)]
       performAction:grey_tap()];
 
   // The Reader Mode UI is not visible.
