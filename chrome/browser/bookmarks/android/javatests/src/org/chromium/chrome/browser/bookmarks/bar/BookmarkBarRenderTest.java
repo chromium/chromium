@@ -26,6 +26,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -34,6 +35,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
@@ -42,6 +44,7 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
@@ -91,6 +94,8 @@ public class BookmarkBarRenderTest {
     @Mock private BookmarkOpener mBookmarkOpener;
     @Mock private BookmarkManagerOpener mBookmarkManagerOpener;
     @Mock private TopControlsStacker mTopControlsStacker;
+    @Mock private ObservableSupplier<@Nullable Tab> mCurrentTabSupplier;
+    @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
 
     private BookmarkBarCoordinator mCoordinator;
     private BookmarkBar mView;
@@ -130,7 +135,9 @@ public class BookmarkBarRenderTest {
                                     mCurrentTab,
                                     mBookmarkOpener,
                                     new ObservableSupplierImpl<>(mBookmarkManagerOpener),
-                                    mTopControlsStacker);
+                                    mTopControlsStacker,
+                                    mCurrentTabSupplier,
+                                    mTopUiThemeColorProvider);
 
                     assertNotNull(mView);
                     ChromeRenderTestRule.sanitize(mView);

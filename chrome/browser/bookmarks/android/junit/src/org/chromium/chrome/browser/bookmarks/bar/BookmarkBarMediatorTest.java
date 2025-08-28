@@ -76,7 +76,6 @@ public class BookmarkBarMediatorTest {
     @Mock private AnchoredPopupWindow mAnchoredPopupWindow;
     @Mock private BasicListMenu mMockListMenu;
     @Mock private BookmarkBarItemsLayoutManager mLayoutManager;
-    @Mock private Runnable mHandleBookmarkBarChange;
 
     private Activity mActivity;
     private BookmarkBarMediator mMediator;
@@ -106,8 +105,7 @@ public class BookmarkBarMediatorTest {
                         mBookmarkOpener,
                         new ObservableSupplierImpl<>(mBookmarkManagerOpener),
                         mItemsRecyclerView,
-                        mBookmarkBarView,
-                        mHandleBookmarkBarChange);
+                        mBookmarkBarView);
     }
 
     @After

@@ -33,7 +33,6 @@ import java.util.List;
 public class BookmarkBarSceneLayer extends SceneOverlayLayer implements SceneOverlay {
 
     private long mNativePtr;
-    private final int mResourceId;
     private final ResourceManager mResourceManager;
     private boolean mIsVisible;
 
@@ -43,10 +42,8 @@ public class BookmarkBarSceneLayer extends SceneOverlayLayer implements SceneOve
         view.updateProperties(model);
     }
 
-    public BookmarkBarSceneLayer(int resourceId, ResourceManager resourceManager) {
-        mResourceId = resourceId;
+    public BookmarkBarSceneLayer(ResourceManager resourceManager) {
         mResourceManager = resourceManager;
-        initializeNative();
     }
 
     /**
@@ -74,7 +71,8 @@ public class BookmarkBarSceneLayer extends SceneOverlayLayer implements SceneOve
                 .updateBookmarkBarLayer(
                         mNativePtr,
                         mResourceManager,
-                        mResourceId,
+                        model.get(BookmarkBarSceneLayerProperties.RESOURCE_ID),
+                        model.get(BookmarkBarSceneLayerProperties.BACKGROUND_COLOR),
                         model.get(BookmarkBarSceneLayerProperties.SCENE_LAYER_OFFSET_HEIGHT),
                         model.get(BookmarkBarSceneLayerProperties.SCENE_LAYER_WIDTH),
                         model.get(BookmarkBarSceneLayerProperties.SCENE_LAYER_HEIGHT),
@@ -160,6 +158,7 @@ public class BookmarkBarSceneLayer extends SceneOverlayLayer implements SceneOve
                 long nativeBookmarkBarSceneLayer,
                 ResourceManager manager,
                 int viewResourceId,
+                int sceneLayerBackgroundColor,
                 int sceneLayerOffsetHeight,
                 int sceneLayerWidth,
                 int sceneLayerHeight,

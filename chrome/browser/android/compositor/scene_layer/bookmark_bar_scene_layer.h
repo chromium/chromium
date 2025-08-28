@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ANDROID_COMPOSITOR_SCENE_LAYER_BOOKMARK_BAR_SCENE_LAYER_H_
 
 #include "base/android/jni_weak_ref.h"
+#include "cc/slim/solid_color_layer.h"
 #include "cc/slim/ui_resource_layer.h"
 #include "chrome/browser/ui/android/layouts/scene_layer.h"
 #include "ui/android/resources/resource_manager_impl.h"
@@ -29,6 +30,7 @@ class BookmarkBarSceneLayer : public SceneLayer {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jresource_manager,
       jint view_resource_id,
+      jint scene_layer_background_color,
       jint scene_layer_offset_height,
       jint scene_layer_width,
       jint scene_layer_height,
@@ -51,7 +53,7 @@ class BookmarkBarSceneLayer : public SceneLayer {
   // Top level container for the rest of the view. The snapshot will be
   // contained within this container, offset left/top to match the padding of
   // the Android widgets.
-  scoped_refptr<cc::slim::Layer> container_;
+  scoped_refptr<cc::slim::SolidColorLayer> container_;
 
   // The snapshot of the Android widgets. This is a Bitmap / raw pixel data of
   // the Android widgets, tightly bound to the minimum possible size of a

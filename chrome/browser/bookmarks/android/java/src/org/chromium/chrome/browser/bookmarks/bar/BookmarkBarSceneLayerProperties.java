@@ -15,6 +15,9 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 @NullMarked
 class BookmarkBarSceneLayerProperties {
 
+    /** The resource ID for the current snapshot */
+    public static final WritableIntPropertyKey RESOURCE_ID = new WritableIntPropertyKey();
+
     /** Whether or not the SceneLayer/snapshot should be visible, true only during scrolls. */
     public static final WritableBooleanPropertyKey VISIBILITY = new WritableBooleanPropertyKey();
 
@@ -44,6 +47,7 @@ class BookmarkBarSceneLayerProperties {
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
+                RESOURCE_ID,
                 VISIBILITY,
                 SCENE_LAYER_WIDTH,
                 SCENE_LAYER_HEIGHT,

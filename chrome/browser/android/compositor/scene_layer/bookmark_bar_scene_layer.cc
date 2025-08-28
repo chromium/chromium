@@ -7,6 +7,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "cc/input/android/offset_tag_android.h"
 #include "cc/slim/layer.h"
+#include "cc/slim/solid_color_layer.h"
 #include "cc/slim/ui_resource_layer.h"
 #include "chrome/browser/ui/android/layouts/scene_layer.h"
 #include "components/viz/common/quads/offset_tag.h"
@@ -22,7 +23,7 @@ namespace android {
 BookmarkBarSceneLayer::BookmarkBarSceneLayer(JNIEnv* env,
                                              const JavaParamRef<jobject>& jobj)
     : SceneLayer(env, jobj),
-      container_(cc::slim::Layer::Create()),
+      container_(cc::slim::SolidColorLayer::Create()),
       snapshot_(cc::slim::UIResourceLayer::Create()) {
   layer()->SetIsDrawable(true);
   container_->SetIsDrawable(true);
@@ -54,6 +55,7 @@ void BookmarkBarSceneLayer::UpdateBookmarkBarLayer(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jresource_manager,
     jint view_resource_id,
+    jint scene_layer_background_color,
     jint scene_layer_offset_height,
     jint scene_layer_width,
     jint scene_layer_height,
@@ -71,16 +73,18 @@ void BookmarkBarSceneLayer::UpdateBookmarkBarLayer(
 
   viz::OffsetTag offset_tag = cc::android::FromJavaOffsetTag(env, joffset_tag);
 
-  // We update the bounds because this update may have been caused by window
-  // size changes. We update the position because the update may have been
-  // caused by a scroll.
+  // An update to the bookmark bar could come from changing the window size,
+  // editing the bookmarks, changing theme, or scrolling. We update all this
+  // information on each update.
+  container_->SetBackgroundColor(
+      SkColor4f::FromColor(scene_layer_background_color));
   container_->SetBounds(gfx::Size(scene_layer_width, scene_layer_height));
-  container_->SetPosition(
-      gfx::PointF(0, scene_layer_offset_height + snapshot_offset_height));
+  container_->SetPosition(gfx::PointF(0, scene_layer_offset_height));
 
-  snapshot_->SetBounds(resource->size());
-  snapshot_->SetPosition(gfx::PointF(snapshot_offset_width, 0));
   snapshot_->SetUIResourceId(resource->ui_resource()->id());
+  snapshot_->SetBounds(resource->size());
+  snapshot_->SetPosition(
+      gfx::PointF(snapshot_offset_width, snapshot_offset_height));
 
   container_->SetOffsetTag(offset_tag);
 }

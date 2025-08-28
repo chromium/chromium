@@ -37,14 +37,13 @@ public class BookmarkBarSceneLayerTest {
     @Mock private ResourceManager mResourceManager;
 
     private static final long NATIVE_PTR = 123L;
-    private static final int RESOURCE_ID = 456;
     private BookmarkBarSceneLayer mSceneLayer;
 
     @Before
     public void setUp() {
         BookmarkBarSceneLayerJni.setInstanceForTesting(mSceneLayerJni);
         doReturn(NATIVE_PTR).when(mSceneLayerJni).init(any());
-        mSceneLayer = new BookmarkBarSceneLayer(RESOURCE_ID, mResourceManager);
+        mSceneLayer = new BookmarkBarSceneLayer(mResourceManager);
         mSceneLayer.initializeNative();
     }
 

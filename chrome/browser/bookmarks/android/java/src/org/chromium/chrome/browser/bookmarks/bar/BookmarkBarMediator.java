@@ -85,7 +85,6 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
     private final ObservableSupplier<BookmarkManagerOpener> mBookmarkManagerOpenerSupplier;
     private final RecyclerView mItemsRecyclerView;
     private final BookmarkBar mBookmarkBarView;
-    private final Runnable mHandleBookmarkBarChange;
 
     // The popup window that displays the contents of a bookmark folder. Instantiated in {@code
     // showPopupMenu} when a folder is tapped.
@@ -112,7 +111,6 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
      * @param itemsRecyclerView The bookmark_bar_items_container recycler view that is inside the
      *     bookmark_bar view.
      * @param bookmarkBarView The bookmark_bar view that contains the entire bookmarks bar.
-     * @param handleBookmarkBarChange Callback for notifications of bookmark bar changes.
      */
     public BookmarkBarMediator(
             Activity activity,
@@ -126,10 +124,8 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
             BookmarkOpener bookmarkOpener,
             ObservableSupplier<BookmarkManagerOpener> bookmarkManagerOpenerSupplier,
             RecyclerView itemsRecyclerView,
-            BookmarkBar bookmarkBarView,
-            Runnable handleBookmarkBarChange) {
+            BookmarkBar bookmarkBarView) {
         mActivity = activity;
-        mHandleBookmarkBarChange = handleBookmarkBarChange;
 
         mAllBookmarksButtonModel = allBookmarksButtonModel;
         mControlsHeightSupplier = controlsHeightSupplier;
@@ -205,21 +201,18 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                 index,
                 BookmarkBarUtils.createListItemFor(
                         this::onBookmarkItemClick, mActivity, mImageFetcher, item));
-        mHandleBookmarkBarChange.run();
     }
 
     @Override
     public void onBookmarkItemMoved(
             @BookmarkBarItemsProvider.ObservationId int observationId, int index, int oldIndex) {
         mItemsModel.move(oldIndex, index);
-        mHandleBookmarkBarChange.run();
     }
 
     @Override
     public void onBookmarkItemRemoved(
             @BookmarkBarItemsProvider.ObservationId int observationId, int index) {
         mItemsModel.removeAt(index);
-        mHandleBookmarkBarChange.run();
     }
 
     @Override
@@ -231,7 +224,6 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                 index,
                 BookmarkBarUtils.createListItemFor(
                         this::onBookmarkItemClick, mActivity, mImageFetcher, item));
-        mHandleBookmarkBarChange.run();
     }
 
     @Override
@@ -246,14 +238,12 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                             this::onBookmarkItemClick, mActivity, mImageFetcher, items.get(i)));
         }
         mItemsModel.addAll(batch, index);
-        mHandleBookmarkBarChange.run();
     }
 
     @Override
     public void onBookmarkItemsRemoved(
             @BookmarkBarItemsProvider.ObservationId int observationId, int index, int count) {
         mItemsModel.removeRange(index, count);
-        mHandleBookmarkBarChange.run();
     }
 
     // Private methods.
