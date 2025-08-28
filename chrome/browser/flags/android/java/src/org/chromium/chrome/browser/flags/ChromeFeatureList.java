@@ -220,6 +220,7 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_USE_ADMINS_FOR_ENTERPRISE_INFO =
             "AndroidUseAdminsForEnterpriseInfo";
     public static final String ANDROID_WEB_APP_LAUNCH_HANDLER = "AndroidWebAppLaunchHandler";
+    public static final String ANDROID_WINDOW_CONTROLS_OVERLAY = "AndroidWindowControlsOverlay";
     public static final String ANDROID_WINDOW_POPUP_LARGE_SCREEN = "AndroidWindowPopupLargeScreen";
     public static final String ANDROID_WINDOW_POPUP_PREDICT_FINAL_BOUNDS =
             "AndroidWindowPopupPredictFinalBounds";
@@ -774,6 +775,8 @@ public abstract class ChromeFeatureList {
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sAndroidWebAppLaunchHandler =
             newCachedFlag(ANDROID_WEB_APP_LAUNCH_HANDLER, false, true);
+    public static final CachedFlag sAndroidWindowControlsOverlay =
+            newCachedFlag(ANDROID_WINDOW_CONTROLS_OVERLAY, false);
     public static final CachedFlag sAndroidWindowPopupLargeScreen =
             newCachedFlag(ANDROID_WINDOW_POPUP_LARGE_SCREEN, false, true);
     public static final CachedFlag sAndroidWindowPopupPredictFinalBounds =
@@ -1128,6 +1131,7 @@ public abstract class ChromeFeatureList {
                     sAndroidThemeResourceProvider,
                     sAndroidUseAdminsForEnterpriseInfo,
                     sAndroidWebAppLaunchHandler,
+                    sAndroidWindowControlsOverlay,
                     sAndroidWindowPopupLargeScreen,
                     sAndroidWindowPopupPredictFinalBounds,
                     sAndroidWindowPopupResizeAfterSpawn,

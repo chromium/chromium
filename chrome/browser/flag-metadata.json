@@ -2870,6 +2870,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "enable-android-window-controls-overlay",
+    "owners": [ "asraine@google.com", "japhet@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-android-window-occlusion",
     "owners": [
       "edcourtney@chromium.org",

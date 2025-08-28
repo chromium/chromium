@@ -6269,6 +6269,11 @@ const char kAndroidUseCorrectWindowBoundsDescription[] =
     "bounds in Blink. Impacts values reported by the window.screenX, "
     "window.screenY, window.outerWidth, and window.outerHeight web APIs.";
 
+const char kAndroidWindowControlsOverlayName[] =
+    "Enable window controls overlay in PWAs";
+const char kAndroidWindowControlsOverlayDescription[] =
+    "Allow window-controls-overlay display mode for PWAs.";
+
 const char kAndroidWindowManagementWebApiName[] = "Window Management Web API";
 const char kAndroidWindowManagementWebApiDescription[] =
     "Enable Window Management Web API. Websites can obtain information about "

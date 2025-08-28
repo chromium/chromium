@@ -12218,6 +12218,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidMinimalUiLargeScreenDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(webapps::features::kAndroidMinimalUiLargeScreen)},
 
+    {"enable-android-window-controls-overlay",
+     flag_descriptions::kAndroidWindowControlsOverlayName,
+     flag_descriptions::kAndroidWindowControlsOverlayDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(webapps::features::kAndroidWindowControlsOverlay)},
+
     {"credential-management-third-party-web-api-request-forwarding",
      flag_descriptions::
          kCredentialManagementThirdPartyWebApiRequestForwardingName,

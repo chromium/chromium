@@ -506,6 +506,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &visited_url_ranking::features::kVisitedURLRankingService,
     &webapps::features::kWebApkInstallFailureNotification,
     &webapps::features::kAndroidMinimalUiLargeScreen,
+    &webapps::features::kAndroidWindowControlsOverlay,
     &base::features::kPostGetMyMemoryStateToBackground,
 };
 
