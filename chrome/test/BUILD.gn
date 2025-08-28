@@ -2412,6 +2412,7 @@ if (!is_android) {
       "//chrome/browser/search",
       "//chrome/browser/search_engines",
       "//chrome/browser/segmentation_platform:test_utils",
+      "//chrome/browser/serial:browser_tests",
       "//chrome/browser/signin/e2e_tests:test_support",
       "//chrome/browser/storage_access_api",
       "//chrome/browser/supervised_user:test_support",
@@ -3484,7 +3485,6 @@ if (!is_android) {
       "../browser/search_engines/template_url_service_browsertest.cc",
       "../browser/secure_origin_allowlist_browsertest.cc",
       "../browser/send_tab_to_self/desktop_notification_handler_browsertest.cc",
-      "../browser/serial/chrome_serial_browsertest.cc",
       "../browser/sessions/better_session_restore_browsertest.cc",
       "../browser/sessions/exit_type_service_browsertest.cc",
       "../browser/sessions/session_id_generator_browsertest.cc",
@@ -6568,9 +6568,6 @@ test("unit_tests") {
     "../browser/segmentation_platform/segmentation_platform_config_unittest.cc",
     "../browser/segmentation_platform/segmentation_platform_profile_observer_unittest.cc",
     "../browser/segmentation_platform/segmentation_platform_service_factory_unittest.cc",
-    "../browser/serial/serial_blocklist_unittest.cc",
-    "../browser/serial/serial_chooser_context_unittest.cc",
-    "../browser/serial/serial_policy_allowed_ports_unittest.cc",
     "../browser/services_unittest.cc",
     "../browser/sessions/chrome_serialized_navigation_driver_unittest.cc",
     "../browser/sessions/session_common_utils_unittest.cc",
@@ -6937,6 +6934,7 @@ test("unit_tests") {
     "//chrome/browser/search_engines",
     "//chrome/browser/segmentation_platform",
     "//chrome/browser/segmentation_platform:test_utils",
+    "//chrome/browser/serial:unit_tests",
     "//chrome/browser/share",
     "//chrome/browser/status_icons",
     "//chrome/browser/storage_access_api",
@@ -12986,16 +12984,14 @@ if (is_linux || is_mac || is_win) {
     sources = [
       "../browser/bluetooth/chrome_bluetooth_realtarget_browsertest.cc",
       "../browser/hid/chrome_hid_realtarget_browsertest.cc",
-      "../browser/serial/chrome_serial_realtarget_browsertest.cc",
       "../browser/usb/chrome_usb_realtarget_browsertest.cc",
     ]
     deps = [
       ":browser_tests_runner",
       ":test_support",
       "//chrome:packed_resources",
-      "//chrome/browser/serial",
+      "//chrome/browser/serial:device_realtarget_browsertests",
       "//chrome/browser/ui/hid",
-      "//chrome/browser/ui/serial",
     ]
   }
 }
