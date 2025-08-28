@@ -24,6 +24,8 @@ struct TabGroup {
   tab_groups.mojom.Color color;
   // The URLs for up to the first three tabs. Used for fetching favicon.
   array<url.mojom.Url> favicon_urls;
+  // Whether the tab group is shared.
+  bool is_shared_tab_group;
 };
 
 // Browser-side handler for requests from NTP Module UI.

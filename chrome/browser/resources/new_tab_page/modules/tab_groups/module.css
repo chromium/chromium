@@ -156,7 +156,7 @@ a:focus-visible {
   border: none;
 }
 
-.create-new-tab-group-icon {
+.icon {
   width: 20px;
   height: 20px;
   flex-shrink: 0;
@@ -285,6 +285,7 @@ a:focus-visible {
   flex-basis: 0;
 }
 
-#createNewTabGroupIcon {
+#createNewTabGroupIcon,
+#sharedTabGroupIcon {
   color: var(--color-new-tab-page-primary-foreground);
 }

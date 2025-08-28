@@ -28,8 +28,7 @@
         <div id="zeroTabGroupsCreateNewTabGroup">
           <cr-button id="createNewTabGroupButton" class="create-new-tab-group"
               @click="${this.onCreateNewTabGroupClick_}">
-            <cr-icon id="createNewTabGroupButtonIcon"
-                class="create-new-tab-group-icon"
+            <cr-icon id="createNewTabGroupButtonIcon" class="icon"
                 icon="tab_groups:create_new_tab_group" slot="prefix-icon">
             </cr-icon>
             <div id="createNewTabGroupButtonText">
@@ -54,6 +53,11 @@
               <div class="tab-group-title">${item.title}</div>
               <div class="tab-group-description">${this.computeDescription_(item.updateTime, item.deviceName)}</div>
             </div>
+            ${item.isSharedTabGroup ? html`
+              <cr-icon id="sharedTabGroupIcon" class="icon"
+                  icon="tab_groups:shared_tab_group" slot="icon">
+              </cr-icon>
+            ` : ''}
           </a>
         </div>
       `)}
@@ -63,8 +67,7 @@
           <div class="hover-layer"></div>
           <a id="createNewTabGroupLink" class="create-new-tab-group"
               @click="${this.onCreateNewTabGroupClick_}">
-            <cr-icon id="createNewTabGroupIcon"
-                class="create-new-tab-group-icon"
+            <cr-icon id="createNewTabGroupIcon" class="icon"
                 icon="tab_groups:create_new_tab_group" slot="icon">
             </cr-icon>
             <div id="createNewTabGroupText" class="tab-group-title">

@@ -7,6 +7,7 @@ import {colorIdToString, tabGroupsDescriptor, TabGroupsProxyImpl} from 'chrome:/
 import {Color} from 'chrome://new-tab-page/tab_group_types.mojom-webui.js';
 import {PageHandlerRemote} from 'chrome://new-tab-page/tab_groups.mojom-webui.js';
 import type {TabGroup} from 'chrome://new-tab-page/tab_groups.mojom-webui.js';
+import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -50,6 +51,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
           {url: 'https://maps.google.com'},
         ],
         totalTabCount: 4,
+        isSharedTabGroup: true,
       },
       {
         id: '0',
@@ -64,6 +66,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
           {url: 'https://maps.google.com'},
         ],
         totalTabCount: 8,
+        isSharedTabGroup: false,
       },
       {
         id: '0',
@@ -78,6 +81,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
           {url: 'https://maps.google.com'},
         ],
         totalTabCount: 188,
+        isSharedTabGroup: true,
       },
     ];
     const module = await createModule(tabGroups);
@@ -106,6 +110,9 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
       assertEquals(tabGroups[i]!.totalTabCount, iconContainer.totalTabCount);
       assertTrue(iconContainer.getAttribute('style')!.includes(
           `background-color: var(${colorIdToString(tabGroups[i]!.color)})`));
+      const sharedTabGroupIcon =
+          groups[i]!.querySelector<CrIconElement>('#sharedTabGroupIcon');
+      assertEquals(tabGroups[i]!.isSharedTabGroup, !!sharedTabGroupIcon);
     }
 
     // Verify that optional device info is parsed correclty.
@@ -143,6 +150,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
       deviceName: 'Test Device',
       faviconUrls: [{url: 'https://www.google.com'}],
       totalTabCount: 1,
+      isSharedTabGroup: false,
     }]);
 
     // Assert.
@@ -174,6 +182,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
         {url: 'https://maps.google.com'},
       ],
       totalTabCount: 4,
+      isSharedTabGroup: false,
     }]);
 
     // Assert.
@@ -203,6 +212,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
         {url: 'https://maps.google.com'},
       ],
       totalTabCount: 8,
+      isSharedTabGroup: false,
     }]);
 
     // Assert.
@@ -235,6 +245,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
         {url: 'https://maps.google.com'},
       ],
       totalTabCount: 188,
+      isSharedTabGroup: false,
     }]);
 
     // Assert.
@@ -294,6 +305,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
       deviceName: 'Test Device',
       faviconUrls: [{url: 'https://www.google.com'}],
       totalTabCount: 1,
+      isSharedTabGroup: false,
     }]);
 
     // Assert.
@@ -334,6 +346,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
       deviceName: 'Test Device',
       faviconUrls: [{url: 'https://www.google.com'}],
       totalTabCount: 1,
+      isSharedTabGroup: false,
     }]);
     assertTrue(!!module);
 
@@ -361,6 +374,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
       deviceName: 'Test Device',
       faviconUrls: [{url: 'https://www.google.com'}],
       totalTabCount: 1,
+      isSharedTabGroup: false,
     }]);
     assertTrue(!!module);
 
@@ -396,6 +410,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
       deviceName: null,
       faviconUrls: [{url: 'https://www.google.com'}],
       totalTabCount: 1,
+      isSharedTabGroup: false,
     }]);
     assertTrue(!!module);
 
@@ -445,6 +460,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
         deviceName: null,
         faviconUrls: [{url: 'https://www.google.com'}],
         totalTabCount: 1,
+        isSharedTabGroup: false,
       },
       {
         id: '1',
@@ -454,6 +470,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
         deviceName: null,
         faviconUrls: [],
         totalTabCount: 0,
+        isSharedTabGroup: false,
       },
     ]);
     assertTrue(!!module);
