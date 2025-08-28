@@ -171,7 +171,7 @@ class MockPage : public side_panel::mojom::CustomizeChromePage {
            bool visible));
   MOCK_METHOD(void,
               SetMostVisitedSettings,
-              (bool custom_links_enabled, bool visible));
+              (ntp_tiles::TileType type, bool visible));
   MOCK_METHOD(void, SetTheme, (side_panel::mojom::ThemePtr));
   MOCK_METHOD(void, SetThemeEditable, (bool));
   MOCK_METHOD(void,
@@ -372,15 +372,12 @@ class CustomizeChromePageHandlerTest : public testing::Test {
   raw_ptr<NtpBackgroundServiceObserver> ntp_background_service_observer_;
 };
 
-// TODO(crbug.com/438302330): Pass type instead of custom_links_enabled when
-// mojom is updated.
 TEST_F(CustomizeChromePageHandlerTest, SetMostVisitedSettings) {
-  bool custom_links_enabled;
+  ntp_tiles::TileType type;
   bool visible;
   EXPECT_CALL(mock_page_, SetMostVisitedSettings)
       .Times(4)
-      .WillRepeatedly(
-          DoAll(SaveArg<0>(&custom_links_enabled), SaveArg<1>(&visible)));
+      .WillRepeatedly(DoAll(SaveArg<0>(&type), SaveArg<1>(&visible)));
 
   profile().GetPrefs()->SetInteger(
       ntp_prefs::kNtpShortcutsType,
@@ -393,8 +390,9 @@ TEST_F(CustomizeChromePageHandlerTest, SetMostVisitedSettings) {
   EXPECT_FALSE(
       profile().GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible));
 
-  handler().SetMostVisitedSettings(/*custom_links_enabled=*/false,
-                                   /*visible=*/true);
+  handler().SetMostVisitedSettings(
+      /*type=*/ntp_tiles::TileType::kTopSites,
+      /*visible=*/true);
   mock_page_.FlushForTesting();
 
   EXPECT_EQ(static_cast<int>(ntp_tiles::TileType::kTopSites),

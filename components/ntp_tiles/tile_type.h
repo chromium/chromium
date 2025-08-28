@@ -5,27 +5,11 @@
 #ifndef COMPONENTS_NTP_TILES_TILE_TYPE_H_
 #define COMPONENTS_NTP_TILES_TILE_TYPE_H_
 
+#include "components/ntp_tiles/tile_type.mojom.h"
+
 namespace ntp_tiles {
 
-// The enum demonstrates the type of a tile.
-//
-// It is used to categorize NTP tiles based on their origin for the following
-// cases:
-// * To track tiles that have been deleted post default app migration.
-// * To track which tile type to show in the New Tab page.
-//
-// These values must stay in sync with the TypeOfDeletedMostVisitedApp enum in
-// enums.xml and `kNtpShortcutsType` pref.
-
-enum class TileType {
-  // Tile with top sites type.
-  kTopSites = 0,
-
-  // Tile with custom links type.
-  kCustomLinks = 1,
-
-  kMaxValue = kCustomLinks
-};
+using TileType = mojom::TileType;
 
 }  // namespace ntp_tiles
 

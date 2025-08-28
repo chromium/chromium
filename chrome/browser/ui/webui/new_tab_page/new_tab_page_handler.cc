@@ -581,9 +581,7 @@ void NewTabPageHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kNtpComposeButtonShownCountPrefName, 0);
 }
 
-// TODO(crbug.com/438302330): Pass Tiletype instead of custom_links_enabled when
-// mojom is updated.
-void NewTabPageHandler::SetMostVisitedSettings(bool custom_links_enabled,
+void NewTabPageHandler::SetMostVisitedSettings(ntp_tiles::TileType type,
                                                bool visible) {
   bool old_visible = IsShortcutsVisible();
   if (old_visible != visible) {
@@ -592,25 +590,20 @@ void NewTabPageHandler::SetMostVisitedSettings(bool custom_links_enabled,
                      base::TimeDelta() /* unused */);
   }
 
-  bool old_custom_links_enabled = IsCustomLinksEnabled();
-  if (old_custom_links_enabled != custom_links_enabled) {
-    profile_->GetPrefs()->SetInteger(
-        ntp_prefs::kNtpShortcutsType,
-        custom_links_enabled
-            ? static_cast<int>(ntp_tiles::TileType::kCustomLinks)
-            : static_cast<int>(ntp_tiles::TileType::kTopSites));
+  ntp_tiles::TileType old_type = GetTileType();
+  if (old_type != type) {
+    profile_->GetPrefs()->SetInteger(ntp_prefs::kNtpShortcutsType,
+                                     static_cast<int>(type));
     logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_TOGGLE_TYPE,
                      base::TimeDelta() /* unused */);
   }
 }
 
-// TODO(crbug.com/438302330): Return type instead of custom_links_enabled when
-// mojom is updated.
 void NewTabPageHandler::GetMostVisitedSettings(
     GetMostVisitedSettingsCallback callback) {
-  bool custom_links_enabled = IsCustomLinksEnabled();
+  ntp_tiles::TileType type = GetTileType();
   bool visible = IsShortcutsVisible();
-  std::move(callback).Run(custom_links_enabled, visible);
+  std::move(callback).Run(type, visible);
 }
 
 void NewTabPageHandler::SetBackgroundImage(const std::string& attribution_1,
@@ -1452,12 +1445,9 @@ void NewTabPageHandler::OnLogFetchResult(OnDoodleImageRenderedCallback callback,
   std::move(callback).Run(target_url_params, interaction_log_url, encoded_ei);
 }
 
-// TODO(crbug.com/438302330): Return TileType and rename function to
-// GetShortcutsType() when mojom is updated.
-bool NewTabPageHandler::IsCustomLinksEnabled() const {
+ntp_tiles::TileType NewTabPageHandler::GetTileType() const {
   return static_cast<ntp_tiles::TileType>(
-             profile_->GetPrefs()->GetInteger(ntp_prefs::kNtpShortcutsType)) ==
-         ntp_tiles::TileType::kCustomLinks;
+      profile_->GetPrefs()->GetInteger(ntp_prefs::kNtpShortcutsType));
 }
 
 bool NewTabPageHandler::IsShortcutsVisible() const {

@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/common/search/ntp_logging_events.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/ntp_tiles/tile_type.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/search_engines/template_url_service_observer.h"
 #include "components/themes/ntp_background_service.h"
@@ -133,7 +134,7 @@ class CustomizeChromePageHandler
       side_panel::mojom::ChromeWebStoreCollection collection) override;
   void OpenChromeWebStoreHomePage() override;
   void OpenNtpManagedByPage() override;
-  void SetMostVisitedSettings(bool custom_links_enabled, bool visible) override;
+  void SetMostVisitedSettings(ntp_tiles::TileType type, bool visible) override;
   void UpdateMostVisitedSettings() override;
   void SetFooterVisible(bool visible) override;
   void UpdateFooterSettings() override;
@@ -147,7 +148,7 @@ class CustomizeChromePageHandler
  private:
   void LogEvent(NTPLoggingEventType event);
 
-  bool IsCustomLinksEnabled() const;
+  ntp_tiles::TileType GetTileType() const;
   bool IsShortcutsVisible() const;
 
   // Returns the type of New Tab Page the SidePanel is attached to.

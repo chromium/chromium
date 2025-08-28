@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/views/new_tab_footer/footer_controller_observer.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/common/search/ntp_logging_events.h"
+#include "components/ntp_tiles/tile_type.h"
 #include "components/optimization_guide/core/model_execution/settings_enabled_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/search_provider_logos/logo_common.h"
@@ -125,7 +126,7 @@ class NewTabPageHandler
           child_untrusted_document_remote);
 
   // new_tab_page::mojom::PageHandler:
-  void SetMostVisitedSettings(bool custom_links_enabled, bool visible) override;
+  void SetMostVisitedSettings(ntp_tiles::TileType type, bool visible) override;
   void GetMostVisitedSettings(GetMostVisitedSettingsCallback callback) override;
   void SetBackgroundImage(const std::string& attribution_1,
                           const std::string& attribution_2,
@@ -232,7 +233,7 @@ class NewTabPageHandler
                         bool success,
                         std::unique_ptr<std::string> body);
 
-  bool IsCustomLinksEnabled() const;
+  ntp_tiles::TileType GetTileType() const;
   bool IsShortcutsVisible() const;
   void MaybeLaunchInteractionSurvey(std::string_view interaction,
                                     const std::string& module_id,

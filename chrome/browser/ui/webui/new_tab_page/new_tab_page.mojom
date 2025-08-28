@@ -4,6 +4,7 @@
 
 module new_tab_page.mojom;
 
+import "components/ntp_tiles/tile_type.mojom";
 import "chrome/browser/ui/webui/ntp_microsoft_auth/ntp_microsoft_auth_shared_ui.mojom";
 import "skia/public/mojom/skcolor.mojom";
 import "ui/webui/resources/cr_components/most_visited/most_visited.mojom";
@@ -246,11 +247,12 @@ interface PageHandler {
   SetDailyRefreshCollectionId(string collection_id);
   // Clears the background and daily refresh settings.
   SetNoBackgroundImage();
-  // Sets the visibility of NTP tiles and whether custom links are enabled.
-  SetMostVisitedSettings(bool custom_links_enabled, bool shortcuts_visible);
-  // Returns the visibility of NTP tiles and whether custom links are enabled.
-  GetMostVisitedSettings() => (bool custom_links_enabled,
-                               bool shortcuts_visible);
+  // Sets the visibility of NTP tiles and the shortcuts type.
+  SetMostVisitedSettings(ntp_tiles.mojom.TileType shortcuts_type,
+    bool shortcuts_visible);
+  // Returns the visibility of NTP tiles and the shortcuts type.
+  GetMostVisitedSettings() => (ntp_tiles.mojom.TileType shortcuts_type,
+    bool shortcuts_visible);
   // Returns the collections of background images.
   GetBackgroundCollections() => (array<BackgroundCollection> collections);
   // Returns the images of a collection identified by |collection_id|.

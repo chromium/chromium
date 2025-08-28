@@ -471,17 +471,12 @@ void CustomizeChromePageHandler::OpenNtpManagedByPage() {
   open_url_callback_.Run(GURL(chrome::kBrowserSettingsSearchEngineURL));
 }
 
-// TODO(crbug.com/438302330): Pass Tiletype instead of custom_links_enabled when
-// mojom is updated.
 void CustomizeChromePageHandler::SetMostVisitedSettings(
-    bool custom_links_enabled,
+    ntp_tiles::TileType type,
     bool visible) {
-  if (IsCustomLinksEnabled() != custom_links_enabled) {
-    profile_->GetPrefs()->SetInteger(
-        ntp_prefs::kNtpShortcutsType,
-        custom_links_enabled
-            ? static_cast<int>(ntp_tiles::TileType::kCustomLinks)
-            : static_cast<int>(ntp_tiles::TileType::kTopSites));
+  if (GetTileType() != type) {
+    profile_->GetPrefs()->SetInteger(ntp_prefs::kNtpShortcutsType,
+                                     static_cast<int>(type));
     LogEvent(NTP_CUSTOMIZE_SHORTCUT_TOGGLE_TYPE);
   }
 
@@ -491,10 +486,8 @@ void CustomizeChromePageHandler::SetMostVisitedSettings(
   }
 }
 
-// TODO(crbug.com/438302330): Pass GetShortcutsType() instead of
-// IsCustomLinksEnabled() when mojom is updated.
 void CustomizeChromePageHandler::UpdateMostVisitedSettings() {
-  page_->SetMostVisitedSettings(IsCustomLinksEnabled(), IsShortcutsVisible());
+  page_->SetMostVisitedSettings(GetTileType(), IsShortcutsVisible());
 }
 
 void CustomizeChromePageHandler::OnBrowserWindowInterfaceChanged() {
@@ -661,12 +654,9 @@ void CustomizeChromePageHandler::LogEvent(NTPLoggingEventType event) {
   }
 }
 
-// TODO(crbug.com/438302330): Return TileType and rename function to
-// GetShortcutsType() when mojom is updated.
-bool CustomizeChromePageHandler::IsCustomLinksEnabled() const {
+ntp_tiles::TileType CustomizeChromePageHandler::GetTileType() const {
   return static_cast<ntp_tiles::TileType>(
-             profile_->GetPrefs()->GetInteger(ntp_prefs::kNtpShortcutsType)) ==
-         ntp_tiles::TileType::kCustomLinks;
+      profile_->GetPrefs()->GetInteger(ntp_prefs::kNtpShortcutsType));
 }
 
 bool CustomizeChromePageHandler::IsShortcutsVisible() const {

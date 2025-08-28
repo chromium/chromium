@@ -4,6 +4,7 @@
 
 import("//components/supervised_user/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -56,6 +57,7 @@ static_library("ntp_tiles") {
     "//components/ntp_tiles/webui/resources",
   ]
   deps = [
+    ":mojo_bindings",
     "//build:branding_buildflags",
     "//components/favicon/core",
     "//components/favicon_base",
@@ -177,4 +179,9 @@ if (is_android) {
       "tile_visual_type.h",
     ]
   }
+}
+
+mojom("mojo_bindings") {
+  sources = [ "tile_type.mojom" ]
+  webui_module_path = "/"
 }
