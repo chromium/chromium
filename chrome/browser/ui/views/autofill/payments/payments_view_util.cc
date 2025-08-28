@@ -33,6 +33,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -159,6 +160,7 @@ void LabeledTextfieldWithErrorMessage::SetErrorState(
   if (error_label) {
     if (error_message.has_value()) {
       error_label->SetText(error_message.value());
+      error_label->GetViewAccessibility().AnnounceAlert(error_message.value());
     }
     error_label->SetVisible(!is_valid);
   }
