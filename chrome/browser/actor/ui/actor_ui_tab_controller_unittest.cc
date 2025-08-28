@@ -12,6 +12,7 @@
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/actor/ui/actor_border_view_controller.h"
+#include "chrome/browser/actor/ui/actor_overlay_window_controller.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/actor/ui/mocks/mock_actor_overlay_view_controller.h"
 #include "chrome/browser/actor/ui/mocks/mock_actor_ui_state_manager.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/views/frame/mock_immersive_mode_controller.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
@@ -31,6 +33,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/views/controls/webview/webview.h"
 
 namespace actor::ui {
 namespace {
@@ -73,6 +76,10 @@ class ActorUiTabControllerTest : public testing::Test {
         {{features::kGlicActorUiHandoffButtonName, "true"},
          {features::kGlicActorUiOverlayName, "true"}});
     profile_ = TestingProfile::Builder().Build();
+    immersive_mode_controller_ =
+        std::make_unique<MockImmersiveModeController>();
+    ON_CALL(*immersive_mode_controller(), IsEnabled())
+        .WillByDefault(Return(false));
 
     actor_keyed_service_ = std::make_unique<ActorKeyedServiceFake>(profile());
     std::unique_ptr<MockActorUiStateManager> ausm =
@@ -92,6 +99,18 @@ class ActorUiTabControllerTest : public testing::Test {
         .WillByDefault(Return(&tab_strip_model_));
     ON_CALL(mock_browser_window_interface_, GetUnownedUserDataHost)
         .WillByDefault(ReturnRef(user_data_host_));
+    ON_CALL(mock_browser_window_interface_, GetImmersiveModeController())
+        .WillByDefault(Return(immersive_mode_controller_.get()));
+
+    container_view_for_window_controller_ = std::make_unique<views::View>();
+    container_web_view_ = std::make_unique<views::WebView>(profile());
+    std::vector<std::pair<views::WebView*, views::View*>>
+        container_overlay_view_pairs;
+    container_overlay_view_pairs.emplace_back(
+        container_web_view_.get(), container_view_for_window_controller_.get());
+    window_controller_ = std::make_unique<ActorOverlayWindowController>(
+        &mock_browser_window_interface_, container_overlay_view_pairs);
+
     border_view_controller_ = std::make_unique<ActorBorderViewController>(
         &mock_browser_window_interface_);
 
@@ -132,6 +151,15 @@ class ActorUiTabControllerTest : public testing::Test {
     return border_view_controller_.get();
   }
 
+  MockImmersiveModeController* immersive_mode_controller() {
+    return immersive_mode_controller_.get();
+  }
+
+  void TearDown() override {
+    window_controller_.reset();
+    testing::Test::TearDown();
+  }
+
   TaskId task_id() { return task_id_; }
 
   TestingProfile* profile() { return profile_.get(); }
@@ -153,6 +181,10 @@ class ActorUiTabControllerTest : public testing::Test {
   ::ui::UnownedUserDataHost user_data_host_;
   MockTabInterface mock_tab_;
   MockBrowserWindowInterface mock_browser_window_interface_;
+  std::unique_ptr<MockImmersiveModeController> immersive_mode_controller_;
+  std::unique_ptr<ActorOverlayWindowController> window_controller_;
+  std::unique_ptr<views::WebView> container_web_view_;
+  std::unique_ptr<views::View> container_view_for_window_controller_;
   TestTabStripModelDelegate delegate_;
   TabStripModel tab_strip_model_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -225,9 +257,11 @@ TEST_F(ActorUiTabControllerTest,
   HandoffButtonState handoff_button_state(
       true, HandoffButtonState::ControlOwnership::kActor);
   UiTabState ui_tab_state(ActorOverlayState(), handoff_button_state);
-  tab_controller()->OnUiTabStateChange(ui_tab_state, base::DoNothing());
+  base::test::TestFuture<bool> future;
+  tab_controller()->OnUiTabStateChange(ui_tab_state, future.GetCallback());
   tab_controller()->OnTabActiveStatusChanged(true, &mock_tab());
   Debounce();
+  EXPECT_TRUE(future.Get());
 
   EXPECT_CALL(*tab_controller_factory()->handoff_button_controller(),
               UpdateState(_, true));
@@ -255,9 +289,11 @@ TEST_F(
   HandoffButtonState handoff_button_state(
       true, HandoffButtonState::ControlOwnership::kActor);
   UiTabState ui_tab_state(ActorOverlayState(), handoff_button_state);
-  tab_controller()->OnUiTabStateChange(ui_tab_state, base::DoNothing());
+  base::test::TestFuture<bool> future;
+  tab_controller()->OnUiTabStateChange(ui_tab_state, future.GetCallback());
   tab_controller()->OnTabActiveStatusChanged(true, &mock_tab());
   Debounce();
+  EXPECT_TRUE(future.Get());
 
   EXPECT_CALL(*tab_controller_factory()->handoff_button_controller(),
               UpdateState(handoff_button_state, /*is_visible=*/true));
@@ -324,12 +360,34 @@ TEST_F(ActorUiTabControllerTest,
   HandoffButtonState handoff_button_state(
       true, HandoffButtonState::ControlOwnership::kActor);
   UiTabState ui_tab_state(ActorOverlayState(), handoff_button_state);
-  tab_controller()->OnUiTabStateChange(ui_tab_state, base::DoNothing());
+  base::test::TestFuture<bool> future;
+  tab_controller()->OnUiTabStateChange(ui_tab_state, future.GetCallback());
   tab_controller()->OnTabActiveStatusChanged(true, &mock_tab());
   Debounce();
+  EXPECT_TRUE(future.Get());
 
   EXPECT_CALL(*tab_controller_factory()->handoff_button_controller(),
               UpdateState(_, /*is_visible=*/true));
+
+  tab_controller()->SetHandoffButtonHoverStatus(true);
+  Debounce();
+}
+
+TEST_F(ActorUiTabControllerTest,
+       SetHandoffButtonHoverStatus_ButtonHidesWhenInImmersiveMode) {
+  ON_CALL(*immersive_mode_controller(), IsEnabled())
+      .WillByDefault(Return(true));
+  HandoffButtonState handoff_button_state(
+      true, HandoffButtonState::ControlOwnership::kActor);
+  UiTabState ui_tab_state(ActorOverlayState(), handoff_button_state);
+  base::test::TestFuture<bool> future;
+  tab_controller()->OnUiTabStateChange(ui_tab_state, future.GetCallback());
+  tab_controller()->OnTabActiveStatusChanged(true, &mock_tab());
+  Debounce();
+  EXPECT_TRUE(future.Get());
+
+  EXPECT_CALL(*tab_controller_factory()->handoff_button_controller(),
+              UpdateState(_, /*is_visible=*/false));
 
   tab_controller()->SetHandoffButtonHoverStatus(true);
   Debounce();

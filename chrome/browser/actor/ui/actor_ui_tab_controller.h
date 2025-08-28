@@ -11,6 +11,7 @@
 #include "chrome/browser/actor/ui/actor_overlay_view_controller.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/actor/ui/handoff_button_controller.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "components/tabs/public/tab_interface.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -29,7 +30,8 @@ class ActorUiTabControllerFactory
       tabs::TabInterface& tab) override;
 };
 
-class ActorUiTabController : public ActorUiTabControllerInterface {
+class ActorUiTabController : public ActorUiTabControllerInterface,
+                             public ImmersiveModeController::Observer {
  public:
   ActorUiTabController(
       tabs::TabInterface& tab,
@@ -50,6 +52,12 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   void SetCallbackForTesting(base::OnceClosure callback) override;
   UiTabState GetCurrentUiTabState() const override;
   bool ShouldShowActorTabIndicator() override;
+
+  // ImmersiveModeController::Observer
+  void OnImmersiveFullscreenEntered() override;
+  void OnImmersiveFullscreenExited() override;
+  void OnImmersiveModeControllerDestroyed() override;
+
   base::WeakPtr<ActorUiTabControllerInterface> GetWeakPtr() override;
 
   // Binds the Mojo receiver to the tab's ActorOverlayViewController.
@@ -89,6 +97,9 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   // Updates the visibility of the scrim background. This is determined by the
   // hover status of the overlay and the handoff button.
   void UpdateScrimBackground();
+
+  // Initialize and start observing ImmersiveModeController.
+  void InitializeImmersiveModeObserver();
 
   // The current UiTabState.
   UiTabState current_ui_tab_state_ = {
@@ -136,6 +147,11 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   std::vector<base::CallbackListSubscription> update_ui_callback_subscription_;
 
   ::ui::ScopedUnownedUserData<ActorUiTabController> scoped_unowned_user_data_;
+
+  // Observer to get notifications when the immersive mode reveal state changes.
+  base::ScopedObservation<ImmersiveModeController,
+                          ImmersiveModeController::Observer>
+      immersive_mode_observer_{this};
 
   base::WeakPtrFactory<ActorUiTabController> weak_factory_{this};
 };

@@ -24,9 +24,6 @@
 
 namespace {
 
-// A fixed vertical offset from the top of the window, used when the tab
-// strip is not visible (e.g., in immersive fullscreen).
-constexpr int kHandoffButtonTopOffset = 8;
 constexpr int kHandoffbuttonPreferredHeight = 70;
 
 std::unique_ptr<views::NonClientFrameView> CreateHandoffButtonFrameView(
@@ -121,8 +118,6 @@ void HandoffButtonController::UpdateState(const HandoffButtonState& state,
     UpdateBounds();
   }
 
-  // TODO(crbug.com/422541242): Add Z-order logic.
-
   UpdateVisibility();
 }
 
@@ -205,16 +200,7 @@ gfx::Rect HandoffButtonController::GetHandoffButtonBounds(
   const int x =
       anchor_bounds.x() + (anchor_bounds.width() - preferred_size.width()) / 2;
 
-  // Calculate the Y coordinate based on tab strip visibility.
-  const bool is_tab_strip_visible =
-      tab_interface_->GetBrowserWindowInterface()->IsTabStripVisible();
-
-  const int y =
-      is_tab_strip_visible
-          // Vertically center the button on the top edge of the anchor.
-          ? anchor_bounds.y() - preferred_size.height() / 2
-          // Position with a fixed offset from the top of the anchor.
-          : anchor_bounds.y() - kHandoffButtonTopOffset;
+  const int y = anchor_bounds.y() - preferred_size.height() / 2;
 
   return gfx::Rect({x, y}, preferred_size);
 }

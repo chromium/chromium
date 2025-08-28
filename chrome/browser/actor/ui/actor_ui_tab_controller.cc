@@ -9,6 +9,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/ui/actor_border_view_controller.h"
+#include "chrome/browser/actor/ui/actor_overlay_window_controller.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/actor/ui/handoff_button_controller.h"
 #include "chrome/browser/profiles/profile.h"
@@ -165,6 +166,32 @@ void ActorUiTabController::UpdateUi() {
   OnUpdateFinished();
 }
 
+void ActorUiTabController::InitializeImmersiveModeObserver() {
+  if (immersive_mode_observer_.IsObserving()) {
+    return;
+  }
+  immersive_mode_observer_.Observe(
+      tab_->GetBrowserWindowInterface()->GetImmersiveModeController());
+}
+
+void ActorUiTabController::OnImmersiveFullscreenEntered() {
+  if (!actor_keyed_service_->IsAnyTaskActingOnTab(*tab_)) {
+    return;
+  }
+  update_ui_debounce_timer_.Reset();
+}
+
+void ActorUiTabController::OnImmersiveFullscreenExited() {
+  if (!actor_keyed_service_->IsAnyTaskActingOnTab(*tab_)) {
+    return;
+  }
+  update_ui_debounce_timer_.Reset();
+}
+
+void ActorUiTabController::OnImmersiveModeControllerDestroyed() {
+  immersive_mode_observer_.Reset();
+}
+
 void ActorUiTabController::SetBorderGlowVisibility() {
   if (auto* controller =
           ActorBorderViewController::From(tab_->GetBrowserWindowInterface())) {
@@ -181,6 +208,23 @@ bool ActorUiTabController::ComputeActorOverlayVisibility() {
 }
 
 bool ActorUiTabController::ComputeHandoffButtonVisibility() {
+  // TODO(crbug.com/436662421): Clean up this null check for
+  // ActorOverlayWindowController. The GetImmersiveModeController call is done
+  // on the BrowserView, which causes crashes in test scenarios where the
+  // BrowserView is not properly created in test environments. To ensure a
+  // BrowserView exists, we can check if ActorOverlayWindowController has been
+  // created, since its creation relies on a valid BrowserView. Once those tests
+  // are cleaned up, this null checks on the window controller can be removed.
+  if (!ActorOverlayWindowController::From(tab_->GetBrowserWindowInterface())) {
+    return false;
+  }
+  InitializeImmersiveModeObserver();
+  if (tab_->GetBrowserWindowInterface()
+          ->GetImmersiveModeController()
+          ->IsEnabled()) {
+    return false;
+  }
+
   bool is_button_active = current_ui_tab_state_.handoff_button.is_active;
   bool is_client_control =
       current_ui_tab_state_.handoff_button.controller == kClient;

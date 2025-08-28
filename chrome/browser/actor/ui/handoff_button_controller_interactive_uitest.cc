@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/tabs/public/tab_interface.h"
@@ -189,6 +191,23 @@ IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
       InAnyContext(HoverOverlayOnTab(kMovedTabId, true)),
       InAnyContext(
           WaitForShow(HandoffButtonController::kHandoffButtonElementId)));
+}
+
+IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
+                       ButtonHidesInImmersiveFullscreen) {
+  StartActingOnTab();
+  RunTestSequence(
+      // Enter immersive fullscreen.
+      Do([&]() {
+        ui_test_utils::ToggleFullscreenModeAndWait(browser());
+        ASSERT_TRUE(base::test::RunUntil(
+            [&]() { return browser()->window()->IsFullscreen(); }));
+      }),
+      // Trigger the event to show the button.
+      HoverOverlay(true),
+      // Verify the button does not show.
+      InAnyContext(
+          WaitForHide(HandoffButtonController::kHandoffButtonElementId)));
 }
 
 }  // namespace
