@@ -118,28 +118,6 @@ public class NavigationAttachmentsMediatorUnitTest {
     }
 
     @Test
-    public void onImagePickerClicked_permissionGranted_launchesImagePicker() {
-        doReturn(true).when(mWindowAndroid).hasPermission(any());
-        doNothing().when(mMediator).launchImagePicker();
-
-        mMediator.onImagePickerClicked();
-
-        verify(mMediator).launchImagePicker();
-        verify(mWindowAndroid, never()).requestPermissions(any(), any());
-    }
-
-    @Test
-    public void onImagePickerClicked_permissionDenied_requestsPermission() {
-        doReturn(false).when(mWindowAndroid).hasPermission(any());
-        doNothing().when(mMediator).launchImagePicker();
-
-        mMediator.onImagePickerClicked();
-
-        verify(mMediator, never()).launchImagePicker();
-        verify(mWindowAndroid).requestPermissions(any(), any());
-    }
-
-    @Test
     public void addAttachment_setsAttachmentsVisible() {
         mMediator.addAttachment(null, "title", "description");
         assertTrue(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE));

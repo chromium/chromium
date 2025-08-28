@@ -14,6 +14,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
 
 import androidx.annotation.VisibleForTesting;
@@ -36,6 +37,7 @@ import java.util.List;
 /** Mediator for the Navigation Attachments component. */
 @NullMarked
 class NavigationAttachmentsMediator {
+    private static final String MIMETYPE_IMAGE_ANY = "image/*";
     private final Context mContext;
     private final WindowAndroid mWindowAndroid;
     private final AndroidPermissionDelegate mPermissionDelegate;
@@ -136,27 +138,23 @@ class NavigationAttachmentsMediator {
     @VisibleForTesting
     void onImagePickerClicked() {
         mPopup.dismiss();
-        if (mPermissionDelegate.hasPermission(Manifest.permission.READ_MEDIA_IMAGES)) {
-            launchImagePicker();
-        } else {
-            mPermissionDelegate.requestPermissions(
-                    new String[] {Manifest.permission.READ_MEDIA_IMAGES},
-                    (permissions, grantResults) -> {
-                        if (grantResults.length > 0
-                                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                            launchImagePicker();
-                        }
-                    });
-        }
-    }
 
-    @VisibleForTesting
-    void launchImagePicker() {
-        var i =
-                new Intent(Intent.ACTION_GET_CONTENT)
-                        .addCategory(Intent.CATEGORY_OPENABLE)
-                        .putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-                        .setType("image/*");
+        Intent i;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            i =
+                    new Intent(MediaStore.ACTION_PICK_IMAGES)
+                            .setType(MIMETYPE_IMAGE_ANY)
+                            .putExtra(MediaStore.EXTRA_PICK_IMAGES_MAX, 10);
+        } else {
+            i =
+                    new Intent(Intent.ACTION_PICK)
+                            .setDataAndType(
+                                    MediaStore.Images.Media.INTERNAL_CONTENT_URI,
+                                    MIMETYPE_IMAGE_ANY)
+                            .putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        }
+
+        i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         mWindowAndroid.showCancelableIntent(
                 i,
@@ -178,6 +176,7 @@ class NavigationAttachmentsMediator {
 
     @VisibleForTesting
     void onFilePickerClicked() {
+        mPopup.dismiss();
         var i =
                 new Intent(Intent.ACTION_OPEN_DOCUMENT)
                         .addCategory(Intent.CATEGORY_OPENABLE)
