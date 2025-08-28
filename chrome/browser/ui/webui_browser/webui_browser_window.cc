@@ -60,11 +60,14 @@ class WebShellWebContentsUserData : public base::SupportsUserData::Data {
 class WebUIBrowserWindow::WidgetDelegate : public views::WidgetDelegate {
  public:
   explicit WidgetDelegate(
+      WebUIBrowserWindow* window,
       WebUIBrowserWebContentsDelegate* web_contents_delegate);
 
   views::ClientView* CreateClientView(views::Widget* widget) override;
+  std::u16string GetWindowTitle() const override;
 
  private:
+  raw_ptr<WebUIBrowserWindow> browser_window_;
   raw_ptr<WebUIBrowserWebContentsDelegate> web_contents_delegate_;
 };
 
@@ -74,7 +77,7 @@ WebUIBrowserWindow::WebUIBrowserWindow(std::unique_ptr<Browser> browser)
   web_contents_delegate_ =
       std::make_unique<WebUIBrowserWebContentsDelegate>(this);
   widget_delegate_ =
-      std::make_unique<WidgetDelegate>(web_contents_delegate_.get());
+      std::make_unique<WidgetDelegate>(this, web_contents_delegate_.get());
   widget_ = std::make_unique<views::Widget>();
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -354,7 +357,8 @@ std::vector<StatusBubble*> WebUIBrowserWindow::GetStatusBubbles() {
 }
 
 void WebUIBrowserWindow::UpdateTitleBar() {
-  NOTIMPLEMENTED();
+  widget_->UpdateWindowTitle();
+  // TODO(webium): The icon might also need updating.
 }
 
 void WebUIBrowserWindow::BookmarkBarStateChanged(
@@ -1002,13 +1006,21 @@ void WebUIBrowserWindow::OnWindowCloseRequested(
 }
 
 WebUIBrowserWindow::WidgetDelegate::WidgetDelegate(
+    WebUIBrowserWindow* window,
     WebUIBrowserWebContentsDelegate* web_contents_delegate)
-    : web_contents_delegate_(web_contents_delegate) {}
+    : browser_window_(window), web_contents_delegate_(web_contents_delegate) {}
 
 views::ClientView* WebUIBrowserWindow::WidgetDelegate::CreateClientView(
     views::Widget* widget) {
   return new WebUIBrowserClientView(web_contents_delegate_, widget,
                                     TransferOwnershipOfContentsView());
+}
+
+std::u16string WebUIBrowserWindow::WidgetDelegate::GetWindowTitle() const {
+  // TODO(webium):  BrowserView::GetWindowTitle() has some magic for media
+  // on Mac.
+  return browser_window_->browser()->GetWindowTitleForCurrentTab(
+      true /* include_app_name */);
 }
 
 WebUIBrowserUI* WebUIBrowserWindow::GetWebUIBrowserUI() const {
