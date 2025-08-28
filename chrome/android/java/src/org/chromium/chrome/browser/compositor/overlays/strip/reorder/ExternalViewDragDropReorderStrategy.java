@@ -82,7 +82,11 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
         // inserted should the drag be dropped.
         ArrayList<Animator> animationList = new ArrayList<>();
         setInteractingStateForView(
-                interactingView, stripGroupTitles, /* isInteracting= */ true, animationList);
+                interactingView,
+                stripGroupTitles,
+                stripTabs,
+                /* isInteracting= */ true,
+                animationList);
 
         // 3. Kick-off animations and request an update.
         mAnimationHost.startAnimations(animationList, null);
@@ -128,7 +132,11 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
             mAnimationHost.finishAnimations();
             ArrayList<Animator> animationList = new ArrayList<>();
             setInteractingStateForView(
-                    mInteractingView, groupTitles, /* isInteracting= */ false, animationList);
+                    mInteractingView,
+                    groupTitles,
+                    stripTabs,
+                    /* isInteracting= */ false,
+                    animationList);
             mInteractingView = null;
             mAnimationHost.startAnimations(animationList, null);
 
@@ -147,12 +155,16 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
             ArrayList<Animator> animationList = new ArrayList<>();
             if (mInteractingView != null) {
                 setInteractingStateForView(
-                        mInteractingView, groupTitles, /* isInteracting= */ false, animationList);
+                        mInteractingView,
+                        groupTitles,
+                        stripTabs,
+                        /* isInteracting= */ false,
+                        animationList);
             }
 
             // 3.b. Set state for the new "interacting" view.
             setInteractingStateForView(
-                    hoveredView, groupTitles, /* isInteracting= */ true, animationList);
+                    hoveredView, groupTitles, stripTabs, /* isInteracting= */ true, animationList);
             mInteractingView = hoveredView;
 
             // 3.c. Animate.
@@ -241,22 +253,22 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
     protected void setInteractingStateForView(
             StripLayoutView stripView,
             StripLayoutGroupTitle[] groupTitles,
+            StripLayoutTab[] stripTabs,
             boolean isInteracting,
             List<Animator> animationList) {
         setTrailingMarginForView(
                 stripView,
                 groupTitles,
-                shouldHaveTrailingMargin(stripView, isInteracting),
+                shouldHaveTrailingMargin(stripTabs, stripView, isInteracting),
                 animationList);
     }
 
-    // TODO:(crbug.com/438523986) Add trailing margin if an unpinned tab hovered on pinned boundary.
     private boolean shouldHaveTrailingMargin(
-            StripLayoutView interactingView, boolean isInteracting) {
+            StripLayoutTab[] stripTabs, StripLayoutView interactingView, boolean isInteracting) {
         if (!isInteracting) return false;
 
         if (TabStripDragHandler.isDraggedTabPinned() != isHoveredViewPinned(interactingView)) {
-            return false;
+            return StripLayoutUtils.isLastPinnedTab(stripTabs, interactingView);
         }
 
         if (TabStripDragHandler.canMergeIntoGroupOnDrop()) return true;

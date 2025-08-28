@@ -115,6 +115,26 @@ public class StripLayoutUtils {
     }
 
     /**
+     * @param stripTabs The list of {@link StripLayoutTab}.
+     * @param view The {@link StripLayoutView} to check whether is the last pinned tab.
+     * @return Whether the view is the last pinned tab.
+     */
+    public static boolean isLastPinnedTab(StripLayoutTab[] stripTabs, StripLayoutView view) {
+        StripLayoutTab tab = (view instanceof StripLayoutTab) ? (StripLayoutTab) view : null;
+        if (tab == null) return false;
+        for (int i = 0; i < stripTabs.length; i++) {
+            if (!stripTabs[i].getIsPinned()) {
+                if (i > 0) {
+                    return tab == stripTabs[i - 1];
+                } else {
+                    break;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * @param groupTitles A list of {@link StripLayoutGroupTitle}.
      * @param tabGroupId The tab group ID for the tab group title we're searching for.
      * @return The {@link StripLayoutGroupTitle} with the given root ID. {@code null} otherwise.
