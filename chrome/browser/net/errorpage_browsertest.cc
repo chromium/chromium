@@ -19,6 +19,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -75,7 +76,6 @@
 #include "net/test/url_request/url_request_failed_job.h"
 #include "net/test/url_request/url_request_mock_data_job.h"
 #include "net/test/url_request/url_request_mock_http_job.h"
-#include "net/url_request/url_request_test_job.h"
 #include "services/network/public/cpp/features.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -88,7 +88,6 @@
 using content::BrowserThread;
 using content::NavigationController;
 using net::URLRequestFailedJob;
-using net::URLRequestTestJob;
 
 namespace {
 
@@ -637,46 +636,21 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, Incognito) {
 
 class ErrorPageAutoReloadTest : public InProcessBrowserTest {
  public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(embedder_support::kEnableAutoReload);
+  static constexpr char kMagicPath[] = "/magic/path/";
+  static constexpr char kSuccessTitle[] = "Success";
+
+  ErrorPageAutoReloadTest() {
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+        &ErrorPageAutoReloadTest::HandleRequest, base::Unretained(this)));
+    EXPECT_TRUE(embedded_test_server()->Start());
   }
 
-  void TearDownOnMainThread() override { url_loader_interceptor_.reset(); }
+  ~ErrorPageAutoReloadTest() override {
+    EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
+  }
 
-  void InstallInterceptor(const GURL& url, int32_t requests_to_fail) {
-    requests_ = failures_ = 0;
-
-    url_loader_interceptor_ =
-        std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
-            [](int32_t requests_to_fail, int32_t* requests, int32_t* failures,
-               content::URLLoaderInterceptor::RequestParams* params) {
-              if (params->url_request.url.host().find("googleapis.com") !=
-                  std::string::npos) {
-                return false;
-              }
-              if (params->url_request.url.path() == "/searchdomaincheck")
-                return false;
-              if (params->url_request.url.path() == "/favicon.ico")
-                return false;
-              if (params->url_request.url.DeprecatedGetOriginAsURL() ==
-                  GaiaUrls::GetInstance()->gaia_url())
-                return false;
-              (*requests)++;
-              if (*failures < requests_to_fail) {
-                (*failures)++;
-                network::URLLoaderCompletionStatus status;
-                status.error_code = net::ERR_CONNECTION_RESET;
-                params->client->OnComplete(status);
-                return true;
-              }
-
-              std::string body = URLRequestTestJob::test_data_1();
-              content::URLLoaderInterceptor::WriteResponse(
-                  URLRequestTestJob::test_headers(), body,
-                  params->client.get());
-              return true;
-            },
-            requests_to_fail, &requests_, &failures_));
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(embedder_support::kEnableAutoReload);
   }
 
   void NavigateToURLAndWaitForTitle(const GURL& url,
@@ -712,42 +686,78 @@ class ErrorPageAutoReloadTest : public InProcessBrowserTest {
     EXPECT_FALSE(failed_auto_reload_navigation.was_committed());
   }
 
-  int32_t interceptor_requests() const { return requests_; }
-  int32_t interceptor_failures() const { return failures_; }
+  // Sets the number of sequential requests to `kMagicPath` that will be failed.
+  // Must be called before there have been any requests to that path.
+  void SetRequestsToFail(int requests_to_fail) {
+    base::AutoLock lock(lock_);
+    EXPECT_EQ(requests_, 0);
+    EXPECT_EQ(requests_to_fail_, 0);
+    requests_to_fail_ = requests_to_fail;
+  }
+
+  GURL GetMagicUrl() const {
+    return embedded_test_server()->GetURL(kMagicPath);
+  }
+
+  // Returns number of observed requests. Not const because grabbing a lock is
+  // considered to mutate it.
+  int requests() {
+    base::AutoLock lock(lock_);
+    return requests_;
+  }
 
  private:
-  std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
-  int32_t requests_;
-  int32_t failures_;
+  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+      const net::test_server::HttpRequest& request) {
+    if (request.relative_url != kMagicPath) {
+      return nullptr;
+    }
+
+    base::AutoLock lock(lock_);
+
+    ++requests_;
+    if (requests_ <= requests_to_fail_) {
+      // An empty response. This should cause a failure with ERR_EMPTY_RESPONSE.
+      return std::make_unique<net::test_server::RawHttpResponse>(
+          /*headers=*/"", /*contents=*/"");
+    }
+
+    // Otherwise, succeed.
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    response->set_content("<html><title>Success</title></html>");
+    response->set_content_type("text/html");
+    return response;
+  }
+
+  base::Lock lock_;
+
+  // Number of requests to kMagicPath to fail. Once hit, all future requests
+  // will succeed. Must be set before any requests have succeeded.
+  int requests_to_fail_ GUARDED_BY(lock_) = 0;
+
+  // Total number of requests to kMagicPath. The first `requests_to_fail_` would
+  // have been failed, and the other ones, if there were any, succeeded.
+  int requests_ GUARDED_BY(lock_) = 0;
 };
 
-// Test is flaky.
-// TODO(crbug.com/41161951): Fix and reenable the test.
-IN_PROC_BROWSER_TEST_F(ErrorPageAutoReloadTest, DISABLED_AutoReload) {
-  GURL test_url("http://error.page.auto.reload");
-  const int32_t kRequestsToFail = 2;
-  InstallInterceptor(test_url, kRequestsToFail);
-  NavigateToURLAndWaitForTitle(test_url, "Test One");
-  // Note that the interceptor updates these variables on the IO thread,
-  // but this function reads them on the main thread. The requests have to be
-  // created (on the IO thread) before NavigateToURLAndWaitForTitle returns or
-  // this becomes racey.
-  EXPECT_EQ(kRequestsToFail, interceptor_failures());
-  EXPECT_EQ(kRequestsToFail + 1, interceptor_requests());
+// Make sure that autoreload is enabled and works in Chrome. Navigates to a URL
+// that fails on the first two load attempts, and succeeds on the third, and
+// waist for the third load to succeed.
+IN_PROC_BROWSER_TEST_F(ErrorPageAutoReloadTest, AutoReload) {
+  SetRequestsToFail(2);
+  NavigateToURLAndWaitForTitle(GetMagicUrl(), kSuccessTitle);
+  EXPECT_EQ(requests(), 3);
 }
 
 // TODO(crbug.com/40856405): Test is flaky.
 IN_PROC_BROWSER_TEST_F(ErrorPageAutoReloadTest,
                        DISABLED_ManualReloadNotSuppressed) {
-  GURL test_url("http://error.page.auto.reload");
-  const int32_t kRequestsToFail = 3;
-  InstallInterceptor(test_url, kRequestsToFail);
+  SetRequestsToFail(3);
 
   // Wait for the error page and first autoreload.
-  NavigateAndWaitForFailureWithAutoReload(test_url);
+  NavigateAndWaitForFailureWithAutoReload(GetMagicUrl());
 
-  EXPECT_EQ(2, interceptor_failures());
-  EXPECT_EQ(2, interceptor_requests());
+  EXPECT_EQ(2, requests());
 
   ToggleHelpBox(browser());
   EXPECT_TRUE(IsDisplayingText(
@@ -772,14 +782,12 @@ IN_PROC_BROWSER_TEST_F(ErrorPageAutoReloadTest,
 // TODO(crbug.com/40709227): Flaky.
 IN_PROC_BROWSER_TEST_F(ErrorPageAutoReloadTest,
                        DISABLED_IgnoresSameDocumentNavigation) {
-  GURL test_url("http://error.page.auto.reload");
-  InstallInterceptor(test_url, 2);
+  SetRequestsToFail(3);
 
   // Wait for the error page and first autoreload.
-  NavigateAndWaitForFailureWithAutoReload(test_url);
+  NavigateAndWaitForFailureWithAutoReload(GetMagicUrl());
 
-  EXPECT_EQ(2, interceptor_failures());
-  EXPECT_EQ(2, interceptor_requests());
+  EXPECT_EQ(2, requests());
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -796,8 +804,7 @@ IN_PROC_BROWSER_TEST_F(ErrorPageAutoReloadTest,
   // WebContents' title.
   EXPECT_EQ(kExpectedTitle, title_watcher.WaitAndGetTitle());
 
-  EXPECT_EQ(2, interceptor_failures());
-  EXPECT_EQ(3, interceptor_requests());
+  EXPECT_EQ(3, requests());
 }
 
 class ErrorPageOfflineTest : public ErrorPageTest {
