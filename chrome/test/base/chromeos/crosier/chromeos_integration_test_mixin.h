@@ -5,6 +5,7 @@
 #ifndef CHROME_TEST_BASE_CHROMEOS_CROSIER_CHROMEOS_INTEGRATION_TEST_MIXIN_H_
 #define CHROME_TEST_BASE_CHROMEOS_CROSIER_CHROMEOS_INTEGRATION_TEST_MIXIN_H_
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 
 namespace base {
@@ -24,6 +25,9 @@ class ChromeOSIntegrationTestMixin : public InProcessBrowserTestMixin {
   // InProcessBrowserTestMixin:
   void SetUpCommandLine(base::CommandLine* command_line) override;
   bool SetUpUserDataDirectory() override;
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 #endif  // CHROME_TEST_BASE_CHROMEOS_CROSIER_CHROMEOS_INTEGRATION_TEST_MIXIN_H_

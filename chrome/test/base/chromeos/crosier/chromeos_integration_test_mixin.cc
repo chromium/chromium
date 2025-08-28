@@ -5,15 +5,41 @@
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_test_mixin.h"
 
 #include "base/command_line.h"
+#include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/strings/string_split.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
+#include "mojo/core/embedder/features.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/gl/gl_switches.h"
 
+namespace {
+
+constexpr char kUseFlagsPathName[] = "/etc/ui_use_flags.txt";
+constexpr char kMojoIpczUseFlag[] = "ipcz";
+
+}  // namespace
+
 ChromeOSIntegrationTestMixin::ChromeOSIntegrationTestMixin(
     InProcessBrowserTestMixinHost* host)
-    : InProcessBrowserTestMixin(host) {}
+    : InProcessBrowserTestMixin(host) {
+  base::FilePath use_flags_path(kUseFlagsPathName);
+  if (base::PathExists(use_flags_path)) {
+    std::string data;
+    base::ReadFileToString(use_flags_path, &data);
+
+    std::vector<std::string> flags = base::SplitString(
+        data, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    if (std::find(flags.begin(), flags.end(), kMojoIpczUseFlag) !=
+        flags.end()) {
+      // Enable MojoIpcz flag in the presence of ipcz USE flag to prevent
+      // crbug.com/439917450.
+      feature_list_.InitAndEnableFeature(mojo::core::kMojoIpcz);
+    }
+  }
+}
 
 ChromeOSIntegrationTestMixin::~ChromeOSIntegrationTestMixin() = default;
 
