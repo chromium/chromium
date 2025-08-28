@@ -432,7 +432,7 @@ IN_PROC_BROWSER_TEST_P(
       "NotificationContentDetection",
       1);
 
-  EXPECT_EQ(GetDisplayedPersistentNotifications().size(), 1U);
+  ASSERT_EQ(GetDisplayedPersistentNotifications().size(), 1U);
   // When the suspicious threshold is 0, every non-allowlisted notification is
   // suspicious.
   if (GetSuspiciousNotificationThreshold() == "0") {
