@@ -14,7 +14,6 @@
 #include "base/task/delayed_task_handle.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/task/task_runner.h"
-#include "base/types/pass_key.h"
 
 namespace actor {
 class PageStabilityMonitor;

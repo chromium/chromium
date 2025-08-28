@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/password_manager/android/one_time_passwords/android_sms_otp_fetch_dispatcher_bridge.h"
 #include "chrome/browser/password_manager/android/one_time_passwords/android_sms_otp_fetch_receiver_bridge.h"
 #include "components/keyed_service/core/keyed_service.h"
