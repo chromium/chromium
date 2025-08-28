@@ -53,7 +53,6 @@ import './site_settings/keyboard_lock_page.js';
 import './site_settings/local_network_access_page.js';
 import './site_settings/media_picker.js';
 import './site_settings/notifications_page.js';
-import './site_settings/pdf_documents.js';
 import './site_settings/protected_content_page.js';
 import './site_settings/protocol_handlers.js';
 import './site_settings/settings_category_default_radio_group.js';
