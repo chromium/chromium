@@ -78,6 +78,10 @@ void LogSaveAndFillNumOfStrikesPresentWhenDialogAccepted(int strike_count);
 
 // Logs the result of the Save and Fill dialog.
 void LogSaveAndFillDialogResult(SaveAndFillDialogResult result);
+
+// Logs that the Save and Fill dialog was shown.
+void LogSaveAndFillDialogShown(bool is_upload);
+
 }  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_SAVE_AND_FILL_METRICS_H_

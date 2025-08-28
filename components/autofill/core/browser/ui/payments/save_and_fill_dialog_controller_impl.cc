@@ -32,6 +32,7 @@ void SaveAndFillDialogControllerImpl::ShowLocalDialog(
   card_save_and_fill_dialog_callback_ =
       std::move(card_save_and_fill_dialog_callback);
   CHECK(dialog_view_);
+  autofill_metrics::LogSaveAndFillDialogShown(/*is_upload=*/false);
 }
 
 void SaveAndFillDialogControllerImpl::ShowUploadDialog(
@@ -46,6 +47,7 @@ void SaveAndFillDialogControllerImpl::ShowUploadDialog(
   card_save_and_fill_dialog_callback_ =
       std::move(card_save_and_fill_dialog_callback);
   CHECK(dialog_view_);
+  autofill_metrics::LogSaveAndFillDialogShown(/*is_upload=*/true);
 }
 
 void SaveAndFillDialogControllerImpl::ShowPendingDialog(

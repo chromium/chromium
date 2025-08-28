@@ -263,4 +263,46 @@ TEST_F(SaveAndFillDialogControllerImplTest, Metrics_DialogResult_Canceled) {
       /*expected_bucket_count=*/1);
 }
 
+TEST_F(SaveAndFillDialogControllerImplTest, Metrics_DialogShown_Local) {
+  base::HistogramTester histogram_tester;
+  auto controller = std::make_unique<SaveAndFillDialogControllerImpl>();
+  base::MockCallback<
+      base::OnceCallback<std::unique_ptr<SaveAndFillDialogView>()>>
+      create_and_show_view_callback;
+  base::MockCallback<
+      payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback>
+      card_save_and_fill_dialog_callback;
+
+  EXPECT_CALL(create_and_show_view_callback, Run())
+      .WillOnce(testing::Return(std::make_unique<SaveAndFillDialogView>()));
+
+  controller->ShowLocalDialog(create_and_show_view_callback.Get(),
+                              card_save_and_fill_dialog_callback.Get());
+
+  histogram_tester.ExpectUniqueSample("Autofill.SaveAndFill.DialogShown.Local",
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
+}
+
+TEST_F(SaveAndFillDialogControllerImplTest, Metrics_DialogShown_Upload) {
+  base::HistogramTester histogram_tester;
+  auto controller = std::make_unique<SaveAndFillDialogControllerImpl>();
+  base::MockCallback<
+      base::OnceCallback<std::unique_ptr<SaveAndFillDialogView>()>>
+      create_and_show_view_callback;
+  base::MockCallback<
+      payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback>
+      card_save_and_fill_dialog_callback;
+
+  EXPECT_CALL(create_and_show_view_callback, Run())
+      .WillOnce(testing::Return(std::make_unique<SaveAndFillDialogView>()));
+
+  controller->ShowUploadDialog({}, create_and_show_view_callback.Get(),
+                               card_save_and_fill_dialog_callback.Get());
+
+  histogram_tester.ExpectUniqueSample("Autofill.SaveAndFill.DialogShown.Upload",
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
+}
+
 }  // namespace autofill

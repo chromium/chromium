@@ -184,4 +184,25 @@ TEST_F(SaveAndFillMetricsTest, LogDialogResult_Canceled) {
                                       SaveAndFillDialogResult::kCanceled,
                                       /*expected_bucket_count=*/1);
 }
+
+TEST_F(SaveAndFillMetricsTest, LogDialogShown_Upload) {
+  base::HistogramTester histogram_tester;
+
+  LogSaveAndFillDialogShown(/*is_upload=*/true);
+
+  histogram_tester.ExpectUniqueSample("Autofill.SaveAndFill.DialogShown.Upload",
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
+}
+
+TEST_F(SaveAndFillMetricsTest, LogDialogShown_Local) {
+  base::HistogramTester histogram_tester;
+
+  LogSaveAndFillDialogShown(/*is_upload=*/false);
+
+  histogram_tester.ExpectUniqueSample("Autofill.SaveAndFill.DialogShown.Local",
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
+}
+
 }  // namespace autofill::autofill_metrics
