@@ -45,6 +45,28 @@ struct GnomeDisplayConfig {
     kPhysical = 2,
   };
 
+  // Monitor layout: horizontal or vertical.
+  enum class LayoutDirection {
+    kHorizontal,
+    kVertical,
+  };
+
+  // Monitor alignment: start (left- or top-aligned), center, or end (right- or
+  // bottom-aligned).
+  enum class LayoutAlignment {
+    kUnknown,
+    kStart,
+    kCenter,
+    kEnd,
+  };
+
+  // Struct that includes all layout information that is needed for Relayout().
+  struct LayoutInfo {
+    LayoutMode layout_mode;
+    LayoutDirection direction;
+    LayoutAlignment alignment;
+  };
+
   struct MonitorMode {
     MonitorMode();
     MonitorMode(const MonitorMode&);
@@ -106,6 +128,20 @@ struct GnomeDisplayConfig {
   // TODO: crbug.com/432217140 - Add tests for this method.
   void SwitchLayoutMode(LayoutMode new_layout_mode);
 
+  // Relayouts monitors. Closes gaps between monitors and removes overlaps. The
+  // layout direction and alignment will be maintained. Note that we currently
+  // only support horizontal and vertical display layouts.
+  //
+  // Typical usage:
+  //
+  // 1. Call GetLayoutInfo() on the display config prior to monitor resizing.
+  // 2. Resize the monitor, which results in a new display config with an
+  //    updated monitor size, and a broken layout.
+  // 3. Call Relayout() with the layout info from step #1.
+  void Relayout(const LayoutInfo& layout_info);
+
+  LayoutInfo GetLayoutInfo() const;
+
   // The serial number returned by GNOME. When applying a new monitor config,
   // GNOME will check that the serial number matches, to avoid race-conditions
   // from trying to modify a stale config.
@@ -125,14 +161,15 @@ struct GnomeDisplayConfig {
   std::map<std::string, MonitorInfo> monitors;
 
  private:
-  // Returns true if the monitors appear to be roughly laid out vertically.
-  bool LayoutIsVertical() const;
+  LayoutDirection GetLayoutDirection() const;
+
+  LayoutAlignment GetLayoutAlignment(LayoutDirection direction) const;
 
   // Stacks monitors vertically without gaps for the new layout mode. If they
   // are not all right-aligned, this will position the monitors against the left
   // edge of the desktop.
   // On return, the layout mode will become `new_layout_mode`.
-  void PackVertically(LayoutMode new_layout_mode);
+  void PackVertically(LayoutMode new_layout_mode, LayoutAlignment alignment);
 
   // Transposes all the monitors by swapping x and y coordinates. This allows
   // the vertical layout code to be reused for horizontal layout.

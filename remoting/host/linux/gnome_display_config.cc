@@ -227,28 +227,39 @@ GnomeDisplayConfig::FindMonitor(webrtc::ScreenId screen_id) {
 }
 
 void GnomeDisplayConfig::SwitchLayoutMode(LayoutMode new_layout_mode) {
-  if (layout_mode == new_layout_mode) {
-    return;
+  if (layout_mode != new_layout_mode) {
+    LayoutInfo info = GetLayoutInfo();
+    info.layout_mode = new_layout_mode;
+    Relayout(info);
   }
+}
 
+void GnomeDisplayConfig::Relayout(const LayoutInfo& layout_info) {
   if (monitors.size() <= 1) {
     // No need to recalculate monitor offset since it's always (0, 0).
+    layout_mode = layout_info.layout_mode;
     return;
   }
 
-  if (LayoutIsVertical()) {
-    PackVertically(new_layout_mode);
+  if (layout_info.direction == LayoutDirection::kVertical) {
+    PackVertically(layout_info.layout_mode, layout_info.alignment);
   } else {
     Transpose();
-    PackVertically(new_layout_mode);
+    PackVertically(layout_info.layout_mode, layout_info.alignment);
     Transpose();
   }
   NormalizeMonitorOffsets();
 }
 
-bool GnomeDisplayConfig::LayoutIsVertical() const {
+GnomeDisplayConfig::LayoutInfo GnomeDisplayConfig::GetLayoutInfo() const {
+  LayoutDirection direction = GetLayoutDirection();
+  return {layout_mode, direction, GetLayoutAlignment(direction)};
+}
+
+GnomeDisplayConfig::LayoutDirection GnomeDisplayConfig::GetLayoutDirection()
+    const {
   if (monitors.size() <= 1) {
-    return false;
+    return LayoutDirection::kHorizontal;
   }
 
   const MonitorInfo& monitor1 = monitors.begin()->second;
@@ -261,36 +272,30 @@ bool GnomeDisplayConfig::LayoutIsVertical() const {
 
   int left2 = monitor2.x;
   int right2 = left2 + GetLayoutSize(monitor2, &MonitorMode::width);
-  return right1 > left2 && right2 > left1;
+  return (right1 > left2 && right2 > left1) ? LayoutDirection::kVertical
+                                            : LayoutDirection::kHorizontal;
 }
 
-void GnomeDisplayConfig::PackVertically(LayoutMode new_layout_mode) {
-  DCHECK_NE(layout_mode, new_layout_mode);
-  DCHECK(!monitors.empty());
-
-  // Before applying the new size, test for any current alignments to
-  // decide which alignment should be preserved, if any.
-  std::vector<MonitorInfo*> monitor_list;
-  monitor_list.reserve(monitors.size());
-  for (auto& kv : monitors) {
-    monitor_list.push_back(&kv.second);
+GnomeDisplayConfig::LayoutAlignment GnomeDisplayConfig::GetLayoutAlignment(
+    LayoutDirection direction) const {
+  if (direction == LayoutDirection::kHorizontal) {
+    const_cast<GnomeDisplayConfig*>(this)->Transpose();
   }
-
   bool is_left_aligned = true;
   bool is_middle_aligned = true;
   bool is_right_aligned = true;
-  const MonitorInfo& first_monitor = *monitor_list.front();
+  const MonitorInfo& first_monitor = monitors.begin()->second;
   auto first_monitor_left = first_monitor.x;
   auto first_monitor_layout_width =
       GetLayoutSize(first_monitor, &MonitorMode::width);
   auto first_monitor_middle =
       first_monitor_left + first_monitor_layout_width / 2;
   auto first_monitor_right = first_monitor_left + first_monitor_layout_width;
-  for (const auto* monitor_info : monitor_list) {
-    auto monitor_left = monitor_info->x;
-    auto layout_width = GetLayoutSize(*monitor_info, &MonitorMode::width);
-    auto monitor_middle = monitor_info->x + layout_width / 2;
-    auto monitor_right = monitor_info->x + layout_width;
+  for (const auto& [_, monitor_info] : monitors) {
+    auto monitor_left = monitor_info.x;
+    auto layout_width = GetLayoutSize(monitor_info, &MonitorMode::width);
+    auto monitor_middle = monitor_info.x + layout_width / 2;
+    auto monitor_right = monitor_info.x + layout_width;
     if (monitor_left != first_monitor_left) {
       is_left_aligned = false;
     }
@@ -300,6 +305,24 @@ void GnomeDisplayConfig::PackVertically(LayoutMode new_layout_mode) {
     if (monitor_right != first_monitor_right) {
       is_right_aligned = false;
     }
+  }
+  if (direction == LayoutDirection::kHorizontal) {
+    const_cast<GnomeDisplayConfig*>(this)->Transpose();
+  }
+  return is_left_aligned     ? LayoutAlignment::kStart
+         : is_middle_aligned ? LayoutAlignment::kCenter
+         : is_right_aligned  ? LayoutAlignment::kEnd
+                             : LayoutAlignment::kUnknown;
+}
+
+void GnomeDisplayConfig::PackVertically(LayoutMode new_layout_mode,
+                                        LayoutAlignment alignment) {
+  DCHECK(!monitors.empty());
+
+  std::vector<MonitorInfo*> monitor_list;
+  monitor_list.reserve(monitors.size());
+  for (auto& kv : monitors) {
+    monitor_list.push_back(&kv.second);
   }
 
   // Sort vertically before packing.
@@ -322,23 +345,28 @@ void GnomeDisplayConfig::PackVertically(LayoutMode new_layout_mode) {
     // arranged roughly diagonally, wasting lots of space. Some amount of
     // horizontal compression is needed to prevent this from happening.
     int layout_width = GetLayoutSize(*monitor_info, &MonitorMode::width);
-    if (is_left_aligned) {
-      monitor_info->x = 0;
-    } else if (is_right_aligned) {
-      monitor_info->x = -layout_width;
-    } else if (is_middle_aligned) {
-      monitor_info->x = -layout_width / 2;
-    } else {
-      // The current implementation left-aligns the monitors if no other
-      // alignment is detected.
-      // TODO: crbug.com/40225767 - A future enhancement may be to detect and
-      // report one of {left, middle, right, none}. The "none" case (for
-      // vertical and horizontal layouts) could be treated as a
-      // client-controlled layout, where the host does not attempt any
-      // repositioning. In this case, the host could still support
-      // resize-to-fit, but in a simplified way - resize would be allowed
-      // whenever it creates no overlaps.
-      monitor_info->x = 0;
+    switch (alignment) {
+      case LayoutAlignment::kStart:
+        monitor_info->x = 0;
+        break;
+      case LayoutAlignment::kCenter:
+        monitor_info->x = -layout_width / 2;
+        break;
+      case LayoutAlignment::kEnd:
+        monitor_info->x = -layout_width;
+        break;
+      default:
+        // The current implementation left-aligns the monitors if no other
+        // alignment is detected.
+        // TODO: crbug.com/40225767 - A future enhancement may be to detect and
+        // report one of {left, middle, right, none}. The "none" case (for
+        // vertical and horizontal layouts) could be treated as a
+        // client-controlled layout, where the host does not attempt any
+        // repositioning. In this case, the host could still support
+        // resize-to-fit, but in a simplified way - resize would be allowed
+        // whenever it creates no overlaps.
+        monitor_info->x = 0;
+        break;
     }
   }
 }
