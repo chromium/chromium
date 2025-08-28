@@ -4463,6 +4463,7 @@ static_library("browser") {
       "//chrome/browser/ui/views/infobars:impl",
       "//chrome/browser/ui/views/location_bar/cookie_controls:impl",
       "//chrome/browser/ui/views/new_tab_footer",
+      "//chrome/browser/ui/views/page_action:impl",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/views/toolbar:impl",
@@ -4688,6 +4689,12 @@ static_library("browser") {
       # TODO(crbug.com/434882143): Remove this circular dependency when
       # c/b/privacy_sandbox/tracking_protection_settings_factory.h gets componentized.
       "//chrome/browser/ui/views/location_bar/cookie_controls:impl",
+
+      # TODO(crbug.com/434882143): Remove this circular dependency when the following headers get
+      # componentized:
+      # - c/b/sharing/click_to_call/click_to_call_ui_controller.h
+      # - c/b/sharing/sms/sms_remote_fetcher_ui_controller.h
+      "//chrome/browser/ui/views/page_action:impl",
 
       # TODO(crbug.com/441020158): Remove this circular dependency when the following headers get
       # componentized:

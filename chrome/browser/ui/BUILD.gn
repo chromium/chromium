@@ -1669,7 +1669,6 @@ static_library("ui") {
       "//chrome/browser/ui/webui/customize_buttons:impl",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/views/toolbar:impl",
-      "//chrome/browser/ui/views/page_action",
       "//chrome/browser/ui/views/new_tab_footer",
       "//chrome/browser/ui/webui/searchbox",
       "//chrome/browser/ui/webui/top_chrome:impl",
@@ -3980,14 +3979,6 @@ static_library("ui") {
       "views/overlay/toggle_microphone_button.h",
       "views/overlay/video_overlay_window_views.cc",
       "views/overlay/video_overlay_window_views.h",
-      "views/page_action/collaboration_messaging_page_action_icon_view.cc",
-      "views/page_action/collaboration_messaging_page_action_icon_view.h",
-      "views/page_action/page_action_icon_controller.cc",
-      "views/page_action/page_action_icon_controller.h",
-      "views/page_action/pwa_install_view.cc",
-      "views/page_action/pwa_install_view.h",
-      "views/page_action/zoom_view.cc",
-      "views/page_action/zoom_view.h",
       "views/page_info/about_this_site_side_panel_coordinator.cc",
       "views/page_info/about_this_site_side_panel_coordinator.h",
       "views/page_info/chosen_object_view.cc",
@@ -4645,6 +4636,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/location_bar/cookie_controls",
       "//chrome/browser/ui/views/location_bar/cookie_controls:impl",
       "//chrome/browser/ui/views/page_action",
+      "//chrome/browser/ui/views/page_action:impl",
       "//chrome/browser/ui/views/page_info",
       "//chrome/browser/ui/views/page_info:impl",
       "//chrome/browser/ui/views/permissions",
@@ -4748,7 +4740,6 @@ static_library("ui") {
       # c/b/ui/views/chrome_layout_provider.h
       # c/b/ui/views/frame/browser_view.h
       # c/b/ui/views/page_info/page_info_bubble_specification.h
-      # c/b/ui/views/page_action/zoom_view.h
       "//chrome/browser/ui/views/location_bar:impl",
 
       # TODO(crbug.com/413572035): Remove circular dependency once/if
@@ -4759,6 +4750,15 @@ static_library("ui") {
       # headers get componentized:
       # c/b/ui/browser.h, browser_finder.h, browser_window.h.
       "//chrome/browser/ui/webauthn:impl",
+
+      # TODO(crbug.com/434882143): Remove this circular dependency when the following
+      # headers get componentized:
+      # c/b/ui/views/frame/browser_view.h
+      # c/b/ui/views/omnibox/omnibox_view_views.h
+      # c/b/ui/webui/new_tab_page/new_tab_page_ui.h
+      # c/b/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h
+      # c/b/ui/webui/ntp/new_tab_ui.h
+      "//chrome/browser/ui/views/page_action:impl",
     ]
 
     if (is_linux) {
