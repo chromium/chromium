@@ -77,6 +77,44 @@ ShapeResult* ShapeForFit(const InlineItemResult& item,
                       item.item->EndOffset(), range, options);
 }
 
+std::optional<float> ComputeSizeLimit(const FitText& fit_text,
+                                      bool is_grow,
+                                      const InlineNode node) {
+  auto limit = fit_text.SizeLimit();
+  if (!is_grow) {
+    if (const auto* settings = node.GetDocument().GetSettings()) {
+      if (int min_size = settings->GetMinimumFontSize(); min_size > 0) {
+        float physical_min =
+            min_size * node.GetDocument().GetFrame()->DevicePixelRatio();
+        limit = limit ? std::max(*limit, physical_min) : physical_min;
+      }
+    }
+  }
+  return limit;
+}
+
+// A helper for font-size scaling.
+FontDescription ScaledFontDescription(const Font& font,
+                                      float scale_factor,
+                                      std::optional<float> limit,
+                                      bool& restricted) {
+  float item_scale = scale_factor;
+  float original_size = font.GetFontDescription().ComputedSize();
+  if (limit) {
+    if (item_scale > 1.0f) {
+      item_scale = std::min(scale_factor, *limit / original_size);
+    } else {
+      item_scale = std::max(scale_factor, *limit / original_size);
+    }
+    if (item_scale != scale_factor) {
+      restricted = true;
+    }
+  }
+  FontDescription scaled_desc(font.GetFontDescription());
+  scaled_desc.SetComputedSize(original_size * item_scale);
+  return scaled_desc;
+}
+
 }  // namespace
 
 bool ShouldApplyFitText(const InlineNode node) {
@@ -257,15 +295,7 @@ bool LineFitter::FitLine(float scale_factor) {
   const bool is_grow = scale_factor > 1.0f;
   const FitText& fit_text =
       is_grow ? node_.Style().TextGrow() : node_.Style().TextShrink();
-  auto limit = fit_text.SizeLimit();
-  if (!is_grow) {
-    if (const auto* settings = node_.GetDocument().GetSettings()) {
-      if (int min_size = settings->GetMinimumFontSize(); min_size > 0) {
-        float physical_min = min_size * device_pixel_ratio_;
-        limit = limit ? std::max(*limit, physical_min) : physical_min;
-      }
-    }
-  }
+  auto limit = ComputeSizeLimit(fit_text, is_grow, node_);
 
   switch (fit_text.Method()) {
     case FitTextMethod::kScale:
@@ -285,23 +315,9 @@ bool LineFitter::FitLine(float scale_factor) {
           static_total_size += item.inline_size;
           continue;
         }
-        float item_scale = scale_factor;
-        if (limit) {
-          if (is_grow) {
-            float max_scale = *limit / item.item->Style()->ComputedFontSize();
-            item_scale = std::min(scale_factor, max_scale);
-          } else {
-            float min_scale = *limit / item.item->Style()->ComputedFontSize();
-            item_scale = std::max(scale_factor, min_scale);
-          }
-          if (item_scale != scale_factor) {
-            restricted = true;
-          }
-        }
         const Font& font = *item.item->Style()->GetFont();
-        FontDescription scaled_desc(font.GetFontDescription());
-        scaled_desc.SetComputedSize(font.GetFontDescription().ComputedSize() *
-                                    item_scale);
+        FontDescription scaled_desc =
+            ScaledFontDescription(font, scale_factor, limit, restricted);
         Font* scaled_font =
             MakeGarbageCollected<Font>(scaled_desc, font.GetFontSelector());
         ShapeResult* shape_result = ShapeForFit(item, shaper_, *scaled_font,
