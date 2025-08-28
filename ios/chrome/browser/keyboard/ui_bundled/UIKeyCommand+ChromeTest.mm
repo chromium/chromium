@@ -109,7 +109,8 @@ TEST_F(UIKeyCommandChromeTest, Factories) {
   Verify(UIKeyCommand.cr_showDownloads, @"⌥⌘L", @"keyCommand_showDownloads",
          @"IDS_IOS_KEYBOARD_SHOW_DOWNLOADS");
   Verify(UIKeyCommand.cr_showDownloads_2, @"⇧⌘J", @"keyCommand_showDownloads");
-  Verify(UIKeyCommand.cr_select1, @"⌘1", @"keyCommand_select1");
+  Verify(UIKeyCommand.cr_select1, @"⌘1", @"keyCommand_select1",
+         @"IDS_IOS_KEYBOARD_FIRST_TAB");
   Verify(UIKeyCommand.cr_select2, @"⌘2", @"keyCommand_select2");
   Verify(UIKeyCommand.cr_select3, @"⌘3", @"keyCommand_select3");
   Verify(UIKeyCommand.cr_select4, @"⌘4", @"keyCommand_select4");
