@@ -186,20 +186,29 @@ void InitializeNewDatabase(sql::Database* db,
   // by tests).
   TRANSIENT_CHECK(db->Execute(
       "CREATE UNIQUE INDEX records_by_key ON records(object_store_id, key)"));
-  // Stores references from index keys to object store records:
-  // [object_store_id, index_id, key] -> record_row_id. There should always be
-  // one (and only one) row in the records table with row_id = record_row_id.
+  // Stores the mapping of object store records to the index keys that reference
+  // them: record_row_id -> [index_id, key]. In general, a record may be
+  // referenced by multiple keys across multiple indexes (on the same object
+  // store). Since the row_id of a record uniquely identifies the record across
+  // object stores, object_store_id is not part of the primary key of this
+  // table. Deleting a record leads to the deletion of all index references to
+  // it (through the on_record_deleted trigger).
+  // The object store ID and record key are redundant information, but including
+  // them here and creating an index over them expedites cursor iteration
+  // because it removes the need to JOIN against the records table. See
+  // https://crbug.com/433318798.
   TRANSIENT_CHECK(
       db->Execute("CREATE TABLE index_references "
-                  "(object_store_id INTEGER NOT NULL,"
+                  "(record_row_id INTEGER NOT NULL,"
                   " index_id INTEGER NOT NULL,"
                   " key BLOB NOT NULL,"
-                  " record_row_id INTEGER NOT NULL,"
-                  " PRIMARY KEY (object_store_id, index_id, key, record_row_id)"
+                  " object_store_id INTEGER NOT NULL,"
+                  " record_key BLOB NOT NULL,"
+                  " PRIMARY KEY (record_row_id, index_id, key)"
                   ") WITHOUT ROWID"));
-  TRANSIENT_CHECK(
-      db->Execute("CREATE INDEX index_references_by_record "
-                  "ON index_references (record_row_id)"));
+  TRANSIENT_CHECK(db->Execute(
+      "CREATE INDEX index_references_by_key "
+      "ON index_references (object_store_id, index_id, key, record_key)"));
 
   // This table stores blob metadata and its actual bytes. A blob should only
   // appear once, regardless of how many records point to it. The columns in
@@ -440,6 +449,9 @@ class ObjectStoreRecordIterator : public RecordIterator {
                       const blink::IndexedDBKey& target_key,
                       const blink::IndexedDBKey& target_primary_key,
                       uint32_t offset) override {
+    // `target_primary_key` is not expected when iterating over object store
+    // records.
+    CHECK(!target_primary_key.IsValid());
     statement.BindBool(is_first_seek_index_, false);
     statement.BindBlob(position_index_, position_);
     if (target_key.IsValid()) {
@@ -481,7 +493,7 @@ class ObjectStoreRecordIterator : public RecordIterator {
 
   uint64_t statement_id_ = 0;
 
-  bool key_only_;
+  bool key_only_ = false;
 
   int is_first_seek_index_ = 0;
   int position_index_ = 0;
@@ -496,8 +508,16 @@ class ObjectStoreRecordIterator : public RecordIterator {
 
 class IndexRecordIterator : public RecordIterator {
  public:
-  IndexRecordIterator(base::WeakPtr<DatabaseConnection> db, bool key_only)
-      : db_(db), key_only_(key_only) {}
+  // If `first_primary_keys_only` is true, `this` will iterate over only the
+  // first (i.e., smallest) primary key for each index key in `key_range` (this
+  // correlates to the nextunique/prevunique IndexedDB cursor direction). Else,
+  // all the primary keys are iterated over for each index key in the range.
+  IndexRecordIterator(base::WeakPtr<DatabaseConnection> db,
+                      bool key_only,
+                      bool first_primary_keys_only)
+      : db_(db),
+        key_only_(key_only),
+        first_primary_keys_only_(first_primary_keys_only) {}
 
   ~IndexRecordIterator() override {
     if (db_) {
@@ -506,78 +526,92 @@ class IndexRecordIterator : public RecordIterator {
   }
 
   // If Initialize() returns an error or nullptr, `this` should be discarded.
-  // If `first_primary_keys_only` is true, `this` will iterate over only the
-  // first (i.e., smallest) primary key for each index key in `key_range`. Else,
-  // all the primary keys are iterated over for each index key in the range.
   StatusOr<std::unique_ptr<Record>> Initialize(
       int64_t object_store_id,
       int64_t index_id,
       const blink::IndexedDBKeyRange& key_range,
-      bool ascending_order,
-      bool first_primary_keys_only) {
+      bool ascending_order) {
     std::vector<std::string_view> query_pieces{
         "SELECT index_references.key AS index_key"};
-    if (first_primary_keys_only) {
-      query_pieces.push_back(", MIN(records.key) AS primary_key");
+    if (first_primary_keys_only_) {
+      query_pieces.push_back(", MIN(record_key)");
     } else {
-      query_pieces.push_back(", records.key AS primary_key");
+      query_pieces.push_back(", record_key");
     }
-    if (!key_only_) {
+    if (key_only_) {
+      query_pieces.push_back(" FROM index_references");
+    } else {
       query_pieces.push_back(
-          ", records.value AS value"
-          ", records.row_id AS record_row_id");
+          ", records.value"
+          ", records.row_id"
+          " FROM index_references INNER JOIN records"
+          "  ON index_references.record_row_id = records.row_id");
     }
     query_pieces.push_back(
-        " FROM index_references INNER JOIN records"
-        "  ON index_references.record_row_id = records.row_id"
-        " WHERE"
-        "  index_references.object_store_id = @object_store_id"
-        "  AND index_references.index_id = @index_id");
+        " WHERE index_references.object_store_id = @object_store_id"
+        "   AND index_references.index_id = @index_id");
     if (key_range.lower().IsValid()) {
       query_pieces.push_back(key_range.lower_open()
-                                 ? " AND index_references.key > @lower"
-                                 : " AND index_references.key >= @lower");
+                                 ? " AND index_key > @lower"
+                                 : " AND index_key >= @lower");
     }
     if (key_range.upper().IsValid()) {
       query_pieces.push_back(key_range.upper_open()
-                                 ? " AND index_references.key < @upper"
-                                 : " AND index_references.key <= @upper");
-    }
-    if (first_primary_keys_only) {
-      query_pieces.push_back(" GROUP BY index_references.key HAVING");
-    } else {
-      query_pieces.push_back(" AND");
+                                 ? " AND index_key < @upper"
+                                 : " AND index_key <= @upper");
     }
     if (ascending_order) {
-      query_pieces.push_back(
-          "("
-          " @is_first_seek = 1"
-          " OR (index_key = @position AND primary_key > @object_store_position)"
-          " OR index_key > @position"
-          ")"
-          "AND (@target_key IS NULL OR index_key >= @target_key)"
-          "AND"
-          "("
-          " @target_primary_key IS NULL"
-          " OR (index_key = @target_key AND primary_key >= @target_primary_key)"
-          " OR index_key > @target_key"
-          ")"
-          "ORDER BY index_key ASC, primary_key ASC");
+      if (first_primary_keys_only_) {
+        query_pieces.push_back(
+            " AND (@is_first_seek = 1 OR index_key > @position)"
+            " AND (@target_key IS NULL OR index_key >= @target_key)"
+            " GROUP BY index_key"
+            " ORDER BY index_key ASC");
+      } else {
+        query_pieces.push_back(
+            " AND "
+            " ("
+            "  @is_first_seek = 1"
+            "  OR (index_key = @position AND record_key >"
+            "      @object_store_position)"
+            "  OR index_key > @position"
+            " )"
+            " AND (@target_key IS NULL OR index_key >= @target_key)"
+            " AND "
+            " ("
+            "  @target_primary_key IS NULL"
+            "  OR (index_key = @target_key AND record_key >="
+            "      @target_primary_key)"
+            "  OR index_key > @target_key"
+            " )"
+            " ORDER BY index_key ASC, record_key ASC");
+      }
     } else {
-      query_pieces.push_back(
-          "("
-          " @is_first_seek = 1"
-          " OR (index_key = @position AND primary_key < @object_store_position)"
-          " OR index_key < @position"
-          ")"
-          "AND (@target_key IS NULL OR index_key <= @target_key)"
-          "AND"
-          "("
-          " @target_primary_key IS NULL"
-          " OR (index_key = @target_key AND primary_key <= @target_primary_key)"
-          " OR index_key < @target_key"
-          ")"
-          "ORDER BY index_key DESC, primary_key DESC");
+      if (first_primary_keys_only_) {
+        query_pieces.push_back(
+            " AND (@is_first_seek = 1 OR index_key < @position)"
+            " AND (@target_key IS NULL OR index_key <= @target_key)"
+            " GROUP BY index_key"
+            " ORDER BY index_key DESC");
+      } else {
+        query_pieces.push_back(
+            " AND "
+            " ("
+            "  @is_first_seek = 1"
+            "  OR (index_key = @position AND record_key < "
+            "      @object_store_position)"
+            "  OR index_key < @position"
+            " )"
+            " AND (@target_key IS NULL OR index_key <= @target_key)"
+            " AND "
+            " ("
+            "  @target_primary_key IS NULL"
+            "  OR (index_key = @target_key AND record_key <= "
+            "      @target_primary_key)"
+            "  OR index_key < @target_key"
+            " )"
+            " ORDER BY index_key DESC, record_key DESC");
+      }
     }
     // LIMIT is needed to use OFFSET. A negative LIMIT implies no limit on the
     // number of rows returned:
@@ -603,9 +637,15 @@ class IndexRecordIterator : public RecordIterator {
     // record in the range.
     statement->BindBool(is_first_seek_index_ = param_index++, true);
     statement->BindNull(position_index_ = param_index++);
-    statement->BindNull(object_store_position_index_ = param_index++);
+    if (!first_primary_keys_only_) {
+      object_store_position_index_ = param_index++;
+      statement->BindNull(object_store_position_index_.value());
+    }
     statement->BindNull(target_key_index_ = param_index++);
-    statement->BindNull(target_primary_key_index_ = param_index++);
+    if (!first_primary_keys_only_) {
+      target_primary_key_index_ = param_index++;
+      statement->BindNull(target_primary_key_index_.value());
+    }
     statement->BindInt64(offset_index_ = param_index++, 0);
     if (statement->Step()) {
       return ReadRow(*statement);
@@ -638,21 +678,27 @@ class IndexRecordIterator : public RecordIterator {
                       const blink::IndexedDBKey& target_key,
                       const blink::IndexedDBKey& target_primary_key,
                       uint32_t offset) override {
+    // `target_primary_key` is not expected when iterating over only the
+    // first primary keys.
+    CHECK(!first_primary_keys_only_ || !target_primary_key.IsValid());
     statement.BindBool(is_first_seek_index_, false);
     statement.BindBlob(position_index_, position_);
-    statement.BindBlob(object_store_position_index_, object_store_position_);
     if (target_key.IsValid()) {
       statement.BindBlob(target_key_index_, EncodeSortableIDBKey(target_key));
     } else {
       statement.BindNull(target_key_index_);
     }
-    if (target_primary_key.IsValid()) {
-      statement.BindBlob(target_primary_key_index_,
-                         EncodeSortableIDBKey(target_primary_key));
-    } else {
-      statement.BindNull(target_primary_key_index_);
-    }
     statement.BindInt64(offset_index_, offset);
+    if (!first_primary_keys_only_) {
+      statement.BindBlob(object_store_position_index_.value(),
+                         object_store_position_);
+      if (target_primary_key.IsValid()) {
+        statement.BindBlob(target_primary_key_index_.value(),
+                           EncodeSortableIDBKey(target_primary_key));
+      } else {
+        statement.BindNull(target_primary_key_index_.value());
+      }
+    }
   }
 
   StatusOr<std::unique_ptr<Record>> ReadRow(
@@ -692,14 +738,16 @@ class IndexRecordIterator : public RecordIterator {
 
   uint64_t statement_id_ = 0;
 
-  bool key_only_;
+  bool key_only_ = false;
+  bool first_primary_keys_only_ = false;
 
   int is_first_seek_index_ = 0;
   int position_index_ = 0;
-  int object_store_position_index_ = 0;
   int target_key_index_ = 0;
-  int target_primary_key_index_ = 0;
   int offset_index_ = 0;
+  // Set iff `first_primary_keys_only_` is false.
+  std::optional<int> object_store_position_index_;
+  std::optional<int> target_primary_key_index_;
 
   // Encoded key from the current record.
   std::string position_;
@@ -1303,14 +1351,16 @@ DatabaseConnection::GetRecordIdentifierIfExists(
     base::PassKey<BackingStoreTransactionImpl>,
     int64_t object_store_id,
     const blink::IndexedDBKey& key) {
+  std::string encoded_key = EncodeSortableIDBKey(key);
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE,
                               "SELECT row_id FROM records "
                               "WHERE object_store_id = ? AND key = ?"));
   statement.BindInt64(0, object_store_id);
-  statement.BindBlob(1, EncodeSortableIDBKey(key));
+  statement.BindBlob(1, encoded_key);
   if (statement.Step()) {
-    return BackingStore::RecordIdentifier{statement.ColumnInt64(0)};
+    return BackingStore::RecordIdentifier{statement.ColumnInt64(0),
+                                          std::move(encoded_key)};
   }
   RETURN_IF_STATEMENT_ERRORED(statement);
   return std::nullopt;
@@ -1433,6 +1483,7 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
     const blink::IndexedDBKey& key,
     IndexedDBValue value) {
   // Insert record, including inline data.
+  const std::string encoded_key = EncodeSortableIDBKey(key);
   {
     // "INSERT OR REPLACE" deletes the row corresponding to
     // [object_store_id, key] if it exists and inserts a new row with `value`.
@@ -1441,7 +1492,7 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
         "INSERT OR REPLACE INTO records "
         "(object_store_id, key, value) VALUES (?, ?, ?)"));
     statement.BindInt64(0, object_store_id);
-    statement.BindBlob(1, EncodeSortableIDBKey(key));
+    statement.BindBlob(1, encoded_key);
     statement.BindBlob(2, std::move(value.bits));
     RUN_STATEMENT_RETURN_ON_ERROR(statement);
   }
@@ -1505,7 +1556,7 @@ StatusOr<BackingStore::RecordIdentifier> DatabaseConnection::PutRecord(
                                       std::move(external_object));
     CHECK(rv.second);
   }
-  return BackingStore::RecordIdentifier{record_row_id};
+  return BackingStore::RecordIdentifier{record_row_id, std::move(encoded_key)};
 }
 
 Status DatabaseConnection::DeleteRange(
@@ -1557,15 +1608,16 @@ Status DatabaseConnection::PutIndexDataForRecord(
     const BackingStore::RecordIdentifier& record) {
   // `PutIndexDataForRecord()` can be called more than once with the same `key`
   // and `record` - in the case of multi-entry indexes, for example.
-  sql::Statement statement(
-      db_->GetCachedStatement(SQL_FROM_HERE,
-                              "INSERT OR IGNORE INTO index_references "
-                              "(object_store_id, index_id, key, record_row_id) "
-                              "VALUES (?, ?, ?, ?)"));
-  statement.BindInt64(0, object_store_id);
+  sql::Statement statement(db_->GetCachedStatement(
+      SQL_FROM_HERE,
+      "INSERT OR IGNORE INTO index_references "
+      "(record_row_id, index_id, key, object_store_id, record_key) "
+      "VALUES (?, ?, ?, ?, ?)"));
+  statement.BindInt64(0, record.number);
   statement.BindInt64(1, index_id);
   statement.BindBlob(2, EncodeSortableIDBKey(key));
-  statement.BindInt64(3, record.number);
+  statement.BindInt64(3, object_store_id);
+  statement.BindBlob(4, record.data);
   RUN_STATEMENT_RETURN_STATUS_ON_ERROR(statement);
   return Status::OK();
 }
@@ -1577,12 +1629,8 @@ StatusOr<blink::IndexedDBKey> DatabaseConnection::GetFirstPrimaryKeyForIndexKey(
     const blink::IndexedDBKey& key) {
   sql::Statement statement(db_->GetCachedStatement(
       SQL_FROM_HERE,
-      "SELECT MIN(records.key) "
-      "FROM index_references INNER JOIN records"
-      " ON index_references.record_row_id = records.row_id "
-      "WHERE index_references.object_store_id = ?"
-      " AND index_references.index_id = ?"
-      " AND index_references.key = ?"));
+      "SELECT MIN(record_key) FROM index_references "
+      "WHERE object_store_id = ? AND index_id = ? AND key = ?"));
   statement.BindInt64(0, object_store_id);
   statement.BindInt64(1, index_id);
   statement.BindBlob(2, EncodeSortableIDBKey(key));
@@ -1806,10 +1854,10 @@ DatabaseConnection::OpenIndexCursor(base::PassKey<BackingStoreTransactionImpl>,
       (direction == blink::mojom::IDBCursorDirection::NextNoDuplicate ||
        direction == blink::mojom::IDBCursorDirection::PrevNoDuplicate);
   auto record_iterator = std::make_unique<IndexRecordIterator>(
-      record_iterator_weak_factory_.GetWeakPtr(), key_only);
+      record_iterator_weak_factory_.GetWeakPtr(), key_only,
+      first_primary_keys_only);
   return record_iterator
-      ->Initialize(object_store_id, index_id, key_range, ascending_order,
-                   first_primary_keys_only)
+      ->Initialize(object_store_id, index_id, key_range, ascending_order)
       .transform([&](std::unique_ptr<Record> first_record)
                      -> std::unique_ptr<BackingStore::Cursor> {
         if (!first_record) {

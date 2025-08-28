@@ -54,7 +54,7 @@ class BackingStore {
     // ignore them.
     // SQLite: a row id. LevelDB: a version.
     int64_t number;
-    // SQLite: unused. LevelDB: the *encoded* primary key bytes.
+    // SQLite and LevelDB: the *encoded* primary key bytes.
     std::string data;
   };
 
