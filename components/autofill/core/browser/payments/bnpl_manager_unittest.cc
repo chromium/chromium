@@ -131,14 +131,6 @@ class TestPaymentsAutofillClientMock : public TestPaymentsAutofillClient {
   explicit TestPaymentsAutofillClientMock(AutofillClient* client)
       : TestPaymentsAutofillClient(client) {}
   ~TestPaymentsAutofillClientMock() override = default;
-
-  MOCK_METHOD(void,
-              ShowBnplTos,
-              (BnplTosModel bnpl_tos_model,
-               base::OnceClosure accept_callback,
-               base::OnceClosure cancel_callback),
-              (override));
-  MOCK_METHOD(void, CloseBnplTos, (), (override));
 };
 
 class MockBnplUiDelegate : public BnplUiDelegate {
@@ -154,6 +146,13 @@ class MockBnplUiDelegate : public BnplUiDelegate {
                base::OnceClosure cancel_callback),
               (override));
   MOCK_METHOD(void, DismissSelectBnplIssuerUi, (), (override));
+  MOCK_METHOD(void,
+              ShowBnplTosUi,
+              (BnplTosModel bnpl_tos_model,
+               base::OnceClosure accept_callback,
+               base::OnceClosure cancel_callback),
+              (override));
+  MOCK_METHOD(void, CloseBnplTosUi, (), (override));
 };
 }  // namespace
 
@@ -1016,9 +1015,9 @@ TEST_F(
 }
 
 // Tests that `OnDidGetLegalMessageFromServer` set the BNPL manager state if the
-// request has completed successfully, and shows the ToS dialog. This test also
-// ensures the ToS dialog is closed after receiving a redirect URL for an
-// unlinked issuer.
+// request has completed successfully, and shows the ToS UI. This test also
+// ensures the ToS UI is closed after receiving a redirect URL for an unlinked
+// issuer.
 TEST_F(BnplManagerTest,
        OnDidGetLegalMessageFromServer_ClosesTosAfterRedirectUrlReceived) {
   bnpl_manager_->OnDidAcceptBnplSuggestion(1'000'000, base::DoNothing());
@@ -1031,9 +1030,7 @@ TEST_F(BnplManagerTest,
           GetExpectedLegalMessageLines()));
 
   BnplTosModel bnpl_tos_model;
-  EXPECT_CALL(*static_cast<TestPaymentsAutofillClientMock*>(
-                  autofill_client_->GetPaymentsAutofillClient()),
-              ShowBnplTos)
+  EXPECT_CALL(GetBnplUiDelegate(), ShowBnplTosUi)
       .WillOnce(SaveArg<0>(&bnpl_tos_model));
   OnIssuerSelected(unlinked_issuer);
 
@@ -1047,16 +1044,14 @@ TEST_F(BnplManagerTest,
 
   EXPECT_EQ(bnpl_tos_model.issuer, unlinked_issuer);
 
-  EXPECT_CALL(*static_cast<TestPaymentsAutofillClientMock*>(
-                  autofill_client_->GetPaymentsAutofillClient()),
-              CloseBnplTos);
+  EXPECT_CALL(GetBnplUiDelegate(), CloseBnplTosUi);
 
   test_api(*bnpl_manager_)
       .OnRedirectUrlFetched(PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
                             BnplFetchUrlResponseDetails());
 }
 
-// Tests that cancelling the ToS dialog resets and ends the flow.
+// Tests that cancelling the ToS UI resets and ends the flow.
 TEST_F(BnplManagerTest,
        OnDidGetLegalMessageFromServer_TosCancellationResetsFlow) {
   bnpl_manager_->OnDidAcceptBnplSuggestion(1'000'000, base::DoNothing());
@@ -1068,10 +1063,8 @@ TEST_F(BnplManagerTest,
           PaymentsAutofillClient::PaymentsRpcResult::kSuccess, kContextToken,
           GetExpectedLegalMessageLines()));
 
-  // Cancel the ToS dialog by running the cancel callback (2nd param).
-  EXPECT_CALL(*static_cast<TestPaymentsAutofillClientMock*>(
-                  autofill_client_->GetPaymentsAutofillClient()),
-              ShowBnplTos)
+  // Cancel the ToS UI by running the cancel callback (2nd param).
+  EXPECT_CALL(GetBnplUiDelegate(), ShowBnplTosUi)
       .WillOnce(base::test::RunOnceCallback<2>());
 
   EXPECT_NE(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
@@ -1216,7 +1209,7 @@ TEST_F(BnplManagerTest, OnBnplPaymentInstrumentUpdated_Failure) {
       .WillOnce(base::test::RunOnceCallback<1>(
           PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure));
 
-  EXPECT_CALL(GetPaymentsAutofillClient(), CloseBnplTos());
+  EXPECT_CALL(GetBnplUiDelegate(), CloseBnplTosUi);
 
   test_api(*bnpl_manager_).UpdateBnplPaymentInstrument();
 
@@ -1783,7 +1776,7 @@ TEST_F(BnplManagerTest, CreateBnplPaymentInstrument_Failure) {
                   _))
       .WillOnce(base::test::RunOnceCallback<1>(
           PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure, ""));
-  EXPECT_CALL(GetPaymentsAutofillClient(), CloseBnplTos);
+  EXPECT_CALL(GetBnplUiDelegate(), CloseBnplTosUi);
 
   test_api(*bnpl_manager_).CreateBnplPaymentInstrument();
 
@@ -1820,7 +1813,7 @@ TEST_F(BnplManagerTest, UpdateBnplPaymentInstrument_Failure) {
           _))
       .WillOnce(base::test::RunOnceCallback<1>(
           PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure));
-  EXPECT_CALL(GetPaymentsAutofillClient(), CloseBnplTos);
+  EXPECT_CALL(GetBnplUiDelegate(), CloseBnplTosUi);
 
   test_api(*bnpl_manager_).UpdateBnplPaymentInstrument();
 

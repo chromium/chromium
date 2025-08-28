@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/autofill/payments/android_bnpl_ui_delegate.h"
 
 #include "base/functional/callback.h"
+#include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
 
 namespace autofill::payments {
 
@@ -24,6 +25,17 @@ void AndroidBnplUiDelegate::ShowSelectBnplIssuerUi(
 void AndroidBnplUiDelegate::DismissSelectBnplIssuerUi() {
   // TODO(crbug.com/438783909): Add JNI call to dismiss the TouchToFill bottom
   // sheet with the BNPL issuer selection screen.
+}
+
+void AndroidBnplUiDelegate::ShowBnplTosUi(BnplTosModel bnpl_tos_model,
+                                          base::OnceClosure accept_callback,
+                                          base::OnceClosure cancel_callback) {
+  // TODO(crbug.com/438783909): Add JNI call to show the TouchToFill bottom
+  // sheet with the ToS screen.
+}
+
+void AndroidBnplUiDelegate::CloseBnplTosUi() {
+  // TODO(crbug.com/438783909): Add JNI call to close the ToS screen.
 }
 
 }  // namespace autofill::payments

@@ -46,8 +46,6 @@ class AutofillOfferData;
 class AutofillOfferManager;
 class AutofillSaveCardBottomSheetBridge;
 class AutofillSaveIbanBottomSheetBridge;
-class BnplTosControllerImpl;
-struct BnplTosModel;
 class CardUnmaskAuthenticationSelectionDialogControllerImpl;
 struct CardUnmaskChallengeOption;
 class CardUnmaskOtpInputDialogControllerImpl;
@@ -174,10 +172,6 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       base::OnceClosure cancel_unmasking_closure) override;
   void DismissUnmaskAuthenticatorSelectionDialog(bool server_success) override;
   void OnUnmaskVerificationResult(PaymentsRpcResult result) override;
-  void ShowBnplTos(BnplTosModel bnpl_tos_model,
-                   base::OnceClosure accept_callback,
-                   base::OnceClosure cancel_callback) override;
-  void CloseBnplTos() override;
   VirtualCardEnrollmentManager* GetVirtualCardEnrollmentManager() override;
   CreditCardCvcAuthenticator& GetCvcAuthenticator() override;
   CreditCardOtpAuthenticator* GetOtpAuthenticator() override;
@@ -337,8 +331,6 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
 
   std::unique_ptr<CardUnmaskAuthenticationSelectionDialogControllerImpl>
       card_unmask_authentication_selection_controller_;
-
-  std::unique_ptr<BnplTosControllerImpl> bnpl_tos_controller_;
 
   std::unique_ptr<IbanAccessManager> iban_access_manager_;
 

@@ -15,6 +15,8 @@
 namespace autofill {
 
 class BnplIssuer;
+class BnplTosControllerImpl;
+struct BnplTosModel;
 class ContentAutofillClient;
 
 namespace payments {
@@ -38,12 +40,18 @@ class DesktopBnplUiDelegate : public BnplUiDelegate {
       base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
       base::OnceClosure cancel_callback) override;
   void DismissSelectBnplIssuerUi() override;
+  void ShowBnplTosUi(BnplTosModel bnpl_tos_model,
+                     base::OnceClosure accept_callback,
+                     base::OnceClosure cancel_callback) override;
+  void CloseBnplTosUi() override;
 
  private:
   const raw_ref<ContentAutofillClient> client_;
 
   std::unique_ptr<SelectBnplIssuerDialogControllerImpl>
       select_bnpl_issuer_dialog_controller_;
+
+  std::unique_ptr<BnplTosControllerImpl> bnpl_tos_controller_;
 };
 
 }  // namespace payments

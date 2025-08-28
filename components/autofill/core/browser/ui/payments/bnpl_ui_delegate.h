@@ -13,6 +13,7 @@
 namespace autofill {
 
 class BnplIssuer;
+struct BnplTosModel;
 
 namespace payments {
 
@@ -33,6 +34,16 @@ class BnplUiDelegate {
 
   // Dismiss the issuer selection UI for BNPL.
   virtual void DismissSelectBnplIssuerUi() = 0;
+
+  // Shows a view that presents the BNPL Terms of Service UI to the user to
+  // accept or decline.
+  virtual void ShowBnplTosUi(BnplTosModel bnpl_tos_model,
+                             base::OnceClosure accept_callback,
+                             base::OnceClosure cancel_callback) = 0;
+
+  // Closes the BNPL Terms of Service UI that was displayed in
+  // `ShowBnplTos()`.
+  virtual void CloseBnplTosUi() = 0;
 };
 
 }  // namespace payments

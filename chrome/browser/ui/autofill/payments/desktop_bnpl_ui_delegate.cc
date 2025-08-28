@@ -7,6 +7,8 @@
 #include "base/check_deref.h"
 #include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/core/browser/ui/payments/bnpl_tos_controller_impl.h"
+#include "components/autofill/core/browser/ui/payments/bnpl_tos_view.h"
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_view.h"
 
@@ -37,6 +39,30 @@ void DesktopBnplUiDelegate::DismissSelectBnplIssuerUi() {
     select_bnpl_issuer_dialog_controller_->Dismiss();
     select_bnpl_issuer_dialog_controller_.reset();
   }
+}
+
+void DesktopBnplUiDelegate::ShowBnplTosUi(BnplTosModel bnpl_tos_model,
+                                          base::OnceClosure accept_callback,
+                                          base::OnceClosure cancel_callback) {
+  if (!bnpl_tos_controller_) {
+    bnpl_tos_controller_ =
+        std::make_unique<BnplTosControllerImpl>(&client_.get());
+  }
+
+  bnpl_tos_controller_->Show(
+      base::BindOnce(&CreateAndShowBnplTos, bnpl_tos_controller_->GetWeakPtr(),
+                     base::Unretained(&client_->GetWebContents())),
+      std::move(bnpl_tos_model), std::move(accept_callback),
+      std::move(cancel_callback));
+}
+
+void DesktopBnplUiDelegate::CloseBnplTosUi() {
+  if (!bnpl_tos_controller_) {
+    return;
+  }
+
+  bnpl_tos_controller_->Dismiss();
+  bnpl_tos_controller_.reset();
 }
 
 }  // namespace autofill::payments

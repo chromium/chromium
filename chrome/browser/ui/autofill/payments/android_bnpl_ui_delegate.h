@@ -14,6 +14,7 @@
 namespace autofill {
 
 class BnplIssuer;
+struct BnplTosModel;
 
 namespace payments {
 
@@ -35,6 +36,10 @@ class AndroidBnplUiDelegate : public BnplUiDelegate {
       base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
       base::OnceClosure cancel_callback) override;
   void DismissSelectBnplIssuerUi() override;
+  void ShowBnplTosUi(BnplTosModel bnpl_tos_model,
+                     base::OnceClosure accept_callback,
+                     base::OnceClosure cancel_callback) override;
+  void CloseBnplTosUi() override;
 };
 
 }  // namespace payments

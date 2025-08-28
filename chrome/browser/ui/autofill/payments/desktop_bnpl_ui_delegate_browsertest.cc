@@ -11,13 +11,14 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
-enum class DialogEnum { kSelectBnplIssuer };
+enum class DialogEnum { kSelectBnplIssuer, kBnplTos };
 
 struct DialogTestData {
   std::string name;
@@ -53,6 +54,13 @@ class DesktopBnplUiDelegateBrowserTest
             /*app_locale=*/"en-US", base::DoNothing(), base::DoNothing());
         break;
       }
+      case DialogEnum::kBnplTos: {
+        BnplTosModel model;
+        model.issuer = test::GetTestUnlinkedBnplIssuer();
+        GetDesktopBnplUiDelegate()->ShowBnplTosUi(
+            std::move(model), base::DoNothing(), base::DoNothing());
+        break;
+      }
     }
   }
 
@@ -68,12 +76,13 @@ class DesktopBnplUiDelegateBrowserTest
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(,
-                         DesktopBnplUiDelegateBrowserTest,
-                         testing::Values(DialogTestData{
-                             "Select_BNPL_Issuer",
-                             DialogEnum::kSelectBnplIssuer}),
-                         GetTestName);
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    DesktopBnplUiDelegateBrowserTest,
+    testing::Values(DialogTestData{"Select_BNPL_Issuer",
+                                   DialogEnum::kSelectBnplIssuer},
+                    DialogTestData{"BNPL_ToS", DialogEnum::kBnplTos}),
+    GetTestName);
 
 // Ensures that the dialog is shown and it won't crash the browser.
 IN_PROC_BROWSER_TEST_P(DesktopBnplUiDelegateBrowserTest, ShowAndVerifyUi) {

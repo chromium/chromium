@@ -32,7 +32,6 @@ class AutofillOfferData;
 class AutofillOfferManager;
 enum class AutofillProgressDialogType;
 class AutofillSaveCardBottomSheetBridge;
-struct BnplTosModel;
 struct CardUnmaskChallengeOption;
 class CardUnmaskDelegate;
 struct CardUnmaskPromptOptions;
@@ -499,16 +498,6 @@ class PaymentsAutofillClient : public RiskDataLoader {
       const CardUnmaskPromptOptions& card_unmask_prompt_options,
       base::WeakPtr<CardUnmaskDelegate> delegate);
   virtual void OnUnmaskVerificationResult(PaymentsRpcResult result);
-
-  // Shows a view that presents the Buy-Now-Pay-Later Terms of Service to the
-  // user to accept or decline.
-  virtual void ShowBnplTos(BnplTosModel bnpl_tos_model,
-                           base::OnceClosure accept_callback,
-                           base::OnceClosure cancel_callback);
-
-  // Closes the Buy-Now-Pay-Later Terms of Service dialog that was displayed in
-  // `ShowBnplTos()`.
-  virtual void CloseBnplTos();
 
   // Returns a pointer to a VirtualCardEnrollmentManager that is owned by
   // PaymentsAutofillClient. VirtualCardEnrollmentManager is used for virtual

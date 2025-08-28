@@ -350,7 +350,7 @@ void BnplManager::OnDidGetLegalMessageFromServer(
     bnpl_tos_model.legal_message_lines = std::move(legal_message);
     bnpl_tos_model.issuer = ongoing_flow_state_->issuer;
 
-    payments_autofill_client().ShowBnplTos(
+    payments_autofill_client().GetBnplUiDelegate()->ShowBnplTosUi(
         std::move(bnpl_tos_model),
         base::BindOnce(&BnplManager::OnTosDialogAccepted,
                        weak_factory_.GetWeakPtr()),
@@ -417,8 +417,8 @@ void BnplManager::OnRedirectUrlFetched(
     payments_autofill_client().GetBnplUiDelegate()->DismissSelectBnplIssuerUi();
   } else {
     // If the BNPL issuer selected is not linked, or is linked but requires ToS
-    // acceptance, then the ToS dialog must be showing, so close it.
-    payments_autofill_client().CloseBnplTos();
+    // acceptance, then the ToS UI must be showing, so close it.
+    payments_autofill_client().GetBnplUiDelegate()->CloseBnplTosUi();
   }
 
   if (result == payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
@@ -602,7 +602,8 @@ void BnplManager::OnBnplPaymentInstrumentCreated(
     ongoing_flow_state_->instrument_id = std::move(instrument_id);
     FetchRedirectUrl();
   } else {
-    payments_autofill_client().CloseBnplTos();
+    CHECK(payments_autofill_client().GetBnplUiDelegate());
+    payments_autofill_client().GetBnplUiDelegate()->CloseBnplTosUi();
     payments_autofill_client().ShowAutofillErrorDialog(
         AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
             /*is_permanent_error=*/ShouldShowPermanentErrorDialog(result)));
@@ -636,7 +637,8 @@ void BnplManager::OnBnplPaymentInstrumentUpdated(
   if (result == payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
     FetchRedirectUrl();
   } else {
-    payments_autofill_client().CloseBnplTos();
+    CHECK(payments_autofill_client().GetBnplUiDelegate());
+    payments_autofill_client().GetBnplUiDelegate()->CloseBnplTosUi();
     payments_autofill_client().ShowAutofillErrorDialog(
         AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
             /*is_permanent_error=*/ShouldShowPermanentErrorDialog(result)));
