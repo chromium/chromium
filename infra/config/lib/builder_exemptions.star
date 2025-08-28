@@ -23,8 +23,6 @@ exempted_from_description_builders = {
         "ASan Release (32-bit x86 with V8-ARM)",
         "ASan Release Media (32-bit x86 with V8-ARM)",
         "Android ASAN (dbg)",
-        "Android WebView O (dbg)",
-        "Android WebView P (dbg)",
         "Android arm Builder (dbg)",
         "Android arm64 Builder (dbg)",
         "Android arm64 Builder All Targets (dbg)",
