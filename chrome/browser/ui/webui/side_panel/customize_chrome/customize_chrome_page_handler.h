@@ -150,6 +150,7 @@ class CustomizeChromePageHandler
 
   ntp_tiles::TileType GetTileType() const;
   bool IsShortcutsVisible() const;
+  bool IsEnterpriseShortcutsVisible() const;
 
   // Returns the type of New Tab Page the SidePanel is attached to.
   side_panel::mojom::NewTabPageType GetNewTabPageType(const GURL& url);

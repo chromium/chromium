@@ -46,6 +46,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/ntp_tiles/features.h"
+#include "components/ntp_tiles/pref_names.h"
 #include "components/ntp_tiles/tile_type.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/search/ntp_features.h"
@@ -171,7 +173,9 @@ class MockPage : public side_panel::mojom::CustomizeChromePage {
            bool visible));
   MOCK_METHOD(void,
               SetMostVisitedSettings,
-              (ntp_tiles::TileType type, bool visible));
+              (ntp_tiles::TileType type,
+               bool visible,
+               const std::vector<ntp_tiles::TileType>& disabled_shortcuts));
   MOCK_METHOD(void, SetTheme, (side_panel::mojom::ThemePtr));
   MOCK_METHOD(void, SetThemeEditable, (bool));
   MOCK_METHOD(void,
@@ -375,9 +379,11 @@ class CustomizeChromePageHandlerTest : public testing::Test {
 TEST_F(CustomizeChromePageHandlerTest, SetMostVisitedSettings) {
   ntp_tiles::TileType type;
   bool visible;
+  std::vector<ntp_tiles::TileType> disabled_shortcuts;
   EXPECT_CALL(mock_page_, SetMostVisitedSettings)
       .Times(4)
-      .WillRepeatedly(DoAll(SaveArg<0>(&type), SaveArg<1>(&visible)));
+      .WillRepeatedly(DoAll(SaveArg<0>(&type), SaveArg<1>(&visible),
+                            SaveArg<2>(&disabled_shortcuts)));
 
   profile().GetPrefs()->SetInteger(
       ntp_prefs::kNtpShortcutsType,
@@ -400,6 +406,85 @@ TEST_F(CustomizeChromePageHandlerTest, SetMostVisitedSettings) {
   EXPECT_TRUE(
       profile().GetPrefs()->GetBoolean(ntp_prefs::kNtpShortcutsVisible));
   histogram_tester().ExpectTotalCount("NewTabPage.CustomizeShortcutAction", 2);
+}
+
+TEST_F(CustomizeChromePageHandlerTest,
+       UpdateMostVisitedSettings_EnterpriseFeatureDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(ntp_tiles::kNtpEnterpriseShortcuts);
+
+  ntp_tiles::TileType type;
+  bool visible;
+  std::vector<ntp_tiles::TileType> disabled_shortcuts;
+  EXPECT_CALL(mock_page_, SetMostVisitedSettings)
+      .WillRepeatedly(DoAll(SaveArg<0>(&type), SaveArg<1>(&visible),
+                            SaveArg<2>(&disabled_shortcuts)));
+
+  // Set enterprise shortcuts policy.
+  base::Value::List enterprise_shortcuts;
+  enterprise_shortcuts.Append(
+      base::Value::Dict().Set("title", "test").Set("url", "https://test.com"));
+  profile().GetPrefs()->SetList(
+      ntp_tiles::prefs::kEnterpriseShortcutsPolicyList,
+      std::move(enterprise_shortcuts));
+  profile().GetPrefs()->SetInteger(
+      ntp_prefs::kNtpShortcutsType,
+      static_cast<int>(ntp_tiles::TileType::kEnterpriseShortcuts));
+  mock_page_.FlushForTesting();
+
+  // The enterprise shortcuts option should be disabled. The type should remain
+  // Enterprise Shortcuts.
+  EXPECT_EQ(ntp_tiles::TileType::kEnterpriseShortcuts, type);
+  EXPECT_THAT(disabled_shortcuts,
+              testing::ElementsAre(ntp_tiles::TileType::kEnterpriseShortcuts));
+}
+
+TEST_F(CustomizeChromePageHandlerTest,
+       UpdateMostVisitedSettingsOnPolicyChange) {
+  ntp_tiles::TileType type;
+  bool visible;
+  std::vector<ntp_tiles::TileType> disabled_shortcuts;
+  EXPECT_CALL(mock_page_, SetMostVisitedSettings)
+      .WillRepeatedly(DoAll(SaveArg<0>(&type), SaveArg<1>(&visible),
+                            SaveArg<2>(&disabled_shortcuts)));
+
+  // Enable enterprise shortcuts policy.
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(ntp_tiles::kNtpEnterpriseShortcuts);
+
+  base::Value::List enterprise_shortcuts;
+  enterprise_shortcuts.Append(
+      base::Value::Dict().Set("title", "test").Set("url", "https://test.com"));
+  profile().GetPrefs()->SetList(
+      ntp_tiles::prefs::kEnterpriseShortcutsPolicyList,
+      std::move(enterprise_shortcuts));
+  mock_page_.FlushForTesting();
+
+  // The enterprise shortcuts option should be visible.
+  EXPECT_EQ(0u, disabled_shortcuts.size());
+
+  // Set shortcut type to enterprise.
+  handler().SetMostVisitedSettings(
+      /*type=*/ntp_tiles::TileType::kEnterpriseShortcuts, /*visible=*/true);
+  mock_page_.FlushForTesting();
+
+  // Verify state.
+  EXPECT_EQ(ntp_tiles::TileType::kEnterpriseShortcuts, type);
+  EXPECT_TRUE(visible);
+  EXPECT_EQ(0u, disabled_shortcuts.size());
+
+  // Disable enterprise shortcuts policy.
+  profile().GetPrefs()->SetList(
+      ntp_tiles::prefs::kEnterpriseShortcutsPolicyList, base::Value::List());
+  mock_page_.FlushForTesting();
+
+  // Verify state is updated. The type should be reset to Custom Links.
+  EXPECT_EQ(ntp_tiles::TileType::kCustomLinks, type);
+  EXPECT_TRUE(visible);
+  EXPECT_EQ(1u, disabled_shortcuts.size());
+  EXPECT_TRUE(std::find(disabled_shortcuts.begin(), disabled_shortcuts.end(),
+                        ntp_tiles::TileType::kEnterpriseShortcuts) !=
+              disabled_shortcuts.end());
 }
 
 enum class ThemeUpdateSource {

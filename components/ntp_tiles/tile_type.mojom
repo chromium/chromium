@@ -19,4 +19,7 @@ enum TileType {
 
   // Tile with custom links type.
   kCustomLinks = 1,
+
+  // Tile with enterprise shortcuts type.
+  kEnterpriseShortcuts = 2,
 };

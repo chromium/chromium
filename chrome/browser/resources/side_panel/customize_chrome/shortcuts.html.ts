@@ -22,10 +22,11 @@ export function getHtml(this: ShortcutsElement) {
         .selected="${this.radioSelection_}"
          @selected-changed="${this.onRadioSelectionChanged_}" nested-selectable>
       ${
-      this.shortcutConfigs_.map(
-          item => html`
+      this.shortcutConfigs_.filter(item => !item.disabled)
+          .map(
+              item => html`
         <div class="option" id="${item.containerName}" @click="${
-              () => this.onOptionClick_(item.type)}">
+                  () => this.onOptionClick_(item.type)}">
           <customize-chrome-button-label label="${item.title}"
               label-description="${item.description}">
           </customize-chrome-button-label>

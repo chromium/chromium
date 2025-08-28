@@ -23,23 +23,6 @@ import {getCss} from './shortcuts.css.js';
 import {getHtml} from './shortcuts.html.js';
 import {TileType} from './tile_type.mojom-webui.js';
 
-const SHORTCUT_CONFIGS = [
-  {
-    type: TileType.kCustomLinks,
-    title: loadTimeData.getString('myShortcuts'),
-    description: loadTimeData.getString('shortcutsCurated'),
-    buttonName: 'customLinksOption',
-    containerName: 'customLinksContainer',
-  },
-  {
-    type: TileType.kTopSites,
-    title: loadTimeData.getString('topSites'),
-    description: loadTimeData.getString('shortcutsSuggested'),
-    buttonName: 'topSitesOption',
-    containerName: 'topSitesContainer',
-  },
-];
-
 export interface ShortcutsElement {
   $: {
     showToggleContainer: HTMLElement,
@@ -68,6 +51,7 @@ export class ShortcutsElement extends CrLitElement {
       radioSelection_: {type: String},
       show_: {type: Boolean},
       shortcutConfigs_: {type: Array},
+      disabledShortcuts_: {type: Array},
     };
   }
 
@@ -75,7 +59,8 @@ export class ShortcutsElement extends CrLitElement {
   protected accessor initialized_: boolean = false;
   protected accessor radioSelection_: string|undefined = undefined;
   protected accessor show_: boolean = false;
-  protected accessor shortcutConfigs_ = SHORTCUT_CONFIGS;
+  protected accessor shortcutConfigs_: any[] = [];
+  protected accessor disabledShortcuts_: TileType[] = [];
 
   private setMostVisitedSettingsListenerId_: number|null = null;
 
@@ -92,9 +77,11 @@ export class ShortcutsElement extends CrLitElement {
     super.connectedCallback();
     this.setMostVisitedSettingsListenerId_ =
         this.callbackRouter_.setMostVisitedSettings.addListener(
-            (shortcutsType: TileType, shortcutsVisible: boolean) => {
+            (shortcutsType: TileType, shortcutsVisible: boolean,
+             disabledShortcuts: TileType[]) => {
               this.shortcutsType_ = shortcutsType;
               this.show_ = shortcutsVisible;
+              this.disabledShortcuts_ = disabledShortcuts;
               this.initialized_ = true;
             });
     this.pageHandler_.updateMostVisitedSettings();
@@ -112,11 +99,45 @@ export class ShortcutsElement extends CrLitElement {
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
 
+    if (changedPrivateProperties.has('disabledShortcuts_')) {
+      this.shortcutConfigs_ = this.computeShortcutConfigs_();
+    }
+
     if (changedPrivateProperties.has('shortcutsType_')) {
       const config = this.shortcutConfigs_.find(
           config => config.type === this.shortcutsType_);
       this.radioSelection_ = config ? config.buttonName : undefined;
     }
+  }
+
+  private computeShortcutConfigs_() {
+    return [
+      {
+        type: TileType.kEnterpriseShortcuts,
+        title: loadTimeData.getString('enterpriseShortcuts'),
+        description: loadTimeData.getString('enterpriseShortcutsCurated'),
+        buttonName: 'enterpriseShortcutsOption',
+        containerName: 'enterpriseShortcutsContainer',
+        disabled:
+            this.disabledShortcuts_.includes(TileType.kEnterpriseShortcuts),
+      },
+      {
+        type: TileType.kCustomLinks,
+        title: loadTimeData.getString('myShortcuts'),
+        description: loadTimeData.getString('shortcutsCurated'),
+        buttonName: 'customLinksOption',
+        containerName: 'customLinksContainer',
+        disabled: this.disabledShortcuts_.includes(TileType.kCustomLinks),
+      },
+      {
+        type: TileType.kTopSites,
+        title: loadTimeData.getString('topSites'),
+        description: loadTimeData.getString('shortcutsSuggested'),
+        buttonName: 'topSitesOption',
+        containerName: 'topSitesContainer',
+        disabled: this.disabledShortcuts_.includes(TileType.kTopSites),
+      },
+    ];
   }
 
   private setMostVisitedSettings_() {

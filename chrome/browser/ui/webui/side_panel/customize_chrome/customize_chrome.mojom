@@ -234,8 +234,10 @@ interface CustomizeChromePage {
   // enabled status, visibility and managed state.
   SetModulesSettings(array<ModuleSettings> modules_settings, bool managed,
       bool visible);
-  // Sets the visibility of NTP tiles and the shortcuts type.
-  SetMostVisitedSettings(ntp_tiles.mojom.TileType shortcuts_type, bool visible);
+  // Sets the visibility of NTP tiles, shortcuts type to select, and shortcut
+  // types that should be hidden in the customization menu.
+  SetMostVisitedSettings(ntp_tiles.mojom.TileType shortcuts_type, bool visible,
+    array<ntp_tiles.mojom.TileType> disabled_shortcuts);
   // Sets the visibility and disabled state of the NTP Footer.
   SetFooterSettings(bool visible,
                     bool extension_policy_enabled,
