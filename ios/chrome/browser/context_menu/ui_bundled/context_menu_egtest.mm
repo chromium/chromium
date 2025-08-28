@@ -696,7 +696,15 @@ void RelaunchApp() {
 // Checks that "open in new window" shows up on a long press of a url link
 // and that it actually opens in a new window, and that when the link is in an
 // incognito webstate, the newly opened webstate is also incognito.
-- (void)testOpenIncognitoLinkInNewWindow {
+// TODO(crbug.com/441761691): Test is flaky on iPad simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testOpenIncognitoLinkInNewWindow \
+  FLAKY_testOpenIncognitoLinkInNewWindow
+#else
+#define MAYBE_testOpenIncognitoLinkInNewWindow \
+  testOpenIncognitoLinkInNewWindow
+#endif
+- (void)MAYBE_testOpenIncognitoLinkInNewWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
