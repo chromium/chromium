@@ -373,9 +373,9 @@ bool STGEverythingMenu::ShowContextMenu(views::MenuItemView* source,
 bool STGEverythingMenu::GetAccelerator(int id,
                                        ui::Accelerator* accelerator) const {
   if (id == IDC_CREATE_NEW_TAB_GROUP) {
-    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
-    CHECK(browser_view);
-    return browser_view->GetAccelerator(id, accelerator);
+    return browser_->GetFeatures()
+        .accelerator_provider()
+        ->GetAcceleratorForCommandId(id, accelerator);
   }
 
   return false;

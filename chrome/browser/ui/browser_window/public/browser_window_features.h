@@ -164,6 +164,10 @@ namespace split_tabs {
 class SplitTabScrimController;
 }  // namespace split_tabs
 
+namespace ui {
+class AcceleratorProvider;
+}  // namespace ui
+
 namespace web_app {
 class AppBrowserController;
 }  // namespace web_app
@@ -448,6 +452,10 @@ class BrowserWindowFeatures {
 
   BrowserLiveTabContext* live_tab_context() { return live_tab_context_.get(); }
 
+  ui::AcceleratorProvider* accelerator_provider() {
+    return accelerator_provider_;
+  }
+
   static ui::UserDataFactoryWithOwner<BrowserWindowInterface>&
   GetUserDataFactoryForTesting();
 
@@ -676,6 +684,11 @@ class BrowserWindowFeatures {
 #endif
 
   std::unique_ptr<BrowserUserEducationInterface> user_education_;
+
+  // TODO(webium): Current both BrowserView and WebUIBrowserWindow implement
+  // AcceleratorProvider. Consider eliminating this inheritance and composing
+  // this functionality into its own class.
+  raw_ptr<ui::AcceleratorProvider> accelerator_provider_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_

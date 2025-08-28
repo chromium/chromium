@@ -102,6 +102,7 @@
 #include "chrome/browser/ui/webui_browser/browser_elements_webui_browser.h"
 #include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_side_panel_ui.h"
+#include "chrome/browser/ui/webui_browser/webui_browser_window.h"
 #include "chrome/common/chrome_features.h"
 #include "components/breadcrumbs/core/breadcrumbs_status.h"
 #include "components/collaboration/public/collaboration_service.h"
@@ -499,6 +500,9 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
               extensions::ExtensionKeybindingRegistry::ALL_EXTENSIONS,
               browser_view);
     }
+
+    // BrowserView is an AcceleratorProvider.
+    accelerator_provider_ = browser_view;
   }
 
   if (auto* const provider =
@@ -510,6 +514,10 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
   if (webui_browser::IsWebUIBrowserEnabled()) {
     webui_browser_side_panel_ui_ =
         std::make_unique<WebUIBrowserSidePanelUI>(browser);
+
+    CHECK(!accelerator_provider_);
+    // WebUIBrowserWindow is an AcceleratorProvider.
+    accelerator_provider_ = static_cast<WebUIBrowserWindow*>(browser->window());
   }
 }
 
