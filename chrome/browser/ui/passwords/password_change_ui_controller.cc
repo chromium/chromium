@@ -79,6 +79,7 @@ void LogDialogAction(PasswordChangeDelegate::State state,
     case PasswordChangeDelegate::State::kCanceled:
     case PasswordChangeDelegate::State::kNoState:
     case PasswordChangeDelegate::State::kLoginFormDetected:
+    case PasswordChangeDelegate::State::kLoginFormDetectedUserCanContinue:
       NOTREACHED();
   }
 }
@@ -96,6 +97,7 @@ void LogToastEvent(PasswordChangeDelegate::State state,
           "PasswordManager.PasswordChange.ChangingPasswordToast", event);
       return;
     case PasswordChangeDelegate::State::kLoginFormDetected:
+    case PasswordChangeDelegate::State::kLoginFormDetectedUserCanContinue:
       base::UmaHistogramEnumeration(
           "PasswordManager.PasswordChange.WaitingForUserSignInToast", event);
       return;
@@ -350,7 +352,7 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
               IDS_PASSWORD_MANAGER_UI_VIEW_DETAILS_BUTTON),
           base::BindOnce(&PasswordChangeUIController::ShowPasswordDetails,
                          weak_ptr_factory_.GetWeakPtr()),
-          true);
+          base::DoNothing());
     case PasswordChangeDelegate::State::kCanceled:
       return ToastOptions(
           l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_PASSWORD_UNCHANGED),
@@ -363,7 +365,15 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
           l10n_util::GetStringUTF16(
               IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_CANCEL),
           std::move(cancel_toast_callback));
-
+    case PasswordChangeDelegate::State::kLoginFormDetectedUserCanContinue:
+      return ToastOptions(
+          l10n_util::GetStringUTF16(
+              IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_TOAST_SIGN_IN_TO_CONTINUE),
+          views::kInfoChromeRefreshIcon,
+          l10n_util::GetStringUTF16(IDS_CONTINUE),
+          base::BindOnce(&PasswordChangeUIController::SkipLoginCheck,
+                         weak_ptr_factory_.GetWeakPtr()),
+          std::move(cancel_toast_callback));
     case PasswordChangeDelegate::State::kNoState:
       NOTREACHED();
   }
@@ -497,6 +507,11 @@ void PasswordChangeUIController::NavigateToPasswordChangeSettings() {
           tab_interface_->GetContents()->GetBrowserContext()),
       GURL(chrome::kChromeUiPasswordChangeUrl),
       NavigateParams::IGNORE_AND_NAVIGATE);
+}
+
+void PasswordChangeUIController::SkipLoginCheck() {
+  CHECK(password_change_delegate_);
+  password_change_delegate_->ProceedToChangePassword();
 }
 
 void PasswordChangeUIController::CloseDialogWidget(

@@ -1581,3 +1581,42 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
 }
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
+                       UserSkipsLoginCheck) {
+  const GURL main_url = WebContents()->GetLastCommittedURL();
+  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
+      .WillOnce(Return(GURL(kChangePasswordURL)));
+  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
+                                                   u"password", WebContents());
+  auto* delegate =
+      password_change_service()->GetPasswordChangeDelegate(WebContents());
+  delegate->StartPasswordChangeFlow();
+  auto* delegate_impl = static_cast<PasswordChangeDelegateImpl*>(delegate);
+  // Verify that the background tab was not created yet.
+  EXPECT_FALSE(delegate_impl->executor());
+  EXPECT_TRUE(delegate_impl->login_checker());
+  EXPECT_EQ(delegate->GetCurrentState(),
+            PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
+
+  delegate_impl->login_checker()->RespondWithLoginStatus(false);
+  EXPECT_TRUE(delegate_impl->login_checker());
+  EXPECT_FALSE(delegate_impl->executor());
+  EXPECT_EQ(delegate->GetCurrentState(),
+            PasswordChangeDelegate::State::kLoginFormDetected);
+
+  // Failing for the second time changes the state to give an option to
+  // continue.
+  delegate_impl->login_checker()->RespondWithLoginStatus(false);
+  EXPECT_TRUE(delegate_impl->login_checker());
+  EXPECT_FALSE(delegate_impl->executor());
+  EXPECT_EQ(delegate->GetCurrentState(),
+            PasswordChangeDelegate::State::kLoginFormDetectedUserCanContinue);
+
+  // Now the user clicks "Continue" which skips login check.
+  delegate->ProceedToChangePassword();
+  EXPECT_FALSE(delegate_impl->login_checker());
+  EXPECT_TRUE(delegate_impl->executor());
+  EXPECT_EQ(delegate->GetCurrentState(),
+            PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
+}

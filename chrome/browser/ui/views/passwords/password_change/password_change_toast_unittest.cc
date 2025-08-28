@@ -76,8 +76,7 @@ TEST_F(PasswordChangeToastTest, ConfigurationUpdated) {
 
   PasswordChangeToast::ToastOptions new_options(
       u"Password changed", vector_icons::kPasswordManagerIcon, u"Details",
-      base::DoNothing(),
-      /*has_close_button=*/true);
+      base::DoNothing(), base::DoNothing());
   toast_view->UpdateLayout(std::move(new_options));
   EXPECT_FALSE(toast_view->throbber()->GetVisible());
   EXPECT_TRUE(toast_view->icon_view()->GetVisible());

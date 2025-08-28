@@ -176,9 +176,13 @@ PasswordChangeDelegate::CoarseFinalPasswordChangeState GetCoarseState(
       return PasswordChangeDelegate::CoarseFinalPasswordChangeState::kOffered;
 
     case PasswordChangeDelegate::State::kCanceled:
+    // Password change is "ongoing", but since the metric is recorded on
+    // destruction of PasswordChangeDelegateImpl it means user canceled password
+    // change implicitly by closing the tab.
     case PasswordChangeDelegate::State::kWaitingForChangePasswordForm:
     case PasswordChangeDelegate::State::kChangingPassword:
     case PasswordChangeDelegate::State::kLoginFormDetected:
+    case PasswordChangeDelegate::State::kLoginFormDetectedUserCanContinue:
       return PasswordChangeDelegate::CoarseFinalPasswordChangeState::kCanceled;
 
     case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
@@ -306,22 +310,22 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
             &PasswordChangeDelegateImpl::OnLoginStateCheckResult,
             weak_ptr_factory_.GetWeakPtr()));
   } else {
-    StartBackgroundTab();
+    ProceedToChangePassword();
   }
 }
 
 void PasswordChangeDelegateImpl::OnLoginStateCheckResult(bool is_logged_in) {
   if (is_logged_in) {
     // User is logged in, start password change process.
-    login_state_checker_.reset();
-    UpdateState(State::kWaitingForChangePasswordForm);
-    StartBackgroundTab();
+    ProceedToChangePassword();
     return;
   }
 
   if (!login_state_checker_->ReachedAttemptsLimit()) {
     // Update the UI to encourage user to complete sign in.
-    UpdateState(State::kLoginFormDetected);
+    UpdateState(current_state_ == State::kLoginFormDetected
+                    ? State::kLoginFormDetectedUserCanContinue
+                    : State::kLoginFormDetected);
     return;
   }
 
@@ -330,7 +334,10 @@ void PasswordChangeDelegateImpl::OnLoginStateCheckResult(bool is_logged_in) {
   UpdateState(State::kChangePasswordFormNotFound);
 }
 
-void PasswordChangeDelegateImpl::StartBackgroundTab() {
+void PasswordChangeDelegateImpl::ProceedToChangePassword() {
+  login_state_checker_.reset();
+  UpdateState(State::kWaitingForChangePasswordForm);
+
   executor_ = CreateWebContents(profile_, change_password_url_);
   CHECK(executor_);
   auto* client = ChromePasswordManagerClient::FromWebContents(executor_.get());

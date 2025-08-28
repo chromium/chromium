@@ -34,24 +34,26 @@ class PasswordChangeToast : public views::View {
                  const gfx::VectorIcon& icon,
                  const std::optional<std::u16string>& action_button_text,
                  base::OnceClosure action_button_closure = base::DoNothing(),
-                 bool has_close_button = false);
+                 base::OnceClosure close_callback = base::NullCallback());
 
     ToastOptions(const std::u16string& text,
                  const std::optional<std::u16string>& action_button_text,
                  base::OnceClosure action_button_closure = base::DoNothing(),
-                 bool has_close_button = false);
+                 base::OnceClosure close_callback = base::NullCallback());
 
     ToastOptions(ToastOptions&& other) noexcept;
     ToastOptions& operator=(ToastOptions&& other) noexcept;
 
     ~ToastOptions();
 
+    bool has_close_button() { return !close_callback.is_null(); }
+
     std::u16string text;
     // If not present, throbber will be shown.
     std::optional<raw_ref<const gfx::VectorIcon>> icon;
     std::optional<std::u16string> action_button_text;
     base::OnceClosure action_button_closure;
-    bool has_close_button = false;
+    base::OnceClosure close_callback;
   };
 
   explicit PasswordChangeToast(ToastOptions toast_configuration);
@@ -79,6 +81,7 @@ class PasswordChangeToast : public views::View {
 
   std::optional<raw_ref<const gfx::VectorIcon>> icon_;
   base::OnceClosure action_button_closure_;
+  base::OnceClosure close_callback_;
 
   raw_ptr<views::FlexLayout> layout_manager_ = nullptr;
   raw_ptr<views::Throbber> throbber_ = nullptr;

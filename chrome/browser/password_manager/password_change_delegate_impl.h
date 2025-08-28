@@ -92,6 +92,7 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
   void OnPasswordFormSubmission(content::WebContents* web_contents) override;
   void OnPrivacyNoticeAccepted() override;
   void OnPasswordChangeDeclined() override;
+  void ProceedToChangePassword() override;
   void AddObserver(PasswordChangeDelegate::Observer* observer) override;
   void RemoveObserver(PasswordChangeDelegate::Observer* observer) override;
 
@@ -99,8 +100,6 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
 
   void OnTabWillDetach(tabs::TabInterface* tab_interface,
                        tabs::TabInterface::DetachReason reason);
-
-  void StartBackgroundTab();
 
   void OnLoginStateCheckResult(bool is_logged_in);
   // Updates `current_state_` and notifies `observers_`.
