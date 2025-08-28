@@ -86,7 +86,8 @@ class Elevator
           IElevatorChrome,
           IElevatorChromeBeta,
           IElevatorChromeDev,
-          IElevatorChromeCanary> {
+          IElevatorChromeCanary,
+          IFastRundown> {
  public:
   // Failure codes.
   static constexpr HRESULT kErrorCouldNotObtainCallingProcess =

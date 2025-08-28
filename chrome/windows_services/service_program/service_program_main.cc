@@ -62,6 +62,18 @@ int ServiceProgramMain(ServiceDelegate& delegate) {
   // Create the global WRL::Module instance.
   CreateWrlModule();
 
+  // Enable fast rundown so that COM stubs are run down (i.e., have their
+  // outstanding reference counts released) more quickly upon client
+  // termination. Testing shows that "fast" rundown still takes on the order of
+  // ten seconds, so it is not a substitute for the elevated tracing service's
+  // ProcessWatcher.
+  // https://learn.microsoft.com/nb-no/archive/blogs/distributedservices/com-server-cleanup-now-you-can-opt-for-a-fast-rundown
+  if (Microsoft::WRL::ComPtr<IGlobalOptions> options; SUCCEEDED(
+          ::CoCreateInstance(CLSID_GlobalOptions, nullptr, CLSCTX_INPROC_SERVER,
+                             IID_PPV_ARGS(&options)))) {
+    options->Set(COMGLB_RO_SETTINGS, COMGLB_FAST_RUNDOWN);
+  }
+
   // Register an empty FeatureList so that queries on it do not fail.
   base::FeatureList::SetInstance(std::make_unique<base::FeatureList>());
 
