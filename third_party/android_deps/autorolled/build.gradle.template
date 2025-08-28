@@ -38,6 +38,9 @@ dependencies {
     compileLatest 'io.grpc:grpc-api:+'
     compileLatest 'io.grpc:grpc-stub:+'
     compileLatest 'io.grpc:grpc-protobuf-lite:+'
+    androidTestCompileLatest 'io.grpc:grpc-testing:+'
+    androidTestCompileLatest 'io.grpc:grpc-inprocess:+'
+    androidTestCompileLatest 'io.grpc:grpc-util:+'
 
     // A dependency of androidx.xr.runtime:runtime, but must be listed here in
     // order to be auto-rolled and not manually rolled.

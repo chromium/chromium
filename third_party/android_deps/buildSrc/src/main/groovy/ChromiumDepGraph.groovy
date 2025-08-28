@@ -164,6 +164,18 @@ class ChromiumDepGraph {
                     cpePrefix: 'cpe:/a:grpc:grpc',
                     licenseUrl: 'https://raw.githubusercontent.com/grpc/grpc-java/refs/heads/master/LICENSE',
                     licenseName: 'Apache 2.0'),
+            io_grpc_grpc_testing: new PropertyOverride(
+                    cpePrefix: 'cpe:/a:grpc:grpc',
+                    licenseUrl: 'https://raw.githubusercontent.com/grpc/grpc-java/refs/heads/master/LICENSE',
+                    licenseName: 'Apache 2.0'),
+            io_grpc_grpc_inprocess: new PropertyOverride(
+                    cpePrefix: 'cpe:/a:grpc:grpc',
+                    licenseUrl: 'https://raw.githubusercontent.com/grpc/grpc-java/refs/heads/master/LICENSE',
+                    licenseName: 'Apache 2.0'),
+            io_grpc_grpc_util: new PropertyOverride(
+                    cpePrefix: 'cpe:/a:grpc:grpc',
+                    licenseUrl: 'https://raw.githubusercontent.com/grpc/grpc-java/refs/heads/master/LICENSE',
+                    licenseName: 'Apache 2.0'),
             io_perfmark_perfmark_api: new PropertyOverride(
                     licenseUrl: 'https://raw.githubusercontent.com/perfmark/perfmark/refs/heads/master/LICENSE',
                     licenseName: 'Apache 2.0'),
