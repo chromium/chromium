@@ -54,6 +54,7 @@ export class WebuiBrowserAppElement extends CrLitElement implements
     return {
       backButtonDisabled_: {state: true, type: Boolean},
       forwardButtonDisabled_: {state: true, type: Boolean},
+      reloadOrStopIcon_: {state: true, type: String},
     };
   }
 
@@ -62,6 +63,7 @@ export class WebuiBrowserAppElement extends CrLitElement implements
   private trackedElementManager_: TrackedElementManager;
   protected accessor backButtonDisabled_: boolean = true;
   protected accessor forwardButtonDisabled_: boolean = true;
+  protected accessor reloadOrStopIcon_: string = 'icon-refresh';
 
   constructor() {
     super();
@@ -142,9 +144,13 @@ export class WebuiBrowserAppElement extends CrLitElement implements
     }
   }
 
-  protected onRefreshClick_(_: Event) {
+  protected onReloadOrStopClick_(_: Event) {
     if (this.$.contentRegion.activeWebview) {
-      this.$.contentRegion.activeWebview.refresh();
+      if (this.reloadOrStopIcon_ === 'icon-refresh') {
+        this.$.contentRegion.activeWebview.reload();
+      } else {
+        this.$.contentRegion.activeWebview.stopLoading();
+      }
     }
   }
 
@@ -182,6 +188,8 @@ export class WebuiBrowserAppElement extends CrLitElement implements
     this.bookmarkBarController_.init(this.$.bookmarkBar);
     BrowserProxy.getInstance().callbackRouter.setFocusToLocationBar.addListener(
         this.setFocusToLocationBar.bind(this));
+    BrowserProxy.getInstance().callbackRouter.setReloadStopState.addListener(
+        this.setReloadStopState.bind(this));
   }
 
   protected onShowBookmarkBar_() {
@@ -227,6 +235,10 @@ export class WebuiBrowserAppElement extends CrLitElement implements
     if (isUserInitiated || this.shadowRoot.activeElement !== this.$.address) {
       this.$.address.selectAll();
     }
+  }
+
+  protected setReloadStopState(isLoading: boolean) {
+    this.reloadOrStopIcon_ = isLoading ? 'icon-clear' : 'icon-refresh';
   }
 }
 

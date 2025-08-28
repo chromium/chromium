@@ -83,8 +83,12 @@ export class WebviewElement extends CrLitElement {
     BrowserProxy.getPageHandler().goForward(this.guestId);
   }
 
-  refresh() {
-    BrowserProxy.getPageHandler().refresh(this.guestId);
+  reload() {
+    BrowserProxy.getPageHandler().reload(this.guestId);
+  }
+
+  stopLoading() {
+    BrowserProxy.getPageHandler().stopLoading(this.guestId);
   }
 
   async canGoBack(): Promise<boolean> {

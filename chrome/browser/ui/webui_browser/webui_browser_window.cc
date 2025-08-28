@@ -459,7 +459,9 @@ void WebUIBrowserWindow::SetFocusToLocationBar(bool is_user_initiated) {
 }
 
 void WebUIBrowserWindow::UpdateReloadStopState(bool is_loading, bool force) {
-  NOTIMPLEMENTED();
+  if (webui_browser::mojom::Page* page = GetWebUIBrowserUI()->page()) {
+    page->SetReloadStopState(is_loading);
+  }
 }
 
 void WebUIBrowserWindow::UpdateToolbar(content::WebContents* contents) {

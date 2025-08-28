@@ -23,6 +23,9 @@ interface Page {
   // user has asked for it explicitly (e.g. by pressing Ctrl-L) rather than this
   // being done automatically.
   SetFocusToLocationBar(bool is_user_initiated);
+
+  // Update the Reload/Stop button's state based on `is_loading`.
+  SetReloadStopState(bool is_loading);
 };
 
 // Browser-side handler for requests from WebUI page.
@@ -51,8 +54,11 @@ interface PageHandler {
   // Navigates the GuestContents with `guest_id` to forward in the nav stack.
   GoForward(int32 guest_id);
 
-  // Refreshes the GuestContents with `guest_id`.
-  Refresh(int32 guest_id);
+  // Reload the GuestContents with `guest_id`.
+  Reload(int32 guest_id);
+
+  // Stop loading the GuestContents with `guest_id`.
+  StopLoading(int32 guest_id);
 
   // Opens the app menu.
   OpenAppMenu();

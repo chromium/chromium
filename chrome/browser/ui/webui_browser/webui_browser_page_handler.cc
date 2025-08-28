@@ -142,10 +142,19 @@ void WebUIBrowserPageHandler::GoForward(int guest_id) {
   }
 }
 
-void WebUIBrowserPageHandler::Refresh(int guest_id) {
+void WebUIBrowserPageHandler::Reload(int guest_id) {
   auto* navigation_controller = GetGuestNavigationController(guest_id);
   if (navigation_controller) {
     navigation_controller->Reload(content::ReloadType::NORMAL, true);
+  } else {
+    mojo::ReportBadMessage("Invalid guest id");
+  }
+}
+
+void WebUIBrowserPageHandler::StopLoading(int guest_id) {
+  auto* guest_handle = guest_contents::GuestContentsHandle::FromID(guest_id);
+  if (guest_handle) {
+    guest_handle->web_contents()->Stop();
   } else {
     mojo::ReportBadMessage("Invalid guest id");
   }

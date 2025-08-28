@@ -81,7 +81,10 @@ class WebUIBrowserUI : public ui::MojoWebUIController,
     return static_cast<WebUIBrowserWindow*>(browser_->window());
   }
 
-  webui_browser::mojom::Page* page() { return page_.get(); }
+  webui_browser::mojom::Page* page() {
+    // get() should only be called if bound, so check first.
+    return page_.is_bound() ? page_.get() : nullptr;
+  }
 
   base::WeakPtr<WebUIBrowserUI> GetWeakPtr();
 

@@ -42,8 +42,8 @@ export function getHtml(this: WebuiBrowserAppElement) {
       <cr-icon-button iron-icon="cr:arrow-forward"
         ?disabled="${this.forwardButtonDisabled_}"
         @click="${this.onForwardClick_}"></cr-icon-button>
-      <cr-icon-button class="icon-refresh"
-        @click="${this.onRefreshClick_}"></cr-icon-button>
+      <cr-icon-button class="${this.reloadOrStopIcon_}"
+        @click="${this.onReloadOrStopClick_}"></cr-icon-button>
       <cr-searchbox id="address"></cr-searchbox>
       <cr-icon-button id="avatarButton" iron-icon="cr:person"
         @click="${this.onAvatarClick_}"></cr-icon-button>
