@@ -62,6 +62,8 @@ const displayNonLogcatCheckbox = document.getElementById(
   'display-non-logcat-checkbox');
 const toggleDarkModeCheckbox = document.getElementById(
   'toggle-dark-mode-checkbox');
+const alwaysShowActivityManagerCheckbox = document.getElementById(
+  'always-show-activity-manager-checkbox');
 const textDisplayArea = document.getElementById('text-display-area');
 
 // Event listeners:
@@ -137,6 +139,9 @@ toggleDarkModeCheckbox.addEventListener('change', () => {
     document.body.classList.remove('dark-mode');
   }
 });
+
+alwaysShowActivityManagerCheckbox.addEventListener('change',
+  updateTextDisplayArea);
 
 // Global click listener to close dropdowns when clicking outside
 document.addEventListener('click', (event) => {
@@ -793,6 +798,7 @@ function updateTextDisplayArea(restoreScrollPosition = true) {
   // selected by the user.
   const displayedLineNumbers = [];
   const displayNonLogcatLines = displayNonLogcatCheckbox.checked;
+  const alwaysShowActivityManager = alwaysShowActivityManagerCheckbox.checked;
 
   for (const [i, parsedLine] of currentFileParsedLines.entries()) {
     if (!parsedLine.isLogcat) {
@@ -800,6 +806,13 @@ function updateTextDisplayArea(restoreScrollPosition = true) {
         displayedLineNumbers.push(i);
       }
       continue;
+    }
+
+    if (alwaysShowActivityManager) {
+      if (parsedLine.tag === 'ActivityManager') {
+        displayedLineNumbers.push(i);
+        continue;
+      }
     }
 
     if (selectedPids.has(parsedLine.pid) && selectedTags.has(parsedLine.tag) &&
