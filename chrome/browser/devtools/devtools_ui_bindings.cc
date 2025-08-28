@@ -2100,7 +2100,8 @@ void DevToolsUIBindings::RecordNewBadgeUsage(const std::string& feature_name) {
 
   auto* user_education_service =
       UserEducationServiceFactory::GetForBrowserContext(profile_);
-  if (!user_education_service) {
+  if (!user_education_service ||
+      !user_education_service->new_badge_registry()) {
     return;
   }
 
