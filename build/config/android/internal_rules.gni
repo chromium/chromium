@@ -130,6 +130,17 @@ template("write_build_config") {
   _deps = []
   _type = invoker.type
 
+  # Targets that run compile_resources.py or dist_aar.py.
+  # Keys are split from the main config to minimize size of .json that the
+  # action needs to parse, and to avoid marking other actions as dirty when
+  # only resource-related keys change.
+  if (_type == "robolectric_binary" || _type == "android_app_bundle_module" ||
+      _type == "android_apk" || _type == "dist_aar") {
+    _outputs += [ string_replace(invoker.build_config,
+                                 ".build_config.json",
+                                 ".res.build_config.json") ]
+  }
+
   if (current_toolchain == default_toolchain) {
     # Ensure targets match naming patterns so that __assetres, __header, __host,
     # and __validate targets work properly.
@@ -2514,21 +2525,27 @@ if (enable_java_templates) {
       script = "//build/android/gyp/unused_resources.py"
       depfile = "$target_gen_dir/${target_name}.d"
       _unused_resources_script = "$root_build_dir/bin/helper/unused_resources"
-      inputs = [ _unused_resources_script ] + java_paths_for_inputs
+      inputs = [
+                 _unused_resources_script,
+                 invoker.build_config,
+                 invoker.res_build_config,
+               ] + java_paths_for_inputs
       outputs = [ invoker.output_config ]
       if (!defined(deps)) {
         deps = []
       }
       deps += [ "//build/android/unused_resources" ]
       _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
+      _rebased_res_build_config =
+          rebase_path(invoker.res_build_config, root_build_dir)
       args = [
         "--script",
         rebase_path(_unused_resources_script, root_build_dir),
         "--output-config",
         rebase_path(invoker.output_config, root_build_dir),
         "--r-text-in=@FileArg($_rebased_build_config:rtxt_path)",
-        "--dependencies-res-zips=@FileArg($_rebased_build_config:dependency_zips)",
-        "--dependencies-res-zips=@FileArg($_rebased_build_config:dependency_zip_overlays)",
+        "--dependencies-res-zips=@FileArg($_rebased_res_build_config:dependency_zips)",
+        "--dependencies-res-zips=@FileArg($_rebased_res_build_config:dependency_zip_overlays)",
         "--depfile",
         rebase_path(depfile, root_build_dir),
       ]
@@ -4525,8 +4542,8 @@ template("create_android_app_bundle_module") {
         invoker.build_config,
       ]
       deps = [
-        invoker.build_config_target,
         invoker.app_bundle_build_config_target,
+        invoker.build_config_target,
       ]
       outputs = [
         _actual_file,

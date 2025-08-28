@@ -1120,6 +1120,7 @@ if (!is_robolectric && enable_java_templates) {
 
     _main_class = "org.chromium.testing.local.JunitTestMain"
     _build_config = "$target_gen_dir/$target_name.build_config.json"
+    _res_build_config = "$target_gen_dir/$target_name.res.build_config.json"
     _build_config_target_name = "$target_name$build_config_target_suffix"
     _java_binary_target_name = "${target_name}__java_binary"
 
@@ -1175,7 +1176,7 @@ if (!is_robolectric && enable_java_templates) {
       deps = _non_java_deps + _java_assetres_deps +
              [ ":$_merge_manifest_target_name" ]
       build_config_dep = ":$_build_config_target_name"
-      build_config = _build_config
+      build_config = _res_build_config
       if (defined(_package_name)) {
         rename_manifest_package = _package_name
       }
@@ -1701,6 +1702,7 @@ if (!is_robolectric && enable_java_templates) {
     }
 
     _build_config = "$target_gen_dir/$target_name.build_config.json"
+    _res_build_config = "$target_gen_dir/$target_name.res.build_config.json"
     _build_config_target_name = "$target_name$build_config_target_suffix"
 
     write_build_config(_build_config_target_name) {
@@ -1715,6 +1717,7 @@ if (!is_robolectric && enable_java_templates) {
     _deps += [ ":$_build_config_target_name" ]
 
     _rebased_build_config = rebase_path(_build_config, root_build_dir)
+    _rebased_res_build_config = rebase_path(_res_build_config, root_build_dir)
 
     action_with_pydeps(target_name) {
       forward_variables_from(invoker,
@@ -1726,7 +1729,10 @@ if (!is_robolectric && enable_java_templates) {
       deps = _deps
       script = "//build/android/gyp/dist_aar.py"
 
-      inputs = [ _build_config ]
+      inputs = [
+        _build_config,
+        _res_build_config,
+      ]
 
       # Although these will be listed as deps in the depfile, they must also
       # appear here so that "gn analyze" knows about them.
@@ -1742,8 +1748,8 @@ if (!is_robolectric && enable_java_templates) {
         rebase_path(depfile, root_build_dir),
         "--output",
         rebase_path(invoker.output, root_build_dir),
-        "--dependencies-res-zips=@FileArg($_rebased_build_config:dependency_zips)",
-        "--dependencies-res-zips=@FileArg($_rebased_build_config:dependency_zip_overlays)",
+        "--dependencies-res-zips=@FileArg($_rebased_res_build_config:dependency_zips)",
+        "--dependencies-res-zips=@FileArg($_rebased_res_build_config:dependency_zip_overlays)",
         "--r-text-files=@FileArg($_rebased_build_config:dependency_rtxt_files)",
         "--proguard-configs=@FileArg($_rebased_build_config:proguard_all_configs)",
       ]
@@ -2169,6 +2175,7 @@ if (!is_robolectric && enable_java_templates) {
     _template_name = target_name
     _base_path = "$target_out_dir/$target_name/$target_name"
     _build_config = "$target_gen_dir/$target_name.build_config.json"
+    _res_build_config = "$target_gen_dir/$target_name.res.build_config.json"
     _build_config_target = "$target_name$build_config_target_suffix"
     _java_target_name = "${_template_name}__java"
 
@@ -2467,7 +2474,7 @@ if (!is_robolectric && enable_java_templates) {
       size_info_path = _res_size_info_path
       proguard_file = _generated_proguard_config
 
-      build_config = _build_config
+      build_config = _res_build_config
       build_config_dep = ":$_build_config_target"
       deps = _java_assetres_deps + _non_java_deps
 
@@ -2481,7 +2488,10 @@ if (!is_robolectric && enable_java_templates) {
         # So that test resources can references under_test resources via
         # @type/name syntax.
         r_java_root_package_name = "test"
-        arsc_package_name = "@FileArg($_rebased_build_config:arsc_package_name)"
+        _rebased_res_build_config =
+            rebase_path(_res_build_config, root_build_dir)
+        arsc_package_name =
+            "@FileArg($_rebased_res_build_config:arsc_package_name)"
 
         # Passing in the --emit-ids mapping will cause aapt2 to assign resources
         # IDs that do not conflict with those from apk_under_test.
@@ -2958,6 +2968,7 @@ if (!is_robolectric && enable_java_templates) {
             ":$_final_dex_target_name",
           ]
           build_config = _build_config
+          res_build_config = _res_build_config
           if (_proguard_enabled) {
             proguard_mapping_path = _proguard_mapping_path
           }
@@ -4713,7 +4724,7 @@ if (!is_robolectric && enable_java_templates) {
     _base_target_gen_dir =
         get_label_info(invoker.base_module_target, "target_gen_dir")
     _base_module_build_config =
-        "$_base_target_gen_dir/${_base_target_name}.build_config.json"
+        "$_base_target_gen_dir/$_base_target_name.build_config.json"
     _base_module_build_config_target =
         "${invoker.base_module_target}$build_config_target_suffix"
     _rebased_base_module_build_config =
@@ -4990,6 +5001,8 @@ if (!is_robolectric && enable_java_templates) {
         deps = _all_module_unused_resources_deps
         all_module_build_configs = _all_module_build_configs
         build_config = _base_module_build_config
+        res_build_config =
+            "$_base_target_gen_dir/$_base_target_name.res.build_config.json"
         if (_proguard_enabled) {
           proguard_mapping_path = _proguard_mapping_path
         }
