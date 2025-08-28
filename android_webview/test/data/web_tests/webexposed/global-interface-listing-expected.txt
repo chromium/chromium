@@ -1856,13 +1856,6 @@ interface DeviceOrientationEvent : Event
     getter beta
     getter gamma
     method constructor
-interface DigitalCredential : Credential
-    static method userAgentAllowsProtocol
-    attribute @@toStringTag
-    getter data
-    getter protocol
-    method constructor
-    method toJSON
 interface Directive
     attribute @@toStringTag
     getter type

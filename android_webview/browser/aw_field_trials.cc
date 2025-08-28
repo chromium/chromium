@@ -193,6 +193,10 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // FedCM is not yet supported on WebView.
   aw_feature_overrides.DisableFeature(::features::kFedCm);
 
+  // Disable Digital Credentials API on WebView.
+  aw_feature_overrides.DisableFeature(::features::kWebIdentityDigitalCredentials);
+  aw_feature_overrides.DisableFeature(::features::kWebIdentityDigitalCredentialsCreation);
+
   // TODO(crbug.com/40272633): Web MIDI permission prompt for all usage.
   aw_feature_overrides.DisableFeature(blink::features::kBlockMidiByDefault);
 
