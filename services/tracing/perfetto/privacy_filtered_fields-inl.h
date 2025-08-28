@@ -803,7 +803,8 @@ constexpr int kCounterDescriptorIndices[] = {1, 3, 4, 5, -1};
 constexpr MessageInfo kCounterDescriptor = {kCounterDescriptorIndices, nullptr};
 
 // Proto Message: TrackDescriptor
-constexpr int kTrackDescriptorIndices[] = {1, 3, 4, 5, 6, 7, 8, 9, 10, -1};
+constexpr int kTrackDescriptorIndices[] = {1, 3,  4,  5,  6,  7,  8,
+                                           9, 10, 11, 12, 15, 17, -1};
 constexpr MessageInfo const* kTrackDescriptorComplexMessages[] = {
     nullptr,
     &kProcessDescriptor,
@@ -812,6 +813,10 @@ constexpr MessageInfo const* kTrackDescriptorComplexMessages[] = {
     &kChromeProcessDescriptor,
     &kChromeThreadDescriptor,
     &kCounterDescriptor,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
     nullptr,
     nullptr};
 constexpr MessageInfo kTrackDescriptor = {kTrackDescriptorIndices,
@@ -831,10 +836,16 @@ constexpr int kReadyThreadEtwEventIndices[] = {1, 3, 5, 6, -1};
 constexpr MessageInfo kReadyThreadEtwEvent = {kReadyThreadEtwEventIndices,
                                               nullptr};
 
+// Proto Message: MemInfoEtwEvent
+constexpr int kMemInfoEtwEventIndices[] = {1, 2, 3,  4,  5,  6,  7,
+                                           8, 9, 10, 11, 12, 13, -1};
+constexpr MessageInfo kMemInfoEtwEvent = {kMemInfoEtwEventIndices, nullptr};
+
 // Proto Message: EtwTraceEvent
-constexpr int kEtwTraceEventIndices[] = {1, 2, 3, 4, 5, -1};
+constexpr int kEtwTraceEventIndices[] = {1, 2, 3, 4, 5, 6, -1};
 constexpr MessageInfo const* kEtwTraceEventComplexMessages[] = {
-    nullptr, &kCSwitchEtwEvent, &kReadyThreadEtwEvent, nullptr, nullptr};
+    nullptr, &kCSwitchEtwEvent, &kReadyThreadEtwEvent,
+    nullptr, nullptr,           &kMemInfoEtwEvent};
 constexpr MessageInfo kEtwTraceEvent = {kEtwTraceEventIndices,
                                         kEtwTraceEventComplexMessages};
 
