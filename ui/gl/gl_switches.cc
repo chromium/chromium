@@ -413,6 +413,16 @@ bool IsDefaultANGLEVulkan() {
       active_gpu.detailedDriverVersion.minor == 615) {
     return false;
   }
+
+  // Exclude Qualcomm 512.676 driver on Adreno 720 that is the cause of
+  // undiagnosed rendering issues.
+  // http://crbug.com/440110161
+  if (active_gpu.driverId == VK_DRIVER_ID_QUALCOMM_PROPRIETARY &&
+      active_gpu.deviceName.find("Adreno") != std::string::npos &&
+      active_gpu.deviceName.find("720") != std::string::npos &&
+      active_gpu.detailedDriverVersion.minor == 676) {
+    return false;
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX)
