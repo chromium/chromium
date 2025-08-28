@@ -19,7 +19,10 @@ suite('PrivacyPageIndex', function() {
     loadTimeData.overrideValues(Object.assign(
         {
           enableIncognitoTrackingProtections: false,
+          enableKeyboardLockPrompt: false,
+          enableLocalNetworkAccessSetting: false,
           enableSecurityKeysSubpage: false,
+          enableWebAppInstallation: false,
           isGuest: false,
           isPrivacySandboxRestricted: false,
           isPrivacySandboxRestrictedNoticeEnabled: false,
@@ -83,6 +86,11 @@ suite('PrivacyPageIndex', function() {
       {
         route: routes.SITE_SETTINGS,
         viewId: 'siteSettings',
+        parentViewId: 'old',
+      },
+      {
+        route: routes.SITE_SETTINGS_AUTOMATIC_FULLSCREEN,
+        viewId: 'siteSettingsAutomaticFullscreen',
         parentViewId: 'old',
       },
       {
@@ -192,26 +200,67 @@ suite('PrivacyPageIndex', function() {
     }
   });
 
-  test('RoutingSecurityKeys', async function() {
-    assertFalse(loadTimeData.getBoolean('enableSecurityKeysSubpage'));
-    await createPrivacyPageIndex({enableSecurityKeysSubpage: true});
-    await testActiveViewsForRoute(routes.SECURITY_KEYS, ['securityKeys']);
+  test('RoutingKeyboardLock', async function() {
+    assertFalse(loadTimeData.getBoolean('enableKeyboardLockPrompt'));
+    await createPrivacyPageIndex({enableKeyboardLockPrompt: true});
+
+    const viewId = 'siteSettingsKeyboardLock';
+    await testActiveViewsForRoute(routes.SITE_SETTINGS_KEYBOARD_LOCK, [viewId]);
 
     // Test that data-parent-view is correctly populated.
     assertTrue(!!index.$.viewManager.querySelector(
-        `#securityKeys[slot=view][data-parent-view-id=old]`));
+        `#${viewId}[slot=view][data-parent-view-id=old]`));
+  });
+
+  test('RoutingLocalNetworkAccess', async function() {
+    assertFalse(loadTimeData.getBoolean('enableLocalNetworkAccessSetting'));
+    await createPrivacyPageIndex({enableLocalNetworkAccessSetting: true});
+
+    const viewId = 'siteSettingsLocalNetworkAccess';
+    await testActiveViewsForRoute(
+        routes.SITE_SETTINGS_LOCAL_NETWORK_ACCESS, [viewId]);
+
+    // Test that data-parent-view is correctly populated.
+    assertTrue(!!index.$.viewManager.querySelector(
+        `#${viewId}[slot=view][data-parent-view-id=old]`));
+  });
+
+  test('RoutingSecurityKeys', async function() {
+    assertFalse(loadTimeData.getBoolean('enableSecurityKeysSubpage'));
+    await createPrivacyPageIndex({enableSecurityKeysSubpage: true});
+
+    const viewId = 'securityKeys';
+    await testActiveViewsForRoute(routes.SECURITY_KEYS, [viewId]);
+
+    // Test that data-parent-view is correctly populated.
+    assertTrue(!!index.$.viewManager.querySelector(
+        `#${viewId}[slot=view][data-parent-view-id=old]`));
+  });
+
+  test('RoutingWebAppInstallation', async function() {
+    assertFalse(loadTimeData.getBoolean('enableWebAppInstallation'));
+    await createPrivacyPageIndex({enableWebAppInstallation: true});
+
+    const viewId = 'siteSettingsWebAppInstallation';
+    await testActiveViewsForRoute(
+        routes.SITE_SETTINGS_WEB_APP_INSTALLATION, [viewId]);
+
+    // Test that data-parent-view is correctly populated.
+    assertTrue(!!index.$.viewManager.querySelector(
+        `#${viewId}[slot=view][data-parent-view-id=old]`));
   });
 
   test('RoutingIncognitoTrackingProtections', async function() {
     assertFalse(loadTimeData.getBoolean('enableIncognitoTrackingProtections'));
     await createPrivacyPageIndex({enableIncognitoTrackingProtections: true});
+
+    const viewId = 'incognitoTrackingProtections';
     await testActiveViewsForRoute(
-        routes.INCOGNITO_TRACKING_PROTECTIONS,
-        ['incognitoTrackingProtections']);
+        routes.INCOGNITO_TRACKING_PROTECTIONS, [viewId]);
 
     // Test that data-parent-view is correctly populated.
     assertTrue(!!index.$.viewManager.querySelector(
-        `#incognitoTrackingProtections[slot=view][data-parent-view-id=old]`));
+        `#${viewId}[slot=view][data-parent-view-id=old]`));
   });
 
   // <if expr="is_chromeos">

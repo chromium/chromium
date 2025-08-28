@@ -506,11 +506,15 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         triggerId = 'securityLinkRow';
         break;
       case 'siteSettings':
+      case 'siteSettingsAutomaticFullscreen':
       case 'siteSettingsHandlers':
+      case 'siteSettingsKeyboardLock':
+      case 'siteSettingsLocalNetworkAccess':
       case 'siteSettingsLocation':
       case 'siteSettingsNotifications':
       case 'siteSettingsPdfDocuments':
       case 'siteSettingsSiteData':
+      case 'siteSettingsWebAppInstallation':
       case 'siteSettingsZoomLevels':
         triggerId = 'permissionsLinkRow';
         break;

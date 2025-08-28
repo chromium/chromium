@@ -1,4 +1,7 @@
-  <style include="settings-shared site-settings-shared"></style>
+<style include="settings-shared site-settings-shared"></style>
+<settings-subpage page-title="$i18n{siteSettingsWebAppInstallation}"
+    search-label="$i18n{siteSettingsAllSitesSearch}"
+    search-term="{{searchTerm}}">
   <div class="content-settings-header secondary">
     $i18n{siteSettingsWebAppInstallationDescription}
   </div>
@@ -17,3 +20,4 @@
           "$i18n{siteSettingsWebAppInstallationAllowedExceptions}"
       search-filter="[[searchTerm]]">
   </category-setting-exceptions>
+</settings-subpage>

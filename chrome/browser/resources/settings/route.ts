@@ -112,6 +112,7 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.SITE_SETTINGS_JAVASCRIPT_OPTIMIZER = r.SITE_SETTINGS.createChild('v8');
   if (loadTimeData.getBoolean('enableKeyboardLockPrompt')) {
     r.SITE_SETTINGS_KEYBOARD_LOCK = r.SITE_SETTINGS.createChild('keyboardLock');
+    r.SITE_SETTINGS_KEYBOARD_LOCK.hasMigratedToPlugin = true;
   }
   r.SITE_SETTINGS_SOUND = r.SITE_SETTINGS.createChild('sound');
   r.SITE_SETTINGS_SENSORS = r.SITE_SETTINGS.createChild('sensors');
@@ -163,13 +164,16 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.SITE_SETTINGS_STORAGE_ACCESS = r.SITE_SETTINGS.createChild('storageAccess');
   r.SITE_SETTINGS_AUTOMATIC_FULLSCREEN =
       r.SITE_SETTINGS.createChild('automaticFullScreen');
+  r.SITE_SETTINGS_AUTOMATIC_FULLSCREEN.hasMigratedToPlugin = true;
   if (loadTimeData.getBoolean('enableWebAppInstallation')) {
     r.SITE_SETTINGS_WEB_APP_INSTALLATION =
         r.SITE_SETTINGS.createChild('webApplications');
+    r.SITE_SETTINGS_WEB_APP_INSTALLATION.hasMigratedToPlugin = true;
   }
   if (loadTimeData.getBoolean('enableLocalNetworkAccessSetting')) {
     r.SITE_SETTINGS_LOCAL_NETWORK_ACCESS =
         r.SITE_SETTINGS.createChild('localNetworkAccess');
+    r.SITE_SETTINGS_LOCAL_NETWORK_ACCESS.hasMigratedToPlugin = true;
   }
 }
 

@@ -1,4 +1,7 @@
-  <style include="settings-shared site-settings-shared"></style>
+<style include="settings-shared site-settings-shared"></style>
+<settings-subpage page-title="$i18n{siteSettingsKeyboardLock}"
+    search-label="$i18n{siteSettingsAllSitesSearch}"
+    search-term="{{searchTerm}}">
   <div class="content-settings-header secondary">
     $i18n{siteSettingsKeyboardLockDescription}
   </div>
@@ -18,3 +21,4 @@
           "$i18n{siteSettingsKeyboardLockBlockedExceptions}"
       search-filter="[[searchFilter_]]">
   </category-setting-exceptions>
+</settings-subpage>

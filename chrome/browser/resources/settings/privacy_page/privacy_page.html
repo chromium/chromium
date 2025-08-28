@@ -965,47 +965,7 @@
               <settings-smart-card-readers-page filter="[[searchFilter_]]">
               </settings-smart-card-readers-page>
             </settings-subpage>
-        </template>
+          </template>
         </template>
       </if>
-      <template is="dom-if" route-path="/content/automaticFullScreen" no-search>
-        <settings-subpage
-            page-title="$i18n{siteSettingsCategoryAutomaticFullscreen}"
-            search-label="$i18n{siteSettingsAllSitesSearch}"
-            search-term="{{searchFilter_}}">
-          <settings-automatic-full-screen-page search-term="[[searchFilter_]]">
-          </settings-automatic-full-screen-page>
-        </settings-subpage>
-      </template>
-      <template is="dom-if" if="[[enableKeyboardLockPrompt_]]">
-        <template is="dom-if" route-path="/content/keyboardLock" no-search>
-          <settings-subpage page-title="$i18n{siteSettingsKeyboardLock}"
-              search-label="$i18n{siteSettingsAllSitesSearch}"
-              search-term="{{searchFilter_}}">
-            <settings-keyboard-lock-page search-term="[[searchFilter_]]">
-            </settings-keyboard-lock-page>
-          </settings-subpage>
-        </template>
-      </template>
-      <template is="dom-if" if="[[enableWebAppInstallation_]]">
-        <template is="dom-if" route-path="/content/webApplications" no-search>
-          <settings-subpage page-title="$i18n{siteSettingsWebAppInstallation}"
-              search-label="$i18n{siteSettingsAllSitesSearch}"
-              search-term="{{searchFilter_}}">
-            <settings-web-applications-page search-term="[[searchFilter_]]">
-            </settings-web-applications-page>
-          </settings-subpage>
-        </template>
-      </template>
-      <template is="dom-if" if="[[enableLocalNetworkAccessSetting_]]">
-        <template is="dom-if" route-path="/content/localNetworkAccess"
-            no-search>
-          <settings-subpage page-title="$i18n{siteSettingsLocalNetworkAccess}"
-              search-label="$i18n{siteSettingsAllSitesSearch}"
-              search-term="{{searchFilter_}}">
-            <settings-local-network-access-page search-term="[[searchFilter_]]">
-            </settings-local-network-access-page>
-          </settings-subpage>
-        </template>
-      </template>
     </settings-animated-pages>

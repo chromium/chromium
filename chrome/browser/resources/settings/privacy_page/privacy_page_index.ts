@@ -93,6 +93,21 @@ export class SettingsPrivacyPageIndexElement extends
         },
       },
 
+      enableKeyboardLockPrompt_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableKeyboardLockPrompt'),
+      },
+
+      enableWebAppInstallation_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableWebAppInstallation'),
+      },
+
+      enableLocalNetworkAccessSetting_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableLocalNetworkAccessSetting'),
+      },
+
       isAdPrivacyAvailable_: {
         type: Boolean,
         readOnly: true,
@@ -122,7 +137,10 @@ export class SettingsPrivacyPageIndexElement extends
   declare private routes_: SettingsRoutes;
   declare private showPrivacyGuidePromo_: boolean;
   declare private enableIncognitoTrackingProtections_: boolean;
+  declare private enableKeyboardLockPrompt_: boolean;
+  declare private enableLocalNetworkAccessSetting_: boolean;
   declare private enableSecurityKeysSubpage_: boolean;
+  declare private enableWebAppInstallation_: boolean;
   declare private isAdPrivacyAvailable_: boolean;
   declare private isPrivacySandboxRestricted_: boolean;
 
@@ -181,8 +199,16 @@ export class SettingsPrivacyPageIndexElement extends
         return ['securityKeys'];
       case routes.SITE_SETTINGS:
         return ['siteSettings'];
+      case routes.SITE_SETTINGS_AUTOMATIC_FULLSCREEN:
+        return ['siteSettingsAutomaticFullscreen'];
       case routes.SITE_SETTINGS_HANDLERS:
         return ['siteSettingsHandlers'];
+      case routes.SITE_SETTINGS_KEYBOARD_LOCK:
+        assert(this.enableKeyboardLockPrompt_);
+        return ['siteSettingsKeyboardLock'];
+      case routes.SITE_SETTINGS_LOCAL_NETWORK_ACCESS:
+        assert(this.enableLocalNetworkAccessSetting_);
+        return ['siteSettingsLocalNetworkAccess'];
       case routes.SITE_SETTINGS_LOCATION:
         return ['siteSettingsLocation'];
       case routes.SITE_SETTINGS_NOTIFICATIONS:
@@ -191,6 +217,9 @@ export class SettingsPrivacyPageIndexElement extends
         return ['siteSettingsPdfDocuments'];
       case routes.SITE_SETTINGS_SITE_DATA:
         return ['siteSettingsSiteData'];
+      case routes.SITE_SETTINGS_WEB_APP_INSTALLATION:
+        assert(this.enableWebAppInstallation_);
+        return ['siteSettingsWebAppInstallation'];
       case routes.SITE_SETTINGS_ZOOM_LEVELS:
         return ['siteSettingsZoomLevels'];
       case routes.SAFETY_HUB:

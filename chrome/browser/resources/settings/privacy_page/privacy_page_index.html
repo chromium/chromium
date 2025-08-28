@@ -124,12 +124,41 @@
   </template>
 
   <template is="dom-if" if="[[renderView_(
+      routes_.SITE_SETTINGS_AUTOMATIC_FULLSCREEN, currentRoute,
+      inSearchMode)]]">
+    <settings-automatic-full-screen-page slot="view"
+        id="siteSettingsAutomaticFullscreen" data-parent-view-id="old"
+        search-term="[[searchFilter_]]">
+    </settings-automatic-full-screen-page>
+  </template>
+
+  <template is="dom-if" if="[[renderView_(
       routes_.SITE_SETTINGS_HANDLERS, currentRoute, inSearchMode)]]">
     <protocol-handlers slot="view" id="siteSettingsHandlers"
         data-parent-view-id="old"
         toggle-off-label="$i18n{siteSettingsHandlersBlocked}"
         toggle-on-label="$i18n{siteSettingsHandlersAskRecommended}">
     </protocol-handlers>
+  </template>
+
+  <template is="dom-if" if="[[enableKeyboardLockPrompt_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SITE_SETTINGS_KEYBOARD_LOCK, currentRoute, inSearchMode)]]">
+      <settings-keyboard-lock-page slot="view" id="siteSettingsKeyboardLock"
+          data-parent-view-id="old" search-term="[[searchFilter_]]">
+      </settings-keyboard-lock-page>
+    </template>
+  </template>
+
+  <template is="dom-if" if="[[enableLocalNetworkAccessSetting_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SITE_SETTINGS_LOCAL_NETWORK_ACCESS, currentRoute,
+        inSearchMode)]]">
+      <settings-local-network-access-page slot="view"
+          id="siteSettingsLocalNetworkAccess" data-parent-view-id="old"
+          search-term="[[searchFilter_]]">
+      </settings-local-network-access-page>
+    </template>
   </template>
 
   <template is="dom-if" if="[[renderView_(
@@ -158,6 +187,17 @@
     <settings-site-data slot="view" id="siteSettingsSiteData"
         data-parent-view-id="old" prefs="{{prefs}}">
     </settings-site-data>
+  </template>
+
+  <template is="dom-if" if="[[enableWebAppInstallation_]]">
+    <template is="dom-if" if="[[renderView_(
+        routes_.SITE_SETTINGS_WEB_APP_INSTALLATION, currentRoute,
+        inSearchMode)]]">
+      <settings-web-applications-page slot="view"
+          id="siteSettingsWebAppInstallation" data-parent-view-id="old"
+          search-term="[[searchFilter_]]">
+      </settings-web-applications-page>
+    </template>
   </template>
 
   <template is="dom-if" if="[[renderView_(

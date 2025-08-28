@@ -1,4 +1,7 @@
-  <style include="settings-shared site-settings-shared"></style>
+<style include="settings-shared site-settings-shared"></style>
+<settings-subpage page-title="$i18n{siteSettingsLocalNetworkAccess}"
+    search-label="$i18n{siteSettingsAllSitesSearch}"
+    search-term="{{searchTerm}}">
   <div class="content-settings-header secondary">
     $i18n{siteSettingsLocalNetworkAccessDescription}
   </div>
@@ -17,3 +20,4 @@
           "$i18n{siteSettingsLocalNetworkAccessAllowedExceptions}"
       search-filter="[[searchTerm]]">
   </category-setting-exceptions>
+</settings-subpage>
