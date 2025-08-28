@@ -11378,7 +11378,7 @@ void Element::ScheduleInterestGainedTask(InterestState new_state) {
   invoker_data.SetInterestGainedTask(PostDelayedCancellableTask(
       *GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI),
       FROM_HERE,
-      WTF::BindOnce(
+      BindOnce(
           [](Element* invoker, Element* target, InterestState new_state) {
             GainOrLoseInterest(invoker, target, new_state);
           },
@@ -11405,7 +11405,7 @@ void Element::ScheduleInterestLostTask() {
   invoker_data.SetInterestLostTask(PostDelayedCancellableTask(
       *GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI),
       FROM_HERE,
-      WTF::BindOnce(
+      BindOnce(
           [](Element* invoker, Element* target) {
             GainOrLoseInterest(invoker, target, InterestState::kNoInterest);
           },

@@ -159,8 +159,8 @@ AbortSignal* AbortSignal::timeout(ScriptState* script_state,
   // for composite signals
   signal->timout_task_handle_ = PostDelayedCancellableTask(
       *task_runner.get(), FROM_HERE,
-      WTF::BindOnce(&AbortSignal::AbortTimeoutFired, WrapPersistent(signal),
-                    WrapPersistent(script_state)),
+      BindOnce(&AbortSignal::AbortTimeoutFired, WrapPersistent(signal),
+               WrapPersistent(script_state)),
       base::Milliseconds(milliseconds));
   return signal;
 }

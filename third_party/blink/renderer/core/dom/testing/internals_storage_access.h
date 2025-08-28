@@ -22,8 +22,8 @@ class InternalsStorageAccess {
   static ScriptPromise<IDLUndefined> setStorageAccess(
       ScriptState*,
       Internals&,
-      const WTF::String& origin,
-      const WTF::String& embedding_origin,
+      const String& origin,
+      const String& embedding_origin,
       const bool blocked,
       ExceptionState&);
 };

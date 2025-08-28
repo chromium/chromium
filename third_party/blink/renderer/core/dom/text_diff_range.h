@@ -35,8 +35,7 @@ struct TextDiffRange {
   inline wtf_size_t NewEndOffset() const { return offset + new_size; }
 
   // Check if text outside of the diff are not changed.
-  void CheckValid(const WTF::String& old_text,
-                  const WTF::String& new_text) const;
+  void CheckValid(const String& old_text, const String& new_text) const;
 
   wtf_size_t offset = 0;
   // Indicates a deletion of `old_size` characters at `offset`.
@@ -46,8 +45,8 @@ struct TextDiffRange {
 };
 
 #if !EXPENSIVE_DCHECKS_ARE_ON()
-inline void TextDiffRange::CheckValid(const WTF::String& old_text,
-                                      const WTF::String& new_text) const {}
+inline void TextDiffRange::CheckValid(const String& old_text,
+                                      const String& new_text) const {}
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
 }  // namespace blink

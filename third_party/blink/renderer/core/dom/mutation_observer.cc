@@ -132,8 +132,8 @@ class MutationObserverAgentData
     if (active_mutation_observers_.empty() &&
         active_slot_change_list_.empty()) {
       GetSupplementable()->event_loop()->EnqueueMicrotask(
-          WTF::BindOnce(&MutationObserverAgentData::DeliverMutations,
-                        WrapWeakPersistent(this)));
+          BindOnce(&MutationObserverAgentData::DeliverMutations,
+                   WrapWeakPersistent(this)));
     }
   }
 

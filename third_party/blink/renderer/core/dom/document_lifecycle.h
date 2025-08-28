@@ -211,7 +211,7 @@ class CORE_EXPORT DocumentLifecycle {
   bool LifecyclePostponed() const { return life_cycle_postponed_; }
 
 #if DCHECK_IS_ON()
-  WTF::String ToString() const;
+  String ToString() const;
 #endif
  private:
   friend class PostponeTransitionScope;

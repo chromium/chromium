@@ -62,7 +62,7 @@ class AbortSignalTest : public PageTestBase {
 TEST_F(AbortSignalTest, AbortAlgorithmRuns) {
   int count = 0;
   abort_handle_ = signal_->AddAlgorithm(
-      WTF::BindOnce([](int* count) { ++(*count); }, WTF::Unretained(&count)));
+      BindOnce([](int* count) { ++(*count); }, Unretained(&count)));
 
   // GC should not affect whether or not the algorithm runs.
   ThreadState::Current()->CollectAllGarbageForTesting();
@@ -78,7 +78,7 @@ TEST_F(AbortSignalTest, AbortAlgorithmRuns) {
 TEST_F(AbortSignalTest, AbortAlgorithmHandleRemoved) {
   int count = 0;
   abort_handle_ = signal_->AddAlgorithm(
-      WTF::BindOnce([](int* count) { ++(*count); }, WTF::Unretained(&count)));
+      BindOnce([](int* count) { ++(*count); }, Unretained(&count)));
 
   signal_->RemoveAlgorithm(abort_handle_.Get());
 
@@ -89,7 +89,7 @@ TEST_F(AbortSignalTest, AbortAlgorithmHandleRemoved) {
 TEST_F(AbortSignalTest, AbortAlgorithmHandleGCed) {
   int count = 0;
   abort_handle_ = signal_->AddAlgorithm(
-      WTF::BindOnce([](int* count) { ++(*count); }, WTF::Unretained(&count)));
+      BindOnce([](int* count) { ++(*count); }, Unretained(&count)));
 
   abort_handle_.Clear();
   ThreadState::Current()->CollectAllGarbageForTesting();
@@ -104,7 +104,7 @@ TEST_F(AbortSignalTest, RegisteredSignalAlgorithmRuns) {
       MakeGarbageCollected<TestEventListener>();
   {
     auto* handle = signal_->AddAlgorithm(
-        WTF::BindOnce([](int* count) { ++(*count); }, WTF::Unretained(&count)));
+        BindOnce([](int* count) { ++(*count); }, Unretained(&count)));
     GetRegistry()->RegisterAbortAlgorithm(listener.Get(), handle);
   }
 
@@ -121,7 +121,7 @@ TEST_F(AbortSignalTest, RegisteredSignalAlgorithmListenerGCed) {
       MakeGarbageCollected<TestEventListener>();
   {
     auto* handle = signal_->AddAlgorithm(
-        WTF::BindOnce([](int* count) { ++(*count); }, WTF::Unretained(&count)));
+        BindOnce([](int* count) { ++(*count); }, Unretained(&count)));
     GetRegistry()->RegisterAbortAlgorithm(listener.Get(), handle);
   }
 
