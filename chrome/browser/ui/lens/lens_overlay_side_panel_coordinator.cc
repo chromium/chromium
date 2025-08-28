@@ -44,6 +44,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -865,7 +866,8 @@ void LensOverlaySidePanelCoordinator::DOMContentLoaded(
 }
 
 web_modal::WebContentsModalDialogHost*
-LensOverlaySidePanelCoordinator::GetWebContentsModalDialogHost() {
+LensOverlaySidePanelCoordinator::GetWebContentsModalDialogHost(
+    content::WebContents* web_contents) {
   return lens_search_controller_->GetTabInterface()
       ->GetBrowserWindowInterface()
       ->GetWebContentsModalDialogHostForWindow();

@@ -19,6 +19,10 @@
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
+namespace content {
+class WebContents;
+}
+
 namespace ash {
 
 class LockScreenCaptivePortalDialog;
@@ -115,8 +119,8 @@ class LockScreenStartReauthDialog
   void UpdateState(NetworkError::ErrorReason reason) override;
 
   // ChromeWebModalDialogManagerDelegate:
-  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
-      override;
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(
+      content::WebContents* web_contents) override;
 
   // web_modal::WebContentsModalDialogHost:
   gfx::Size GetMaximumDialogSize() override;

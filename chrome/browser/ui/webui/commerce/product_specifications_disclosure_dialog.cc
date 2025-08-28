@@ -35,7 +35,7 @@ void UpdateDialogPosition(views::Widget* widget,
   auto* dialog_host =
       web_modal::WebContentsModalDialogManager::FromWebContents(web_contents)
           ->delegate()
-          ->GetWebContentsModalDialogHost();
+          ->GetWebContentsModalDialogHost(web_contents);
   views::Widget* host_widget =
       views::Widget::GetWidgetForNativeView(dialog_host->GetHostView());
   auto size = widget->GetRootView()->GetPreferredSize();

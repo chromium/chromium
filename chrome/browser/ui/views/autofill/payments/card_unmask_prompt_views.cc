@@ -177,7 +177,7 @@ void CardUnmaskPromptViews::SetRetriableErrorMessage(
         GetWidget(), web_modal::WebContentsModalDialogManager::FromWebContents(
                          web_contents_.get())
                          ->delegate()
-                         ->GetWebContentsModalDialogHost());
+                         ->GetWebContentsModalDialogHost(web_contents_.get()));
   }
 
   DeprecatedLayoutImmediately();

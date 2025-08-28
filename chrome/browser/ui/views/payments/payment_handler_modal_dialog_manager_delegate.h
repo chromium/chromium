@@ -47,8 +47,8 @@ class PaymentHandlerModalDialogManagerDelegate
   // provided to SetWebContents().
   void SetWebContentsBlocked(content::WebContents* web_contents,
                              bool blocked) override;
-  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
-      override;
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(
+      content::WebContents* web_contents) override;
   bool IsWebContentsVisible(content::WebContents* web_contents) override;
 
  private:

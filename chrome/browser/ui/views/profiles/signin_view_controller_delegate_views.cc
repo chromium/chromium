@@ -332,7 +332,8 @@ content::WebContents* SigninViewControllerDelegateViews::AddNewContents(
 }
 
 web_modal::WebContentsModalDialogHost*
-SigninViewControllerDelegateViews::GetWebContentsModalDialogHost() {
+SigninViewControllerDelegateViews::GetWebContentsModalDialogHost(
+    content::WebContents* web_contents) {
   return browser_->window()->GetWebContentsModalDialogHost();
 }
 

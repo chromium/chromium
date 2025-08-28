@@ -33,7 +33,8 @@ ExtensionViewHostWebModalHandler::~ExtensionViewHostWebModalHandler() {
 }
 
 web_modal::WebContentsModalDialogHost*
-ExtensionViewHostWebModalHandler::GetWebContentsModalDialogHost() {
+ExtensionViewHostWebModalHandler::GetWebContentsModalDialogHost(
+    content::WebContents* web_contents) {
   return this;
 }
 

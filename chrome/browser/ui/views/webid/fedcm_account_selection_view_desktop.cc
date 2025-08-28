@@ -826,7 +826,7 @@ void FedCmAccountSelectionView::UpdateDialogPosition() {
         web_modal::WebContentsModalDialogManager::FromWebContents(
             web_contents())
             ->delegate()
-            ->GetWebContentsModalDialogHost());
+            ->GetWebContentsModalDialogHost(web_contents()));
   }
 }
 

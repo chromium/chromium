@@ -25,6 +25,7 @@
 #include "url/gurl.h"
 
 namespace content {
+class WebContents;
 class WebUI;
 }
 
@@ -64,8 +65,8 @@ class WebUILoginView : public views::View,
   void RequestFocus() override;
 
   // Overridden from ChromeWebModalDialogManagerDelegate:
-  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
-      override;
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(
+      content::WebContents* web_contents) override;
 
   // Overridden from web_modal::WebContentsModalDialogHost:
   gfx::NativeView GetHostView() const override;

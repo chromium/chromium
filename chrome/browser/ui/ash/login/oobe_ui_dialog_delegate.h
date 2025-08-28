@@ -129,8 +129,8 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
   base::WeakPtr<LoginDisplayHostMojo> controller_;
 
   // ChromeWebModalDialogManagerDelegate:
-  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
-      override;
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(
+      content::WebContents* web_contents) override;
 
   // web_modal::WebContentsModalDialogHost:
   gfx::Size GetMaximumDialogSize() override;

@@ -491,7 +491,8 @@ void OobeUIDialogDelegate::OnFocusLeavingSystemTray(bool reverse) {
 }
 
 web_modal::WebContentsModalDialogHost*
-OobeUIDialogDelegate::GetWebContentsModalDialogHost() {
+OobeUIDialogDelegate::GetWebContentsModalDialogHost(
+    content::WebContents* web_contents) {
   return this;
 }
 

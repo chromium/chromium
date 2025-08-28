@@ -1003,7 +1003,8 @@ bool AppWindow::IsWebContentsVisible(content::WebContents* web_contents) {
   return app_delegate_->IsWebContentsVisible(web_contents);
 }
 
-WebContentsModalDialogHost* AppWindow::GetWebContentsModalDialogHost() {
+WebContentsModalDialogHost* AppWindow::GetWebContentsModalDialogHost(
+    content::WebContents* web_contents) {
   return native_app_window_.get();
 }
 

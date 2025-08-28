@@ -131,7 +131,8 @@ void SiteIconTextAndOriginView::ContentsChanged(
   }
 
   auto* const modal_dialog_host =
-      modal_dialog_manager->delegate()->GetWebContentsModalDialogHost();
+      modal_dialog_manager->delegate()->GetWebContentsModalDialogHost(
+          web_contents_);
   if (!modal_dialog_host) {
     return;
   }

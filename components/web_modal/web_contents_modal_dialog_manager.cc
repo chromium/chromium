@@ -30,8 +30,8 @@ void WebContentsModalDialogManager::SetDelegate(
 
   for (const auto& dialog : child_dialogs_) {
     // Delegate can be null on Views/Win32 during tab drag.
-    dialog.manager->HostChanged(d ? d->GetWebContentsModalDialogHost()
-                                  : nullptr);
+    dialog.manager->HostChanged(
+        d ? d->GetWebContentsModalDialogHost(web_contents()) : nullptr);
   }
 }
 
@@ -41,7 +41,8 @@ void WebContentsModalDialogManager::ShowDialogWithManager(
     std::unique_ptr<SingleWebContentsDialogManager> manager) {
   observer_list_.Notify(&Observer::OnWillShow);
   if (delegate_)
-    manager->HostChanged(delegate_->GetWebContentsModalDialogHost());
+    manager->HostChanged(
+        delegate_->GetWebContentsModalDialogHost(web_contents()));
   child_dialogs_.emplace_back(dialog, std::move(manager));
 
   if (child_dialogs_.size() == 1) {

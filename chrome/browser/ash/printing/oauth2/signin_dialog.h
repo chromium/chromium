@@ -19,6 +19,7 @@ class URL;
 
 namespace content {
 class BrowserContext;
+class WebContents;
 }  // namespace content
 
 namespace ash::printing::oauth2 {
@@ -50,8 +51,8 @@ class SigninDialog : public views::DialogDelegateView,
 
  private:
   // ChromeWebModalDialogManagerDelegate:
-  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
-      override;
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(
+      content::WebContents* web_contents) override;
 
   // web_modal::WebContentsModalDialogHost:
   gfx::NativeView GetHostView() const override;

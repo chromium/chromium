@@ -1562,7 +1562,8 @@ Browser* GlicWindowControllerImpl::attached_browser() {
 }
 
 web_modal::WebContentsModalDialogHost*
-GlicWindowControllerImpl::GetWebContentsModalDialogHost() {
+GlicWindowControllerImpl::GetWebContentsModalDialogHost(
+    content::WebContents* web_contents) {
   return this;
 }
 

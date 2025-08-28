@@ -99,8 +99,8 @@ class ProfilePickerSignInProvider : public content::WebContentsDelegate,
                               content::InvalidateTypes changed_flags) override;
 
   // ChromeWebModalDialogManagerDelegate:
-  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
-      override;
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(
+      content::WebContents* web_contents) override;
 
   // Initializes the flow with the newly created or loaded profile.
   void OnProfileInitialized(StepSwitchFinishedCallback switch_finished_callback,

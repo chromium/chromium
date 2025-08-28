@@ -273,7 +273,9 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
   // Update the dialog size and position, as the preferred size of the sheet
   // might have changed.
   constrained_window::UpdateWebContentsModalDialogPosition(
-      GetWidget(), dialog_manager->delegate()->GetWebContentsModalDialogHost());
+      GetWidget(),
+      dialog_manager->delegate()->GetWebContentsModalDialogHost(
+          constrained_window::GetTopLevelWebContents(web_contents())));
 
   // Reset focus to the highest priority control on the new/updated sheet.
   if (GetInitiallyFocusedView()) {

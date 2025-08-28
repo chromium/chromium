@@ -232,7 +232,8 @@ void ProfilePickerSignInProvider::NavigationStateChanged(
 }
 
 web_modal::WebContentsModalDialogHost*
-ProfilePickerSignInProvider::GetWebContentsModalDialogHost() {
+ProfilePickerSignInProvider::GetWebContentsModalDialogHost(
+    content::WebContents* web_contents) {
   return host_->GetWebContentsModalDialogHost();
 }
 

@@ -112,8 +112,8 @@ class SigninViewControllerDelegateViews
       bool* was_blocked) override;
 
   // ChromeWebModalDialogManagerDelegate:
-  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
-      override;
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(
+      content::WebContents* web_contents) override;
 
   // views::ViewObserver:
   void OnViewAddedToWidget(views::View* observed_view) override;

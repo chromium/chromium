@@ -172,7 +172,7 @@ class WebDialogWebContentsDelegateViews
           web_modal::WebContentsModalDialogManager::FromWebContents(
               top_level_web_contents)
               ->delegate()
-              ->GetWebContentsModalDialogHost());
+              ->GetWebContentsModalDialogHost(top_level_web_contents));
     }
   }
 

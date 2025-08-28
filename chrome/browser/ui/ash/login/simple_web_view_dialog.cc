@@ -377,7 +377,8 @@ void SimpleWebViewDialog::UpdateReload(bool is_loading, bool force) {
 }
 
 web_modal::WebContentsModalDialogHost*
-SimpleWebViewDialog::GetWebContentsModalDialogHost() {
+SimpleWebViewDialog::GetWebContentsModalDialogHost(
+    content::WebContents* web_contents) {
   return this;
 }
 

@@ -2935,8 +2935,8 @@ void Browser::SetWebContentsBlocked(content::WebContents* web_contents,
   }
 }
 
-web_modal::WebContentsModalDialogHost*
-Browser::GetWebContentsModalDialogHost() {
+web_modal::WebContentsModalDialogHost* Browser::GetWebContentsModalDialogHost(
+    content::WebContents* web_contents) {
   return window_->GetWebContentsModalDialogHost();
 }
 

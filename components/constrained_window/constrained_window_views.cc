@@ -284,7 +284,7 @@ views::Widget* CreateWebModalDialogViews(views::WidgetDelegate* dialog,
   web_modal::WebContentsModalDialogManager* manager =
       web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
   web_modal::ModalDialogHost* const dialog_host =
-      manager->delegate()->GetWebContentsModalDialogHost();
+      manager->delegate()->GetWebContentsModalDialogHost(web_contents);
   CHECK(dialog_host);
 
   // Use desktop widget so that it is not constrained by the boundary of the

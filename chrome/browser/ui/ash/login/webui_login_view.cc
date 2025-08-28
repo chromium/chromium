@@ -172,7 +172,8 @@ void WebUILoginView::RequestFocus() {
 }
 
 web_modal::WebContentsModalDialogHost*
-WebUILoginView::GetWebContentsModalDialogHost() {
+WebUILoginView::GetWebContentsModalDialogHost(
+    content::WebContents* web_contents) {
   return this;
 }
 

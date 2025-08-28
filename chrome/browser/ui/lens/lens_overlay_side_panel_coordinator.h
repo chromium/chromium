@@ -303,8 +303,8 @@ class LensOverlaySidePanelCoordinator
   void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
 
   // ChromeWebModalDialogManagerDelegate:
-  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
-      override;
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(
+      content::WebContents* web_contents) override;
 
   // Whether the side panel should handle the URL differently since it has a
   // text directive and a URL that matches the current page. `nav_url` refers to
