@@ -8006,10 +8006,9 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.VirtualCardEnrollBubble.LoadingResult"
-    enum="AutofillVirtualCardEnrollBubbleResult" expires_after="2025-08-31">
+    enum="AutofillVirtualCardEnrollBubbleResult" expires_after="2025-11-02">
   <owner>darwinyang@google.com</owner>
-  <owner>kavitasoni@google.com</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the reason for closing the virtual card loading bubble. Recorded
@@ -8020,8 +8019,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram name="Autofill.VirtualCardEnrollBubble.LoadingShown"
     enum="AutofillVirtualCardEnrollBubbleResult" expires_after="2025-11-02">
   <owner>darwinyang@google.com</owner>
-  <owner>kavitasoni@google.com</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records if the virtual card loading bubble is shown during credit card
