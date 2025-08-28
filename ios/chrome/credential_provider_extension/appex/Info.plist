@@ -26,6 +26,19 @@
 	<dict>
 		<key>NSExtensionAttributes</key>
 		<dict>
+			<key>ASCredentialProviderExtensionCapabilities</key>
+			<dict>
+				<key>ProvidesPasskeys</key>
+				<true/>
+				<key>ProvidesPasswords</key>
+				<true/>
+				<key>ShowsConfigurationUI</key>
+				<true/>
+				<key>SupportsConditionalPasskeyRegistration</key>
+				<true/>
+				<key>SupportsCredentialUpdate</key>
+				<true/>
+			</dict>
 			<key>ASCredentialProviderExtensionShowsConfigurationUI</key>
 			<true/>
 		</dict>
