@@ -11,7 +11,6 @@
 
 #include <objbase.h>
 
-#include <delayimp.h>
 #include <mfapi.h>
 #include <mferror.h>
 #include <stddef.h>
@@ -48,6 +47,7 @@
 #include "base/win/core_winrt_util.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_variant.h"
+#include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "media/base/media_switches.h"
 #include "media/base/win/mf_helpers.h"
@@ -236,24 +236,14 @@ bool LoadMediaFoundationDlls() {
 
   // Force-resolve all imports from modules accessed via /DELAYLOAD. Note that
   // MF.dll and MFPlat.DLL have already been resolved via
-  // InitializeMediaFoundation(). __HrLoadAllImportsForDll makes a
+  // InitializeMediaFoundation(). LoadAllImportsForDll() makes a
   // case-sensitive comparison to the module names in the dll.
   // LINT.IfChange
-  for (const char* mfdll : {"MFReadWrite.dll"}) {
-    // LINT.ThenChange(//chrome/common/win/delay_load_failure_hook.cc)
-    HRESULT hr = E_FAIL;
-    __try {
-      hr = __HrLoadAllImportsForDll(mfdll);
-    } __except (HRESULT_FACILITY(::GetExceptionCode()) == FACILITY_VISUALCPP
-                    ? EXCEPTION_EXECUTE_HANDLER
-                    : EXCEPTION_CONTINUE_SEARCH) {
-      // Resolution of all imports failed; possibly because the module failed
-      // to load or because one or more imports was not found.
-      hr = E_FAIL;
-    }
-    if (FAILED(hr)) {
-      return false;
-    }
+  auto loaded = base::win::LoadAllImportsForDll("MFReadWrite.dll");
+  // LINT.ThenChange(//chrome/common/win/delay_load_failure_hook.cc)
+  if (!loaded.value_or(false)) {
+    // Loading failed, or the module is not a delayload dep of this module.
+    return false;
   }
 
   // MFCaptureEngine is not imported via delayloads, but may be needed anyway.
