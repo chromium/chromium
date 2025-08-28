@@ -19,7 +19,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.data_sharing.DataSharingMetrics;
-import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.ui.versioning.VersioningModalDialog;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -27,7 +26,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager.MaybeBlockingResult;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
@@ -47,17 +45,14 @@ import org.chromium.components.collaboration.Outcome;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.collaboration.SigninStatus;
 import org.chromium.components.collaboration.error_info.Type;
-import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.GroupToken;
 import org.chromium.components.data_sharing.SharedTabGroupPreview;
 import org.chromium.components.data_sharing.configs.DataSharingCreateUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingJoinUiConfig;
-import org.chromium.components.data_sharing.configs.DataSharingManageUiConfig;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
-import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -79,7 +74,6 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
     private long mExitCallback;
     private long mNativePtr;
     private @Nullable LoadingFullscreenCoordinator mLoadingFullscreenCoordinator;
-    private @Nullable String mSessionId;
 
     // Will become null once used in the prepareFlowUI().
     private @Nullable Callback<Runnable> mSwitchToTabSwitcherCallback;
@@ -515,15 +509,15 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
                     }
                 };
 
-        mSessionId =
+        String sessionId =
                 mDataSharingTabManager.showJoinScreenWithPreview(
                         mActivity, token, previewData, joinCallback);
+        assumeNonNull(sessionId);
 
         mCloseScreenRunnable =
                 () -> {
                     mThreadChecker.assertOnValidThread();
-                    assumeNonNull(mDataSharingTabManager.getUiDelegate())
-                            .destroyFlow(assumeNonNull(mSessionId));
+                    assumeNonNull(mDataSharingTabManager.getUiDelegate()).destroyFlow(sessionId);
                 };
     }
 
@@ -591,15 +585,15 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
         SavedTabGroup existingGroup =
                 mDataSharingTabManager.getSavedTabGroupForEitherId(syncId, localId);
 
-        mSessionId =
+        String sessionId =
                 mDataSharingTabManager.showShareDialog(
                         mActivity, existingGroup.title, existingGroup, createCallback);
+        assumeNonNull(sessionId);
 
         mCloseScreenRunnable =
                 () -> {
                     mThreadChecker.assertOnValidThread();
-                    assumeNonNull(mDataSharingTabManager.getUiDelegate())
-                            .destroyFlow(assumeNonNull(mSessionId));
+                    assumeNonNull(mDataSharingTabManager.getUiDelegate()).destroyFlow(sessionId);
                 };
     }
 
@@ -624,8 +618,7 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
                     CollaborationControllerDelegateImplJni.get()
                             .runResultCallback(Outcome.SUCCESS, resultCallback);
                 };
-        mDataSharingTabManager.showShareSheet(
-                mActivity, groupId, mSessionId, url, onFinishCallback);
+        mDataSharingTabManager.showShareSheet(mActivity, groupId, url, onFinishCallback);
     }
 
     /**
@@ -640,102 +633,22 @@ public class CollaborationControllerDelegateImpl implements CollaborationControl
         mThreadChecker.assertOnValidThread();
         SavedTabGroup existingGroup =
                 mDataSharingTabManager.getSavedTabGroupForEitherId(syncId, localId);
-        String tabGroupName = getSavedTabGroupTitle(existingGroup);
-        String collaborationId = assumeNonNull(existingGroup.collaborationId);
-        TabGroupSyncService tabGroupSyncService =
-                TabGroupSyncServiceFactory.getForProfile(
-                        assumeNonNull(mDataSharingTabManager.getProfile()));
-        assumeNonNull(tabGroupSyncService);
 
-        Callback<@Outcome Integer> outcomeCallback =
-                (outcome) -> {
-                    mThreadChecker.assertOnValidThread();
-                    CollaborationControllerDelegateImplJni.get()
-                            .runResultCallback(outcome, resultCallback);
-                };
-
-        DataSharingManageUiConfig.ManageCallback manageCallback =
-                new DataSharingManageUiConfig.ManageCallback() {
-                    private @Nullable Callback<@Outcome Integer> mOutcomeCallback;
-
-                    {
-                        mOutcomeCallback = outcomeCallback;
-                    }
-
-                    @Override
-                    public void onShareInviteLinkClicked(GroupToken groupToken) {
-                        onShareInviteLinkClickedWithWait(groupToken, null);
-                    }
-
-                    @Override
-                    public void onShareInviteLinkClickedWithWait(
-                            GroupToken groupToken, @Nullable Callback<Boolean> onFinished) {
-                        GURL url =
-                                mDataSharingTabManager.getDataSharingUrl(
-                                        new GroupData(
-                                                groupToken.collaborationId,
-                                                assumeNonNull(tabGroupName),
-                                                /* members= */ null,
-                                                assumeNonNull(groupToken.accessToken)));
-                        if (url == null) {
-                            Callback.runNullSafe(onFinished, false);
-                            DataSharingMetrics.recordShareActionFlowState(
-                                    DataSharingMetrics.ShareActionStateAndroid.URL_CREATION_FAILED);
-                            return;
-                        }
-                        mDataSharingTabManager.showShareSheet(
-                                mActivity, groupToken.collaborationId, mSessionId, url, onFinished);
-                    }
-
-                    @Override
-                    public void onStopSharingInitiated(Callback<Boolean> readyToStopSharing) {
-                        SavedTabGroup existingGroup =
-                                DataSharingTabGroupUtils.getTabGroupForCollabIdFromSync(
-                                        collaborationId, tabGroupSyncService);
-                        assumeNonNull(existingGroup);
-                        tabGroupSyncService.aboutToUnShareTabGroup(
-                                assumeNonNull(existingGroup.localId), readyToStopSharing);
-                    }
-
-                    @Override
-                    public void onStopSharingCompleted(boolean success) {
-                        SavedTabGroup existingGroup =
-                                assumeNonNull(
-                                        DataSharingTabGroupUtils.getTabGroupForCollabIdFromSync(
-                                                collaborationId, tabGroupSyncService));
-                        tabGroupSyncService.onTabGroupUnShareComplete(
-                                assumeNonNull(existingGroup.localId), success);
-                    }
-
-                    @Override
-                    public void onLeaveGroup() {
-                        Callback<@Outcome Integer> callback = mOutcomeCallback;
-                        mOutcomeCallback = null;
-
-                        // TODO(haileywang): remove assert if we don't observe any crash
-                        assert callback != null;
-                        if (callback != null) {
-                            callback.onResult(Outcome.GROUP_LEFT_OR_DELETED);
-                        }
-                    }
-
-                    @Override
-                    public void onSessionFinished() {
-                        if (mOutcomeCallback != null) {
-                            mOutcomeCallback.onResult(Outcome.SUCCESS);
-                        }
-                    }
-                };
-
-        mSessionId =
-                mDataSharingTabManager.showManageSharingWithManageCallback(
-                        mActivity, assumeNonNull(existingGroup.collaborationId), manageCallback);
+        String sessionId =
+                mDataSharingTabManager.showManageSharing(
+                        mActivity,
+                        assumeNonNull(existingGroup.collaborationId),
+                        (outcome) -> {
+                            mThreadChecker.assertOnValidThread();
+                            CollaborationControllerDelegateImplJni.get()
+                                    .runResultCallback(outcome, resultCallback);
+                        });
+        assumeNonNull(sessionId);
 
         mCloseScreenRunnable =
                 () -> {
                     mThreadChecker.assertOnValidThread();
-                    assumeNonNull(mDataSharingTabManager.getUiDelegate())
-                            .destroyFlow(assumeNonNull(mSessionId));
+                    assumeNonNull(mDataSharingTabManager.getUiDelegate()).destroyFlow(sessionId);
                 };
     }
 

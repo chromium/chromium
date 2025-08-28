@@ -641,14 +641,12 @@ public class DataSharingTabManager {
      *
      * @param context The context where to show the share sheet.
      * @param collaborationId The group id for the tab group.
-     * @param sessionId The session id for current share/manage flow.
      * @param url The {@link GURL} of the tab group invitation.
      * @param onShareSheetShown The callback to run when share sheet opens.
      */
     public void showShareSheet(
             Context context,
             String collaborationId,
-            @Nullable String sessionId,
             GURL url,
             @Nullable Callback<Boolean> onShareSheetShown) {
         mDataSharingTabGroupsDelegate.getPreviewBitmap(
@@ -656,14 +654,13 @@ public class DataSharingTabManager {
                 ShareHelper.getTextPreviewImageSizePx(mResources),
                 (preview) -> {
                     showShareSheetWithPreview(
-                            context, collaborationId, sessionId, url, preview, onShareSheetShown);
+                            context, collaborationId, url, preview, onShareSheetShown);
                 });
     }
 
     private void showShareSheetWithPreview(
             Context context,
             String collaborationId,
-            @Nullable String sessionId,
             GURL url,
             Bitmap preview,
             @Nullable Callback<Boolean> onShareSheetShown) {
@@ -693,10 +690,6 @@ public class DataSharingTabManager {
         String text =
                 context.getString(R.string.collaboration_share_sheet_message, tabGroupName)
                         + SHARED_TEXT_SEPARATOR;
-
-        assumeNonNull(mDataSharingService);
-        DataSharingUIDelegate uiDelegate = getUiDelegate();
-
         ShareParams.Builder shareParamsBuilder =
                 new ShareParams.Builder(
                                 mWindowAndroid,
@@ -710,9 +703,6 @@ public class DataSharingTabManager {
                                         DataSharingMetrics.recordShareActionFlowState(
                                                 DataSharingMetrics.ShareActionStateAndroid
                                                         .SHARE_SHEET_CLICKED);
-                                        if (uiDelegate != null && sessionId != null) {
-                                            uiDelegate.logShareSheet(sessionId, true);
-                                        }
                                     }
 
                                     @Override
@@ -720,9 +710,6 @@ public class DataSharingTabManager {
                                         DataSharingMetrics.recordShareActionFlowState(
                                                 DataSharingMetrics.ShareActionStateAndroid
                                                         .SHARE_SHEET_CANCELLED);
-                                        if (uiDelegate != null && sessionId != null) {
-                                            uiDelegate.logShareSheet(sessionId, false);
-                                        }
                                     }
                                 });
 
@@ -740,48 +727,6 @@ public class DataSharingTabManager {
                 () -> {
                     Callback.runNullSafe(onShareSheetShown, true);
                 });
-    }
-
-    /**
-     * Shows UI for manage sharing.
-     *
-     * @param activity The activity to show the UI for.
-     * @param collaborationId The collaboration ID to show the UI for.
-     * @param manageCallback The callbacks for user actions in the manage UI.
-     * @return The session id associated with the UI instance.
-     */
-    public @Nullable String showManageSharingWithManageCallback(
-            Activity activity,
-            String collaborationId,
-            DataSharingManageUiConfig.ManageCallback manageCallback) {
-        assert mProfile != null;
-
-        assumeNonNull(mDataSharingService);
-        DataSharingUIDelegate uiDelegate = mDataSharingService.getUiDelegate();
-        TabGroupSyncService tabGroupSyncService =
-                TabGroupSyncServiceFactory.getForProfile(mProfile);
-        assumeNonNull(tabGroupSyncService);
-        String tabGroupName =
-                DataSharingTabGroupUtils.getTabGroupTitle(
-                        activity, collaborationId, tabGroupSyncService);
-
-        DataSharingStringConfig stringConfig = createManageSharingStringConfig();
-
-        boolean isSharingDisabled =
-                mCollaborationService != null
-                        && mCollaborationService.getServiceStatus().collaborationStatus
-                                == CollaborationStatus.DISABLED_FOR_POLICY;
-        DataSharingManageUiConfig manageConfig =
-                new DataSharingManageUiConfig.Builder()
-                        .setGroupToken(new GroupToken(collaborationId, null))
-                        .setManageCallback(manageCallback)
-                        .setLearnAboutBlockedAccounts(getLearnAboutBlockedAccountsUrl())
-                        .setActivityLogsUrl(getActivityLogsUrl())
-                        .setCommonConfig(getCommonConfig(activity, tabGroupName, stringConfig))
-                        .setIsSharingDisabled(isSharingDisabled)
-                        .build();
-        String sessionId = uiDelegate.showManageFlow(manageConfig);
-        return sessionId;
     }
 
     /**
@@ -807,7 +752,46 @@ public class DataSharingTabManager {
                 DataSharingTabGroupUtils.getTabGroupTitle(
                         activity, collaborationId, tabGroupSyncService);
 
-        DataSharingStringConfig stringConfig = createManageSharingStringConfig();
+        DataSharingStringConfig stringConfig =
+                new DataSharingStringConfig.Builder()
+                        .setResourceId(
+                                DataSharingStringConfig.StringKey.MANAGE_DESCRIPTION,
+                                R.string.collaboration_manage_group_description)
+                        .setResourceId(
+                                DataSharingStringConfig.StringKey.LET_ANYONE_JOIN_DESCRIPTION,
+                                R.string.collaboration_manage_share_wisely)
+                        .setResourceId(
+                                DataSharingStringConfig.StringKey.LEARN_ABOUT_SHARED_TAB_GROUPS,
+                                R.string.collaboration_learn_about_shared_groups)
+                        .setResourceId(
+                                DataSharingStringConfig.StringKey.BLOCK_MESSAGE,
+                                R.string.collaboration_owner_block_dialog_body)
+                        .setResourceId(
+                                DataSharingStringConfig.StringKey.BLOCK_AND_LEAVE_GROUP_MESSAGE,
+                                R.string.collaboration_block_leave_dialog_body)
+                        .setResourceId(
+                                DataSharingStringConfig.StringKey.LEARN_ABOUT_BLOCKED_ACCOUNTS,
+                                R.string.collaboration_block_leave_learn_more)
+                        .setResourceId(
+                                DataSharingStringConfig.StringKey.REMOVE_MESSAGE,
+                                R.string.collaboration_owner_remove_member_dialog_body)
+                        .setResourceId(
+                                DataSharingStringConfig.StringKey.LEAVE_GROUP_MESSAGE,
+                                R.string.collaboration_leave_dialog_body)
+                        .setResourceId(
+                                DataSharingStringConfig.StringKey.STOP_SHARING_MESSAGE,
+                                R.string.collaboration_owner_stop_sharing_dialog_body)
+                        .setResourceId(
+                                DataSharingStringConfig.StringKey
+                                        .LET_ANYONE_JOIN_GROUP_WHEN_FULL_DESCRIPTION,
+                                R.string.collaboration_group_is_full_description)
+                        .setResourceId(
+                                DataSharingStringConfig.StringKey.ACTIVITY_LOGS_TITLE,
+                                R.string.data_sharing_shared_tab_groups_activity)
+                        .setResourceId(
+                                DataSharingStringConfig.StringKey.SHARING_DISABLED_DESCRIPTION,
+                                R.string.collaboration_entreprise_sharing_off_header)
+                        .build();
 
         DataSharingManageUiConfig.ManageCallback manageCallback =
                 new DataSharingManageUiConfig.ManageCallback() {
@@ -838,7 +822,7 @@ public class DataSharingTabManager {
                                     DataSharingMetrics.ShareActionStateAndroid.URL_CREATION_FAILED);
                             return;
                         }
-                        showShareSheet(activity, groupToken.collaborationId, null, url, onFinished);
+                        showShareSheet(activity, groupToken.collaborationId, url, onFinished);
                     }
 
                     @Override
@@ -897,11 +881,6 @@ public class DataSharingTabManager {
         return uiDelegate.showManageFlow(manageConfig);
     }
 
-    public GURL getDataSharingUrl(GroupData groupData) {
-        assumeNonNull(mDataSharingService);
-        return mDataSharingService.getDataSharingUrl(groupData);
-    }
-
     private DataSharingUiConfig getCommonConfig(
             Activity activity,
             @Nullable String tabGroupName,
@@ -930,48 +909,6 @@ public class DataSharingTabManager {
             commonConfig.setTabGroupName(tabGroupName);
         }
         return commonConfig.build();
-    }
-
-    private DataSharingStringConfig createManageSharingStringConfig() {
-        return new DataSharingStringConfig.Builder()
-                .setResourceId(
-                        DataSharingStringConfig.StringKey.MANAGE_DESCRIPTION,
-                        R.string.collaboration_manage_group_description)
-                .setResourceId(
-                        DataSharingStringConfig.StringKey.LET_ANYONE_JOIN_DESCRIPTION,
-                        R.string.collaboration_manage_share_wisely)
-                .setResourceId(
-                        DataSharingStringConfig.StringKey.LEARN_ABOUT_SHARED_TAB_GROUPS,
-                        R.string.collaboration_learn_about_shared_groups)
-                .setResourceId(
-                        DataSharingStringConfig.StringKey.BLOCK_MESSAGE,
-                        R.string.collaboration_owner_block_dialog_body)
-                .setResourceId(
-                        DataSharingStringConfig.StringKey.BLOCK_AND_LEAVE_GROUP_MESSAGE,
-                        R.string.collaboration_block_leave_dialog_body)
-                .setResourceId(
-                        DataSharingStringConfig.StringKey.LEARN_ABOUT_BLOCKED_ACCOUNTS,
-                        R.string.collaboration_block_leave_learn_more)
-                .setResourceId(
-                        DataSharingStringConfig.StringKey.REMOVE_MESSAGE,
-                        R.string.collaboration_owner_remove_member_dialog_body)
-                .setResourceId(
-                        DataSharingStringConfig.StringKey.LEAVE_GROUP_MESSAGE,
-                        R.string.collaboration_leave_dialog_body)
-                .setResourceId(
-                        DataSharingStringConfig.StringKey.STOP_SHARING_MESSAGE,
-                        R.string.collaboration_owner_stop_sharing_dialog_body)
-                .setResourceId(
-                        DataSharingStringConfig.StringKey
-                                .LET_ANYONE_JOIN_GROUP_WHEN_FULL_DESCRIPTION,
-                        R.string.collaboration_group_is_full_description)
-                .setResourceId(
-                        DataSharingStringConfig.StringKey.ACTIVITY_LOGS_TITLE,
-                        R.string.data_sharing_shared_tab_groups_activity)
-                .setResourceId(
-                        DataSharingStringConfig.StringKey.SHARING_DISABLED_DESCRIPTION,
-                        R.string.collaboration_entreprise_sharing_off_header)
-                .build();
     }
 
     /**
