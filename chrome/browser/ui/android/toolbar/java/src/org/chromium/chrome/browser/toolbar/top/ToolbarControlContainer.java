@@ -241,6 +241,14 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             mToolbar.getProgressBar().setVisibility(View.VISIBLE);
             mToolbarView.setVisibility(View.VISIBLE);
             mToolbarContainer.removeView(mLocationBarView);
+            // CoordinatorLayout only updates its processed list of children at measure time, even
+            // if a child is removed. This can cause problems if a reparented former child has a new
+            // type of LayoutParams, triggering a ClassCastException. We work around this by forcing
+            // a re-measure.
+            mToolbarContainer.forceLayout();
+            mToolbarContainer.measure(
+                    mToolbarContainer.getMeasuredWidthAndState(),
+                    mToolbarContainer.getMeasuredHeightAndState());
             mToolbar.restoreLocationBarView();
             setBackgroundColor(Color.TRANSPARENT);
         }

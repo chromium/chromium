@@ -22,6 +22,7 @@ import android.graphics.drawable.LayerDrawable;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -45,11 +46,21 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
+import org.chromium.chrome.browser.omnibox.LocationBarCoordinatorPhone;
+import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarHairlineView;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
+import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.forward_button.ForwardButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.reload_button.ReloadButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarAllowCaptureReason;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer.ToolbarViewResourceAdapter;
@@ -57,7 +68,9 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer.ToolbarVi
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer.ToolbarViewResourceCoordinatorLayout;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.url.GURL;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BooleanSupplier;
@@ -79,11 +92,23 @@ public class ToolbarControlContainerTest {
     @Mock private View mLocationBarView;
     @Mock private ToolbarHairlineView mToolbarHairline;
     @Mock private Toolbar mToolbar;
+    @Mock private ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;
     @Mock private ToolbarProgressBar mProgressBar;
     @Mock private Tab mTab;
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private FullscreenManager mFullscreenManager;
     @Mock private TouchEventObserver mTouchEventObserver;
+    @Mock private LocationBarCoordinator mLocationBarCoordinator;
+    @Mock private LocationBarCoordinatorPhone mLocationBarCoordinatorPhone;
+    @Mock private MenuButtonCoordinator mMenuButtonCoordinator;
+    @Mock private ToolbarDataProvider mToolbarDataProvider;
+    @Mock private ReloadButtonCoordinator mReloadButtonCoordinator;
+    @Mock private BackButtonCoordinator mBackButtonCoordinator;
+    @Mock private ForwardButtonCoordinator mForwardButtonCoordinator;
+    @Mock private HomeButtonDisplay mHomeButtonDisplay;
+    @Mock private ThemeColorProvider mThemeColorProvider;
+    @Mock private IncognitoStateProvider mIncognitoStateProvider;
+    @Mock private NewTabPageDelegate mNewTabPageDelegate;
 
     private final Supplier<Tab> mTabSupplier = () -> mTab;
     private final ObservableSupplierImpl<Boolean> mCompositorInMotionSupplier =
@@ -535,6 +560,28 @@ public class ToolbarControlContainerTest {
                 mLayoutStateProviderSupplier,
                 mFullscreenManager);
 
+        ToolbarPhone toolbarPhone = controlContainer.findViewById(R.id.toolbar);
+        doReturn(mLocationBarCoordinatorPhone).when(mLocationBarCoordinator).getPhoneCoordinator();
+        doReturn(mNewTabPageDelegate).when(mToolbarDataProvider).getNewTabPageDelegate();
+        doReturn(new GURL(UrlConstants.ABOUT_URL)).when(mToolbarDataProvider).getCurrentGurl();
+        toolbarPhone.setLocationBarCoordinator(mLocationBarCoordinator);
+        toolbarPhone.initialize(
+                mToolbarDataProvider,
+                null,
+                mMenuButtonCoordinator,
+                mTabSwitcherButtonCoordinator,
+                null,
+                null,
+                null,
+                mProgressBar,
+                mReloadButtonCoordinator,
+                mBackButtonCoordinator,
+                mForwardButtonCoordinator,
+                mHomeButtonDisplay,
+                /* extensionToolbarCoordinator= */ null,
+                mThemeColorProvider,
+                mIncognitoStateProvider);
+
         controlContainer.toggleLocationBarOnlyMode(true);
         verify(mProgressBar).setVisibility(View.GONE);
         verify(mToolbarView).setVisibility(View.GONE);
@@ -546,8 +593,9 @@ public class ToolbarControlContainerTest {
                 mLocationBarView,
                 toolbarViewResourceFrameLayout.getChildAt(
                         toolbarViewResourceFrameLayout.getChildCount() - 1));
-        // check that location bar is parented to container view
 
+        MarginLayoutParams layoutParams = new MarginLayoutParams(500, 100);
+        doReturn(layoutParams).when(mLocationBarCoordinatorPhone).getMarginLayoutParams();
         controlContainer.toggleLocationBarOnlyMode(false);
         verify(mProgressBar).setVisibility(View.VISIBLE);
         verify(mToolbarView).setVisibility(View.VISIBLE);
