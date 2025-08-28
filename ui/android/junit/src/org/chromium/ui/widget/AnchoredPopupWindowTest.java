@@ -40,6 +40,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.R;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
+import org.chromium.ui.widget.AnchoredPopupWindow.PopupPositionParams;
 import org.chromium.ui.widget.AnchoredPopupWindow.PopupSpec;
 import org.chromium.ui.widget.AnchoredPopupWindow.VerticalOrientation;
 
@@ -96,15 +97,15 @@ public final class AnchoredPopupWindowTest {
     }
 
     @Test
-    public void testGetPopupPosition_BelowRight() {
+    public void popupPositionParams_BelowRight() {
         Rect anchorRect = new Rect(10, 10, 20, 20);
 
         int spaceLeftOfAnchor =
-                AnchoredPopupWindow.getSpaceLeftOfAnchor(anchorRect, mWindowRect, false);
+                PopupPositionParams.getSpaceLeftOfAnchor(anchorRect, mWindowRect, false);
         int spaceRightOfAnchor =
-                AnchoredPopupWindow.getSpaceRightOfAnchor(anchorRect, mWindowRect, false);
+                PopupPositionParams.getSpaceRightOfAnchor(anchorRect, mWindowRect, false);
         boolean positionToLeft =
-                AnchoredPopupWindow.shouldPositionLeftOfAnchor(
+                PopupPositionParams.shouldPositionLeftOfAnchor(
                         spaceLeftOfAnchor, spaceRightOfAnchor, mPopupWidth, false, false);
 
         assertEquals("Space left of anchor incorrect.", 10, spaceLeftOfAnchor);
@@ -112,7 +113,7 @@ public final class AnchoredPopupWindowTest {
         assertFalse("positionToLeft incorrect.", positionToLeft);
 
         int x =
-                AnchoredPopupWindow.getPopupX(
+                PopupSpec.getPopupX(
                         anchorRect,
                         mWindowRect,
                         mPopupWidth,
@@ -120,22 +121,22 @@ public final class AnchoredPopupWindowTest {
                         false,
                         AnchoredPopupWindow.HorizontalOrientation.MAX_AVAILABLE_SPACE,
                         false);
-        int y = AnchoredPopupWindow.getPopupY(anchorRect, mPopupHeight, false, true);
+        int y = PopupSpec.getPopupY(anchorRect, mPopupHeight, false, true);
 
         assertEquals("Wrong x position.", 20, x);
         assertEquals("Wrong y position.", 20, y);
     }
 
     @Test
-    public void testGetPopupPosition_BelowRight_Overlap() {
+    public void popupPositionParams_BelowRight_Overlap() {
         Rect anchorRect = new Rect(10, 10, 20, 20);
 
         int spaceLeftOfAnchor =
-                AnchoredPopupWindow.getSpaceLeftOfAnchor(anchorRect, mWindowRect, true);
+                PopupPositionParams.getSpaceLeftOfAnchor(anchorRect, mWindowRect, true);
         int spaceRightOfAnchor =
-                AnchoredPopupWindow.getSpaceRightOfAnchor(anchorRect, mWindowRect, true);
+                PopupPositionParams.getSpaceRightOfAnchor(anchorRect, mWindowRect, true);
         boolean positionToLeft =
-                AnchoredPopupWindow.shouldPositionLeftOfAnchor(
+                PopupPositionParams.shouldPositionLeftOfAnchor(
                         spaceLeftOfAnchor, spaceRightOfAnchor, mPopupWidth, false, false);
 
         assertEquals("Space left of anchor incorrect.", 20, spaceLeftOfAnchor);
@@ -143,7 +144,7 @@ public final class AnchoredPopupWindowTest {
         assertFalse("positionToLeft incorrect.", positionToLeft);
 
         int x =
-                AnchoredPopupWindow.getPopupX(
+                PopupSpec.getPopupX(
                         anchorRect,
                         mWindowRect,
                         mPopupWidth,
@@ -151,17 +152,17 @@ public final class AnchoredPopupWindowTest {
                         true,
                         AnchoredPopupWindow.HorizontalOrientation.MAX_AVAILABLE_SPACE,
                         false);
-        int y = AnchoredPopupWindow.getPopupY(anchorRect, mPopupHeight, true, true);
+        int y = PopupSpec.getPopupY(anchorRect, mPopupHeight, true, true);
 
         assertEquals("Wrong x position.", 10, x);
         assertEquals("Wrong y position.", 10, y);
     }
 
     @Test
-    public void testGetPopupPosition_BelowCenter() {
+    public void popupPositionParams_BelowCenter() {
         Rect anchorRect = new Rect(295, 10, 305, 20);
         int x =
-                AnchoredPopupWindow.getPopupX(
+                PopupSpec.getPopupX(
                         anchorRect,
                         mWindowRect,
                         mPopupWidth,
@@ -169,22 +170,22 @@ public final class AnchoredPopupWindowTest {
                         false,
                         AnchoredPopupWindow.HorizontalOrientation.CENTER,
                         false);
-        int y = AnchoredPopupWindow.getPopupY(anchorRect, mPopupHeight, false, true);
+        int y = PopupSpec.getPopupY(anchorRect, mPopupHeight, false, true);
 
         assertEquals("Wrong x position.", 225, x);
         assertEquals("Wrong y position.", 20, y);
     }
 
     @Test
-    public void getPopupPosition_AboveLeft() {
+    public void popupPositionParams_AboveLeft() {
         Rect anchorRect = new Rect(400, 800, 410, 820);
 
         int spaceLeftOfAnchor =
-                AnchoredPopupWindow.getSpaceLeftOfAnchor(anchorRect, mWindowRect, false);
+                PopupPositionParams.getSpaceLeftOfAnchor(anchorRect, mWindowRect, false);
         int spaceRightOfAnchor =
-                AnchoredPopupWindow.getSpaceRightOfAnchor(anchorRect, mWindowRect, false);
+                PopupPositionParams.getSpaceRightOfAnchor(anchorRect, mWindowRect, false);
         boolean positionToLeft =
-                AnchoredPopupWindow.shouldPositionLeftOfAnchor(
+                PopupPositionParams.shouldPositionLeftOfAnchor(
                         spaceLeftOfAnchor, spaceRightOfAnchor, mPopupWidth, false, false);
 
         assertEquals("Space left of anchor incorrect.", 400, spaceLeftOfAnchor);
@@ -192,7 +193,7 @@ public final class AnchoredPopupWindowTest {
         assertTrue("positionToLeft incorrect.", positionToLeft);
 
         int x =
-                AnchoredPopupWindow.getPopupX(
+                PopupSpec.getPopupX(
                         anchorRect,
                         mWindowRect,
                         mPopupWidth,
@@ -200,22 +201,22 @@ public final class AnchoredPopupWindowTest {
                         false,
                         AnchoredPopupWindow.HorizontalOrientation.MAX_AVAILABLE_SPACE,
                         positionToLeft);
-        int y = AnchoredPopupWindow.getPopupY(anchorRect, mPopupHeight, false, false);
+        int y = PopupSpec.getPopupY(anchorRect, mPopupHeight, false, false);
 
         assertEquals("Wrong x position.", 250, x);
         assertEquals("Wrong y position.", 500, y);
     }
 
     @Test
-    public void testGetPopupPosition_AboveLeft_Overlap() {
+    public void popupPositionParams_AboveLeft_Overlap() {
         Rect anchorRect = new Rect(400, 800, 410, 820);
 
         int spaceLeftOfAnchor =
-                AnchoredPopupWindow.getSpaceLeftOfAnchor(anchorRect, mWindowRect, true);
+                PopupPositionParams.getSpaceLeftOfAnchor(anchorRect, mWindowRect, true);
         int spaceRightOfAnchor =
-                AnchoredPopupWindow.getSpaceRightOfAnchor(anchorRect, mWindowRect, true);
+                PopupPositionParams.getSpaceRightOfAnchor(anchorRect, mWindowRect, true);
         boolean positionToLeft =
-                AnchoredPopupWindow.shouldPositionLeftOfAnchor(
+                PopupPositionParams.shouldPositionLeftOfAnchor(
                         spaceLeftOfAnchor, spaceRightOfAnchor, mPopupWidth, false, false);
 
         assertEquals("Space left of anchor incorrect.", 410, spaceLeftOfAnchor);
@@ -223,7 +224,7 @@ public final class AnchoredPopupWindowTest {
         assertTrue("positionToLeft incorrect.", positionToLeft);
 
         int x =
-                AnchoredPopupWindow.getPopupX(
+                PopupSpec.getPopupX(
                         anchorRect,
                         mWindowRect,
                         mPopupWidth,
@@ -231,17 +232,17 @@ public final class AnchoredPopupWindowTest {
                         true,
                         AnchoredPopupWindow.HorizontalOrientation.MAX_AVAILABLE_SPACE,
                         true);
-        int y = AnchoredPopupWindow.getPopupY(anchorRect, mPopupHeight, true, false);
+        int y = PopupSpec.getPopupY(anchorRect, mPopupHeight, true, false);
 
         assertEquals("Wrong x position.", 260, x);
         assertEquals("Wrong y position.", 520, y);
     }
 
     @Test
-    public void testGetPopupPosition_ClampedLeftEdge() {
+    public void popupPositionParams_ClampedLeftEdge() {
         Rect anchorRect = new Rect(10, 10, 20, 20);
         int x =
-                AnchoredPopupWindow.getPopupX(
+                PopupSpec.getPopupX(
                         anchorRect,
                         mWindowRect,
                         mPopupWidth,
@@ -254,10 +255,10 @@ public final class AnchoredPopupWindowTest {
     }
 
     @Test
-    public void testGetPopupPosition_ClampedRightEdge() {
+    public void popupPositionParams_ClampedRightEdge() {
         Rect anchorRect = new Rect(590, 800, 600, 820);
         int x =
-                AnchoredPopupWindow.getPopupX(
+                PopupSpec.getPopupX(
                         anchorRect,
                         mWindowRect,
                         mPopupWidth,
@@ -270,14 +271,14 @@ public final class AnchoredPopupWindowTest {
     }
 
     @Test
-    public void testShouldPositionLeftOfAnchor() {
+    public void popupPositionParams_ShouldPositionLeftOfAnchor() {
         Rect anchorRect = new Rect(300, 10, 310, 20);
         int spaceLeftOfAnchor =
-                AnchoredPopupWindow.getSpaceLeftOfAnchor(anchorRect, mWindowRect, false);
+                PopupPositionParams.getSpaceLeftOfAnchor(anchorRect, mWindowRect, false);
         int spaceRightOfAnchor =
-                AnchoredPopupWindow.getSpaceRightOfAnchor(anchorRect, mWindowRect, false);
+                PopupPositionParams.getSpaceRightOfAnchor(anchorRect, mWindowRect, false);
         boolean positionToLeft =
-                AnchoredPopupWindow.shouldPositionLeftOfAnchor(
+                PopupPositionParams.shouldPositionLeftOfAnchor(
                         spaceLeftOfAnchor, spaceRightOfAnchor, mPopupWidth, false, false);
 
         assertEquals("Space left of anchor incorrect.", 300, spaceLeftOfAnchor);
@@ -286,11 +287,11 @@ public final class AnchoredPopupWindowTest {
 
         anchorRect = new Rect(250, 10, 260, 20);
         spaceLeftOfAnchor =
-                AnchoredPopupWindow.getSpaceLeftOfAnchor(anchorRect, mWindowRect, false);
+                PopupPositionParams.getSpaceLeftOfAnchor(anchorRect, mWindowRect, false);
         spaceRightOfAnchor =
-                AnchoredPopupWindow.getSpaceRightOfAnchor(anchorRect, mWindowRect, false);
+                PopupPositionParams.getSpaceRightOfAnchor(anchorRect, mWindowRect, false);
         positionToLeft =
-                AnchoredPopupWindow.shouldPositionLeftOfAnchor(
+                PopupPositionParams.shouldPositionLeftOfAnchor(
                         spaceLeftOfAnchor, spaceRightOfAnchor, mPopupWidth, true, true);
 
         // There is more space to the right, but the popup will still fit to the left and should
@@ -301,20 +302,20 @@ public final class AnchoredPopupWindowTest {
     }
 
     @Test
-    public void testGetMaxContentWidth() {
-        int maxWidth = AnchoredPopupWindow.getMaxContentWidth(300, 600, 10, 10);
+    public void popupSpec_MaxContentWidth() {
+        int maxWidth = PopupSpec.getMaxContentWidth(300, 600, 10, 10);
         assertEquals("Max width should be based on desired width.", 290, maxWidth);
 
-        maxWidth = AnchoredPopupWindow.getMaxContentWidth(300, 300, 10, 10);
+        maxWidth = PopupSpec.getMaxContentWidth(300, 300, 10, 10);
         assertEquals("Max width should be based on root view width.", 270, maxWidth);
 
-        maxWidth = AnchoredPopupWindow.getMaxContentWidth(0, 600, 10, 10);
+        maxWidth = PopupSpec.getMaxContentWidth(0, 600, 10, 10);
         assertEquals(
                 "Max width should be based on root view width when desired with is 0.",
                 570,
                 maxWidth);
 
-        maxWidth = AnchoredPopupWindow.getMaxContentWidth(300, 300, 10, 300);
+        maxWidth = PopupSpec.getMaxContentWidth(300, 300, 10, 300);
         assertEquals("Max width should be clamped at 0.", 0, maxWidth);
     }
 
@@ -323,7 +324,7 @@ public final class AnchoredPopupWindowTest {
     //  anchorRect => A, expectedPopupRect => E, width = w, height = h
 
     @Test
-    public void testCalcPopupRect_DefaultSettings() {
+    public void popupSpec_DefaultSettings() {
         // E.left = A.right = 0
         // E.top = A.bottom = 0
         // E.right = A.right + w = 150
@@ -361,7 +362,7 @@ public final class AnchoredPopupWindowTest {
     }
 
     @Test
-    public void testCalcPopupRect_BiasOnX() {
+    public void popupSpec_BiasOnX() {
         // E.left = A.left - w = 300 - 150 = 150
         // E.top = A.bottom = 0
         // E.right = A.left = 300
@@ -391,7 +392,7 @@ public final class AnchoredPopupWindowTest {
     }
 
     @Test
-    public void testCalcPopupRect_BiasOnY() {
+    public void popupSpec_BiasOnY() {
         // E.left = A.right = 0
         // E.top = A.bottom = 500
         // E.right = A.right + w = 150
@@ -421,7 +422,7 @@ public final class AnchoredPopupWindowTest {
     }
 
     @Test
-    public void testCalcPopupRect_LimitedSpaceX() {
+    public void popupSpec_LimitedSpaceX() {
         // When both left / right side does not have enough space, the anchor will have to overlap
         // with the anchor.
         // E.left = max(window.left, A.left - w) = max(0, 100 - 150) = 0
@@ -444,7 +445,7 @@ public final class AnchoredPopupWindowTest {
     }
 
     @Test
-    public void testCalcPopupRect_LimitedSpaceY() {
+    public void popupSpec_LimitedSpaceY() {
         // Since mVerticalOverlapAnchor = false, even when space allows on the side, the popup
         // will not show on the side of anchor rect.
         // E.left = A.right = 0
@@ -459,7 +460,7 @@ public final class AnchoredPopupWindowTest {
     }
 
     @Test
-    public void testCalcPopupRect_Margin() {
+    public void popupSpec_Margin() {
         // TODO(crbug.com/40831293): Margin needs to be considered on Y axis.
         mMarginPx = 10;
         // E.left = A.right + margin = 0 + 10 = 10
@@ -473,7 +474,7 @@ public final class AnchoredPopupWindowTest {
     }
 
     @Test
-    public void testCalcPopupRect_Padding() {
+    public void popupSpec_Padding() {
         mPaddingX = 3;
         mPaddingY = 2;
         // E.left = A.right = 0
@@ -487,7 +488,7 @@ public final class AnchoredPopupWindowTest {
     }
 
     @Test
-    public void testCalcPopupRect_MaxWidth() {
+    public void popupSpec_MaxWidth() {
         mMaxWidthPx = 200;
         // E.left = A.right = 0
         // E.top = A.bottom = 0
@@ -510,7 +511,7 @@ public final class AnchoredPopupWindowTest {
     }
 
     @Test
-    public void testCalcPopupRect_DesiredWidth() {
+    public void popupSpec_DesiredWidth() {
         mDesiredWidthPx = 200;
         // E.left = A.right = 0
         // E.top = A.bottom = 0
@@ -552,7 +553,7 @@ public final class AnchoredPopupWindowTest {
     }
 
     @Test
-    public void testCalcPopupRect_DesiredHeight() {
+    public void popupSpec_DesiredHeight() {
         mDesiredHeightPx = 500;
         // E.left = A.right = 0
         // E.top = A.bottom = 0
@@ -574,7 +575,7 @@ public final class AnchoredPopupWindowTest {
     }
 
     @Test
-    public void testCalcPopupRect_DesiredSize() {
+    public void popupSpec_DesiredSize() {
         mDesiredWidthPx = 200;
         mDesiredHeightPx = 500;
         // E.left = A.right = 0
@@ -597,7 +598,7 @@ public final class AnchoredPopupWindowTest {
     }
 
     @Test
-    public void testCalcPopupRect_PreferredHorizontalOrientationCenter() {
+    public void popupSpec_PreferredHorizontalOrientationCenter() {
         mPreferredHorizontalOrientation = HorizontalOrientation.CENTER;
 
         // E.left = (A.left + A.right) / 2 - w / 2 = (300 + 300) / 2 - 150 / 2 = 225
@@ -629,7 +630,7 @@ public final class AnchoredPopupWindowTest {
     }
 
     @Test
-    public void testCalcPopupRect_PreferredHorizontalOrientationLayoutDirection() {
+    public void popupSpec_PreferredHorizontalOrientationLayoutDirection() {
         mPreferredHorizontalOrientation = HorizontalOrientation.LAYOUT_DIRECTION;
 
         LocalizationUtils.setRtlForTesting(false);
@@ -654,7 +655,7 @@ public final class AnchoredPopupWindowTest {
     }
 
     @Test
-    public void testCalcPopupRect_PreferredVerticalOrientation() {
+    public void popupSpec_PreferredVerticalOrientation() {
         mPreferredVerticalOrientation = VerticalOrientation.ABOVE;
 
         // E.left = A.right = 0
@@ -694,7 +695,7 @@ public final class AnchoredPopupWindowTest {
     }
 
     @Test
-    public void testCalcPopupRect_PreferCurrentOrientation() {
+    public void popupSpec_PreferCurrentOrientation() {
         mPreferCurrentOrientation = true;
 
         mCurrentPositionBelow = true;
@@ -719,7 +720,7 @@ public final class AnchoredPopupWindowTest {
     }
 
     @Test
-    public void testCalcPopupRect_HorizontalOverlap() {
+    public void popupSpec_HorizontalOverlap() {
         mHorizontalOverlapAnchor = true;
         // E.left = A.left = 0
         // E.top = A.bottom = 200
@@ -740,7 +741,7 @@ public final class AnchoredPopupWindowTest {
     }
 
     @Test
-    public void testCalcPopupRect_VerticalOverlap() {
+    public void popupSpec_VerticalOverlap() {
         mVerticalOverlapAnchor = true;
         // E.left = A.right = 100
         // E.top = A.top = 400
@@ -761,7 +762,7 @@ public final class AnchoredPopupWindowTest {
     }
 
     @Test
-    public void testCalcPopupRect_SmartAnchorWithMaxWidth() {
+    public void popupSpec_SmartAnchorWithMaxWidth() {
         mHorizontalOverlapAnchor = false;
         mVerticalOverlapAnchor = true;
         // E.left = max(window.left, A.left - w) = max(0, 100-150) = 0
@@ -960,7 +961,7 @@ public final class AnchoredPopupWindowTest {
      */
     private void doTestAnchoredPopupAtRect(String testCase, Rect anchoredRect, Rect expectedRect) {
         PopupSpec popupSpec =
-                AnchoredPopupWindow.calculatePopupWindowSpec(
+                PopupSpec.calculatePopupWindowSpec(
                         mWindowRect,
                         anchoredRect,
                         mContentView,
