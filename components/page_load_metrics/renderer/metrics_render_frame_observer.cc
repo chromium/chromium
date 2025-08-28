@@ -418,12 +418,12 @@ void MetricsRenderFrameObserver::OnMainFrameViewportRectangleChanged(
   }
 }
 
-void MetricsRenderFrameObserver::OnMainFrameImageAdRectangleChanged(
+void MetricsRenderFrameObserver::OnMainFrameAdRectangleChanged(
     int element_id,
-    const gfx::Rect& image_ad_rect) {
+    const gfx::Rect& ad_rect) {
   if (page_timing_metrics_sender_) {
-    page_timing_metrics_sender_->OnMainFrameImageAdRectangleChanged(
-        element_id, image_ad_rect);
+    page_timing_metrics_sender_->OnMainFrameAdRectangleChanged(element_id,
+                                                               ad_rect);
   }
 }
 

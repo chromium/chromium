@@ -22,7 +22,7 @@ namespace {
 class MockFrameClient : public frame_test_helpers::TestWebFrameClient {
  public:
   MOCK_METHOD(void,
-              OnMainFrameImageAdRectangleChanged,
+              OnMainFrameAdRectangleChanged,
               (int element_dom_node_id, const gfx::Rect& content_rect),
               (override));
 };
@@ -77,8 +77,8 @@ TEST_F(DisplayAdElementMonitorTest, BasicReporting_InsertUpdateRemove) {
 
   // Expect the initial position report.
   EXPECT_CALL(MockClient(),
-              OnMainFrameImageAdRectangleChanged(ad_element->GetDomNodeId(),
-                                                 gfx::Rect(100, 50, 300, 250)));
+              OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
+                                            gfx::Rect(100, 50, 300, 250)));
   ad_element->SetIsAdRelated();
   UpdateLifecycle();
   testing::Mock::VerifyAndClearExpectations(&MockClient());
@@ -86,8 +86,8 @@ TEST_F(DisplayAdElementMonitorTest, BasicReporting_InsertUpdateRemove) {
   // Change the element's position and expect a new report with the updated
   // position.
   EXPECT_CALL(MockClient(),
-              OnMainFrameImageAdRectangleChanged(
-                  ad_element->GetDomNodeId(), gfx::Rect(200, 150, 300, 250)));
+              OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
+                                            gfx::Rect(200, 150, 300, 250)));
   ad_element->setAttribute(
       html_names::kStyleAttr,
       AtomicString("position:absolute; left:200px; top:150px; width:300px; "
@@ -98,7 +98,7 @@ TEST_F(DisplayAdElementMonitorTest, BasicReporting_InsertUpdateRemove) {
   // Remove the element and expect an empty rect report.
   const int dom_node_id = ad_element->GetDomNodeId();
   EXPECT_CALL(MockClient(),
-              OnMainFrameImageAdRectangleChanged(dom_node_id, gfx::Rect()));
+              OnMainFrameAdRectangleChanged(dom_node_id, gfx::Rect()));
   ad_element->remove();
   testing::Mock::VerifyAndClearExpectations(&MockClient());
 }
@@ -119,8 +119,8 @@ TEST_F(DisplayAdElementMonitorTest, ScrollingDoesNotSendNewReport) {
 
   // The first report should contain the ad's position in document coordinates.
   EXPECT_CALL(MockClient(),
-              OnMainFrameImageAdRectangleChanged(
-                  ad_element->GetDomNodeId(), gfx::Rect(100, 2050, 300, 250)));
+              OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
+                                            gfx::Rect(100, 2050, 300, 250)));
   ad_element->SetIsAdRelated();
   UpdateLifecycle();
   testing::Mock::VerifyAndClearExpectations(&MockClient());
@@ -129,7 +129,7 @@ TEST_F(DisplayAdElementMonitorTest, ScrollingDoesNotSendNewReport) {
   // viewport but not relative to the document. Expect that no new message is
   // sent because the reported rect is unchanged.
   EXPECT_CALL(MockClient(),
-              OnMainFrameImageAdRectangleChanged(testing::_, testing::_))
+              OnMainFrameAdRectangleChanged(testing::_, testing::_))
       .Times(0);
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, 500), mojom::blink::ScrollType::kProgrammatic);
@@ -174,8 +174,8 @@ TEST_F(DisplayAdElementMonitorTest, NestedAdElement) {
   // Ad's absolute X = iframe's left (100) + ad's left (10) = 110.
   // Ad's absolute Y = iframe's top (50) + ad's top (1500) = 1550.
   EXPECT_CALL(MockClient(),
-              OnMainFrameImageAdRectangleChanged(
-                  ad_element->GetDomNodeId(), gfx::Rect(110, 1550, 300, 250)));
+              OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
+                                            gfx::Rect(110, 1550, 300, 250)));
   ad_element->SetIsAdRelated();
   UpdateLifecycle();
   testing::Mock::VerifyAndClearExpectations(&MockClient());
@@ -185,8 +185,8 @@ TEST_F(DisplayAdElementMonitorTest, NestedAdElement) {
   // updated position.
   // New absolute Y = initial Y (1550) - iframe scroll (200) = 1350.
   EXPECT_CALL(MockClient(),
-              OnMainFrameImageAdRectangleChanged(
-                  ad_element->GetDomNodeId(), gfx::Rect(110, 1350, 300, 250)));
+              OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
+                                            gfx::Rect(110, 1350, 300, 250)));
   iframe_doc->View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, 200), mojom::blink::ScrollType::kProgrammatic);
   UpdateLifecycle();
@@ -210,7 +210,7 @@ TEST_F(DisplayAdElementMonitorTest, AdInitiallyOverlaidAndThenExposed) {
   // The ad is covered by the overlay div. Expect that no geometry report is
   // sent.
   EXPECT_CALL(MockClient(),
-              OnMainFrameImageAdRectangleChanged(testing::_, testing::_))
+              OnMainFrameAdRectangleChanged(testing::_, testing::_))
       .Times(0);
   ad_element->SetIsAdRelated();
   UpdateLifecycle();
@@ -219,7 +219,7 @@ TEST_F(DisplayAdElementMonitorTest, AdInitiallyOverlaidAndThenExposed) {
   // Expose the ad by removing the overlay. A report is not sent immediately
   // because the visibility check is throttled.
   EXPECT_CALL(MockClient(),
-              OnMainFrameImageAdRectangleChanged(testing::_, testing::_))
+              OnMainFrameAdRectangleChanged(testing::_, testing::_))
       .Times(0);
   overlay_element->remove();
   UpdateLifecycle();
@@ -228,8 +228,8 @@ TEST_F(DisplayAdElementMonitorTest, AdInitiallyOverlaidAndThenExposed) {
   // Fast-forward time past the throttle delay. The monitor should now detect
   // the exposed ad and send a report with its correct geometry.
   EXPECT_CALL(MockClient(),
-              OnMainFrameImageAdRectangleChanged(ad_element->GetDomNodeId(),
-                                                 gfx::Rect(100, 50, 300, 250)));
+              OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
+                                            gfx::Rect(100, 50, 300, 250)));
   task_environment_.FastForwardBy(base::Seconds(1));
   UpdateLifecycle();
   testing::Mock::VerifyAndClearExpectations(&MockClient());
@@ -255,8 +255,8 @@ TEST_F(DisplayAdElementMonitorTest,
   // it's assumed to be visible by default. A report with its geometry is
   // expected.
   EXPECT_CALL(MockClient(),
-              OnMainFrameImageAdRectangleChanged(
-                  ad_element->GetDomNodeId(), gfx::Rect(100, 700, 300, 250)));
+              OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
+                                            gfx::Rect(100, 700, 300, 250)));
   ad_element->SetIsAdRelated();
   UpdateLifecycle();
   testing::Mock::VerifyAndClearExpectations(&MockClient());
@@ -265,7 +265,7 @@ TEST_F(DisplayAdElementMonitorTest,
   // The overlay check will now perform a hit-test. The ad is now detected as
   // invisible, so an empty rect should be reported to signal its removal from
   // visibility.
-  EXPECT_CALL(MockClient(), OnMainFrameImageAdRectangleChanged(
+  EXPECT_CALL(MockClient(), OnMainFrameAdRectangleChanged(
                                 ad_element->GetDomNodeId(), gfx::Rect()));
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, 200), mojom::blink::ScrollType::kProgrammatic);
@@ -313,7 +313,7 @@ TEST_F(DisplayAdElementMonitorTest,
   // Initially, the iframe (and the ad within it) is covered by the overlay.
   // The hit-test should detect this, and no geometry report should be sent.
   EXPECT_CALL(MockClient(),
-              OnMainFrameImageAdRectangleChanged(testing::_, testing::_))
+              OnMainFrameAdRectangleChanged(testing::_, testing::_))
       .Times(0);
   ad_element->SetIsAdRelated();
   UpdateLifecycle();
@@ -326,8 +326,8 @@ TEST_F(DisplayAdElementMonitorTest,
   // Ad's absolute X = iframe's left (100) + ad's left (10) = 110.
   // Ad's absolute Y = iframe's top (50) + ad's top (20) = 70.
   EXPECT_CALL(MockClient(),
-              OnMainFrameImageAdRectangleChanged(ad_element->GetDomNodeId(),
-                                                 gfx::Rect(110, 70, 300, 250)));
+              OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
+                                            gfx::Rect(110, 70, 300, 250)));
   overlay_element->remove();
   task_environment_.FastForwardBy(base::Seconds(1));
   UpdateLifecycle();

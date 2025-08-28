@@ -71,11 +71,8 @@ void DisplayAdElementMonitor::OnElementRemoved() {
 
   if (element_->InActiveDocument() && !last_reported_rect_.IsEmpty()) {
     gfx::Rect empty_rect;
-    element_->GetDocument()
-        .GetFrame()
-        ->Client()
-        ->OnMainFrameImageAdRectangleChanged(element_->GetDomNodeId(),
-                                             empty_rect);
+    element_->GetDocument().GetFrame()->Client()->OnMainFrameAdRectangleChanged(
+        element_->GetDomNodeId(), empty_rect);
     last_reported_rect_ = empty_rect;
   }
 
@@ -143,7 +140,7 @@ void DisplayAdElementMonitor::DidFinishLifecycleUpdate(
   }
 
   if (last_reported_rect_ != rect_to_report) {
-    local_root_main_frame.Client()->OnMainFrameImageAdRectangleChanged(
+    local_root_main_frame.Client()->OnMainFrameAdRectangleChanged(
         element_->GetDomNodeId(), rect_to_report);
     last_reported_rect_ = rect_to_report;
   }

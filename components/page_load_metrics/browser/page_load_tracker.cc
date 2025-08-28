@@ -1175,10 +1175,10 @@ void PageLoadTracker::OnMainFrameViewportRectChanged(
   }
 }
 
-void PageLoadTracker::OnMainFrameImageAdRectsChanged(
-    const base::flat_map<int, gfx::Rect>& main_frame_image_ad_rects) {
+void PageLoadTracker::OnMainFrameAdRectsChanged(
+    const base::flat_map<int, gfx::Rect>& main_frame_ad_rects) {
   for (const auto& observer : observers_) {
-    observer->OnMainFrameImageAdRectsChanged(main_frame_image_ad_rects);
+    observer->OnMainFrameAdRectsChanged(main_frame_ad_rects);
   }
 }
 

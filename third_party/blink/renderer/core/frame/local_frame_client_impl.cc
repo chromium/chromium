@@ -1151,12 +1151,11 @@ void LocalFrameClientImpl::OnMainFrameViewportRectangleChanged(
       main_frame_viewport_rect);
 }
 
-void LocalFrameClientImpl::OnMainFrameImageAdRectangleChanged(
+void LocalFrameClientImpl::OnMainFrameAdRectangleChanged(
     DOMNodeId element_id,
-    const gfx::Rect& image_ad_rect) {
+    const gfx::Rect& ad_rect) {
   DCHECK(web_frame_->Client());
-  web_frame_->Client()->OnMainFrameImageAdRectangleChanged(element_id,
-                                                           image_ad_rect);
+  web_frame_->Client()->OnMainFrameAdRectangleChanged(element_id, ad_rect);
 }
 
 void LocalFrameClientImpl::OnOverlayPopupAdDetected() {

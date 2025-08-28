@@ -89,8 +89,7 @@ class PageTimingMetricsSender {
       const gfx::Rect& main_frame_intersection_rect);
   void OnMainFrameViewportRectangleChanged(
       const gfx::Rect& main_frame_viewport_rect);
-  void OnMainFrameImageAdRectangleChanged(int element_id,
-                                          const gfx::Rect& image_ad_rect);
+  void OnMainFrameAdRectangleChanged(int element_id, const gfx::Rect& ad_rect);
 
   void DidObserveUserInteraction(base::TimeTicks max_event_start,
                                  base::TimeTicks max_event_queued_main_thread,

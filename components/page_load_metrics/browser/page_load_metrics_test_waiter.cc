@@ -82,8 +82,8 @@ class WaiterMetricsObserver final : public PageLoadMetricsObserver {
       const gfx::Rect& main_frame_intersection_rect) override;
   void OnMainFrameViewportRectChanged(
       const gfx::Rect& main_frame_viewport_rect) override;
-  void OnMainFrameImageAdRectsChanged(
-      const base::flat_map<int, gfx::Rect>& main_frame_image_ad_rects) override;
+  void OnMainFrameAdRectsChanged(
+      const base::flat_map<int, gfx::Rect>& main_frame_ad_rects) override;
   void OnV8MemoryChanged(
       const std::vector<MemoryUpdate>& memory_updates) override;
   void OnPageRenderDataUpdate(const mojom::FrameRenderDataUpdate& render_data,
@@ -181,8 +181,8 @@ void PageLoadMetricsTestWaiter::SetMainFrameIntersectionExpectation() {
   expected_.did_set_main_frame_intersection_ = true;
 }
 
-void PageLoadMetricsTestWaiter::SetMainFrameImageAdRectsExpectation() {
-  expected_.did_observed_main_frame_image_ad_rects_ = true;
+void PageLoadMetricsTestWaiter::SetMainFrameAdRectsExpectation() {
+  expected_.did_observed_main_frame_ad_rects_ = true;
 }
 
 void PageLoadMetricsTestWaiter::AddMainFrameViewportRectExpectation(
@@ -286,9 +286,9 @@ bool PageLoadMetricsTestWaiter::DidObserveWebFeature(
        static_cast<blink::UseCounterFeature::EnumValue>(feature)});
 }
 
-bool PageLoadMetricsTestWaiter::DidObserveMainFrameImageAdRect(
+bool PageLoadMetricsTestWaiter::DidObserveMainFrameAdRect(
     const gfx::Rect& rect) const {
-  for (auto& [id, observed_rect] : main_frame_image_ad_rects_) {
+  for (auto& [id, observed_rect] : main_frame_ad_rects_) {
     if (observed_rect == rect) {
       return true;
     }
@@ -463,16 +463,16 @@ void PageLoadMetricsTestWaiter::OnMainFrameViewportRectChanged(
     run_loop_->Quit();
 }
 
-void PageLoadMetricsTestWaiter::OnMainFrameImageAdRectsChanged(
-    const base::flat_map<int, gfx::Rect>& main_frame_image_ad_rects) {
-  if (main_frame_image_ad_rects.empty()) {
+void PageLoadMetricsTestWaiter::OnMainFrameAdRectsChanged(
+    const base::flat_map<int, gfx::Rect>& main_frame_ad_rects) {
+  if (main_frame_ad_rects.empty()) {
     return;
   }
 
-  observed_.did_observed_main_frame_image_ad_rects_ = true;
+  observed_.did_observed_main_frame_ad_rects_ = true;
 
-  for (auto& [id, rect] : main_frame_image_ad_rects) {
-    main_frame_image_ad_rects_[id] = rect;
+  for (auto& [id, rect] : main_frame_ad_rects) {
+    main_frame_ad_rects_[id] = rect;
   }
 
   if (ExpectationsSatisfied() && run_loop_) {
@@ -713,13 +713,12 @@ bool PageLoadMetricsTestWaiter::MainFrameViewportRectExpectationsSatisfied()
              expected_.main_frame_viewport_rect_;
 }
 
-bool PageLoadMetricsTestWaiter::MainFrameImageAdRectsExpectationsSatisfied()
-    const {
-  if (!expected_.did_observed_main_frame_image_ad_rects_) {
+bool PageLoadMetricsTestWaiter::MainFrameAdRectsExpectationsSatisfied() const {
+  if (!expected_.did_observed_main_frame_ad_rects_) {
     return true;
   }
 
-  return observed_.did_observed_main_frame_image_ad_rects_;
+  return observed_.did_observed_main_frame_ad_rects_;
 }
 
 bool PageLoadMetricsTestWaiter::MemoryUpdateExpectationsSatisfied() const {
@@ -795,7 +794,7 @@ bool PageLoadMetricsTestWaiter::ExpectationsSatisfied() const {
          CpuTimeExpectationsSatisfied() &&
          MainFrameIntersectionExpectationsSatisfied() &&
          MainFrameViewportRectExpectationsSatisfied() &&
-         MainFrameImageAdRectsExpectationsSatisfied() &&
+         MainFrameAdRectsExpectationsSatisfied() &&
          MemoryUpdateExpectationsSatisfied() &&
          LayoutShiftExpectationsSatisfied() &&
          NumInteractionsExpectationsSatisfied() &&
@@ -928,10 +927,10 @@ void WaiterMetricsObserver::OnMainFrameViewportRectChanged(
   }
 }
 
-void WaiterMetricsObserver::OnMainFrameImageAdRectsChanged(
-    const base::flat_map<int, gfx::Rect>& main_frame_image_ad_rects) {
+void WaiterMetricsObserver::OnMainFrameAdRectsChanged(
+    const base::flat_map<int, gfx::Rect>& main_frame_ad_rects) {
   if (waiter_) {
-    waiter_->OnMainFrameImageAdRectsChanged(main_frame_image_ad_rects);
+    waiter_->OnMainFrameAdRectsChanged(main_frame_ad_rects);
   }
 }
 

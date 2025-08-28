@@ -273,9 +273,9 @@ void PageAdDensityTracker::UpdateMainFrameViewportRect(const gfx::Rect& rect) {
   CalculateViewportAdDensity();
 }
 
-void PageAdDensityTracker::UpdateMainFrameImageAdRects(
-    const base::flat_map<int, gfx::Rect>& main_frame_image_ad_rects) {
-  for (auto const& [element_id, rect] : main_frame_image_ad_rects) {
+void PageAdDensityTracker::UpdateMainFrameAdRects(
+    const base::flat_map<int, gfx::Rect>& main_frame_ad_rects) {
+  for (auto const& [element_id, rect] : main_frame_ad_rects) {
     RectId rect_id = RectId(RectType::kElement, element_id);
 
     RemoveRect(rect_id, /*recalculate_viewport_density=*/false);

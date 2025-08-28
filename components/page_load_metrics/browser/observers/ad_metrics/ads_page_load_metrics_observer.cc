@@ -752,10 +752,9 @@ void AdsPageLoadMetricsObserver::OnMainFrameViewportRectChanged(
       main_frame_viewport_rect);
 }
 
-void AdsPageLoadMetricsObserver::OnMainFrameImageAdRectsChanged(
-    const base::flat_map<int, gfx::Rect>& main_frame_image_ad_rects) {
-  page_ad_density_tracker_.UpdateMainFrameImageAdRects(
-      main_frame_image_ad_rects);
+void AdsPageLoadMetricsObserver::OnMainFrameAdRectsChanged(
+    const base::flat_map<int, gfx::Rect>& main_frame_ad_rects) {
+  page_ad_density_tracker_.UpdateMainFrameAdRects(main_frame_ad_rects);
 }
 
 // TODO(crbug.com/40727873): Evaluate imposing width requirements

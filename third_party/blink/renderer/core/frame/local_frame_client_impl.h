@@ -260,9 +260,8 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   void OnMainFrameViewportRectangleChanged(
       const gfx::Rect& main_frame_viewport_rect) override;
 
-  void OnMainFrameImageAdRectangleChanged(
-      DOMNodeId element_id,
-      const gfx::Rect& image_ad_rect) override;
+  void OnMainFrameAdRectangleChanged(DOMNodeId element_id,
+                                     const gfx::Rect& ad_rect) override;
 
   void OnOverlayPopupAdDetected() override;
 

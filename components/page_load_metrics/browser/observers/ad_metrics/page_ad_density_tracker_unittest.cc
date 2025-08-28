@@ -396,7 +396,7 @@ TEST(PageAdDensityTrackerTest, AverageViewportAdDensity_ImageAdRects_Simple) {
   rects.emplace(1, gfx::Rect(0, 0, 50, 50));
   rects.emplace(2, gfx::Rect(0, 50, 100, 50));
 
-  tracker.UpdateMainFrameImageAdRects(rects);
+  tracker.UpdateMainFrameAdRects(rects);
 
   task_environment.FastForwardBy(base::Seconds(1));
   tracker.Finalize();
@@ -416,7 +416,7 @@ TEST(PageAdDensityTrackerTest, AverageViewportAdDensity_ImageAdRects_Removal) {
     rects.emplace(1, gfx::Rect(0, 0, 50, 50));
     rects.emplace(2, gfx::Rect(0, 50, 100, 50));
 
-    tracker.UpdateMainFrameImageAdRects(rects);
+    tracker.UpdateMainFrameAdRects(rects);
   }
   task_environment.FastForwardBy(base::Seconds(1));
 
@@ -424,7 +424,7 @@ TEST(PageAdDensityTrackerTest, AverageViewportAdDensity_ImageAdRects_Removal) {
     base::flat_map<int, gfx::Rect> rects;
     rects.emplace(2, gfx::Rect());
 
-    tracker.UpdateMainFrameImageAdRects(rects);
+    tracker.UpdateMainFrameAdRects(rects);
   }
   task_environment.FastForwardBy(base::Seconds(1));
 
@@ -446,7 +446,7 @@ TEST(PageAdDensityTrackerTest,
   base::flat_map<int, gfx::Rect> rects;
   rects.emplace(1, gfx::Rect(0, 50, 100, 50));
 
-  tracker.UpdateMainFrameImageAdRects(rects);
+  tracker.UpdateMainFrameAdRects(rects);
 
   task_environment.FastForwardBy(base::Seconds(1));
 

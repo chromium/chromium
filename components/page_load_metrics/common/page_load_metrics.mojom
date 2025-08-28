@@ -237,11 +237,11 @@ struct FrameMetadata {
   // hasn't changed).
   gfx.mojom.Rect? main_frame_viewport_rect;
 
-  // The image ad rectangles within the main frame. Empty rectangles are used to
-  // signal the removal of the rectangle. The map keys are the element ids. This
-  // is only populated for the main frame, for the first time
-  // each rectangle is initially computed and for any subsequent changes.
-  map<int32, gfx.mojom.Rect> main_frame_image_ad_rects;
+  // A map of ad element node IDs to their bounding rectangles in the main
+  // frame's coordinate system. Empty rectangles are used to signal the removal
+  // of the element. This is only populated for the main frame, for the first
+  // time each rectangle is initially computed and for any subsequent changes.
+  map<int32, gfx.mojom.Rect> main_frame_ad_rects;
 
   // Detected versions of JavaScript frameworks in the page.
   blink.mojom.JavaScriptFrameworkDetectionResult framework_detection_result;

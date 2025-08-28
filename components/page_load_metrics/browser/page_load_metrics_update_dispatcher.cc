@@ -758,8 +758,8 @@ void PageLoadMetricsUpdateDispatcher::UpdateMainFrameMetadata(
                                          main_frame_metadata_);
     MaybeUpdateMainFrameViewportRect(main_frame_metadata_);
 
-    client_->OnMainFrameImageAdRectsChanged(
-        main_frame_metadata_->main_frame_image_ad_rects);
+    client_->OnMainFrameAdRectsChanged(
+        main_frame_metadata_->main_frame_ad_rects);
   }
 }
 

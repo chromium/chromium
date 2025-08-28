@@ -514,10 +514,11 @@ class PageLoadMetricsObserverInterface {
   virtual void OnMainFrameViewportRectChanged(
       const gfx::Rect& main_frame_viewport_rect) = 0;
 
-  // Called when an image ad rectangle changed. An empty `image_ad_rect` is used
-  // to signal the removal of the rectangle. Only invoked on the main frame.
-  virtual void OnMainFrameImageAdRectsChanged(
-      const base::flat_map<int, gfx::Rect>& main_frame_image_ad_rects) = 0;
+  // Called when the geometry of ad elements changed. The key of
+  // `main_frame_ad_rects` is the element's node ID. Only invoked on the main
+  // frame.
+  virtual void OnMainFrameAdRectsChanged(
+      const base::flat_map<int, gfx::Rect>& main_frame_ad_rects) = 0;
 
   // Invoked when the UMA metrics subsystem is persisting metrics as the
   // application goes into the background, on platforms where the browser

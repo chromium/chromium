@@ -342,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  waiter->SetMainFrameImageAdRectsExpectation();
+  waiter->SetMainFrameAdRectsExpectation();
 
   GURL image_url =
       embedded_test_server()->GetURL("b.com", "/ads_observer/pixel.png");
@@ -362,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 
   waiter->Wait();
 
-  EXPECT_TRUE(waiter->DidObserveMainFrameImageAdRect(gfx::Rect(0, 0, 5, 5)));
+  EXPECT_TRUE(waiter->DidObserveMainFrameAdRect(gfx::Rect(0, 0, 5, 5)));
 
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));

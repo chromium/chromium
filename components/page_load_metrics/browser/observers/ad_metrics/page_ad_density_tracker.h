@@ -77,8 +77,8 @@ class PageAdDensityTracker {
   void UpdateMainFrameViewportRect(const gfx::Rect& rect);
 
   // Operations to track the main frame ad rectangles' position and dimensions.
-  void UpdateMainFrameImageAdRects(
-      const base::flat_map<int, gfx::Rect>& main_frame_image_ad_rects);
+  void UpdateMainFrameAdRects(
+      const base::flat_map<int, gfx::Rect>& main_frame_ad_rects);
 
   // Returns the density by height, as a value from 0-100. If the density
   // calculation fails (i.e. no main frame size), this returns -1. Percentage
