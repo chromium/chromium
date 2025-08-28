@@ -62,7 +62,7 @@ build_webui_tests("build") {
     "update_content_selection_test.ts",
     "update_content_selection_with_highlights_test.ts",
     "update_content_test.ts",
-    "voice_language_util_test.ts",
+    "voice_language_conversions_test.ts",
     "voice_notification_manager_test.ts",
     "voice_language_controller_test.ts",
     "voice_language_model_test.ts",

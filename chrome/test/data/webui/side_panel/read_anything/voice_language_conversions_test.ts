@@ -9,7 +9,7 @@ import {assertDeepEquals, assertEquals} from 'chrome-untrusted://webui-test/chai
 import {createSpeechSynthesisVoice} from './common.js';
 
 
-suite('voice and language utils', () => {
+suite('voice and language conversions', () => {
   test('mojoVoicePackStatusToVoicePackStatusEnum', () => {
     // Success codes
     assertEquals(

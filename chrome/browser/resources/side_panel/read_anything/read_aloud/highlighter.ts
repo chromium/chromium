@@ -6,7 +6,6 @@ import {assert} from '//resources/js/assert.js';
 
 import {isRectVisible} from '../common.js';
 import {NodeStore} from '../node_store.js';
-import {isEspeak} from '../voice_language_util.js';
 
 import {getReadAloudModel} from './read_aloud_model_browser_proxy.js';
 import type {ReadAloudModelBrowserProxy} from './read_aloud_model_browser_proxy.js';
@@ -14,6 +13,7 @@ import {AxReadAloudNode} from './read_aloud_types.js';
 import type {Segment} from './read_aloud_types.js';
 import {getCurrentSpeechRate, isInvalidHighlightForWordHighlighting} from './speech_presentation_rules.js';
 import {VoiceLanguageController} from './voice_language_controller.js';
+import {isEspeak} from './voice_language_conversions.js';
 import {WordBoundaries} from './word_boundaries.js';
 
 export const previousReadHighlightClass = 'previous-read-highlight';

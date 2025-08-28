@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {VoiceClientSideStatusCode, VoicePackStatus} from '../voice_language_util.js';
+import type {VoiceClientSideStatusCode, VoicePackStatus} from './voice_language_conversions.js';
 
 // Holds state around languages and associated voices used by read aloud.
 export class VoiceLanguageModel {

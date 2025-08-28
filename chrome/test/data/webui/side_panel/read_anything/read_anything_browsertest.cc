@@ -76,8 +76,9 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoiceSelectionMenu) {
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoiceLanguageUtil) {
-  RunSidePanelTest("side_panel/read_anything/voice_language_util_test.js",
-                   "mocha.run()");
+  RunSidePanelTest(
+      "side_panel/read_anything/voice_language_conversions_test.js",
+      "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, KeyboardUtil) {

@@ -4,7 +4,7 @@
 
 import {MetricsBrowserProxyImpl, ReadAnythingSpeechError, ReadAnythingVoiceType} from './metrics_browser_proxy.js';
 import type {MetricsBrowserProxy, ReadAloudSettingsChange, ReadAnythingSettingsChange} from './metrics_browser_proxy.js';
-import {isEspeak, isNatural} from './voice_language_util.js';
+import {isEspeak, isNatural} from './read_aloud/voice_language_conversions.js';
 
 export enum TimeFrom {
   APP = 'App',

@@ -30,7 +30,7 @@ import {VoiceLanguageController} from './read_aloud/voice_language_controller.js
 import type {VoiceLanguageListener} from './read_aloud/voice_language_controller.js';
 import {ReadAnythingLogger, TimeFrom} from './read_anything_logger.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
-import {VoiceNotificationManager} from './voice_notification_manager.js';
+import {VoiceNotificationManager} from './read_aloud/voice_notification_manager.js';
 
 const AppElementBase = WebUiListenerMixinLit(CrLitElement);
 

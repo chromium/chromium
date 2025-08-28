@@ -23,12 +23,12 @@ import {ReadAloudSettingsChange} from './metrics_browser_proxy.js';
 import {ReadAnythingLogger} from './read_anything_logger.js';
 // clang-format off
 // <if expr="not is_chromeos">
-import {isGoogle} from './voice_language_util.js';
+import {isGoogle} from './read_aloud/voice_language_conversions.js';
 // </if>
 // clang-format on
-import {areVoicesEqual, convertLangOrLocaleForVoicePackManager, isNatural, NotificationType} from './voice_language_util.js';
-import {VoiceNotificationManager} from './voice_notification_manager.js';
-import type {VoiceNotificationListener} from './voice_notification_manager.js';
+import {VoiceNotificationManager} from './read_aloud/voice_notification_manager.js';
+import type {VoiceNotificationListener} from './read_aloud/voice_notification_manager.js';
+import {areVoicesEqual, convertLangOrLocaleForVoicePackManager, isNatural, NotificationType} from './read_aloud/voice_language_conversions.js';
 import {getCss} from './voice_selection_menu.css.js';
 import {getHtml} from './voice_selection_menu.html.js';
 

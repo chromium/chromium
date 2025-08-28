@@ -49,7 +49,9 @@ build_webui("build") {
     "read_aloud/speech_presentation_rules.ts",
     "read_aloud/word_boundaries.ts",
     "read_aloud/voice_language_controller.ts",
+    "read_aloud/voice_language_conversions.ts",
     "read_aloud/voice_language_model.ts",
+    "read_aloud/voice_notification_manager.ts",
     "metrics_browser_proxy.ts",
     "read_aloud/text_segmenter.ts",
     "read_anything.ts",
@@ -57,8 +59,6 @@ build_webui("build") {
     "read_anything_toolbar.html.ts",
     "read_anything_toolbar.ts",
     "speech_browser_proxy.ts",
-    "voice_language_util.ts",
-    "voice_notification_manager.ts",
     "voice_selection_menu.html.ts",
     "voice_selection_menu.ts",
   ]

@@ -23,9 +23,9 @@ import {ToolbarEvent} from './common.js';
 import {getCss} from './language_menu.css.js';
 import {getHtml} from './language_menu.html.js';
 import type {LanguageToastElement} from './language_toast.js';
-import {AVAILABLE_GOOGLE_TTS_LOCALES, getVoicePackConvertedLangIfExists, NotificationType} from './voice_language_util.js';
-import type {VoiceNotificationListener} from './voice_notification_manager.js';
-import {VoiceNotificationManager} from './voice_notification_manager.js';
+import {AVAILABLE_GOOGLE_TTS_LOCALES, getVoicePackConvertedLangIfExists, NotificationType} from './read_aloud/voice_language_conversions.js';
+import type {VoiceNotificationListener} from './read_aloud/voice_notification_manager.js';
+import {VoiceNotificationManager} from './read_aloud/voice_notification_manager.js';
 
 export interface LanguageMenuElement {
   $: {

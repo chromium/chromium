@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getNotification, NotificationType} from './voice_language_util.js';
-import type {VoiceClientSideStatusCode} from './voice_language_util.js';
+import {getNotification, NotificationType} from './voice_language_conversions.js';
+import type {VoiceClientSideStatusCode} from './voice_language_conversions.js';
 
 export interface VoiceNotificationListener {
   // Listeners should notify via their UI of language pack status changes.
