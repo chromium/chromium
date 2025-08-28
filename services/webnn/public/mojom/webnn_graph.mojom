@@ -319,6 +319,8 @@ struct ElementWiseUnary {
     kRoundEven,
     kSin,
     kTan,
+    kIsNaN,
+    kIsInfinite,
     kLogicalNot,
     kIdentity,
     kSqrt,

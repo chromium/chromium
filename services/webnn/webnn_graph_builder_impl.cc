@@ -822,6 +822,20 @@ bool OperationValidationContext::ValidateUnaryOperation(
     // The data type is not in the constraint.
     return false;
   }
+
+  if constexpr (std::is_same_v<Operation, mojom::ElementWiseUnary>) {
+    if (IsLogicalElementWiseUnary(operation.kind)) {
+      // For logical unary operations, output must be uint8 but shape should
+      // match input.
+      if (output->descriptor.data_type() != OperandDataType::kUint8) {
+        return false;
+      }
+      return output->descriptor.shape() == input->descriptor.shape();
+    }
+  }
+
+  // For all other operations, output descriptor should match input descriptor
+  // exactly.
   return output->descriptor == input->descriptor;
 }
 
@@ -1299,6 +1313,14 @@ bool OperationValidationContext::ValidateElementWiseUnary(
     case mojom::ElementWiseUnary::Kind::kLog:
       return ValidateUnaryOperation(
           operation, context_properties_->data_type_limits.log_input,
+          operation_id);
+    case mojom::ElementWiseUnary::Kind::kIsNaN:
+      return ValidateUnaryOperation(
+          operation, context_properties_->data_type_limits.is_nan_input,
+          operation_id);
+    case mojom::ElementWiseUnary::Kind::kIsInfinite:
+      return ValidateUnaryOperation(
+          operation, context_properties_->data_type_limits.is_infinite_input,
           operation_id);
     case mojom::ElementWiseUnary::Kind::kLogicalNot:
       return ValidateUnaryOperation(

@@ -247,7 +247,8 @@ class GraphBuilderOrt {
   void AddEluOperation(const mojom::Elu& elu);
   void AddLogicalBinaryOperation(const mojom::ElementWiseBinary& logical_binary,
                                  base::cstring_view op_type);
-  void AddLogicalNotOperation(const mojom::ElementWiseUnary& logical_not);
+  void AddLogicalUnaryOperation(const mojom::ElementWiseUnary& logical_unary,
+                                base::cstring_view op_type);
   void AddLogicalNotEqualOperation(const mojom::ElementWiseBinary& not_equal);
   void AddElementWiseBinaryOperation(
       const mojom::ElementWiseBinary& element_wise_binary);

@@ -293,6 +293,8 @@ dictionary MLTriangularOptions : MLOperatorOptions {
   [RaisesException] MLOperand tan(MLOperand x, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand erf(MLOperand x, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand identity(MLOperand x, optional MLOperatorOptions options = {});
+  [RaisesException] MLOperand isNaN(MLOperand x, optional MLOperatorOptions options = {});
+  [RaisesException] MLOperand isInfinite(MLOperand x, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand logicalNot(MLOperand x, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand reciprocal(MLOperand x, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand sqrt(MLOperand x, optional MLOperatorOptions options = {});

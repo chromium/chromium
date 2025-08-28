@@ -237,6 +237,10 @@ std::string OpKindToString(mojom::ElementWiseUnary::Kind kind) {
       return ops::kSin;
     case mojom::ElementWiseUnary::Kind::kTan:
       return ops::kTan;
+    case mojom::ElementWiseUnary::Kind::kIsNaN:
+      return ops::kIsNaN;
+    case mojom::ElementWiseUnary::Kind::kIsInfinite:
+      return ops::kIsInfinite;
     case mojom::ElementWiseUnary::Kind::kLogicalNot:
       return ops::kLogicalNot;
     case mojom::ElementWiseUnary::Kind::kIdentity:
@@ -359,6 +363,17 @@ bool IsLogicalElementWiseBinary(mojom::ElementWiseBinary::Kind kind) {
     case mojom::ElementWiseBinary::Kind::kLogicalOr:
     case mojom::ElementWiseBinary::Kind::kLogicalXor:
       return true;
+  }
+}
+
+bool IsLogicalElementWiseUnary(mojom::ElementWiseUnary::Kind kind) {
+  switch (kind) {
+    case mojom::ElementWiseUnary::Kind::kIsNaN:
+    case mojom::ElementWiseUnary::Kind::kIsInfinite:
+    case mojom::ElementWiseUnary::Kind::kLogicalNot:
+      return true;
+    default:
+      return false;
   }
 }
 

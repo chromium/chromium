@@ -200,6 +200,8 @@ dictionary MLOpSupportLimits {
   MLBinarySupportLimits logicalOr;
   MLBinarySupportLimits logicalXor;
   MLLogicalNotSupportLimits logicalNot;
+  MLLogicalNotSupportLimits isNaN;
+  MLLogicalNotSupportLimits isInfinite;
 
   // Element-wise unary ops.
   MLSingleInputSupportLimits abs;

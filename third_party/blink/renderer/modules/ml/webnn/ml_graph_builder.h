@@ -252,6 +252,12 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* identity(MLOperand* input,
                       MLOperatorOptions* options,
                       ExceptionState& exception_state);
+  MLOperand* isNaN(MLOperand* input,
+                   MLOperatorOptions* options,
+                   ExceptionState& exception_state);
+  MLOperand* isInfinite(MLOperand* input,
+                        MLOperatorOptions* options,
+                        ExceptionState& exception_state);
   MLOperand* logicalNot(MLOperand* input,
                         MLOperatorOptions* options,
                         ExceptionState& exception_state);

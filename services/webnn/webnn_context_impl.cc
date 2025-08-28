@@ -308,6 +308,10 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
       .RetainAll(DataTypeConstraint::kUint8);
   backend_context_properties.data_type_limits.logical_not_input.data_types
       .RetainAll(DataTypeConstraint::kUint8);
+  backend_context_properties.data_type_limits.is_nan_input.data_types.RetainAll(
+      DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.is_infinite_input.data_types
+      .RetainAll(DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.logical_output.RetainAll(
       DataTypeConstraint::kUint8);
   backend_context_properties.data_type_limits.abs_input.data_types.RetainAll(

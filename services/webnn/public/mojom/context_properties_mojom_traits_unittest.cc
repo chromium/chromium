@@ -82,6 +82,8 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
        /*logical_or_input=*/{{webnn::OperandDataType::kFloat16}, kMaxRank},
        /*logical_xor_input=*/{{webnn::OperandDataType::kFloat16}, kMaxRank},
        /*logical_not_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+       /*is_nan_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+       /*is_infinite_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
        /*logical_output=*/{webnn::OperandDataType::kUint64},
        /*abs_input=*/
        {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
@@ -241,7 +243,7 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}});
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}});
 
   EXPECT_TRUE(
       mojo::test::SerializeAndDeserialize<webnn::mojom::ContextProperties>(

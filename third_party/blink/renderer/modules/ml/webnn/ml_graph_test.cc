@@ -618,6 +618,8 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
          /*logical_or_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
          /*logical_xor_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
          /*logical_not_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
+         /*is_nan_input*/ {webnn::SupportedDataTypes::All(), kMaxRank},
+         /*is_infinite_input*/ {webnn::SupportedDataTypes::All(), kMaxRank},
          /*logical_output=*/webnn::SupportedDataTypes::All(),
          /*abs_input=*/
          {webnn::SupportedDataTypes::All(), kMaxRank},

@@ -611,6 +611,8 @@ ContextProperties GetContextPropertiesForTesting() {
        /*logical_or_input=*/{DataTypeConstraint::kUint8, kMaxRank},
        /*logical_xor_input=*/{DataTypeConstraint::kUint8, kMaxRank},
        /*logical_not_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*is_nan_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*is_infinite_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*logical_output=*/SupportedDataTypes::All(),
        /*abs_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*ceil_input=*/{SupportedDataTypes::All(), kMaxRank},

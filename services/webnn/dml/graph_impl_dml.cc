@@ -3054,6 +3054,22 @@ void CreateOperatorNodeForElementWiseUnary(
                                         DML_OPERATOR_ELEMENT_WISE_LOG>(
           operands, operation, graph_builder, id_to_node_output_map);
     }
+    case mojom::ElementWiseUnary::Kind::kIsNaN: {
+      CHECK(context_properties.data_type_limits.is_nan_input.data_types.Has(
+          input_data_type));
+      return CreateOperatorNodeForUnary<DML_ELEMENT_WISE_IS_NAN_OPERATOR_DESC,
+                                        DML_OPERATOR_ELEMENT_WISE_IS_NAN>(
+          operands, operation, graph_builder, id_to_node_output_map);
+    }
+    case mojom::ElementWiseUnary::Kind::kIsInfinite: {
+      CHECK(
+          context_properties.data_type_limits.is_infinite_input.data_types.Has(
+              input_data_type));
+      return CreateOperatorNodeForUnary<
+          DML_ELEMENT_WISE_IS_INFINITY_OPERATOR_DESC,
+          DML_OPERATOR_ELEMENT_WISE_IS_INFINITY>(
+          operands, operation, graph_builder, id_to_node_output_map);
+    }
     case mojom::ElementWiseUnary::Kind::kLogicalNot: {
       CHECK(
           context_properties.data_type_limits.logical_not_input.data_types.Has(

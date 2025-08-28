@@ -53,6 +53,8 @@ constexpr base::cstring_view kOpTypeCos = "Cos";
 constexpr base::cstring_view kOpTypeExp = "Exp";
 constexpr base::cstring_view kOpTypeFloor = "Floor";
 constexpr base::cstring_view kOpTypeLog = "Log";
+constexpr base::cstring_view kOpTypeIsNaN = "IsNaN";
+constexpr base::cstring_view kOpTypeIsInfinite = "IsInf";
 constexpr base::cstring_view kOpTypeLogicalNot = "Not";
 constexpr base::cstring_view kOpTypeNeg = "Neg";
 constexpr base::cstring_view kOpTypeRoundEven = "Round";
@@ -1267,27 +1269,33 @@ void GraphBuilderOrt::AddLogicalBinaryOperation(
   InsertCastNode(bool_output, output, WebnnToOnnxDataType(output_data_type));
 }
 
-void GraphBuilderOrt::AddLogicalNotOperation(
-    const mojom::ElementWiseUnary& logical_not) {
-  const std::string node_name = GenerateNodeName(logical_not.label);
-  // ONNX logical not operation only supports bool input.
-  CHECK_EQ(GetOperand(logical_not.input_operand_id).descriptor.data_type(),
-           OperandDataType::kUint8);
-  std::string input =
-      CreateCastNode(GetOperandNameById(logical_not.input_operand_id),
-                     ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL);
-  std::vector<const char*> inputs = {input.c_str()};
+void GraphBuilderOrt::AddLogicalUnaryOperation(
+    const mojom::ElementWiseUnary& logical_unary,
+    base::cstring_view op_type) {
+  const std::string node_name = GenerateNodeName(logical_unary.label);
+
+  std::string input = GetOperandNameById(logical_unary.input_operand_id);
+
+  // LogicalNot operation in ONNX only supports bool input.
+  if (op_type == kOpTypeLogicalNot) {
+    CHECK_EQ(GetOperand(logical_unary.input_operand_id).descriptor.data_type(),
+             OperandDataType::kUint8);
+    input = CreateCastNode(input, ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL);
+  }
 
   const std::string bool_output = GenerateOperandName();
-  std::array<const char*, 1> outputs = {bool_output.c_str()};
-  model_editor_.AddNode(kOpTypeLogicalNot, node_name, inputs, outputs);
 
-  // ONNX `Not` operator only supports bool output, while WebNN `logicalNot`
-  // operator supports uint8 output. Insert a `Cast` operator for type
+  std::array<const char*, 1> inputs = {input.c_str()};
+  std::array<const char*, 1> outputs = {bool_output.c_str()};
+  model_editor_.AddNode(op_type, node_name, inputs, outputs);
+
+  // ONNX logical operators only support bool output, while WebNN logical
+  // operators support uint8 output. Insert a `Cast` operator for type
   // conversion.
   const OperandDataType output_data_type =
-      GetOperand(logical_not.output_operand_id).descriptor.data_type();
-  const std::string output = GetOperandNameById(logical_not.output_operand_id);
+      GetOperand(logical_unary.output_operand_id).descriptor.data_type();
+  const std::string output =
+      GetOperandNameById(logical_unary.output_operand_id);
   CHECK_EQ(output_data_type, OperandDataType::kUint8);
   InsertCastNode(bool_output, output, WebnnToOnnxDataType(output_data_type));
 }
@@ -1448,9 +1456,17 @@ void GraphBuilderOrt::AddElementWiseUnaryOperation(
       CHECK(data_type_limits.log_input.Supports(input_descriptor));
       return AddUnaryOperation(element_wise_unary, kOpTypeLog);
     }
+    case mojom::ElementWiseUnary::Kind::kIsNaN: {
+      CHECK(data_type_limits.is_nan_input.Supports(input_descriptor));
+      return AddLogicalUnaryOperation(element_wise_unary, kOpTypeIsNaN);
+    }
+    case mojom::ElementWiseUnary::Kind::kIsInfinite: {
+      CHECK(data_type_limits.is_infinite_input.Supports(input_descriptor));
+      return AddLogicalUnaryOperation(element_wise_unary, kOpTypeIsInfinite);
+    }
     case mojom::ElementWiseUnary::Kind::kLogicalNot: {
       CHECK(data_type_limits.logical_not_input.Supports(input_descriptor));
-      return AddLogicalNotOperation(element_wise_unary);
+      return AddLogicalUnaryOperation(element_wise_unary, kOpTypeLogicalNot);
     }
     case mojom::ElementWiseUnary::Kind::kNeg: {
       CHECK(data_type_limits.neg_input.Supports(input_descriptor));

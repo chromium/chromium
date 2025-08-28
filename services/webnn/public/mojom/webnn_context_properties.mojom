@@ -105,6 +105,8 @@ struct DataTypeLimits {
   SupportedTensors logical_or_input;
   SupportedTensors logical_xor_input;
   SupportedTensors logical_not_input;
+  SupportedTensors is_nan_input;
+  SupportedTensors is_infinite_input;
   SupportedDataTypes logical_output;
 
   // Element-wise unary ops.

@@ -692,6 +692,8 @@ class GraphBuilderTflite final {
       const mojom::LeakyRelu& leaky_relu);
   base::expected<OperatorOffset, std::string> SerializeLinear(
       const mojom::Linear& linear);
+  OperatorOffset SerializeIsInfinite(const TensorInfo& input_tensor_info,
+                                     const TensorInfo& output_tensor_info);
   OperatorOffset SerializeLogicalNot(const TensorInfo& input_tensor_info,
                                      const TensorInfo& output_tensor_info);
   base::expected<OperatorOffset, std::string> SerializeLstmCell(

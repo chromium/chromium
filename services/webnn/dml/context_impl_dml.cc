@@ -196,6 +196,12 @@ ContextProperties ContextImplDml::GetProperties(
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_logical_not_operator_desc#tensor-support
        /*logical_not_input=*/{kUint8To32, kMaxRank},
 
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_is_nan_operator_desc#tensor-support
+       /*is_nan_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_is_infinity_operator_desc#tensor-support
+       /*is_infinite_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
+
        /*logical_output=*/kUint8To32,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_abs_operator_desc#tensor-support

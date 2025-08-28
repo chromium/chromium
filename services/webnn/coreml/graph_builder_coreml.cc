@@ -1234,6 +1234,12 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        {DataTypeConstraint::kUint8, kMaxRank},
        /*logical_not_input=*/
        {DataTypeConstraint::kUint8, kMaxRank},
+       // IsNaN is emulated by not_equal.
+       /*is_nan_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
+       // IsInfinite is emulated by abs and equal.
+       /*is_infinite_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
        /*logical_output=*/DataTypeConstraint::kUint8,
        /*abs_input=*/{kFloatsAndInt32, kMaxRank},
        /*ceil_input=*/
@@ -3061,6 +3067,38 @@ GraphBuilderCoreml::AddOperationForElementwiseUnary(
       return AddUnaryFloatsOperationWithEpsilon(
           kOpLogTypeName, input_operand_id, output_operand_id,
           /*epsilon=*/0, block);
+    }
+    case mojom::ElementWiseUnary::Kind::kIsNaN: {
+      CHECK(context_properties_.data_type_limits.is_nan_input.data_types.Has(
+          input_operand_data_type));
+      // IsNaN is not supported in CoreML. This is emulated with:
+      // not_equal(a, a).
+      return AddOperationForElementwiseBinary(
+          /*lhs_operand=*/input_operand_id,
+          /*rhs_operand=*/input_operand_id,
+          /*output_operand_id=*/output_operand_id,
+          mojom::ElementWiseBinary::Kind::kNotEqual, block);
+    }
+    case mojom::ElementWiseUnary::Kind::kIsInfinite: {
+      CHECK(
+          context_properties_.data_type_limits.is_infinite_input.data_types.Has(
+              input_operand_data_type));
+      // IsInfinite is not supported in CoreML. This is emulated with:
+      // equal(abs(a), Infinity).
+      ASSIGN_OR_RETURN(
+          OperandId abs_operand_id,
+          GenerateInternalOperandInfo(input_operand_info.mil_data_type,
+                                      input_operand_info.dimensions));
+      RETURN_IF_ERROR(AddOperationForElementwiseUnary(
+          mojom::ElementWiseUnary::Kind::kAbs, input_operand_id, abs_operand_id,
+          block));
+      return AddOperationForElementwiseBinary(
+          /*lhs_operand=*/abs_operand_id,
+          /*rhs_operand=*/
+          CreateFloatValue(input_data_type,
+                           std::numeric_limits<float>::infinity()),
+          /*output_operand_id=*/output_operand_id,
+          mojom::ElementWiseBinary::Kind::kEqual, block);
     }
     case mojom::ElementWiseUnary::Kind::kNeg: {
       CHECK(context_properties_.data_type_limits.neg_input.data_types.Has(

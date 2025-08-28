@@ -131,6 +131,10 @@ String MLOperator::OperatorKindToString(
           return "erf";
         case webnn::mojom::blink::ElementWiseUnary::Kind::kIdentity:
           return "identity";
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kIsNaN:
+          return "isNaN";
+        case webnn::mojom::blink::ElementWiseUnary::Kind::kIsInfinite:
+          return "isInfinite";
         case webnn::mojom::blink::ElementWiseUnary::Kind::kLogicalNot:
           return "logicalNot";
         case webnn::mojom::blink::ElementWiseUnary::Kind::kReciprocal:

@@ -187,8 +187,10 @@ enum class MLGraphOperatorUma {
   kReverse = 91,
   kNotEqual = 92,
   kRoundEven = 93,
+  kIsNaN = 94,
+  kIsInfinite = 95,
   kMinValue = kGraphBuilt,
-  kMaxValue = kRoundEven,
+  kMaxValue = kIsInfinite,
 };
 
 using MLGraphOperatorUmaSet = base::EnumSet<MLGraphOperatorUma,
@@ -274,6 +276,10 @@ MLGraphOperatorUma GetUmaValueForOperation(
           return MLGraphOperatorUma::kIdentity;
         case blink_mojom::ElementWiseUnary::Kind::kLog:
           return MLGraphOperatorUma::kLog;
+        case blink_mojom::ElementWiseUnary::Kind::kIsNaN:
+          return MLGraphOperatorUma::kIsNaN;
+        case blink_mojom::ElementWiseUnary::Kind::kIsInfinite:
+          return MLGraphOperatorUma::kIsInfinite;
         case blink_mojom::ElementWiseUnary::Kind::kLogicalNot:
           return MLGraphOperatorUma::kLogicalNot;
         case blink_mojom::ElementWiseUnary::Kind::kNeg:
@@ -998,6 +1004,7 @@ MLOperand* BuildUnaryOperator(MLGraphBuilder* builder,
 }
 
 MLOperand* BuildElementWiseUnaryOperator(
+    const webnn::ContextProperties& context_properties,
     MLGraphBuilder* builder,
     ExceptionState& exception_state,
     blink_mojom::ElementWiseUnary::Kind kind,
@@ -1013,11 +1020,22 @@ MLOperand* BuildElementWiseUnaryOperator(
     return nullptr;
   }
 
+  // Logical operator outputs are bools, otherwise output operators are the same
+  // type as input operators.
+  webnn::OperandDataType data_type = IsLogicalUnaryOperator(kind)
+                                         ? webnn::OperandDataType::kUint8
+                                         : input->DataType();
+
+  ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
+      webnn::OperandDescriptor output_descriptor,
+      webnn::OperandDescriptor::Create(context_properties, data_type,
+                                       input->Shape(), label));
+
   auto* unary = MakeGarbageCollected<MLOperator>(
       builder, /*kind=*/blink_mojom::Operation::Tag::kElementWiseUnary, options,
       /*sub_kind=*/kind);
   MLOperand* output =
-      MLOperand::CreateOutput(builder, input->Descriptor(), unary);
+      MLOperand::CreateOutput(builder, std::move(output_descriptor), unary);
   unary->Connect({input}, {output});
   return output;
 }
@@ -2043,7 +2061,8 @@ BUILD_ELEMENTWISE_BINARY_OP(logicalXor, logical_xor, kLogicalXor)
     THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);           \
     THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);             \
     return BuildElementWiseUnaryOperator(                                      \
-        this, exception_state, blink_mojom::ElementWiseUnary::Kind::op_kind,   \
+        ml_context_->GetProperties(), this, exception_state,                   \
+        blink_mojom::ElementWiseUnary::Kind::op_kind,                          \
         ml_context_->GetProperties().data_type_limits.op_snake##_input, input, \
         options);                                                              \
   }
@@ -2054,6 +2073,9 @@ BUILD_ELEMENTWISE_UNARY_OP(cos, cos, kCos)
 BUILD_ELEMENTWISE_UNARY_OP(exp, exp, kExp)
 BUILD_ELEMENTWISE_UNARY_OP(floor, floor, kFloor)
 BUILD_ELEMENTWISE_UNARY_OP(log, log, kLog)
+BUILD_ELEMENTWISE_UNARY_OP(isNaN, is_nan, kIsNaN)
+BUILD_ELEMENTWISE_UNARY_OP(isInfinite, is_infinite, kIsInfinite)
+BUILD_ELEMENTWISE_UNARY_OP(logicalNot, logical_not, kLogicalNot)
 BUILD_ELEMENTWISE_UNARY_OP(neg, neg, kNeg)
 BUILD_ELEMENTWISE_UNARY_OP(roundEven, round_even, kRoundEven)
 BUILD_ELEMENTWISE_UNARY_OP(sign, sign, kSign)
@@ -2063,17 +2085,6 @@ BUILD_ELEMENTWISE_UNARY_OP(erf, erf, kErf)
 BUILD_ELEMENTWISE_UNARY_OP(identity, identity, kIdentity)
 BUILD_ELEMENTWISE_UNARY_OP(reciprocal, reciprocal, kReciprocal)
 BUILD_ELEMENTWISE_UNARY_OP(sqrt, sqrt, kSqrt)
-
-MLOperand* MLGraphBuilder::logicalNot(MLOperand* input,
-                                      MLOperatorOptions* options,
-                                      ExceptionState& exception_state) {
-  THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
-  THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
-  return BuildElementWiseUnaryOperator(
-      this, exception_state, blink_mojom::ElementWiseUnary::Kind::kLogicalNot,
-      ml_context_->GetProperties().data_type_limits.logical_not_input, input,
-      options);
-}
 
 MLOperand* MLGraphBuilder::cast(MLOperand* input,
                                 const V8MLOperandDataType output_data_type,
