@@ -83,9 +83,8 @@ class DecisionHelper {
 
     DCHECK(entry->schedule_params.deliver_time_end.has_value());
     bool meet_deliver_time_end =
-        entry->schedule_params.deliver_time_end.has_value()
-            ? now <= entry->schedule_params.deliver_time_end.value()
-            : false;
+        entry->schedule_params.deliver_time_end.has_value() &&
+        now <= entry->schedule_params.deliver_time_end.value();
     if (meet_deliver_time_start && meet_deliver_time_end) {
       return false;
     }
