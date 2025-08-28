@@ -105,15 +105,17 @@ bool ShouldApplyFitText(const InlineNode node) {
     }
   }
 
-  if (style.TextGrow().Target() == FitTextTarget::kConsistent) {
-    AddConsoleMessage(node, ConsoleMessage::Level::kInfo,
-                      "`text-grow: consistent` is not implemented yet.");
-    apply_text_grow = false;
-  }
-  if (style.TextShrink().Target() == FitTextTarget::kConsistent) {
-    AddConsoleMessage(node, ConsoleMessage::Level::kInfo,
-                      "`text-shrink: consistent` is not implemented yet.");
-    apply_text_shrink = false;
+  if (!RuntimeEnabledFeatures::CssFitWidthTextConsistentEnabled()) {
+    if (style.TextGrow().Target() == FitTextTarget::kConsistent) {
+      AddConsoleMessage(node, ConsoleMessage::Level::kInfo,
+                        "`text-grow: consistent` is not implemented yet.");
+      apply_text_grow = false;
+    }
+    if (style.TextShrink().Target() == FitTextTarget::kConsistent) {
+      AddConsoleMessage(node, ConsoleMessage::Level::kInfo,
+                        "`text-shrink: consistent` is not implemented yet.");
+      apply_text_shrink = false;
+    }
   }
 
   return apply_text_grow || apply_text_shrink;

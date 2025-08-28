@@ -1311,8 +1311,18 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
       // to overflow in that case.
     }
 
-    bool should_scale_line_height =
-        apply_fit_text_ && LineFitter(Node(), &line_info).MeasureAndFitLine();
+    bool should_scale_line_height = false;
+    if (apply_fit_text_) {
+      if (context_->IsMeasuringScale()) {
+        // No fit-text handling here. We call MeasurePerBlockScale() later.
+      } else if (float scale = context_->MeasuredScale(); scale != 1.0f) {
+        should_scale_line_height =
+            LineFitter(Node(), &line_info).FitLine(scale);
+      } else {
+        should_scale_line_height =
+            LineFitter(Node(), &line_info).MeasureAndFitLine();
+      }
+    }
 
     PrepareBoxStates(line_info, should_scale_line_height, break_token);
 
