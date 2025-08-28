@@ -103,8 +103,9 @@ GREYElementInteraction* RequestDesktopButton() {
 #define MAYBE_testOpenTabInTabStripBeforePrerenderedTab \
   DISABLED_testOpenTabInTabStripBeforePrerenderedTab
 #else
+// TODO(crbug.com/441756543): Re-enable this test once the flakiness is fixed.
 #define MAYBE_testOpenTabInTabStripBeforePrerenderedTab \
-  testOpenTabInTabStripBeforePrerenderedTab
+  FLAKY_testOpenTabInTabStripBeforePrerenderedTab
 #endif  // defined(OFFICIAL_BUILD)
 
 - (void)addURLToHistory {
