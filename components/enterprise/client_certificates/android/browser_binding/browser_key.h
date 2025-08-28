@@ -35,9 +35,10 @@ class BrowserKey {
   // Returns the SSL private key of this browser key as a scoped refptr.
   virtual scoped_refptr<net::SSLPrivateKey> GetSSLPrivateKey() const = 0;
 
-  // Signs the given data with the private key of this browser key.
-  virtual std::optional<std::vector<uint8_t>> SignSlowly(
-      base::span<const uint8_t> data) const = 0;
+  // Signs the provided data with the private key of this browser key and
+  // returns the signature.
+  virtual std::optional<std::vector<uint8_t>> Sign(
+      const std::vector<uint8_t>& data) const = 0;
 };
 
 }  // namespace client_certificates

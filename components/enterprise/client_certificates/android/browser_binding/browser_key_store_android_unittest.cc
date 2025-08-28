@@ -61,6 +61,10 @@ TEST_F(BrowserKeyStoreAndroidTest, GetsPublicKeyWhenSupportsStrongBox) {
   EXPECT_FALSE(bk->GetPrivateKey().is_null());
   EXPECT_FALSE(bk->GetSSLPrivateKey().get() == nullptr);
   EXPECT_FALSE(bk->GetPublicKeyAsSPKI().empty());
+  EXPECT_FALSE(bk->GetIdentifier().empty());
+  auto signature = bk->Sign(std::vector<uint8_t>{1, 2, 3});
+  EXPECT_TRUE(signature.has_value());
+  EXPECT_FALSE(signature.value().empty());
 
   // Clean up by removing the bk.
   if (bk) {

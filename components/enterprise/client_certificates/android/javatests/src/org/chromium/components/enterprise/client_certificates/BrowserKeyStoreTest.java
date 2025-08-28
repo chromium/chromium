@@ -27,6 +27,7 @@ import org.chromium.blink.mojom.PublicKeyCredentialParameters;
 import org.chromium.blink.mojom.PublicKeyCredentialType;
 
 import java.security.KeyPair;
+import java.security.Signature;
 import java.security.interfaces.ECPublicKey;
 import java.util.Arrays;
 import java.util.List;
@@ -97,6 +98,13 @@ public class BrowserKeyStoreTest {
         // Provide an empty list of algorithms expecting the existing key to be returned.
         BrowserKey bk2 =
                 browserKeyStore.getOrCreateBrowserKeyForCredentialId(BK_ID, Arrays.asList());
+        byte[] signature2 = bk2.sign(clientData);
+
+        // Verify the bk2's signature using bk1's public key.
+        Signature signature = Signature.getInstance("SHA256withECDSA");
+        signature.initVerify(bk1.getKeyPair().getPublic());
+        signature.update(clientData);
+        assertTrue(signature.verify(signature2));
     }
 
     @Test

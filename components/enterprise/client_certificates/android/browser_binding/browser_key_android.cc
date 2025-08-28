@@ -81,15 +81,22 @@ scoped_refptr<net::SSLPrivateKey> BrowserKeyAndroid::GetSSLPrivateKey() const {
                                  Java_BrowserKey_getPrivateKey(env, impl_));
 }
 
-std::optional<std::vector<uint8_t>> BrowserKeyAndroid::SignSlowly(
-    base::span<const uint8_t> data) const {
-  std::vector<uint8_t> signature;
-  // TODO(crbug.com/432304139): Add support for other algorithms.
-  if (!net::android::SignWithPrivateKey(GetPrivateKey(), "SHA256withECDSA",
-                                        data, &signature)) {
+std::optional<std::vector<uint8_t>> BrowserKeyAndroid::Sign(
+    const std::vector<uint8_t>& data) const {
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  jni_zero::ScopedJavaLocalRef<jbyteArray> data_json_jarray =
+      base::android::ToJavaByteArray(env, data);
+  jni_zero::ScopedJavaLocalRef<jbyteArray> signature_jarray =
+      Java_BrowserKey_sign(env, impl_, data_json_jarray);
+
+  if (signature_jarray.is_null()) {
     return std::nullopt;
   }
-  return signature;
+
+  std::vector<uint8_t> signature_output;
+  base::android::AppendJavaByteArrayToByteVector(env, signature_jarray,
+                                                 &signature_output);
+  return signature_output;
 }
 
 }  // namespace client_certificates
