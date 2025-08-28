@@ -9,6 +9,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -358,8 +359,14 @@ TEST_P(ParseInAnyOrderTest, ParseInAnyOrder) {
     return matching_ids[scanner->Cursor()->max_length()];
   };
 
+  // Must outlive `scanner`.
+  auto unowned_fields =
+      base::ToVector(fields, [](const std::unique_ptr<AutofillField>& field) {
+        return raw_ptr<AutofillField>(field.get());
+      });
+
   // Construct n parsers from `testcase.field_matches_parser`.
-  AutofillScanner scanner(fields);
+  AutofillScanner scanner(unowned_fields);
   std::vector<raw_ptr<AutofillField>> matched_fields(n);
   std::vector<
       std::pair<raw_ptr<AutofillField>*, base::RepeatingCallback<bool()>>>

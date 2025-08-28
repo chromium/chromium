@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/containers/to_vector.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -126,8 +127,14 @@ void PhoneFieldParserTest::RunParsingTest(
     global_ids.push_back(AppendField(field));
   }
 
+  // Must outlive `scanner`.
+  auto unowned_fields =
+      base::ToVector(list_, [](const std::unique_ptr<AutofillField>& field) {
+        return raw_ptr<AutofillField>(field.get());
+      });
+
   // Parse.
-  AutofillScanner scanner(list_);
+  AutofillScanner scanner(unowned_fields);
   ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
                          *GetActivePatternFile());
   field_ = Parse(context, &scanner);

@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
 
+#include "base/containers/to_vector.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser_test_api.h"
 
@@ -72,7 +73,14 @@ void FormFieldParserTestBase::ClassifyAndVerify(
     const LanguageCode& page_language,
     PatternFile pattern_file) {
   UpdateRanks(fields_);
-  AutofillScanner scanner(fields_);
+
+  // Must outlive `scanner`.
+  auto unowned_fields =
+      base::ToVector(fields_, [](const std::unique_ptr<AutofillField>& field) {
+        return raw_ptr<AutofillField>(field.get());
+      });
+
+  AutofillScanner scanner(unowned_fields);
   ParsingContext context(client_country, page_language, pattern_file,
                          GetActiveRegexFeatures());
   std::unique_ptr<FormFieldParser> field = Parse(context, &scanner);
@@ -95,7 +103,14 @@ void FormFieldParserTestBase::ClassifyAndVerifyWithMultipleParses(
   UpdateRanks(fields_);
   ParsingContext context(client_country, page_language,
                          *GetActivePatternFile());
-  AutofillScanner scanner(fields_);
+
+  // Must outlive `scanner`.
+  auto unowned_fields =
+      base::ToVector(fields_, [](const std::unique_ptr<AutofillField>& field) {
+        return raw_ptr<AutofillField>(field.get());
+      });
+
+  AutofillScanner scanner(unowned_fields);
   while (!scanner.IsEnd()) {
     // An empty page_language means the language is unknown and patterns of
     // all languages are used.
