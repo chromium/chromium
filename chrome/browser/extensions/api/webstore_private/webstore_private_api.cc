@@ -1104,7 +1104,7 @@ WebstorePrivateGetBrowserLoginFunction::Run() {
   info.login =
       IdentityManagerFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context())->GetOriginalProfile())
-          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .email;
   return RespondNow(ArgumentList(GetBrowserLogin::Results::Create(info)));
 }
