@@ -94,6 +94,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Event.DragDrop.Tool" enum="DragAndDropToolType"
+    expires_after="2026-08-01">
+  <owner>mustaq@chromium.org</owner>
+  <owner>gastonr@microsoft.com</owner>
+  <owner>gerchiko@microsoft.com</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Records the completion of a drag and drop operation using the enumerated
+    tool as the device for the drag. The tool used for drags is not discernible
+    when the drag is initiated outside of the browser's window, so those drags
+    will be recorded as using the unknown tool.
+  </summary>
+</histogram>
+
 <histogram name="Event.EscKeyPressedDownWithModifier" enum="Boolean"
     expires_after="2024-07-15">
   <owner>muyaoxu@google.com</owner>

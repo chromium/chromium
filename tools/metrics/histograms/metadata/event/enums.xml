@@ -243,6 +243,25 @@ chromium-metrics-reviews@google.com.
              is system apps and dialogs"/>
 </enum>
 
+<!-- LINT.IfChange(DragAndDropToolType) -->
+
+<enum name="DragAndDropToolType">
+  <summary>The type of tool that can trigger a drag and drop.</summary>
+  <int value="0" label="Unknown">
+    The tool is unknown. (Usually for drags that started outside the browser)
+  </int>
+  <int value="1" label="Mouse">The tool is a mouse or trackpad.</int>
+  <int value="2" label="Finger">The tool is a finger (touch).</int>
+  <int value="3" label="StylusViaGesture">
+    The tool is a stylus and the drag was initiated via press gesture.
+  </int>
+  <int value="4" label="StylusViaButton">
+    The tool is a stylus and the drag was initiated via button press.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/core/input/mouse_event_manager.h:DragAndDropToolType) -->
+
 <enum name="EventResultType">
   <int value="0" label="Passive"/>
   <int value="1" label="Uncancelable"/>

@@ -1476,6 +1476,10 @@ void EventHandler::ClearDragState() {
   should_only_fire_drag_over_event_ = false;
 }
 
+void EventHandler::ReportDragEnd() {
+  mouse_event_manager_->ReportDragEnd();
+}
+
 void EventHandler::RecomputeMouseHoverStateIfNeeded() {
   mouse_event_manager_->RecomputeMouseHoverStateIfNeeded();
 }

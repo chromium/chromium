@@ -27,8 +27,6 @@ class InputDeviceCapabilities;
 class LocalFrame;
 class ScrollManager;
 
-enum class DragInitiator;
-
 // This class takes care of dispatching all mouse events and keeps track of
 // positions and states of mouse.
 class CORE_EXPORT MouseEventManager final
@@ -151,6 +149,7 @@ class CORE_EXPORT MouseEventManager final
   void RecomputeMouseHoverState();
 
   void MarkHoverStateDirty();
+  void ReportDragEnd();
 
  private:
   class MouseEventBoundaryEventDispatcher : public BoundaryEventDispatcher {
@@ -172,8 +171,21 @@ class CORE_EXPORT MouseEventManager final
     const WebMouseEvent* web_mouse_event_;
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(DragAndDropToolType)
+  enum class DragAndDropToolType {
+    kUnknown = 0,
+    kMouse,
+    kFinger,
+    kStylusViaGesture,
+    kStylusViaButton,
+    kMaxValue = kStylusViaButton,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/event/enums.xml:DragAndDropToolType)
+
   bool DragThresholdExceeded(const gfx::Point&) const;
-  bool HandleDrag(const MouseEventWithHitTestResults&, DragInitiator);
+  bool HandleDrag(const MouseEventWithHitTestResults&, DragAndDropToolType);
   bool TryStartDrag(const MouseEventWithHitTestResults&);
   void ClearDragDataTransfer();
   DataTransfer* CreateDraggingDataTransfer() const;
@@ -228,6 +240,7 @@ class CORE_EXPORT MouseEventManager final
   // ends, and at each begin frame, we will dispatch a fake mouse move event to
   // update hover when this is true.
   bool hover_state_dirty_ = false;
+  DragAndDropToolType drag_initiator_ = DragAndDropToolType::kUnknown;
 };
 
 }  // namespace blink

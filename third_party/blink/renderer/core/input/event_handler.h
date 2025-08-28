@@ -252,6 +252,7 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
   // Clears drag target and related states. It is called when drag is done or
   // canceled.
   void ClearDragState();
+  void ReportDragEnd();
 
   EventHandlerRegistry& GetEventHandlerRegistry() const {
     return *event_handler_registry_;

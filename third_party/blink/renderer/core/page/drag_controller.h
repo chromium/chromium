@@ -127,6 +127,7 @@ class CORE_EXPORT DragController final
   void Trace(Visitor*) const final;
 
   std::optional<PointerId> drag_pointer_id() const { return drag_pointer_id_; }
+  bool did_initiate_drag() const { return did_initiate_drag_; }
 
  private:
   DispatchEventResult DispatchTextInputEventFor(LocalFrame*, DragData*);

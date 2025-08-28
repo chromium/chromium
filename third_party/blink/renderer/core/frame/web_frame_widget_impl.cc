@@ -632,6 +632,10 @@ void WebFrameWidgetImpl::DragTargetDrop(const WebDragData& web_drag_data,
                      operations_allowed_, web_drag_data.ForceDefaultAction());
   GetPage()->GetDragController().PerformDrag(
       &drag_data, *local_root_->GetFrame(), drag_operation_);
+  // Drops that initiated in the browser get reported via `DragSourceEndedAt`.
+  if (!GetPage()->GetDragController().did_initiate_drag()) {
+    local_root_->GetFrame()->GetEventHandler().ReportDragEnd();
+  }
 }
 
 void WebFrameWidgetImpl::DragSourceEndedAt(const gfx::PointF& point_in_viewport,
