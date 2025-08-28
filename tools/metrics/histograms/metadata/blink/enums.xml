@@ -8585,6 +8585,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="395" label="RegexpStaticProperties"/>
   <int value="396" label="JsonModules"/>
   <int value="397" label="DRAFT_WasmCustomDescriptors"/>
+  <int value="398" label="FetchRequestStreams"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
