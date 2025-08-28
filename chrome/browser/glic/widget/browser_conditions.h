@@ -8,17 +8,18 @@
 #include <memory>
 
 class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 namespace glic {
 
 // Returns the browser the glic window would attach to, if the user pressed
 // the attach button on the window. Returns null if attachment is not possible.
-Browser* FindBrowserForAttachment(Profile* profile);
+BrowserWindowInterface* FindBrowserForAttachment(Profile* profile);
 
 // Returns whether `browser` can be used for attaching the glic panel for the
 // given profile.
-bool IsBrowserGlicAttachable(Profile* profile, Browser* browser);
+bool IsBrowserGlicAttachable(Profile* profile, BrowserWindowInterface* browser);
 
 // Returns whether 'browser' is in the foreground. This is based on active
 // state and on windows includes a occlusion check.
@@ -32,7 +33,7 @@ class BrowserAttachObserver {
  public:
   // Informs the observer that the browser for attachment has changed. Null if
   // no browser is available for attachment.
-  virtual void BrowserForAttachmentChanged(Browser* browser) {}
+  virtual void BrowserForAttachmentChanged(BrowserWindowInterface* browser) {}
   // Informs the observer that the value of `CanAttachToBrowser()` has changed.
   virtual void CanAttachToBrowserChanged(bool can_attach) {}
 };

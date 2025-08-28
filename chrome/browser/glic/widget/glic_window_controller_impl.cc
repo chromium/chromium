@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -942,14 +943,15 @@ void GlicWindowControllerImpl::Attach() {
     return;
   }
 
-  Browser* browser = glic::FindBrowserForAttachment(profile_);
+  BrowserWindowInterface* browser = glic::FindBrowserForAttachment(profile_);
   if (!browser) {
     return;
   }
   if (AlwaysDetached()) {
     return;
   }
-  AttachToBrowser(*browser, AttachChangeReason::kMenu);
+  AttachToBrowser(*browser->GetBrowserForMigrationOnly(),
+                  AttachChangeReason::kMenu);
 }
 
 void GlicWindowControllerImpl::Detach() {
