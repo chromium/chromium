@@ -78,7 +78,7 @@ class GlicFocusedTabManager : public GlicFocusedTabManagerInterface,
   AddFocusedTabOrCandidateInstanceChangedCallback(
       FocusedTabOrCandidateInstanceChangedCallback callback);
 
-  // Callback for changes to the tab data rejresentation of the focused tab.
+  // Callback for changes to the tab data representation of the focused tab.
   // This includes any event that changes tab data -- e.g. favicon/title change
   // events (where the container does not change), as well as container changed
   // events.
