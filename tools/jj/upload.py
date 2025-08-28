@@ -129,6 +129,7 @@ def main(args):
       # In particular, if you're uploading any commit except @-, expect some
       # weirdness.
       with tempfile.NamedTemporaryFile(suffix='.json') as out:
+        out = pathlib.Path(out.name)
         run_command([
             'git',
             'cl',
