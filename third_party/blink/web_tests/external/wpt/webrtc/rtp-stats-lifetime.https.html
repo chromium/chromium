@@ -49,7 +49,7 @@ promise_test(async t => {
   const pc1 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
   const pc2 = new RTCPeerConnection();
-  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
 
   // Offer to send. See previous test for assertions that the outbound-rtp is
   // not created this early, which this test does not care about.
@@ -76,7 +76,7 @@ promise_test(async t => {
   const pc1 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
   const pc2 = new RTCPeerConnection();
-  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
 
   pc1.addTransceiver('video', {sendEncodings: [{rid: 'foo'}, {rid: 'bar'}]});
   // O/A with tweaks to accept simulcast.
@@ -99,7 +99,7 @@ promise_test(async t => {
   const pc1 = new RTCPeerConnection();
   t.add_cleanup(() => pc1.close());
   const pc2 = new RTCPeerConnection();
-  t.add_cleanup(() => pc1.close());
+  t.add_cleanup(() => pc2.close());
   pc1.onicecandidate = e => pc2.addIceCandidate(e.candidate);
   pc2.onicecandidate = e => pc1.addIceCandidate(e.candidate);
 
@@ -115,6 +115,7 @@ promise_test(async t => {
   // Start sending. This results in inbound-rtp being created.
   const stream = await getNoiseStream({video:true});
   const [track] = stream.getTracks();
+  t.add_cleanup(() => track.stop());
   await sender.replaceTrack(track);
   const inboundRtp = await getInboundRtpPollUntilItExists(pc2);
   assert_not_equals(
