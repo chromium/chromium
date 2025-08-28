@@ -118,6 +118,13 @@ ContentsContainerView* MultiContentsView::GetContentsContainerViewFor(
   return nullptr;
 }
 
+gfx::Size MultiContentsView::GetContentsSize() const {
+  const int drop_target_width =
+      IsDragAndDropEnabled() ? drop_target_view_->GetPreferredWidth(width())
+                             : 0;
+  return gfx::Size(width() - drop_target_width, height());
+}
+
 bool MultiContentsView::IsInSplitView() const {
   return resize_area_->GetVisible();
 }
