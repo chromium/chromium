@@ -43,7 +43,6 @@
 namespace performance_manager {
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::WithArg;
 
 class PerformanceManagerTest : public PerformanceManagerTestHarness {
@@ -172,16 +171,16 @@ class PerformanceManagerBrowserNodeTest : public PerformanceManagerTest {
     // PerformanceManagerTest.LookupNodesFromObservers for the ideal behaviour.
 
     EXPECT_CALL(browser_process_observer_, OnBeforeProcessNodeAdded(_))
-        .WillOnce(Invoke([this](const ProcessNode* process_node) {
+        .WillOnce([this](const ProcessNode* process_node) {
           observed_browser_process_node_ = process_node;
           ValidateProcessNode(process_node, false);
-        }));
+        });
     EXPECT_CALL(browser_process_observer_, OnProcessNodeAdded(_))
-        .WillOnce(Invoke([&](const ProcessNode* process_node) {
+        .WillOnce([&](const ProcessNode* process_node) {
           EXPECT_EQ(process_node, observed_browser_process_node_);
           // TODO(crbug.com/40755583): Should be true.
           ValidateProcessNode(process_node, false);
-        }));
+        });
 
     Super::OnGraphCreated(graph);
   }
@@ -279,44 +278,44 @@ TEST_F(PerformanceManagerTest, LookupNodesFromObservers) {
   // accessors crash when called from any observer.
 
   EXPECT_CALL(frame_observer, OnBeforeFrameNodeAdded(_, _, _, _, _))
-      .WillOnce(WithArg<0>(Invoke([&](const FrameNode* frame_node) {
+      .WillOnce(WithArg<0>([&](const FrameNode* frame_node) {
         observed_frame_node = frame_node;
         // TODO(crbug.com/40755583): Should be false.
         ValidateFrameNode(frame_node, true);
-      })));
+      }));
   EXPECT_CALL(frame_observer, OnFrameNodeAdded(_))
-      .WillOnce(Invoke([&](const FrameNode* frame_node) {
+      .WillOnce([&](const FrameNode* frame_node) {
         EXPECT_EQ(frame_node, observed_frame_node);
         ValidateFrameNode(frame_node, true);
         quit_closure.Run();
-      }));
+      });
 
   EXPECT_CALL(page_observer, OnBeforePageNodeAdded(_))
-      .WillOnce(Invoke([&](const PageNode* page_node) {
+      .WillOnce([&](const PageNode* page_node) {
         observed_page_node = page_node;
         ValidatePageNode(page_node, false);
-      }));
+      });
   EXPECT_CALL(page_observer, OnPageNodeAdded(_))
-      .WillOnce(Invoke([&](const PageNode* page_node) {
+      .WillOnce([&](const PageNode* page_node) {
         EXPECT_EQ(page_node, observed_page_node);
         // TODO(crbug.com/40755583): Should be true.
         ValidatePageNode(page_node, false);
         quit_closure.Run();
-      }));
+      });
 
   EXPECT_CALL(process_observer, OnBeforeProcessNodeAdded(_))
-      .WillRepeatedly(Invoke([&](const ProcessNode* process_node) {
+      .WillRepeatedly([&](const ProcessNode* process_node) {
         observed_process_nodes[process_node->GetProcessType()] = process_node;
         ValidateProcessNode(process_node, false);
-      }));
+      });
   EXPECT_CALL(process_observer, OnProcessNodeAdded(_))
-      .WillRepeatedly(Invoke([&](const ProcessNode* process_node) {
+      .WillRepeatedly([&](const ProcessNode* process_node) {
         EXPECT_EQ(process_node,
                   observed_process_nodes[process_node->GetProcessType()]);
         // TODO(crbug.com/40755583): Should be true.
         ValidateProcessNode(process_node, false);
         quit_closure.Run();
-      }));
+      });
 
   // Create a new page and simulate a committed navigation to create a FrameNode
   // and renderer ProcessNode.
@@ -356,18 +355,18 @@ TEST_F(PerformanceManagerTest, LookupNodesFromObservers) {
   quit_closure = base::BarrierClosure(3, task_environment()->QuitClosure());
 
   EXPECT_CALL(worker_observer, OnBeforeWorkerNodeAdded(_, _))
-      .WillRepeatedly(WithArg<0>(Invoke([&](const WorkerNode* worker_node) {
+      .WillRepeatedly(WithArg<0>([&](const WorkerNode* worker_node) {
         observed_worker_nodes[worker_node->GetWorkerType()] = worker_node;
         ValidateWorkerNode(worker_node, false);
-      })));
+      }));
   EXPECT_CALL(worker_observer, OnWorkerNodeAdded(_))
-      .WillRepeatedly(Invoke([&](const WorkerNode* worker_node) {
+      .WillRepeatedly([&](const WorkerNode* worker_node) {
         EXPECT_EQ(worker_node,
                   observed_worker_nodes[worker_node->GetWorkerType()]);
         // TODO(crbug.com/40755583): Should be true.
         ValidateWorkerNode(worker_node, false);
         quit_closure.Run();
-      }));
+      });
 
   const blink::DedicatedWorkerToken dedicated_worker_token =
       dedicated_worker_factory()->CreateDedicatedWorker(renderer_process_node,
@@ -404,60 +403,60 @@ TEST_F(PerformanceManagerTest, LookupNodesFromObservers) {
   // been removed from the graph.
 
   EXPECT_CALL(frame_observer, OnBeforeFrameNodeRemoved(_))
-      .WillOnce(Invoke([&](const FrameNode* frame_node) {
+      .WillOnce([&](const FrameNode* frame_node) {
         EXPECT_EQ(frame_node, observed_frame_node);
         // TODO(crbug.com/40755583): Should be true.
         ValidateFrameNode(frame_node, false);
-      }));
+      });
   EXPECT_CALL(frame_observer, OnFrameNodeRemoved(_, _, _, _, _))
-      .WillOnce(WithArg<0>(Invoke([&](const FrameNode* frame_node) {
+      .WillOnce(WithArg<0>([&](const FrameNode* frame_node) {
         EXPECT_EQ(frame_node, observed_frame_node);
         ValidateFrameNode(frame_node, false);
         quit_closure.Run();
-      })));
+      }));
 
   EXPECT_CALL(page_observer, OnBeforePageNodeRemoved(_))
-      .WillOnce(Invoke([&](const PageNode* page_node) {
+      .WillOnce([&](const PageNode* page_node) {
         EXPECT_EQ(page_node, observed_page_node);
         // TODO(crbug.com/40755583): Should be true.
         ValidatePageNode(page_node, false);
-      }));
+      });
   EXPECT_CALL(page_observer, OnPageNodeRemoved(_))
-      .WillOnce(Invoke([&](const PageNode* page_node) {
+      .WillOnce([&](const PageNode* page_node) {
         EXPECT_EQ(page_node, observed_page_node);
         ValidatePageNode(page_node, false);
         quit_closure.Run();
-      }));
+      });
 
   EXPECT_CALL(process_observer, OnBeforeProcessNodeRemoved(_))
-      .WillRepeatedly(Invoke([&](const ProcessNode* process_node) {
+      .WillRepeatedly([&](const ProcessNode* process_node) {
         EXPECT_EQ(process_node,
                   observed_process_nodes[process_node->GetProcessType()]);
         // TODO(crbug.com/40755583): Should be true.
         ValidateProcessNode(process_node, false);
-      }));
+      });
   EXPECT_CALL(process_observer, OnProcessNodeRemoved(_))
-      .WillRepeatedly(Invoke([&](const ProcessNode* process_node) {
+      .WillRepeatedly([&](const ProcessNode* process_node) {
         EXPECT_EQ(process_node,
                   observed_process_nodes[process_node->GetProcessType()]);
         ValidateProcessNode(process_node, false);
         quit_closure.Run();
-      }));
+      });
 
   EXPECT_CALL(worker_observer, OnBeforeWorkerNodeRemoved(_))
-      .WillRepeatedly(Invoke([&](const WorkerNode* worker_node) {
+      .WillRepeatedly([&](const WorkerNode* worker_node) {
         EXPECT_EQ(worker_node,
                   observed_worker_nodes[worker_node->GetWorkerType()]);
         // TODO(crbug.com/40755583): Should be true.
         ValidateWorkerNode(worker_node, false);
-      }));
+      });
   EXPECT_CALL(worker_observer, OnWorkerNodeRemoved(_, _))
-      .WillRepeatedly(WithArg<0>(Invoke([&](const WorkerNode* worker_node) {
+      .WillRepeatedly(WithArg<0>([&](const WorkerNode* worker_node) {
         EXPECT_EQ(worker_node,
                   observed_worker_nodes[worker_node->GetWorkerType()]);
         ValidateWorkerNode(worker_node, false);
         quit_closure.Run();
-      })));
+      }));
 
   dedicated_worker_factory()->DestroyDedicatedWorker(dedicated_worker_token);
   shared_worker_factory()->DestroySharedWorker(shared_worker_token);
@@ -487,19 +486,19 @@ TEST_F(PerformanceManagerBrowserNodeTest, LookupBrowserProcessFromObservers) {
   // PerformanceManagerTest.LookupNodesFromObservers for the ideal behaviour.
 
   EXPECT_CALL(browser_process_observer_, OnBeforeProcessNodeRemoved(_))
-      .WillOnce(Invoke([&](const ProcessNode* process_node) {
+      .WillOnce([&](const ProcessNode* process_node) {
         EXPECT_EQ(process_node, observed_browser_process_node_);
         // TODO(crbug.com/40755583): Should be true.
         ValidateProcessNode(process_node, false);
-      }));
+      });
   EXPECT_CALL(browser_process_observer_, OnProcessNodeRemoved(_))
-      .WillOnce(Invoke([&](const ProcessNode* process_node) {
+      .WillOnce([&](const ProcessNode* process_node) {
         EXPECT_EQ(process_node, observed_browser_process_node_);
         ValidateProcessNode(process_node, false);
         // Avoid dangling raw_ptr.
         observed_browser_process_node_ = nullptr;
         std::move(quit_closure).Run();
-      }));
+      });
 
   DeleteBrowserProcessNodeForTesting();
 

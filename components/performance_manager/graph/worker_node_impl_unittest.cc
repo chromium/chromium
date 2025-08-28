@@ -42,7 +42,6 @@ class MockObserver : public MockWorkerNodeObserver {
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::InSequence;
-using ::testing::Invoke;
 using ::testing::InvokeWithoutArgs;
 
 }  // namespace
@@ -259,7 +258,7 @@ TEST_F(WorkerNodeImplTest, ObserverWorks) {
   const WorkerNode* worker_node = nullptr;
   const ProcessNode* process_node = nullptr;
   EXPECT_CALL(obs, OnBeforeWorkerNodeAdded(_, _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](const WorkerNode* node, const ProcessNode* pending_process_node) {
             worker_node = node;
             process_node = pending_process_node;
@@ -269,12 +268,11 @@ TEST_F(WorkerNodeImplTest, ObserverWorks) {
             EXPECT_TRUE(node->GetClientFrames().empty());
             EXPECT_TRUE(node->GetClientWorkers().empty());
             EXPECT_TRUE(node->GetChildWorkers().empty());
-          }));
-  EXPECT_CALL(obs, OnWorkerNodeAdded(_))
-      .WillOnce(Invoke([&](const WorkerNode* node) {
-        EXPECT_EQ(worker_node, node);
-        EXPECT_EQ(process_node, node->GetProcessNode());
-      }));
+          });
+  EXPECT_CALL(obs, OnWorkerNodeAdded(_)).WillOnce([&](const WorkerNode* node) {
+    EXPECT_EQ(worker_node, node);
+    EXPECT_EQ(process_node, node->GetProcessNode());
+  });
   auto dedicated_worker = CreateNode<WorkerNodeImpl>(
       WorkerNode::WorkerType::kDedicated, process.get());
   EXPECT_EQ(worker_node, dedicated_worker.get());
@@ -346,41 +344,41 @@ TEST_F(WorkerNodeImplTest, Observer_AddWorkerNodes) {
   const ProcessNode* saved_shared_worker_process = nullptr;
   const ProcessNode* saved_dedicated_worker_process = nullptr;
   EXPECT_CALL(obs, OnBeforeWorkerNodeRemoved(service_worker.get()))
-      .WillOnce(Invoke([&](const WorkerNode* worker_node) {
+      .WillOnce([&](const WorkerNode* worker_node) {
         // Node should still be in graph.
         saved_service_worker_process = worker_node->GetProcessNode();
         EXPECT_TRUE(saved_service_worker_process);
-      }));
+      });
   EXPECT_CALL(obs, OnWorkerNodeRemoved(service_worker.get(), _))
-      .WillOnce(Invoke([&](const WorkerNode* worker_node,
-                           const ProcessNode* previous_process_node) {
+      .WillOnce([&](const WorkerNode* worker_node,
+                    const ProcessNode* previous_process_node) {
         EXPECT_EQ(saved_service_worker_process, previous_process_node);
         EXPECT_FALSE(worker_node->GetProcessNode());
-      }));
+      });
   EXPECT_CALL(obs, OnBeforeWorkerNodeRemoved(shared_worker.get()))
-      .WillOnce(Invoke([&](const WorkerNode* worker_node) {
+      .WillOnce([&](const WorkerNode* worker_node) {
         // Node should still be in graph.
         saved_shared_worker_process = worker_node->GetProcessNode();
         EXPECT_TRUE(saved_shared_worker_process);
-      }));
+      });
   EXPECT_CALL(obs, OnWorkerNodeRemoved(shared_worker.get(), _))
-      .WillOnce(Invoke([&](const WorkerNode* worker_node,
-                           const ProcessNode* previous_process_node) {
+      .WillOnce([&](const WorkerNode* worker_node,
+                    const ProcessNode* previous_process_node) {
         EXPECT_EQ(saved_shared_worker_process, previous_process_node);
         EXPECT_FALSE(worker_node->GetProcessNode());
-      }));
+      });
   EXPECT_CALL(obs, OnBeforeWorkerNodeRemoved(dedicated_worker.get()))
-      .WillOnce(Invoke([&](const WorkerNode* worker_node) {
+      .WillOnce([&](const WorkerNode* worker_node) {
         // Node should still be in graph.
         saved_dedicated_worker_process = worker_node->GetProcessNode();
         EXPECT_TRUE(saved_dedicated_worker_process);
-      }));
+      });
   EXPECT_CALL(obs, OnWorkerNodeRemoved(dedicated_worker.get(), _))
-      .WillOnce(Invoke([&](const WorkerNode* worker_node,
-                           const ProcessNode* previous_process_node) {
+      .WillOnce([&](const WorkerNode* worker_node,
+                    const ProcessNode* previous_process_node) {
         EXPECT_EQ(saved_dedicated_worker_process, previous_process_node);
         EXPECT_FALSE(worker_node->GetProcessNode());
-      }));
+      });
 
   // Clean up workers.
   service_worker.reset();

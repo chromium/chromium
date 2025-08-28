@@ -87,8 +87,7 @@ TEST_F(BFCachePolicyTest, BFCacheFlushedOnMemoryPressure) {
         *policy_,
         MaybeFlushBFCache(page_node_.get(),
                           MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE))
-        .WillOnce(testing::Invoke(
-            ::testing::Invoke(&run_loop, &base::RunLoop::Quit)));
+        .WillOnce(::testing::Invoke(&run_loop, &base::RunLoop::Quit));
     base::MemoryPressureListener::SimulatePressureNotificationAsync(
         MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE);
     run_loop.Run();
@@ -101,8 +100,7 @@ TEST_F(BFCachePolicyTest, BFCacheFlushedOnMemoryPressure) {
         *policy_,
         MaybeFlushBFCache(page_node_.get(),
                           MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL))
-        .WillOnce(testing::Invoke(
-            ::testing::Invoke(&run_loop, &base::RunLoop::Quit)));
+        .WillOnce(::testing::Invoke(&run_loop, &base::RunLoop::Quit));
     base::MemoryPressureListener::SimulatePressureNotificationAsync(
         MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL);
     run_loop.Run();
