@@ -25,11 +25,11 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -1447,13 +1447,26 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
-    public void testCloseTabGroup_VisualDataRemoved() {
+    public void testCloseTabGroup_VisualDataRemoved() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
-        Tab tab2 = createTab();
+        createTab();
         mergeListOfTabsToGroup(List.of(tab0, tab1), tab0);
         Token groupId = tab0.getTabGroupId();
         assertNotNull(groupId);
+
+        CallbackHelper didRemoveTabGroupHelper = new CallbackHelper();
+        TabGroupModelFilterObserver observer =
+                new TabGroupModelFilterObserver() {
+                    @Override
+                    public void didRemoveTabGroup(
+                            int tabId, Token tabGroupId, @DidRemoveTabGroupReason int reason) {
+                        assertEquals(groupId, tabGroupId);
+                        assertEquals(DidRemoveTabGroupReason.CLOSE, reason);
+                        didRemoveTabGroupHelper.notifyCalled();
+                    }
+                };
+        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.addTabGroupObserver(observer));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1480,6 +1493,9 @@ public class TabCollectionTabModelImplTest {
                             TabGroupVisualDataStore.getTabGroupColor(groupId));
                     assertFalse(TabGroupVisualDataStore.getTabGroupCollapsed(groupId));
                 });
+
+        didRemoveTabGroupHelper.waitForOnly();
+        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeTabGroupObserver(observer));
     }
 
     @Test

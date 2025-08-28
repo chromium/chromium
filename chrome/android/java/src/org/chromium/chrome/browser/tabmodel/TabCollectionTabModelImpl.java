@@ -811,7 +811,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         }
 
         // TODO(crbug.com/381471263): Simplify the observer calls.
-        maybeSendCloseTabGroupEvent(tabsToClose, /* committing= */ false);
+        List<Token> closingTabGroupIds =
+                maybeSendCloseTabGroupEvent(tabsToClose, /* committing= */ false);
         if (params.tabCloseType == TabCloseType.MULTIPLE) {
             for (TabModelObserver obs : mTabModelObservers) {
                 obs.willCloseMultipleTabs(false, tabsToClose);
@@ -867,6 +868,13 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             for (Tab tab : tabsToClose) {
                 finalizeTabClosure(
                         tab, /* notifyTabClosureCommitted= */ false, params.tabClosingSource);
+            }
+        }
+
+        for (Token tabGroupId : closingTabGroupIds) {
+            for (TabGroupModelFilterObserver obs : mTabGroupObservers) {
+                obs.didRemoveTabGroup(
+                        Tab.INVALID_TAB_ID, tabGroupId, DidRemoveTabGroupReason.CLOSE);
             }
         }
 
@@ -2126,10 +2134,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         maybeSendCloseTabGroupEvent(tabs, /* committing= */ true);
     }
 
-    private void maybeSendCloseTabGroupEvent(List<Tab> tabs, boolean committing) {
+    private List<Token> maybeSendCloseTabGroupEvent(List<Tab> tabs, boolean committing) {
         LazyOneshotSupplier<Set<Token>> tabGroupIdsInComprehensiveModel =
                 getLazyAllTabGroupIds(tabs, /* includePendingClosures= */ committing);
         Set<Token> processedTabGroups = new HashSet<>();
+        List<Token> closingTabGroupIds = new ArrayList<>();
         for (Tab tab : tabs) {
             @Nullable Token tabGroupId = tab.getTabGroupId();
             if (tabGroupId == null) continue;
@@ -2140,6 +2149,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             // If the tab group still exists in the comprehensive tab model we should not send an
             // event.
             if (assumeNonNull(tabGroupIdsInComprehensiveModel.get()).contains(tabGroupId)) continue;
+
+            closingTabGroupIds.add(tabGroupId);
 
             boolean hiding;
             if (committing) {
@@ -2157,6 +2168,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                 }
             }
         }
+        return closingTabGroupIds;
     }
 
     private void closeDetachedTabGroup(Token tabGroupId) {
