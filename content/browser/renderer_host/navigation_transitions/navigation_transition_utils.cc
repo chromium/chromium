@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_utils.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
@@ -176,6 +177,20 @@ void CacheScreenshotSharedImageImpl(
     return;
   }
   TRACE_EVENT("content", "CacheScreenshotSharedImageImpl");
+  base::UmaHistogramBoolean(
+      "Navigation.GestureTransition.Screenshot.SharedImageReceived",
+      !!shared_image);
+  if (!shared_image) {
+    // This might happen if the surface is deleted before the CopyOutputRequest
+    // is satisfied. The histogram above will measure how often this happens in
+    // practice.
+    // TODO(crbug.com/441541036): Fix scoping of surface and add a proper cache
+    // miss reason in the navigation entry.
+    CacheScreenshotImpl(controller, navigation_request, screenshot_id,
+                        is_copied_from_embedder, copy_output_request_sequence,
+                        supports_etc_non_power_of_two, SkBitmap());
+    return;
+  }
 
   int entry_index =
       NavigationTransitionUtils::FindEntryIndexForNavigationTransitionID(
@@ -188,22 +203,15 @@ void CacheScreenshotSharedImageImpl(
     return;
   }
 
-  // TODO(crbug.com/438496406): Figure out how to test shared images.
+  auto& screenshot_callback = GetTestScreenshotCallback();
+  auto bound_screenshot_callback =
+      screenshot_callback
+          ? base::BindRepeating(screenshot_callback, entry_index)
+          : NavigationEntryScreenshot::ScreenshotCallback();
 
-  if (!shared_image) {
-    if (entry) {
-      entry->navigation_transition_data().set_cache_hit_or_miss_reason(
-          is_copied_from_embedder
-              ? CacheHitOrMissReason::kCapturedEmptyBitmapFromEmbedder
-              : CacheHitOrMissReason::kCapturedEmptyBitmapFromWebPage);
-      entry->navigation_transition_data().set_is_copied_from_embedder(
-          is_copied_from_embedder);
-    }
-    return;
-  }
   auto screenshot = std::make_unique<NavigationEntryScreenshot>(
       std::move(shared_image), screenshot_id, supports_etc_non_power_of_two,
-      std::move(raster_context_provider));
+      std::move(raster_context_provider), bound_screenshot_callback);
   NavigationEntryScreenshotCache* cache =
       controller->GetNavigationEntryScreenshotCache();
   cache->SetScreenshot(std::move(navigation_request), std::move(screenshot),
