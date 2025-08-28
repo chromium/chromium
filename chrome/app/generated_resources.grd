@@ -8560,6 +8560,21 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_EXPIRED">
         File upload has expired and been removed.
       </message>
+      <message name="IDS_NTP_COMPOSE_ADD_TAB" desc="Heading for a list of tabs that can be added to a contextual search. This is a subsection of a menu.">
+        Add tab
+      </message>
+      <message name="IDS_NTP_COMPOSE_ADD_IMAGE"  desc="Text for a button label that opens a menu so users can add an image to their search.">
+        Add image
+      </message>
+      <message name="IDS_NTP_COMPOSE_UPLOAD_FILE" desc="Text for a button label that opens a menu so users can add a file to their search.">
+        Upload file
+      </message>
+      <message name="IDS_NTP_COMPOSE_ADD_CONTEXT" desc="The text to display to ask user to add context to their search e.g. pdf or image.">
+        Add tab or file
+      </message>
+      <message name="IDS_NTP_COMPOSE_ADD_CONTEXT_TITLE" desc="The a11y title for a button that allows users to add context to their search e.g. pdf or image.">
+        Add a tab or file to your search
+      </message>
 
       <!-- NTP Modules -->
       <message name="IDS_NTP_MODULES_SETUP_LIST_DISABLE_TOAST_MESSAGE" desc="Text shown in the toast confirming a module has been disabled.">
