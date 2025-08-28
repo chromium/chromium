@@ -657,6 +657,7 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
 }
 
 void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
+  accelerator_provider_ = nullptr;
   extension_keybinding_registry_.reset();
   contents_border_controller_.reset();
   live_tab_context_.reset();
