@@ -197,7 +197,7 @@ void FormFieldParser::ParseFormFields(
     const std::vector<std::unique_ptr<AutofillField>>& fields,
     bool is_form_tag,
     FieldCandidatesMap& field_candidates) {
-  std::vector<raw_ptr<AutofillField, VectorExperimental>> processed_fields =
+  std::vector<raw_ptr<AutofillField>> processed_fields =
       RemoveCheckableFields(fields);
 
   // Email pass.
@@ -377,7 +377,7 @@ void FormFieldParser::ParseSingleFields(
     ParsingContext& context,
     const std::vector<std::unique_ptr<AutofillField>>& fields,
     FieldCandidatesMap& field_candidates) {
-  std::vector<raw_ptr<AutofillField, VectorExperimental>> processed_fields =
+  std::vector<raw_ptr<AutofillField>> processed_fields =
       RemoveCheckableFields(fields);
   // Merchant promo code pass.
   ParseFormFieldsPass(MerchantPromoCodeFieldParser::Parse, context,
@@ -399,7 +399,7 @@ void FormFieldParser::ParseStandaloneLoyaltyCardFields(
     ParsingContext& context,
     const std::vector<std::unique_ptr<AutofillField>>& fields,
     FieldCandidatesMap& field_candidates) {
-  std::vector<raw_ptr<AutofillField, VectorExperimental>> processed_fields =
+  std::vector<raw_ptr<AutofillField>> processed_fields =
       RemoveCheckableFields(fields);
 
   if (base::FeatureList::IsEnabled(
@@ -414,7 +414,7 @@ void FormFieldParser::ParseStandaloneCVCFields(
     ParsingContext& context,
     const std::vector<std::unique_ptr<AutofillField>>& fields,
     FieldCandidatesMap& field_candidates) {
-  std::vector<raw_ptr<AutofillField, VectorExperimental>> processed_fields =
+  std::vector<raw_ptr<AutofillField>> processed_fields =
       RemoveCheckableFields(fields);
   ParseFormFieldsPass(StandaloneCvcFieldParser::Parse, context,
                       processed_fields, field_candidates);
@@ -424,7 +424,7 @@ void FormFieldParser::ParseStandaloneEmailFields(
     ParsingContext& context,
     const std::vector<std::unique_ptr<AutofillField>>& fields,
     FieldCandidatesMap& field_candidates) {
-  std::vector<raw_ptr<AutofillField, VectorExperimental>> processed_fields =
+  std::vector<raw_ptr<AutofillField>> processed_fields =
       RemoveCheckableFields(fields);
   // Do not ignore fields with autocomplete attributes attempting to disable
   // autocomplete. Disabling autocomplete is a common practice on fields where
@@ -650,11 +650,10 @@ void FormFieldParser::AddClassification(
 }
 
 // static
-std::vector<raw_ptr<AutofillField, VectorExperimental>>
-FormFieldParser::RemoveCheckableFields(
+std::vector<raw_ptr<AutofillField>> FormFieldParser::RemoveCheckableFields(
     const std::vector<std::unique_ptr<AutofillField>>& fields) {
   // Set up a working copy of the fields to be processed.
-  std::vector<raw_ptr<AutofillField, VectorExperimental>> processed_fields;
+  std::vector<raw_ptr<AutofillField>> processed_fields;
   for (const auto& field : fields) {
     // Ignore checkable fields as they interfere with parsers assuming context.
     // Eg., while parsing address, "Is PO box" checkbox after ADDRESS_LINE1
@@ -787,7 +786,7 @@ std::optional<FormFieldParser::MatchInfo> FormFieldParser::MatchInName(
 void FormFieldParser::ParseFormFieldsPass(
     ParseFunction parse,
     ParsingContext& context,
-    const std::vector<raw_ptr<AutofillField, VectorExperimental>>& fields,
+    const std::vector<raw_ptr<AutofillField>>& fields,
     FieldCandidatesMap& field_candidates) {
   AutofillScanner scanner(fields);
   while (!scanner.IsEnd()) {

@@ -312,8 +312,7 @@ class FormFieldParser {
 
   // Removes checkable fields and returns fields to be processed for field
   // detection.
-  static std::vector<raw_ptr<AutofillField, VectorExperimental>>
-  RemoveCheckableFields(
+  static std::vector<raw_ptr<AutofillField>> RemoveCheckableFields(
       const std::vector<std::unique_ptr<AutofillField>>& fields);
 
   // Matches the regular expression `pattern` against the specified
@@ -348,7 +347,7 @@ class FormFieldParser {
   static void ParseFormFieldsPass(
       ParseFunction parse,
       ParsingContext& context,
-      const std::vector<raw_ptr<AutofillField, VectorExperimental>>& fields,
+      const std::vector<raw_ptr<AutofillField>>& fields,
       FieldCandidatesMap& field_candidates);
 };
 

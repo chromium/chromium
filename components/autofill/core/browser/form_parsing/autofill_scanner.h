@@ -19,8 +19,7 @@ class AutofillField;
 // A helper class for parsing a stream of |AutofillField|'s with lookahead.
 class AutofillScanner {
  public:
-  explicit AutofillScanner(
-      const std::vector<raw_ptr<AutofillField, VectorExperimental>>& fields);
+  explicit AutofillScanner(const std::vector<raw_ptr<AutofillField>>& fields);
   explicit AutofillScanner(
       const std::vector<std::unique_ptr<AutofillField>>& fields);
 
@@ -53,26 +52,22 @@ class AutofillScanner {
   size_t CursorPosition();
 
  private:
-  void Init(
-      const std::vector<raw_ptr<AutofillField, VectorExperimental>>& fields);
+  void Init(const std::vector<raw_ptr<AutofillField>>& fields);
 
   // Indicates the current position in the stream, represented as a vector.
-  std::vector<raw_ptr<AutofillField, VectorExperimental>>::const_iterator
-      cursor_;
+  std::vector<raw_ptr<AutofillField>>::const_iterator cursor_;
 
   // The most recently saved cursor.
-  std::vector<raw_ptr<AutofillField, VectorExperimental>>::const_iterator
-      saved_cursor_;
+  std::vector<raw_ptr<AutofillField>>::const_iterator saved_cursor_;
 
   // The beginning pointer for the stream.
-  std::vector<raw_ptr<AutofillField, VectorExperimental>>::const_iterator
-      begin_;
+  std::vector<raw_ptr<AutofillField>>::const_iterator begin_;
 
   // The past-the-end pointer for the stream.
-  std::vector<raw_ptr<AutofillField, VectorExperimental>>::const_iterator end_;
+  std::vector<raw_ptr<AutofillField>>::const_iterator end_;
 
   // The storage of non-owning pointers, used for the unique_ptr constructor.
-  std::vector<raw_ptr<AutofillField, VectorExperimental>> non_owning_;
+  std::vector<raw_ptr<AutofillField>> non_owning_;
 };
 
 }  // namespace autofill
