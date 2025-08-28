@@ -13,7 +13,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/metrics/first_web_contents_profiler_base.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -84,13 +85,15 @@ bool FirstWebContentsProfiler::WasStartupInterrupted() {
 
 void BeginFirstWebContentsProfiling() {
   content::WebContents* visible_contents = nullptr;
-  const BrowserList* browser_list = BrowserList::GetInstance();
-  for (Browser* browser : browser_list->OrderedByActivation()) {
-    visible_contents =
-        FirstWebContentsProfilerBase::GetVisibleContents(browser);
-    if (visible_contents)
-      break;
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        visible_contents =
+            FirstWebContentsProfilerBase::GetVisibleContents(browser);
+        if (visible_contents) {
+          return false;  // stop iterating
+        }
+        return true;  // continue iterating
+      });
 
   if (!visible_contents) {
     RecordFirstWebContentsFinishReason(

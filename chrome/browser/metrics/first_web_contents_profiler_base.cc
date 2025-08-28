@@ -7,6 +7,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -22,22 +24,25 @@ FirstWebContentsProfilerBase::~FirstWebContentsProfilerBase() = default;
 
 // static
 content::WebContents* FirstWebContentsProfilerBase::GetVisibleContents(
-    Browser* browser) {
-  if (!browser->window()->IsVisible())
+    BrowserWindowInterface* browser) {
+  if (!browser->GetWindow()->IsVisible()) {
     return nullptr;
+  }
 
   // The active WebContents may be hidden when the window height is small.
   content::WebContents* contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetFeatures().tab_strip_model()->GetActiveWebContents();
 
   // It is incorrect to have a visible browser window with no active
   // WebContents, but reports on show that it happens.
   // See https://crbug.com/1032348 for Mac or https://crbug.com/1414831 for Win.
-  if (!contents)
+  if (!contents) {
     return nullptr;
+  }
 
-  if (contents->GetVisibility() != content::Visibility::VISIBLE)
+  if (contents->GetVisibility() != content::Visibility::VISIBLE) {
     return nullptr;
+  }
 
   return contents;
 }
