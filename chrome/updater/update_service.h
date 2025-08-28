@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/version.h"
 #include "chrome/updater/enum_traits.h"
+#include "chrome/updater/mojom/updater_service.mojom.h"
 #include "chrome/updater/util/util.h"
 #include "components/update_client/update_client.h"
 
@@ -128,50 +129,7 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
   };
 
   struct UpdateState {
-    // Possible states for updating an app. Add new values at the end of
-    // the definition, and do not mutate the existing values.
-    enum class State {
-      // This value represents the absence of a state. No update request has
-      // yet been issued.
-      kUnknown = 0,
-
-      // This update has not been started, but has been requested.
-      kNotStarted = 1,
-
-      // The engine began issuing an update check request.
-      kCheckingForUpdates = 2,
-
-      // An update is available.
-      kUpdateAvailable = 3,
-
-      // The engine began downloading an update.
-      kDownloading = 4,
-
-      // The engine began running installation scripts.
-      kInstalling = 5,
-
-      // The engine found and installed an update for this product. The update
-      // is complete and the state will not change.
-      kUpdated = 6,
-
-      // The engine checked for updates. This product is already up to date.
-      // No update has been installed for this product. The update is complete
-      // and the state will not change.
-      kNoUpdate = 7,
-
-      // The engine encountered an error updating this product. The update has
-      // halted and the state will not change.
-      kUpdateError = 8,
-
-      // The engine is decompressing an update.
-      kDecompressing = 9,
-
-      // The engine is applying a patch.
-      kPatching = 10,
-
-      // Update EnumTraits<UpdateService::UpdateState::State> when adding new
-      // values.
-    };
+    using State = updater::mojom::UpdateState::State;
 
     UpdateState();
     UpdateState(const UpdateState&);

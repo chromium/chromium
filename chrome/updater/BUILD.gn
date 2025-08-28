@@ -212,6 +212,7 @@ if (is_win || is_mac || is_linux) {
       "//chrome/enterprise_companion/mojom",
       "//chrome/enterprise_companion/telemetry_logger",
       "//chrome/enterprise_companion/telemetry_logger/proto",
+      "//chrome/updater/mojom",
       "//chrome/updater/protos:omaha_proto",
       "//components/crash/core/common",
       "//components/crx_file",
@@ -403,10 +404,7 @@ if (is_win || is_mac || is_linux) {
         "remove_uninstalled_apps_task_posix.cc",
       ]
 
-      deps += [
-        "//chrome/updater/mojom",
-        "//components/named_mojo_ipc_server",
-      ]
+      deps += [ "//components/named_mojo_ipc_server" ]
     }
 
     if (is_linux) {
@@ -591,6 +589,7 @@ if (is_win || is_mac || is_linux) {
       ":version_header",
       "//base",
       "//chrome/enterprise_companion:installer_paths",
+      "//chrome/updater/mojom",
       "//components/policy/core/common:common_constants",
       "//components/update_client",
       "//mojo/core/embedder",
@@ -670,10 +669,7 @@ if (is_win || is_mac || is_linux) {
         "util/posix_util.h",
       ]
 
-      deps += [
-        "//chrome/updater/mojom",
-        "//components/named_mojo_ipc_server",
-      ]
+      deps += [ "//components/named_mojo_ipc_server" ]
     }
   }
 
