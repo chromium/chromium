@@ -37,6 +37,31 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Lens"/>
 </enum>
 
+<!-- LINT.IfChange(AimEligibilityRequestStatus) -->
+
+<enum name="AimEligibilityRequestStatus">
+  <summary>
+    The status of a HTTP GET request sent to a backend to fetch AIM eligibility.
+  </summary>
+  <int value="0" label="kSent"/>
+  <int value="1" label="kErrorResponse"/>
+  <int value="2" label="kFailedToParse"/>
+  <int value="3" label="kSuccess"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/omnibox/browser/aim_eligibility_service.h:EligibilityRequestStatus) -->
+
+<!-- LINT.IfChange(AimEligibilityResponseSource) -->
+
+<enum name="AimEligibilityResponseSource">
+  <summary>The source of the response for AIM eligibility.</summary>
+  <int value="0" label="kDefault"/>
+  <int value="1" label="kPrefs"/>
+  <int value="2" label="kServer"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/omnibox/browser/aim_eligibility_service.h:EligibilityResponseSource) -->
+
 <enum name="BooleanNavigated">
   <int value="0" label="Navigation did not occur"/>
   <int value="1" label="Navigation occurred"/>
@@ -325,20 +350,6 @@ chromium-metrics-reviews@google.com.
     Response was received asynchronously.
   </int>
 </enum>
-
-<!-- LINT.IfChange(ServerAimEligibilityRequestStatus) -->
-
-<enum name="ServerAimEligibilityRequestStatus">
-  <summary>
-    The status of a HTTP GET request sent to a backend to fetch AIM eligibility.
-  </summary>
-  <int value="0" label="kSent"/>
-  <int value="1" label="kErrorResponse"/>
-  <int value="2" label="kFailedToParse"/>
-  <int value="3" label="kSuccess"/>
-</enum>
-
-<!-- LINT.ThenChange(//components/omnibox/browser/aim_eligibility_service.h:ServerRequestStatus) -->
 
 <enum name="SuggestionAnswerOptionalType">
   <summary>
