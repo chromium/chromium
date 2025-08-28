@@ -51,6 +51,7 @@ class CORE_EXPORT DeclaredStylePropertyMap final : public StylePropertyMap {
 
  private:
   StyleRule* GetStyleRule() const;
+  void NotifyRuleMutation();
 
   WeakMember<CSSStyleRule> owner_rule_;
 };
