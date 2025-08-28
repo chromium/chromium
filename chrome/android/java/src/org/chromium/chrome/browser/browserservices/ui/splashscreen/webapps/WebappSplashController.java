@@ -15,6 +15,7 @@ import android.widget.ImageView;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
@@ -106,7 +107,7 @@ public class WebappSplashController implements SplashDelegate {
         storage.getSplashScreenImage(
                 new WebappDataStorage.FetchCallback<>() {
                     @Override
-                    public void onDataRetrieved(Bitmap splashImage) {
+                    public void onDataRetrieved(@Nullable Bitmap splashImage) {
                         initializeWebApkInfoSplashLayout(
                                 splashScreen, backgroundColor, splashImage, false);
                     }
@@ -117,7 +118,7 @@ public class WebappSplashController implements SplashDelegate {
     private void initializeWebApkInfoSplashLayout(
             ViewGroup splashScreen,
             int backgroundColor,
-            Bitmap splashImage,
+            @Nullable Bitmap splashImage,
             boolean isSplashIconMaskable) {
         Context context = ContextUtils.getApplicationContext();
 

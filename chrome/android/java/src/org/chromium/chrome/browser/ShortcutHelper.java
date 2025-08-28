@@ -229,8 +229,8 @@ public class ShortcutHelper {
      */
     public static Intent createWebappShortcutIntent(
             String id,
-            String url,
-            String scope,
+            @Nullable String url,
+            @Nullable String scope,
             @Nullable String name,
             @Nullable String shortName,
             @Nullable String encodedIcon,

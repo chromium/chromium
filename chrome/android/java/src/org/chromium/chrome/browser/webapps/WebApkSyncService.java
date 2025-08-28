@@ -7,13 +7,12 @@ package org.chromium.chrome.browser.webapps;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappIcon;
@@ -27,6 +26,7 @@ import java.util.List;
 
 /** Static class to update WebAPK data to sync. */
 @JNINamespace("webapk")
+@NullMarked
 public class WebApkSyncService {
     private static final long UNIX_OFFSET_MICROS = 11644473600000000L;
 
@@ -34,10 +34,7 @@ public class WebApkSyncService {
     public interface PwaRestorableListCallback {
         @CalledByNative("PwaRestorableListCallback")
         void onRestorableAppsAvailable(
-                boolean success,
-                @NonNull String[] appIds,
-                @NonNull String[] appNames,
-                @NonNull List<Bitmap> icons);
+                boolean success, String[] appIds, String[] appNames, List<Bitmap> icons);
     }
 
     static void onWebApkUsed(
@@ -55,7 +52,7 @@ public class WebApkSyncService {
         WebApkSyncServiceJni.get().onWebApkUninstalled(manifestId);
     }
 
-    static WebApkSpecifics getWebApkSpecifics(
+    static @Nullable WebApkSpecifics getWebApkSpecifics(
             @Nullable WebappInfo webApkInfo, WebappDataStorage storage) {
         if (webApkInfo == null || !webApkInfo.isForWebApk()) {
             return null;
