@@ -301,7 +301,8 @@ public class LocationBarCoordinator
                         merchantTrustSignalsCoordinatorSupplier,
                         browserControlsVisibilityDelegate);
         mNavigationAttachmentsCoordinator =
-                new NavigationAttachmentsCoordinator(context, windowAndroid, mLocationBarLayout);
+                new NavigationAttachmentsCoordinator(
+                        context, windowAndroid, mLocationBarLayout, profileObservableSupplier);
         mLocationBarMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         mLocationBarMediator.addUrlFocusChangeListener(mNavigationAttachmentsCoordinator);

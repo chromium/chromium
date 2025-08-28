@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -21,16 +22,22 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.navattach.AttachmentDetailsFetcher.AttachmentDetails;
+import org.chromium.chrome.browser.omnibox.navattach.NavigationAttachmentsRecyclerViewAdapter.NavigationAttachmentItemType;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,13 +52,15 @@ class NavigationAttachmentsMediator {
     private final NavigationAttachmentsPopup mPopup;
     private final ModelList mModelList;
     private final Drawable mFallbackDrawable;
+    private ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
 
     NavigationAttachmentsMediator(
             Context context,
             WindowAndroid windowAndroid,
             PropertyModel model,
             NavigationAttachmentsViewHolder viewHolder,
-            ModelList modelList) {
+            ModelList modelList,
+            ObservableSupplier<Profile> profileObservableSupplier) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mPermissionDelegate = windowAndroid;
@@ -69,9 +78,20 @@ class NavigationAttachmentsMediator {
         mModel.set(NavigationAttachmentsProperties.POPUP_FILE_CLICKED, this::onFilePickerClicked);
         mModel.set(
                 NavigationAttachmentsProperties.ON_USE_AI_MODE_CHANGED, this::onUseAiModeChanged);
+        new OneShotCallback<>(profileObservableSupplier, this::initializeBridge);
     }
 
-    void destroy() {}
+    void destroy() {
+        if (mComposeBoxQueryControllerBridge != null) {
+            mComposeBoxQueryControllerBridge.destroy();
+        }
+    }
+
+    @Initializer
+    @VisibleForTesting
+    void initializeBridge(Profile profile) {
+        mComposeBoxQueryControllerBridge = new ComposeBoxQueryControllerBridge(profile);
+    }
 
     void onUseAiModeChanged(boolean enabled) {
         if (!enabled) {
@@ -130,7 +150,18 @@ class NavigationAttachmentsMediator {
 
                     var bitmap = (Bitmap) data.getExtras().get("data");
                     if (bitmap == null) return;
-                    addAttachment(new BitmapDrawable(mContext.getResources(), bitmap), null, null);
+
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    bitmap.compress(CompressFormat.PNG, 100, byteArrayOutputStream);
+                    byte[] dataBytes = byteArrayOutputStream.toByteArray();
+                    AttachmentDetails attachmentDetails =
+                            new AttachmentDetails(
+                                    NavigationAttachmentItemType.ATTACHMENT_IMAGE,
+                                    new BitmapDrawable(mContext.getResources(), bitmap),
+                                    "",
+                                    "image/png",
+                                    dataBytes);
+                    addAttachment(attachmentDetails);
                 },
                 R.string.low_memory_error);
     }
@@ -163,12 +194,7 @@ class NavigationAttachmentsMediator {
 
                     var uris = extractUrisFromResult(data);
                     for (var uri : uris) {
-                        fetchAttachmentDetails(
-                                uri,
-                                (details) -> {
-                                    addAttachment(
-                                            details.thumbnail, details.title, details.description);
-                                });
+                        fetchAttachmentDetails(uri, this::addAttachment);
                     }
                 },
                 R.string.low_memory_error);
@@ -193,12 +219,7 @@ class NavigationAttachmentsMediator {
 
                     var uris = extractUrisFromResult(data);
                     for (var uri : uris) {
-                        fetchAttachmentDetails(
-                                uri,
-                                (details) -> {
-                                    addAttachment(
-                                            details.thumbnail, details.title, details.description);
-                                });
+                        fetchAttachmentDetails(uri, this::addAttachment);
                     }
                 },
                 /* errorId= */ android.R.string.cancel);
@@ -211,27 +232,28 @@ class NavigationAttachmentsMediator {
                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    /* package */ void addAttachment(
-            @Nullable Drawable thumbnail, @Nullable String title, @Nullable String description) {
+    /* package */ void addAttachment(AttachmentDetailsFetcher.AttachmentDetails attachmentDetails) {
+        uploadAttachment(attachmentDetails);
         mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE, true);
-
-        @NavigationAttachmentsRecyclerViewAdapter.NavigationAttachmentItemType
-        int itemType =
-                (title == null || description == null)
-                        ? NavigationAttachmentsRecyclerViewAdapter.NavigationAttachmentItemType
-                                .ATTACHMENT_IMAGE
-                        : NavigationAttachmentsRecyclerViewAdapter.NavigationAttachmentItemType
-                                .ATTACHMENT_ITEM;
 
         PropertyModel model =
                 new PropertyModel.Builder(NavigationAttachmentItemProperties.ALL_KEYS)
                         .with(
                                 NavigationAttachmentItemProperties.THUMBNAIL,
-                                thumbnail != null ? thumbnail : mFallbackDrawable)
-                        .with(NavigationAttachmentItemProperties.TITLE, title)
-                        .with(NavigationAttachmentItemProperties.DESCRIPTION, description)
+                                attachmentDetails.thumbnail != null
+                                        ? attachmentDetails.thumbnail
+                                        : mFallbackDrawable)
+                        .with(NavigationAttachmentItemProperties.TITLE, attachmentDetails.title)
+                        .with(
+                                NavigationAttachmentItemProperties.DESCRIPTION,
+                                attachmentDetails.mimeType)
                         .build();
-        mModelList.add(new MVCListAdapter.ListItem(itemType, model));
+        mModelList.add(new MVCListAdapter.ListItem(attachmentDetails.itemType, model));
+    }
+
+    private void uploadAttachment(AttachmentDetails attachmentDetails) {
+        mComposeBoxQueryControllerBridge.addFile(
+                attachmentDetails.title, attachmentDetails.mimeType, attachmentDetails.data);
     }
 
     // Parse GET_CONTENT response, extracting single- or multiple image selections.

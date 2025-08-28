@@ -15,11 +15,14 @@ import android.text.TextUtils;
 import android.util.Size;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FileUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.omnibox.navattach.NavigationAttachmentsRecyclerViewAdapter.NavigationAttachmentItemType;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Optional;
 
 /**
@@ -32,16 +35,26 @@ import java.util.Optional;
 @NullMarked
 class AttachmentDetailsFetcher
         extends AsyncTask<Optional<AttachmentDetailsFetcher.AttachmentDetails>> {
+
     /** A container for the fetched attachment details. */
     public static final class AttachmentDetails {
+        public final @NavigationAttachmentItemType int itemType;
         public final @Nullable Drawable thumbnail;
         public final String title;
-        public final String description;
+        public final String mimeType;
+        public final byte[] data;
 
-        AttachmentDetails(@Nullable Drawable thumbnail, String title, String description) {
+        AttachmentDetails(
+                @NavigationAttachmentItemType int itemType,
+                @Nullable Drawable thumbnail,
+                String title,
+                String mimeType,
+                byte[] data) {
+            this.itemType = itemType;
             this.thumbnail = thumbnail;
             this.title = title;
-            this.description = description;
+            this.mimeType = mimeType;
+            this.data = data;
         }
     }
 
@@ -99,14 +112,29 @@ class AttachmentDetailsFetcher
             title = mUri.getLastPathSegment();
         }
 
-        String description = mContentResolver.getType(mUri);
+        String mimeType = mContentResolver.getType(mUri);
 
         // Bail: don't add the item if we miss metadata.
         assert !TextUtils.isEmpty(title);
-        assert !TextUtils.isEmpty(description);
-        if (title == null || description == null) return Optional.empty();
+        assert !TextUtils.isEmpty(mimeType);
+        if (title == null || mimeType == null) return Optional.empty();
 
-        return Optional.of(new AttachmentDetails(thumbnail, title, description));
+        byte[] data;
+
+        try (InputStream inputStream = mContentResolver.openInputStream(mUri)) {
+            if (inputStream == null) return Optional.empty();
+            data = FileUtils.readStream(inputStream);
+        } catch (IOException e) {
+            return Optional.empty();
+        }
+
+        return Optional.of(
+                new AttachmentDetails(
+                        NavigationAttachmentItemType.ATTACHMENT_ITEM,
+                        thumbnail,
+                        title,
+                        mimeType,
+                        data));
     }
 
     @Override

@@ -7,12 +7,12 @@ package org.chromium.chrome.browser.omnibox.navattach;
 import android.content.Context;
 import android.view.ViewGroup;
 
-import androidx.annotation.VisibleForTesting;
-
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -26,7 +26,10 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
     private final @Nullable NavigationAttachmentsViewHolder mViewHolder;
 
     public NavigationAttachmentsCoordinator(
-            Context context, WindowAndroid windowAndroid, ViewGroup parent) {
+            Context context,
+            WindowAndroid windowAndroid,
+            ViewGroup parent,
+            ObservableSupplier<Profile> profileObservableSupplier) {
         if (!OmniboxFeatures.sOmniboxMultimodalInput.isEnabled()
                 || parent.findViewById(R.id.location_bar_navigation_toolbar) == null) {
             mMediator = null;
@@ -52,7 +55,12 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
                 model, mViewHolder, NavigationAttachmentsViewBinder::bind);
         mMediator =
                 new NavigationAttachmentsMediator(
-                        context, windowAndroid, model, mViewHolder, modelList);
+                        context,
+                        windowAndroid,
+                        model,
+                        mViewHolder,
+                        modelList,
+                        profileObservableSupplier);
     }
 
     public void destroy() {
@@ -69,7 +77,6 @@ public class NavigationAttachmentsCoordinator implements UrlFocusChangeListener 
         }
     }
 
-    @VisibleForTesting
     @Nullable NavigationAttachmentsViewHolder getViewHolderForTesting() {
         return mViewHolder;
     }

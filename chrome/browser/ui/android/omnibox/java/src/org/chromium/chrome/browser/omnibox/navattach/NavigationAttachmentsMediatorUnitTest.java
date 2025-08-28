@@ -27,11 +27,17 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.omnibox.navattach.AttachmentDetailsFetcher.AttachmentDetails;
+import org.chromium.chrome.browser.omnibox.navattach.NavigationAttachmentsRecyclerViewAdapter.NavigationAttachmentItemType;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.nio.ByteBuffer;
 
 /** Unit tests for {@link NavigationAttachmentsMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -41,20 +47,30 @@ public class NavigationAttachmentsMediatorUnitTest {
     private @Mock NavigationAttachmentsViewHolder mViewHolder;
     private @Mock NavigationAttachmentsPopup mPopup;
     private @Mock WindowAndroid mWindowAndroid;
+    private @Mock Profile mProfile;
+    private @Mock ComposeBoxQueryControllerBridge.Natives mNativeMock;
 
     private Context mContext;
     private PropertyModel mModel;
     private NavigationAttachmentsMediator mMediator;
+    private ObservableSupplierImpl<Profile> mProfileSupplier;
 
     @Before
     public void setUp() {
+        mProfileSupplier = new ObservableSupplierImpl<>(mProfile);
         mContext = RuntimeEnvironment.application;
         mModel = new PropertyModel(NavigationAttachmentsProperties.ALL_KEYS);
         mViewHolder = new NavigationAttachmentsViewHolder(mViewGroup, mPopup);
         mMediator =
                 Mockito.spy(
                         new NavigationAttachmentsMediator(
-                                mContext, mWindowAndroid, mModel, mViewHolder, new ModelList()));
+                                mContext,
+                                mWindowAndroid,
+                                mModel,
+                                mViewHolder,
+                                new ModelList(),
+                                mProfileSupplier));
+        ComposeBoxQueryControllerBridgeJni.setInstanceForTesting(mNativeMock);
     }
 
     @Test
@@ -118,9 +134,22 @@ public class NavigationAttachmentsMediatorUnitTest {
     }
 
     @Test
-    public void addAttachment_setsAttachmentsVisible() {
-        mMediator.addAttachment(null, "title", "description");
+    public void addAttachment_addAttachment() {
+        doReturn(123L).when(mNativeMock).init(mProfile);
+        mMediator.initializeBridge(mProfile);
+        byte[] byteArray = new byte[] {1, 2, 3};
+        AttachmentDetails attachmentDetails =
+                new AttachmentDetails(
+                        NavigationAttachmentItemType.ATTACHMENT_ITEM,
+                        null,
+                        "title",
+                        "image",
+                        byteArray);
+        mMediator.addAttachment(attachmentDetails);
         assertTrue(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE));
+        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(byteArray.length);
+        byteBuffer.put(byteArray);
+        verify(mNativeMock).addFile(123L, "title", "image", byteBuffer);
     }
 
     @Test
@@ -128,7 +157,7 @@ public class NavigationAttachmentsMediatorUnitTest {
         ModelList modelList = new ModelList();
         mMediator =
                 new NavigationAttachmentsMediator(
-                        mContext, mWindowAndroid, mModel, mViewHolder, modelList);
+                        mContext, mWindowAndroid, mModel, mViewHolder, modelList, mProfileSupplier);
         modelList.add(new MVCListAdapter.ListItem(0, new PropertyModel()));
         assertEquals(1, modelList.size());
 

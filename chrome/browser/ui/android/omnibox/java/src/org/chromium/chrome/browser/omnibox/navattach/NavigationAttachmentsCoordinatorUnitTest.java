@@ -24,10 +24,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
@@ -43,6 +45,7 @@ public class NavigationAttachmentsCoordinatorUnitTest {
     private WindowAndroid mWindowAndroid;
     private NavigationAttachmentsCoordinator mCoordinator;
     private ViewGroup mParent;
+    private final ObservableSupplierImpl<Profile> mProfileSupplier = new ObservableSupplierImpl<>();
 
     @Before
     public void setUp() {
@@ -67,7 +70,9 @@ public class NavigationAttachmentsCoordinatorUnitTest {
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testToolbarVisibility_featureEnabled() {
-        mCoordinator = new NavigationAttachmentsCoordinator(mActivity, mWindowAndroid, mParent);
+        mCoordinator =
+                new NavigationAttachmentsCoordinator(
+                        mActivity, mWindowAndroid, mParent, mProfileSupplier);
         View navigationToolbar = mParent.findViewById(R.id.location_bar_navigation_toolbar);
         assertEquals(View.GONE, navigationToolbar.getVisibility());
 
@@ -81,7 +86,9 @@ public class NavigationAttachmentsCoordinatorUnitTest {
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testAdapter_isSet() {
-        mCoordinator = new NavigationAttachmentsCoordinator(mActivity, mWindowAndroid, mParent);
+        mCoordinator =
+                new NavigationAttachmentsCoordinator(
+                        mActivity, mWindowAndroid, mParent, mProfileSupplier);
         NavigationAttachmentsViewHolder viewHolder = mCoordinator.getViewHolderForTesting();
         assertNotNull(viewHolder);
         assertNotNull(viewHolder.attachmentsView.getAdapter());
@@ -90,14 +97,18 @@ public class NavigationAttachmentsCoordinatorUnitTest {
     @Test
     @DisableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testToolbarVisibility_featureDisabled() {
-        mCoordinator = new NavigationAttachmentsCoordinator(mActivity, mWindowAndroid, mParent);
+        mCoordinator =
+                new NavigationAttachmentsCoordinator(
+                        mActivity, mWindowAndroid, mParent, mProfileSupplier);
         assertNull(mCoordinator.getViewHolderForTesting());
     }
 
     @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testAddButton_togglesPopup() {
-        mCoordinator = new NavigationAttachmentsCoordinator(mActivity, mWindowAndroid, mParent);
+        mCoordinator =
+                new NavigationAttachmentsCoordinator(
+                        mActivity, mWindowAndroid, mParent, mProfileSupplier);
         NavigationAttachmentsViewHolder viewHolder = mCoordinator.getViewHolderForTesting();
         assertNotNull(viewHolder);
         View addButton = viewHolder.addButton;
