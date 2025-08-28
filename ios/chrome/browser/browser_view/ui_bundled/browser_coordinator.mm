@@ -10,6 +10,7 @@
 #import <optional>
 
 #import "base/check_deref.h"
+#import "base/check_op.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
@@ -805,6 +806,13 @@ enum class ToolbarKind {
 
   [super start];
   self.started = YES;
+
+  CHECK_GE(_numberOfActivityOverly, 0);
+  if (_numberOfActivityOverly > 0 && !self.activityOverlayCoordinator) {
+    // The activity overlay was requested before the UI got ready, need to start
+    // the overlay now.
+    [self startActivityOverlay];
+  }
 }
 
 - (void)stop {
@@ -1078,6 +1086,15 @@ enum class ToolbarKind {
   }
   _webUsageEnabled = webUsageEnabled;
   self.viewController.webUsageEnabled = webUsageEnabled;
+}
+
+// Starts the activity overlay that was requested using `-showActivityOverlay`.
+- (void)startActivityOverlay {
+  CHECK(self.viewController);
+  self.activityOverlayCoordinator = [[ActivityOverlayCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  [self.activityOverlayCoordinator start];
 }
 
 // Hides activity overlay number. Remove it if the number becomes 0..
@@ -2325,13 +2342,17 @@ enum class ToolbarKind {
   _urlLoadingBrowserAgent->Load(params);
 }
 
-// Displays activity overlay.
+// Requests that the activity overlay is shown. The actual creation of the
+// overlay might be deferred until the UI is ready.
 - (base::ScopedClosureRunner)showActivityOverlay {
-  _numberOfActivityOverly++;
-  self.activityOverlayCoordinator = [[ActivityOverlayCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser];
-  [self.activityOverlayCoordinator start];
+  ++_numberOfActivityOverly;
+  if (_numberOfActivityOverly == 1) {
+    // Start the overlay immediately if the UI is ready. Otherwise,
+    // `startActivityOverlay` will be invoked from `[BrowserCoordinator start]`.
+    if (self.viewController) {
+      [self startActivityOverlay];
+    }
+  }
   return base::ScopedClosureRunner(base::BindOnce(
       [](BrowserCoordinator* strongSelf) {
         [strongSelf decreaseActivityOverlay];
