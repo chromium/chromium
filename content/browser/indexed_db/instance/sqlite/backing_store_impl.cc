@@ -11,25 +11,11 @@
 #include "base/files/file_util.h"
 #include "base/notimplemented.h"
 #include "content/browser/indexed_db/file_path_util.h"
-#include "content/browser/indexed_db/indexed_db_data_loss_info.h"
 #include "content/browser/indexed_db/instance/sqlite/backing_store_database_impl.h"
 #include "content/browser/indexed_db/instance/sqlite/database_connection.h"
 #include "content/browser/indexed_db/status.h"
 
 namespace content::indexed_db::sqlite {
-
-std::tuple<std::unique_ptr<BackingStore>, Status, IndexedDBDataLossInfo, bool>
-BackingStoreImpl::OpenAndVerify(
-    base::FilePath directory,
-    storage::mojom::BlobStorageContext& blob_storage_context) {
-  return {
-      std::make_unique<BackingStoreImpl>(std::move(directory),
-                                         blob_storage_context),
-      Status::OK(),
-      IndexedDBDataLossInfo(),
-      false,
-  };
-}
 
 BackingStoreImpl::BackingStoreImpl(
     base::FilePath directory,

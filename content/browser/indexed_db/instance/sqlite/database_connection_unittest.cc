@@ -60,9 +60,8 @@ class DatabaseConnectionTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
     // Create a mock backing store for testing
-    auto rv =
-        BackingStoreImpl::OpenAndVerify(temp_dir_.GetPath(), blob_context_);
-    backing_store_ = std::move(std::get<0>(rv));
+    backing_store_ =
+        std::make_unique<BackingStoreImpl>(temp_dir_.GetPath(), blob_context_);
   }
 
   void TearDown() override { backing_store_.reset(); }
