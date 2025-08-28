@@ -11,7 +11,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.Browser;
 
-import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.preference.Preference;
 
@@ -25,6 +24,8 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
@@ -70,15 +71,16 @@ import java.util.List;
 import java.util.Set;
 
 /** A SiteSettingsDelegate instance that contains Chrome-specific Site Settings logic. */
+@NullMarked
 public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     private final Context mContext;
     private final Profile mProfile;
     private final PrivacySandboxBridge mPrivacySandboxBridge;
-    private BrowsingDataModel mBrowsingDataModel;
-    private ManagedPreferenceDelegate mManagedPreferenceDelegate;
-    private SnackbarManager mSnackbarManager;
-    private PrivacySandboxSnackbarController mPrivacySandboxController;
-    private LargeIconBridge mLargeIconBridge;
+    private @Nullable BrowsingDataModel mBrowsingDataModel;
+    private @Nullable ManagedPreferenceDelegate mManagedPreferenceDelegate;
+    private @Nullable SnackbarManager mSnackbarManager;
+    private @Nullable PrivacySandboxSnackbarController mPrivacySandboxController;
+    private @Nullable LargeIconBridge mLargeIconBridge;
 
     public ChromeSiteSettingsDelegate(Context context, Profile profile) {
         mContext = context;
