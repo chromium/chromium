@@ -138,6 +138,52 @@ TEST_F(ActorKeyedServiceTest, FindTaskIdsInInactive_ReturnsSuccessfully) {
   EXPECT_EQ(single_found[0], id2);
 }
 
+// Test that adding a tab to a paused or stopped task has no effect.
+TEST_F(ActorKeyedServiceTest, AddTabToPausedOrStoppedTask) {
+  auto* actor_service = ActorKeyedService::Get(profile());
+  actor_service->SetActorUiStateManagerForTesting(BuildUiStateManagerMock());
+  std::unique_ptr<ExecutionEngine> execution_engine =
+      std::make_unique<ExecutionEngine>(profile());
+  TaskId id = actor_service->AddActiveTask(std::make_unique<ActorTask>(
+      profile(), std::move(execution_engine),
+      ui::NewUiEventDispatcher(actor_service->GetActorUiStateManager())));
+
+  ActorTask* task = actor_service->GetTask(id);
+  ASSERT_TRUE(task);
+  const tabs::TabHandle tab_handle(123);
+
+  // Pause the task and try to add a tab.
+  task->Pause(/*from_actor=*/true);
+  EXPECT_TRUE(task->IsPaused());
+
+  {
+    base::RunLoop loop;
+    task->AddTab(tab_handle,
+                 base::BindLambdaForTesting([&](mojom::ActionResultPtr result) {
+                   EXPECT_EQ(result->code,
+                             mojom::ActionResultCode::kTaskPaused);
+                   loop.Quit();
+                 }));
+    loop.Run();
+  }
+  EXPECT_FALSE(task->IsActingOnTab(tab_handle));
+
+  // Stop the task and try to add a tab.
+  actor_service->StopTask(id, true);
+  EXPECT_TRUE(task->IsStopped());
+  {
+    base::RunLoop loop;
+    task->AddTab(tab_handle,
+                 base::BindLambdaForTesting([&](mojom::ActionResultPtr result) {
+                   EXPECT_EQ(result->code,
+                             mojom::ActionResultCode::kTaskWentAway);
+                   loop.Quit();
+                 }));
+    loop.Run();
+  }
+  EXPECT_FALSE(task->IsActingOnTab(tab_handle));
+}
+
 }  // namespace
 
 }  // namespace actor

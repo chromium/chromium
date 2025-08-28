@@ -220,6 +220,15 @@ base::Time ActorTask::GetEndTime() const {
 }
 
 void ActorTask::AddTab(tabs::TabHandle tab_handle, AddTabCallback callback) {
+  if (IsPaused() || IsStopped()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback),
+            MakeResult(IsPaused() ? mojom::ActionResultCode::kTaskPaused
+                                  : mojom::ActionResultCode::kTaskWentAway)));
+    return;
+  }
   // Make this tab the most recently actuated on, even if it was actuated on
   // before.
   last_actuated_tab_handle_ = tab_handle;
