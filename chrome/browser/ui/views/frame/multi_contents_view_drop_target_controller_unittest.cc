@@ -42,6 +42,12 @@ content::DropData ValidUrlDropData() {
   return valid_url_data;
 }
 
+content::DropData NonStandardUrlDropData() {
+  content::DropData valid_url_data;
+  valid_url_data.url = GURL("mailto:me@google.com");
+  return valid_url_data;
+}
+
 void SetRTL(bool rtl) {
   // Override the current locale/direction.
   base::i18n::SetICUDefaultLocale(rtl ? "he" : "en");
@@ -228,6 +234,16 @@ TEST_F(MultiContentsViewDropTargetControllerNudgeDisabledTest,
 }
 
 // Tests that the drop target is not shown when an invalid url is being dragged.
+TEST_F(MultiContentsViewDropTargetControllerNudgeDisabledTest,
+       OnWebContentsDragUpdate_HideDropTargetOnNonStandardURL) {
+  controller().OnWebContentsDragUpdate(NonStandardUrlDropData(),
+                                       kDragPointForStartDropTargetShow, false);
+  FastForward();
+  EXPECT_FALSE(drop_target_view().GetVisible());
+}
+
+// Tests that the drop target is not shown when a non-standard url is being
+// dragged.
 TEST_F(MultiContentsViewDropTargetControllerNudgeDisabledTest,
        OnWebContentsDragUpdate_HideDropTargetOnInvalidURL) {
   controller().OnWebContentsDragUpdate(content::DropData(),
