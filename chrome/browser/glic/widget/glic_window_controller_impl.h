@@ -222,7 +222,7 @@ class GlicWindowControllerImpl
 
   // Find and return a browser within attachment distance. Returns nullptr if no
   // browsers are within attachment distance.
-  Browser* FindBrowserForAttachment();
+  BrowserWindowInterface* FindBrowserForAttachment();
 
   // Called when the move animation finishes when attaching.
   void AttachAnimationFinished();
@@ -237,7 +237,8 @@ class GlicWindowControllerImpl
   void AttachedBrowserDidClose(BrowserWindowInterface* browser);
 
   // Returns true if a browser is occluded at point in screen coordinates.
-  bool IsBrowserOccludedAtPoint(Browser* browser, gfx::Point point);
+  bool IsBrowserOccludedAtPoint(BrowserWindowInterface* browser,
+                                gfx::Point point);
 
   // Return the last size Resize() was called with, or the default initial size
   // if Resize() hasn't been called. The return value is clamped to fit between

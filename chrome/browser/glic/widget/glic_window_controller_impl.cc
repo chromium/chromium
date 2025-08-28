@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -108,7 +109,7 @@ mojom::PanelState CreatePanelState(bool widget_visible,
   return panel_state;
 }
 
-GlicButton* GetGlicButton(Browser& browser) {
+GlicButton* GetGlicButton(BrowserWindowInterface& browser) {
   return BrowserElementsViews::From(&browser)->GetViewAs<glic::GlicButton>(
       kGlicButtonElementId);
 }
@@ -1292,17 +1293,18 @@ void GlicWindowControllerImpl::AdjustPositionIfNeeded() {
 }
 
 void GlicWindowControllerImpl::OnDragComplete() {
-  Browser* browser = FindBrowserForAttachment();
+  BrowserWindowInterface* browser = FindBrowserForAttachment();
   // No browser within attachment range.
   if (!browser) {
     return;
   }
   // Attach to the found browser.
-  AttachToBrowser(*browser, AttachChangeReason::kDrag);
+  AttachToBrowser(*browser->GetBrowserForMigrationOnly(),
+                  AttachChangeReason::kDrag);
 }
 
 void GlicWindowControllerImpl::HandleGlicButtonIndicator() {
-  Browser* browser = FindBrowserForAttachment();
+  BrowserWindowInterface* browser = FindBrowserForAttachment();
   // No browser within attachment range so reset indicators
   if (!browser) {
     scoped_glic_button_indicator_.reset();
@@ -1313,13 +1315,16 @@ void GlicWindowControllerImpl::HandleGlicButtonIndicator() {
   if (!scoped_glic_button_indicator_ ||
       scoped_glic_button_indicator_->GetGlicButton() != glic_button) {
     // Bring the browser to the front.
-    browser->GetBrowserView().GetWidget()->Activate();
+    browser->GetBrowserForMigrationOnly()
+        ->GetBrowserView()
+        .GetWidget()
+        ->Activate();
     scoped_glic_button_indicator_ =
         std::make_unique<ScopedGlicButtonIndicator>(glic_button);
   }
 }
 
-Browser* GlicWindowControllerImpl::FindBrowserForAttachment() {
+BrowserWindowInterface* GlicWindowControllerImpl::FindBrowserForAttachment() {
   // The profile must have started off as Glic enabled since a Glic widget is
   // open but it may have been disabled at runtime by policy. In this edge-case,
   // prevent reattaching back to a window (as it no longer has a GlicButton).
@@ -1334,44 +1339,52 @@ Browser* GlicWindowControllerImpl::FindBrowserForAttachment() {
       GetGlicWidget()->GetWindowBoundsInScreen().top_right();
   // Loops through all browsers in activation order with the latest accessed
   // browser first.
-  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (!IsBrowserGlicAttachable(profile_, browser)) {
-      continue;
-    }
+  BrowserWindowInterface* browser_for_attachment = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (!IsBrowserGlicAttachable(profile_, browser)) {
+          return true;  // continue iterating
+        }
 
-    auto* tab_strip_view = browser->GetBrowserView().tab_strip_view();
-    CHECK(tab_strip_view);
+        auto* tab_strip_view = browser->GetBrowserForMigrationOnly()
+                                   ->GetBrowserView()
+                                   .tab_strip_view();
+        CHECK(tab_strip_view);
 
-    // If the profile is enabled, the Glic button must be available.
-    glic::GlicButton* glic_button =
-        BrowserElementsViews::From(browser)->GetViewAs<glic::GlicButton>(
-            kGlicButtonElementId);
-    CHECK(glic_button);
+        // If the profile is enabled, the Glic button must be available.
+        glic::GlicButton* glic_button =
+            BrowserElementsViews::From(browser)->GetViewAs<glic::GlicButton>(
+                kGlicButtonElementId);
+        CHECK(glic_button);
 
-    // Define attachment zone as the right of the tab strip. It either is the
-    // width of the widget or 1/3 of the tab strip, whichever is smaller.
-    gfx::Rect attachment_zone = tab_strip_view->GetBoundsInScreen();
-    int width = std::min(attachment_zone.width() / 3,
-                         GlicWidget::GetInitialSize().width());
-    attachment_zone.SetByBounds(attachment_zone.right() - width,
-                                attachment_zone.y() - kAttachmentBuffer,
-                                attachment_zone.right() + kAttachmentBuffer,
-                                attachment_zone.bottom());
+        // Define attachment zone as the right of the tab strip. It either is
+        // the width of the widget or 1/3 of the tab strip, whichever is
+        // smaller.
+        gfx::Rect attachment_zone = tab_strip_view->GetBoundsInScreen();
+        int width = std::min(attachment_zone.width() / 3,
+                             GlicWidget::GetInitialSize().width());
+        attachment_zone.SetByBounds(attachment_zone.right() - width,
+                                    attachment_zone.y() - kAttachmentBuffer,
+                                    attachment_zone.right() + kAttachmentBuffer,
+                                    attachment_zone.bottom());
 
-    // If both the left center of the attachment zone and glic button right
-    // center are occluded, don't consider for attachment.
-    if (IsBrowserOccludedAtPoint(browser, attachment_zone.left_center()) &&
-        IsBrowserOccludedAtPoint(
-            browser, glic_button->GetBoundsInScreen().right_center())) {
-      continue;
-    }
+        // If both the left center of the attachment zone and glic button right
+        // center are occluded, don't consider for attachment.
+        if (IsBrowserOccludedAtPoint(browser, attachment_zone.left_center()) &&
+            IsBrowserOccludedAtPoint(
+                browser, glic_button->GetBoundsInScreen().right_center())) {
+          return true;  // continue iterating
+        }
 
-    if (attachment_zone.Contains(glic_top_right)) {
-      return browser;
-    }
-  }
-  // No browser found near glic.
-  return nullptr;
+        if (attachment_zone.Contains(glic_top_right)) {
+          browser_for_attachment = browser;
+          return false;  // stop iterating
+        }
+
+        return true;  // continue iterating
+      });
+
+  return browser_for_attachment;
 }
 
 void GlicWindowControllerImpl::AddStateObserver(StateObserver* observer) {
@@ -1454,13 +1467,17 @@ void GlicWindowControllerImpl::Shutdown() {
   window_activation_callback_list_.Notify(false);
 }
 
-bool GlicWindowControllerImpl::IsBrowserOccludedAtPoint(Browser* browser,
-                                                        gfx::Point point) {
+bool GlicWindowControllerImpl::IsBrowserOccludedAtPoint(
+    BrowserWindowInterface* browser,
+    gfx::Point point) {
   std::set<gfx::NativeWindow> exclude = {
       GetGlicView()->GetWidget()->GetNativeWindow()};
   gfx::NativeWindow window =
       window_finder_->GetLocalProcessWindowAtPoint(point, exclude);
-  if (browser->GetBrowserView().GetWidget()->GetNativeWindow() != window) {
+  if (browser->GetBrowserForMigrationOnly()
+          ->GetBrowserView()
+          .GetWidget()
+          ->GetNativeWindow() != window) {
     return true;
   }
   return false;
