@@ -60,7 +60,7 @@ declare_args() {
   use_clang_modules =
       # Clang modules doesn't work with translation_unit used in codesearch
       # pipeline http://b/436082487.
-      !enable_kythe_annotations && is_clang && current_os == "linux" &&
+      !enable_kythe_annotations && is_clang && is_linux &&
       current_cpu == "x64" &&
       # reclient doesn't handle headers in modulemap config.
       !use_reclient && !is_cronet_for_aosp_build
