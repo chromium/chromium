@@ -337,9 +337,13 @@ EncoderStatus D3D12VideoEncodeH265Delegate::EncodeImpl(
 
   if (is_keyframe) {
     H265VPS vps = ToVPS();
+    // HEVC spec section C.3: insertion of current picture happens before
+    // removal of pictures from the DPB, so if we for example allow the
+    // maximum references for each frame to be 2, the DPB must allow 3 frames
+    // to be stored into it. Thus vps_max_dec_pic_buffering_minus1 equals to
+    // the maximum allowed references, instead of that minus 1.
     vps.vps_max_dec_pic_buffering_minus1[0] =
-        svc_layers_ ? max_num_ref_frames_ - 1
-                    : GetMaxNumOfManualRefBuffers() - 1;
+        svc_layers_ ? max_num_ref_frames_ : GetMaxNumOfManualRefBuffers();
     H265SPS sps = ToSPS(vps);
     // Values specified here equals to that in T-REC H.273 Table 3.
     if (IsRec601(input_color_space)) {

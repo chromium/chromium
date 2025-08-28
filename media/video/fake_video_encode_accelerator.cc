@@ -74,7 +74,7 @@ EncoderStatus FakeVideoEncodeAccelerator::Initialize(
 
 void FakeVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
                                         bool force_keyframe) {
-  VideoEncoder::EncodeOptions options(/*key_frame=*/true);
+  VideoEncoder::EncodeOptions options(/*key_frame=*/force_keyframe);
   Encode(std::move(frame), options);
 }
 
