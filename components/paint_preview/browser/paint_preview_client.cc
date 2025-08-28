@@ -155,13 +155,14 @@ void CloseFile(base::File file) {
 }
 
 void OnSerializedRecordingFileCreated(
-    const RecordingParams& capture_params,
+    RecordingParams capture_params,
     const base::FilePath& filename,
     PaintPreviewClient::RecordingRequestParamsReadyCallback callback,
     base::File file) {
   if (!file.IsValid()) {
     DLOG(ERROR) << "File create failed: " << file.error_details();
-    std::move(callback).Run(mojom::PaintPreviewStatus::kFileCreationError, {});
+    std::move(callback).Run(std::move(capture_params),
+                            mojom::PaintPreviewStatus::kFileCreationError, {});
   } else if (callback.IsCancelled()) {
     // The weak pointer is invalid, we should close the file on a background
     // thread to avoid it being closed implicitly via the default dtor on the UI
@@ -170,10 +171,10 @@ void OnSerializedRecordingFileCreated(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::BindOnce(&CloseFile, std::move(file)));
   } else {
-    std::move(callback).Run(
-        mojom::PaintPreviewStatus::kOk,
-        CreateRecordingRequestParams(RecordingPersistence::kFileSystem,
-                                     capture_params, std::move(file)));
+    mojom::PaintPreviewCaptureParamsPtr params = CreateRecordingRequestParams(
+        RecordingPersistence::kFileSystem, capture_params, std::move(file));
+    std::move(callback).Run(std::move(capture_params),
+                            mojom::PaintPreviewStatus::kOk, std::move(params));
   }
 }
 
@@ -192,6 +193,16 @@ PaintPreviewClient::PaintPreviewParams::PaintPreviewParams(
       inner(RecordingParams(std::move(document_guid))) {}
 
 PaintPreviewClient::PaintPreviewParams::~PaintPreviewParams() = default;
+
+PaintPreviewClient::PaintPreviewParams
+PaintPreviewClient::PaintPreviewParams::Clone() const {
+  PaintPreviewParams copy(persistence, inner.get_document_guid());
+
+  copy.inner = inner.Clone();
+  copy.root_dir = root_dir;
+
+  return copy;
+}
 
 // static
 PaintPreviewClient::PaintPreviewParams
@@ -255,7 +266,7 @@ PaintPreviewClient::InProgressDocumentCaptureState::FilePathForFrame(
 
 void PaintPreviewClient::InProgressDocumentCaptureState::
     PrepareRecordingRequestParams(
-        const RecordingParams& capture_params,
+        RecordingParams capture_params,
         const base::UnguessableToken& frame_guid,
         RecordingRequestParamsReadyCallback ready_callback) const {
   if (persistence == RecordingPersistence::kFileSystem) {
@@ -263,12 +274,15 @@ void PaintPreviewClient::InProgressDocumentCaptureState::
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
         base::BindOnce(&CreateOrOverwriteFileForWriting, frame_filepath),
-        base::BindOnce(&OnSerializedRecordingFileCreated, capture_params,
-                       frame_filepath, std::move(ready_callback)));
+        base::BindOnce(&OnSerializedRecordingFileCreated,
+                       std::move(capture_params), frame_filepath,
+                       std::move(ready_callback)));
   } else {
+    mojom::PaintPreviewCaptureParamsPtr params =
+        CreateRecordingRequestParams(persistence, capture_params, {});
     std::move(ready_callback)
-        .Run(mojom::PaintPreviewStatus::kOk,
-             CreateRecordingRequestParams(persistence, capture_params, {}));
+        .Run(std::move(capture_params), mojom::PaintPreviewStatus::kOk,
+             std::move(params));
   }
 }
 
@@ -331,7 +345,7 @@ PaintPreviewClient::PaintPreviewClient(content::WebContents* web_contents)
 PaintPreviewClient::~PaintPreviewClient() = default;
 
 void PaintPreviewClient::CapturePaintPreview(
-    const PaintPreviewParams& params,
+    PaintPreviewParams params,
     content::RenderFrameHost* render_frame_host,
     PaintPreviewCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -403,7 +417,7 @@ void PaintPreviewClient::CapturePaintPreview(
       {params.inner.get_document_guid(), std::move(document_data)});
   TRACE_EVENT_BEGIN("paint_preview", "PaintPreviewClient::CapturePaintPreview",
                     perfetto::Track::FromPointer(&document_data_it->second));
-  CapturePaintPreviewInternal(params.inner, render_frame_host,
+  CapturePaintPreviewInternal(std::move(params.inner), render_frame_host,
                               document_data_it->second);
 }
 
@@ -433,7 +447,8 @@ void PaintPreviewClient::CaptureSubframePaintPreview(
   params.max_decoded_image_size_bytes =
       document_data->max_decoded_image_size_bytes;
   params.skip_accelerated_content = document_data->skip_accelerated_content;
-  CapturePaintPreviewInternal(params, render_subframe_host, *document_data);
+  CapturePaintPreviewInternal(std::move(params), render_subframe_host,
+                              *document_data);
 }
 
 void PaintPreviewClient::RenderFrameDeleted(
@@ -480,7 +495,7 @@ void PaintPreviewClient::RenderFrameDeleted(
 }
 
 void PaintPreviewClient::CapturePaintPreviewInternal(
-    const RecordingParams& params,
+    RecordingParams params,
     content::RenderFrameHost* render_frame_host,
     const InProgressDocumentCaptureState& document_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -510,9 +525,9 @@ void PaintPreviewClient::CapturePaintPreviewInternal(
   }
 
   document_data.PrepareRecordingRequestParams(
-      params, frame_guid,
+      std::move(params), frame_guid,
       base::BindOnce(&PaintPreviewClient::RequestCaptureOnUIThread,
-                     weak_ptr_factory_.GetWeakPtr(), frame_guid, params,
+                     weak_ptr_factory_.GetWeakPtr(), frame_guid,
                      content::GlobalRenderFrameHostId(
                          render_frame_host->GetProcess()->GetDeprecatedID(),
                          render_frame_host->GetRoutingID())));
@@ -520,8 +535,8 @@ void PaintPreviewClient::CapturePaintPreviewInternal(
 
 void PaintPreviewClient::RequestCaptureOnUIThread(
     const base::UnguessableToken& frame_guid,
-    const RecordingParams& params,
     const content::GlobalRenderFrameHostId& render_frame_id,
+    RecordingParams params,
     mojom::PaintPreviewStatus status,
     mojom::PaintPreviewCaptureParamsPtr capture_params) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -573,8 +588,8 @@ void PaintPreviewClient::RequestCaptureOnUIThread(
   interface_it->second->CapturePaintPreview(
       std::move(capture_params),
       base::BindOnce(&PaintPreviewClient::OnPaintPreviewCapturedCallback,
-                     weak_ptr_factory_.GetWeakPtr(), frame_guid, params,
-                     render_frame_id));
+                     weak_ptr_factory_.GetWeakPtr(), frame_guid,
+                     std::move(params), render_frame_id));
 }
 
 void PaintPreviewClient::OnPaintPreviewCapturedCallback(

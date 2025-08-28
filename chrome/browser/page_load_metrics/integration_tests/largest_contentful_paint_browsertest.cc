@@ -278,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
 
   base::RunLoop run_loop;
   client->CapturePaintPreview(
-      params, web_contents()->GetPrimaryMainFrame(),
+      std::move(params), web_contents()->GetPrimaryMainFrame(),
       base::BindOnce(
           [](base::OnceClosure callback, base::UnguessableToken,
              paint_preview::mojom::PaintPreviewStatus,

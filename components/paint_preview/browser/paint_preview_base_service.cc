@@ -84,7 +84,7 @@ void PaintPreviewBaseService::CapturePaintPreview(CaptureParams capture_params,
 
   auto start_time = base::TimeTicks::Now();
   client->CapturePaintPreview(
-      params, render_frame_host,
+      std::move(params), render_frame_host,
       base::BindOnce(&PaintPreviewBaseService::OnCaptured,
                      weak_ptr_factory_.GetWeakPtr(), std::move(capture_handle),
                      start_time, std::move(callback)));

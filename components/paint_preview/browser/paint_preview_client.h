@@ -42,13 +42,22 @@ class PaintPreviewClient
                               std::unique_ptr<CaptureResult>)>;
 
   using RecordingRequestParamsReadyCallback =
-      base::OnceCallback<void(mojom::PaintPreviewStatus,
+      base::OnceCallback<void(RecordingParams,
+                              mojom::PaintPreviewStatus,
                               mojom::PaintPreviewCaptureParamsPtr)>;
 
   // Augmented version of mojom::PaintPreviewServiceParams.
   struct PaintPreviewParams {
     explicit PaintPreviewParams(RecordingPersistence persistence);
+
+    PaintPreviewParams(const PaintPreviewParams&) = delete;
+    PaintPreviewParams& operator=(const PaintPreviewParams&) = delete;
+    PaintPreviewParams(PaintPreviewParams&&) = default;
+    PaintPreviewParams& operator=(PaintPreviewParams&&) = default;
+
     ~PaintPreviewParams();
+
+    PaintPreviewParams Clone() const;
 
     // Indicates where the PaintPreviewRecorder should store its intermediate
     // artifacts.
@@ -78,7 +87,7 @@ class PaintPreviewClient
   // passed the main frame or for just a specific subframe depending on
   // |render_frame_host|. |callback| is invoked on completion, and must be
   // non-null.
-  void CapturePaintPreview(const PaintPreviewParams& params,
+  void CapturePaintPreview(PaintPreviewParams params,
                            content::RenderFrameHost* render_frame_host,
                            PaintPreviewCallback callback);
 
@@ -183,7 +192,7 @@ class PaintPreviewClient
     // |persistence| is |RecordingPersistence::kFileSystem|, this will create
     // the file that will act as the sink for the recording.
     void PrepareRecordingRequestParams(
-        const RecordingParams& capture_params,
+        RecordingParams capture_params,
         const base::UnguessableToken& frame_guid,
         RecordingRequestParamsReadyCallback ready_callback) const;
 
@@ -211,7 +220,7 @@ class PaintPreviewClient
   // Sets up for a capture of a frame on |render_frame_host| according to
   // |params|.
   void CapturePaintPreviewInternal(
-      const RecordingParams& params,
+      RecordingParams params,
       content::RenderFrameHost* render_frame_host,
       const InProgressDocumentCaptureState& document_data);
 
@@ -221,8 +230,8 @@ class PaintPreviewClient
   // the File stored in |result| (base::File isn't aware of its file path).
   void RequestCaptureOnUIThread(
       const base::UnguessableToken& frame_guid,
-      const RecordingParams& params,
       const content::GlobalRenderFrameHostId& render_frame_id,
+      RecordingParams params,
       mojom::PaintPreviewStatus status,
       mojom::PaintPreviewCaptureParamsPtr capture_params);
 

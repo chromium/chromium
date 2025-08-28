@@ -196,7 +196,8 @@ TEST_P(PaintPreviewClientRenderViewHostTest, CaptureMainFrameMock) {
   auto* client = PaintPreviewClient::FromWebContents(web_contents());
   ASSERT_NE(client, nullptr);
   CaptureResultFuture main_capture_future;
-  client->CapturePaintPreview(params, rfh, main_capture_future.GetCallback());
+  client->CapturePaintPreview(params.Clone(), rfh,
+                              main_capture_future.GetCallback());
 
   auto [returned_guid, status, result] = main_capture_future.Take();
   EXPECT_EQ(returned_guid, params.inner.get_document_guid());
@@ -254,7 +255,7 @@ TEST_P(PaintPreviewClientRenderViewHostTest, CaptureFailureMock) {
   auto* client = PaintPreviewClient::FromWebContents(web_contents());
   ASSERT_NE(client, nullptr);
   CaptureResultFuture main_capture_future;
-  client->CapturePaintPreview(params, main_rfh(),
+  client->CapturePaintPreview(params.Clone(), main_rfh(),
                               main_capture_future.GetCallback());
 
   auto [returned_guid, status, result] = main_capture_future.Take();
@@ -293,7 +294,7 @@ TEST_F(PaintPreviewClientRenderViewHostTestBase, SubframeFileCreationFails) {
       recorder_received_request_future.GetCallback());
 
   CaptureResultFuture main_capture_future;
-  client->CapturePaintPreview(params, main_rfh(),
+  client->CapturePaintPreview(params.Clone(), main_rfh(),
                               main_capture_future.GetCallback());
 
   ASSERT_TRUE(recorder_received_request_future.Wait());
@@ -351,7 +352,8 @@ TEST_P(PaintPreviewClientRenderViewHostTest, RenderFrameDeletedDuringCapture) {
       service_received_request_future.GetCallback());
 
   CaptureResultFuture main_capture_future;
-  client->CapturePaintPreview(params, rfh, main_capture_future.GetCallback());
+  client->CapturePaintPreview(params.Clone(), rfh,
+                              main_capture_future.GetCallback());
 
   ASSERT_TRUE(service_received_request_future.Wait());
   client->RenderFrameDeleted(rfh);
@@ -453,7 +455,7 @@ TEST_P(PaintPreviewClientRenderViewHostResponseOrderingTest,
   ASSERT_NE(client, nullptr);
 
   CaptureResultFuture main_capture_future;
-  client->CapturePaintPreview(main_frame_params, rfh,
+  client->CapturePaintPreview(main_frame_params.Clone(), rfh,
                               main_capture_future.GetCallback());
   ASSERT_TRUE(main_frame_req.Wait());
 

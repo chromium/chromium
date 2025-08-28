@@ -21,6 +21,13 @@ namespace paint_preview {
 struct RecordingParams {
   explicit RecordingParams(const base::UnguessableToken& document_guid);
 
+  RecordingParams(const RecordingParams&) = delete;
+  RecordingParams& operator=(const RecordingParams&) = delete;
+  RecordingParams(RecordingParams&&);
+  RecordingParams& operator=(RecordingParams&&);
+
+  RecordingParams Clone() const;
+
   const base::UnguessableToken& get_document_guid() const LIFETIME_BOUND {
     return document_guid;
   }

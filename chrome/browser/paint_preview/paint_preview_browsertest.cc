@@ -180,7 +180,8 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest, CaptureFrame) {
   base::test::TestFuture<base::UnguessableToken, mojom::PaintPreviewStatus,
                          std::unique_ptr<CaptureResult>>
       future;
-  client->CapturePaintPreview(params, GetWebContents()->GetPrimaryMainFrame(),
+  client->CapturePaintPreview(params.Clone(),
+                              GetWebContents()->GetPrimaryMainFrame(),
                               future.GetCallback());
   auto [guid, status, result] = future.Take();
   EXPECT_EQ(guid, params.inner.get_document_guid());
@@ -214,7 +215,8 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest,
   base::test::TestFuture<base::UnguessableToken, mojom::PaintPreviewStatus,
                          std::unique_ptr<CaptureResult>>
       future;
-  client->CapturePaintPreview(params, GetWebContents()->GetPrimaryMainFrame(),
+  client->CapturePaintPreview(params.Clone(),
+                              GetWebContents()->GetPrimaryMainFrame(),
                               future.GetCallback());
 
   auto [guid, status, result] = future.Take();
@@ -270,7 +272,8 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewFencedFrameBrowserTest,
   base::test::TestFuture<base::UnguessableToken, mojom::PaintPreviewStatus,
                          std::unique_ptr<CaptureResult>>
       future;
-  client->CapturePaintPreview(params, primary_main_rfh, future.GetCallback());
+  client->CapturePaintPreview(params.Clone(), primary_main_rfh,
+                              future.GetCallback());
   auto [guid, status, result] = future.Take();
   // This callback should have a success result without any DCHECK
   // error.
@@ -323,7 +326,8 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewFencedFrameBrowserTest,
   base::test::TestFuture<base::UnguessableToken, mojom::PaintPreviewStatus,
                          std::unique_ptr<CaptureResult>>
       future;
-  client->CapturePaintPreview(params, primary_main_rfh, future.GetCallback());
+  client->CapturePaintPreview(params.Clone(), primary_main_rfh,
+                              future.GetCallback());
 
   // Wait for the request to execute before removing the fenced frame.
   ASSERT_TRUE(started_future.Wait());
@@ -379,7 +383,8 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest,
   base::test::TestFuture<base::UnguessableToken, mojom::PaintPreviewStatus,
                          std::unique_ptr<CaptureResult>>
       future;
-  client->CapturePaintPreview(params, GetWebContents()->GetPrimaryMainFrame(),
+  client->CapturePaintPreview(params.Clone(),
+                              GetWebContents()->GetPrimaryMainFrame(),
                               future.GetCallback());
   auto [guid, status, result] = future.Take();
   EXPECT_EQ(guid, params.inner.get_document_guid());
@@ -425,7 +430,8 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest,
   base::test::TestFuture<base::UnguessableToken, mojom::PaintPreviewStatus,
                          std::unique_ptr<CaptureResult>>
       future;
-  client->CapturePaintPreview(params, GetWebContents()->GetPrimaryMainFrame(),
+  client->CapturePaintPreview(params.Clone(),
+                              GetWebContents()->GetPrimaryMainFrame(),
                               future.GetCallback());
   auto [guid, status, result] = future.Take();
   EXPECT_EQ(guid, params.inner.get_document_guid());
@@ -479,7 +485,8 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest, DontReloadInRenderProcessExit) {
   base::test::TestFuture<base::UnguessableToken, mojom::PaintPreviewStatus,
                          std::unique_ptr<CaptureResult>>
       future;
-  client->CapturePaintPreview(params, web_contents->GetPrimaryMainFrame(),
+  client->CapturePaintPreview(params.Clone(),
+                              web_contents->GetPrimaryMainFrame(),
                               future.GetCallback());
   // This callback is now posted so it shouldn't cause a crash.
   // Wait for the request to execute before crashing the renderer. Otherwise in
