@@ -381,9 +381,9 @@ class IbanAccessManagerMandatoryReauthTest : public IbanAccessManagerTest {
   void SetUpDeviceAuthenticatorResponseMock(bool success) {
     ON_CALL(mandatory_reauth_manager(), StartDeviceAuthentication)
         .WillByDefault(testing::WithArg<1>(
-            testing::Invoke([success](base::OnceCallback<void(bool)> callback) {
+            [success](base::OnceCallback<void(bool)> callback) {
               std::move(callback).Run(success);
-            })));
+            }));
   }
 
   payments::MockMandatoryReauthManager& mandatory_reauth_manager() {

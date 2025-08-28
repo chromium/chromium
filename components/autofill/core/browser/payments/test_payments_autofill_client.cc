@@ -307,10 +307,10 @@ void TestPaymentsAutofillClient::
           payments::MandatoryReauthAuthenticationMethod::kBiometric));
 
   ON_CALL(mandatory_reauth_manager, Authenticate)
-      .WillByDefault(testing::WithArg<0>(
-          testing::Invoke([](base::OnceCallback<void(bool)> callback) {
+      .WillByDefault(
+          testing::WithArg<0>([](base::OnceCallback<void(bool)> callback) {
             std::move(callback).Run(true);
-          })));
+          }));
 }
 #endif
 

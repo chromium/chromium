@@ -71,11 +71,11 @@ class CreditCardAccessManagerMandatoryReauthTestBase
               Authenticate)
           .WillByDefault(testing::WithArg<0>(
 #endif
-              testing::Invoke([mandatory_reauth_response_is_success =
-                                   MandatoryReauthResponseIsSuccess()](
-                                  base::OnceCallback<void(bool)> callback) {
+              [mandatory_reauth_response_is_success =
+                   MandatoryReauthResponseIsSuccess()](
+                  base::OnceCallback<void(bool)> callback) {
                 std::move(callback).Run(mandatory_reauth_response_is_success);
-              })));
+              }));
     } else {
       EXPECT_CALL(mandatory_reauth_manager(),
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)

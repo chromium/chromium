@@ -80,7 +80,6 @@ using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::Gt;
-using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::IsNull;
 using ::testing::Optional;
@@ -887,7 +886,7 @@ TEST_F(ContentAutofillDriverTest, GetFourDigitCombinationsFromDom_NoMatches) {
         std::move(callback).Run(matches);
       };
   EXPECT_CALL(agent(), GetPotentialLastFourCombinationsForStandaloneCvc)
-      .WillOnce(WithArg<0>(Invoke(cb)));
+      .WillOnce(WithArg<0>(cb));
 
   std::vector<std::string> matches = {"dummy data"};
   driver().browser_events().GetFourDigitCombinationsFromDom(
@@ -908,7 +907,7 @@ TEST_F(ContentAutofillDriverTest,
         std::move(callback).Run(matches);
       };
   EXPECT_CALL(agent(), GetPotentialLastFourCombinationsForStandaloneCvc)
-      .WillOnce(WithArg<0>(Invoke(cb)));
+      .WillOnce(WithArg<0>(cb));
   std::vector<std::string> matches;
   driver().browser_events().GetFourDigitCombinationsFromDom(
       base::BindLambdaForTesting([&](const std::vector<std::string>& result) {

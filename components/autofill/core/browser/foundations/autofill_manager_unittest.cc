@@ -44,7 +44,6 @@ using ::testing::AtLeast;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
-using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::NiceMock;
 using ::testing::Pair;
@@ -460,7 +459,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   // Reset the manager, the observers should stick around.
   EXPECT_CALL(observer,
               OnAutofillManagerStateChanged(m, kActive, kPendingDeletion))
-      .WillOnce(Invoke([&] { observation.Reset(); }));
+      .WillOnce([&] { observation.Reset(); });
   test_api(*driver_).SetLifecycleStateAndNotifyObservers(kPendingDeletion);
   driver_.reset();
 }
