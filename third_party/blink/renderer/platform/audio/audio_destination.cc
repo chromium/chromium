@@ -651,7 +651,7 @@ void AudioDestination::ProvideResamplerInput(int resampler_frame_delay,
   TRACE_EVENT("webaudio", "AudioDestination::ProvideResamplerInput",
               "delay (frames)", resampler_frame_delay);
   auto adjusted_delay = delay_to_report_ + audio_utilities::FramesToTime(
-      resampler_frame_delay, context_sample_rate_);;
+      resampler_frame_delay, context_sample_rate_);
   PullFromCallback(dest, adjusted_delay);
 }
 
