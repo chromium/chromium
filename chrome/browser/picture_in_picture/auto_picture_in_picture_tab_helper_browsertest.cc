@@ -384,7 +384,8 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
   }
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(GetEnabledFeatures(), {});
+    scoped_feature_list_.InitWithFeatures(GetEnabledFeatures(),
+                                          GetDisabledFeatures());
     InProcessBrowserTest::SetUp();
   }
 
@@ -900,6 +901,10 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
             blink::features::kMediaSessionEnterPictureInPicture};
   }
 
+  virtual std::vector<base::test::FeatureRef> GetDisabledFeatures() {
+    return {blink::features::kBrowserInitiatedAutomaticPictureInPicture};
+  }
+
  private:
   std::unique_ptr<media_session::test::TestAudioFocusObserver>
       audio_focus_observer_;
@@ -997,6 +1002,10 @@ class BrowserInitiatedAutoPictureInPictureBrowserTest
     features.push_back(
         blink::features::kBrowserInitiatedAutomaticPictureInPicture);
     return features;
+  }
+
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    return {};
   }
 };
 
