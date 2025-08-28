@@ -314,30 +314,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, SetAddresses) {
       u"Faria lima");
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerCreditCard) {
-  embedded_test_server()->ServeFilesFromSourceDirectory(
-      "chrome/test/data/autofill");
-  ASSERT_TRUE(embedded_test_server()->Start());
-  const GURL url(
-      embedded_test_server()->GetURL("/autofill_creditcard_form.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
-  Attach();
-
-  EXPECT_TRUE(main_autofill_manager().WaitForFormsSeen(1));
-
-  int backend_node_id = GetBackendNodeIdByIdAttribute("CREDIT_CARD_NUMBER");
-
-  base::Value::Dict params;
-  params.Set("fieldId", backend_node_id);
-  params.Set("card", GetTestCreditCard());
-
-  ASSERT_TRUE(result());
-  SendCommandSync("Autofill.trigger", std::move(params));
-  EXPECT_EQ(*result(), base::Value::Dict());
-  EXPECT_EQ(GetFilledOutForm(""), GetTestCreditCard());
-}
-
 IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerCreditCardInIframe) {
   embedded_test_server()->ServeFilesFromSourceDirectory(
       "chrome/test/data/autofill");

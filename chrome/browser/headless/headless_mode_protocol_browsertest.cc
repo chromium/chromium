@@ -438,4 +438,6 @@ HEADLESS_MODE_PROTOCOL_TEST(WindowScreenScaleFactor,
 HEADLESS_MODE_PROTOCOL_TEST(WindowScreenSizeOrientation,
                             "shared/window-screen-size-orientation.js")
 
+HEADLESS_MODE_PROTOCOL_TEST(AutofillTriggerCreditCard,
+                            "autofill/autofill-trigger-credit-card.js")
 }  // namespace headless
