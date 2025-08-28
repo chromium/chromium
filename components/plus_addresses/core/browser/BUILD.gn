@@ -75,3 +75,21 @@ source_set("unit_tests") {
     "//testing/gmock",
   ]
 }
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "plus_address_test_environment.cc",
+    "plus_address_test_environment.h",
+  ]
+  deps = [
+    "//components/plus_addresses/core/common:prefs",
+    "//testing/gmock",
+  ]
+  public_deps = [
+    "//components/affiliations/core/browser:test_support",
+    "//components/plus_addresses/core/browser/settings:test_support",
+    "//components/prefs:test_support",
+    "//components/signin/public/identity_manager:test_support",
+  ]
+}

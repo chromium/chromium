@@ -105,6 +105,7 @@ source_set("unit_tests") {
     "//components/os_crypt/async/browser:test_support",
     "//components/plus_addresses/core/browser:blocklist_data",
     "//components/plus_addresses/core/browser:hats_utils",
+    "//components/plus_addresses/core/browser:test_support",
     "//components/plus_addresses/core/browser/metrics",
     "//components/plus_addresses/core/browser/settings:test_support",
     "//components/plus_addresses/core/common:features",
@@ -129,8 +130,6 @@ static_library("test_support") {
     "mock_plus_address_http_client.cc",
     "mock_plus_address_http_client.h",
     "plus_address_http_client_impl_test_api.h",
-    "plus_address_test_environment.cc",
-    "plus_address_test_environment.h",
     "plus_address_test_utils.cc",
     "plus_address_test_utils.h",
   ]
