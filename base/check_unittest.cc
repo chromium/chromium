@@ -9,6 +9,7 @@
 
 #include "base/check_deref.h"
 #include "base/check_version_internal.h"
+#include "base/command_line.h"
 #include "base/dcheck_is_on.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
