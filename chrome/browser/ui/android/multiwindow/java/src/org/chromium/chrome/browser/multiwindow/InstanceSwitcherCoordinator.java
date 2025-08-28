@@ -439,7 +439,7 @@ public class InstanceSwitcherCoordinator {
                         InstanceSwitcherItemProperties.CLOSE_BUTTON_CONTENT_DESCRIPTION,
                         mContext.getString(
                                 R.string.instance_switcher_item_close_content_description,
-                                item.title));
+                                mUiUtils.getItemTitle(item)));
             }
             String lastAccessedString =
                     isCurrentWindow
@@ -503,6 +503,11 @@ public class InstanceSwitcherCoordinator {
                     RecordUserAction.record("Android.WindowManager.SecondaryMenu");
                 });
         builder.with(InstanceSwitcherItemProperties.MORE_MENU, () -> listMenu);
+        builder.with(
+                InstanceSwitcherItemProperties.MORE_MENU_CONTENT_DESCRIPTION,
+                mContext.getString(
+                        R.string.instance_switcher_item_more_menu_content_description,
+                        mUiUtils.getItemTitle(item)));
     }
 
     private void closeWindow(InstanceInfo item) {
@@ -761,6 +766,12 @@ public class InstanceSwitcherCoordinator {
                         RecordUserAction.record("Android.WindowManager.SaveWindowName");
                         if (!newTitle.equals(currentTitle)) {
                             listItem.model.set(InstanceSwitcherItemProperties.TITLE, newTitle);
+                            listItem.model.set(
+                                    InstanceSwitcherItemProperties.MORE_MENU_CONTENT_DESCRIPTION,
+                                    mContext.getString(
+                                            R.string
+                                                    .instance_switcher_item_more_menu_content_description,
+                                            newTitle));
                             RecordUserAction.record("Android.WindowManager.ChangeWindowName");
                             mRenameWindowCallback.onResult(new Pair<>(item.instanceId, newTitle));
                         }

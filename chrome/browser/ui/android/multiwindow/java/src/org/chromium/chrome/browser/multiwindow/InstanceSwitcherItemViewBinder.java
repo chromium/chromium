@@ -87,6 +87,11 @@ class InstanceSwitcherItemViewBinder {
             ListMenuDelegate delegate = model.get(InstanceSwitcherItemProperties.MORE_MENU);
             ((ListMenuButton) view.findViewById(R.id.more)).setDelegate(delegate);
 
+        } else if (InstanceSwitcherItemProperties.MORE_MENU_CONTENT_DESCRIPTION == propertyKey) {
+            View moreMenuButton = view.findViewById(R.id.more);
+            moreMenuButton.setContentDescription(
+                    model.get(InstanceSwitcherItemProperties.MORE_MENU_CONTENT_DESCRIPTION));
+
         } else if (InstanceSwitcherItemProperties.ENABLE_COMMAND == propertyKey) {
             View newWindow = view.findViewById(R.id.new_window);
             boolean enabled = model.get(InstanceSwitcherItemProperties.ENABLE_COMMAND);

@@ -974,7 +974,7 @@ public class InstanceSwitcherCoordinatorTest {
                 });
 
         // Click on the 'more' button for the second instance.
-        clickMoreButtonAtPosition(1, R.id.active_instance_list);
+        clickMoreButtonAtPosition(1, "title1");
 
         // Check that "Name" is an option and click it.
         onView(withText(R.string.instance_switcher_name_window))
@@ -1001,7 +1001,7 @@ public class InstanceSwitcherCoordinatorTest {
                 .check(matches(atPosition(1, hasDescendant(withText(newName)))));
 
         // Reopen the name window dialog.
-        clickMoreButtonAtPosition(1, R.id.active_instance_list);
+        clickMoreButtonAtPosition(1, newName);
         onView(withText(R.string.instance_switcher_name_window))
                 .inRoot(withDecorView(withClassName(containsString("Popup"))))
                 .check(matches(isDisplayed()))
@@ -1096,7 +1096,7 @@ public class InstanceSwitcherCoordinatorTest {
                 });
 
         // Click on the 'more' button for the second instance.
-        clickMoreButtonAtPosition(1, R.id.active_instance_list);
+        clickMoreButtonAtPosition(1, "title1");
 
         // Check that "Name" is an option and click it.
         onView(withText(R.string.instance_switcher_name_window))
@@ -1161,7 +1161,7 @@ public class InstanceSwitcherCoordinatorTest {
                 });
 
         // Click on the 'more' button for the second instance.
-        clickMoreButtonAtPosition(1, R.id.active_instance_list);
+        clickMoreButtonAtPosition(1, "title1");
 
         // Check that "Name" is an option and click it.
         onView(withText(R.string.instance_switcher_name_window))
@@ -1330,8 +1330,21 @@ public class InstanceSwitcherCoordinatorTest {
         };
     }
 
-    private void clickMoreButtonAtPosition(int instanceIndex, int instanceListId) {
-        onView(withId(instanceListId))
+    private void clickMoreButtonAtPosition(int instanceIndex, String itemTitle) {
+        // Verify content description of the more button on the list item.
+        onView(withId(R.id.active_instance_list))
+                .inRoot(isDialog())
+                .check(
+                        matches(
+                                atPosition(
+                                        instanceIndex,
+                                        hasDescendant(
+                                                allOf(
+                                                        withId(R.id.more),
+                                                        withContentDescription(
+                                                                "More options for "
+                                                                        + itemTitle))))));
+        onView(withId(R.id.active_instance_list))
                 .inRoot(isDialog())
                 .perform(
                         actionOnItemAtPosition(
