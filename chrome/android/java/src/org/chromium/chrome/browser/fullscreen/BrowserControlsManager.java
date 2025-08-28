@@ -51,6 +51,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.BrowserControlsOffsetTagConstraints;
 import org.chromium.ui.BrowserControlsOffsetTagDefinitions;
 import org.chromium.ui.OffsetTagConstraints;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.util.TokenHolder;
 
@@ -365,6 +366,10 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                 break;
         }
 
+        if (doSyncMinHeightWithTotalHeight()) {
+            mTopControlsMinHeight = mTopControlsHeight;
+        }
+
         mRendererTopContentOffset = mTopControlsHeight;
         updateControlOffset();
         scheduleVisibilityUpdate();
@@ -530,6 +535,10 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
 
     @Override
     public void setTopControlsHeight(int topControlsHeight, int topControlsMinHeight) {
+        if (doSyncMinHeightWithTotalHeight()) {
+            topControlsMinHeight = topControlsHeight;
+        }
+
         if (mTopControlsHeight == topControlsHeight
                 && mTopControlsMinHeight == topControlsMinHeight) {
             return;
@@ -1343,6 +1352,14 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         if (mActiveTabObserver != null) mActiveTabObserver.destroy();
         mBrowserVisibilityDelegate.destroy();
         if (mTabControlsObserver != null) mTabControlsObserver.destroy();
+    }
+
+    // Disallow top browser controls from scrolling off on large tablets by setting min height
+    // equal to overall height.
+    // TODO(https://crbug.com/436900619): Converge on and implement long-term solution.
+    private boolean doSyncMinHeightWithTotalHeight() {
+        return ChromeFeatureList.sLockTopControlsOnLargeTablets.isEnabled()
+                && DeviceFormFactor.isNonMultiDisplayContextOnLargeTablet(mActivity);
     }
 
     @NullUnmarked
