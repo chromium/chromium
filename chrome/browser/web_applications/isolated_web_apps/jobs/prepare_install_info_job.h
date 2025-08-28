@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "content/public/browser/web_contents.h"
@@ -48,7 +49,7 @@ class PrepareInstallInfoJob {
   static std::unique_ptr<PrepareInstallInfoJob> CreateAndStart(
       Profile& profile,
       IwaSourceWithMode source,
-      std::optional<base::Version> expected_version,
+      std::optional<IwaVersion> expected_version,
       content::WebContents& web_contents,
       IsolatedWebAppInstallCommandHelper& command_helper,
       std::unique_ptr<webapps::WebAppUrlLoader> loader,
@@ -86,7 +87,7 @@ class PrepareInstallInfoJob {
 
   PrepareInstallInfoJob(Profile& profile,
                         IwaSourceWithMode source,
-                        std::optional<base::Version> expected_version,
+                        std::optional<IwaVersion> expected_version,
                         content::WebContents& web_contents,
                         IsolatedWebAppInstallCommandHelper& command_helper);
 
@@ -103,19 +104,19 @@ class PrepareInstallInfoJob {
       base::OnceCallback<void(blink::mojom::ManifestPtr)> next_step_callback);
 
   void ValidateManifestAndGetVersion(
-      base::OnceCallback<void(base::Version)> next_step_callback,
+      base::OnceCallback<void(IwaVersion)> next_step_callback,
       blink::mojom::ManifestPtr manifest);
 
   void ParseInstallInfoFromManifest(
       base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,
-      const base::Version parsed_version);
+      const IwaVersion parsed_version);
 
   void FinishJob(WebAppInstallInfo info);
 
   const raw_ref<Profile> profile_;
 
   const IwaSourceWithMode source_;
-  const std::optional<base::Version> expected_version_;
+  const std::optional<IwaVersion> expected_version_;
   const raw_ref<content::WebContents> web_contents_;
   blink::mojom::ManifestPtr manifest_;
   const raw_ref<IsolatedWebAppInstallCommandHelper> command_helper_;

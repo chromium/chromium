@@ -137,11 +137,8 @@ class IsolatedWebAppUpdateManager::LocalDevModeUpdateDiscoverer {
       IsolatedWebAppUpdatePrepareAndStoreCommandResult result) {
     std::move(callback).Run(
         result
-            .transform([](const auto& success) {
-              // TODO(crbug.com/437038363): Adjust to IwaVersion.
-              return IwaVersion::Create(success.update_version.components())
-                  .value();
-            })
+            .transform(
+                [](const auto& success) { return success.update_version; })
             .transform_error([](const auto& error) { return error.message; }));
   }
 

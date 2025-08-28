@@ -99,7 +99,7 @@ class IsolatedWebAppInstallPrepareApplyUpdateCommandBrowserTest
     base::test::TestFuture<PrepareAndStoreUpdateResult> future;
     provider()->scheduler().PrepareAndStoreIsolatedWebAppUpdate(
         IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateInfo(
-            GetUpdateSource(update_bundle_path), update_version.version()),
+            GetUpdateSource(update_bundle_path), update_version),
         IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id),
         /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_THAT(
       prep_store_update_result,
       Field(&IsolatedWebAppUpdatePrepareAndStoreCommandSuccess::update_version,
-            Eq(update_iwa->version().version())));
+            Eq(update_iwa->version())));
 
   ASSERT_THAT(
       GetIsolatedWebAppFor(web_bundle_id),
@@ -280,7 +280,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_THAT(
       prep_store_update_result,
       Field(&IsolatedWebAppUpdatePrepareAndStoreCommandSuccess::update_version,
-            Eq(version.version())));
+            Eq(version)));
 
   ASSERT_THAT(
       GetIsolatedWebAppFor(web_bundle_id),

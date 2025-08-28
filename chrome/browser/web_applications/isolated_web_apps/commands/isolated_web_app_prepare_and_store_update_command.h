@@ -47,13 +47,13 @@ namespace web_app {
 // Represents a successful preparation and storage of a pending IWA update.
 struct IsolatedWebAppUpdatePrepareAndStoreCommandSuccess {
   IsolatedWebAppUpdatePrepareAndStoreCommandSuccess(
-      base::Version update_version,
+      IwaVersion update_version,
       IsolatedWebAppStorageLocation destination_location);
   IsolatedWebAppUpdatePrepareAndStoreCommandSuccess(
       const IsolatedWebAppUpdatePrepareAndStoreCommandSuccess& other);
   ~IsolatedWebAppUpdatePrepareAndStoreCommandSuccess();
 
-  base::Version update_version;
+  IwaVersion update_version;
   IsolatedWebAppStorageLocation location;
 };
 
@@ -75,7 +75,7 @@ class IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo {
  public:
   IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo(
       IwaSourceWithModeAndFileOp source,
-      std::optional<base::Version> expected_version,
+      std::optional<IwaVersion> expected_version,
       bool allow_downgrades = false);
   ~IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo();
 
@@ -87,14 +87,14 @@ class IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo {
   base::Value AsDebugValue() const;
 
   const IwaSourceWithModeAndFileOp& source() const { return source_; }
-  const std::optional<base::Version>& expected_version() const {
+  const std::optional<IwaVersion>& expected_version() const {
     return expected_version_;
   }
   bool allow_downgrades() const { return allow_downgrades_; }
 
  private:
   IwaSourceWithModeAndFileOp source_;
-  std::optional<base::Version> expected_version_;
+  std::optional<IwaVersion> expected_version_;
   bool allow_downgrades_;
 };
 
@@ -148,13 +148,13 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
                      std::string>;
 
   void ReportFailure(std::string_view message);
-  void ReportSuccess(const base::Version& update_version);
+  void ReportSuccess(const IwaVersion& update_version);
 
   Profile& profile();
 
   void ReportVersionValidationFailure(
       VersionChangeValidationResult validation_result,
-      const base::Version& expected_version);
+      const IwaVersion& expected_version);
 
   void CheckIfUpdateIsStillApplicable(base::OnceClosure next_step_callback);
 
@@ -177,14 +177,14 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
 
   void SetPendingUpdateInfo(PrepareInstallInfoJob::InstallInfoOrFailure result);
 
-  void OnFinalized(const base::Version& update_version, bool success);
+  void OnFinalized(const IwaVersion& update_version, bool success);
 
   std::unique_ptr<AppLock> lock_;
 
   const std::unique_ptr<IsolatedWebAppInstallCommandHelper> command_helper_;
 
   const IsolatedWebAppUrlInfo url_info_;
-  const std::optional<base::Version> expected_version_;
+  const std::optional<IwaVersion> expected_version_;
   bool allow_downgrades_;
 
   // The inferred integrity block data of the update bundle being processed.
@@ -195,7 +195,7 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
   std::optional<IwaSourceWithModeAndFileOp> update_source_;
   std::optional<IwaSourceWithMode> destination_location_;
   std::optional<IsolatedWebAppStorageLocation> destination_storage_location_;
-  std::optional<base::Version> installed_version_;
+  std::optional<IwaVersion> installed_version_;
 
   std::unique_ptr<content::WebContents> web_contents_;
 

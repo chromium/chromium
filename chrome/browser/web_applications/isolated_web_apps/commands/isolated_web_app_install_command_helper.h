@@ -24,6 +24,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/webapps/browser/installable/installable_logging.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 class Profile;
@@ -114,8 +115,8 @@ KeyRotationData GetKeyRotationData(
 
 // Checks if version change is allowed for given arguments.
 VersionChangeValidationResult ValidateVersionChangeFeasibility(
-    const base::Version& expected_version,
-    const base::Version& installed_version,
+    const IwaVersion& expected_version,
+    const IwaVersion& installed_version,
     bool allow_downgrades,
     bool same_version_update_allowed_by_key_rotation);
 
@@ -171,14 +172,14 @@ class IsolatedWebAppInstallCommandHelper {
       base::OnceCallback<void(
           base::expected<blink::mojom::ManifestPtr, std::string>)> callback);
 
-  base::expected<base::Version, std::string> ValidateManifestAndGetVersion(
-      const std::optional<base::Version>& expected_version,
+  base::expected<IwaVersion, std::string> ValidateManifestAndGetVersion(
+      const std::optional<IwaVersion>& expected_version,
       const blink::mojom::Manifest& manifest);
 
   void RetrieveInstallInfoWithIconsFromManifest(
       const blink::mojom::Manifest& manifest,
       content::WebContents& web_contents,
-      const base::Version parsed_version,
+      IwaVersion parsed_version,
       base::OnceCallback<void(base::expected<WebAppInstallInfo, std::string>)>
           callback);
 
@@ -211,7 +212,7 @@ class IsolatedWebAppInstallCommandHelper {
       webapps::InstallableStatusCode error_code);
 
   void OnGettingInstallInfoFromManifest(
-      const base::Version parsed_version,
+      IwaVersion parsed_version,
       base::OnceCallback<void(base::expected<WebAppInstallInfo, std::string>)>
           callback,
       std::unique_ptr<WebAppInstallInfo> install_info);

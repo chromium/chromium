@@ -239,13 +239,8 @@ void InstallIsolatedWebAppCommand::CreateStoragePartition(
 void InstallIsolatedWebAppCommand::PrepareInstallInfo(
     base::OnceCallback<void(PrepareInstallInfoJob::InstallInfoOrFailure)>
         next_step_callback) {
-  // TODO (crbug.com/437038363): Adjust to IwaVersion.
-  std::optional<base::Version> expected_base_version;
-  if (expected_version_.has_value()) {
-    expected_base_version = expected_version_->version();
-  }
   prepare_install_info_job_ = PrepareInstallInfoJob::CreateAndStart(
-      profile(), *destination_source_, expected_base_version, *web_contents_,
+      profile(), *destination_source_, expected_version_, *web_contents_,
       *command_helper_, lock_->web_contents_manager().CreateUrlLoader(),
       std::move(next_step_callback));
 }

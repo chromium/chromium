@@ -585,7 +585,6 @@ void IwaInternalsHandler::UpdateManifestInstalledIsolatedWebApp(
   }
   std::optional<IwaVersion> pinned_version =
       base::OptionalFromPtr(base::FindOrNull(pinned_versions_, app_id));
-
   bool allow_downgrades = app_ids_allowing_downgrades_.contains(app_id);
 
   update_handler_->UpdateManifestInstalledIsolatedWebApp(

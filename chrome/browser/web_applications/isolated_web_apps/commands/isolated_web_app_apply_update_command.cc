@@ -24,6 +24,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/callback_utils.h"
@@ -46,6 +47,7 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -189,11 +191,15 @@ void IsolatedWebAppApplyUpdateCommand::CreateStoragePartition(
 void IsolatedWebAppApplyUpdateCommand::PrepareInstallInfo(
     base::OnceCallback<void(PrepareInstallInfoJob::InstallInfoOrFailure)>
         next_step_callback) {
+  // TODO: (crbug.com/437038363) Adjust to IwaVersion.
+  std::optional<IwaVersion> pending_version = base::OptionalFromExpected(
+      IwaVersion::Create(pending_update_info().version.components()));
+
   prepare_install_info_job_ = PrepareInstallInfoJob::CreateAndStart(
       profile(),
       IwaSourceWithMode::FromStorageLocation(profile().GetPath(),
                                              pending_update_info().location),
-      pending_update_info().version, *web_contents_, *command_helper_,
+      pending_version, *web_contents_, *command_helper_,
       lock_->web_contents_manager().CreateUrlLoader(),
       std::move(next_step_callback));
 }

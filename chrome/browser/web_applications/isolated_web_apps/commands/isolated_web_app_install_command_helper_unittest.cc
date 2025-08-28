@@ -525,10 +525,9 @@ TEST_P(InstallIsolatedWebAppCommandHelperInvalidVersionTest,
   auto manifest = CreateDefaultManifest(url_info.origin().GetURL());
   manifest->version = GetParam().version;
 
-  base::expected<base::Version, std::string> result =
-      command_helper->ValidateManifestAndGetVersion(
-          /*expected_version=*/std::nullopt, *manifest);
-  EXPECT_THAT(result, ErrorIs(HasSubstr(GetParam().error)));
+  EXPECT_THAT(command_helper->ValidateManifestAndGetVersion(
+                  /*expected_version=*/std::nullopt, *manifest),
+              ErrorIs(HasSubstr(GetParam().error)));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -556,11 +555,9 @@ TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
       url_info, CreateDefaultDataRetriever(url_info.origin().GetURL()),
       /*response_reader_factory=*/nullptr);
 
-  base::expected<base::Version, std::string> result =
-      command_helper->ValidateManifestAndGetVersion(
-          base::Version("99.99.99"),
-          *CreateDefaultManifest(url_info.origin().GetURL()));
-  EXPECT_THAT(result,
+  EXPECT_THAT(command_helper->ValidateManifestAndGetVersion(
+                  *IwaVersion::Create("99.99.99"),
+                  *CreateDefaultManifest(url_info.origin().GetURL())),
               ErrorIs(HasSubstr(
                   "does not match the version provided in the manifest")));
 }
@@ -572,11 +569,10 @@ TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
       url_info, CreateDefaultDataRetriever(url_info.origin().GetURL()),
       /*response_reader_factory=*/nullptr);
 
-  base::expected<base::Version, std::string> result =
-      command_helper->ValidateManifestAndGetVersion(
-          /*expected_version=*/std::nullopt,
-          *CreateDefaultManifest(url_info.origin().GetURL()));
-  EXPECT_THAT(result, HasValue());
+  EXPECT_THAT(command_helper->ValidateManifestAndGetVersion(
+                  /*expected_version=*/std::nullopt,
+                  *CreateDefaultManifest(url_info.origin().GetURL())),
+              HasValue());
 }
 
 TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
@@ -590,10 +586,9 @@ TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
       CreateDefaultManifest(url_info.origin().GetURL());
   manifest->id = url_info.origin().GetURL().Resolve("/test-manifest-id");
 
-  base::expected<base::Version, std::string> result =
-      command_helper->ValidateManifestAndGetVersion(
-          /*expected_version=*/std::nullopt, *manifest);
-  EXPECT_THAT(result, ErrorIs(HasSubstr(R"(Manifest `id` must be "/")")));
+  EXPECT_THAT(command_helper->ValidateManifestAndGetVersion(
+                  /*expected_version=*/std::nullopt, *manifest),
+              ErrorIs(HasSubstr(R"(Manifest `id` must be "/")")));
 }
 
 TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
@@ -607,10 +602,9 @@ TEST_F(IsolatedWebAppInstallCommandHelperValidateManifestTest,
       CreateDefaultManifest(url_info.origin().GetURL());
   manifest->scope = url_info.origin().GetURL().Resolve("/scope");
 
-  base::expected<base::Version, std::string> result =
-      command_helper->ValidateManifestAndGetVersion(
-          /*expected_version=*/std::nullopt, *manifest);
-  EXPECT_THAT(result, ErrorIs(HasSubstr("Scope should resolve to the origin")));
+  EXPECT_THAT(command_helper->ValidateManifestAndGetVersion(
+                  /*expected_version=*/std::nullopt, *manifest),
+              ErrorIs(HasSubstr("Scope should resolve to the origin")));
 }
 
 class InstallIsolatedWebAppCommandHelperManifestIconsTest
@@ -687,7 +681,8 @@ TEST_F(InstallIsolatedWebAppCommandHelperManifestIconsTest,
 
   base::test::TestFuture<base::expected<WebAppInstallInfo, std::string>> future;
   command_helper->RetrieveInstallInfoWithIconsFromManifest(
-      *manifest, web_contents(), base::Version("1.0.0"), future.GetCallback());
+      *manifest, web_contents(), *IwaVersion::Create("1.0.0"),
+      future.GetCallback());
   auto result = future.Take();
   EXPECT_THAT(result, HasValue());
 
@@ -725,7 +720,8 @@ TEST_F(InstallIsolatedWebAppCommandHelperManifestIconsTest,
 
   base::test::TestFuture<base::expected<WebAppInstallInfo, std::string>> future;
   command_helper->RetrieveInstallInfoWithIconsFromManifest(
-      *manifest, web_contents(), base::Version("1.0.0"), future.GetCallback());
+      *manifest, web_contents(), *IwaVersion::Create("1.0.0"),
+      future.GetCallback());
   auto result = future.Take();
   EXPECT_THAT(result, ValueIs(Field(&WebAppInstallInfo::scope,
                                     Eq(url_info.origin().GetURL()))));
@@ -748,7 +744,8 @@ TEST_F(InstallIsolatedWebAppCommandHelperManifestIconsTest,
 
   base::test::TestFuture<base::expected<WebAppInstallInfo, std::string>> future;
   command_helper->RetrieveInstallInfoWithIconsFromManifest(
-      *manifest, web_contents(), base::Version("1.0.0"), future.GetCallback());
+      *manifest, web_contents(), *IwaVersion::Create("1.0.0"),
+      future.GetCallback());
   auto result = future.Take();
   EXPECT_THAT(result,
               ErrorIs(HasSubstr(
@@ -776,7 +773,8 @@ TEST_F(InstallIsolatedWebAppCommandHelperManifestIconsTest,
 
   base::test::TestFuture<base::expected<WebAppInstallInfo, std::string>> future;
   command_helper->RetrieveInstallInfoWithIconsFromManifest(
-      *manifest, web_contents(), base::Version("1.0.0"), future.GetCallback());
+      *manifest, web_contents(), *IwaVersion::Create("1.0.0"),
+      future.GetCallback());
   auto result = future.Take();
   EXPECT_THAT(result,
               ErrorIs(HasSubstr(

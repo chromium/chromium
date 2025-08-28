@@ -41,6 +41,7 @@
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "content/public/common/content_features.h"
 #include "net/http/http_status_code.h"
@@ -408,7 +409,7 @@ class IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest
   }
 
   blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url,
-                                                  const base::Version version) {
+                                                  const IwaVersion version) {
     auto manifest = blink::mojom::Manifest::New();
     manifest->id = application_url.DeprecatedGetOriginAsURL();
     manifest->scope = application_url.Resolve("/");
