@@ -28,15 +28,12 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.autofill.CreditCardScanner;
 import org.chromium.chrome.browser.autofill.CreditCardScanner.Delegate;
 import org.chromium.chrome.browser.autofill.settings.CreditCardScannerManager.FieldType;
 import org.chromium.chrome.browser.autofill.settings.CreditCardScannerManager.ScanResult;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.IntentRequestTracker;
 
 import java.util.Set;
@@ -44,7 +41,6 @@ import java.util.Set;
 /** Unit tests for {@link CreditCardScannerManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD})
 public class CreditCardScannerManagerTest {
     @Rule public final MockitoRule mockito = MockitoJUnit.rule();
 
@@ -75,21 +71,7 @@ public class CreditCardScannerManagerTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD})
-    public void onCreateWithFeatureDisabled() {
-        CreditCardScannerManager manager = new CreditCardScannerManager(mDelegate);
-
-        assertFalse(manager.canScan());
-        assertEquals(ScanResult.UNKNOWN, manager.getScanResultForTesting());
-        assertFalse(
-                "ScannerCannotScan user action should not be logged if it's due to a disabled"
-                        + " feature.",
-                mActionTester.getActions().contains(SCANNER_CANNOT_SCAN_USER_ACTION));
-    }
-
-    @Test
-    @SmallTest
-    public void onCreateWithFeatureEnabled() {
+    public void onCreate() {
         CreditCardScannerManager manager = new CreditCardScannerManager(mDelegate);
 
         assertTrue(manager.canScan());

@@ -13,7 +13,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.CreditCardScanner;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.IntentRequestTracker;
 
 import java.util.HashSet;
@@ -122,10 +121,7 @@ public class CreditCardScannerManager implements CreditCardScanner.Delegate {
      * @return True if the scanner can scan.
      */
     public boolean canScan() {
-        return mScanner.canScan()
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList
-                                .AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD);
+        return mScanner.canScan();
     }
 
     /**

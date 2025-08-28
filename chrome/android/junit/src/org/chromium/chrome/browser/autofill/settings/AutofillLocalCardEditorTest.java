@@ -82,7 +82,6 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
-@DisableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD)
 public class AutofillLocalCardEditorTest {
     // This is a non-amex card without a CVC code.
     private static CreditCard getSampleLocalCard() {
@@ -957,23 +956,13 @@ public class AutofillLocalCardEditorTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD})
-    public void scannerFeatureDisabled_scanButtonIsHidden() {
-        initFragment(null);
-        assertEquals(View.GONE, mScanButton.getVisibility());
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD})
-    public void scannerFeatureEnabled_scanButtonIsVisible() {
+    public void scanButtonIsVisible() {
         initFragment(null);
         assertEquals(View.VISIBLE, mScanButton.getVisibility());
     }
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD})
     public void scannerCannotScan_scanButtonIsHidden() {
         when(mMockScanner.canScan()).thenReturn(false);
         initFragment(null);
@@ -983,7 +972,6 @@ public class AutofillLocalCardEditorTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD})
     public void scannerButtonClicked_scanIsCalled() {
         initFragment(null);
 

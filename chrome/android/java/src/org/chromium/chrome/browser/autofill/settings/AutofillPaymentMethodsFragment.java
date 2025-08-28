@@ -429,10 +429,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
             // in
             // new credit cards.
             if (personalDataManager.isAutofillPaymentMethodsEnabled()) {
-                if (personalDataManager.getCreditCardsForSettings().isEmpty()
-                        && ChromeFeatureList.isEnabled(
-                                ChromeFeatureList
-                                        .AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD)) {
+                if (personalDataManager.getCreditCardsForSettings().isEmpty()) {
                     CardWithButtonPreference addFirstCardPref =
                             new CardWithButtonPreference(getStyledContext(), null);
                     addFirstCardPref.setTitle(R.string.autofill_create_first_credit_card_title);
