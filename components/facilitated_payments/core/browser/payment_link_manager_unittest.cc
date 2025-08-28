@@ -392,12 +392,10 @@ TEST_F(PaymentLinkManagerTest,
       "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
       "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
 
-  EXPECT_CALL(GetApiClient(), IsAvailableSync)
-      .Times(1)
-      .WillOnce(testing::Invoke([&]() {
-        FastForwardBy(base::Seconds(2));
-        return true;
-      }));
+  EXPECT_CALL(GetApiClient(), IsAvailableSync).Times(1).WillOnce([&]() {
+    FastForwardBy(base::Seconds(2));
+    return true;
+  });
 
   payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
@@ -424,12 +422,10 @@ TEST_F(PaymentLinkManagerTest,
       "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
       "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
 
-  EXPECT_CALL(GetApiClient(), IsAvailableSync)
-      .Times(1)
-      .WillOnce(testing::Invoke([&]() {
-        FastForwardBy(base::Seconds(2));
-        return false;
-      }));
+  EXPECT_CALL(GetApiClient(), IsAvailableSync).Times(1).WillOnce([&]() {
+    FastForwardBy(base::Seconds(2));
+    return false;
+  });
 
   payment_link_manager_->TriggerPaymentLinkPushPayment(
       supported_payment_link, GURL("https://www.example.com"),
@@ -1560,9 +1556,9 @@ class PaymentLinkManagerTestForA2AFlow : public PaymentLinkManagerTest {
     ON_CALL(client_, GetDeviceDelegate)
         .WillByDefault(testing::Return(mock_device_delegate_.get()));
     ON_CALL(*mock_device_delegate_, GetSupportedPaymentApps)
-        .WillByDefault(testing::Invoke([&]() {
+        .WillByDefault([&]() {
           return std::move(mock_facilitated_payments_app_info_list_);
-        }));
+        });
     ON_CALL(optimization_guide_decider_,
             CanApplyOptimization(
                 testing::_,

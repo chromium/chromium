@@ -75,14 +75,13 @@ class PixAccountLinkingManagerTest : public testing::Test {
     ON_CALL(*multiple_request_payments_network_interface(),
             GetDetailsForCreatePaymentInstrument(testing::_, testing::_,
                                                  testing::_))
-        .WillByDefault(testing::Invoke([](long, auto callback,
-                                          const std::string&) {
+        .WillByDefault([](long, auto callback, const std::string&) {
           std::move(callback).Run(autofill::payments::PaymentsAutofillClient::
                                       PaymentsRpcResult::kSuccess,
                                   true);
           return base::StrongAlias<autofill::payments::RequestIdTag,
                                    std::string>();
-        }));
+        });
     // Simulate user leaving and returning to Chrome, after which the callback
     // that triggers showing the prompt is called.
     ON_CALL(*device_delegate(), SetOnReturnToChromeCallbackAndObserveAppState)
@@ -198,13 +197,13 @@ TEST_F(PixAccountLinkingManagerTest,
   EXPECT_CALL(
       *multiple_request_payments_network_interface(),
       GetDetailsForCreatePaymentInstrument(testing::_, testing::_, testing::_))
-      .WillOnce(testing::Invoke([](long, auto callback, const std::string&) {
+      .WillOnce([](long, auto callback, const std::string&) {
         std::move(callback).Run(autofill::payments::PaymentsAutofillClient::
                                     PaymentsRpcResult::kSuccess,
                                 false);
         return base::StrongAlias<autofill::payments::RequestIdTag,
                                  std::string>();
-      }));
+      });
 
   EXPECT_CALL(client(), ShowPixAccountLinkingPrompt).Times(0);
 
@@ -329,9 +328,9 @@ TEST_F(PixAccountLinkingManagerTest,
   // SetOnReturnToChromeCallbackAndObserveAppState to capture the callback and
   // simulate an async response.
   ON_CALL(*device_delegate(), SetOnReturnToChromeCallbackAndObserveAppState)
-      .WillByDefault(testing::Invoke([&](base::OnceClosure callback) {
+      .WillByDefault([&](base::OnceClosure callback) {
         on_return_to_chrome_callback = std::move(callback);
-      }));
+      });
 
   EXPECT_CALL(client(), ShowPixAccountLinkingPrompt).Times(0);
 
@@ -525,13 +524,13 @@ TEST_F(PixAccountLinkingManagerTest,
   EXPECT_CALL(
       *multiple_request_payments_network_interface(),
       GetDetailsForCreatePaymentInstrument(testing::_, testing::_, testing::_))
-      .WillOnce(testing::Invoke([](long, auto callback, const std::string&) {
+      .WillOnce([](long, auto callback, const std::string&) {
         std::move(callback).Run(autofill::payments::PaymentsAutofillClient::
                                     PaymentsRpcResult::kSuccess,
                                 false);
         return base::StrongAlias<autofill::payments::RequestIdTag,
                                  std::string>();
-      }));
+      });
 
   manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
 
