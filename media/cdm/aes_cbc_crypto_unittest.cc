@@ -179,4 +179,16 @@ TEST(AesCbcCryptoTest, BlockDecryptionWorks) {
   }
 }
 
+TEST(AesCbcCryptoTest, InitializeWithWrongKeySize) {
+  AesCbcCrypto crypto;
+  const std::vector<uint8_t> kWrongSizeKey(kKeySize - 1, 0);
+  EXPECT_FALSE(crypto.Initialize(kWrongSizeKey, kIv));
+}
+
+TEST(AesCbcCryptoTest, InitializeWithWrongIvSize) {
+  AesCbcCrypto crypto;
+  const std::vector<uint8_t> kWrongSizeIv(kBlockSize - 1, 0);
+  EXPECT_FALSE(crypto.Initialize(kKey1, kWrongSizeIv));
+}
+
 }  // namespace media
