@@ -1481,7 +1481,7 @@
   </message>
 
   <message name="IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT" desc="Description text for confirmation shown after save card is successfully uploaded and saved to the server.">
-    This card is saved in your Google Account so you can use it across Google services.
+    Your card is saved in your Google Account so you can autofill it for future purchases
   </message>
   <message name="IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_DESCRIPTION_TEXT" desc="Description text for confirmation shown after save card upload to the server was unsuccessful.">
     This card couldn't be saved in your Google Account. It's saved to Chrome on this device instead.
