@@ -418,7 +418,7 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
   if (customBackground) {
     // Clear background so old state doesn't show. It will be set to the new
     // background later.
-    [self.consumer setBackgroundImage:nil];
+    [self.consumer setBackgroundImage:nil framingCoordinates:nil];
 
     if (std::holds_alternative<sync_pb::NtpCustomBackground>(
             customBackground.value())) {
@@ -445,20 +445,20 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
     } else {
       HomeUserUploadedBackground userBackground =
           std::get<HomeUserUploadedBackground>(customBackground.value());
-
       HomeCustomizationFramingCoordinates* framingCoordinates =
           HomeCustomizationFramingCoordinatesFromFramingCoordinates(
               userBackground.framing_coordinates);
-      __weak __typeof(self) weakSelf = self;
 
+      __weak __typeof(self) weakSelf = self;
       _userUploadedImageManager->LoadUserUploadedImage(
           base::FilePath(userBackground.image_path),
           base::BindOnce(^(UIImage* image) {
-            [weakSelf applyFramingCoordinates:framingCoordinates toImage:image];
+            [weakSelf handleUserUploadedImage:image
+                           framingCoordinates:framingCoordinates];
           }));
     }
   } else {
-    [self.consumer setBackgroundImage:nil];
+    [self.consumer setBackgroundImage:nil framingCoordinates:nil];
   }
 
   std::optional<sync_pb::UserColorTheme> colorTheme =
@@ -657,53 +657,24 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
 // Helper method to handle the image response after fetching the background
 // image for the new tab page.
 - (void)handleBackgroundImageFetch:(const gfx::Image&)image {
-  [self.consumer setBackgroundImage:image.ToUIImage()];
+  [self.consumer setBackgroundImage:image.ToUIImage() framingCoordinates:nil];
 }
 
 // Helper method to handle displaying a user-uploaded background image
 // with the specified framing coordinates.
-- (void)applyFramingCoordinates:
-            (HomeCustomizationFramingCoordinates*)coordinates
-                        toImage:(UIImage*)originalImage {
-  if (!originalImage) {
+- (void)handleUserUploadedImage:(UIImage*)image
+             framingCoordinates:
+                 (HomeCustomizationFramingCoordinates*)framingCoordinates {
+  if (!image) {
     // Clear the corrupted data.
     _backgroundCustomizationService->ClearCurrentUserUploadedBackground();
     _backgroundCustomizationService->StoreCurrentTheme();
-    [self.consumer setBackgroundImage:nil];
+    [self.consumer setBackgroundImage:nil framingCoordinates:nil];
     return;
   }
 
-  // Create a canvas the size of the view.
-  CGSize canvasSize = [UIScreen mainScreen].bounds.size;
-
-  // Calculate scale to fill the view.
-  CGFloat widthScale = canvasSize.width / originalImage.size.width;
-  CGFloat heightScale = canvasSize.height / originalImage.size.height;
-  CGFloat scale = MAX(widthScale, heightScale);
-
-  CGFloat scaledWidth = originalImage.size.width * scale;
-  CGFloat scaledHeight = originalImage.size.height * scale;
-
-  // Use negative offset to position the image so the framed area is visible.
-  CGFloat offsetX = -(coordinates.visibleRect.origin.x * scale);
-  CGFloat offsetY = -(coordinates.visibleRect.origin.y * scale);
-
-  UIGraphicsImageRendererFormat* format =
-      [[UIGraphicsImageRendererFormat alloc] init];
-  format.opaque = NO;
-  format.scale = 0.0;
-
-  UIGraphicsImageRenderer* renderer =
-      [[UIGraphicsImageRenderer alloc] initWithSize:canvasSize format:format];
-
-  UIImage* framedImage =
-      [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
-        // Draw the positioned image.
-        [originalImage
-            drawInRect:CGRectMake(offsetX, offsetY, scaledWidth, scaledHeight)];
-      }];
-
-  [self.consumer setBackgroundImage:framedImage];
+  [self.consumer setBackgroundImage:image
+                 framingCoordinates:framingCoordinates];
 }
 
 @end

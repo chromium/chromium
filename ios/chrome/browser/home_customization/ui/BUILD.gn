@@ -40,6 +40,8 @@ source_set("ui") {
     "home_customization_framing_coordinates.mm",
     "home_customization_header_view.h",
     "home_customization_header_view.mm",
+    "home_customization_image_view.h",
+    "home_customization_image_view.mm",
     "home_customization_link_cell.h",
     "home_customization_link_cell.mm",
     "home_customization_magic_stack_consumer.h",
@@ -78,4 +80,15 @@ source_set("ui") {
     "//url",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "home_customization_image_view_unittest.mm" ]
+  deps = [
+    ":ui",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//ui/base",
+  ]
 }
