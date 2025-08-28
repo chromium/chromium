@@ -29,6 +29,12 @@ class AIProofreader : public AIContextBoundObject,
   void Proofread(const std::string& input,
                  mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
                      pending_responder) override;
+  void GetCorrectionType(
+      const std::string& input,
+      const std::string& corrected_input,
+      const std::string& correction_instruction,
+      mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
+          pending_responder) override;
 
   ~AIProofreader() override;
 
@@ -37,6 +43,12 @@ class AIProofreader : public AIContextBoundObject,
 
  private:
   friend class AITestUtils;
+
+  void StartExecution(const std::string& input,
+                      const std::string& corrected_input,
+                      const std::string& correction_instruction,
+                      mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
+                          pending_responder);
 
   void DidGetExecutionInputSizeForProofread(
       mojo::RemoteSetElementId responder_id,
@@ -48,8 +60,18 @@ class AIProofreader : public AIContextBoundObject,
       optimization_guide::OptimizationGuideModelStreamingExecutionResult
           result);
 
+  // Builds a request for the model with two primary modes:
+  //
+  // - To explain a correction: When `corrected_input` and
+  //   `correction_instruction` are provided, the request asks the model to
+  //   return the type of the correction.
+  //
+  // - To proofread text: Otherwise, the request asks the model to return the
+  //   fully corrected text of the input.
   optimization_guide::proto::ProofreaderApiRequest BuildRequest(
-      const std::string& input);
+      const std::string& input,
+      const std::string& corrected_input,
+      const std::string& correction_instruction);
 
   // The underlying session provided by optimization guide component.
   std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>

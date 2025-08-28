@@ -26,6 +26,12 @@ class EchoAIProofreader : public blink::mojom::AIProofreader {
   void Proofread(const std::string& input,
                  mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
                      pending_responder) override;
+  void GetCorrectionType(
+      const std::string& input,
+      const std::string& corrected_input,
+      const std::string& correction,
+      mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
+          pending_responder) override;
 
  private:
   mojo::RemoteSet<blink::mojom::ModelStreamingResponder> responder_set_;

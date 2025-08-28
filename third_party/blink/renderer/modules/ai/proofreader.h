@@ -1,3 +1,4 @@
+
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -10,6 +11,7 @@
 #include "third_party/blink/public/mojom/ai/ai_proofreader.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_correction_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_proofread_correction.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_proofread_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_proofreader_create_options.h"
@@ -26,6 +28,15 @@ namespace blink {
 
 using CanCreateCallback =
     base::OnceCallback<void(mojom::blink::ModelAvailabilityCheckResult)>;
+
+// Describe an error in the original string that is corrected in the new string.
+struct Correction {
+  uint32_t error_start;
+  uint32_t error_end;
+  uint32_t correction_start;
+  uint32_t correction_end;
+  String correction;
+};
 
 // The class that represents a proofreader object.
 class Proofreader final : public ScriptWrappable,
@@ -102,6 +113,28 @@ class Proofreader final : public ScriptWrappable,
                         AbortSignal* signal,
                         ScriptState* script_state);
 
+  // Recursively fetch correction type labels for all corrections.
+  // `correction_index` is the next correction to fetch the label for.
+  // `raw_corrections` is passed to help annotate the error and correction from
+  // the original input and the corrected input.
+  void GetCorrectionTypes(ScriptPromiseResolver<ProofreadResult>* resolver,
+                          ScriptState* script_state,
+                          AbortSignal* signal,
+                          ProofreadResult* proofread_result,
+                          Vector<Correction> raw_corrections,
+                          const String& input,
+                          uint32_t correction_index);
+
+  void OnLabelComplete(ScriptPromiseResolver<ProofreadResult>* resolver,
+                       ScriptState* script_state,
+                       AbortSignal* signal,
+                       ProofreadResult* result,
+                       Vector<Correction> raw_corrections,
+                       const String& input,
+                       uint32_t correction_index,
+                       const String& label,
+                       mojom::blink::ModelExecutionContextInfoPtr context_info);
+
   HeapMojoRemote<mojom::blink::AIProofreader> remote_;
   Member<ProofreaderCreateOptions> options_;
   Member<AbortController> destruction_abort_controller_;
@@ -110,12 +143,10 @@ class Proofreader final : public ScriptWrappable,
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
-// Find list of specific corrections with their locations given an input and the
-// fully corrected input from proofreading.
+// Get the corrections made on `input` that would produce `corrected_input`.
 MODULES_EXPORT
-HeapVector<Member<ProofreadCorrection>> GetProofreadingCorrections(
-    const String& input,
-    const String& corrected_input);
+Vector<Correction> GetCorrections(const String& input,
+                                  const String& corrected_input);
 
 }  // namespace blink
 

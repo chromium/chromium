@@ -32,6 +32,9 @@ using ::blink::mojom::AILanguageCodePtr;
 using ::testing::_;
 
 constexpr char kInputString[] = "input string";
+constexpr char kInputStringWithError[] = "`input` string";
+constexpr char kCorrectedInputWithCorrection[] = "`Input` string.";
+constexpr char kCorrectionInstruction[] = "From `input` to `Input`";
 
 class MockCreateProofreaderClient
     : public blink::mojom::AIManagerCreateProofreaderClient {
@@ -92,11 +95,15 @@ blink::mojom::AIProofreaderCreateOptionsPtr GetDefaultOptions() {
 
 // Get a request proto matching that expected for ExecuteModel() calls.
 optimization_guide::proto::ProofreaderApiRequest GetExecuteRequest(
-    std::string_view proofread_text = kInputString) {
+    std::string_view proofread_text = kInputString,
+    std::string_view corrected_text = "",
+    std::string_view correction = "") {
   optimization_guide::proto::ProofreaderApiRequest request;
   request.set_allocated_options(
       AIProofreader::ToProtoOptions(GetDefaultOptions()).release());
   request.set_text(proofread_text);
+  request.set_corrected_text(corrected_text);
+  request.set_correction(correction);
   return request;
 }
 
@@ -532,6 +539,70 @@ TEST_F(AIProofreaderTest, MultipleProofread) {
                                   mock_responder.BindNewPipeAndPassRemote());
     run_loop.Run();
   }
+}
+
+TEST_F(AIProofreaderTest, GetCorretionTypeDefault) {
+  SetupMockOptimizationGuideKeyedService();
+  SetupMockSession();
+  auto expected =
+      GetExecuteRequest(kInputStringWithError, kCorrectedInputWithCorrection,
+                        kCorrectionInstruction);
+  const auto options = blink::mojom::AIProofreaderCreateOptions::New(
+      /*include_correction_types=*/true,
+      /*include_correction_explanations=*/false,
+      /*correction_explanation_language=*/AILanguageCode::New(""),
+      /*expected_input_languages=*/std::vector<AILanguageCodePtr>());
+  expected.set_allocated_options(
+      AIProofreader::ToProtoOptions(options).release());
+  EXPECT_CALL(session_, ExecuteModel(_, _))
+      .WillOnce(testing::Invoke(
+          [&](const google::protobuf::MessageLite& request,
+              optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
+            EXPECT_THAT(request, EqualsProto(expected));
+            callback.Run(CreateExecutionResult("Correction type",
+                                               /*is_complete=*/true));
+          }));
+
+  mojo::Remote<blink::mojom::AIProofreader> proofreader_remote;
+  {
+    MockCreateProofreaderClient mock_create_proofreader_client;
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_create_proofreader_client, OnResult(_))
+        .WillOnce(testing::Invoke(
+            [&](mojo::PendingRemote<::blink::mojom::AIProofreader>
+                    proofreader) {
+              EXPECT_TRUE(proofreader);
+              proofreader_remote = mojo::Remote<blink::mojom::AIProofreader>(
+                  std::move(proofreader));
+              run_loop.Quit();
+            }));
+
+    mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
+    ai_manager->CreateProofreader(
+        mock_create_proofreader_client.BindNewPipeAndPassRemote(),
+        options.Clone());
+    run_loop.Run();
+  }
+  AITestUtils::MockModelStreamingResponder mock_responder;
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_responder, OnStreaming(_))
+      .WillOnce(testing::Invoke([&](const std::string& text) {
+        EXPECT_THAT(text, "Correction type");
+      }));
+
+  EXPECT_CALL(mock_responder, OnCompletion(_))
+      .WillOnce(testing::Invoke(
+          [&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
+            run_loop.Quit();
+          }));
+
+  proofreader_remote->GetCorrectionType(
+      kInputStringWithError, kCorrectedInputWithCorrection,
+      kCorrectionInstruction, mock_responder.BindNewPipeAndPassRemote());
+  run_loop.Run();
 }
 
 TEST_F(AIProofreaderTest, ResponderDisconnected) {
