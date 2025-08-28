@@ -119,7 +119,8 @@
 - (void)autofillController:(CWVAutofillController*)autofillController
      didSubmitFormWithName:(NSString*)formName
                    frameID:(NSString*)frameID
-             userInitiated:(BOOL)userInitiated {
+             userInitiated:(BOOL)userInitiated
+            perfectFilling:(BOOL)perfectFilling {
   // Not implemented.
 }
 

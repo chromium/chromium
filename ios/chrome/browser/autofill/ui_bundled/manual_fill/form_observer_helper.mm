@@ -68,14 +68,17 @@
 - (void)webState:(web::WebState*)webState
     didSubmitDocumentWithFormData:(const autofill::FormData&)formData
                    hasUserGesture:(BOOL)hasUserGesture
-                          inFrame:(web::WebFrame*)frame {
-  if ([self.delegate
-          respondsToSelector:@selector
-          (webState:didSubmitDocumentWithFormData:hasUserGesture:inFrame:)]) {
+                          inFrame:(web::WebFrame*)frame
+                   perfectFilling:(BOOL)perfectFilling {
+  if ([self.delegate respondsToSelector:@selector
+                     (webState:
+                         didSubmitDocumentWithFormData:hasUserGesture:inFrame
+                                                      :perfectFilling:)]) {
     [self.delegate webState:webState
         didSubmitDocumentWithFormData:formData
                        hasUserGesture:hasUserGesture
-                              inFrame:frame];
+                              inFrame:frame
+                       perfectFilling:perfectFilling];
   }
 }
 

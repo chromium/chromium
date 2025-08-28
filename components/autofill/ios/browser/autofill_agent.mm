@@ -874,7 +874,8 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 - (void)webState:(web::WebState*)webState
     didSubmitDocumentWithFormData:(const FormData&)formData
                    hasUserGesture:(BOOL)hasUserGesture
-                          inFrame:(web::WebFrame*)frame {
+                          inFrame:(web::WebFrame*)frame
+                   perfectFilling:(BOOL)perfectFilling {
   if (![self isAutofillEnabled] || !frame) {
     return;
   }

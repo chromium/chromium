@@ -413,24 +413,28 @@ TEST_F(CWVAutofillControllerTest, SubmitCallback) {
   [[delegate expect] autofillController:autofill_controller_
                   didSubmitFormWithName:kTestFormName
                                 frameID:frame_id_
-                          userInitiated:YES];
+                          userInitiated:YES
+                         perfectFilling:YES];
   auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
   autofill::FormData test_form_data;
   test_form_data.set_name(base::SysNSStringToUTF16(kTestFormName));
 
   form_activity_tab_helper_->DocumentSubmitted(
       /*sender_frame*/ frame.get(), /*form_data=*/test_form_data,
-      /*user_initiated=*/true);
+      /*user_initiated=*/true,
+      /*perfect_filling=*/true);
 
   [[delegate expect] autofillController:autofill_controller_
                   didSubmitFormWithName:kTestFormName
                                 frameID:frame_id_
-                          userInitiated:NO];
+                          userInitiated:NO
+                         perfectFilling:NO];
 
   form_activity_tab_helper_->DocumentSubmitted(
       /*sender_frame*/ frame.get(),
       /*form_data=*/test_form_data,
-      /*user_initiated=*/false);
+      /*user_initiated=*/false,
+      /*perfect_filling=*/false);
 
   [delegate verify];
 }

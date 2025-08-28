@@ -36,15 +36,18 @@ void FormActivityObserverBridge::FormActivityRegistered(
 void FormActivityObserverBridge::DocumentSubmitted(web::WebState* web_state,
                                                    web::WebFrame* sender_frame,
                                                    const FormData& form_data,
-                                                   bool has_user_gesture) {
+                                                   bool has_user_gesture,
+                                                   bool perfect_filling) {
   DCHECK_EQ(web_state, web_state_);
   if ([owner_ respondsToSelector:@selector
               (webState:
-                  didSubmitDocumentWithFormData:hasUserGesture:inFrame:)]) {
+                  didSubmitDocumentWithFormData:hasUserGesture:inFrame
+                                               :perfectFilling:)]) {
     [owner_ webState:web_state
         didSubmitDocumentWithFormData:form_data
                        hasUserGesture:has_user_gesture
-                              inFrame:sender_frame];
+                              inFrame:sender_frame
+                       perfectFilling:perfect_filling];
   }
 }
 

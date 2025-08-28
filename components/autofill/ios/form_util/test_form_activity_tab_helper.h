@@ -34,7 +34,8 @@ class TestFormActivityTabHelper {
                              const FormRemovalParams& params);
   void DocumentSubmitted(web::WebFrame* sender_frame,
                          const FormData& form_data,
-                         bool has_user_gesture);
+                         bool has_user_gesture,
+                         bool perfect_filling);
 
  private:
   raw_ptr<web::WebState> web_state_ = nullptr;

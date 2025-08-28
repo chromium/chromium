@@ -63,7 +63,8 @@ class TestFormActivityObserver : public autofill::FormActivityObserver {
   void DocumentSubmitted(web::WebState* web_state,
                          web::WebFrame* sender_frame,
                          const FormData& form_data,
-                         bool has_user_gesture) override;
+                         bool has_user_gesture,
+                         bool perfect_filling) override;
 
   void FormActivityRegistered(web::WebState* web_state,
                               web::WebFrame* sender_frame,

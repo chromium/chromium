@@ -252,7 +252,8 @@ TEST_F(WebViewAutofillTest, TestDelegateCallbacks) {
          autofillController:autofill_controller_
       didSubmitFormWithName:kTestFormName
                     frameID:[OCMArg any]
-              userInitiated:[OCMArg any]];
+              userInitiated:[OCMArg any]
+             perfectFilling:[OCMArg any]];
   // The 'submit' event listener defined in form.js is only called during the
   // bubbling phase.
   NSString* submit_script = [NSString

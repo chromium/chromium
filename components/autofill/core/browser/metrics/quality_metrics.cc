@@ -25,7 +25,9 @@
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/metrics/prediction_quality_metrics.h"
 #include "components/autofill/core/browser/metrics/quality_metrics_filling.h"
+#include "components/autofill/core/common/autofill_data_validation.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_util.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "third_party/icu/source/common/unicode/uscript.h"
 
@@ -52,10 +54,8 @@ void LogPerfectFillingMetric(const FormStructure& form) {
   // without subsequent changes. This means that in a perfect filling
   // scenario, a field is either autofilled, empty, has value at page load or
   // has value set by JS.
-  const bool perfect_filling =
-      std::ranges::none_of(form, [](const auto& field) {
-        return field->is_user_edited() && !field->is_autofilled();
-      });
+  const bool perfect_filling = IsFormPerfectlyFilled(form.ToFormData());
+
   // The perfect filling metric is only recorded if Autofill was used on at
   // least one field. This conditions this metric on Assistance, Readiness and
   // Acceptance. Perfect filling is recorded for addresses and credit cards

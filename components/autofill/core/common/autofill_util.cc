@@ -204,4 +204,11 @@ std::u16string GetButtonTitlesString(const ButtonTitleList& titles_list) {
   return base::JoinString(titles, u",");
 }
 
+bool IsFormPerfectlyFilled(const FormData& form) {
+  return std::none_of(form.fields().begin(), form.fields().end(),
+                      [](const FormFieldData& field) {
+                        return field.is_user_edited() && !field.is_autofilled();
+                      });
+}
+
 }  // namespace autofill

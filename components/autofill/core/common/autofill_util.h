@@ -102,6 +102,12 @@ bool IsPaymentsFieldSwappingEnabled();
 // Extracts comma-separated strings from a ButtonTitleList.
 std::u16string GetButtonTitlesString(const ButtonTitleList& titles_list);
 
+// Returns true if `form` is considered "perfectly filled".
+//
+// A form is perfectly filled if the user did not have to manually type into any
+// field that Autofill didn't assist with.
+bool IsFormPerfectlyFilled(const FormData& form);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_UTIL_H_

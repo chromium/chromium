@@ -37,12 +37,13 @@ void TestFormActivityTabHelper::FormRemovalRegistered(
 
 void TestFormActivityTabHelper::DocumentSubmitted(web::WebFrame* sender_frame,
                                                   const FormData& form_data,
-                                                  bool has_user_gesture) {
+                                                  bool has_user_gesture,
+                                                  bool perfect_filling) {
   autofill::FormActivityTabHelper* form_activity_tab_helper =
       autofill::FormActivityTabHelper::GetOrCreateForWebState(web_state_);
   for (auto& observer : form_activity_tab_helper->observers_) {
     observer.DocumentSubmitted(web_state_, sender_frame, form_data,
-                               has_user_gesture);
+                               has_user_gesture, perfect_filling);
   }
 }
 }  // namespace autofill

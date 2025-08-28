@@ -630,14 +630,17 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
 - (void)webState:(web::WebState*)webState
     didSubmitDocumentWithFormData:(const autofill::FormData&)formData
                    hasUserGesture:(BOOL)userInitiated
-                          inFrame:(web::WebFrame*)frame {
-  if ([_delegate respondsToSelector:@selector
-                 (autofillController:
-                     didSubmitFormWithName:frameID:userInitiated:)]) {
+                          inFrame:(web::WebFrame*)frame
+                   perfectFilling:(BOOL)perfectFilling {
+  if ([_delegate
+          respondsToSelector:@selector
+          (autofillController:
+              didSubmitFormWithName:frameID:userInitiated:perfectFilling:)]) {
     [_delegate autofillController:self
             didSubmitFormWithName:base::SysUTF16ToNSString(formData.name())
                           frameID:base::SysUTF8ToNSString(frame->GetFrameId())
-                    userInitiated:userInitiated];
+                    userInitiated:userInitiated
+                   perfectFilling:perfectFilling];
   }
 }
 

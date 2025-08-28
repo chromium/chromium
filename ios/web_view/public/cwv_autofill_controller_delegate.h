@@ -96,10 +96,13 @@ typedef NS_OPTIONS(NSInteger, CWVPasswordLeakType) {
 
 // Called when a form was submitted.
 // |userInitiated| is YES if form was submitted as a result of user interaction.
+// |perfectFilling| is true if the user submitted the form
+// without manually changing any of the autofilled data.
 - (void)autofillController:(CWVAutofillController*)autofillController
      didSubmitFormWithName:(NSString*)formName
                    frameID:(NSString*)frameID
-             userInitiated:(BOOL)userInitiated;
+             userInitiated:(BOOL)userInitiated
+            perfectFilling:(BOOL)perfectFilling;
 
 // Called when |forms| are found in a frame with |frameID|.
 // Will be called after initial load and after any form mutations.
