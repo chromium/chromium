@@ -105,7 +105,12 @@ gfx::Rect WebContentsViewChildFrame::GetContainerBounds() const {
 void WebContentsViewChildFrame::SetInitialFocus() {
   // This should only be reachable in Webium, not other uses.
   CHECK(base::FeatureList::IsEnabled(features::kAttachUnownedInnerWebContents));
-  NOTIMPLEMENTED();
+
+  if (web_contents_->FocusLocationBarByDefault()) {
+    web_contents_->SetFocusToLocationBar();
+  } else {
+    Focus();
+  }
 }
 
 gfx::Rect WebContentsViewChildFrame::GetViewBounds() const {
@@ -164,7 +169,20 @@ void WebContentsViewChildFrame::RestoreFocus() {
 }
 
 void WebContentsViewChildFrame::Focus() {
-  NOTIMPLEMENTED();
+  if (!base::FeatureList::IsEnabled(features::kAttachUnownedInnerWebContents)) {
+    return;
+  }
+
+  if (delegate_ && delegate_->Focus()) {
+    return;
+  }
+
+  RenderWidgetHostView* rwhv = web_contents_->GetRenderWidgetHostView();
+  if (rwhv) {
+    rwhv->Focus();
+  }
+
+  web_contents_->SetAsFocusedWebContentsIfNecessary();
 }
 
 void WebContentsViewChildFrame::StoreFocus() {
