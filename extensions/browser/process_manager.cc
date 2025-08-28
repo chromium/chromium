@@ -738,11 +738,6 @@ base::Uuid ProcessManager::IncrementServiceWorkerKeepaliveCount(
   service_worker_keepalives_[request_uuid] = ServiceWorkerKeepaliveData{
       worker_id, activity_type, extra_data, timeout_type, start_result};
 
-  base::UmaHistogramEnumeration(
-      "Extensions.ServiceWorkerBackground."
-      "ProcessManagerStartingExternalRequestResult",
-      start_result);
-
   return request_uuid;
 }
 
