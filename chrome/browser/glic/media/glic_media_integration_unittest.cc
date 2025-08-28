@@ -13,6 +13,7 @@
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/pref_names.h"
 #include "components/optimization_guide/content/browser/media_transcript_provider.h"
+#include "components/soda/mock_soda_installer.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
@@ -26,22 +27,6 @@ namespace glic {
 
 class GlicMediaIntegrationTest : public ChromeRenderViewHostTestHarness {
  public:
-  void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-    // Return a mock Live Caption controller.
-    auto controller = CreateLiveCaptionController();
-    live_caption_controller_ = controller.get();
-    captions::LiveCaptionControllerFactory::GetInstance()->SetTestingFactory(
-        web_contents()->GetBrowserContext(),
-        base::BindOnce(
-            [](std::unique_ptr<captions::LiveCaptionController> controller,
-               content::BrowserContext* context)
-                -> std::unique_ptr<KeyedService> {
-              return std::move(controller);
-            },
-            std::move(controller)));
-  }
-
   void TearDown() override {
     live_caption_controller_ = nullptr;
     pref_registry_ = nullptr;
@@ -54,15 +39,26 @@ class GlicMediaIntegrationTest : public ChromeRenderViewHostTestHarness {
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     pref_registry_ = pref_service->registry();
     RegisterUserProfilePrefs(pref_registry_);
-    return TestingProfile::Builder()
-        .SetPrefService(std::move(pref_service))
-        .AddTestingFactories(GetTestingFactories())
-        .Build();
+
+    auto profile = TestingProfile::Builder()
+                       .SetPrefService(std::move(pref_service))
+                       .AddTestingFactories(GetTestingFactories())
+                       .Build();
+
+    // Set up soda Installer
+    soda_installer_.NeverDownloadSodaForTesting();
+    ON_CALL(soda_installer_, Init).WillByDefault(testing::Return());
+
+    return profile;
   }
 
   // Get the MediaIntegration instance, after doing some work to register prefs
   GlicMediaIntegration* GetIntegration() {
     scoped_feature_list_.emplace(media::kHeadlessLiveCaption);
+    // Make sure that we have installed our LiveCaptionController before this,
+    // because the integration will try to fetch it.  The test might have done
+    // this earlier, however, which is also fine.
+    /*void*/ live_caption_controller();
     return GlicMediaIntegration::GetFor(web_contents());
   }
 
@@ -76,6 +72,22 @@ class GlicMediaIntegrationTest : public ChromeRenderViewHostTestHarness {
   }
 
   captions::LiveCaptionController* live_caption_controller() {
+    if (live_caption_controller_) {
+      return live_caption_controller_;
+    }
+
+    // Return a mock Live Caption controller.
+    auto controller = CreateLiveCaptionController();
+    live_caption_controller_ = controller.get();
+    captions::LiveCaptionControllerFactory::GetInstance()->SetTestingFactory(
+        web_contents()->GetBrowserContext(),
+        base::BindOnce(
+            [](std::unique_ptr<captions::LiveCaptionController> controller,
+               content::BrowserContext* context)
+                -> std::unique_ptr<KeyedService> {
+              return std::move(controller);
+            },
+            std::move(controller)));
     return live_caption_controller_;
   }
 
@@ -108,10 +120,10 @@ class GlicMediaIntegrationTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
-  TestingPrefServiceSimple pref_service_;
   std::optional<base::test::ScopedFeatureList> scoped_feature_list_;
   raw_ptr<captions::LiveCaptionController> live_caption_controller_ = nullptr;
   raw_ptr<user_prefs::PrefRegistrySyncable> pref_registry_ = nullptr;
+  speech::MockSodaInstaller soda_installer_;
 };
 
 TEST_F(GlicMediaIntegrationTest, GetWithNullReturnsNull) {

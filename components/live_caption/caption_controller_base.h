@@ -123,6 +123,10 @@ class CaptionControllerBase : public ui::NativeThemeObserver {
     return caption_bubble_controller();
   }
 
+  void remove_listener_for_testing(Listener* listener) {
+    RemoveListener(listener);
+  }
+
  protected:
   CaptionControllerBase(PrefService* profile_prefs,
                         const std::string& application_locale,
@@ -138,6 +142,11 @@ class CaptionControllerBase : public ui::NativeThemeObserver {
 
   virtual std::unique_ptr<TranslationViewWrapperBase>
   CreateTranslationViewWrapper();
+
+  // Called when the size of the listener set goes to or from zero.  This allows
+  // subclasses to handle SODA installation as needed on a per-platform basis.
+  virtual void OnFirstListenerAdded() {}
+  virtual void OnLastListenerRemoved() {}
 
  private:
   virtual CaptionBubbleSettings* caption_bubble_settings() = 0;

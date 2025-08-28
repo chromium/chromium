@@ -37,6 +37,14 @@ class MockSodaInstaller : public speech::SodaInstaller {
   MOCK_METHOD(void, InstallSoda, (PrefService*), (override));
   MOCK_METHOD(void, UninstallSoda, (PrefService*), (override));
   MOCK_METHOD(void, Init, (PrefService*, PrefService*), (override));
+  MOCK_METHOD(void,
+              RegisterLanguage,
+              (const std::string& language, PrefService* global_prefs),
+              (override));
+  MOCK_METHOD(void,
+              UnregisterLanguage,
+              (const std::string& language, PrefService* global_prefs),
+              (override));
 };
 
 }  // namespace speech

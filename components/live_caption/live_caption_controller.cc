@@ -115,9 +115,29 @@ void LiveCaptionController::OnLiveCaptionEnabledChanged() {
     StartLiveCaption();
   } else {
     StopLiveCaption();
-    speech::SodaInstaller::GetInstance()->SetUninstallTimer(global_prefs_,
-                                                            GetLanguageCode());
   }
+}
+
+void LiveCaptionController::OnFirstListenerAdded() {
+  // We have a listener, so be sure we also have soda.  This listener might not
+  // be the UI.
+
+  MaybeSetLiveCaptionLanguage();
+  // The SodaInstaller determines whether SODA is already on the device and
+  // whether or not to download. Once SODA is on the device and ready, the
+  // SODAInstaller calls OnSodaInstalled on its observers.
+  if (!speech::SodaInstaller::GetInstance()->IsSodaInstalled(
+          speech::GetLanguageCode(GetLanguageCode()))) {
+    speech::SodaInstaller::GetInstance()->AddObserver(this);
+    speech::SodaInstaller::GetInstance()->Init(profile_prefs(), global_prefs_);
+  }
+}
+
+void LiveCaptionController::OnLastListenerRemoved() {
+  // We might not have installed a listener, but that's okay.
+  speech::SodaInstaller::GetInstance()->RemoveObserver(this);
+  speech::SodaInstaller::GetInstance()->SetUninstallTimer(global_prefs_,
+                                                          GetLanguageCode());
 }
 
 void LiveCaptionController::OnLiveCaptionLanguageChanged() {
@@ -138,23 +158,12 @@ bool LiveCaptionController::IsLiveCaptionEnabled() {
 
 void LiveCaptionController::StartLiveCaption() {
   DCHECK(enabled_);
-  MaybeSetLiveCaptionLanguage();
-  // The SodaInstaller determines whether SODA is already on the device and
-  // whether or not to download. Once SODA is on the device and ready, the
-  // SODAInstaller calls OnSodaInstalled on its observers. The UI is created at
-  // that time.
-  if (speech::SodaInstaller::GetInstance()->IsSodaInstalled(
-          speech::GetLanguageCode(GetLanguageCode()))) {
-    CreateUI();
-  } else {
-    speech::SodaInstaller::GetInstance()->AddObserver(this);
-    speech::SodaInstaller::GetInstance()->Init(profile_prefs(), global_prefs_);
-  }
+  // Creating the UI will trigger soda to install if needed.
+  CreateUI();
 }
 
 void LiveCaptionController::StopLiveCaption() {
   DCHECK(!enabled_);
-  speech::SodaInstaller::GetInstance()->RemoveObserver(this);
   DestroyUI();
 }
 
@@ -164,16 +173,13 @@ CaptionBubbleSettings* LiveCaptionController::caption_bubble_settings() {
 
 void LiveCaptionController::OnSodaInstalled(
     speech::LanguageCode language_code) {
-  // Live Caption should always be enabled when this is called. If Live Caption
-  // has been disabled, then this should not be observing the SodaInstaller
-  // anymore.
-  DCHECK(enabled_);
+  // Live Caption might not be enabled right now, because installation might
+  // have been triggered by a caption observer that isn't our UI.  That's fine.
   bool is_language_code_for_live_caption =
       prefs::IsLanguageCodeForLiveCaption(language_code, profile_prefs());
 
   if (is_language_code_for_live_caption) {
     speech::SodaInstaller::GetInstance()->RemoveObserver(this);
-    CreateUI();
   }
 }
 
@@ -186,6 +192,8 @@ void LiveCaptionController::OnSodaInstallError(
       language_code != speech::LanguageCode::kNone) {
     return;
   }
+  // If LC is enabled, turn it back off so the UI switch toggles off.  It's okay
+  // if there are other caption observers; they simply won't get any captions.
   if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
     profile_prefs()->SetBoolean(prefs::kLiveCaptionEnabled, false);
   }
