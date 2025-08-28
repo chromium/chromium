@@ -96,7 +96,7 @@ TRACE_EVENT_INSTANT("my_component.debug.lifetime", "MyObject::Constructor",
     perfetto::Flow::FromPointer(this));
 
 TRACE_EVENT_INSTANT("my_component.debug.lifetime", "MyObject::Destructor",
-    perfetto::Flow::TerminatingFlow(this));
+    perfetto::TerminatingFlow::FromPointer(this));
 ```
 
 ### Named Tracks
