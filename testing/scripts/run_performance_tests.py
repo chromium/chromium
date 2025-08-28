@@ -42,6 +42,7 @@ import argparse
 from collections import deque, OrderedDict
 import datetime
 import json
+import logging
 import os
 import pathlib
 import shutil
@@ -769,6 +770,11 @@ class CrossbenchTest(object):
                         type=str,
                         required=False,
                         help='Use official build of the browser')
+    parser.add_argument(
+        '--connect-to-device-over-network',
+        action='store_true',
+        default=False,
+        help='Connect to test device over TCP (used on Android desktop)')
     self.cb_options, self.options.passthrough_args = parser.parse_known_args(
         self.options.passthrough_args)
 
@@ -869,7 +875,11 @@ class CrossbenchTest(object):
     options = browser_options.BrowserFinderOptions()
     options.chrome_root = CHROMIUM_SRC_DIR
     parser = options.CreateParser()
-    parser.parse_args([self.CHROME_BROWSER % browser_arg])
+    browser_finder_args = [self.CHROME_BROWSER % browser_arg]
+    if self.cb_options.connect_to_device_over_network:
+      browser_finder_args.append('--connect-to-device-over-network')
+      logging.getLogger().setLevel(logging.DEBUG)
+    parser.parse_args(browser_finder_args)
     possible_browser = browser_finder.FindBrowser(options)
     if not possible_browser:
       raise ValueError(f'Unable to find Chrome browser of type: {browser_arg}')
