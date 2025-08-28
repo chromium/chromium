@@ -56,6 +56,8 @@ constexpr std::u16string_view kHomeAddressManagementUrl =
 constexpr std::u16string_view kWorkAddressManagementUrl =
     u"https://myaccount.google.com/address/"
     u"work?utm_source=chrome&utm_campaign=manage_addresses";
+constexpr std::u16string_view kAccountNameAndEmailManagementUrl =
+    u"https://myaccount.google.com/personal-info";
 
 // Creates a text label used by the keyboard accessory. For password
 // suggestions, constructs the label from the password stored in
@@ -198,9 +200,14 @@ std::u16string GetAccountEmail(content::WebContents* web_contents) {
             l10n_util::GetStringUTF16(IDS_AUTOFILL_REMOVE_SUGGESTION_BUTTON);
         break;
       case AutofillProfile::RecordType::kAccountNameEmail:
-        // TODO(crbug.com/356845298): Handle setting appropriate text for
-        // removing address suggestion for kAccountNameEmail profiles.
-        NOTREACHED();
+        removal_text->title = l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_REMOVE_ACCOUNT_NAME_AND_EMAIL_PROFILE_SUGGESTION_CONFIRMATION_TITLE);
+        removal_text->body = l10n_util::GetStringFUTF16(
+            IDS_AUTOFILL_REMOVE_ACCOUNT_NAME_AND_EMAIL_PROFILE_SUGGESTION_CONFIRMATION_BODY,
+            GetAccountEmail(web_contents));
+        removal_text->body_link = kAccountNameAndEmailManagementUrl;
+        removal_text->confirm_button_text =
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_REMOVE_SUGGESTION_BUTTON);
     }
   }
   return true;
