@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AxReadAloudNode} from './read_aloud_types.js';
 import type {ReadAloudNode, Segment} from './read_aloud_types.js';
-import {TextSegmenter} from './text_segmenter.js';
+import {TsReadModelImpl} from './ts_model_impl.js';
+import {V8ModelImpl} from './v8_model_impl.js';
 
 // TODO: crbug.com/440400392- Use TestReadAloudModelBrowserProxy to replace
 // FakeReadingMode.
-
-// TODO: crbug.com/440400392- Move logic into read_aloud_model. The browser
-// proxy should only be a wrapper around browser calls (e.g.
-// chrome.readingMode).
 
 // Proxy class used to wrap text segmentation calls. This can be used to use
 // different text segmentation approaches via feature flag, such as an
@@ -39,100 +35,6 @@ export interface ReadAloudModelBrowserProxy {
   // Handle initialization.
   isInitialized(): boolean;
   init(context: ReadAloudNode|string): void;
-}
-
-class V8ModelImpl implements ReadAloudModelBrowserProxy {
-  getHighlightForCurrentSegmentIndex(index: number, phrases: boolean):
-      Segment[] {
-    return chrome.readingMode.getHighlightForCurrentSegmentIndex(index, phrases)
-        .map(
-            ({nodeId, start, length}) =>
-                ({node: new AxReadAloudNode(nodeId), start, length}));
-  }
-
-  getCurrentTextSegments(): Segment[] {
-    return chrome.readingMode.getCurrentTextSegments().map(
-        ({nodeId, start, length}) =>
-            ({node: new AxReadAloudNode(nodeId), start, length}));
-  }
-
-  getCurrentTextContent(): string {
-    return chrome.readingMode.getCurrentTextContent();
-  }
-
-  getAccessibleText(text: string, maxSpeechLength: number): string {
-    const boundary =
-        chrome.readingMode.getAccessibleBoundary(text, maxSpeechLength);
-    return text.substring(0, boundary);
-  }
-
-  resetSpeechToBeginning(): void {
-    chrome.readingMode.resetGranularityIndex();
-  }
-
-  isInitialized(): boolean {
-    return chrome.readingMode.isSpeechTreeInitialized;
-  }
-
-  init(textNode: ReadAloudNode) {
-    if (!(textNode instanceof AxReadAloudNode)) {
-      return;
-    }
-    chrome.readingMode.initAxPositionWithNode(textNode.axNodeId);
-  }
-
-  moveSpeechForward() {
-    chrome.readingMode.movePositionToNextGranularity();
-  }
-
-  moveSpeechBackwards() {
-    chrome.readingMode.movePositionToPreviousGranularity();
-  }
-}
-
-// Read aloud model implementation based in TS to be used when the
-// ReadAnythingReadAloudTSTextSegmentation flag is enabled.
-class TsReadModelImpl implements ReadAloudModelBrowserProxy {
-  // TODO: crbug.com/440400392- Implement all of the ReadAloudModelBrowserProxy
-  // methods.
-  getHighlightForCurrentSegmentIndex(): Segment[] {
-    return [];
-  }
-
-  getCurrentTextSegments(): Segment[] {
-    return [];
-  }
-
-  getCurrentTextContent(): string {
-    return '';
-  }
-
-  getAccessibleText(text: string, maxSpeechLength: number): string {
-    return text.slice(
-        0,
-        TextSegmenter.getInstance().getAccessibleBoundary(
-            text, maxSpeechLength));
-  }
-
-  resetSpeechToBeginning(): void {
-    return;
-  }
-
-  moveSpeechForward(): void {
-    return;
-  }
-
-  moveSpeechBackwards() {
-    return;
-  }
-
-  isInitialized(): boolean {
-    return false;
-  }
-
-  init(): void {
-    return;
-  }
 }
 
 export function getReadAloudModel(): ReadAloudModelBrowserProxy {
