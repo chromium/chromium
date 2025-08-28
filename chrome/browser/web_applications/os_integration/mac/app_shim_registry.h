@@ -39,6 +39,29 @@ class PrefRegistrySimple;
 // because apps are in the process of being disentangled from extensions.
 class AppShimRegistry {
  public:
+  // The result of loading the HMAC key (used to encrypt the code signatures for
+  // app shims) from prefs.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class GetHmacKeyResult {
+    kSuccess = 0,
+    kNotFound = 1,
+    kBase64DecodeFailed = 2,
+    kDecryptFailed_Permanent = 3,
+    kDecryptFailed_Temporary = 4,
+    kInvalidLength = 5,
+    kMaxValue = kInvalidLength,
+  };
+
+  // The result of saving the HMAC key to prefs after generating a new key.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class SaveHmacKeyResult {
+    kSuccess = 0,
+    kEncryptionFailed = 1,
+    kMaxValue = kEncryptionFailed,
+  };
+
   AppShimRegistry(const AppShimRegistry& other) = delete;
   AppShimRegistry& operator=(const AppShimRegistry& other) = delete;
 
@@ -187,8 +210,9 @@ class AppShimRegistry {
       const os_crypt_async::Encryptor& encryptor);
 
   // Helper function used by GetCdHashHmacKey
-  // Encode and encrypt the given HMAC key and save it to preferences.
-  void SaveCdHashHmacKey(const os_crypt_async::Encryptor& encryptor,
+  // Encode and encrypt the given HMAC key and save it to preferences. Returns
+  // true on success.
+  bool SaveCdHashHmacKey(const os_crypt_async::Encryptor& encryptor,
                          const HmacKey& key);
 
   // Update the local storage for |app_id|. Update |installed_profiles| and
@@ -210,6 +234,14 @@ class AppShimRegistry {
   bool DoVerifyCdHashForApp(const std::string& app_id,
                             std::vector<uint8_t> cd_hash,
                             os_crypt_async::Encryptor encryptor);
+
+  // An in-memory cache of the HMAC key.
+  std::optional<HmacKey> hmac_key_;
+  // Whether `hmac_key_` has been saved to (or loaded from) prefs. As long as
+  // this is false we'll retry storing the key, as it is possible for saving
+  // to temporarily fail (if the keychain is temporarily unavailable for
+  // example).
+  bool hmac_key_saved_to_prefs_ = false;
 
   raw_ptr<PrefService> override_pref_service_ = nullptr;
   base::FilePath override_user_data_dir_;

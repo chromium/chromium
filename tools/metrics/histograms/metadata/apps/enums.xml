@@ -340,6 +340,20 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Dismissed by Nudge"/>
 </enum>
 
+<enum name="AppShimRegistryGetHmacKeyResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Not Found"/>
+  <int value="2" label="Base64 Decode Failed"/>
+  <int value="3" label="Decrypt Failed (Permanent)"/>
+  <int value="4" label="Decrypt Failed (Temporary)"/>
+  <int value="5" label="Invalid Length"/>
+</enum>
+
+<enum name="AppShimRegistrySaveHmacKeyResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Encryption Failed"/>
+</enum>
+
 <enum name="AppTypeV2">
   <int value="0" label="Unknown"/>
   <int value="1" label="Android app"/>

@@ -2196,6 +2196,27 @@ chromium-metrics-reviews@google.com.
   <token key="InstallReason" variants="InstallReason"/>
 </histogram>
 
+<histogram name="Apps.AppShimRegistry.HmacKeyStore.LoadResult"
+    enum="AppShimRegistryGetHmacKeyResult" expires_after="2026-08-26">
+  <owner>mek@chromium.org</owner>
+  <owner>src/chrome/browser/web_applications/OWNERS</owner>
+  <summary>
+    The result of loading the HMAC key from the app shim registry in the web
+    applications system. This is logged once per browser session, as the key
+    will be cached in memory afterwards.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppShimRegistry.HmacKeyStore.SaveResult"
+    enum="AppShimRegistrySaveHmacKeyResult" expires_after="2026-08-26">
+  <owner>mek@chromium.org</owner>
+  <owner>src/chrome/browser/web_applications/OWNERS</owner>
+  <summary>
+    The result of saving the HMAC key from the app shim registry in the web
+    applications system. This is logged on every attempt to save the key.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppShimSignatureValidationResult"
     enum="WebAppShimSignatureValidationResult" expires_after="2026-01-18">
   <owner>markrowe@chromium.org</owner>

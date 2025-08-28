@@ -6,13 +6,26 @@
 
 #include "base/base64.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/browser_process.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+class TestAppShimRegistry : public AppShimRegistry {
+ public:
+  explicit TestAppShimRegistry(PrefService* pref_service) : AppShimRegistry() {
+    SetPrefServiceAndUserDataDirForTesting(pref_service,
+                                           base::FilePath("/x/y/z"));
+  }
+  ~TestAppShimRegistry() = default;
+};
 
 class AppShimRegistryTest : public testing::Test {
  public:
@@ -23,19 +36,19 @@ class AppShimRegistryTest : public testing::Test {
 
   void SetUp() override {
     local_state_ = std::make_unique<TestingPrefServiceSimple>();
-    registry_ = AppShimRegistry::Get();
+    registry_ = std::make_unique<TestAppShimRegistry>(local_state_.get());
     registry_->RegisterLocalPrefs(local_state_->registry());
-    registry_->SetPrefServiceAndUserDataDirForTesting(local_state_.get(),
-                                                      base::FilePath("/x/y/z"));
     OSCryptMocker::SetUp();
   }
-  void TearDown() override {
-    registry_->SetPrefServiceAndUserDataDirForTesting(nullptr,
-                                                      base::FilePath());
-    OSCryptMocker::TearDown();
-  }
+  void TearDown() override { OSCryptMocker::TearDown(); }
 
  protected:
+  os_crypt_async::Encryptor GetEncryptor() {
+    base::test::TestFuture<os_crypt_async::Encryptor> future;
+    g_browser_process->os_crypt_async()->GetInstance(future.GetCallback());
+    return future.Take();
+  }
+
   bool VerifyCdHashForAppSync(const std::string& app_id,
                               base::span<const uint8_t> cd_hash) {
     base::test::TestFuture<bool> future;
@@ -51,8 +64,8 @@ class AppShimRegistryTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  raw_ptr<AppShimRegistry> registry_ = nullptr;
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
+  std::unique_ptr<TestAppShimRegistry> registry_;
 };
 
 TEST_F(AppShimRegistryTest, Lifetime) {
@@ -401,9 +414,18 @@ TEST_F(AppShimRegistryTest, CodeDirectoryHashesInvalidData) {
   local_state_->SetString("app_shims_cdhash_hmac_key",
                           "this-is-not-valid-base64");
 
+  // Simulate a restart to clear the cached HMAC key.
+  registry_ = std::make_unique<TestAppShimRegistry>(local_state_.get());
+
   // The existing code directory hash should fail to verify after altering the
   // HMAC key.
-  EXPECT_FALSE(VerifyCdHashForAppSync(app_id, cd_hash));
+  {
+    base::HistogramTester histogram_tester;
+    EXPECT_FALSE(VerifyCdHashForAppSync(app_id, cd_hash));
+    histogram_tester.ExpectBucketCount(
+        "Apps.AppShimRegistry.HmacKeyStore.LoadResult",
+        AppShimRegistry::GetHmacKeyResult::kBase64DecodeFailed, 1);
+  }
 
   // Verify that saving the code directory hash again makes it possible to
   // verify the hash once more.
@@ -415,14 +437,91 @@ TEST_F(AppShimRegistryTest, CodeDirectoryHashesInvalidData) {
   local_state_->SetString("app_shims_cdhash_hmac_key",
                           base::Base64Encode("this-is-not-a-valid-key"));
 
+  // Simulate a restart.
+  registry_ = std::make_unique<TestAppShimRegistry>(local_state_.get());
+
   // The existing code directory hash should fail to verify after altering the
   // HMAC key.
-  EXPECT_FALSE(VerifyCdHashForAppSync(app_id, cd_hash));
+  {
+    base::HistogramTester histogram_tester;
+    EXPECT_FALSE(VerifyCdHashForAppSync(app_id, cd_hash));
+    histogram_tester.ExpectBucketCount(
+        "Apps.AppShimRegistry.HmacKeyStore.LoadResult",
+        AppShimRegistry::GetHmacKeyResult::kDecryptFailed_Permanent, 1);
+  }
 
   // Verify that saving the code directory hash again makes it possible to
   // verify the hash once more.
   SaveCdHashForAppSync(app_id, cd_hash);
   EXPECT_TRUE(VerifyCdHashForAppSync(app_id, cd_hash));
+}
+
+TEST_F(AppShimRegistryTest, CodeDirectoryHashesInvalidLength) {
+  const std::string app_id("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+  const uint8_t cd_hash[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+  base::FilePath profile_path("/x/y/z/Profile");
+
+  // Install app in profile.
+  registry_->OnAppInstalledForProfile(app_id, profile_path);
+  SaveCdHashForAppSync(app_id, cd_hash);
+
+  // Overwrite the HMAC key with a key that is the wrong length.
+  std::string wrong_length_key = "wrong_length";
+  std::string encrypted_wrong_length_key;
+  auto encryptor = GetEncryptor();
+  EXPECT_TRUE(
+      encryptor.EncryptString(wrong_length_key, &encrypted_wrong_length_key));
+  local_state_->SetString("app_shims_cdhash_hmac_key",
+                          base::Base64Encode(encrypted_wrong_length_key));
+
+  // Simulate a restart.
+  registry_ = std::make_unique<TestAppShimRegistry>(local_state_.get());
+
+  // The existing code directory hash should fail to verify after altering the
+  // HMAC key.
+  {
+    base::HistogramTester histogram_tester;
+    EXPECT_FALSE(VerifyCdHashForAppSync(app_id, cd_hash));
+    histogram_tester.ExpectBucketCount(
+        "Apps.AppShimRegistry.HmacKeyStore.LoadResult",
+        AppShimRegistry::GetHmacKeyResult::kInvalidLength, 1);
+  }
+}
+
+TEST_F(AppShimRegistryTest, CodeDirectoryHashesCaching) {
+  const std::string app_id("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+  const uint8_t cd_hash[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+  base::FilePath profile_path("/x/y/z/Profile");
+
+  // Install app in profile.
+  registry_->OnAppInstalledForProfile(app_id, profile_path);
+
+  // The first time the key is requested, a new key will be generated, and
+  // saved.
+  {
+    base::HistogramTester histogram_tester;
+    SaveCdHashForAppSync(app_id, cd_hash);
+    EXPECT_TRUE(VerifyCdHashForAppSync(app_id, cd_hash));
+    histogram_tester.ExpectBucketCount(
+        "Apps.AppShimRegistry.HmacKeyStore.LoadResult",
+        AppShimRegistry::GetHmacKeyResult::kNotFound, 1);
+    histogram_tester.ExpectBucketCount(
+        "Apps.AppShimRegistry.HmacKeyStore.SaveResult",
+        AppShimRegistry::SaveHmacKeyResult::kSuccess, 1);
+  }
+
+  // Simulate a restart.
+  registry_ = std::make_unique<TestAppShimRegistry>(local_state_.get());
+
+  // The first time the key is requested, it is loaded from prefs.
+  {
+    base::HistogramTester histogram_tester;
+    SaveCdHashForAppSync(app_id, cd_hash);
+    EXPECT_TRUE(VerifyCdHashForAppSync(app_id, cd_hash));
+    histogram_tester.ExpectBucketCount(
+        "Apps.AppShimRegistry.HmacKeyStore.LoadResult",
+        AppShimRegistry::GetHmacKeyResult::kSuccess, 1);
+  }
 }
 
 }  // namespace
