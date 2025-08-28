@@ -749,10 +749,6 @@ void NativeWidgetNSWindowBridge::CloseWindow() {
     return;
   }
 
-  // Destroy the content view so that it won't call back into |host_| while
-  // being torn down.
-  DestroyContentView();
-
   // If the window wants to be visible and has a parent, then the parent may
   // order it back in (in the period between orderOut: and close).
   wants_to_be_visible_ = false;

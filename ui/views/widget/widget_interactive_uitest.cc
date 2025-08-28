@@ -1692,6 +1692,16 @@ TEST_F(DesktopWidgetTestInteractive,
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
         // BUILDFLAG(ENABLE_DESKTOP_AURA)
 
+// Asserts the Widget's NativeView remains valid after the Widget has been
+// closed but before the Widget is destroyed.
+TEST_F(WidgetTestInteractive, NativeViewRemainsValidPostClose) {
+  WidgetAutoclosePtr toplevel(CreateTopLevelPlatformWidget());
+  EXPECT_TRUE(toplevel->GetNativeView());
+  toplevel->Close();
+  EXPECT_TRUE(toplevel->IsClosed());
+  EXPECT_TRUE(toplevel->GetNativeView());
+}
+
 namespace {
 
 // Helper class for CaptureLostTrackingWidget to store whether
