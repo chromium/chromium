@@ -308,10 +308,15 @@ void AutoPictureInPictureTabHelper::MediaSessionActionsChanged(
 void AutoPictureInPictureTabHelper::MaybeEnterAutoPictureInPicture() {
   if (!IsEligibleForAutoPictureInPicture(
           /*should_record_blocking_metrics=*/true)) {
-    if (content::MediaSession* media_session =
-            content::MediaSession::GetIfExists(web_contents())) {
-      media_session->ReportAutoPictureInPictureInfoChanged();
+    if (base::FeatureList::IsEnabled(
+            media::kAutoPictureInPictureForVideoPlayback) &&
+        !IsUsingCameraOrMicrophone() && !has_safe_url_) {
+      // This is a media playback case, but we have not checked for URL safety
+      // yet. Do not report info changed, as an async check will be triggered
+      // which will call this function again.
+      return;
     }
+    MaybeReportAutoPictureInPictureInfoChanged();
     return;
   }
   auto_picture_in_picture_activation_time_ =
@@ -330,21 +335,32 @@ void AutoPictureInPictureTabHelper::MaybeScheduleAsyncTasks() {
 
   // Prevent scheduling asynchronous checks if we are already in picture in
   // picture, picture in picture was blocked due to content setting/incognito,
-  // or a media session does not exist. Also prevent these checks if we are
-  // already eligible for auto picture in picture, since auto picture in picture
-  // requests will succeed anyways.
+  // we are using camera or microphone, or a media session does not exist. Also
+  // prevent these checks if we are already eligible for auto picture in
+  // picture, since auto picture in picture requests will succeed anyways.
   //
   // The `blocked_due_to_content_setting_` check is performed to prevent
   // recording duplicate entries for blocking metrics.
   if (is_in_picture_in_picture_ ||
       !(content::MediaSession::GetIfExists(web_contents())) ||
-      blocked_due_to_content_setting_ ||
+      blocked_due_to_content_setting_ || IsUsingCameraOrMicrophone() ||
       IsEligibleForAutoPictureInPicture(
           /*should_record_blocking_metrics=*/false)) {
     return;
   }
 
   ScheduleUrlSafetyCheck();
+}
+
+void AutoPictureInPictureTabHelper::MaybeReportAutoPictureInPictureInfoChanged()
+    const {
+  content::MediaSession* media_session =
+      content::MediaSession::GetIfExists(web_contents());
+  if (!media_session) {
+    return;
+  }
+
+  media_session->ReportAutoPictureInPictureInfoChanged();
 }
 
 void AutoPictureInPictureTabHelper::StopAndResetAsyncTasks() {
@@ -521,6 +537,9 @@ void AutoPictureInPictureTabHelper::OnUrlSafetyResult(bool has_safe_url) {
   has_safe_url_ = has_safe_url;
 
   if (!has_safe_url_) {
+    // If URL is not safe, we are not eligible. Report the auto
+    // picture-in-picture information change.
+    MaybeReportAutoPictureInPictureInfoChanged();
     return;
   }
 

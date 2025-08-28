@@ -202,6 +202,10 @@ class AutoPictureInPictureTabHelper
   // times.
   void MaybeScheduleAsyncTasks();
 
+  // Reports to the media session that the auto picture-in-picture information
+  // has changed.
+  void MaybeReportAutoPictureInPictureInfoChanged() const;
+
   // Stops any pending URL safety task. Also reset relevant member variables:
   //   * Sets `has_safe_url_` to false.
   //   * Resets `safe_browsing_checker_client_`.

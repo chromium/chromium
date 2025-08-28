@@ -43,6 +43,8 @@ class MEDIA_EXPORT PictureInPictureEventsInfo {
     bool has_safe_url = false;
     bool meets_media_engagement_conditions = false;
     bool blocked_due_to_content_setting = false;
+
+    auto operator<=>(const AutoPipInfo&) const = default;
   };
 
   using AutoPipReasonCallback = base::RepeatingCallback<AutoPipReason(void)>;

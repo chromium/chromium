@@ -16,9 +16,11 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/media_session_service.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/common/content_client.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_media_session_client.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/test/test_content_browser_client.h"
 #include "content/test/test_web_contents.h"
 #include "media/base/media_content_type.h"
 #include "media/base/media_switches.h"
@@ -30,6 +32,7 @@
 #include "third_party/blink/public/common/features.h"
 
 using ::testing::_;
+using testing::Return;
 
 namespace content {
 
@@ -96,6 +99,14 @@ class MockWebContentsDelegate : public content::WebContentsDelegate {
  public:
   // content::WebContentsDelegate:
   MOCK_METHOD(void, ActivateContents, (content::WebContents*), (override));
+};
+
+class MockContentBrowserClient : public TestContentBrowserClient {
+ public:
+  MOCK_METHOD(media::PictureInPictureEventsInfo::AutoPipInfo,
+              GetAutoPipInfo,
+              (const WebContents& web_contents),
+              (const, override));
 };
 
 }  // anonymous namespace
@@ -1246,6 +1257,149 @@ TEST_F(MediaSessionImplTest,
                              MediaSessionAction::kEnterAutoPictureInPicture));
   GetMediaSession()->EnterAutoPictureInPicture();
   EXPECT_EQ(1, player_observer_->received_enter_picture_in_picture_calls());
+}
+
+TEST_F(MediaSessionImplTest,
+       ReportAutoPictureInPictureInfoChanged_Deduplicates) {
+  int player = player_observer_->StartNewPlayer();
+  GetMediaSession()->AddPlayer(player_observer_.get(), player);
+
+  MockContentBrowserClient mock_client;
+  ContentBrowserClient* old_client = SetBrowserClientForTesting(&mock_client);
+
+  media::PictureInPictureEventsInfo::AutoPipInfo info;
+  info.auto_pip_reason =
+      media::PictureInPictureEventsInfo::AutoPipReason::kMediaPlayback;
+  EXPECT_CALL(mock_client, GetAutoPipInfo(_)).WillRepeatedly(Return(info));
+
+  // The first call should notify.
+  GetMediaSession()->ReportAutoPictureInPictureInfoChanged();
+  EXPECT_EQ(
+      1,
+      player_observer_->received_auto_picture_in_picture_info_changed_calls());
+
+  // A second call with the same info should not.
+  GetMediaSession()->ReportAutoPictureInPictureInfoChanged();
+  EXPECT_EQ(
+      1,
+      player_observer_->received_auto_picture_in_picture_info_changed_calls());
+
+  // A call with different info should notify.
+  info.is_playing = true;
+  EXPECT_CALL(mock_client, GetAutoPipInfo(_)).WillRepeatedly(Return(info));
+  GetMediaSession()->ReportAutoPictureInPictureInfoChanged();
+  EXPECT_EQ(
+      2,
+      player_observer_->received_auto_picture_in_picture_info_changed_calls());
+
+  // A call with the same info again should not.
+  GetMediaSession()->ReportAutoPictureInPictureInfoChanged();
+  EXPECT_EQ(
+      2,
+      player_observer_->received_auto_picture_in_picture_info_changed_calls());
+
+  SetBrowserClientForTesting(old_client);
+}
+
+TEST_F(MediaSessionImplTest,
+       ReportAutoPictureInPictureInfoChanged_ClearedOnCrossDocumentNavigate) {
+  int player = player_observer_->StartNewPlayer();
+  GetMediaSession()->AddPlayer(player_observer_.get(), player);
+
+  MockContentBrowserClient mock_client;
+  ContentBrowserClient* old_client = SetBrowserClientForTesting(&mock_client);
+
+  media::PictureInPictureEventsInfo::AutoPipInfo info;
+  info.auto_pip_reason =
+      media::PictureInPictureEventsInfo::AutoPipReason::kMediaPlayback;
+  EXPECT_CALL(mock_client, GetAutoPipInfo(_)).WillRepeatedly(Return(info));
+
+  // The first call should notify.
+  GetMediaSession()->ReportAutoPictureInPictureInfoChanged();
+  EXPECT_EQ(
+      1,
+      player_observer_->received_auto_picture_in_picture_info_changed_calls());
+
+  // Navigate to a new document, which should clear the cached info.
+  NavigateAndCommit(GURL("https://example.com/foo"));
+
+  // The info is the same, but since we navigated, it should be sent again.
+  GetMediaSession()->ReportAutoPictureInPictureInfoChanged();
+  EXPECT_EQ(
+      2,
+      player_observer_->received_auto_picture_in_picture_info_changed_calls());
+
+  SetBrowserClientForTesting(old_client);
+}
+
+TEST_F(MediaSessionImplTest,
+       ReportAutoPictureInPictureInfoChanged_NotClearedOnSameDocumentNavigate) {
+  // Navigate to an initial page.
+  NavigateAndCommit(GURL("https://example.com/"));
+
+  int player = player_observer_->StartNewPlayer();
+  GetMediaSession()->AddPlayer(player_observer_.get(), player);
+
+  MockContentBrowserClient mock_client;
+  ContentBrowserClient* old_client = SetBrowserClientForTesting(&mock_client);
+
+  media::PictureInPictureEventsInfo::AutoPipInfo info;
+  info.auto_pip_reason =
+      media::PictureInPictureEventsInfo::AutoPipReason::kMediaPlayback;
+  EXPECT_CALL(mock_client, GetAutoPipInfo(_)).WillRepeatedly(Return(info));
+
+  // The first call should notify.
+  GetMediaSession()->ReportAutoPictureInPictureInfoChanged();
+  EXPECT_EQ(
+      1,
+      player_observer_->received_auto_picture_in_picture_info_changed_calls());
+
+  // Navigate to a same-document fragment, which should not clear the cached
+  // info.
+  NavigateAndCommit(GURL("https://example.com/#foo"));
+
+  // The info is the same, and since we did a same-document navigation, it
+  // should not be sent again.
+  GetMediaSession()->ReportAutoPictureInPictureInfoChanged();
+  EXPECT_EQ(
+      1,
+      player_observer_->received_auto_picture_in_picture_info_changed_calls());
+
+  SetBrowserClientForTesting(old_client);
+}
+
+TEST_F(MediaSessionImplTest, NewPlayerReceivesAutoPictureInPictureInfo) {
+  // Add a player. It should not receive any info yet.
+  int player1 = player_observer_->StartNewPlayer();
+  GetMediaSession()->AddPlayer(player_observer_.get(), player1);
+  EXPECT_EQ(
+      0,
+      player_observer_->received_auto_picture_in_picture_info_changed_calls());
+
+  // Set up the mock client to return some auto-pip info.
+  MockContentBrowserClient mock_client;
+  ContentBrowserClient* old_client = SetBrowserClientForTesting(&mock_client);
+
+  media::PictureInPictureEventsInfo::AutoPipInfo info;
+  info.auto_pip_reason =
+      media::PictureInPictureEventsInfo::AutoPipReason::kMediaPlayback;
+  EXPECT_CALL(mock_client, GetAutoPipInfo(_)).WillRepeatedly(Return(info));
+
+  // Report the info change. The first player should be notified.
+  GetMediaSession()->ReportAutoPictureInPictureInfoChanged();
+  EXPECT_EQ(
+      1,
+      player_observer_->received_auto_picture_in_picture_info_changed_calls());
+
+  // Add a second player. It should be notified immediately with the cached
+  // info.
+  int player2 = player_observer_->StartNewPlayer();
+  GetMediaSession()->AddPlayer(player_observer_.get(), player2);
+  EXPECT_EQ(
+      2,
+      player_observer_->received_auto_picture_in_picture_info_changed_calls());
+
+  SetBrowserClientForTesting(old_client);
 }
 
 class MediaSessionImplWithMediaSessionClientTest : public MediaSessionImplTest {
