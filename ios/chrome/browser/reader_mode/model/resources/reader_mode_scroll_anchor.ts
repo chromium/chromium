@@ -34,6 +34,7 @@ function findScrollAnchor(): void {
       'hash': hashCode(pText),
       'charCount': pText.length,
       'offset': minDistance,
+      'isScrolledAtTop': window.scrollY === 0,
     });
   }
 }

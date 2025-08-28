@@ -56,6 +56,15 @@ void ReaderModeScrollAnchorJavaScriptFeature::ScriptMessageReceived(
   std::optional<double> hash = dict->FindDouble("hash");
   std::optional<double> char_count = dict->FindDouble("charCount");
   std::optional<double> offset = dict->FindDouble("offset");
+  std::optional<bool> is_scrolled_at_top = dict->FindBool("isScrolledAtTop");
+
+  if (is_scrolled_at_top.has_value() && is_scrolled_at_top.value()) {
+    // If the original page is scrolled at the top, disable automatic scrolling
+    // script when entering Reader mode.
+    tab_helper->SetScrollAnchorScript(std::string());
+    return;
+  }
+
   if (hash.has_value() && char_count.has_value() && offset.has_value()) {
     std::string script = "scrollToParagraphByHash(" +
                          base::NumberToString(hash.value()) + ", " +
