@@ -60,6 +60,12 @@ bool SaveUpdateAddressProfilePromptViewAndroid::Show(
   Profile* browser_profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
 
+  SaveUpdateAddressProfilePromptMode prompt_mode =
+      is_update ? SaveUpdateAddressProfilePromptMode::kUpdateProfile
+      : is_migration_to_account
+          ? SaveUpdateAddressProfilePromptMode::kMigrateProfile
+          : SaveUpdateAddressProfilePromptMode::kSaveNewProfile;
+
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> java_autofill_profile =
       autofill_profile.CreateJavaObject(
@@ -67,8 +73,7 @@ bool SaveUpdateAddressProfilePromptViewAndroid::Show(
   java_object_.Reset(Java_SaveUpdateAddressProfilePrompt_create(
       env, web_contents_->GetTopLevelNativeWindow()->GetJavaObject(),
       java_controller, browser_profile->GetJavaObject(), java_autofill_profile,
-      static_cast<jboolean>(is_update),
-      static_cast<jboolean>(is_migration_to_account)));
+      static_cast<jint>(prompt_mode)));
   if (!java_object_) {
     return false;
   }

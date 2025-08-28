@@ -236,6 +236,7 @@ android_library("java") {
   srcjar_deps = [
     ":jni_headers",
     "//chrome/browser/ui:adaptive_toolbar_enums_java",
+    "//chrome/browser/ui:save_update_profile_enums_java",
   ]
 
   resources_package = "org.chromium.chrome.browser.toolbar"

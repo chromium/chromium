@@ -5652,6 +5652,13 @@ if (is_android) {
   }
 }
 
+if (is_android) {
+  java_cpp_enum("save_update_profile_enums_java") {
+    sources =
+        [ "android/autofill/save_update_address_profile_prompt_view_android.h" ]
+  }
+}
+
 if (use_aura) {
   source_set("overscroll_pref_manager") {
     sources = [

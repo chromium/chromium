@@ -4,10 +4,6 @@
 
 package org.chromium.chrome.browser.autofill;
 
-import static org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow.MIGRATE_EXISTING_ADDRESS_PROFILE;
-import static org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow.SAVE_NEW_ADDRESS_PROFILE;
-import static org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow.UPDATE_EXISTING_ADDRESS_PROFILE;
-
 import android.app.Activity;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -25,7 +21,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.Delegate;
-import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.ui.base.WindowAndroid;
@@ -56,22 +51,24 @@ public class SaveUpdateAddressProfilePrompt {
             Activity activity,
             Profile browserProfile,
             AutofillProfile autofillProfile,
-            boolean isUpdate,
-            boolean isMigrationToAccount) {
+            @SaveUpdateAddressProfilePromptMode int promptMode) {
         mController = controller;
         mModalDialogManager = modalDialogManager;
 
         LayoutInflater inflater = LayoutInflater.from(activity);
-        final @UserFlow int userFlow;
-        if (isMigrationToAccount) {
-            mDialogView = inflater.inflate(R.layout.autofill_migrate_address_profile_prompt, null);
-            userFlow = MIGRATE_EXISTING_ADDRESS_PROFILE;
-        } else if (isUpdate) {
-            mDialogView = inflater.inflate(R.layout.autofill_update_address_profile_prompt, null);
-            userFlow = UPDATE_EXISTING_ADDRESS_PROFILE;
-        } else {
-            mDialogView = inflater.inflate(R.layout.autofill_save_address_profile_prompt, null);
-            userFlow = SAVE_NEW_ADDRESS_PROFILE;
+
+        switch (promptMode) {
+            case SaveUpdateAddressProfilePromptMode.MIGRATE_PROFILE:
+                mDialogView =
+                        inflater.inflate(R.layout.autofill_migrate_address_profile_prompt, null);
+                break;
+            case SaveUpdateAddressProfilePromptMode.UPDATE_PROFILE:
+                mDialogView =
+                        inflater.inflate(R.layout.autofill_update_address_profile_prompt, null);
+                break;
+            default:
+                mDialogView = inflater.inflate(R.layout.autofill_save_address_profile_prompt, null);
+                break;
         }
 
         PropertyModel.Builder builder =
@@ -102,7 +99,7 @@ public class SaveUpdateAddressProfilePrompt {
                                 activity,
                                 autofillProfile,
                                 PersonalDataManagerFactory.getForProfile(browserProfile)),
-                        userFlow,
+                        promptMode,
                         /* saveToDisk= */ false);
         mDialogView
                 .findViewById(R.id.edit_button)
@@ -126,9 +123,7 @@ public class SaveUpdateAddressProfilePrompt {
      * @param controller the controller to handle the interaction.
      * @param browserProfile the Chrome profile being used.
      * @param autofillProfile the address data to be saved.
-     * @param isUpdate true if there's an existing profile which will be updated, false otherwise.
-     * @param isMigrationToAccount true if address profile is going to be saved in user's Google
-     *         account, false otherwise.
+     * @param promptMode the user flow that this prompt is being created for.
      * @return instance of the SaveUpdateAddressProfilePrompt or null if the call failed.
      */
     @CalledByNative
@@ -137,8 +132,7 @@ public class SaveUpdateAddressProfilePrompt {
             SaveUpdateAddressProfilePromptController controller,
             Profile browserProfile,
             AutofillProfile autofillProfile,
-            boolean isUpdate,
-            boolean isMigrationToAccount) {
+            @SaveUpdateAddressProfilePromptMode int promptMode) {
         Activity activity = windowAndroid.getActivity().get();
         ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
         if (activity == null || modalDialogManager == null) return null;
@@ -149,8 +143,7 @@ public class SaveUpdateAddressProfilePrompt {
                 activity,
                 browserProfile,
                 autofillProfile,
-                isUpdate,
-                isMigrationToAccount);
+                promptMode);
     }
 
     /**

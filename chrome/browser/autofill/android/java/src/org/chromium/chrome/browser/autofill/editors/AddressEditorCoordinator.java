@@ -59,6 +59,7 @@ public class AddressEditorCoordinator {
     }
 
     /** Different types of user flows this editor supports. */
+    // TODO(cbug.com/441265846): Replace it with SaveUpdateAddressProfilePromptMode enum.
     @IntDef({
         UserFlow.CREATE_NEW_ADDRESS_PROFILE,
         UserFlow.SAVE_NEW_ADDRESS_PROFILE,
