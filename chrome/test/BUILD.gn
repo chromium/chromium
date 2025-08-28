@@ -4872,6 +4872,7 @@ if (!is_android) {
         ]
 
         deps += [
+          "//ash/webui/boca_ui:constants",
           "//build/config/chromebox_for_meetings:buildflags",
           "//chrome/browser/ash/scanning",
           "//chrome/browser/ash/scanning:test_support",

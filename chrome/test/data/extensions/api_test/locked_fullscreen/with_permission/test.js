@@ -17,6 +17,14 @@ updateWindowToLockedFullscreen = async function() {
   chrome.test.succeed();
 };
 
+updateIncompatibleWindowToLockedFullscreen = async function() {
+  const window = await chrome.windows.getCurrent();
+  const updatedWindow =
+      await chrome.windows.update(window.id, {state: 'locked-fullscreen'});
+  chrome.test.assertNe('locked-fullscreen', updatedWindow.state);
+  chrome.test.succeed();
+};
+
 removeLockedFullscreenFromWindow = async function() {
   const window = await chrome.windows.getCurrent();
   chrome.test.assertEq('locked-fullscreen', window.state);
@@ -27,10 +35,22 @@ removeLockedFullscreenFromWindow = async function() {
   chrome.test.succeed();
 };
 
+removeLockedFullscreenFromIncompatibleWindow = async function() {
+  const window = await chrome.windows.getCurrent();
+  chrome.test.assertEq('locked-fullscreen', window.state);
+
+  const updatedWindow =
+      await chrome.windows.update(window.id, {state: 'fullscreen'});
+  chrome.test.assertNe('fullscreen', updatedWindow.state);
+  chrome.test.succeed();
+};
+
 const tests = {
   openLockedFullscreenWindow,
   updateWindowToLockedFullscreen,
+  updateIncompatibleWindowToLockedFullscreen,
   removeLockedFullscreenFromWindow,
+  removeLockedFullscreenFromIncompatibleWindow,
 };
 
 chrome.test.getConfig(function(config) {

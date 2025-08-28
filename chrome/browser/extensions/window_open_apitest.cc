@@ -6,6 +6,7 @@
 
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/browsertest_util.h"
@@ -38,18 +39,24 @@
 #include "ui/base/base_window.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_features.h"
+#include "ash/webui/boca_ui/url_constants.h"
 #include "ash/wm/window_pin_util.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/extensions/window_controller_list.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chromeos/ui/base/window_pin_type.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "ui/aura/window.h"
 #endif
 
 using content::OpenURLParams;
 using content::Referrer;
 using content::WebContents;
+using ::testing::NotNull;
 
 namespace aura {
 class Window;
@@ -58,6 +65,7 @@ class Window;
 namespace extensions {
 
 class WindowOpenApiTest : public ExtensionApiTest {
+ protected:
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -350,8 +358,46 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-class WindowOpenApiLockedFullscreenTest : public WindowOpenApiTest {
+// TODO(crbug.com/441788722): Move `WindowOpenApiLockedFullscreenTest` to a
+// separate test file.
+class WindowOpenApiLockedFullscreenTest
+    : public WindowOpenApiTest,
+      public testing::WithParamInterface<bool> {
  protected:
+  WindowOpenApiLockedFullscreenTest() {
+    // TODO(crbug.com/438844429): Remove `kBoca` and `kBocaConsumer` feature
+    // flags once Boca SWA is installed even when Class Tools policy is not set.
+    if (IsLockedQuizMigrationEnabled()) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{ash::features::kBocaOnTaskLockedQuizMigration,
+                                ash::features::kBoca,
+                                ash::features::kBocaConsumer},
+          /*disabled_features=*/{});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{ash::features::kBoca,
+                                ash::features::kBocaConsumer},
+          /*disabled_features=*/{
+              ash::features::kBocaOnTaskLockedQuizMigration});
+    }
+  }
+
+  void SetUpOnMainThread() override {
+    WindowOpenApiTest::SetUpOnMainThread();
+    ash::SystemWebAppManager::GetForTest(browser()->profile())
+        ->InstallSystemAppsForTesting();
+  }
+
+  // Launch Boca app and wait for it to open.
+  void LaunchBocaAppAndWait() {
+    content::TestNavigationObserver observer(
+        (GURL(ash::boca::kChromeBocaAppUntrustedIndexURL)));
+    observer.StartWatchingNewWebContents();
+    ash::LaunchSystemWebAppAsync(browser()->profile(),
+                                 ash::SystemWebAppType::BOCA);
+    observer.Wait();
+  }
+
   chromeos::WindowPinType GetCurrentWindowPinType() {
     chromeos::WindowPinType type = ash::GetWindowPinType(GetCurrentWindow());
     return type;
@@ -364,6 +410,13 @@ class WindowOpenApiLockedFullscreenTest : public WindowOpenApiTest {
       ash::PinWindow(GetCurrentWindow(), /*trusted=*/true);
     }
   }
+
+  Browser* FindBocaSystemWebAppBrowser() {
+    return ash::FindSystemWebAppBrowser(browser()->profile(),
+                                        ash::SystemWebAppType::BOCA);
+  }
+
+  bool IsLockedQuizMigrationEnabled() const { return GetParam(); }
 
  private:
   aura::Window* GetCurrentWindow() {
@@ -379,10 +432,20 @@ class WindowOpenApiLockedFullscreenTest : public WindowOpenApiTest {
     EXPECT_TRUE(controller);
     return controller->window()->GetNativeWindow();
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(WindowOpenApiLockedFullscreenTest,
+IN_PROC_BROWSER_TEST_P(WindowOpenApiLockedFullscreenTest,
                        OpenLockedFullscreenWindow) {
+  // This test is for the legacy behavior of locking a standard browser window.
+  // Skip it when the new SWA-based migration is enabled.
+  // TODO(crbug.com/438540673): Update `chrome.windows.create` to migrate locked
+  // quiz to Boca SWA.
+  if (IsLockedQuizMigrationEnabled()) {
+    GTEST_SKIP() << "This test is only relevant for the legacy case.";
+  }
+
   ASSERT_TRUE(RunExtensionTest("locked_fullscreen/with_permission",
                                {.custom_arg = "openLockedFullscreenWindow"}))
       << message_;
@@ -392,8 +455,12 @@ IN_PROC_BROWSER_TEST_F(WindowOpenApiLockedFullscreenTest,
   EXPECT_EQ(chromeos::WindowPinType::kTrustedPinned, GetCurrentWindowPinType());
 }
 
-IN_PROC_BROWSER_TEST_F(WindowOpenApiLockedFullscreenTest,
+IN_PROC_BROWSER_TEST_P(WindowOpenApiLockedFullscreenTest,
                        UpdateWindowToLockedFullscreen) {
+  if (IsLockedQuizMigrationEnabled()) {
+    LaunchBocaAppAndWait();
+  }
+
   ASSERT_TRUE(
       RunExtensionTest("locked_fullscreen/with_permission",
                        {.custom_arg = "updateWindowToLockedFullscreen"}))
@@ -403,12 +470,37 @@ IN_PROC_BROWSER_TEST_F(WindowOpenApiLockedFullscreenTest,
   EXPECT_EQ(chromeos::WindowPinType::kTrustedPinned, GetCurrentWindowPinType());
 }
 
-IN_PROC_BROWSER_TEST_F(WindowOpenApiLockedFullscreenTest,
+IN_PROC_BROWSER_TEST_P(WindowOpenApiLockedFullscreenTest,
+                       UpdateIncompatibleWindowToLockedFullscreen) {
+  if (!IsLockedQuizMigrationEnabled()) {
+    GTEST_SKIP()
+        << "This test is only relevant for the new SWA-based migration case.";
+  }
+
+  ASSERT_TRUE(RunExtensionTest(
+      "locked_fullscreen/with_permission",
+      {.custom_arg = "updateIncompatibleWindowToLockedFullscreen"}))
+      << message_;
+
+  // chrome.windows.update call fails since the new SWA-based migration does not
+  // support set locked fullscreen on regular browser window.
+  EXPECT_EQ(chromeos::WindowPinType::kNone, GetCurrentWindowPinType());
+}
+
+IN_PROC_BROWSER_TEST_P(WindowOpenApiLockedFullscreenTest,
                        RemoveLockedFullscreenFromWindow) {
+  Browser* current_browser = browser();
+  if (IsLockedQuizMigrationEnabled()) {
+    LaunchBocaAppAndWait();
+    Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+    current_browser = boca_app_browser;
+  }
+  ASSERT_THAT(current_browser, NotNull());
+
   // After locking the window, do a LockedFullscreenStateChanged so the
   // command_controller state catches up as well.
   SetCurrentWindowPinType(chromeos::WindowPinType::kTrustedPinned);
-  browser()->command_controller()->LockedFullscreenStateChanged();
+  current_browser->command_controller()->LockedFullscreenStateChanged();
 
   ASSERT_TRUE(
       RunExtensionTest("locked_fullscreen/with_permission",
@@ -419,31 +511,67 @@ IN_PROC_BROWSER_TEST_F(WindowOpenApiLockedFullscreenTest,
   EXPECT_EQ(chromeos::WindowPinType::kNone, GetCurrentWindowPinType());
 }
 
+IN_PROC_BROWSER_TEST_P(WindowOpenApiLockedFullscreenTest,
+                       RemoveLockedFullscreenFromIncompatibleWindow) {
+  if (!IsLockedQuizMigrationEnabled()) {
+    GTEST_SKIP()
+        << "This test is only relevant for the new SWA-based migration case.";
+  }
+
+  // After locking the window, do a LockedFullscreenStateChanged so the
+  // command_controller state catches up as well.
+  SetCurrentWindowPinType(chromeos::WindowPinType::kTrustedPinned);
+  browser()->command_controller()->LockedFullscreenStateChanged();
+
+  ASSERT_TRUE(RunExtensionTest(
+      "locked_fullscreen/with_permission",
+      {.custom_arg = "removeLockedFullscreenFromIncompatibleWindow"}))
+      << message_;
+
+  // chrome.windows.update call fails since the new SWA-based migration does not
+  // support set locked fullscreen on regular browser window.
+  EXPECT_EQ(chromeos::WindowPinType::kTrustedPinned, GetCurrentWindowPinType());
+}
+
 // Make sure that commands disabling code works in locked fullscreen mode.
-IN_PROC_BROWSER_TEST_F(WindowOpenApiLockedFullscreenTest,
+IN_PROC_BROWSER_TEST_P(WindowOpenApiLockedFullscreenTest,
                        VerifyCommandsInLockedFullscreen) {
+  Browser* current_browser = browser();
+  if (IsLockedQuizMigrationEnabled()) {
+    LaunchBocaAppAndWait();
+    Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+    current_browser = boca_app_browser;
+  }
+  ASSERT_THAT(current_browser, NotNull());
+
   // IDC_EXIT is always enabled in regular mode so it's a perfect candidate for
   // testing.
-  EXPECT_TRUE(browser()->command_controller()->IsCommandEnabled(IDC_EXIT));
+  EXPECT_TRUE(
+      current_browser->command_controller()->IsCommandEnabled(IDC_EXIT));
   ASSERT_TRUE(
       RunExtensionTest("locked_fullscreen/with_permission",
                        {.custom_arg = "updateWindowToLockedFullscreen"}))
       << message_;
 
-  // IDC_EXIT should always be disabled in locked fullscreen.
-  EXPECT_FALSE(browser()->command_controller()->IsCommandEnabled(IDC_EXIT));
-
-  // Some other disabled commands.
-  EXPECT_FALSE(browser()->command_controller()->IsCommandEnabled(IDC_FIND));
+  // Verify some disabled commands.
   EXPECT_FALSE(
-      browser()->command_controller()->IsCommandEnabled(IDC_ZOOM_PLUS));
+      current_browser->command_controller()->IsCommandEnabled(IDC_EXIT));
+  EXPECT_FALSE(
+      current_browser->command_controller()->IsCommandEnabled(IDC_ZOOM_PLUS));
 
   // Verify some allowlisted commands.
-  EXPECT_TRUE(browser()->command_controller()->IsCommandEnabled(IDC_COPY));
-  EXPECT_TRUE(browser()->command_controller()->IsCommandEnabled(IDC_PASTE));
+  EXPECT_TRUE(
+      current_browser->command_controller()->IsCommandEnabled(IDC_COPY));
+  EXPECT_TRUE(
+      current_browser->command_controller()->IsCommandEnabled(IDC_PASTE));
+
+  // IDC_FIND should be disabled for the legacy locked fullscreen, but enabled
+  // for new SWA-based migration locked fullscreen.
+  EXPECT_EQ(current_browser->command_controller()->IsCommandEnabled(IDC_FIND),
+            IsLockedQuizMigrationEnabled());
 }
 
-IN_PROC_BROWSER_TEST_F(WindowOpenApiLockedFullscreenTest,
+IN_PROC_BROWSER_TEST_P(WindowOpenApiLockedFullscreenTest,
                        OpenLockedFullscreenWindowWithoutPermission) {
   ASSERT_TRUE(RunExtensionTest("locked_fullscreen/without_permission",
                                {.custom_arg = "openLockedFullscreenWindow"}))
@@ -455,8 +583,12 @@ IN_PROC_BROWSER_TEST_F(WindowOpenApiLockedFullscreenTest,
   EXPECT_EQ(1u, extensions::WindowControllerList::GetInstance()->size());
 }
 
-IN_PROC_BROWSER_TEST_F(WindowOpenApiLockedFullscreenTest,
+IN_PROC_BROWSER_TEST_P(WindowOpenApiLockedFullscreenTest,
                        UpdateWindowToLockedFullscreenWithoutPermission) {
+  if (IsLockedQuizMigrationEnabled()) {
+    LaunchBocaAppAndWait();
+  }
+
   ASSERT_TRUE(
       RunExtensionTest("locked_fullscreen/without_permission",
                        {.custom_arg = "updateWindowToLockedFullscreen"}))
@@ -467,10 +599,20 @@ IN_PROC_BROWSER_TEST_F(WindowOpenApiLockedFullscreenTest,
   EXPECT_EQ(chromeos::WindowPinType::kNone, GetCurrentWindowPinType());
 }
 
-IN_PROC_BROWSER_TEST_F(WindowOpenApiLockedFullscreenTest,
+IN_PROC_BROWSER_TEST_P(WindowOpenApiLockedFullscreenTest,
                        RemoveLockedFullscreenFromWindowWithoutPermission) {
+  Browser* current_browser = browser();
+  if (IsLockedQuizMigrationEnabled()) {
+    LaunchBocaAppAndWait();
+    Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+    current_browser = boca_app_browser;
+  }
+  ASSERT_THAT(current_browser, NotNull());
+
+  // After locking the window, do a LockedFullscreenStateChanged so the
+  // command_controller state catches up as well.
   SetCurrentWindowPinType(chromeos::WindowPinType::kTrustedPinned);
-  browser()->command_controller()->LockedFullscreenStateChanged();
+  current_browser->command_controller()->LockedFullscreenStateChanged();
 
   ASSERT_TRUE(
       RunExtensionTest("locked_fullscreen/without_permission",
@@ -480,6 +622,10 @@ IN_PROC_BROWSER_TEST_F(WindowOpenApiLockedFullscreenTest,
   // The current window is still locked-fullscreen.
   EXPECT_EQ(chromeos::WindowPinType::kTrustedPinned, GetCurrentWindowPinType());
 }
+
+INSTANTIATE_TEST_SUITE_P(WindowOpenApiLockedFullscreenTests,
+                         WindowOpenApiLockedFullscreenTest,
+                         testing::Bool());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_CHROMEOS)

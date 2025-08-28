@@ -6,11 +6,14 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
+#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "ash/wm/window_pin_util.h"
 #include "chrome/browser/ash/boca/on_task/on_task_system_web_app_manager_impl.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -118,8 +121,27 @@ void LockedQuizSessionManager::OnBocaSWALaunched(
 
 void LockedQuizSessionManager::SetLockedFullscreenState(Browser* browser,
                                                         bool pinned) {
-  // TODO(crbug.com/438498962): Replace with the
-  // `SetPinStateForSystemWebAppWindow` helper in `OnTaskSystemWebAppManager`.
+  if (ash::features::IsBocaOnTaskLockedQuizMigrationEnabled()) {
+    bool is_boca_app_instance =
+        ash::IsBrowserForSystemWebApp(browser, ash::SystemWebAppType::BOCA);
+
+    // Enforce that the browser instance provided is the Boca SWA.
+    if (!is_boca_app_instance) {
+      LOG(ERROR) << "Attempted to lock a browser window that is not the "
+                 << "Boca SWA.";
+      // TODO(crbug.com/441365121): Return false to surface the error back to
+      // the extension.
+      return;
+    }
+
+    const SessionID browser_window_id = browser->session_id();
+    system_web_app_manager_->SetPinStateForSystemWebAppWindow(
+        pinned, browser_window_id);
+    return;
+  }
+
+  // TODO(crbug.com/438540029): Clean up after migrating locked quizzes to use
+  // the Boca SWA.
   aura::Window* const window = browser->window()->GetNativeWindow();
   DCHECK(window);
 
