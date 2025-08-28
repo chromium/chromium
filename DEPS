@@ -4227,7 +4227,8 @@ hooks = [
                '--build-bindgen',
                '--build-vet',
                '--build-crubit',
-               '--gnrt-stdlib'],
+               '--gnrt-stdlib',
+               '--skip-test'],
   },
   {
     # Update LASTCHANGE.
