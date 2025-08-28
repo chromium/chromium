@@ -179,11 +179,10 @@ TEST_F(SharingFCMHandlerTest, PingMessageHandler) {
   // Tests OnMessage flow in SharingFCMHandler after handler is added.
   ON_CALL(mock_sharing_message_handler_,
           OnMessage(ProtoEquals(sharing_message), _))
-      .WillByDefault(testing::Invoke(
-          [](const SharingMessage& message,
-             SharingMessageHandler::DoneCallback done_callback) {
-            std::move(done_callback).Run(/*response=*/nullptr);
-          }));
+      .WillByDefault([](const SharingMessage& message,
+                        SharingMessageHandler::DoneCallback done_callback) {
+        std::move(done_callback).Run(/*response=*/nullptr);
+      });
   EXPECT_CALL(mock_sharing_message_handler_, OnMessage(_, _));
   EXPECT_CALL(
       mock_sharing_fcm_sender_,
@@ -217,11 +216,10 @@ TEST_F(SharingFCMHandlerTest, PingMessageHandlerWithMessageIdInPayload) {
 
   ON_CALL(mock_sharing_message_handler_,
           OnMessage(ProtoEquals(sharing_message), _))
-      .WillByDefault(testing::Invoke(
-          [](const SharingMessage& message,
-             SharingMessageHandler::DoneCallback done_callback) {
-            std::move(done_callback).Run(/*response=*/nullptr);
-          }));
+      .WillByDefault([](const SharingMessage& message,
+                        SharingMessageHandler::DoneCallback done_callback) {
+        std::move(done_callback).Run(/*response=*/nullptr);
+      });
   EXPECT_CALL(mock_sharing_message_handler_, OnMessage(_, _));
   EXPECT_CALL(
       mock_sharing_fcm_sender_,
@@ -248,13 +246,13 @@ TEST_F(SharingFCMHandlerTest, PingMessageHandlerWithResponse) {
   // Tests OnMessage flow in SharingFCMHandler after handler is added.
   ON_CALL(mock_sharing_message_handler_,
           OnMessage(ProtoEquals(sharing_message), _))
-      .WillByDefault(testing::Invoke(
+      .WillByDefault(
           [](const SharingMessage& message,
              SharingMessageHandler::DoneCallback done_callback) {
             std::move(done_callback)
                 .Run(std::make_unique<
                      components_sharing_message::ResponseMessage>());
-          }));
+          });
   EXPECT_CALL(mock_sharing_message_handler_, OnMessage(_, _));
   EXPECT_CALL(
       mock_sharing_fcm_sender_,
@@ -282,11 +280,10 @@ TEST_F(SharingFCMHandlerTest, PingMessageHandlerSecondaryUser) {
   // Tests OnMessage flow in SharingFCMHandler after handler is added.
   ON_CALL(mock_sharing_message_handler_,
           OnMessage(ProtoEquals(sharing_message), _))
-      .WillByDefault(testing::Invoke(
-          [](const SharingMessage& message,
-             SharingMessageHandler::DoneCallback done_callback) {
-            std::move(done_callback).Run(/*response=*/nullptr);
-          }));
+      .WillByDefault([](const SharingMessage& message,
+                        SharingMessageHandler::DoneCallback done_callback) {
+        std::move(done_callback).Run(/*response=*/nullptr);
+      });
   EXPECT_CALL(
       mock_sharing_fcm_sender_,
       SendMessageToFcmTarget(FCMChannelMatcher(), Eq(kSharingAckMessageTTL),
@@ -314,11 +311,10 @@ TEST_F(SharingFCMHandlerTest,
 
   ON_CALL(mock_sharing_message_handler_,
           OnMessage(ProtoEquals(sharing_message), _))
-      .WillByDefault(testing::Invoke(
-          [](const SharingMessage& message,
-             SharingMessageHandler::DoneCallback done_callback) {
-            std::move(done_callback).Run(/*response=*/nullptr);
-          }));
+      .WillByDefault([](const SharingMessage& message,
+                        SharingMessageHandler::DoneCallback done_callback) {
+        std::move(done_callback).Run(/*response=*/nullptr);
+      });
   EXPECT_CALL(mock_sharing_fcm_sender_,
               SendMessageToServerTarget(ServerChannelMatcher(),
                                         ProtoEquals(sharing_ack_message), _));
