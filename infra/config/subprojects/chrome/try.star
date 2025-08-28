@@ -184,6 +184,15 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "cronet-arm64-gn2bp-debug",
+    # The limited traffic to the location_filters specified below makes this
+    # use of owner_whitelist acceptable (see
+    # https://crrev.com/c/6429907/4..6/infra/config/subprojects/chrome/try.star#b182).
+    owner_whitelist = ["googlers"],
+    tryjob = try_.job(
+        location_filters = [
+            "components/cronet/gn2bp/.+",
+        ],
+    ),
 )
 
 chrome_internal_verifier(
