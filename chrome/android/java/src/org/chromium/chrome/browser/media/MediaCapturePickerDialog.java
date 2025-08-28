@@ -206,6 +206,8 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
 
     @Override
     public void onTabRemoved(Tab tab) {
+        if (tab.isNativePage()) return;
+
         var removed = mTabItemStateMap.remove(tab);
         assert removed != null;
         removed.destroy();
