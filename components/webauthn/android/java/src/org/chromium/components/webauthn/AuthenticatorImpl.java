@@ -238,7 +238,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
 
         if (!GmsCoreUtils.isWebauthnSupported()
                 || (!isChrome(mWebContents) && !GmsCoreUtils.isResultReceiverSupported())) {
-            recordOutcomeEvent(MakeCredentialOutcome.OTHER_FAILURE);
+            recordOutcomeEvent(GetAssertionOutcome.OTHER_FAILURE);
             onError(AuthenticatorStatus.NOT_IMPLEMENTED);
             return;
         }
