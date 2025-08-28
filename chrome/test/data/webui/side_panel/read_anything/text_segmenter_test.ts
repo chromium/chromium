@@ -22,11 +22,6 @@ suite('TextSegmenter', () => {
     assertEquals(8, segmenter.getWordCount('do-re-mi-fa-so-la-ti-do'));
   });
 
-  // TODO: crbug.com/440400392- Once sentence segmentation is added, add
-  // tests to verify updateLanguage. It was difficult to find any examples
-  // of the language making a difference for word count because the segmenter
-  // is good enough at recognizing the input language to handle word breakdown.
-
   test('getAccessibleBoundary when max length cuts off sentence', () => {
     const firstSentence = 'This is a normal sentence. ';
     const secondSentence = 'This is a second sentence.';
@@ -65,5 +60,21 @@ suite('TextSegmenter', () => {
     const index = TextSegmenter.getInstance().getAccessibleBoundary(text, 1000);
     assertEquals(newLineLocation + 1, index);
     assertEquals('Hello there.This/is\n', text.slice(0, index));
+  });
+
+  test('updateLanguage', () => {
+    // 'k:a' is interpreted as one word in Swedish and 2 words in English and
+    // French.
+    const text = 'k:a';
+    const textSegmenter = TextSegmenter.getInstance();
+
+    textSegmenter.updateLanguage('en-us');
+    assertEquals(2, textSegmenter.getWordCount(text));
+
+    textSegmenter.updateLanguage('sv-se');
+    assertEquals(1, textSegmenter.getWordCount(text));
+
+    textSegmenter.updateLanguage('fr-fr');
+    assertEquals(2, textSegmenter.getWordCount(text));
   });
 });

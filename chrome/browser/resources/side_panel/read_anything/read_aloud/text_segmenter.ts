@@ -11,7 +11,6 @@ export class TextSegmenter {
   constructor() {
     // If no language code has been provided, Intl.Segmenter will use the system
     // default language.
-    // TODO: crbug.com/440400392- Use the page language to improve segmentation.
     this.updateLanguage();
   }
 
