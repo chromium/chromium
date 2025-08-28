@@ -19,8 +19,8 @@ void JNI_PageContentProtoProviderBridge_GetAiPageContent(
     content::WebContents* web_contents,
     const jni_zero::JavaParamRef<jobject>& j_callback) {
   blink::mojom::AIPageContentOptionsPtr extraction_options =
-      optimization_guide::DefaultAIPageContentOptions();
-  extraction_options->on_critical_path = true;
+      optimization_guide::DefaultAIPageContentOptions(
+          /* on_critical_path =*/true);
   optimization_guide::GetAIPageContent(
       web_contents, std::move(extraction_options),
       base::BindOnce(

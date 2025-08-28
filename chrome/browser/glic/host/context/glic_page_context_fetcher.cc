@@ -171,15 +171,16 @@ void FetchPageContext(
   options.include_viewport_screenshot =
       tab_context_options.include_viewport_screenshot;
 
+  const bool on_critical_path = true;
   if (tab_context_options.include_annotated_page_content) {
     if (tab_context_options.annotated_page_content_mode ==
         optimization_guide::proto::
             ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS) {
       options.annotated_page_content_options =
-          optimization_guide::ActionableAIPageContentOptions();
+          optimization_guide::ActionableAIPageContentOptions(on_critical_path);
     } else {
       options.annotated_page_content_options =
-          optimization_guide::DefaultAIPageContentOptions();
+          optimization_guide::DefaultAIPageContentOptions(on_critical_path);
     }
     options.annotated_page_content_options->max_meta_elements =
         tab_context_options.max_meta_tags;

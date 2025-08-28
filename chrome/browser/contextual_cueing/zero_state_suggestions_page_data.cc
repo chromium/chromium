@@ -205,9 +205,8 @@ void ZeroStateSuggestionsPageData::InitiatePageContentExtraction() {
     // Otherwise, extract fresh APC.
     if (should_extract_apc) {
       blink::mojom::AIPageContentOptionsPtr ai_page_content_options;
-      ai_page_content_options =
-          optimization_guide::DefaultAIPageContentOptions();
-      ai_page_content_options->on_critical_path = true;
+      ai_page_content_options = optimization_guide::DefaultAIPageContentOptions(
+          /*on_critical_path =*/true);
 
       optimization_guide::GetAIPageContent(
           web_contents, std::move(ai_page_content_options),

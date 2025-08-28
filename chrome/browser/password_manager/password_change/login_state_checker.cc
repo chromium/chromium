@@ -20,7 +20,8 @@
 
 namespace {
 blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
-  return optimization_guide::DefaultAIPageContentOptions();
+  return optimization_guide::DefaultAIPageContentOptions(
+      /* on_critical_path =*/false);
 }
 
 using autofill::SavePasswordProgressLogger;

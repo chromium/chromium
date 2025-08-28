@@ -97,8 +97,8 @@ class ActorUiDomNodeGeometryBrowserTest : public InProcessBrowserTest {
   }
 
   AIPageContentOptionsPtr AIPageContentOptions() {
-    auto options = optimization_guide::DefaultAIPageContentOptions();
-    options->on_critical_path = true;
+    auto options = optimization_guide::DefaultAIPageContentOptions(
+        /*on_critical_path =*/true);
     options->mode = AIPageContentMode::kActionableElements;
     return options;
   }

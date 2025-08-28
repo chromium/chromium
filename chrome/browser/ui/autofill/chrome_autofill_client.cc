@@ -501,8 +501,8 @@ OtpDelegate* ChromeAutofillClient::GetOtpDelegate() {
 
 void ChromeAutofillClient::GetAiPageContent(GetAiPageContentCallback callback) {
   blink::mojom::AIPageContentOptionsPtr extraction_options =
-      optimization_guide::DefaultAIPageContentOptions();
-  extraction_options->on_critical_path = false;
+      optimization_guide::DefaultAIPageContentOptions(
+          /*on_critical_path =*/false);
   optimization_guide::GetAIPageContent(
       web_contents(), std::move(extraction_options),
       base::BindOnce([](std::optional<optimization_guide::AIPageContentResult>

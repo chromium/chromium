@@ -155,7 +155,8 @@ void ActorKeyedService::RequestTabObservation(
   page_content_annotations::FetchPageContextOptions options;
   options.include_viewport_screenshot = true;
   options.annotated_page_content_options =
-      optimization_guide::ActionableAIPageContentOptions();
+      optimization_guide::ActionableAIPageContentOptions(
+          /* on_critical_path =*/true);
   page_content_annotations::FetchPageContext(
       *tab.GetContents(), options,
       base::BindOnce(

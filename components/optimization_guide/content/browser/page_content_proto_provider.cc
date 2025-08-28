@@ -388,15 +388,19 @@ AIPageContentResult::AIPageContentResult(AIPageContentResult&& other) = default;
 AIPageContentResult& AIPageContentResult::operator=(
     AIPageContentResult&& other) = default;
 
-blink::mojom::AIPageContentOptionsPtr DefaultAIPageContentOptions() {
+blink::mojom::AIPageContentOptionsPtr DefaultAIPageContentOptions(
+    bool on_critical_path) {
   auto options = blink::mojom::AIPageContentOptions::New();
   options->mode = blink::mojom::AIPageContentMode::kDefault;
+  options->on_critical_path = on_critical_path;
   return options;
 }
 
-blink::mojom::AIPageContentOptionsPtr ActionableAIPageContentOptions() {
+blink::mojom::AIPageContentOptionsPtr ActionableAIPageContentOptions(
+    bool on_critical_path) {
   auto options = blink::mojom::AIPageContentOptions::New();
   options->mode = blink::mojom::AIPageContentMode::kActionableElements;
+  options->on_critical_path = on_critical_path;
   return options;
 }
 

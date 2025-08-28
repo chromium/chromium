@@ -31,11 +31,11 @@ constexpr optimization_guide::proto::PasswordChangeRequest::FlowStep
         FlowStep::PasswordChangeRequest_FlowStep_OPEN_FORM_STEP;
 
 blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
-  auto options = optimization_guide::DefaultAIPageContentOptions();
   // WebContents where password change is happening is hidden, and renderer
   // won't capture a snapshot unless it becomes visible again or
   // on_critical_path is set to true.
-  options->on_critical_path = true;
+  auto options = optimization_guide::DefaultAIPageContentOptions(
+      /*on_critical_path =*/true);
   return options;
 }
 

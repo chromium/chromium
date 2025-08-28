@@ -23,8 +23,12 @@ class WebContents;
 }
 
 namespace optimization_guide {
-blink::mojom::AIPageContentOptionsPtr DefaultAIPageContentOptions();
-blink::mojom::AIPageContentOptionsPtr ActionableAIPageContentOptions();
+// See AIPageContentOptions in ai_page_content.mojom for documentation of
+// `on_critical_path`.
+blink::mojom::AIPageContentOptionsPtr DefaultAIPageContentOptions(
+    bool on_critical_path);
+blink::mojom::AIPageContentOptionsPtr ActionableAIPageContentOptions(
+    bool on_critical_path);
 
 // A DocumentUserData that stores a serialized unguessable token for a given
 // RenderFrameHost.

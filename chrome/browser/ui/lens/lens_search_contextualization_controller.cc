@@ -618,8 +618,8 @@ void LensSearchContextualizationController::MaybeGetAnnotatedPageContent(
   }
 
   blink::mojom::AIPageContentOptionsPtr ai_page_content_options =
-      optimization_guide::DefaultAIPageContentOptions();
-  ai_page_content_options->on_critical_path = true;
+      optimization_guide::DefaultAIPageContentOptions(
+          /*on_critical_path =*/true);
   ai_page_content_options->max_meta_elements = 20;
   optimization_guide::GetAIPageContent(
       lens_search_controller_->GetTabInterface()->GetContents(),

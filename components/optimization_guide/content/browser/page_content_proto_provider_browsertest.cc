@@ -91,14 +91,13 @@ void AssertValidOrigin(
 }
 
 blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
-  auto request = DefaultAIPageContentOptions();
-  request->on_critical_path = true;
+  auto request = DefaultAIPageContentOptions(/*on_critical_path =*/true);
   return request;
 }
 
 blink::mojom::AIPageContentOptionsPtr GetActionableAIPageContentOptions() {
-  auto request = ActionableAIPageContentOptions();
-  request->on_critical_path = true;
+  auto request = ActionableAIPageContentOptions(
+      /*on_critical_path =*/true);
   return request;
 }
 
@@ -228,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, BasicDefault) {
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, BasicActionable) {
   const gfx::Size window_bounds(web_contents()->GetSize());
   LoadPage(https_server()->GetURL("/simple.html"),
-           ActionableAIPageContentOptions());
+           GetActionableAIPageContentOptions());
 
   EXPECT_EQ(page_content().version(),
             optimization_guide::proto::
@@ -351,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestActionableElements,
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, ForLabel) {
   LoadPage(https_server()->GetURL("/for_label.html"),
-           ActionableAIPageContentOptions());
+           GetActionableAIPageContentOptions());
   EXPECT_EQ(page_content().version(),
             optimization_guide::proto::
                 ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
@@ -380,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, ForLabel) {
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
                        ClickabilityReason) {
   LoadPage(https_server()->GetURL("/clickability_reason.html"),
-           ActionableAIPageContentOptions());
+           GetActionableAIPageContentOptions());
   EXPECT_EQ(page_content().version(),
             optimization_guide::proto::
                 ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
@@ -434,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
                        LabelNotActionable) {
   LoadPage(https_server()->GetURL("/label_not_actionable.html"),
-           ActionableAIPageContentOptions());
+           GetActionableAIPageContentOptions());
   EXPECT_EQ(page_content().version(),
             optimization_guide::proto::
                 ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
@@ -458,7 +457,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, AriaRole) {
   LoadPage(https_server()->GetURL("/aria_role.html"),
-           ActionableAIPageContentOptions());
+           GetActionableAIPageContentOptions());
   EXPECT_EQ(page_content().version(),
             optimization_guide::proto::
                 ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
@@ -477,7 +476,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, AriaRole) {
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, ZOrder) {
   LoadPage(https_server()->GetURL("/simple.html"),
-           ActionableAIPageContentOptions());
+           GetActionableAIPageContentOptions());
 
   EXPECT_EQ(page_content()
                 .root_node()
@@ -691,8 +690,8 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestSiteIsolation,
                             QueryParam())),
            nullptr);
 
-  auto request = optimization_guide::DefaultAIPageContentOptions();
-  request->on_critical_path = false;
+  auto request = optimization_guide::DefaultAIPageContentOptions(
+      /*on_critical_path =*/false);
   LoadData(std::move(request));
   content::FetchHistogramsFromChildProcesses();
 
@@ -739,7 +738,7 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestSiteIsolation,
                "a.com", base::StringPrintf(
                             "/paragraph_iframe_partially_offscreen.html%s",
                             QueryParam())),
-           ActionableAIPageContentOptions());
+           GetActionableAIPageContentOptions());
 
   const auto& root_node = ActionableContentRootNode();
   ASSERT_EQ(root_node.children_nodes().size(), 1);
@@ -773,7 +772,7 @@ IN_PROC_BROWSER_TEST_P(
           "a.com", base::StringPrintf(
                        "/paragraph_iframe_partially_scrolled_offscreen.html%s",
                        QueryParam())),
-      ActionableAIPageContentOptions());
+      GetActionableAIPageContentOptions());
 
   const auto& root_node = ActionableContentRootNode();
   ASSERT_EQ(root_node.children_nodes().size(), 2);
