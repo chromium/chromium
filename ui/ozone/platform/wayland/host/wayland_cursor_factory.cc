@@ -72,6 +72,7 @@ WaylandCursorFactory::WaylandCursorFactory(WaylandConnection* connection)
 }
 
 WaylandCursorFactory::~WaylandCursorFactory() {
+  connection_->UpdateCursor();
   connection_->SetCursorBufferListener(nullptr);
 }
 

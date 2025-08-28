@@ -92,6 +92,8 @@ class WaylandScreen : public PlatformScreen, public DeviceScaleFactorObserver {
   // the screen.
   bool VerifyOutputStateConsistentForTesting() const;
 
+  void ResetConnection();
+
  protected:
   // Suspends or un-suspends the platform-specific screensaver, and returns
   // whether the operation was successful. Can be called more than once with the

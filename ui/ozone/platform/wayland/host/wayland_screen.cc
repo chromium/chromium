@@ -273,6 +273,10 @@ void WaylandScreen::AddOrUpdateDisplay(const WaylandOutput::Metrics& metrics) {
   display_list_.AddOrUpdateDisplay(changed_display, type);
 }
 
+void WaylandScreen::ResetConnection() {
+  connection_ = nullptr;
+}
+
 WaylandOutput::Id WaylandScreen::GetOutputIdForDisplayId(int64_t display_id) {
   auto iter = std::find_if(
       display_id_map_.begin(), display_id_map_.end(),

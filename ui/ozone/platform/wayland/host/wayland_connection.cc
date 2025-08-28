@@ -137,7 +137,11 @@ bool MinSupportedKernelForLinuxDrmSyncobj() {
 
 WaylandConnection::WaylandConnection() = default;
 
-WaylandConnection::~WaylandConnection() = default;
+WaylandConnection::~WaylandConnection() {
+  if (wayland_output_manager() && wayland_output_manager()->wayland_screen()) {
+    wayland_output_manager()->wayland_screen()->ResetConnection();
+  }
+}
 
 bool WaylandConnection::Initialize(bool use_threaded_polling) {
   // Register factories for classes that implement wl::GlobalObjectRegistrar<T>.

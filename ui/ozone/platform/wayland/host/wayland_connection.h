@@ -320,6 +320,7 @@ class WaylandConnection {
   friend class OverlayPrioritizer;
   friend class SinglePixelBuffer;
   friend class ToplevelIconManager;
+  friend class WaylandCursorFactory;
   friend class WaylandDataDeviceManager;
   friend class WaylandOutput;
   friend class WaylandSeat;
