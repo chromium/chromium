@@ -750,11 +750,6 @@
       'cros_test_max_in_shard': 50
     },
   },
-  'skylab-shards-20': {
-    'skylab': {
-      'shards': 20,
-    },
-  },
   'skylab-shards-30': {
     'skylab': {
       'shards': 30,

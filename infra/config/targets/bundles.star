@@ -1388,7 +1388,7 @@ targets.bundle(
             ],
         ),
         targets.bundle(
-            targets = "chromeos_chrome_criticalstaging_tast_tests",
+            targets = "chromeos_chrome_criticalstaging_tast_tests_tfc",
             mixins = [
                 "chromeos-tast-public-builder",
                 "skylab-20-tests-per-shard",
@@ -1398,7 +1398,7 @@ targets.bundle(
             ],
         ),
         targets.bundle(
-            targets = "chromeos_chrome_disabled_tast_tests",
+            targets = "chromeos_chrome_disabled_tast_tests_tfc",
             mixins = [
                 "chromeos-tast-public-builder",
                 "tfc-run-public",

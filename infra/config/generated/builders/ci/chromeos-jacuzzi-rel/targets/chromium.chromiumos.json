@@ -60,22 +60,32 @@
           "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)|uidetection\\.(key|key_type|server)",
           "shard_method=hash"
         ],
-        "autotest_name": "tast.chrome-from-gcs",
         "bucket": "chromiumos-image-archive",
         "ci_only": true,
         "cros_board": "jacuzzi",
         "cros_test_max_in_shard": 20,
+        "cros_test_names_exclude_from_file": [
+          "chromeos/tast_control_disabled_tests.txt"
+        ],
+        "cros_test_tags": [
+          "group:mainline",
+          "dep:chrome",
+          "informational",
+          "group:criticalstaging"
+        ],
+        "cros_test_tags_exclude": [
+          "dep:lacros",
+          "dep:no_chrome_dcheck"
+        ],
         "experiment_percentage": 100,
         "module_name": "//chromeos:chrome_criticalstaging_tast_tests/",
         "module_scheme": "tast",
         "name": "chrome_criticalstaging_tast_tests PUBLIC_LKGM",
         "public_builder": "cros_test_platform_public",
         "public_builder_bucket": "testplatform-public",
-        "shards": 3,
         "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
         "test": "chrome_criticalstaging_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_criticalstaging_tast_tests/",
-        "test_level_retries": 2,
         "timeout_sec": 14400,
         "use_lkgm": true,
         "variant_id": "PUBLIC_LKGM"
@@ -100,11 +110,9 @@
         "name": "chrome_disabled_tast_tests PUBLIC_LKGM",
         "public_builder": "cros_test_platform_public",
         "public_builder_bucket": "testplatform-public",
-        "shards": 2,
         "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
         "test": "chrome_disabled_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_disabled_tast_tests/",
-        "test_level_retries": 1,
         "timeout_sec": 14400,
         "use_lkgm": true,
         "variant_id": "PUBLIC_LKGM"

@@ -510,13 +510,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "skylab-shards-20",
-    skylab = targets.skylab(
-        shards = 20,
-    ),
-)
-
-targets.mixin(
     name = "skylab-shards-30",
     skylab = targets.skylab(
         shards = 30,
