@@ -11,6 +11,8 @@ $wait_after_headers_packet = (int) ($_GET["wait_after_headers_packet"] ?? 0);
 $flush_every_x_bytes = (int) ($_GET["flush_every"] ?? 1);
 $wait_every_x_bytes = (int) ($_GET["wait_every_x_bytes"] ?? 0xFFFFF);
 $wait_duration_every_x_bytes = (int) ($_GET["wait_duration_every_x_bytes"] ?? 50);
+$binary_payload = (bool) ($_GET["binary_payload"] ?? false);
+$content_type = (string) ($_GET["content_type"] ?? "application/json");
 
 $sent_data_size = 0;
 
@@ -21,7 +23,7 @@ if ($redirect) {
 }
 
 // This is done because it should force netstack to handle data as it comes.
-header("Content-Type: application/json");
+header("Content-Type: " . $content_type);
 
 if ($cached) {
     header("HTTP/1.0 304 Not Modified");
@@ -61,8 +63,14 @@ while ($sent_data_size < $size) {
 
 function send_data($size)
 {
-    global $sent_data_size;
-    echo str_repeat("a", $size);
+    global $sent_data_size, $binary_payload;
+    if ($binary_payload) {
+        for ($i = 0; $i < $size; ++$i) {
+            echo chr(($sent_data_size + $i) % 256);
+        }
+    } else {
+        echo str_repeat("a", $size);
+    }
     $sent_data_size += $size;
 }
 

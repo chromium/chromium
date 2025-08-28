@@ -3143,14 +3143,13 @@ void NetworkHandler::ProcessDurableMessageOrGetLocalData(
     std::unique_ptr<GetResponseBodyCallback> callback,
     std::optional<mojo_base::BigBuffer> durable_message) {
   if (durable_message.has_value()) {
-    // TODO(crbug.com/414864477): Read initial chunk of data and if non-ascii
-    // characters are found, return in base64 encoded form.
-    // callback->sendSuccess(
-    //     base::Base64Encode(std::string_view(
-    //         reinterpret_cast<const char*>(message.data()), message.size())),
-    //     true);
-    std::string response(base::as_string_view(durable_message->byte_span()));
-    callback->sendSuccess(response, false);
+    std::string_view data_view =
+        base::as_string_view(durable_message->byte_span());
+    if (base::IsStringUTF8(data_view)) {
+      callback->sendSuccess(std::string(data_view), false);
+    } else {
+      callback->sendSuccess(base::Base64Encode(data_view), true);
+    }
     return;
   }
 
