@@ -164,14 +164,19 @@ static std::optional<gfx::PointF> ParsePointInternal(const CharType* ptr,
   return gfx::PointF(x, y);
 }
 
-static SVGPoint* ParsePoint(const String& string) {
+static base::expected<gfx::PointF, SVGParseStatus> ParsePoint(
+    const String& string) {
   std::optional<gfx::PointF> point;
   if (!string.empty()) {
     point = VisitCharacters(string, [&](auto chars) {
       return ParsePointInternal(chars.data(), chars.data() + chars.size());
     });
+
+    if (point.has_value()) {
+      return point.value();
+    }
   }
-  return MakeGarbageCollected<SVGPoint>(point.value_or(gfx::PointF{}));
+  return base::unexpected(SVGParseStatus::kParsingFailed);
 }
 
 SMILAnimationValue SVGAnimateMotionElement::CreateAnimationValue() const {
@@ -192,29 +197,52 @@ void SVGAnimateMotionElement::UpdateKeyframeValues(const Keyframe& keyframe) {
   to_point_ = values_[keyframe.to_index];
 }
 
-void SVGAnimateMotionElement::CalculateFromAndToValues(
+bool SVGAnimateMotionElement::CalculateFromAndToValues(
     const String& from_string,
     const String& to_string) {
-  from_point_ = ParsePoint(from_string);
-  to_point_ = ParsePoint(to_string);
+  base::expected<gfx::PointF, SVGParseStatus> from_point_parse_result =
+      ParsePoint(from_string);
+  base::expected<gfx::PointF, SVGParseStatus> to_point_parse_result =
+      ParsePoint(to_string);
+
+  if ((!from_string.empty() && !from_point_parse_result.has_value()) ||
+      !to_point_parse_result.has_value()) {
+    return false;
+  }
+
+  from_point_ = MakeGarbageCollected<SVGPoint>(
+      from_point_parse_result.value_or(gfx::PointF()));
+  to_point_ = MakeGarbageCollected<SVGPoint>(to_point_parse_result.value());
+  return true;
 }
 
-void SVGAnimateMotionElement::CalculateFromAndByValues(
+bool SVGAnimateMotionElement::CalculateFromAndByValues(
     const String& from_string,
     const String& by_string) {
-  CalculateFromAndToValues(from_string, by_string);
+  if (!CalculateFromAndToValues(from_string, by_string)) {
+    return false;
+  }
+
   // Apply 'from' to 'to' to get 'by' semantics. If the animation mode
   // is 'by', |from_string| will be the empty string and yield a point
   // of (0,0).
   to_point_->SetValue(to_point_->Value() +
                       from_point_->Value().OffsetFromOrigin());
+  return true;
 }
 
-void SVGAnimateMotionElement::CalculateValues(const Vector<String>& values) {
+bool SVGAnimateMotionElement::CalculateValues(const Vector<String>& values) {
   values_.clear();
   for (const auto& value : values) {
-    values_.push_back(ParsePoint(value));
+    base::expected<gfx::PointF, SVGParseStatus> point_parse_result =
+        ParsePoint(value);
+    if (!point_parse_result.has_value()) {
+      return false;
+    }
+    values_.push_back(
+        MakeGarbageCollected<SVGPoint>(point_parse_result.value()));
   }
+  return true;
 }
 
 void SVGAnimateMotionElement::CalculateAnimationValue(

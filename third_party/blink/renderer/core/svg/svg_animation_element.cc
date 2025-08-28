@@ -622,20 +622,16 @@ bool SVGAnimationElement::CheckAnimationParameters() const {
 bool SVGAnimationElement::UpdateAnimationValues() {
   switch (GetAnimationMode()) {
     case kFromToAnimation:
-      CalculateFromAndToValues(FromValue(), ToValue());
-      break;
+      return CalculateFromAndToValues(FromValue(), ToValue());
     case kToAnimation:
       // For to-animations the from value is the current accumulated value from
       // lower priority animations. The value is not static and is determined
       // during the animation.
-      CalculateFromAndToValues(g_empty_string, ToValue());
-      break;
+      return CalculateFromAndToValues(g_empty_string, ToValue());
     case kFromByAnimation:
-      CalculateFromAndByValues(FromValue(), ByValue());
-      break;
+      return CalculateFromAndByValues(FromValue(), ByValue());
     case kByAnimation:
-      CalculateFromAndByValues(g_empty_string, ByValue());
-      break;
+      return CalculateFromAndByValues(g_empty_string, ByValue());
     case kValuesAnimation: {
       Vector<String> string_values;
       const AtomicString& values_attr = getAttribute(svg_names::kValuesAttr);
@@ -644,11 +640,13 @@ bool SVGAnimationElement::UpdateAnimationValues() {
                                     svg_names::kValuesAttr, values_attr);
         return false;
       }
-      CalculateValues(string_values);
+      if (!CalculateValues(string_values)) {
+        return false;
+      }
       if (GetCalcMode() == kCalcModePaced) {
         CalculateKeyTimesForCalcModePaced();
       }
-      break;
+      return true;
     }
     case kPathAnimation:
       break;

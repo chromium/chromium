@@ -134,11 +134,11 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
   bool UpdateAnimationValues();
 
   virtual void UpdateKeyframeValues(const Keyframe& keyframe) = 0;
-  virtual void CalculateFromAndToValues(const String& from_string,
+  virtual bool CalculateFromAndToValues(const String& from_string,
                                         const String& to_string) = 0;
-  virtual void CalculateFromAndByValues(const String& from_string,
+  virtual bool CalculateFromAndByValues(const String& from_string,
                                         const String& by_string) = 0;
-  virtual void CalculateValues(const Vector<String>& values) = 0;
+  virtual bool CalculateValues(const Vector<String>& values) = 0;
   virtual wtf_size_t ValuesCount() const = 0;
   virtual void CalculateAnimationValue(SMILAnimationValue&,
                                        float percent,

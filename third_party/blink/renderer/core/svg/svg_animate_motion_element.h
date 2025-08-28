@@ -49,11 +49,11 @@ class SVGAnimateMotionElement final : public SVGAnimationElement {
   SMILAnimationValue CreateAnimationValue() const override;
   void ClearAnimationValue() override;
   void UpdateKeyframeValues(const Keyframe& keyframe) override;
-  void CalculateFromAndToValues(const String& from_string,
+  bool CalculateFromAndToValues(const String& from_string,
                                 const String& to_string) override;
-  void CalculateFromAndByValues(const String& from_string,
+  bool CalculateFromAndByValues(const String& from_string,
                                 const String& by_string) override;
-  void CalculateValues(const Vector<String>& values) override;
+  bool CalculateValues(const Vector<String>& values) override;
   wtf_size_t ValuesCount() const override {
     DCHECK_EQ(GetAnimationMode(), kValuesAnimation);
     return values_.size();
