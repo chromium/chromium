@@ -33,12 +33,6 @@
 namespace viz {
 
 #if BUILDFLAG(IS_ANDROID)
-bool PreferRGB565ResourcesForDisplay() {
-  return base::SysInfo::AmountOfPhysicalMemory().InMiB() <= 512;
-}
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
 bool AlwaysUseWideColorGamut() {
   // Full stack integration tests draw in sRGB and expect to read back in sRGB.
   // WideColorGamut causes pixels to be drawn in P3, but read back doesn't tell

@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/strings/string_split.h"
+#include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "ui/gl/gl_switches.h"
 
@@ -328,4 +329,18 @@ base::TimeDelta GetGLCompileShaderDelay() {
   return base::TimeDelta();
 #endif  // BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
 }
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kAndroidLimitRgb565DisplayToApi32,
+             "AndroidLimitRgb565DisplayToApi32",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool PreferRGB565ResourcesForDisplay() {
+  return base::SysInfo::AmountOfPhysicalMemory().InMiB() <= 512 &&
+         (base::android::android_info::sdk_int() <=
+              base::android::android_info::SDK_VERSION_Sv2 ||
+          !base::FeatureList::IsEnabled(kAndroidLimitRgb565DisplayToApi32));
+}
+#endif
+
 }  // namespace features

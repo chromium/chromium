@@ -33,6 +33,7 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_display_egl_util.h"
 #include "ui/gl/gl_display_manager.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/gl_surface_presentation_helper.h"
 #include "ui/gl/gl_surface_stub.h"
 #include "ui/gl/gl_utils.h"
@@ -1016,7 +1017,7 @@ bool PbufferGLSurfaceEGL::Initialize(GLSurfaceFormat format) {
   // to use a compatible config. We expect the client to request RGB565
   // onscreen surface also for this to work (with the exception of
   // fullscreen video).
-  if (base::SysInfo::AmountOfPhysicalMemory().InMiB() <= 512) {
+  if (features::PreferRGB565ResourcesForDisplay()) {
     format.SetRGB565();
   }
 #endif

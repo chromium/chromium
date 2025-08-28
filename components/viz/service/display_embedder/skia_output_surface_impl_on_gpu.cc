@@ -1983,7 +1983,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
     if (!presenter_) {
       gl::GLSurfaceFormat format;
 #if BUILDFLAG(IS_ANDROID)
-      if (PreferRGB565ResourcesForDisplay() &&
+      if (features::PreferRGB565ResourcesForDisplay() &&
           !renderer_settings_.requires_alpha_channel) {
         format.SetRGB565();
       }
