@@ -11540,13 +11540,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::
              kAutofillEnablePaymentSettingsCardPromoAndScanCard)},
-
-    {"autofill-enable-payment-settings-server-card-save",
-     flag_descriptions::kAutofillEnablePaymentSettingsServerCardSaveName,
-     flag_descriptions::kAutofillEnablePaymentSettingsServerCardSaveDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnablePaymentSettingsServerCardSave)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"cert-verification-network-time",

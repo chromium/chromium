@@ -534,9 +534,6 @@ extern const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[];
 extern const char kAutofillEnablePaymentSettingsCardPromoAndScanCardName[];
 extern const char
     kAutofillEnablePaymentSettingsCardPromoAndScanCardDescription[];
-
-extern const char kAutofillEnablePaymentSettingsServerCardSaveName[];
-extern const char kAutofillEnablePaymentSettingsServerCardSaveDescription[];
 #endif
 
 extern const char kAutofillEnablePrefetchingRiskDataForRetrievalName[];

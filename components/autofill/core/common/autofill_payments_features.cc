@@ -219,12 +219,6 @@ BASE_FEATURE(kAutofillEnableOffersInClankKeyboardAccessory,
 BASE_FEATURE(kAutofillEnablePaymentSettingsCardPromoAndScanCard,
              "AutofillEnablePaymentSettingsCardPromoAndScanCard",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When enabled, the payment settings page will save new cards to the payment
-// server instead of locally.
-BASE_FEATURE(kAutofillEnablePaymentSettingsServerCardSave,
-             "AutofillEnablePaymentSettingsServerCardSave",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // When enabled, risk data is prefetched during payments autofill flows to
