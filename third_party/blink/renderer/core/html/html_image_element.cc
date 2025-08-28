@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/lcp_critical_path_predictor/element_locator.h"
 #include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
+#include "third_party/blink/renderer/core/loader/resource/image_resource.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -766,12 +767,18 @@ void HTMLImageElement::SetIsAdRelated() {
 void HTMLImageElement::DidFinishLayout() {
   if (base::FeatureList::IsEnabled(features::kSpeculativeImageDecodes)) {
     if (LayoutImage* layout_image = DynamicTo<LayoutImage>(GetLayoutObject())) {
-      // Populate cached values for load priority and speculative decode
-      // parameters.
-      layout_image->ComputeResourcePriority();
-      layout_image->ComputeSpeculativeDecodeSize();
-      layout_image->ComputeSpeculativeDecodeQuality();
-      // Once the image has a source ResourceFetcher will take over the updates.
+      // Populate cached values for speculative decode parameters.
+      // ComputeResourcePriority is expensive; only call it if the image is big
+      // enough to qualify for speculative decode.
+      if (layout_image->ComputeSpeculativeDecodeSize()
+              .GetCheckedArea()
+              .ValueOrDefault(0) >=
+          ImageResource::kSpeculativeDecodeMinImageSize) {
+        layout_image->ComputeResourcePriority();
+        layout_image->ComputeSpeculativeDecodeQuality();
+      }
+      // Once the image has a source, ResourceFetcher will take over the
+      // updates.
       if (GetImageLoader().GetContent()) {
         GetDocument().View()->UnregisterFromLifecycleNotifications(this);
       }
