@@ -26,7 +26,7 @@ OpenXrAnchorManagerAndroid::OpenXrAnchorManagerAndroid(
 
 OpenXrAnchorManagerAndroid::~OpenXrAnchorManagerAndroid() = default;
 
-XrSpace OpenXrAnchorManagerAndroid::CreateAnchor(
+XrSpace OpenXrAnchorManagerAndroid::CreateAnchorInternal(
     XrPosef pose,
     XrSpace space,
     XrTime predicted_display_time) {

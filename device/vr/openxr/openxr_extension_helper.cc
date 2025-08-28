@@ -137,10 +137,16 @@ OpenXrExtensionHelper::OpenXrExtensionHelper(
   OPENXR_LOAD_FN(xrCreateSpatialContextCompleteEXT);
   OPENXR_LOAD_FN(xrCreateSpatialDiscoverySnapshotAsyncEXT);
   OPENXR_LOAD_FN(xrCreateSpatialDiscoverySnapshotCompleteEXT);
+  OPENXR_LOAD_FN(xrCreateSpatialUpdateSnapshotEXT);
   OPENXR_LOAD_FN(xrDestroySpatialContextEXT);
+  OPENXR_LOAD_FN(xrDestroySpatialEntityEXT);
   OPENXR_LOAD_FN(xrDestroySpatialSnapshotEXT);
   OPENXR_LOAD_FN(xrEnumerateSpatialCapabilitiesEXT);
   OPENXR_LOAD_FN(xrEnumerateSpatialCapabilityComponentTypesEXT);
+  OPENXR_LOAD_FN(xrQuerySpatialComponentDataEXT);
+
+  // Spatial Anchors
+  OPENXR_LOAD_FN(xrCreateSpatialAnchorEXT);
 
 #if BUILDFLAG(IS_WIN)
   OPENXR_LOAD_FN(xrConvertWin32PerformanceCounterToTimeKHR);

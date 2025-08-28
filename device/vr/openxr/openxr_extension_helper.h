@@ -66,10 +66,16 @@ struct OpenXrExtensionMethods {
   OPENXR_DECLARE_FN(xrCreateSpatialContextCompleteEXT);
   OPENXR_DECLARE_FN(xrCreateSpatialDiscoverySnapshotAsyncEXT);
   OPENXR_DECLARE_FN(xrCreateSpatialDiscoverySnapshotCompleteEXT);
+  OPENXR_DECLARE_FN(xrCreateSpatialUpdateSnapshotEXT);
   OPENXR_DECLARE_FN(xrDestroySpatialContextEXT);
+  OPENXR_DECLARE_FN(xrDestroySpatialEntityEXT);
   OPENXR_DECLARE_FN(xrDestroySpatialSnapshotEXT);
   OPENXR_DECLARE_FN(xrEnumerateSpatialCapabilitiesEXT);
   OPENXR_DECLARE_FN(xrEnumerateSpatialCapabilityComponentTypesEXT);
+  OPENXR_DECLARE_FN(xrQuerySpatialComponentDataEXT);
+
+  // Spatial Anchors
+  OPENXR_DECLARE_FN(xrCreateSpatialAnchorEXT);
 
 #if BUILDFLAG(IS_WIN)
   // Time

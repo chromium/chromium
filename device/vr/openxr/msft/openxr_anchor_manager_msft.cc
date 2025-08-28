@@ -36,9 +36,10 @@ OpenXrAnchorManagerMsft::~OpenXrAnchorManagerMsft() {
   space_to_anchor_map_.clear();
 }
 
-XrSpace OpenXrAnchorManagerMsft::CreateAnchor(XrPosef pose,
-                                              XrSpace space,
-                                              XrTime predicted_display_time) {
+XrSpace OpenXrAnchorManagerMsft::CreateAnchorInternal(
+    XrPosef pose,
+    XrSpace space,
+    XrTime predicted_display_time) {
   XrSpatialAnchorMSFT xr_anchor;
   XrSpatialAnchorCreateInfoMSFT anchor_create_info{
       XR_TYPE_SPATIAL_ANCHOR_CREATE_INFO_MSFT};

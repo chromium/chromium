@@ -49,7 +49,8 @@ OpenXrSpatialFrameworkManager::OpenXrSpatialFrameworkManager(
   }
 
   if (supported_features.contains(device::mojom::XRSessionFeature::ANCHORS)) {
-    anchor_manager_ = std::make_unique<OpenXrSpatialAnchorManager>();
+    anchor_manager_ = std::make_unique<OpenXrSpatialAnchorManager>(
+        extension_helper_.get(), *this, base_space_);
     anchor_manager_->PopulateCapabilityConfiguration(capability_configuration);
   }
 
