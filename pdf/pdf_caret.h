@@ -5,6 +5,8 @@
 #ifndef PDF_PDF_CARET_H_
 #define PDF_PDF_CARET_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -23,6 +25,12 @@ struct RegionData;
 // Manages the text caret for text selection and navigation within a PDF. This
 // class handles caret drawing, blinking, position updates, and keyboard-driven
 // movement. For now, only used if Ink2 text highlighting is enabled.
+//
+// When moving by lines, caret movement is based on the geometric proximity of
+// characters. This works well for standard text layouts, but has limitations.
+// The implementation currently assumes a top-to-bottom text flow, and may not
+// behave as expected with multi-column layouts or unconventional page designs
+// (e.g. text lines that are not ordered from top to bottom).
 class PdfCaret {
  public:
   // The pixel width of the caret.
@@ -74,10 +82,10 @@ class PdfCaret {
   // Called by `blink_timer_` to toggle caret visibility.
   void OnBlinkTimerFired();
 
-  // Returns the screen rect for the current caret. For chars without a defined
-  // rect (like synthetic newlines), it calculates a position based on the
-  // preceding char.
-  gfx::Rect GetScreenRectForCaret() const;
+  // Returns the screen rect for the current caret if it were placed at `index`.
+  // For chars without a defined rect (like synthetic newlines), it calculates a
+  // position based on the preceding char.
+  gfx::Rect GetScreenRectForCaret(const PageCharacterIndex& index) const;
 
   // Returns the screen rect for a char, which may be empty.
   gfx::Rect GetScreenRectForChar(const PageCharacterIndex& index) const;
@@ -102,6 +110,31 @@ class PdfCaret {
   // Returns whether `index` is a valid char or not. False when `index` is the
   // last caret position of a page.
   bool IndexHasChar(const PageCharacterIndex& index) const;
+
+  // Returns whether `index` is a synthesized newline or not.
+  bool IsSynthesizedNewline(const PageCharacterIndex& index) const;
+
+  // Gets the `PageCharacterIndex` of the next non-newline char. Starts from
+  // `index` and skips past consecutive newlines on a page, moving in the
+  // direction specified by `move_right`. Returns `std::nullopt` if `index` is
+  // already a non-newline char or no non-newline char is found.
+  std::optional<PageCharacterIndex> GetNextNonNewlineOnPage(
+      const PageCharacterIndex& index,
+      bool move_right) const;
+
+  // Gets the `PageCharacterIndex` of the next newline on a page. Starts from
+  // `index` and moves in the direction specified by `move_right`. Returns
+  // `std::nullopt` if no more newlines are found.
+  std::optional<PageCharacterIndex> GetNextNewlineOnPage(
+      const PageCharacterIndex& index,
+      bool move_right) const;
+
+  // Gets the `PageCharacterIndex` of the char within a single line of text,
+  // bounded by `start_newline` exclusive and `end_newline` inclusive, that is
+  // closest to the current caret from center to center.
+  PageCharacterIndex GetClosestCharInTextLine(
+      const PageCharacterIndex& start_newline,
+      const PageCharacterIndex& end_newline) const;
 
   // Client must outlive `this`.
   const raw_ptr<PdfCaretClient> client_;
