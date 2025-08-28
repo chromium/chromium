@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+#include <string_view>
+#include <utility>
+
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/browser/web_contents/slow_web_preference_cache.h"
@@ -16,32 +20,22 @@
 
 namespace content {
 
-namespace {
-
-class InteractionMediaQueriesDynamicTest : public ContentBrowserTest {
- public:
-  InteractionMediaQueriesDynamicTest() = default;
-  ~InteractionMediaQueriesDynamicTest() override = default;
-};
-
-}  //  namespace
+using InteractionMediaQueriesDynamicTest = ContentBrowserTest;
 
 // Disable test on Android ASAN bot: crbug.com/807420
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     (BUILDFLAG(IS_ANDROID) && !defined(ADDRESS_SANITIZER))
 IN_PROC_BROWSER_TEST_F(InteractionMediaQueriesDynamicTest,
                        PointerMediaQueriesDynamic) {
-  ui::SetAvailablePointerAndHoverTypesForTesting(ui::POINTER_TYPE_NONE,
-                                                 ui::HOVER_TYPE_NONE);
+  std::optional<ui::ScopedSetPointerAndHoverTypesForTesting> scoper(
+      std::in_place, ui::POINTER_TYPE_NONE, ui::HOVER_TYPE_NONE);
   SlowWebPreferenceCache::GetInstance()->OnInputDeviceConfigurationChanged(0);
+  EXPECT_TRUE(
+      NavigateToURL(shell(), GetTestUrl("", "interaction-mq-dynamic.html")));
 
-  GURL test_url = GetTestUrl("", "interaction-mq-dynamic.html");
-  const std::u16string kSuccessTitle(u"SUCCESS");
+  static constexpr std::u16string_view kSuccessTitle = u"SUCCESS";
   TitleWatcher title_watcher(shell()->web_contents(), kSuccessTitle);
-  EXPECT_TRUE(NavigateToURL(shell(), test_url));
-
-  ui::SetAvailablePointerAndHoverTypesForTesting(ui::POINTER_TYPE_COARSE,
-                                                 ui::HOVER_TYPE_HOVER);
+  scoper.emplace(ui::POINTER_TYPE_COARSE, ui::HOVER_TYPE_HOVER);
   SlowWebPreferenceCache::GetInstance()->OnInputDeviceConfigurationChanged(0);
   EXPECT_EQ(kSuccessTitle, title_watcher.WaitAndGetTitle());
 }

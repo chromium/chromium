@@ -17,24 +17,30 @@ std::pair<int, int> GetAvailablePointerAndHoverTypesImpl();
 
 namespace {
 
-int available_pointer_types_for_testing = POINTER_TYPE_NONE;
-int available_hover_types_for_testing = HOVER_TYPE_NONE;
-bool return_available_pointer_and_hover_types_for_testing = false;
+ScopedSetPointerAndHoverTypesForTesting* g_pointer_and_hover_types_for_testing =
+    nullptr;
 
-}  // namespace
-
-std::pair<int, int> GetAvailablePointerAndHoverTypes() {
-  return return_available_pointer_and_hover_types_for_testing
-             ? std::make_pair(available_pointer_types_for_testing,
-                              available_hover_types_for_testing)
-             : GetAvailablePointerAndHoverTypesImpl();
 }
 
-void SetAvailablePointerAndHoverTypesForTesting(int available_pointer_types,
-                                                int available_hover_types) {
-  return_available_pointer_and_hover_types_for_testing = true;
-  available_pointer_types_for_testing = available_pointer_types;
-  available_hover_types_for_testing = available_hover_types;
+ScopedSetPointerAndHoverTypesForTesting::
+    ScopedSetPointerAndHoverTypesForTesting(int available_pointer_types,
+                                            int available_hover_types)
+    : pointer_and_hover_types_(
+          {available_pointer_types, available_hover_types}) {
+  // Currently no need for nested scopers.
+  CHECK(!g_pointer_and_hover_types_for_testing);
+  g_pointer_and_hover_types_for_testing = this;
+}
+
+ScopedSetPointerAndHoverTypesForTesting::
+    ~ScopedSetPointerAndHoverTypesForTesting() {
+  g_pointer_and_hover_types_for_testing = nullptr;
+}
+
+std::pair<int, int> GetAvailablePointerAndHoverTypes() {
+  return g_pointer_and_hover_types_for_testing
+             ? g_pointer_and_hover_types_for_testing->pointer_and_hover_types()
+             : GetAvailablePointerAndHoverTypesImpl();
 }
 
 #if !BUILDFLAG(IS_ANDROID)
