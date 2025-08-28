@@ -172,14 +172,7 @@ void OpenManualFallback() {
 }
 
 // Tests that the branding is not visible when no manual fill button is visible.
-// TODO(crbug.com/431975187): Re-enable the test on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testAllManualFillButtonsHidden \
-  FLAKY_testAllManualFillButtonsHidden
-#else
-#define MAYBE_testAllManualFillButtonsHidden testAllManualFillButtonsHidden
-#endif
-- (void)MAYBE_testAllManualFillButtonsHidden {
+- (void)testAllManualFillButtonsHidden {
   BringUpKeyboard();
   CheckBrandingHasVisiblity(NO);
 }
