@@ -52,7 +52,44 @@ void CreateWebGPUGraphicsContextOnMainThreadAsync(
 }  // namespace
 
 std::unique_ptr<WebGraphicsContext3DProvider>
-CreateOffscreenGraphicsContext3DProvider(
+CreateRasterGraphicsContextProvider(
+    Platform::ContextAttributes context_attributes,
+    Platform::GraphicsInfo* gl_info,
+    const KURL& url) {
+  if (IsMainThread()) {
+    return Platform::Current()->CreateOffscreenGraphicsContext3DProvider(
+        context_attributes, url, gl_info);
+  } else {
+    base::WaitableEvent waitable_event;
+    std::unique_ptr<WebGraphicsContext3DProvider> created_context_provider;
+    PostCrossThreadTask(
+        *Thread::MainThread()->GetTaskRunner(
+            AccessMainThreadForWebGraphicsContext3DProvider()),
+        FROM_HERE,
+        CrossThreadBindOnce(
+            [](Platform::ContextAttributes context_attributes,
+               Platform::GraphicsInfo* gl_info, const KURL& url,
+               std::unique_ptr<WebGraphicsContext3DProvider>* out_provider,
+               base::WaitableEvent* waitable_event) {
+              DCHECK(IsMainThread());
+              // The gpu compositing mode is snapshotted in the GraphicsInfo
+              // when making the context. The context will be lost if the mode
+              // changes.
+              *out_provider =
+                  Platform::Current()->CreateOffscreenGraphicsContext3DProvider(
+                      context_attributes, url, gl_info);
+              waitable_event->Signal();
+            },
+            context_attributes, CrossThreadUnretained(gl_info), url,
+            CrossThreadUnretained(&created_context_provider),
+            CrossThreadUnretained(&waitable_event)));
+    waitable_event.Wait();
+    return created_context_provider;
+  }
+}
+
+std::unique_ptr<WebGraphicsContext3DProvider>
+CreateWebGLGraphicsContextProvider(
     Platform::ContextAttributes context_attributes,
     Platform::GraphicsInfo* gl_info,
     const KURL& url) {

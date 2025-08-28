@@ -105,8 +105,8 @@ class VideoTrackRecorderImplContextProvider {
                                  Platform::GraphicsInfo* gl_info,
                                  const KURL& url) {
     base::ScopedAllowBaseSyncPrimitives allow;
-    return CreateOffscreenGraphicsContext3DProvider(context_attributes, gl_info,
-                                                    url);
+    return CreateRasterGraphicsContextProvider(context_attributes, gl_info,
+                                               url);
   }
 };
 

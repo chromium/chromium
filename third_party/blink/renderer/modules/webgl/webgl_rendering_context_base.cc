@@ -662,8 +662,8 @@ WebGLRenderingContextBase::CreateContextProviderInternal(
 
   const auto& url = execution_context->Url();
   std::unique_ptr<WebGraphicsContext3DProvider> context_provider =
-      CreateOffscreenGraphicsContext3DProvider(context_attributes,
-                                               graphics_info, url);
+      CreateWebGLGraphicsContextProvider(context_attributes, graphics_info,
+                                         url);
   if (context_provider && !context_provider->BindToCurrentSequence()) {
     context_provider = nullptr;
     graphics_info->error_message = String("BindToCurrentSequence failed: " +
@@ -8902,7 +8902,7 @@ void WebGLRenderingContextBase::MaybeRestoreContext(TimerBase*) {
   const auto& url = Host()->GetExecutionContextUrl();
 
   std::unique_ptr<WebGraphicsContext3DProvider> context_provider =
-      CreateOffscreenGraphicsContext3DProvider(attributes, &gl_info, url);
+      CreateWebGLGraphicsContextProvider(attributes, &gl_info, url);
   scoped_refptr<DrawingBuffer> buffer;
   if (context_provider && context_provider->BindToCurrentSequence()) {
     // Construct a new drawing buffer with the new GL context.

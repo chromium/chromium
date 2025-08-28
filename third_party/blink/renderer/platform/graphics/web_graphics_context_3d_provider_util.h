@@ -28,7 +28,13 @@ namespace blink {
 // A blocking task is posted to the main thread to create the context, so do
 // not call this method from code which may block main thread progress.
 PLATFORM_EXPORT std::unique_ptr<WebGraphicsContext3DProvider>
-CreateOffscreenGraphicsContext3DProvider(
+CreateRasterGraphicsContextProvider(
+    Platform::ContextAttributes context_attributes,
+    Platform::GraphicsInfo* gl_info,
+    const KURL& url);
+
+PLATFORM_EXPORT std::unique_ptr<WebGraphicsContext3DProvider>
+CreateWebGLGraphicsContextProvider(
     Platform::ContextAttributes context_attributes,
     Platform::GraphicsInfo* gl_info,
     const KURL& url);
