@@ -924,7 +924,9 @@ TEST_F(CrostiniExportImportTest, TestExportFail) {
       [&]() -> bool { return !base::PathExists(tarball_); }));
 }
 
-TEST_F(CrostiniExportImportTest, TestExportCancelled) {
+// TODO(crbug.com/441657411): Disabled as flaky since the replacement of
+// RunUntilIdle.
+TEST_F(CrostiniExportImportTest, DISABLED_TestExportCancelled) {
   crostini_export_import_->FillOperationData(ExportImportType::EXPORT,
                                              custom_container_id_);
   crostini_export_import_->FileSelected(ui::SelectedFileInfo(tarball_), 0);
