@@ -1474,7 +1474,7 @@ ci.builder(
         mixins = [
             "expand-as-isolated-script",
             "has_native_resultdb_integration",
-            "mac_default_x64",
+            "mac_beta_x64",
             "mac_toolchain",
             "out_dir_arg",
             "xcode_26_main",
