@@ -21,9 +21,9 @@
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals_handler.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals_ui.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -237,18 +237,18 @@ class WebAppInternalsIwaInstallationBrowserTest
         ->GetHandlerForTesting();
   }
 
-  IsolatedWebAppUpdateServerMixin update_server_mixin_{&mixin_host_};
+  IsolatedWebAppTestUpdateServer iwa_test_update_server_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
                        FetchUpdateManifestAndInstallIwaAndUpdate) {
-  update_server_mixin_.AddBundle(
+  iwa_test_update_server_.AddBundle(
       IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
           .BuildBundle(test::GetDefaultEd25519KeyPair()));
 
   auto* handler = OpenWebAppInternals();
 
-  GURL update_manifest_url = update_server_mixin_.GetUpdateManifestUrl(
+  GURL update_manifest_url = iwa_test_update_server_.GetUpdateManifestUrl(
       test::GetDefaultEd25519WebBundleId());
   base::test::TestFuture<::mojom::ParseUpdateManifestFromUrlResultPtr>
       um_future;
@@ -302,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
   }
 
   // Now add a new entry to the manifest and re-run the update check.
-  update_server_mixin_.AddBundle(
+  iwa_test_update_server_.AddBundle(
       IsolatedWebAppBuilder(ManifestBuilder().SetVersion("2.0.0"))
           .BuildBundle(test::GetDefaultEd25519KeyPair()));
   {
@@ -340,11 +340,11 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
 
   // Now add new entries with v2.1.0 for the `beta` channel and v2.2.0 for the
   // `default` channel and force an update check.
-  update_server_mixin_.AddBundle(
+  iwa_test_update_server_.AddBundle(
       IsolatedWebAppBuilder(ManifestBuilder().SetVersion("2.1.0"))
           .BuildBundle(test::GetDefaultEd25519KeyPair()),
       /*update_channels=*/{{beta_channel}});
-  update_server_mixin_.AddBundle(
+  iwa_test_update_server_.AddBundle(
       IsolatedWebAppBuilder(ManifestBuilder().SetVersion("2.2.0"))
           .BuildBundle(test::GetDefaultEd25519KeyPair()));
 
@@ -367,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
 
   // Add v2.3.0 to `beta` channel, pin the app to v2.1.0. Expect no update.
   {
-    update_server_mixin_.AddBundle(
+    iwa_test_update_server_.AddBundle(
         IsolatedWebAppBuilder(ManifestBuilder().SetVersion("2.3.0"))
             .BuildBundle(test::GetDefaultEd25519KeyPair()),
         /*update_channels=*/{{beta_channel}});
@@ -389,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
   // Add v2.4.0 to `beta` channel, pin the app to v2.3.0. Expect an update to
   // v2.3.0.
   {
-    update_server_mixin_.AddBundle(
+    iwa_test_update_server_.AddBundle(
         IsolatedWebAppBuilder(ManifestBuilder().SetVersion("2.4.0"))
             .BuildBundle(test::GetDefaultEd25519KeyPair()),
         /*update_channels=*/{{beta_channel}});
@@ -452,13 +452,13 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     WebAppInternalsIwaInstallationBrowserTest,
     FetchUpdateManifestAndInstallIwaAndUpdateInvalidPinnedVersion) {
-  update_server_mixin_.AddBundle(
+  iwa_test_update_server_.AddBundle(
       IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
           .BuildBundle(test::GetDefaultEd25519KeyPair()));
 
   auto* handler = OpenWebAppInternals();
 
-  GURL update_manifest_url = update_server_mixin_.GetUpdateManifestUrl(
+  GURL update_manifest_url = iwa_test_update_server_.GetUpdateManifestUrl(
       test::GetDefaultEd25519WebBundleId());
   base::test::TestFuture<::mojom::ParseUpdateManifestFromUrlResultPtr>
       um_future;
@@ -493,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(
                               .app_id();
 
   // Add v2.0.0 to the update manifest.
-  update_server_mixin_.AddBundle(
+  iwa_test_update_server_.AddBundle(
       IsolatedWebAppBuilder(ManifestBuilder().SetVersion("2.0.0"))
           .BuildBundle(test::GetDefaultEd25519KeyPair()));
 

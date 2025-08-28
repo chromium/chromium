@@ -26,9 +26,9 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -279,13 +279,12 @@ class KioskIwaVersionManagementBaseTest
     : public MixinBasedInProcessBrowserTest {
  public:
   // Factory method to create kiosk mixin configurations based on the url from
-  // IsolatedWebAppUpdateServerMixin.
+  // IsolatedWebAppTestUpdateServer.
   using ConfigCreator =
       base::OnceCallback<KioskMixin::Config(const GURL& update_manifest_url)>;
 
   explicit KioskIwaVersionManagementBaseTest(ConfigCreator config_creator)
-      : iwa_server_mixin_(&mixin_host_),
-        kiosk_mixin_(&mixin_host_,
+      : kiosk_mixin_(&mixin_host_,
                      std::move(config_creator).Run(GetUpdateManifestUrl())) {
     // Prevents a race condition (often in debug builds) where a network service
     // process is not yet started when kiosk downloads the IWA update manifest.
@@ -306,7 +305,7 @@ class KioskIwaVersionManagementBaseTest
   void AddTestBundle(std::string_view version,
                      std::optional<std::vector<web_app::UpdateChannel>>
                          channels = std::nullopt) {
-    iwa_server_mixin_.AddBundle(
+    iwa_test_update_server_.AddBundle(
         web_app::IsolatedWebAppBuilder(
             web_app::ManifestBuilder().SetVersion(version))
             .BuildBundle(GetTestKeyPair()),
@@ -317,7 +316,7 @@ class KioskIwaVersionManagementBaseTest
                      std::string_view version,
                      std::optional<std::vector<web_app::UpdateChannel>>
                          channels = std::nullopt) {
-    iwa_server_mixin_.AddBundle(
+    iwa_test_update_server_.AddBundle(
         web_app::IsolatedWebAppBuilder(
             web_app::ManifestBuilder().SetName(name).SetVersion(version))
             .BuildBundle(GetTestKeyPair()),
@@ -334,7 +333,7 @@ class KioskIwaVersionManagementBaseTest
 
  private:
   GURL GetUpdateManifestUrl() const {
-    return iwa_server_mixin_.GetUpdateManifestUrl(GetTestWebBundleId());
+    return iwa_test_update_server_.GetUpdateManifestUrl(GetTestWebBundleId());
   }
 
   void OverrideCacheDir() {
@@ -347,7 +346,7 @@ class KioskIwaVersionManagementBaseTest
         ash::DIR_DEVICE_LOCAL_ACCOUNT_IWA_CACHE, cache_root_dir_);
   }
 
-  web_app::IsolatedWebAppUpdateServerMixin iwa_server_mixin_;
+  web_app::IsolatedWebAppTestUpdateServer iwa_test_update_server_;
   KioskMixin kiosk_mixin_;
   base::FilePath cache_root_dir_;
   std::unique_ptr<base::ScopedPathOverride> cache_root_dir_override_;

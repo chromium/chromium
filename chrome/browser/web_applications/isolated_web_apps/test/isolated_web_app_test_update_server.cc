@@ -1,8 +1,8 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 
 #include <variant>
 
@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace web_app {
@@ -27,24 +28,25 @@ std::unique_ptr<net::test_server::HttpResponse> HttpNotFound() {
 
 }  // namespace
 
-IsolatedWebAppUpdateServerMixin::IsolatedWebAppUpdateServerMixin(
-    InProcessBrowserTestMixinHost* mixin_host)
-    : InProcessBrowserTestMixin(mixin_host) {
+IsolatedWebAppTestUpdateServer::IsolatedWebAppTestUpdateServer() {
   iwa_server_.RegisterRequestHandler(base::BindRepeating(
-      &IsolatedWebAppUpdateServerMixin::HandleRequest, base::Unretained(this)));
+      &IsolatedWebAppTestUpdateServer::HandleRequest, base::Unretained(this)));
   EXPECT_TRUE(iwa_server_.Start());
   storage_.SetBaseUrl(iwa_server_.base_url());
 }
 
-IsolatedWebAppUpdateServerMixin::~IsolatedWebAppUpdateServerMixin() = default;
+IsolatedWebAppTestUpdateServer::~IsolatedWebAppTestUpdateServer() {
+  if (iwa_server_.Started()) {
+    EXPECT_TRUE(iwa_server_.ShutdownAndWaitUntilComplete());
+  }
+}
 
-GURL IsolatedWebAppUpdateServerMixin::GetUpdateManifestUrl(
+GURL IsolatedWebAppTestUpdateServer::GetUpdateManifestUrl(
     const web_package::SignedWebBundleId& web_bundle_id) const {
   return storage_.GetUpdateManifestUrl(web_bundle_id);
 }
 
-base::Value::Dict
-IsolatedWebAppUpdateServerMixin::CreateForceInstallPolicyEntry(
+base::Value::Dict IsolatedWebAppTestUpdateServer::CreateForceInstallPolicyEntry(
     const web_package::SignedWebBundleId& web_bundle_id,
     const std::optional<UpdateChannel>& update_channel,
     const std::optional<IwaVersion>& pinned_version,
@@ -54,25 +56,25 @@ IsolatedWebAppUpdateServerMixin::CreateForceInstallPolicyEntry(
       pinned_version, allow_downgrades);
 }
 
-base::Value::Dict IsolatedWebAppUpdateServerMixin::GetUpdateManifest(
+base::Value::Dict IsolatedWebAppTestUpdateServer::GetUpdateManifest(
     const web_package::SignedWebBundleId& web_bundle_id) const {
   return storage_.GetUpdateManifest(web_bundle_id);
 }
 
-void IsolatedWebAppUpdateServerMixin::AddBundle(
+void IsolatedWebAppTestUpdateServer::AddBundle(
     std::unique_ptr<BundledIsolatedWebApp> bundle,
     std::optional<std::vector<UpdateChannel>> update_channels) {
   storage_.AddBundle(std::move(bundle), std::move(update_channels));
 }
 
-void IsolatedWebAppUpdateServerMixin::RemoveBundle(
+void IsolatedWebAppTestUpdateServer::RemoveBundle(
     const web_package::SignedWebBundleId& web_bundle_id,
     const IwaVersion& version) {
   storage_.RemoveBundle(web_bundle_id, version);
 }
 
 std::unique_ptr<net::test_server::HttpResponse>
-IsolatedWebAppUpdateServerMixin::HandleRequest(
+IsolatedWebAppTestUpdateServer::HandleRequest(
     const net::test_server::HttpRequest& request) {
   auto resource = storage_.GetResource(request.GetURL().path());
   if (!resource) {

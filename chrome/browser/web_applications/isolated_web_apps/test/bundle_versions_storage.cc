@@ -96,7 +96,7 @@ GURL BundleVersionsStorage::AddBundle(
     std::optional<std::vector<UpdateChannel>> update_channels) {
   CHECK(base_url_)
       << "SetBaseUrl() must be invoked prior to the first call to AddBundle(). "
-         "If you're using IsolatedWebAppUpdateServerMixin, make sure that "
+         "If you're using IsolatedWebAppTestUpdateServer, make sure that "
          "AddBundle() is called from SetUpOnMainThread() and not from the "
          "constructor.";
 

@@ -13,8 +13,8 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -87,7 +87,7 @@ class ComputeAppSizeCommandForIsolatedWebAppBrowserTest
 
   void SetUpOnMainThread() override {
     IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
-    update_server_mixin_.AddBundle(
+    iwa_test_update_server_.AddBundle(
         IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
             .BuildBundle(kPublicKeyPair1));
   }
@@ -103,7 +103,7 @@ class ComputeAppSizeCommandForIsolatedWebAppBrowserTest
                                    std::move(update_manifest_entries));
   }
 
-  IsolatedWebAppUpdateServerMixin update_server_mixin_{&mixin_host_};
+  IsolatedWebAppTestUpdateServer iwa_test_update_server_;
 
 #if !BUILDFLAG(IS_CHROMEOS)
  private:
@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(ComputeAppSizeCommandForIsolatedWebAppBrowserTest,
 
   WebAppTestInstallObserver install_observer(profile());
   SetIwaForceInstallPolicy(base::Value::List().Append(
-      update_server_mixin_.CreateForceInstallPolicyEntry(kWebBundleId1)));
+      iwa_test_update_server_.CreateForceInstallPolicyEntry(kWebBundleId1)));
   ASSERT_EQ(install_observer.BeginListeningAndWait({app_id}), app_id);
 
   auto* browser = web_app::LaunchWebAppBrowserAndWait(profile(), app_id);

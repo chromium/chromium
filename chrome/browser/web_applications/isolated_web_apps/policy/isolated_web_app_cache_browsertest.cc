@@ -44,10 +44,10 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_task.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -301,9 +301,11 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
                    [&](ManagedGuestSessionMixin& mgs_mixin) {
                      base::Value::List config;
                      for (auto& iwa : apps_to_configure_in_session) {
-                       config.Append(iwa_mixin_.CreateForceInstallPolicyEntry(
-                           iwa.bundle_id(), iwa.update_channel(),
-                           iwa.pinned_version()));
+                       config.Append(iwa_test_update_server_
+                                         .CreateForceInstallPolicyEntry(
+                                             iwa.bundle_id(),
+                                             iwa.update_channel(),
+                                             iwa.pinned_version()));
                      }
                      mgs_mixin.device_local_account_policy_builder()
                          .payload()
@@ -325,7 +327,8 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
                            scoped_update,
                            GetKioskIwaManualLaunchConfig(
                                iwa.bundle_id(),
-                               iwa_mixin_.GetUpdateManifestUrl(iwa.bundle_id()),
+                               iwa_test_update_server_.GetUpdateManifestUrl(
+                                   iwa.bundle_id()),
                                iwa.update_channel(), iwa.pinned_version()));
                      }
                    },
@@ -457,7 +460,7 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
       // configuring IWAs. We need to remove all of them.
       auto versions = GetVersionsFromUpdateManifest(iwa.bundle_id());
       for (IwaVersion version : versions) {
-        iwa_mixin_.RemoveBundle(iwa.bundle_id(), version);
+        iwa_test_update_server_.RemoveBundle(iwa.bundle_id(), version);
       }
     }
   }
@@ -465,7 +468,7 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
   void AddNewIwaToServer(const IwaServerConfig& iwa_server_config,
                          std::optional<std::vector<UpdateChannel>>
                              update_channels = std::nullopt) {
-    iwa_mixin_.AddBundle(
+    iwa_test_update_server_.AddBundle(
         IsolatedWebAppBuilder(ManifestBuilder().SetName(kIwaName).SetVersion(
                                   iwa_server_config.version().GetString()))
             .BuildBundle(iwa_server_config.public_key_pair()),
@@ -586,7 +589,8 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
       const SignedWebBundleId& bundle_id) {
     std::vector<IwaVersion> versions;
 
-    base::Value::Dict manifest_dict = iwa_mixin_.GetUpdateManifest(bundle_id);
+    base::Value::Dict manifest_dict =
+        iwa_test_update_server_.GetUpdateManifest(bundle_id);
     for (auto& version_value :
          CHECK_DEREF(manifest_dict.FindList("versions"))) {
       auto& version_dict = CHECK_DEREF(version_value.GetIfDict());
@@ -636,7 +640,7 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
   // `bundle_id`s should be unique in `iwa_policy_configs_`.
   const std::vector<IwaPolicyConfig> iwa_policy_configs_;
   const std::vector<IwaServerConfig> add_to_server_iwas_;
-  IsolatedWebAppUpdateServerMixin iwa_mixin_{&mixin_host_};
+  IsolatedWebAppTestUpdateServer iwa_test_update_server_;
   base::test::ScopedFeatureList scoped_feature_list_;
   policy::DevicePolicyCrosTestHelper policy_helper_;
   base::FilePath cache_root_dir_;

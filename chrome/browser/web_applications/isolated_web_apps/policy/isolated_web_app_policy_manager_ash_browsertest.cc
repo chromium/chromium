@@ -47,8 +47,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_generator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_iwa_installer_factory.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -152,21 +152,21 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
           .app_id();
 
   void AddInitialBundles() {
-    update_server_mixin_.AddBundle(
+    iwa_test_update_server_.AddBundle(
         IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
             .BuildBundle(kPublicKeyPair1));
-    update_server_mixin_.AddBundle(
+    iwa_test_update_server_.AddBundle(
         IsolatedWebAppBuilder(ManifestBuilder().SetVersion("7.0.6"))
             .BuildBundle(kPublicKeyPair1));
-    update_server_mixin_.AddBundle(
+    iwa_test_update_server_.AddBundle(
         IsolatedWebAppBuilder(ManifestBuilder().SetVersion("9.0.0"))
             .BuildBundle(kPublicKeyPair1),
         std::vector<UpdateChannel>{kBetaChannel});
 
-    update_server_mixin_.AddBundle(
+    iwa_test_update_server_.AddBundle(
         IsolatedWebAppBuilder(ManifestBuilder().SetVersion("2.0.0"))
             .BuildBundle(kPublicKeyPair2));
-    update_server_mixin_.AddBundle(
+    iwa_test_update_server_.AddBundle(
         IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.2.0"))
             .BuildBundle(kPublicKeyPair2),
         std::vector<UpdateChannel>{kBetaChannel});
@@ -240,7 +240,7 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
 
     isolated_web_apps_proto->set_value(
         WriteJson(base::Value::List().Append(
-                      update_server_mixin_.CreateForceInstallPolicyEntry(
+                      iwa_test_update_server_.CreateForceInstallPolicyEntry(
                           kWebBundleId1)))
             .value());
   }
@@ -262,22 +262,22 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
 
   void SetPolicyWithOneApp() {
     SetIWAForceInstallPolicy(base::Value::List().Append(
-        update_server_mixin_.CreateForceInstallPolicyEntry(kWebBundleId1)));
+        iwa_test_update_server_.CreateForceInstallPolicyEntry(kWebBundleId1)));
   }
 
   void SetPolicyWithTwoApps() {
     SetIWAForceInstallPolicy(
         base::Value::List()
-            .Append(update_server_mixin_.CreateForceInstallPolicyEntry(
+            .Append(iwa_test_update_server_.CreateForceInstallPolicyEntry(
                 kWebBundleId1))
-            .Append(update_server_mixin_.CreateForceInstallPolicyEntry(
+            .Append(iwa_test_update_server_.CreateForceInstallPolicyEntry(
                 kWebBundleId2)));
   }
 
   void SetPolicyWithOneAppWithPinnedVersion(
       std::string pinned_version = kPinnedVersion) {
     SetIWAForceInstallPolicy(base::Value::List().Append(
-        update_server_mixin_.CreateForceInstallPolicyEntry(
+        iwa_test_update_server_.CreateForceInstallPolicyEntry(
             kWebBundleId1, /*update_channel=*/std::nullopt,
             *IwaVersion::Create(pinned_version))));
   }
@@ -285,8 +285,8 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
   void SetPolicyWithBetaChannelApp(
       const web_package::SignedWebBundleId& web_bundle_id) {
     SetIWAForceInstallPolicy(base::Value::List().Append(
-        update_server_mixin_.CreateForceInstallPolicyEntry(web_bundle_id,
-                                                           {kBetaChannel})));
+        iwa_test_update_server_.CreateForceInstallPolicyEntry(web_bundle_id,
+                                                              {kBetaChannel})));
   }
 
   base::Version GetIsolatedWebAppVersion(const webapps::AppId& app_id) {
@@ -392,7 +392,7 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
 
  private:
   ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
-  IsolatedWebAppUpdateServerMixin update_server_mixin_{&mixin_host_};
+  IsolatedWebAppTestUpdateServer iwa_test_update_server_;
   ash::DeviceStateMixin device_state_{
       &mixin_host_,
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};

@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_UPDATE_SERVER_MIXIN_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_UPDATE_SERVER_MIXIN_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_ISOLATED_WEB_APP_TEST_UPDATE_SERVER_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_ISOLATED_WEB_APP_TEST_UPDATE_SERVER_H_
 
 #include <memory>
 #include <optional>
 #include <vector>
 
 #include "chrome/browser/web_applications/isolated_web_apps/test/bundle_versions_storage.h"
-#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "url/gurl.h"
@@ -23,11 +23,15 @@ namespace web_app {
 class BundledIsolatedWebApp;
 
 // This mixin starts a server that hosts update manifests and bundles.
-class IsolatedWebAppUpdateServerMixin : public InProcessBrowserTestMixin {
+class IsolatedWebAppTestUpdateServer {
  public:
-  explicit IsolatedWebAppUpdateServerMixin(
-      InProcessBrowserTestMixinHost* mixin_host);
-  ~IsolatedWebAppUpdateServerMixin() override;
+  IsolatedWebAppTestUpdateServer();
+  ~IsolatedWebAppTestUpdateServer();
+
+  IsolatedWebAppTestUpdateServer(const IsolatedWebAppTestUpdateServer&) =
+      delete;
+  IsolatedWebAppTestUpdateServer& operator=(
+      const IsolatedWebAppTestUpdateServer&) = delete;
 
   // The returned URL has the following structure:
   //   * /<web_bundle_id>/update_manifest.json
@@ -72,4 +76,4 @@ class IsolatedWebAppUpdateServerMixin : public InProcessBrowserTestMixin {
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_UPDATE_SERVER_MIXIN_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_ISOLATED_WEB_APP_TEST_UPDATE_SERVER_H_

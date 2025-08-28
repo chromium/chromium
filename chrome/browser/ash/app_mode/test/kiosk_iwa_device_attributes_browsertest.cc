@@ -20,8 +20,8 @@
 #include "chrome/browser/ash/policy/core/device_policy_cros_test_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -122,7 +122,7 @@ class KioskIwaDeviceAttributesApiTest
  public:
   KioskIwaDeviceAttributesApiTest() {
     InitFeatureList();
-    iwa_server_mixin_.AddBundle(
+    iwa_test_update_server_.AddBundle(
         web_app::IsolatedWebAppBuilder(GetIwaManifestBuilder())
             .BuildBundle(web_app::test::GetDefaultEd25519KeyPair()));
   }
@@ -220,7 +220,7 @@ class KioskIwaDeviceAttributesApiTest
     kiosk_.Configure(
         scoped_update,
         GetKioskIwaManualLaunchConfig(
-            iwa_server_mixin_.GetUpdateManifestUrl(kTestWebBundleId)));
+            iwa_test_update_server_.GetUpdateManifestUrl(kTestWebBundleId)));
 
     scoped_update.policy_data()->set_annotated_asset_id(
         kDeviceAnnotatedAssetId);
@@ -251,7 +251,7 @@ class KioskIwaDeviceAttributesApiTest
                                              /*port=*/0);
 
   base::test::ScopedFeatureList feature_list_;
-  web_app::IsolatedWebAppUpdateServerMixin iwa_server_mixin_{&mixin_host_};
+  web_app::IsolatedWebAppTestUpdateServer iwa_test_update_server_;
   KioskMixin kiosk_{&mixin_host_};
   policy::DevicePolicyCrosTestHelper policy_helper_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;

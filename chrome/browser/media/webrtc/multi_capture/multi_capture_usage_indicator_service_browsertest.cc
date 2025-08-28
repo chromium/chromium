@@ -19,9 +19,9 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -136,14 +136,14 @@ class MultiCaptureUsageIndicatorBrowserTestBase
     PrefService& prefs = CHECK_DEREF(profile()->GetPrefs());
     base::Value::List app_install_force_list =
         prefs.GetList(prefs::kIsolatedWebAppInstallForceList).Clone();
-    update_server_mixin_.AddBundle(
+    iwa_test_update_server_.AddBundle(
         web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder()
                                            .SetName(app.app_name)
                                            .SetVersion("3.0.4"))
             .AddHtml("/", kIndexHtml706)
             .BuildBundle(app.bundle_id, {app.key_pair}));
     app_install_force_list.Append(
-        update_server_mixin_.CreateForceInstallPolicyEntry(app.bundle_id));
+        iwa_test_update_server_.CreateForceInstallPolicyEntry(app.bundle_id));
 
     prefs.SetList(prefs::kIsolatedWebAppInstallForceList,
                   std::move(app_install_force_list));
@@ -217,7 +217,7 @@ class MultiCaptureUsageIndicatorBrowserTestBase
   }
 
   std::map<std::string, message_center::Notification> visible_notifications_;
-  web_app::IsolatedWebAppUpdateServerMixin update_server_mixin_{&mixin_host_};
+  web_app::IsolatedWebAppTestUpdateServer iwa_test_update_server_;
   base::test::ScopedFeatureList scoped_feature_list{
       chromeos::features::kMultiCaptureReworkedUsageIndicators};
 

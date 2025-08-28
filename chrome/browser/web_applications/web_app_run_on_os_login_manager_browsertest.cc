@@ -26,10 +26,10 @@
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_run_on_os_login_notification.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
@@ -91,12 +91,12 @@ class MockNetworkConnectionTracker : public network::NetworkConnectionTracker {
   }
 };
 
-class RunOnOsLoginTestHandlerMixin : public IsolatedWebAppUpdateServerMixin {
+class RunOnOsLoginTestHandlerMixin : public InProcessBrowserTestMixin {
  public:
   explicit RunOnOsLoginTestHandlerMixin(
       InProcessBrowserTestMixinHost* mixin_host,
       InProcessBrowserTest* test_base)
-      : IsolatedWebAppUpdateServerMixin(mixin_host),
+      : InProcessBrowserTestMixin(mixin_host),
         test_base_(test_base),
         // ROOL startup done manually to ensure that SetUpOnMainThread is run
         // before.
@@ -106,14 +106,14 @@ class RunOnOsLoginTestHandlerMixin : public IsolatedWebAppUpdateServerMixin {
   void SetUpOnMainThread() override {
     profile_ = test_base_->browser()->profile();
     provider_ = WebAppProvider::GetForTest(profile_);
-    IsolatedWebAppUpdateServerMixin::SetUpOnMainThread();
+    InProcessBrowserTestMixin::SetUpOnMainThread();
   }
 
   void TearDownOnMainThread() override {
     test_base_ = nullptr;
     profile_ = nullptr;
     provider_ = nullptr;
-    IsolatedWebAppUpdateServerMixin::TearDownOnMainThread();
+    InProcessBrowserTestMixin::TearDownOnMainThread();
   }
 
   void AddRoolApp(const std::string& manifest_id,
@@ -168,6 +168,8 @@ class RunOnOsLoginTestHandlerMixin : public IsolatedWebAppUpdateServerMixin {
 
   void ResetSkipRunOnOsLoginStartup() { skip_run_on_os_login_startup_.reset(); }
 
+  IsolatedWebAppTestUpdateServer& iwa_test_server() { return iwa_test_server_; }
+
  private:
   raw_ptr<InProcessBrowserTest> test_base_;
   raw_ptr<Profile> profile_ = nullptr;
@@ -176,6 +178,7 @@ class RunOnOsLoginTestHandlerMixin : public IsolatedWebAppUpdateServerMixin {
   std::unique_ptr<base::test::TestFuture<void>> completed_future_;
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kDesktopPWAsRunOnOsLogin};
+  IsolatedWebAppTestUpdateServer iwa_test_server_;
 };
 
 class WebAppRunOnOsLoginManagerBrowserTest
@@ -675,7 +678,7 @@ class IsolatedWebAppRunOnOsLoginManagerBrowserTest
         });
       )");
 
-    run_on_os_login_handler_.AddBundle(
+    run_on_os_login_handler_.iwa_test_server().AddBundle(
         builder.BuildBundle(temp_dir_.Append(kBundleFileName), key_pair_));
   }
 
@@ -713,7 +716,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppRunOnOsLoginManagerBrowserTest,
           base::Value::Dict()
               .Set(kPolicyWebBundleIdKey, url_info_->web_bundle_id().id())
               .Set(kPolicyUpdateManifestUrlKey,
-                   run_on_os_login_handler_
+                   run_on_os_login_handler_.iwa_test_server()
                        .GetUpdateManifestUrl(url_info_->web_bundle_id())
                        .spec())));
 

@@ -12,8 +12,8 @@
 #include "chrome/browser/ash/test/regular_logged_in_browser_test_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -155,12 +155,12 @@ class IsolatedWebAppDeviceAttributesBrowserTest
     web_app::WebAppTestInstallObserver observer(profile());
     observer.BeginListening({iwa_url_info.app_id()});
 
-    isolated_web_app_update_server_mixin_.AddBundle(
+    isolated_web_app_iwa_test_update_server_.AddBundle(
         IsolatedWebAppBuilder(GetIwaManifestBuilder())
             .BuildBundle(web_bundle_id, {test::GetDefaultEd25519KeyPair()}));
     web_app::test::AddForceInstalledIwaToPolicy(
         profile()->GetPrefs(),
-        isolated_web_app_update_server_mixin_.CreateForceInstallPolicyEntry(
+        isolated_web_app_iwa_test_update_server_.CreateForceInstallPolicyEntry(
             web_bundle_id));
 
     EXPECT_EQ(iwa_url_info.app_id(), observer.Wait());
@@ -222,8 +222,8 @@ class IsolatedWebAppDeviceAttributesBrowserTest
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   policy::DevicePolicyCrosTestHelper policy_helper_;
-  web_app::IsolatedWebAppUpdateServerMixin
-      isolated_web_app_update_server_mixin_{&mixin_host_};
+  web_app::IsolatedWebAppTestUpdateServer
+      isolated_web_app_iwa_test_update_server_;
 };
 
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppDeviceAttributesBrowserTest,
