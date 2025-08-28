@@ -39,3 +39,6 @@
 -AdAuctionServiceImplTest.SendReportsWaitsForCallback
 -AdAuctionServiceImplUpdateIfOlderThanTest.Clamped10Min
 -AuctionRunnerTest.ComponentAuctionProcessManagerBlocksWorkletCreation
+
+# TODO(crbug.com/441537630): An OOM occurs in v8.
+-TrustedSignalsRequestManagerTest.AutomaticallySendRequestsDisabled
