@@ -450,7 +450,7 @@ targets.bundle(
         "video_encode_accelerator_tests",
     ],
     mixins = [
-        "force-android-desktop",
+        "force-desktop-android",
         "has_native_resultdb_integration",
         "linux-jammy",
         "x86-64",

@@ -4,6 +4,7 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_tablet_x64_tablet_landscape.textpb",
+          "--force-desktop-android",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.emulator_15.android_browsertests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -54,6 +55,7 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_tablet_x64_tablet_landscape.textpb",
+          "--force-desktop-android",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -103,6 +105,7 @@
         "args": [
           "--git-revision=${got_revision}",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_tablet_x64_tablet_landscape.textpb",
+          "--force-desktop-android",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.emulator_15.chrome_public_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -159,6 +162,7 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_tablet_x64_tablet_landscape.textpb",
+          "--force-desktop-android",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],

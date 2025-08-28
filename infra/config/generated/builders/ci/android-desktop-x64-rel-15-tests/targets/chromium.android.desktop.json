@@ -3,8 +3,9 @@
     "gtest_tests": [
       {
         "args": [
-          "--force-android-desktop",
+          "--force-desktop-android",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_tablet_x64_tablet_landscape.textpb",
+          "--force-desktop-android",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.emulator_15.android_browsertests.filter",
           "--emulator-debug-tags=all",
           "--gs-results-bucket=chromium-result-details",
@@ -56,8 +57,9 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--force-android-desktop",
+          "--force-desktop-android",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_tablet_x64_tablet_landscape.textpb",
+          "--force-desktop-android",
           "--gtest_filter=-org.chromium.chrome.browser.ui.appmenu.AppMenuTest.testShowAppMenu_AnchorTop",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -113,8 +115,9 @@
       },
       {
         "args": [
-          "--force-android-desktop",
+          "--force-desktop-android",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_tablet_x64_tablet_landscape.textpb",
+          "--force-desktop-android",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -162,8 +165,9 @@
       },
       {
         "args": [
-          "--force-android-desktop",
+          "--force-desktop-android",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_tablet_x64_tablet_landscape.textpb",
+          "--force-desktop-android",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.emulator_15.unit_tests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -213,8 +217,9 @@
       },
       {
         "args": [
-          "--force-android-desktop",
+          "--force-desktop-android",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_tablet_x64_tablet_landscape.textpb",
+          "--force-desktop-android",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -271,8 +276,9 @@
           "reftest",
           "crashtest",
           "print-reftest",
-          "--additional-driver-flag=--force-android-desktop",
-          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_tablet_x64_tablet_landscape.textpb"
+          "--additional-driver-flag=--force-desktop-android",
+          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_tablet_x64_tablet_landscape.textpb",
+          "--force-desktop-android"
         ],
         "ci_only": true,
         "description": "Run with android_35_google_apis_tablet_x64",
