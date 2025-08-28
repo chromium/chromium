@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_consumer.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_mutator.h"
 
 class BwgService;
@@ -31,9 +32,15 @@ class WebState;
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Disconnects the mediator.
+- (void)disconnect;
+
 // Returns whether the Lens overlay is available for the profile. It may still
 // be unavailable for the current web state.
 - (BOOL)isLensAvailableForProfile;
+
+// Consumer for the Page Action Menu mediator.
+@property(nonatomic, weak) id<PageActionMenuConsumer> consumer;
 
 @end
 

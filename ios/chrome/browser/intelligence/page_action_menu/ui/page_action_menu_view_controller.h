@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_consumer.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_options_consumer.h"
 
 @protocol BWGCommands;
@@ -18,7 +19,7 @@
 
 // The view controller representing the presented page action menu UI.
 @interface PageActionMenuViewController
-    : UIViewController <ReaderModeOptionsConsumer>
+    : UIViewController <PageActionMenuConsumer, ReaderModeOptionsConsumer>
 
 // The delegate for this view controller.
 @property(nonatomic, weak) id<PageActionMenuViewControllerDelegate> delegate;

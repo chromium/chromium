@@ -84,6 +84,9 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
   // Stack view containing the menu's main content.
   UIStackView* _contentStackView;
 
+  // The entry point for Ask Gemini.
+  UIButton* _BWGButton;
+
   // The entry point for the Lens overlay.
   UIButton* _lensButton;
 }
@@ -133,11 +136,11 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
   // (above) if Reader mode is available and active.
   if (IsReaderModeAvailable() && ![self.mutator isReaderModeActive]) {
     // Adds the large Gemini entry point button.
-    UIButton* BWGButton = [self createBWGButton];
-    [_contentStackView addArrangedSubview:BWGButton];
+    _BWGButton = [self createBWGButton];
+    [_contentStackView addArrangedSubview:_BWGButton];
 
     [NSLayoutConstraint activateConstraints:@[
-      [BWGButton.heightAnchor
+      [_BWGButton.heightAnchor
           constraintGreaterThanOrEqualToConstant:kLargeButtonHeight],
     ]];
   }
@@ -227,6 +230,12 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
 
 - (void)announceFontSizeMultiplier:(CGFloat)multiplier {
   // Nothing to do.
+}
+
+#pragma mark - PageActionMenuConsumer
+
+- (void)pageLoadStatusChanged {
+  [self updateButton:_BWGButton enabled:[self.mutator isGeminiAvailable]];
 }
 
 #pragma mark - Private
@@ -448,15 +457,15 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
                forControlEvents:UIControlEventTouchUpInside];
     [stackView addArrangedSubview:readerModeButton];
   } else {
-    UIButton* BWGSmallButton =
+    _BWGButton =
         [self createSmallButtonWithIcon:[self askGeminiIcon]
                                   title:l10n_util::GetNSString(
                                             IDS_IOS_AI_HUB_GEMINI_LABEL)
                                 enabled:[self.mutator isGeminiAvailable]];
-    [BWGSmallButton addTarget:self
-                       action:@selector(handleBWGTapped:)
-             forControlEvents:UIControlEventTouchUpInside];
-    [stackView addArrangedSubview:BWGSmallButton];
+    [_BWGButton addTarget:self
+                   action:@selector(handleBWGTapped:)
+         forControlEvents:UIControlEventTouchUpInside];
+    [stackView addArrangedSubview:_BWGButton];
   }
 
   return stackView;

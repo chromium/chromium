@@ -65,6 +65,7 @@ const CGFloat kMenuCornerRadius = 20;
                               self.profile)
                BWGService:BwgServiceFactory::GetForProfile(self.profile)
       readerModeTabHelper:readerModeTabHelper];
+  _mediator.consumer = _viewController;
 
   if (readerModeTabHelper) {
     DistillerService* distillerService =
@@ -138,6 +139,7 @@ const CGFloat kMenuCornerRadius = 20;
                                                 completion:completion];
   }
   _viewController = nil;
+  [_mediator disconnect];
   _mediator = nil;
   _readerModeOptionsViewController = nil;
   [_readerModeOptionsMediator disconnect];

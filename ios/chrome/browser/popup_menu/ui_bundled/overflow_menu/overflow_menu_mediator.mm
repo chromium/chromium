@@ -1502,6 +1502,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   if (IsReaderModeAvailable()) {
     self.readerModeAction.enabled = [self isReaderModeEnabled];
   }
+
+  if ([self isGeminiAvailable]) {
+    self.askBWGAction.enabled = !_webState->IsLoading();
+  }
 }
 
 // Updates the order of the items in each section or group.
