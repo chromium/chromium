@@ -36,6 +36,9 @@ namespace blink {
 class Page;
 class V8PermissionState;
 
+// For more information, see the explainer here:
+// https://github.com/WICG/PEPC/blob/main/explainer.md
+// and the design doc here: docs/permissions/pepc.md.
 class CORE_EXPORT HTMLPermissionElement
     : public HTMLElement,
       public mojom::blink::EmbeddedPermissionControlClient,
