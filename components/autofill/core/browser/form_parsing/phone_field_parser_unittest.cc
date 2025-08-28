@@ -28,11 +28,16 @@ using base::ASCIIToUTF16;
 namespace autofill {
 namespace {
 
-const FormControlType kFieldTypes[] = {
+constexpr FormControlType kFieldTypes[] = {
     FormControlType::kInputText,
     FormControlType::kInputTelephone,
     FormControlType::kInputNumber,
 };
+
+raw_ptr<const FormFieldData> to_form_field_data(
+    const std::unique_ptr<AutofillField>& field) {
+  return field.get();
+}
 
 class PhoneFieldParserTest : public testing::Test {
  public:
@@ -130,12 +135,13 @@ void PhoneFieldParserTest::RunParsingTest(
   // Must outlive `scanner`.
   auto unowned_fields =
       base::ToVector(list_, [](const std::unique_ptr<AutofillField>& field) {
-        return raw_ptr<AutofillField>(field.get());
+        return raw_ptr<const FormFieldData>(field.get());
       });
 
   // Parse.
   AutofillScanner scanner(unowned_fields);
-  ParsingContext context(list_, GeoIpCountryCode(""), LanguageCode(""),
+  ParsingContext context(base::ToVector(list_, &to_form_field_data),
+                         GeoIpCountryCode(""), LanguageCode(""),
                          *GetActivePatternFile());
   field_ = Parse(context, &scanner);
   ASSERT_EQ(expect_success, field_.get() != nullptr);

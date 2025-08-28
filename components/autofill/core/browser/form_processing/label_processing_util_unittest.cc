@@ -7,6 +7,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -22,6 +23,11 @@ namespace {
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::Pair;
+
+raw_ptr<const FormFieldData> to_form_field_data(
+    const std::unique_ptr<AutofillField>& field) {
+  return field.get();
+}
 
 TEST(LabelProcessingUtil, GetParseableNameLabels) {
   std::vector<std::u16string_view> labels = {u"City", u"Street & House Number",
@@ -86,13 +92,14 @@ TEST(LabelProcessingUtil, GetParseableLabels_Feature) {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndDisableFeature(
         features::kAutofillEnableSupportForParsingWithSharedLabels);
-    EXPECT_THAT(GetParseableLabels(fields), IsEmpty());
+    EXPECT_THAT(GetParseableLabels(base::ToVector(fields, to_form_field_data)),
+                IsEmpty());
   }
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(
         features::kAutofillEnableSupportForParsingWithSharedLabels);
-    EXPECT_THAT(GetParseableLabels(fields),
+    EXPECT_THAT(GetParseableLabels(base::ToVector(fields, to_form_field_data)),
                 ElementsAre(Pair(fields[1]->global_id(), u"Street"),
                             Pair(fields[2]->global_id(), u"House Number"),
                             Pair(fields[3]->global_id(), u"Floor")));

@@ -15,13 +15,13 @@
 
 namespace autofill {
 
-class AutofillField;
+class FormFieldData;
 
-// A helper class for parsing a stream of |AutofillField|'s with lookahead.
+// A helper class for parsing a stream of |FormFieldData|'s with lookahead.
 class AutofillScanner {
  public:
   explicit AutofillScanner(
-      const std::vector<raw_ptr<AutofillField>>& fields LIFETIME_BOUND);
+      const std::vector<raw_ptr<const FormFieldData>>& fields LIFETIME_BOUND);
 
   AutofillScanner(const AutofillScanner&) = delete;
   AutofillScanner& operator=(const AutofillScanner&) = delete;
@@ -32,10 +32,10 @@ class AutofillScanner {
   void Advance();
 
   // Returns the current field in the stream.
-  AutofillField* Cursor() const;
+  const FormFieldData* Cursor() const;
 
   // Returns the field before Cursor(), or nullptr if there is none.
-  AutofillField* Predecessor() const;
+  const FormFieldData* Predecessor() const;
 
   // Returns |true| if the cursor has reached the end of the stream.
   bool IsEnd() const;
@@ -55,16 +55,16 @@ class AutofillScanner {
 
  private:
   // Indicates the current position in the stream, represented as a vector.
-  std::vector<raw_ptr<AutofillField>>::const_iterator cursor_;
+  std::vector<raw_ptr<const FormFieldData>>::const_iterator cursor_;
 
   // The most recently saved cursor.
-  std::vector<raw_ptr<AutofillField>>::const_iterator saved_cursor_;
+  std::vector<raw_ptr<const FormFieldData>>::const_iterator saved_cursor_;
 
   // The beginning pointer for the stream.
-  std::vector<raw_ptr<AutofillField>>::const_iterator begin_;
+  std::vector<raw_ptr<const FormFieldData>>::const_iterator begin_;
 
   // The past-the-end pointer for the stream.
-  std::vector<raw_ptr<AutofillField>>::const_iterator end_;
+  std::vector<raw_ptr<const FormFieldData>>::const_iterator end_;
 };
 
 }  // namespace autofill

@@ -11,11 +11,12 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
 
-class AutofillField;
+class FormFieldData;
 
 // Given the `labels` of all fields in a form in order, this logic attempts
 // to split labels among consecutive fields by common separators. In particular,
@@ -37,7 +38,7 @@ std::vector<std::u16string_view> GetParseableLabels(
 // Returns a map containing each field's parseable label **if** that label
 // differs from FormFieldData::label().
 base::flat_map<FieldGlobalId, std::u16string> GetParseableLabels(
-    base::span<const std::unique_ptr<AutofillField>> fields);
+    base::span<const raw_ptr<const FormFieldData>> fields);
 
 }  // namespace autofill
 

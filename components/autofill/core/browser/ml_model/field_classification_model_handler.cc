@@ -10,6 +10,7 @@
 
 #include "base/barrier_callback.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/memory/weak_ptr.h"
@@ -143,8 +144,12 @@ void FieldClassificationModelHandler::ApplySmallFormRules(
   }
 
   FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
-      form.fields(), field_candidates_map, form.is_form_element(),
-      form.client_country(), nullptr);
+      base::ToVector(form.fields(),
+                     [](const auto& field) -> raw_ptr<const FormFieldData> {
+                       return field.get();
+                     }),
+      field_candidates_map, form.is_form_element(), form.client_country(),
+      nullptr);
 
   for (size_t i = 0; i < predicted_types.size(); ++i) {
     const auto& field_id = form.field(i)->global_id();

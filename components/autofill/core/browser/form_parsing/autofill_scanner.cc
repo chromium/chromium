@@ -11,7 +11,7 @@
 namespace autofill {
 
 AutofillScanner::AutofillScanner(
-    const std::vector<raw_ptr<AutofillField>>& fields) {
+    const std::vector<raw_ptr<const FormFieldData>>& fields) {
   cursor_ = fields.begin();
   saved_cursor_ = fields.begin();
   begin_ = fields.begin();
@@ -25,12 +25,12 @@ void AutofillScanner::Advance() {
   ++cursor_;
 }
 
-AutofillField* AutofillScanner::Cursor() const {
+const FormFieldData* AutofillScanner::Cursor() const {
   CHECK(!IsEnd());
   return *cursor_;
 }
 
-AutofillField* AutofillScanner::Predecessor() const {
+const FormFieldData* AutofillScanner::Predecessor() const {
   return cursor_ != begin_ ? *std::prev(cursor_) : nullptr;
 }
 

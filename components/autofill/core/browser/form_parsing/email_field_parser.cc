@@ -41,7 +41,7 @@ std::unique_ptr<FormFieldParser> EmailFieldParser::Parse(
 
   // TODO(crbug.com/361560365): Consider moving this into the JSON files once
   // this is launched and they support placeholders.
-  const AutofillField* field = scanner->Cursor();
+  const FormFieldData* field = scanner->Cursor();
   if ((IsValidEmailAddress(field->placeholder()) ||
        IsValidEmailAddress(field->label()))) {
     scanner->Advance();

@@ -94,6 +94,11 @@ bool HasAllowedScheme(const GURL& url) {
   return url.SchemeIsHTTPOrHTTPS();
 }
 
+raw_ptr<const FormFieldData> to_form_field_data(
+    const std::unique_ptr<AutofillField>& field) {
+  return field.get();
+}
+
 std::string ServerTypesToString(const AutofillField& field) {
   std::vector<std::string_view> server_types =
       base::ToVector(field.server_predictions(), [](const auto& prediction) {
@@ -224,7 +229,8 @@ void FormStructure::DetermineHeuristicTypes(
       base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection)
           ? current_page_language_
           : LanguageCode();
-  ParsingContext context(fields_, client_country_, page_language,
+  ParsingContext context(base::ToVector(fields_, &to_form_field_data),
+                         client_country_, page_language,
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
                          PatternFile::kDefault,
 #else
@@ -302,10 +308,10 @@ FormDataPredictions FormStructure::GetFieldTypePredictions() const {
   }
 
   const base::flat_map<FieldGlobalId, std::u16string> parseable_names =
-      GetParseableNames(fields_);
+      GetParseableNames(base::ToVector(fields_, &to_form_field_data));
 
   const base::flat_map<FieldGlobalId, std::u16string> parseable_labels =
-      GetParseableLabels(fields_);
+      GetParseableLabels(base::ToVector(fields_, &to_form_field_data));
 
   for (const auto& field : fields_) {
     FormFieldDataPredictions annotated_field;
@@ -721,28 +727,34 @@ void FormStructure::SetFieldTypesFromAutocompleteAttribute() {
   }
 }
 
+// TODO(crbug.com/427787155): Move this function out of `FormStructure`.
 FieldCandidatesMap FormStructure::ParseFieldTypesWithPatterns(
     ParsingContext& context) const {
   FieldCandidatesMap field_type_map;
 
+  auto form_field_data_vector = base::ToVector(
+      fields_,
+      [](const auto& f) -> raw_ptr<const FormFieldData> { return f.get(); });
   if (ShouldRunHeuristics()) {
-    FormFieldParser::ParseFormFields(context, fields_, is_form_element(),
-                                     field_type_map);
+    FormFieldParser::ParseFormFields(context, form_field_data_vector,
+                                     is_form_element(), field_type_map);
   } else if (ShouldRunHeuristicsForSingleFields()) {
-    FormFieldParser::ParseSingleFields(context, fields_, field_type_map);
-    FormFieldParser::ParseStandaloneCVCFields(context, fields_, field_type_map);
+    FormFieldParser::ParseSingleFields(context, form_field_data_vector,
+                                       field_type_map);
+    FormFieldParser::ParseStandaloneCVCFields(context, form_field_data_vector,
+                                              field_type_map);
 
     // For standalone email fields, allow heuristics even when the minimum
     // number of fields is not met. See similar comments in
     // `FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields`.
-    FormFieldParser::ParseStandaloneEmailFields(context, fields_,
+    FormFieldParser::ParseStandaloneEmailFields(context, form_field_data_vector,
                                                 field_type_map);
 
     // Try parsing standalone loyalty card fields after an attempt has been
     // made to parse multi-purpose input fields e.g. email or loyalty number
     // fields.
-    FormFieldParser::ParseStandaloneLoyaltyCardFields(context, fields_,
-                                                      field_type_map);
+    FormFieldParser::ParseStandaloneLoyaltyCardFields(
+        context, form_field_data_vector, field_type_map);
   }
   return field_type_map;
 }
@@ -1003,10 +1015,10 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
   }
 
   const base::flat_map<FieldGlobalId, std::u16string> parseable_names =
-      GetParseableNames(form.fields());
+      GetParseableNames(base::ToVector(form.fields(), &to_form_field_data));
 
   const base::flat_map<FieldGlobalId, std::u16string> parseable_labels =
-      GetParseableLabels(form.fields());
+      GetParseableLabels(base::ToVector(form.fields(), &to_form_field_data));
 
   for (size_t i = 0; i < form.field_count(); ++i) {
     const AutofillField* field = form.field(i);

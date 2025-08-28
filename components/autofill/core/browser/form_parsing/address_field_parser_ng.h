@@ -27,7 +27,7 @@ struct ClassifiedFieldSequence {
   // the `score` is used as a tiebreaker.
   bool BetterThan(const ClassifiedFieldSequence& other) const;
 
-  base::flat_map<FieldType, raw_ptr<AutofillField>> assignments;
+  base::flat_map<FieldType, raw_ptr<const FormFieldData>> assignments;
   // The set of field types that exist in `assignments`. As a performance
   // optimization, we don't delete entries from `assignments` (flat_map is slow
   // when the keyset is modified) but write null entries instead.
@@ -109,7 +109,7 @@ class AddressFieldParserNG : public FormFieldParser {
   // is in progress and must not be accessed afterwards:
   raw_ptr<ParsingContext> context_;
   raw_ptr<AutofillScanner> scanner_;
-  raw_ptr<AutofillField> initial_field_;
+  raw_ptr<const FormFieldData> initial_field_;
 
   // An intermediate classification (assignment of field types to fields) that
   // is being worked on during the parsing.

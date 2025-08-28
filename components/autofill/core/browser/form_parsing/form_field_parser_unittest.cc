@@ -27,6 +27,15 @@
 
 namespace autofill {
 
+namespace {
+
+raw_ptr<const FormFieldData> to_form_field_data(
+    const std::unique_ptr<AutofillField>& field) {
+  return field.get();
+}
+
+}  // namespace
+
 class FormFieldParserTest : public FormFieldParserTestBase,
                             public ::testing::Test {
  public:
@@ -40,44 +49,49 @@ class FormFieldParserTest : public FormFieldParserTestBase,
   int ParseFormFields(GeoIpCountryCode client_country = GeoIpCountryCode(""),
                       LanguageCode language = LanguageCode(""),
                       bool is_form_tag = true) {
-    ParsingContext context(fields_, client_country, language,
+    auto fields = base::ToVector(fields_, &to_form_field_data);
+    ParsingContext context(fields, client_country, language,
                            GetActivePatternFile().value(),
                            GetActiveRegexFeatures());
-    FormFieldParser::ParseFormFields(context, fields_, is_form_tag,
+    FormFieldParser::ParseFormFields(context, fields, is_form_tag,
                                      field_candidates_map_);
     return field_candidates_map_.size();
   }
 
   // Like `ParseFormFields()`, but using `ParseSingleFields()` instead.
   int ParseSingleFields() {
-    ParsingContext context(fields_, GeoIpCountryCode(""), LanguageCode(""),
+    auto fields = base::ToVector(fields_, &to_form_field_data);
+    ParsingContext context(fields, GeoIpCountryCode(""), LanguageCode(""),
                            GetActivePatternFile().value(),
                            GetActiveRegexFeatures());
-    FormFieldParser::ParseSingleFields(context, fields_, field_candidates_map_);
+    FormFieldParser::ParseSingleFields(context, fields, field_candidates_map_);
     return field_candidates_map_.size();
   }
 
   int ParseStandaloneCVCFields() {
-    ParsingContext context(fields_, GeoIpCountryCode(""), LanguageCode(""),
+    auto fields = base::ToVector(fields_, &to_form_field_data);
+    ParsingContext context(fields, GeoIpCountryCode(""), LanguageCode(""),
                            GetActivePatternFile().value());
-    FormFieldParser::ParseStandaloneCVCFields(context, fields_,
+    FormFieldParser::ParseStandaloneCVCFields(context, fields,
                                               field_candidates_map_);
     return field_candidates_map_.size();
   }
 
   int ParseStandaloneEmailFields() {
-    ParsingContext context(fields_, GeoIpCountryCode(""), LanguageCode(""),
+    auto fields = base::ToVector(fields_, &to_form_field_data);
+    ParsingContext context(fields, GeoIpCountryCode(""), LanguageCode(""),
                            GetActivePatternFile().value());
-    FormFieldParser::ParseStandaloneEmailFields(context, fields_,
+    FormFieldParser::ParseStandaloneEmailFields(context, fields,
                                                 field_candidates_map_);
     return field_candidates_map_.size();
   }
 
   int ParseStandaloneLoyaltyCardFields() {
-    ParsingContext context(fields_, GeoIpCountryCode(""), LanguageCode(""),
+    auto fields = base::ToVector(fields_, &to_form_field_data);
+    ParsingContext context(fields, GeoIpCountryCode(""), LanguageCode(""),
                            GetActivePatternFile().value(),
                            GetActiveRegexFeatures());
-    FormFieldParser::ParseStandaloneLoyaltyCardFields(context, fields_,
+    FormFieldParser::ParseStandaloneLoyaltyCardFields(context, fields,
                                                       field_candidates_map_);
     return field_candidates_map_.size();
   }
@@ -135,15 +149,17 @@ TEST_P(MatchTest, Match) {
   SCOPED_TRACE("label = " + base::UTF16ToUTF8(label));
   field->set_label(label);
   for (const auto& pattern : positive_patterns) {
-    ParsingContext context(base::span_from_ref(field), GeoIpCountryCode(""),
-                           LanguageCode(""), GetActivePatternFile().value());
+    ParsingContext context(base::span_from_ref(to_form_field_data(field)),
+                           GeoIpCountryCode(""), LanguageCode(""),
+                           GetActivePatternFile().value());
     SCOPED_TRACE("positive_pattern = " + base::UTF16ToUTF8(pattern));
     EXPECT_TRUE(FormFieldParserTestApi::Match(context, *field, pattern,
                                               {MatchAttribute::kLabel}));
   }
   for (const auto& pattern : negative_patterns) {
-    ParsingContext context(base::span_from_ref(field), GeoIpCountryCode(""),
-                           LanguageCode(""), GetActivePatternFile().value());
+    ParsingContext context(base::span_from_ref(to_form_field_data(field)),
+                           GeoIpCountryCode(""), LanguageCode(""),
+                           GetActivePatternFile().value());
     SCOPED_TRACE("negative_pattern = " + base::UTF16ToUTF8(pattern));
     EXPECT_FALSE(FormFieldParserTestApi::Match(context, *field, pattern,
                                                {MatchAttribute::kLabel}));
@@ -178,7 +194,8 @@ TEST_F(FormFieldParserTest, TestParseableLabels) {
   AddTextFormFieldData("", "not a parseable label", UNKNOWN_TYPE);
   AutofillField* autofill_field = fields_.back().get();
 
-  ParsingContext context(fields_, GeoIpCountryCode(""), LanguageCode(""),
+  ParsingContext context(base::ToVector(fields_, &to_form_field_data),
+                         GeoIpCountryCode(""), LanguageCode(""),
                          GetActivePatternFile().value());
   context.label_overrides[autofill_field->global_id()] = u"First Name";
   EXPECT_TRUE(FormFieldParserTestApi::Match(
@@ -347,14 +364,14 @@ TEST_P(ParseInAnyOrderTest, ParseInAnyOrder) {
   // Must outlive `scanner`.
   auto unowned_fields =
       base::ToVector(fields, [](const std::unique_ptr<AutofillField>& field) {
-        return raw_ptr<AutofillField>(field.get());
+        return raw_ptr<const FormFieldData>(field.get());
       });
 
   // Construct n parsers from `testcase.field_matches_parser`.
   AutofillScanner scanner(unowned_fields);
-  std::vector<raw_ptr<AutofillField>> matched_fields(n);
+  std::vector<raw_ptr<const FormFieldData>> matched_fields(n);
   std::vector<
-      std::pair<raw_ptr<AutofillField>*, base::RepeatingCallback<bool()>>>
+      std::pair<raw_ptr<const FormFieldData>*, base::RepeatingCallback<bool()>>>
       fields_and_parsers;
   for (size_t i = 0; i < n; i++) {
     fields_and_parsers.emplace_back(

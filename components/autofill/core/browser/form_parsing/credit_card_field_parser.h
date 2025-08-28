@@ -17,7 +17,6 @@
 
 namespace autofill {
 
-class AutofillField;
 class AutofillScanner;
 
 class CreditCardFieldParser : public FormFieldParser {
@@ -60,7 +59,7 @@ class CreditCardFieldParser : public FormFieldParser {
   // if there are no hints on what's best. It must be either
   // CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR or CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR.
   static ExpirationDateFormat DetermineExpirationDateFormat(
-      const AutofillField& field,
+      const FormFieldData& field,
       FieldType fallback_type,
       FieldType server_hint,
       FieldType forced_field_type);
@@ -69,7 +68,7 @@ class CreditCardFieldParser : public FormFieldParser {
   // of priority: `forced_field_type` > type derived from heuristically
   // determined signals > `server_hint` > `fallback_type`. The server field
   // types can be UNKOWN_TYPE in which case they are ignored.
-  static FieldType DetermineExpirationYearType(const AutofillField& field,
+  static FieldType DetermineExpirationYearType(const FormFieldData& field,
                                                FieldType fallback_type,
                                                FieldType server_hint,
                                                FieldType forced_field_type);

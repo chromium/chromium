@@ -26,8 +26,8 @@ class FormFieldParserTestApi {
 
   static bool ParseInAnyOrder(
       AutofillScanner* scanner,
-      std::vector<
-          std::pair<raw_ptr<AutofillField>*, base::RepeatingCallback<bool()>>>
+      std::vector<std::pair<raw_ptr<const FormFieldData>*,
+                            base::RepeatingCallback<bool()>>>
           fields_and_parsers) {
     return FormFieldParser::ParseInAnyOrder(scanner, fields_and_parsers);
   }

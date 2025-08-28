@@ -11,11 +11,18 @@
 namespace autofill {
 
 namespace {
+
 void UpdateRanks(std::vector<std::unique_ptr<AutofillField>>& fields) {
   for (size_t i = 0; i < fields.size(); ++i) {
     fields[i]->set_rank(i);
   }
 }
+
+raw_ptr<const FormFieldData> to_form_field_data(
+    const std::unique_ptr<AutofillField>& field) {
+  return field.get();
+}
+
 }  // namespace
 
 FormFieldParserTestBase::FormFieldParserTestBase() = default;
@@ -53,8 +60,8 @@ void FormFieldParserTestBase::AddSelectOneFormFieldData(
     const std::vector<SelectOption>& options,
     FieldType expected_type) {
   AddFormFieldData(FormControlType::kSelectOne, name, label, expected_type);
-  FormFieldData* field_data = fields_.back().get();
-  field_data->set_options(options);
+  FormFieldData& field_data = *fields_.back();
+  field_data.set_options(options);
 }
 
 void FormFieldParserTestBase::AddTextFormFieldData(std::string_view name,
@@ -77,11 +84,12 @@ void FormFieldParserTestBase::ClassifyAndVerify(
   // Must outlive `scanner`.
   auto unowned_fields =
       base::ToVector(fields_, [](const std::unique_ptr<AutofillField>& field) {
-        return raw_ptr<AutofillField>(field.get());
+        return raw_ptr<const FormFieldData>(field.get());
       });
 
   AutofillScanner scanner(unowned_fields);
-  ParsingContext context(fields_, client_country, page_language, pattern_file,
+  ParsingContext context(base::ToVector(fields_, &to_form_field_data),
+                         client_country, page_language, pattern_file,
                          GetActiveRegexFeatures());
   std::unique_ptr<FormFieldParser> field = Parse(context, &scanner);
 
@@ -101,13 +109,14 @@ void FormFieldParserTestBase::ClassifyAndVerifyWithMultipleParses(
     const GeoIpCountryCode& client_country,
     const LanguageCode& page_language) {
   UpdateRanks(fields_);
-  ParsingContext context(fields_, client_country, page_language,
+  ParsingContext context(base::ToVector(fields_, &to_form_field_data),
+                         client_country, page_language,
                          *GetActivePatternFile());
 
   // Must outlive `scanner`.
   auto unowned_fields =
       base::ToVector(fields_, [](const std::unique_ptr<AutofillField>& field) {
-        return raw_ptr<AutofillField>(field.get());
+        return raw_ptr<const FormFieldData>(field.get());
       });
 
   AutofillScanner scanner(unowned_fields);

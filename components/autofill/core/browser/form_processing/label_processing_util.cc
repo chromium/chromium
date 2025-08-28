@@ -10,8 +10,8 @@
 
 #include "base/feature_list.h"
 #include "base/strings/string_split.h"
-#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/form_field_data.h"
 
 namespace autofill {
 
@@ -87,10 +87,10 @@ std::vector<std::u16string_view> GetParseableLabels(
 }
 
 base::flat_map<FieldGlobalId, std::u16string> GetParseableLabels(
-    base::span<const std::unique_ptr<AutofillField>> fields) {
+    base::span<const raw_ptr<const FormFieldData>> fields) {
   std::vector<std::u16string_view> field_labels;
   field_labels.reserve(fields.size());
-  for (const std::unique_ptr<AutofillField>& field : fields) {
+  for (const raw_ptr<const FormFieldData>& field : fields) {
     if (!field->IsTextInputElement() || !field->IsFocusable()) {
       continue;
     }
@@ -106,7 +106,7 @@ base::flat_map<FieldGlobalId, std::u16string> GetParseableLabels(
   // `field_labels[i-1]`, meaning that earlier labels need to be overwritten
   // later.
   auto it = parseable_labels.rbegin();
-  for (const std::unique_ptr<AutofillField>& field : base::Reversed(fields)) {
+  for (const raw_ptr<const FormFieldData>& field : base::Reversed(fields)) {
     if (!field->IsTextInputElement() || !field->IsFocusable()) {
       continue;
     }

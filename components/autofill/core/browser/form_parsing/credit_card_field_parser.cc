@@ -253,7 +253,7 @@ bool CreditCardFieldParser::LikelyCardMonthSelectField(
   if (scanner->IsEnd())
     return false;
 
-  AutofillField* field = scanner->Cursor();
+  const FormFieldData* field = scanner->Cursor();
   if (!MatchesFormControlType(
           field->form_control_type(),
           {FormControlType::kSelectOne, FormControlType::kInputSearch})) {
@@ -287,7 +287,7 @@ bool CreditCardFieldParser::LikelyCardYearSelectField(
   if (scanner->IsEnd())
     return false;
 
-  AutofillField* field = scanner->Cursor();
+  const FormFieldData* field = scanner->Cursor();
   if (!MatchesFormControlType(
           field->form_control_type(),
           {FormControlType::kSelectOne, FormControlType::kInputSearch})) {
@@ -363,7 +363,7 @@ bool CreditCardFieldParser::LikelyCardTypeSelectField(
   if (scanner->IsEnd())
     return false;
 
-  AutofillField* field = scanner->Cursor();
+  const FormFieldData* field = scanner->Cursor();
 
   if (!MatchesFormControlType(
           field->form_control_type(),
@@ -487,8 +487,8 @@ bool CreditCardFieldParser::ParseExpirationDate(ParsingContext& context,
 
   // First try to parse split month/year expiration fields by looking for a
   // pair of select fields that look like month/year.
-  raw_ptr<AutofillField> expiration_month_field;
-  raw_ptr<AutofillField> expiration_year_field;
+  raw_ptr<const FormFieldData> expiration_month_field;
+  raw_ptr<const FormFieldData> expiration_year_field;
   if (ParseInAnyOrder(
           scanner, {{&expiration_month_field,
                      base::BindRepeating(&LikelyCardMonthSelectField, scanner)},
@@ -580,7 +580,7 @@ bool CreditCardFieldParser::ParseExpirationDate(ParsingContext& context,
 
 // static
 FieldType CreditCardFieldParser::DetermineExpirationYearType(
-    const AutofillField& field,
+    const FormFieldData& field,
     FieldType fallback_type,
     FieldType server_hint,
     FieldType forced_field_type) {
@@ -615,7 +615,7 @@ FieldType CreditCardFieldParser::DetermineExpirationYearType(
 
   // For select elements, look for today's year in the list of possible
   // expiration years and search for 4-digit and 2-digit representations.
-  auto OptionsContain = [](const AutofillField& field,
+  auto OptionsContain = [](const FormFieldData& field,
                            const std::u16string& year_needle,
                            const auto& option_projection) {
     // If the <option>s contain single-digits elements, this may lead to false
@@ -699,7 +699,7 @@ bool CreditCardFieldParser::HasExpiration() const {
 // static
 CreditCardFieldParser::ExpirationDateFormat
 CreditCardFieldParser::DetermineExpirationDateFormat(
-    const AutofillField& field,
+    const FormFieldData& field,
     FieldType fallback_type,
     FieldType server_hint,
     FieldType forced_field_type) {

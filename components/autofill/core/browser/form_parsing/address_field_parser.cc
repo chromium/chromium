@@ -48,7 +48,7 @@ std::unique_ptr<FormFieldParser> AddressFieldParser::Parse(
   }
 
   std::unique_ptr<AddressFieldParser> address_field(new AddressFieldParser());
-  const AutofillField* const initial_field = scanner->Cursor();
+  const FormFieldData* const initial_field = scanner->Cursor();
   size_t saved_cursor = scanner->SaveCursor();
 
   // Allow address fields to appear in any order.

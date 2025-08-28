@@ -157,7 +157,7 @@ PhoneFieldParser::GetPhoneGrammars() {
 bool PhoneFieldParser::LikelyAugmentedPhoneCountryCode(
     AutofillScanner* scanner,
     std::optional<FieldAndMatchInfo>* match) {
-  AutofillField* field = scanner->Cursor();
+  const FormFieldData* field = scanner->Cursor();
 
   // Return false if the field is not a selection box.
   if (!MatchesFormControlType(field->form_control_type(),
@@ -321,7 +321,7 @@ void PhoneFieldParser::AddClassifications(
     AddClassification(parsed_phone_fields_[FIELD_PHONE], field_number_type,
                       kBasePhoneParserScore, field_candidates);
   } else {
-    const AutofillField* field = parsed_phone_fields_[FIELD_PHONE]->field;
+    const FormFieldData* field = parsed_phone_fields_[FIELD_PHONE]->field;
     if (field->label().find(u"+") != std::u16string::npos ||
         field->placeholder().find(u"+") != std::u16string::npos ||
         field->aria_description().find(u"+") != std::u16string::npos) {

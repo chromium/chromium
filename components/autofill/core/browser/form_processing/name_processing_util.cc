@@ -14,9 +14,9 @@
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/types/zip.h"
-#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regexes.h"
+#include "components/autofill/core/common/form_field_data.h"
 
 namespace autofill {
 
@@ -91,7 +91,7 @@ void ComputeParseableNames(base::span<std::u16string_view> field_names) {
 }
 
 base::flat_map<FieldGlobalId, std::u16string> GetParseableNames(
-    base::span<const std::unique_ptr<AutofillField>> fields) {
+    base::span<const raw_ptr<const FormFieldData>> fields) {
   std::vector<std::u16string_view> names = base::ToVector(
       fields, [](const auto& f) -> std::u16string_view { return f->name(); });
   ComputeParseableNames(names);

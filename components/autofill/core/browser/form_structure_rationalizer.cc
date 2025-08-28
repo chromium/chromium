@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/containers/contains.h"
+#include "base/containers/to_vector.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
 #include "components/autofill/core/browser/field_type_utils.h"
@@ -1081,7 +1082,10 @@ void FormStructureRationalizer::RationalizeByRationalizationEngine(
     const GeoIpCountryCode& client_country,
     const LanguageCode& language_code,
     LogManager* log_manager) {
-  ParsingContext context(*fields_, client_country, language_code,
+  auto to_form_field_data = [](const std::unique_ptr<AutofillField>& field)
+      -> raw_ptr<const FormFieldData> { return field.get(); };
+  ParsingContext context(base::ToVector(*fields_, to_form_field_data),
+                         client_country, language_code,
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
                          PatternFile::kDefault,
 #else

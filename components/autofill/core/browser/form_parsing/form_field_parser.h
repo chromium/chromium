@@ -29,7 +29,7 @@
 
 namespace autofill {
 
-class AutofillField;
+class FormFieldData;
 class AutofillRegexCache;
 class AutofillScanner;
 class LogManager;
@@ -86,7 +86,7 @@ class RegexMatchesCache {
 // a) environmental information that is needed in many places and b) caches to
 // prevent repetitive work.
 struct ParsingContext {
-  ParsingContext(base::span<const std::unique_ptr<AutofillField>> fields,
+  ParsingContext(base::span<const raw_ptr<const FormFieldData>> fields,
                  GeoIpCountryCode client_country,
                  LanguageCode page_language,
                  PatternFile pattern_file,
@@ -151,7 +151,7 @@ class FormFieldParser {
     // matched or how well the regex matched to improve match prioritisation.
   };
   struct FieldAndMatchInfo {
-    raw_ptr<const AutofillField> field = internal::IsRequired();
+    raw_ptr<const FormFieldData> field = internal::IsRequired();
     MatchInfo match_info = internal::IsRequired();
   };
 
@@ -165,7 +165,7 @@ class FormFieldParser {
   // |field_candidates|.
   static void ParseFormFields(
       ParsingContext& context,
-      const std::vector<std::unique_ptr<AutofillField>>& fields,
+      const std::vector<raw_ptr<const FormFieldData>>& fields,
       bool is_form_tag,
       FieldCandidatesMap& field_candidates);
 
@@ -174,7 +174,7 @@ class FormFieldParser {
   // used as the key into |field_candidates|.
   static void ParseSingleFields(
       ParsingContext& context,
-      const std::vector<std::unique_ptr<AutofillField>>& fields,
+      const std::vector<raw_ptr<const FormFieldData>>& fields,
       FieldCandidatesMap& field_candidates);
 
   // Search for standalone loyalty card fields inside `fields`. Standalone
@@ -183,7 +183,7 @@ class FormFieldParser {
   // also accept emails or other data types
   static void ParseStandaloneLoyaltyCardFields(
       ParsingContext& context,
-      const std::vector<std::unique_ptr<AutofillField>>& fields,
+      const std::vector<raw_ptr<const FormFieldData>>& fields,
       FieldCandidatesMap& field_candidates);
 
   // Search for standalone CVC fields inside `fields`. Standalone CVC fields
@@ -194,7 +194,7 @@ class FormFieldParser {
   // in the form, which is why its parsing logic is extracted to its own method.
   static void ParseStandaloneCVCFields(
       ParsingContext& context,
-      const std::vector<std::unique_ptr<AutofillField>>& fields,
+      const std::vector<raw_ptr<const FormFieldData>>& fields,
       FieldCandidatesMap& field_candidates);
 
   // Search for standalone email fields inside `fields`. Used because email
@@ -203,13 +203,13 @@ class FormFieldParser {
   // enabled.
   static void ParseStandaloneEmailFields(
       ParsingContext& context,
-      const std::vector<std::unique_ptr<AutofillField>>& fields,
+      const std::vector<raw_ptr<const FormFieldData>>& fields,
       FieldCandidatesMap& field_candidates);
 
   // Returns a MatchInfo if `field` matches one of the the passed `patterns`.
   static std::optional<MatchInfo> FieldMatchesMatchPatternRef(
       ParsingContext& context,
-      const AutofillField& field,
+      const FormFieldData& field,
       std::string_view regex_name,
       std::initializer_list<MatchParams (*)(const MatchParams&)> projections =
           {});
@@ -220,7 +220,7 @@ class FormFieldParser {
   //   contexts that don't contain enough fields (e.g. forms with only an
   //   email address).
   static void ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
-      const std::vector<std::unique_ptr<AutofillField>>& fields,
+      const std::vector<raw_ptr<const FormFieldData>>& fields,
       FieldCandidatesMap& field_candidates,
       bool is_form_tag,
       GeoIpCountryCode client_country,
@@ -285,8 +285,8 @@ class FormFieldParser {
   // reset to nullptr and the scanner is rewound to it's original position.
   static bool ParseInAnyOrder(
       AutofillScanner* scanner,
-      std::vector<
-          std::pair<raw_ptr<AutofillField>*, base::RepeatingCallback<bool()>>>
+      std::vector<std::pair<raw_ptr<const FormFieldData>*,
+                            base::RepeatingCallback<bool()>>>
           fields_and_parsers);
 
   // Adds an association between a `match` and a `type` into `field_candidates`.
@@ -306,7 +306,7 @@ class FormFieldParser {
  protected:
   // Derived classes must implement this interface to supply field type
   // information.  |ParseFormFields| coordinates the parsing and extraction
-  // of types from an input vector of |AutofillField| objects and delegates
+  // of types from an input vector of |FormFieldData| objects and delegates
   // the type extraction via this method.
   virtual void AddClassifications(
       FieldCandidatesMap& field_candidates) const = 0;
@@ -320,14 +320,14 @@ class FormFieldParser {
 
   // Removes checkable fields and returns fields to be processed for field
   // detection.
-  static std::vector<raw_ptr<AutofillField>> RemoveCheckableFields(
-      const std::vector<std::unique_ptr<AutofillField>>& fields);
+  static std::vector<raw_ptr<const FormFieldData>> RemoveCheckableFields(
+      const std::vector<raw_ptr<const FormFieldData>>& fields);
 
   // Matches the regular expression `pattern` against the specified
   // `match_attributes` of the `field`.
   static std::optional<MatchInfo> Match(
       ParsingContext& context,
-      const AutofillField& field,
+      const FormFieldData& field,
       std::u16string_view pattern,
       DenseSet<MatchAttribute> match_attributes,
       std::string_view regex_name,
@@ -336,12 +336,12 @@ class FormFieldParser {
   // Like `Match()`, but only for the label or name of the field.
   static std::optional<MatchInfo> MatchInLabel(
       ParsingContext& context,
-      const AutofillField& field,
+      const FormFieldData& field,
       std::u16string_view pattern,
       std::string_view regex_name,
       bool is_negative_pattern = false);
   static std::optional<MatchInfo> MatchInName(ParsingContext& context,
-                                              const AutofillField& field,
+                                              const FormFieldData& field,
                                               std::u16string_view pattern,
                                               std::string_view regex_name,
                                               bool is_negative_pattern = false);
@@ -355,7 +355,7 @@ class FormFieldParser {
   static void ParseFormFieldsPass(
       ParseFunction parse,
       ParsingContext& context,
-      const std::vector<raw_ptr<AutofillField>>& fields,
+      const std::vector<raw_ptr<const FormFieldData>>& fields,
       FieldCandidatesMap& field_candidates);
 };
 
