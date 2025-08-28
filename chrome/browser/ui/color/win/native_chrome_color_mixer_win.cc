@@ -27,45 +27,21 @@
 #include "ui/views/views_features.h"
 
 namespace {
-// This class encapsulates much of the same logic from ThemeHelperWin pertaining
-// to the calculation of frame colors on Windows 8, 10 and up. Once the
-// ColorProvider is permanently switched on, all the relevant code from
-// ThemeHelperWin can be deleted.
-class FrameColorHelper {
- public:
-  FrameColorHelper();
-  FrameColorHelper(const FrameColorHelper&) = delete;
-  FrameColorHelper& operator=(const FrameColorHelper&) = delete;
-  ~FrameColorHelper() = default;
 
-  void AddNativeChromeColors(ui::ColorMixer& mixer,
-                             const ui::ColorProviderKey& key) const;
-  void AddBorderAccentColors(ui::ColorMixer& mixer) const;
-
-  static FrameColorHelper* Get();
-
-  static void UpdateUserColorWhenAccentColorStateChanges();
-
- private:
-  // Returns the Tint for the given |id|. If there is no tint, the identity tint
-  // {-1, -1, -1} is returned and won't tint the color on which it is used.
-  color_utils::HSL GetTint(int id, const ui::ColorProviderKey& key) const;
-
-  // Callback executed when the accent color is updated. This re-reads the
-  // accent color and updates the NativeTheme instances.
-  void OnAccentColorUpdated();
-
-  // Re-reads the accent colors and updates member variables.
-  void FetchAccentColors();
-};
-
-FrameColorHelper::FrameColorHelper() {
-  FetchAccentColors();
+color_utils::HSL GetTint(int id, const ui::ColorProviderKey& key) {
+  color_utils::HSL hsl;
+  if (key.custom_theme && key.custom_theme->GetTint(id, &hsl)) {
+    return hsl;
+  }
+  // Always pass false for |incognito| here since the ColorProvider is treating
+  // incognito mode as dark mode. If this needs to change, that information will
+  // need to propagate into the ColorProviderKey.
+  return ThemeProperties::GetDefaultTint(
+      id, false, key.color_mode == ui::ColorProviderKey::ColorMode::kDark);
 }
 
-void FrameColorHelper::AddNativeChromeColors(
-    ui::ColorMixer& mixer,
-    const ui::ColorProviderKey& key) const {
+void AddNativeChromeColors(ui::ColorMixer& mixer,
+                           const ui::ColorProviderKey& key) {
   using TP = ThemeProperties;
   using ColorMode = ui::ColorProviderKey::ColorMode;
 
@@ -172,6 +148,27 @@ void FrameColorHelper::AddNativeChromeColors(
   }
 }
 
+// Updates the NativeTheme's user_color to reflect the system accent color.
+// TODO(crbug.com/40280436): Explore moving logic into NativeThemeWin.
+void UpdateUserColor() {
+  const auto accent_color = ui::AccentColorObserver::Get()->accent_color();
+  ui::NativeTheme::GetInstanceForNativeUi()->set_user_color(accent_color);
+  ui::NativeTheme::GetInstanceForWeb()->set_user_color(accent_color);
+}
+
+void OnAccentColorUpdated() {
+  UpdateUserColor();
+  ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
+  ui::NativeTheme::GetInstanceForWeb()->NotifyOnNativeThemeUpdated();
+}
+
+void UpdateUserColorWhenAccentColorStateChanges() {
+  UpdateUserColor();
+  static base::NoDestructor<base::CallbackListSubscription> subscription(
+      ui::AccentColorObserver::Get()->Subscribe(
+          base::BindRepeating(&OnAccentColorUpdated)));
+}
+
 SkColor GetAccentBorderColor() {
   if (const auto* const accent_color_observer = ui::AccentColorObserver::Get();
       accent_color_observer->use_dwm_frame_color() &&
@@ -185,54 +182,10 @@ SkColor GetAccentBorderColor() {
   return pre_1809 ? SK_ColorWHITE : SkColorSetARGB(0xa8, 0x26, 0x26, 0x26);
 }
 
-void FrameColorHelper::AddBorderAccentColors(ui::ColorMixer& mixer) const {
+void AddBorderAccentColors(ui::ColorMixer& mixer) {
   mixer[kColorAccentBorderActive] = {GetAccentBorderColor()};
   // In Windows 10, native inactive borders are #555555 with 50% alpha.
   mixer[kColorAccentBorderInactive] = {SkColorSetARGB(0x80, 0x55, 0x55, 0x55)};
-}
-
-// static
-FrameColorHelper* FrameColorHelper::Get() {
-  static FrameColorHelper g_frame_color_helper;
-  return &g_frame_color_helper;
-}
-
-// static
-void FrameColorHelper::UpdateUserColorWhenAccentColorStateChanges() {
-  static base::NoDestructor<base::CallbackListSubscription> subscription(
-      ui::AccentColorObserver::Get()->Subscribe(
-          base::BindRepeating(&FrameColorHelper::OnAccentColorUpdated,
-                              base::Unretained(FrameColorHelper::Get()))));
-}
-
-color_utils::HSL FrameColorHelper::GetTint(
-    int id,
-    const ui::ColorProviderKey& key) const {
-  color_utils::HSL hsl;
-  if (key.custom_theme && key.custom_theme->GetTint(id, &hsl)) {
-    return hsl;
-  }
-  // Always pass false for |incognito| here since the ColorProvider is treating
-  // incognito mode as dark mode. If this needs to change, that information will
-  // need to propagate into the ColorProviderKey.
-  return ThemeProperties::GetDefaultTint(
-      id, false, key.color_mode == ui::ColorProviderKey::ColorMode::kDark);
-}
-
-void FrameColorHelper::OnAccentColorUpdated() {
-  FetchAccentColors();
-  ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
-  ui::NativeTheme::GetInstanceForWeb()->NotifyOnNativeThemeUpdated();
-}
-
-void FrameColorHelper::FetchAccentColors() {
-  // Update the NativeTheme's user_color to reflect the system accent color.
-  // TODO(crbug.com/40280436): Explore moving FrameColorHelper logic into
-  // NativeThemeWin.
-  const auto* accent_color_observer = ui::AccentColorObserver::Get();
-  const auto accent_color = accent_color_observer->accent_color();
-  ui::NativeTheme::GetInstanceForNativeUi()->set_user_color(accent_color);
-  ui::NativeTheme::GetInstanceForWeb()->set_user_color(accent_color);
 }
 
 ui::ColorTransform GetCaptionForegroundColor(
@@ -257,14 +210,14 @@ ui::ColorTransform GetCaptionForegroundColor(
 
 void AddNativeChromeColorMixer(ui::ColorProvider* provider,
                                const ui::ColorProviderKey& key) {
-  FrameColorHelper::UpdateUserColorWhenAccentColorStateChanges();
+  UpdateUserColorWhenAccentColorStateChanges();
 
   ui::ColorMixer& mixer = provider->AddMixer();
 
   // NOTE: These cases are always handled, even on Win7, in order to ensure the
   // the color provider redirection tests function. Win7 callers should never
   // actually pass in these IDs.
-  FrameColorHelper::Get()->AddBorderAccentColors(mixer);
+  AddBorderAccentColors(mixer);
 
   mixer[kColorCaptionButtonForegroundActive] =
       GetCaptionForegroundColor(kColorWindowControlButtonBackgroundActive);
@@ -288,7 +241,7 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   }
 
   if (key.contrast_mode != ui::ColorProviderKey::ContrastMode::kHigh) {
-    FrameColorHelper::Get()->AddNativeChromeColors(mixer, key);
+    AddNativeChromeColors(mixer, key);
     return;
   }
 
