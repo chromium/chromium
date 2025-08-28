@@ -168,7 +168,6 @@ class FormStructureBrowserTest
       {.disable_server_communication = true}};
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
-  std::unique_ptr<AutofillClient> autofill_client_;
   AutofillAgent* autofill_agent_;
   std::unique_ptr<TestAutofillManagerInjector<TestAutofillManager>>
       autofill_manager_injector_;
@@ -252,8 +251,7 @@ void FormStructureBrowserTest::SetUp() {
                                                providers:@[ autofill_agent_ ]];
 
   InfoBarManagerImpl::CreateForWebState(web_state());
-  autofill_client_ =
-      std::make_unique<TestAutofillClientIOS>(web_state(), autofill_agent_);
+  TestAutofillClientIOS::CreateForWebState(web_state(), autofill_agent_);
 
   autofill_manager_injector_ =
       std::make_unique<TestAutofillManagerInjector<TestAutofillManager>>(

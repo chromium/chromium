@@ -165,7 +165,7 @@ class AutofillAgentTests : public web::WebTest {
         [[AutofillAgent alloc] initWithPrefService:prefs_.get()
                                           webState:&fake_web_state_];
 
-    client_ = std::make_unique<autofill::TestAutofillClientIOS>(
+    autofill::TestAutofillClientIOS::CreateForWebState(
         &fake_web_state_,
         should_set_autofill_driver_ios_bridge() ? autofill_agent_ : nil);
   }
@@ -188,9 +188,6 @@ class AutofillAgentTests : public web::WebTest {
   // the latter of which can be de-allocated as part of de-allocating the
   // fake_web_state_.
   std::unique_ptr<PrefService> prefs_;
-  // The client_ needs to outlive the fake_web_state_, which owns the
-  // frames.
-  std::unique_ptr<autofill::TestAutofillClientIOS> client_;
   web::FakeWebState fake_web_state_;
   raw_ptr<web::FakeWebFrame> fake_main_frame_ = nullptr;
   raw_ptr<web::FakeWebFramesManager> fake_web_frames_manager_ = nullptr;
@@ -808,9 +805,9 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearFormWithGPay) {
 class AutofillAgentTestFrameInitializationOrderFrames
     : public AutofillAgentTests {
  public:
-  // If we do pass `autofill_agent_` to `client_` (which would then pass it on
-  // to the AutofillDriverIOS objects), then the test fixture crashes during
-  // destruction.
+  // If we do pass `autofill_agent_` to `autofill::TestAutofillClientIOS`
+  // (which would then pass it on to the AutofillDriverIOS objects), then
+  // the test fixture crashes during destruction.
   //
   // TODO(crbug.com/40100455): Understand what happens at destruction and fix
   // this. Then eliminate should_set_autofill_driver_ios_bridge().

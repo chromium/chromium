@@ -8,7 +8,6 @@
 #import "components/autofill/core/common/autofill_test_utils.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
-#import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/password_manager/core/browser/features/password_features.h"
@@ -76,17 +75,8 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
     infobars::InfoBarManager* infobar_manager =
         InfoBarManagerImpl::FromWebState(web_state_.get());
 
-    // The AutofillClient has strange dependencies:
-    // - It must be initialized *after* `web_state_` because it depends on
-    //   `web_state_`.
-    // - It must be destroyed *after* `web_state_` because AutofillDriverIOS
-    //   holds a reference to it and is destroyed together with `web_state_`.
-    //
-    // That's why we initialize it in the constructor but put it in the
-    // declaration order above `web_state_`.
-    autofill_client_ = std::make_unique<
-        autofill::WithFakedFromWebState<autofill::ChromeAutofillClientIOS>>(
-        profile_.get(), web_state_.get(), infobar_manager, autofill_agent_);
+    autofill::ChromeAutofillClientIOS::CreateForWebState(
+        web_state_.get(), profile_.get(), infobar_manager, autofill_agent_);
   }
 
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
@@ -95,7 +85,6 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
       {.disable_server_communication = true}};
   web::ScopedTestingWebClient web_client_;
   std::unique_ptr<TestProfileIOS> profile_;
-  std::unique_ptr<autofill::AutofillClient> autofill_client_;
   std::unique_ptr<web::WebState> web_state_;
   raw_ptr<AutofillBottomSheetTabHelper> helper_;
   AutofillAgent* autofill_agent_;

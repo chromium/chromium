@@ -29,11 +29,11 @@
 #import "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "components/sync/service/sync_service.h"
+#import "ios/web/public/browser_state.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web_view/internal/app/application_context.h"
-#import "ios/web_view/internal/autofill/cwv_autofill_controller+testing.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_controller_internal.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_form_internal.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_profile_internal.h"
@@ -65,9 +65,6 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
 
   // Autofill agent associated with |webState|.
   AutofillAgent* _autofillAgent;
-
-  // Autofill client associated with |webState|.
-  std::unique_ptr<autofill::WebViewAutofillClientIOS> _autofillClient;
 
   // The |webState| which this autofill controller should observe.
   web::WebState* _webState;
@@ -110,26 +107,6 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
                (std::unique_ptr<ios_web_view::WebViewPasswordManagerClient>)
                    passwordManagerClient
               passwordController:(SharedPasswordController*)passwordController {
-  self = [self initWithWebState:webState
-          autofillClientForTest:nullptr
-                  autofillAgent:autofillAgent
-                passwordManager:std::move(passwordManager)
-          passwordManagerClient:std::move(passwordManagerClient)
-             passwordController:passwordController];
-  return self;
-}
-
-- (instancetype)
-         initWithWebState:(web::WebState*)webState
-    autofillClientForTest:(std::unique_ptr<autofill::WebViewAutofillClientIOS>)
-                              autofillClientForTest
-            autofillAgent:(AutofillAgent*)autofillAgent
-          passwordManager:(std::unique_ptr<password_manager::PasswordManager>)
-                              passwordManager
-    passwordManagerClient:
-        (std::unique_ptr<ios_web_view::WebViewPasswordManagerClient>)
-            passwordManagerClient
-       passwordController:(SharedPasswordController*)passwordController {
   self = [super init];
   if (self) {
     DCHECK(webState);
@@ -144,10 +121,12 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
     _formActivityObserverBridge =
         std::make_unique<autofill::FormActivityObserverBridge>(webState, self);
 
-    _autofillClient =
-        autofillClientForTest
-            ? std::move(autofillClientForTest)
-            : autofill::WebViewAutofillClientIOS::Create(_webState, self);
+    // Creating the autofill::WebViewAutofillClientIOS instance will do nothing
+    // if a test has installed one before creating the CWVAutofillController.
+    autofill::WebViewAutofillClientIOS::CreateForWebState(
+        _webState, self,
+        ios_web_view::WebViewBrowserState::FromBrowserState(
+            _webState->GetBrowserState()));
 
     _passwordManagerClient = std::move(passwordManagerClient);
     _passwordManagerClient->set_bridge(self);
@@ -170,7 +149,11 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
 #pragma mark - Public Methods
 
 - (autofill::WebViewAutofillClientIOS*)autofillClient {
-  return _autofillClient.get();
+  if (!_webState) {
+    return nullptr;
+  }
+
+  return autofill::WebViewAutofillClientIOS::FromWebState(_webState);
 }
 
 - (void)clearFormWithName:(NSString*)formName
@@ -647,7 +630,6 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
 - (void)webStateDestroyed:(web::WebState*)webState {
   DCHECK_EQ(_webState, webState);
   _formActivityObserverBridge.reset();
-  _autofillClient.reset();
   _webState->RemoveObserver(_webStateObserverBridge.get());
   _webStateObserverBridge.reset();
   _passwordManager.reset();

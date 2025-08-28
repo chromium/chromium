@@ -49,12 +49,11 @@
                                    browser:browser];
   if (self) {
     _baseNavigationController = navigationController;
-    // TODO(crbug.com/40714201): Use AutofillClientIOS::FromWebState() so that
-    // tests can easily inject their AutofillClient.
+    // TODO(crbug.com/40714201): Some tests install an AutofillClientIOS that
+    // does not sub-class ChromeAutofillClientIOS making this unsafe.
     autofill::ChromeAutofillClientIOS* client =
-        AutofillTabHelper::FromWebState(
-            browser->GetWebStateList()->GetActiveWebState())
-            ->autofill_client();
+        autofill::ChromeAutofillClientIOS::FromWebState(
+            browser->GetWebStateList()->GetActiveWebState());
     CHECK(client);
     auto* paymentsClient = client->GetPaymentsAutofillClient();
     CHECK(paymentsClient);

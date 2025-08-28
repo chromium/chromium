@@ -431,8 +431,8 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
     autofill_agent_ = [[AutofillAgent alloc] initWithPrefService:prefs_.get()
                                                         webState:web_state()];
 
-    autofill_client_ = std::make_unique<autofill::TestAutofillClientIOS>(
-        web_state(), autofill_agent_);
+    autofill::TestAutofillClientIOS::CreateForWebState(web_state(),
+                                                       autofill_agent_);
 
     // Password autofill agent needs to exist before any call to fill data.
     autofill::PasswordAutofillAgent::CreateForWebState(web_state(),
@@ -577,7 +577,8 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
     GURL url = test_server_.GetURL("/testpage");
     web::test::LoadUrl(web_state(), url);
     web_state()->WasShown();
-    autofill_client_->set_last_committed_primary_main_frame_url(url);
+    autofill::TestAutofillClientIOS::FromWebState(web_state())
+        ->set_last_committed_primary_main_frame_url(url);
   }
 
   // Returns the frame that corresponds to `frame_id`.
@@ -672,7 +673,6 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
   std::unique_ptr<TestAutofillManagerInjector<TestAutofillManager>>
       autofill_manager_injector_;
   std::unique_ptr<PrefService> prefs_;
-  std::unique_ptr<autofill::TestAutofillClientIOS> autofill_client_;
   AutofillAgent* autofill_agent_;
   autofill::MockPasswordAutofillAgentDelegate delegate_mock_;
 

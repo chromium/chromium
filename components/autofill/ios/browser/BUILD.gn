@@ -13,6 +13,7 @@ source_set("browser") {
     "autofill_client_ios.h",
     "autofill_client_ios.mm",
     "autofill_client_ios_bridge.h",
+    "autofill_client_ios_mixin.h",
     "autofill_driver_ios.h",
     "autofill_driver_ios.mm",
     "autofill_driver_ios_bridge.h",

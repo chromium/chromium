@@ -180,8 +180,8 @@ class SharedPasswordControllerTest : public PlatformTest {
     web_state_.SetWebFramesManager(content_world,
                                    std::move(web_frames_manager));
 
-    autofill_client_ = std::make_unique<autofill::TestAutofillClientIOS>(
-        &web_state_, /*bridge=*/nil);
+    autofill::TestAutofillClientIOS::CreateForWebState(&web_state_,
+                                                       /*bridge=*/nil);
     // The manager injector must be created before creating the controller to
     // make sure it can exchange the manager before the controller starts
     // observing it.
@@ -248,7 +248,6 @@ class SharedPasswordControllerTest : public PlatformTest {
 
   base::test::TaskEnvironment task_environment_;
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
-  std::unique_ptr<autofill::TestAutofillClientIOS> autofill_client_;
   std::unique_ptr<TestAutofillManagerInjector<TestBrowserAutofillManager>>
       autofill_manager_injector_;
   web::FakeWebState web_state_;
@@ -1210,8 +1209,8 @@ class SharedPasswordControllerTestWithRealSuggestionHelper
 
     controller_.delegate = delegate_;
 
-    autofill_client_ = std::make_unique<autofill::TestAutofillClientIOS>(
-        &web_state_, /*bridge=*/nil);
+    autofill::TestAutofillClientIOS::CreateForWebState(&web_state_,
+                                                       /*bridge=*/nil);
 
     web_state_.SetCurrentURL(GURL(kTestURL));
 
@@ -1237,7 +1236,6 @@ class SharedPasswordControllerTestWithRealSuggestionHelper
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<autofill::TestAutofillClientIOS> autofill_client_;
   web::FakeWebState web_state_;
   raw_ptr<web::FakeWebFramesManager> web_frames_manager_;
   testing::StrictMock<MockPasswordManager> password_manager_;

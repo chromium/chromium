@@ -21,7 +21,7 @@
 #import "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
 #import "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
 #import "components/autofill/core/browser/strike_databases/strike_database.h"
-#import "components/autofill/ios/browser/autofill_client_ios.h"
+#import "components/autofill/ios/browser/autofill_client_ios_mixin.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_bridge.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/prefs/pref_service.h"
@@ -41,58 +41,9 @@ class IOSWebViewPaymentsAutofillClient;
 }  // namespace payments
 
 // WebView implementation of AutofillClient.
-//
-// The argument why it satisfies the AutofillClientIOS contract is lengthy.
-//
-// Firstly, observe that
-// - WebState is an instance variable of CWVWebView and
-// - WebViewAutofillClientIOS is indirectly an implicitly-`strong` property of
-//   CWVWebView.
-//
-// There are multiple ways of destruction of CWVWebView.
-//
-// - Case 1: CWVWebView's `shutDown` is called before `dealloc`.
-//   Then ~WebStateImpl() first notifies WebStateDestroyed(), which leads to
-//   potentially two calls of AutofillDriverIOSFactory::WebStateDestroyed()
-//   (whose relative ordering isn't obvious):
-//   (a) AutofillDriverIOSFactory is notified directly, and
-//   (b) CWVAutofillController is notified, which calls
-//       ~WebViewAutofillClientIOS(), which in turn calls
-//       AutofillDriverIOSFactory::WebStateDestroyed().
-//   Since AutofillDriverIOSFactory::WebStateDestroyed() removes itself as
-//   observer, (a) cannot happen after (b). So either only (b) happens or (a)
-//   happens before (b).
-//   At the time of (b), all members of WebViewAutofillClientIOS are still alive
-//   and web_state() is valid, so the AutofillClientIOS contract is satisfied.
-//
-// - Case 2: CWVWebView's `dealloc` is called without `shutDown`.
-//   Then ~WebViewAutofillClientIOS() may be called before, during, or after
-//   ~WebStateImpl().
-//   If it is called during or after ~WebStateImpl(), the argument from Case 1
-//   applies.
-//   If it is called before ~WebStateImpl(), then ~WebViewAutofillClientIOS()
-//   calls AutofillDriverIOSFactory::WebStateDestroyed(), so the
-//   AutofillClientIOS contract is satisfied.
-class WebViewAutofillClientIOS : public AutofillClientIOS {
+class WebViewAutofillClientIOS
+    : public AutofillClientIOSMixin<WebViewAutofillClientIOS> {
  public:
-  static std::unique_ptr<WebViewAutofillClientIOS> Create(
-      web::WebState* web_state,
-      id<CWVAutofillClientIOSBridge, AutofillDriverIOSBridge> bridge);
-
-  WebViewAutofillClientIOS(
-      PrefService* pref_service,
-      PersonalDataManager* personal_data_manager,
-      AutocompleteHistoryManager* autocomplete_history_manager,
-      web::WebState* web_state,
-      id<CWVAutofillClientIOSBridge, AutofillDriverIOSBridge> bridge,
-      signin::IdentityManager* identity_manager,
-      StrikeDatabase* strike_database,
-      syncer::SyncService* sync_service,
-      LogRouter* log_router);
-
-  WebViewAutofillClientIOS(const WebViewAutofillClientIOS&) = delete;
-  WebViewAutofillClientIOS& operator=(const WebViewAutofillClientIOS&) = delete;
-
   ~WebViewAutofillClientIOS() override;
 
   // AutofillClient:
@@ -151,6 +102,24 @@ class WebViewAutofillClientIOS : public AutofillClientIOS {
   LogManager* GetCurrentLogManager() override;
 
  private:
+  friend class AutofillClientIOSMixin<WebViewAutofillClientIOS>;
+
+  WebViewAutofillClientIOS(
+      web::WebState* web_state,
+      id<CWVAutofillClientIOSBridge, AutofillDriverIOSBridge> bridge,
+      ios_web_view::WebViewBrowserState* browser_state);
+
+  WebViewAutofillClientIOS(
+      web::WebState* web_state,
+      id<CWVAutofillClientIOSBridge, AutofillDriverIOSBridge> bridge,
+      PrefService* pref_service,
+      PersonalDataManager* personal_data_manager,
+      AutocompleteHistoryManager* autocomplete_history_manager,
+      signin::IdentityManager* identity_manager,
+      StrikeDatabase* strike_database,
+      syncer::SyncService* sync_service,
+      LogRouter* log_router);
+
   __weak id<CWVAutofillClientIOSBridge> bridge_;
   raw_ptr<PrefService> pref_service_;
   std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;

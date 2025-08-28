@@ -36,40 +36,38 @@
 
 namespace autofill {
 
-// static
-std::unique_ptr<WebViewAutofillClientIOS> WebViewAutofillClientIOS::Create(
+WebViewAutofillClientIOS::WebViewAutofillClientIOS(
     web::WebState* web_state,
-    id<CWVAutofillClientIOSBridge, AutofillDriverIOSBridge> bridge) {
-  auto* browser_state = ios_web_view::WebViewBrowserState::FromBrowserState(
-      web_state->GetBrowserState());
-  return std::make_unique<autofill::WebViewAutofillClientIOS>(
-      browser_state->GetPrefs(),
-      ios_web_view::WebViewPersonalDataManagerFactory::GetForBrowserState(
-          browser_state->GetRecordingBrowserState()),
-      ios_web_view::WebViewAutocompleteHistoryManagerFactory::
-          GetForBrowserState(browser_state),
-      web_state, bridge,
-      ios_web_view::WebViewIdentityManagerFactory::GetForBrowserState(
-          browser_state->GetRecordingBrowserState()),
-      ios_web_view::WebViewStrikeDatabaseFactory::GetForBrowserState(
-          browser_state->GetRecordingBrowserState()),
-      ios_web_view::WebViewSyncServiceFactory::GetForBrowserState(
-          browser_state),
-      autofill::WebViewAutofillLogRouterFactory::GetForBrowserState(
-          browser_state));
-}
+    id<CWVAutofillClientIOSBridge, AutofillDriverIOSBridge> bridge,
+    ios_web_view::WebViewBrowserState* browser_state)
+    : WebViewAutofillClientIOS(
+          web_state,
+          bridge,
+          browser_state->GetPrefs(),
+          ios_web_view::WebViewPersonalDataManagerFactory::GetForBrowserState(
+              browser_state->GetRecordingBrowserState()),
+          ios_web_view::WebViewAutocompleteHistoryManagerFactory::
+              GetForBrowserState(browser_state),
+          ios_web_view::WebViewIdentityManagerFactory::GetForBrowserState(
+              browser_state->GetRecordingBrowserState()),
+          ios_web_view::WebViewStrikeDatabaseFactory::GetForBrowserState(
+              browser_state->GetRecordingBrowserState()),
+          ios_web_view::WebViewSyncServiceFactory::GetForBrowserState(
+              browser_state),
+          autofill::WebViewAutofillLogRouterFactory::GetForBrowserState(
+              browser_state)) {}
 
 WebViewAutofillClientIOS::WebViewAutofillClientIOS(
+    web::WebState* web_state,
+    id<CWVAutofillClientIOSBridge, AutofillDriverIOSBridge> bridge,
     PrefService* pref_service,
     PersonalDataManager* personal_data_manager,
     AutocompleteHistoryManager* autocomplete_history_manager,
-    web::WebState* web_state,
-    id<CWVAutofillClientIOSBridge, AutofillDriverIOSBridge> bridge,
     signin::IdentityManager* identity_manager,
     StrikeDatabase* strike_database,
     syncer::SyncService* sync_service,
     LogRouter* log_router)
-    : AutofillClientIOS(web_state, bridge),
+    : AutofillClientIOSMixin<WebViewAutofillClientIOS>(web_state, bridge),
       bridge_(bridge),
       pref_service_(pref_service),
       personal_data_manager_(personal_data_manager),
@@ -81,13 +79,6 @@ WebViewAutofillClientIOS::WebViewAutofillClientIOS(
 
 WebViewAutofillClientIOS::~WebViewAutofillClientIOS() {
   HideAutofillSuggestions(SuggestionHidingReason::kTabGone);
-  if (web_state()) {
-    // If web_state() is still valid, WebStateDestroyed() possibly hasn't been
-    // called yet. To meet the AutofillClientIOS contract, we call it. See the
-    // WebViewAutofillClientIOS class-level documentation.
-    static_cast<web::WebStateObserver&>(GetAutofillDriverFactory())
-        .WebStateDestroyed(web_state());
-  }
 }
 
 base::WeakPtr<AutofillClient> WebViewAutofillClientIOS::GetWeakPtr() {

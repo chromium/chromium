@@ -7,6 +7,7 @@
 
 #import "components/autofill/core/browser/foundations/test_autofill_client.h"
 #import "components/autofill/ios/browser/autofill_client_ios.h"
+#import "components/autofill/ios/browser/autofill_client_ios_mixin.h"
 
 namespace web {
 class WebState;
@@ -14,30 +15,23 @@ class WebState;
 
 namespace autofill {
 
-// Mixin that registers `T` with a test-only registry so that
-// AutofillClientIOS::FromWebState() finds `T`.
-template <typename T>
-  requires(std::derived_from<T, AutofillClientIOS>)
-class WithFakedFromWebState : public T {
- public:
-  template <typename... Args>
-  explicit WithFakedFromWebState(Args&&... args)
-      : T(std::forward<Args>(args)...) {}
-
-  ~WithFakedFromWebState() override {
-    if (T::web_state()) {
-      // The AutofillClientIOS contract requires a call of
-      // AutofillDriverIOSFactory::WebStateDestroyed() before any members of the
-      // client are destroyed.
-      static_cast<web::WebStateObserver&>(T::GetAutofillDriverFactory())
-          .WebStateDestroyed(T::web_state());
-    }
-  }
-};
-
 // A variant of TestAutofillClient that is be associated with a web::WebState.
-using TestAutofillClientIOS =
-    WithFakedFromWebState<TestAutofillClientTemplate<AutofillClientIOS>>;
+class TestAutofillClientIOS
+    : public AutofillClientIOSMixin<
+          TestAutofillClientIOS,
+          TestAutofillClientTemplate<AutofillClientIOS>> {
+ private:
+  friend class AutofillClientIOSMixin<
+      TestAutofillClientIOS,
+      TestAutofillClientTemplate<AutofillClientIOS>>;
+
+  TestAutofillClientIOS(web::WebState* web_state,
+                        id<AutofillDriverIOSBridge> bridge)
+      : AutofillClientIOSMixin<TestAutofillClientIOS,
+                               TestAutofillClientTemplate<AutofillClientIOS>>(
+            web_state,
+            bridge) {}
+};
 
 }  // namespace autofill
 

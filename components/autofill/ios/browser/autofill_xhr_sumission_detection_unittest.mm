@@ -73,8 +73,7 @@ class AutofillXHRSubmissionDetectionTest : public PlatformTest {
 
     // Driver factory needs to exist before any call to
     // `AutofillDriverIOS::FromWebStateAndWebFrame`, or we crash.
-    autofill_client_ =
-        std::make_unique<TestAutofillClientIOS>(&web_state_, /*bridge=*/nil);
+    TestAutofillClientIOS::CreateForWebState(&web_state_, /*bridge=*/nil);
 
     // Replace AutofillManager with the test implementation.
     autofill_manager_injector_ =
@@ -101,7 +100,6 @@ class AutofillXHRSubmissionDetectionTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestAutofillClientIOS> autofill_client_;
   web::FakeWebState web_state_;
   raw_ptr<web::FakeWebFramesManager> web_frames_manager_;
   std::unique_ptr<TestAutofillManagerInjector<TestingAutofillManager>>

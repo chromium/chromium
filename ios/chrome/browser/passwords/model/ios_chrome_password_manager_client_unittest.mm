@@ -205,9 +205,8 @@ TEST_F(IOSChromePasswordManagerClientTest,
       kPasswordManagerEnableCrowdsourcingUploads};
 
   InfoBarManagerImpl::CreateForWebState(web_state_.get());
-  auto autofill_client = std::make_unique<
-      autofill::WithFakedFromWebState<autofill::ChromeAutofillClientIOS>>(
-      profile_.get(), web_state_.get(),
+  autofill::ChromeAutofillClientIOS::CreateForWebState(
+      web_state_.get(), profile_.get(),
       InfoBarManagerImpl::FromWebState(web_state_.get()), nil);
 
   PasswordManagerClient* client = passwordController_.passwordManagerClient;
@@ -227,9 +226,8 @@ TEST_F(IOSChromePasswordManagerClientTest,
       kPasswordManagerEnableCrowdsourcingUploads);
 
   InfoBarManagerImpl::CreateForWebState(web_state_.get());
-  auto autofill_client = std::make_unique<
-      autofill::WithFakedFromWebState<autofill::ChromeAutofillClientIOS>>(
-      profile_.get(), web_state_.get(),
+  autofill::ChromeAutofillClientIOS::CreateForWebState(
+      web_state_.get(), profile_.get(),
       InfoBarManagerImpl::FromWebState(web_state_.get()), nil);
 
   PasswordManagerClient* client = passwordController_.passwordManagerClient;

@@ -17,6 +17,7 @@
 #import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
+#import "components/autofill/ios/browser/autofill_client_ios_mixin.h"
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
@@ -122,23 +123,28 @@ namespace {
 using ::testing::_;
 
 class TestChromeAutofillClient
-    : public WithFakedFromWebState<ChromeAutofillClientIOS> {
+    : public AutofillClientIOSMixin<TestChromeAutofillClient,
+                                    ChromeAutofillClientIOS> {
  public:
-  explicit TestChromeAutofillClient(ProfileIOS* profile,
-                                    web::WebState* web_state,
-                                    infobars::InfoBarManager* infobar_manager,
-                                    AutofillAgent* autofill_agent)
-      : WithFakedFromWebState<ChromeAutofillClientIOS>(profile,
-                                                       web_state,
-                                                       infobar_manager,
-                                                       autofill_agent) {
-  }
-
   void RemoveAutofillSaveCardInfoBar() override {
     removed_save_card_infobar_ = true;
   }
 
   bool DidRemoveSaveCardInfobar() { return removed_save_card_infobar_; }
+
+ private:
+  friend class AutofillClientIOSMixin<TestChromeAutofillClient,
+                                      ChromeAutofillClientIOS>;
+
+  TestChromeAutofillClient(web::WebState* web_state,
+                           ProfileIOS* profile,
+                           infobars::InfoBarManager* infobar_manager,
+                           AutofillAgent* autofill_agent)
+      : AutofillClientIOSMixin<TestChromeAutofillClient,
+                               ChromeAutofillClientIOS>(web_state,
+                                                        profile,
+                                                        infobar_manager,
+                                                        autofill_agent) {}
 
  private:
   bool removed_save_card_infobar_ = false;
@@ -159,8 +165,8 @@ class IOSChromePaymentsAutofillClientTest : public PlatformTest {
     autofill_agent_ =
         [[AutofillAgent alloc] initWithPrefService:profile_->GetPrefs()
                                           webState:web_state_.get()];
-    autofill_client_ = std::make_unique<TestChromeAutofillClient>(
-        profile_.get(), web_state_.get(), infobar_manager, autofill_agent_);
+    TestChromeAutofillClient::CreateForWebState(
+        web_state_.get(), profile_.get(), infobar_manager, autofill_agent_);
 
     // Inject the autofill commands fake into the AutofillTabHelper and
     // ChromeAutofillClient.
@@ -170,10 +176,12 @@ class IOSChromePaymentsAutofillClientTest : public PlatformTest {
         AutofillBottomSheetTabHelper::FromWebState(web_state_.get());
     bottomsheet_tab_helper_->SetAutofillBottomSheetHandler(autofill_commands_);
 
-    autofill_client_->set_commands_handler(autofill_commands_);
+    client()->set_commands_handler(autofill_commands_);
   }
 
-  TestChromeAutofillClient* client() { return autofill_client_.get(); }
+  TestChromeAutofillClient* client() {
+    return TestChromeAutofillClient::FromWebState(web_state_.get());
+  }
 
   FakeAutofillCommands* autofill_commands() { return autofill_commands_; }
 
@@ -200,7 +208,6 @@ class IOSChromePaymentsAutofillClientTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   AutofillAgent* autofill_agent_;
-  std::unique_ptr<TestChromeAutofillClient> autofill_client_;
 };
 
 // Test that save card bottomsheet is not shown for local save when flag is

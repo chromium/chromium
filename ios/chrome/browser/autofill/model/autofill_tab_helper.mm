@@ -32,13 +32,15 @@ AutofillTabHelper::~AutofillTabHelper() = default;
 void AutofillTabHelper::SetBaseViewController(
     UIViewController* base_view_controller) {
   CHECK(web_state_->IsRealized());
-  autofill_client_->SetBaseViewController(base_view_controller);
+  autofill::ChromeAutofillClientIOS::FromWebState(web_state_)
+      ->SetBaseViewController(base_view_controller);
 }
 
 void AutofillTabHelper::SetAutofillHandler(
     id<AutofillCommands> autofill_handler) {
   CHECK(web_state_->IsRealized());
-  autofill_client_->set_commands_handler(autofill_handler);
+  autofill::ChromeAutofillClientIOS::FromWebState(web_state_)
+      ->set_commands_handler(autofill_handler);
 }
 
 void AutofillTabHelper::SetSnackbarHandler(
@@ -77,8 +79,10 @@ void AutofillTabHelper::WebStateRealized(web::WebState* web_state) {
   infobars::InfoBarManager* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state);
   DCHECK(infobar_manager);
-  autofill_client_ = std::make_unique<autofill::ChromeAutofillClientIOS>(
-      profile, web_state_, infobar_manager, autofill_agent_);
+
+  DCHECK(!autofill::AutofillClientIOS::FromWebState(web_state));
+  autofill::ChromeAutofillClientIOS::CreateForWebState(
+      web_state_, profile, infobar_manager, autofill_agent_);
 
   if (IsAutofillAcrossIframesEnabled()) {
     autofill::ChildFrameRegistrar::GetOrCreateForWebState(web_state_)

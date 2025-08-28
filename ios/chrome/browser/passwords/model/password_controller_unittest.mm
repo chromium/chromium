@@ -265,8 +265,8 @@ class PasswordControllerTest : public PlatformTest {
     // predictions on.
     PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
 
-    autofill_client_ = std::make_unique<autofill::TestAutofillClientIOS>(
-        web_state(), /*bridge=*/nil);
+    autofill::TestAutofillClientIOS::CreateForWebState(web_state(),
+                                                       /*bridge=*/nil);
 
     passwordController_ = CreatePasswordController(
         profile_->GetPrefs(), web_state(), store_.get(), &weak_client_);
@@ -496,7 +496,6 @@ class PasswordControllerTest : public PlatformTest {
   TestProfileManagerIOS profile_manager_;
   raw_ptr<ProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
-  std::unique_ptr<autofill::TestAutofillClientIOS> autofill_client_;
 
   // SuggestionController for testing.
   PasswordsTestSuggestionController* suggestionController_;
@@ -1268,8 +1267,8 @@ class PasswordControllerTestSimple : public PlatformTest {
     web_state_.SetWebFramesManager(content_world,
                                    std::move(web_frames_manager));
 
-    autofill_client_ = std::make_unique<autofill::TestAutofillClientIOS>(
-        &web_state_, /*bridge=*/nil);
+    autofill::TestAutofillClientIOS::CreateForWebState(&web_state_,
+                                                       /*bridge=*/nil);
 
     passwordController_ = CreatePasswordController(&pref_service_, &web_state_,
                                                    store_.get(), &weak_client_);
@@ -1290,7 +1289,6 @@ class PasswordControllerTestSimple : public PlatformTest {
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState web_state_;
-  std::unique_ptr<autofill::TestAutofillClientIOS> autofill_client_;
   PasswordController* passwordController_;
   scoped_refptr<password_manager::MockPasswordStoreInterface> store_;
   raw_ptr<MockPasswordManagerClient> weak_client_;

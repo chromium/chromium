@@ -19,10 +19,6 @@
 @protocol SnackbarCommands;
 @class UIViewController;
 
-namespace autofill {
-class ChromeAutofillClientIOS;
-}
-
 // Class binding an instance of AutofillAgent to a WebState.
 class AutofillTabHelper : public web::WebStateObserver,
                           public web::WebStateUserData<AutofillTabHelper>,
@@ -42,10 +38,6 @@ class AutofillTabHelper : public web::WebStateObserver,
   // Returns an object that can provide Autofill suggestions.
   id<FormSuggestionProvider> GetSuggestionProvider();
 
-  autofill::ChromeAutofillClientIOS* autofill_client() {
-    return autofill_client_.get();
-  }
-
  private:
   friend class web::WebStateUserData<AutofillTabHelper>;
 
@@ -63,9 +55,6 @@ class AutofillTabHelper : public web::WebStateObserver,
 
   // The Objective-C AutofillAgent instance.
   __strong AutofillAgent* autofill_agent_;
-
-  // The iOS AutofillClient instance.
-  std::unique_ptr<autofill::ChromeAutofillClientIOS> autofill_client_;
 
   // The WebState holding this instance of the helper.
   raw_ptr<web::WebState> web_state_;
