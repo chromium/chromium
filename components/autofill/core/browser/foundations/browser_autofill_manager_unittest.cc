@@ -4067,17 +4067,17 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtFormSubmitted) {
 
   const std::vector<AutofillField::FieldLogEventType> focus_field_log_events =
       autofill_field->field_log_events();
-  ASSERT_EQ(u"First Name", autofill_field->parseable_label());
+  ASSERT_EQ(u"First Name", autofill_field->label());
   const TriggerFillFieldLogEvent* trigger_fill_field_log_event =
       FindFirstEventOfType<TriggerFillFieldLogEvent>(focus_field_log_events);
   ASSERT_TRUE(trigger_fill_field_log_event);
 
   for (const auto& autofill_field_ptr : *form_structure) {
-    SCOPED_TRACE(autofill_field_ptr->parseable_label());
+    SCOPED_TRACE(autofill_field_ptr->label());
     std::vector<AutofillField::FieldLogEventType> expected_events =
         ToFieldTypeEvents(*autofill_field_ptr);
 
-    if (autofill_field_ptr->parseable_label() == u"First Name") {
+    if (autofill_field_ptr->label() == u"First Name") {
       // The "First Name" field is the trigger field, so it contains the
       // TriggerFillFieldLogEvent followed by a FillFieldLogEvent.
       expected_events.push_back(TriggerFillFieldLogEvent{
@@ -4146,7 +4146,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
 
   const std::vector<AutofillField::FieldLogEventType>& focus_field_log_events =
       autofill_field->field_log_events();
-  ASSERT_EQ(u"First Name", autofill_field->parseable_label());
+  ASSERT_EQ(u"First Name", autofill_field->label());
   const TriggerFillFieldLogEvent* trigger_fill_field_log_event =
       FindFirstEventOfType<TriggerFillFieldLogEvent>(focus_field_log_events);
   ASSERT_TRUE(trigger_fill_field_log_event);
@@ -4155,11 +4155,11 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   // all following FillFieldLogEvents.
   FillEventId fill_event_id = trigger_fill_field_log_event->fill_event_id;
   for (const auto& autofill_field_ptr : *form_structure) {
-    SCOPED_TRACE(autofill_field_ptr->parseable_label());
+    SCOPED_TRACE(autofill_field_ptr->label());
     std::vector<AutofillField::FieldLogEventType> expected_events =
         ToFieldTypeEvents(*autofill_field_ptr);
 
-    if (autofill_field_ptr->parseable_label() == u"First Name") {
+    if (autofill_field_ptr->label() == u"First Name") {
       // The "First Name" field is the trigger field, so it contains the
       // TriggerFillFieldLogEvent followed by a FillFieldLogEvent.
       expected_events.push_back(
@@ -4176,8 +4176,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
           .filling_prevented_by_iframe_security_policy =
               OptionalBoolean::kFalse,
       });
-    } else if (autofill_field_ptr->parseable_label() == u"Phone Number" ||
-               autofill_field_ptr->parseable_label() == u"Email") {
+    } else if (autofill_field_ptr->label() == u"Phone Number" ||
+               autofill_field_ptr->label() == u"Email") {
       // Not filled because the address profile contained no data to fill.
       expected_events.push_back(FillFieldLogEvent{
           .fill_event_id = fill_event_id,
@@ -4188,7 +4188,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
           .filling_prevented_by_iframe_security_policy =
               OptionalBoolean::kUndefined,
       });
-    } else if (autofill_field_ptr->parseable_label() == u"Last Name") {
+    } else if (autofill_field_ptr->label() == u"Last Name") {
       // Not filled because the field contained a user typed value already.
       expected_events.push_back(FillFieldLogEvent{
           .fill_event_id = fill_event_id,
@@ -4257,7 +4257,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
 
   const std::vector<AutofillField::FieldLogEventType>& focus_field_log_events =
       autofill_field->field_log_events();
-  ASSERT_EQ(u"First Name", autofill_field->parseable_label());
+  ASSERT_EQ(u"First Name", autofill_field->label());
   const TriggerFillFieldLogEvent* trigger_fill_field_log_event1 =
       FindNthEventOfType<TriggerFillFieldLogEvent>(focus_field_log_events, 1);
   ASSERT_TRUE(trigger_fill_field_log_event1);
@@ -4277,11 +4277,11 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
   };
 
   for (const auto& autofill_field_ptr : *form_structure) {
-    SCOPED_TRACE(autofill_field_ptr->parseable_label());
+    SCOPED_TRACE(autofill_field_ptr->label());
     std::vector<AutofillField::FieldLogEventType> expected_events =
         ToFieldTypeEvents(*autofill_field_ptr);
 
-    if (autofill_field_ptr->parseable_label() == u"First Name") {
+    if (autofill_field_ptr->label() == u"First Name") {
       // The "First Name" field is the trigger field, so it contains the
       // TriggerFillFieldLogEvent followed by a FillFieldLogEvent.
       expected_events.push_back(TriggerFillFieldLogEvent{
@@ -4303,8 +4303,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
           .had_value_after_filling = OptionalBoolean::kTrue,
           .filling_prevented_by_iframe_security_policy =
               OptionalBoolean::kFalse});
-    } else if (autofill_field_ptr->parseable_label() == u"Phone Number" ||
-               autofill_field_ptr->parseable_label() == u"Email") {
+    } else if (autofill_field_ptr->label() == u"Phone Number" ||
+               autofill_field_ptr->label() == u"Email") {
       FillFieldLogEvent expected_event = expected_fill_field_log_event1;
       expected_event.was_autofilled_before_security_policy =
           OptionalBoolean::kFalse;
@@ -4368,7 +4368,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtUserTypingInField) {
 
   const std::vector<AutofillField::FieldLogEventType>& focus_field_log_events =
       autofill_field->field_log_events();
-  ASSERT_EQ(u"First Name", autofill_field->parseable_label());
+  ASSERT_EQ(u"First Name", autofill_field->label());
   const TriggerFillFieldLogEvent* trigger_fill_field_log_event =
       FindFirstEventOfType<TriggerFillFieldLogEvent>(focus_field_log_events);
   ASSERT_TRUE(trigger_fill_field_log_event);
@@ -4386,11 +4386,11 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtUserTypingInField) {
   };
 
   for (const auto& autofill_field_ptr : *form_structure) {
-    SCOPED_TRACE(autofill_field_ptr->parseable_label());
+    SCOPED_TRACE(autofill_field_ptr->label());
     std::vector<AutofillField::FieldLogEventType> expected_events =
         ToFieldTypeEvents(*autofill_field_ptr);
 
-    if (autofill_field_ptr->parseable_label() == u"First Name") {
+    if (autofill_field_ptr->label() == u"First Name") {
       // The "First Name" field is the trigger field, so it contains the
       // TriggerFillFieldLogEvent followed by a FillFieldLogEvent.
       expected_events.push_back(TriggerFillFieldLogEvent{
@@ -4442,7 +4442,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
 
   const std::vector<AutofillField::FieldLogEventType>& focus_field_log_events =
       autofill_field->field_log_events();
-  ASSERT_EQ(u"Name on Card", autofill_field->parseable_label());
+  ASSERT_EQ(u"Name on Card", autofill_field->label());
   const TriggerFillFieldLogEvent* trigger_fill_field_log_event =
       FindFirstEventOfType<TriggerFillFieldLogEvent>(focus_field_log_events);
   ASSERT_TRUE(trigger_fill_field_log_event);
@@ -4460,11 +4460,11 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   };
 
   for (const auto& autofill_field_ptr : *form_structure) {
-    SCOPED_TRACE(autofill_field_ptr->parseable_label());
+    SCOPED_TRACE(autofill_field_ptr->label());
     std::vector<AutofillField::FieldLogEventType> expected_events =
         ToFieldTypeEvents(*autofill_field_ptr);
 
-    if (autofill_field_ptr->parseable_label() == u"Name on Card") {
+    if (autofill_field_ptr->label() == u"Name on Card") {
       // The "Name on Card" field gets focus and shows a suggestion so it
       // contains the AskForValuesToFillFieldLogEvent.
       expected_events.push_back(AskForValuesToFillFieldLogEvent{
@@ -4479,7 +4479,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
       // The "Name on Card" field is the trigger field, so it contains the
       // TriggerFillFieldLogEvent followed by a FillFieldLogEvent.
       expected_events.push_back(expected_fill_field_log_event);
-    } else if (autofill_field_ptr->parseable_label() == u"CVC") {
+    } else if (autofill_field_ptr->label() == u"CVC") {
       // CVC field is not autofilled.
       expected_events.push_back(FillFieldLogEvent{
           .fill_event_id = trigger_fill_field_log_event->fill_event_id,
@@ -4529,10 +4529,10 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   FormSubmitted(form);
 
   for (const auto& autofill_field_ptr : *form_structure) {
-    SCOPED_TRACE(autofill_field_ptr->parseable_label());
+    SCOPED_TRACE(autofill_field_ptr->label());
     std::vector<AutofillField::FieldLogEventType> expected_events =
         ToFieldTypeEvents(*autofill_field_ptr);
-    if (autofill_field_ptr->parseable_label() != u"Middle name") {
+    if (autofill_field_ptr->label() != u"Middle name") {
       expected_events.insert(expected_events.begin(),
                              AutocompleteAttributeFieldLogEvent{
                                  .html_type = autofill_field_ptr->html_type(),
@@ -4617,22 +4617,22 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   FormSubmitted(form);
 
   for (const auto& autofill_field_ptr : *form_structure) {
-    SCOPED_TRACE(autofill_field_ptr->parseable_label());
+    SCOPED_TRACE(autofill_field_ptr->label());
     std::vector<AutofillField::FieldLogEventType> expected_events =
         ToFieldTypeEvents(*autofill_field_ptr);
     // The autofill server applies two predictions on the "Name" field.
     std::optional<FieldType> server_type2 =
-        autofill_field_ptr->parseable_label() == u"Name"
+        autofill_field_ptr->label() == u"Name"
             ? std::optional<FieldType>(USERNAME)
             : std::nullopt;
     FieldPrediction::Source prediction_source2 =
-        autofill_field_ptr->parseable_label() == u"Name"
+        autofill_field_ptr->label() == u"Name"
             ? FieldPrediction::SOURCE_PASSWORDS_DEFAULT
             : FieldPrediction::SOURCE_UNSPECIFIED;
     // The server prediction overrides the type predicted by local heuristic on
     // the field of label "Street".
     bool server_type_prediction_is_override =
-        autofill_field_ptr->parseable_label() == u"Street" ? true : false;
+        autofill_field_ptr->label() == u"Street" ? true : false;
     expected_events.push_back(ServerPredictionFieldLogEvent{
         .server_type1 = autofill_field_ptr->server_type(),
         .prediction_source1 =
@@ -4713,7 +4713,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   FormSubmitted(form);
 
   for (const auto& autofill_field_ptr : *form_structure) {
-    SCOPED_TRACE(autofill_field_ptr->parseable_label());
+    SCOPED_TRACE(autofill_field_ptr->label());
     size_t field_signature_rank =
         autofill_field_ptr->heuristic_type() == ADDRESS_HOME_LINE2 ? 2 : 1;
     std::vector<AutofillField::FieldLogEventType> expected_events =
@@ -4729,7 +4729,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
     });
     // Rationalization.
     bool type_changed =
-        autofill_field_ptr->parseable_label() == u"Address" ? true : false;
+        autofill_field_ptr->label() == u"Address" ? true : false;
     expected_events.push_back(RationalizationFieldLogEvent{
         .field_type = autofill_field_ptr->Type().GetAddressType(),
         .section_id = 1,

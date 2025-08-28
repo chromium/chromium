@@ -8,7 +8,10 @@
 #include <string_view>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/strings/string_split.h"
+#include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 
@@ -81,6 +84,41 @@ std::vector<std::u16string_view> GetParseableLabels(
     shared_label_candidate_it = shareable_range_end;
   }
   return labels;
+}
+
+base::flat_map<FieldGlobalId, std::u16string> GetParseableLabels(
+    base::span<const std::unique_ptr<AutofillField>> fields) {
+  std::vector<std::u16string_view> field_labels;
+  field_labels.reserve(fields.size());
+  for (const std::unique_ptr<AutofillField>& field : fields) {
+    if (!field->IsTextInputElement() || !field->IsFocusable()) {
+      continue;
+    }
+    field_labels.push_back(field->label());
+  }
+
+  std::vector<std::pair<FieldGlobalId, std::u16string>> label_map;
+  std::vector<std::u16string_view> parseable_labels =
+      GetParseableLabels(std::move(field_labels));
+  // Iterating through the fields in reverse order is necessary for memory
+  // safety: `field_labels` contains string_views pointing to the labels of the
+  // `fields_`. By splitting shared labels, `field_labels[i]` might reference
+  // `field_labels[i-1]`, meaning that earlier labels need to be overwritten
+  // later.
+  auto it = parseable_labels.rbegin();
+  for (const std::unique_ptr<AutofillField>& field : base::Reversed(fields)) {
+    if (!field->IsTextInputElement() || !field->IsFocusable()) {
+      continue;
+    }
+    CHECK(it != parseable_labels.rend());
+    if (field->label() != *it &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillEnableSupportForParsingWithSharedLabels)) {
+      label_map.emplace_back(field->global_id(), std::u16string(*it));
+    }
+    it++;
+  }
+  return label_map;
 }
 
 }  // namespace autofill

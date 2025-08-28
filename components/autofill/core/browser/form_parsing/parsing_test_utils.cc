@@ -81,7 +81,7 @@ void FormFieldParserTestBase::ClassifyAndVerify(
       });
 
   AutofillScanner scanner(unowned_fields);
-  ParsingContext context(client_country, page_language, pattern_file,
+  ParsingContext context(fields_, client_country, page_language, pattern_file,
                          GetActiveRegexFeatures());
   std::unique_ptr<FormFieldParser> field = Parse(context, &scanner);
 
@@ -101,7 +101,7 @@ void FormFieldParserTestBase::ClassifyAndVerifyWithMultipleParses(
     const GeoIpCountryCode& client_country,
     const LanguageCode& page_language) {
   UpdateRanks(fields_);
-  ParsingContext context(client_country, page_language,
+  ParsingContext context(fields_, client_country, page_language,
                          *GetActivePatternFile());
 
   // Must outlive `scanner`.

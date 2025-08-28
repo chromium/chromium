@@ -86,7 +86,8 @@ class RegexMatchesCache {
 // a) environmental information that is needed in many places and b) caches to
 // prevent repetitive work.
 struct ParsingContext {
-  ParsingContext(GeoIpCountryCode client_country,
+  ParsingContext(base::span<const std::unique_ptr<AutofillField>> fields,
+                 GeoIpCountryCode client_country,
                  LanguageCode page_language,
                  PatternFile pattern_file,
                  DenseSet<RegexFeature> active_features = {},
@@ -94,6 +95,11 @@ struct ParsingContext {
   ParsingContext(const ParsingContext&) = delete;
   ParsingContext& operator=(const ParsingContext&) = delete;
   ~ParsingContext();
+
+  // Contains the parseable labels that override FormFieldData::label().
+  // Parsing code should prefer these labels but fall back to
+  // FormFieldData::label().
+  base::flat_map<FieldGlobalId, std::u16string> label_overrides;
 
   const GeoIpCountryCode client_country;
   const LanguageCode page_language;
@@ -108,9 +114,6 @@ struct ParsingContext {
   // 19% in release builds.
   // Note that adding features here may push users into the respective
   // experiment/control groups earlier than you may want.
-  const bool enable_support_for_parsing_with_shared_labels{
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableSupportForParsingWithSharedLabels)};
   const bool better_placeholder_support{base::FeatureList::IsEnabled(
       features::kAutofillBetterLocalHeuristicPlaceholderSupport)};
 

@@ -135,7 +135,7 @@ void PhoneFieldParserTest::RunParsingTest(
 
   // Parse.
   AutofillScanner scanner(unowned_fields);
-  ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
+  ParsingContext context(list_, GeoIpCountryCode(""), LanguageCode(""),
                          *GetActivePatternFile());
   field_ = Parse(context, &scanner);
   ASSERT_EQ(expect_success, field_.get() != nullptr);

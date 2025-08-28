@@ -38,6 +38,7 @@
 #include "components/autofill/core/browser/form_parsing/search_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/standalone_cvc_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/travel_field_parser.h"
+#include "components/autofill/core/browser/form_processing/label_processing_util.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
@@ -148,12 +149,15 @@ void RegexMatchesCache::Put(RegexMatchesCache::Key key, bool value) {
   cache_.Put(key, value);
 }
 
-ParsingContext::ParsingContext(GeoIpCountryCode client_country,
-                               LanguageCode page_language,
-                               PatternFile pattern_file,
-                               DenseSet<RegexFeature> active_features,
-                               LogManager* log_manager)
-    : client_country(std::move(client_country)),
+ParsingContext::ParsingContext(
+    base::span<const std::unique_ptr<AutofillField>> fields,
+    GeoIpCountryCode client_country,
+    LanguageCode page_language,
+    PatternFile pattern_file,
+    DenseSet<RegexFeature> active_features,
+    LogManager* log_manager)
+    : label_overrides(GetParseableLabels(fields)),
+      client_country(std::move(client_country)),
       page_language(std::move(page_language)),
       pattern_file(pattern_file),
       active_features(active_features),
@@ -719,11 +723,13 @@ std::optional<FormFieldParser::MatchInfo> FormFieldParser::MatchInLabel(
       context.log_manager && context.log_manager->IsLoggingActive() ? &matches
                                                                     : nullptr;
 
-  // TODO(crbug.com/40741721): Remove once shared labels are launched.
-  const std::u16string& label =
-      context.enable_support_for_parsing_with_shared_labels
-          ? field.parseable_label()
-          : field.label();
+  const std::u16string& label = [&]() -> const std::u16string& {
+    if (auto it = context.label_overrides.find(field.global_id());
+        it != context.label_overrides.end()) {
+      return it->second;
+    }
+    return field.label();
+  }();
 
   if (!context.better_placeholder_support || field.placeholder().empty()) {
     if (MatchesRegexWithCache(context, label, pattern, capture_destination)) {

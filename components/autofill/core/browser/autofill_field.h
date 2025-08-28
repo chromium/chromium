@@ -175,7 +175,6 @@ class AutofillField : public FormFieldData {
   const FieldTypeSet& possible_types() const { return possible_types_; }
   bool previously_autofilled() const { return previously_autofilled_; }
   const std::u16string& parseable_name() const { return parseable_name_; }
-  const std::u16string& parseable_label() const { return parseable_label_; }
   bool only_fill_when_focused() const { return only_fill_when_focused_; }
 
   void set_heuristic_type(HeuristicSource s, FieldType t);
@@ -204,9 +203,6 @@ class AutofillField : public FormFieldData {
   }
   void set_parseable_name(std::u16string parseable_name) {
     parseable_name_ = std::move(parseable_name);
-  }
-  void set_parseable_label(std::u16string parseable_label) {
-    parseable_label_ = std::move(parseable_label);
   }
 
   void set_only_fill_when_focused(bool fill_when_focused) {
@@ -547,10 +543,6 @@ class AutofillField : public FormFieldData {
   // a common prefix shared with other fields). Will be used for heuristics
   // parsing.
   std::u16string parseable_name_;
-
-  // The parseable label attribute is potentially only a part of the original
-  // label when the label is divided between subsequent fields.
-  std::u16string parseable_label_;
 
   // A list of field log events, which record when user interacts the field
   // during autofill or editing, such as user clicks on the field, the

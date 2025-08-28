@@ -319,7 +319,7 @@ std::unique_ptr<FormFieldParser> AddressFieldParserNG::Parse(
   address_field->initial_field_ = scanner->Cursor();
 
   DVLOG(1) << "Parse recursively starting at " << saved_cursor << " "
-           << scanner->Cursor()->parseable_label();
+           << scanner->Cursor()->label();
 
   address_field->ParseRecursively();
 

@@ -181,9 +181,6 @@ FormStructure::FormStructure(const FormData& form)
   // Computes the `parseable_name_` of the fields by removing common affixes
   // from their names.
   ExtractParseableFieldNames();
-  // Computes the `parseable_label_` of the fields by splitting labels among
-  // consecutive fields by common separators.
-  ExtractParseableFieldLabels();
   SetFieldTypesFromAutocompleteAttribute();
   DetermineFieldRanks();
 }
@@ -230,7 +227,7 @@ void FormStructure::DetermineHeuristicTypes(
       base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection)
           ? current_page_language_
           : LanguageCode();
-  ParsingContext context(client_country_, page_language,
+  ParsingContext context(fields_, client_country_, page_language,
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
                          PatternFile::kDefault,
 #else
@@ -307,6 +304,9 @@ FormDataPredictions FormStructure::GetFieldTypePredictions() const {
     }
   }
 
+  const base::flat_map<FieldGlobalId, std::u16string> parseable_labels =
+      GetParseableLabels(fields_);
+
   for (const auto& field : fields_) {
     FormFieldDataPredictions annotated_field;
     annotated_field.host_form_signature =
@@ -339,8 +339,13 @@ FormDataPredictions FormStructure::GetFieldTypePredictions() const {
     }();
 
     annotated_field.parseable_name = base::UTF16ToUTF8(field->parseable_name());
-    annotated_field.parseable_label =
-        base::UTF16ToUTF8(field->parseable_label());
+    annotated_field.parseable_label = base::UTF16ToUTF8([&]() {
+      if (auto it = parseable_labels.find(field->global_id());
+          it != parseable_labels.end()) {
+        return it->second;
+      }
+      return field->label();
+    }());
     annotated_field.section = field->section().ToString();
     annotated_field.rank = field->rank();
     annotated_field.rank_in_signature_group = field->rank_in_signature_group();
@@ -830,39 +835,6 @@ FormData FormStructure::ToFormData() const {
   return data;
 }
 
-void FormStructure::ExtractParseableFieldLabels() {
-  std::vector<std::u16string_view> field_labels;
-  field_labels.reserve(field_count());
-  for (const std::unique_ptr<AutofillField>& field : fields_) {
-    if (!field->IsTextInputElement() || !field->IsFocusable()) {
-      continue;
-    }
-    field_labels.push_back(field->label());
-  }
-
-  // Determine the parsable labels and write them back.
-  std::vector<std::u16string_view> parsable_labels =
-      GetParseableLabels(std::move(field_labels));
-  // Iterating through the fields in reverse order is necessary for memory
-  // safety: `field_labels` contains string_views pointing to the labels of the
-  // `fields_`. By splitting shared labels, `field_labels[i]` might reference
-  // `field_labels[i-1]`, meaning that earlier labels need to be overwritten
-  // later.
-  auto it = parsable_labels.rbegin();
-  for (const std::unique_ptr<AutofillField>& field : base::Reversed(fields_)) {
-    if (!field->IsTextInputElement() || !field->IsFocusable()) {
-      continue;
-    }
-    CHECK(it != parsable_labels.rend());
-    if (field->label() != *it &&
-        base::FeatureList::IsEnabled(
-            features::kAutofillEnableSupportForParsingWithSharedLabels)) {
-      field->set_parseable_label(std::u16string(*it));
-    }
-    it++;
-  }
-}
-
 void FormStructure::ExtractParseableFieldNames() {
   std::vector<std::u16string_view> names = base::ToVector(
       fields_, [](const auto& f) -> std::u16string_view { return f->name(); });
@@ -1022,6 +994,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
     buffer << Tr{} << "May run AutofillAI model: "
            << ToYesOrNo(form.may_run_autofill_ai_model());
   }
+
   std::map<const AutofillField*, std::vector<AttributeType>>
       field_to_attribute_types;
   for (const auto& [section, entities_and_fields] :
@@ -1032,6 +1005,10 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
       }
     }
   }
+
+  const base::flat_map<FieldGlobalId, std::u16string> parseable_labels =
+      GetParseableLabels(form.fields());
+
   for (size_t i = 0; i < form.field_count(); ++i) {
     buffer << Tag{"tr"};
     buffer << Tag{"td"} << "Field " << i << ": " << CTag{};
@@ -1121,12 +1098,13 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
     buffer << Tr{} << "Section:" << field->section();
 
     constexpr size_t kMaxLabelSize = 100;
-    // TODO(crbug.com/40741721): Remove once shared labels are launched.
-    const std::u16string& label =
-        base::FeatureList::IsEnabled(
-            features::kAutofillEnableSupportForParsingWithSharedLabels)
-            ? field->parseable_label()
-            : field->label();
+    const std::u16string& label = [&]() -> const std::u16string& {
+      if (auto it = parseable_labels.find(field->global_id());
+          it != parseable_labels.end()) {
+        return it->second;
+      }
+      return field->label();
+    }();
     const std::u16string truncated_label =
         label.substr(0, std::min(label.length(), kMaxLabelSize));
     buffer << Tr{} << "Label:" << truncated_label;

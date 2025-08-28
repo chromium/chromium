@@ -5,10 +5,17 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PROCESSING_LABEL_PROCESSING_UTIL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PROCESSING_LABEL_PROCESSING_UTIL_H_
 
+#include <memory>
+#include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/containers/flat_map.h"
+#include "components/autofill/core/common/unique_ids.h"
+
 namespace autofill {
+
+class AutofillField;
 
 // Given the `labels` of all fields in a form in order, this logic attempts
 // to split labels among consecutive fields by common separators. In particular,
@@ -26,6 +33,11 @@ namespace autofill {
 // the result might reference (part of) `label[i-1]` of the input.
 std::vector<std::u16string_view> GetParseableLabels(
     std::vector<std::u16string_view> labels);
+
+// Returns a map containing each field's parseable label **if** that label
+// differs from FormFieldData::label().
+base::flat_map<FieldGlobalId, std::u16string> GetParseableLabels(
+    base::span<const std::unique_ptr<AutofillField>> fields);
 
 }  // namespace autofill
 

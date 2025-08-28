@@ -405,10 +405,6 @@ class FormStructure {
   // Extracts the parseable field name by removing a common affix.
   void ExtractParseableFieldNames();
 
-  // Extract parseable field labels by potentially splitting labels between
-  // adjacent fields.
-  void ExtractParseableFieldLabels();
-
   // The country where the user is currently located. Used to introduce biases
   // in form parsing and understanding according to the user's location.
   GeoIpCountryCode client_country_;
