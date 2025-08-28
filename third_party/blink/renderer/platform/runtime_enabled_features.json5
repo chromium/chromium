@@ -5796,7 +5796,7 @@
     },
     {
       name: "WidthAndHeightAsPresentationAttributesOnNestedSvg",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "WidthAndHeightStylePropertiesOnUseAndSymbol",
