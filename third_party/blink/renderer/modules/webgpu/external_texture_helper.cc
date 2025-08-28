@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webgpu/external_texture_helper.h"
 
+#include "base/debug/crash_logging.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_transformation.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
@@ -303,11 +304,24 @@ ExternalTexture CreateExternalTexture(
     external_texture_desc.plane0 = plane0;
     external_texture_desc.plane1 = plane1;
 
-    // Set color space transformation metas for ExternalTexture
-    std::array<float, 12> yuvToRgbMatrix =
-        GetYUVToRGBMatrix(src_color_space, media_video_frame->BitDepth());
-    external_texture_desc.yuvToRgbConversionMatrix = yuvToRgbMatrix.data();
-
+    std::array<float, 12> yuvToRgbMatrix;
+    auto set_matrix = [&]() {
+      yuvToRgbMatrix =
+          GetYUVToRGBMatrix(src_color_space, media_video_frame->BitDepth());
+      external_texture_desc.yuvToRgbConversionMatrix = yuvToRgbMatrix.data();
+    };
+    // `GetYUVToRGBMatrix` eventually calls into `ToSkYUVColorSpace` which
+    // generates DumpWithoutCrashing for RGB matrix.
+    if (src_color_space.GetMatrixID() == gfx::ColorSpace::MatrixID::RGB) {
+      // Log debug label for a shared image created with YUV color space with an
+      // RGB matrix.
+      SCOPED_CRASH_KEY_STRING32(
+          "ExternalTextureHelper", "SIDebugLabel",
+          media_video_frame->shared_image()->debug_label());
+      set_matrix();
+    } else {
+      set_matrix();
+    }
     // Decide whether color space conversion could be skipped.
     external_texture_desc.doYuvToRgbConversionOnly =
         IsSameGamutAndGamma(src_color_space, dst_color_space);
