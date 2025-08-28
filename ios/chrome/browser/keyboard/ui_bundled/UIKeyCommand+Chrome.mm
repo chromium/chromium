@@ -289,10 +289,12 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_showHelp {
+  UIImage* image = DefaultSymbolWithConfiguration(kHelpSymbol, nil);
   return [self cr_commandWithInput:@"?"
                      modifierFlags:AltCommand
                             action:@selector(keyCommand_showHelp)
-                   titleIDAsString:@"IDS_IOS_KEYBOARD_SHOW_HELP"];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_SHOW_HELP"
+                             image:image];
 }
 
 + (UIKeyCommand*)cr_showDownloads {
@@ -382,10 +384,13 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_reportAnIssue {
+  UIImage* image =
+      DefaultSymbolWithConfiguration(kExclamationMarkBubbleSymbol, nil);
   return [self cr_commandWithInput:@"i"
                      modifierFlags:ShiftCommand
                             action:@selector(keyCommand_reportAnIssue)
-                   titleIDAsString:@"IDS_IOS_KEYBOARD_REPORT_AN_ISSUE"];
+                   titleIDAsString:@"IDS_IOS_KEYBOARD_REPORT_AN_ISSUE"
+                             image:image];
 }
 
 + (UIKeyCommand*)cr_reportAnIssue_2 {
