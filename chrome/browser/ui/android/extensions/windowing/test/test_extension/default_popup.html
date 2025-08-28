@@ -11,10 +11,21 @@
 </head>
 
 <body style="min-width: 200px;">
-  <h3>Windowing API Test Extension</h3>
-  <p>num_windows: <span id="num_windows">0</span></p>
+  <h3>chrome.windows API Test</h3>
 
-  <button id="get_all_windows_button">Get all windows</button>
+  <ul style="list-style-type: none; padding: 0;">
+    <li style="padding: 5px 0;"><button id="get_all_windows_button">getAll()</button></li>
+    <li style="padding: 5px 0;"><button id="get_current_window_button">getCurrent()</button></li>
+    <li style="padding: 5px 0;"><button id="get_last_focused_window_button">getLastFocused()</button>
+    </li>
+    <li style="padding: 5px 0;">
+      <button id="get_window_button">get()</button>
+      <input type="number" id="window_id_input" placeholder="Enter Window ID">
+    </li>
+  </ul>
+
+  <p>API return value:</p>
+  <textarea id="api_return_value_text_area" rows="15" cols="30" readonly></textarea>
 
   <script src="default_popup.js" type="module"></script>
 </body>
