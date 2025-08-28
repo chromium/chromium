@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/features.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -15,6 +16,7 @@
 #include "base/win/registry.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/animation/animation.h"
 #include "ui/gfx/font_util_win.h"
 #include "ui/gfx/win/singleton_hwnd_observer.h"
 
@@ -123,6 +125,10 @@ class CachedFontRenderParams {
     if (message == WM_SETTINGCHANGE) {
       // TODO(khushalsagar): This should trigger an update to the
       // renderer and gpu processes, where the params are cached.
+      if (wparam == SPI_GETCLIENTAREAANIMATION &&
+          base::features::IsReducePPMsEnabled()) {
+        Animation::UpdatePrefersReducedMotion();
+      }
       params_.reset();
       singleton_hwnd_observer_.reset(nullptr);
     }
