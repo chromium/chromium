@@ -28,7 +28,6 @@ class ToolbarActionsBarBubbleViews : public views::BubbleDialogDelegateView,
   // Creates the bubble anchored to |anchor_view|, which may not be nullptr.
   ToolbarActionsBarBubbleViews(
       views::View* anchor_view,
-      bool anchored_to_action,
       std::unique_ptr<ToolbarActionsBarBubbleDelegate> delegate);
   ToolbarActionsBarBubbleViews(const ToolbarActionsBarBubbleViews&) = delete;
   ToolbarActionsBarBubbleViews& operator=(const ToolbarActionsBarBubbleViews&) =
@@ -67,7 +66,6 @@ class ToolbarActionsBarBubbleViews : public views::BubbleDialogDelegateView,
   raw_ptr<views::Label> body_text_ = nullptr;
   raw_ptr<views::Label> item_list_ = nullptr;
   raw_ptr<views::ImageButton> learn_more_button_ = nullptr;
-  const bool anchored_to_action_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_ACTIONS_BAR_BUBBLE_VIEWS_H_

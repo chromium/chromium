@@ -55,9 +55,7 @@ class ToolbarActionsBarBubbleDelegate {
   virtual std::u16string GetHeadingText() = 0;
 
   // Gets the text for the bubble's body.
-  // |anchored_to_action| is true if the bubble is being anchored to a specific
-  // action (rather than the overflow menu or the full container).
-  virtual std::u16string GetBodyText(bool anchored_to_action) = 0;
+  virtual std::u16string GetBodyText() = 0;
 
   // Gets the text for the main button on the bubble; this button will
   // correspond with ACTION_EXECUTE.

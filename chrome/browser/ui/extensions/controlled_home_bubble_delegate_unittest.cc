@@ -335,9 +335,7 @@ TEST_F(ControlledHomeBubbleDelegateTest, LongExtensionNameIsTruncated) {
       std::make_unique<ControlledHomeBubbleDelegate>(browser());
   EXPECT_TRUE(bubble_delegate->ShouldShow());
 
-  // Extension name is only shown if the dialog is not anchored to an action.
-  std::u16string bubble_text =
-      bubble_delegate->GetBodyText(/*anchored_to_action=*/false);
+  std::u16string bubble_text = bubble_delegate->GetBodyText();
 
   EXPECT_FALSE(base::Contains(bubble_text, long_name));
   EXPECT_TRUE(base::Contains(bubble_text, truncated_name));

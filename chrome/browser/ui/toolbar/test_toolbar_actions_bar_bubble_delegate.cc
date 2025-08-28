@@ -25,9 +25,7 @@ class TestToolbarActionsBarBubbleDelegate::DelegateImpl
  private:
   bool ShouldShow() override { return !parent_->shown_; }
   std::u16string GetHeadingText() override { return parent_->heading_; }
-  std::u16string GetBodyText(bool anchored_to_action) override {
-    return parent_->body_;
-  }
+  std::u16string GetBodyText() override { return parent_->body_; }
   std::u16string GetActionButtonText() override { return parent_->action_; }
   std::u16string GetDismissButtonText() override { return parent_->dismiss_; }
   ui::mojom::DialogButton GetDefaultDialogButton() override {

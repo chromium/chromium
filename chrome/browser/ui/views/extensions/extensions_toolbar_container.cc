@@ -668,7 +668,7 @@ void ExtensionsToolbarContainer::ShowToolbarActionBubble(
   views::Widget* const widget = views::BubbleDialogDelegateView::CreateBubble(
       std::make_unique<ToolbarActionsBarBubbleViews>(
           anchor_view ? anchor_view : GetExtensionsButton(),
-          anchor_view != nullptr, std::move(controller)));
+          std::move(controller)));
 
   ShowWidgetForExtension(widget, extension_id);
 }

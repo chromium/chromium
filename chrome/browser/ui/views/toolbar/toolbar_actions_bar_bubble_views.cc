@@ -29,12 +29,10 @@ const int kBubbleExtraIconSize = 16;
 
 ToolbarActionsBarBubbleViews::ToolbarActionsBarBubbleViews(
     views::View* anchor_view,
-    bool anchored_to_action,
     std::unique_ptr<ToolbarActionsBarBubbleDelegate> delegate)
     : views::BubbleDialogDelegateView(anchor_view,
                                       views::BubbleBorder::TOP_RIGHT),
-      delegate_(std::move(delegate)),
-      anchored_to_action_(anchored_to_action) {
+      delegate_(std::move(delegate)) {
   std::u16string ok_text = delegate_->GetActionButtonText();
   std::u16string cancel_text = delegate_->GetDismissButtonText();
 
@@ -159,7 +157,7 @@ void ToolbarActionsBarBubbleViews::RemovedFromWidget() {
 }
 
 void ToolbarActionsBarBubbleViews::Init() {
-  std::u16string body_text_string = delegate_->GetBodyText(anchored_to_action_);
+  std::u16string body_text_string = delegate_->GetBodyText();
   if (body_text_string.empty()) {
     return;
   }
@@ -173,13 +171,12 @@ void ToolbarActionsBarBubbleViews::Init() {
       provider->GetDistanceMetric(views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
       margins().width();
 
-  if (!body_text_string.empty()) {
-    body_text_ = new views::Label(body_text_string);
-    body_text_->SetMultiLine(true);
-    body_text_->SizeToFit(width);
-    body_text_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    AddChildViewRaw(body_text_.get());
-  }
+  auto body_text = std::make_unique<views::Label>(body_text_string);
+  body_text->SetMultiLine(true);
+  body_text->SizeToFit(width);
+  body_text->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  body_text_ = body_text.get();
+  AddChildView(std::move(body_text));
 }
 
 void ToolbarActionsBarBubbleViews::OnWidgetVisibilityChanged(

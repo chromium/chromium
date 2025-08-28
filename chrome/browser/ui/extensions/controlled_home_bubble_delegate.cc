@@ -125,24 +125,16 @@ void ControlledHomeBubbleDelegate::PendingShow() {
 }
 
 std::u16string ControlledHomeBubbleDelegate::GetHeadingText() {
-  return l10n_util::GetStringUTF16(
-      IDS_EXTENSIONS_SETTINGS_API_TITLE_HOME_PAGE_BUBBLE);
+  return l10n_util::GetStringUTF16(IDS_EXTENSIONS_CONTROLLED_HOME_DIALOG_TITLE);
 }
 
-std::u16string ControlledHomeBubbleDelegate::GetBodyText(
-    bool anchored_to_action) {
+std::u16string ControlledHomeBubbleDelegate::GetBodyText() {
   const extensions::SettingsOverrides* settings =
       extensions::SettingsOverrides::Get(extension_.get());
   CHECK(settings);
 
   bool startup_change = !settings->startup_pages.empty();
   bool search_change = settings->search_engine.has_value();
-
-  std::u16string body;
-  int first_line_id =
-      anchored_to_action
-          ? IDS_EXTENSIONS_SETTINGS_API_FIRST_LINE_HOME_PAGE_SPECIFIC
-          : IDS_EXTENSIONS_SETTINGS_API_FIRST_LINE_HOME_PAGE;
   int second_line_id = 0;
   if (startup_change && search_change) {
     second_line_id = IDS_EXTENSIONS_SETTINGS_API_SECOND_LINE_START_AND_SEARCH;
@@ -151,13 +143,12 @@ std::u16string ControlledHomeBubbleDelegate::GetBodyText(
   } else if (search_change) {
     second_line_id = IDS_EXTENSIONS_SETTINGS_API_SECOND_LINE_SEARCH_ENGINE;
   }
-  DCHECK_NE(0, first_line_id);
-  body = anchored_to_action
-             ? l10n_util::GetStringUTF16(first_line_id)
-             : l10n_util::GetStringFUTF16(
-                   first_line_id,
-                   extensions::util::GetFixupExtensionNameForUIDisplay(
-                       extension_->name()));
+
+  std::u16string body;
+  body = l10n_util::GetStringFUTF16(
+      IDS_EXTENSIONS_CONTROLLED_HOME_DIALOG_DESCRIPTION,
+      extensions::util::GetFixupExtensionNameForUIDisplay(extension_->name()));
+
   if (second_line_id) {
     body += l10n_util::GetStringUTF16(second_line_id);
   }

@@ -48,7 +48,7 @@ class ControlledHomeBubbleDelegate
   // ToolbarActionsBarBubbleDelegate:
   bool ShouldShow() override;
   std::u16string GetHeadingText() override;
-  std::u16string GetBodyText(bool anchored_to_action) override;
+  std::u16string GetBodyText() override;
   std::u16string GetActionButtonText() override;
   std::u16string GetDismissButtonText() override;
   ui::mojom::DialogButton GetDefaultDialogButton() override;

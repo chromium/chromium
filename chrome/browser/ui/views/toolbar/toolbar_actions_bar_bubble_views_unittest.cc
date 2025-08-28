@@ -70,10 +70,8 @@ class ToolbarActionsBarBubbleViewsTest : public ChromeViewsTestBase {
     ASSERT_FALSE(bubble_widget_);
     ASSERT_FALSE(bubble_);
     anchor_widget_ = CreateAnchorWidget();
-    bool anchored_to_action = false;
     bubble_ = new ToolbarActionsBarBubbleViews(
-        anchor_widget_->GetContentsView(), anchored_to_action,
-        delegate->GetDelegate());
+        anchor_widget_->GetContentsView(), delegate->GetDelegate());
     bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_);
     bubble_widget_->Show();
   }
@@ -210,7 +208,7 @@ TEST_F(ToolbarActionsBarBubbleViewsTest, TestShowAndCloseBubble) {
   TestToolbarActionsBarBubbleDelegate delegate(
       kHeadingText, kBodyText, kActionButtonText, kDismissButtonText);
   ToolbarActionsBarBubbleViews* bubble = new ToolbarActionsBarBubbleViews(
-      anchor_widget->GetContentsView(), false, delegate.GetDelegate());
+      anchor_widget->GetContentsView(), delegate.GetDelegate());
 
   EXPECT_FALSE(delegate.shown());
   EXPECT_FALSE(delegate.close_action());
