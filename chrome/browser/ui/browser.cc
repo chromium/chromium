@@ -1184,6 +1184,12 @@ Browser::GetWebContentsModalDialogHostForWindow() {
   return window_->GetWebContentsModalDialogHost();
 }
 
+web_modal::WebContentsModalDialogHost*
+Browser::GetWebContentsModalDialogHostForTab(
+    tabs::TabInterface* tab_interface) {
+  return GetWebContentsModalDialogHost(tab_interface->GetContents());
+}
+
 bool Browser::IsActive() const {
 // TODO(https://crbug.com/376306245): This is a temporary workaround for the
 // fact that window_->IsActive() does not return the right result for macOS
@@ -2937,7 +2943,7 @@ void Browser::SetWebContentsBlocked(content::WebContents* web_contents,
 
 web_modal::WebContentsModalDialogHost* Browser::GetWebContentsModalDialogHost(
     content::WebContents* web_contents) {
-  return window_->GetWebContentsModalDialogHost();
+  return window_->GetWebContentsModalDialogHostFor(web_contents);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

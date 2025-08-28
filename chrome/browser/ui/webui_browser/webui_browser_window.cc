@@ -27,6 +27,7 @@
 #include "components/input/native_web_keyboard_event.h"
 #include "components/sharing_message/sharing_dialog_data.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
@@ -774,6 +775,13 @@ std::unique_ptr<FindBar> WebUIBrowserWindow::CreateFindBar() {
 
 web_modal::WebContentsModalDialogHost*
 WebUIBrowserWindow::GetWebContentsModalDialogHost() {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
+web_modal::WebContentsModalDialogHost*
+WebUIBrowserWindow::GetWebContentsModalDialogHostFor(
+    content::WebContents* web_contents) {
   NOTIMPLEMENTED();
   return nullptr;
 }

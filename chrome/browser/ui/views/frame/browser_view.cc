@@ -133,6 +133,7 @@
 #include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
 #include "chrome/browser/ui/views/frame/native_browser_frame.h"
 #include "chrome/browser/ui/views/frame/scrim_view.h"
+#include "chrome/browser/ui/views/frame/tab_modal_dialog_host.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/top_container_loading_bar.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
@@ -3648,6 +3649,24 @@ std::unique_ptr<FindBar> BrowserView::CreateFindBar() {
 
 WebContentsModalDialogHost* BrowserView::GetWebContentsModalDialogHost() {
   return GetBrowserViewLayout()->GetWebContentsModalDialogHost();
+}
+
+WebContentsModalDialogHost* BrowserView::GetWebContentsModalDialogHostFor(
+    content::WebContents* web_contents) {
+  if (multi_contents_view_) {
+    ContentsContainerView* const contents_container_view =
+        multi_contents_view_->GetContentsContainerViewFor(web_contents);
+    // `contents_container_view` can be null in cases where a modal dialog is
+    // being created for a tab that was just created but isn't attached to the
+    // view yet.
+    if (contents_container_view) {
+      return contents_container_view->web_contents_modal_dialog_host();
+    } else {
+      return GetActiveContentsContainerView()->web_contents_modal_dialog_host();
+    }
+  }
+
+  return contents_container_view_->web_contents_modal_dialog_host();
 }
 
 BookmarkBarView* BrowserView::GetBookmarkBarView() const {

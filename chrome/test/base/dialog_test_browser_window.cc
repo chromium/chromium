@@ -38,6 +38,12 @@ DialogTestBrowserWindow::GetWebContentsModalDialogHost() {
   return this;
 }
 
+WebContentsModalDialogHost*
+DialogTestBrowserWindow::GetWebContentsModalDialogHostFor(
+    content::WebContents* web_contents) {
+  return this;
+}
+
 // The web contents modal dialog must be parented to *something*; use the
 // WebContents window since there is no true browser window for unit tests.
 gfx::NativeView DialogTestBrowserWindow::GetHostView() const {

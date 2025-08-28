@@ -97,12 +97,11 @@ struct BrowserViewLayout::ContentsContainerLayoutResult {
   gfx::Rect separator_bounds;
 };
 
-class BrowserViewLayout::WebContentsModalDialogHostViews
+class BrowserViewLayout::BrowserModalDialogHostViews
     : public WebContentsModalDialogHost,
       public views::WidgetObserver {
  public:
-  explicit WebContentsModalDialogHostViews(
-      BrowserViewLayout* browser_view_layout)
+  explicit BrowserModalDialogHostViews(BrowserViewLayout* browser_view_layout)
       : browser_view_layout_(browser_view_layout) {
     // browser_view might be nullptr in unit tests.
     if (browser_view_layout->browser_view_) {
@@ -111,12 +110,11 @@ class BrowserViewLayout::WebContentsModalDialogHostViews
     }
   }
 
-  WebContentsModalDialogHostViews(const WebContentsModalDialogHostViews&) =
+  BrowserModalDialogHostViews(const BrowserModalDialogHostViews&) = delete;
+  BrowserModalDialogHostViews& operator=(const BrowserModalDialogHostViews&) =
       delete;
-  WebContentsModalDialogHostViews& operator=(
-      const WebContentsModalDialogHostViews&) = delete;
 
-  ~WebContentsModalDialogHostViews() override {
+  ~BrowserModalDialogHostViews() override {
     observer_list_.Notify(&ModalDialogHostObserver::OnHostDestroying);
   }
 
@@ -266,7 +264,7 @@ BrowserViewLayout::BrowserViewLayout(
       side_panel_rounded_corner_(side_panel_rounded_corner),
       contents_separator_(contents_separator),
       tab_strip_(tab_strip_region_view_->tab_strip()),
-      dialog_host_(std::make_unique<WebContentsModalDialogHostViews>(this)) {}
+      dialog_host_(std::make_unique<BrowserModalDialogHostViews>(this)) {}
 
 BrowserViewLayout::~BrowserViewLayout() = default;
 

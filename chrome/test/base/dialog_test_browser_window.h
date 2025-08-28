@@ -10,6 +10,10 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 
+namespace content {
+class WebContents;
+}
+
 namespace views {
 class Widget;
 }
@@ -28,6 +32,9 @@ class DialogTestBrowserWindow : public TestBrowserWindow,
   // BrowserWindow overrides
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
       override;
+
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHostFor(
+      content::WebContents* web_contents) override;
 
   // web_modal::WebContentsModalDialogHost overrides
   gfx::NativeView GetHostView() const override;

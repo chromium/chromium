@@ -106,7 +106,7 @@ class BrowserViewLayout : public views::LayoutManager {
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserViewLayoutTest, BrowserViewLayout);
   FRIEND_TEST_ALL_PREFIXES(BrowserViewLayoutTest, Layout);
-  class WebContentsModalDialogHostViews;
+  class BrowserModalDialogHostViews;
 
   // Layout the following controls, updating `available_bounds` to leave the
   // remaining space available for future controls.
@@ -178,8 +178,8 @@ class BrowserViewLayout : public views::LayoutManager {
   raw_ptr<tabs::VerticalTabStripStateController>
       vertical_tab_strip_controller_ = nullptr;
 
-  // The host for use in positioning the web contents modal dialog.
-  std::unique_ptr<WebContentsModalDialogHostViews> dialog_host_;
+  // The host for use in positioning the web contents browser modal dialog.
+  std::unique_ptr<BrowserModalDialogHostViews> dialog_host_;
 
   // The latest dialog bounds applied during a layout pass.
   gfx::Rect latest_dialog_bounds_in_screen_;

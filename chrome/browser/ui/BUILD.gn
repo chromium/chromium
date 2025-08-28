@@ -3800,6 +3800,8 @@ static_library("ui") {
       "views/frame/system_menu_model_builder.h",
       "views/frame/system_menu_model_delegate.cc",
       "views/frame/system_menu_model_delegate.h",
+      "views/frame/tab_modal_dialog_host.cc",
+      "views/frame/tab_modal_dialog_host.h",
       "views/frame/tab_strip_region_view.cc",
       "views/frame/tab_strip_region_view.h",
       "views/frame/top_container_background.cc",
@@ -5100,7 +5102,7 @@ static_library("ui") {
     ]
 
     if (enable_pdf_save_to_drive) {
-      deps += [ "//chrome/browser/ui/views/save_to_drive:save_to_drive" ]
+      deps += [ "//chrome/browser/ui/views/save_to_drive" ]
       allow_circular_includes_from +=
           [ "//chrome/browser/ui/views/save_to_drive:save_to_drive" ]
     }

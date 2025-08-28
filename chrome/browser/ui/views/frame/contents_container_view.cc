@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_mini_toolbar.h"
 #include "chrome/browser/ui/views/frame/scrim_view.h"
+#include "chrome/browser/ui/views/frame/tab_modal_dialog_host.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
 #include "chrome/common/chrome_features.h"
@@ -58,7 +59,8 @@ constexpr int kNewTabFooterHeight = 56;
 }  // namespace
 
 ContentsContainerView::ContentsContainerView(BrowserView* browser_view)
-    : browser_view_(browser_view) {
+    : browser_view_(browser_view),
+      web_contents_modal_dialog_host_(browser_view_, this) {
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
   SetProperty(views::kElementIdentifierKey, kContentsContainerViewElementId);
 

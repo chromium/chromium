@@ -255,6 +255,10 @@ class BrowserWindowInterface : public content::PageNavigator {
   virtual web_modal::WebContentsModalDialogHost*
   GetWebContentsModalDialogHostForWindow() = 0;
 
+  // Returns the web contents modal dialog host for the `tab_interface`.
+  virtual web_modal::WebContentsModalDialogHost*
+  GetWebContentsModalDialogHostForTab(tabs::TabInterface* tab_interface) = 0;
+
   // Whether the window is active.
   // The definition of "active" aligns with the window being painted as active
   // instead of the top level widget having focus.

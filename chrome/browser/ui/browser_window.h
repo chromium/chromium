@@ -536,6 +536,13 @@ class BrowserWindow : public ui::BaseWindow {
   virtual web_modal::WebContentsModalDialogHost*
   GetWebContentsModalDialogHost() = 0;
 
+  // Return the WebContentsModalDialogHost for use in positioning web contents
+  // modal dialogs relative to its corresponding container view if possible,
+  // otherwise falls back to returning the WebContentsModalDialogHost that is
+  // responsible for modal positioning relative to the browser window.
+  virtual web_modal::WebContentsModalDialogHost*
+  GetWebContentsModalDialogHostFor(content::WebContents* web_contents) = 0;
+
   // Construct a BrowserWindow implementation for the specified |browser|.
   static BrowserWindow* CreateBrowserWindow(std::unique_ptr<Browser> browser,
                                             bool user_gesture,

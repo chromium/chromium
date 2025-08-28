@@ -812,6 +812,8 @@ class Browser : public TabStripModelObserver,
   const ui::UnownedUserDataHost& GetUnownedUserDataHost() const override;
   web_modal::WebContentsModalDialogHost*
   GetWebContentsModalDialogHostForWindow() override;
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHostForTab(
+      tabs::TabInterface* tab_interface) override;
   bool IsActive() const override;
   base::CallbackListSubscription RegisterDidBecomeActive(
       DidBecomeActiveCallback callback) override;

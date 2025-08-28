@@ -96,10 +96,12 @@ bool PlatformClipsChildrenToViewport() {
 }
 
 gfx::Rect GetModalDialogBounds(views::Widget* widget,
-                               BrowserWindowInterface* host_browser_window,
+                               TabInterface* tab_interface,
                                const gfx::Size& size) {
+  BrowserWindowInterface* const host_browser_window =
+      tab_interface->GetBrowserWindowInterface();
   gfx::Point position =
-      host_browser_window->GetWebContentsModalDialogHostForWindow()
+      host_browser_window->GetWebContentsModalDialogHostForTab(tab_interface)
           ->GetDialogPosition(size);
 
   if (widget->non_client_view()) {
@@ -148,22 +150,19 @@ gfx::Rect GetModalDialogBounds(views::Widget* widget,
   return dialog_bounds;
 }
 
-void ConfigureDesiredBoundsDelegate(
-    views::Widget* widget,
-    BrowserWindowInterface* host_browser_window) {
+void ConfigureDesiredBoundsDelegate(views::Widget* widget,
+                                    TabInterface* tab_interface) {
   views::WidgetDelegate* delegate = widget->widget_delegate();
   // This callback is invoked in two cases:
   // 1. by auto-resizing (Widget::is_autosized()) widgets when the layout is
   // invalidated.
   // 2. by BubbleDialogDelegate::SizeToContents().
   delegate->set_desired_bounds_delegate(base::BindRepeating(
-      [](views::Widget* widget,
-         BrowserWindowInterface* host_browser_window) -> gfx::Rect {
+      [](views::Widget* widget, TabInterface* tab_interface) -> gfx::Rect {
         return GetModalDialogBounds(
-            widget, host_browser_window,
-            widget->GetRootView()->GetPreferredSize({}));
+            widget, tab_interface, widget->GetRootView()->GetPreferredSize({}));
       },
-      widget, host_browser_window));
+      widget, tab_interface));
 }
 
 // The dialog widget should be visible if and only if the tab is in the
@@ -282,9 +281,8 @@ void TabDialogManager::ShowDialog(views::Widget* widget,
   }
   widget_ = widget;
   params_ = std::move(params);
-  auto* browser_window_interface = tab_interface_->GetBrowserWindowInterface();
   if (!params_->get_dialog_bounds) {
-    ConfigureDesiredBoundsDelegate(widget_.get(), browser_window_interface);
+    ConfigureDesiredBoundsDelegate(widget_.get(), tab_interface_);
   }
   UpdateModalDialogBounds();
   widget_->SetNativeWindowProperty(
@@ -384,7 +382,6 @@ void TabDialogManager::UpdateModalDialogBounds() {
     return;
   }
 
-  auto* host_browser_window = tab_interface_->GetBrowserWindowInterface();
   auto* host_widget = GetHostWidget();
   const gfx::Size size = widget_->GetRootView()->GetPreferredSize({});
 
@@ -402,8 +399,7 @@ void TabDialogManager::UpdateModalDialogBounds() {
   if (params_->get_dialog_bounds) {
     target_bounds = params_->get_dialog_bounds.Run();
   } else {
-    target_bounds =
-        GetModalDialogBounds(widget_.get(), host_browser_window, size);
+    target_bounds = GetModalDialogBounds(widget_.get(), tab_interface_, size);
   }
 
   if (params_->animated && gfx::Animation::ShouldRenderRichAnimation() &&

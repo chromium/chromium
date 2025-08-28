@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/devtools/devtools_contents_resizing_strategy.h"
+#include "chrome/browser/ui/views/frame/tab_modal_dialog_host.h"
 #include "ui/views/focus/external_focus_tracker.h"
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/view.h"
@@ -89,6 +90,10 @@ class ContentsContainerView : public views::View,
     return watermark_view_;
   }
 
+  TabModalDialogHost* web_contents_modal_dialog_host() {
+    return &web_contents_modal_dialog_host_;
+  }
+
   // Sets the contents resizing strategy.
   void SetContentsResizingStrategy(
       const DevToolsContentsResizingStrategy& strategy);
@@ -135,6 +140,8 @@ class ContentsContainerView : public views::View,
 
   raw_ptr<BrowserView> browser_view_ = nullptr;
   raw_ptr<ContentsWebView> contents_view_ = nullptr;
+
+  TabModalDialogHost web_contents_modal_dialog_host_;
 
   // The view that contains devtools window for the WebContents.
   raw_ptr<views::WebView> devtools_web_view_ = nullptr;
