@@ -78,7 +78,7 @@ public class TwaSplashController implements SplashDelegate {
                         getSplashScreenParamsFromIntent(),
                         SplashScreenParamKey.KEY_FADE_OUT_DURATION_MS,
                         0);
-        mSplashController.setConfig(this, splashHideAnimationDurationMs);
+        mSplashController.setConfigAndShowSplash(this, splashHideAnimationDurationMs);
     }
 
     @Override

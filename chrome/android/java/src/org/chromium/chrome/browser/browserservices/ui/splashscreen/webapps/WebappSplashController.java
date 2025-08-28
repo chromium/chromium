@@ -48,7 +48,7 @@ public class WebappSplashController implements SplashDelegate {
 
         mWebappInfo = WebappInfo.create(intentDataProvider);
 
-        mSplashController.setConfig(this, HIDE_ANIMATION_DURATION_MS);
+        mSplashController.setConfigAndShowSplash(this, HIDE_ANIMATION_DURATION_MS);
 
         if (mWebappInfo.isForWebApk()) {
             mWebApkNetworkErrorObserver = new WebApkSplashNetworkErrorObserver(activity);
