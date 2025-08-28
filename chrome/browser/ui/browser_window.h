@@ -335,11 +335,6 @@ class BrowserWindow : public ui::BaseWindow {
   // transition if |animate| is true.
   virtual void UpdateCustomTabBarVisibility(bool visible, bool animate) = 0;
 
-  // Updates the visibility of the scrim that covers the content area associated
-  // with |contents|.
-  virtual void SetContentScrimVisibility(content::WebContents* contents,
-                                         bool visible) = 0;
-
   // Updates the visibility of the scrim that covers the devtools area.
   virtual void SetDevToolsScrimVisibility(bool visible) = 0;
 

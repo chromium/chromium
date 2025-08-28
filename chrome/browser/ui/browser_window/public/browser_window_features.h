@@ -64,6 +64,7 @@ class ProfileMenuCoordinator;
 class ReadingListSidePanelCoordinator;
 class RecentActivityBubbleCoordinator;
 class BrowserSelectFileDialogController;
+class ScrimViewController;
 class SidePanelCoordinator;
 class SidePanelUI;
 class SigninViewController;
@@ -533,6 +534,8 @@ class BrowserWindowFeatures {
   std::unique_ptr<default_browser::PinInfoBarController>
       pin_infobar_controller_;
 #endif
+
+  std::unique_ptr<ScrimViewController> scrim_view_controller_;
 
   std::unique_ptr<SidePanelCoordinator> side_panel_coordinator_;
 

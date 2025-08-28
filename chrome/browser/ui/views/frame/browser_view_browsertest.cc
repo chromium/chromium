@@ -879,6 +879,44 @@ IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest,
                    .IsDropTimerRunningForTesting());
 }
 
+IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest, ScrimForTabModalInSplitView) {
+  if (!base::FeatureList::IsEnabled(features::KScrimForTabModal)) {
+    GTEST_SKIP();
+  }
+
+  // Create a split view with two tabs followed by a third that will show the
+  // scrim.
+  chrome::AddTabAt(browser(), GURL(), -1, true);
+  chrome::AddTabAt(browser(), GURL(), -1, true);
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->tab_strip_model()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // Show a tab modal dialog on the third tab (not part of the split).
+  browser()->tab_strip_model()->ActivateTabAt(2);
+  content::WebContents* contents = browser_view()->GetActiveWebContents();
+  auto delegate = std::make_unique<TestTabModalConfirmDialogDelegate>(contents);
+  TabModalConfirmDialog::Create(std::move(delegate), contents);
+  EXPECT_TRUE(
+      active_contents_container_view()->contents_scrim_view()->GetVisible());
+
+  // Activating a tab in the split will cause the scrim to hide.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  EXPECT_FALSE(
+      active_contents_container_view()->contents_scrim_view()->GetVisible());
+
+  // Swapping the tab with the tab modal dialog into the inactive spot in the
+  // split should show the scrim on the inactive view.
+  browser()->tab_strip_model()->UpdateTabInSplit(
+      browser()->tab_strip_model()->GetTabAtIndex(1), 2,
+      TabStripModel::SplitUpdateType::kSwap);
+  EXPECT_FALSE(
+      active_contents_container_view()->contents_scrim_view()->GetVisible());
+  EXPECT_TRUE(
+      inactive_contents_container_view()->contents_scrim_view()->GetVisible());
+}
+
 #if BUILDFLAG(IS_MAC)
 class MacSideBySideBrowserViewTest : public InProcessBrowserTest {
  public:

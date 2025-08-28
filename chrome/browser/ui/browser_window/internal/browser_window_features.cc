@@ -73,6 +73,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_border_controller.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
+#include "chrome/browser/ui/views/frame/scrim_view_controller.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/fullscreen_control/fullscreen_control_host.h"
 #include "chrome/browser/ui/views/incognito_clear_browsing_data_dialog_coordinator.h"
@@ -528,6 +529,8 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
     provider->Init(browser_view);
   }
 
+  scrim_view_controller_ = std::make_unique<ScrimViewController>(browser_view);
+
   // TODO(crbug.com/346148093): Move SidePanelCoordinator construction to Init.
   // TODO(crbug.com/346148554): Do not create a SidePanelCoordinator for most
   // browser.h types
@@ -739,6 +742,8 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   immersive_mode_controller_.reset();
 
   exclusive_access_manager_.reset();
+
+  scrim_view_controller_.reset();
 
   if (auto* const provider = browser_elements_->AsA<BrowserElementsViews>()) {
     provider->TearDown();

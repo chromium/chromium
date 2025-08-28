@@ -2933,10 +2933,6 @@ void Browser::SetWebContentsBlocked(content::WebContents* web_contents,
   if (!blocked && contents_is_active && browser_active) {
     web_contents->Focus();
   }
-
-  if (contents_is_active) {
-    window_->SetContentScrimVisibility(web_contents, /*visible=*/blocked);
-  }
 }
 
 web_modal::WebContentsModalDialogHost*
@@ -3107,9 +3103,6 @@ void Browser::OnActiveTabChanged(WebContents* old_contents,
   // since the omnibox expects the correct element to already be focused when
   // it is updated.
   window_->OnActiveTabChanged(old_contents, new_contents, index, reason);
-
-  bool is_blocked = tab_strip_model_->IsTabBlocked(index);
-  window_->SetContentScrimVisibility(new_contents, /*visible=*/is_blocked);
 
   browser_window_features()->exclusive_access_manager()->OnTabDetachedFromView(
       old_contents);

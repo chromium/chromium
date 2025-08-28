@@ -87,8 +87,6 @@ class WebUIBrowserWindow : public BrowserWindow,
   void UpdateToolbar(content::WebContents* contents) override;
   bool UpdateToolbarSecurityState() override;
   void UpdateCustomTabBarVisibility(bool visible, bool animate) override;
-  void SetContentScrimVisibility(content::WebContents* contents,
-                                 bool visible) override;
   void SetDevToolsScrimVisibility(bool visible) override;
   void ResetToolbarTabState(content::WebContents* contents) override;
   void FocusToolbar() override;

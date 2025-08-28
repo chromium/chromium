@@ -2388,17 +2388,6 @@ void BrowserView::UpdateCustomTabBarVisibility(bool visible, bool animate) {
   }
 }
 
-void BrowserView::SetContentScrimVisibility(content::WebContents* contents,
-                                            bool visible) {
-  if (base::FeatureList::IsEnabled(features::KScrimForTabModal)) {
-    ContentsContainerView* contents_container_view =
-        GetContentsContainerViewFor(contents);
-    if (contents_container_view) {
-      contents_container_view->contents_scrim_view()->SetVisible(visible);
-    }
-  }
-}
-
 void BrowserView::SetDevToolsScrimVisibility(bool visible) {
   if (base::FeatureList::IsEnabled(features::KScrimForTabModal)) {
     GetActiveContentsContainerView()->devtools_scrim_view()->SetVisible(
