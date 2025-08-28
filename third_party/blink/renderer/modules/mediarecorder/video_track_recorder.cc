@@ -101,12 +101,9 @@ struct CrossThreadCopier<media::Muxer::VideoParameters>
 class VideoTrackRecorderImplContextProvider {
  public:
   static std::unique_ptr<WebGraphicsContext3DProvider>
-  CreateOffscreenGraphicsContext(Platform::ContextAttributes context_attributes,
-                                 Platform::GraphicsInfo* gl_info,
-                                 const KURL& url) {
+  CreateOffscreenGraphicsContext(const KURL& url) {
     base::ScopedAllowBaseSyncPrimitives allow;
-    return CreateRasterGraphicsContextProvider(context_attributes, gl_info,
-                                               url);
+    return CreateRasterGraphicsContextProvider(url);
   }
 };
 
@@ -591,14 +588,9 @@ VideoTrackRecorderImpl::Encoder::MaybeProvideEncodableFrame(
   // there
   if (!encoder_thread_context_) {
     // PaintCanvasVideoRenderer requires these settings to work.
-    Platform::ContextAttributes attributes;
-    attributes.enable_raster_interface = true;
-    attributes.prefer_low_power_gpu = true;
-
-    Platform::GraphicsInfo info;
     encoder_thread_context_ =
         VideoTrackRecorderImplContextProvider::CreateOffscreenGraphicsContext(
-            attributes, &info, KURL("chrome://VideoTrackRecorderImpl"));
+            KURL("chrome://VideoTrackRecorderImpl"));
 
     if (encoder_thread_context_ &&
         !encoder_thread_context_->BindToCurrentSequence()) {

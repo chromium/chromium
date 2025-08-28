@@ -52,13 +52,14 @@ void CreateWebGPUGraphicsContextOnMainThreadAsync(
 }  // namespace
 
 std::unique_ptr<WebGraphicsContext3DProvider>
-CreateRasterGraphicsContextProvider(
-    Platform::ContextAttributes context_attributes,
-    Platform::GraphicsInfo* gl_info,
-    const KURL& url) {
+CreateRasterGraphicsContextProvider(const KURL& url) {
+  Platform::ContextAttributes attributes;
+  attributes.enable_raster_interface = true;
+  attributes.prefer_low_power_gpu = true;
+  Platform::GraphicsInfo gl_info;
   if (IsMainThread()) {
     return Platform::Current()->CreateOffscreenGraphicsContext3DProvider(
-        context_attributes, url, gl_info);
+        attributes, url, &gl_info);
   } else {
     base::WaitableEvent waitable_event;
     std::unique_ptr<WebGraphicsContext3DProvider> created_context_provider;
@@ -67,7 +68,7 @@ CreateRasterGraphicsContextProvider(
             AccessMainThreadForWebGraphicsContext3DProvider()),
         FROM_HERE,
         CrossThreadBindOnce(
-            [](Platform::ContextAttributes context_attributes,
+            [](Platform::ContextAttributes attributes,
                Platform::GraphicsInfo* gl_info, const KURL& url,
                std::unique_ptr<WebGraphicsContext3DProvider>* out_provider,
                base::WaitableEvent* waitable_event) {
@@ -77,10 +78,10 @@ CreateRasterGraphicsContextProvider(
               // changes.
               *out_provider =
                   Platform::Current()->CreateOffscreenGraphicsContext3DProvider(
-                      context_attributes, url, gl_info);
+                      attributes, url, gl_info);
               waitable_event->Signal();
             },
-            context_attributes, CrossThreadUnretained(gl_info), url,
+            attributes, CrossThreadUnretained(&gl_info), url,
             CrossThreadUnretained(&created_context_provider),
             CrossThreadUnretained(&waitable_event)));
     waitable_event.Wait();

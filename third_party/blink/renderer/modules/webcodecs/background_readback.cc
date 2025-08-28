@@ -327,13 +327,8 @@ bool SyncReadbackThread::LazyInitialize() {
 
   if (context_provider_)
     return true;
-  Platform::ContextAttributes attributes;
-  attributes.enable_raster_interface = true;
-  attributes.prefer_low_power_gpu = true;
-
-  Platform::GraphicsInfo info;
-  context_provider_ = CreateRasterGraphicsContextProvider(
-      attributes, &info, KURL("chrome://BackgroundReadback"));
+  context_provider_ =
+      CreateRasterGraphicsContextProvider(KURL("chrome://BackgroundReadback"));
 
   if (!context_provider_) {
     DLOG(ERROR) << "Can't create context provider.";
