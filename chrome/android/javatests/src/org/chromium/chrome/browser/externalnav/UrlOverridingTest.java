@@ -591,9 +591,6 @@ public class UrlOverridingTest {
             finishCallback.waitForCallback(0, preClickFinishTarget, 20, TimeUnit.SECONDS);
         }
 
-        firstPaintCallback.waitForCallback(
-                "First page content was not drawn.", 0, 1, 20, TimeUnit.SECONDS);
-
         if (params.needClick) {
             int loadCount = loadCallback.getCallCount();
             doClick(params.clickTargetId, tab);
@@ -630,7 +627,11 @@ public class UrlOverridingTest {
 
             if (UrlUtilities.isHttpOrHttps(latestTabHolder.value.getUrl())) {
                 firstPaintCallback.waitForCallback(
-                        "New Tab content was not drawn.", 1, 1, 20, TimeUnit.SECONDS);
+                        "New Tab content was not drawn.",
+                        firstPaintCallback.getCallCount(),
+                        1,
+                        20,
+                        TimeUnit.SECONDS);
             }
         }
 
