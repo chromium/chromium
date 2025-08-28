@@ -24,7 +24,7 @@ PipewireDesktopCapturer::PipewireDesktopCapturer(
 PipewireDesktopCapturer::~PipewireDesktopCapturer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (stream_) {
-    stream_->StopVideoCapture();
+    stream_->SetCallback(nullptr);
   }
 }
 

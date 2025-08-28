@@ -6,27 +6,17 @@
 #define REMOTING_HOST_LINUX_GNOME_INTERACTION_STRATEGY_H_
 
 #include <memory>
-#include <string>
-#include <tuple>
 
 #include "base/containers/flat_map.h"
-#include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/types/expected.h"
-#include "remoting/host/base/loggable.h"
 #include "remoting/host/desktop_capturer_proxy.h"
 #include "remoting/host/desktop_interaction_strategy.h"
-#include "remoting/host/linux/ei_sender_session.h"
-#include "remoting/host/linux/gdbus_connection_ref.h"
-#include "remoting/host/linux/gdbus_fd_list.h"
-#include "remoting/host/linux/gnome_display_config_dbus_client.h"
-#include "remoting/host/linux/gvariant_ref.h"
-#include "remoting/host/linux/pipewire_capture_stream.h"
+#include "remoting/host/linux/gnome_remote_desktop_session.h"
 #include "remoting/host/linux/pipewire_capture_stream_manager.h"
-#include "remoting/host/linux/pipewire_desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 namespace remoting {
@@ -66,8 +56,8 @@ class GnomeInteractionStrategy : public DesktopInteractionStrategy,
   friend class GnomeInteractionStrategyFactory;
   friend class GnomeDesktopDisplayInfoMonitor;
 
-  using InitCallback =
-      base::OnceCallback<void(base::expected<void, std::string>)>;
+  using InitCallbackSignature = void(base::expected<void, std::string>);
+  using InitCallback = base::OnceCallback<InitCallbackSignature>;
   explicit GnomeInteractionStrategy(
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
   template <typename SuccessType, typename String>
@@ -89,17 +79,9 @@ class GnomeInteractionStrategy : public DesktopInteractionStrategy,
       base::WeakPtr<PipewireCaptureStream> stream) override;
 
   GDBusConnectionRef connection_ GUARDED_BY_CONTEXT(sequence_checker_);
-  InitCallback init_callback_;
-  gvariant::ObjectPath session_path_ GUARDED_BY_CONTEXT(sequence_checker_);
-  gvariant::ObjectPath screencast_session_path_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-  std::unique_ptr<EiSenderSession> ei_session_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  raw_ptr<GnomeRemoteDesktopSession> remote_desktop_session_ GUARDED_BY_CONTEXT(
+      sequence_checker_) = GnomeRemoteDesktopSession::GetInstance();
   gvariant::ObjectPath stream_path_ GUARDED_BY_CONTEXT(sequence_checker_);
-  GnomeDisplayConfigDBusClient display_config_client_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-  PipewireCaptureStreamManager capture_stream_manager_
-      GUARDED_BY_CONTEXT(sequence_checker_);
   PipewireCaptureStreamManager::Observer::Subscription
       capture_stream_manager_subscription_
           GUARDED_BY_CONTEXT(sequence_checker_);
@@ -114,7 +96,7 @@ class GnomeInteractionStrategy : public DesktopInteractionStrategy,
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
-  base::WeakPtrFactory<GnomeInteractionStrategy> weak_ptr_factory_;
+  base::WeakPtrFactory<GnomeInteractionStrategy> weak_ptr_factory_{this};
 };
 
 class GnomeInteractionStrategyFactory

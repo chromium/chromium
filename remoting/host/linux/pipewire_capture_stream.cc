@@ -24,21 +24,53 @@
 
 namespace remoting {
 
-PipewireCaptureStream::CallbackProxy::CallbackProxy() = default;
+// SharedScreenCastStream runs the pipewire loop, and invokes frame callbacks,
+// on a separate thread. This class is responsible for bouncing them back to
+// the corresponding methods of `parent_` on `callback_sequence`.
+class PipewireCaptureStream::CallbackProxy
+    : public webrtc::DesktopCapturer::Callback {
+ public:
+  explicit CallbackProxy(base::WeakPtr<PipewireCaptureStream> parent);
+  ~CallbackProxy() override;
+
+  void Start();
+  void Stop();
+
+  // Callback interface
+  void OnFrameCaptureStart() override;
+  void OnCaptureResult(webrtc::DesktopCapturer::Result result,
+                       std::unique_ptr<webrtc::DesktopFrame> frame) override;
+
+ private:
+  // Lock is needed since Initialize() and the callback methods are called
+  // from different threads. It also ensures that the initial frame is
+  // delivered before any frames received from the SharedScreenCastStream.
+  base::Lock lock_;
+  bool started_ GUARDED_BY(lock_);
+  scoped_refptr<base::SequencedTaskRunner> callback_sequence_ =
+      base::SequencedTaskRunner::GetCurrentDefault();
+  base::WeakPtr<PipewireCaptureStream> parent_;
+};
+
+PipewireCaptureStream::CallbackProxy::CallbackProxy(
+    base::WeakPtr<PipewireCaptureStream> parent)
+    : parent_(parent) {}
 
 PipewireCaptureStream::CallbackProxy::~CallbackProxy() = default;
 
-void PipewireCaptureStream::CallbackProxy::Initialize(
-    base::WeakPtr<PipewireCaptureStream> parent) {
+void PipewireCaptureStream::CallbackProxy::Start() {
   base::AutoLock lock(lock_);
-  callback_sequence_ = base::SequencedTaskRunner::GetCurrentDefault();
-  parent_ = parent;
+  started_ = true;
+}
+
+void PipewireCaptureStream::CallbackProxy::Stop() {
+  base::AutoLock lock(lock_);
+  started_ = false;
 }
 
 void PipewireCaptureStream::CallbackProxy::OnFrameCaptureStart() {
   base::AutoLock lock(lock_);
-  if (!callback_sequence_) {
-    // Not initialized yet.
+  if (!started_) {
     return;
   }
   callback_sequence_->PostTask(
@@ -50,8 +82,7 @@ void PipewireCaptureStream::CallbackProxy::OnCaptureResult(
     webrtc::DesktopCapturer::Result result,
     std::unique_ptr<webrtc::DesktopFrame> frame) {
   base::AutoLock lock(lock_);
-  if (!callback_sequence_) {
-    // Not initialized yet.
+  if (!started_) {
     return;
   }
   callback_sequence_->PostTask(
@@ -59,7 +90,9 @@ void PipewireCaptureStream::CallbackProxy::OnCaptureResult(
                                 parent_, result, std::move(frame)));
 }
 
-PipewireCaptureStream::PipewireCaptureStream() = default;
+PipewireCaptureStream::PipewireCaptureStream() {
+  callback_proxy_ = std::make_unique<CallbackProxy>(GetWeakPtr());
+}
 
 PipewireCaptureStream::~PipewireCaptureStream() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -81,24 +114,46 @@ void PipewireCaptureStream::StartVideoCapture() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   stream_->StartScreenCastStream(pipewire_node_, pipewire_fd_,
                                  resolution_.width(), resolution_.height(),
-                                 false, &callback_proxy_);
+                                 false, callback_proxy_.get());
 }
 
 void PipewireCaptureStream::SetCallback(
     base::WeakPtr<webrtc::DesktopCapturer::Callback> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   callback_ = callback;
+  if (!callback_) {
+    // The current lifecycle of the pipewire stream and its virtual monitor is:
+    //
+    // 1. Call the org_gnome_Mutter_ScreenCast_Stream::Start API, which creates
+    //    the pipewire stream but doesn't actually create the virtual monitor.
+    // 2. Call stream_->StartScreenCastStream(), which creates the virtual
+    //    monitor.
+    // 3. Call stream_->StopScreenCastStream(), which stops the stream but
+    //    doesn't destroy the virtual monitor.
+    // 4. Call the org_gnome_Mutter_ScreenCast_Stream::Stop API, which destroys
+    //    the virtual monitor.
+    //
+    // Based on this, we could call StopScreenCastStream() here and call
+    // StartScreenCastStream() again when the callback is set to a non-null
+    // value. However, the lifecycle is not documented anywhere, and it's
+    // asymmetrical which doesn't sound right, so we don't do it in case the
+    // behavior gets changed in the future.
+    callback_proxy_->Stop();
+    is_capturing_frame_ = false;
+    return;
+  }
+
   auto self = weak_ptr_factory_.GetWeakPtr();
   // RecaptureLatestFrameAsDirty() must be called before
   // callback_proxy_.Initialize(), since calling the latter will immediately
   // start pumping frames to `PipewireCaptureStream` and can potentially cause
-  // race conditions.
+  // race conditions (an old frame is delivered after the current frame).
   RecaptureLatestFrameAsDirty();
   // While unlikely, RecaptureLatestFrameAsDirty() runs `callback_` in the
   // current stack frame and could potentially delete `this`, so we should only
   // access class members if the weak pointer remains valid.
   if (self) {
-    callback_proxy_.Initialize(self);
+    callback_proxy_->Start();
   }
 }
 
@@ -130,11 +185,6 @@ std::optional<webrtc::DesktopVector>
 PipewireCaptureStream::CaptureCursorPosition() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return stream_->CaptureCursorPosition();
-}
-
-void PipewireCaptureStream::StopVideoCapture() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  stream_->StopScreenCastStream();
 }
 
 std::string_view PipewireCaptureStream::mapping_id() {
