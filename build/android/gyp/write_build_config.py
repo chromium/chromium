@@ -652,6 +652,7 @@ def main():
 
   main_config = {}
   res_config = {}
+  rtxt_config = {}
 
   if is_apk:
     main_config['apk_path'] = params['apk_path']
@@ -696,7 +697,7 @@ def main():
       main_config['all_dex_files'] = list(tv.all_dex_files)
 
     if target_type in ('dist_aar', 'java_library'):
-      main_config['dependency_rtxt_files'] = (
+      rtxt_config['dependency_rtxt_files'] = (
           params.resource_deps().collect('rtxt_path'))
 
     sdk_deps = params.deps().of_type('system_java_library')
@@ -902,6 +903,11 @@ def main():
     path = build_config_path.replace('.build_config.json',
                                      '.res.build_config.json')
     build_utils.WriteJson(res_config, path, only_if_changed=True)
+
+  if rtxt_config:
+    path = build_config_path.replace('.build_config.json',
+                                     '.rtxt.build_config.json')
+    build_utils.WriteJson(rtxt_config, path, only_if_changed=True)
 
   build_utils.WriteJson(main_config, build_config_path, only_if_changed=True)
 

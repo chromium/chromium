@@ -1703,6 +1703,7 @@ if (!is_robolectric && enable_java_templates) {
 
     _build_config = "$target_gen_dir/$target_name.build_config.json"
     _res_build_config = "$target_gen_dir/$target_name.res.build_config.json"
+    _rtxt_build_config = "$target_gen_dir/$target_name.rtxt.build_config.json"
     _build_config_target_name = "$target_name$build_config_target_suffix"
 
     write_build_config(_build_config_target_name) {
@@ -1718,6 +1719,7 @@ if (!is_robolectric && enable_java_templates) {
 
     _rebased_build_config = rebase_path(_build_config, root_build_dir)
     _rebased_res_build_config = rebase_path(_res_build_config, root_build_dir)
+    _rebased_rtxt_build_config = rebase_path(_rtxt_build_config, root_build_dir)
 
     action_with_pydeps(target_name) {
       forward_variables_from(invoker,
@@ -1732,6 +1734,7 @@ if (!is_robolectric && enable_java_templates) {
       inputs = [
         _build_config,
         _res_build_config,
+        _rtxt_build_config,
       ]
 
       # Although these will be listed as deps in the depfile, they must also
@@ -1750,7 +1753,7 @@ if (!is_robolectric && enable_java_templates) {
         rebase_path(invoker.output, root_build_dir),
         "--dependencies-res-zips=@FileArg($_rebased_res_build_config:dependency_zips)",
         "--dependencies-res-zips=@FileArg($_rebased_res_build_config:dependency_zip_overlays)",
-        "--r-text-files=@FileArg($_rebased_build_config:dependency_rtxt_files)",
+        "--r-text-files=@FileArg($_rebased_rtxt_build_config:dependency_rtxt_files)",
         "--proguard-configs=@FileArg($_rebased_build_config:proguard_all_configs)",
       ]
       if (_direct_deps_only) {

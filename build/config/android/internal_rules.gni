@@ -141,6 +141,15 @@ template("write_build_config") {
                                  ".res.build_config.json") ]
   }
 
+  if (_type == "dist_aar" ||
+      (_type == "java_library" &&
+       (!invoker.is_prebuilt || (defined(invoker.dex_needs_classpath) &&
+                                 invoker.dex_needs_classpath)))) {
+    _outputs += [ string_replace(invoker.build_config,
+                                 ".build_config.json",
+                                 ".rtxt.build_config.json") ]
+  }
+
   if (current_toolchain == default_toolchain) {
     # Ensure targets match naming patterns so that __assetres, __header, __host,
     # and __validate targets work properly.
@@ -599,16 +608,17 @@ template("generate_r_java") {
   action_with_pydeps(target_name) {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
     depfile = "$target_gen_dir/${invoker.target_name}.d"
-    inputs = [ invoker.build_config ]
+    inputs = [ invoker.rtxt_build_config ]
     outputs = [ invoker.srcjar_path ]
-    _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
+    _rebased_rtxt_build_config =
+        rebase_path(invoker.rtxt_build_config, root_build_dir)
     script = "//build/android/gyp/create_r_java.py"
     args = [
       "--depfile",
       rebase_path(depfile, root_build_dir),
       "--srcjar-out",
       rebase_path(invoker.srcjar_path, root_build_dir),
-      "--deps-rtxts=@FileArg($_rebased_build_config:dependency_rtxt_files)",
+      "--deps-rtxts=@FileArg($_rebased_rtxt_build_config:dependency_rtxt_files)",
       "--r-package=${invoker.package}",
     ]
   }
@@ -3893,7 +3903,9 @@ if (enable_java_templates) {
         generate_r_java(_fake_rjava_target) {
           deps = [ ":$_build_config_target_name" ] + _java_assetres_deps +
                  _non_java_deps
-          build_config = _build_config
+          _rtxt_build_config =
+              "$target_gen_dir/$_main_target_name.rtxt.build_config.json"
+          rtxt_build_config = _rtxt_build_config
 
           # Filepath has to be exactly this because compile_java looks for the
           # srcjar of srcjar_deps at this location $gen_dir/$target_name.srcjar
