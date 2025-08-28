@@ -300,7 +300,11 @@ void WaylandZwpLinuxDmabuf::OnMainDevice(void* data,
   // listener, and the CHECK above ensures there is 1 element in the wl_array.
   self->main_dev_ = UNSAFE_BUFFERS(reinterpret_cast<dev_t*>(device->data)[0]);
   drmDevicePtr raw_device;
-  drmGetDeviceFromDevId(self->main_dev_, 0, &raw_device);
+  int ret = drmGetDeviceFromDevId(self->main_dev_, 0, &raw_device);
+  if (ret < 0) {
+    PLOG(ERROR) << "drmGetDeviceFromDevId() returned an error";
+    return;
+  }
   ScopedDrmDevice drm_device(raw_device);
 
   if (!drm_device || !(drm_device->available_nodes & 1 << DRM_NODE_RENDER)) {
