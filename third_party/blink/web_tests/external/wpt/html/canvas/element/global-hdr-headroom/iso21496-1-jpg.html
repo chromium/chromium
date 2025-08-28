@@ -15,43 +15,45 @@
 //  * Some use sRGB as the gain application primaries, others use Rec2020
 // The tests that use a Rec2100 PQ or HLG base are allowed a higher amount of
 // error because of the brutal quantization error in those spaces.
-promise_test(async () => {
-  const tests = [
-    {
-      filename:'iso21496-1-base_srgb-altr_none-use_base.jpg',
-      workingSpace:'srgb',
-      epsilon:0x4/255
-    },
-    {
-      filename:'iso21496-1-base_srgb-altr_rec2020-use_altr.jpg',
-      workingSpace:'rec2020',
-      epsilon:0x4/255
-    },
-    /*
-    // Enable these when passing on at least one browser.
-    {
-      filename:'iso21496-1-base_rec2100pq-altr_none-use_base.jpg',
-      workingSpace:'rec2020',
-      epsilon:0x8/255
-    },
-    {
-      filename:'iso21496-1-base_rec2100pq-altr_none-use_altr.jpg',
-      workingSpace:'rec2020',
-      epsilon:0x8/255
-    },
-    {
-      filename:'iso21496-1-base_rec2100hlg-altr_none-use_base.jpg',
-      workingSpace:'rec2020',
-      epsilon:0x8/255
-    },
-    */
-  ];
-  for (const test of tests) {
+const tests = [
+  {
+    filename:'iso21496-1-base_srgb-altr_none-use_base.jpg',
+    desc:'base sRGB, use base primaries',
+    workingSpace:'srgb',
+    epsilon:0x4/255
+  },
+  {
+    filename:'iso21496-1-base_srgb-altr_rec2020-use_altr.jpg',
+    desc:'base sRGB, alternate Rec2020, use alternate primaries',
+    workingSpace:'rec2020',
+    epsilon:0x4/255
+  },
+  {
+    filename:'iso21496-1-base_rec2100pq-altr_none-use_base.jpg',
+    desc:'base Rec2100 PQ, use base primaries',
+    workingSpace:'rec2020',
+    epsilon:0xC/255
+  },
+  {
+    filename:'iso21496-1-base_rec2100pq-altr_none-use_altr.jpg',
+    desc:'base Rec2100 PQ, alternate has no profile, use alternate primaries',
+    workingSpace:'rec2020',
+    epsilon:0xC/255
+  },
+  {
+    filename:'iso21496-1-base_rec2100hlg-altr_none-use_base.jpg',
+    desc:'base Rec2100 HLG, use base primaries',
+    workingSpace:'rec2020',
+    epsilon:0x8/255
+  },
+];
+for (const test of tests) {
+  promise_test(async () => {
     filename = test.filename;
     const canvas = new OffscreenCanvas(64, 64);
     const ctx = canvas.getContext('2d', {colorType:'float16'});
     if (ctx.globalHDRHeadroom === undefined) {
-      break;
+      return;
     }
 
     // All test images evaluate to these sRGB values at headroom 0
@@ -104,9 +106,7 @@ promise_test(async () => {
     // Read back a pixel in each solid color region.
     for (let x = 0; x < 4; ++x) {
       for (let y = 0; y < 4; ++y) {
-        const name = 'filename:' + filename + ', ' +
-                     'globalHDRHeadroom: ' + globalHDRHeadroomValues[x] + ', ' +
-                     'x:' + x + ', ' +
+        const name = 'globalHDRHeadroom: ' + globalHDRHeadroomValues[x] + ', ' +
                      'y:' + y;
         const data = ctx.getImageData(
             8 + 16*x, 8 + 16*y, 1, 1,
@@ -114,12 +114,11 @@ promise_test(async () => {
         const actual = data.data;
         const expected = expectedPixelValues[x][y];
         for (let c = 0; c < 3; ++c) {
-          const kEpsilon = 0x08 / 255;
           assert_approx_equals(
-              actual[c], expected[c], kEpsilon, name);
+              actual[c], expected[c], test.epsilon, name);
         }
       }
     }
-  }
-});
+  }, test.desc);
+}
 </script>
