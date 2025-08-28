@@ -18,8 +18,15 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/throbber.h"
+#include "ui/views/view_class_properties.h"
 
 namespace autofill {
+
+namespace {
+// Add a top inset for the CVC icon so that when the icon is center aligned
+// vertically, it is aligned with other elements in the same row.
+constexpr int kCvcIconTopInsetDp = 4;
+}  // namespace
 
 SaveAndFillDialog::SaveAndFillDialog(
     base::WeakPtr<SaveAndFillDialogController> controller,
@@ -170,6 +177,10 @@ void SaveAndFillDialog::CreateMainContentView() {
           .SetTextStyle(views::style::STYLE_SECONDARY)
           .SetMultiLine(true)
           .SetHorizontalAlignment(gfx::ALIGN_TO_HEAD)
+          .SetProperty(views::kMarginsKey,
+                       gfx::Insets().set_bottom(
+                           views::LayoutProvider::Get()->GetDistanceMetric(
+                               views::DISTANCE_UNRELATED_CONTROL_VERTICAL)))
           .Build());
 
   card_number_data_ = CreateLabelAndTextfieldView(
@@ -216,10 +227,13 @@ void SaveAndFillDialog::CreateMainContentView() {
           .AddChild(views::Builder<views::View>(
               std::move(expiration_date_data_.container)))
           .AddChild(views::Builder<views::View>(std::move(cvc_data_.container)))
-          .AddChild(views::Builder<views::ImageView>().SetImage(
-              ui::ImageModel::FromImage(
-                  ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-                      IDR_CREDIT_CARD_CVC_HINT_BACK))))
+          .AddChild(
+              views::Builder<views::ImageView>()
+                  .SetImage(ui::ImageModel::FromImage(
+                      ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+                          IDR_CREDIT_CARD_CVC_HINT_BACK)))
+                  .SetProperty(views::kMarginsKey,
+                               gfx::Insets().set_top(kCvcIconTopInsetDp)))
           .Build());
 
   name_on_card_data_ = CreateLabelAndTextfieldView(
