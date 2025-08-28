@@ -140,13 +140,10 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
                name:UIApplicationDidBecomeActiveNotification
              object:nil];
 
-    if (@available(iOS 17, *)) {
-      NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-          @[ UITraitPreferredContentSizeCategory.class ]);
-      [self
-          registerForTraitChanges:(traits)
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+        @[ UITraitPreferredContentSizeCategory.class ]);
+    [self registerForTraitChanges:(traits)
                        withAction:@selector(updateTextProperitesOnTraitChange)];
-    }
   }
   return self;
 }
@@ -504,10 +501,8 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   // Hide the selection UI in pre-edit. UITextField is expected to hide the
   // selection UI when `clearsOnInsertion` is YES, but this behavior is not
   // working on iOS 17.
-  if (@available(iOS 17, *)) {
-    if (self.isPreEditing) {
-      return nil;
-    }
+  if (self.isPreEditing) {
+    return nil;
   }
   return [super selectionRectsForRange:range];
 }
@@ -541,19 +536,6 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   }
   return [super hitTest:point withEvent:event];
 }
-
-#pragma mark - UITraitCollection
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self updateTextProperitesOnTraitChange];
-}
-#endif
 
 #pragma mark - UIGestureRecognizerDelegate
 
@@ -609,10 +591,8 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
   // TODO(crbug.com/40280508): Improve this short term fix.
-  if (@available(iOS 17.0, *)) {
-    if (action == @selector(undoManager)) {
-      return YES;
-    }
+  if (action == @selector(undoManager)) {
+    return YES;
   }
 
   // If the text is not empty and there is selected text, show copy and cut.

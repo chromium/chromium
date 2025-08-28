@@ -740,10 +740,8 @@ const char kOmniboxFocusResultedInNavigation[] =
   // trigger that manually.
   [textField sendActionsForControlEvents:UIControlEventEditingChanged];
   [textField becomeFirstResponder];
-  if (@available(iOS 17, *)) {
-    // Set the caret pos to the end of the text (crbug.com/331622199).
-    [self setCaretPos:text.length()];
-  }
+  // Set the caret pos to the end of the text (crbug.com/331622199).
+  [self setCaretPos:text.length()];
 }
 
 #pragma mark - Private

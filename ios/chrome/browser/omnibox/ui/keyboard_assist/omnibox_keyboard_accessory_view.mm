@@ -102,13 +102,10 @@ constexpr CGFloat kShadowOpacity = 0.12;
     self.helpHandler = helpHandler;
     [self addSubviews];
 
-    if (@available(iOS 17, *)) {
-      NSArray<UITrait>* traits =
-          TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
-      [self
-          registerForTraitChanges:traits
+    NSArray<UITrait>* traits =
+        TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
+    [self registerForTraitChanges:traits
                        withAction:@selector(updateLensAppearanceOnTraitChange)];
-    }
   }
   return self;
 }
@@ -162,17 +159,6 @@ constexpr CGFloat kShadowOpacity = 0.12;
   // view.
   return self;
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self updateLensAppearanceOnTraitChange];
-}
-#endif
 
 - (void)addSubviews {
   if (!self.subviews.count) {
