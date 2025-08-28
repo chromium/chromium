@@ -210,9 +210,6 @@ base::MemoryPressureListener::MemoryPressureLevel
 SystemMemoryPressureEvaluator::CalculateCurrentPressureLevel() {
   MEMORYSTATUSEX mem_status = {};
   bool got_system_memory_status = GetSystemMemoryStatus(&mem_status);
-  // Report retrieval outcome before early returning on failure.
-  base::UmaHistogramBoolean("Memory.MemoryStatusRetrievalSuccess",
-                            got_system_memory_status);
 
   if (!got_system_memory_status) {
     return base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
