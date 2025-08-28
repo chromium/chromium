@@ -188,7 +188,6 @@ export class MostVisitedElement extends MostVisitedElementBase {
   private mediaEventTracker_: EventTracker;
   private eventTracker_: EventTracker;
   private boundOnDocumentKeyDown_: (e: KeyboardEvent) => void = (_e) => null;
-  private prerenderTimer_: null|ReturnType<typeof setTimeout> = null;
   private preconnectTimer_: null|ReturnType<typeof setTimeout> = null;
   private dragImage_: HTMLImageElement;
 
@@ -864,10 +863,6 @@ export class MostVisitedElement extends MostVisitedElementBase {
     if (e.defaultPrevented) {
       // Ignore previously handled events.
       return;
-    }
-
-    if (this.prerenderTimer_) {
-      clearTimeout(this.prerenderTimer_);
     }
 
     if (this.preconnectTimer_) {
