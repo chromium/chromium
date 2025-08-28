@@ -10,8 +10,6 @@ source_set("model") {
     "chrome_profile_download_service_tracker.mm",
     "ios_chrome_hints_manager.h",
     "ios_chrome_hints_manager.mm",
-    "ios_chrome_prediction_model_store.h",
-    "ios_chrome_prediction_model_store.mm",
     "optimization_guide_global_state.h",
     "optimization_guide_global_state.mm",
     "optimization_guide_service.h",

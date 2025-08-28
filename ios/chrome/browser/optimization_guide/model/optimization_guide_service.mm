@@ -30,7 +30,6 @@
 #import "components/variations/synthetic_trials.h"
 #import "ios/chrome/browser/metrics/model/ios_chrome_metrics_service_accessor.h"
 #import "ios/chrome/browser/optimization_guide/model/ios_chrome_hints_manager.h"
-#import "ios/chrome/browser/optimization_guide/model/ios_chrome_prediction_model_store.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/tab_url_provider_impl.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"

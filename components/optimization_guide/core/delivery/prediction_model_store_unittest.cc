@@ -48,18 +48,6 @@ struct ModelDetail {
 
 }  // namespace
 
-class TestPredictionModelStore : public PredictionModelStore {
- public:
-  explicit TestPredictionModelStore(PrefService* local_state)
-      : local_state_(local_state) {}
-
-  // PredictionModelStore:
-  PrefService* GetLocalState() const override { return local_state_; }
-
- private:
-  raw_ptr<PrefService> local_state_;
-};
-
 class PredictionModelStoreTest : public testing::Test {
  public:
   void SetUp() override {
@@ -112,7 +100,7 @@ class PredictionModelStoreTest : public testing::Test {
 
   void CreateAndInitializePredictionModelStore() {
     prediction_model_store_ =
-        std::make_unique<TestPredictionModelStore>(local_state_prefs_.get());
+        std::make_unique<PredictionModelStore>(local_state_prefs_.get());
     prediction_model_store_->Initialize(temp_models_dir_.GetPath());
   }
 
@@ -133,7 +121,7 @@ class PredictionModelStoreTest : public testing::Test {
   base::ScopedTempDir temp_models_dir_;
   std::unique_ptr<TestingPrefServiceSimple> local_state_prefs_;
   std::unique_ptr<proto::PredictionModel> last_loaded_prediction_model_;
-  std::unique_ptr<TestPredictionModelStore> prediction_model_store_;
+  std::unique_ptr<PredictionModelStore> prediction_model_store_;
 };
 
 TEST_F(PredictionModelStoreTest, BaseModelDirs) {

@@ -10,7 +10,6 @@ source_set("optimization_guide") {
   sources = [
     "chrome_hints_manager.h",
     "chrome_model_quality_logs_uploader_service.h",
-    "chrome_prediction_model_store.h",
     "model_execution/optimization_guide_global_state.h",
     "model_validator_keyed_service.h",
     "model_validator_keyed_service_factory.h",
@@ -48,7 +47,6 @@ source_set("impl") {
   sources = [
     "chrome_hints_manager.cc",
     "chrome_model_quality_logs_uploader_service.cc",
-    "chrome_prediction_model_store.cc",
     "model_execution/optimization_guide_global_state.cc",
     "model_validator_keyed_service.cc",
     "model_validator_keyed_service_factory.cc",

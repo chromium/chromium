@@ -10,7 +10,6 @@
 #import "base/functional/callback.h"
 #import "base/run_loop.h"
 #import "base/test/test_file_util.h"
-#import "ios/chrome/browser/optimization_guide/model/ios_chrome_prediction_model_store.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_global_state.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/profile/model/ios_chrome_io_thread.h"

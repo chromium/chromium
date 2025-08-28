@@ -18,12 +18,14 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/optimization_guide_on_device_model_installer.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
+#include "chrome/common/chrome_paths.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/pref_names.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/model_execution/on_device_asset_manager.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"
+#include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/on_device_base_model_metadata.pb.h"
 #include "content/public/browser/service_process_host.h"
@@ -109,6 +111,14 @@ void LaunchService(
           .Pass());
 }
 
+base::FilePath GetBaseStoreDir() {
+  base::FilePath model_downloads_dir;
+  base::PathService::Get(chrome::DIR_USER_DATA, &model_downloads_dir);
+  model_downloads_dir = model_downloads_dir.Append(
+      optimization_guide::kOptimizationGuideModelStoreDirPrefix);
+  return model_downloads_dir;
+}
+
 }  // namespace
 
 class ChromeOnDeviceModelServiceController final {
@@ -164,7 +174,9 @@ OptimizationGuideGlobalState::OptimizationGuideGlobalState()
     : model_broker_state_(
           g_browser_process->local_state(),
           std::make_unique<OnDeviceModelComponentStateManagerDelegate>(),
-          base::BindRepeating(&LaunchService)) {
+          base::BindRepeating(&LaunchService)),
+      prediction_model_store_(g_browser_process->local_state()) {
+  prediction_model_store_.Initialize(GetBaseStoreDir());
   // Register an observer on the component state manager after it is created but
   // before it has start up.
   component_state_manager_observer_ =

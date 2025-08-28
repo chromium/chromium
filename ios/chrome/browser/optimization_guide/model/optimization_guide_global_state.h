@@ -7,10 +7,10 @@
 
 #import "base/memory/weak_ptr.h"
 #import "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
+#import "components/optimization_guide/core/delivery/prediction_model_store.h"
 #import "components/optimization_guide/core/model_execution/model_broker_state.h"
 #import "components/optimization_guide/core/model_execution/on_device_asset_manager.h"
 #import "components/optimization_guide/core/optimization_guide_enums.h"
-#import "ios/chrome/browser/optimization_guide/model/ios_chrome_prediction_model_store.h"
 
 namespace optimization_guide {
 
@@ -21,7 +21,7 @@ class OptimizationGuideGlobalState final {
   OptimizationGuideGlobalState();
   ~OptimizationGuideGlobalState();
 
-  IOSChromePredictionModelStore& prediction_model_store() {
+  PredictionModelStore& prediction_model_store() {
     return prediction_model_store_;
   }
 
@@ -30,7 +30,7 @@ class OptimizationGuideGlobalState final {
   OptimizationGuideGlobalState& operator=(const OptimizationGuideGlobalState&) =
       delete;
 
-  IOSChromePredictionModelStore prediction_model_store_;
+  PredictionModelStore prediction_model_store_;
 
   base::WeakPtrFactory<OptimizationGuideGlobalState> weak_ptr_factory_{this};
 };

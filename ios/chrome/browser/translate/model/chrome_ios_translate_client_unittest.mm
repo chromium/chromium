@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/language/model/language_model_manager_factory.h"
 #import "ios/chrome/browser/language_detection/model/language_detection_model_loader_service_ios_factory.h"
 #import "ios/chrome/browser/language_detection/model/language_detection_model_service_factory.h"
-#import "ios/chrome/browser/optimization_guide/model/ios_chrome_prediction_model_store.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
