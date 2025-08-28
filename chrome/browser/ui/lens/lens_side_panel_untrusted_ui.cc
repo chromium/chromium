@@ -34,36 +34,6 @@
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 #include "ui/webui/webui_util.h"
 
-namespace {
-static constexpr webui::LocalizedString kStrings[] = {
-    // Composebox.
-    {"composeboxCancelButtonTitle", IDS_NTP_COMPOSE_CANCEL_BUTTON_A11Y_LABEL},
-    {"composeboxCancelButtonTitleInput",
-     IDS_NTP_COMPOSE_CANCEL_BUTTON_A11Y_LABEL_INPUT},
-    {"composeboxImageUploadButtonTitle",
-     IDS_NTP_COMPOSE_IMAGE_UPLOAD_BUTTON_A11Y_LABEL},
-    {"composeboxPdfUploadButtonTitle",
-     IDS_NTP_COMPOSE_PDF_UPLOAD_BUTTON_A11Y_LABEL},
-    {"composeboxPlaceholderText", IDS_NTP_COMPOSE_PLACEHOLDER_TEXT},
-    {"composeboxSubmitButtonTitle", IDS_NTP_COMPOSE_SUBMIT_BUTTON_A11Y_LABEL},
-    {"composeboxDeleteFileTitle", IDS_NTP_COMPOSE_DELETE_FILE_A11Y_LABEL},
-    {"composeboxFileUploadStartedText",
-     IDS_NTP_COMPOSE_FILE_UPLOAD_STARTED_A11Y_TEXT},
-    {"composeboxFileUploadCompleteText",
-     IDS_NTP_COMPOSE_FILE_UPLOAD_COMPLETE_A11Y_TEXT},
-    {"composeboxFileUploadInvalidEmptySize",
-     IDS_NTP_COMPOSE_FILE_UPLOAD_INVALID_EMPTY_SIZE},
-    {"composeboxFileUploadInvalidTooLarge",
-     IDS_NTP_COMPOSE_FILE_UPLOAD_INVALID_TOO_LARGE},
-    {"composeboxFileUploadImageProcessingError",
-     IDS_NTP_COMPOSE_FILE_UPLOAD_IMAGE_PROCESSING_ERROR},
-    {"composeboxFileUploadValidationFailed",
-     IDS_NTP_COMPOSE_FILE_UPLOAD_VALIDATION_FAILED},
-    {"composeboxFileUploadFailed", IDS_NTP_COMPOSE_FILE_UPLOAD_FAILED},
-    {"composeboxFileUploadExpired", IDS_NTP_COMPOSE_FILE_UPLOAD_EXPIRED},
-};
-}  // namespace
-
 namespace lens {
 
 LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
@@ -178,8 +148,6 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
       network::mojom::CSPDirectiveName::StyleSrc,
       "style-src 'self' chrome-untrusted://resources chrome-untrusted://theme");
 
-  // ComposeBox LoadTimeData
-  html_source->AddLocalizedStrings(kStrings);
   // Support no file types.
   html_source->AddString("composeboxImageFileTypes", "");
   html_source->AddString("composeboxAttachmentFileTypes", "");
