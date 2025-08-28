@@ -1,0 +1,16 @@
+Name: io.grpc:grpc-util
+Short Name: grpc-util
+URL: https://github.com/grpc/grpc-java
+Version: 1.75.0
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: cpe:/a:grpc:grpc
+Security Critical: no
+Shipped: no
+
+Description:
+gRPC: Util
+
+Local Modifications:
+No modifications.
