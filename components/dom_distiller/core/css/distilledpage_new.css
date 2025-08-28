@@ -14,6 +14,8 @@ html {
   margin-right: auto;
   padding-left: 16px;  /* Add some horizontal space */
   padding-right: 16px;
+  padding-top: 16px; /* Add vertical spacing for title and bottom sheet peek */
+  padding-bottom: 80px;
   box-sizing: border-box; /* Ensures padding is included in the width */
 }
 
