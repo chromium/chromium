@@ -34,6 +34,7 @@
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/script_injection_tracker.h"
 #include "extensions/browser/service_worker/service_worker_host.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/cors_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
@@ -44,6 +45,8 @@
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/url_pattern_set.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using content::RenderProcessHost;
 
