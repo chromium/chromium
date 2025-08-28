@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/glic/host/context/glic_focused_tab_manager_interface.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
@@ -35,7 +36,8 @@ class GlicFocusedBrowserManager;
 // its WebContents. This is an implementation detail of GlicKeyedService and
 // others should rely on the interface that GlicKeyedService exposes for
 // observing state changes.
-class GlicFocusedTabManager : public content::WebContentsObserver,
+class GlicFocusedTabManager : public GlicFocusedTabManagerInterface,
+                              public content::WebContentsObserver,
                               public TabStripModelObserver {
  public:
   explicit GlicFocusedTabManager(
@@ -45,10 +47,12 @@ class GlicFocusedTabManager : public content::WebContentsObserver,
   GlicFocusedTabManager(const GlicFocusedTabManager&) = delete;
   GlicFocusedTabManager& operator=(const GlicFocusedTabManager&) = delete;
 
-  // Returns the currently focused tab data or an error reason stating why one
-  // was not available. This may also contain a tab candidate along with details
-  // as to why it cannot be focused. Virtual for testing.
-  virtual FocusedTabData GetFocusedTabData();
+  // GlicFocusedTabManagerInterface implementation.
+  using FocusedTabChangedCallback =
+      base::RepeatingCallback<void(const FocusedTabData&)>;
+  base::CallbackListSubscription AddFocusedTabChangedCallback(
+      FocusedTabChangedCallback callback) override;
+  FocusedTabData GetFocusedTabData() override;
 
   // content::WebContentsObserver
   void PrimaryPageChanged(content::Page& page) override;
@@ -56,13 +60,6 @@ class GlicFocusedTabManager : public content::WebContentsObserver,
   // TabStripModelObserver
   void OnSplitTabChanged(const SplitTabChange& change) override;
 
-  // Callback for changes to focused tab. If no tab is in focus an error reason
-  // is returned indicating why and maybe a tab candidate with details as to
-  // why it cannot be focused.
-  using FocusedTabChangedCallback =
-      base::RepeatingCallback<void(const FocusedTabData&)>;
-  base::CallbackListSubscription AddFocusedTabChangedCallback(
-      FocusedTabChangedCallback callback);
 
   // Callback for changes to the `WebContents` comprising the focused tab. Only
   // fired when the `WebContents` for the focused tab changes to/from nullptr or
