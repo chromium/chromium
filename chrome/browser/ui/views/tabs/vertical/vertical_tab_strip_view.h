@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_VIEW_H_
 
-#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/accessible_pane_view.h"
 #include "ui/views/layout/delegating_layout_manager.h"
+#include "ui/views/view.h"
 
+class VerticalPinnedTabContainerView;
 class VerticalUnpinnedTabContainerView;
 
 namespace views {
@@ -30,7 +30,7 @@ class VerticalTabStripView final : public views::View,
   ~VerticalTabStripView() override;
 
   views::Separator* tabs_separator_for_testing() { return tabs_separator_; }
-  views::View* pinned_tabs_container_for_testing() {
+  VerticalPinnedTabContainerView* pinned_tabs_container_for_testing() {
     return pinned_tabs_container_;
   }
   VerticalUnpinnedTabContainerView* unpinned_tabs_container_for_testing() {
@@ -44,7 +44,7 @@ class VerticalTabStripView final : public views::View,
       const views::SizeBounds& size_bounds) const override;
 
  private:
-  raw_ptr<views::View> pinned_tabs_container_ = nullptr;
+  raw_ptr<VerticalPinnedTabContainerView> pinned_tabs_container_ = nullptr;
   raw_ptr<views::Separator> tabs_separator_ = nullptr;
   raw_ptr<VerticalUnpinnedTabContainerView> unpinned_tabs_container_ = nullptr;
 };

@@ -12,6 +12,9 @@
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/controls/resize_area_delegate.h"
 
+class VerticalUnpinnedTabContainerView;
+class VerticalPinnedTabContainerView;
+
 namespace tabs {
 class VerticalTabStripStateController;
 }  // namespace tabs
@@ -42,7 +45,7 @@ class VerticalTabStripRegionView final : public views::AccessiblePaneView,
     return tab_strip_view_->tabs_separator_for_testing();
   }
   views::ResizeArea* resize_area_for_testing() { return resize_area_; }
-  views::View* pinned_tabs_container_for_testing() {
+  VerticalPinnedTabContainerView* pinned_tabs_container_for_testing() {
     return tab_strip_view_->pinned_tabs_container_for_testing();
   }
   VerticalUnpinnedTabContainerView* unpinned_tabs_container_for_testing() {

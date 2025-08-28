@@ -1,0 +1,86 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/views/tabs/vertical/vertical_pinned_tab_container_view.h"
+
+#include "chrome/browser/ui/layout_constants.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/views/layout/delegating_layout_manager.h"
+#include "ui/views/layout/proposed_layout.h"
+#include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
+
+namespace {
+constexpr int kTabVerticalPadding = 4;
+}  // namespace
+
+VerticalPinnedTabContainerView::VerticalPinnedTabContainerView() {
+  SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
+}
+
+VerticalPinnedTabContainerView::~VerticalPinnedTabContainerView() = default;
+
+views::ProposedLayout VerticalPinnedTabContainerView::CalculateProposedLayout(
+    const views::SizeBounds& size_bounds) const {
+  views::ProposedLayout layouts;
+  int total_width = 0;
+  int total_height = 0;
+
+  int x = 0;
+  int y = 0;
+  // TODO(crbug.com/441086907): Update all |children()| callers in this method
+  // to instead read from the TabCollectionNode.
+  int children_on_row = children().size();
+
+  // Child width will be uniform and match the largest child's width.
+  int child_width = 0;
+  for (views::View* child : children()) {
+    // TODO(corising): look into caching this value and only recomputing if the
+    // children change.
+    child_width = std::max(child_width, child->GetPreferredSize().width());
+  }
+  // If the width is bounded, calculate how many children can fit on a row.
+  // Since all children are allocated the same width this will be the same for
+  // every row.
+  if (size_bounds.width().is_bounded()) {
+    int available_width =
+        size_bounds.width().value() -
+        GetLayoutConstant(VERTICAL_TAB_STRIP_HORIZONTAL_PADDING);
+    children_on_row = std::floor((available_width - child_width) /
+                                 (child_width + kTabVerticalPadding)) +
+                      1;
+    // Allocate extra space to the tabs.
+    available_width -= (children_on_row * child_width) -
+                       (kTabVerticalPadding * (children_on_row - 1));
+    child_width += std::floor(available_width / children_on_row);
+  }
+
+  int row_index = 0;
+  for (views::View* child : children()) {
+    gfx::Rect bounds = gfx::Rect(child->GetPreferredSize());
+    bounds.set_width(child_width);
+    if (row_index != 0) {
+      x += kTabVerticalPadding;
+    }
+    bounds.set_x(x);
+    bounds.set_y(y);
+    x += bounds.width();
+    total_width = std::max(total_width, x);
+    total_height = std::max(total_height, (y + bounds.height()));
+    layouts.child_layouts.emplace_back(child, child->GetVisible(), bounds);
+    row_index++;
+    if (row_index >= children_on_row) {
+      y = total_height + kTabVerticalPadding;
+      row_index = 0;
+      x = 0;
+    }
+  }
+  layouts.host_size = gfx::Size(total_width, total_height);
+  return layouts;
+}
+
+BEGIN_METADATA(VerticalPinnedTabContainerView)
+END_METADATA

@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_pinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_unpinned_tab_container_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
@@ -23,12 +24,23 @@
 namespace {
 constexpr int kRegionVeritcalInteriorMargin = 8;
 constexpr int kRegionVerticalPadding = 5;
+
+void SetScrollViewProperties(views::ScrollView* scroll_view) {
+  scroll_view->SetUseContentsPreferredSize(true);
+  scroll_view->SetBackgroundColor(std::nullopt);
+  scroll_view->SetHorizontalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kDisabled);
+}
 }  // namespace
 
 VerticalTabStripView::VerticalTabStripView() {
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
 
-  pinned_tabs_container_ = AddChildView(std::make_unique<views::View>());
+  views::ScrollView* pinned_tabs_scroll_view =
+      AddChildView(std::make_unique<views::ScrollView>());
+  SetScrollViewProperties(pinned_tabs_scroll_view);
+  pinned_tabs_container_ = pinned_tabs_scroll_view->SetContents(
+      std::make_unique<VerticalPinnedTabContainerView>());
 
   auto tabs_separator = std::make_unique<views::Separator>();
   tabs_separator->SetColorId(kColorTabDividerFrameActive);
@@ -36,10 +48,7 @@ VerticalTabStripView::VerticalTabStripView() {
 
   views::ScrollView* unpinned_tabs_scroll_view =
       AddChildView(std::make_unique<views::ScrollView>());
-  unpinned_tabs_scroll_view->SetUseContentsPreferredSize(true);
-  unpinned_tabs_scroll_view->SetBackgroundColor(std::nullopt);
-  unpinned_tabs_scroll_view->SetHorizontalScrollBarMode(
-      views::ScrollView::ScrollBarMode::kDisabled);
+  SetScrollViewProperties(unpinned_tabs_scroll_view);
   unpinned_tabs_container_ = unpinned_tabs_scroll_view->SetContents(
       std::make_unique<VerticalUnpinnedTabContainerView>());
 }
@@ -68,14 +77,16 @@ views::ProposedLayout VerticalTabStripView::CalculateProposedLayout(
   }
 
   // Place the pinned container.
+  views::ScrollView* pinned_tabs_scroll_view =
+      views::ScrollView::GetScrollViewForContents(pinned_tabs_container_.get());
   gfx::Rect pinned_container_bounds(
       0, y, tab_container_size_bounds.width().value(),
-      pinned_tabs_container_->GetPreferredSize(tab_container_size_bounds)
+      pinned_tabs_scroll_view->GetPreferredSize(tab_container_size_bounds)
           .height());
   pinned_container_bounds.set_height(
       std::min(pinned_container_bounds.height(), (remaining_height / 2)));
-  layouts.child_layouts.emplace_back(pinned_tabs_container_.get(),
-                                     pinned_tabs_container_->GetVisible(),
+  layouts.child_layouts.emplace_back(pinned_tabs_scroll_view,
+                                     pinned_tabs_scroll_view->GetVisible(),
                                      pinned_container_bounds);
 
   remaining_height -= pinned_container_bounds.height();
