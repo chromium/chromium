@@ -49,8 +49,24 @@ public interface AconfigFlaggedApiDelegate {
         void onDisplayTopologyChanged(SparseArray<RectF> absoluteBounds);
     }
 
-    /** Checks if the display topology is available, based on the API level and Aconfig flags. */
+    /**
+     * Checks if the display topology is available, based on the API level and Aconfig flags.
+     *
+     * @deprecated Use {@link #isDisplayTopologyAvailable(DisplayManager)} instead.
+     */
+    @Deprecated
     default boolean isDisplayTopologyAvailable() {
+        return false;
+    }
+
+    /**
+     * Checks if the display topology is available, based on the API level, Aconfig flags and
+     * Display Topology state.
+     *
+     * @param displayManager {@link android.hardware.display.DisplayManager} from which Display
+     *     Topology will be obtained.
+     */
+    default boolean isDisplayTopologyAvailable(DisplayManager displayManager) {
         return false;
     }
 
@@ -59,7 +75,7 @@ public interface AconfigFlaggedApiDelegate {
      * supported, otherwise returns {@code null}.
      *
      * @param displayManager {@link android.hardware.display.DisplayManager} from which Display
-     *     Topology be will be obtained.
+     *     Topology will be obtained.
      * @return Map from logical display ID to the display's absolute bounds if method supported,
      *     otherwise {@code null}.
      */
