@@ -13,6 +13,7 @@
 
 namespace autofill {
 
+struct AutofillErrorDialogContext;
 enum class AutofillProgressDialogType;
 class BnplIssuer;
 struct BnplTosModel;
@@ -44,6 +45,7 @@ class AndroidBnplUiDelegate : public BnplUiDelegate {
   void ShowProgressUi(AutofillProgressDialogType autofill_progress_dialog_type,
                       base::OnceClosure cancel_callback) override;
   void CloseProgressUi(bool show_confirmation_before_closing) override;
+  void ShowAutofillErrorUi(AutofillErrorDialogContext context) override;
 };
 
 }  // namespace payments

@@ -12,6 +12,7 @@
 
 namespace autofill {
 
+struct AutofillErrorDialogContext;
 enum class AutofillProgressDialogType;
 class BnplIssuer;
 struct BnplTosModel;
@@ -56,6 +57,13 @@ class BnplUiDelegate {
   // Closes the progress UI. `show_confirmation_before_closing` indicates
   // whether a confirmation should be shown before the UI is closed.
   virtual void CloseProgressUi(bool show_confirmation_before_closing) = 0;
+
+  // Shows an error UI during the BNPL flow. The type of error UI that is shown
+  // will match the `type` in `context`. If the `server_returned_title` and
+  // `server_returned_description` in `context` are both set, the error dialog
+  // that is displayed will have these fields displayed for the title and
+  // description, respectively.
+  virtual void ShowAutofillErrorUi(AutofillErrorDialogContext context) = 0;
 };
 
 }  // namespace payments

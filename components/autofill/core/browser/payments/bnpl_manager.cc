@@ -269,7 +269,7 @@ void BnplManager::OnVcnDetailsFetched(
     std::move(ongoing_flow_state_->on_bnpl_vcn_fetched_callback)
         .Run(credit_card);
   } else {
-    payments_autofill_client().ShowAutofillErrorDialog(
+    payments_autofill_client().GetBnplUiDelegate()->ShowAutofillErrorUi(
         AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
             /*is_permanent_error=*/ShouldShowPermanentErrorDialog(result)));
   }
@@ -358,7 +358,7 @@ void BnplManager::OnDidGetLegalMessageFromServer(
     return;
   }
 
-  payments_autofill_client().ShowAutofillErrorDialog(
+  payments_autofill_client().GetBnplUiDelegate()->ShowAutofillErrorUi(
       AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
           /*is_permanent_error=*/ShouldShowPermanentErrorDialog(result)));
 
@@ -440,7 +440,7 @@ void BnplManager::OnRedirectUrlFetched(
     payments_autofill_client().GetPaymentsWindowManager()->InitBnplFlow(
         std::move(payments_window_bnpl_context));
   } else {
-    payments_autofill_client().ShowAutofillErrorDialog(
+    payments_autofill_client().GetBnplUiDelegate()->ShowAutofillErrorUi(
         AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
             /*is_permanent_error=*/ShouldShowPermanentErrorDialog(result)));
     Reset();
@@ -458,9 +458,10 @@ void BnplManager::OnPopupWindowCompleted(
       FetchVcnDetails(std::move(url));
       break;
     case PaymentsWindowManager::BnplFlowResult::kFailure:
-      payments_autofill_client().ShowAutofillErrorDialog(
-          AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
-              /*is_permanent_error=*/false));
+      CHECK_DEREF(payments_autofill_client().GetBnplUiDelegate())
+          .ShowAutofillErrorUi(
+              AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
+                  /*is_permanent_error=*/false));
       Reset();
       break;
   }
@@ -604,7 +605,7 @@ void BnplManager::OnBnplPaymentInstrumentCreated(
   } else {
     CHECK(payments_autofill_client().GetBnplUiDelegate());
     payments_autofill_client().GetBnplUiDelegate()->CloseBnplTosUi();
-    payments_autofill_client().ShowAutofillErrorDialog(
+    payments_autofill_client().GetBnplUiDelegate()->ShowAutofillErrorUi(
         AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
             /*is_permanent_error=*/ShouldShowPermanentErrorDialog(result)));
     Reset();
@@ -639,7 +640,7 @@ void BnplManager::OnBnplPaymentInstrumentUpdated(
   } else {
     CHECK(payments_autofill_client().GetBnplUiDelegate());
     payments_autofill_client().GetBnplUiDelegate()->CloseBnplTosUi();
-    payments_autofill_client().ShowAutofillErrorDialog(
+    payments_autofill_client().GetBnplUiDelegate()->ShowAutofillErrorUi(
         AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
             /*is_permanent_error=*/ShouldShowPermanentErrorDialog(result)));
     Reset();

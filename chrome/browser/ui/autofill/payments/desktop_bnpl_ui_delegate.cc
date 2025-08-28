@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_progress_dialog_type.h"
+#include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_view.h"
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller_impl.h"
@@ -79,6 +80,12 @@ void DesktopBnplUiDelegate::CloseProgressUi(
   client_->GetPaymentsAutofillClient()->CloseAutofillProgressDialog(
       show_confirmation_before_closing,
       /*no_interactive_authentication_callback=*/base::DoNothing());
+}
+
+void DesktopBnplUiDelegate::ShowAutofillErrorUi(
+    AutofillErrorDialogContext context) {
+  client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
+      std::move(context));
 }
 
 }  // namespace autofill::payments

@@ -6,6 +6,7 @@
 
 #include "base/functional/callback.h"
 #include "components/autofill/core/browser/autofill_progress_dialog_type.h"
+#include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
 
 namespace autofill::payments {
@@ -49,6 +50,12 @@ void AndroidBnplUiDelegate::ShowProgressUi(
 void AndroidBnplUiDelegate::CloseProgressUi(
     bool show_confirmation_before_closing) {
   // TODO(crbug.com/438783909): Add JNI call to hide the progress spinner.
+}
+
+void AndroidBnplUiDelegate::ShowAutofillErrorUi(
+    AutofillErrorDialogContext context) {
+  // TODO(crbug.com/438783909): Add JNI call to show the TouchToFill bottom
+  // sheet with the error screen.
 }
 
 }  // namespace autofill::payments
