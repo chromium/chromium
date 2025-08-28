@@ -45,8 +45,6 @@
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_installer.h"
 #include "chrome/browser/chromeos/app_mode/chrome_kiosk_external_loader_broker.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_browser_session.h"
@@ -106,16 +104,15 @@ scoped_refptr<base::SequencedTaskRunner> GetBackgroundTaskRunner() {
 }
 
 std::unique_ptr<chromeos::ExternalCache> CreateExternalCache(
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     chromeos::ExternalCacheDelegate* delegate) {
   if (g_test_overrides) {
     return g_test_overrides->CreateExternalCache(delegate, true);
   }
 
-  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
-      g_browser_process->shared_url_loader_factory();
   auto cache = std::make_unique<chromeos::ExternalCacheImpl>(
-      GetCrxCacheDir(), shared_url_loader_factory, GetBackgroundTaskRunner(),
-      delegate, /*always_check_updates=*/true,
+      GetCrxCacheDir(), std::move(shared_url_loader_factory),
+      GetBackgroundTaskRunner(), delegate, /*always_check_updates=*/true,
       /*wait_for_cache_initialization=*/false,
       /*allow_scheduled_updates=*/true);
   cache->set_flush_on_put(true);
@@ -507,9 +504,11 @@ bool KioskChromeAppManager::IsPlatformCompliantWithApp(
   return IsPlatformCompliant(info->required_platform_version);
 }
 
-KioskChromeAppManager::KioskChromeAppManager() {
+KioskChromeAppManager::KioskChromeAppManager(
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory) {
   CHECK(!g_instance);  // Only one instance is allowed.
-  external_cache_ = CreateExternalCache(this);
+  external_cache_ =
+      CreateExternalCache(std::move(shared_url_loader_factory), this);
   g_instance = this;
   UpdateAppsFromPolicy();
 }

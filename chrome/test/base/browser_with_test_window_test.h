@@ -37,6 +37,7 @@
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #else
 #include "ui/views/test/scoped_views_test_helper.h"
 #endif

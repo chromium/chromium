@@ -72,6 +72,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/test_web_ui.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -305,7 +306,8 @@ class WizardControllerTestBase : public ::testing::Test {
       chrome_keyboard_controller_client_test_helper_;
   ash::ScopedTestDeviceSettingsService device_settings_service_;
   ScopedTestingCrosSettings settings_;
-  KioskChromeAppManager kiosk_chrome_app_manager_;
+  KioskChromeAppManager kiosk_chrome_app_manager_{
+      TestingBrowserProcess::GetGlobal()->shared_url_loader_factory()};
   ScopedStubInstallAttributes scoped_stub_install_attributes_;
   ash::system::ScopedFakeStatisticsProvider statistics_provider_;
   std::unique_ptr<ScopedEnrollmentLauncherFactoryOverrideForTesting>

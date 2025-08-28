@@ -27,6 +27,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "remoting/host/chromeos/features.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 
@@ -114,7 +115,8 @@ class DeviceCommandFetchCrdAvailabilityInfoJobTest
 
     user_activity_detector_ = ui::UserActivityDetector::Get();
     kiosk_web_app_manager_ = std::make_unique<ash::KioskWebAppManager>();
-    kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>();
+    kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>(
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
   }
 
   void TearDown() override {

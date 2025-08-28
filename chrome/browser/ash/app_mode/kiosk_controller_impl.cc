@@ -53,6 +53,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/wm/core/wm_core_switches.h"
@@ -126,9 +127,11 @@ KioskApp EmptyKioskApp(const KioskAppId& app_id) {
 
 KioskControllerImpl::KioskControllerImpl(
     PrefService& local_state,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     user_manager::UserManager* user_manager)
     : local_state_(local_state),
       iwa_manager_(local_state),
+      chrome_app_manager_(std::move(shared_url_loader_factory)),
       arcvm_app_manager_(&local_state) {
   user_manager_observation_.Observe(user_manager);
 }

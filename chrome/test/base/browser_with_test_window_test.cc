@@ -114,7 +114,8 @@ void BrowserWithTestWindowTest::SetUp() {
 
 #if BUILDFLAG(IS_CHROMEOS)
   manager_ = std::make_unique<crosapi::CrosapiManager>();
-  kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>();
+  kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>(
+      TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
 #endif
 
   // Subclasses can provide their own Profile name.

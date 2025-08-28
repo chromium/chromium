@@ -38,6 +38,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "remoting/host/chromeos/features.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 
 namespace policy {
@@ -221,7 +222,8 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
 
     user_activity_detector_ = ui::UserActivityDetector::Get();
     kiosk_web_app_manager_ = std::make_unique<ash::KioskWebAppManager>();
-    kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>();
+    kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>(
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
   }
 
   void TearDown() override {

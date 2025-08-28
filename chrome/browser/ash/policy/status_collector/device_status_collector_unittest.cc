@@ -128,6 +128,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/core/embedder/embedder.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/file_system/mount_points.h"
 #include "storage/common/file_system/file_system_mount_option.h"
@@ -1118,8 +1119,8 @@ class DeviceStatusCollectorTest : public testing::Test {
       const DeviceLocalAccount& auto_launch_app_account,
       const std::string& required_platform_version) {
     if (!kiosk_chrome_app_manager_) {
-      kiosk_chrome_app_manager_ =
-          std::make_unique<ash::KioskChromeAppManager>();
+      kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>(
+          TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
     }
     kiosk_chrome_app_manager_->AddAppForTest(
         auto_launch_app_account.kiosk_app_id,

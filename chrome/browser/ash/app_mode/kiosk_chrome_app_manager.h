@@ -12,6 +12,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
@@ -35,6 +36,10 @@ class CommandLine;
 
 namespace extensions {
 class Extension;
+}
+
+namespace network {
+class SharedURLLoaderFactory;
 }
 
 namespace ash {
@@ -117,7 +122,8 @@ class KioskChromeAppManager : public KioskAppManagerBase,
   // be applied to Kiosk, because a Kiosk session has a special user profile.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  KioskChromeAppManager();
+  explicit KioskChromeAppManager(
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
   KioskChromeAppManager(const KioskChromeAppManager&) = delete;
   KioskChromeAppManager& operator=(const KioskChromeAppManager&) = delete;
   ~KioskChromeAppManager() override;

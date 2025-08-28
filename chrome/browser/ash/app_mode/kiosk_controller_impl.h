@@ -31,6 +31,10 @@
 
 class PrefService;
 
+namespace network {
+class SharedURLLoaderFactory;
+}
+
 namespace ash {
 
 class AppLaunchSplashScreen;
@@ -40,8 +44,10 @@ class KioskLaunchController;
 class KioskControllerImpl : public KioskController,
                             public user_manager::UserManager::Observer {
  public:
-  KioskControllerImpl(PrefService& local_state,
-                      user_manager::UserManager* user_manager);
+  KioskControllerImpl(
+      PrefService& local_state,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      user_manager::UserManager* user_manager);
   KioskControllerImpl(const KioskControllerImpl&) = delete;
   KioskControllerImpl& operator=(const KioskControllerImpl&) = delete;
   ~KioskControllerImpl() override;

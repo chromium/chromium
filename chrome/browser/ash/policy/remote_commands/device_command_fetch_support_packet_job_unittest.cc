@@ -45,6 +45,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "record.pb.h"
 #include "record_constants.pb.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -101,7 +102,8 @@ class DeviceCommandFetchSupportPacketTest : public ash::DeviceSettingsTestBase {
     cros_settings_helper_.ReplaceDeviceSettingsProviderWithStub();
 
     kiosk_web_app_manager_ = std::make_unique<ash::KioskWebAppManager>();
-    kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>();
+    kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>(
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
 
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
