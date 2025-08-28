@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/test/mock_multiple_request_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
@@ -391,9 +392,14 @@ TEST_F(SaveAndFillManagerImplTest,
       payments::GetBillingCustomerId(
           autofill_client_->GetPersonalDataManager().payments_data_manager()));
   EXPECT_EQ(details.app_locale, autofill_client_->GetAppLocale());
-  EXPECT_EQ(base::FeatureList::IsEnabled(
-                features::kAutofillEnableCvcStorageAndFilling),
-            !details.client_behavior_signals.empty());
+  EXPECT_THAT(details.client_behavior_signals,
+              testing::Contains(
+                  ClientBehaviorConstants::kShowAccountEmailInLegalMessage));
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableCvcStorageAndFilling)) {
+    EXPECT_THAT(details.client_behavior_signals,
+                testing::Contains(ClientBehaviorConstants::kOfferingToSaveCvc));
+  }
 }
 
 TEST_F(SaveAndFillManagerImplTest, UniqueAddress_SingleAddressCandidate) {

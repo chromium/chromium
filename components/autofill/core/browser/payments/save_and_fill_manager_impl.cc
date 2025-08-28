@@ -242,13 +242,15 @@ void SaveAndFillManagerImpl::PopulateInitialUploadDetails() {
     upload_details_.client_behavior_signals.emplace_back(
         ClientBehaviorConstants::kOfferingToSaveCvc);
   }
-  // TODO(crbug.com/432100446): Add kShowAccountEmailInLegalMessage to
-  // `client_behavior_signals` when feature launched to mobile.
 
   upload_details_.upload_card_source = UploadCardSource::kUpstreamSaveAndFill;
   upload_details_.billing_customer_number = payments::GetBillingCustomerId(
       payments_autofill_client()->GetPaymentsDataManager());
   upload_details_.app_locale = autofill_client_->GetAppLocale();
+  // For Save and Fill dialog, the account email should always be shown in the
+  // legal message.
+  upload_details_.client_behavior_signals.push_back(
+      ClientBehaviorConstants::kShowAccountEmailInLegalMessage);
 
   // Calculate the unique address from the most recently used
   // addresses. Can be empty if there is none.
