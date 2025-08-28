@@ -154,6 +154,8 @@ source_set("impl") {
     "widget/application_hotkey_delegate.h",
     "widget/browser_conditions.cc",
     "widget/browser_conditions.h",
+    "widget/glic_instance.cc",
+    "widget/glic_instance.h",
     "widget/glic_panel_coordinator_impl.cc",
     "widget/glic_panel_coordinator_impl.h",
     "widget/glic_panel_hotkey_delegate.cc",
@@ -171,6 +173,7 @@ source_set("impl") {
     "widget/glic_window_resize_animation.cc",
     "widget/glic_window_resize_animation.h",
     "widget/local_hotkey_manager.cc",
+    "widget/panel_delegate.h",
   ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [

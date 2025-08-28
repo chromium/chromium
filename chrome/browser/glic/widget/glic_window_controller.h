@@ -71,7 +71,7 @@ class GlicWindowController : public Host::Delegate {
   GlicWindowController(const GlicWindowController&) = delete;
   GlicWindowController& operator=(const GlicWindowController&) = delete;
   GlicWindowController() = default;
-  virtual ~GlicWindowController() = default;
+  ~GlicWindowController() override = default;
 
   // Show, summon, or activate the panel if needed, or close it if it's already
   // active and prevent_close is false.
@@ -90,7 +90,6 @@ class GlicWindowController : public Host::Delegate {
                                            mojom::InvocationSource source) = 0;
 
   virtual void FocusIfOpen() = 0;
-
 
   // Destroy the glic panel and its web contents.
   virtual void Shutdown() = 0;

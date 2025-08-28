@@ -30,6 +30,7 @@ class Host {
  public:
   class Delegate {
    public:
+    virtual ~Delegate() = default;
     // Returns the current panel state.
     virtual const mojom::PanelState& GetPanelState() const = 0;
 
