@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+  <script>
+    const kSRIIntegrityAttributeOnInlineScript = 5652;
+
+    test(() => {
+      internals.clearUseCounter(document, kSRIIntegrityAttributeOnInlineScript);
+      assert_false(internals.isUseCounted(document, kSRIIntegrityAttributeOnInlineScript));
+    });
+  </script>
+
+  <script integrity>
+    test(() => {
+      assert_false(internals.isUseCounted(document, kSRIIntegrityAttributeOnInlineScript));
+    }, "Empty integrity => No counter.");
+  </script>
+
+  <script integrity="not-integrity-metadata">
+    test(() => {
+      assert_false(internals.isUseCounted(document, kSRIIntegrityAttributeOnInlineScript));
+    }, "Invalid integrity => No counter.");
+  </script>
+
+  <script integrity="sha256-+MO/YqmqPm/BYZwlDkir51GTc9Pt9BvmLrXcRRma8u8=">
+    test(() => {
+      assert_true(internals.isUseCounted(document, kSRIIntegrityAttributeOnInlineScript));
+    }, "Valid integrity => counter.");
+  </script>
+</body>

@@ -626,6 +626,22 @@ PendingScript* ScriptLoader::PrepareScript(
   TextPosition position = is_in_document_write ? TextPosition::MinimumPosition()
                                                : script_start_position;
 
+  // Measure the pages on which a `<script>` element without a `src` attribute
+  // has a non-empty `integrity` attribute to see whether inline integrity
+  // checks might run into compat challenges.
+  //
+  // https://github.com/mikewest/inline-integrity/issues/6
+  if (!element_->HasSourceAttribute() &&
+      !element_->IntegrityAttributeValue().empty()) {
+    IntegrityMetadataSet metadata;
+    SubresourceIntegrity::ParseIntegrityAttribute(
+        element_->IntegrityAttributeValue(), metadata, context_window);
+    if (!metadata.empty()) {
+      UseCounter::Count(*context_window,
+                        WebFeature::kSRIIntegrityAttributeOnInlineScript);
+    }
+  }
+
   // <spec step="18">If el does not have a src content attribute, and the Should
   // element's inline behavior be blocked by Content Security Policy? algorithm
   // returns "Blocked" when given el, "script", and source text, then return.
