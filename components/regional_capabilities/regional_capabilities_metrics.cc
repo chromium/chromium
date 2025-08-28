@@ -10,6 +10,7 @@
 #include "base/strings/strcat.h"
 #include "components/country_codes/country_codes.h"
 #include "components/regional_capabilities/program_settings.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace regional_capabilities {
 
@@ -78,6 +79,27 @@ void RecordProgramAndLocationMatch(
 void RecordFunnelStage(FunnelStage stage) {
   base::UmaHistogramEnumeration("RegionalCapabilities.FunnelStage.Reported",
                                 stage);
+}
+
+void RecordActiveRegionalProgram(
+    const absl::flat_hash_set<ActiveRegionalProgram> programs) {
+  ActiveRegionalProgram merged_program;
+
+  switch (programs.size()) {
+    case 0:
+      // There should always be at least one profile, and therefore at least one
+      // program.
+      NOTREACHED();
+    case 1:
+      merged_program = *programs.cbegin();
+      break;
+    default:
+      merged_program = ActiveRegionalProgram::kMixed;
+      break;
+  }
+
+  base::UmaHistogramEnumeration("RegionalCapabilities.ActiveRegionalProgram",
+                                merged_program);
 }
 
 }  // namespace regional_capabilities

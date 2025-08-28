@@ -22,6 +22,21 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="RegionalCapabilities.ActiveRegionalProgram"
+    enum="ActiveRegionalProgram" expires_after="2026-01-31">
+  <owner>ljjlee@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
+  <summary>
+    Records an overall active regional program for the profiles loaded in the
+    current session, at the time the session is finalized. This histogram will
+    be used by the UMA pipeline to tag all metrics in the session log, enabling
+    per-program filtering and analysis.
+
+    Emitted through ProvideCurrentSessionData, when a UMA session record is
+    getting finalized.
+  </summary>
+</histogram>
+
 <histogram name="RegionalCapabilities.FallbackCountryMatching"
     enum="CountryMatchingStatus" expires_after="2025-12-28">
   <owner>dgn@chromium.org</owner>

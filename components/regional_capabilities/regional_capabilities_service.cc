@@ -437,6 +437,18 @@ void RegionalCapabilitiesService::EnsureRegionalScopeCacheInitialized() {
   }
 }
 
+ActiveRegionalProgram RegionalCapabilitiesService::GetActiveProgramForMetrics() {
+  switch (GetActiveProgramSettings().program) {
+    case Program::kDefault:
+      return ActiveRegionalProgram::kDefault;
+    case Program::kTaiyaki:
+      return ActiveRegionalProgram::kTaiyaki;
+    case Program::kWaffle:
+      return ActiveRegionalProgram::kWaffle;
+  }
+  NOTREACHED();
+}
+
 void RegionalCapabilitiesService::ClearCacheForTesting() {
   CHECK_IS_TEST();
   country_id_cache_.reset();

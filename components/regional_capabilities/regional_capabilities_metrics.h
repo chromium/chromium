@@ -6,10 +6,22 @@
 #define COMPONENTS_REGIONAL_CAPABILITIES_REGIONAL_CAPABILITIES_METRICS_H_
 
 #include "components/country_codes/country_codes.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace regional_capabilities {
 
-enum class Program;
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ActiveRegionalProgram)
+enum class ActiveRegionalProgram {
+  kDefault = 0,
+  kMixed = 1,
+  kWaffle = 2,
+  kTaiyaki = 3,
+  kMaxValue = kTaiyaki,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/regional_capabilities/enums.xml:ActiveRegionalProgram)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -64,6 +76,14 @@ enum class FunnelStage {
 // LINT.ThenChange(/tools/metrics/histograms/metadata/regional_capabilities/enums.xml:RegionalCapabilitiesFunnelStage)
 
 void RecordFunnelStage(FunnelStage stage);
+
+// Records the histogram for the active regional program, used for UMA
+// filtering.
+//
+// `programs` contains the active program for each profile. This method is
+// responsible for aggregating these into a single histogram.
+void RecordActiveRegionalProgram(
+    const absl::flat_hash_set<ActiveRegionalProgram> programs);
 
 }  // namespace regional_capabilities
 

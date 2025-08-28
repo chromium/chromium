@@ -28,6 +28,7 @@ struct PrepopulatedEngine;
 
 namespace regional_capabilities {
 
+enum class ActiveRegionalProgram;
 class CountryIdHolder;
 enum class Program;
 
@@ -135,6 +136,10 @@ class RegionalCapabilitiesService : public KeyedService {
   // Clears the caches to be able to change countries multiple times
   // in tests.
   void ClearCacheForTesting();
+
+  // Returns the metrics enum for the active regional program. This is used for
+  // logging only.
+  ActiveRegionalProgram GetActiveProgramForMetrics();
 
   const ProgramSettings& GetActiveProgramSettingsForTesting();
 
