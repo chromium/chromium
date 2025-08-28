@@ -262,7 +262,10 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
             fetchImage(model, suggestion.getImageUrl());
         }
 
-        addActionButtonIfAvailable(suggestion, model, position);
+        // Action button should not be provided in the hub.
+        if (input.getPageClassification() != PageClassification.ANDROID_HUB_VALUE) {
+            addActionButtonIfAvailable(suggestion, model, position);
+        }
     }
 
     private void addActionButtonIfAvailable(
