@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -48,8 +49,12 @@ using testing::WithoutArgs;
 
 namespace syncer {
 
+class SyncSchedulerImplTest;
+
 namespace {
-base::OnceClosure g_quit_closure_;
+
+SyncSchedulerImplTest* g_test_instance = nullptr;
+
 void SimulatePollSuccess(DataTypeSet requested_types, SyncCycle* cycle) {
   cycle->mutable_status_controller()->set_last_download_updates_result(
       SyncerError::Success());
@@ -179,29 +184,6 @@ std::unique_ptr<DataTypeActivationResponse> MakeFakeActivationResponse(
 MockSyncer::MockSyncer() : Syncer(nullptr) {}
 
 using SyncShareTimes = std::vector<TimeTicks>;
-
-void QuitLoopNow() {
-  // We use QuitNow() instead of Quit() as the latter may get stalled
-  // indefinitely in the presence of repeated timers with low delays
-  // and a slow test (e.g., ThrottlingDoesThrottle [which has a poll
-  // delay of 5ms] run under TSAN on the trybots).
-  std::move(g_quit_closure_).Run();
-}
-
-void RunLoop() {
-  base::RunLoop loop;
-  g_quit_closure_ = loop.QuitClosure();
-  loop.Run();
-}
-
-void PumpLoop() {
-  // Do it this way instead of RunAllPending to pump loop exactly once
-  // (necessary in the presence of timers; see comment in
-  // QuitLoopNow).
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&QuitLoopNow));
-  RunLoop();
-}
 
 static const size_t kMinNumSamples = 5;
 
@@ -409,6 +391,35 @@ class SyncSchedulerImplTest : public testing::Test {
     return scheduler_->pending_wakeup_timer_.GetCurrentDelay();
   }
 
+  static SyncSchedulerImplTest& GetInstance() {
+    CHECK(g_test_instance);
+    return *g_test_instance;
+  }
+
+  void QuitLoopNow() {
+    // We use QuitNow() instead of Quit() as the latter may get stalled
+    // indefinitely in the presence of repeated timers with low delays
+    // and a slow test (e.g., ThrottlingDoesThrottle [which has a poll
+    // delay of 5ms] run under TSAN on the trybots).
+    std::move(g_quit_closure_).Run();
+  }
+
+  void RunLoop() {
+    base::RunLoop loop;
+    g_quit_closure_ = loop.QuitClosure();
+    loop.Run();
+  }
+
+  void PumpLoop() {
+    // Do it this way instead of RunAllPending to pump loop exactly once
+    // (necessary in the presence of timers; see comment in
+    // QuitLoopNow).
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&SyncSchedulerImplTest::QuitLoopNow,
+                                  base::Unretained(this)));
+    RunLoop();
+  }
+
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
 
@@ -431,6 +442,9 @@ class SyncSchedulerImplTest : public testing::Test {
   raw_ptr<MockSyncer, DanglingUntriaged> syncer_ = nullptr;
   raw_ptr<MockDelayProvider, DanglingUntriaged> delay_ = nullptr;
   scoped_refptr<ExtensionsActivity> extensions_activity_;
+  base::OnceClosure g_quit_closure_;
+  base::AutoReset<SyncSchedulerImplTest*> resetter_{&g_test_instance, this,
+                                                    nullptr};
   base::WeakPtrFactory<SyncSchedulerImplTest> weak_ptr_factory_{this};
 };
 
@@ -443,7 +457,7 @@ void RecordSyncShareImpl(SyncShareTimes* times) {
 ACTION_P2(RecordSyncShare, times, success) {
   RecordSyncShareImpl(times);
   if (base::RunLoop::IsRunningOnCurrentThread()) {
-    QuitLoopNow();
+    SyncSchedulerImplTest::GetInstance().QuitLoopNow();
   }
   return success;
 }
@@ -453,7 +467,7 @@ ACTION_P3(RecordSyncShareMultiple, times, quit_after, success) {
   EXPECT_LE(times->size(), quit_after);
   if (times->size() >= quit_after &&
       base::RunLoop::IsRunningOnCurrentThread()) {
-    QuitLoopNow();
+    SyncSchedulerImplTest::GetInstance().QuitLoopNow();
   }
   return success;
 }
@@ -464,12 +478,12 @@ ACTION_P(StopScheduler, scheduler) {
 
 ACTION(AddFailureAndQuitLoopNow) {
   ADD_FAILURE();
-  QuitLoopNow();
+  SyncSchedulerImplTest::GetInstance().QuitLoopNow();
   return true;
 }
 
 ACTION_P(QuitLoopNowAction, success) {
-  QuitLoopNow();
+  SyncSchedulerImplTest::GetInstance().QuitLoopNow();
   return success;
 }
 

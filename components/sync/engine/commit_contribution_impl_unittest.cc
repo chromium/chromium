@@ -36,10 +36,9 @@ using testing::IsEmpty;
 using testing::Not;
 using testing::SizeIs;
 
-const ClientTagHash kTag = ClientTagHash::FromHashed("tag");
-const char kValue[] = "value";
-const char kURL[] = "url";
-const char kTitle[] = "title";
+constexpr char kValue[] = "value";
+constexpr char kURL[] = "url";
+constexpr char kTitle[] = "title";
 
 EntitySpecifics GeneratePreferenceSpecifics(const ClientTagHash& tag,
                                             const std::string& value) {
@@ -66,19 +65,31 @@ EntitySpecifics GenerateBookmarkSpecifics(const std::string& url,
   return specifics;
 }
 
-std::unique_ptr<EntityData> CreateDefaultPreferenceEntityData() {
-  auto data = std::make_unique<syncer::EntityData>();
+}  // namespace
 
-  data->client_tag_hash = kTag;
-  data->specifics = GeneratePreferenceSpecifics(kTag, kValue);
-  data->creation_time = base::Time::Now();
-  data->modification_time = data->creation_time;
-  data->name = "Name:";
+class CommitContributionImplTest : public testing::Test {
+ public:
+  CommitContributionImplTest() = default;
 
-  return data;
-}
+  const ClientTagHash& tag() const { return tag_; }
 
-TEST(CommitContributionImplTest, PopulateCommitProtoDefault) {
+  std::unique_ptr<EntityData> CreateDefaultPreferenceEntityData() {
+    auto data = std::make_unique<syncer::EntityData>();
+
+    data->client_tag_hash = tag();
+    data->specifics = GeneratePreferenceSpecifics(tag(), kValue);
+    data->creation_time = base::Time::Now();
+    data->modification_time = data->creation_time;
+    data->name = "Name:";
+
+    return data;
+  }
+
+ private:
+  const ClientTagHash tag_{ClientTagHash::FromHashed("tag")};
+};
+
+TEST_F(CommitContributionImplTest, PopulateCommitProtoDefault) {
   const int64_t kBaseVersion = 7;
   base::Time creation_time = base::Time::UnixEpoch() + base::Days(1);
   base::Time modification_time = creation_time + base::Seconds(1);
@@ -105,14 +116,14 @@ TEST(CommitContributionImplTest, PopulateCommitProtoDefault) {
   EXPECT_EQ(creation_time.InMillisecondsFSinceUnixEpoch(), entity.ctime());
   EXPECT_FALSE(entity.name().empty());
   EXPECT_FALSE(entity.client_tag_hash().empty());
-  EXPECT_EQ(kTag.value(), entity.specifics().preference().name());
+  EXPECT_EQ(tag().value(), entity.specifics().preference().name());
   EXPECT_FALSE(entity.deleted());
   EXPECT_EQ(kValue, entity.specifics().preference().value());
   EXPECT_TRUE(entity.parent_id_string().empty());
   EXPECT_FALSE(entity.unique_position().has_custom_compressed_v1());
 }
 
-TEST(CommitContributionImplTest, PopulateCommitProtoTombstone) {
+TEST_F(CommitContributionImplTest, PopulateCommitProtoTombstone) {
   const int64_t kBaseVersion = 7;
   base::Time creation_time = base::Time::UnixEpoch() + base::Days(1);
   base::Time modification_time = creation_time + base::Seconds(1);
@@ -157,7 +168,7 @@ TEST(CommitContributionImplTest, PopulateCommitProtoTombstone) {
   EXPECT_FALSE(entity.name().empty());
 }
 
-TEST(CommitContributionImplTest, PopulateCommitProtoBookmark) {
+TEST_F(CommitContributionImplTest, PopulateCommitProtoBookmark) {
   const int64_t kBaseVersion = 7;
   base::Time creation_time = base::Time::UnixEpoch() + base::Days(1);
   base::Time modification_time = creation_time + base::Seconds(1);
@@ -202,7 +213,7 @@ TEST(CommitContributionImplTest, PopulateCommitProtoBookmark) {
   EXPECT_TRUE(entity.unique_position().has_custom_compressed_v1());
 }
 
-TEST(CommitContributionImplTest, PopulateCommitProtoBookmarkFolder) {
+TEST_F(CommitContributionImplTest, PopulateCommitProtoBookmarkFolder) {
   const int64_t kBaseVersion = 7;
   base::Time creation_time = base::Time::UnixEpoch() + base::Days(1);
   base::Time modification_time = creation_time + base::Seconds(1);
@@ -247,7 +258,7 @@ TEST(CommitContributionImplTest, PopulateCommitProtoBookmarkFolder) {
   EXPECT_TRUE(entity.unique_position().has_custom_compressed_v1());
 }
 
-TEST(CommitContributionImplTest, ShouldPropagateFailedItemsOnCommitResponse) {
+TEST_F(CommitContributionImplTest, ShouldPropagateFailedItemsOnCommitResponse) {
   auto data = std::make_unique<syncer::EntityData>();
   data->client_tag_hash = ClientTagHash::FromHashed("hash");
   auto request_data = std::make_unique<CommitRequestData>();
@@ -302,7 +313,7 @@ TEST(CommitContributionImplTest, ShouldPropagateFailedItemsOnCommitResponse) {
       failed_item.datatype_specific_error.sharing_message_error().error_code());
 }
 
-TEST(CommitContributionImplTest, ShouldPropagateFullCommitFailure) {
+TEST_F(CommitContributionImplTest, ShouldPropagateFullCommitFailure) {
   base::MockOnceCallback<void(SyncCommitError commit_error)>
       on_commit_failure_callback;
   EXPECT_CALL(on_commit_failure_callback, Run(SyncCommitError::kNetworkError));
@@ -315,7 +326,7 @@ TEST(CommitContributionImplTest, ShouldPropagateFullCommitFailure) {
   contribution.ProcessCommitFailure(SyncCommitError::kNetworkError);
 }
 
-TEST(CommitContributionImplTest, ShouldPopulateIdStringForCommitOnlyTypes) {
+TEST_F(CommitContributionImplTest, ShouldPopulateIdStringForCommitOnlyTypes) {
   // Create non-empty commit-only entity.
   auto data = std::make_unique<syncer::EntityData>();
   data->client_tag_hash = ClientTagHash::FromHashed("hash");
@@ -338,7 +349,7 @@ TEST(CommitContributionImplTest, ShouldPopulateIdStringForCommitOnlyTypes) {
   EXPECT_THAT(msg.commit().entries(0).id_string(), Not(IsEmpty()));
 }
 
-TEST(CommitContributionImplTest, ShouldPopulateCollaborationId) {
+TEST_F(CommitContributionImplTest, ShouldPopulateCollaborationId) {
   std::unique_ptr<EntityData> data = CreateDefaultPreferenceEntityData();
   data->collaboration_metadata = CollaborationMetadata::ForLocalChange(
       /*changed_by=*/GaiaId(), CollaborationId("collaboration"));
@@ -356,7 +367,5 @@ TEST(CommitContributionImplTest, ShouldPopulateCollaborationId) {
 
   EXPECT_EQ(entity.collaboration().collaboration_id(), "collaboration");
 }
-
-}  // namespace
 
 }  // namespace syncer

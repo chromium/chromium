@@ -53,20 +53,16 @@ using testing::NotNull;
 
 const GaiaId::Literal kDefaultAuthenticatedGaiaId("DefaultGaiaId");
 
-const char kKey1[] = "key1";
-const char kKey2[] = "key2";
-const char kKey3[] = "key3";
-const char kKey4[] = "key4";
-const char kKey5[] = "key5";
-const char kValue1[] = "value1";
-const char kValue2[] = "value2";
-const char kValue3[] = "value3";
+constexpr char kKey1[] = "key1";
+constexpr char kKey2[] = "key2";
+constexpr char kKey3[] = "key3";
+constexpr char kKey4[] = "key4";
+constexpr char kKey5[] = "key5";
+constexpr char kValue1[] = "value1";
+constexpr char kValue2[] = "value2";
+constexpr char kValue3[] = "value3";
 
-const char kCacheGuid[] = "TestCacheGuid";
-
-// Typically used for verification after a delete. The specifics given to the
-// worker/processor will not have been initialized and thus empty.
-const EntitySpecifics kEmptySpecifics;
+constexpr char kCacheGuid[] = "TestCacheGuid";
 
 ClientTagHash GetHash(DataType type, const std::string& key) {
   return ClientTagHash::FromUnhashed(
@@ -874,6 +870,10 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldHandleSynchronousDataLoad) {
 //
 // This results in 1 + 4 = 5 orderings of the events.
 TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldLoadPendingDelete) {
+  // Typically used for verification after a delete. The specifics given to the
+  // worker/processor will not have been initialized and thus empty.
+  const EntitySpecifics kEmptySpecifics;
+
   // Connect.
   ResetStateDeleteItem(kKey1, kValue1);
   InitializeToMetadataLoaded();
