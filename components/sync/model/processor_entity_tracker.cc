@@ -156,8 +156,8 @@ std::vector<std::string> ProcessorEntityTracker::RemoveInactiveCollaborations(
   CHECK(
       IsInitialSyncAtLeastPartiallyDone(data_type_state_.initial_sync_state()));
   std::vector<std::string> removed_storage_keys;
-  std::erase_if(entities_, [&removed_storage_keys,
-                            &active_collaborations](const auto& item) {
+  absl::erase_if(entities_, [&removed_storage_keys,
+                             &active_collaborations](const auto& item) {
     const std::unique_ptr<ProcessorEntity>& entity = item.second;
     if (!active_collaborations.contains(
             entity->metadata().collaboration().collaboration_id())) {

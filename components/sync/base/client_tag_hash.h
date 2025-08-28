@@ -29,6 +29,12 @@ class ClientTagHash {
     }
   };
 
+  // For use in absl::flat_hash_set or absl::flat_hash_map .
+  template <typename H>
+  friend H AbslHashValue(H h, const ClientTagHash& client_tag_hash) {
+    return H::combine(std::move(h), client_tag_hash.value());
+  }
+
   // Creates ClientTagHash based on `client_tag`.
   static ClientTagHash FromUnhashed(DataType type, std::string_view client_tag);
 

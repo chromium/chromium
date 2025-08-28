@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SYNC_MODEL_PROCESSOR_ENTITY_TRACKER_H_
 #define COMPONENTS_SYNC_MODEL_PROCESSOR_ENTITY_TRACKER_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -16,6 +15,7 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/protocol/data_type_state.pb.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace sync_pb {
 class EntityMetadata;
@@ -146,7 +146,8 @@ class ProcessorEntityTracker {
   // A map of client tag hash to sync entities known to this tracker. This
   // should contain entries and metadata, although the entities may not always
   // contain data type data/specifics.
-  std::map<ClientTagHash, std::unique_ptr<ProcessorEntity>> entities_;
+  absl::flat_hash_map<ClientTagHash, std::unique_ptr<ProcessorEntity>>
+      entities_;
 
   // The data type metadata (progress marker, initial sync done, etc).
   sync_pb::DataTypeState data_type_state_;
@@ -160,7 +161,7 @@ class ProcessorEntityTracker {
   // support GetStorageKey(). In this case the bridge is responsible for
   // updating storage key with UpdateStorageKey() call from within
   // MergeFullSyncData/ApplyIncrementalSyncChanges.
-  std::map<std::string, ClientTagHash> storage_key_to_tag_hash_;
+  absl::flat_hash_map<std::string, ClientTagHash> storage_key_to_tag_hash_;
 };
 
 }  // namespace syncer
