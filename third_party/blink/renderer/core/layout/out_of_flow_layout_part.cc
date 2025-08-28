@@ -1567,22 +1567,23 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
   while (!descendants->empty()) {
     ComputeInlineContainingBlocksForFragmentainer(*descendants);
 
-    // When there are anchor queries, each containing block should be laid out
-    // separately. This loop chunks |descendants| by their containing blocks, if
-    // they have anchor queries.
+    // If there are anchors, the objects containing them need to be laid out
+    // before proceeding to successors (since they may have references to such
+    // anchors). This loop chunks `descendants` if there are OOFs containing
+    // anchors. Each time we encounter an OOF that is an anchor and/or has
+    // anchors inside, we need to lay out all the OOFs we have gathered so far,
+    // before resuming with any remaining OOFs following it.
     base::span<LogicalOofNodeForFragmentation> descendants_span =
         base::span(*descendants);
     for (;;) {
       bool has_new_descendants_span = false;
-      // The CSS containing block of the last descendant, to group |descendants|
-      // by the CSS containing block.
-      const LayoutObject* last_css_containing_block = nullptr;
 
       // Sort the descendants by fragmentainer index in |descendants_to_layout|.
       // This will ensure that the descendants are laid out in the correct
       // order.
       DCHECK(!descendants_span.empty());
-      for (size_t i = 0; i < descendants_span.size(); ++i) {
+      for (size_t i = 0;
+           i < descendants_span.size() && !has_new_descendants_span; ++i) {
         auto& descendant = descendants_span[i];
         if (GetFragmentainerType() == kFragmentColumn) {
           auto* containing_block = To<LayoutBox>(
@@ -1599,39 +1600,17 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
           }
         }
 
-        // Ensure each containing block is laid out before laying out other
-        // containing blocks. The CSS Anchor Positioning may evaluate
-        // differently when the containing block is different, and may refer to
-        // other containing blocks that were already laid out.
+        // An OOF that is or contains anchors needs to be laid out right away,
+        // so that these anchors are visible to successors.
         //
-        // Do this only when needed, because doing so may rebuild fragmentainers
-        // multiple times, which can hit the performance when there are many
-        // containing blocks in the block formatting context.
-        //
-        // Use |LayoutObject::Container|, not |LayoutObject::ContainingBlock|.
-        // The latter is not the CSS containing block for inline boxes. See the
-        // comment of |LayoutObject::ContainingBlock|.
-        //
-        // Note |descendant.containing_block.fragment| is |ContainingBlock|, not
-        // the CSS containing block.
-        if ((stitched_anchor_queries && !stitched_anchor_queries->IsEmpty()) ||
-            may_have_anchors_on_oof) {
-          const LayoutObject* css_containing_block =
-              descendant.box->Container();
-          DCHECK(css_containing_block);
-          if (css_containing_block != last_css_containing_block) {
-            // Chunking the layout of OOFs by the containing blocks is done only
-            // if it has anchor query, for the performance reasons to minimize
-            // the number of rebuilding fragmentainer fragments.
-            if (last_css_containing_block &&
-                (last_css_containing_block->MayHaveAnchorQuery() ||
-                 may_have_anchors_on_oof)) {
-              has_new_descendants_span = true;
-              descendants_span = descendants_span.subspan(i);
-              break;
-            }
-            last_css_containing_block = css_containing_block;
-          }
+        // Do this only when needed, to avoid rebuilding fragmentainers more
+        // times than necessary.
+        if (descendant.box->MayHaveAnchorQuery()) {
+          // This OOF is an achor and/or has anchors inside. Lay out the OOFs
+          // that we've collected so far, then resume collecting OOFs
+          // afterwards, if there are any left.
+          descendants_span = descendants_span.subspan(i + 1);
+          has_new_descendants_span = !descendants_span.empty();
         }
 
         NodeInfo node_info = SetupNodeInfo(descendant);
