@@ -402,10 +402,12 @@ void FullscreenModel::UpdateProgress() {
   if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
     SetProgress(1.0 + delta / toolbar_height_delta);
     return;
-  }
-  if (IsFullscreenTransitionSpeedSet()) {
-    SetProgress(1.0 + (delta * speed_) / toolbar_height_delta);
-    return;
+  } else {
+    if (IsFullscreenTransitionSpeedSet()) {
+      SetProgress(1.0 + (delta * speed_) / toolbar_height_delta);
+      return;
+    }
+    SetProgress(1.0 + delta / toolbar_height_delta);
   }
 }
 
