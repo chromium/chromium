@@ -27,6 +27,7 @@ namespace autofill {
 namespace {
 
 using autofill_metrics::SettingsVisibleFieldTypeForMetrics;
+using ::testing::UnorderedPointwise;
 
 // Test that two AutofillProfiles have the same `record_type() and `Compare()`
 // equal. This is useful for testing profile migration, which changes a
@@ -79,10 +80,11 @@ class AutofillProfileImportProcessTest : public testing::Test {
 
   ProfileImportProcess CreateProfileImportProcess(
       const AutofillProfile& profile,
-      bool allow_only_silent_updates) {
+      bool allow_only_silent_updates,
+      ProfileImportMetadata metadata = {}) {
     return ProfileImportProcess(profile, "en_US", url_, ukm_source_id(),
                                 &address_data_manager(),
-                                allow_only_silent_updates);
+                                allow_only_silent_updates, metadata);
   }
 
  private:
@@ -1186,6 +1188,156 @@ TEST_F(
               testing::UnorderedPointwise(
                   CompareWithRecordType(),
                   {expected_profile, account_name_email_profile}));
+}
+
+// Tests that an accepted import of a profile that is a superset of both the
+// `kAccountNameEmail` profile and the `kAccountWork` profile results in a
+// creation of a new superset profile.
+TEST_F(AutofillProfileImportProcessTest, NameEmail_Work_SupersetImport) {
+  address_data_manager().SetIsEligibleForAddressAccountStorage(true);
+
+  const AutofillProfile account_name_email_profile =
+      test::AccountNameEmailProfile();
+  const AutofillProfile work_profile =
+      test::OnlyAddressProfile(AutofillProfile::RecordType::kAccountWork);
+  const AutofillProfile observed_profile =
+      test::SupersetProfileOf({account_name_email_profile, work_profile},
+                              address_data_manager().app_locale(),
+                              AutofillProfile::RecordType::kLocalOrSyncable);
+
+  address_data_manager().AddProfile(account_name_email_profile);
+  address_data_manager().AddProfile(work_profile);
+
+  // Insert guids into `unedited_autofilled_profile_guids` to trigger
+  // `kAccountNameEmail` H/W merge flow.
+  ProfileImportMetadata metadata;
+  metadata.unedited_autofilled_profile_guids.insert(
+      account_name_email_profile.guid());
+  metadata.unedited_autofilled_profile_guids.insert(work_profile.guid());
+
+  ProfileImportProcess import_data = CreateProfileImportProcess(
+      observed_profile, /*allow_only_silent_updates=*/false, metadata);
+
+  // Test that the type of import was determined correctly.
+  EXPECT_EQ(import_data.import_type(),
+            AutofillProfileImportType::kHomeWorkNameEmailMerge);
+
+  // The merge candidate should be set to std::nullopt
+  ASSERT_EQ(import_data.merge_candidate(), std::nullopt);
+
+  // Simulate that the user accepts this import without edits.
+  import_data.AcceptWithoutEdits();
+  EXPECT_TRUE(import_data.ProfilesChanged());
+
+  // Create an additional profile that is expected to exists after the import is
+  // applied.
+  AutofillProfile expected_profile = observed_profile;
+  test_api(expected_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
+
+  // Confirm three profiles exist post-import:
+  // - `account_name_email_profile`
+  // - `work_profile`
+  // - a new superset `kAccount` profile
+  EXPECT_THAT(ApplyImportAndGetProfiles(import_data),
+              UnorderedPointwise(CompareWithRecordType(),
+                                 {account_name_email_profile, work_profile,
+                                  expected_profile}));
+}
+
+// Tests that an accepted import of a profile that is a superset of both the
+// `kAccountNameEmail` profile and the `kAccountHome` profile results in a
+// creation of a new superset profile.
+TEST_F(AutofillProfileImportProcessTest, NameEmail_Home_SupersetImport) {
+  address_data_manager().SetIsEligibleForAddressAccountStorage(true);
+
+  const AutofillProfile account_name_email_profile =
+      test::AccountNameEmailProfile();
+  const AutofillProfile home_profile =
+      test::OnlyAddressProfile(AutofillProfile::RecordType::kAccountHome);
+  const AutofillProfile observed_profile =
+      test::SupersetProfileOf({account_name_email_profile, home_profile},
+                              address_data_manager().app_locale(),
+                              AutofillProfile::RecordType::kLocalOrSyncable);
+
+  address_data_manager().AddProfile(home_profile);
+  address_data_manager().AddProfile(account_name_email_profile);
+
+  // Insert guids into `unedited_autofilled_profile_guids` to trigger
+  // `kAccountNameEmail` H/W merge flow.
+  ProfileImportMetadata metadata;
+  metadata.unedited_autofilled_profile_guids.insert(
+      account_name_email_profile.guid());
+  metadata.unedited_autofilled_profile_guids.insert(home_profile.guid());
+
+  ProfileImportProcess import_data = CreateProfileImportProcess(
+      observed_profile, /*allow_only_silent_updates=*/false, metadata);
+
+  // Test that the type of import was determined correctly.
+  EXPECT_EQ(import_data.import_type(),
+            AutofillProfileImportType::kHomeWorkNameEmailMerge);
+
+  // The merge candidate should be set to std::nullopt
+  ASSERT_EQ(import_data.merge_candidate(), std::nullopt);
+
+  // Simulate that the user accepts this import without edits.
+  import_data.AcceptWithoutEdits();
+  EXPECT_TRUE(import_data.ProfilesChanged());
+
+  // Create an additional profile that is expected to exists after the import is
+  // applied.
+  AutofillProfile expected_profile = observed_profile;
+  test_api(expected_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
+
+  // Confirm three profiles exist post-import:
+  // - `account_name_email_profile`
+  // - `home_profile`
+  // - a new superset `kAccount` profile
+  EXPECT_THAT(ApplyImportAndGetProfiles(import_data),
+              UnorderedPointwise(CompareWithRecordType(),
+                                 {account_name_email_profile, home_profile,
+                                  expected_profile}));
+}
+
+// Tests that an accepted import of a profile that is a superset of both
+// `kAccountNameEmail` and `kAccountHome` doesn't result in
+// `kHomeWorkNameEmailMerge` import if unedited_autofilled_profile_guids` of
+// `ProfileImportMetadata` contains more than 2 profiles or a profile of the
+// wrong type.
+TEST_F(AutofillProfileImportProcessTest,
+       NameEmail_HW_SupersetImport_IncorrectGuidMetadata) {
+  address_data_manager().SetIsEligibleForAddressAccountStorage(true);
+
+  const AutofillProfile standard_profile = test::StandardProfile();
+  const AutofillProfile account_name_email_profile =
+      test::AccountNameEmailProfile();
+  const AutofillProfile home_profile =
+      test::OnlyAddressProfile(AutofillProfile::RecordType::kAccountHome);
+  const AutofillProfile observed_profile =
+      test::SupersetProfileOf({account_name_email_profile, home_profile},
+                              address_data_manager().app_locale(),
+                              AutofillProfile::RecordType::kLocalOrSyncable);
+
+  address_data_manager().AddProfile(home_profile);
+  address_data_manager().AddProfile(account_name_email_profile);
+  address_data_manager().AddProfile(standard_profile);
+  ProfileImportMetadata metadata;
+
+  // Wrong number of profiles
+  metadata.unedited_autofilled_profile_guids.insert(
+      account_name_email_profile.guid());
+  ProfileImportProcess import_data_1 = CreateProfileImportProcess(
+      observed_profile, /*allow_only_silent_updates=*/false, metadata);
+  EXPECT_NE(import_data_1.import_type(),
+            AutofillProfileImportType::kHomeWorkNameEmailMerge);
+
+  // Contains profile of an incorrect type - `kAccount`
+  metadata.unedited_autofilled_profile_guids.insert(standard_profile.guid());
+  ProfileImportProcess import_data_2 = CreateProfileImportProcess(
+      observed_profile, /*allow_only_silent_updates=*/false, metadata);
+  EXPECT_NE(import_data_2.import_type(),
+            AutofillProfileImportType::kHomeWorkNameEmailMerge);
 }
 
 }  // namespace

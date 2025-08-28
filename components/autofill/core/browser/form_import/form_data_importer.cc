@@ -310,6 +310,18 @@ void FormDataImporter::ImportAndProcessFormData(
         AutofillMetrics::AutofillPromptStatus::kCreditCardShown);
   }
 
+  // TODO(crbug.com/356845298) Clean up when launched.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForNameAndEmail)) {
+    base::flat_set<std::string> unedited_autofilled_profile_guids =
+        ExtractGUIDsOfProfilesWithoutManualEdits(submitted_form);
+
+    for (auto& candidate : extracted_data.extracted_address_profiles) {
+      candidate.import_metadata.unedited_autofilled_profile_guids =
+          unedited_autofilled_profile_guids;
+    }
+  }
+
   ProcessExtractedAddressProfiles(
       extracted_data.extracted_address_profiles,
       // If a payments prompt is potentially shown, do not allow for a second
@@ -1158,6 +1170,22 @@ Iban FormDataImporter::ExtractIbanFromForm(const FormStructure& form) {
     }
   }
   return candidate_iban;
+}
+
+base::flat_set<std::string>
+FormDataImporter::ExtractGUIDsOfProfilesWithoutManualEdits(
+    const FormStructure& submitted_form) const {
+  base::flat_set<std::string> unedited_source_profile_guids;
+  for (const std::unique_ptr<AutofillField>& field : submitted_form) {
+    if (field->is_user_edited()) {
+      return {};
+    }
+    if (const std::optional<std::string>& guid =
+            field->autofill_source_profile_guid()) {
+      unedited_source_profile_guids.insert(guid.value());
+    }
+  }
+  return unedited_source_profile_guids;
 }
 
 void FormDataImporter::OnAddressDataChanged() {

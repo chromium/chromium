@@ -75,6 +75,17 @@ AutofillProfile AccountNameEmailProfile();
 // method, with `kAccount` `record_type`.
 AutofillProfile AccountNameEmailProfileSuperset();
 
+// A new profile that contains only address data.
+AutofillProfile OnlyAddressProfile(AutofillProfile::RecordType record_type =
+                                       AutofillProfile::RecordType::kAccount);
+
+// A new profile obtained through repeated merging of data from `profiles`, with
+// a specific record type.
+AutofillProfile SupersetProfileOf(
+    base::span<const AutofillProfile> profiles,
+    std::string_view app_locale,
+    AutofillProfile::RecordType type = AutofillProfile::RecordType::kAccount,
+    AddressCountryCode country_code = AddressCountryCode("US"));
 }  // namespace autofill::test
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_TEST_UTILS_TEST_PROFILES_H_

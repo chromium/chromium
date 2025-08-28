@@ -88,6 +88,7 @@ using ::testing::_;
 using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::Eq;
+using ::testing::IsEmpty;
 using ::testing::NiceMock;
 using ::testing::Pair;
 using ::testing::Pointee;
@@ -144,6 +145,9 @@ constexpr char kDefaultCreditCardExpYear[] = "2999";
 constexpr char kDefaultPhoneGermany[] = "+49 89 123456";
 constexpr char kDefaultPhoneMexico[] = "+52 55 1234 5678";
 constexpr char kDefaultPhoneArmenia[] = "+374 10 123456";
+
+constexpr char kDefaultGuid[] = "a21f010a-eac1-41fc-aee9-c06bbedfb292";
+constexpr char kSecondGuid[] = "a21f010a-eac1-41fc-aee9-c06bbedfb293";
 
 // For a given FieldType |type| returns a pair of field name and label
 // that should be parsed into this type by our field type parsers.
@@ -3949,6 +3953,40 @@ TEST_F(FormDataImporterTest, AutofillPromptStatusMetric_AddressAndCreditCard) {
   histogram_tester.ExpectUniqueSample(
       "Autofill.PromptStatus",
       AutofillMetrics::AutofillPromptStatus::kAddressAndCreditCardShown, 1);
+}
+
+TEST_F(FormDataImporterTest, ExtractGUIDsOfProfilesWithoutManualEdits) {
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructDefaultProfileFormStructure();
+  int counter = 0;
+  for (auto& field : *form_structure) {
+    field->set_autofill_source_profile_guid(counter % 2 ? kDefaultGuid
+                                                        : kSecondGuid);
+    field->set_is_user_edited(false);
+    ++counter;
+  }
+  base::flat_set<std::string> guids =
+      test_api(form_data_importer())
+          .ExtractGUIDsOfProfilesWithoutManualEdits(*form_structure);
+  EXPECT_THAT(guids, UnorderedElementsAre(kDefaultGuid, kSecondGuid));
+}
+
+TEST_F(FormDataImporterTest,
+       ExtractGUIDsOfProfilesWithoutManualEdits_FieldWasEdited) {
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructDefaultProfileFormStructure();
+  int counter = 0;
+  for (auto& field : *form_structure) {
+    field->set_autofill_source_profile_guid(counter % 2 ? kDefaultGuid
+                                                        : kSecondGuid);
+    field->set_is_user_edited(false);
+    ++counter;
+  }
+  form_structure->field(0)->set_is_user_edited(true);
+  base::flat_set<std::string> guids =
+      test_api(form_data_importer())
+          .ExtractGUIDsOfProfilesWithoutManualEdits(*form_structure);
+  EXPECT_THAT(guids, IsEmpty());
 }
 
 class SkipSaveCardInFormDataImporterTest

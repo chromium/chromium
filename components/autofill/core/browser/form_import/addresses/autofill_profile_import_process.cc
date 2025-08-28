@@ -52,6 +52,44 @@ bool ShouldCountryApproximationBeRemoved(
   return IsMergeableWithExistingProfiles(without_country);
 }
 
+// Checks if `unedited_autofilled_profile_guids` set is populated in a way that
+// allows for creating a profile that is a superset of both the
+// `kAccountNameEmail` profile and one of the Home/Work profiles. This flow
+// works only if there are 2 profiles in the set. One of them must be of type
+// `kAccountNameEmail` and the remaining one must be either `kAccountHome` or
+// `kAccountWork`.
+bool CanCombineAccountNameEmailWithHomeWork(
+    const ProfileImportMetadata& import_metadata,
+    const AddressDataManager& address_data_manager) {
+  if (import_metadata.unedited_autofilled_profile_guids.size() != 2) {
+    return false;
+  }
+
+  bool account_name_email_was_filled = false;
+  bool home_or_work_was_filled = false;
+  for (const auto& guid : import_metadata.unedited_autofilled_profile_guids) {
+    const AutofillProfile* profile =
+        address_data_manager.GetProfileByGUID(guid);
+    if (profile) {
+      switch (profile->record_type()) {
+        case AutofillProfile::RecordType::kAccountNameEmail:
+          account_name_email_was_filled = true;
+          break;
+        case AutofillProfile::RecordType::kAccountHome:
+        case AutofillProfile::RecordType::kAccountWork:
+          home_or_work_was_filled = true;
+          break;
+        case AutofillProfile::RecordType::kAccount:
+        case AutofillProfile::RecordType::kLocalOrSyncable:
+          // These profile types cannot take part in this flow, hence return
+          // false.
+          return false;
+      }
+    }
+  }
+  return account_name_email_was_filled && home_or_work_was_filled;
+}
+
 }  // namespace
 
 ProfileImportMetadata::ProfileImportMetadata() = default;
@@ -108,6 +146,10 @@ void ProfileImportProcess::DetermineProfileImportType() {
   int number_of_unchanged_profiles = 0;
   int number_of_blocked_profile_updates = 0;
   std::optional<AutofillProfile> migration_candidate;
+
+  const bool account_name_email_home_work_merge =
+      CanCombineAccountNameEmailWithHomeWork(import_metadata(),
+                                             *address_data_manager_);
 
   // We don't offer an import if `observed_profile_` is a duplicate of an
   // existing profile.
@@ -217,23 +259,16 @@ void ProfileImportProcess::DetermineProfileImportType() {
       switch (import_candidate_->record_type()) {
         case AutofillProfile::RecordType::kAccountHome:
         case AutofillProfile::RecordType::kAccountWork:
-          import_type_ = AutofillProfileImportType::kHomeAndWorkSuperset;
+          import_type_ =
+              account_name_email_home_work_merge
+                  ? AutofillProfileImportType::kHomeWorkNameEmailMerge
+                  : AutofillProfileImportType::kHomeAndWorkSuperset;
           break;
         case AutofillProfile::RecordType::kAccountNameEmail:
-          import_type_ = AutofillProfileImportType::kNameEmailSuperset;
-          // Setting `merge_candidate_` to `std::nullopt` ensures that the save
-          // bubble will appear. Although `observed_profile` can be merged with
-          // with `kAccountNameEmail` profile this flow is supposed to create a
-          // new profile since the `kAccountNameEmail` profile, from the POV of
-          // import process, is read-only.
-          merge_candidate_ = std::nullopt;
-          // Resetting merge_candidate_ creates discrepancy between the real
-          // number of unchanged profiles and number stored in
-          // `number_of_unchanged_profiles` variable. In order to account for
-          // the fact that `kAccountNameEmail` profile will not be changed
-          // (instead a new profile will be created)
-          // `number_of_unchanged_profiles` should be incremented.
-          ++number_of_unchanged_profiles;
+          import_type_ =
+              account_name_email_home_work_merge
+                  ? AutofillProfileImportType::kHomeWorkNameEmailMerge
+                  : AutofillProfileImportType::kNameEmailSuperset;
           break;
         case AutofillProfile::RecordType::kAccount:
         case AutofillProfile::RecordType::kLocalOrSyncable:
@@ -268,6 +303,24 @@ void ProfileImportProcess::DetermineProfileImportType() {
         AutofillClock::Now());
   }
 
+  if (import_type_ == AutofillProfileImportType::kHomeWorkNameEmailMerge ||
+      import_type_ == AutofillProfileImportType::kNameEmailSuperset) {
+    // Setting `merge_candidate_` to `std::nullopt` ensures that the save
+    // bubble will appear. Although `observed_profile` can be merged with
+    // with `kAccountNameEmail` profile this flow is supposed to create a
+    // new profile since the `kAccountNameEmail` profile, from the POV of
+    // import process, is read-only. The reasoning is the same in the case
+    // of `kHomeWorkNameEmailMerge`.
+    merge_candidate_ = std::nullopt;
+    // Resetting merge_candidate_ creates discrepancy between the real
+    // number of unchanged profiles and number stored in
+    // `number_of_unchanged_profiles` variable. In order to account for
+    // the fact that the `kAccountNameEmail` profile or a H/W profile will not
+    // be changed (and instead a new profile will be created)
+    // `number_of_unchanged_profiles` should be incremented.
+    ++number_of_unchanged_profiles;
+  }
+
   // At this point, all existing profiles are either unchanged, updated and/or
   // one is the merge candidate.
   // One of the unchanged or updated profiles might be considered for migration.
@@ -296,8 +349,14 @@ void ProfileImportProcess::DetermineSourceOfImportCandidate() {
   // profile under the hood, since Home & Work is read-only. This makes sure
   // that the profile created is an account profile, since Home & Work is only
   // available for users eligible to account address storage.
+  //
+  // Merging the `kAccountNameEmail` profile with a H/W profile also results in
+  // creation of a new profile. Since, H/W is available only for users eligible
+  // for account address storage, the profile created as a result of this flow
+  // should also be of type `kAccount`.
   if (import_type_ != AutofillProfileImportType::kNewProfile &&
-      import_type_ != AutofillProfileImportType::kHomeAndWorkSuperset) {
+      import_type_ != AutofillProfileImportType::kHomeAndWorkSuperset &&
+      import_type_ != AutofillProfileImportType::kHomeWorkNameEmailMerge) {
     return;
   }
   CHECK(import_candidate_);
@@ -348,6 +407,7 @@ void ProfileImportProcess::ApplyImport() {
     // 1. New profile prompt
     // 2. Home & Work superset import prompt
     // 3. `kAccountNameEmail` superset import prompt
+    // 4. Merging the `kAccountNameEmail` profile with a H/W profile prompt
     address_data_manager_->AddProfile(*confirmed_import_candidate_);
   }
 }

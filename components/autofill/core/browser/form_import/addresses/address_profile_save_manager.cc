@@ -86,6 +86,7 @@ void AddressProfileSaveManager::MaybeOfferSavePrompt(
     case AutofillProfileImportType::kProfileMigrationAndSilentUpdate:
     case AutofillProfileImportType::kHomeAndWorkSuperset:
     case AutofillProfileImportType::kNameEmailSuperset:
+    case AutofillProfileImportType::kHomeWorkNameEmailMerge:
       if (address_data_manager().auto_accept_address_imports_for_testing()) {
         import_process->AcceptWithoutEdits();
         FinalizeProfileImport(std::move(import_process));
