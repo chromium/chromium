@@ -1315,6 +1315,7 @@ void RecordMissedReuseOpportunityMetric(
     return;
   }
 
+  CHECK(allocation_context.navigation_context);
   auto context = allocation_context.navigation_context->is_outermost_main_frame
                      ? RecentlyDestroyedHosts::Context::kMainFrame
                      : RecentlyDestroyedHosts::Context::kSubframe;
