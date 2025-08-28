@@ -213,39 +213,44 @@ For more detailed information, please see the "Web Tests" documentation:
 *   https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_tests.md
 *   https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/writing_web_tests.md
 
-### 2. Headless Browser Tests (for Chrome-specific features)
+### 2. Headless Mode Protocol Tests (for Chrome-specific features)
 
 These tests are for parts of the protocol that are specific to Chrome, and not
 part of the core Blink engine (for example, features in
 `chrome/browser/devtools/protocol/`).
 
-These tests also use JavaScript, but they are encapsulated in Headless Browser
-Tests.
+These tests also use JavaScript, but they are encapsulated in Chrome Browser
+Tests in Headless Mode.
 
-**How to Write and Run a Headless Browser Test**
+**How to Write and Run Chrome Browser Tests in Headless Mode**
+
+Example CL: https://crrev.com/c/6658682.
 
 1.  **Write a JavaScript test file.** (Analogous to Web Tests).
 
-    *   Place it in the `headless/test/data/protocol/` directory.
+    *   Place new test files in
+        `chrome/browser/headless/test/data/protocol/sanity`. If a new class of
+        tests needs a dedicated subdirectory, create it under
+        `chrome/browser/headless/test/data/protocol/`.
     *   For an example, see
-        [`headless/test/data/protocol/page/page-before-unload.js`](https://source.chromium.org/chromium/chromium/src/+/main:headless/test/data/protocol/page/page-before-unload.js;drc=e5b65ca9b408d525f787a946448b206f7f81cca9).
+        [`chrome/browser/headless/test/data/protocol/input/document-focus-on-load.js`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/headless/test/data/protocol/input/document-focus-on-load.js;drc=28499a22affcf0aa290ab68d84401a6fc1433460).
 
-2.  **Add your test to the C++ test suite.**
+2.  **Add your test to the HeadlessModeProtocolBrowserTest test suite.**
 
     *   In the file
-        [`headless/test/headless_protocol_browsertest.cc`](https://source.chromium.org/chromium/chromium/src/+/main:headless/test/headless_protocol_browsertest.cc;drc=697ee8ce8537dc2c4fc5e41bd16c14cc0d37f429;l=279),
-        add a `HEADLESS_PROTOCOL_TEST` with the test file path from the previous
-        step.
+        [`chrome/browser/headless/headless_mode_protocol_browsertest.cc`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/headless/headless_mode_protocol_browsertest.cc;drc=190220758aecdeb7d5a8839e9946dd381e8857a0;l=214),
+        add a `HEADLESS_MODE_PROTOCOL_TEST` with the test file path from the
+        previous step.
 
-3.  **Build the `headless_browsertests` target:** `autoninja -C out/Default
-    headless_browsertests`
+3.  **Build the `browser_tests` target:** `autoninja -C out/Default
+    browser_tests`
 
 4.  **Run your test.**
 
     *   Use `--gtest_filter` to select the test you added. For example, to run a
-        test named `PageBeforeUnload`:
-        ```bash
-           out/Default/headless_browsertests --gtest_filter="HeadlessProtocolBrowserTest_PageBeforeUnload*"
-        ```
+        test named `DocumentFocusOnLoad`: `bash out/Default/browser_tests
+        --gtest_filter="*HeadlessMode*DocumentFocusOnLoad*"`
     *   To update the `-expected.txt` file with new output, add the
         `--reset-results` flag.
+
+    *   To get the verbose CDP log, add the `--dump-devtools-protocol` flag.
