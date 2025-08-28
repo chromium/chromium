@@ -731,10 +731,6 @@ void PermissionContextBase::UpdateSetting(
   if (info && content_settings::CanBeAutoRevokedAsUnusedPermission(
                   content_settings_type(), info->delegate().ToValue(setting),
                   is_one_time)) {
-    // For #2, by definition, that should be all of them. If that changes in
-    // the future, consider whether revocation for such permission makes
-    // sense, and/or change this to an early return so that we don't
-    // unnecessarily record timestamps where we don't need them.
     constraints.set_track_last_visit_for_autoexpiration(true);
   }
 

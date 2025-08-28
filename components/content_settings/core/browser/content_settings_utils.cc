@@ -227,12 +227,14 @@ bool CanBeAutoRevokedAsUnusedPermission(ContentSettingsType type,
   // a finite amount of time.
   // We're only interested in expiring permissions that are either
   // A. permission settings (= PermissionSettingsRegistry-based), which
-  //    1. query the delegate.
-  // B. regular permissions (= ContentSettingsRegistry-based), which
   //    1. Are ALLOWed.
-  //    2. Fall back to ASK.
+  //    2. Are of eligible ContentSettingsType.
+  //      (That includes the default value being ASK. By definition, all
+  //      Permissions are ASK by default. If that changes in the future,
+  //      consider whether revocation for such permission makes sense. If not,
+  //      make sure last_visited is not unnecessarily tracked for them.)
   //    3. Are not already a one-time grant.
-  // C. chooser permissions (= WebsiteSettingsRegistry-based), which
+  // B. chooser permissions (= WebsiteSettingsRegistry-based), which
   //    1. Are allowlisted.
   //    2. Have a non-empty value.
   if (is_one_time) {
@@ -243,7 +245,8 @@ bool CanBeAutoRevokedAsUnusedPermission(ContentSettingsType type,
       PermissionSettingsRegistry::GetInstance()->Get(type);
   if (permission_settings_info) {
     auto setting = permission_settings_info->delegate().FromValue(value);
-    DCHECK(setting) << value.DebugString();
+    // If the setting is already DEFAULT or the value is corrupt, no need to
+    // revoke the permission.
     if (!setting.has_value()) {
       return false;
     }
