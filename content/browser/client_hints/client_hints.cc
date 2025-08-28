@@ -673,30 +673,34 @@ enum class ClientUaHeaderCallType {
 // Implementation of UpdateNavigationRequestClientUaHeaders().
 void UpdateNavigationRequestClientUaHeadersImpl(
     ClientHintsControllerDelegate* delegate,
-    bool override_ua,
-    FrameTreeNode* frame_tree_node,
+    bool is_ua_override_on,
+    FrameTreeNode* ftn_for_web_contents_override,
     ClientUaHeaderCallType call_type,
     net::HttpRequestHeaders* headers,
     const network::ParsedPermissionsPolicy& container_policy,
-    const ClientHintsExtendedData& data) {
+    const ClientHintsExtendedData& data,
+    FrameTreeNode* ftn_for_devtools_override) {
   std::optional<blink::UserAgentMetadata> ua_metadata;
   bool disable_due_to_custom_ua = false;
-  if (override_ua) {
+  if (is_ua_override_on) {
     NavigatorDelegate* nav_delegate =
-        frame_tree_node ? frame_tree_node->navigator().GetDelegate() : nullptr;
-    ua_metadata =
-        nav_delegate
-            ? nav_delegate->GetUserAgentOverride(frame_tree_node->frame_tree())
-                  .ua_metadata_override
-            : std::nullopt;
+        ftn_for_web_contents_override
+            ? ftn_for_web_contents_override->navigator().GetDelegate()
+            : nullptr;
+    ua_metadata = nav_delegate
+                      ? nav_delegate
+                            ->GetUserAgentOverride(
+                                ftn_for_web_contents_override->frame_tree())
+                            .ua_metadata_override
+                      : std::nullopt;
     // If a custom UA override is set, but no value is provided for UA client
     // hints, disable them.
     disable_due_to_custom_ua = !ua_metadata.has_value();
   }
 
-  if (frame_tree_node &&
-      devtools_instrumentation::ApplyUserAgentMetadataOverrides(frame_tree_node,
-                                                                &ua_metadata)) {
+  if (ftn_for_devtools_override &&
+      devtools_instrumentation::ApplyUserAgentMetadataOverrides(
+          ftn_for_devtools_override, &ua_metadata)) {
     // Likewise, if devtools says to override client hints but provides no
     // value, disable them. This overwrites previous decision from UI.
     disable_due_to_custom_ua = !ua_metadata.has_value();
@@ -823,14 +827,24 @@ void UpdateNavigationRequestClientUaHeaders(
     return;
   }
 
+  // In usual navigation, use the common FrameTreeNode to look up DevTools for
+  // the DevTools UA override logic.
   ClientHintsExtendedData data(origin, frame_tree_node, delegate);
   UpdateNavigationRequestClientUaHeadersImpl(
       delegate, override_ua, frame_tree_node,
-      ClientUaHeaderCallType::kAfterCreated, headers, {}, data);
+      ClientUaHeaderCallType::kAfterCreated, headers, {}, data,
+      /*ftn_for_devtools_override=*/frame_tree_node);
 }
-
 namespace {
 
+// The main logic of adding Client Hints headers to `headers`. `frame_tree_node`
+// is used for checking the client hints policies, looking up UA overrides in
+// the corresponding WebContents, and calculating client hints values like
+// ViewportWidth, whereas `ftn_for_devtools_override` only serves as source of
+// UA override by DevTools. The two FrameTreeNode parameters can differ in
+// prefetch navigation cases because the FrameTreeNode of the navigation target
+// is sometimes unavailable during prefetch, and we must find an alternative
+// FrameTreeNode for the DevTools UA override source in such cases.
 void AddRequestClientHintsHeaders(
     const url::Origin& origin,
     net::HttpRequestHeaders* headers,
@@ -838,7 +852,8 @@ void AddRequestClientHintsHeaders(
     ClientHintsControllerDelegate* delegate,
     bool is_ua_override_on,
     FrameTreeNode* frame_tree_node,
-    const network::ParsedPermissionsPolicy& container_policy) {
+    const network::ParsedPermissionsPolicy& container_policy,
+    FrameTreeNode* ftn_for_devtools_override) {
   ClientHintsExtendedData data(origin, frame_tree_node, delegate);
   UpdateIFramePermissionsPolicyWithDelegationSupportForClientHints(
       data, container_policy);
@@ -884,7 +899,8 @@ void AddRequestClientHintsHeaders(
 
   UpdateNavigationRequestClientUaHeadersImpl(
       delegate, is_ua_override_on, frame_tree_node,
-      ClientUaHeaderCallType::kDuringCreation, headers, container_policy, data);
+      ClientUaHeaderCallType::kDuringCreation, headers, container_policy, data,
+      ftn_for_devtools_override);
 
   if (ShouldAddClientHint(data, WebClientHintsType::kPrefersColorScheme)) {
     AddPrefersColorSchemeHeader(headers, frame_tree_node);
@@ -924,7 +940,8 @@ void AddPrefetchNavigationRequestClientHintsHeaders(
     net::HttpRequestHeaders* headers,
     BrowserContext* context,
     ClientHintsControllerDelegate* delegate,
-    bool is_ua_override_on) {
+    bool is_ua_override_on,
+    FrameTreeNode* ftn_for_devtools_override) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(context);
 
@@ -932,8 +949,12 @@ void AddPrefetchNavigationRequestClientHintsHeaders(
     return;
   }
 
+  // FrameTreeNode is nullptr because it is possible that no navigation has been
+  // committed yet. Nevertheless, `ftn_for_devtools_override` serves as a
+  // workaround for DevTools-initiated UA overrides.
   AddRequestClientHintsHeaders(origin, headers, context, delegate,
-                               is_ua_override_on, nullptr, {});
+                               is_ua_override_on, nullptr, {},
+                               ftn_for_devtools_override);
 }
 
 void AddNavigationRequestClientHintsHeaders(
@@ -952,9 +973,11 @@ void AddNavigationRequestClientHintsHeaders(
     return;
   }
 
-  AddRequestClientHintsHeaders(origin, headers, context, delegate,
-                               is_ua_override_on, frame_tree_node,
-                               container_policy);
+  // In usual navigation, use the common FrameTreeNode to look up DevTools for
+  // the DevTools UA override logic.
+  AddRequestClientHintsHeaders(
+      origin, headers, context, delegate, is_ua_override_on, frame_tree_node,
+      container_policy, /*ftn_for_devtools_override=*/frame_tree_node);
 }
 
 std::optional<std::vector<WebClientHintsType>>

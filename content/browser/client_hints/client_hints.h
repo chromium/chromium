@@ -113,18 +113,21 @@ CONTENT_EXPORT void AddNavigationRequestClientHintsHeaders(
     BrowserContext* context,
     ClientHintsControllerDelegate* delegate,
     bool is_ua_override_on,
-    FrameTreeNode*,
-    const network::ParsedPermissionsPolicy&,
+    FrameTreeNode* frame_tree_node,
+    const network::ParsedPermissionsPolicy& container_policy,
     const std::optional<GURL>& request_url = std::nullopt);
 
 // Adds client hints headers for a prefetch navigation that is not associated
-// with a frame. It must be a main frame navigation.
+// with a frame. It must be a main frame navigation. `ftn_for_devtools_override`
+// is only used to apply UA overrides by DevTools and not for any other
+// purposes.
 CONTENT_EXPORT void AddPrefetchNavigationRequestClientHintsHeaders(
     const url::Origin& origin,
     net::HttpRequestHeaders* headers,
     BrowserContext* context,
     ClientHintsControllerDelegate* delegate,
-    bool is_ua_override_on);
+    bool is_ua_override_on,
+    FrameTreeNode* ftn_for_devtools_override);
 
 // Parses incoming client hints and persists them as appropriate. Returns
 // hints that were accepted as enabled even if they are not going to be
@@ -142,7 +145,7 @@ ParseAndPersistAcceptCHForNavigation(
     const net::HttpResponseHeaders* response_headers,
     BrowserContext* context,
     ClientHintsControllerDelegate* delegate,
-    FrameTreeNode*);
+    FrameTreeNode* frame_tree_node);
 
 // Persists the `hints` in the Accept-CH storage for the Origin of `url`.
 // `delegate` cannot be nullptr.

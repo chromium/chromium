@@ -395,10 +395,11 @@ TEST_F(ClientHintsTest, AddPrefetchNavigationRequestClientHintsHeaders) {
       {WebClientHintsType::kDeviceMemory, WebClientHintsType::kDpr,
        WebClientHintsType::kUAArch, WebClientHintsType::kPrefersColorScheme});
 
+  // TODO(crbug.com/427866914): Add tests for UA overrides by DevTools.
   net::HttpRequestHeaders headers;
-  AddPrefetchNavigationRequestClientHintsHeaders(origin, &headers,
-                                                 browser_context(), &delegate,
-                                                 /*is_ua_override_on=*/false);
+  AddPrefetchNavigationRequestClientHintsHeaders(
+      origin, &headers, browser_context(), &delegate,
+      /*is_ua_override_on=*/false, /*ftn_for_devtools_override=*/nullptr);
 
   // Low-entropy UA hints are sent by default.
   EXPECT_TRUE(headers.HasHeader("sec-ch-ua"));

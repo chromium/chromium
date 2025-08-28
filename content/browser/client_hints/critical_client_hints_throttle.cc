@@ -168,9 +168,11 @@ void CriticalClientHintsThrottle::MaybeRestartWithHints(
             ->commit_params()
             .frame_policy.container_policy);
   } else {
+    // TODO(crbug.com/427866914): Set correct `ftn_for_devtools_override` to
+    // apply DevTools-initiated UA overrides.
     AddPrefetchNavigationRequestClientHintsHeaders(
         response_origin, &modified_headers, context_, client_hint_delegate_,
-        /*is_ua_override_on=*/false);
+        /*is_ua_override_on=*/false, /*ftn_for_devtools_override=*/nullptr);
   }
 
   // If a client hint header is not in the original request,
