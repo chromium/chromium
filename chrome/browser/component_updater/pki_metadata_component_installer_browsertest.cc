@@ -1527,7 +1527,11 @@ class TestDnsOverHttpsConfigSource : public DnsOverHttpsConfigSource {
   std::string GetDnsOverHttpsTemplates() const override {
     return dns_over_https_templates_;
   }
-  bool IsConfigManaged() const override { return false; }
+  bool IsConfigManaged() const override {
+    // Return managed=true, otherwise the test config will be ignored if the
+    // test is run on an enterprise enrolled device.
+    return true;
+  }
   void SetDohChangeCallback(base::RepeatingClosure callback) override {}
 
  private:
