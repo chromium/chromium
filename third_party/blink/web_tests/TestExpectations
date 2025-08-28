@@ -3623,8 +3623,6 @@ crbug.com/397500917 [ Mac13 ] external/wpt/html/cross-origin-opener-policy/ifram
 crbug.com/397483597 [ Mac15-arm64 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedFrame-timestamps.html [ Timeout ]
 crbug.com/397483597 [ Mac15 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedFrame-timestamps.html [ Timeout ]
 crbug.com/397483597 [ Mac ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedAudioFrame-audiolevel.html [ Timeout ]
-crbug.com/397483597 [ Mac15-arm64 ] external/wpt/webrtc-stats/rtp-stats-creation.html [ Skip Timeout ]
-crbug.com/397483597 [ Mac15 ] external/wpt/webrtc-stats/rtp-stats-creation.html [ Skip Timeout ]
 crbug.com/397483597 [ Mac ] external/wpt/webrtc/RTCPeerConnection-getStats.https.html [ Skip Timeout ]
 crbug.com/397150490 external/wpt/speech-api/SpeechSynthesis-speak-without-activation-fails.tentative.html [ Failure Timeout ]
 crbug.com/396813145 virtual/threaded/external/wpt/css/css-view-transitions/animation-name-ua-prefix.html [ Failure ]
@@ -9612,6 +9610,10 @@ crbug.com/435121429 external/wpt/web-animations/timing-model/animations/setting-
 crbug.com/438933773 [ Win11-arm64 ] external/wpt/bluetooth/bidi/service/getCharacteristics/blocklisted-characteristics.https.window.js [ Failure Pass ]
 crbug.com/438933773 [ Win11-arm64 ] external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/exclusion-filters-require-filters.https.window.js [ Failure Pass ]
 crbug.com/439012788 [ Linux ] wpt_internal/html/canvas/drawHTMLElement/allow-readback/html-images-ignored.https.sub.html [ Failure Pass ]
+
+# Temporarily disable to unblock WebRTC roll
+crbug.com/406585888 external/wpt/webrtc/rtp-stats-lifetime.https.html [ Failure Pass ]
+crbug.com/406585888 external/wpt/webrtc-stats/rtp-stats-creation.html [ Failure Pass ]
 
 # Gardener 2025-08-18
 crbug.com/439456643 [ Linux ] external/wpt/content-security-policy/parsing/invalid-bytes.html [ Failure Timeout ]
