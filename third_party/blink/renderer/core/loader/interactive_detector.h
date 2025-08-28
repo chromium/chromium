@@ -87,7 +87,7 @@ class CORE_EXPORT InteractiveDetector
   // pointer down followed by a pointer up.
   std::optional<base::TimeDelta> GetFirstInputDelay() const;
 
-  WTF::Vector<std::optional<base::TimeDelta>>
+  Vector<std::optional<base::TimeDelta>>
   GetFirstInputDelaysAfterBackForwardCacheRestore() const;
 
   // The timestamp of the event whose delay is reported by GetFirstInputDelay().
@@ -148,7 +148,7 @@ class CORE_EXPORT InteractiveDetector
     std::optional<base::TimeTicks> first_scroll_timestamp;
     std::optional<base::TimeDelta> frist_scroll_delay;
 
-    WTF::Vector<std::optional<base::TimeDelta>>
+    Vector<std::optional<base::TimeDelta>>
         first_input_delays_after_back_forward_cache_restore;
   } page_event_times_;
 

@@ -125,7 +125,7 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
     // It is safe to use Unretained(client), because |client| is a
     // ResourceLoader which owns |this|, and we are binding with weak ptr of
     // |this| here.
-    pending_method_calls_.push(WTF::BindOnce(
+    pending_method_calls_.push(blink::BindOnce(
         [](base::WeakPtr<PrefetchedSignedExchangeLoader> self,
            std::unique_ptr<network::ResourceRequest> request,
            scoped_refptr<const SecurityOrigin> top_frame_origin,
@@ -144,14 +144,14 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
         GetWeakPtr(), std::move(request), std::move(top_frame_origin),
         no_mime_sniffing, std::move(resource_load_info_notifier_wrapper),
         code_cache_host ? code_cache_host->GetWeakPtr() : nullptr,
-        WTF::Unretained(client)));
+        Unretained(client)));
   }
   void Freeze(LoaderFreezeMode value) override {
     if (url_loader_) {
       url_loader_->Freeze(value);
       return;
     }
-    pending_method_calls_.push(WTF::BindOnce(
+    pending_method_calls_.push(blink::BindOnce(
         &PrefetchedSignedExchangeLoader::Freeze, GetWeakPtr(), value));
   }
   void DidChangePriority(WebURLRequest::Priority new_priority,
@@ -161,8 +161,8 @@ class PrefetchedSignedExchangeManager::PrefetchedSignedExchangeLoader
       return;
     }
     pending_method_calls_.push(
-        WTF::BindOnce(&PrefetchedSignedExchangeLoader::DidChangePriority,
-                      GetWeakPtr(), new_priority, intra_priority_value));
+        blink::BindOnce(&PrefetchedSignedExchangeLoader::DidChangePriority,
+                        GetWeakPtr(), new_priority, intra_priority_value));
   }
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForBodyLoader()
       override {

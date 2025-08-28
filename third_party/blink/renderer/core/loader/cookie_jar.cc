@@ -104,8 +104,8 @@ void CookieJar::SetCookie(const String& value) {
         document_->GetExecutionContext()->GetStorageAccessApiStatus(),
         get_version_shared_memory, is_ad_tagged, apply_devtools_overrides,
         value,
-        WTF::BindOnce(&CookieJar::OnSetCookieResponse, WrapWeakPersistent(this),
-                      cookie_url, apply_devtools_overrides));
+        BindOnce(&CookieJar::OnSetCookieResponse, WrapWeakPersistent(this),
+                 cookie_url, apply_devtools_overrides));
   } else {
     if (!backend_->SetCookieFromString(
             cookie_url, document_->SiteForCookies(),

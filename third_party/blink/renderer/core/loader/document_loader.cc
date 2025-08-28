@@ -301,7 +301,7 @@ bool ShouldEmitNewNavigationHistogram(WebNavigationType navigation_type) {
   }
 }
 
-// Helpers to convert between base::flat_map and WTF::HashMap
+// Helpers to convert between base::flat_map and blink::HashMap
 std::optional<
     HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus>>
 ConvertPermissionStatusFlatMapToHashMap(
@@ -1732,15 +1732,15 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
     frame_->GetTaskRunner(TaskType::kInternalLoading)
         ->PostTask(
             FROM_HERE,
-            WTF::BindOnce(&DocumentLoader::CommitSameDocumentNavigationInternal,
-                          WrapWeakPersistent(this), url, frame_load_type,
-                          WrapPersistent(history_item),
-                          same_document_navigation_type, client_redirect_policy,
-                          has_transient_user_activation,
-                          WTF::RetainedRef(initiator_origin),
-                          is_browser_initiated, is_synchronously_committed,
-                          triggering_event_info, task_state_id,
-                          has_ua_visual_transition, should_skip_screenshot));
+            blink::BindOnce(
+                &DocumentLoader::CommitSameDocumentNavigationInternal,
+                WrapWeakPersistent(this), url, frame_load_type,
+                WrapPersistent(history_item), same_document_navigation_type,
+                client_redirect_policy, has_transient_user_activation,
+                blink::RetainedRef(initiator_origin), is_browser_initiated,
+                is_synchronously_committed, triggering_event_info,
+                task_state_id, has_ua_visual_transition,
+                should_skip_screenshot));
   } else {
     CommitSameDocumentNavigationInternal(
         url, frame_load_type, history_item, same_document_navigation_type,

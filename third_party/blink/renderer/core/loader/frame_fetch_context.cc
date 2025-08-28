@@ -959,7 +959,7 @@ bool FrameFetchContext::StartSpeculativeImageDecode(
         "image_id", paint_image_id);
     document_->GetFrame()->GetChromeClient().RequestDecode(
         document_->GetFrame(), draw_image,
-        WTF::BindOnce(
+        blink::BindOnce(
             [](base::OnceClosure cb, PaintImage::Id paint_image_id, bool) {
               TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("loading"),
                                    "SpeculativeImageDecodeFinished",

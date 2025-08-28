@@ -100,8 +100,7 @@ class AnchorElementInteractionTest : public SimTest {
 
     MainFrame().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
         mojom::blink::AnchorElementInteractionHost::Name_,
-        WTF::BindRepeating(&AnchorElementInteractionTest::Bind,
-                           WTF::Unretained(this)));
+        BindRepeating(&AnchorElementInteractionTest::Bind, Unretained(this)));
     WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
 
     // Check our invariant about dwell times, otherwise tests that use them

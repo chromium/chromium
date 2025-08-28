@@ -144,7 +144,7 @@ std::optional<base::TimeDelta> InteractiveDetector::GetFirstInputDelay() const {
   return page_event_times_.first_input_delay;
 }
 
-WTF::Vector<std::optional<base::TimeDelta>>
+Vector<std::optional<base::TimeDelta>>
 InteractiveDetector::GetFirstInputDelaysAfterBackForwardCacheRestore() const {
   return page_event_times_.first_input_delays_after_back_forward_cache_restore;
 }

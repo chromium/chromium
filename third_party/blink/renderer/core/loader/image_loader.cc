@@ -189,40 +189,40 @@ void ImageLoader::DispatchDecodeRequestsIfComplete() {
   }
 
   LocalFrame* frame = GetElement()->GetDocument().GetFrame();
-  WTF::EraseIf(decode_requests_, ([&](const auto& request) {
-                 // If the image already in kDispatched state or still in
-                 // kPendingMicrotask
-                 // state, then we don't dispatch decodes for it. So, the only
-                 // case to handle is if we're in kPendingLoad state.
-                 if (request->state() != DecodeRequest::kPendingLoad) {
-                   return false;
-                 }
-                 Image* image = GetContent()->GetImage();
-                 if (!ImageTypeNeedsDecode(*image)) {
-                   // If the image is of a type that doesn't need decode,
-                   // resolve the promise.
-                   request->Resolve();
-                   return true;
-                 }
-                 cc::DrawImage draw_image(
-                     image->PaintImageForCurrentFrame(),
-                     /*use_dark_mode=*/false,
-                     SkIRect::MakeWH(image->width(), image->height()),
-                     cc::PaintFlags::FilterQuality::kNone, SkM44(),
-                     PaintImage::kDefaultFrameIndex);
-                 // ImageLoader should be kept alive when decode is still
-                 // pending. JS may invoke 'decode' without capturing the Image
-                 // object. If GC kicks in, ImageLoader will be destroyed,
-                 // leading to unresolved/unrejected Promise.
-                 frame->GetChromeClient().RequestDecode(
-                     frame, draw_image,
-                     WTF::BindOnce(&ImageLoader::DecodeRequestFinished,
-                                   MakeUnwrappingCrossThreadHandle(this),
-                                   request->request_id()),
-                     /*speculative*/ false);
-                 request->NotifyDecodeDispatched();
-                 return false;
-               }));
+  EraseIf(decode_requests_, ([&](const auto& request) {
+            // If the image already in kDispatched state or still in
+            // kPendingMicrotask
+            // state, then we don't dispatch decodes for it. So, the only
+            // case to handle is if we're in kPendingLoad state.
+            if (request->state() != DecodeRequest::kPendingLoad) {
+              return false;
+            }
+            Image* image = GetContent()->GetImage();
+            if (!ImageTypeNeedsDecode(*image)) {
+              // If the image is of a type that doesn't need decode,
+              // resolve the promise.
+              request->Resolve();
+              return true;
+            }
+            cc::DrawImage draw_image(
+                image->PaintImageForCurrentFrame(),
+                /*use_dark_mode=*/false,
+                SkIRect::MakeWH(image->width(), image->height()),
+                cc::PaintFlags::FilterQuality::kNone, SkM44(),
+                PaintImage::kDefaultFrameIndex);
+            // ImageLoader should be kept alive when decode is still
+            // pending. JS may invoke 'decode' without capturing the Image
+            // object. If GC kicks in, ImageLoader will be destroyed,
+            // leading to unresolved/unrejected Promise.
+            frame->GetChromeClient().RequestDecode(
+                frame, draw_image,
+                BindOnce(&ImageLoader::DecodeRequestFinished,
+                         MakeUnwrappingCrossThreadHandle(this),
+                         request->request_id()),
+                /*speculative*/ false);
+            request->NotifyDecodeDispatched();
+            return false;
+          }));
 }
 
 void ImageLoader::DecodeRequestFinished(uint64_t request_id, bool success) {
@@ -253,14 +253,14 @@ void ImageLoader::RejectPendingDecodes(UpdateType update_type) {
   // have to reject even the pending mutation requests because conceptually they
   // would have been scheduled before the synchronous update ran, so they
   // referred to the old image.
-  WTF::EraseIf(decode_requests_, ([&](const auto& request) {
-                 if (update_type == UpdateType::kAsync &&
-                     request->state() == DecodeRequest::kPendingMicrotask) {
-                   return false;
-                 }
-                 request->Reject();
-                 return true;
-               }));
+  EraseIf(decode_requests_, ([&](const auto& request) {
+            if (update_type == UpdateType::kAsync &&
+                request->state() == DecodeRequest::kPendingMicrotask) {
+              return false;
+            }
+            request->Reject();
+            return true;
+          }));
 }
 
 void ImageLoader::Trace(Visitor* visitor) const {
@@ -371,10 +371,9 @@ inline void ImageLoader::QueuePendingErrorEvent() {
   pending_error_event_ = PostCancellableTask(
       *GetElement()->GetDocument().GetTaskRunner(TaskType::kDOMManipulation),
       FROM_HERE,
-      WTF::BindOnce(&ImageLoader::DispatchPendingErrorEvent,
-                    WrapPersistent(this),
-                    std::make_unique<IncrementLoadEventDelayCount>(
-                        GetElement()->GetDocument())));
+      BindOnce(&ImageLoader::DispatchPendingErrorEvent, WrapPersistent(this),
+               std::make_unique<IncrementLoadEventDelayCount>(
+                   GetElement()->GetDocument())));
 }
 
 inline void ImageLoader::CrossSiteOrCSPViolationOccurred(
@@ -391,7 +390,7 @@ inline void ImageLoader::EnqueueImageLoadingMicroTask(
   auto task = std::make_unique<Task>(this, update_behavior);
   pending_task_ = task->GetWeakPtr();
   element_->GetDocument().GetAgent().event_loop()->EnqueueMicrotask(
-      WTF::BindOnce(&Task::Run, std::move(task)));
+      BindOnce(&Task::Run, std::move(task)));
   delay_until_do_update_from_element_ =
       std::make_unique<IncrementLoadEventDelayCount>(element_->GetDocument());
 }
@@ -823,10 +822,9 @@ void ImageLoader::ImageNotifyFinished(ImageResourceContent* content) {
   pending_load_event_ = PostCancellableTask(
       *GetElement()->GetDocument().GetTaskRunner(TaskType::kDOMManipulation),
       FROM_HERE,
-      WTF::BindOnce(&ImageLoader::DispatchPendingLoadEvent,
-                    WrapPersistent(this),
-                    std::make_unique<IncrementLoadEventDelayCount>(
-                        GetElement()->GetDocument())));
+      BindOnce(&ImageLoader::DispatchPendingLoadEvent, WrapPersistent(this),
+               std::make_unique<IncrementLoadEventDelayCount>(
+                   GetElement()->GetDocument())));
 }
 
 LayoutImageResource* ImageLoader::GetLayoutImageResource() const {
@@ -997,8 +995,8 @@ ScriptPromise<IDLUndefined> ImageLoader::Decode(
   auto* request = MakeGarbageCollected<DecodeRequest>(
       this, MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
                 script_state, exception_state.GetContext()));
-  execution_context->GetAgent()->event_loop()->EnqueueMicrotask(WTF::BindOnce(
-      &DecodeRequest::ProcessForTask, WrapWeakPersistent(request)));
+  execution_context->GetAgent()->event_loop()->EnqueueMicrotask(
+      BindOnce(&DecodeRequest::ProcessForTask, WrapWeakPersistent(request)));
   decode_requests_.push_back(request);
   return request->promise();
 }

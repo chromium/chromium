@@ -80,7 +80,7 @@ class CORE_EXPORT PingLoader {
   static bool SendBeacon(const ScriptState&,
                          LocalFrame*,
                          const KURL&,
-                         const WTF::String&);
+                         const String&);
   static bool SendBeacon(const ScriptState&,
                          LocalFrame*,
                          const KURL&,

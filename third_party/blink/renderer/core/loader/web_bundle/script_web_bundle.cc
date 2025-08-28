@@ -263,7 +263,7 @@ void ScriptWebBundle::WillReleaseBundleLoaderAndUnregister() {
   if (element_document_) {
     auto task = std::make_unique<ReleaseResourceTask>(*this);
     element_document_->GetAgent().event_loop()->EnqueueMicrotask(
-        WTF::BindOnce(&ReleaseResourceTask::Run, std::move(task)));
+        BindOnce(&ReleaseResourceTask::Run, std::move(task)));
   } else {
     ReleaseBundleLoaderAndUnregister();
   }
@@ -285,14 +285,12 @@ void ScriptWebBundle::ReusedWith(ScriptElementBase& element,
   DCHECK(bundle_loader_);
   if (bundle_loader_->HasLoaded()) {
     element_document_->GetTaskRunner(TaskType::kDOMManipulation)
-        ->PostTask(FROM_HERE,
-                   WTF::BindOnce(&ScriptElementBase::DispatchLoadEvent,
-                                 WrapPersistent(element_.Get())));
+        ->PostTask(FROM_HERE, BindOnce(&ScriptElementBase::DispatchLoadEvent,
+                                       WrapPersistent(element_.Get())));
   } else if (bundle_loader_->HasFailed()) {
     element_document_->GetTaskRunner(TaskType::kDOMManipulation)
-        ->PostTask(FROM_HERE,
-                   WTF::BindOnce(&ScriptElementBase::DispatchErrorEvent,
-                                 WrapPersistent(element_.Get())));
+        ->PostTask(FROM_HERE, BindOnce(&ScriptElementBase::DispatchErrorEvent,
+                                       WrapPersistent(element_.Get())));
   }
 }
 

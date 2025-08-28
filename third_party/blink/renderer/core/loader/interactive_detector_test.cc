@@ -504,8 +504,8 @@ TEST_F(InteractiveDetectorTest, TaskLongerThan5sBlocksTTI) {
 
   // Post a task with 6 seconds duration.
   GetTaskRunner()->PostTask(
-      FROM_HERE, WTF::BindOnce(&InteractiveDetectorTest::DummyTaskWithDuration,
-                               WTF::Unretained(this), 6.0));
+      FROM_HERE, BindOnce(&InteractiveDetectorTest::DummyTaskWithDuration,
+                          Unretained(this), 6.0));
 
   platform_->RunUntilIdle();
 
@@ -523,8 +523,8 @@ TEST_F(InteractiveDetectorTest, LongTaskAfterTTIDoesNothing) {
 
   // Long task 1.
   GetTaskRunner()->PostTask(
-      FROM_HERE, WTF::BindOnce(&InteractiveDetectorTest::DummyTaskWithDuration,
-                               WTF::Unretained(this), 0.1));
+      FROM_HERE, BindOnce(&InteractiveDetectorTest::DummyTaskWithDuration,
+                          Unretained(this), 0.1));
 
   platform_->RunUntilIdle();
 
@@ -535,8 +535,8 @@ TEST_F(InteractiveDetectorTest, LongTaskAfterTTIDoesNothing) {
 
   // Long task 2.
   GetTaskRunner()->PostTask(
-      FROM_HERE, WTF::BindOnce(&InteractiveDetectorTest::DummyTaskWithDuration,
-                               WTF::Unretained(this), 0.1));
+      FROM_HERE, BindOnce(&InteractiveDetectorTest::DummyTaskWithDuration,
+                          Unretained(this), 0.1));
 
   platform_->RunUntilIdle();
   // Wait 5 seconds to see if TTI time changes.

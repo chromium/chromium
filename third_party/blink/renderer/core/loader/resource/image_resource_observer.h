@@ -100,7 +100,7 @@ class CORE_EXPORT ImageResourceObserver : public GarbageCollectedMixin {
   }
 
   // Name for debugging, e.g. shown in memory-infra.
-  virtual WTF::String DebugName() const = 0;
+  virtual String DebugName() const = 0;
 
   static bool IsExpectedType(ImageResourceObserver*) { return true; }
 
