@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] setPointerCapture target removed by lostpointercapture
+  assert_equals: expected "lostpointercapture@target0, pointerup@button, pointerup@button" but got "lostpointercapture@target0, lostpointercapture@target0, pointerup@target1, pointerup@button"
+Harness: the test ran to completion.
+
