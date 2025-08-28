@@ -41,15 +41,17 @@ class BackButtonViewBinder {
             button.setBackground(model.get(BackButtonProperties.BACKGROUND_HIGHLIGHT));
         } else if (key == BackButtonProperties.LONG_CLICK_LISTENER) {
             final var listener = model.get(BackButtonProperties.LONG_CLICK_LISTENER);
-            button.setOnLongClickListener(
-                    view -> {
+            final java.util.function.BooleanSupplier callback =
+                    () -> {
                         if (listener == null) {
                             return false;
                         }
 
                         listener.run();
                         return true;
-                    });
+                    };
+            button.setOnLongClickListener(view -> callback.getAsBoolean());
+            button.setOnContextClickListener(view -> callback.getAsBoolean());
         } else if (key == BackButtonProperties.KEY_LISTENER) {
             final var listener = model.get(BackButtonProperties.KEY_LISTENER);
             button.setOnKeyListener(listener);
