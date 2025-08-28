@@ -112,7 +112,7 @@ struct TestRootFrameSink {
     manager_->CreateRootCompositorFrameSink(std::move(params));
   }
 
-  ~TestRootFrameSink() { manager_->InvalidateFrameSinkId(kRootFrame); }
+  ~TestRootFrameSink() { manager_->InvalidateFrameSinkId(kRootFrame, {}); }
 
   const raw_ref<FrameSinkManagerImpl> manager_;
   mojo::AssociatedRemote<mojom::CompositorFrameSink> compositor_frame_sink;

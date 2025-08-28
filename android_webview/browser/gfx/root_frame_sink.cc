@@ -123,7 +123,7 @@ RootFrameSink::~RootFrameSink() {
   GetFrameSinkManager()->UnregisterBeginFrameSource(begin_frame_source_.get());
   begin_frame_source_.reset();
   support_.reset();
-  GetFrameSinkManager()->InvalidateFrameSinkId(root_frame_sink_id_);
+  GetFrameSinkManager()->InvalidateFrameSinkId(root_frame_sink_id_, {});
 }
 
 viz::FrameSinkManagerImpl* RootFrameSink::GetFrameSinkManager() {

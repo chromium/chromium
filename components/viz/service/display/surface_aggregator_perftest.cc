@@ -424,7 +424,7 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
           auto& frame_sink = entry.second;
           bool is_root = frame_sink->is_root();
           frame_sink.reset();
-          manager_.InvalidateFrameSinkId(frame_sink_id);
+          manager_.InvalidateFrameSinkId(frame_sink_id, {});
           frame_sink = std::make_unique<CompositorFrameSinkSupport>(
               nullptr, &manager_, frame_sink_id, is_root);
         }

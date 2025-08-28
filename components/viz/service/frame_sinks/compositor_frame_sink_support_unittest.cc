@@ -154,7 +154,7 @@ class CompositorFrameSinkSupportTestBase : public testing::Test {
   }
 
   void TearDown() override {
-    manager_->InvalidateFrameSinkId(kArbitraryFrameSinkId);
+    manager_->InvalidateFrameSinkId(kArbitraryFrameSinkId, {});
   }
 
   void AddResourcesToFrame(CompositorFrame* frame,
@@ -726,7 +726,7 @@ TEST_P(AckOnSurfaceActivationWhenInteractiveTest, AddDuringEviction) {
       .WillRepeatedly(testing::Return());
   support->EvictSurface(local_surface_id);
   ExpireAllTemporaryReferences();
-  manager_->InvalidateFrameSinkId(kAnotherArbitraryFrameSinkId);
+  manager_->InvalidateFrameSinkId(kAnotherArbitraryFrameSinkId, {});
   EXPECT_EQ(1, num_pending_frames(support.get()));
 }
 
@@ -781,7 +781,7 @@ TEST_P(CompositorFrameSinkSupportTest, MonotonicallyIncreasingLocalSurfaceIds) {
       0);
   EXPECT_EQ(SubmitResult::ACCEPTED, result);
 
-  manager_->InvalidateFrameSinkId(kAnotherArbitraryFrameSinkId);
+  manager_->InvalidateFrameSinkId(kAnotherArbitraryFrameSinkId, {});
 }
 
 // Verifies that CopyOutputRequests submitted by unprivileged clients are
@@ -822,7 +822,7 @@ TEST_P(AckOnSurfaceActivationWhenInteractiveTest,
   // All the resources in the rejected frame should have been returned.
   CheckReturnedResourcesMatchExpected(frame_resource_ids);
 
-  manager_->InvalidateFrameSinkId(kAnotherArbitraryFrameSinkId);
+  manager_->InvalidateFrameSinkId(kAnotherArbitraryFrameSinkId, {});
 }
 
 // Tests doing an EvictLastActivatedSurface before shutting down the factory.
@@ -862,7 +862,7 @@ TEST_P(AckOnSurfaceActivationWhenInteractiveTest, EvictLastActivatedSurface) {
   ExpireAllTemporaryReferences();
   manager_->surface_manager()->GarbageCollectSurfaces();
   EXPECT_FALSE(GetSurfaceForId(id));
-  manager_->InvalidateFrameSinkId(kAnotherArbitraryFrameSinkId);
+  manager_->InvalidateFrameSinkId(kAnotherArbitraryFrameSinkId, {});
 }
 
 // This test checks the case where a client submits a CompositorFrame for a

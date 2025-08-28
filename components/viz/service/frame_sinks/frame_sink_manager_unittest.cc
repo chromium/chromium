@@ -203,7 +203,7 @@ TEST_F(FrameSinkManagerTest, CreateRootCompositorFrameSink) {
   EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdRoot));
 
   // Invalidating should destroy the RootCompositorFrameSinkImpl.
-  manager_->InvalidateFrameSinkId(kFrameSinkIdRoot);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdRoot, {});
   EXPECT_FALSE(CompositorFrameSinkExists(kFrameSinkIdRoot));
 }
 
@@ -221,7 +221,7 @@ TEST_F(FrameSinkManagerTest, InputManagerCreation) {
   EXPECT_FALSE(InputManagerExists());
 
   // Invalidating should destroy the CompositorFrameSinkImpl.
-  manager_->InvalidateFrameSinkId(kFrameSinkIdA);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
 }
 
 TEST_F(FrameSinkManagerTest, CreateCompositorFrameSink) {
@@ -232,7 +232,7 @@ TEST_F(FrameSinkManagerTest, CreateCompositorFrameSink) {
                             /* render_input_router_config= */ nullptr);
 
   // Invalidating should destroy the CompositorFrameSinkImpl.
-  manager_->InvalidateFrameSinkId(kFrameSinkIdA);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
   EXPECT_FALSE(CompositorFrameSinkExists(kFrameSinkIdA));
 }
 
@@ -261,7 +261,7 @@ TEST_F(FrameSinkManagerTest, CompositorFrameSinkConnectionLost) {
   // Check that the CompositorFrameSinkImpl was destroyed.
   EXPECT_FALSE(CompositorFrameSinkExists(kFrameSinkIdA));
 
-  manager_->InvalidateFrameSinkId(kFrameSinkIdA);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
 }
 
 TEST_F(FrameSinkManagerTest, SingleClients) {
@@ -506,8 +506,8 @@ TEST_F(FrameSinkManagerTest, FrameSinkParentChildRelationship) {
                                          client_c->frame_sink_id());
 
   // Delete RootCompositorFrameSinks.
-  manager_->InvalidateFrameSinkId(kFrameSinkIdRoot);
-  manager_->InvalidateFrameSinkId(kFrameSinkIdRoot2);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdRoot, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdRoot2, {});
 }
 
 // This test verifies that a BeginFrameSource path to the root from a
@@ -625,7 +625,7 @@ TEST_F(FrameSinkManagerTest, DebugLabel) {
   manager_->SetFrameSinkDebugLabel(kFrameSinkIdA, label);
   EXPECT_EQ(label, manager_->GetFrameSinkDebugLabel(kFrameSinkIdA));
 
-  manager_->InvalidateFrameSinkId(kFrameSinkIdA);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
   EXPECT_EQ("", manager_->GetFrameSinkDebugLabel(kFrameSinkIdA));
 }
 
@@ -888,7 +888,7 @@ TEST_F(FrameSinkManagerTest, EvictRootSurfaceId) {
   EXPECT_EQ(surface_id, GetRootCompositorFrameSinkImpl()->CurrentSurfaceId());
   manager_->EvictSurfaces({surface_id});
   EXPECT_FALSE(GetRootCompositorFrameSinkImpl()->CurrentSurfaceId().is_valid());
-  manager_->InvalidateFrameSinkId(kFrameSinkIdRoot);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdRoot, {});
 }
 
 TEST_F(FrameSinkManagerTest, EvictNewerRootSurfaceId) {
@@ -913,7 +913,7 @@ TEST_F(FrameSinkManagerTest, EvictNewerRootSurfaceId) {
       allocator.GetCurrentLocalSurfaceId();
   manager_->EvictSurfaces({{kFrameSinkIdRoot, next_local_surface_id}});
   EXPECT_FALSE(GetRootCompositorFrameSinkImpl()->CurrentSurfaceId().is_valid());
-  manager_->InvalidateFrameSinkId(kFrameSinkIdRoot);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdRoot, {});
 }
 
 TEST_F(FrameSinkManagerTest, SubmitCompositorFrameWithEvictedSurfaceId) {
@@ -945,7 +945,7 @@ TEST_F(FrameSinkManagerTest, SubmitCompositorFrameWithEvictedSurfaceId) {
   // it because it was evicted.
   EXPECT_NE(surface_id2, GetRootCompositorFrameSinkImpl()->CurrentSurfaceId());
 
-  manager_->InvalidateFrameSinkId(kFrameSinkIdRoot);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdRoot, {});
 }
 
 // Test that `FrameSinkManagerImpl::DiscardPendingCopyOfOutputRequests`
@@ -987,7 +987,7 @@ TEST_F(FrameSinkManagerTest,
   ASSERT_EQ(&preserved_request, request_ptr);
 
   // For `manager_->CreateCompositorFrameSink`.
-  manager_->InvalidateFrameSinkId(kFrameSinkIdA);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
   // For `manager_->RegisterBeginFrameSource`.
   manager_->UnregisterBeginFrameSource(&source);
 }
@@ -1015,7 +1015,7 @@ TEST_F(FrameSinkManagerTest, ExactCopyOutputRequestTakenBySurfaceRightAway) {
   // Invalidate the frame sink after we create the surface. This makes sure
   // the exact request can only be taken by the exact surface, instead of being
   // queued in the `CompositorFrameSinkSupport`.
-  manager_->InvalidateFrameSinkId(kFrameSinkIdA);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
 
   auto request = std::make_unique<CopyOutputRequest>(
       CopyOutputRequest::ResultFormat::RGBA,
@@ -1073,7 +1073,7 @@ TEST_F(FrameSinkManagerTest,
   ASSERT_EQ(requests.size(), 1u);
   ASSERT_EQ(requests[0].copy_output_request.get(), request_ptr);
 
-  manager_->InvalidateFrameSinkId(kFrameSinkIdA);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
   manager_->UnregisterBeginFrameSource(&source);
 }
 
@@ -1125,7 +1125,7 @@ TEST_P(AndroidFrameSinkManagerTest, RenderInputRouterLifecycle) {
   }
 
   // Invalidating should destroy the CompositorFrameSinkImpl.
-  manager_->InvalidateFrameSinkId(kFrameSinkIdA);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
   EXPECT_FALSE(CompositorFrameSinkExists(kFrameSinkIdA));
 
   if (InputManagerExists()) {
@@ -1208,7 +1208,7 @@ TEST_P(AndroidFrameSinkManagerTest,
     EXPECT_FALSE(GetMockInputManager()->RIRExistsForFrameSinkId(kFrameSinkIdB));
   }
   // Invalidating should destroy the CompositorFrameSinkImpl.
-  manager_->InvalidateFrameSinkId(kFrameSinkIdB);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdB, {});
 
   EXPECT_FALSE(CompositorFrameSinkExists(kFrameSinkIdB));
 
@@ -1278,7 +1278,7 @@ TEST_P(AndroidFrameSinkManagerTest, RWHIERLifecycleDiffWebContents) {
   }
 
   // Invalidating should destroy the CompositorFrameSinkImpl.
-  manager_->InvalidateFrameSinkId(kFrameSinkIdA);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
   EXPECT_FALSE(CompositorFrameSinkExists(kFrameSinkIdA));
 
   if (expected_creation) {
@@ -1286,7 +1286,7 @@ TEST_P(AndroidFrameSinkManagerTest, RWHIERLifecycleDiffWebContents) {
     EXPECT_EQ(mock_input_manager->GetInputEventRouterMapSize(), 1);
   }
 
-  manager_->InvalidateFrameSinkId(kFrameSinkIdB);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdB, {});
   EXPECT_FALSE(CompositorFrameSinkExists(kFrameSinkIdB));
 
   if (expected_creation) {
@@ -1322,7 +1322,7 @@ TEST_P(AndroidFrameSinkManagerTest, RWHIERLifecycleSameWebContents) {
   }
 
   // Invalidating should destroy the CompositorFrameSinkImpl.
-  manager_->InvalidateFrameSinkId(kFrameSinkIdA);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
   EXPECT_FALSE(CompositorFrameSinkExists(kFrameSinkIdA));
 
   if (expected_creation) {
@@ -1330,7 +1330,7 @@ TEST_P(AndroidFrameSinkManagerTest, RWHIERLifecycleSameWebContents) {
     EXPECT_EQ(mock_input_manager->GetInputEventRouterMapSize(), 1);
   }
 
-  manager_->InvalidateFrameSinkId(kFrameSinkIdB);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdB, {});
   EXPECT_FALSE(CompositorFrameSinkExists(kFrameSinkIdB));
 
   if (expected_creation) {
@@ -1356,7 +1356,7 @@ TEST_P(AndroidFrameSinkManagerTest, VizRIRDelegateLifecycle) {
   EXPECT_EQ(InputManagerExists(), ExpectedInputManagerCreation());
 
   // Invalidating should destroy the CompositorFrameSinkImpl.
-  manager_->InvalidateFrameSinkId(kFrameSinkIdA);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
 
   EXPECT_FALSE(CompositorFrameSinkExists(kFrameSinkIdA));
 
@@ -1418,7 +1418,7 @@ TEST_P(AndroidFrameSinkManagerTest, VizRenderInputRouterSupportBaseLifecycle) {
   EXPECT_EQ(InputManagerExists(), ExpectedInputManagerCreation());
 
   // Invalidating should destroy the CompositorFrameSinkImpl.
-  manager_->InvalidateFrameSinkId(kFrameSinkIdA);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
 
   EXPECT_FALSE(CompositorFrameSinkExists(kFrameSinkIdA));
 
@@ -1579,15 +1579,15 @@ TEST_P(AndroidFrameSinkManagerTest, RenderInputRouterSupportTraversals) {
   manager_->UnregisterFrameSinkHierarchy(kFrameSinkIdE, kFrameSinkIdA);
 
   // Delete RootCompositorFrameSinks.
-  manager_->InvalidateFrameSinkId(kFrameSinkIdRoot);
-  manager_->InvalidateFrameSinkId(kFrameSinkIdRoot2);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdRoot, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdRoot2, {});
 
   // Invalidating should destroy the CompositorFrameSinkImpl's.
-  manager_->InvalidateFrameSinkId(kFrameSinkIdA);
-  manager_->InvalidateFrameSinkId(kFrameSinkIdB);
-  manager_->InvalidateFrameSinkId(kFrameSinkIdC);
-  manager_->InvalidateFrameSinkId(kFrameSinkIdD);
-  manager_->InvalidateFrameSinkId(kFrameSinkIdE);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdB, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdC, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdD, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdE, {});
 }
 
 TEST_P(AndroidFrameSinkManagerTest, EmbeddedRenderInputRouters) {
@@ -1676,15 +1676,15 @@ TEST_P(AndroidFrameSinkManagerTest, EmbeddedRenderInputRouters) {
   manager_->UnregisterFrameSinkHierarchy(kFrameSinkIdE, kFrameSinkIdA);
 
   // Delete RootCompositorFrameSinks.
-  manager_->InvalidateFrameSinkId(kFrameSinkIdRoot);
-  manager_->InvalidateFrameSinkId(kFrameSinkIdRoot2);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdRoot, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdRoot2, {});
 
   // Invalidating should destroy the CompositorFrameSinkImpl's.
-  manager_->InvalidateFrameSinkId(kFrameSinkIdA);
-  manager_->InvalidateFrameSinkId(kFrameSinkIdB);
-  manager_->InvalidateFrameSinkId(kFrameSinkIdC);
-  manager_->InvalidateFrameSinkId(kFrameSinkIdD);
-  manager_->InvalidateFrameSinkId(kFrameSinkIdE);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdB, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdC, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdD, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdE, {});
 }
 
 TEST_P(AndroidFrameSinkManagerTest, ReconstructsRenderInputRouterSupports) {
@@ -1764,11 +1764,11 @@ TEST_P(AndroidFrameSinkManagerTest, ReconstructsRenderInputRouterSupports) {
   manager_->UnregisterFrameSinkHierarchy(kFrameSinkIdRoot2, kFrameSinkIdB);
   manager_->UnregisterFrameSinkHierarchy(kFrameSinkIdB, kFrameSinkIdC);
 
-  manager_->InvalidateFrameSinkId(kFrameSinkIdRoot);
-  manager_->InvalidateFrameSinkId(kFrameSinkIdRoot2);
-  manager_->InvalidateFrameSinkId(kFrameSinkIdA);
-  manager_->InvalidateFrameSinkId(kFrameSinkIdB);
-  manager_->InvalidateFrameSinkId(kFrameSinkIdC);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdRoot, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdRoot2, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdB, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdC, {});
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

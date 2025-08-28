@@ -19,6 +19,7 @@
 #include "base/containers/queue.h"
 #include "base/debug/alias.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
@@ -193,10 +194,13 @@ void FrameSinkManagerImpl::RegisterFrameSinkId(const FrameSinkId& frame_sink_id,
 }
 
 void FrameSinkManagerImpl::InvalidateFrameSinkId(
-    const FrameSinkId& frame_sink_id) {
+    const FrameSinkId& frame_sink_id,
+    InvalidateFrameSinkIdCallback callback) {
   TRACE_EVENT("viz", "FrameSinkManagerImpl::InvalidateFrameSinkId",
               "frame_sink_id", frame_sink_id);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::ScopedClosureRunner callback_runner(std::move(callback));
 
   surface_manager_.InvalidateFrameSinkId(frame_sink_id);
   if (video_detector_)

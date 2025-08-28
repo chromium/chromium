@@ -185,10 +185,14 @@ MagnifierSurfaceControl::MagnifierSurfaceControl(
 
 MagnifierSurfaceControl::~MagnifierSurfaceControl() {
   display_private_.reset();
-  if (frame_sink_id_.is_valid()) {
-    GetHostFrameSinkManager()->InvalidateFrameSinkId(frame_sink_id_, this);
-  }
-  gpu::GpuSurfaceTracker::Get()->RemoveSurface(surface_handle_);
+  CHECK(frame_sink_id_.is_valid());
+  GetHostFrameSinkManager()->InvalidateFrameSinkId(
+      frame_sink_id_, this,
+      base::BindOnce(
+          [](gpu::SurfaceHandle surface_handle) {
+            gpu::GpuSurfaceTracker::Get()->RemoveSurface(surface_handle);
+          },
+          surface_handle_));
 }
 
 void MagnifierSurfaceControl::SetReadbackOrigin(JNIEnv* env,
@@ -282,7 +286,7 @@ void MagnifierSurfaceControl::CreateDisplayAndFrameSink() {
   root_params->refresh_rate = window_android->GetRefreshRate();
 
   GetHostFrameSinkManager()->CreateRootCompositorFrameSink(
-      std::move(root_params));
+      std::move(root_params), /*maybe_wait_on_destruction=*/false);
 
   display_private_->SetDisplayVisible(true);
   display_private_->Resize(surface_size_);

@@ -2982,7 +2982,7 @@ TEST_F(SurfaceSynchronizationTest,
 
   // Killing the child sink should unblock the frame because it is known
   // the dependency can never fulfill.
-  frame_sink_manager().InvalidateFrameSinkId(kChildFrameSink1);
+  frame_sink_manager().InvalidateFrameSinkId(kChildFrameSink1, {});
   EXPECT_TRUE(parent_surface()->HasActiveFrame());
   EXPECT_FALSE(parent_surface()->HasPendingFrame());
   EXPECT_EQ(parent_id, parent_support().last_activated_surface_id());
