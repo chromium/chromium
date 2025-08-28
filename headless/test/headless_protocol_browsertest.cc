@@ -576,6 +576,9 @@ HEADLESS_PROTOCOL_TEST(ScreenOrientationLockNaturalPortrait,
 HEADLESS_PROTOCOL_TEST(ScreenDetailsMultipleScreens,
                        "shared/screen-details-multiple-screens.js")
 
+HEADLESS_PROTOCOL_TEST(ScreenDetailsMultipleScreensScaled,
+                       "shared/screen-details-multiple-screens-scaled.js")
+
 HEADLESS_PROTOCOL_TEST(ScreenDetailsPixelRatio,
                        "shared/screen-details-pixel-ratio.js")
 
