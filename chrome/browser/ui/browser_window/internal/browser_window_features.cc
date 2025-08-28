@@ -290,6 +290,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       std::make_unique<ReadingListSidePanelCoordinator>(
           profile, browser->GetTabStripModel());
 
+  bookmarks_side_panel_coordinator_ =
+      std::make_unique<BookmarksSidePanelCoordinator>();
+
   signin_view_controller_ = std::make_unique<SigninViewController>(
       browser, profile, tab_strip_model_);
 
@@ -549,9 +552,6 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
   history_clusters_side_panel_coordinator_ =
       std::make_unique<HistoryClustersSidePanelCoordinator>(
           browser_, browser_->GetProfile(), side_panel_coordinator_.get());
-
-  bookmarks_side_panel_coordinator_ =
-      std::make_unique<BookmarksSidePanelCoordinator>();
 
   if (CommentsSidePanelCoordinator::IsSupported()) {
     comments_side_panel_coordinator_ =
