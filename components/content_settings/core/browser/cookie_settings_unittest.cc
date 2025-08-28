@@ -677,7 +677,6 @@ TEST_F(CookieSettingsTest, CookiesControlsDefault) {
           /*cookie_partition_key=*/std::nullopt));
 }
 
-// The feature AlwaysBlock3pcsIncognito is not applicable to iOS.
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CookieSettingsTest, CookiesControlsDisabled) {
   prefs_.SetInteger(prefs::kCookieControlsMode,
@@ -686,12 +685,10 @@ TEST_F(CookieSettingsTest, CookiesControlsDisabled) {
       kBlockedSite, kFirstPartySiteForCookies,
       /*top_frame_origin=*/std::nullopt, net::CookieSettingOverrides(),
       /*cookie_partition_key=*/std::nullopt));
-  EXPECT_NE(
-      cookie_settings_incognito_->IsFullCookieAccessAllowed(
-          kBlockedSite, kFirstPartySiteForCookies,
-          /*top_frame_origin=*/std::nullopt, net::CookieSettingOverrides(),
-          /*cookie_partition_key=*/std::nullopt),
-      base::FeatureList::IsEnabled(privacy_sandbox::kAlwaysBlock3pcsIncognito));
+  EXPECT_FALSE(cookie_settings_incognito_->IsFullCookieAccessAllowed(
+      kBlockedSite, kFirstPartySiteForCookies,
+      /*top_frame_origin=*/std::nullopt, net::CookieSettingOverrides(),
+      /*cookie_partition_key=*/std::nullopt));
 }
 #endif
 
@@ -1998,23 +1995,7 @@ TEST_F(CookieSettingsTest, ManagedThirdPartyException) {
 }
 
 #if !BUILDFLAG(IS_IOS)
-TEST_F(CookieSettingsTest, Allows3pcsInIncognitoWithCookieControlsModeOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      privacy_sandbox::kAlwaysBlock3pcsIncognito);
-
-  prefs_.SetInteger(prefs::kCookieControlsMode,
-                    static_cast<int>(CookieControlsMode::kOff));
-  EXPECT_FALSE(cookie_settings_->ShouldBlockThirdPartyCookies());
-  prefs_.SetInteger(prefs::kCookieControlsMode,
-                    static_cast<int>(CookieControlsMode::kOff));
-  EXPECT_FALSE(cookie_settings_incognito_->ShouldBlockThirdPartyCookies());
-}
-
 TEST_F(CookieSettingsTest, Blocks3pcsInIncognitoWithCookieControlsModeOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(privacy_sandbox::kAlwaysBlock3pcsIncognito);
-
   prefs_.SetInteger(prefs::kCookieControlsMode,
                     static_cast<int>(CookieControlsMode::kOff));
   EXPECT_FALSE(cookie_settings_->ShouldBlockThirdPartyCookies());

@@ -1793,13 +1793,6 @@ static_library("browser") {
     # TODO(crbug.com/40228447): break this dep when favicon is in its own target
     "//chrome/browser/share",
 
-    # TODO(358041220): There is a circular_dependency of `cookie_controls:impl` module
-    # with "//chrome/browser" due to the inclusion of //c/b/policy/profile_policy_connector.h
-    # from cookie_controls_service.cc. When the respective //c/b/policy directory gets
-    # modularized, `cookie_controls:impl` can depend on it directly, and the circular dependency
-    # be removed.
-    "//chrome/browser/ui/cookie_controls:impl",
-
     # TODO(417228688): Remove this dependency when chrome/browser/serial get modularized.
     "//chrome/browser/ui/serial:impl",
 
@@ -2056,8 +2049,6 @@ static_library("browser") {
     "//chrome/browser/ui/bluetooth:impl",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/color:mixers",
-    "//chrome/browser/ui/cookie_controls",
-    "//chrome/browser/ui/cookie_controls:impl",
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/find_bar",
     "//chrome/browser/ui/hats",
@@ -2912,8 +2903,6 @@ static_library("browser") {
       "android/preferences/browser_prefs_android.h",
       "android/preferences/clipboard_android.cc",
       "android/preferences/clipboard_android.h",
-      "android/preferences/cookie_controls_service_bridge.cc",
-      "android/preferences/cookie_controls_service_bridge.h",
       "android/preferences/privacy_preferences_manager_impl.cc",
       "android/preferences/shared_preferences_migrator_android.cc",
       "android/preferences/shared_preferences_migrator_android.h",
