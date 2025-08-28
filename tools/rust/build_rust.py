@@ -57,8 +57,8 @@ sys.path.append(
 
 from build import (AddCMakeToPath, AddZlibToPath, CheckoutGitRepo, CopyFile,
                    DownloadDebianSysroot, GetLibXml2Dirs, GitCherryPick,
-                   LLVM_DIR, IsGitAncestorToHead, LLVM_BUILD_TOOLS_DIR,
-                   RunCommand)
+                   GitRevert, LLVM_DIR, IsGitAncestorToHead,
+                   LLVM_BUILD_TOOLS_DIR, RunCommand)
 from update import (CHROMIUM_DIR, DownloadAndUnpack, EnsureDirExists,
                     GetDefaultHostOs, RmTree, WriteStampFile, UpdatePackage)
 
@@ -621,6 +621,9 @@ def GitApplyCherryPicks():
     # cherry-pick fixes into it, then point RUST_SRC_DIR at that fork
     # with `GitMoveSubmoduleBranch()`.
     #############################
+
+    # TODO(https://crbug.com/441524277): remove revert after resolving issue upstream
+    GitRevert(RUST_SRC_DIR, '8ea3b093819aabd92a605b42989341da0c97c0d6')
 
     print('Finished applying cherry-picks.')
 
