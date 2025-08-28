@@ -10150,20 +10150,13 @@ test("unit_tests") {
       "//url",
     ]
     if (enable_pdf_save_to_drive) {
-      deps += [ "//chrome/browser/save_to_drive" ]
+      deps += [
+        "//chrome/browser/save_to_drive",
+        "//chrome/browser/ui/views/save_to_drive:unit_tests",
+      ]
+      allow_circular_includes_from +=
+          [ "//chrome/browser/ui/views/save_to_drive:unit_tests" ]
     }
-  }
-
-  if (enable_pdf_save_to_drive) {
-    sources += [
-      "../browser/ui/views/save_to_drive/account_chooser_radio_group_view_unittest.cc",
-      "../browser/ui/views/save_to_drive/account_chooser_test_util.cc",
-      "../browser/ui/views/save_to_drive/account_chooser_test_util.h",
-      "../browser/ui/views/save_to_drive/account_chooser_view_unittest.cc",
-      "../browser/ui/views/save_to_drive/mock_account_chooser_radio_button_delegate.cc",
-      "../browser/ui/views/save_to_drive/mock_account_chooser_radio_button_delegate.h",
-    ]
-    deps += [ "//chrome/browser/ui/views/save_to_drive:test_support" ]
   }
 
   if (enable_plugins) {

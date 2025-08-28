@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/save_to_drive/account_chooser_view.h"
 
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/save_to_drive/account_chooser_radio_group_view.h"
 #include "chrome/browser/ui/views/save_to_drive/account_chooser_util.h"
 #include "chrome/grit/generated_resources.h"

@@ -7,7 +7,7 @@ import("//pdf/features.gni")
 
 assert(enable_pdf_save_to_drive)
 
-source_set("get_account") {
+source_set("save_to_drive") {
   sources = [ "get_account.h" ]
   public_deps = [ "//components/signin/public/identity_manager" ]
   deps = [ "//base" ]

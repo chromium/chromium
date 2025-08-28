@@ -6,32 +6,68 @@ import("//pdf/features.gni")
 
 assert(enable_pdf_save_to_drive)
 
-source_set("get_account_impl") {
-  sources = [ "get_account.cc" ]
-  public_deps = [ "//components/signin/public/identity_manager" ]
-  deps = [
-    "//chrome/browser/ui/save_to_drive:get_account",
-    "//content/public/browser",
+source_set("save_to_drive") {
+  sources = [
+    "account_chooser_radio_group_view.cc",
+    "account_chooser_radio_group_view.h",
+    "account_chooser_util.cc",
+    "account_chooser_util.h",
+    "account_chooser_view.cc",
+    "account_chooser_view.h",
+    "account_chooser_view_delegate.h",
+    "get_account.cc",
   ]
-}
-
-source_set("account_chooser") {
-  sources = [ "account_chooser_view_delegate.h" ]
   public_deps = [
+    "//chrome/browser:browser_public_dependencies",
     "//components/signin/public/identity_manager",
     "//content/public/browser",
   ]
-  deps = [ "//ui/display" ]
+  deps = [
+    "//chrome/app:generated_resources_grit",
+    "//chrome/browser/profiles:profile_util",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/save_to_drive",
+    "//components/omnibox/browser:vector_icons",
+    "//components/strings:components_strings_grit",
+    "//ui/display",
+    "//ui/views",
+  ]
 }
 
 source_set("test_support") {
   testonly = true
   sources = [
+    "account_chooser_test_util.cc",
+    "account_chooser_test_util.h",
+    "mock_account_chooser_radio_button_delegate.cc",
+    "mock_account_chooser_radio_button_delegate.h",
     "mock_account_chooser_view_delegate.cc",
     "mock_account_chooser_view_delegate.h",
   ]
   deps = [
-    ":account_chooser",
+    ":save_to_drive",
     "//testing/gmock",
+    "//ui/gfx:test_support",
+    "//ui/views",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "account_chooser_radio_group_view_unittest.cc",
+    "account_chooser_view_unittest.cc",
+  ]
+  deps = [
+    ":save_to_drive",
+    ":test_support",
+    "//base",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/browser/ui",
+    "//components/strings:components_strings_grit",
+    "//testing/gtest",
+    "//ui/gfx:test_support",
+    "//ui/views",
+    "//ui/views:test_support",
   ]
 }

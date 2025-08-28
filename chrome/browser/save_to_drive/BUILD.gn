@@ -28,6 +28,8 @@ source_set("save_to_drive") {
   deps = [
     "//base",
     "//chrome/browser/pdf",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/save_to_drive",
     "//chrome/common/extensions",
     "//chrome/common/extensions/api",
     "//components/pdf/browser",
