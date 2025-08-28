@@ -30,6 +30,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/view_class_properties.h"
@@ -116,6 +117,16 @@ ContentsContainerView* MultiContentsView::GetContentsContainerViewFor(
     }
   }
   return nullptr;
+}
+
+gfx::Size MultiContentsView::GetContentsSize() const {
+  if (!IsInSplitView()) {
+    return contents_container_views_[0]->size();
+  }
+
+  gfx::Point origin = contents_container_views_[0]->bounds().origin();
+  gfx::Point endpoint = contents_container_views_[1]->bounds().bottom_right();
+  return gfx::BoundingRect(origin, endpoint).size();
 }
 
 bool MultiContentsView::IsInSplitView() const {

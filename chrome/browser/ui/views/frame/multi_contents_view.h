@@ -73,6 +73,13 @@ class MultiContentsView : public views::View,
   // Returns the currently inactive ContentsWebView.
   ContentsWebView* GetInactiveContentsView() const;
 
+  // Returns the size of the contents area. If in split view, this captures the
+  // entire area starting from the origin of the first contents to the bottom
+  // right of the last contents.
+  // TODO(crbug.com/441514755): Determine how we should handle size for split
+  // views.
+  gfx::Size GetContentsSize() const;
+
   // Returns true if more than one WebContents is displayed.
   bool IsInSplitView() const;
 
