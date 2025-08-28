@@ -10,6 +10,8 @@ import static org.mockito.Mockito.when;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 
 /**
  * Supports {@code android_browser_window_unittest.cc}.
@@ -24,17 +26,22 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 final class AndroidBrowserWindowNativeUnitTestSupport {
     private final AndroidBrowserWindow mAndroidBrowserWindow;
+    private final ChromeAndroidTask mMockChromeAndroidTask;
 
     @CalledByNative
-    private AndroidBrowserWindowNativeUnitTestSupport() {
-        this(BrowserWindowType.NORMAL);
+    private AndroidBrowserWindowNativeUnitTestSupport(Profile profile) {
+        this(BrowserWindowType.NORMAL, profile);
     }
 
     @CalledByNative
-    private AndroidBrowserWindowNativeUnitTestSupport(@BrowserWindowType int browserWindowType) {
-        ChromeAndroidTask mMockChromeAndroidTask = mock(ChromeAndroidTask.class);
+    private AndroidBrowserWindowNativeUnitTestSupport(
+            @BrowserWindowType int browserWindowType, Profile profile) {
+        mMockChromeAndroidTask = mock(ChromeAndroidTask.class);
         when(mMockChromeAndroidTask.getBrowserWindowType()).thenReturn(browserWindowType);
         mAndroidBrowserWindow = new AndroidBrowserWindow(mMockChromeAndroidTask);
+
+        ProfileManager.setLastUsedProfileForTesting(profile);
+        setProfileForTesting(profile);
     }
 
     @CalledByNative
@@ -58,7 +65,13 @@ final class AndroidBrowserWindowNativeUnitTestSupport {
     }
 
     @CalledByNative
-    private void invokeDestroy() {
+    private void invokeResetAndDestroy() {
         mAndroidBrowserWindow.destroy();
+        ProfileManager.resetForTesting();
+    }
+
+    @CalledByNative
+    private void setProfileForTesting(Profile profile) {
+        when(mMockChromeAndroidTask.getProfile()).thenReturn(profile);
     }
 }

@@ -8,6 +8,7 @@ import android.graphics.Rect;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
 import java.util.List;
@@ -140,6 +141,9 @@ public interface ChromeAndroidTask {
      * <p>The timestamp is in milliseconds since boot.
      */
     long getLastActivatedTimeMillis();
+
+    /** Returns the {@link Profile} associated with this task. */
+    Profile getProfile();
 
     /** Returns current bounds of the window. */
     Rect getBounds();

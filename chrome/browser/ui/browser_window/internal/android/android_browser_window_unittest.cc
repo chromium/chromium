@@ -8,11 +8,19 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/internal/android/android_base_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/native_unit_test_support_jni/AndroidBrowserWindowNativeUnitTestSupport_jni.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/test/base/fake_profile_manager.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "components/prefs/pref_service.h"
 #include "components/sessions/core/session_id.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/base_window.h"
 
@@ -28,12 +36,17 @@ class AndroidBrowserWindowUnitTest : public testing::Test {
   ~AndroidBrowserWindowUnitTest() override = default;
 
   void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    SetProfileManager();
     java_test_support_ =
         Java_AndroidBrowserWindowNativeUnitTestSupport_Constructor(
-            AttachCurrentThread());
+            AttachCurrentThread(), GetLastUsedProfile()->GetJavaObject());
   }
 
-  void TearDown() override { InvokeJavaDestroy(); }
+  void TearDown() override {
+    SetProfileManager(nullptr);
+    InvokeJavaResetAndDestroy();
+  }
 
   AndroidBrowserWindow* InvokeJavaGetOrCreateNativePtr() const {
     return reinterpret_cast<AndroidBrowserWindow*>(
@@ -59,12 +72,41 @@ class AndroidBrowserWindowUnitTest : public testing::Test {
             AttachCurrentThread(), java_test_support_));
   }
 
-  void InvokeJavaDestroy() const {
-    Java_AndroidBrowserWindowNativeUnitTestSupport_invokeDestroy(
+  void InvokeJavaResetAndDestroy() {
+    Java_AndroidBrowserWindowNativeUnitTestSupport_invokeResetAndDestroy(
         AttachCurrentThread(), java_test_support_);
   }
 
+  void InvokeJavaSetProfileForTesting(Profile* profile) const {
+    Java_AndroidBrowserWindowNativeUnitTestSupport_setProfileForTesting(
+        AttachCurrentThread(), java_test_support_, profile->GetJavaObject());
+  }
+
+ protected:
+  Profile* GetLastUsedProfile() {
+    return profile_manager()->GetProfile(
+        profile_manager()->GetLastUsedProfileDir());
+  }
+
+  void SetProfileManager() {
+    SetProfileManager(
+        std::make_unique<FakeProfileManager>(temp_dir_.GetPath()));
+  }
+
+  void SetProfileManager(std::unique_ptr<ProfileManager> profile_manager) {
+    TestingBrowserProcess::GetGlobal()->SetProfileManager(
+        std::move(profile_manager));
+  }
+
  private:
+  inline FakeProfileManager* profile_manager() const {
+    return static_cast<FakeProfileManager*>(
+        g_browser_process->profile_manager());
+  }
+  base::ScopedTempDir temp_dir_;
+  // Necessary to use Profile and FakeProfileManager. See
+  // docs/threading_and_tasks_testing.md.
+  content::BrowserTaskEnvironment task_environment_;
   ScopedJavaGlobalRef<jobject> java_test_support_;
 };
 
@@ -87,7 +129,7 @@ TEST_F(AndroidBrowserWindowUnitTest,
   InvokeJavaGetOrCreateNativeBaseWindowPtr();
 
   // Act: call Java destroy().
-  InvokeJavaDestroy();
+  InvokeJavaResetAndDestroy();
 
   // Assert: the native pointers on the Java side should be set to null.
   AndroidBrowserWindow* android_browser_window =
@@ -120,12 +162,14 @@ TEST_F(AndroidBrowserWindowUnitTest, GetSessionIDReturnsUniqueID) {
   // objects to get two instances of AndroidBrowserWindow.
   //
   // For clarity, we don't use the test fixture's java_test_support_ field.
+  Profile* profile = GetLastUsedProfile();
   ScopedJavaLocalRef<jobject> java_test_support1 =
       Java_AndroidBrowserWindowNativeUnitTestSupport_Constructor(
-          AttachCurrentThread());
+          AttachCurrentThread(), profile->GetJavaObject());
   ScopedJavaLocalRef<jobject> java_test_support2 =
       Java_AndroidBrowserWindowNativeUnitTestSupport_Constructor(
-          AttachCurrentThread());
+          AttachCurrentThread(), profile->GetJavaObject());
+
   AndroidBrowserWindow* android_browser_window1 = reinterpret_cast<
       AndroidBrowserWindow*>(
       Java_AndroidBrowserWindowNativeUnitTestSupport_invokeGetOrCreateNativePtr(
@@ -141,17 +185,19 @@ TEST_F(AndroidBrowserWindowUnitTest, GetSessionIDReturnsUniqueID) {
   EXPECT_NE(session_id1, session_id2);
 
   // Clean up.
-  Java_AndroidBrowserWindowNativeUnitTestSupport_invokeDestroy(
+  Java_AndroidBrowserWindowNativeUnitTestSupport_invokeResetAndDestroy(
       AttachCurrentThread(), java_test_support1);
-  Java_AndroidBrowserWindowNativeUnitTestSupport_invokeDestroy(
+  Java_AndroidBrowserWindowNativeUnitTestSupport_invokeResetAndDestroy(
       AttachCurrentThread(), java_test_support2);
 }
 
 TEST_F(AndroidBrowserWindowUnitTest, GetTypeReturnsBrowserWindowInterfaceType) {
   // Arrange.
+  Profile* profile = GetLastUsedProfile();
   ScopedJavaLocalRef<jobject> java_test_support =
       Java_AndroidBrowserWindowNativeUnitTestSupport_Constructor(
-          AttachCurrentThread(), BrowserWindowInterface::TYPE_POPUP);
+          AttachCurrentThread(), BrowserWindowInterface::TYPE_POPUP,
+          profile->GetJavaObject());
   AndroidBrowserWindow* android_browser_window = reinterpret_cast<
       AndroidBrowserWindow*>(
       Java_AndroidBrowserWindowNativeUnitTestSupport_invokeGetOrCreateNativePtr(
@@ -162,6 +208,41 @@ TEST_F(AndroidBrowserWindowUnitTest, GetTypeReturnsBrowserWindowInterfaceType) {
             android_browser_window->GetType());
 
   // Clean up.
-  Java_AndroidBrowserWindowNativeUnitTestSupport_invokeDestroy(
+  Java_AndroidBrowserWindowNativeUnitTestSupport_invokeResetAndDestroy(
       AttachCurrentThread(), java_test_support);
+}
+
+TEST_F(AndroidBrowserWindowUnitTest, GetProfileReturnsCorrectProfile) {
+  // Arrange.
+  AndroidBrowserWindow* android_browser_window =
+      InvokeJavaGetOrCreateNativePtr();
+  Profile* expected_profile = GetLastUsedProfile();
+
+  // Act.
+  const Profile* actual_profile = android_browser_window->GetProfile();
+
+  // Assert.
+  EXPECT_EQ(expected_profile, actual_profile);
+}
+
+TEST_F(AndroidBrowserWindowUnitTest, GetProfileCrashesIfActiveProfileChanges) {
+  // Arrange: Create the AndroidBrowserWindow, which will cache the initial
+  // active profile.
+  AndroidBrowserWindow* android_browser_window =
+      InvokeJavaGetOrCreateNativePtr();
+  Profile* initial_profile = GetLastUsedProfile();
+
+  // Verify that GetProfile() returns the initial profile without crashing.
+  ASSERT_EQ(initial_profile, android_browser_window->GetProfile());
+
+  // Swap the ProfileManager with a new one.
+  SetProfileManager();
+
+  Profile* new_active_profile = GetLastUsedProfile();
+  ASSERT_NE(initial_profile, new_active_profile);
+  InvokeJavaSetProfileForTesting(new_active_profile);
+
+  // Act & Assert: Now, GetProfile() should fetch the new active profile, which
+  // will not match the cached one, causing a crash.
+  ASSERT_DEATH(android_browser_window->GetProfile(), "");
 }

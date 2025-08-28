@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.ui.browser_window;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
 /**
@@ -37,9 +39,13 @@ public interface ChromeAndroidTaskTracker {
      *     The types are defined in the native {@code BrowserWindowInterface::Type} enum.
      * @param activityWindowAndroid The {@link ActivityWindowAndroid} to be associated with the
      *     returned {@link ChromeAndroidTask}.
+     * @param profileSupplier Supplies the profile associated with the returned {@link
+     *     ChromeAndroidTask}.
      */
     ChromeAndroidTask obtainTask(
-            @BrowserWindowType int browserWindowType, ActivityWindowAndroid activityWindowAndroid);
+            @BrowserWindowType int browserWindowType,
+            ActivityWindowAndroid activityWindowAndroid,
+            Supplier<Profile> profileSupplier);
 
     /**
      * Returns the {@link ChromeAndroidTask} with the given {@code taskId}.

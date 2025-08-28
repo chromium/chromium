@@ -44,6 +44,7 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedWithNativeObserver;
+import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.Arrays;
 
@@ -73,7 +74,8 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Act.
         var chromeAndroidTask =
-                new ChromeAndroidTaskImpl(BrowserWindowType.NORMAL, activityWindowAndroid);
+                new ChromeAndroidTaskImpl(
+                        BrowserWindowType.NORMAL, activityWindowAndroid, () -> mock(Profile.class));
 
         // Assert.
         assertEquals(activityWindowAndroid, chromeAndroidTask.getActivityWindowAndroid());
@@ -95,6 +97,21 @@ public class ChromeAndroidTaskImplUnitTest {
                 .register(isA(TopResumedActivityChangedWithNativeObserver.class));
         verify(mockActivityLifecycleDispatcher, times(1))
                 .register(isA(ConfigurationChangedObserver.class));
+    }
+
+    @Test
+    public void getProfile_returnsProfileFromSupplier() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps =
+                ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
+                        /* taskId= */ 1);
+        var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+
+        // Act & Assert.
+        assertEquals(
+                "The returned Profile should be the same as the one from the Supplier.",
+                chromeAndroidTaskWithMockDeps.mMockProfile,
+                chromeAndroidTask.getProfile());
     }
 
     @Test
@@ -264,7 +281,10 @@ public class ChromeAndroidTaskImplUnitTest {
     @Test
     public void getOrCreateNativeBrowserWindowPtr_returnsPtrValue() {
         // Arrange.
-        var chromeAndroidTask = createChromeAndroidTask();
+        var chromeAndroidTaskWithMockDeps =
+                ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
+                        /* taskId= */ 1);
+        var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
 
         // Act.
         long nativeBrowserWindowPtr = chromeAndroidTask.getOrCreateNativeBrowserWindowPtr();

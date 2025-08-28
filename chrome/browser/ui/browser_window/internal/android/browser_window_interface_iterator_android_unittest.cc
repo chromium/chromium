@@ -8,6 +8,8 @@
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/native_unit_test_support_jni/BrowserWindowInterfaceIteratorAndroidNativeUnitTestSupport_jni.h"
+#include "chrome/test/base/testing_profile.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,11 +30,13 @@ class BrowserWindowInterfaceIteratorAndroidUnitTest : public testing::Test {
   BrowserWindowInterfaceIteratorAndroidUnitTest() = default;
   ~BrowserWindowInterfaceIteratorAndroidUnitTest() override = default;
 
+  void SetUp() override { profile_ = std::make_unique<TestingProfile>(); }
+
   BrowserWindowInterface* CreateBrowserWindow(int task_id) {
     BrowserWindowInterface* browser_window = reinterpret_cast<
         BrowserWindowInterface*>(
         Java_BrowserWindowInterfaceIteratorAndroidNativeUnitTestSupport_createBrowserWindow(
-            AttachCurrentThread(), task_id));
+            AttachCurrentThread(), task_id, profile_->GetJavaObject()));
 
     // This is needed to avoid the `assert lastActivatedTimeMillis > 0;` in
     // ChromeAndroidTaskImpl.Java:getLastActivatedTimeMillis().
@@ -57,6 +61,11 @@ class BrowserWindowInterfaceIteratorAndroidUnitTest : public testing::Test {
     Java_BrowserWindowInterfaceIteratorAndroidNativeUnitTestSupport_destroyAllBrowserWindows(
         AttachCurrentThread());
   }
+
+ private:
+  // Necessary to use TestingProfile. See docs/threading_and_tasks_testing.md.
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfile> profile_;
 };
 
 TEST_F(BrowserWindowInterfaceIteratorAndroidUnitTest,

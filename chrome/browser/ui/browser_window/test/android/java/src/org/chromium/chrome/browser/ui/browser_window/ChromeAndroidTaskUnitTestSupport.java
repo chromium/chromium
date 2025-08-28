@@ -17,6 +17,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
 import java.lang.ref.WeakReference;
@@ -47,6 +49,7 @@ public final class ChromeAndroidTaskUnitTestSupport {
     public static final class ChromeAndroidTaskWithMockDeps {
         public final ChromeAndroidTask mChromeAndroidTask;
         public final ActivityWindowAndroidMocks mActivityWindowAndroidMocks;
+        public final Profile mMockProfile;
 
         /**
          * Mock {@link AndroidBrowserWindow.Natives}.
@@ -60,9 +63,11 @@ public final class ChromeAndroidTaskUnitTestSupport {
         ChromeAndroidTaskWithMockDeps(
                 ChromeAndroidTask chromeAndroidTask,
                 ActivityWindowAndroidMocks activityWindowAndroidMocks,
+                Profile mockProfile,
                 AndroidBrowserWindow.@Nullable Natives mockAndroidBrowserWindowNatives) {
             mChromeAndroidTask = chromeAndroidTask;
             mActivityWindowAndroidMocks = activityWindowAndroidMocks;
+            mMockProfile = mockProfile;
             mMockAndroidBrowserWindowNatives = mockAndroidBrowserWindowNatives;
         }
     }
@@ -103,21 +108,29 @@ public final class ChromeAndroidTaskUnitTestSupport {
      *
      * @param taskId ID for {@link ChromeAndroidTask#getId()}.
      * @param mockNatives Whether to mock {@code @NativeMethods}. Set this to false if the test
-     *     needs to run native code, such as in .cc unit tests.
+     *     needs to run native code, such as in .cc unit tests. Tests that set this to false must
+     *     initialize a Native ProfileManager with a valid profile.
      * @return A new instance of {@link ChromeAndroidTaskWithMockDeps}.
      */
     public static ChromeAndroidTaskWithMockDeps createChromeAndroidTaskWithMockDeps(
             int taskId, boolean mockNatives) {
+        Profile profile =
+                mockNatives ? mock(Profile.class) : ProfileManager.getLastUsedRegularProfile();
+
         var activityWindowAndroidMocks = createActivityWindowAndroidMocks(taskId);
         var mockAndroidBrowserWindowNatives =
                 mockNatives ? createMockAndroidBrowserWindowNatives() : null;
         var chromeAndroidTask =
                 new ChromeAndroidTaskImpl(
                         BrowserWindowType.NORMAL,
-                        activityWindowAndroidMocks.mMockActivityWindowAndroid);
+                        activityWindowAndroidMocks.mMockActivityWindowAndroid,
+                        () -> profile);
 
         return new ChromeAndroidTaskWithMockDeps(
-                chromeAndroidTask, activityWindowAndroidMocks, mockAndroidBrowserWindowNatives);
+                chromeAndroidTask,
+                activityWindowAndroidMocks,
+                profile,
+                mockAndroidBrowserWindowNatives);
     }
 
     /** See {@link #createActivityWindowAndroidMocks(int)}. */

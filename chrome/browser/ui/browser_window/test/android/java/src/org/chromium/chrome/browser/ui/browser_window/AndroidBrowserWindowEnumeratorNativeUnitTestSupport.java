@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.browser_window;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.profiles.Profile;
 
 /** Supports {@code android_browser_window_enumerator_unittest.cc}. */
 @NullMarked
@@ -15,12 +16,13 @@ final class AndroidBrowserWindowEnumeratorNativeUnitTestSupport {
     private AndroidBrowserWindowEnumeratorNativeUnitTestSupport() {}
 
     @CalledByNative
-    private static long createBrowserWindow(int taskId) {
+    private static long createBrowserWindow(int taskId, Profile profile) {
         var mockActivityWindowAndroid =
                 ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(taskId);
         var chromeAndroidTask =
                 ChromeAndroidTaskTrackerImpl.getInstance()
-                        .obtainTask(BrowserWindowType.NORMAL, mockActivityWindowAndroid);
+                        .obtainTask(
+                                BrowserWindowType.NORMAL, mockActivityWindowAndroid, () -> profile);
         return chromeAndroidTask.getOrCreateNativeBrowserWindowPtr();
     }
 

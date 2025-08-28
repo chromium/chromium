@@ -19,6 +19,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
@@ -69,7 +70,9 @@ final class AndroidBaseWindowNativeUnitTestSupport {
                             /* trackOcclusion= */ false);
             mChromeAndroidTask =
                     new ChromeAndroidTaskImpl(
-                            BrowserWindowType.NORMAL, (ActivityWindowAndroid) mWindowAndroid);
+                            BrowserWindowType.NORMAL,
+                            (ActivityWindowAndroid) mWindowAndroid,
+                            () -> mock(Profile.class));
         } else {
             mWindowAndroid = mock(WindowAndroid.class);
             mChromeAndroidTask = mock(ChromeAndroidTask.class);

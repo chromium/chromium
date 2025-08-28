@@ -11,6 +11,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
 /** Java class for communicating with the native {@code AndroidBrowserWindow}. */
@@ -80,6 +81,11 @@ final class AndroidBrowserWindow {
         ActivityWindowAndroid activityWindowAndroid = mChromeAndroidTask.getActivityWindowAndroid();
         if (activityWindowAndroid == null) return null;
         return activityWindowAndroid.getActivity().get();
+    }
+
+    @CalledByNative
+    private Profile getProfile() {
+        return mChromeAndroidTask.getProfile();
     }
 
     @NativeMethods

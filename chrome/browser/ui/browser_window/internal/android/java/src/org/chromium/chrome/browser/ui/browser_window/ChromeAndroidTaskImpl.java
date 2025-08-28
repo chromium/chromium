@@ -26,12 +26,14 @@ import androidx.core.view.WindowCompat;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
 import org.chromium.base.TimeUtils;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedWithNativeObserver;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
 import java.lang.ref.WeakReference;
@@ -68,6 +70,7 @@ final class ChromeAndroidTaskImpl
     private final int mId;
 
     private final AndroidBrowserWindow mAndroidBrowserWindow;
+    private final Supplier<Profile> mProfileSupplier;
 
     /**
      * Contains all {@link ChromeAndroidTaskFeature}s associated with this {@link
@@ -117,10 +120,13 @@ final class ChromeAndroidTaskImpl
     }
 
     ChromeAndroidTaskImpl(
-            @BrowserWindowType int browserWindowType, ActivityWindowAndroid activityWindowAndroid) {
+            @BrowserWindowType int browserWindowType,
+            ActivityWindowAndroid activityWindowAndroid,
+            Supplier<Profile> profileSupplier) {
         mBrowserWindowType = browserWindowType;
         mId = getActivity(activityWindowAndroid).getTaskId();
         mAndroidBrowserWindow = new AndroidBrowserWindow(/* chromeAndroidTask= */ this);
+        mProfileSupplier = profileSupplier;
         setActivityWindowAndroidInternal(activityWindowAndroid);
     }
 
@@ -267,6 +273,13 @@ final class ChromeAndroidTaskImpl
         long lastActivatedTimeMillis = mLastActivatedTimeMillis.get();
         assert lastActivatedTimeMillis > 0;
         return lastActivatedTimeMillis;
+    }
+
+    @Override
+    public Profile getProfile() {
+        Profile profile = mProfileSupplier.get();
+        assert profile != null;
+        return profile;
     }
 
     @Override

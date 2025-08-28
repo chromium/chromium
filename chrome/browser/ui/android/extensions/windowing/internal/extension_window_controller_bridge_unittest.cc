@@ -7,6 +7,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/files/scoped_temp_dir.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/mock_window_controller_list_observer.h"
 #include "chrome/browser/extensions/window_controller.h"
@@ -14,6 +15,10 @@
 #include "chrome/browser/ui/android/extensions/windowing/test/native_unit_test_support_jni/ExtensionWindowControllerBridgeNativeUnitTestSupport_jni.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/test/base/fake_profile_manager.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -28,6 +33,7 @@ class ExtensionWindowControllerBridgeUnitTest : public testing::Test {
   ~ExtensionWindowControllerBridgeUnitTest() override = default;
 
   void SetUp() override {
+    SetUpProfile();
     java_test_support_.Reset(
         Java_ExtensionWindowControllerBridgeNativeUnitTestSupport_Constructor(
             AttachCurrentThread()));
@@ -40,11 +46,28 @@ class ExtensionWindowControllerBridgeUnitTest : public testing::Test {
     test_tab_model_->AssociateWithBrowserWindow(browser);
   }
 
+  void SetUpProfile() {
+    task_environment_ = std::make_unique<content::BrowserTaskEnvironment>();
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    TestingBrowserProcess::GetGlobal()->SetProfileManager(
+        std::make_unique<FakeProfileManager>(temp_dir_.GetPath()));
+    base::FilePath profile_path =
+        profile_manager()->user_data_dir().AppendASCII("test-profile");
+    profile_ = static_cast<TestingProfile*>(
+        profile_manager()->GetProfile(profile_path));
+  }
+
   void TearDown() override {
     test_tab_model_.reset();
 
     Java_ExtensionWindowControllerBridgeNativeUnitTestSupport_tearDown(
         AttachCurrentThread(), java_test_support_);
+    TearDownProfile();
+  }
+
+  void TearDownProfile() {
+    TestingBrowserProcess::DeleteInstance();
+    task_environment_.reset();
   }
 
   void InvokeJavaOnAddedToTask() const {
@@ -69,6 +92,16 @@ class ExtensionWindowControllerBridgeUnitTest : public testing::Test {
   }
 
  private:
+  FakeProfileManager* profile_manager() {
+    return static_cast<FakeProfileManager*>(
+        g_browser_process->profile_manager());
+  }
+
+  base::ScopedTempDir temp_dir_;
+  // Necessary to use FakeProfileManager and TestingProfile. See
+  // docs/threading_and_tasks_testing.md.
+  std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
+  raw_ptr<TestingProfile> profile_;
   ScopedJavaGlobalRef<jobject> java_test_support_;
 
   std::unique_ptr<TestTabModel> test_tab_model_;

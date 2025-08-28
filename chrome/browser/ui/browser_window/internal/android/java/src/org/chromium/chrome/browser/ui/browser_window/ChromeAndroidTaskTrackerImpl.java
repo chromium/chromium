@@ -9,8 +9,10 @@ import android.util.ArrayMap;
 
 import androidx.annotation.GuardedBy;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
 import java.util.ArrayList;
@@ -46,7 +48,9 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
 
     @Override
     public ChromeAndroidTask obtainTask(
-            @BrowserWindowType int browserWindowType, ActivityWindowAndroid activityWindowAndroid) {
+            @BrowserWindowType int browserWindowType,
+            ActivityWindowAndroid activityWindowAndroid,
+            Supplier<Profile> profileSupplier) {
         int taskId = getTaskId(activityWindowAndroid);
 
         synchronized (mTasksLock) {
@@ -58,7 +62,9 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
                 return existingTask;
             }
 
-            var newTask = new ChromeAndroidTaskImpl(browserWindowType, activityWindowAndroid);
+            var newTask =
+                    new ChromeAndroidTaskImpl(
+                            browserWindowType, activityWindowAndroid, profileSupplier);
             mTasks.put(taskId, newTask);
             mObservers.forEach((observer) -> observer.onTaskAdded(newTask));
             return newTask;

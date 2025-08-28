@@ -10,6 +10,8 @@
 #include "chrome/browser/ui/browser_window/internal/android/android_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/native_unit_test_support_jni/AndroidBrowserWindowEnumeratorNativeUnitTestSupport_jni.h"
+#include "chrome/test/base/testing_profile.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -22,6 +24,8 @@ class AndroidBrowserWindowEnumeratorTest : public ::testing::Test {
   AndroidBrowserWindowEnumeratorTest() = default;
   ~AndroidBrowserWindowEnumeratorTest() override = default;
 
+  void SetUp() override { profile_ = std::make_unique<TestingProfile>(); }
+
   void TearDown() override {
     Java_AndroidBrowserWindowEnumeratorNativeUnitTestSupport_destroyAllBrowserWindows(
         base::android::AttachCurrentThread());
@@ -32,7 +36,8 @@ class AndroidBrowserWindowEnumeratorTest : public ::testing::Test {
     AndroidBrowserWindow* browser_window = reinterpret_cast<
         AndroidBrowserWindow*>(
         Java_AndroidBrowserWindowEnumeratorNativeUnitTestSupport_createBrowserWindow(
-            base::android::AttachCurrentThread(), task_id));
+            base::android::AttachCurrentThread(), task_id,
+            profile_->GetJavaObject()));
 
     // This is needed to avoid the `assert lastActivatedTimeMillis > 0;` in
     // ChromeAndroidTaskImpl.Java:getLastActivatedTimeMillis().
@@ -46,6 +51,11 @@ class AndroidBrowserWindowEnumeratorTest : public ::testing::Test {
     Java_AndroidBrowserWindowEnumeratorNativeUnitTestSupport_destroyBrowserWindow(
         base::android::AttachCurrentThread(), task_id);
   }
+
+ private:
+  // Necessary to use TestingProfile.
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfile> profile_;
 };
 
 TEST_F(AndroidBrowserWindowEnumeratorTest, EmptyEnumerator) {
