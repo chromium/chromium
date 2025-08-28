@@ -209,7 +209,6 @@ TEST_F(ActorLoginDelegateImplTest, AttemptLogin_FeatureOn) {
       .WillOnce(Return(&mock_password_manager));
   EXPECT_CALL(mock_password_manager, GetPasswordFormCache())
       .WillOnce(Return(&mock_form_cache));
-  EXPECT_CALL(mock_password_manager, GetClient()).WillOnce(Return(&client_));
   EXPECT_CALL(mock_form_cache, GetFormManagers())
       .WillOnce(Return(base::span(form_managers)));
 

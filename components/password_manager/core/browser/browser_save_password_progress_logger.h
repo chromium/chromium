@@ -98,7 +98,7 @@ class BrowserSavePasswordProgressLogger
  private:
   // The LogManager to which logs can be sent for display. The log_manager must
   // outlive this logger.
-  const raw_ptr<autofill::LogManager> log_manager_;
+  const raw_ptr<autofill::LogManager> log_manager_ = nullptr;
 
   // TODO(crbug.com/40276395): Move the below functions to stand-alone helper
   // functions in an anonymous namespace.

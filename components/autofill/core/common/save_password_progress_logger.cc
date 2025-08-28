@@ -568,6 +568,30 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "Login state check: no page content";
     case STRING_LOGIN_STATE_CHECK_FAILURE:
       return "Login state check: failure";
+    case STRING_ACTOR_LOGIN_FILLING_ATTEMPT_STARTED:
+      return "Actor login: starting filling attempt";
+    case STRING_ACTOR_LOGIN_FILLING_NOT_ALLOWED:
+      return "Actor login: filling not allowed";
+    case STRING_ACTOR_LOGIN_NO_SIGNIN_FORM:
+      return "Actor login: no signin form";
+    case STRING_ACTOR_LOGIN_INVALID_CREDENTIAL:
+      return "Actor login: the provided credential is not saved for this site";
+    case STRING_ACTOR_LOGIN_WAITING_FOR_REAUTH:
+      return "Actor login: waiting for reauth";
+    case STRING_ACTOR_LOGIN_REAUTH_FAILED:
+      return "Actor login: reauthentication failed";
+    case STRING_ACTOR_LOGIN_FRAME_CHANGED:
+      return "Actor login: the frame hosting the form went away";
+    case STRING_ACTOR_LOGIN_FORM_WENT_AWAY:
+      return "Actor login: the form to fill went away";
+    case STRING_ACTOR_LOGIN_NO_USERNAME_FIELD:
+      return "Actor login: no username field";
+    case STRING_ACTOR_LOGIN_NO_PASWORD_FIELD:
+      return "Actor login: no password field";
+    case STRING_ACTOR_LOGIN_USERNAME_FILL_SUCCESS:
+      return "Actor login: username filled";
+    case STRING_ACTOR_LOGIN_PASSWORD_FILL_SUCCESS:
+      return "Actor login: password filled";
     case SavePasswordProgressLogger::STRING_INVALID:
       return "INVALID";
       // Intentionally no default: clause here -- all IDs need to get covered.

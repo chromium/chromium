@@ -179,7 +179,8 @@ TEST_F(ActorLoginCredentialFillerTest, NoSigninForm_NoManagers) {
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
 
   base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
-  ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
+  ActorLoginCredentialFiller filler(origin, credential, &mock_client_,
+                                    mock_callback.Get());
 
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
@@ -200,7 +201,8 @@ TEST_F(ActorLoginCredentialFillerTest, NoSigninForm_DifferentOrigin) {
   form_managers.push_back(std::move(form_manager));
 
   base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
-  ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
+  ActorLoginCredentialFiller filler(origin, credential, &mock_client_,
+                                    mock_callback.Get());
 
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
@@ -225,7 +227,8 @@ TEST_F(ActorLoginCredentialFillerTest, NoSigninForm_NoParsedForm) {
   form_managers.push_back(std::move(form_manager));
 
   base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
-  ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
+  ActorLoginCredentialFiller filler(origin, credential, &mock_client_,
+                                    mock_callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
   EXPECT_CALL(mock_callback, Run(Eq(LoginStatusResult::kErrorNoSigninForm)));
@@ -243,7 +246,8 @@ TEST_F(ActorLoginCredentialFillerTest, NoSigninForm_NotLoginForm) {
   form_managers.push_back(std::move(form_manager));
 
   base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
-  ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
+  ActorLoginCredentialFiller filler(origin, credential, &mock_client_,
+                                    mock_callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
   EXPECT_CALL(mock_callback, Run(Eq(LoginStatusResult::kErrorNoSigninForm)));
@@ -265,7 +269,8 @@ TEST_F(ActorLoginCredentialFillerTest,
   form_managers.push_back(CreateFormManagerWithParsedForm(origin, form_data));
 
   base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
-  ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
+  ActorLoginCredentialFiller filler(origin, credential, &mock_client_,
+                                    mock_callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
   EXPECT_CALL(mock_callback,
@@ -287,7 +292,8 @@ TEST_F(ActorLoginCredentialFillerTest,
   form_managers.push_back(CreateFormManagerWithParsedForm(origin, form_data));
 
   base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
-  ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
+  ActorLoginCredentialFiller filler(origin, credential, &mock_client_,
+                                    mock_callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
   EXPECT_CALL(mock_callback,
@@ -313,7 +319,8 @@ TEST_F(ActorLoginCredentialFillerTest,
   form_managers.push_back(CreateFormManagerWithParsedForm(origin, form_data));
 
   base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
-  ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
+  ActorLoginCredentialFiller filler(origin, credential, &mock_client_,
+                                    mock_callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
   EXPECT_CALL(mock_callback,
@@ -337,7 +344,8 @@ TEST_F(ActorLoginCredentialFillerTest, FillUsernameAndPassword) {
   const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
 
   base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
-  ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
+  ActorLoginCredentialFiller filler(origin, credential, &mock_client_,
+                                    mock_callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
   EXPECT_CALL(
@@ -381,7 +389,8 @@ TEST_F(ActorLoginCredentialFillerTest, FillOnlyUsernameField) {
   const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
 
   base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
-  ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
+  ActorLoginCredentialFiller filler(origin, credential, &mock_client_,
+                                    mock_callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers())
       .WillOnce(Return(base::span(form_managers)));
   EXPECT_CALL(
@@ -426,7 +435,8 @@ TEST_F(ActorLoginCredentialFillerTest, FillOnlyPasswordField) {
   const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
 
   base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
-  ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
+  ActorLoginCredentialFiller filler(origin, credential, &mock_client_,
+                                    mock_callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers())
       .WillOnce(Return(base::span(form_managers)));
   EXPECT_CALL(
@@ -468,7 +478,8 @@ TEST_F(ActorLoginCredentialFillerTest, FillUsernameFails) {
   const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
 
   base::MockCallback<LoginStatusResultOrErrorReply> callback;
-  ActorLoginCredentialFiller filler(origin, credential, callback.Get());
+  ActorLoginCredentialFiller filler(origin, credential, &mock_client_,
+                                    callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
   EXPECT_CALL(
@@ -506,7 +517,8 @@ TEST_F(ActorLoginCredentialFillerTest, FillPasswordFails) {
   const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
 
   base::MockCallback<LoginStatusResultOrErrorReply> callback;
-  ActorLoginCredentialFiller filler(origin, credential, callback.Get());
+  ActorLoginCredentialFiller filler(origin, credential, &mock_client_,
+                                    callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
   EXPECT_CALL(
@@ -544,7 +556,8 @@ TEST_F(ActorLoginCredentialFillerTest, FillBothFails) {
   const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
 
   base::MockCallback<LoginStatusResultOrErrorReply> callback;
-  ActorLoginCredentialFiller filler(origin, credential, callback.Get());
+  ActorLoginCredentialFiller filler(origin, credential, &mock_client_,
+                                    callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
   EXPECT_CALL(
@@ -573,14 +586,12 @@ TEST_F(ActorLoginCredentialFillerTest, FillingIsDisabled) {
   const Credential credential =
       CreateTestCredential(u"username", origin.GetURL());
 
-  MockPasswordManagerClient mock_client;
-  EXPECT_CALL(mock_password_manager_, GetClient())
-      .WillOnce(Return(&mock_client));
-  EXPECT_CALL(mock_client, IsFillingEnabled(origin.GetURL()))
+  EXPECT_CALL(mock_client_, IsFillingEnabled(origin.GetURL()))
       .WillOnce(Return(false));
 
   base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
-  ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
+  ActorLoginCredentialFiller filler(origin, credential, &mock_client_,
+                                    mock_callback.Get());
 
   EXPECT_CALL(mock_callback,
               Run(Eq(LoginStatusResult::kErrorFillingNotAllowed)));
@@ -603,7 +614,8 @@ TEST_F(ActorLoginCredentialFillerTest, RequestsReauthBeforeFilling) {
   const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
 
   base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
-  ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
+  ActorLoginCredentialFiller filler(origin, credential, &mock_client_,
+                                    mock_callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
   EXPECT_CALL(
@@ -653,7 +665,8 @@ TEST_F(ActorLoginCredentialFillerTest, DoesntFillIfReauthFails) {
   // Set up the device authenticator and pretend that reauth before
   // filling is required.
   base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
-  ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
+  ActorLoginCredentialFiller filler(origin, credential, &mock_client_,
+                                    mock_callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
 
@@ -697,7 +710,8 @@ TEST_F(ActorLoginCredentialFillerTest, ReturnsErrorIfFormWentAwayDuringReauth) {
   const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
 
   base::MockCallback<LoginStatusResultOrErrorReply> mock_callback;
-  ActorLoginCredentialFiller filler(origin, credential, mock_callback.Get());
+  ActorLoginCredentialFiller filler(origin, credential, &mock_client_,
+                                    mock_callback.Get());
   EXPECT_CALL(mock_form_cache_, GetFormManagers)
       .WillOnce(Return(base::span(form_managers)));
 

@@ -138,7 +138,7 @@ void ActorLoginDelegateImpl::AttemptLogin(
       GetWebContents().GetPrimaryMainFrame()->GetLastCommittedOrigin();
 
   credential_filler_ = std::make_unique<ActorLoginCredentialFiller>(
-      origin, credential,
+      origin, credential, client_,
       base::BindPostTaskToCurrentDefault(
           base::BindOnce(&ActorLoginDelegateImpl::OnAttemptLoginCompleted,
                          weak_ptr_factory_.GetWeakPtr())));

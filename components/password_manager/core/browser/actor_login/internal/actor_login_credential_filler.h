@@ -24,6 +24,7 @@ class ActorLoginCredentialFiller {
  public:
   ActorLoginCredentialFiller(const url::Origin& main_frame_origin,
                              const Credential& credential,
+                             password_manager::PasswordManagerClient* client,
                              LoginStatusResultOrErrorReply callback);
   ~ActorLoginCredentialFiller();
 
@@ -76,6 +77,9 @@ class ActorLoginCredentialFiller {
   // reply from the renderer.
   std::optional<bool> username_filled_;
   std::optional<bool> password_filled_;
+
+  // Safe to access from everywhere apart from the destructor.
+  raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
 
   // The callback to call with the result of the login attempt.
   LoginStatusResultOrErrorReply callback_;
