@@ -112,6 +112,7 @@ mojom("mojom") {
 
 source_set("tab_strip_api") {
   sources = [
+    "tab_strip_service.h",
     "tab_strip_service_impl.h",
     "tab_strip_service_register.h",
   ]
@@ -133,6 +134,10 @@ source_set("impl") {
     "event_broadcaster.cc",
     "event_broadcaster.h",
     "tab_strip_service_impl.cc",
+
+    # intermediary transition classes. Will be renamed
+    "tab_strip_service_sync_impl.cc",
+    "tab_strip_service_sync_impl.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]

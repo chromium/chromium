@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/events/tab_strip_event_recorder.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_experiment_api.mojom.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_register.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/types/node_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -33,8 +34,8 @@ class TabStripServiceImpl : public tabs_api::mojom::TabStripService,
   TabStripServiceImpl(BrowserWindowInterface* browser,
                       TabStripModel* tab_strip_model);
   TabStripServiceImpl(
-      std::unique_ptr<tabs_api::BrowserAdapter> browser_adapter,
-      std::unique_ptr<tabs_api::TabStripModelAdapter> tab_strip_adapter);
+      std::unique_ptr<tabs_api::TabStripService> service,
+      std::unique_ptr<tabs_api::TabStripModelAdapter> tab_strip_model_adapter);
   TabStripServiceImpl(const TabStripServiceImpl&&) = delete;
   TabStripServiceImpl& operator=(const TabStripServiceImpl&) = delete;
   ~TabStripServiceImpl() override;
@@ -72,14 +73,17 @@ class TabStripServiceImpl : public tabs_api::mojom::TabStripService,
                             const tab_groups::TabGroupVisualData& visual_data,
                             UpdateTabGroupVisualCallback) override;
 
+  tabs_api::TabStripService* GetSyncVersion() const;
+
  private:
   void BroadcastEvents(
       const std::vector<tabs_api::events::Event>& events) const;
 
-  std::unique_ptr<tabs_api::BrowserAdapter> browser_adapter_;
+  std::unique_ptr<tabs_api::TabStripService> tab_strip_service_;
   std::unique_ptr<tabs_api::TabStripModelAdapter> tab_strip_model_adapter_;
   std::unique_ptr<tabs_api::events::TabStripEventRecorder> recorder_;
 
+  // Mojo plumbing.
   mojo::ReceiverSet<tabs_api::mojom::TabStripService> clients_;
   mojo::ReceiverSet<tabs_api::mojom::TabStripExperimentService>
       experiment_clients_;
