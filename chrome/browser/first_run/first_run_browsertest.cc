@@ -402,9 +402,8 @@ class FirstRunMasterPrefsImportBookmarkFaviconBrowserTest
   }
 };
 
-// TODO(crbug.com/441583914): Flaky.
 IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsImportBookmarkFaviconBrowserTest,
-                       DISABLED_ImportBookmarksDict) {
+                       ImportBookmarksDict) {
   Profile* profile = browser()->profile();
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile);
