@@ -104,6 +104,8 @@ message FormTypeQuality {
   AutofillAiFieldEvent field_event = 2 [features = { field_presence: EXPLICIT }];
 
   AutofillAiKeyMetrics key_metrics = 3 [features = { field_presence: EXPLICIT }];
+
+  AutofillAiUserPromptMetrics user_prompt_metrics = 4 [features = { field_presence: EXPLICIT }];
 }
 
 // See `AutofillAiUkmLogger::FieldEvent`.
@@ -231,6 +233,27 @@ message AutofillAiKeyMetrics {
   AutofillAiEntityType entity_type = 10 [features = { field_presence: IMPLICIT }];
 }
 
+message AutofillAiUserPromptMetrics {
+  // A random variable assigned to a specific instance of a HTML form in a
+  // specific renderer. This should be globally unique and suitable for
+  // counting distinct forms. Two different users would have different values.
+  // A single user loading the same form in two different tabs would have two
+  // different values. This is used to link the fields to a form in
+  // AutofillAi.FieldInfo.
+  uint64 form_session_identifier = 1 [features = { field_presence: IMPLICIT }];
+
+  // The registered domain of the page that the form is on.
+  string domain = 2 [features = { field_presence: IMPLICIT }];
+
+  AutofillAiEntityStorageType storage_type = 3 [features = { field_presence: IMPLICIT }];
+
+  AutofillAiPromptType prompt_type = 4 [features = { field_presence: IMPLICIT }];
+
+  AutofillAiEntityType entity_type = 5 [features = { field_presence: IMPLICIT }];
+
+  AutofillAiPromptUserDecision result = 6 [features = { field_presence: IMPLICIT }];
+}
+
 enum AutofillAiFieldEventType {
   AUTOFILL_AI_FIELD_EVENT_TYPE_SUGGESTION_SHOWN = 0;
 
@@ -269,4 +292,38 @@ enum AutofillAiEntityType {
   AUTOFILL_AI_ENTITY_TYPE_KNOWN_TRAVELER_NUMBER = 5;
 
   AUTOFILL_AI_ENTITY_TYPE_REDRESS_NUMBER = 6;
+}
+
+// Defines the different types of storage that can hold AutofillAi entities.
+enum AutofillAiEntityStorageType {
+  AUTOFILL_AI_ENTITY_STORAGE_TYPE_UNKNOWN = 0;
+
+  AUTOFILL_AI_ENTITY_STORAGE_TYPE_WALLET = 1;
+
+  AUTOFILL_AI_ENTITY_STORAGE_TYPE_LOCAL = 2;
+}
+
+// Defines different types of prompts that can be shown to the user. For example
+// whether the user would like to save or update an entity.
+enum AutofillAiPromptType {
+  AUTOFILL_AI_PROMPT_TYPE_UNKNOWN = 0;
+
+  AUTOFILL_AI_PROMPT_TYPE_SAVE_ENTITY = 1;
+
+  AUTOFILL_AI_PROMPT_TYPE_UPDATE_ENTITY = 2;
+}
+
+// Specified the different decisions users can make when being shown a
+// prompt/dialog, for example to update or save an entity.
+enum AutofillAiPromptUserDecision {
+  AUTOFILL_AI_PROMPT_USER_DECISION_UNKNOWN = 0;
+
+  // The user accepted the save or update entities prompt.
+  AUTOFILL_AI_PROMPT_USER_DECISION_ACCEPTED = 1;
+
+  // The user explicitly declined the save or update entities prompt.
+  AUTOFILL_AI_PROMPT_USER_DECISION_DECLINED = 2;
+
+  // The user ignored the save or update entities prompt.
+  AUTOFILL_AI_PROMPT_USER_DECISION_IGNORED = 3;
 }
