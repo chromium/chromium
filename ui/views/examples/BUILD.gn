@@ -193,7 +193,6 @@ source_set("views_examples_proc") {
     deps += [
       "//ui/base:pixel_diff_test_support",
       "//ui/native_theme",
-      "//ui/native_theme:native_theme_browser",
       "//ui/snapshot",
     ]
   }
@@ -510,9 +509,6 @@ test("views_examples_unittests") {
       "//ui/aura",
       "//ui/wm",
     ]
-  }
-  if (is_win) {
-    deps += [ "//ui/native_theme:native_theme_browser" ]
   }
 
   if (is_fuchsia) {

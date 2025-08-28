@@ -54,7 +54,13 @@ component("native_theme") {
   }
 
   if (is_win) {
-    sources += [ "caption_style_win.cc" ]
+    sources += [
+      "caption_style_win.cc",
+      "native_theme_win.cc",
+      "native_theme_win.h",
+    ]
+
+    libs = [ "uxtheme.lib" ]
   }
 
   if (use_aura || toolkit_views) {
@@ -85,33 +91,6 @@ component("native_theme") {
     "//ui/gfx/geometry",
     "//ui/resources",
   ]
-}
-
-if (is_win) {
-  component("native_theme_browser") {
-    defines = [ "IS_NATIVE_THEME_IMPL" ]
-
-    # These files cannot work in the renderer on Windows.
-    sources = [
-      "native_theme_win.cc",
-      "native_theme_win.h",
-    ]
-
-    deps = [
-      ":native_theme",
-      "//base",
-      "//cc/paint",
-      "//ui/base",
-      "//ui/color",
-      "//ui/display",
-      "//ui/gfx",
-    ]
-
-    libs = [ "uxtheme.lib" ]
-  }
-} else {
-  source_set("native_theme_browser") {
-  }
 }
 
 source_set("test_support") {
@@ -150,7 +129,6 @@ test("native_theme_unittests") {
 
   deps = [
     ":native_theme",
-    ":native_theme_browser",
     ":test_support",
     "//base/test:run_all_unittests",
     "//base/test:test_support",

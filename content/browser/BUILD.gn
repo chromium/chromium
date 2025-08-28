@@ -335,7 +335,6 @@ source_set("browser") {
     "//ui/latency",
     "//ui/menus",
     "//ui/native_theme",
-    "//ui/native_theme:native_theme_browser",
     "//ui/resources",
     "//ui/shell_dialogs",
     "//ui/snapshot",

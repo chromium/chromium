@@ -589,7 +589,6 @@ component("views") {
     "//ui/latency",
     "//ui/lottie",
     "//ui/native_theme",
-    "//ui/native_theme:native_theme_browser",
     "//ui/resources",
     "//ui/strings",
     "//ui/touch_selection",

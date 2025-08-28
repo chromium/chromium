@@ -51,7 +51,6 @@ component("touch_selection") {
       "//ui/compositor",
       "//ui/gfx",
       "//ui/native_theme",
-      "//ui/native_theme:native_theme_browser",
       "//ui/resources",
       "//ui/touch_selection/vector_icons",
     ]

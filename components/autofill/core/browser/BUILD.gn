@@ -1024,10 +1024,7 @@ static_library("browser") {
       "crowdsourcing/server_prediction_overrides.cc",
       "crowdsourcing/server_prediction_overrides.h",
     ]
-    deps += [
-      "//ui/native_theme",
-      "//ui/native_theme:native_theme_browser",
-    ]
+    deps += [ "//ui/native_theme" ]
   }
 
   if (is_ios) {
@@ -1751,10 +1748,7 @@ source_set("unit_tests") {
   }
 
   if (!is_ios && !is_android) {
-    deps += [
-      "//ui/native_theme",
-      "//ui/native_theme:native_theme_browser",
-    ]
+    deps += [ "//ui/native_theme" ]
   }
 
   if (use_blink) {
