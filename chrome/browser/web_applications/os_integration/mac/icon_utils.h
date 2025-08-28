@@ -7,8 +7,11 @@
 
 #include "base/auto_reset.h"
 
+#ifdef __OBJC__
 @class NSImage;
 @class NSImageRep;
+#endif
+
 namespace gfx {
 class Image;
 }
@@ -20,6 +23,7 @@ namespace web_app {
 // design templates.
 gfx::Image CreateAppleMaskedAppIcon(const gfx::Image& base_icon);
 
+#ifdef __OBJC__
 // Check if an icon has a solid color border
 bool HasSolidColorBorder(const gfx::Image& icon);
 
@@ -33,6 +37,7 @@ gfx::Image MaskDiyAppIcon(const gfx::Image& base_icon);
 // representation from `background` into it (according to Cocoa), then draws
 // `overlay` over it using NSCompositingOperationSourceOver.
 NSImageRep* OverlayImageRep(NSImage* background, NSImageRep* overlay);
+#endif
 
 namespace testing {
 // Sets whether icon masking should be disabled for testing purposes.
