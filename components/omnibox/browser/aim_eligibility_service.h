@@ -17,7 +17,6 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -57,7 +56,8 @@ class AimEligibilityService : public KeyedService,
   // Checks if the application language matches the given language.
   bool IsLanguage(const std::string& language) const;
 
-  // Registers an observer to be notified when eligibility has changed.
+  // Register observers to notify when eligibility may have changed. Eligibility
+  // is re-checked periodically.
   void AddObserver(AimEligibilityServiceObserver* observer);
   void RemoveObserver(AimEligibilityServiceObserver* observer);
 
@@ -85,41 +85,17 @@ class AimEligibilityService : public KeyedService,
  private:
   friend class AimEligibilityServiceFriend;
 
-  // Tracks the source of the eligibility request.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
-  // LINT.IfChange(RequestSource)
-  enum class RequestSource {
-    kStartup = 0,
-    kCookieChange = 1,
-    kMaxValue = kCookieChange,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/histograms.xml:AimEligibilityRequestSource)
-
-  // Tracks the status of the eligibility request.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  // LINT.IfChange(EligibilityRequestStatus)
-  enum class EligibilityRequestStatus {
+  // LINT.IfChange(ServerAimEligibilityRequestStatus)
+  enum class ServerRequestStatus {
     kSent = 0,
     kErrorResponse = 1,
     kFailedToParse = 2,
     kSuccess = 3,
     kMaxValue = kSuccess,
   };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:AimEligibilityRequestStatus)
-
-  // Tracks the source of `most_recent_response_`.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  // LINT.IfChange(EligibilityResponseSource)
-  enum class EligibilityResponseSource {
-    kDefault = 0,
-    kPrefs = 1,
-    kServer = 2,
-    kMaxValue = kServer,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:AimEligibilityResponseSource)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:ServerAimEligibilityRequestStatus)
 
   // Initializes the service.
   void Initialize();
@@ -129,8 +105,8 @@ class AimEligibilityService : public KeyedService,
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;
 
-  // Callback for when the eligibility response changes. Notifies observers.
-  void OnEligibilityResponseChanged();
+  // Notify `observers_` that eligibility may have changed.
+  void NotifyObservers() const;
 
   // Updates `most_recent_response_` and the prefs with `response_proto`.
   void UpdateMostRecentResponse(
@@ -139,28 +115,11 @@ class AimEligibilityService : public KeyedService,
   void LoadMostRecentResponse();
 
   // Fetch eligibility from the server.
-  void StartServerEligibilityRequest(RequestSource request_source);
+  void StartServerEligibilityRequest();
   void OnServerEligibilityResponse(
       std::unique_ptr<network::SimpleURLLoader> loader,
-      RequestSource request_source,
       std::unique_ptr<std::string> response_string);
 
-  // Returns the given histogram name sliced by the given request source.
-  std::string GetHistogramNameSlicedByRequestSource(
-      const std::string& name,
-      RequestSource request_source) const;
-  // Records total and sliced histograms for eligibility request status.
-  void LogEligibilityRequestStatus(EligibilityRequestStatus status,
-                                   RequestSource request_source) const;
-  // Record total and sliced histograms for eligibility request response code.
-  void LogEligibilityRequestResponseCode(int response_code,
-                                         RequestSource request_source) const;
-  // Record total and sliced histograms for eligibility response.
-  void LogEligibilityResponse(RequestSource request_source) const;
-  // Record histograms for eligibility response change.
-  void LogEligibilityResponseChange() const;
-
-  // The pref name used for storing the eligibility response proto.
   static constexpr char kResponsePrefName[] =
       "aim_eligibility_service.aim_eligibility_response";
 
@@ -172,17 +131,13 @@ class AimEligibilityService : public KeyedService,
   // Outlives `this` due to BCKSF dependency. Can be nullptr in tests.
   const raw_ptr<signin::IdentityManager> identity_manager_;
 
-  PrefChangeRegistrar pref_change_registrar_;
   base::CallbackListSubscription template_url_service_subscription_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
 
-  // Updated on service initialization and on successful server response.
+  // Update on each successfully server response.
   omnibox::AimEligibilityResponse most_recent_response_;
-  EligibilityResponseSource most_recent_response_source_ =
-      EligibilityResponseSource::kDefault;
-
   // Tracks whether the service has been initialized.
   bool initialized_ = false;
 
