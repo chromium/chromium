@@ -239,7 +239,7 @@ bool HEVCDecoderConfigurationRecord::ParseInternal(BufferReader* reader,
   }
   H265Parser parser;
   H265NALU nalu;
-  parser.SetStream(param_sets.data(), param_sets.size());
+  parser.SetStream(param_sets);
   while (true) {
     H265Parser::Result result = parser.AdvanceToNextNALU(&nalu);
     if (result != H265Parser::kOk) {
@@ -367,7 +367,7 @@ bool HEVC::InsertParamSetsAnnexB(
 
   std::unique_ptr<H265NaluParser> parser(new H265NaluParser());
   const uint8_t* start = buffer->data();
-  parser->SetEncryptedStream(start, buffer->size(), *subsamples);
+  parser->SetEncryptedStream(*buffer, *subsamples);
 
   H265NALU nalu;
   if (parser->AdvanceToNextNALU(&nalu) != H265NaluParser::kOk)
@@ -377,8 +377,7 @@ bool HEVC::InsertParamSetsAnnexB(
 
   if (nalu.nal_unit_type == H265NALU::AUD_NUT) {
     // Move insert point to just after the AUD.
-    config_insert_point +=
-        (nalu.data + base::checked_cast<size_t>(nalu.size)) - start;
+    config_insert_point += base::to_address(nalu.data.end()) - start;
   }
 
   // Clear |parser| and |start| since they aren't needed anymore and
@@ -444,7 +443,7 @@ BitstreamConverter::AnalysisResult HEVC::AnalyzeAnnexB(
   }
 
   H265NaluParser parser;
-  parser.SetEncryptedStream(buffer, size, subsamples);
+  parser.SetEncryptedStream(base::span(buffer, size), subsamples);
 
   enum NALUOrderState {
     kAUDAllowed,

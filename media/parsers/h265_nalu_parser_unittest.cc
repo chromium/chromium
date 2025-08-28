@@ -34,7 +34,7 @@ class H265NaluParserTest : public ::testing::Test {
     ASSERT_TRUE(stream_->Initialize(file_path))
         << "Couldn't open stream file: " << file_path.MaybeAsASCII();
 
-    parser_.SetStream(stream_->data(), stream_->length());
+    parser_.SetStream(stream_->bytes());
   }
 
   bool ParseNalusUntilNut(H265NALU* target_nalu, H265NALU::Type nalu_type) {
@@ -113,7 +113,7 @@ TEST_F(H265NaluParserTest, GetCurrentSubsamplesNormal) {
   subsamples.emplace_back(5u, 20u);
   subsamples.emplace_back(11u, 0u);
   H265NaluParser parser;
-  parser.SetEncryptedStream(kStream, std::size(kStream), subsamples);
+  parser.SetEncryptedStream(kStream, subsamples);
 
   H265NALU nalu;
   EXPECT_EQ(H265NaluParser::kOk, parser.AdvanceToNextNALU(&nalu));
@@ -164,7 +164,7 @@ TEST_F(H265NaluParserTest,
   subsamples.emplace_back(5u, 24u);
   subsamples.emplace_back(19u, 0u);
   H265NaluParser parser;
-  parser.SetEncryptedStream(kStream, std::size(kStream), subsamples);
+  parser.SetEncryptedStream(kStream, subsamples);
 
   H265NALU nalu;
   EXPECT_EQ(H265NaluParser::kOk, parser.AdvanceToNextNALU(&nalu));

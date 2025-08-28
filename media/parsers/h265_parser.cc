@@ -1114,8 +1114,8 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
 
   DCHECK(shdr);
   shdr->nal_unit_type = nalu.nal_unit_type;
-  shdr->nalu_data = nalu.data.get();
-  shdr->nalu_size = nalu.size;
+  shdr->nalu_data = nalu.data.data();
+  shdr->nalu_size = nalu.data.size();
   shdr->temporal_id = nalu.nuh_temporal_id_plus1 - 1;
 
   READ_BOOL_OR_RETURN(&shdr->first_slice_segment_in_pic_flag);

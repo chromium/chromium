@@ -113,7 +113,7 @@ bool TemporalScalabilityIdExtractor::ParseH264(base::span<const uint8_t> chunk,
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 bool TemporalScalabilityIdExtractor::ParseHEVC(base::span<const uint8_t> chunk,
                                                BitstreamMetadata& md) {
-  h265_->SetStream(chunk.data(), chunk.size());
+  h265_->SetStream(chunk);
   H265NALU nalu;
   H265NaluParser::Result result;
   while ((result = h265_->AdvanceToNextNALU(&nalu)) !=

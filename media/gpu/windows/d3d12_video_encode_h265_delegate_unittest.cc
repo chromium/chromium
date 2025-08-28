@@ -370,7 +370,7 @@ TEST_F(D3D12VideoEncodeH265DelegateTest, EncodeFrame) {
   ASSERT_LE(metadata.payload_size_bytes, kBufferSize);
   H265Parser parser;
   base::WritableSharedMemoryMapping map = shared_memory.Map();
-  parser.SetStream(map.data(), map.size());
+  parser.SetStream(map.GetMemoryAsSpan<uint8_t>());
   H265NALU nalu;
   ASSERT_EQ(parser.AdvanceToNextNALU(&nalu), H265Parser::Result::kOk);
   EXPECT_EQ(nalu.nal_unit_type, H265NALU::VPS_NUT);
