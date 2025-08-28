@@ -58,9 +58,6 @@ suite('NewTabPageAppTest', () => {
       customLinksEnabled: false,
       shortcutsVisible: false,
     }));
-    handler.setResultFor('getBackgroundCollections', Promise.resolve({
-      collections: [],
-    }));
     handler.setResultFor('getDoodle', Promise.resolve({
       doodle: null,
     }));
