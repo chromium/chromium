@@ -16,7 +16,8 @@ enum class ToolbarTabGroupState;
 // Protocol defining the interface for interacting with a view of the adaptive
 // toolbar.
 @protocol AdaptiveToolbarView <NSObject>
-
+// Button to cancel the edit of the location bar.
+@property(nonatomic, strong, readonly) UIButton* cancelButton;
 // Property to get all the buttons in this view.
 @property(nonatomic, strong, readonly) NSArray<ToolbarButton*>* allButtons;
 

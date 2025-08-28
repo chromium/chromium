@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_utils.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/secondary_toolbar_keyboard_state_provider.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/secondary_toolbar_view.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/toolbar_progress_bar.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 
 @interface SecondaryToolbarViewController ()
@@ -267,27 +268,31 @@
 #pragma mark - ToolbarAnimatee
 
 - (void)expandLocationBar {
-  // TODO(crbug.com/440072313): Implement.
+  self.view.expanded = YES;
+  [self.view layoutIfNeeded];
 }
 
 - (void)contractLocationBar {
-  // TODO(crbug.com/440072313): Implement.
+  self.view.expanded = NO;
+  [self.view layoutIfNeeded];
 }
 
 - (void)showCancelButton {
-  // TODO(crbug.com/440072313): Implement.
+  self.view.cancelButton.hidden = NO;
 }
 
 - (void)hideCancelButton {
-  // TODO(crbug.com/440072313): Implement.
+  self.view.cancelButton.hidden = YES;
 }
 
 - (void)showControlButtons {
-  // TODO(crbug.com/440072313): Implement.
+  self.view.progressBar.alpha = 1;
+  self.view.buttonStackView.hidden = NO;
 }
 
 - (void)hideControlButtons {
-  // TODO(crbug.com/440072313): Implement.
+  self.view.progressBar.alpha = 0;
+  self.view.buttonStackView.hidden = YES;
 }
 
 - (void)setLocationBarHeightToMatchFakeOmnibox {
@@ -300,7 +305,7 @@
 
 // Changes related to the toolbar itself.
 - (void)setToolbarFaded:(BOOL)faded {
-  // TODO(crbug.com/440072313): Implement.
+  self.view.alpha = faded ? 0 : 1;
 }
 
 @end

@@ -41,9 +41,6 @@
 // It should only contain ToolbarButtons.
 @property(nonatomic, strong, readonly) UIStackView* trailingStackView;
 
-// Button to cancel the edit of the location bar.
-@property(nonatomic, strong, readonly) UIButton* cancelButton;
-
 // Constraints to be activated when the location bar is expanded and positioned
 // relatively to the cancel button.
 @property(nonatomic, strong, readonly)

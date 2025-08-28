@@ -309,9 +309,11 @@ void CheckCurrentURLContainsString(std::string string) {
         performAction:grey_tap()];
 
   } else {
+    id<GREYMatcher> cancelButton =
+        grey_accessibilityID(kToolbarCancelOmniboxEditButtonIdentifier);
     [[EarlGrey
-        selectElementWithMatcher:grey_accessibilityID(
-                                     kToolbarCancelOmniboxEditButtonIdentifier)]
+        selectElementWithMatcher:grey_allOf(cancelButton,
+                                            grey_sufficientlyVisible(), nil)]
         performAction:grey_tap()];
   }
 }
