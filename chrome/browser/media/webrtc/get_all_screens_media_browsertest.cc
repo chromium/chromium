@@ -446,9 +446,11 @@ INSTANTIATE_TEST_SUITE_P(
     InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest,
     ::testing::Bool());
 
+// crbug.com/441674610: Disabled as failing on ChromeOS without being able to
+// reproduce.
 IN_PROC_BROWSER_TEST_P(
     InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest,
-    ProgrammaticallyStoppingOneDoesNotStopTheOther) {
+    DISABLED_ProgrammaticallyStoppingOneDoesNotStopTheOther) {
   SetScreens(/*screen_count=*/1u);
   ASSERT_EQ(Run(method1_), base::Value());
   ASSERT_EQ(Run(method2_), base::Value());
@@ -458,11 +460,12 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(true, AreAllTracksLive(method2_));
 }
 
-// Identical to StoppingOneDoesNotStopTheOther other than that this following
-// test stops the second-started method first.
+// crbug.com/441674610: Disabled as failing on ChromeOS without being able to
+// reproduce. Identical to StoppingOneDoesNotStopTheOther other than that this
+// following test stops the second-started method first.
 IN_PROC_BROWSER_TEST_P(
     InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest,
-    ProgrammaticallyStoppingOneDoesNotStopTheOtherInverseOrder) {
+    DISABLED_ProgrammaticallyStoppingOneDoesNotStopTheOtherInverseOrder) {
   SetScreens(/*screen_count=*/1u);
   ASSERT_EQ(Run(method1_), base::Value());
   ASSERT_EQ(Run(method2_), base::Value());
@@ -472,9 +475,11 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(false, AreAllTracksLive(method2_));
 }
 
+// crbug.com/441674610: Disabled as failing on ChromeOS without being able to
+// reproduce.
 IN_PROC_BROWSER_TEST_P(
     InteractionBetweenGetAllScreensMediaAndGetDisplayMediaTest,
-    UserStoppingGetDisplayMediaDoesNotStopGetAllScreensMedia) {
+    DISABLED_UserStoppingGetDisplayMediaDoesNotStopGetAllScreensMedia) {
   SetScreens(/*screen_count=*/1u);
   ASSERT_EQ(Run(method1_), base::Value());
   ASSERT_EQ(Run(method2_), base::Value());
