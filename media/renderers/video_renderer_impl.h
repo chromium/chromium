@@ -252,7 +252,7 @@ class MEDIA_EXPORT VideoRendererImpl
   raw_ptr<DemuxerStream> demuxer_stream_;
 
   // This dangling raw_ptr occurred in:
-  // webkit_unit_tests: WebMediaPlayerImplTest.MediaPositionState_Playing
+  // blink_unittests: WebMediaPlayerImplTest.MediaPositionState_Playing
   // https://ci.chromium.org/ui/p/chromium/builders/try/linux-rel/1425143/test-results?q=ExactID%3Aninja%3A%2F%2Fthird_party%2Fblink%2Frenderer%2Fcontroller%3Ablink_unittests%2FWebMediaPlayerImplTest.MediaPositionState_Playing+VHash%3A896f1103f2d1008d&sortby=&groupby=
   raw_ptr<MediaLog, FlakyDanglingUntriaged> media_log_;
 

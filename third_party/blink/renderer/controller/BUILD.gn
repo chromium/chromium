@@ -142,15 +142,6 @@ group("blink_unittests_data") {
   ]
 }
 
-# Old name of blink_unittests.
-# TODO(tkent): Remove this after removing external dependency.
-group("webkit_unit_tests") {
-  visibility = []  # Allow re-assignment of list.
-  visibility = [ "*" ]
-  testonly = true
-  deps = [ ":blink_unittests" ]
-}
-
 test("blink_unittests") {
   deps = [ ":blink_unittests_sources" ]
 
