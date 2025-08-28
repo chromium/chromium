@@ -471,6 +471,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.ContentRuleListProvider.Compile.Error.{RuleListKey}"
+    units="WKErrorCode" expires_after="2026-08-12">
+  <owner>rsailer@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Records the WKErrorDomain error code when compiling a WKContentRuleList
+    fails. {RuleListKey} is the unique identifier for the list that failed to
+    compile. See WebKit's WKError.h for specific WKErrorCode values.
+  </summary>
+  <token key="RuleListKey"
+      variants="IOSContentRuleListProviderRuleListKeyVariant"/>
+</histogram>
+
 <histogram name="IOS.ContentRuleListProvider.Compile.Success.{RuleListKey}"
     enum="BooleanSuccess" expires_after="2026-08-12">
   <owner>rsailer@google.com</owner>

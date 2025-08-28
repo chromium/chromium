@@ -99,7 +99,10 @@ void WKContentRuleListProvider::OnRuleListCompiled(RuleListKey key,
   base::UmaHistogramBoolean(
       "IOS.ContentRuleListProvider.Compile.Success." + key, error == nil);
 
-  if (!error) {
+  if (error) {
+    base::UmaHistogramSparse("IOS.ContentRuleListProvider.Compile.Error." + key,
+                             error.code);
+  } else {
     base::UmaHistogramTimes("IOS.ContentRuleListProvider.Compile.Time." + key,
                             duration);
 

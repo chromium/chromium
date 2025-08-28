@@ -11,8 +11,6 @@
 
 #import "base/check.h"
 #import "base/check_is_test.h"
-#import "base/debug/crash_logging.h"
-#import "base/debug/dump_without_crashing.h"
 #import "base/functional/callback_helpers.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/ptr_util.h"
@@ -52,16 +50,6 @@ NSUUID* ToNSUUID(const base::Uuid& uuid) {
   NSUUID* nsuuid = [[NSUUID alloc] initWithUUIDString:uuid_nsstring];
   DCHECK(nsuuid);
   return nsuuid;
-}
-
-// Helper function to log errors from static list compilation.
-void LogStaticListRegistrationError(const char* key, NSError* error) {
-  if (error) {
-    SCOPED_CRASH_KEY_STRING64("WKWebViewConfigurationProvider", "key", key);
-    SCOPED_CRASH_KEY_STRING256("WKWebViewConfigurationProvider", "error",
-                               base::SysNSStringToUTF8(error.description));
-    base::debug::DumpWithoutCrashing();
-  }
 }
 
 }  // namespace
@@ -142,15 +130,12 @@ void WKWebViewConfigurationProvider::Initialize() {
   content_rule_list_provider_->UpdateRuleList(
       kBlockLocalResourcesRuleListKey,
       base::SysNSStringToUTF8(CreateLocalBlockingJsonRuleList()),
-      base::BindOnce(&LogStaticListRegistrationError,
-                     kBlockLocalResourcesRuleListKey));
-
+      base::DoNothing());
   // 2. Create Mixed Content Autoupgrade List
   content_rule_list_provider_->UpdateRuleList(
       kMixedContentUpgradeRuleListKey,
       base::SysNSStringToUTF8(CreateMixedContentAutoUpgradeJsonRuleList()),
-      base::BindOnce(&LogStaticListRegistrationError,
-                     kMixedContentUpgradeRuleListKey));
+      base::DoNothing());
 }
 
 void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
