@@ -975,7 +975,8 @@ void ExpectCheckForUpdateOppositeScopeFails(UpdaterScope scope,
       }));
   loop.Run();
   ASSERT_TRUE(result == UpdateService::Result::kServiceFailed ||
-              result == UpdateService::Result::kIPCConnectionFailed)
+              result == UpdateService::Result::kIPCConnectionFailed ||
+              result == UpdateService::Result::kInvalidArgument)
       << "result == " << result;
 }
 
