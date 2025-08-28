@@ -30,7 +30,6 @@ extern const char kNTPOverscrollActionHistogram[];
 extern const char kMagicStackSetUpListEnabledHistogram[];
 extern const char kMagicStackSafetyCheckEnabledHistogram[];
 extern const char kMagicStackTabResumptionEnabledHistogram[];
-extern const char kMagicStackParcelTrackingEnabledHistogram[];
 extern const char kMagicStackTipsEnabledHistogram[];
 extern const char kHomeCustomizationOpenedHistogram[];
 

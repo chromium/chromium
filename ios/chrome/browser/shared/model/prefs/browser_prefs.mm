@@ -220,6 +220,8 @@ inline constexpr char kInvalidationClientIDCache[] =
 inline constexpr char kInvalidationTopicsToHandler[] =
     "invalidation.per_sender_topics_to_handler";
 inline constexpr char kParcelTrackingDisabled[] = "parcel_tracking.disabled";
+inline constexpr char kHomeCustomizationMagicStackParcelTrackingEnabled[] =
+    "ios.home_customization.magic_stack.parcel_tracking.enabled";
 
 // Migrates a boolean pref from source to target PrefService.
 void MigrateBooleanPref(std::string_view pref_name,
@@ -982,8 +984,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       prefs::kHomeCustomizationMagicStackSafetyCheckEnabled, true);
   registry->RegisterBooleanPref(
       prefs::kHomeCustomizationMagicStackTabResumptionEnabled, true);
-  registry->RegisterBooleanPref(
-      prefs::kHomeCustomizationMagicStackParcelTrackingEnabled, true);
 
   safety_check_prefs::RegisterPrefs(registry);
 
@@ -1143,6 +1143,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(kInvalidationClientIDCache);
   registry->RegisterDictionaryPref(kInvalidationTopicsToHandler);
   registry->RegisterBooleanPref(kParcelTrackingDisabled, false);
+  registry->RegisterBooleanPref(
+      kHomeCustomizationMagicStackParcelTrackingEnabled, false);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1352,6 +1354,7 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   prefs->ClearPref(kInvalidationClientIDCache);
   prefs->ClearPref(kInvalidationTopicsToHandler);
   prefs->ClearPref(kParcelTrackingDisabled);
+  prefs->ClearPref(kHomeCustomizationMagicStackParcelTrackingEnabled);
 }
 
 void MigrateObsoleteUserDefault() {

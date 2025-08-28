@@ -1806,15 +1806,12 @@
           prefs::kHomeCustomizationMagicStackSetUpListEnabled);
       BOOL tabResumptionEnabled = prefService->GetBoolean(
           prefs::kHomeCustomizationMagicStackTabResumptionEnabled);
-      BOOL parcelTrackingEnabled = prefService->GetBoolean(
-          prefs::kHomeCustomizationMagicStackParcelTrackingEnabled);
       BOOL tipsEnabled = prefService->GetBoolean(
           prefs::kHomeCustomizationMagicStackTipsEnabled);
       [self.NTPMetricsRecorder
           recordMagicStackCustomizationStateWithSetUpList:setUpListEnabled
                                               safetyCheck:safetyCheckEnabled
                                             tabResumption:tabResumptionEnabled
-                                           parcelTracking:parcelTrackingEnabled
                                                      tips:tipsEnabled];
 
       // TODO(crbug.com/350990359): Deprecate IOS.NTP.Impression when Home

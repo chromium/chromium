@@ -723,8 +723,6 @@ inline constexpr char kHomeCustomizationMagicStackSafetyCheckEnabled[] =
     "ios.home_customization.magic_stack.safety_check.enabled";
 inline constexpr char kHomeCustomizationMagicStackTabResumptionEnabled[] =
     "ios.home_customization.magic_stack.tab_resumption.enabled";
-inline constexpr char kHomeCustomizationMagicStackParcelTrackingEnabled[] =
-    "ios.home_customization.magic_stack.parcel_tracking.enabled";
 inline constexpr char kHomeCustomizationMagicStackTipsEnabled[] =
     "ios.home_customization.magic_stack.tips.enabled";
 inline constexpr char

@@ -106,7 +106,6 @@ enum class HomeCustomizationEntrypoint {
     recordMagicStackCustomizationStateWithSetUpList:(BOOL)setUpListEnabled
                                         safetyCheck:(BOOL)safetyCheckEnabled
                                       tabResumption:(BOOL)tabResumptionEnabled
-                                     parcelTracking:(BOOL)parcelTrackingEnabled
                                                tips:(BOOL)tipsEnabled;
 
 // Logs the entrypoint used to open the customization menu.

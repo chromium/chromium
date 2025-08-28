@@ -2455,16 +2455,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.HomeCustomization.MagicStack.ParcelTracking.Enabled"
-    enum="Boolean" expires_after="2025-12-14">
-  <owner>adamta@google.com</owner>
-  <owner>bling-pandamonium@google.com</owner>
-  <summary>
-    Records whether the Parcel Tracking module is currently enabled in the Magic
-    Stack from the Home Customization menu. Logged on each NTP impression.
-  </summary>
-</histogram>
-
 <histogram name="IOS.HomeCustomization.MagicStack.SafetyCheck.Enabled"
     enum="Boolean" expires_after="2025-10-12">
   <owner>adamta@google.com</owner>

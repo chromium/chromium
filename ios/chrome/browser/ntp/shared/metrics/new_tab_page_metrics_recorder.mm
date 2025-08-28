@@ -78,7 +78,6 @@
     recordMagicStackCustomizationStateWithSetUpList:(BOOL)setUpListEnabled
                                         safetyCheck:(BOOL)safetyCheckEnabled
                                       tabResumption:(BOOL)tabResumptionEnabled
-                                     parcelTracking:(BOOL)parcelTrackingEnabled
                                                tips:(BOOL)tipsEnabled {
   base::UmaHistogramBoolean(kMagicStackSetUpListEnabledHistogram,
                             setUpListEnabled);
@@ -86,8 +85,6 @@
                             safetyCheckEnabled);
   base::UmaHistogramBoolean(kMagicStackTabResumptionEnabledHistogram,
                             tabResumptionEnabled);
-  base::UmaHistogramBoolean(kMagicStackParcelTrackingEnabledHistogram,
-                            parcelTrackingEnabled);
   base::UmaHistogramBoolean(kMagicStackTipsEnabledHistogram, tipsEnabled);
 }
 
