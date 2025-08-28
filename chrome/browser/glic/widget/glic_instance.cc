@@ -22,14 +22,14 @@ void GlicInstance::AttachPanel() {
   if (!attachment_delegate_) {
     return;
   }
-  attachment_delegate_->AttachPanel(this);
+  attachment_delegate_->AttachInstance(this);
 }
 
 void GlicInstance::DetachPanel() {
   if (!attachment_delegate_) {
     return;
   }
-  attachment_delegate_->DetachPanel(this);
+  attachment_delegate_->DetachInstance(this);
 }
 
 bool GlicInstance::IsShowing() const {

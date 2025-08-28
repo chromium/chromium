@@ -30,8 +30,8 @@ class GlicInstance : public PanelDelegate {
   class AttachmentDelegate {
    public:
     virtual ~AttachmentDelegate() = default;
-    virtual void AttachPanel(GlicInstance* panel) = 0;
-    virtual void DetachPanel(GlicInstance* panel) = 0;
+    virtual void AttachInstance(GlicInstance* instance) = 0;
+    virtual void DetachInstance(GlicInstance* instance) = 0;
   };
 
   GlicInstance();

@@ -292,4 +292,12 @@ GlicPanelCoordinatorImpl::RegisterFloatyStateChange(
   NOTIMPLEMENTED();
   return floaty_state_change_callback_list_.Add(std::move(callback));
 }
+
+void GlicPanelCoordinatorImpl::AttachInstance(GlicInstance* instance) {
+  NOTIMPLEMENTED();
+}
+
+void GlicPanelCoordinatorImpl::DetachInstance(GlicInstance* instance) {
+  NOTIMPLEMENTED();
+}
 }  // namespace glic

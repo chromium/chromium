@@ -20,6 +20,7 @@
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/widget/glic_instance.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -34,7 +35,8 @@ class Size;
 class Point;
 }  // namespace gfx
 namespace glic {
-class GlicPanelCoordinatorImpl : public GlicWindowController {
+class GlicPanelCoordinatorImpl : public GlicWindowController,
+                                 public GlicInstance::AttachmentDelegate {
  public:
   GlicPanelCoordinatorImpl(const GlicPanelCoordinatorImpl&) = delete;
   GlicPanelCoordinatorImpl& operator=(const GlicPanelCoordinatorImpl&) = delete;
@@ -44,6 +46,10 @@ class GlicPanelCoordinatorImpl : public GlicWindowController {
                            GlicKeyedService* service,
                            GlicEnabling* enabling);
   ~GlicPanelCoordinatorImpl() override;
+
+  // GlicInstance::AttachmentDelegate implementation
+  void AttachInstance(GlicInstance* instance) override;
+  void DetachInstance(GlicInstance* instance) override;
 
   // GlicWindowController implementation
   void Toggle(BrowserWindowInterface* browser,
