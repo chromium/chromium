@@ -15249,6 +15249,8 @@ from previous Chrome versions.
   <int value="367917214" label="SearchEngineChoiceTrigger:enabled"/>
   <int value="368073826" label="AnnotatorMode:enabled"/>
   <int value="368224960" label="FedCmRpContext:disabled"/>
+  <int value="368588654"
+      label="SafetyHubUnusedPermissionRevocationForAllSurfaces:enabled"/>
   <int value="368854020" label="ash-screen-rotation-animation"/>
   <int value="369233761" label="FieldClassificationModelCaching:enabled"/>
   <int value="369301993" label="PrinterStatus:enabled"/>
@@ -17006,6 +17008,8 @@ from previous Chrome versions.
   <int value="1012916096" label="AutocorrectToggle:enabled"/>
   <int value="1012942422" label="HorizontalTabSwitcherAndroid:disabled"/>
   <int value="1012997760" label="OmniboxExpandedStateSuggestIcons:disabled"/>
+  <int value="1013066153"
+      label="SafetyHubUnusedPermissionRevocationForAllSurfaces:disabled"/>
   <int value="1013656454"
       label="EnableKeyboardBacklightControlInSettings:disabled"/>
   <int value="1013734783" label="WebViewXRequestedWithHeader:disabled"/>

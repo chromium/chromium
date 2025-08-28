@@ -12998,6 +12998,14 @@ const FeatureEntry kFeatureEntries[] = {
          kSafetyHubDisruptiveNotificationRevocationVariations,
          "SafetyHubDisruptiveNotificationRevocation")},
 
+    {"safety-hub-unused-permission-revocation-for-all-surfaces",
+     flag_descriptions::kSafetyHubUnusedPermissionRevocationForAllSurfacesName,
+     flag_descriptions::
+         kSafetyHubUnusedPermissionRevocationForAllSurfacesDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         features::kSafetyHubUnusedPermissionRevocationForAllSurfaces)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"android-data-importer-service",
      flag_descriptions::kAndroidDataImporterServiceName,

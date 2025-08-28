@@ -2114,6 +2114,10 @@ extern const char kSafetyHubDescription[];
 extern const char kSafetyHubDisruptiveNotificationRevocationName[];
 extern const char kSafetyHubDisruptiveNotificationRevocationDescription[];
 
+extern const char kSafetyHubUnusedPermissionRevocationForAllSurfacesName[];
+extern const char
+    kSafetyHubUnusedPermissionRevocationForAllSurfacesDescription[];
+
 #if BUILDFLAG(IS_ANDROID)
 extern const char kSafetyHubMagicStackName[];
 extern const char kSafetyHubMagicStackDescription[];

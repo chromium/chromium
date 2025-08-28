@@ -8961,6 +8961,15 @@
     "expiry_milestone": 140
   },
   {
+    "name": "safety-hub-unused-permission-revocation-for-all-surfaces",
+    "owners": [
+      "aisulu@google.com",
+      "fsenra@google.com",
+      "chrome-browser-privacy-team@google.com"
+    ],
+    "expiry_milestone": 144
+  },
+  {
     "name": "safety-hub-weak-reused-passwords",
     "owners": [
       "fsenra@google.com",

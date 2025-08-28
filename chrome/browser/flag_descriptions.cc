@@ -3718,6 +3718,12 @@ const char kSafetyHubDisruptiveNotificationRevocationDescription[] =
     "Enables autorevoking notifications with high volume and low site "
     "engagement score";
 
+const char kSafetyHubUnusedPermissionRevocationForAllSurfacesName[] =
+    "Safety Hub -  unused permission revocation from all surfaces";
+const char kSafetyHubUnusedPermissionRevocationForAllSurfacesDescription[] =
+    "Enables autorevoking of unused permissions granted from all UI "
+    "surfaces.";
+
 #if BUILDFLAG(IS_ANDROID)
 const char kSafetyHubMagicStackName[] = "Safety Check v2 - Magic Stack";
 const char kSafetyHubMagicStackDescription[] =
