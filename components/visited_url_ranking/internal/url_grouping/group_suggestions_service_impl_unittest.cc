@@ -29,7 +29,6 @@ namespace {
 
 using ::testing::_;
 using ::testing::ElementsAre;
-using ::testing::Invoke;
 
 constexpr char kTestUrl1[] = "https://www.example1.com/";
 constexpr char kTestUrl2[] = "https://www.example2.com/";
@@ -171,13 +170,11 @@ class GroupSuggestionsServiceImplTest : public testing::Test {
 
     SuggestionTriggerData data;
     ON_CALL(*mock_delegate_, ShowSuggestion(_, _))
-        .WillByDefault(
-            Invoke([&data](const GroupSuggestions& group_suggestions,
-                           SuggestionResponseCallback response_callback) {
-              data.callback = std::move(response_callback);
-              data.suggestion =
-                  group_suggestions.suggestions.front().DeepCopy();
-            }));
+        .WillByDefault([&data](const GroupSuggestions& group_suggestions,
+                               SuggestionResponseCallback response_callback) {
+          data.callback = std::move(response_callback);
+          data.suggestion = group_suggestions.suggestions.front().DeepCopy();
+        });
     std::move(fetch_callback)
         .Run(ResultStatus::kSuccess, URLVisitsMetadata{},
              std::move(candidates));
@@ -203,8 +200,8 @@ TEST_F(GroupSuggestionsServiceImplTest, EndToEnd) {
                                          GroupSuggestionsService::Scope());
 
   EXPECT_CALL(*mock_delegate_, ShowSuggestion(_, _))
-      .WillOnce(Invoke([](const GroupSuggestions& group_suggestions,
-                          SuggestionResponseCallback response_callback) {
+      .WillOnce([](const GroupSuggestions& group_suggestions,
+                   SuggestionResponseCallback response_callback) {
         ASSERT_EQ(1u, group_suggestions.suggestions.size());
         const GroupSuggestion& suggestion =
             group_suggestions.suggestions.front();
@@ -214,7 +211,7 @@ TEST_F(GroupSuggestionsServiceImplTest, EndToEnd) {
         EXPECT_THAT(suggestion.tab_ids, ElementsAre(111, 112, 114, 115, 116));
         EXPECT_FALSE(suggestion.promo_contents.empty());
         EXPECT_FALSE(suggestion.promo_header.empty());
-      }));
+      });
   TriggerSuggestions(GetSampleCandidates());
 }
 
@@ -255,14 +252,14 @@ TEST_F(GroupSuggestionsServiceImplTest, GroupedTabsNotIncluded) {
       base::Token::CreateRandom();
 
   EXPECT_CALL(*mock_delegate_, ShowSuggestion(_, _))
-      .WillOnce(Invoke([](const GroupSuggestions& group_suggestions,
-                          SuggestionResponseCallback response_callback) {
+      .WillOnce([](const GroupSuggestions& group_suggestions,
+                   SuggestionResponseCallback response_callback) {
         ASSERT_EQ(1u, group_suggestions.suggestions.size());
         const GroupSuggestion& suggestion =
             group_suggestions.suggestions.front();
         // 115 not included as its part of a group.
         EXPECT_THAT(suggestion.tab_ids, ElementsAre(111, 112, 114, 116));
-      }));
+      });
 
   TriggerSuggestions(std::move(candidates));
 }

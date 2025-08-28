@@ -293,7 +293,7 @@ class HistoryURLVisitDataFetcherTest : public testing::Test {
       std::vector<history::AnnotatedVisit> annotated_visits) {
     EXPECT_CALL(*mock_history_service_,
                 GetAnnotatedVisits(_, true, false, _, _))
-        .WillOnce(testing::Invoke(
+        .WillOnce(
             [annotated_visits](
                 const history::QueryOptions& options,
                 bool compute_redirect_chain_start_properties,
@@ -303,7 +303,7 @@ class HistoryURLVisitDataFetcherTest : public testing::Test {
                 -> base::CancelableTaskTracker::TaskId {
               std::move(callback).Run(std::move(annotated_visits));
               return 0;
-            }));
+            });
   }
 
   FetchResult FetchAndGetResult(const FetchOptions& options) {

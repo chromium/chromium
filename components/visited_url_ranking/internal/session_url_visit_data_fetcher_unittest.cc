@@ -159,8 +159,7 @@ class SessionURLVisitDataFetcherTest
 
   void SetSessionSyncServiceExpectations() {
     EXPECT_CALL(mock_session_sync_service_, GetOpenTabsUIDelegate())
-        .WillOnce(
-            testing::Invoke([this]() { return &open_tabs_ui_delegate_; }));
+        .WillOnce([this]() { return &open_tabs_ui_delegate_; });
   }
 
   FetchResult FetchAndGetResult(const FetchOptions& options) {
@@ -192,7 +191,7 @@ class SessionURLVisitDataFetcherTest
 
 TEST_F(SessionURLVisitDataFetcherTest, FetchURLVisitDataNoOpenTabsUIDelegate) {
   EXPECT_CALL(mock_session_sync_service_, GetOpenTabsUIDelegate())
-      .WillOnce(testing::Invoke([]() { return nullptr; }));
+      .WillOnce([]() { return nullptr; });
 
   std::vector<std::unique_ptr<sync_sessions::SyncedSession>> sample_sessions;
   sample_sessions.push_back(GetSampleSession());
@@ -218,22 +217,21 @@ TEST_F(SessionURLVisitDataFetcherTest, FetchURLVisitDataDefaultSources) {
 
   SetSessionSyncServiceExpectations();
   EXPECT_CALL(open_tabs_ui_delegate_, GetLocalSession(testing::_))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&local_sample_sessions](const sync_sessions::SyncedSession** local) {
             local_sample_sessions[0]->SetSessionName("Local Session");
             *local = local_sample_sessions[0].get();
             return true;
-          }));
+          });
   EXPECT_CALL(open_tabs_ui_delegate_, GetAllForeignSessions(testing::_))
-      .WillOnce(testing::Invoke(
-          [&foreign_sample_sessions](
-              std::vector<raw_ptr<const sync_sessions::SyncedSession,
-                                  VectorExperimental>>* sessions) {
-            for (auto& sample_session : foreign_sample_sessions) {
-              sessions->push_back(sample_session.get());
-            }
-            return true;
-          }));
+      .WillOnce([&foreign_sample_sessions](
+                    std::vector<raw_ptr<const sync_sessions::SyncedSession,
+                                        VectorExperimental>>* sessions) {
+        for (auto& sample_session : foreign_sample_sessions) {
+          sessions->push_back(sample_session.get());
+        }
+        return true;
+      });
 
   base::Time yesterday = base::Time::Now() - base::Days(1);
   auto result = FetchAndGetResult(FetchOptions(
@@ -265,22 +263,21 @@ TEST_P(SessionURLVisitDataFetcherTest, FetchURLVisitData) {
   const auto source = GetParam();
   if (source == Source::kLocal) {
     EXPECT_CALL(open_tabs_ui_delegate_, GetLocalSession(testing::_))
-        .WillOnce(testing::Invoke(
+        .WillOnce(
             [&sample_sessions](const sync_sessions::SyncedSession** local) {
               *local = sample_sessions[0].get();
               return true;
-            }));
+            });
   } else if (source == Source::kForeign) {
     EXPECT_CALL(open_tabs_ui_delegate_, GetAllForeignSessions(testing::_))
-        .WillOnce(testing::Invoke(
-            [&sample_sessions](
-                std::vector<raw_ptr<const sync_sessions::SyncedSession,
-                                    VectorExperimental>>* sessions) {
-              for (auto& sample_session : sample_sessions) {
-                sessions->push_back(sample_session.get());
-              }
-              return true;
-            }));
+        .WillOnce([&sample_sessions](
+                      std::vector<raw_ptr<const sync_sessions::SyncedSession,
+                                          VectorExperimental>>* sessions) {
+          for (auto& sample_session : sample_sessions) {
+            sessions->push_back(sample_session.get());
+          }
+          return true;
+        });
   }
 
   auto options = FetchOptions(
@@ -317,21 +314,19 @@ TEST_F(SessionURLVisitDataFetcherTest,
 
   SetSessionSyncServiceExpectations();
   EXPECT_CALL(open_tabs_ui_delegate_, GetLocalSession(testing::_))
-      .WillOnce(testing::Invoke(
-          [&sample_sessions](const sync_sessions::SyncedSession** local) {
-            *local = sample_sessions[0].get();
-            return true;
-          }));
+      .WillOnce([&sample_sessions](const sync_sessions::SyncedSession** local) {
+        *local = sample_sessions[0].get();
+        return true;
+      });
   EXPECT_CALL(open_tabs_ui_delegate_, GetAllForeignSessions(testing::_))
-      .WillOnce(testing::Invoke(
-          [&sample_sessions](
-              std::vector<raw_ptr<const sync_sessions::SyncedSession,
-                                  VectorExperimental>>* sessions) {
-            for (auto& sample_session : sample_sessions) {
-              sessions->push_back(sample_session.get());
-            }
-            return true;
-          }));
+      .WillOnce([&sample_sessions](
+                    std::vector<raw_ptr<const sync_sessions::SyncedSession,
+                                        VectorExperimental>>* sessions) {
+        for (auto& sample_session : sample_sessions) {
+          sessions->push_back(sample_session.get());
+        }
+        return true;
+      });
 
   base::Time yesterday = base::Time::Now() - base::Days(1);
   auto result = FetchAndGetResult(FetchOptions(
