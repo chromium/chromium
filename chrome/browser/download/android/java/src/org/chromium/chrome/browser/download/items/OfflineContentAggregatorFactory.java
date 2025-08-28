@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.download.items;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
@@ -47,8 +49,9 @@ public class OfflineContentAggregatorFactory {
         return sProvider;
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         OfflineContentProvider getOfflineContentAggregator();
     }
 }
