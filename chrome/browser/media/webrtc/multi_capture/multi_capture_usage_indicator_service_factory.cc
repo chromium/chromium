@@ -53,7 +53,7 @@ MultiCaptureUsageIndicatorServiceFactory::BuildServiceInstanceForBrowserContext(
   return MultiCaptureUsageIndicatorService::Create(
       profile->GetPrefs(),
       NotificationDisplayServiceFactory::GetForProfile(profile),
-      MultiCaptureDataServiceFactory::GetForProfile(profile));
+      MultiCaptureDataServiceFactory::GetForBrowserContext(profile));
 }
 
 bool MultiCaptureUsageIndicatorServiceFactory::

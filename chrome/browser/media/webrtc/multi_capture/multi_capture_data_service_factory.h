@@ -8,7 +8,9 @@
 #include "base/no_destructor.h"
 #include "components/webapps/isolated_web_apps/service/isolated_web_app_browser_context_service_factory.h"
 
-class Profile;
+namespace content {
+class BrowserContext;
+}
 
 namespace multi_capture {
 
@@ -19,7 +21,8 @@ class MultiCaptureDataService;
 class MultiCaptureDataServiceFactory
     : public web_app::IsolatedWebAppBrowserContextServiceFactory {
  public:
-  static MultiCaptureDataService* GetForProfile(Profile* context);
+  static MultiCaptureDataService* GetForBrowserContext(
+      content::BrowserContext* context);
   static MultiCaptureDataServiceFactory* GetInstance();
 
   MultiCaptureDataServiceFactory(const MultiCaptureDataServiceFactory&) =

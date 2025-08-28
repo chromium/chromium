@@ -463,6 +463,8 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/smb_client/fileapi/smbfs_file_system_backend_delegate.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
+#include "chrome/browser/media/webrtc/multi_capture/multi_capture_data_service.h"
+#include "chrome/browser/media/webrtc/multi_capture/multi_capture_data_service_factory.h"
 #include "chrome/browser/speech/tts_chromeos.h"
 #include "chrome/browser/speech/tts_controller_delegate_impl.h"
 #include "chrome/browser/ui/ash/main_extra_parts/chrome_browser_main_extra_parts_ash.h"
@@ -2737,11 +2739,17 @@ bool ChromeContentBrowserClient::IsIsolatedContextAllowedForUrl(
 #endif
 }
 
-void ChromeContentBrowserClient::CheckGetAllScreensMediaAllowed(
-    content::RenderFrameHost* render_frame_host,
-    base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(capture_policy::IsMultiScreenCaptureAllowed(
-      render_frame_host->GetMainFrame()->GetLastCommittedOrigin().GetURL()));
+bool ChromeContentBrowserClient::IsMultiCaptureAllowed(
+    content::RenderFrameHost* render_frame_host) {
+#if BUILDFLAG(IS_CHROMEOS)
+  return multi_capture::MultiCaptureDataServiceFactory::GetForBrowserContext(
+             WebContents::FromRenderFrameHost(render_frame_host)
+                 ->GetBrowserContext())
+      ->IsMultiCaptureAllowed(
+          render_frame_host->GetMainFrame()->GetLastCommittedOrigin().GetURL());
+#else
+  return false;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 bool ChromeContentBrowserClient::IsFileAccessAllowed(

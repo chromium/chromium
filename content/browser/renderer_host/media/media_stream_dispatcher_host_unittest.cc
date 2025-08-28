@@ -1428,10 +1428,9 @@ INSTANTIATE_TEST_SUITE_P(
 
 class MockContentBrowserClient : public ContentBrowserClient {
  public:
-  MOCK_METHOD(void,
-              CheckGetAllScreensMediaAllowed,
-              (content::RenderFrameHost * render_frame_host,
-               base::OnceCallback<void(bool)> callback),
+  MOCK_METHOD(bool,
+              IsMultiCaptureAllowed,
+              (content::RenderFrameHost * render_frame_host),
               (override));
 };
 
@@ -1484,11 +1483,9 @@ TEST_F(MediaStreamDispatcherHostMultiCaptureTest,
   GlobalRenderFrameHostId main_rfh_global_id = global_rfh_id();
   int main_render_process_id = main_rfh_global_id.child_id;
   int render_frame_id = main_rfh_global_id.frame_routing_id;
-  EXPECT_CALL(content_browser_client_, CheckGetAllScreensMediaAllowed(_, _))
-      .WillOnce([](content::RenderFrameHost* render_frame_host,
-                   base::OnceCallback<void(bool)> callback) {
-        std::move(callback).Run(false);
-      });
+  EXPECT_CALL(content_browser_client_, IsMultiCaptureAllowed(_))
+      .Times(1)
+      .WillOnce(Return(false));
 
   base::test::TestFuture<
       MediaStreamDispatcherHost::GenerateStreamsUIThreadCheckResult>
@@ -1512,11 +1509,9 @@ TEST_F(MediaStreamDispatcherHostMultiCaptureTest,
   GlobalRenderFrameHostId main_rfh_global_id = global_rfh_id();
   int main_render_process_id = main_rfh_global_id.child_id;
   int render_frame_id = main_rfh_global_id.frame_routing_id;
-  EXPECT_CALL(content_browser_client_, CheckGetAllScreensMediaAllowed(_, _))
-      .WillOnce([](content::RenderFrameHost* render_frame_host,
-                   base::OnceCallback<void(bool)> callback) {
-        std::move(callback).Run(true);
-      });
+  EXPECT_CALL(content_browser_client_, IsMultiCaptureAllowed(_))
+      .Times(1)
+      .WillOnce(Return(true));
 
   base::test::TestFuture<
       MediaStreamDispatcherHost::GenerateStreamsUIThreadCheckResult>

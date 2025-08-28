@@ -7,7 +7,6 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/media/webrtc/multi_capture/multi_capture_data_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -18,8 +17,8 @@ static_assert(BUILDFLAG(IS_CHROMEOS), "For ChromeOS only");
 
 namespace multi_capture {
 
-MultiCaptureDataService* MultiCaptureDataServiceFactory::GetForProfile(
-    Profile* context) {
+MultiCaptureDataService* MultiCaptureDataServiceFactory::GetForBrowserContext(
+    content::BrowserContext* context) {
   return static_cast<MultiCaptureDataService*>(
       GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
 }

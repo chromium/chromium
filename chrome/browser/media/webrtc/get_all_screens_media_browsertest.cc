@@ -180,8 +180,6 @@ class GetAllScreensMediaBrowserTestBase
  public:
   explicit GetAllScreensMediaBrowserTestBase(bool is_permissions_policy_set)
       : is_permissions_policy_set_(is_permissions_policy_set) {
-    scoped_feature_list_.InitAndDisableFeature(
-        chromeos::features::kMultiCaptureReworkedUsageIndicators);
     allowed_app_1_ =
         CreateIsolatedWebApp(/*html_text=*/"GetAllScreensMedia allowed 1");
     EXPECT_TRUE(allowed_app_1_);
@@ -331,7 +329,6 @@ class GetAllScreensMediaBrowserTestBase
 
  private:
   const bool is_permissions_policy_set_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class MultiScreenCaptureInIsolatedWebAppBrowserTest
@@ -503,7 +500,10 @@ IN_PROC_BROWSER_TEST_P(
 class MultiCaptureNotificationTest : public GetAllScreensMediaBrowserTestBase {
  public:
   MultiCaptureNotificationTest()
-      : GetAllScreensMediaBrowserTestBase(/*is_permissions_policy_set=*/true) {}
+      : GetAllScreensMediaBrowserTestBase(/*is_permissions_policy_set=*/true) {
+    scoped_feature_list_.InitAndDisableFeature(
+        chromeos::features::kMultiCaptureReworkedUsageIndicators);
+  }
   MultiCaptureNotificationTest(const MultiCaptureNotificationTest&) = delete;
   MultiCaptureNotificationTest& operator=(const MultiCaptureNotificationTest&) =
       delete;
@@ -562,6 +562,7 @@ class MultiCaptureNotificationTest : public GetAllScreensMediaBrowserTestBase {
   }
 
   raw_ptr<ChromeContentBrowserClient> client_ = nullptr;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(MultiCaptureNotificationTest,

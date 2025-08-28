@@ -249,7 +249,8 @@ IN_PROC_BROWSER_TEST_P(
     MultiCaptureUsageIndicatorBrowserTest,
     YouMayBeCapturedNotificationShowsIfAppInstalledAndAllowlisted) {
   CHECK_DEREF(
-      multi_capture::MultiCaptureDataServiceFactory::GetForProfile(profile()))
+      multi_capture::MultiCaptureDataServiceFactory::GetForBrowserContext(
+          profile()))
       .LoadData();
 
   ASSERT_TRUE(visible_notifications_.contains(
@@ -269,7 +270,8 @@ IN_PROC_BROWSER_TEST_P(
           CHECK_DEREF(multi_capture::MultiCaptureUsageIndicatorServiceFactory::
                           GetForBrowserContext(profile()));
   CHECK_DEREF(
-      multi_capture::MultiCaptureDataServiceFactory::GetForProfile(profile()))
+      multi_capture::MultiCaptureDataServiceFactory::GetForBrowserContext(
+          profile()))
       .LoadData();
 
   ASSERT_TRUE(visible_notifications_.contains(
@@ -331,7 +333,8 @@ class MultiCaptureUsageIndicatorDynamicAppBrowserTest
 IN_PROC_BROWSER_TEST_F(MultiCaptureUsageIndicatorDynamicAppBrowserTest,
                        AllowlistedAppAddedAndDeleted) {
   CHECK_DEREF(
-      multi_capture::MultiCaptureDataServiceFactory::GetForProfile(profile()))
+      multi_capture::MultiCaptureDataServiceFactory::GetForBrowserContext(
+          profile()))
       .LoadData();
 
   ASSERT_EQ(visible_notifications_.size(), 1u);

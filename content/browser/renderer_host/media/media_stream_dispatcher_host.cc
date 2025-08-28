@@ -409,11 +409,9 @@ void MediaStreamDispatcherHost::CheckRequestAllScreensAllowed(
     return;
   }
 
-  GetContentClient()->browser()->CheckGetAllScreensMediaAllowed(
-      render_frame_host,
-      base::BindOnce(
-          &MediaStreamDispatcherHost::CheckStreamsPermissionResultReceived,
-          std::move(get_salt_and_origin_cb), std::move(result_callback)));
+  CheckStreamsPermissionResultReceived(
+      std::move(get_salt_and_origin_cb), std::move(result_callback),
+      GetContentClient()->browser()->IsMultiCaptureAllowed(render_frame_host));
 }
 
 void MediaStreamDispatcherHost::CheckStreamsPermissionResultReceived(

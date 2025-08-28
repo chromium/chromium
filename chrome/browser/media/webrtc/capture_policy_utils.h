@@ -72,8 +72,6 @@ void ShowCaptureTerminatedDialog(content::WebContents* contents);
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-// TODO(crbug.com/40230867): Use Origin instead of GURL.
-// Passing `std::nullopt` to `url` means "for any origin".
 bool IsMultiScreenCaptureAllowed(const std::optional<GURL>& url);
 
 #if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
