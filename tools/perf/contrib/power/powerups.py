@@ -75,22 +75,7 @@ class ContribPowerPowerups(PowerPerfBenchmarkBase):
       }
       data_sources: {
           config {
-              name: "org.chromium.trace_metadata"
-              chrome_config {
-                  trace_config: "{
-                    \\"record_mode\\": \\"record-until-full\\",
-                    \\"included_categories\\": [
-                      \\"toplevel.flow\\",
-                      \\"toplevel\\",
-                      \\"mojom\\",
-                      \\"navigation\\",
-                      \\"ipc\\"
-                    ],
-                    \\"excluded_categories\\": [\\"*\\"],
-                    \\"memory_dump_config\\": {}
-                  }"
-                  client_priority: USER_INITIATED
-              }
+              name: "org.chromium.trace_metadata2"
           }
       }
       data_sources: {

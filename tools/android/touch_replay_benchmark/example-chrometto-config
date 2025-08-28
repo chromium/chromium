@@ -47,10 +47,7 @@ data_sources {
 data_sources {
     config {
         target_buffer: 2
-        name: "org.chromium.trace_metadata"
-        chrome_config {
-            trace_config: "{\"record_mode\":\"record-until-full\",\"included_categories\": [\"toplevel\",\"toplevel.flow\",\"navigation\",\"Java\"\"base\",\"browser\",\"cc\",\"disabled-by-default-cpu_profiler\",\"gpu\",\"input\",\"latencyInfo\",\"mojom\",\"viz\",\"ui\"],\"memory_dump_config\":{}}"
-        }
+        name: "org.chromium.trace_metadata2"
     }
 }
 duration_ms: 0
