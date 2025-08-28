@@ -32,6 +32,18 @@ class BrowserList final : public KeyedService, public BrowserObserver {
     kInactive,
     kIncognito,
     kRegularAndInactive,
+    kRegularAndIncognito,
+
+    // This iterate over absolutely all Browsers, including the inactive
+    // ones. As the inactive Browser does not force the realization of its
+    // active WebState, this WebState may not have any tab helpers leading
+    // to crashes if the code expect them to exists.
+    //
+    // Prefer to use kRegularAndIncognito instead which is likely a better
+    // fit for your feature (unless you know all the limitation of working
+    // with inactive Browser).
+    //
+    // See https://crbug.com/432020830 for details.
     kAll,
   };
 
