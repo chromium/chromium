@@ -14,9 +14,10 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doNothing;
@@ -44,7 +45,6 @@ import static org.chromium.chrome.browser.tab.TabSelectionType.FROM_USER;
 
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
-import android.view.Gravity;
 import android.view.Surface;
 import android.view.View;
 
@@ -78,6 +78,7 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent.UpdateAccessorySheetDelegate;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator;
+import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryStyle;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
@@ -127,6 +128,7 @@ public class ManualFillingControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Captor ArgumentCaptor<FullscreenManager.Observer> mFullscreenObserverCaptor;
+    @Captor private ArgumentCaptor<KeyboardAccessoryStyle> mStyleCaptor;
 
     @Mock private ChromeWindow mMockWindow;
     @Mock private ChromeActivity mMockActivity;
@@ -1042,7 +1044,10 @@ public class ManualFillingControllerTest {
         // Ensure it's bottom-aligned and insetting the page with its height.
         assertEquals(
                 sAccessoryHeightDp * density, (int) mController.getBottomInsetSupplier().get());
-        verify(mMockKeyboardAccessory).setOffsetAndGravity(eq(0), anyInt());
+        verify(mMockKeyboardAccessory).setStyle(mStyleCaptor.capture());
+        KeyboardAccessoryStyle style = mStyleCaptor.getValue();
+        assertTrue(style.isDocked());
+        assertEquals(0, style.getMaxWidth());
         reset(mMockKeyboardAccessory, mMockAccessorySheet);
 
         // Simulate entering fullscreen mode which makes the keyboard overlaying.
@@ -1073,7 +1078,10 @@ public class ManualFillingControllerTest {
         // Ensure it's bottom-aligned and insetting the page with its height.
         assertEquals(
                 sAccessoryHeightDp * density, (int) mController.getBottomInsetSupplier().get());
-        verify(mMockKeyboardAccessory).setOffsetAndGravity(eq(0), anyInt());
+        verify(mMockKeyboardAccessory).setStyle(mStyleCaptor.capture());
+        KeyboardAccessoryStyle style = mStyleCaptor.getValue();
+        assertTrue(style.isDocked());
+        assertEquals(0, style.getMaxWidth());
         reset(mMockKeyboardAccessory, mMockAccessorySheet);
 
         // Simulate entering fullscreen mode which makes the keyboard overlaying.
@@ -1467,7 +1475,10 @@ public class ManualFillingControllerTest {
                 /* isCredentialFieldOrHasAutofillSuggestions= */ false);
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(HIDDEN));
-        verify(mMockKeyboardAccessory).setOffsetAndGravity(anyInt(), eq(Gravity.BOTTOM));
+        verify(mMockKeyboardAccessory).setStyle(mStyleCaptor.capture());
+        KeyboardAccessoryStyle style = mStyleCaptor.getValue();
+        assertTrue(style.isDocked());
+        assertEquals(0, style.getMaxWidth());
         verify(mMockKeyboardAccessory, never()).setHasStickyLastItem(anyBoolean());
     }
 
@@ -1485,7 +1496,10 @@ public class ManualFillingControllerTest {
                 /* waitForKeyboard= */ true, /* isCredentialFieldOrHasAutofillSuggestions= */ true);
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_BAR));
-        verify(mMockKeyboardAccessory).setOffsetAndGravity(anyInt(), eq(Gravity.TOP));
+        verify(mMockKeyboardAccessory).setStyle(mStyleCaptor.capture());
+        KeyboardAccessoryStyle style = mStyleCaptor.getValue();
+        assertFalse(style.isDocked());
+        assertTrue(style.getMaxWidth() > 0);
         verify(mMockKeyboardAccessory).setHasStickyLastItem(false);
     }
 
@@ -1505,7 +1519,10 @@ public class ManualFillingControllerTest {
                 /* waitForKeyboard= */ true, /* isCredentialFieldOrHasAutofillSuggestions= */ true);
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_BAR));
-        verify(mMockKeyboardAccessory).setOffsetAndGravity(anyInt(), eq(Gravity.TOP));
+        verify(mMockKeyboardAccessory).setStyle(mStyleCaptor.capture());
+        KeyboardAccessoryStyle style = mStyleCaptor.getValue();
+        assertFalse(style.isDocked());
+        assertTrue(style.getMaxWidth() > 0);
         verify(mMockKeyboardAccessory).setHasStickyLastItem(false);
     }
 
@@ -1525,7 +1542,10 @@ public class ManualFillingControllerTest {
                 /* waitForKeyboard= */ true, /* isCredentialFieldOrHasAutofillSuggestions= */ true);
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(FLOATING_BAR));
-        verify(mMockKeyboardAccessory).setOffsetAndGravity(anyInt(), eq(Gravity.TOP));
+        verify(mMockKeyboardAccessory).setStyle(mStyleCaptor.capture());
+        KeyboardAccessoryStyle style = mStyleCaptor.getValue();
+        assertFalse(style.isDocked());
+        assertTrue(style.getMaxWidth() > 0);
         verify(mMockKeyboardAccessory).setHasStickyLastItem(false);
     }
 
@@ -1545,7 +1565,10 @@ public class ManualFillingControllerTest {
                 /* waitForKeyboard= */ true, /* isCredentialFieldOrHasAutofillSuggestions= */ true);
 
         assertThat(mModel.get(KEYBOARD_EXTENSION_STATE), is(EXTENDING_KEYBOARD));
-        verify(mMockKeyboardAccessory).setOffsetAndGravity(anyInt(), eq(Gravity.BOTTOM));
+        verify(mMockKeyboardAccessory).setStyle(mStyleCaptor.capture());
+        KeyboardAccessoryStyle style = mStyleCaptor.getValue();
+        assertTrue(style.isDocked());
+        assertEquals(0, style.getMaxWidth());
         verify(mMockKeyboardAccessory).setHasStickyLastItem(true);
     }
 

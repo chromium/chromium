@@ -57,6 +57,7 @@ class KeyboardAccessoryView extends LinearLayout {
     private boolean mDisableAnimations;
     private boolean mAllowClicksWhileObscured;
     private boolean mHasStickyLastItem;
+    private int mMaxWidth;
 
     protected RecyclerView mBarItemsView;
 
@@ -285,15 +286,58 @@ class KeyboardAccessoryView extends LinearLayout {
         return provider;
     }
 
-    void setOffsetAndGravity(@Px int offset, int gravity) {
+    void setStyle(KeyboardAccessoryStyle style) {
+        mMaxWidth = style.getMaxWidth();
         CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) getLayoutParams();
-        if (gravity == Gravity.TOP) {
-            params.setMargins(params.leftMargin, offset, params.rightMargin, 0);
-        } else if (gravity == Gravity.BOTTOM) {
-            params.setMargins(params.leftMargin, 0, params.rightMargin, offset);
+        if (style.isDocked()) {
+            applyDockedStyle(params, style.getOffset());
+        } else {
+            applyUndockedStyle(params, style.getOffset());
         }
-        params.gravity = gravity;
         setLayoutParams(params);
+    }
+
+    /**
+     * Configures the view's appearance for the floating (undocked) state. This state has an
+     * elevation, rounded corners and wraps its content.
+     */
+    private void applyUndockedStyle(CoordinatorLayout.LayoutParams params, @Px int offset) {
+        params.gravity = Gravity.CENTER | Gravity.TOP;
+        params.setMargins(params.leftMargin, offset, params.rightMargin, 0);
+        params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+
+        findViewById(R.id.accessory_shadow).setVisibility(View.GONE);
+        findViewById(R.id.accessory_bar_contents).setBackground(null);
+        setBackgroundResource(R.drawable.keyboard_accessory_shadow_shape);
+        @Px
+        int elevation = getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_elevation);
+        setElevation(elevation);
+    }
+
+    /**
+     * Configures the view's appearance for the standard (docked) bottom state. This state matches
+     * the parent width and has no elevation.
+     */
+    private void applyDockedStyle(CoordinatorLayout.LayoutParams params, @Px int offset) {
+        params.gravity = Gravity.BOTTOM;
+        params.setMargins(params.leftMargin, 0, params.rightMargin, offset);
+        params.width = ViewGroup.LayoutParams.MATCH_PARENT;
+
+        findViewById(R.id.accessory_shadow).setVisibility(View.VISIBLE);
+        findViewById(R.id.accessory_bar_contents)
+                .setBackgroundResource(R.color.default_bg_color_baseline);
+        setBackground(null);
+        setElevation(0);
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int measuredWidth = MeasureSpec.getSize(widthMeasureSpec);
+        if (mMaxWidth > 0 && mMaxWidth < measuredWidth) {
+            int measureMode = MeasureSpec.getMode(widthMeasureSpec);
+            widthMeasureSpec = MeasureSpec.makeMeasureSpec(mMaxWidth, measureMode);
+        }
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     void setObfuscatedLastChildAt(Callback<Integer> obfuscatedLastChildAt) {

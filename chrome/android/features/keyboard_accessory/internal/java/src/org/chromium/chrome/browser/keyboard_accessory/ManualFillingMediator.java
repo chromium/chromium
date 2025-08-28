@@ -19,7 +19,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProper
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.SUPPRESSED_BY_BOTTOM_SHEET;
 
 import android.util.SparseArray;
-import android.view.Gravity;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +43,7 @@ import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.StateProperty;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator;
+import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryStyle;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
@@ -80,6 +80,7 @@ import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.ViewportInsets;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable;
@@ -103,6 +104,7 @@ class ManualFillingMediator
     private static final int MIN_WINDOW_HEIGHT_FOR_UNDOCKED_BAR_DP = 480;
     private static final int MIN_WINDOW_WIDTH_FOR_UNDOCKED_BAR_DP = 600;
     private static final int EXPANDED_WINDOW_WIDTH_FOR_UNDOCKED_BAR_DP = 840;
+    private static final float MAXIMUM_BAR_WIDTH_PERCENTAGE = 0.7f;
 
     private final SparseArray<AccessorySheetTabCoordinator> mSheets = new SparseArray<>();
     private final PropertyModel mModel = ManualFillingProperties.createFillingModel();
@@ -490,7 +492,7 @@ class ManualFillingMediator
         } else if (property == IS_FULLSCREEN) {
             if (isInitialized() && !mKeyboardAccessory.empty()) {
                 updateExtensionStateAndKeyboard(isSoftKeyboardShowing(getContentView()));
-                changeControlSpaceForState(mModel.get(KEYBOARD_EXTENSION_STATE));
+                updateStyleAndControlSpaceForState(mModel.get(KEYBOARD_EXTENSION_STATE));
             }
             return;
         } else if (property == PORTRAIT_ORIENTATION) {
@@ -528,7 +530,7 @@ class ManualFillingMediator
     private void transitionIntoState(@KeyboardExtensionState int extensionState) {
         if (!meetsStatePreconditions(extensionState)) return;
         TraceEvent.begin("ManualFillingMediator#transitionIntoState");
-        changeControlSpaceForState(extensionState);
+        updateStyleAndControlSpaceForState(extensionState);
         enforceStateProperties(extensionState); // Triggers a relayout. Call after changing insets.
         updateKeyboard(extensionState);
         TraceEvent.end("ManualFillingMediator#transitionIntoState");
@@ -750,26 +752,28 @@ class ManualFillingMediator
                 title, message, confirmButtonText, confirmedCallback, declinedCallback);
     }
 
-    private void changeTopOffset() {
-        if (mControlsManager == null) {
-            return;
+    /**
+     * Gets the keyboard accessory's top offset. This offset is slightly smaller than the content
+     * offset to allow the accessory to partially overlap the top bar.
+     */
+    private @Px int getTopOffset() {
+        if (mControlsManager == null || mControlsManager.getContentOffset() == 0) {
+            return 0;
         }
-        int calculatedOffset = 0;
-        int contentOffset = mControlsManager.getContentOffset();
-        if (contentOffset != 0) {
-            // Sets the keyboard accessory's top offset. This offset is slightly smaller than
-            // the content offset to allow the accessory to partially overlap the top bar.
-            int topInsetOverlap =
-                    mActivity
-                            .getResources()
-                            .getDimensionPixelOffset(R.dimen.keyboard_accessory_top_inset_overlap);
-            calculatedOffset = contentOffset - topInsetOverlap;
-        }
-        mKeyboardAccessory.setOffsetAndGravity(calculatedOffset, Gravity.TOP);
-        mBottomInsetSupplier.set(0);
+        int topInsetOverlap =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelOffset(R.dimen.keyboard_accessory_top_inset_overlap);
+        return mControlsManager.getContentOffset() - topInsetOverlap;
     }
 
-    private void changeControlSpaceForState(int extensionState) {
+    private @Px int getMaxWidth() {
+        int screenWidthDp = mActivity.getResources().getConfiguration().screenWidthDp;
+        @Px int screenWidth = DisplayUtil.dpToPx(mWindowAndroid.getDisplay(), screenWidthDp);
+        return (int) (MAXIMUM_BAR_WIDTH_PERCENTAGE * screenWidth);
+    }
+
+    private void updateStyleAndControlSpaceForState(int extensionState) {
         if (extensionState == WAITING_TO_REPLACE) return; // Don't change yet.
 
         int newControlsOffset = 0;
@@ -777,7 +781,10 @@ class ManualFillingMediator
                 && requiresVisibleBar(extensionState)
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP)) {
-            changeTopOffset();
+            @Px int offset = getTopOffset();
+            @Px int maxWidth = getMaxWidth();
+            mKeyboardAccessory.setStyle(new KeyboardAccessoryStyle(false, offset, maxWidth));
+            mBottomInsetSupplier.set(0);
             return;
         }
 
@@ -805,7 +812,7 @@ class ManualFillingMediator
                                     .getDimensionPixelSize(R.dimen.toolbar_shadow_height);
             newControlsOffset += mAccessorySheet.getHeight();
         }
-        mKeyboardAccessory.setOffsetAndGravity(newControlsOffset, Gravity.BOTTOM);
+        mKeyboardAccessory.setStyle(new KeyboardAccessoryStyle(true, newControlsOffset, 0));
         mBottomInsetSupplier.set(newControlsHeight);
     }
 
@@ -934,7 +941,7 @@ class ManualFillingMediator
         // MINIMAL_AVAILABLE_VERTICAL_SPACE.
         mAccessorySheet.setHeight(
                 visibleViewportHeightPx + mAccessorySheet.getHeight() - minimumVerticalSpacePx);
-        changeControlSpaceForState(mModel.get(KEYBOARD_EXTENSION_STATE));
+        updateStyleAndControlSpaceForState(mModel.get(KEYBOARD_EXTENSION_STATE));
     }
 
     private void refreshTabs() {

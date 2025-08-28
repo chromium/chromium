@@ -92,6 +92,7 @@ android_library("internal_java") {
     "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryMetricsRecorder.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryProperties.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryRecyclerViewMcp.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryStyle.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryView.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryViewBinder.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/button_group_component/KeyboardAccessoryButtonGroupCoordinator.java",
@@ -138,6 +139,7 @@ android_library("internal_java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/keyboard_accessory_shadow_shape.xml",
     "java/res/layout/accessory_sheet_header.xml",
     "java/res/layout/address_accessory_sheet.xml",
     "java/res/layout/all_passwords_bottom_sheet.xml",

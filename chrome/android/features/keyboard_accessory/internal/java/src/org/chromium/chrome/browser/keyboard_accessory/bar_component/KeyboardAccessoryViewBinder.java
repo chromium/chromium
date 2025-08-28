@@ -13,11 +13,11 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_STICKY_LAST_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_SUGGESTIONS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OBFUSCATED_CHILD_AT_CALLBACK;
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OFFSET_AND_GRAVITY;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ON_TOUCH_EVENT_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHEET_OPENER_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHOW_SWIPING_IPH;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SKIP_CLOSING_ANIMATION;
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.STYLE;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.VISIBLE;
 
 import android.content.Context;
@@ -321,9 +321,8 @@ class KeyboardAccessoryViewBinder {
             if (!model.get(VISIBLE)) {
                 view.setVisible(false); // Update to cancel any animation.
             }
-        } else if (propertyKey == OFFSET_AND_GRAVITY) {
-            view.setOffsetAndGravity(
-                    model.get(OFFSET_AND_GRAVITY).first, model.get(OFFSET_AND_GRAVITY).second);
+        } else if (propertyKey == STYLE) {
+            view.setStyle(model.get(STYLE));
         } else if (propertyKey == ANIMATION_LISTENER) {
             view.setAnimationListener(model.get(ANIMATION_LISTENER));
         } else if (propertyKey == OBFUSCATED_CHILD_AT_CALLBACK) {
