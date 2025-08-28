@@ -8,6 +8,7 @@
 #import <vector>
 
 #import "base/apple/foundation_util.h"
+#import "base/check.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
@@ -432,8 +433,8 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
 - (void)updateFormManagers {
   BrowserList* browserList = BrowserListFactory::GetForProfile(self.profile);
 
-  for (Browser* browser :
-       browserList->BrowsersOfType(BrowserList::BrowserType::kAll)) {
+  for (Browser* browser : browserList->BrowsersOfType(
+           BrowserList::BrowserType::kRegularAndIncognito)) {
     [self updateFormManagersForBrowser:browser];
   }
 }
@@ -599,6 +600,7 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
   if (!webState) {
     return;
   }
+  CHECK(webState->IsRealized(), base::NotFatalUntil::M150);
   password_manager::PasswordManagerClient* passwordManagerClient =
       PasswordTabHelper::FromWebState(webState)->GetPasswordManagerClient();
   passwordManagerClient->UpdateFormManagers();
