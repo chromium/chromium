@@ -14,10 +14,6 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/native_theme/native_theme.h"
 
-#if BUILDFLAG(IS_WIN)
-#include <windows.h>
-#endif
-
 namespace {
 
 // Strings used in alignment properties.
@@ -34,20 +30,6 @@ constexpr char kTilingRepeatY[] = "repeat-y";
 constexpr char kTilingRepeat[] = "repeat";
 
 SkColor GetLightModeColor(int id) {
-#if BUILDFLAG(IS_WIN)
-  const SkColor kDefaultColorNTPBackground =
-      color_utils::GetSysSkColor(COLOR_WINDOW);
-  const SkColor kDefaultColorNTPText =
-      color_utils::GetSysSkColor(COLOR_WINDOWTEXT);
-  const SkColor kDefaultColorNTPLink =
-      color_utils::GetSysSkColor(COLOR_HOTLIGHT);
-#else
-  // TODO(beng): source from theme provider.
-  constexpr SkColor kDefaultColorNTPBackground = SK_ColorWHITE;
-  constexpr SkColor kDefaultColorNTPText = SK_ColorBLACK;
-  constexpr SkColor kDefaultColorNTPLink = SkColorSetRGB(0x06, 0x37, 0x74);
-#endif  // BUILDFLAG(IS_WIN)
-
   switch (id) {
     // Properties stored in theme pack.  If you change these defaults, you must
     // increment the version number in browser_theme_pack.cc.
@@ -71,11 +53,11 @@ SkColor GetLightModeColor(int id) {
     case ThemeProperties::COLOR_TOOLBAR_TEXT:
       return gfx::kGoogleGrey800;
     case ThemeProperties::COLOR_NTP_BACKGROUND:
-      return kDefaultColorNTPBackground;
+      return SK_ColorWHITE;
     case ThemeProperties::COLOR_NTP_TEXT:
-      return kDefaultColorNTPText;
+      return SK_ColorBLACK;
     case ThemeProperties::COLOR_NTP_LINK:
-      return kDefaultColorNTPLink;
+      return SkColorSetRGB(0x06, 0x37, 0x74);
     case ThemeProperties::COLOR_NTP_HEADER:
       return SkColorSetRGB(0x96, 0x96, 0x96);
     case ThemeProperties::COLOR_CONTROL_BUTTON_BACKGROUND:
