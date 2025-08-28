@@ -255,7 +255,7 @@ class BrowserView : public BrowserWindow,
   }
 
   // Accessor for the TabStrip.
-  TabStrip* tabstrip() { return tabstrip_; }
+  TabStrip* tabstrip() { return tab_strip_region_view_->tab_strip(); }
 
   // Accessor for the WebUI tab strip.
   WebUITabStripContainerView* webui_tab_strip() { return webui_tab_strip_; }
@@ -1131,9 +1131,6 @@ class BrowserView : public BrowserWindow,
 
   // The view that contains the tabstrip, new tab button, and grab handle space.
   raw_ptr<TabStripRegionView> tab_strip_region_view_ = nullptr;
-
-  // The TabStrip.
-  raw_ptr<TabStrip> tabstrip_ = nullptr;
 
   // the webui based tabstrip, when applicable. see https://crbug.com/989131.
   raw_ptr<WebUITabStripContainerView> webui_tab_strip_ = nullptr;

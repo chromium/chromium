@@ -238,7 +238,6 @@ BrowserViewLayout::BrowserViewLayout(
     WebAppFrameToolbarView* web_app_frame_toolbar,
     views::Label* web_app_window_title,
     TabStripRegionView* tab_strip_region_view,
-    TabStrip* tab_strip,
     views::View* vertical_tab_strip_container,
     views::View* toolbar,
     InfoBarContainerView* infobar_container,
@@ -266,7 +265,7 @@ BrowserViewLayout::BrowserViewLayout(
       right_aligned_side_panel_separator_(right_aligned_side_panel_separator),
       side_panel_rounded_corner_(side_panel_rounded_corner),
       contents_separator_(contents_separator),
-      tab_strip_(tab_strip),
+      tab_strip_(tab_strip_region_view_->tab_strip()),
       dialog_host_(std::make_unique<WebContentsModalDialogHostViews>(this)) {}
 
 BrowserViewLayout::~BrowserViewLayout() = default;

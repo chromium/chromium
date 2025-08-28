@@ -11,10 +11,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -22,18 +26,59 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_scroll_container.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/views/chrome_views_test_base.h"
-#include "tab_strip_region_view.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/test/views_test_base.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
+class LayoutWaiter : public views::ViewObserver {
+ public:
+  explicit LayoutWaiter(views::View* view) : view_(view) {
+    view_->AddObserver(this);
+  }
+  ~LayoutWaiter() override {
+    if (view_) {
+      view_->RemoveObserver(this);
+    }
+  }
+
+  void Wait() {
+    // The view can be null if it's deleted before Wait() is called.
+    if (!view_) {
+      return;
+    }
+    run_loop_.Run();
+  }
+
+  // views::ViewObserver:
+  void OnViewBoundsChanged(views::View* observed_view) override {
+    // Quit the run loop when the observed view's bounds change.
+    run_loop_.Quit();
+  }
+
+  void OnViewIsDeleting(views::View* observed_view) override {
+    // If the view is deleted while we're waiting, stop observing and
+    // ensure we don't try to access it later.
+    view_ = nullptr;
+    run_loop_.Quit();
+  }
+
+ private:
+  raw_ptr<views::View> view_ = nullptr;
+  base::RunLoop run_loop_;
+};
+
 // TabStripRegionViewTestBase contains no test cases.
-class TabStripRegionViewTestBase : public ChromeViewsTestBase {
+class TabStripRegionViewTestBase : public InProcessBrowserTest {
  public:
   explicit TabStripRegionViewTestBase(bool has_scrolling)
       : animation_mode_reset_(gfx::AnimationTestApi::SetRichAnimationRenderMode(
@@ -52,45 +97,33 @@ class TabStripRegionViewTestBase : public ChromeViewsTestBase {
   ~TabStripRegionViewTestBase() override = default;
 
   void SetUp() override {
-    ChromeViewsTestBase::SetUp();
-
-    BuildTabStripRegionView();
+    InProcessBrowserTest::SetUp();
 
     // Prevent hover cards from appearing when the mouse is over the tab. Tests
     // don't typically account for this possibly, so it can cause unrelated
-    // tests to fail due to tab data not being set. See crbug.com/1050012.
+    // tests to fail due to tab data not being set. See crbug.com/40672885.
     Tab::SetShowHoverCardOnMouseHoverForTesting(false);
   }
 
-  void BuildTabStripRegionView() {
-    auto controller = std::make_unique<FakeBaseTabStripController>();
-    controller_ = controller.get();
-    auto tab_strip = std::make_unique<TabStrip>(
-        std::unique_ptr<TabStripController>(controller.release()));
-    tab_strip_ = tab_strip.get();
-    controller_->set_tab_strip(tab_strip_);
-    widget_ =
-        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
-    tab_strip_region_view_ = widget_->SetContentsView(
-        std::make_unique<TabStripRegionView>(std::move(tab_strip)));
-  }
-
   void TearDown() override {
-    widget_.reset();
-    ChromeViewsTestBase::TearDown();
+    InProcessBrowserTest::TearDown();
+    Tab::SetShowHoverCardOnMouseHoverForTesting(true);
   }
 
  protected:
-  void CompleteAnimationAndLayout() {
-    views::test::RunScheduledLayout(tab_strip_region_view_);
+  BrowserView* browser_view() {
+    return BrowserView::GetBrowserViewForBrowser(browser());
   }
 
-  // Owned by TabStrip.
-  raw_ptr<FakeBaseTabStripController, DanglingUntriaged> controller_ = nullptr;
-  raw_ptr<TabStrip, DanglingUntriaged> tab_strip_ = nullptr;
-  raw_ptr<TabStripRegionView, DanglingUntriaged> tab_strip_region_view_ =
-      nullptr;
-  std::unique_ptr<views::Widget> widget_;
+  TabStripRegionView* tab_strip_region_view() {
+    return browser_view()->tab_strip_region_view();
+  }
+
+  TabStrip* tab_strip() {
+    return browser_view()->tab_strip_region_view()->tab_strip();
+  }
+
+  TabStripModel* tab_strip_model() { return browser()->tab_strip_model(); }
 
  private:
   gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_;
@@ -108,65 +141,90 @@ class TabStripRegionViewTest : public TabStripRegionViewTestBase,
   ~TabStripRegionViewTest() override = default;
 };
 
-// TODO (crbug/1520595): Skip for now due to test failing when CR2023 enabled.
-TEST_P(TabStripRegionViewTest, DISABLED_GrabHandleSpaceStaysVisible) {
+// TODO(crbug.com/41493572): Skip for now due to test failing when CR2023
+// enabled.
+IN_PROC_BROWSER_TEST_P(TabStripRegionViewTest,
+                       DISABLED_GrabHandleSpaceStaysVisible) {
   const int kTabStripRegionViewWidth = 500;
-  tab_strip_region_view_->SetBounds(0, 0, kTabStripRegionViewWidth, 20);
+  tab_strip_region_view()->SetBounds(0, 0, kTabStripRegionViewWidth, 20);
 
   for (int i = 0; i < 100; ++i) {
-    controller_->AddTab(i,
-                        (i == 0) ? TabActive::kActive : TabActive::kInactive);
-    CompleteAnimationAndLayout();
-    EXPECT_LE(tab_strip_region_view_->reserved_grab_handle_space_for_testing()
+    chrome::AddTabAt(browser(), GURL("about:blank"), -1, i == 0);
+    {
+      LayoutWaiter waiter(
+          tab_strip()->tab_at(tab_strip()->GetModelCount() - 1));
+      RunScheduledLayouts();
+      waiter.Wait();
+    }
+    EXPECT_LE(tab_strip_region_view()
+                  ->reserved_grab_handle_space_for_testing()
                   ->bounds()
                   .right(),
               kTabStripRegionViewWidth);
   }
 }
 
-// TODO (crbug/1520595): Skip for now due to test failing when CR2023 enabled.
-TEST_P(TabStripRegionViewTest, DISABLED_NewTabButtonStaysVisible) {
+// TODO(crbug.com/41493572): Skip for now due to test failing when CR2023
+// enabled.
+IN_PROC_BROWSER_TEST_P(TabStripRegionViewTest,
+                       DISABLED_NewTabButtonStaysVisible) {
   const int kTabStripRegionViewWidth = 500;
-  tab_strip_region_view_->SetBounds(0, 0, kTabStripRegionViewWidth, 20);
+  tab_strip_region_view()->SetBounds(0, 0, kTabStripRegionViewWidth, 20);
 
   for (int i = 0; i < 100; ++i) {
-    controller_->AddTab(i,
-                        (i == 0) ? TabActive::kActive : TabActive::kInactive);
-    CompleteAnimationAndLayout();
-    EXPECT_LE(tab_strip_region_view_->GetNewTabButton()->bounds().right(),
+    chrome::AddTabAt(browser(), GURL("about:blank"), -1, i == 0);
+    {
+      LayoutWaiter waiter(
+          tab_strip()->tab_at(tab_strip()->GetModelCount() - 1));
+      RunScheduledLayouts();
+      waiter.Wait();
+    }
+    EXPECT_LE(tab_strip_region_view()->GetNewTabButton()->bounds().right(),
               kTabStripRegionViewWidth);
   }
 }
 
-// TODO (crbug/1520595): Skip for now due to test failing when CR2023 enabled.
-TEST_P(TabStripRegionViewTest, DISABLED_NewTabButtonRightOfTabs) {
+// TODO(crbug.com/41493572): Skip for now due to test failing when CR2023
+// enabled.
+IN_PROC_BROWSER_TEST_P(TabStripRegionViewTest,
+                       DISABLED_NewTabButtonRightOfTabs) {
   const int kTabStripRegionViewWidth = 500;
-  tab_strip_region_view_->SetBounds(0, 0, kTabStripRegionViewWidth, 20);
+  tab_strip_region_view()->SetBounds(0, 0, kTabStripRegionViewWidth, 20);
 
-  controller_->AddTab(0, TabActive::kActive);
+  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
 
-  CompleteAnimationAndLayout();
+  {
+    LayoutWaiter waiter(tab_strip()->tab_at(tab_strip()->GetModelCount() - 1));
+    RunScheduledLayouts();
+    waiter.Wait();
+  }
 
-  EXPECT_EQ(tab_strip_region_view_->GetNewTabButton()->bounds().x(),
-            tab_strip_->tab_at(0)->bounds().right());
+  EXPECT_EQ(tab_strip_region_view()->GetNewTabButton()->bounds().x(),
+            tab_strip()->tab_at(0)->bounds().right());
 }
 
-// TODO (crbug/1523257): Skip for now due to test failing when CR2023 enabled.
-TEST_P(TabStripRegionViewTest, DISABLED_NewTabButtonInkDrop) {
+// TODO(crbug.com/41496209): Skip for now due to test failing when CR2023
+// enabled.
+IN_PROC_BROWSER_TEST_P(TabStripRegionViewTest, DISABLED_NewTabButtonInkDrop) {
   constexpr int kTabStripRegionViewWidth = 500;
-  tab_strip_region_view_->SetBounds(0, 0, kTabStripRegionViewWidth,
-                                    GetLayoutConstant(TAB_STRIP_HEIGHT));
+  tab_strip_region_view()->SetBounds(0, 0, kTabStripRegionViewWidth,
+                                     GetLayoutConstant(TAB_STRIP_HEIGHT));
 
   // Add a few tabs and simulate the new tab button's ink drop animation. This
   // should not cause any crashes since the ink drop layer size as well as the
   // ink drop container size should remain equal to the new tab button visible
   // bounds size. https://crbug.com/814105.
   auto* button = static_cast<TabStripControlButton*>(
-      tab_strip_region_view_->GetNewTabButton());
+      tab_strip_region_view()->GetNewTabButton());
   for (int i = 0; i < 10; ++i) {
     button->AnimateToStateForTesting(views::InkDropState::ACTION_TRIGGERED);
-    controller_->AddTab(i, TabActive::kActive);
-    CompleteAnimationAndLayout();
+    chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
+    {
+      LayoutWaiter waiter(
+          tab_strip()->tab_at(tab_strip()->GetModelCount() - 1));
+      RunScheduledLayouts();
+      waiter.Wait();
+    }
     button->AnimateToStateForTesting(views::InkDropState::HIDDEN);
   }
 }
@@ -178,49 +236,51 @@ TEST_P(TabStripRegionViewTest, DISABLED_NewTabButtonInkDrop) {
 // This is important in ensuring that we maximise the targetable area of these
 // views when the tab strip is flush with the top of the screen when the window
 // is maximized (Fitt's Law).
-TEST_P(TabStripRegionViewTest, ChildrenAreFlushWithTopOfTabStripRegionView) {
-  tab_strip_region_view_->SetBounds(0, 0, 1000, 100);
-  controller_->AddTab(0, TabActive::kActive);
+IN_PROC_BROWSER_TEST_P(TabStripRegionViewTest,
+                       ChildrenAreFlushWithTopOfTabStripRegionView) {
+  tab_strip_region_view()->SetBounds(0, 0, 1000, 100);
+  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
 
-  CompleteAnimationAndLayout();
+  {
+    LayoutWaiter waiter(tab_strip()->tab_at(tab_strip()->GetModelCount() - 1));
+    RunScheduledLayouts();
+    waiter.Wait();
+  }
 
   // The tab strip should sit flush with the top of the
-  // |tab_strip_region_view_|.
-  gfx::Point tab_strip_origin(tab_strip_->bounds().origin());
-  views::View::ConvertPointToTarget(tab_strip_, tab_strip_region_view_,
+  // |tab_strip_region_view()|.
+  gfx::Point tab_strip_origin(tab_strip()->bounds().origin());
+  views::View::ConvertPointToTarget(tab_strip(), tab_strip_region_view(),
                                     &tab_strip_origin);
   EXPECT_EQ(0, tab_strip_origin.y());
 
   // The new tab button should sit flush with the top of the
-  // |tab_strip_region_view_|.
+  // |tab_strip_region_view()|.
   gfx::Point new_tab_button_origin(
-      tab_strip_region_view_->GetNewTabButton()->bounds().origin());
-  views::View::ConvertPointToTarget(tab_strip_, tab_strip_region_view_,
+      tab_strip_region_view()->GetNewTabButton()->bounds().origin());
+  views::View::ConvertPointToTarget(tab_strip(), tab_strip_region_view(),
                                     &new_tab_button_origin);
   EXPECT_EQ(0, new_tab_button_origin.y());
 }
 
-TEST_P(TabStripRegionViewTest, TabSearchPositionLoggedOnConstruction) {
+IN_PROC_BROWSER_TEST_P(TabStripRegionViewTest,
+                       TabSearchPositionLoggedOnConstruction) {
   using TabSearchPositionEnum = TabStripRegionView::TabSearchPositionEnum;
   const bool tab_search_trailing_tabstrip =
-      tabs::GetTabSearchTrailingTabstrip(tab_strip_region_view_->profile());
+      tabs::GetTabSearchTrailingTabstrip(browser()->profile());
   TabSearchPositionEnum expected_enum_val =
       tab_search_trailing_tabstrip ? TabSearchPositionEnum::kTrailing
                                    : TabSearchPositionEnum::kLeading;
 
   base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount("Tabs.TabSearch.PositionInTabstrip",
-                                     TabSearchPositionEnum::kLeading, 0);
-  histogram_tester.ExpectBucketCount("Tabs.TabSearch.PositionInTabstrip",
-                                     TabSearchPositionEnum::kTrailing, 0);
-  BuildTabStripRegionView();
-  histogram_tester.ExpectBucketCount("Tabs.TabSearch.PositionInTabstrip",
-                                     expected_enum_val, 1);
+  tab_strip_region_view()->LogTabSearchPositionForTesting();  // IN-TEST
+  histogram_tester.ExpectUniqueSample("Tabs.TabSearch.PositionInTabstrip",
+                                      expected_enum_val, 1);
 }
 
-TEST_P(TabStripRegionViewTest, HasMultiselectableState) {
+IN_PROC_BROWSER_TEST_P(TabStripRegionViewTest, HasMultiselectableState) {
   ui::AXNodeData ax_node_data;
-  tab_strip_region_view_->GetViewAccessibility().GetAccessibleNodeData(
+  tab_strip_region_view()->GetViewAccessibility().GetAccessibleNodeData(
       &ax_node_data);
   EXPECT_TRUE(ax_node_data.HasState(ax::mojom::State::kMultiselectable));
 }
@@ -243,28 +303,42 @@ class TabStripRegionViewTestWithScrollingDisabled
 // so tabs that do not fit in the tabstrip will become invisible. This is the
 // opposite behavior from
 // TabStripRegionViewTestWithScrollingEnabled.TabStripCanBeLargerThanContainer.
-TEST_F(TabStripRegionViewTestWithScrollingDisabled,
-       TabStripCannotBeLargerThanContainer) {
+IN_PROC_BROWSER_TEST_F(TabStripRegionViewTestWithScrollingDisabled,
+                       TabStripCannotBeLargerThanContainer) {
   const int minimum_active_width = TabStyle::Get()->GetMinimumInactiveWidth();
-  controller_->AddTab(0, TabActive::kActive);
-  CompleteAnimationAndLayout();
+  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
+  {
+    LayoutWaiter waiter(tab_strip()->tab_at(tab_strip()->GetModelCount() - 1));
+    RunScheduledLayouts();
+    waiter.Wait();
+  }
 
   // Add tabs to the tabstrip until it is full.
-  while (tab_strip_->tab_at(0)->width() > minimum_active_width) {
-    controller_->AddTab(0, TabActive::kInactive);
-    CompleteAnimationAndLayout();
-    EXPECT_LT(tab_strip_->width(), tab_strip_region_view_->width());
+  while (tab_strip()->tab_at(0)->width() > minimum_active_width) {
+    chrome::AddTabAt(browser(), GURL("about:blank"), -1, false);
+    {
+      LayoutWaiter waiter(
+          tab_strip()->tab_at(tab_strip()->GetModelCount() - 1));
+      RunScheduledLayouts();
+      waiter.Wait();
+    }
+    EXPECT_LT(tab_strip()->width(), tab_strip_region_view()->width());
   }
 
   // Add a few more tabs after the tabstrip is full to ensure tabs added
   // afterwards are not visible.
   for (int i = 0; i < 10; i++) {
-    controller_->AddTab(0, TabActive::kInactive);
-    CompleteAnimationAndLayout();
+    chrome::AddTabAt(browser(), GURL("about:blank"), -1, false);
+    {
+      LayoutWaiter waiter(
+          tab_strip()->tab_at(tab_strip()->GetModelCount() - 1));
+      RunScheduledLayouts();
+      waiter.Wait();
+    }
   }
-  EXPECT_LT(tab_strip_->width(), tab_strip_region_view_->width());
+  EXPECT_LT(tab_strip()->width(), tab_strip_region_view()->width());
   EXPECT_FALSE(
-      tab_strip_->tab_at(tab_strip_->GetModelCount() - 1)->GetVisible());
+      tab_strip()->tab_at(tab_strip()->GetModelCount() - 1)->GetVisible());
 }
 
 class TabStripRegionViewTestWithScrollingEnabled
@@ -283,17 +357,26 @@ class TabStripRegionViewTestWithScrollingEnabled
 // container. This is the opposite behavior from
 // TabStripRegionViewTestWithScrollingDisabled.
 // TabStripCannotBeLargerThanContainer.
-TEST_F(TabStripRegionViewTestWithScrollingEnabled,
-       TabStripCanBeLargerThanContainer) {
+IN_PROC_BROWSER_TEST_F(TabStripRegionViewTestWithScrollingEnabled,
+                       TabStripCanBeLargerThanContainer) {
   const int minimum_active_width = TabStyle::Get()->GetMinimumInactiveWidth();
-  controller_->AddTab(0, TabActive::kActive);
-  CompleteAnimationAndLayout();
+  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
+  {
+    LayoutWaiter waiter(tab_strip()->tab_at(tab_strip()->GetModelCount() - 1));
+    RunScheduledLayouts();
+    waiter.Wait();
+  }
 
   // Add tabs to the tabstrip until it is full and should start overflowing.
-  while (tab_strip_->tab_at(0)->width() > minimum_active_width) {
-    controller_->AddTab(0, TabActive::kInactive);
-    CompleteAnimationAndLayout();
-    EXPECT_LT(tab_strip_->width(), tab_strip_region_view_->width());
+  while (tab_strip()->tab_at(0)->width() > minimum_active_width) {
+    chrome::AddTabAt(browser(), GURL("about:blank"), -1, false);
+    {
+      LayoutWaiter waiter(
+          tab_strip()->tab_at(tab_strip()->GetModelCount() - 1));
+      RunScheduledLayouts();
+      waiter.Wait();
+    }
+    EXPECT_LT(tab_strip()->width(), tab_strip_region_view()->width());
   }
 
   // Add a few more tabs after the tabstrip is full to ensure the tabstrip
@@ -302,24 +385,38 @@ TEST_F(TabStripRegionViewTestWithScrollingEnabled,
   // region, not just the portion of that that's allocated to the tabstrip
   // itself (e.g. some of that space is for the NTB).
   for (int i = 0; i < 10; i++) {
-    controller_->AddTab(0, TabActive::kInactive);
-    CompleteAnimationAndLayout();
+    chrome::AddTabAt(browser(), GURL("about:blank"), -1, false);
+    {
+      LayoutWaiter waiter(
+          tab_strip()->tab_at(tab_strip()->GetModelCount() - 1));
+      RunScheduledLayouts();
+      waiter.Wait();
+    }
   }
-  EXPECT_GT(tab_strip_->width(), tab_strip_region_view_->width());
+  EXPECT_GT(tab_strip()->width(), tab_strip_region_view()->width());
   EXPECT_TRUE(
-      tab_strip_->tab_at(tab_strip_->GetModelCount() - 1)->GetVisible());
+      tab_strip()->tab_at(tab_strip()->GetModelCount() - 1)->GetVisible());
 }
 
-TEST_F(TabStripRegionViewTestWithScrollingEnabled,
-       TabStripScrollButtonsNotInWindowCaption) {
+IN_PROC_BROWSER_TEST_F(TabStripRegionViewTestWithScrollingEnabled,
+                       TabStripScrollButtonsNotInWindowCaption) {
   const int minimum_active_width = TabStyle::Get()->GetMinimumInactiveWidth();
-  controller_->AddTab(0, TabActive::kActive);
-  CompleteAnimationAndLayout();
+  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
+  {
+    LayoutWaiter waiter(tab_strip()->tab_at(tab_strip()->GetModelCount() - 1));
+    RunScheduledLayouts();
+    waiter.Wait();
+  }
 
   // Add tabs to the tabstrip until it is full and should start overflowing.
-  while (tab_strip_->tab_at(0)->width() > minimum_active_width) {
-    controller_->AddTab(0, TabActive::kInactive);
-    CompleteAnimationAndLayout();
+  while (tab_strip()->tab_at(0)->width() > minimum_active_width) {
+    chrome::AddTabAt(browser(), GURL("about:blank"), -1, false);
+    {
+      LayoutWaiter waiter(
+          tab_strip()->tab_at(tab_strip()->GetModelCount() - 1));
+      RunScheduledLayouts();
+      waiter.Wait();
+    }
   }
 
   // Add a few more tabs after the tabstrip is full to ensure the tabstrip
@@ -328,13 +425,18 @@ TEST_F(TabStripRegionViewTestWithScrollingEnabled,
   // region, not just the portion of that that's allocated to the tabstrip
   // itself (e.g. some of that space is for the NTB).
   for (int i = 0; i < 10; i++) {
-    controller_->AddTab(0, TabActive::kInactive);
-    CompleteAnimationAndLayout();
+    chrome::AddTabAt(browser(), GURL("about:blank"), -1, false);
+    {
+      LayoutWaiter waiter(
+          tab_strip()->tab_at(tab_strip()->GetModelCount() - 1));
+      RunScheduledLayouts();
+      waiter.Wait();
+    }
   }
 
   raw_ptr<TabStripScrollContainer> scroll_container =
       views::AsViewClass<TabStripScrollContainer>(
-          tab_strip_region_view_->GetTabStripContainerForTesting());
+          tab_strip_region_view()->GetTabStripContainerForTesting());
   raw_ptr<views::ImageButton> leading_scroll_button_ =
       scroll_container->GetLeadingScrollButtonForTesting();
   raw_ptr<views::ImageButton> trailing_scroll_button_ =
@@ -352,10 +454,10 @@ TEST_F(TabStripRegionViewTestWithScrollingEnabled,
       gfx::Rect(scrolling_button_point, gfx::Size(1, 1));
   gfx::RectF floating_rect_in_target_coords_f(scrolling_button_rect);
   views::View::ConvertRectToTarget(leading_scroll_button_,
-                                   tab_strip_region_view_,
+                                   tab_strip_region_view(),
                                    &floating_rect_in_target_coords_f);
 
-  EXPECT_FALSE(tab_strip_region_view_->IsRectInWindowCaption(
+  EXPECT_FALSE(tab_strip_region_view()->IsRectInWindowCaption(
       gfx::ToEnclosingRect(floating_rect_in_target_coords_f)));
 }
 

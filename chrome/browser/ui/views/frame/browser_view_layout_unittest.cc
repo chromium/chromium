@@ -134,7 +134,7 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
   BrowserViewLayoutTest()
       : delegate_(nullptr),
         top_container_(nullptr),
-        tab_strip_(nullptr),
+        tab_strip_region_view_(nullptr),
         toolbar_(nullptr),
         infobar_container_(nullptr),
         contents_container_(nullptr),
@@ -150,7 +150,7 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
   MockBrowserViewLayoutDelegate* delegate() { return delegate_; }
   views::View* browser_view() { return browser_view_.get(); }
   views::View* top_container() { return top_container_; }
-  TabStrip* tab_strip() { return tab_strip_; }
+  TabStrip* tab_strip() { return tab_strip_region_view_->tab_strip(); }
   views::View* webui_tab_strip() { return webui_tab_strip_; }
   views::View* toolbar() { return toolbar_; }
   views::View* separator() { return separator_; }
@@ -169,8 +169,7 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
         CreateFixedSizeView(gfx::Size(kBaseWidth, 60)));
     auto tab_strip = std::make_unique<TabStrip>(
         std::make_unique<FakeBaseTabStripController>());
-    tab_strip_ = tab_strip.get();
-    TabStripRegionView* tab_strip_region_view = top_container_->AddChildView(
+    tab_strip_region_view_ = top_container_->AddChildView(
         std::make_unique<TabStripRegionView>(std::move(tab_strip)));
     webui_tab_strip_ = top_container_->AddChildView(
         CreateFixedSizeView(gfx::Size(kBaseWidth, 200)));
@@ -211,7 +210,7 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
         std::move(delegate),
         /*browser_view=*/nullptr, /*window_scrim=*/nullptr, top_container_,
         /*web_app_frame_toolbar=*/nullptr,
-        /*web_app_window_title=*/nullptr, tab_strip_region_view, tab_strip_,
+        /*web_app_window_title=*/nullptr, tab_strip_region_view_,
         /*vertical_tab_strip_container=*/nullptr, toolbar_, infobar_container_,
         contents_container_,
         /*multi_contents_view=*/nullptr,
@@ -235,7 +234,6 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
     // along with it after TearDown(). Null out the pointers to avoid them
     // dangling.
     top_container_ = nullptr;
-    tab_strip_ = nullptr;
     webui_tab_strip_ = nullptr;
     toolbar_ = nullptr;
     separator_ = nullptr;
@@ -266,7 +264,7 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
 
   // Views owned by |browser_view_|.
   raw_ptr<views::View> top_container_;
-  raw_ptr<TabStrip> tab_strip_;
+  raw_ptr<TabStripRegionView> tab_strip_region_view_;
   raw_ptr<views::View> webui_tab_strip_;
   raw_ptr<views::View> toolbar_;
   raw_ptr<views::Separator> separator_;

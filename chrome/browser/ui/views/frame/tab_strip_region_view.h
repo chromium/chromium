@@ -13,6 +13,8 @@
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/accessible_pane_view.h"
 
+class BrowserView;
+
 namespace views {
 class Button;
 }
@@ -41,6 +43,7 @@ class TabStripRegionView final : public TabStripViewInterface {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:TabSearchPosition)
 
+  explicit TabStripRegionView(BrowserView* browser_view);
   explicit TabStripRegionView(std::unique_ptr<TabStrip> tab_strip);
   TabStripRegionView(const TabStripRegionView&) = delete;
   TabStripRegionView& operator=(const TabStripRegionView&) = delete;
@@ -114,6 +117,8 @@ class TabStripRegionView final : public TabStripViewInterface {
       const tab_groups::TabGroupId& group) override;
   TabDragContext* GetDragContext() override;
   void SetTabStripObserver(TabStripObserver* observer) override;
+
+  void LogTabSearchPositionForTesting();
 
  private:
   // Updates the border padding for `new_tab_button_` and
