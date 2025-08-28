@@ -109,13 +109,7 @@ class ReaderModeBrowserAgentTest : public ReaderModeTest {
 
 // Tests that the Reader mode UI is shown/dismissed when changing the current
 // active WebState in the WebStateList.
-// TODO(crbug.com/437829140): Re-enable the test on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_ChangingActiveWebState ChangingActiveWebState
-#else
-#define MAYBE_ChangingActiveWebState DISABLED_ChangingActiveWebState
-#endif
-TEST_F(ReaderModeBrowserAgentTest, MAYBE_ChangingActiveWebState) {
+TEST_F(ReaderModeBrowserAgentTest, ChangingActiveWebState) {
   OCMExpect([delegate_ readerModeBrowserAgent:GetReaderModeBrowserAgent()
                           showContentAnimated:NO]);
   OCMExpect([fake_reader_mode_chip_handler_ showReaderModeChip]);
@@ -147,13 +141,7 @@ TEST_F(ReaderModeBrowserAgentTest, MAYBE_ChangingActiveWebState) {
 
 // Tests that the Reader mode UI is not dismissed when moving the active
 // WebState while the Reader mode UI is presented.
-// TODO(crbug.com/437829140): Re-enable the test on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_MovingActiveWebState MovingActiveWebState
-#else
-#define MAYBE_MovingActiveWebState DISABLED_MovingActiveWebState
-#endif
-TEST_F(ReaderModeBrowserAgentTest, MAYBE_MovingActiveWebState) {
+TEST_F(ReaderModeBrowserAgentTest, MovingActiveWebState) {
   OCMExpect([delegate_ readerModeBrowserAgent:GetReaderModeBrowserAgent()
                           showContentAnimated:NO]);
   OCMExpect([fake_reader_mode_chip_handler_ showReaderModeChip]);
@@ -169,13 +157,7 @@ TEST_F(ReaderModeBrowserAgentTest, MAYBE_MovingActiveWebState) {
 
 // Tests that the Reader mode UI is shown/dismissed when Reader mode is
 // activated/deactivated in the currently active WebState.
-// TODO(crbug.com/437829140): Re-enable the test on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_ChangingReaderModeStatus ChangingReaderModeStatus
-#else
-#define MAYBE_ChangingReaderModeStatus DISABLED_ChangingReaderModeStatus
-#endif
-TEST_F(ReaderModeBrowserAgentTest, MAYBE_ChangingReaderModeStatus) {
+TEST_F(ReaderModeBrowserAgentTest, ChangingReaderModeStatus) {
   OCMExpect([delegate_ readerModeBrowserAgent:GetReaderModeBrowserAgent()
                           showContentAnimated:YES]);
   EnableReaderMode(GetActiveWebState(), ReaderModeAccessPoint::kContextualChip);
@@ -190,13 +172,7 @@ TEST_F(ReaderModeBrowserAgentTest, MAYBE_ChangingReaderModeStatus) {
 
 // Tests that the Reader mode UI is hidden when a navigation occurs in the
 // active WebState.
-// TODO(crbug.com/437829140): Re-enable the test on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_NavigationInActiveWebState NavigationInActiveWebState
-#else
-#define MAYBE_NavigationInActiveWebState DISABLED_NavigationInActiveWebState
-#endif
-TEST_F(ReaderModeBrowserAgentTest, MAYBE_NavigationInActiveWebState) {
+TEST_F(ReaderModeBrowserAgentTest, NavigationInActiveWebState) {
   // Show reader mode.
   OCMExpect([delegate_ readerModeBrowserAgent:GetReaderModeBrowserAgent()
                           showContentAnimated:NO]);
