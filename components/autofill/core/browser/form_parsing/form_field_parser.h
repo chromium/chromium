@@ -166,7 +166,6 @@ class FormFieldParser {
   static void ParseFormFields(
       ParsingContext& context,
       const std::vector<raw_ptr<const FormFieldData>>& fields,
-      bool is_form_tag,
       FieldCandidatesMap& field_candidates);
 
   // Looks for types that are allowed to appear in solitary (such as merchant
@@ -222,7 +221,6 @@ class FormFieldParser {
   static void ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
       const std::vector<raw_ptr<const FormFieldData>>& fields,
       FieldCandidatesMap& field_candidates,
-      bool is_form_tag,
       GeoIpCountryCode client_country,
       LogManager* log_manager);
 

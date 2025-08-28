@@ -47,14 +47,12 @@ class FormFieldParserTest : public FormFieldParserTestBase,
   // Parses all added fields using `ParseFormFields`.
   // Returns the number of fields parsed.
   int ParseFormFields(GeoIpCountryCode client_country = GeoIpCountryCode(""),
-                      LanguageCode language = LanguageCode(""),
-                      bool is_form_tag = true) {
+                      LanguageCode language = LanguageCode("")) {
     auto fields = base::ToVector(fields_, &to_form_field_data);
     ParsingContext context(fields, client_country, language,
                            GetActivePatternFile().value(),
                            GetActiveRegexFeatures());
-    FormFieldParser::ParseFormFields(context, fields, is_form_tag,
-                                     field_candidates_map_);
+    FormFieldParser::ParseFormFields(context, fields, field_candidates_map_);
     return field_candidates_map_.size();
   }
 
@@ -299,14 +297,6 @@ TEST_F(FormFieldParserTest, ParseFormFieldsFieldsEmailOrLoyaltyCard) {
 TEST_F(FormFieldParserTest, ParseStandaloneCVCFields) {
   AddTextFormFieldData("", "CVC", CREDIT_CARD_STANDALONE_VERIFICATION_CODE);
   EXPECT_EQ(1, ParseStandaloneCVCFields());
-  TestClassificationExpectations();
-}
-
-// Test that email fields are parsed even when the field is not in a <form>.
-TEST_F(FormFieldParserTest, ParseStandaloneEmailFieldsOutsiteOfFormTag) {
-  AddTextFormFieldData("", "Email", EMAIL_ADDRESS);
-  EXPECT_EQ(1, ParseFormFields(GeoIpCountryCode(""), LanguageCode(""),
-                               /*is_form_tag=*/false));
   TestClassificationExpectations();
 }
 

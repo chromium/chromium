@@ -737,7 +737,7 @@ FieldCandidatesMap FormStructure::ParseFieldTypesWithPatterns(
       [](const auto& f) -> raw_ptr<const FormFieldData> { return f.get(); });
   if (ShouldRunHeuristics()) {
     FormFieldParser::ParseFormFields(context, form_field_data_vector,
-                                     is_form_element(), field_type_map);
+                                     field_type_map);
   } else if (ShouldRunHeuristicsForSingleFields()) {
     FormFieldParser::ParseSingleFields(context, form_field_data_vector,
                                        field_type_map);

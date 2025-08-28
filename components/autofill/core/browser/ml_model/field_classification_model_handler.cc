@@ -148,8 +148,7 @@ void FieldClassificationModelHandler::ApplySmallFormRules(
                      [](const auto& field) -> raw_ptr<const FormFieldData> {
                        return field.get();
                      }),
-      field_candidates_map, form.is_form_element(), form.client_country(),
-      nullptr);
+      field_candidates_map, form.client_country(), nullptr);
 
   for (size_t i = 0; i < predicted_types.size(); ++i) {
     const auto& field_id = form.field(i)->global_id();

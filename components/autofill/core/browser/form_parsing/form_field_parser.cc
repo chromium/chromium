@@ -201,7 +201,6 @@ bool FormFieldParser::MatchesRegexWithCache(
 void FormFieldParser::ParseFormFields(
     ParsingContext& context,
     const std::vector<raw_ptr<const FormFieldData>>& fields,
-    bool is_form_tag,
     FieldCandidatesMap& field_candidates) {
   std::vector<raw_ptr<const FormFieldData>> processed_fields =
       RemoveCheckableFields(fields);
@@ -273,15 +272,13 @@ void FormFieldParser::ParseFormFields(
                       field_candidates);
 
   ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
-      fields, field_candidates, is_form_tag, context.client_country,
-      context.log_manager);
+      fields, field_candidates, context.client_country, context.log_manager);
 }
 
 // static
 void FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
     const std::vector<raw_ptr<const FormFieldData>>& fields,
     FieldCandidatesMap& field_candidates,
-    bool is_form_tag,
     GeoIpCountryCode client_country,
     LogManager* log_manager) {
   // Set to count distinct field types.
