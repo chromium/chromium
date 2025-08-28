@@ -79,6 +79,7 @@ All changes to this list should go through Blink's feature review process: http:
     background-size
     baseline-shift
     baseline-source
+    block-ellipsis
     block-size
     border-block-end-color
     border-block-end-style
@@ -487,6 +488,7 @@ All changes to this list should go through Blink's feature review process: http:
     -webkit-column-break-inside
         break-inside
     -webkit-line-clamp
+        block-ellipsis
         continue
         max-lines
     -webkit-mask-box-image
@@ -768,6 +770,7 @@ All changes to this list should go through Blink's feature review process: http:
         interest-hide-delay
         interest-show-delay
     line-clamp
+        block-ellipsis
         continue
         max-lines
     list-style

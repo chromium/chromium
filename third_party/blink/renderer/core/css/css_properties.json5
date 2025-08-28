@@ -6765,9 +6765,21 @@
       runtime_flag: "CSSLineClamp",
     },
     {
+      name: "block-ellipsis",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      inherited: true,
+      field_group: "*",
+      field_template: "keyword",
+      keywords: ["auto", "no-ellipsis"],
+      default_value: "no-ellipsis",
+      typedom_types: ["Keyword"],
+      invalidate: ["layout", "paint"],
+      runtime_flag: "CSSLineClamp",
+    },
+    {
       name: "line-clamp",
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      longhands: ["max-lines", "continue"],
+      longhands: ["max-lines", "block-ellipsis", "continue"],
       runtime_flag: "CSSLineClamp",
     },
     {
@@ -6786,7 +6798,7 @@
       name: "-alternative-webkit-line-clamp",
       alternative_of: "-webkit-line-clamp",
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      longhands: ["max-lines", "continue"],
+      longhands: ["max-lines", "block-ellipsis", "continue"],
       runtime_flag: "CSSLineClamp",
     },
     {

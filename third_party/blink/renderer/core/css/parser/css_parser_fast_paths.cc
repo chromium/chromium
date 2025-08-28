@@ -1695,6 +1695,9 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       return value_id == CSSValueID::kAuto ||
              value_id == CSSValueID::kCollapse ||
              value_id == CSSValueID::kWebkitLegacy;
+    case CSSPropertyID::kBlockEllipsis:
+      return value_id == CSSValueID::kAuto ||
+             value_id == CSSValueID::kNoEllipsis;
     default:
       NOTREACHED();
   }
@@ -1709,6 +1712,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kMixBlendMode,
     CSSPropertyID::kIsolation,
     CSSPropertyID::kBaselineSource,
+    CSSPropertyID::kBlockEllipsis,
     CSSPropertyID::kBorderBottomStyle,
     CSSPropertyID::kBorderCollapse,
     CSSPropertyID::kBorderLeftStyle,

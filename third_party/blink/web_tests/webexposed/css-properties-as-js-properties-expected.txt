@@ -46,6 +46,7 @@ backgroundSize
 basePalette
 baselineShift
 baselineSource
+blockEllipsis
 blockSize
 border
 borderBlock

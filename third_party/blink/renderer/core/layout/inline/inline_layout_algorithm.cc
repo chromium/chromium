@@ -337,7 +337,10 @@ InlineLayoutAlgorithm::GetLineClampState(const LineInfo* line_info) const {
   }
   if (!(line_info && line_info->IsBlockInInline()) &&
       line_clamp_data.IsAtClampPoint()) {
-    return LineClampState::kLineClampEllipsis;
+    if (!RuntimeEnabledFeatures::CSSLineClampEnabled() ||
+        Style().BlockEllipsis() == EBlockEllipsis::kAuto) [[likely]] {
+      return LineClampState::kLineClampEllipsis;
+    }
   }
   if (line_info && !line_info->IsBlockInInline() && line_info->HasOverflow() &&
       node_.GetLayoutBlockFlow()->ShouldTruncateOverflowingText()) {

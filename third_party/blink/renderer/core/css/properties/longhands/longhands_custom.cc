@@ -6413,6 +6413,14 @@ const CSSValue* MaxLines::CSSValueFromComputedStyleInternal(
                                         CSSPrimitiveValue::UnitType::kNumber);
 }
 
+const CSSValue* BlockEllipsis::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return CSSIdentifierValue::Create(style.BlockEllipsis());
+}
+
 const CSSValue* LineHeight::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,

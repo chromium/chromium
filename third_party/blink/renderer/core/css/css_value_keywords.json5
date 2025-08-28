@@ -2034,5 +2034,8 @@
 
     // continue
     "-webkit-legacy",
+
+    // block-ellipsis
+    "no-ellipsis",
   ],
 }

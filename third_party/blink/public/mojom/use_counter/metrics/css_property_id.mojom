@@ -941,6 +941,7 @@ enum CSSSampleId {
     kMasonry = 879,
     kContinue = 880,
     kMaxLines = 881,
+    kBlockEllipsis = 882,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).
