@@ -18,10 +18,9 @@
 
 // LINT.IfChange(FingerprintingProtectionRuleListApplyTrigger)
 enum class FingerprintingProtectionRuleListApplyTrigger {
-  kInitialLoad = 0,
-  kComponentUpdate = 1,
-  kFpProtectionToggled = 2,
-  kExceptionsChanged = 3,
+  kComponentUpdate = 0,
+  kFpProtectionToggled = 1,
+  kExceptionsChanged = 2,
   kMaxValue = kExceptionsChanged,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:FingerprintingProtectionRuleListApplyTrigger)
@@ -72,7 +71,7 @@ class ScriptBlockingRuleApplierService
   void Shutdown() override;
 
   // script_blocking::ContentRuleListData::Observer:
-  void OnScriptBlockingRuleListUpdated() override;
+  void OnContentRuleListDataUpdated() override;
 
   // privacy_sandbox::TrackingProtectionSettingsObserver:
   void OnTrackingProtectionExceptionsChanged() override;

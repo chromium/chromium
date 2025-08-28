@@ -88,8 +88,6 @@ ScriptBlockingRuleApplierService::ScriptBlockingRuleApplierService(
       &script_blocking::ContentRuleListData::GetInstance());
   tracking_protection_settings_observation_.Observe(
       tracking_protection_settings_);
-  BuildAndApplyRules(
-      FingerprintingProtectionRuleListApplyTrigger::kInitialLoad);
 }
 
 ScriptBlockingRuleApplierService::~ScriptBlockingRuleApplierService() {
@@ -103,7 +101,7 @@ void ScriptBlockingRuleApplierService::Shutdown() {
   weak_factory_.InvalidateWeakPtrs();
 }
 
-void ScriptBlockingRuleApplierService::OnScriptBlockingRuleListUpdated() {
+void ScriptBlockingRuleApplierService::OnContentRuleListDataUpdated() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BuildAndApplyRules(
       FingerprintingProtectionRuleListApplyTrigger::kComponentUpdate);

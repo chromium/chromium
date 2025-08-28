@@ -26,7 +26,7 @@ class ContentRuleListData final {
   // content rule list data.
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnScriptBlockingRuleListUpdated() = 0;
+    virtual void OnContentRuleListDataUpdated() = 0;
 
    protected:
     ~Observer() override = default;
