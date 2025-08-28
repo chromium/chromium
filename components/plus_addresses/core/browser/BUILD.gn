@@ -49,6 +49,8 @@ source_set("blocklist_data") {
 
 source_set("browser") {
   sources = [
+    "plus_address_cache.cc",
+    "plus_address_cache.h",
     "plus_address_ui_utils.cc",
     "plus_address_ui_utils.h",
   ]
