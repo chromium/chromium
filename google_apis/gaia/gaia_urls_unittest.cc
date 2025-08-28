@@ -114,9 +114,12 @@ TEST_F(GaiaUrlsTest, InitializeDefault_AllUrls) {
             "https://accounts.google.com/AddSession");
   EXPECT_EQ(gaia_urls()->reauth_url().spec(),
             "https://accounts.google.com/embedded/xreauth/chrome");
-  EXPECT_EQ(gaia_urls()->account_capabilities_url().spec(),
+  EXPECT_EQ(gaia_urls()->account_capabilities_batch_get_url().spec(),
             "https://accountcapabilities-pa.googleapis.com/v1/"
             "accountcapabilities:batchGet");
+  EXPECT_EQ(gaia_urls()->account_capabilities_get_all_visible_url().spec(),
+            "https://accountcapabilities-pa.googleapis.com/v1/"
+            "accountcapabilities:getAllVisible");
   EXPECT_EQ(gaia_urls()->GetCheckConnectionInfoURLWithSource("").spec(),
             "https://accounts.google.com/GetCheckConnectionInfo");
   EXPECT_EQ(gaia_urls()->oauth2_token_url().spec(),
@@ -300,8 +303,11 @@ TEST_F(GaiaUrlsTest, InitializeFromConfig_AllUrls) {
             "https://accounts.example.com/AddSession");
   EXPECT_EQ(gaia_urls()->reauth_url().spec(),
             "https://accounts.example.com/embedded/xreauth/chrome");
-  EXPECT_EQ(gaia_urls()->account_capabilities_url().spec(),
+  EXPECT_EQ(gaia_urls()->account_capabilities_batch_get_url().spec(),
             "https://accountcapabilities.exampleapis.com/v1/capabilities");
+  EXPECT_EQ(gaia_urls()->account_capabilities_get_all_visible_url().spec(),
+            "https://accountcapabilities.exampleapis.com/v1/"
+            "getAllVisibleCapabilities");
   EXPECT_EQ(gaia_urls()->GetCheckConnectionInfoURLWithSource("").spec(),
             "https://accounts.example.com/GetCheckConnectionInfo");
   EXPECT_EQ(gaia_urls()->oauth2_token_url().spec(),
@@ -367,9 +373,12 @@ TEST_F(GaiaUrlsTest, InitializeFromConfig_AllBaseUrls) {
             "https://accounts.example.com/AddSession");
   EXPECT_EQ(gaia_urls()->reauth_url().spec(),
             "https://accounts.example.com/embedded/xreauth/chrome");
-  EXPECT_EQ(gaia_urls()->account_capabilities_url().spec(),
+  EXPECT_EQ(gaia_urls()->account_capabilities_batch_get_url().spec(),
             "https://accountcapabilities.exampleapis.com/v1/"
             "accountcapabilities:batchGet");
+  EXPECT_EQ(gaia_urls()->account_capabilities_get_all_visible_url().spec(),
+            "https://accountcapabilities.exampleapis.com/v1/"
+            "accountcapabilities:getAllVisible");
   EXPECT_EQ(gaia_urls()->GetCheckConnectionInfoURLWithSource("").spec(),
             "https://accounts.example.com/GetCheckConnectionInfo");
   EXPECT_EQ(gaia_urls()->oauth2_token_url().spec(),
