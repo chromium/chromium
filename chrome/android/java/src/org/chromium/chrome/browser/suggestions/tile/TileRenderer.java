@@ -66,6 +66,7 @@ public class TileRenderer {
     private final int mDesiredIconSize;
     private final int mMinIconSize;
     private final float mIconCornerRadius;
+    private final String mPinnedShortcutString;
     private int mTitleLinesCount;
     private boolean mNativeInitializationComplete;
     private @Nullable Profile mProfile;
@@ -145,6 +146,7 @@ public class TileRenderer {
         mDesiredIconSize = res.getDimensionPixelSize(R.dimen.tile_view_icon_size);
         mIconCornerRadius = res.getDimension(R.dimen.tile_view_icon_corner_radius);
         int minIconSize = res.getDimensionPixelSize(R.dimen.tile_view_icon_min_size);
+        mPinnedShortcutString = res.getString(R.string.accessibility_ntp_pinned_shortcut_badge);
 
         // On ldpi devices, mDesiredIconSize could be even smaller than the global limit.
         mMinIconSize = Math.min(mDesiredIconSize, minIconSize);
@@ -415,10 +417,14 @@ public class TileRenderer {
                             R.string.accessibility_omnibox_most_visited_tile_search,
                             tile.getTitle()));
         } else {
+            String title = tile.getTitle();
+            if (tile.getData().source == TileSource.CUSTOM_LINKS) {
+                title += ": " + mPinnedShortcutString;
+            }
             tileView.setContentDescription(
                     mContext.getString(
                             R.string.accessibility_omnibox_most_visited_tile_navigate,
-                            tile.getTitle(),
+                            title,
                             tile.getUrl().getHost()));
         }
     }
