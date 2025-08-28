@@ -55,14 +55,16 @@ class CanOfferSigninTest : public testing::Test {
 
 TEST_F(CanOfferSigninTest, NoProfile) {
   SigninUIError error =
-      CanOfferSignin(nullptr, GaiaId("12345"), "user@gmail.com");
+      CanOfferSignin(nullptr, GaiaId("12345"), "user@gmail.com",
+                     /*allow_account_from_other_profile=*/false);
   EXPECT_FALSE(error.IsOk());
   EXPECT_EQ(error, SigninUIError::Other("user@gmail.com"));
 }
 
 TEST_F(CanOfferSigninTest, Default) {
-  EXPECT_TRUE(
-      CanOfferSignin(profile(), GaiaId("12345"), "user@gmail.com").IsOk());
+  EXPECT_TRUE(CanOfferSignin(profile(), GaiaId("12345"), "user@gmail.com",
+                             /*allow_account_from_other_profile=*/false)
+                  .IsOk());
 }
 
 TEST_F(CanOfferSigninTest, ProfileConnected) {
@@ -70,11 +72,15 @@ TEST_F(CanOfferSigninTest, ProfileConnected) {
       IdentityManagerFactory::GetForProfile(profile()), "foo@gmail.com",
       signin::ConsentLevel::kSync);
 
-  EXPECT_TRUE(
-      CanOfferSignin(profile(), account_info.gaia, account_info.email).IsOk());
-  EXPECT_TRUE(CanOfferSignin(profile(), account_info.gaia, "foo").IsOk());
+  EXPECT_TRUE(CanOfferSignin(profile(), account_info.gaia, account_info.email,
+                             /*allow_account_from_other_profile=*/false)
+                  .IsOk());
+  EXPECT_TRUE(CanOfferSignin(profile(), account_info.gaia, "foo",
+                             /*allow_account_from_other_profile=*/false)
+                  .IsOk());
   SigninUIError error =
-      CanOfferSignin(profile(), account_info.gaia, "user@gmail.com");
+      CanOfferSignin(profile(), account_info.gaia, "user@gmail.com",
+                     /*allow_account_from_other_profile=*/false);
   EXPECT_FALSE(error.IsOk());
   EXPECT_EQ(error, SigninUIError::WrongReauthAccount("user@gmail.com",
                                                      account_info.email));
@@ -84,7 +90,8 @@ TEST_F(CanOfferSigninTest, UsernameNotAllowed) {
   SetAllowedUsernamePattern("*.google.com");
 
   SigninUIError error =
-      CanOfferSignin(profile(), GaiaId("12345"), "foo@gmail.com");
+      CanOfferSignin(profile(), GaiaId("12345"), "foo@gmail.com",
+                     /*allow_account_from_other_profile=*/false);
   EXPECT_FALSE(error.IsOk());
   EXPECT_EQ(error, SigninUIError::UsernameNotAllowedByPatternFromPrefs(
                        "foo@gmail.com"));
@@ -94,7 +101,8 @@ TEST_F(CanOfferSigninTest, NoSigninCookies) {
   AllowSigninCookies(false);
 
   SigninUIError error =
-      CanOfferSignin(profile(), GaiaId("12345"), "user@gmail.com");
+      CanOfferSignin(profile(), GaiaId("12345"), "user@gmail.com",
+                     /*allow_account_from_other_profile=*/false);
   EXPECT_FALSE(error.IsOk());
   EXPECT_EQ(error, SigninUIError::Other("user@gmail.com"));
 }
@@ -115,8 +123,9 @@ TEST_P(CanOfferSigninWithSigninToSyncFeatureTest,
       signin::ConsentLevel::kSync);
 
   Profile* second_profile = CreateTestingProfile("second");
-  SigninUIError error = CanOfferSignin(second_profile, first_account_info.gaia,
-                                       first_account_info.email);
+  SigninUIError error = CanOfferSignin(
+      second_profile, first_account_info.gaia, first_account_info.email,
+      /*allow_account_from_other_profile=*/false);
   EXPECT_FALSE(error.IsOk());
   EXPECT_EQ(error, SigninUIError::AccountAlreadyUsedByAnotherProfile(
                        first_account_info.email, profile()->GetPath()));
@@ -132,8 +141,9 @@ TEST_P(CanOfferSigninWithSigninToSyncFeatureTest,
       signin::ConsentLevel::kSync);
 
   Profile* second_profile = CreateTestingProfile("second");
-  SigninUIError error = CanOfferSignin(second_profile, first_account_info.gaia,
-                                       first_account_info.email);
+  SigninUIError error = CanOfferSignin(
+      second_profile, first_account_info.gaia, first_account_info.email,
+      /*allow_account_from_other_profile=*/false);
   EXPECT_TRUE(error.IsOk());
 }
 
@@ -144,8 +154,9 @@ TEST_P(CanOfferSigninWithSigninToSyncFeatureTest,
       signin::ConsentLevel::kSignin);
 
   Profile* second_profile = CreateTestingProfile("second");
-  SigninUIError error = CanOfferSignin(second_profile, first_account_info.gaia,
-                                       first_account_info.email);
+  SigninUIError error = CanOfferSignin(
+      second_profile, first_account_info.gaia, first_account_info.email,
+      /*allow_account_from_other_profile=*/false);
   if (IsParamFeatureEnabled()) {
     EXPECT_FALSE(error.IsOk());
     EXPECT_EQ(error, SigninUIError::AccountAlreadyUsedByAnotherProfile(
@@ -153,6 +164,11 @@ TEST_P(CanOfferSigninWithSigninToSyncFeatureTest,
   } else {
     EXPECT_TRUE(error.IsOk());
   }
+
+  EXPECT_TRUE(CanOfferSignin(second_profile, first_account_info.gaia,
+                             first_account_info.email,
+                             /*allow_account_from_other_profile=*/true)
+                  .IsOk());
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(

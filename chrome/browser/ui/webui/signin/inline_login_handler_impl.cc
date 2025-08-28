@@ -712,7 +712,9 @@ void InlineLoginHandlerImpl::FinishCompleteLogin(
   switch (reason) {
     case HandlerSigninReason::kReauthentication:
     case HandlerSigninReason::kForcedSigninPrimaryAccount:
-      can_offer_error = CanOfferSignin(profile, params.gaia_id, params.email);
+      can_offer_error =
+          CanOfferSignin(profile, params.gaia_id, params.email,
+                         /*allow_account_from_other_profile=*/false);
       break;
     case HandlerSigninReason::kFetchLstOnly:
       break;

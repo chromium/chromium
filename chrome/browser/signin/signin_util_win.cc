@@ -315,7 +315,8 @@ void SigninWithCredentialProviderIfPossible(Profile* profile) {
   // Chrome doesn't allow signing into current profile if the same user is
   // signed in another profile.
   if (!CanOfferSignin(profile, GaiaId(base::WideToUTF8(cred_provider_gaia_id)),
-                      base::WideToUTF8(cred_provider_email))
+                      base::WideToUTF8(cred_provider_email),
+                      /*allow_account_from_other_profile=*/false)
            .IsOk() ||
       IsGCPWUsedInOtherProfile(profile)) {
     return;

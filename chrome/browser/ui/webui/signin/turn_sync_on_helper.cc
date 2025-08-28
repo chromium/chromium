@@ -285,7 +285,8 @@ void TurnSyncOnHelper::TurnSyncOnInternal() {
 
 bool TurnSyncOnHelper::HasCanOfferSigninError() {
   SigninUIError can_offer_error =
-      CanOfferSignin(profile_, account_info_.gaia, account_info_.email);
+      CanOfferSignin(profile_, account_info_.gaia, account_info_.email,
+                     /*allow_account_from_other_profile=*/false);
   if (can_offer_error.IsOk()) {
     return false;
   }

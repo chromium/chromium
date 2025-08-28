@@ -27,7 +27,8 @@
 
 SigninUIError CanOfferSignin(Profile* profile,
                              const GaiaId& gaia_id,
-                             const std::string& email) {
+                             const std::string& email,
+                             bool allow_account_from_other_profile) {
   if (!profile) {
     return SigninUIError::Other(email);
   }
@@ -56,7 +57,12 @@ SigninUIError CanOfferSignin(Profile* profile,
     // re-auth scenario. Make sure the email just signed in corresponds to
     // the one sign in manager expects.
     std::string current_email =
-        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+        identity_manager
+            ->GetPrimaryAccountInfo(
+                base::FeatureList::IsEnabled(
+                    syncer::kReplaceSyncPromosWithSignInPromos)
+                    ? signin::ConsentLevel::kSignin
+                    : signin::ConsentLevel::kSync)
             .email;
     // TODO(crbug.com/440302112): Consider checking for the gaia_id equality
     // instead of the email for reauth flow detection.
@@ -65,9 +71,13 @@ SigninUIError CanOfferSignin(Profile* profile,
       return SigninUIError::WrongReauthAccount(email, current_email);
     }
 
+    allow_account_from_other_profile =
+        allow_account_from_other_profile ||
+        base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kBypassAccountAlreadyUsedByAnotherProfileCheck);
     // If some profile, not just the current one, is already connected to this
-    // account, don't show the infobar.
-    if (g_browser_process && !same_email) {
+    // account, don't offer sign in.
+    if (g_browser_process && !same_email && !allow_account_from_other_profile) {
       ProfileManager* profile_manager = g_browser_process->profile_manager();
       if (profile_manager) {
         std::vector<ProfileAttributesEntry*> entries =
@@ -100,10 +110,6 @@ SigninUIError CanOfferSignin(Profile* profile,
             if (!entry->IsAuthenticated() && !entry->CanBeManaged()) {
               continue;
             }
-          }
-          if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-                  switches::kBypassAccountAlreadyUsedByAnotherProfileCheck)) {
-            continue;
           }
           if (gaia_id == entry->GetGAIAId()) {
             return SigninUIError::AccountAlreadyUsedByAnotherProfile(
