@@ -70,11 +70,11 @@ TEST(MessagePortDescriptorTest, InstrumentationAndSerializationWorks) {
 
   // Create a message handle descriptor pair and expect a notification.
   EXPECT_CALL(delegate, NotifyMessagePortPairCreated(_, _))
-      .WillOnce(Invoke([&created_data](const base::UnguessableToken& port0_id,
-                                       const base::UnguessableToken& port1_id) {
+      .WillOnce([&created_data](const base::UnguessableToken& port0_id,
+                                const base::UnguessableToken& port1_id) {
         created_data.token0 = port0_id;
         created_data.token1 = port1_id;
-      }));
+      });
   MessagePortDescriptorPair pair;
 
   MessagePortDescriptor port0;

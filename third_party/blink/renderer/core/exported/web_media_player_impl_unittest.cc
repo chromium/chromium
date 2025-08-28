@@ -105,7 +105,6 @@ using ::testing::DoAll;
 using ::testing::Eq;
 using ::testing::Gt;
 using ::testing::InSequence;
-using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::NotNull;
 using ::testing::Return;
@@ -796,13 +795,13 @@ class WebMediaPlayerImplTest
     if (should_have_client) {
       EXPECT_CALL(mock_resource_fetch_context_, CreateUrlLoader(_))
           .WillRepeatedly(
-              Invoke([&client](const WebAssociatedURLLoaderOptions&) {
+              [&client](const WebAssociatedURLLoaderOptions&) {
                 auto a =
                     std::make_unique<NiceMock<MockWebAssociatedURLLoader>>();
                 EXPECT_CALL(*a, LoadAsynchronously(_, _))
                     .WillRepeatedly(testing::SaveArg<1>(&client));
                 return a;
-              }));
+              });
     }
 
     wmpi_->Load(WebMediaPlayer::kLoadTypeURL,
@@ -1926,10 +1925,10 @@ TEST_F(WebMediaPlayerImplTest, Encrypted) {
     // Wait for kNetworkStateFormatError caused by Renderer initialization
     // error.
     base::RunLoop run_loop;
-    EXPECT_CALL(client_, NetworkStateChanged()).WillOnce(Invoke([&] {
+    EXPECT_CALL(client_, NetworkStateChanged()).WillOnce([&] {
       if (wmpi_->GetNetworkState() == WebMediaPlayer::kNetworkStateFormatError)
         run_loop.QuitClosure().Run();
-    }));
+    });
     SetCdm();
     run_loop.Run();
   }
@@ -1986,7 +1985,7 @@ TEST_F(WebMediaPlayerImplTest, FallbackToMediaFoundationRenderer) {
   // so that WMPI can reach kReadyStateHaveCurrentData.
   auto mock_renderer_factory = std::make_unique<media::MockRendererFactory>();
   EXPECT_CALL(*mock_renderer_factory, CreateRenderer(_, _, _, _, _, _))
-      .WillOnce(testing::WithoutArgs(Invoke([]() {
+      .WillOnce(testing::WithoutArgs([]() {
         auto mock_renderer = std::make_unique<NiceMock<media::MockRenderer>>();
         EXPECT_CALL(*mock_renderer, OnSetCdm(_, _))
             .WillOnce(RunOnceCallback<1>(true));
@@ -1994,7 +1993,7 @@ TEST_F(WebMediaPlayerImplTest, FallbackToMediaFoundationRenderer) {
             .WillOnce(DoAll(RunOnceCallback<2>(media::PIPELINE_OK),
                             WithArg<1>(ReportHaveEnough())));
         return mock_renderer;
-      })));
+      }));
 
   renderer_factory_selector_->AddFactory(media::RendererType::kMediaFoundation,
                                          std::move(mock_renderer_factory));
@@ -2038,20 +2037,20 @@ TEST_F(WebMediaPlayerImplTest, PipelineErrorHardwareContextReset) {
   // second one will initialize normally and quit the loop to complete the test.
   auto mock_renderer_factory = std::make_unique<media::MockRendererFactory>();
   EXPECT_CALL(*mock_renderer_factory, CreateRenderer(_, _, _, _, _, _))
-      .WillOnce(testing::WithoutArgs(Invoke([]() {
+      .WillOnce(testing::WithoutArgs([]() {
         auto mock_renderer = std::make_unique<NiceMock<media::MockRenderer>>();
         EXPECT_CALL(*mock_renderer, OnInitialize(_, _, _))
             .WillOnce(DoAll(RunOnceCallback<2>(media::PIPELINE_OK),
                             WithArg<1>(ReportHardwareContextReset())));
         return mock_renderer;
-      })))
-      .WillOnce(testing::WithoutArgs(Invoke([&]() {
+      }))
+      .WillOnce(testing::WithoutArgs([&]() {
         auto mock_renderer = std::make_unique<NiceMock<media::MockRenderer>>();
         EXPECT_CALL(*mock_renderer, OnInitialize(_, _, _))
             .WillOnce(DoAll(RunOnceCallback<2>(media::PIPELINE_OK),
                             RunClosure(run_loop.QuitClosure())));
         return mock_renderer;
-      })));
+      }));
 
   renderer_factory_selector_->AddFactory(media::RendererType::kTest,
                                          std::move(mock_renderer_factory));
@@ -2077,27 +2076,27 @@ TEST_F(WebMediaPlayerImplTest, PipelineErrorHardwareContextReset_Twice) {
   // test.
   auto mock_renderer_factory = std::make_unique<media::MockRendererFactory>();
   EXPECT_CALL(*mock_renderer_factory, CreateRenderer(_, _, _, _, _, _))
-      .WillOnce(testing::WithoutArgs(Invoke([]() {
+      .WillOnce(testing::WithoutArgs([]() {
         auto mock_renderer = std::make_unique<NiceMock<media::MockRenderer>>();
         EXPECT_CALL(*mock_renderer, OnInitialize(_, _, _))
             .WillOnce(DoAll(RunOnceCallback<2>(media::PIPELINE_OK),
                             WithArg<1>(ReportHardwareContextReset())));
         return mock_renderer;
-      })))
-      .WillOnce(testing::WithoutArgs(Invoke([]() {
+      }))
+      .WillOnce(testing::WithoutArgs([]() {
         auto mock_renderer = std::make_unique<NiceMock<media::MockRenderer>>();
         EXPECT_CALL(*mock_renderer, OnInitialize(_, _, _))
             .WillOnce(DoAll(RunOnceCallback<2>(media::PIPELINE_OK),
                             WithArg<1>(ReportHardwareContextReset())));
         return mock_renderer;
-      })))
-      .WillOnce(testing::WithoutArgs(Invoke([&]() {
+      }))
+      .WillOnce(testing::WithoutArgs([&]() {
         auto mock_renderer = std::make_unique<NiceMock<media::MockRenderer>>();
         EXPECT_CALL(*mock_renderer, OnInitialize(_, _, _))
             .WillOnce(DoAll(RunOnceCallback<2>(media::PIPELINE_OK),
                             RunClosure(run_loop.QuitClosure())));
         return mock_renderer;
-      })));
+      }));
 
   renderer_factory_selector_->AddFactory(media::RendererType::kTest,
                                          std::move(mock_renderer_factory));

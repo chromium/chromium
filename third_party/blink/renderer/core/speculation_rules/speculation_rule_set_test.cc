@@ -1210,8 +1210,9 @@ TEST_F(SpeculationRuleSetTest, RemoveInMicrotask) {
     ::testing::InSequence sequence;
     EXPECT_CALL(mock_callback, Run(::testing::SizeIs(2)));
     EXPECT_CALL(mock_callback, Run(::testing::SizeIs(1)));
-    EXPECT_CALL(mock_callback, Run(::testing::SizeIs(2)))
-        .WillOnce(::testing::Invoke([&]() { run_loop.Quit(); }));
+    EXPECT_CALL(mock_callback, Run(::testing::SizeIs(2))).WillOnce([&]() {
+      run_loop.Quit();
+    });
   }
   speculation_host.SetCandidatesUpdatedCallback(mock_callback.Get());
 
@@ -3819,8 +3820,9 @@ TEST_F(DocumentRulesTest, RemoveForcesStyleUpdate) {
   {
     ::testing::InSequence sequence;
     EXPECT_CALL(mock_callback, Run(::testing::SizeIs(2)));
-    EXPECT_CALL(mock_callback, Run(::testing::SizeIs(3)))
-        .WillOnce(::testing::Invoke([&]() { run_loop.Quit(); }));
+    EXPECT_CALL(mock_callback, Run(::testing::SizeIs(3))).WillOnce([&]() {
+      run_loop.Quit();
+    });
   }
   speculation_host.SetCandidatesUpdatedCallback(mock_callback.Get());
 
@@ -3882,8 +3884,9 @@ TEST_F(DocumentRulesTest, RemoveWhileWaitingForStyle) {
   ::testing::StrictMock<base::MockCallback<base::RepeatingCallback<void(
       const Vector<mojom::blink::SpeculationCandidatePtr>&)>>>
       mock_callback;
-  EXPECT_CALL(mock_callback, Run(::testing::SizeIs(1)))
-      .WillOnce(::testing::Invoke([&]() { run_loop.Quit(); }));
+  EXPECT_CALL(mock_callback, Run(::testing::SizeIs(1))).WillOnce([&]() {
+    run_loop.Quit();
+  });
   speculation_host.SetCandidatesUpdatedCallback(mock_callback.Get());
 
   LocalFrame& frame = page_holder.GetFrame();

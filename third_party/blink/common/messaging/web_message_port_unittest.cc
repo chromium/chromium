@@ -90,13 +90,12 @@ TEST(WebMessagePortTest, EndToEnd) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(receiver1, OnMessage(_))
-        .WillOnce(
-            Invoke([&message, &run_loop](Message&& received_message) -> bool {
-              EXPECT_EQ(message, received_message.data);
-              EXPECT_TRUE(received_message.ports.empty());
-              run_loop.Quit();
-              return true;
-            }));
+        .WillOnce([&message, &run_loop](Message&& received_message) -> bool {
+          EXPECT_EQ(message, received_message.data);
+          EXPECT_TRUE(received_message.ports.empty());
+          run_loop.Quit();
+          return true;
+        });
     port0.PostMessage(Message(message));
     run_loop.Run();
     testing::Mock::VerifyAndClearExpectations(&receiver0);
@@ -108,13 +107,12 @@ TEST(WebMessagePortTest, EndToEnd) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(receiver0, OnMessage(_))
-        .WillOnce(
-            Invoke([&message, &run_loop](Message&& received_message) -> bool {
-              EXPECT_EQ(message, received_message.data);
-              EXPECT_EQ(1u, received_message.ports.size());
-              run_loop.Quit();
-              return true;
-            }));
+        .WillOnce([&message, &run_loop](Message&& received_message) -> bool {
+          EXPECT_EQ(message, received_message.data);
+          EXPECT_EQ(1u, received_message.ports.size());
+          run_loop.Quit();
+          return true;
+        });
     port1.PostMessage(Message(message, std::move(pipe2.first)));
     run_loop.Run();
     testing::Mock::VerifyAndClearExpectations(&receiver0);
@@ -124,9 +122,9 @@ TEST(WebMessagePortTest, EndToEnd) {
   // Close one end of the pipe and expect the other end to get an error.
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(receiver1, OnPipeError()).WillOnce(Invoke([&run_loop]() {
+    EXPECT_CALL(receiver1, OnPipeError()).WillOnce([&run_loop]() {
       run_loop.Quit();
-    }));
+    });
     port0.Close();
     EXPECT_FALSE(port0.IsValid());
     EXPECT_FALSE(port0.is_errored());
@@ -175,9 +173,9 @@ TEST(WebMessagePortTest, MoveAssignToConnectedPort) {
   // open port being closed, which can be noticed on the remote half as a
   // connection error.
   base::RunLoop run_loop;
-  EXPECT_CALL(receiver1, OnPipeError()).WillOnce(Invoke([&run_loop]() {
+  EXPECT_CALL(receiver1, OnPipeError()).WillOnce([&run_loop]() {
     run_loop.Quit();
-  }));
+  });
 
   port0 = WebMessagePort();
 

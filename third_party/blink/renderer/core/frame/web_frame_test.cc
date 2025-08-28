@@ -11456,8 +11456,7 @@ TEST_F(WebFrameTest, ImeSelectionCommitDoesNotChangeClipboard) {
   EXPECT_CALL(web_frame_client, DidChangeSelection(true, _))
       .WillRepeatedly(Return());  // Happens due to edit change.
   EXPECT_CALL(web_frame_client, DidChangeSelection(false, _))
-      .WillRepeatedly(testing::Invoke(
-          [widget] { EXPECT_FALSE(widget->HandlingInputEvent()); }));
+      .WillRepeatedly([widget] { EXPECT_FALSE(widget->HandlingInputEvent()); });
 
   Document* document = web_frame->GetFrame()->GetDocument();
 

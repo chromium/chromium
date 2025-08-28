@@ -298,10 +298,10 @@ TEST_F(HTMLMediaElementEventListenersTest,
   Vector<blink::WebFullscreenVideoStatus> observed_results;
 
   ON_CALL(*WebMediaPlayer(), SetIsEffectivelyFullscreen(_))
-      .WillByDefault(testing::Invoke(
+      .WillByDefault(
           [&](blink::WebFullscreenVideoStatus fullscreen_video_status) {
             observed_results.push_back(fullscreen_video_status);
-          }));
+          });
 
   DestroyDocument();
 
