@@ -69,6 +69,10 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/webui_util.h"
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/public/glic_enabling.h"
+#endif
+
 namespace {
 
 content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
@@ -107,12 +111,35 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
   source->AddString("accountPictureUrl",
                     profiles::GetPlaceholderAvatarIconUrl());
 
+  // The history page footer can display messages about other forms of
+  // browsing history, linking to Google My Activity (GMA) and/or
+  // Gemini Apps Activity (GAA). At most one message is shown, depending on
+  // the user's settings.
   source->AddString(
-      "sidebarFooter",
+      "sidebarFooterGMAOnly",
       l10n_util::GetStringFUTF16(
-          IDS_HISTORY_OTHER_FORMS_OF_HISTORY,
+          IDS_HISTORY_OTHER_FORMS_OF_HISTORY_GMA_ONLY,
           l10n_util::GetStringUTF16(
               IDS_SETTINGS_CLEAR_DATA_MYACTIVITY_URL_IN_HISTORY)));
+  source->AddString(
+      "sidebarFooterGAAOnly",
+      l10n_util::GetStringFUTF16(IDS_HISTORY_OTHER_FORMS_OF_HISTORY_GAA_ONLY,
+                                 chrome::kMyActivityGeminiAppsUrl));
+  source->AddString("sidebarFooterGMAAndGAA",
+                    l10n_util::GetStringFUTF16(
+                        IDS_HISTORY_OTHER_FORMS_OF_HISTORY_GMA_AND_GAA,
+                        l10n_util::GetStringUTF16(
+                            IDS_SETTINGS_CLEAR_DATA_MYACTIVITY_URL_IN_HISTORY),
+                        chrome::kMyActivityGeminiAppsUrl));
+
+#if BUILDFLAG(ENABLE_GLIC)
+  const bool is_glic_enabled =
+      glic::GlicEnabling::ShouldShowSettingsPage(profile);
+#else
+  const bool is_glic_enabled = false;
+#endif  // BUILDFLAG(ENABLE_GLIC)
+
+  source->AddBoolean("isGlicEnabled", is_glic_enabled);
 
 #if BUILDFLAG(IS_CHROMEOS)
   source->AddLocalizedString("turnOnSyncButton",

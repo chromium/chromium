@@ -38,8 +38,14 @@
   <message name="IDS_HISTORY_FOUND_SEARCH_RESULTS" desc="Message shown when zero or multiple search results are found.">
     Found <ph name="NUMBER_OF_RESULTS">$1</ph> <ph name="SEARCH_RESULTS"><ex>search results</ex>$2</ph> for '<ph name="SEARCH_STRING">$3</ph>'
   </message>
-  <message name="IDS_HISTORY_OTHER_FORMS_OF_HISTORY" desc="The notification at the top of the history page indicating that deleting Chrome browsing history will not delete other forms of history stored at Google My Activity.">
-    Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>myactivity.google.com<ph name="END_LINK">&lt;/a&gt;</ph>
+  <message name="IDS_HISTORY_OTHER_FORMS_OF_HISTORY_GMA_ONLY" desc="The notification at the bottom of the history page indicating that deleting Chrome browsing history will not delete other forms of history stored at Google My Activity.">
+    Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK_GMA">&lt;a target="_blank" href="$1"&gt;</ph>myactivity.google.com<ph name="END_LINK_GMA">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_HISTORY_OTHER_FORMS_OF_HISTORY_GAA_ONLY" desc="The notification at the bottom of the history page indicating that deleting Chrome browsing history will not delete other forms of history stored at Gemini Apps Activity.">
+    Your Google Account may have your <ph name="BEGIN_LINK_GAA">&lt;a target="_blank" href="$1"&gt;</ph>Gemini Apps Activity<ph name="END_LINK_GAA">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_HISTORY_OTHER_FORMS_OF_HISTORY_GMA_AND_GAA" desc="The notification at the bottom of the history page indicating that deleting Chrome browsing history will not delete other forms of history stored at Google My Activity and Gemini Apps Activity.">
+    Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK_GMA">&lt;a target="_blank" href="$1"&gt;</ph>myactivity.google.com<ph name="END_LINK_GMA">&lt;/a&gt;</ph>, such as your <ph name="BEGIN_LINK_GAA">&lt;a target="_blank" href="$2"&gt;</ph>Gemini Apps Activity<ph name="END_LINK_GAA">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_HISTORY_LOADING" desc="Text shown when we're loading the user's history">
     Loading...

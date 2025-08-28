@@ -13,6 +13,7 @@ import '/strings.m.js';
 
 import type {CrMenuSelector} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -24,6 +25,7 @@ import {getHtml} from './side_bar.html.js';
 export interface FooterInfo {
   managed: boolean;
   otherFormsOfHistory: boolean;
+  geminiAppsActivity: boolean;
 }
 
 export interface HistorySideBarElement {
@@ -78,6 +80,13 @@ export class HistorySideBarElement extends CrLitElement {
        * Used to display notices for profile sign-in status and managed status.
        */
       showFooter_: {type: Boolean},
+      /**
+       * Used to display Google Account section in the footer. This section
+       * contains links to Google My Activity and/or Gemini Apps Activity.
+       *
+       * When this property is true, `showFooter_` property should also be true.
+       */
+      showGoogleAccountFooter_: {type: Boolean},
 
       showHistoryClusters_: {type: Boolean},
     };
@@ -92,6 +101,7 @@ export class HistorySideBarElement extends CrLitElement {
   private accessor historyClustersVisibleManagedByPolicy_: boolean =
       loadTimeData.getBoolean('isHistoryClustersVisibleManagedByPolicy');
   protected accessor showFooter_: boolean = false;
+  protected accessor showGoogleAccountFooter_: boolean = false;
   private accessor showHistoryClusters_: boolean = false;
 
   override connectedCallback() {
@@ -103,14 +113,32 @@ export class HistorySideBarElement extends CrLitElement {
     super.willUpdate(changedProperties);
 
     if (changedProperties.has('footerInfo')) {
+      this.showGoogleAccountFooter_ = this.footerInfo.otherFormsOfHistory ||
+          this.footerInfo.geminiAppsActivity;
       this.showFooter_ =
-          this.footerInfo.otherFormsOfHistory || this.footerInfo.managed;
+          this.footerInfo.managed || this.showGoogleAccountFooter_;
     }
     if (changedProperties.has('historyClustersEnabled') ||
         changedProperties.has('historyClustersVisible')) {
       this.showHistoryClusters_ =
           this.historyClustersEnabled && this.historyClustersVisible;
     }
+  }
+
+  // Returned element should not be visible when property
+  // `showGoogleAccountFooter_` is false, i.e. when both
+  // `footerInfo.otherFormsOfHistory` and `footerInfo.geminiAppsActivity`
+  // are false.
+  protected getGoogleAccountFooterMessage_(): TrustedHTML {
+    if (this.footerInfo.otherFormsOfHistory &&
+        !this.footerInfo.geminiAppsActivity) {
+      return sanitizeInnerHtml(loadTimeData.getString('sidebarFooterGMAOnly'));
+    }
+    if (!this.footerInfo.otherFormsOfHistory &&
+        this.footerInfo.geminiAppsActivity) {
+      return sanitizeInnerHtml(loadTimeData.getString('sidebarFooterGAAOnly'));
+    }
+    return sanitizeInnerHtml(loadTimeData.getString('sidebarFooterGMAAndGAA'));
   }
 
   private onKeydown_(e: KeyboardEvent) {
