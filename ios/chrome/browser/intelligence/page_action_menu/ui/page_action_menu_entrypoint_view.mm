@@ -73,7 +73,6 @@ NSTimeInterval kAnimationDuration = 0.3;
           IDS_IOS_BWG_PAGE_ACTION_MENU_ENTRY_POINT_ACCESSIBILITY_LABEL);
     }
 
-    [self setNewBadgeVisible:isNewBadgeVisible];
     [self createBackgroundView];
     [self setNewBadgeVisible:isNewBadgeVisible];
 
