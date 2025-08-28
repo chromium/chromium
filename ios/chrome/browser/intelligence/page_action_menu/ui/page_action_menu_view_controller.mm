@@ -497,6 +497,8 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
                 action:@selector(handleBWGTapped:)
       forControlEvents:UIControlEventTouchUpInside];
 
+  [self updateButton:button enabled:[self.mutator isGeminiAvailable]];
+
   return button;
 }
 
@@ -535,14 +537,18 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
          forKey:NSFontAttributeName];
   NSMutableAttributedString* string =
       [[NSMutableAttributedString alloc] initWithString:title];
+  NSRange titleRange = NSMakeRange(0, string.length);
   [string addAttributes:titleAttributes range:NSMakeRange(0, string.length)];
+  [string addAttribute:NSForegroundColorAttributeName
+                 value:[UIColor colorNamed:kTextPrimaryColor]
+                 range:titleRange];
   buttonConfiguration.attributedTitle = string;
 
   UIButton* button = [UIButton buttonWithConfiguration:buttonConfiguration
                                          primaryAction:nil];
   button.translatesAutoresizingMaskIntoConstraints = NO;
 
-  [self updateSmallButton:button enabled:enabled];
+  [self updateButton:button enabled:enabled];
 
   return button;
 }
@@ -608,34 +614,17 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
 
 // Updates the availability of the Lens entry point.
 - (void)updateLensAvailability:(UITraitCollection*)traitCollection {
-  [self
-      updateSmallButton:_lensButton
-                enabled:[self.mutator
-                            isLensAvailableForTraitCollection:traitCollection]];
+  [self updateButton:_lensButton
+             enabled:[self.mutator
+                         isLensAvailableForTraitCollection:traitCollection]];
 }
 
-// Updates a `button` for whether it's `enabled`, modifying the tint and enabled
-// property.
-- (void)updateSmallButton:(UIButton*)button enabled:(BOOL)enabled {
-  [button setEnabled:enabled];
-
-  NSMutableAttributedString* attributedTitle =
-      [button.configuration.attributedTitle mutableCopy];
-  NSRange titleRange = NSMakeRange(0, attributedTitle.length);
-
-  if (enabled) {
-    // If enabled, add the custom color attribute to override the tint.
-    [attributedTitle addAttribute:NSForegroundColorAttributeName
-                            value:[UIColor colorNamed:kTextPrimaryColor]
-                            range:titleRange];
-  } else {
-    // If disabled, remove the custom color attribute so it returns to its
-    // default tint.
-    [attributedTitle removeAttribute:NSForegroundColorAttributeName
-                               range:titleRange];
-  }
-
-  [button setAttributedTitle:attributedTitle forState:UIControlStateNormal];
+// Updates a `button` for whether it's `enabled`.
+- (void)updateButton:(UIButton*)button enabled:(BOOL)enabled {
+  // Only disable user interaction to not affect the tint color of the title and
+  // image.
+  button.userInteractionEnabled = enabled;
+  button.alpha = enabled ? 1.0 : 0.5;
 }
 
 @end
