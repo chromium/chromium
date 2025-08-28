@@ -96,9 +96,8 @@ public class AndroidPaymentAppFinderCanMakePaymentTest {
 
     /**
      * When ALLOW_SHOW_WITHOUT_READY_TO_PAY feature is disabled and an Android payment app returns
-     * "false" from the IS_READY_TO_PAY intent service, then PaymentRequest API returns "true" from
-     * the canMakePayment() call, because it checks only that the app is installed.
-     * TODO(crbug.com/440022389): The canMakePayment() and show() calls should be consistent.
+     * "false" from the IS_READY_TO_PAY intent service, then PaymentRequest API returns "false" from
+     * the canMakePayment() call.
      */
     @Test
     @MediumTest
@@ -106,7 +105,7 @@ public class AndroidPaymentAppFinderCanMakePaymentTest {
     public void testCannotMakePaymentWithAndroidPaymentAppNotReadyToPayAndShowProhibited()
             throws Exception {
         mMockPaymentAppInstaller.addApp(createPaymentApp()).setReadyToPay(false).install();
-        assertEquals("\"true\"", getCanMakePaymentResult());
+        assertEquals("\"false\"", getCanMakePaymentResult());
         assertEquals("\"false\"", getHasEnrolledInstrumentResult());
         assertEquals("\"NotSupportedError\"", getShowResult());
     }

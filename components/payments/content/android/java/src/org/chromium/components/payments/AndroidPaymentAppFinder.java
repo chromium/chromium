@@ -161,6 +161,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
     private int mPendingVerifiersCount;
     private int mPendingIsReadyToPayQueries;
     private int mPendingResourceUsersCount;
+    private boolean mIsCanMakePaymentReportedToFactoryDelegate;
 
     /**
      * @param delegate The package manager delegate to use in testing.
@@ -759,9 +760,8 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
         assert mPendingVerifiersCount == 0;
 
         boolean hasValidApps = mValidApps.size() > 0;
-        mFactoryDelegate.onCanMakePaymentCalculated(hasValidApps);
-
         if (!hasValidApps) {
+            onCanMakePaymentCalculated(false);
             Log.e(TAG, "No valid apps found.");
         }
 
@@ -824,11 +824,20 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
         if (isReadyToPay
                 || PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
                         PaymentFeatureList.ALLOW_SHOW_WITHOUT_READY_TO_PAY)) {
+            onCanMakePaymentCalculated(true);
             mFactoryDelegate.onPaymentAppCreated(app);
         }
 
         if (--mPendingIsReadyToPayQueries == 0) {
             mFactoryDelegate.onDoneCreatingPaymentApps(mFactory);
+        }
+    }
+
+    private void onCanMakePaymentCalculated(boolean value) {
+        if (!mIsCanMakePaymentReportedToFactoryDelegate) {
+            mIsCanMakePaymentReportedToFactoryDelegate = true;
+            Log.i(TAG, "Can make payment: \"%b\".", value);
+            mFactoryDelegate.onCanMakePaymentCalculated(value);
         }
     }
 
