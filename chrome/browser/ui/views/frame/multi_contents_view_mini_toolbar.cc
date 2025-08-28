@@ -9,6 +9,7 @@
 #include "base/i18n/rtl.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/search/search.h"
@@ -71,6 +72,12 @@ bool IsNTP(const GURL& url) {
           url.host() == chrome::kChromeUINewTabHost) ||
          search::IsNTPURL(url) || search::IsSplitViewNewTabPage(url);
 }
+
+void SetAccessibleNameAndTooltip(views::View* view, int string_id) {
+  std::u16string string = l10n_util::GetStringUTF16(string_id);
+  view->SetAccessibleName(string);
+  view->SetTooltipText(string);
+}
 }  // namespace
 
 MultiContentsViewMiniToolbar::MultiContentsViewMiniToolbar(
@@ -117,14 +124,13 @@ MultiContentsViewMiniToolbar::MultiContentsViewMiniToolbar(
                             base::Unretained(this)),
         kCloseTabChromeRefreshIcon, 16,
         kColorMulitContentsViewMiniToolbarForeground));
-    image_button_->SetTooltipText(
-        l10n_util::GetStringUTF16(IDS_SPLIT_TAB_CLOSE));
+    SetAccessibleNameAndTooltip(image_button_, IDS_SPLIT_TAB_CLOSE);
   } else {
     image_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
         base::RepeatingClosure(), kBrowserToolsChromeRefreshIcon, 16,
         kColorMulitContentsViewMiniToolbarForeground));
-    image_button_->SetTooltipText(l10n_util::GetStringUTF16(
-        IDS_SPLIT_VIEW_MINI_TOOLBAR_MENU_BUTTON_TOOLTIP));
+    SetAccessibleNameAndTooltip(
+        image_button_, IDS_ACCNAME_SPLIT_VIEW_MINI_TOOLBAR_MENU_BUTTON);
     image_button_->SetButtonController(
         std::make_unique<views::MenuButtonController>(
             image_button_,
@@ -297,6 +303,7 @@ void MultiContentsViewMiniToolbar::UpdateContents(TabRendererData tab_data) {
         base::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
   }
   domain_label_->SetText(domain);
+  domain_label_->SetCustomTooltipText(base::ASCIIToUTF16(domain_url.spec()));
 
   UpdateFavicon(tab_data);
 }
