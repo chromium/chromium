@@ -12,9 +12,16 @@
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/win/taskbar_manager.h"
+#include "chrome/installer/util/install_util.h"
+#include "chrome/installer/util/shell_util.h"
+#endif
 
 namespace settings {
 
@@ -28,6 +35,13 @@ bool DefaultBrowserIsDisabledByPolicy() {
   DCHECK(pref->GetValue()->is_bool());
   return pref->IsManaged() && !pref->GetValue()->GetBool();
 }
+
+#if BUILDFLAG(IS_WIN)
+void PinToTaskbarResult(bool result) {
+  // TODO(crbug.com/393629107): Record metric
+  // Windows.TaskbarPinFromSettingsSucceeded.
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -79,6 +93,14 @@ void DefaultBrowserHandler::SetAsDefaultBrowser(const base::Value::List& args) {
   AllowJavascript();
   RecordSetAsDefaultUMA();
 
+#if BUILDFLAG(IS_WIN)
+  if (!args.empty() && args[0].GetBool()) {
+    browser_util::PinAppToTaskbar(
+        ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
+        base::BindOnce(&PinToTaskbarResult));
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   default_browser_worker_->StartSetAsDefault(
       base::BindOnce(&DefaultBrowserHandler::OnDefaultBrowserWorkerFinished,
                      weak_ptr_factory_.GetWeakPtr(), std::nullopt));
@@ -102,6 +124,13 @@ void DefaultBrowserHandler::RecordSetAsDefaultUMA() {
   UMA_HISTOGRAM_COUNTS("Settings.StartSetAsDefault", true);
 }
 
+void DefaultBrowserHandler::OnCanPinToTaskbarResult(
+    const std::optional<std::string>& js_callback_id,
+    shell_integration::DefaultWebClientState state,
+    bool can_pin) {
+  OnDefaultCheckFinished(js_callback_id, can_pin, state);
+}
+
 void DefaultBrowserHandler::OnDefaultBrowserWorkerFinished(
     const std::optional<std::string>& js_callback_id,
     shell_integration::DefaultWebClientState state) {
@@ -110,10 +139,28 @@ void DefaultBrowserHandler::OnDefaultBrowserWorkerFinished(
     // default browser.
     chrome::startup::default_prompt::ResetPromptPrefs(
         Profile::FromWebUI(web_ui()));
+  } else {
+#if BUILDFLAG(IS_WIN)
+    if (base::FeatureList::IsEnabled(features::kOfferPinToTaskbarInSettings)) {
+      browser_util::ShouldOfferToPin(
+          ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
+          base::BindOnce(&DefaultBrowserHandler::OnCanPinToTaskbarResult,
+                         weak_ptr_factory_.GetWeakPtr(), js_callback_id,
+                         state));
+      return;
+    }
+#endif  // BUILDFLAG(IS_WIN)
   }
+  OnDefaultCheckFinished(js_callback_id, /*can_pin=*/false, state);
+}
 
+void DefaultBrowserHandler::OnDefaultCheckFinished(
+    const std::optional<std::string>& js_callback_id,
+    bool can_pin,
+    shell_integration::DefaultWebClientState state) {
   base::Value::Dict dict;
   dict.Set("isDefault", state == shell_integration::IS_DEFAULT);
+  dict.Set("canPin", can_pin);
   dict.Set("canBeDefault", shell_integration::CanSetAsDefaultBrowser());
   dict.Set("isUnknownError", state == shell_integration::UNKNOWN_DEFAULT);
   dict.Set("isDisabledByPolicy", DefaultBrowserIsDisabledByPolicy());
