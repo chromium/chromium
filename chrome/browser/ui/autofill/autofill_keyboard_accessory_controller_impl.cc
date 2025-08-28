@@ -59,6 +59,42 @@ constexpr std::u16string_view kWorkAddressManagementUrl =
 constexpr std::u16string_view kAccountNameAndEmailManagementUrl =
     u"https://myaccount.google.com/personal-info";
 
+std::u16string ExtractPassword(const std::u16string& label) {
+  // `label` is never empty since `Suggestion::labels` must contain a password.
+  return label.substr(0, kMaxBulletCount);
+}
+
+Suggestion::Text FormatLabelsByFillingProduct(
+    const std::u16string& label,
+    const std::u16string& additional_label,
+    FillingProduct filling_product) {
+  switch (filling_product) {
+    case FillingProduct::kPassword:
+      // The `Suggestion::additional_label` contains the signon_realm or is
+      // empty.
+      return Suggestion::Text(
+          additional_label.empty()
+              ? ExtractPassword(label)
+              : base::StrCat({additional_label, kLabelSeparator,
+                              ExtractPassword(label)}));
+    case FillingProduct::kAddress:
+    case FillingProduct::kPlusAddresses:
+    case FillingProduct::kCreditCard:
+    case FillingProduct::kIban:
+    case FillingProduct::kAutocomplete:
+    case FillingProduct::kMerchantPromoCode:
+    case FillingProduct::kCompose:
+    case FillingProduct::kAutofillAi:
+    case FillingProduct::kLoyaltyCard:
+    case FillingProduct::kIdentityCredential:
+    case FillingProduct::kDataList:
+    case FillingProduct::kOneTimePassword:
+    case FillingProduct::kPasskey:
+    case FillingProduct::kNone:
+      return Suggestion::Text(label);
+  }
+}
+
 // Creates a text label used by the keyboard accessory. For password
 // suggestions, constructs the label from the password stored in
 // `Suggestion::additional_label` and an optional signon realm stored in
@@ -73,22 +109,9 @@ Suggestion::Text CreateLabel(const Suggestion& suggestion) {
   // interface.
   CHECK_EQ(suggestion.labels.size(), 1U);
   CHECK_EQ(suggestion.labels[0].size(), 1U);
-  if (GetFillingProductFromSuggestionType(suggestion.type) ==
-      FillingProduct::kPassword) {
-    // The `Suggestion::labels` can never be empty since it must contain a
-    // password.
-    const std::u16string password =
-        suggestion.labels[0][0].value.substr(0, kMaxBulletCount);
-
-    // The `Suggestion::additional_label` contains the signon_realm or is empty.
-    if (suggestion.additional_label.empty()) {
-      return Suggestion::Text(password);
-    }
-    return Suggestion::Text(
-        base::StrCat({suggestion.additional_label, kLabelSeparator, password}));
-  }
-
-  return Suggestion::Text(suggestion.labels[0][0].value);
+  return FormatLabelsByFillingProduct(
+      suggestion.labels[0][0].value, suggestion.additional_label,
+      GetFillingProductFromSuggestionType(suggestion.type));
 }
 
 std::u16string GetAccountEmail(content::WebContents* web_contents) {
@@ -471,6 +494,7 @@ void AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed(
     case FillingProduct::kMerchantPromoCode:
     case FillingProduct::kIban:
     case FillingProduct::kPassword:
+    case FillingProduct::kPasskey:
     case FillingProduct::kCompose:
     case FillingProduct::kPlusAddresses:
     case FillingProduct::kAutofillAi:

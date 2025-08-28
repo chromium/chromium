@@ -271,6 +271,7 @@ bool IsSingleFieldFillerFillingProduct(FillingProduct filling_product) {
     case FillingProduct::kPlusAddresses:
     case FillingProduct::kAutofillAi:
     case FillingProduct::kCompose:
+    case FillingProduct::kPasskey:
     case FillingProduct::kPassword:
     case FillingProduct::kCreditCard:
     case FillingProduct::kAddress:

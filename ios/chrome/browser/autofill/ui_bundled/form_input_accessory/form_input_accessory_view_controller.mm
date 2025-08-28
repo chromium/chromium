@@ -607,6 +607,7 @@ UIImage* GetManualFillSymbol() {
       case FillingProduct::kIdentityCredential:
       case FillingProduct::kDataList:
       case FillingProduct::kOneTimePassword:
+      case FillingProduct::kPasskey:
       case FillingProduct::kNone:
         // These FillingProduct types are currently not available
         // on iOS. Also, there shouldn't be suggestions of type `kNone`.

@@ -124,9 +124,25 @@ base::RepeatingClosure CreateExecuteSoonWrapper(base::RepeatingClosure task) {
 }
 
 bool IsDeactivatedPasswordOrPasskey(const Suggestion& suggestion) {
-  return suggestion.HasDeactivatedStyle() &&
-         GetFillingProductFromSuggestionType(suggestion.type) ==
-             FillingProduct::kPassword;
+  switch (GetFillingProductFromSuggestionType(suggestion.type)) {
+    case FillingProduct::kPassword:
+    case FillingProduct::kPasskey:
+      return suggestion.HasDeactivatedStyle();
+    case FillingProduct::kAddress:
+    case FillingProduct::kPlusAddresses:
+    case FillingProduct::kCreditCard:
+    case FillingProduct::kIban:
+    case FillingProduct::kAutocomplete:
+    case FillingProduct::kMerchantPromoCode:
+    case FillingProduct::kCompose:
+    case FillingProduct::kAutofillAi:
+    case FillingProduct::kLoyaltyCard:
+    case FillingProduct::kIdentityCredential:
+    case FillingProduct::kDataList:
+    case FillingProduct::kOneTimePassword:
+    case FillingProduct::kNone:
+      return false;
+  }
 }
 
 std::unique_ptr<views::BoxLayoutView> GetBadgeView(std::u16string_view label) {
@@ -165,6 +181,7 @@ void FormatLabel(views::Label& label,
     case FillingProduct::kCompose:
     case FillingProduct::kIban:
     case FillingProduct::kMerchantPromoCode:
+    case FillingProduct::kPasskey:
     case FillingProduct::kPassword:
     case FillingProduct::kDataList:
     case FillingProduct::kNone:

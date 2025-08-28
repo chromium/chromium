@@ -81,6 +81,7 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
     case FillingProduct::kDataList:
       filling_product_bucket = FillingProductToString(filling_product);
       break;
+    case FillingProduct::kPasskey:
     case FillingProduct::kCompose:
     case FillingProduct::kAutofillAi:
     case FillingProduct::kMerchantPromoCode:

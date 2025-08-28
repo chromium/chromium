@@ -277,6 +277,7 @@ void AutofillAiLogger::RecordNumberOfFieldsFilled(
           case FillingProduct::kAutocomplete:
           case FillingProduct::kCompose:
           case FillingProduct::kDataList:
+          case FillingProduct::kPasskey:
           case FillingProduct::kNone:
             return false;
         }

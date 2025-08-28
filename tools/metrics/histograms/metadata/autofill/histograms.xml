@@ -161,6 +161,8 @@ chromium-metrics-reviews@google.com.
   <variant name="OneTimePassword"
       summary="User chose to fill a field with a one time password
                suggestion."/>
+  <variant name="Passkey"
+      summary="User chose to not fill a form but continue with a passkey."/>
   <variant name="Password"
       summary="User chose to fill a form or field with password credentials."/>
   <variant name="PlusAddresses"
