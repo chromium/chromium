@@ -205,7 +205,7 @@ class PdfCaretTest : public testing::Test {
     SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
     SetUpChar({1, 0}, 'b', {kTestMultiPage1Char0ScreenRect});
     SetUpChar({1, 1}, 'c', {kTestMultiPage1Char1ScreenRect});
-    SetUpChar({2, 0}, '\0', {});
+    SetUpChar({2, 0}, '\0', {kTestMultiPage2NonTextScreenRect});
     SetUpChar({3, 0}, 'd', {kTestMultiPage3Char0ScreenRect});
   }
 
@@ -536,6 +536,19 @@ class PdfCaretMoveTest : public PdfCaretTest {
     EXPECT_CALL(client(), IsSynthesizedNewline(_))
         .WillRepeatedly(Return(false));
   }
+
+  void SetUpPagesWithSynthesizedChars(
+      const std::vector<std::vector<uint32_t>>& synthesized_chars) {
+    for (size_t page_index = 0; page_index < synthesized_chars.size();
+         ++page_index) {
+      for (uint32_t synthesized_char : synthesized_chars[page_index]) {
+        PageCharacterIndex index{static_cast<uint32_t>(page_index),
+                                 synthesized_char};
+        EXPECT_CALL(client(), IsSynthesizedNewline(index))
+            .WillRepeatedly(Return(true));
+      }
+    }
+  }
 };
 
 TEST_F(PdfCaretMoveTest, OnKeyDown) {
@@ -643,7 +656,6 @@ TEST_F(PdfCaretMoveTest, MoveCharLeftRightMultiPage) {
   TestDrawCaret(kTestMultiPage1Char1EndCaret);
 
   // Top-left of page 2. Page 2 does not have any chars.
-  SetUpChar({2, 0}, '\0', {kTestMultiPage2NonTextScreenRect});
   EXPECT_TRUE(
       caret().OnKeyDown(GenerateKeyboardEvent(ui::KeyboardCode::VKEY_RIGHT)));
   TestDrawCaret(kTestMultiPage2NonTextScreenRect);
@@ -665,17 +677,11 @@ TEST_F(PdfCaretMoveTest, MoveCharLeftRightMultiPage) {
 }
 
 TEST_F(PdfCaretMoveTest, MoveCharLeftRightSkipNewlines) {
-  constexpr PageCharacterIndex kTestSynthesizedChar1{0, 1};
-  constexpr PageCharacterIndex kTestSynthesizedChar2{0, 2};
-  EXPECT_CALL(client(), IsSynthesizedNewline(kTestSynthesizedChar1))
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(client(), IsSynthesizedNewline(kTestSynthesizedChar2))
-      .WillRepeatedly(Return(true));
-
   SetUpPagesWithCharCounts({4});
+  SetUpPagesWithSynthesizedChars({{1, 2}});
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
-  SetUpChar(kTestSynthesizedChar1, '\r', {});
-  SetUpChar(kTestSynthesizedChar2, '\n', {});
+  SetUpChar({0, 1}, '\r', {});
+  SetUpChar({0, 2}, '\n', {});
   SetUpChar({0, 3}, 'b', {gfx::Rect(10, 26, 12, 14)});
 
   // Start at left of page 0, char 0.
@@ -729,17 +735,11 @@ TEST_F(PdfCaretMoveTest, MoveCharLeftRightStartEndNewlines) {
 }
 
 TEST_F(PdfCaretMoveTest, MoveCharLeftRightConsecutiveNewlines) {
-  constexpr PageCharacterIndex kTestSynthesizedChar1{0, 1};
-  constexpr PageCharacterIndex kTestSynthesizedChar2{0, 2};
-  EXPECT_CALL(client(), IsSynthesizedNewline(kTestSynthesizedChar1))
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(client(), IsSynthesizedNewline(kTestSynthesizedChar2))
-      .WillRepeatedly(Return(true));
-
   SetUpPagesWithCharCounts({5});
+  SetUpPagesWithSynthesizedChars({{1, 2}});
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
-  SetUpChar(kTestSynthesizedChar1, '\r', {});
-  SetUpChar(kTestSynthesizedChar2, '\n', {});
+  SetUpChar({0, 1}, '\r', {});
+  SetUpChar({0, 2}, '\n', {});
   SetUpChar({0, 3}, '\n', {gfx::Rect(10, 26, 12, 14)});
   SetUpChar({0, 4}, 'b', {gfx::Rect(22, 26, 12, 14)});
 
@@ -770,13 +770,10 @@ TEST_F(PdfCaretMoveTest, MoveCharLeftRightConsecutiveNewlines) {
 }
 
 TEST_F(PdfCaretMoveTest, MoveCharLeftRightSingleSyntheticNewline) {
-  constexpr PageCharacterIndex kTestSynthesizedChar1{0, 1};
-  EXPECT_CALL(client(), IsSynthesizedNewline(kTestSynthesizedChar1))
-      .WillRepeatedly(Return(true));
-
   SetUpPagesWithCharCounts({3});
+  SetUpPagesWithSynthesizedChars({{1}});
   SetUpChar(kTestChar0, 'a', {kTestChar0ScreenRect});
-  SetUpChar(kTestSynthesizedChar1, '\n', {});
+  SetUpChar({0, 1}, '\n', {});
   SetUpChar({0, 2}, 'b', {gfx::Rect(10, 26, 12, 14)});
 
   // Start at left of page 0, char 0.
