@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "components/optimization_guide/core/model_execution/substitution.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
@@ -41,6 +42,11 @@ class SafetyConfig final {
   // Whether this check is only for allowed languages.
   bool IsRequestCheckLanguageOnly(int check_idx) const;
 
+  // Whether the given text matches the block condition of the regex filter in
+  // the request check at the given index.
+  bool IsRequestBlockedByRegexFilter(int check_idx,
+                                     std::string_view text) const;
+
   // Evaluates scores for a request safety check.
   // `check_idx` must be < `NumResponseChecks()`.
   bool IsRequestUnsafe(
@@ -60,6 +66,10 @@ class SafetyConfig final {
   std::optional<SubstitutionResult> GetRawOutputCheckInput(
       const std::string&) const;
 
+  // Whether the given text matches the block condition of the regex filter in
+  // the raw output check.
+  bool IsRawOutputBlockedByRegexFilter(std::string_view text) const;
+
   // Evaluates scores of a raw output unsafe.
   bool IsRawOutputUnsafe(
       const on_device_model::mojom::SafetyInfoPtr& safety_info) const;
@@ -76,6 +86,11 @@ class SafetyConfig final {
       int check_idx,
       MultimodalMessageReadView request,
       MultimodalMessageReadView response) const;
+
+  // Whether the given text matches the block condition of the regex filter in
+  // the response check at the given index.
+  bool IsResponseBlockedByRegexFilter(int check_idx,
+                                      std::string_view text) const;
 
   // Evaluates scores for a response safety check.
   // `check_idx` must be < `NumResponseChecks()`.

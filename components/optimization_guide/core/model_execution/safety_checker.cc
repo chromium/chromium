@@ -52,14 +52,17 @@ SafetyChecker::Result RequestCheckResult(
     base::WeakPtr<SafetyChecker> checker,
     int request_check_idx,
     std::string check_input_text,
+    bool blocked_by_regex_filter,
     on_device_model::mojom::SafetyInfoPtr safety_info) {
   if (!checker) {
     return FailToRunResult();
   }
   SafetyChecker::Result result;
   // Evaluate the check.
-  result.is_unsafe =
-      checker->safety_cfg().IsRequestUnsafe(request_check_idx, safety_info);
+  result.is_unsafe = blocked_by_regex_filter
+                         ? true
+                         : checker->safety_cfg().IsRequestUnsafe(
+                               request_check_idx, safety_info);
   result.is_unsupported_language =
       checker->safety_cfg().IsRequestUnsupportedLanguage(request_check_idx,
                                                          safety_info);
@@ -72,13 +75,16 @@ SafetyChecker::Result RawOutputCheckResult(
     base::WeakPtr<SafetyChecker> checker,
     std::string check_input_text,
     ResponseCompleteness completeness,
+    bool blocked_by_regex_filter,
     on_device_model::mojom::SafetyInfoPtr safety_info) {
   if (!checker) {
     return FailToRunResult();
   }
   SafetyChecker::Result result;
   // Evaluate the check.
-  result.is_unsafe = checker->safety_cfg().IsRawOutputUnsafe(safety_info);
+  result.is_unsafe = blocked_by_regex_filter
+                         ? true
+                         : checker->safety_cfg().IsRawOutputUnsafe(safety_info);
   result.is_unsupported_language =
       checker->safety_cfg().IsRawOutputUnsupportedLanguage(completeness,
                                                            safety_info);
@@ -92,14 +98,17 @@ SafetyChecker::Result ResponseCheckResult(
     int request_check_idx,
     std::string check_input_text,
     ResponseCompleteness completeness,
+    bool blocked_by_regex_filter,
     on_device_model::mojom::SafetyInfoPtr safety_info) {
   if (!checker) {
     return FailToRunResult();
   }
   SafetyChecker::Result result;
   // Evaluate the check.
-  result.is_unsafe =
-      checker->safety_cfg().IsResponseUnsafe(request_check_idx, safety_info);
+  result.is_unsafe = blocked_by_regex_filter
+                         ? true
+                         : checker->safety_cfg().IsResponseUnsafe(
+                               request_check_idx, safety_info);
   result.is_unsupported_language =
       checker->safety_cfg().IsResponseUnsupportedLanguage(
           request_check_idx, completeness, safety_info);
@@ -152,6 +161,7 @@ void SafetyChecker::RunRequestChecks(const MultimodalMessage& request,
     std::move(callback).Run(FailToRunResult());
     return;
   }
+
   auto merge_fn = base::BarrierCallback<Result>(
       num_checks,
       base::BindOnce(&SafetyChecker::Result::Merge).Then(std::move(callback)));
@@ -162,11 +172,14 @@ void SafetyChecker::RunRequestChecks(const MultimodalMessage& request,
       continue;
     }
     auto text = check_input->ToString();
+    bool blocked_by_regex_filter =
+        safety_cfg_.IsRequestBlockedByRegexFilter(idx, text);
     auto merge_result_fn =
         base::BindOnce(&RequestCheckResult, weak_ptr_factory_.GetWeakPtr(), idx,
-                       text)
+                       text, blocked_by_regex_filter)
             .Then(merge_fn);
-    if (safety_cfg_.IsRequestCheckLanguageOnly(idx)) {
+    if (safety_cfg_.IsRequestCheckLanguageOnly(idx) ||
+        blocked_by_regex_filter) {
       session->DetectLanguage(
           text, base::BindOnce(&AsSafetyInfo).Then(std::move(merge_result_fn)));
     } else {
@@ -193,10 +206,21 @@ void SafetyChecker::RunRawOutputCheck(const std::string& raw_output,
     return;
   }
   auto text = check_input->ToString();
-  session->ClassifyTextSafety(
-      text, base::BindOnce(&RawOutputCheckResult,
-                           weak_ptr_factory_.GetWeakPtr(), text, completeness)
-                .Then(std::move(callback)));
+  bool blocked_by_regex_filter =
+      safety_cfg_.IsRawOutputBlockedByRegexFilter(text);
+
+  auto make_result_then_callback =
+      base::BindOnce(&RawOutputCheckResult, weak_ptr_factory_.GetWeakPtr(),
+                     text, completeness, blocked_by_regex_filter)
+          .Then(std::move(callback));
+
+  if (blocked_by_regex_filter) {
+    session->DetectLanguage(text,
+                            base::BindOnce(&AsSafetyInfo)
+                                .Then(std::move(make_result_then_callback)));
+  } else {
+    session->ClassifyTextSafety(text, std::move(make_result_then_callback));
+  }
 }
 
 void SafetyChecker::RunResponseChecks(const MultimodalMessage& request,
@@ -229,11 +253,18 @@ void SafetyChecker::RunResponseChecks(const MultimodalMessage& request,
       continue;
     }
     auto text = check_input->ToString();
+    bool blocked_by_regex_filter =
+        safety_cfg_.IsResponseBlockedByRegexFilter(idx, text);
     auto merge_result_fn =
         base::BindOnce(&ResponseCheckResult, weak_ptr_factory_.GetWeakPtr(),
-                       idx, text, completeness)
+                       idx, text, completeness, blocked_by_regex_filter)
             .Then(merge_fn);
-    session->ClassifyTextSafety(text, std::move(merge_result_fn));
+    if (blocked_by_regex_filter) {
+      session->DetectLanguage(
+          text, base::BindOnce(&AsSafetyInfo).Then(std::move(merge_result_fn)));
+    } else {
+      session->ClassifyTextSafety(text, std::move(merge_result_fn));
+    }
   }
 }
 
