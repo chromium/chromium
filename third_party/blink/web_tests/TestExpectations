@@ -2934,6 +2934,14 @@ crbug.com/438770398 external/wpt/css/css-anchor-position/position-visibility-rem
 
 crbug.com/440374744 external/wpt/content-security-policy/xslt/document-function-blocked.html [ Timeout ]
 
+# Crash with either:
+#   [1749319:7:0828/082256.523414:FATAL:cc/trees/tree_synchronizer.cc:230] Check failed: target_layer.
+# ... or:
+#   [4031854:7:0828/082339.467097:FATAL:cc/trees/property_tree.h:87] Check failed: i < static_cast<int>(nodes_.size()) (2 vs. 2)
+virtual/threaded/external/wpt/css/css-view-transitions/remove-root-element-firefox-bug-1982469-crash.html [ Crash Timeout ]
+virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/remove-root-element-firefox-bug-1982469-crash.html [ Crash Timeout ]
+virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/remove-root-element-firefox-bug-1982469-crash.html [ Crash Timeout ]
+
 # ====== New tests from wpt-importer added here ======
 crbug.com/441356800 external/wpt/html/semantics/embedded-content/the-video-element/video_timeupdate_on_seek.html [ Timeout ]
 crbug.com/441360066 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/fragment_navigated/fragment_navigated.py [ Timeout ]
@@ -9627,5 +9635,5 @@ crbug.com/440589865 [ Mac15-arm64 ] virtual/webnn-service-with-gpu/external/wpt/
 crbug.com/419705502 [ Win10.20h2 ] http/tests/devtools/elements/styles-2/nested-pseudo-elements.js [ Failure Pass ]
 
 # Gardener 2025-08-28
-crbug.com/441519564 [ Mac ] external/wpt/webrtc/RTCRtpParameters-codec.html [ Pass Failure ]
+crbug.com/441519564 [ Mac ] external/wpt/webrtc/RTCRtpParameters-codec.html [ Failure Pass ]
 crbug.com/441011869 [ Linux ] external/wpt/storage-access-api/requestStorageAccess-sandboxed-iframe-allow-storage-access.sub.https.window.html [ Pass Timeout ]

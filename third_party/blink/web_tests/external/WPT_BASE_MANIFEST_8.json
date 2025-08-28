@@ -6191,6 +6191,13 @@
        ]
       ]
      },
+     "remove-root-element-firefox-bug-1982469-crash.html": [
+      "1faf3d2b80a458c5f7f36a245b633d63f0bd96fd",
+      [
+       null,
+       {}
+      ]
+     ],
      "root-element-cv-hidden-crash.html": [
       "890194b7c171ea7a42fd083567637aacee4fd877",
       [
@@ -75735,8 +75742,34 @@
        {}
       ]
      ],
+     "anchor-position-grid-001.html": [
+      "1396e31a68bfb14c08a3f5970e5e29bdb21bfe29",
+      [
+       null,
+       [
+        [
+         "/css/css-anchor-position/anchor-position-grid-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "anchor-position-inline-004.html": [
+      "12220bcc87d0ee2d2b8da619de7817610e3a5d4d",
+      [
+       null,
+       [
+        [
+         "/css/css-anchor-position/anchor-position-inline-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "anchor-position-multicol-007.html": [
-      "b8aca1164479d58f0c7c28720362a96d017f5463",
+      "2302731c7376d50ed2001edd204391237dc127c1",
       [
        null,
        [
@@ -75749,7 +75782,7 @@
       ]
      ],
      "anchor-position-multicol-008.html": [
-      "f652b6ac2b05d28850f1d732d017cdff9c02e848",
+      "7704df90b1e18256b580697f6030716d16456c9f",
       [
        null,
        [
@@ -75774,6 +75807,84 @@
        {}
       ]
      ],
+     "anchor-position-multicol-012.html": [
+      "7618dd809331719027ce3ef7c8f64363e9c9de03",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "anchor-position-multicol-013.html": [
+      "10a37a0ad6431edb8c849288cb63cc4cd9886a26",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "anchor-position-multicol-014.html": [
+      "969ec8f3c429969c36a1e1a969d10ef399a13644",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "anchor-position-multicol-015.html": [
+      "1a5c2881de6fd97024f8671567fd36332fabeb77",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "anchor-position-multicol-016.html": [
+      "85eddfca08b1ccd67cdec412c2c07fc06b1080b7",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "anchor-position-multicol-017.html": [
+      "3e8c35a9d3c844a3b5fb9fa87fb81a47f5d9850d",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "anchor-position-multicol-colspan-003.html": [
       "e985cebfb807f65d7413d81885f6d2be7234b2a9",
       [
@@ -75781,6 +75892,19 @@
        [
         [
          "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "anchor-position-multicol-nested-001.html": [
+      "70a8e2a7bfb54394fcba7ffe64b6d87d6beb9401",
+      [
+       null,
+       [
+        [
+         "/css/css-anchor-position/anchor-position-multicol-nested-001-ref.html",
          "=="
         ]
        ],
@@ -311402,6 +311526,21 @@
      ]
     ]
    },
+   "intersection-observer": {
+    "cross-origin-tall-iframe-rendering.sub.html": [
+     "1fcc2b6eca56968bfc07f83fc4c2f6f50ba275dd",
+     [
+      null,
+      [
+       [
+        "/intersection-observer/cross-origin-tall-iframe-rendering-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ]
+   },
    "jpegxl": {
     "3x3_jpeg_recompression.html": [
      "7d484635b53d432fbbb47315a3ceaad7a3753a83",
@@ -339911,10 +340050,6 @@
       "4343e9e262cc932ae5e4e0943ecf8d5ad3c465b7",
       []
      ],
-     "anchor-getComputedStyle-002-expected.txt": [
-      "cda14f3fc67b30f7471bd714ea6dfdaa6886c1a8",
-      []
-     ],
      "anchor-name-multicol-003-expected.txt": [
       "5aec40681f48e640e80a3ae85b95645c403e3248",
       []
@@ -339927,8 +340062,12 @@
       "2c8824bbc3536186d6bc8aed7222ded7da2c40be",
       []
      ],
-     "anchor-position-grid-001-expected.txt": [
-      "e4a7a86f2df7267d26b163dce419a65636a955b7",
+     "anchor-position-grid-001-ref.html": [
+      "d21d1545fac1fc4ecf2722fc632fc8d554532571",
+      []
+     ],
+     "anchor-position-inline-004-ref.html": [
+      "897270dca431618e2b4a2374830b4f129e3ab631",
       []
      ],
      "anchor-position-multicol-002-expected.txt": [
@@ -339945,6 +340084,10 @@
      ],
      "anchor-position-multicol-fixed-001-expected.txt": [
       "92541321de958c156e218dd6b28310cfc095d10e",
+      []
+     ],
+     "anchor-position-multicol-nested-001-ref.html": [
+      "729c0a66024808f1133c78aec3b1808362bfaf3c",
       []
      ],
      "anchor-position-top-layer-ref.html": [
@@ -341480,10 +341623,6 @@
       ],
       "background-computed-expected.txt": [
        "02491ecd6aca5f41a2160d73a60cf236ebf56d43",
-       []
-      ],
-      "background-image-computed.sub-expected.txt": [
-       "4a51499dd475465fca772e09156b911d3c63fb53",
        []
       ],
       "background-position-computed-expected.txt": [
@@ -380691,10 +380830,6 @@
       "cced79a004c0e7f1acdd55298a1221212bdfe94d",
       []
      ],
-     "calc-linear-radial-conic-gradient-001-expected.txt": [
-      "7171e51b97888cc61c9aa794c696161c707d3f8a",
-      []
-     ],
      "calc-margin-block-1-ref.html": [
       "954187dfd7cd8a8c46cb4368803fd0735349541e",
       []
@@ -389469,7 +389604,7 @@
        []
       ],
       "scroll_support.js": [
-       "59deaf473dba08b641e372d75afb602fa795b387",
+       "cc6fff31e5ff14e2cc0c68e98a06cbef2d517016",
        []
       ],
       "scrollend-event-fires-to-iframe-inner-frame.html": [
@@ -416065,14 +416200,6 @@
      },
      "the-button-element": {
       "command-and-commandfor": {
-       "button-event-dispatch-expected.txt": [
-        "a55fc3d44f1e7c9196b4b43d456a46ec6c526989",
-        []
-       ],
-       "event-dispatch-shadow-expected.txt": [
-        "55b35913b52e00e3588b702618117e6c6495c6bf",
-        []
-       ],
        "event-interface-expected.txt": [
         "57ccc64f83c74b49b55a2651e6d1c40dd4f0c14e",
         []
@@ -420992,6 +421119,10 @@
      "1b6a42746fc63ada4e4687bf7dd1a934febb43ad",
      []
     ],
+    "cross-origin-tall-iframe-rendering-ref.html": [
+     "b6c4a93fcf52fd16fe633d63fdf838f66560b716",
+     []
+    ],
     "idlharness.window-expected.txt": [
      "db686334a323798d8d0e7bdb0c7f276899906cb6",
      []
@@ -421007,6 +421138,10 @@
      ],
      "cross-origin-subframe.html": [
       "1b34d7c7b75c8b789e8888529d9043005e5667fd",
+      []
+     ],
+     "cross-origin-tall-subframe.sub.html": [
+      "522dfc9413063b55f915ebb14498adb66ef3164c",
       []
      ],
      "iframe-no-root-subframe.html": [
@@ -435353,6 +435488,10 @@
      }
     },
     "resources": {
+     "counter.py": [
+      "8d3cbc159dc07584d5bc1772ef195c7930667899",
+      []
+     ],
      "empty.json": [
       "9e26dfeeb6e641a33dae4961196235bdb965b21b",
       []
@@ -436159,18 +436298,6 @@
      },
      "svgangle-animation-unitType-expected.txt": [
       "51d7def652f483165f166cca0f2d085a60a17497",
-      []
-     ],
-     "svglength-animation-invalid-value-1-expected.txt": [
-      "cb837e2d0fb0e6810d03f1e5f9f70a881cd78ffc",
-      []
-     ],
-     "svglength-animation-invalid-value-2-expected.txt": [
-      "cf952810ae501e69bd832c76dbede938d6ea0c17",
-      []
-     ],
-     "svglength-animation-invalid-value-3-expected.txt": [
-      "f53f7bddc704075b97e0ca2803314416beda52a4",
       []
      ],
      "svglengthlist-animation-unitType-expected.txt": [
@@ -439235,39 +439362,7 @@
       "761f96b6fd3392027f357ce79c11734d9b97557f",
       []
      ]
-    },
-    "urlpattern.any-expected.txt": [
-     "fed2f805876c40387af149c344e2db10c9fefc7f",
-     []
-    ],
-    "urlpattern.any.serviceworker-expected.txt": [
-     "fed2f805876c40387af149c344e2db10c9fefc7f",
-     []
-    ],
-    "urlpattern.any.sharedworker-expected.txt": [
-     "fed2f805876c40387af149c344e2db10c9fefc7f",
-     []
-    ],
-    "urlpattern.any.worker-expected.txt": [
-     "fed2f805876c40387af149c344e2db10c9fefc7f",
-     []
-    ],
-    "urlpattern.https.any-expected.txt": [
-     "fed2f805876c40387af149c344e2db10c9fefc7f",
-     []
-    ],
-    "urlpattern.https.any.serviceworker-expected.txt": [
-     "fed2f805876c40387af149c344e2db10c9fefc7f",
-     []
-    ],
-    "urlpattern.https.any.sharedworker-expected.txt": [
-     "fed2f805876c40387af149c344e2db10c9fefc7f",
-     []
-    ],
-    "urlpattern.https.any.worker-expected.txt": [
-     "fed2f805876c40387af149c344e2db10c9fefc7f",
-     []
-    ]
+    }
    },
    "user-timing": {
     "DIR_METADATA": [
@@ -444402,11 +444497,11 @@
     },
     "resources": {
      "minimum_datatype_set.json": [
-      "3c1dc16f971b8c2f512e6ef601fec90bec3a353f",
+      "39acc257965684f0617eefcaacc508fed70bcba7",
       []
      ],
      "utils.js": [
-      "7cca3330992597495615ac2dc0d025adcf4ef087",
+      "eb15b329d906df6ec3da8f584a4dec8645190807",
       []
      ],
      "utils_validation.js": [
@@ -445567,19 +445662,19 @@
      ]
     },
     "idlharness.https.any-expected.txt": [
-     "0e9f58b351fe394d4a0b3a2c175b87e74e68787e",
+     "f71eaa832367bf2a7e425c869c53a89781110c33",
      []
     ],
     "idlharness.https.any.serviceworker-expected.txt": [
-     "0e9f58b351fe394d4a0b3a2c175b87e74e68787e",
+     "f71eaa832367bf2a7e425c869c53a89781110c33",
      []
     ],
     "idlharness.https.any.sharedworker-expected.txt": [
-     "0e9f58b351fe394d4a0b3a2c175b87e74e68787e",
+     "f71eaa832367bf2a7e425c869c53a89781110c33",
      []
     ],
     "idlharness.https.any.worker-expected.txt": [
-     "0e9f58b351fe394d4a0b3a2c175b87e74e68787e",
+     "f71eaa832367bf2a7e425c869c53a89781110c33",
      []
     ],
     "resources": {
@@ -446384,11 +446479,11 @@
         []
        ],
        "dom_override_cue_align_position_line_size-ref.html": [
-        "a9a63e7c72a9ad5c13fa873a5e18ca477671c836",
+        "565d46c3f645b3ecad99835990483c2df543c81a",
         []
        ],
        "dom_override_cue_align_position_line_size_while_paused-ref.html": [
-        "61c9c3eae5153875cee824713d59fa8cbce98557",
+        "5295ced32683d84baa3de6ddbda05471473274ed",
         []
        ],
        "dom_override_cue_line-ref.html": [
@@ -503876,13 +503971,6 @@
        {}
       ]
      ],
-     "anchor-position-grid-001.html": [
-      "006c4b851d5a582d5fe18ee8d27a3378dfab29b4",
-      [
-       null,
-       {}
-      ]
-     ],
      "anchor-position-inline-001.html": [
       "12c1766a6cd64c27dfdca0abff2ae749ff66a7ba",
       [
@@ -503899,13 +503987,6 @@
      ],
      "anchor-position-inline-003.html": [
       "2915d6328c8cdf309f3069f8e817bfea435d9f86",
-      [
-       null,
-       {}
-      ]
-     ],
-     "anchor-position-inline-004.html": [
-      "e47147ec672dfc096c915cb587cd74f04cc7d3cc",
       [
        null,
        {}
@@ -503969,13 +504050,6 @@
      ],
      "anchor-position-multicol-fixed-001.html": [
       "062021877968296ca2c87086692a85487065673e",
-      [
-       null,
-       {}
-      ]
-     ],
-     "anchor-position-multicol-nested-001.html": [
-      "c5ce41299af29008356b7a049a3d479038379fae",
       [
        null,
        {}
@@ -504171,14 +504245,14 @@
       ]
      ],
      "anchor-scroll-position-try-007.html": [
-      "739a4c897e5626a2b1bcc760e6c502e1b645f549",
+      "8c02bdc47c798fa5baecfe268db15d815b211923",
       [
        null,
        {}
       ]
      ],
      "anchor-scroll-position-try-008.html": [
-      "0df1c26a289dbb4a4841ffa69fb069b24a94b4e4",
+      "01e0026f652c94a952d15be857f6c19550aff228",
       [
        null,
        {}
@@ -533387,6 +533461,15 @@
        ]
       ]
      },
+     "line-break": {
+      "line-break-var-substitution.html": [
+       "95731480032ac6b8165b1290fbd7cddf4e246ef9",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
      "line-breaking": {
       "line-breaking-020.html": [
        "7c8d0f119edb5ef768b37a5a41b8df9bb9e59600",
@@ -533561,7 +533644,7 @@
        ]
       ],
       "line-break-invalid.html": [
-       "aca16649360766eed8a2b91d1692890cd03a5e4b",
+       "7ba6825728b80d8e0b8f1b7edc8945c99db815d5",
        [
         null,
         {}
@@ -537018,6 +537101,13 @@
         ]
        ]
       },
+      "invalidation.html": [
+       "a456e184df913122916b873d269b6b38388f9fd9",
+       [
+        null,
+        {}
+       ]
+      ],
       "properties": {
        "accent-color.html": [
         "8cd0b986e8665ee6a4e9830b9346f5a4957b89b8",
@@ -548036,7 +548126,7 @@
        ]
       ],
       "parse-heading.html": [
-       "1429dfb8a30f67c791e01e0fc3b2facfcb40e337",
+       "ce9b1fab20432edc4d23953bdf6a2c038c422204",
        [
         null,
         {}
@@ -551757,7 +551847,7 @@
        ]
       ],
       "scrollend-event-fired-for-programmatic-scroll.html": [
-       "449aea053512442d063f46355bf48c53686291da",
+       "92d69fc8a95a1802e608dc44090b6f51ed7f1d3c",
        [
         "dom/events/scrolling/scrollend-event-fired-for-programmatic-scroll.html?include=root-scrollBy-auto",
         {
@@ -551808,7 +551898,7 @@
        ]
       ],
       "scrollend-event-fired-for-scroll-attr-change.html": [
-       "c96db1c749e9da8f448184722d4e7611619097c7",
+       "f7b357e493573f342620925ff7a9015a9f38207d",
        [
         "dom/events/scrolling/scrollend-event-fired-for-scroll-attr-change.html?include=root-scrollLeft-auto",
         {
@@ -554154,6 +554244,13 @@
        "a1be3e1dd3e79a75d4f2218c2ad1e0fbabe62849",
        [
         "dom/nodes/insertion-removing-steps/insertion-removing-steps-script.window.html",
+        {}
+       ]
+      ],
+      "later-script-removed-by-earlier-script.html": [
+       "28c7d665a250a70639297f99b5dcc0728e44bbb5",
+       [
+        null,
         {}
        ]
       ],
@@ -624714,6 +624811,13 @@
        ]
       },
       "global-hdr-headroom": {
+       "attribute.html": [
+        "a265d4d8b5f411b65ccaaa65fe4745b9630766c9",
+        [
+         null,
+         {}
+        ]
+       ],
        "iso21496-1-jpg.html": [
         "a22ff64ec5fddc5f07f518092891ffb86c06c48a",
         [
@@ -663270,7 +663374,7 @@
         ]
        ],
        "dialog-closedby-corner-cases.html": [
-        "2c9dff9753abfa76a67c0f97505e9f5c5edaa81a",
+        "0ce20f08dd7fc409ee7a43d575c5b4aaa8ac3c7f",
         [
          null,
          {
@@ -663289,7 +663393,7 @@
         ]
        ],
        "dialog-closedby-start-open.html": [
-        "0606d9b04afd002d7319b8a9ad7b990ca67cf359",
+        "97cfb30afef4f802fd3aa97c91c86230a8bb9f89",
         [
          null,
          {
@@ -663299,7 +663403,7 @@
         ]
        ],
        "dialog-closedby.html": [
-        "b67bc80765aded1bf376d967ebce989b2861cf12",
+        "0dd1fe9f815367248f1a813c280b87d6e0e7d20a",
         [
          null,
          {
@@ -663456,7 +663560,7 @@
         ]
        ],
        "dialog-requestclose.html": [
-        "6555f1b43bd399cc4e885f80a3a9cbee1dd752dc",
+        "029e819be49070eaf2d04aed7936aa4e2e28603c",
         [
          null,
          {
@@ -663486,7 +663590,7 @@
         ]
        ],
        "dialog-toggle-source.html": [
-        "3166316b497f8a3499b6dca81f1aaf3b03ab4fb2",
+        "ac950a8c327dacdcb65e46876489f3d0526152a4",
         [
          null,
          {
@@ -664254,7 +664358,7 @@
        ]
       ],
       "popover-anchor-multicol-display.tentative.html": [
-       "fe65ec5ba4ebac600e32990424ba4ef7a06cccf7",
+       "f8db954924c83198baba490e0a1a7e97097369f2",
        [
         null,
         {}
@@ -678048,6 +678152,13 @@
     ],
     "cross-origin-iframe.sub.html": [
      "d444237f6b954b08952c502a510e7ead785c2eec",
+     [
+      null,
+      {}
+     ]
+    ],
+    "cross-origin-tall-iframe.sub.html": [
+     "382f7b9b97b047ed4b147aa0734963e5e92a2d13",
      [
       null,
       {}
@@ -726846,6 +726957,13 @@
       {}
      ]
     ],
+    "header-only-top-level.html": [
+     "a1dc00c9767e8d3f56deaa0c0d8c20656a8b3ddd",
+     [
+      null,
+      {}
+     ]
+    ],
     "inline-speculation-rules-errors.html": [
      "69e9cf3df5c6a12b6ae1ebd08fd154b6f161154a",
      [
@@ -744955,6 +745073,13 @@
        {}
       ]
      ],
+     "svgboolean-animation-invalid-value-1.html": [
+      "e0ff889432b8aae4f3b8f47ec6f894557c427015",
+      [
+       null,
+       {}
+      ]
+     ],
      "svgenum-animation-1.html": [
       "05b75e9ad81d5e979834ef25a42ab9f3a42f1d12",
       [
@@ -745055,6 +745180,20 @@
      ],
      "svginteger-animation-2.html": [
       "25ef7ff08effb49c9953981756d482846b590aaf",
+      [
+       null,
+       {}
+      ]
+     ],
+     "svginteger-animation-invalid-value-1.html": [
+      "9fce58ac258906a807ed8cdaadfff7d03c7221a3",
+      [
+       null,
+       {}
+      ]
+     ],
+     "svgintegeroptionalinteger-animation-invalid-value-1.html": [
+      "69904840914f0cbc1837496f4c769d2a1eccd7c5",
       [
        null,
        {}
@@ -745179,6 +745318,48 @@
        {}
       ]
      ],
+     "svglength-animation-invalid-value-4.html": [
+      "ae9d144e1dca30e200b32e1669f1454d49064944",
+      [
+       null,
+       {}
+      ]
+     ],
+     "svglength-animation-invalid-value-5.html": [
+      "fe4f2d553d1057228af8ad73ada1901884011055",
+      [
+       null,
+       {}
+      ]
+     ],
+     "svglength-animation-invalid-value-6.html": [
+      "50d20eef822450040b8e165732d56ce1c477caaf",
+      [
+       null,
+       {}
+      ]
+     ],
+     "svglength-animation-invalid-value-7.html": [
+      "b4fce7d2ec99d685810e0a5cf8317daf84a46c46",
+      [
+       null,
+       {}
+      ]
+     ],
+     "svglength-animation-invalid-value-8.html": [
+      "55be1f390fe21c5209523624f08bcfc6417497d7",
+      [
+       null,
+       {}
+      ]
+     ],
+     "svglength-animation-invalid-value-9.html": [
+      "696b7ad3b2689fe644cefeaea740de7fda6878e4",
+      [
+       null,
+       {}
+      ]
+     ],
      "svglength-animation-number-to-number.html": [
       "0b4fca52ec0f878023ce6ba62fcde0e7426bbc8d",
       [
@@ -745286,6 +745467,13 @@
        {}
       ]
      ],
+     "svglengthlist-animation-invalid-value-1.html": [
+      "57f3d2606ba27da625c3313fde6de61331222e5d",
+      [
+       null,
+       {}
+      ]
+     ],
      "svglengthlist-animation-unitType.html": [
       "0dcb8a7962f53f5fc864a2492dff49bd73477427",
       [
@@ -745321,6 +745509,13 @@
        {}
       ]
      ],
+     "svgnumber-animation-invalid-value-1.html": [
+      "cfb4a1fc13e3c11ff9fcb3eb4799b0401aa9ec9f",
+      [
+       null,
+       {}
+      ]
+     ],
      "svgnumberlist-animation-1.html": [
       "aabb7d7daa159409706ad2ff59e54220218f25a2",
       [
@@ -745330,6 +745525,13 @@
      ],
      "svgnumberlist-animation-2.html": [
       "e62bbf68602dbe439b2659aac3727f8f6c40e2d0",
+      [
+       null,
+       {}
+      ]
+     ],
+     "svgnumberlist-animation-invalid-value-1.html": [
+      "8bfcf4d9d9adad3cd4727cf48f0901a062fdeb7c",
       [
        null,
        {}
@@ -745363,6 +745565,13 @@
        {}
       ]
      ],
+     "svgnumberoptionalnumber-animation-invalid-value-1.html": [
+      "046249fe101de216f9c1a1cadccac10586fbe13c",
+      [
+       null,
+       {}
+      ]
+     ],
      "svgpath-animation-1.tentative.html": [
       "3df821d7c310f6c1607786f14a6c6bafef272fb5",
       [
@@ -745372,6 +745581,13 @@
      ],
      "svgpath-animation-2.tentative.html": [
       "68114581172fdf83d0317e3be397a5a6cd0e5926",
+      [
+       null,
+       {}
+      ]
+     ],
+     "svgpath-animation-invalid-value-1.html": [
+      "90b759dbd4191e2f57c076a740d75755e777c032",
       [
        null,
        {}
@@ -745391,6 +745607,13 @@
        {}
       ]
      ],
+     "svgpointlist-animation-invalid-value-1.html": [
+      "e9d489a14202c696dfd6efb0cfb65eb71edec21e",
+      [
+       null,
+       {}
+      ]
+     ],
      "svgrect-animation-1.html": [
       "d13ccff418ff36c3f928e45aa14766a0d041e988",
       [
@@ -745400,6 +745623,13 @@
      ],
      "svgrect-animation-2.html": [
       "86f5368a3adfa4e40e84327f9170a74c231d0b03",
+      [
+       null,
+       {}
+      ]
+     ],
+     "svgrect-animation-invalid-value-1.html": [
+      "fd28b6d4c0a0dec91dfb38801eacac3454abeede",
       [
        null,
        {}
@@ -748851,7 +749081,7 @@
      ]
     ],
     "script-enforcement-001.html": [
-     "dc2bf3131eac1bfd2e71d3a256c534f9f25b4402",
+     "55b90298df2161fdcb1bf5decf25d9cc6ea27944",
      [
       null,
       {}
@@ -748865,21 +749095,21 @@
      ]
     ],
     "script-enforcement-002.html": [
-     "d6799d502ecfd706bd1356a34283c1a422f75cb1",
+     "90989d3d64766b4c9e914cbac33b13001ced05f2",
      [
       null,
       {}
      ]
     ],
     "script-enforcement-003.html": [
-     "5f3b31796bb77dd33c74dd795e053562dc686c7d",
+     "b792eb71458e81b15d80eeb5fc6f7aa2e9eefe24",
      [
       null,
       {}
      ]
     ],
     "script-enforcement-004.html": [
-     "29dff3c6c40ad13a19ff6b1033df20b2cf8cb205",
+     "7d5b9248b4b4b145305270bccc6eeef75edaae38",
      [
       null,
       {}
@@ -767982,7 +768212,7 @@
        ]
       ],
       "different-contexts.html": [
-       "0b54c472cf071edd86654b0027fb81bf00fdc02c",
+       "63000250af08a5134852f0f24f182dba35dc887d",
        [
         null,
         {}
@@ -786064,6 +786294,228 @@
        }
       ]
      ],
+     "is_infinite.https.any.js": [
+      "a5c25435619115b7340e38e6755d6e8fd8768a68",
+      [
+       "webnn/conformance_tests/is_infinite.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API Element-wise logical isInfinite operation"
+         ],
+         [
+          "global",
+          "window"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/is_infinite.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API Element-wise logical isInfinite operation"
+         ],
+         [
+          "global",
+          "window"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/is_infinite.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API Element-wise logical isInfinite operation"
+         ],
+         [
+          "global",
+          "window"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "is_nan.https.any.js": [
+      "ef656eede0c5e6f0bc8e1ff74d1230996c3c4b47",
+      [
+       "webnn/conformance_tests/is_nan.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API Element-wise logical isNaN operation"
+         ],
+         [
+          "global",
+          "window"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/is_nan.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API Element-wise logical isNaN operation"
+         ],
+         [
+          "global",
+          "window"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/is_nan.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API Element-wise logical isNaN operation"
+         ],
+         [
+          "global",
+          "window"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "l2Pool2d.https.any.js": [
       "bb4d3d79723af9d41f1d220e0922441857d21441",
       [
@@ -791344,6 +791796,117 @@
          [
           "title",
           "test WebNN API reverse operation"
+         ],
+         [
+          "global",
+          "window"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "round_even.https.any.js": [
+      "e054d2ea4f55785c86aab84bc04b1a91e74d7dbd",
+      [
+       "webnn/conformance_tests/round_even.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise roundEven operation"
+         ],
+         [
+          "global",
+          "window"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/round_even.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise roundEven operation"
+         ],
+         [
+          "global",
+          "window"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/round_even.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API element-wise roundEven operation"
          ],
          [
           "global",
@@ -800528,7 +801091,7 @@
       ]
      ],
      "elementwise-logical.https.any.js": [
-      "547cba3cc6c480e3e8a5a34c62e54723b7d9bd6a",
+      "13ebc11a8344b4dbbc289498a61b6f6a6aeb1823",
       [
        "webnn/validation_tests/elementwise-logical.https.any.html?op=equal&device=cpu",
        {
@@ -800660,6 +801223,30 @@
          [
           "variant",
           "?op=logicalNot&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
          ],
          [
           "script",
@@ -800801,6 +801388,30 @@
           "?op=logicalNot&device=npu"
          ],
          [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
+         ],
+         [
           "script",
           "../resources/utils_validation.js"
          ]
@@ -800938,6 +801549,30 @@
          [
           "variant",
           "?op=logicalNot&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
          ],
          [
           "script",
@@ -801079,6 +801714,30 @@
           "?op=logicalNot&device=npu"
          ],
          [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
+         ],
+         [
           "script",
           "../resources/utils_validation.js"
          ]
@@ -801216,6 +801875,30 @@
          [
           "variant",
           "?op=logicalNot&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
          ],
          [
           "script",
@@ -801357,6 +802040,30 @@
           "?op=logicalNot&device=npu"
          ],
          [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
+         ],
+         [
           "script",
           "../resources/utils_validation.js"
          ]
@@ -801494,6 +802201,30 @@
          [
           "variant",
           "?op=logicalNot&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
          ],
          [
           "script",
@@ -801635,6 +802366,30 @@
           "?op=logicalNot&device=npu"
          ],
          [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
+         ],
+         [
           "script",
           "../resources/utils_validation.js"
          ]
@@ -801772,6 +802527,1008 @@
          [
           "variant",
           "?op=logicalNot&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/elementwise-logical.https.any.html?op=isInfinite&device=cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API element-wise logical operations"
+         ],
+         [
+          "global",
+          "window"
+         ],
+         [
+          "variant",
+          "?op=equal&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=equal&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=equal&device=npu"
+         ],
+         [
+          "variant",
+          "?op=greater&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=greater&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=greater&device=npu"
+         ],
+         [
+          "variant",
+          "?op=greaterOrEqual&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=greaterOrEqual&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=greaterOrEqual&device=npu"
+         ],
+         [
+          "variant",
+          "?op=lesser&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=lesser&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=lesser&device=npu"
+         ],
+         [
+          "variant",
+          "?op=lesserOrEqual&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=lesserOrEqual&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=lesserOrEqual&device=npu"
+         ],
+         [
+          "variant",
+          "?op=notEqual&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=notEqual&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=notEqual&device=npu"
+         ],
+         [
+          "variant",
+          "?op=logicalAnd&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=logicalAnd&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=logicalAnd&device=npu"
+         ],
+         [
+          "variant",
+          "?op=logicalOr&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=logicalOr&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=logicalOr&device=npu"
+         ],
+         [
+          "variant",
+          "?op=logicalXor&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=logicalXor&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=logicalXor&device=npu"
+         ],
+         [
+          "variant",
+          "?op=logicalNot&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=logicalNot&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=logicalNot&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/elementwise-logical.https.any.html?op=isInfinite&device=gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API element-wise logical operations"
+         ],
+         [
+          "global",
+          "window"
+         ],
+         [
+          "variant",
+          "?op=equal&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=equal&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=equal&device=npu"
+         ],
+         [
+          "variant",
+          "?op=greater&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=greater&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=greater&device=npu"
+         ],
+         [
+          "variant",
+          "?op=greaterOrEqual&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=greaterOrEqual&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=greaterOrEqual&device=npu"
+         ],
+         [
+          "variant",
+          "?op=lesser&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=lesser&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=lesser&device=npu"
+         ],
+         [
+          "variant",
+          "?op=lesserOrEqual&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=lesserOrEqual&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=lesserOrEqual&device=npu"
+         ],
+         [
+          "variant",
+          "?op=notEqual&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=notEqual&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=notEqual&device=npu"
+         ],
+         [
+          "variant",
+          "?op=logicalAnd&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=logicalAnd&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=logicalAnd&device=npu"
+         ],
+         [
+          "variant",
+          "?op=logicalOr&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=logicalOr&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=logicalOr&device=npu"
+         ],
+         [
+          "variant",
+          "?op=logicalXor&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=logicalXor&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=logicalXor&device=npu"
+         ],
+         [
+          "variant",
+          "?op=logicalNot&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=logicalNot&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=logicalNot&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/elementwise-logical.https.any.html?op=isInfinite&device=npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API element-wise logical operations"
+         ],
+         [
+          "global",
+          "window"
+         ],
+         [
+          "variant",
+          "?op=equal&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=equal&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=equal&device=npu"
+         ],
+         [
+          "variant",
+          "?op=greater&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=greater&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=greater&device=npu"
+         ],
+         [
+          "variant",
+          "?op=greaterOrEqual&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=greaterOrEqual&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=greaterOrEqual&device=npu"
+         ],
+         [
+          "variant",
+          "?op=lesser&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=lesser&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=lesser&device=npu"
+         ],
+         [
+          "variant",
+          "?op=lesserOrEqual&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=lesserOrEqual&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=lesserOrEqual&device=npu"
+         ],
+         [
+          "variant",
+          "?op=notEqual&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=notEqual&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=notEqual&device=npu"
+         ],
+         [
+          "variant",
+          "?op=logicalAnd&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=logicalAnd&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=logicalAnd&device=npu"
+         ],
+         [
+          "variant",
+          "?op=logicalOr&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=logicalOr&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=logicalOr&device=npu"
+         ],
+         [
+          "variant",
+          "?op=logicalXor&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=logicalXor&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=logicalXor&device=npu"
+         ],
+         [
+          "variant",
+          "?op=logicalNot&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=logicalNot&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=logicalNot&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/elementwise-logical.https.any.html?op=isNaN&device=cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API element-wise logical operations"
+         ],
+         [
+          "global",
+          "window"
+         ],
+         [
+          "variant",
+          "?op=equal&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=equal&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=equal&device=npu"
+         ],
+         [
+          "variant",
+          "?op=greater&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=greater&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=greater&device=npu"
+         ],
+         [
+          "variant",
+          "?op=greaterOrEqual&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=greaterOrEqual&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=greaterOrEqual&device=npu"
+         ],
+         [
+          "variant",
+          "?op=lesser&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=lesser&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=lesser&device=npu"
+         ],
+         [
+          "variant",
+          "?op=lesserOrEqual&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=lesserOrEqual&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=lesserOrEqual&device=npu"
+         ],
+         [
+          "variant",
+          "?op=notEqual&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=notEqual&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=notEqual&device=npu"
+         ],
+         [
+          "variant",
+          "?op=logicalAnd&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=logicalAnd&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=logicalAnd&device=npu"
+         ],
+         [
+          "variant",
+          "?op=logicalOr&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=logicalOr&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=logicalOr&device=npu"
+         ],
+         [
+          "variant",
+          "?op=logicalXor&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=logicalXor&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=logicalXor&device=npu"
+         ],
+         [
+          "variant",
+          "?op=logicalNot&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=logicalNot&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=logicalNot&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/elementwise-logical.https.any.html?op=isNaN&device=gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API element-wise logical operations"
+         ],
+         [
+          "global",
+          "window"
+         ],
+         [
+          "variant",
+          "?op=equal&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=equal&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=equal&device=npu"
+         ],
+         [
+          "variant",
+          "?op=greater&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=greater&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=greater&device=npu"
+         ],
+         [
+          "variant",
+          "?op=greaterOrEqual&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=greaterOrEqual&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=greaterOrEqual&device=npu"
+         ],
+         [
+          "variant",
+          "?op=lesser&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=lesser&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=lesser&device=npu"
+         ],
+         [
+          "variant",
+          "?op=lesserOrEqual&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=lesserOrEqual&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=lesserOrEqual&device=npu"
+         ],
+         [
+          "variant",
+          "?op=notEqual&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=notEqual&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=notEqual&device=npu"
+         ],
+         [
+          "variant",
+          "?op=logicalAnd&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=logicalAnd&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=logicalAnd&device=npu"
+         ],
+         [
+          "variant",
+          "?op=logicalOr&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=logicalOr&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=logicalOr&device=npu"
+         ],
+         [
+          "variant",
+          "?op=logicalXor&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=logicalXor&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=logicalXor&device=npu"
+         ],
+         [
+          "variant",
+          "?op=logicalNot&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=logicalNot&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=logicalNot&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
+         ],
+         [
+          "script",
+          "../resources/utils_validation.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "webnn/validation_tests/elementwise-logical.https.any.html?op=isNaN&device=npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "validation tests for WebNN API element-wise logical operations"
+         ],
+         [
+          "global",
+          "window"
+         ],
+         [
+          "variant",
+          "?op=equal&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=equal&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=equal&device=npu"
+         ],
+         [
+          "variant",
+          "?op=greater&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=greater&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=greater&device=npu"
+         ],
+         [
+          "variant",
+          "?op=greaterOrEqual&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=greaterOrEqual&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=greaterOrEqual&device=npu"
+         ],
+         [
+          "variant",
+          "?op=lesser&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=lesser&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=lesser&device=npu"
+         ],
+         [
+          "variant",
+          "?op=lesserOrEqual&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=lesserOrEqual&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=lesserOrEqual&device=npu"
+         ],
+         [
+          "variant",
+          "?op=notEqual&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=notEqual&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=notEqual&device=npu"
+         ],
+         [
+          "variant",
+          "?op=logicalAnd&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=logicalAnd&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=logicalAnd&device=npu"
+         ],
+         [
+          "variant",
+          "?op=logicalOr&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=logicalOr&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=logicalOr&device=npu"
+         ],
+         [
+          "variant",
+          "?op=logicalXor&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=logicalXor&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=logicalXor&device=npu"
+         ],
+         [
+          "variant",
+          "?op=logicalNot&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=logicalNot&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=logicalNot&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
          ],
          [
           "script",
@@ -801913,6 +803670,30 @@
           "?op=logicalNot&device=npu"
          ],
          [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
+         ],
+         [
           "script",
           "../resources/utils_validation.js"
          ]
@@ -802050,6 +803831,30 @@
          [
           "variant",
           "?op=logicalNot&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
          ],
          [
           "script",
@@ -802191,6 +803996,30 @@
           "?op=logicalNot&device=npu"
          ],
          [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
+         ],
+         [
           "script",
           "../resources/utils_validation.js"
          ]
@@ -802328,6 +804157,30 @@
          [
           "variant",
           "?op=logicalNot&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
          ],
          [
           "script",
@@ -802469,6 +804322,30 @@
           "?op=logicalNot&device=npu"
          ],
          [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
+         ],
+         [
           "script",
           "../resources/utils_validation.js"
          ]
@@ -802606,6 +804483,30 @@
          [
           "variant",
           "?op=logicalNot&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
          ],
          [
           "script",
@@ -802747,6 +804648,30 @@
           "?op=logicalNot&device=npu"
          ],
          [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
+         ],
+         [
           "script",
           "../resources/utils_validation.js"
          ]
@@ -802884,6 +804809,30 @@
          [
           "variant",
           "?op=logicalNot&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
          ],
          [
           "script",
@@ -803025,6 +804974,30 @@
           "?op=logicalNot&device=npu"
          ],
          [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
+         ],
+         [
           "script",
           "../resources/utils_validation.js"
          ]
@@ -803162,6 +805135,30 @@
          [
           "variant",
           "?op=logicalNot&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
          ],
          [
           "script",
@@ -803303,6 +805300,30 @@
           "?op=logicalNot&device=npu"
          ],
          [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
+         ],
+         [
           "script",
           "../resources/utils_validation.js"
          ]
@@ -803440,6 +805461,30 @@
          [
           "variant",
           "?op=logicalNot&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
          ],
          [
           "script",
@@ -803581,6 +805626,30 @@
           "?op=logicalNot&device=npu"
          ],
          [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
+         ],
+         [
           "script",
           "../resources/utils_validation.js"
          ]
@@ -803718,6 +805787,30 @@
          [
           "variant",
           "?op=logicalNot&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
          ],
          [
           "script",
@@ -803859,6 +805952,30 @@
           "?op=logicalNot&device=npu"
          ],
          [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
+         ],
+         [
           "script",
           "../resources/utils_validation.js"
          ]
@@ -803996,6 +806113,30 @@
          [
           "variant",
           "?op=logicalNot&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
          ],
          [
           "script",
@@ -804137,6 +806278,30 @@
           "?op=logicalNot&device=npu"
          ],
          [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
+         ],
+         [
           "script",
           "../resources/utils_validation.js"
          ]
@@ -804274,6 +806439,30 @@
          [
           "variant",
           "?op=logicalNot&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
          ],
          [
           "script",
@@ -804415,6 +806604,30 @@
           "?op=logicalNot&device=npu"
          ],
          [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
+         ],
+         [
           "script",
           "../resources/utils_validation.js"
          ]
@@ -804552,6 +806765,30 @@
          [
           "variant",
           "?op=logicalNot&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
          ],
          [
           "script",
@@ -804693,6 +806930,30 @@
           "?op=logicalNot&device=npu"
          ],
          [
+          "variant",
+          "?op=isNaN&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isNaN&device=npu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=cpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=gpu"
+         ],
+         [
+          "variant",
+          "?op=isInfinite&device=npu"
+         ],
+         [
           "script",
           "../resources/utils_validation.js"
          ]
@@ -804701,7 +806962,7 @@
       ]
      ],
      "elementwise-unary.https.any.js": [
-      "99152c29c8124f5bbf4a67c9be9b8d584cb83318",
+      "4f1bf0b1fa9a8afa365790e9cefb6d774bceebec",
       [
        "webnn/validation_tests/elementwise-unary.https.any.html?cpu",
        {
@@ -811683,7 +813944,7 @@
      ]
     ],
     "outbound-rtp-encoding-index.https.html": [
-     "825fe6949c3d9b040763c51c088b75162a03b481",
+     "44624bf62d51a14b094be044fe376dbeb964f776",
      [
       null,
       {}
@@ -812016,7 +814277,7 @@
      ]
     ],
     "rtp-stats-lifetime.https.html": [
-     "4ddd6ad4f16c5432694723f4da6b68acd24e06cb",
+     "b6a7760da136a39487198d29ce070c2cc047bd31",
      [
       null,
       {}
@@ -812701,7 +814962,7 @@
      ]
     ],
     "hardware-capability-stats.https.html": [
-     "a6293e850044ab7d56c10cf84e21252ce93f6d4a",
+     "eee83ad04b51dff8cdbf6aa0acec1fb462a2d405",
      [
       null,
       {
@@ -826841,7 +829102,7 @@
      ]
     ],
     "connect.https.any.js": [
-     "93df5fe3f478df382918a49368d1a3ad0c5242aa",
+     "8718108c4fdf19327725513d2f245e6a819324e0",
      [
       "webtransport/connect.https.any.html",
       {
@@ -826920,7 +829181,7 @@
      ]
     ],
     "constructor.https.any.js": [
-     "0f39c4993bd99c9fd99b845bbafc01330215b840",
+     "f7727474eebb9cba409cbcdc06d3eaaf3bd326f1",
      [
       "webtransport/constructor.https.any.html",
       {
@@ -836901,7 +839162,7 @@
      ]
     ],
     "setrequestheader-content-type.htm": [
-     "07238391eb5cc8639edbe996208a18b6d9d26b04",
+     "c78482142469cf966c3f64287c81c78bcd4f3e63",
      [
       null,
       {
@@ -850641,66 +852902,6 @@
        ]
       ]
      }
-    },
-    "text": {
-     "visualtests": {
-      "text-inline-size-001-visual.svg": [
-       "086bab33b0030bb1d40dc17f960b7e3cbb098ae6",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-inline-size-002-visual.svg": [
-       "7f58973ce359b79113247ca28a155216687e0d13",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-inline-size-003-visual.svg": [
-       "19bf0dc9d53d81c7a65a0c2a200ec5b3c1d7e771",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-inline-size-005-visual.svg": [
-       "dab467e1221be1da26d5194414cb54c766074a5c",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-inline-size-006-visual.svg": [
-       "427ff09501b75b4e58429d42ad2339e43c596d7d",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-inline-size-007-visual.svg": [
-       "8bb078f95b0743452caf08d2367260902dc1059e",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-inline-size-101-visual.svg": [
-       "e1c5c416931ad35437bb1f480ed896e18dce50ba",
-       [
-        null,
-        {}
-       ]
-      ],
-      "text-inline-size-201-visual.svg": [
-       "f2649eaad28fe66a6534f2e2c0f26e291c5ee38d",
-       [
-        null,
-        {}
-       ]
-      ]
-     }
     }
    }
   },
@@ -850981,7 +853182,7 @@
        },
        "download_will_begin": {
         "download_will_begin.py": [
-         "4c21616f08143d9245c01bbf16dd4fa5eb2c97ea",
+         "6d1ac792f397a1313a3e63b90044f5c941be1ec5",
          [
           null,
           {}
@@ -851163,7 +853364,7 @@
          ]
         ],
         "navigate.py": [
-         "25117a14b93e7f23b2b37e9619ab95f7c465f025",
+         "637df8af37e842a6175bc6b0317ef2f111d4c95e",
          [
           null,
           {}
@@ -854868,7 +857069,7 @@
      },
      "interop": {
       "beforeunload_prompt.py": [
-       "68a025ef38cb67c0a06de93a5b51939235e9bf8a",
+       "e788722b9a37cab9cd49552a534abb562e41a9bd",
        [
         null,
         {}
