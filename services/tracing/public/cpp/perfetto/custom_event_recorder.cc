@@ -77,82 +77,14 @@ void CustomEventRecorder::EmitRecurringUpdates() {
 #endif
 }
 
-void CustomEventRecorder::OnSetup(
-    const perfetto::DataSourceBase::SetupArgs& args) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(perfetto_sequence_checker_);
-
-  // The legacy chrome_config is only used to specify histogram names.
-  auto legacy_config = TraceConfig(args.config->chrome_config().trace_config());
-  ResetHistograms(legacy_config.histogram_names());
-}
-
 void CustomEventRecorder::OnStart(const perfetto::DataSourceBase::StartArgs&) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(perfetto_sequence_checker_);
   EmitRecurringUpdates();
 }
 
-void CustomEventRecorder::OnStop(const perfetto::DataSourceBase::StopArgs&) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(perfetto_sequence_checker_);
-
-  // Write metadata events etc.
-  LogHistograms();
-}
-
 void CustomEventRecorder::WillClearIncrementalState(
     const perfetto::DataSourceBase::ClearIncrementalStateArgs&) {
   EmitRecurringUpdates();
-}
-
-void CustomEventRecorder::LogHistogram(base::HistogramBase* histogram) {
-  if (!histogram) {
-    return;
-  }
-  // For the purpose of calculating metrics from histograms we only want the
-  // delta of the events.
-  auto samples = histogram->SnapshotSamples();
-
-  // If there were HistogramSamples recorded during startup, then those should
-  // be subtracted from the overall set. This way we only report the samples
-  // that occurred during the run.
-  auto it = startup_histogram_samples_.find(histogram->histogram_name());
-  if (it != startup_histogram_samples_.end()) {
-    samples->Subtract(*it->second.get());
-  }
-  base::Pickle pickle;
-  samples->Serialize(&pickle);
-  std::string buckets = base::Base64Encode(
-      std::string_view(pickle.data_as_char(), pickle.size()));
-  TRACE_EVENT_INSTANT2("benchmark,uma", "UMAHistogramSamples",
-                       TRACE_EVENT_SCOPE_PROCESS, "name",
-                       histogram->histogram_name(), "buckets", buckets);
-}
-
-void CustomEventRecorder::ResetHistograms(
-    const std::unordered_set<std::string>& histogram_names) {
-  histograms_.clear();
-  startup_histogram_samples_.clear();
-  for (const std::string& histogram_name : histogram_names) {
-    histograms_.push_back(histogram_name);
-    auto* histogram = base::StatisticsRecorder::FindHistogram(histogram_name);
-    if (!histogram) {
-      continue;
-    }
-
-    // For the purpose of calculating metrics from histograms we only want the
-    // delta of the events. However we do not want to emit the results when
-    // resetting. This will allow LogHistogram to emit one UMAHistogramSamples
-    // which encompasses only the histograms recorded during the trace. We
-    // cache the initial HistogramSamples so that they can be subtracted from
-    // the full snapshot at the end.
-    startup_histogram_samples_.emplace(histogram_name,
-                                       histogram->SnapshotSamples());
-  }
-}
-
-void CustomEventRecorder::LogHistograms() {
-  for (const std::string& histogram_name : histograms_) {
-    LogHistogram(base::StatisticsRecorder::FindHistogram(histogram_name));
-  }
 }
 
 void CustomEventRecorder::DetachFromSequence() {
