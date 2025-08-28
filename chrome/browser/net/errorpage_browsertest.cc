@@ -658,27 +658,6 @@ class ErrorPageAutoReloadTest : public InProcessBrowserTest {
               title_watcher.WaitAndGetTitle());
   }
 
-  void NavigateAndWaitForFailureWithAutoReload(const GURL& url) {
-    content::WebContents* const web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-
-    // Expect the first navigation to fail with a committed error page.
-    content::TestNavigationManager first_navigation(web_contents, url);
-    web_contents->GetController().LoadURL(url, content::Referrer(),
-                                          ui::PAGE_TRANSITION_TYPED,
-                                          /*extra_headers=*/std::string());
-    ASSERT_TRUE(first_navigation.WaitForNavigationFinished());
-    EXPECT_TRUE(first_navigation.was_committed());
-    EXPECT_FALSE(first_navigation.was_successful());
-
-    // Expect a second navigation to result from a failed auto-reload attempt.
-    // This should not be committed.
-    content::TestNavigationManager failed_auto_reload_navigation(web_contents,
-                                                                 url);
-    ASSERT_TRUE(failed_auto_reload_navigation.WaitForNavigationFinished());
-    EXPECT_FALSE(failed_auto_reload_navigation.was_committed());
-  }
-
   // Sets the number of sequential requests to `kMagicPath` that will be failed.
   // Must be called before there have been any requests to that path.
   void SetRequestsToFail(int requests_to_fail) {
@@ -740,37 +719,6 @@ IN_PROC_BROWSER_TEST_F(ErrorPageAutoReloadTest, AutoReload) {
   SetRequestsToFail(2);
   NavigateToURLAndWaitForTitle(GetMagicUrl(), kSuccessTitle);
   EXPECT_EQ(requests(), 3);
-}
-
-// Make sure that a same document navigation does not cause issues with the
-// auto-reload timer.  Note that this test was added due to this case causing
-// a crash.  On regression, this test may hang due to a crashed renderer.
-// TODO(crbug.com/40709227): Flaky.
-IN_PROC_BROWSER_TEST_F(ErrorPageAutoReloadTest,
-                       DISABLED_IgnoresSameDocumentNavigation) {
-  SetRequestsToFail(3);
-
-  // Wait for the error page and first autoreload.
-  NavigateAndWaitForFailureWithAutoReload(GetMagicUrl());
-
-  EXPECT_EQ(2, requests());
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  const std::u16string kExpectedTitle = u"Test One";
-  content::TitleWatcher title_watcher(web_contents, kExpectedTitle);
-
-  // Same-document navigation on an error page should not interrupt the
-  // scheduled auto-reload which should still be pending on the WebContents.
-  web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-      u"document.location='#';", base::NullCallback(),
-      content::ISOLATED_WORLD_ID_GLOBAL);
-
-  // Wait for the second auto reload to happen. It will succeed and update the
-  // WebContents' title.
-  EXPECT_EQ(kExpectedTitle, title_watcher.WaitAndGetTitle());
-
-  EXPECT_EQ(3, requests());
 }
 
 class ErrorPageOfflineTest : public ErrorPageTest {
