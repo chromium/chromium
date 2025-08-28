@@ -187,17 +187,17 @@ class InstallTest(fake_filesystem_unittest.TestCase):
         )
 
     @unittest.mock.patch('builtins.input', return_value='y')
-    def test_add_extension(self, mock_input):
-        """Tests the add_extension function."""
+    def test_add_extension_copy(self, mock_input):
+        """Tests the add_extension function with copying."""
         install.add_extension(
             'sample_1',
             self.source_extensions_dir,
             self.target_extensions_dir,
             False,
         )
-        self.assertTrue(
-            (self.target_extensions_dir / 'sample_1').exists()
-        )
+        dest_path = self.target_extensions_dir / 'sample_1'
+        self.assertTrue(dest_path.exists())
+        self.assertFalse(dest_path.is_symlink())
 
     @unittest.mock.patch('builtins.input', return_value='y')
     def test_add_extension_symlink(self, mock_input):
@@ -295,7 +295,7 @@ class InstallTest(fake_filesystem_unittest.TestCase):
             'sample_1',
             self.source_extensions_dir,
             self.global_extension_dir,
-            False,
+            symlink=True,
         )
 
     @unittest.mock.patch('install.get_project_root')

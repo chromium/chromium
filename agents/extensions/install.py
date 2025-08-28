@@ -10,7 +10,9 @@ directory into the Gemini CLI extensions directory. You can install
 configurations at the project level (in the '.gemini/extensions' folder at the
 root of the repository) or globally (in '~/.gemini/extensions').
 """
+
 import argparse
+import dataclasses
 import hashlib
 import json
 import os
@@ -18,6 +20,23 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+from typing import Literal
+
+
+@dataclasses.dataclass
+class ExtensionInfo:
+    """Holds information about an extension."""
+
+    name: str
+    scope: Literal['local', 'global'] | None = None
+    install_type: Literal['symlink', 'copy'] | None = None
+    install_path: str | None = None
+    installed_hash: str | None = None
+    available_hash: str | None = None
+    installed_version: str | None = None
+    available_version: str | None = None
+    error: str | None = None
+    status: str | None = None
 
 
 def get_extensions_from_dir(extensions_dir: Path) -> list[str]:
@@ -175,43 +194,138 @@ def is_up_to_date(extension_name: str, source_extensions_dir: Path,
     return source_hash == dest_hash
 
 
-def list_extensions(project_root: Path | None,
-                      extensions_dirs: list[Path]) -> None:
+def _get_installed_info(
+    project_root: Path | None, use_global: bool
+) -> dict[str, ExtensionInfo]:
+    """Returns a dict of extension names to their info."""
+    extensions = {}
+    scope = 'global' if use_global else 'local'
+    install_dir = get_extension_dir(project_root, use_global=use_global)
+    if not install_dir or not install_dir.exists():
+        return extensions
+    for name in get_installed_extensions(install_dir):
+        path = install_dir / name
+        info = ExtensionInfo(
+            name=name,
+            scope=scope,
+            install_path=str(path),
+            installed_hash=get_dir_hash(path),
+            installed_version=get_extension_version(path),
+        )
+
+        if path.is_symlink():
+            info.install_type = 'symlink'
+        else:
+            info.install_type = 'copy'
+        extensions[name] = info
+    return extensions
+
+
+def _print_table(extensions_data: list[ExtensionInfo]) -> None:
+    """Prints the extension data in a table format."""
+    headers = (
+        'Extension',
+        'AVAILABLE',
+        'INSTALLED',
+        'SCOPE',
+        'SYMLINKED',
+        'STATUS',
+    )
+    rows = []
+
+    for info in extensions_data:
+        name = info.name
+        latest = info.available_version or '-'
+        installed = info.installed_version or '-'
+        scope = info.scope or '-'
+        symlinked = (
+            'yes'
+            if info.install_type == 'symlink'
+            else ('no' if info.install_type else '-')
+        )
+        status = info.status or '-'
+        rows.append([name, latest, installed, scope, symlinked, status])
+
+    # Calculate column widths
+    widths = [
+        max(len(str(item)) for item in col)
+        for col in zip(*([list(headers)] + rows), strict=False)
+    ]
+
+    header_line = '  '.join(
+        f'{h:<{w}}' for h, w in zip(headers, widths, strict=False)
+    )
+    separator_line = '  '.join('-' * w for w in widths)
+    print(header_line)
+    print(separator_line)
+
+    for row in rows:
+        print(
+            '  '.join(
+                f'{item:<{w}}' for item, w in zip(row, widths, strict=False)
+            )
+        )
+
+
+def list_extensions(
+    project_root: Path | None, source_dirs: list[Path]
+) -> None:
     """Lists all available and installed extensions."""
-    # Get available, local, and global extensions
-    available_extensions = {}
-    for extensions_dir in extensions_dirs:
-        for name in get_extensions_from_dir(extensions_dir):
-            available_extensions[name] = get_extension_version(
-                extensions_dir / name)
+    # Pre-compute a map of available extensions to their info.
+    available_info_map = {}
+    for source_dir in source_dirs:
+        for name in get_extensions_from_dir(source_dir):
+            if name not in available_info_map:
+                source_path = source_dir / name
+                available_info_map[name] = ExtensionInfo(
+                    name=name,
+                    available_hash=get_dir_hash(source_path),
+                    available_version=get_extension_version(source_path),
+                )
 
-    local_extensions_dir = get_extension_dir(project_root, use_global=False)
-    if local_extensions_dir:
-        local_extensions = {
-            name: get_extension_version(local_extensions_dir / name)
-            for name in get_installed_extensions(local_extensions_dir)
-        }
+    local_info_map = _get_installed_info(project_root, use_global=False)
+    global_info_map = _get_installed_info(project_root, use_global=True)
 
-    global_extensions_dir = get_extension_dir(project_root, use_global=True)
-    if global_extensions_dir:
-        global_extensions = {
-            name: get_extension_version(global_extensions_dir / name)
-            for name in get_installed_extensions(global_extensions_dir)
-        }
+    all_names = sorted(
+        (set(available_info_map) | set(local_info_map) | set(global_info_map))
+        - {'example_server'}
+    )
 
-    all_extension_names = sorted(
-        (set(available_extensions)
-         | set(local_extensions)
-         | set(global_extensions)) - {'example_server'})
+    extensions_data = []
+    for name in all_names:
+        local_info = local_info_map.get(name)
+        global_info = global_info_map.get(name)
+        available_info = available_info_map.get(name)
 
-    # Print table
-    print(f'{"Extension":<20} {"AVAILABLE":<12} {"LOCAL":<10} {"GLOBAL":<10}')
-    print(f'{"-"*19} {"-"*11} {"-"*9} {"-"*9}')
-    for name in all_extension_names:
-        available = available_extensions.get(name, '-')
-        local = local_extensions.get(name, '-')
-        glob = global_extensions.get(name, '-')
-        print(f'{name:<20} {available:<12} {local:<10} {glob:<10}')
+        if not local_info and not global_info:
+            if available_info:
+                extensions_data.append(available_info)
+            continue
+
+        if local_info and global_info:
+            local_info.status = 'active'
+            global_info.status = 'overridden'
+        elif local_info:
+            local_info.status = 'active'
+        elif global_info:
+            global_info.status = 'active'
+
+        if local_info:
+            if available_info:
+                local_info.available_hash = available_info.available_hash
+                local_info.available_version = available_info.available_version
+            extensions_data.append(local_info)
+        if global_info:
+            if available_info:
+                global_info.available_hash = available_info.available_hash
+                global_info.available_version = (
+                    available_info.available_version
+                )
+            if local_info:
+                global_info.name = ''
+            extensions_data.append(global_info)
+
+    _print_table(extensions_data)
 
 
 def add_extension(extension_name: str, source_extensions_dir: Path,
@@ -307,18 +421,26 @@ def main() -> None:
         ' To get help for a specific command, run "install.py <command> -h".')
 
     # Add command
-    add_parser = subparsers.add_parser('add', help='Add new extension.')
+    add_parser = subparsers.add_parser(
+        'add', help='Add new extension (symlinks by default).'
+    )
     add_parser.add_argument('-g',
                             '--global',
                             dest='use_global',
                             action='store_true',
                             help='Install to the global extensions directory.')
-    add_parser.add_argument(
+    mode_group = add_parser.add_mutually_exclusive_group()
+    mode_group.add_argument(
         '-l',
         '--symlink',
         action='store_true',
-        help='Use symlinks rather than directory copies so '
-        'that extensions automatically stays up-to-date.')
+        help='DEPRECATED: This is now the default behavior.',
+    )
+    mode_group.add_argument(
+        '--copy',
+        action='store_true',
+        help='Use directory copies rather than symlinks.',
+    )
     add_parser.add_argument('extensions',
                             nargs='+',
                             help='A list of extension directory names to add.')
@@ -335,7 +457,8 @@ def main() -> None:
         'extensions',
         nargs='*',
         help='A list of extension directory names to update. If not specified, '
-        'all installed extensions will be updated.')
+        'all installed extensions will be updated.',
+    )
 
     # Remove command
     remove_parser = subparsers.add_parser('remove', help='Remove extensions.')
@@ -356,45 +479,54 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    if args.command in ('add', 'update', 'remove'):
-        target_extensions_dir = get_extension_dir(project_root, args.use_global)
-        if not target_extensions_dir:
-            print(
-                'Error: Could not determine target directory for local '
-                'extensions. Please run from within a gclient project.',
-                file=sys.stderr)
-            sys.exit(1)
-
-        if args.command in ('add', 'update'):
-            target_extensions_dir.mkdir(parents=True, exist_ok=True)
-
-        extensions_to_process = args.extensions
-        if args.command == 'update' and not extensions_to_process:
-            extensions_to_process = get_installed_extensions(
-                target_extensions_dir)
-
-        for extension in extensions_to_process:
-            source_extensions_dir = find_extensions_dir_for_extension(
-                extension, extensions_dirs)
-            if not source_extensions_dir:
-                print(f"Error: Extension '{extension}' not found. Skipping.",
-                      file=sys.stderr)
-                continue
-
-            if args.command == 'add':
-                add_extension(extension, source_extensions_dir,
-                              target_extensions_dir, args.symlink)
-            elif args.command == 'update':
-                update_extension(extension, source_extensions_dir,
-                                 target_extensions_dir)
-            elif args.command == 'remove':
-                remove_extension(extension, target_extensions_dir)
-
-    elif args.command == 'list':
-        list_extensions(project_root, extensions_dirs)
-    else:
+    if not args.command:
         parser.print_help()
         sys.exit(1)
+
+    if args.command == 'list':
+        list_extensions(project_root, extensions_dirs)
+        return
+
+    if args.command == 'add' and args.symlink:
+        print(
+            'Warning: The --symlink flag is deprecated and will be removed in '
+            'a future version. Symlinking is now the default behavior. Use '
+            '--copy to copy the extension directory instead.',
+            file=sys.stderr,
+        )
+
+    target_extensions_dir = get_extension_dir(project_root, args.use_global)
+    if not target_extensions_dir:
+        print(
+            'Error: Could not determine target directory for local '
+            'extensions. Please run from within a gclient project.',
+            file=sys.stderr)
+        sys.exit(1)
+
+    if args.command in ('add', 'update'):
+        target_extensions_dir.mkdir(parents=True, exist_ok=True)
+
+    extensions_to_process = args.extensions
+    if args.command == 'update' and not extensions_to_process:
+        extensions_to_process = get_installed_extensions(
+            target_extensions_dir)
+
+    for extension in extensions_to_process:
+        source_extensions_dir = find_extensions_dir_for_extension(
+            extension, extensions_dirs)
+        if not source_extensions_dir:
+            print(f"Error: Extension '{extension}' not found. Skipping.",
+                  file=sys.stderr)
+            continue
+
+        if args.command == 'add':
+            add_extension(extension, source_extensions_dir,
+                          target_extensions_dir, symlink=not args.copy)
+        elif args.command == 'update':
+            update_extension(extension, source_extensions_dir,
+                             target_extensions_dir)
+        elif args.command == 'remove':
+            remove_extension(extension, target_extensions_dir)
 
 
 if __name__ == '__main__':

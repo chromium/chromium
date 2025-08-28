@@ -125,26 +125,22 @@ class InstallIntegrationTest(fake_filesystem_unittest.TestCase):
             (self.target_extensions_dir / 'sample_3').exists()
         )
 
-    def test_add_remove_sequence(self):
-        """Tests adding and then removing a extension."""
+    def test_copy_add_remove_sequence(self):
+        """Tests adding and then removing a copied extension."""
         with unittest.mock.patch(
-            'sys.argv', ['install.py', 'add', 'sample_1']
+            'sys.argv', ['install.py', 'add', '--copy', 'sample_1']
         ):
             install.main()
-        self.assertTrue(
-            (self.target_extensions_dir / 'sample_1').exists()
-        )
-        self.assertFalse(
-            (self.target_extensions_dir / 'sample_1' / 'tests').exists()
-        )
+        dest_path = self.target_extensions_dir / 'sample_1'
+        self.assertTrue(dest_path.exists())
+        self.assertFalse(dest_path.is_symlink())
+        self.assertFalse((dest_path / 'tests').exists())
 
         with unittest.mock.patch(
             'sys.argv', ['install.py', 'remove', 'sample_1']
         ):
             install.main()
-        self.assertFalse(
-            (self.target_extensions_dir / 'sample_1').exists()
-        )
+        self.assertFalse(dest_path.exists())
 
     def test_symlink_add_remove(self):
         """Tests adding and removing a symlinked extension."""
@@ -169,7 +165,7 @@ class InstallIntegrationTest(fake_filesystem_unittest.TestCase):
     def test_update_sequence(self):
         """Tests adding, updating, and then checking the version."""
         with unittest.mock.patch(
-            'sys.argv', ['install.py', 'add', 'sample_1']
+            'sys.argv', ['install.py', 'add', '--copy', 'sample_1']
         ):
             install.main()
 
@@ -210,11 +206,11 @@ class InstallIntegrationTest(fake_filesystem_unittest.TestCase):
     def test_update_all_extensions(self):
         """Tests updating all installed extensions at once."""
         with unittest.mock.patch(
-            'sys.argv', ['install.py', 'add', 'sample_1']
+            'sys.argv', ['install.py', 'add', '--copy', 'sample_1']
         ):
             install.main()
         with unittest.mock.patch(
-            'sys.argv', ['install.py', 'add', 'sample_2']
+            'sys.argv', ['install.py', 'add', '--copy', 'sample_2']
         ):
             install.main()
 
@@ -350,6 +346,22 @@ class InstallIntegrationTest(fake_filesystem_unittest.TestCase):
                     install.main()
             self.assertIn(
                 'the following arguments are required',
+                mock_stderr.getvalue(),
+            )
+
+    def test_mutually_exclusive_arguments(self):
+        """Tests that --copy and --symlink are mutually exclusive."""
+        with unittest.mock.patch(
+            'sys.stderr', new_callable=io.StringIO
+        ) as mock_stderr:
+            with self.assertRaises(SystemExit):
+                with unittest.mock.patch(
+                    'sys.argv',
+                    ['install.py', 'add', '--copy', '--symlink', 'sample_1'],
+                ):
+                    install.main()
+            self.assertIn(
+                'not allowed with argument',
                 mock_stderr.getvalue(),
             )
 

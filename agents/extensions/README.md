@@ -21,6 +21,18 @@ To see a list of available extensions and their install status:
 vpython3 agents/extensions/install.py list
 ```
 
+Example output:
+```
+Extension           AVAILABLE  INSTALLED  SCOPE   SYMLINKED  STATUS
+------------------  ---------  ---------  ------  ---------  ----------
+blink_spec          1.0.0      -          -       -          -
+build_information   1.0.0      1.0.0      global  yes        active
+depot_tools         1.0.0      1.0.0      local   no         active
+                    1.0.0      1.0.0      global  yes        overridden
+landmines           1.0.0      1.0.0      local   yes        active
+perf                1.0.0      -          -       -          -
+```
+
 ### Adding Extensions
 
 ```bash
