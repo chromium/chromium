@@ -33,6 +33,7 @@
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "components/webapps/common/web_app_id.h"
 #include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "net/base/backoff_entry.h"
@@ -192,7 +193,7 @@ class IsolatedWebAppUpdateManager
   void DiscoverApplyAndPrioritizeLocalDevModeUpdate(
       const IwaSourceDevModeWithFileOp& location,
       const IsolatedWebAppUrlInfo& url_info,
-      base::OnceCallback<void(base::expected<base::Version, std::string>)>
+      base::OnceCallback<void(base::expected<IwaVersion, std::string>)>
           callback);
 
   std::optional<base::TimeTicks> GetNextUpdateDiscoveryTimeForTesting() const {
@@ -338,14 +339,14 @@ class IsolatedWebAppUpdateManager
 
   void OnLocalUpdateDiscovered(
       IsolatedWebAppUrlInfo url_info,
-      base::OnceCallback<void(base::expected<base::Version, std::string>)>
+      base::OnceCallback<void(base::expected<IwaVersion, std::string>)>
           callback,
-      base::expected<base::Version, std::string> update_discovery_result);
+      base::expected<IwaVersion, std::string> update_discovery_result);
 
   void OnLocalUpdateApplyTaskCreated(
       IsolatedWebAppUrlInfo url_info,
-      base::Version update_version,
-      base::OnceCallback<void(base::expected<base::Version, std::string>)>
+      IwaVersion update_version,
+      base::OnceCallback<void(base::expected<IwaVersion, std::string>)>
           callback);
 
   raw_ref<Profile> profile_;
