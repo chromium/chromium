@@ -109,10 +109,6 @@ namespace tab_groups {
 class CollaborationMessagingTabData;
 }  // namespace tab_groups
 
-namespace lens {
-class TabContextualizationController;
-}  // namespace lens
-
 namespace tabs {
 
 class TabAlertController;
@@ -417,9 +413,6 @@ class TabFeatures {
       ask_before_http_dialog_controller_;
 
   std::unique_ptr<actor::ActorTabData> actor_tab_data_;
-
-  std::unique_ptr<lens::TabContextualizationController>
-      tab_contextualization_controller_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

@@ -46,8 +46,6 @@ static_library("lens") {
     "lens_url_utils.h",
     "ref_counted_lens_overlay_client_logs.cc",
     "ref_counted_lens_overlay_client_logs.h",
-    "tab_contextualization_controller.cc",
-    "tab_contextualization_controller.h",
   ]
   deps = [
     "//base",
@@ -55,7 +53,6 @@ static_library("lens") {
     "//components/lens:lens_mojo",
     "//components/lens/proto/v1:lens_latencies_metadata_proto",
     "//components/signin/public/identity_manager",
-    "//components/tabs:public",
     "//components/variations",
     "//components/variations:variations_mojom",
     "//google_apis/common",
@@ -75,10 +72,6 @@ static_library("lens") {
     "//skia",
     "//ui/gfx",
   ]
-
-  if (is_win || is_mac || is_linux || is_chromeos || is_android) {
-    deps += [ "//ui/base/unowned_user_data" ]
-  }
 }
 
 component("features") {
