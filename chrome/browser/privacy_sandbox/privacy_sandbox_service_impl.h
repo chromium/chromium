@@ -67,6 +67,9 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
 
   ~PrivacySandboxServiceImpl() override;
 
+  // KeyedService:
+  void Shutdown() override;
+
   // PrivacySandboxService:
   PromptType GetRequiredPromptType(SurfaceType surface_type) override;
   void PromptActionOccurred(PromptAction action,

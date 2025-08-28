@@ -494,6 +494,22 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
 
 PrivacySandboxServiceImpl::~PrivacySandboxServiceImpl() = default;
 
+void PrivacySandboxServiceImpl::Shutdown() {
+  user_prefs_registrar_.RemoveAll();
+  privacy_sandbox_countries_ = nullptr;
+  product_messaging_controller_ = nullptr;
+  first_party_sets_policy_service_ = nullptr;
+  browsing_topics_service_ = nullptr;
+  host_content_settings_map_ = nullptr;
+  browsing_data_remover_ = nullptr;
+  interest_group_manager_ = nullptr;
+  pref_service_ = nullptr;
+  cookie_settings_ = nullptr;
+  tracking_protection_settings_ = nullptr;
+  privacy_sandbox_settings_ = nullptr;
+  profile_ = nullptr;
+}
+
 bool PrivacySandboxServiceImpl::
     CheckAndRegisterAllowPromptForBlocked3PCookiesTrial() {
   pref_service_->SetBoolean(prefs::kPrivacySandboxAllowNoticeFor3PCBlockedTrial,
