@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/autofill/payments/android_bnpl_ui_delegate.h"
 
 #include "base/functional/callback.h"
+#include "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
 
 namespace autofill::payments {
@@ -36,6 +37,18 @@ void AndroidBnplUiDelegate::ShowBnplTosUi(BnplTosModel bnpl_tos_model,
 
 void AndroidBnplUiDelegate::CloseBnplTosUi() {
   // TODO(crbug.com/438783909): Add JNI call to close the ToS screen.
+}
+
+void AndroidBnplUiDelegate::ShowProgressUi(
+    AutofillProgressDialogType autofill_progress_dialog_type,
+    base::OnceClosure cancel_callback) {
+  // TODO(crbug.com/438783909): Add JNI call to display the TouchToFill bottom
+  // sheet with a progress spinner.
+}
+
+void AndroidBnplUiDelegate::CloseProgressUi(
+    bool show_confirmation_before_closing) {
+  // TODO(crbug.com/438783909): Add JNI call to hide the progress spinner.
 }
 
 }  // namespace autofill::payments

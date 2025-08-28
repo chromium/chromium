@@ -5,8 +5,10 @@
 #include "chrome/browser/ui/autofill/payments/desktop_bnpl_ui_delegate.h"
 
 #include "base/check_deref.h"
+#include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_view.h"
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller_impl.h"
@@ -63,6 +65,20 @@ void DesktopBnplUiDelegate::CloseBnplTosUi() {
 
   bnpl_tos_controller_->Dismiss();
   bnpl_tos_controller_.reset();
+}
+
+void DesktopBnplUiDelegate::ShowProgressUi(
+    AutofillProgressDialogType autofill_progress_dialog_type,
+    base::OnceClosure cancel_callback) {
+  client_->GetPaymentsAutofillClient()->ShowAutofillProgressDialog(
+      autofill_progress_dialog_type, std::move(cancel_callback));
+}
+
+void DesktopBnplUiDelegate::CloseProgressUi(
+    bool show_confirmation_before_closing) {
+  client_->GetPaymentsAutofillClient()->CloseAutofillProgressDialog(
+      show_confirmation_before_closing,
+      /*no_interactive_authentication_callback=*/base::DoNothing());
 }
 
 }  // namespace autofill::payments

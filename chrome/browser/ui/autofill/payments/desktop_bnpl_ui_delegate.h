@@ -14,6 +14,7 @@
 
 namespace autofill {
 
+enum class AutofillProgressDialogType;
 class BnplIssuer;
 class BnplTosControllerImpl;
 struct BnplTosModel;
@@ -44,6 +45,9 @@ class DesktopBnplUiDelegate : public BnplUiDelegate {
                      base::OnceClosure accept_callback,
                      base::OnceClosure cancel_callback) override;
   void CloseBnplTosUi() override;
+  void ShowProgressUi(AutofillProgressDialogType autofill_progress_dialog_type,
+                      base::OnceClosure cancel_callback) override;
+  void CloseProgressUi(bool show_confirmation_before_closing) override;
 
  private:
   const raw_ref<ContentAutofillClient> client_;

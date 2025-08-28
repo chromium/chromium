@@ -153,6 +153,15 @@ class MockBnplUiDelegate : public BnplUiDelegate {
                base::OnceClosure cancel_callback),
               (override));
   MOCK_METHOD(void, CloseBnplTosUi, (), (override));
+  MOCK_METHOD(void,
+              ShowProgressUi,
+              (AutofillProgressDialogType autofill_progress_dialog_type,
+               base::OnceClosure cancel_callback),
+              (override));
+  MOCK_METHOD(void,
+              CloseProgressUi,
+              (bool show_confirmation_before_closing),
+              (override));
 };
 }  // namespace
 
@@ -578,6 +587,10 @@ TEST_F(BnplManagerTest, FetchVcnDetails_CallsGetBnplPaymentInstrument) {
   EXPECT_NE(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
 
   test_api(*bnpl_manager_).FetchVcnDetails(kPopupUrl);
+
+  EXPECT_CALL(GetBnplUiDelegate(),
+              CloseProgressUi(/*show_confirmation_before_closing=*/true));
+
   test_api(*bnpl_manager_)
       .OnVcnDetailsFetched(PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
                            response_details);
@@ -618,6 +631,10 @@ TEST_F(BnplManagerTest, FetchVcnDetails_RpcError) {
   EXPECT_NE(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
 
   test_api(*bnpl_manager_).FetchVcnDetails(kPopupUrl);
+
+  EXPECT_CALL(GetBnplUiDelegate(),
+              CloseProgressUi(/*show_confirmation_before_closing=*/false));
+
   test_api(*bnpl_manager_)
       .OnVcnDetailsFetched(PaymentsAutofillClient::PaymentsRpcResult::
                                kVcnRetrievalPermanentFailure,
@@ -900,23 +917,21 @@ TEST_F(BnplManagerTest, OnPopupWindowCompleted_Failure) {
   EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
 }
 
-// Tests that FetchVcnDetails will display an autofill progress dialog.
-TEST_F(BnplManagerTest, FetchVcnDetails_ShowProgressUiForFetchingVcn) {
+// Tests that FetchVcnDetails will display an autofill progress UI.
+TEST_F(BnplManagerTest, FetchVcnDetails_ShowProgressUi) {
   bnpl_manager_->OnDidAcceptBnplSuggestion(1'000'000, base::DoNothing());
   test_api(*bnpl_manager_)
       .PopulateManagerWithUserAndBnplIssuerDetails(
           kBillingCustomerNumber, kInstrumentId, kRiskData, kContextToken,
           kRedirectUrl, test::GetTestLinkedBnplIssuer());
 
-  EXPECT_FALSE(autofill_client_->GetPaymentsAutofillClient()
-                   ->autofill_progress_dialog_shown());
+  EXPECT_CALL(GetBnplUiDelegate(),
+              ShowProgressUi(
+                  AutofillProgressDialogType::kBnplFetchVcnProgressDialog, _));
+
   EXPECT_FALSE(autofill_client_->GetPaymentsAutofillClient()
                    ->autofill_error_dialog_shown());
-
   test_api(*bnpl_manager_).FetchVcnDetails(kPopupUrl);
-
-  EXPECT_TRUE(autofill_client_->GetPaymentsAutofillClient()
-                  ->autofill_progress_dialog_shown());
   EXPECT_FALSE(autofill_client_->GetPaymentsAutofillClient()
                    ->autofill_error_dialog_shown());
 }
@@ -931,15 +946,15 @@ TEST_F(BnplManagerTest, FetchVcnDetails_Reset) {
           kRedirectUrl, test::GetTestLinkedBnplIssuer());
 
   EXPECT_FALSE(autofill_client_->GetPaymentsAutofillClient()
-                   ->autofill_progress_dialog_shown());
-  EXPECT_FALSE(autofill_client_->GetPaymentsAutofillClient()
                    ->autofill_error_dialog_shown());
   EXPECT_NE(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
 
+  EXPECT_CALL(GetBnplUiDelegate(),
+              ShowProgressUi(
+                  AutofillProgressDialogType::kBnplFetchVcnProgressDialog, _));
+
   test_api(*bnpl_manager_).FetchVcnDetails(kPopupUrl);
 
-  EXPECT_TRUE(autofill_client_->GetPaymentsAutofillClient()
-                  ->autofill_progress_dialog_shown());
   EXPECT_FALSE(autofill_client_->GetPaymentsAutofillClient()
                    ->autofill_error_dialog_shown());
   EXPECT_NE(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);

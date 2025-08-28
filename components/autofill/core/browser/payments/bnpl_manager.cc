@@ -211,18 +211,18 @@ void BnplManager::FetchVcnDetails(GURL url) {
   request_details.issuer_id = autofill::ConvertToBnplIssuerIdString(
       ongoing_flow_state_->issuer.issuer_id());
 
-  payments_autofill_client().ShowAutofillProgressDialog(
-      AutofillProgressDialogType::kBnplFetchVcnProgressDialog,
-      /*cancel_callback=*/base::BindOnce(
-          [](base::WeakPtr<BnplManager> manager) {
-            if (manager) {
-              // Note: Does not call
-              // `PaymentsAutofillClient::CloseAutofillProgressDialog()` as this
-              // is expected to be handled by dialog UI code.
-              manager->Reset();
-            }
-          },
-          weak_factory_.GetWeakPtr()));
+  CHECK_DEREF(payments_autofill_client().GetBnplUiDelegate())
+      .ShowProgressUi(AutofillProgressDialogType::kBnplFetchVcnProgressDialog,
+                      /*cancel_callback=*/base::BindOnce(
+                          [](base::WeakPtr<BnplManager> manager) {
+                            if (manager) {
+                              // Note: Does not call
+                              // `BnplUiDelegate::CloseProgressUi()` as this is
+                              // expected to be handled by UI code.
+                              manager->Reset();
+                            }
+                          },
+                          weak_factory_.GetWeakPtr()));
 
   payments_autofill_client()
       .GetPaymentsNetworkInterface()
@@ -244,9 +244,9 @@ void BnplManager::OnVcnDetailsFetched(
   bool successful =
       result == PaymentsAutofillClient::PaymentsRpcResult::kSuccess;
 
-  payments_autofill_client().CloseAutofillProgressDialog(
-      /*show_confirmation_before_closing=*/successful,
-      /*no_interactive_authentication_callback=*/base::OnceClosure());
+  CHECK(payments_autofill_client().GetBnplUiDelegate());
+  payments_autofill_client().GetBnplUiDelegate()->CloseProgressUi(
+      /*show_confirmation_before_closing=*/successful);
 
   if (successful) {
     CHECK(ongoing_flow_state_);

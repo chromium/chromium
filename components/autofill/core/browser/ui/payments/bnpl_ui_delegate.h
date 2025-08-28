@@ -12,6 +12,7 @@
 
 namespace autofill {
 
+enum class AutofillProgressDialogType;
 class BnplIssuer;
 struct BnplTosModel;
 
@@ -44,6 +45,17 @@ class BnplUiDelegate {
   // Closes the BNPL Terms of Service UI that was displayed in
   // `ShowBnplTos()`.
   virtual void CloseBnplTosUi() = 0;
+
+  // Shows a progress UI while fetching the VCN. `autofill_progress_dialog_type`
+  // determines the specific UI of the progress dialog shown. `cancel_callback`
+  // is run when the user cancels the progress dialog.
+  virtual void ShowProgressUi(
+      AutofillProgressDialogType autofill_progress_dialog_type,
+      base::OnceClosure cancel_callback) = 0;
+
+  // Closes the progress UI. `show_confirmation_before_closing` indicates
+  // whether a confirmation should be shown before the UI is closed.
+  virtual void CloseProgressUi(bool show_confirmation_before_closing) = 0;
 };
 
 }  // namespace payments
