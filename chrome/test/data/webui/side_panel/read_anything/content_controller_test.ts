@@ -323,6 +323,27 @@ suite('ContentController', () => {
           assertFalse(
               newInnerSpan.classList.contains(previousReadHighlightClass));
         });
+
+    test(
+        'does not add previous highlighting when hiding links that were ' +
+            'highlighted and then cleared',
+        () => {
+          const innerSpan = document.createElement('span');
+          innerSpan.classList.add(HIGHLIGHTED_LINK_CLASS);
+          link.appendChild(innerSpan);
+          shadowRoot.appendChild(link);
+          nodeStore.setDomNode(link, linkId);
+          chrome.readingMode.linksEnabled = false;
+
+          contentController.onSelectionChange(shadowRoot);
+          contentController.updateLinks(true, shadowRoot);
+
+          const newInnerSpan = shadowRoot.querySelector('span[data-link] span');
+          assertTrue(!!newInnerSpan);
+          assertFalse(
+              newInnerSpan.classList.contains(previousReadHighlightClass));
+          assertFalse(newInnerSpan.classList.contains(HIGHLIGHTED_LINK_CLASS));
+        });
   });
 
   suite('loadImages', () => {

@@ -214,6 +214,16 @@ export class ContentController {
         !this.speechController_.isSpeechActive();
   }
 
+  onSelectionChange(shadowRoot?: ShadowRoot) {
+    if (!shadowRoot) {
+      return;
+    }
+    const highlightedNodes =
+        shadowRoot.querySelectorAll<HTMLElement>('.' + HIGHLIGHTED_LINK_CLASS);
+    highlightedNodes.forEach(
+        node => node.classList.remove(HIGHLIGHTED_LINK_CLASS));
+  }
+
   loadImages() {
     if (!chrome.readingMode.imagesFeatureEnabled) {
       return;

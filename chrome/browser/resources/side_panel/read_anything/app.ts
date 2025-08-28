@@ -237,6 +237,7 @@ export class AppElement extends AppElementBase implements
 
       if (this.isReadAloudEnabled_) {
         this.speechController_.onSelectionChange();
+        this.contentController_.onSelectionChange(this.shadowRoot);
       }
     };
 
