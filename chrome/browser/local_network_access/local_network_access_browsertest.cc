@@ -366,9 +366,8 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
   CheckCounter(WebFeature::kLocalNetworkAccessWithinSharedWorker, 1);
 }
 
-// Known to not work. See crbug.com/434744665.
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
-                       SharedWorkerAcceptPermissionDoesNotWork) {
+                       SharedWorkerAcceptPermission) {
   policy::PolicyMap policies;
   base::Value::List allowlist;
   allowlist.Append(base::Value("*"));
@@ -384,8 +383,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
 
   GURL fetch_url = https_server().GetURL("b.com", kLnaPath);
   std::string_view script_template = "fetch_from_shared_worker($1);";
-  // Failure to fetch URL
-  EXPECT_EQ("TypeError: Failed to fetch",
+  EXPECT_EQ("Access-Control-Allow-Origin: *",
             content::EvalJs(web_contents(),
                             content::JsReplace(script_template, fetch_url)));
   CheckCounter(WebFeature::kPrivateNetworkAccessWithinWorker, 1);

@@ -427,7 +427,7 @@ ServiceWorkerDevToolsAgentHost::CreateNetworkFactoryParamsForDevTools() {
       /*coep_reporter=*/mojo::NullRemote(),
       /*dip_reporter=*/mojo::NullRemote(),
       static_cast<StoragePartitionImpl*>(rph->GetStoragePartition())
-          ->CreateURLLoaderNetworkObserverForServiceWorker(
+          ->CreateURLLoaderNetworkObserverForServiceOrSharedWorker(
               rph->GetDeprecatedID(), origin),
       NetworkServiceDevToolsObserver::MakeSelfOwned(GetId()),
       /*client_security_state=*/nullptr,

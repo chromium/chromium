@@ -644,7 +644,7 @@ void CallCancelRequest(
 bool CancelIfPrerendering(NavigationOrDocumentHandle* navigation_or_document,
                           PrerenderFinalStatus final_status) {
   FrameTreeNode* frame_tree_node = nullptr;
-  // `navigation_or_document` can be null for `kServiceWorkerContext`.
+  // `navigation_or_document` can be null for `kSharedOrServiceWorkerContext`.
   if (!navigation_or_document) {
     return false;
   }
@@ -2110,7 +2110,7 @@ void StoragePartitionImpl::OnAuthRequired(
         process_id = render_frame_host->GetGlobalId().child_id;
       }
     }
-  } else if (context.type() == ContextType::kServiceWorkerContext) {
+  } else if (context.type() == ContextType::kSharedOrServiceWorkerContext) {
     process_id = context.process_id();
   }
 
@@ -2187,10 +2187,10 @@ void StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired(
   //      check for existing permission state, and if the state is ASK trigger
   //      the permission prompt. Nested subframes should be allowed iff
   //      permission policy delegated the permission into the embedding frame.
-  //   3. Worker context (ContextType::kServiceWorkerContext) covers requests
-  //      from workers. These may not have an existing document around. These
-  //      should check for the permission state, but NOT trigger the permission
-  //      prompt.
+  //   3. Worker context (ContextType::kSharedOrServiceWorkerContext) covers
+  //      requests from service workers and shared workers. These may not have
+  //      an existing document around. These should check for the permission
+  //      state, but NOT trigger the permission prompt.
 
   // Currently requesting the Local Network Access permission is restricted to
   // subresource requests and subframe navigation requests.
@@ -2290,7 +2290,7 @@ void StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired(
               std::move(callback)));
       return;
     }
-  } else if (context.type() == ContextType::kServiceWorkerContext) {
+  } else if (context.type() == ContextType::kSharedOrServiceWorkerContext) {
     // TODO(crbug.com/404887282): Plumb the `frame_window_id` of the worker,
     // if it exists, to allow this to identify the hosting frame of the worker,
     // when available. This would allow us to additionally _request_ the
@@ -2391,7 +2391,7 @@ void StoragePartitionImpl::OnCertificateRequested(
 
   base::WeakPtr<WebContents> web_contents_weak;
   int process_id = network::mojom::kInvalidProcessId;
-  if (context.type() == ContextType::kServiceWorkerContext) {
+  if (context.type() == ContextType::kSharedOrServiceWorkerContext) {
     process_id = context.process_id();
   } else {
     WebContents* web_contents = context.GetWebContents();
@@ -2594,7 +2594,7 @@ StoragePartitionImpl::CreateURLLoaderNetworkObserverForNavigationRequest(
 }
 
 mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
-StoragePartitionImpl::CreateURLLoaderNetworkObserverForServiceWorker(
+StoragePartitionImpl::CreateURLLoaderNetworkObserverForServiceOrSharedWorker(
     int process_id,
     const url::Origin& worker_origin) {
   mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver> remote;
@@ -3687,8 +3687,8 @@ StoragePartitionImpl::CreateURLLoaderFactoryParams() {
   // For browser-process initiated requests there is no corresponding service
   // worker origin, so just pass an opaque origin.
   params->url_loader_network_observer =
-      CreateURLLoaderNetworkObserverForServiceWorker(params->process_id,
-                                                     url::Origin());
+      CreateURLLoaderNetworkObserverForServiceOrSharedWorker(params->process_id,
+                                                             url::Origin());
   params->disable_web_security =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableWebSecurity);
@@ -3805,7 +3805,7 @@ StoragePartitionImpl::GetRenderFrameHostIdFromNetworkContext() {
   URLLoaderNetworkContext context =
       url_loader_network_observers_.current_context();
 
-  // `navigation_or_document()` can be null for `kServiceWorkerContext`.
+  // `navigation_or_document()` can be null for `kSharedOrServiceWorkerContext`.
   RenderFrameHost* render_frame_host =
       context.navigation_or_document()
           ? context.navigation_or_document()->GetDocument()
@@ -3867,7 +3867,7 @@ StoragePartitionImpl::URLLoaderNetworkContext::URLLoaderNetworkContext(
 StoragePartitionImpl::URLLoaderNetworkContext::URLLoaderNetworkContext(
     int process_id,
     const url::Origin& worker_origin)
-    : type_(Type::kServiceWorkerContext),
+    : type_(Type::kSharedOrServiceWorkerContext),
       process_id_(process_id),
       worker_origin_(worker_origin) {}
 

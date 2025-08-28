@@ -469,7 +469,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   CreateSharedDictionaryAccessObserverForServiceWorker();
 
   mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
-  CreateURLLoaderNetworkObserverForServiceWorker(
+  CreateURLLoaderNetworkObserverForServiceOrSharedWorker(
       int process_id,
       const url::Origin& worker_origin);
 
@@ -552,7 +552,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   enum class ContextType {
     kRenderFrameHostContext,
     kNavigationRequestContext,
-    kServiceWorkerContext,
+    kSharedOrServiceWorkerContext,
   };
 
  private:
@@ -626,7 +626,7 @@ class CONTENT_EXPORT StoragePartitionImpl
     explicit URLLoaderNetworkContext(
         GlobalRenderFrameHostId global_render_frame_host_id);
 
-    // Used when `type` is `kServiceWorkerContext`.
+    // Used when `type` is `kSharedOrServiceWorkerContext`.
     URLLoaderNetworkContext(int process_id, const url::Origin& worker_origin);
 
     // Used when `type` is `kNavigationRequestContext`.
@@ -646,8 +646,8 @@ class CONTENT_EXPORT StoragePartitionImpl
       return worker_origin_;
     }
 
-    // If `type_` is kServiceWorkerContext, returns nullptr. Otherwise returns
-    // the WebContents.
+    // If `type_` is kSharedOrServiceWorkerContext, returns nullptr. Otherwise
+    // returns the WebContents.
     WebContents* GetWebContents();
 
     // Returns true if the request is the primary main frame navigation.
@@ -657,10 +657,10 @@ class CONTENT_EXPORT StoragePartitionImpl
     ContextType type_;
     scoped_refptr<NavigationOrDocumentHandle> navigation_or_document_;
 
-    // Only valid when `type_` is kServiceWorkerContext.
+    // Only valid when `type_` is kSharedOrServiceWorkerContext.
     int process_id_ = content::ChildProcessHost::kInvalidUniqueID;
 
-    // Only valid and non-nullopt when `type_` is kServiceWorkerContext.
+    // Only valid and non-nullopt when `type_` is kSharedOrServiceWorkerContext.
     std::optional<url::Origin> worker_origin_;
   };
 

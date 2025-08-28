@@ -2634,7 +2634,7 @@ TEST_F(StoragePartitionImplLocalNetworkAccessTest,
       url::Origin::Create(GURL("https://foo.com"));
 
   mojo::Remote<network::mojom::URLLoaderNetworkServiceObserver> observer(
-      partition->CreateURLLoaderNetworkObserverForServiceWorker(
+      partition->CreateURLLoaderNetworkObserverForServiceOrSharedWorker(
           network::mojom::kBrowserProcessId, worker_origin));
 
   base::test::TestFuture<bool> grant_permission;

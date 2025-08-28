@@ -497,7 +497,10 @@ SharedWorkerHost::CreateNetworkFactoryParamsForSubresources() {
       URLLoaderFactoryParamsHelper::CreateForWorker(
           GetProcessHost(), origin, GetStorageKey().ToPartialNetIsolationInfo(),
           std::move(coep_reporter), std::move(dip_reporter),
-          /*url_loader_network_observer=*/mojo::NullRemote(),
+          static_cast<StoragePartitionImpl*>(
+              GetProcessHost()->GetStoragePartition())
+              ->CreateURLLoaderNetworkObserverForServiceOrSharedWorker(
+                  GetProcessHost()->GetDeprecatedID(), origin),
           /*devtools_observer=*/mojo::NullRemote(),
           mojo::Clone(worker_client_security_state_),
           /*debug_tag=*/
