@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/ui/extensions/extension_action_platform_delegate.h"
 #include "ui/base/accelerators/accelerator.h"
 
@@ -23,10 +22,9 @@ class ToolbarActionViewDelegateViews;
 // the views::View wrapper.
 class ExtensionActionPlatformDelegateViews
     : public ExtensionActionPlatformDelegate,
-      public extensions::CommandService::Observer,
       public ui::AcceleratorTarget {
  public:
-  ExtensionActionPlatformDelegateViews(
+  explicit ExtensionActionPlatformDelegateViews(
       ExtensionActionViewController* controller);
 
   ExtensionActionPlatformDelegateViews(
@@ -44,12 +42,6 @@ class ExtensionActionPlatformDelegateViews
                  PopupShowAction show_action,
                  ShowPopupCallback callback) override;
 
-  // extensions::CommandService::Observer:
-  void OnExtensionCommandAdded(const std::string& extension_id,
-                               const extensions::Command& command) override;
-  void OnExtensionCommandRemoved(const std::string& extension_id,
-                                 const extensions::Command& command) override;
-  void OnCommandServiceDestroying() override;
 
   // ui::AcceleratorTarget:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
@@ -63,10 +55,6 @@ class ExtensionActionPlatformDelegateViews
   // The extension key binding accelerator this extension action is listening
   // for (to show the popup).
   std::unique_ptr<ui::Accelerator> action_keybinding_;
-
-  base::ScopedObservation<extensions::CommandService,
-                          extensions::CommandService::Observer>
-      command_service_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_ACTION_PLATFORM_DELEGATE_VIEWS_H_

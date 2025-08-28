@@ -35,10 +35,7 @@ ExtensionActionPlatformDelegate::Create(
 
 ExtensionActionPlatformDelegateViews::ExtensionActionPlatformDelegateViews(
     ExtensionActionViewController* controller)
-    : controller_(controller) {
-  command_service_observation_.Observe(
-      extensions::CommandService::Get(controller_->browser()->profile()));
-}
+    : controller_(controller) {}
 
 ExtensionActionPlatformDelegateViews::~ExtensionActionPlatformDelegateViews() {
   // Should have already unregistered.
@@ -87,44 +84,6 @@ void ExtensionActionPlatformDelegateViews::ShowPopup(
   ExtensionPopup::ShowPopup(controller_->browser(), std::move(host),
                             GetDelegateViews()->GetReferenceButtonForPopup(),
                             arrow, show_action, std::move(callback));
-}
-
-void ExtensionActionPlatformDelegateViews::OnExtensionCommandAdded(
-    const std::string& extension_id,
-    const extensions::Command& command) {
-  if (extension_id != controller_->extension()->id()) {
-    return;  // Not this action's extension.
-  }
-
-  if (!extensions::Command::IsActionRelatedCommand(command.command_name())) {
-    return;
-  }
-
-  RegisterCommand();
-}
-
-void ExtensionActionPlatformDelegateViews::OnExtensionCommandRemoved(
-    const std::string& extension_id,
-    const extensions::Command& command) {
-  if (extension_id != controller_->extension()->id()) {
-    return;
-  }
-
-  if (!extensions::Command::IsActionRelatedCommand(command.command_name())) {
-    return;
-  }
-
-  extensions::Command extension_command;
-  if (controller_->GetExtensionCommand(&extension_command)) {
-    return;  // Command has not been removed.
-  }
-
-  UnregisterCommand();
-}
-
-void ExtensionActionPlatformDelegateViews::OnCommandServiceDestroying() {
-  DCHECK(command_service_observation_.IsObserving());
-  command_service_observation_.Reset();
 }
 
 bool ExtensionActionPlatformDelegateViews::AcceleratorPressed(

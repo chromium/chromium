@@ -183,7 +183,10 @@ ExtensionActionViewController::ExtensionActionViewController(
       view_delegate_(nullptr),
       platform_delegate_(ExtensionActionPlatformDelegate::Create(this)),
       icon_factory_(extension_.get(), extension_action, this),
-      extension_registry_(extension_registry) {}
+      extension_registry_(extension_registry) {
+  command_service_observation_.Observe(
+      extensions::CommandService::Get(profile_));
+}
 
 ExtensionActionViewController::~ExtensionActionViewController() {
   DCHECK(!IsShowingPopup());
@@ -483,6 +486,44 @@ void ExtensionActionViewController::RegisterCommand() {
 
 void ExtensionActionViewController::UnregisterCommand() {
   platform_delegate_->UnregisterCommand();
+}
+
+void ExtensionActionViewController::OnExtensionCommandAdded(
+    const std::string& extension_id,
+    const extensions::Command& command) {
+  if (extension_id != extension()->id()) {
+    return;  // Not this action's extension.
+  }
+
+  if (!extensions::Command::IsActionRelatedCommand(command.command_name())) {
+    return;
+  }
+
+  RegisterCommand();
+}
+
+void ExtensionActionViewController::OnExtensionCommandRemoved(
+    const std::string& extension_id,
+    const extensions::Command& command) {
+  if (extension_id != extension()->id()) {
+    return;
+  }
+
+  if (!extensions::Command::IsActionRelatedCommand(command.command_name())) {
+    return;
+  }
+
+  extensions::Command extension_command;
+  if (GetExtensionCommand(&extension_command)) {
+    return;  // Command has not been removed.
+  }
+
+  UnregisterCommand();
+}
+
+void ExtensionActionViewController::OnCommandServiceDestroying() {
+  DCHECK(command_service_observation_.IsObserving());
+  command_service_observation_.Reset();
 }
 
 void ExtensionActionViewController::InspectPopup() {
