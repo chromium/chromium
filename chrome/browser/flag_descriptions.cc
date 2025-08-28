@@ -507,6 +507,14 @@ const char kDeprecateUnloadDescription[] =
     "explicitly disabled by Permissions-Policy, even during the gradual "
     "rollout of their deprecation.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kDesktopUAOnConnectedDisplayName[] =
+    "Request Desktop User-Agent on external displays. Android only.";
+const char kDesktopUAOnConnectedDisplayDescription[] =
+    "When enabled, this feature will request a desktop user agent on external "
+    "displays.";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const char kDevToolsPrivacyUIName[] = "DevTools Privacy UI";
 const char kDevToolsPrivacyUIDescription[] =
     "Enables the Privacy UI in the current 'Security' panel in DevTools.";

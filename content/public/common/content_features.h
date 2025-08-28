@@ -89,6 +89,7 @@ CONTENT_EXPORT extern const base::FeatureParam<bool>
 CONTENT_EXPORT extern const char kCookieDeprecationLabelName[];
 CONTENT_EXPORT extern const char kCookieDeprecationTestingDisableAdsAPIsName[];
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDeferSpeculativeRFHCreation);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kDesktopUAOnConnectedDisplay);
 CONTENT_EXPORT extern const base::FeatureParam<bool>
     kWarmupSpareProcessCreationWhenDeferRFH;
 CONTENT_EXPORT extern const base::FeatureParam<bool>

@@ -11678,6 +11678,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kClankDefaultBrowserPromoName,
      flag_descriptions::kClankDefaultBrowserPromoDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kDefaultBrowserPromoAndroid2)},
+
+    {"desktop-ua-on-connected-display",
+     flag_descriptions::kDesktopUAOnConnectedDisplayName,
+     flag_descriptions::kDesktopUAOnConnectedDisplayDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kDesktopUAOnConnectedDisplay)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)

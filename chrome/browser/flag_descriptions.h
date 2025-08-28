@@ -331,6 +331,11 @@ extern const char kDemoModeComponentUpdaterTestTagName[];
 extern const char kDemoModeComponentUpdaterTestTagDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kDesktopUAOnConnectedDisplayName[];
+extern const char kDesktopUAOnConnectedDisplayDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
 extern const char kDevToolsPrivacyUIName[];
 extern const char kDevToolsPrivacyUIDescription[];
 

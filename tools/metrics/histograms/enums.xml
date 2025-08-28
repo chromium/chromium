@@ -11916,6 +11916,7 @@ from previous Chrome versions.
   <int value="-842597982" label="ShelfPalmRejectionTouchArea:disabled"/>
   <int value="-842438090" label="enable-md-feedback"/>
   <int value="-842236618" label="CrOSSystemVoiceIsolationOption:disabled"/>
+  <int value="-839828262" label="DesktopUAOnConnectedDisplay:disabled"/>
   <int value="-839822160" label="WebAppManifestImmediateUpdating:enabled"/>
   <int value="-839788988" label="EnableToggleCameraShortcut:disabled"/>
   <int value="-839664591" label="enable-web-authentication-testing-api"/>
@@ -18099,6 +18100,7 @@ from previous Chrome versions.
   <int value="1399386367" label="LocalHistoryZeroSuggestBeyondNTP:disabled"/>
   <int value="1399657075" label="IndexedDBCompressValuesWithSnappy:enabled"/>
   <int value="1401948539" label="TpcdSupportSettings:disabled"/>
+  <int value="1402046854" label="DesktopUAOnConnectedDisplay:enabled"/>
   <int value="1402156039" label="BakedGamutMapping:disabled"/>
   <int value="1402940985" label="kScrollableTabStripWithDragging:disabled"/>
   <int value="1403195370" label="ArcCupsApi:enabled"/>
