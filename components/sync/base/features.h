@@ -24,6 +24,9 @@ inline constexpr base::FeatureParam<int>
 // Enables syncing of Loyalty Cards coming from Google Wallet.
 BASE_DECLARE_FEATURE(kSyncAutofillLoyaltyCard);
 
+// Enables storing valuables in the profile db instead of the account db.
+BASE_DECLARE_FEATURE(kSyncMoveValuablesToProfileDb);
+
 // Enables syncing account-local metadata for shared tab groups.
 BASE_DECLARE_FEATURE(kSyncSharedTabGroupAccountData);
 

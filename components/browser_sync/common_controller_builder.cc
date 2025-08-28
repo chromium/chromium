@@ -824,21 +824,23 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
 #if !BUILDFLAG(IS_IOS)
   if (!disabled_types.Has(syncer::AUTOFILL_VALUABLE) &&
       base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
+    scoped_refptr<autofill::AutofillWebDataService> autofill_web_data_service =
+        base::FeatureList::IsEnabled(syncer::kSyncMoveValuablesToProfileDb)
+            ? profile_autofill_web_data_service_.value()
+            : account_autofill_web_data_service_.value();
     controllers.push_back(
         std::make_unique<autofill::AutofillValuableDataTypeController>(
             syncer::AUTOFILL_VALUABLE,
             std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
-                account_autofill_web_data_service_.value()->GetDBTaskRunner(),
+                autofill_web_data_service->GetDBTaskRunner(),
                 base::BindRepeating(
                     &AutofillLoyaltyCardDelegateFromDataService,
-                    base::RetainedRef(
-                        account_autofill_web_data_service_.value()))),
+                    base::RetainedRef(autofill_web_data_service))),
             std::make_unique<syncer::ProxyDataTypeControllerDelegate>(
-                account_autofill_web_data_service_.value()->GetDBTaskRunner(),
+                autofill_web_data_service->GetDBTaskRunner(),
                 base::BindRepeating(
                     &AutofillLoyaltyCardDelegateFromDataService,
-                    base::RetainedRef(
-                        account_autofill_web_data_service_.value())))));
+                    base::RetainedRef(autofill_web_data_service)))));
   }
 #endif
 

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <vector>
+
 #include "chrome/browser/autofill/valuables_data_manager_factory.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -25,6 +27,7 @@ using autofill::test::CreateLoyaltyCard;
 using autofill::test::CreateLoyaltyCard2;
 using sync_datatype_helper::test;
 using testing::ElementsAre;
+using testing::UnorderedElementsAre;
 
 namespace {
 
@@ -52,20 +55,15 @@ sync_pb::SyncEntity LoyaltyCardToSyncEntity(const LoyaltyCard& loyalty_card) {
   return entity;
 }
 
-class SingleClientValuablesSyncTest : public SyncTest {
+class SingleClientValuableSyncTestBase : public SyncTest {
  public:
-  SingleClientValuablesSyncTest() : SyncTest(SINGLE_CLIENT) {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{autofill::features::
-                                  kAutofillEnableLoyaltyCardsFilling,
-                              syncer::kSyncAutofillLoyaltyCard},
-        /*disabled_features=*/{});
-  }
-  SingleClientValuablesSyncTest(const SingleClientValuablesSyncTest&) = delete;
-  SingleClientValuablesSyncTest& operator=(
-      const SingleClientValuablesSyncTest&) = delete;
+  SingleClientValuableSyncTestBase() : SyncTest(SINGLE_CLIENT) {}
+  SingleClientValuableSyncTestBase(const SingleClientValuableSyncTestBase&) =
+      delete;
+  SingleClientValuableSyncTestBase& operator=(
+      const SingleClientValuableSyncTestBase&) = delete;
 
-  ~SingleClientValuablesSyncTest() override = default;
+  ~SingleClientValuableSyncTestBase() override = default;
 
   ValuablesDataManager* GetValuablesDataManager(int index) {
     return ValuablesDataManagerFactory::GetForProfile(
@@ -82,8 +80,27 @@ class SingleClientValuablesSyncTest : public SyncTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+class SingleClientValuablesSyncTest : public SingleClientValuableSyncTestBase,
+                                      public testing::WithParamInterface<bool> {
+ public:
+  SingleClientValuablesSyncTest() {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        autofill::features::kAutofillEnableLoyaltyCardsFilling,
+        syncer::kSyncAutofillLoyaltyCard};
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetParam()) {
+      enabled_features.push_back(syncer::kSyncMoveValuablesToProfileDb);
+    } else {
+      disabled_features.push_back(syncer::kSyncMoveValuablesToProfileDb);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  ~SingleClientValuablesSyncTest() override = default;
+};
+
 // Valuables data should get loaded on initial sync.
-IN_PROC_BROWSER_TEST_F(SingleClientValuablesSyncTest, InitialSync) {
+IN_PROC_BROWSER_TEST_P(SingleClientValuablesSyncTest, InitialSync) {
   const LoyaltyCard loyalty_card = CreateLoyaltyCard();
   GetFakeServer()->SetValuableData({LoyaltyCardToSyncEntity(loyalty_card)});
   ASSERT_TRUE(SetupSync());
@@ -97,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuablesSyncTest, InitialSync) {
 // below does not apply, at least in the current form.
 #if !BUILDFLAG(IS_CHROMEOS)
 // Valuables data should get cleared from the database when the user signs out.
-IN_PROC_BROWSER_TEST_F(SingleClientValuablesSyncTest, ClearOnSignOut) {
+IN_PROC_BROWSER_TEST_P(SingleClientValuablesSyncTest, ClearOnSignOut) {
   const LoyaltyCard loyalty_card = CreateLoyaltyCard();
   GetFakeServer()->SetValuableData({LoyaltyCardToSyncEntity(loyalty_card)});
   ASSERT_TRUE(SetupSync());
@@ -116,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuablesSyncTest, ClearOnSignOut) {
 
 // Valuables data should get cleared from the database when the user enters the
 // sync paused state (e.g. persistent auth error).
-IN_PROC_BROWSER_TEST_F(SingleClientValuablesSyncTest, ClearOnSyncPaused) {
+IN_PROC_BROWSER_TEST_P(SingleClientValuablesSyncTest, ClearOnSyncPaused) {
   const LoyaltyCard loyalty_card = CreateLoyaltyCard();
   GetFakeServer()->SetValuableData({LoyaltyCardToSyncEntity(loyalty_card)});
   ASSERT_TRUE(SetupSync());
@@ -138,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuablesSyncTest, ClearOnSyncPaused) {
 
 // Valuables are not using incremental updates. Make sure existing data gets
 // replaced when synced down.
-IN_PROC_BROWSER_TEST_F(SingleClientValuablesSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientValuablesSyncTest,
                        NewSyncDataShouldReplaceExistingData) {
   const LoyaltyCard loyalty_card = CreateLoyaltyCard();
   GetFakeServer()->SetValuableData({LoyaltyCardToSyncEntity(loyalty_card)});
@@ -155,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuablesSyncTest,
   EXPECT_THAT(vdm->GetLoyaltyCards(), ElementsAre(loyalty_card2));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientValuablesSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientValuablesSyncTest,
                        ClearOnDisablePaymentsSync) {
   const LoyaltyCard loyalty_card = CreateLoyaltyCard();
   GetFakeServer()->SetValuableData({LoyaltyCardToSyncEntity(loyalty_card)});
@@ -172,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuablesSyncTest,
   EXPECT_THAT(vdm->GetLoyaltyCards(), testing::IsEmpty());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientValuablesSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientValuablesSyncTest,
                        ClearOnDisableWalletAutofill) {
   const LoyaltyCard loyalty_card = CreateLoyaltyCard();
   GetFakeServer()->SetValuableData({LoyaltyCardToSyncEntity(loyalty_card)});
@@ -188,6 +205,86 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuablesSyncTest,
 
   WaitForNumberOfCards(0, vdm);
   EXPECT_THAT(vdm->GetLoyaltyCards(), testing::IsEmpty());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SingleClientValuablesSyncTest,
+    testing::Bool(),
+    [](const testing::TestParamInfo<SingleClientValuablesSyncTest::ParamType>&
+           info) {
+      return info.param ? "ValuablesInProfileDB" : "ValuablesInAccountDB";
+    });
+
+// DB migration tests for valuables.
+class MigrateValuableDatabasesSyncTest
+    : public SingleClientValuableSyncTestBase {
+ public:
+  MigrateValuableDatabasesSyncTest() {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        autofill::features::kAutofillEnableLoyaltyCardsFilling,
+        syncer::kSyncAutofillLoyaltyCard};
+
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetTestPreCount() == 0 || GetTestPreCount() == 2) {
+      disabled_features.push_back(syncer::kSyncMoveValuablesToProfileDb);
+    } else {
+      enabled_features.push_back(syncer::kSyncMoveValuablesToProfileDb);
+    }
+
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  void SetUpOnMainThread() override {
+    SingleClientValuableSyncTestBase::SetUpOnMainThread();
+    GetFakeServer()->SetValuableData({LoyaltyCardToSyncEntity(loyalty_card1_),
+                                      LoyaltyCardToSyncEntity(loyalty_card2_)});
+  }
+  ~MigrateValuableDatabasesSyncTest() override = default;
+
+ protected:
+  const LoyaltyCard loyalty_card1_ = CreateLoyaltyCard();
+  const LoyaltyCard loyalty_card2_ = CreateLoyaltyCard2();
+};
+
+// With `kSyncMoveValuablesToProfileDb` disabled, valuables are loaded normally
+// from the account DB.
+IN_PROC_BROWSER_TEST_F(MigrateValuableDatabasesSyncTest,
+                       PRE_PRE_MigrateValuablesDB) {
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(SetupSync());
+  ValuablesDataManager* vdm = GetValuablesDataManager(0);
+  ASSERT_NE(nullptr, vdm);
+  // Make sure the data & metadata is in the DB.
+  WaitForNumberOfCards(2, vdm);
+  EXPECT_THAT(vdm->GetLoyaltyCards(),
+              UnorderedElementsAre(loyalty_card1_, loyalty_card2_));
+}
+
+// With `kSyncMoveValuablesToProfileDb` enabled, valuables storage is migrated
+// to the profile DB. The DB starts fresh and sync downloads the latest set of
+// valuables.
+IN_PROC_BROWSER_TEST_F(MigrateValuableDatabasesSyncTest,
+                       PRE_MigrateValuablesDB) {
+  ASSERT_TRUE(SetupClients());
+  ValuablesDataManager* vdm = GetValuablesDataManager(0);
+  ASSERT_NE(nullptr, vdm);
+  WaitForNumberOfCards(2, vdm);
+  // Make sure the data & metadata is in the DB.
+  EXPECT_THAT(vdm->GetLoyaltyCards(),
+              UnorderedElementsAre(loyalty_card1_, loyalty_card2_));
+}
+
+// With `kSyncMoveValuablesToProfileDb` disabled again, valuables are loaded
+// from the account DB again.
+IN_PROC_BROWSER_TEST_F(MigrateValuableDatabasesSyncTest, MigrateValuablesDB) {
+  ASSERT_TRUE(SetupClients());
+  ValuablesDataManager* vdm = GetValuablesDataManager(0);
+  ASSERT_NE(nullptr, vdm);
+  WaitForNumberOfCards(2, vdm);
+  // Make sure the data & metadata is in the DB.
+  EXPECT_THAT(vdm->GetLoyaltyCards(),
+              UnorderedElementsAre(loyalty_card1_, loyalty_card2_));
 }
 
 }  // namespace
