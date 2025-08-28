@@ -60,7 +60,6 @@ from blinkpy.web_tests.models.test_expectations import TestExpectations
 from blinkpy.web_tests.models.test_run_results import convert_to_hierarchical_view
 from blinkpy.web_tests.models.typ_types import (
     Artifacts,
-    ModuleScheme,
     Result,
     ResultSinkReporter,
     ResultType,
@@ -409,8 +408,7 @@ class WPTResultsProcessor:
         self.fs = fs
         self.port = port
         self.artifacts_dir = artifacts_dir
-        self.sink = sink or ResultSinkReporter(
-            host=port.typ_host(), module_scheme=ModuleScheme.WEBTEST)
+        self.sink = sink or ResultSinkReporter(host=port.typ_host())
         # This prefix does not actually exist on disk and only affects how the
         # results are reported.
         if test_name_prefix and not test_name_prefix.endswith('/'):
