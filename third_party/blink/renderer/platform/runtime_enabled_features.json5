@@ -3213,6 +3213,13 @@
       status: "stable",
     },
     {
+      // Experimental support for Multicast in Direct Sockets API.
+      // https://github.com/explainers-by-googlers/multicast-in-direct-sockets
+      name: "MulticastInDirectSockets",
+      status: "test",
+      depends_on: ["DirectSockets"]
+    },
+    {
       name: "MulticolColumnWrapping",
       status: "experimental",
     },

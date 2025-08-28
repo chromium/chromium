@@ -1581,6 +1581,11 @@ extern const char kMostVisitedTilesReselectDescription[];
 extern const char kMostVisitedTilesVisualDeduplicationName[];
 extern const char kMostVisitedTilesVisualDeduplicationDescription[];
 
+#if !BUILDFLAG(IS_ANDROID)
+extern const char kMulticastInDirectSocketsName[];
+extern const char kMulticastInDirectSocketsDescription[];
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 extern const char kCanvas2DLayersName[];
 extern const char kCanvas2DLayersDescription[];
 

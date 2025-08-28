@@ -2705,6 +2705,14 @@ const char kMostVisitedTilesVisualDeduplicationDescription[] =
     "(i.e., have the same title and the same hostname) of another tile with "
     "higher score.";
 
+#if !BUILDFLAG(IS_ANDROID)
+const char kMulticastInDirectSocketsName[] = "Multicast in Direct Sockets API";
+const char kMulticastInDirectSocketsDescription[] =
+    "Enables access Multicast in Direct Sockets API. See "
+    "https://github.com/explainers-by-googlers/multicast-in-direct-sockets for "
+    "details.";
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 const char kCanvas2DLayersName[] =
     "Enables canvas 2D methods BeginLayer and EndLayer";
 const char kCanvas2DLayersDescription[] =
