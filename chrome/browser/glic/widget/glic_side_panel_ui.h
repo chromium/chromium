@@ -1,0 +1,41 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_GLIC_WIDGET_GLIC_SIDE_PANEL_UI_H_
+#define CHROME_BROWSER_GLIC_WIDGET_GLIC_SIDE_PANEL_UI_H_
+
+#include "base/time/time.h"
+#include "chrome/browser/glic/host/glic.mojom-forward.h"
+#include "chrome/browser/glic/host/glic_ui_embedder.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
+
+namespace glic {
+
+// A stub implementation of GlicUiEmbedder for side panel UIs.
+class GlicSidePanelUi : public GlicUiEmbedder {
+ public:
+  GlicSidePanelUi();
+  ~GlicSidePanelUi() override;
+
+  // GlicUiEmbedder:
+  const mojom::PanelState& GetPanelState() const override;
+  void Resize(const gfx::Size& size,
+              base::TimeDelta duration,
+              base::OnceClosure callback) override;
+  void SetDraggableAreas(
+      const std::vector<gfx::Rect>& draggable_areas) override;
+  void EnableDragResize(bool enabled) override;
+  void Attach() override;
+  void Detach() override;
+  void SetMinimumWidgetSize(const gfx::Size& size) override;
+  bool IsShowing() const override;
+
+ private:
+  mojom::PanelState panel_state_;
+};
+
+}  // namespace glic
+
+#endif  // CHROME_BROWSER_GLIC_WIDGET_GLIC_SIDE_PANEL_UI_H_
