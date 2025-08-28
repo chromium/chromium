@@ -10,6 +10,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 
 #include "base/compiler_specific.h"
