@@ -329,17 +329,17 @@ void InlineLayoutAlgorithm::CheckBoxStates(
 #endif
 
 ALWAYS_INLINE InlineLayoutAlgorithm::LineClampState
-InlineLayoutAlgorithm::GetLineClampState(const LineInfo* line_info,
-                                         LayoutUnit line_box_height) const {
+InlineLayoutAlgorithm::GetLineClampState(const LineInfo* line_info) const {
   const ConstraintSpace& space = GetConstraintSpace();
   LineClampData line_clamp_data = space.GetLineClampData();
-  if (!line_info->IsBlockInInline() && line_clamp_data.IsAtClampPoint()) {
-    return LineClampState::kLineClampEllipsis;
-  }
   if (line_clamp_data.ShouldHideForPaint()) {
     return LineClampState::kHide;
   }
-  if (!line_info->IsBlockInInline() && line_info->HasOverflow() &&
+  if (!(line_info && line_info->IsBlockInInline()) &&
+      line_clamp_data.IsAtClampPoint()) {
+    return LineClampState::kLineClampEllipsis;
+  }
+  if (line_info && !line_info->IsBlockInInline() && line_info->HasOverflow() &&
       node_.GetLayoutBlockFlow()->ShouldTruncateOverflowingText()) {
     return LineClampState::kTextOverflowEllipsis;
   }
@@ -409,8 +409,7 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
   // Truncate the line if:
   //  - 'text-overflow: ellipsis' is set and we *aren't* a line-clamp context.
   //  - If we've reached the line-clamp limit.
-  const LineClampState line_clamp_state =
-      GetLineClampState(line_info, line_box_metrics.LineHeight());
+  const LineClampState line_clamp_state = GetLineClampState(line_info);
   if (line_clamp_state == LineClampState::kTextOverflowEllipsis ||
       (line_clamp_state == LineClampState::kLineClampEllipsis &&
        !RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled()))
@@ -1188,7 +1187,7 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
                                column_spanner_path_, &GetExclusionSpace());
       line_break_strategy.SetupLineBreaker(context_, line_breaker);
       if (RuntimeEnabledFeatures::CSSLineClampLineBreakingEllipsisEnabled() &&
-          constraint_space.GetLineClampData().IsAtClampPoint()) {
+          GetLineClampState(nullptr) == LineClampState::kLineClampEllipsis) {
         LayoutUnit ellipsis_width = SetupLineClampEllipsis();
         line_breaker.SetLineClampEllipsisWidth(ellipsis_width);
       }
