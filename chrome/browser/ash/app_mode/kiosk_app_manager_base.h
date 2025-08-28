@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/path_service.h"
@@ -19,6 +20,8 @@
 #include "components/account_id/account_id.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
+
+class PrefService;
 
 namespace base {
 class FilePath;
@@ -49,7 +52,8 @@ class KioskAppManagerBase : public KioskAppDataDelegate {
   };
   using AppList = std::vector<App>;
 
-  KioskAppManagerBase();
+  // `local_state` must be non-null, and must outlive `this`.
+  explicit KioskAppManagerBase(PrefService* local_state);
   KioskAppManagerBase(const KioskAppManagerBase&) = delete;
   KioskAppManagerBase& operator=(const KioskAppManagerBase&) = delete;
   ~KioskAppManagerBase() override;
@@ -91,6 +95,8 @@ class KioskAppManagerBase : public KioskAppDataDelegate {
   // Performs removal of the removed apps's cryptohomes.
   void ClearRemovedApps(
       const std::vector<const KioskAppDataBase*>& old_apps) const;
+
+  const raw_ref<PrefService> local_state_;
 
   bool auto_launched_with_zero_delay_ = false;
 

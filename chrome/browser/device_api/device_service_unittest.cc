@@ -36,6 +36,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -943,7 +944,8 @@ class DeviceAPIServiceWithKioskUserTest : public DeviceAPIServiceParamTest {
     DeviceAPIServiceParamTest::SetUp();
     command_line_.GetProcessCommandLine()->AppendSwitch(
         switches::kForceAppMode);
-    app_manager_ = std::make_unique<ash::KioskWebAppManager>();
+    app_manager_ = std::make_unique<ash::KioskWebAppManager>(
+        TestingBrowserProcess::GetGlobal()->local_state());
   }
 
   void TearDown() override {

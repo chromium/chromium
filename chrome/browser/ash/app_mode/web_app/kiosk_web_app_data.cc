@@ -192,13 +192,15 @@ class KioskWebAppData::IconFetcher {
   base::WeakPtrFactory<IconFetcher> weak_ptr_factory_{this};
 };
 
-KioskWebAppData::KioskWebAppData(KioskAppDataDelegate& delegate,
+KioskWebAppData::KioskWebAppData(PrefService* local_state,
+                                 KioskAppDataDelegate& delegate,
                                  const std::string& app_id,
                                  const AccountId& account_id,
                                  const GURL url,
                                  const std::string& title,
                                  const GURL icon_url)
-    : KioskAppDataBase(KioskWebAppManager::kWebKioskDictionaryName,
+    : KioskAppDataBase(local_state,
+                       KioskWebAppManager::kWebKioskDictionaryName,
                        app_id,
                        account_id),
       delegate_(delegate),
@@ -211,8 +213,7 @@ KioskWebAppData::KioskWebAppData(KioskAppDataDelegate& delegate,
 KioskWebAppData::~KioskWebAppData() = default;
 
 bool KioskWebAppData::LoadFromCache() {
-  PrefService* local_state = g_browser_process->local_state();
-  const base::Value::Dict& dict = local_state->GetDict(dictionary_name());
+  const base::Value::Dict& dict = local_state_->GetDict(dictionary_name());
 
   if (!LoadFromDictionary(dict)) {
     return false;
@@ -285,8 +286,7 @@ void KioskWebAppData::UpdateAppInfo(const std::string& title,
     SaveIcon(bitmap, delegate_->GetKioskAppIconCacheDir());
   }
 
-  PrefService* local_state = g_browser_process->local_state();
-  ScopedDictPrefUpdate dict_update(local_state, dictionary_name());
+  ScopedDictPrefUpdate dict_update(&local_state_.get(), dictionary_name());
   SaveToDictionary(dict_update);
 
   launch_url_ = start_url;
@@ -359,8 +359,7 @@ void KioskWebAppData::OnDidDownloadIcon(SkBitmap icon) {
 
   SaveIcon(icon, delegate_->GetKioskAppIconCacheDir());
 
-  PrefService* local_state = g_browser_process->local_state();
-  ScopedDictPrefUpdate dict_update(local_state, dictionary_name());
+  ScopedDictPrefUpdate dict_update(&local_state_.get(), dictionary_name());
   SaveIconToDictionary(dict_update);
 
   dict_update->FindDict(KioskAppDataBase::kKeyApps)

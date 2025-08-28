@@ -268,12 +268,14 @@ class KioskAppData::WebstoreDataParser
 ////////////////////////////////////////////////////////////////////////////////
 // KioskAppData
 
-KioskAppData::KioskAppData(KioskAppDataDelegate& delegate,
+KioskAppData::KioskAppData(PrefService* local_state,
+                           KioskAppDataDelegate& delegate,
                            const std::string& app_id,
                            const AccountId& account_id,
                            const GURL& update_url,
                            const base::FilePath& cached_crx)
-    : KioskAppDataBase(KioskChromeAppManager::kKioskDictionaryName,
+    : KioskAppDataBase(local_state,
+                       KioskChromeAppManager::kKioskDictionaryName,
                        app_id,
                        account_id),
       delegate_(delegate),
@@ -341,13 +343,14 @@ void KioskAppData::SetStatusForTest(Status status) {
 
 // static
 std::unique_ptr<KioskAppData> KioskAppData::CreateForTest(
+    PrefService* local_state,
     KioskAppDataDelegate& delegate,
     const std::string& app_id,
     const AccountId& account_id,
     const GURL& update_url,
     const std::string& required_platform_version) {
   std::unique_ptr<KioskAppData> data(new KioskAppData(
-      delegate, app_id, account_id, update_url, base::FilePath()));
+      local_state, delegate, app_id, account_id, update_url, base::FilePath()));
   data->status_ = Status::kLoaded;
   data->required_platform_version_ = required_platform_version;
   return data;
@@ -373,8 +376,7 @@ void KioskAppData::SetStatus(Status status) {
 }
 
 bool KioskAppData::LoadFromCache() {
-  PrefService* local_state = g_browser_process->local_state();
-  const base::Value::Dict& dict = local_state->GetDict(dictionary_name());
+  const base::Value::Dict& dict = local_state_->GetDict(dictionary_name());
 
   if (!LoadFromDictionary(dict)) {
     return false;
@@ -407,8 +409,7 @@ void KioskAppData::SetCache(const std::string& name,
 
   SaveIcon(icon, delegate_->GetKioskAppIconCacheDir());
 
-  PrefService* local_state = g_browser_process->local_state();
-  ScopedDictPrefUpdate dict_update(local_state, dictionary_name());
+  ScopedDictPrefUpdate dict_update(&local_state_.get(), dictionary_name());
   SaveToDictionary(dict_update);
 
   const std::string app_key = std::string(kKeyApps) + '.' + app_id();

@@ -95,7 +95,8 @@ KioskIwaData::KioskIwaData(const std::string& user_id,
                            bool allow_downgrades,
                            KioskAppDataDelegate& delegate,
                            PrefService& local_state)
-    : KioskAppDataBase(KioskIwaManager::kIwaKioskDictionaryName,
+    : KioskAppDataBase(&local_state,
+                       KioskIwaManager::kIwaKioskDictionaryName,
                        iwa_info.app_id(),
                        AccountId::FromUserEmail(user_id)),
       iwa_info_(iwa_info),
@@ -103,8 +104,7 @@ KioskIwaData::KioskIwaData(const std::string& user_id,
       update_channel_(std::move(update_channel)),
       pinned_version_(std::move(pinned_version)),
       allow_downgrades_(allow_downgrades),
-      delegate_(delegate),
-      local_state_(local_state) {
+      delegate_(delegate) {
   name_ = update_manifest_url_.GetWithoutFilename().GetContent();
 }
 

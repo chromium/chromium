@@ -11,15 +11,16 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ref.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_icon_loader.h"
-#include "chrome/browser/browser_process.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -75,10 +76,12 @@ void RemoveDictionaryPath(base::Value::Dict& dict, std::string_view path) {
 // static
 const char KioskAppDataBase::kKeyApps[] = "apps";
 
-KioskAppDataBase::KioskAppDataBase(const std::string& dictionary_name,
+KioskAppDataBase::KioskAppDataBase(PrefService* local_state,
+                                   const std::string& dictionary_name,
                                    const std::string& app_id,
                                    const AccountId& account_id)
-    : dictionary_name_(dictionary_name),
+    : local_state_(CHECK_DEREF(local_state)),
+      dictionary_name_(dictionary_name),
       app_id_(app_id),
       account_id_(account_id) {}
 
@@ -158,9 +161,7 @@ void KioskAppDataBase::SaveIcon(const SkBitmap& icon,
 
 void KioskAppDataBase::ClearCache() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  PrefService* local_state = g_browser_process->local_state();
-
-  ScopedDictPrefUpdate dict_update(local_state, dictionary_name());
+  ScopedDictPrefUpdate dict_update(&local_state_.get(), dictionary_name());
 
   const std::string app_key =
       std::string(KioskAppDataBase::kKeyApps) + '.' + app_id_;

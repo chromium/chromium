@@ -307,6 +307,7 @@ class WizardControllerTestBase : public ::testing::Test {
   ash::ScopedTestDeviceSettingsService device_settings_service_;
   ScopedTestingCrosSettings settings_;
   KioskChromeAppManager kiosk_chrome_app_manager_{
+      TestingBrowserProcess::GetGlobal()->local_state(),
       TestingBrowserProcess::GetGlobal()->shared_url_loader_factory()};
   ScopedStubInstallAttributes scoped_stub_install_attributes_;
   ash::system::ScopedFakeStatisticsProvider statistics_provider_;

@@ -28,6 +28,7 @@
 
 class GURL;
 class PrefRegistrySimple;
+class PrefService;
 class Profile;
 
 namespace base {
@@ -122,7 +123,9 @@ class KioskChromeAppManager : public KioskAppManagerBase,
   // be applied to Kiosk, because a Kiosk session has a special user profile.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  explicit KioskChromeAppManager(
+  // `local_state` must be non-null, and must outlive `this`.
+  KioskChromeAppManager(
+      PrefService* local_state,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
   KioskChromeAppManager(const KioskChromeAppManager&) = delete;
   KioskChromeAppManager& operator=(const KioskChromeAppManager&) = delete;

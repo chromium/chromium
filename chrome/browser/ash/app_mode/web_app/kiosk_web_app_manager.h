@@ -17,6 +17,7 @@
 #include "url/gurl.h"
 
 class PrefRegistrySimple;
+class PrefService;
 class Profile;
 
 namespace web_app {
@@ -37,7 +38,9 @@ class KioskWebAppManager : public KioskAppManagerBase {
 
   // Will return the manager instance or will crash if it not yet initiazlied.
   static KioskWebAppManager* Get();
-  KioskWebAppManager();
+
+  // `local_state` must be non-null, and must outlive `this`.
+  explicit KioskWebAppManager(PrefService* local_state);
   KioskWebAppManager(const KioskWebAppManager&) = delete;
   KioskWebAppManager& operator=(const KioskWebAppManager&) = delete;
   ~KioskWebAppManager() override;

@@ -131,7 +131,8 @@ KioskControllerImpl::KioskControllerImpl(
     user_manager::UserManager* user_manager)
     : local_state_(local_state),
       iwa_manager_(local_state),
-      chrome_app_manager_(std::move(shared_url_loader_factory)),
+      web_app_manager_(&local_state),
+      chrome_app_manager_(&local_state, std::move(shared_url_loader_factory)),
       arcvm_app_manager_(&local_state) {
   user_manager_observation_.Observe(user_manager);
 }

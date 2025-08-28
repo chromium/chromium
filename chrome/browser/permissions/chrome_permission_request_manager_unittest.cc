@@ -147,7 +147,8 @@ class ChromePermissionRequestManagerTest
     user_manager->AddKioskWebAppUser(account_id);
     user_manager->LoginUser(account_id);
 
-    auto kiosk_app_manager = std::make_unique<ash::KioskWebAppManager>();
+    auto kiosk_app_manager = std::make_unique<ash::KioskWebAppManager>(
+        TestingBrowserProcess::GetGlobal()->local_state());
     kiosk_app_manager->AddAppForTesting(account_id, app_url);
 
     NavigateAndCommit(url);

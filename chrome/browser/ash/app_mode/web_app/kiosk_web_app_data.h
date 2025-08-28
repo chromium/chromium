@@ -40,7 +40,9 @@ class KioskWebAppData : public KioskAppDataBase {
                  // without them.
   };
 
-  KioskWebAppData(KioskAppDataDelegate& delegate,
+  // `local_state` must be non-null, and must outlive `this`.
+  KioskWebAppData(PrefService* local_state,
+                  KioskAppDataDelegate& delegate,
                   const std::string& app_id,
                   const AccountId& account_id,
                   const GURL url,

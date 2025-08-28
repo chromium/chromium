@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
@@ -76,8 +75,6 @@ class KioskArcvmAppManager : public KioskAppManagerBase {
 
   std::vector<std::unique_ptr<KioskArcvmAppData>> apps_;
   AccountId auto_launch_account_id_;
-  // TODO(crbug.com/418940675): See if this can be refactored to raw_ref.
-  const raw_ptr<PrefService> local_state_;
 };
 
 }  // namespace ash

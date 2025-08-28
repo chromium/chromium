@@ -8,8 +8,10 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_base.h"
@@ -27,7 +29,8 @@ namespace {
 const char kIconCacheDir[] = "kiosk/icon";
 }  // namespace
 
-KioskAppManagerBase::KioskAppManagerBase() {
+KioskAppManagerBase::KioskAppManagerBase(PrefService* local_state)
+    : local_state_(CHECK_DEREF(local_state)) {
   local_accounts_subscription_ = CrosSettings::Get()->AddSettingsObserver(
       kAccountsPrefDeviceLocalAccounts,
       base::BindRepeating(&KioskAppManagerBase::UpdateAppsFromPolicy,

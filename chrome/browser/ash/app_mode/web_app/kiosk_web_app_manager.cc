@@ -13,6 +13,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
@@ -63,8 +64,9 @@ KioskAppManagerBase::App KioskWebAppManager::CreateAppByData(
   return app;
 }
 
-KioskWebAppManager::KioskWebAppManager()
-    : auto_launch_account_id_(EmptyAccountId()) {
+KioskWebAppManager::KioskWebAppManager(PrefService* local_state)
+    : KioskAppManagerBase(local_state),
+      auto_launch_account_id_(EmptyAccountId()) {
   CHECK(!g_web_kiosk_app_manager);  // Only one instance is allowed.
   g_web_kiosk_app_manager = this;
   UpdateAppsFromPolicy();
@@ -135,7 +137,8 @@ void KioskWebAppManager::AddAppForTesting(const AccountId& account_id,
   const std::string app_id =
       web_app::GenerateAppId(/*manifest_id_path=*/std::nullopt, install_url);
   apps_.push_back(std::make_unique<KioskWebAppData>(
-      *this, app_id, account_id, install_url, /*title*/ std::string(),
+      &local_state_.get(), *this, app_id, account_id, install_url,
+      /*title*/ std::string(),
       /*icon_url*/ GURL()));
   NotifyKioskAppsChanged();
 }
@@ -188,7 +191,7 @@ void KioskWebAppManager::UpdateAppsFromPolicy() {
       old_apps.erase(old_it);
     } else {
       apps_.push_back(std::make_unique<KioskWebAppData>(
-          *this, app_id, account_id, std::move(url), title,
+          &local_state_.get(), *this, app_id, account_id, std::move(url), title,
           std::move(icon_url)));
       apps_.back()->LoadFromCache();
     }

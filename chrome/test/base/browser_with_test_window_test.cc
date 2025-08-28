@@ -115,6 +115,7 @@ void BrowserWithTestWindowTest::SetUp() {
 #if BUILDFLAG(IS_CHROMEOS)
   manager_ = std::make_unique<crosapi::CrosapiManager>();
   kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>(
+      TestingBrowserProcess::GetGlobal()->local_state(),
       TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
 #endif
 

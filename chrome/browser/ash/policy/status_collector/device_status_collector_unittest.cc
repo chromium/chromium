@@ -1120,6 +1120,7 @@ class DeviceStatusCollectorTest : public testing::Test {
       const std::string& required_platform_version) {
     if (!kiosk_chrome_app_manager_) {
       kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>(
+          TestingBrowserProcess::GetGlobal()->local_state(),
           TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
     }
     kiosk_chrome_app_manager_->AddAppForTest(
@@ -1145,7 +1146,8 @@ class DeviceStatusCollectorTest : public testing::Test {
 
   void MockAutoLaunchWebKioskApp(
       const DeviceLocalAccount& auto_launch_app_account) {
-    kiosk_web_app_manager_ = std::make_unique<ash::KioskWebAppManager>();
+    kiosk_web_app_manager_ = std::make_unique<ash::KioskWebAppManager>(
+        TestingBrowserProcess::GetGlobal()->local_state());
     kiosk_web_app_manager_->AddAppForTesting(
         AccountId::FromUserEmail(auto_launch_app_account.user_id),
         GURL(auto_launch_app_account.web_kiosk_app_info.url()));

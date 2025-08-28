@@ -75,9 +75,6 @@ specific_include_rules = {
   "kiosk_app_data\\.cc": [
     "+chrome/browser/browser_process.h",
   ],
-  "kiosk_app_data_base\\.cc": [
-    "+chrome/browser/browser_process.h",
-  ],
   "kiosk_cryptohome_remover\\.cc": [
     "+chrome/browser/browser_process.h",
   ],

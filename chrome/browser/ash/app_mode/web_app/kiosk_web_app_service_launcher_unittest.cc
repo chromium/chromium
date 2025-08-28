@@ -39,6 +39,7 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "components/services/app_service/public/cpp/instance.h"
@@ -117,7 +118,8 @@ class KioskWebAppServiceLauncherTest : public BrowserWithTestWindowTest {
     static_cast<web_app::FakeWebAppUiManager*>(&web_app_provider().ui_manager())
         ->SetOnLaunchWebAppCallback(app_launch_future_.GetRepeatingCallback());
 
-    app_manager_ = std::make_unique<KioskWebAppManager>();
+    app_manager_ = std::make_unique<KioskWebAppManager>(
+        TestingBrowserProcess::GetGlobal()->local_state());
     account_id_ = AccountId::FromUserEmail(kAppEmail);
     app_manager_->AddAppForTesting(account_id_, GURL(kAppInstallUrl));
 

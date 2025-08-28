@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_data.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
@@ -87,8 +86,6 @@ class KioskIwaManager : public KioskAppManagerBase {
   // removed.
   void ProcessDeviceLocalAccount(const policy::DeviceLocalAccount& account,
                                  KioskIwaDataMap& previous_apps);
-
-  const raw_ref<PrefService> local_state_;
 
   // TODO(crbug.com/377878781): Make common helpers for all kiosk app managers.
   std::vector<std::unique_ptr<KioskIwaData>> isolated_web_apps_;

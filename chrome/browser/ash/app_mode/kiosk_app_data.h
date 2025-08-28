@@ -20,6 +20,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
+class PrefService;
 class Profile;
 
 namespace extensions {
@@ -47,7 +48,9 @@ class KioskAppData : public KioskAppDataBase,
     kError,    // Failed to load data.
   };
 
-  KioskAppData(KioskAppDataDelegate& delegate,
+  // `local_state` must be non-null, and must outlive `this`.
+  KioskAppData(PrefService* local_state,
+               KioskAppDataDelegate& delegate,
                const std::string& app_id,
                const AccountId& account_id,
                const GURL& update_url,
@@ -81,7 +84,9 @@ class KioskAppData : public KioskAppDataBase,
 
   void SetStatusForTest(Status status);
 
+  // `local_state` must be non-null, and must outlive the returned object.
   static std::unique_ptr<KioskAppData> CreateForTest(
+      PrefService* local_state,
       KioskAppDataDelegate& delegate,
       const std::string& app_id,
       const AccountId& account_id,

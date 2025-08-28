@@ -71,7 +71,7 @@ KioskIwaManager* KioskIwaManager::Get() {
 }
 
 KioskIwaManager::KioskIwaManager(PrefService& local_state)
-    : local_state_(local_state) {
+    : KioskAppManagerBase(&local_state) {
   CHECK(!g_kiosk_iwa_manager_instance);  // Only one instance is allowed.
   g_kiosk_iwa_manager_instance = this;
   UpdateAppsFromPolicy();

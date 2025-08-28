@@ -95,7 +95,6 @@ class KioskIwaData : public KioskAppDataBase {
   const bool allow_downgrades_;
 
   const raw_ref<KioskAppDataDelegate> delegate_;
-  const raw_ref<PrefService> local_state_;
 
   base::WeakPtrFactory<KioskIwaData> weak_ptr_factory_{this};
 };

@@ -54,7 +54,8 @@ KioskArcvmAppManager* KioskArcvmAppManager::Get() {
 }
 
 KioskArcvmAppManager::KioskArcvmAppManager(PrefService* local_state)
-    : auto_launch_account_id_(EmptyAccountId()), local_state_(local_state) {
+    : KioskAppManagerBase(local_state),
+      auto_launch_account_id_(EmptyAccountId()) {
   CHECK(!g_arcvm_kiosk_app_manager);  // Only one instance is allowed.
   g_arcvm_kiosk_app_manager = this;
   UpdateAppsFromPolicy();
@@ -126,8 +127,9 @@ void KioskArcvmAppManager::AddAutoLaunchAppForTest(
   }
 
   apps_.emplace_back(std::make_unique<KioskArcvmAppData>(
-      local_state_, app_id, app_info.package_name(), app_info.class_name(),
-      app_info.action(), account_id, app_info.display_name()));
+      &local_state_.get(), app_id, app_info.package_name(),
+      app_info.class_name(), app_info.action(), account_id,
+      app_info.display_name()));
 
   auto_launch_account_id_ = account_id;
   auto_launched_with_zero_delay_ = true;
@@ -198,8 +200,8 @@ void KioskArcvmAppManager::UpdateAppsFromPolicy() {
                              ? app_info.package_name()
                              : app_info.display_name();
       apps_.push_back(std::make_unique<KioskArcvmAppData>(
-          local_state_, app_id, app_info.package_name(), app_info.class_name(),
-          app_info.action(), account_id, name));
+          &local_state_.get(), app_id, app_info.package_name(),
+          app_info.class_name(), app_info.action(), account_id, name));
       apps_.back()->LoadFromCache();
     }
     // TODO(crbug.com/418847377): Remove direct dependency on

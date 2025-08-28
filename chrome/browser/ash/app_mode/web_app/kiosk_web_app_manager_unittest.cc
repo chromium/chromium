@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -122,7 +123,8 @@ class KioskWebAppManagerTest : public BrowserWithTestWindowTest {
     app_publisher_ =
         std::make_unique<FakePublisher>(app_service_, apps::AppType::kWeb);
 
-    app_manager_ = std::make_unique<KioskWebAppManager>();
+    app_manager_ = std::make_unique<KioskWebAppManager>(
+        TestingBrowserProcess::GetGlobal()->local_state());
 
     app_manager()->StartObservingAppUpdate(profile(), account_id());
     app_manager()->AddObserver(&app_manager_observer_);
