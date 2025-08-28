@@ -126,11 +126,8 @@ std::string Me2MeDesktopEnvironment::GetCapabilities() const {
   capabilities += protocol::kDefaultResizeCapability;
 
   if (RunningUnderWayland()) {
-    // Client-controlled layout for wayland is still WIP and has some bugs.
-#if !defined(NDEBUG)
     capabilities += " ";
     capabilities += protocol::kClientControlledLayoutCapability;
-#endif
     capabilities += " ";
     capabilities += protocol::kHighDpiCapability;
   } else if (UsingVideoDummyDriver()) {
