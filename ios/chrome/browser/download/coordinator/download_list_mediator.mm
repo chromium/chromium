@@ -6,13 +6,14 @@
 
 #import <UIKit/UIKit.h>
 
-#import <algorithm>
 #import <memory>
 #import <string>
 #import <vector>
 
 #import "base/check.h"
 #import "base/files/file_path.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -24,21 +25,32 @@
 #import "ios/chrome/browser/download/ui/download_list/download_list_item.h"
 #import "ios/web/public/download/download_task.h"
 
-@interface DownloadListMediator () <DownloadRecordObserverDelegate> {
-  raw_ptr<DownloadRecordService> _downloadRecordService;
-  __weak id<DownloadListConsumer> _consumer;
-  BOOL _isReady;
-  std::unique_ptr<DownloadRecordObserverBridge> _observerBridge;
-  // Flag to indicate if the app is recovering from background state.
-  BOOL _isRecoveringFromBackground;
-  // Current filter type applied to the download records.
-  DownloadFilterType _currentFilterType;
-  // Cached download records to avoid frequent service calls.
-  std::vector<DownloadRecord> _allRecords;
-}
+@interface DownloadListMediator () <DownloadRecordObserverDelegate>
+
+// Cached download records to avoid frequent service calls.
+@property(nonatomic, assign) std::vector<DownloadRecord> allRecords;
+
+// Consumer for updating the UI.
+@property(nonatomic, weak) id<DownloadListConsumer> consumer;
+
 @end
 
-@implementation DownloadListMediator
+@implementation DownloadListMediator {
+  // Service for managing download records.
+  raw_ptr<DownloadRecordService> _downloadRecordService;
+
+  // Flag to indicate if the mediator is ready (i.e., has a consumer).
+  BOOL _isReady;
+
+  // Observer bridge for download record updates.
+  std::unique_ptr<DownloadRecordObserverBridge> _observerBridge;
+
+  // Flag to indicate if the app is recovering from background state.
+  BOOL _isRecoveringFromBackground;
+
+  // Current filter type applied to the download records.
+  DownloadFilterType _currentFilterType;
+}
 
 - (instancetype)initWithDownloadRecordService:
     (DownloadRecordService*)downloadRecordService {
@@ -105,12 +117,18 @@
 - (void)loadDownloadRecords {
   CHECK(_isReady);
 
-  [_consumer setLoadingState:YES];
+  [self.consumer setLoadingState:YES];
 
-  std::vector<DownloadRecord> recordsToDisplay =
-      [self applyCurrentFilter:_allRecords];
+  __weak __typeof__(self) weakSelf = self;
+  _downloadRecordService->GetAllDownloadsAsync(
+      base::BindOnce(^(std::vector<DownloadRecord> records) {
+        __strong __typeof__(weakSelf) strongSelf = weakSelf;
+        strongSelf.allRecords = std::move(records);
+        std::vector<DownloadRecord> recordsToDisplay =
+            [strongSelf applyCurrentFilter:strongSelf.allRecords];
 
-  [self setDownloadListItems:recordsToDisplay];
+        [strongSelf setDownloadListItems:recordsToDisplay];
+      }));
 }
 
 - (void)syncRecordsIfNeeded {
@@ -119,7 +137,7 @@
   // Implement logic to sync records with the file system in a future iteration.
 
   std::vector<DownloadRecord> recordsToDisplay =
-      [self applyCurrentFilter:_allRecords];
+      [self applyCurrentFilter:self.allRecords];
   [self setDownloadListItems:recordsToDisplay];
 }
 
@@ -128,10 +146,10 @@
 
   _currentFilterType = type;
 
-  [_consumer setLoadingState:YES];
+  [self.consumer setLoadingState:YES];
 
   std::vector<DownloadRecord> filteredRecords =
-      [self applyCurrentFilter:_allRecords];
+      [self applyCurrentFilter:self.allRecords];
 
   [self setDownloadListItems:filteredRecords];
 }
@@ -197,9 +215,9 @@
         [[DownloadListItem alloc] initWithDownloadRecord:record];
     [items addObject:item];
   }
-  [_consumer setDownloadListItems:items.copy];
-  [_consumer setLoadingState:NO];
-  [_consumer setEmptyState:(items.count == 0)];
+  [self.consumer setDownloadListItems:items.copy];
+  [self.consumer setLoadingState:NO];
+  [self.consumer setEmptyState:(items.count == 0)];
 }
 
 @end

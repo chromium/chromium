@@ -43,6 +43,7 @@ source_set("ui") {
   frameworks = [
     "ContactsUI.framework",
     "Contacts.framework",
+    "QuickLook.framework",
     "SafariServices.framework",
     "ARKit.framework",
     "StoreKit.framework",

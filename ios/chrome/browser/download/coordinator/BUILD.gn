@@ -6,6 +6,8 @@ source_set("coordinator") {
   sources = [
     "ar_quick_look_coordinator.h",
     "ar_quick_look_coordinator.mm",
+    "download_file_preview_coordinator.h",
+    "download_file_preview_coordinator.mm",
     "download_list_coordinator.h",
     "download_list_coordinator.mm",
     "download_list_mediator.h",
@@ -47,6 +49,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
