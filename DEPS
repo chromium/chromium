@@ -3076,7 +3076,7 @@ deps = {
       'packages': [
         {
           'package': 'skia/tools/goldctl/mac-amd64',
-          'version': 'b-j1EfuXxMKGgGvSsu998B3Py6Im2cjyVMMFGXVabJYC',
+          'version': 'cofn9zqFtLm5rQy4mXJxjZX1A8GS_95ZVb-2E3-m734C',
         },
       ],
       'dep_type': 'cipd',
