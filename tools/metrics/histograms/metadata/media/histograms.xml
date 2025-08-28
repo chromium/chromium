@@ -1638,14 +1638,15 @@ chromium-metrics-reviews@google.com.
   <owner>saza@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
-    Whether a glitch in the capture/render audio at the OS level was detected
-    during the first 1000 OS callbacks of an active input/output stream. A
-    glitch is detected if the OS skips providing/requesting any frames of audio,
-    and is recorded when the stream ends, as long as the stream saw at least one
-    OS callback. Reported on Windows and Mac.
+    Whether a glitch in the {Type} audio at the OS level was detected during the
+    first 1000 OS callbacks of an active input/output stream. A glitch is
+    detected if the OS skips providing/requesting any frames of audio, and is
+    recorded when the stream ends, as long as the stream saw at least one OS
+    callback. Reported on Windows and Mac.
   </summary>
   <token key="Type">
     <variant name="Capture"/>
+    <variant name="Loopback"/>
     <variant name="Render"/>
   </token>
 </histogram>
@@ -1657,15 +1658,15 @@ chromium-metrics-reviews@google.com.
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The number of glitches that were detected at the OS level while an audio
-    input (Capture) or output (Render) stream was active. A glitch is detected
-    if the OS skips providing/requesting any frames of audio. This value is
-    aggregated over a period of 1000 OS callbacks (every 10 seconds for buffer
-    size 10 ms) and is logged at the end of each collection interval. Not
-    recorded for streams shorter than 1000 callbacks. Reported on Windows, Mac
-    and ChromeOS.
+    {Type} stream was active. A glitch is detected if the OS skips
+    providing/requesting any frames of audio. This value is aggregated over a
+    period of 1000 OS callbacks (every 10 seconds for buffer size 10 ms) and is
+    logged at the end of each collection interval. Not recorded for streams
+    shorter than 1000 callbacks. Reported on Windows, Mac and ChromeOS.
   </summary>
   <token key="Type">
     <variant name="Capture"/>
+    <variant name="Loopback"/>
     <variant name="Render"/>
   </token>
 </histogram>
@@ -1677,14 +1678,15 @@ chromium-metrics-reviews@google.com.
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The length in milliseconds of the largest glitch that was detected at the OS
-    level by an audio input (Capture) or output (Render) stream. This value is
-    aggregated over a period of 1000 OS callbacks (every 10 seconds for buffer
-    size 10 ms) and is logged at the end of each collection interval if any
-    glitches were detected. Not recorded for streams shorter than 1000
-    callbacks. Reported on Windows and Mac.
+    level by an audio input {Type} stream. This value is aggregated over a
+    period of 1000 OS callbacks (every 10 seconds for buffer size 10 ms) and is
+    logged at the end of each collection interval if any glitches were detected.
+    Not recorded for streams shorter than 1000 callbacks. Reported on Windows
+    and Mac.
   </summary>
   <token key="Type">
     <variant name="Capture"/>
+    <variant name="Loopback"/>
     <variant name="Render"/>
   </token>
 </histogram>
@@ -1695,16 +1697,16 @@ chromium-metrics-reviews@google.com.
   <owner>saza@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
-    The combined length in milliseconds of input (Capture) or output (Render)
-    audio glitches detected at the OS level. This is useful to know in
-    particular for audio processing such as echo cancellation. This value is
-    aggregated over a period of 1000 OS callbacks (every 10 seconds for buffer
-    size 10 ms) and is logged at the end of each collection interval if any
-    glitches were detected. Not recorded for streams shorter than 1000
-    callbacks. Reported on Windows and Mac.
+    The combined length in milliseconds of {Type} audio glitches detected at the
+    OS level. This is useful to know in particular for audio processing such as
+    echo cancellation. This value is aggregated over a period of 1000 OS
+    callbacks (every 10 seconds for buffer size 10 ms) and is logged at the end
+    of each collection interval if any glitches were detected. Not recorded for
+    streams shorter than 1000 callbacks. Reported on Windows and Mac.
   </summary>
   <token key="Type">
     <variant name="Capture"/>
+    <variant name="Loopback"/>
     <variant name="Render"/>
   </token>
 </histogram>
@@ -1716,11 +1718,12 @@ chromium-metrics-reviews@google.com.
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The duration of audio glitches occurring in the OS-specific implementation
-    of an audio stream (AudioInputStream for Capture and AudioOutputStream for
-    Render). Reported every time a glitch occurs.
+    of an audio stream (AudioInputStream for Capture and Loopback, and
+    AudioOutputStream for Render). Reported every time a glitch occurs.
   </summary>
   <token key="Type">
     <variant name="Capture"/>
+    <variant name="Loopback"/>
     <variant name="Render"/>
   </token>
 </histogram>

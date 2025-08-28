@@ -18,7 +18,7 @@ namespace media {
 class SystemGlitchReporter {
  public:
   // Used to determine which UMA metrics to log.
-  enum class StreamType { kCapture, kRender };
+  enum class StreamType { kCapture, kRender, kLoopback };
 
   struct Stats {
     int glitches_detected = 0;

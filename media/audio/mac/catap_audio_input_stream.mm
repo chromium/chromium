@@ -311,6 +311,8 @@ CatapAudioInputStream::CatapAudioInputStream(
       buffer_frames_duration_(
           AudioTimestampHelper::FramesToTime(params_.frames_per_buffer(),
                                              params_.sample_rate())),
+      glitch_helper_(params_.sample_rate(),
+                     AudioGlitchInfo::Direction::kLoopback),
       device_id_(device_id),
       capture_default_device_(
           device_id_ != AudioDeviceDescription::kLoopbackAllDevicesId &&
@@ -339,6 +341,7 @@ CatapAudioInputStream::CatapAudioInputStream(
 
 CatapAudioInputStream::~CatapAudioInputStream() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ReportAndResetStats();
 }
 
 AudioInputStream::OpenOutcome CatapAudioInputStream::Open() {
@@ -549,6 +552,7 @@ void CatapAudioInputStream::Stop() {
 
   sink_ = nullptr;
   ReportStopStatus(true, timer.Elapsed());
+  ReportAndResetStats();
 }
 
 void CatapAudioInputStream::Close() {
@@ -633,6 +637,8 @@ void CatapAudioInputStream::OnCatapSample(
     const base::span<const AudioBuffer> input_buffers,
     const AudioTimeStamp* input_time) {
   base::TimeTicks capture_time;
+  glitch_helper_.OnFramesReceived(
+      *input_time, input_buffers.size() * params_.frames_per_buffer());
   if (!(input_time->mFlags & kAudioTimeStampHostTimeValid)) {
     // Fallback if there's no host time stamp. There's no evidence that this
     // ever happens, so this is just in case.
@@ -656,7 +662,8 @@ void CatapAudioInputStream::OnCatapSample(
     CHECK_EQ(params_.frames_per_buffer(), frames);
     audio_bus_->FromInterleaved<Float32SampleTypeTraits>(data, frames);
 
-    sink_->OnData(audio_bus_.get(), capture_time, kMaxVolume, {});
+    sink_->OnData(audio_bus_.get(), capture_time, kMaxVolume,
+                  glitch_helper_.ConsumeGlitchInfo());
 
     capture_time += buffer_frames_duration_;
   }
@@ -846,6 +853,14 @@ void CatapAudioInputStream::SendLogMessage(const char* format, ...) {
   log_callback_.Run("CatapAudioInputStream::" +
                     base::StringPrintV(format, args));
   va_end(args);
+}
+
+void CatapAudioInputStream::ReportAndResetStats() {
+  std::optional<std::string> log_message =
+      glitch_helper_.LogAndReset("CATap in");
+  if (log_message) {
+    SendLogMessage(log_message->c_str());
+  }
 }
 
 AudioInputStream* CreateCatapAudioInputStream(

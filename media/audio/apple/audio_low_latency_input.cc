@@ -133,7 +133,8 @@ AUAudioInputStream::AUAudioInputStream(
       fifo_(input_params.channels(),
             input_params.frames_per_buffer(),
             kNumberOfBlocksBufferInFifo),
-      glitch_reporter_(SystemGlitchReporter::StreamType::kCapture),
+      glitch_helper_(input_params.sample_rate(),
+                     AudioGlitchInfo::Direction::kCapture),
       peak_detector_(base::BindRepeating(&AudioManager::TraceAmplitudePeak,
                                          base::Unretained(manager_),
                                          /*trace_start=*/true)),
@@ -1061,8 +1062,7 @@ OSStatus AUAudioInputStream::Provide(UInt32 number_of_frames,
                                      const AudioTimeStamp* time_stamp) {
   TRACE_EVENT1("audio", "AUAudioInputStream::Provide", "number_of_frames",
                number_of_frames);
-  UpdateCaptureTimestamp(time_stamp);
-  last_number_of_frames_ = number_of_frames;
+  glitch_helper_.OnFramesReceived(*time_stamp, number_of_frames);
 
   // TODO(grunell): We'll only care about the first buffer size change, any
   // further changes will be ignored. This is in line with output side stats.
@@ -1129,7 +1129,7 @@ OSStatus AUAudioInputStream::Provide(UInt32 number_of_frames,
               static_cast<int>(input_params_.frames_per_buffer()));
 
     sink_->OnData(audio_bus, capture_time, normalized_volume,
-                  glitch_accumulator_.GetAndReset());
+                  glitch_helper_.ConsumeGlitchInfo());
 
     // Move the capture time forward for each vended block.
     capture_time += AudioTimestampHelper::FramesToTime(audio_bus->frames(),
@@ -1217,55 +1217,18 @@ void AUAudioInputStream::CloseAudioUnit() {
   audio_unit_ = 0;
 }
 
-void AUAudioInputStream::UpdateCaptureTimestamp(
-    const AudioTimeStamp* timestamp) {
-  if ((timestamp->mFlags & kAudioTimeStampSampleTimeValid) == 0)
-    return;
-
-  if (last_sample_time_) {
-    DCHECK_NE(0U, last_number_of_frames_);
-    UInt32 sample_time_diff =
-        static_cast<UInt32>(timestamp->mSampleTime - last_sample_time_);
-    DCHECK_GE(sample_time_diff, last_number_of_frames_);
-    UInt32 lost_frames = sample_time_diff - last_number_of_frames_;
-    base::TimeDelta lost_audio_duration = AudioTimestampHelper::FramesToTime(
-        lost_frames, input_params_.sample_rate());
-    glitch_reporter_.UpdateStats(lost_audio_duration);
-    if (lost_audio_duration.is_positive()) {
-      glitch_accumulator_.Add(AudioGlitchInfo::SingleBoundedSystemGlitch(
-          lost_audio_duration, AudioGlitchInfo::Direction::kCapture));
-    }
-  }
-
-  // Store the last sample time for use next time we get called back.
-  last_sample_time_ = timestamp->mSampleTime;
-}
-
 void AUAudioInputStream::ReportAndResetStats() {
-  if (last_sample_time_ == 0)
-    return;  // No stats gathered to report.
-
-  // A value of 0 indicates that we got the buffer size we asked for.
-  base::UmaHistogramCounts10000("Media.Audio.Capture.FramesProvided",
-                                number_of_frames_provided_);
-
-  SystemGlitchReporter::Stats stats =
-      glitch_reporter_.GetLongTermStatsAndReset();
-
-  std::string log_message = base::StringPrintf(
-      "AU in: (num_glitches_detected=[%d], cumulative_audio_lost=[%llu ms], "
-      "largest_glitch=[%llu ms])",
-      stats.glitches_detected, stats.total_glitch_duration.InMilliseconds(),
-      stats.largest_glitch_duration.InMilliseconds());
-
-  log_callback_.Run(log_message);
-  if (stats.glitches_detected != 0) {
-    DLOG(WARNING) << log_message;
+  std::optional<std::string> log_message = glitch_helper_.LogAndReset("AU in");
+  if (log_message) {
+    log_callback_.Run(*log_message);
   }
 
+  if (number_of_frames_provided_) {
+    // A value of 0 indicates that we got the buffer size we asked for.
+    base::UmaHistogramCounts10000("Media.Audio.Capture.FramesProvided",
+                                  number_of_frames_provided_);
+  }
   number_of_frames_provided_ = 0;
-  last_sample_time_ = 0;
-  last_number_of_frames_ = 0;
 }
 
 // TODO(ossu): Ideally, we'd just use the mono stream directly. However, since

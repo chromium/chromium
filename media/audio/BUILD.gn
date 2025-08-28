@@ -163,6 +163,8 @@ source_set("audio") {
       "apple/audio_low_latency_input.h",
       "apple/audio_manager_apple.cc",
       "apple/audio_manager_apple.h",
+      "apple/glitch_helper.cc",
+      "apple/glitch_helper.h",
       "apple/scoped_audio_unit.cc",
       "apple/scoped_audio_unit.h",
     ]
