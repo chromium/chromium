@@ -4,6 +4,8 @@
 
 #include "content/browser/preloading/prerender/prerender_features.h"
 
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 
 namespace features {
@@ -92,7 +94,11 @@ BASE_FEATURE(Prerender2WarmUpCompositorForNonImmediate,
 bool UsePrefetchPrerenderIntegration() {
   return base::FeatureList::IsEnabled(
              features::kPrerender2FallbackPrefetchSpecRules) ||
-         base::FeatureList::IsEnabled(features::kPrefetchPrerenderIntegration);
+         base::FeatureList::IsEnabled(
+             features::kPrefetchPrerenderIntegration) ||
+         content::GetContentClient()
+             ->browser()
+             ->UsePrefetchPrerenderIntegration();
 }
 
 }  // namespace features

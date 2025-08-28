@@ -790,15 +790,8 @@ class PreloadBookmarkBarPrefetchEnabledPrerenderEnabledNavigationTest
     : public PreloadBookmarkBarNavigationTestBase {
  public:
   PreloadBookmarkBarPrefetchEnabledPrerenderEnabledNavigationTest() {
-    // TODO(crbug.com/439876420): Replace
-    // `features::kPrefetchPrerenderIntegration` with a flag specific to
-    // BookmarkBar.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{
-             features::kPrefetchPrerenderIntegration,
-             {},
-         },
-         {
              features::kBookmarkTriggerForPreconnect,
              {{"preconnect_start_delay_on_mouse_hover_ms", "0"}},
          },

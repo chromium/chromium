@@ -1994,4 +1994,8 @@ bool ContentBrowserClient::ShouldEnableCanvasNoise(
   return false;
 }
 
+bool ContentBrowserClient::UsePrefetchPrerenderIntegration() {
+  return false;
+}
+
 }  // namespace content

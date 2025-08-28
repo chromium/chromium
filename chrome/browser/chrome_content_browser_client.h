@@ -1208,6 +1208,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool ShouldEnableCanvasNoise(content::BrowserContext* browser_context,
                                const GURL& origin) override;
 
+  bool UsePrefetchPrerenderIntegration() override;
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,
