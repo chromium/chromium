@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -50,9 +51,20 @@ unsigned SimulateHashCalculation(float size) {
   return font_description.CacheKey(FontFaceCreationParams(), is_unique_match)
       .GetHash();
 }
+
+class CSSFontFaceSourceTest : public testing::Test {
+ public:
+  CSSFontFaceSourceTest() = default;
+
+ private:
+  // To destroy garbage-collected objects, we need TaskEnvironment. It prepares
+  // `v8::isolate` and runs garbege collector at its destructor.
+  test::TaskEnvironment task_environment_;
+};
+
 }  // namespace
 
-TEST(CSSFontFaceSourceTest, HashCollision) {
+TEST_F(CSSFontFaceSourceTest, HashCollision) {
   DummyFontFaceSource* font_face_source =
       MakeGarbageCollected<DummyFontFaceSource>();
 
@@ -67,7 +79,7 @@ TEST(CSSFontFaceSourceTest, HashCollision) {
 }
 
 // Exercises the size font_data_table_ assertions in CSSFontFaceSource.
-TEST(CSSFontFaceSourceTest, UnboundedGrowth) {
+TEST_F(CSSFontFaceSourceTest, UnboundedGrowth) {
   DummyFontFaceSource* font_face_source =
       MakeGarbageCollected<DummyFontFaceSource>();
   FontDescription font_description_variable;
