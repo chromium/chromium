@@ -604,12 +604,8 @@ void GlicWindowControllerImpl::FocusIfOpen() {
 
   if (IsDetached()) {
     GetGlicWidget()->Activate();
-    GetGlicView()->GetWebContents()->Focus();
-    return;
   }
-
-  // TODO(crbug.com/439745838): Implement for side panel
-  NOTIMPLEMENTED();
+  GetGlicView()->GetWebContents()->Focus();
   return;
 }
 
