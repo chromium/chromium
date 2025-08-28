@@ -275,8 +275,6 @@ class ReadAnythingUntrustedPageHandler :
 
   const bool use_screen_ai_service_;
 
-  bool extension_installed_ = false;
-
   // Whether the currently distilled page is recognized as a pdf. This allows
   // the page handler to trigger distillation if the page would now be
   // recognized as a pdf after it finishes loading.
