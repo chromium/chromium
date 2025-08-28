@@ -15983,6 +15983,24 @@
             ]
         }
     ],
+    "NewTabsInGroups": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NewTabAddsToActiveGroup"
+                    ]
+                }
+            ]
+        }
+    ],
     "NimbleCollisionAvoidanceV1": [
         {
             "platforms": [
