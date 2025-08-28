@@ -84,6 +84,7 @@
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/ip_protection/common/ip_protection_status.h"
+#include "components/lens/tab_contextualization_controller.h"
 #include "components/passage_embeddings/passage_embeddings_features.h"
 #include "components/permissions/permission_indicators_tab_data.h"
 #include "components/security_interstitials/core/features.h"
@@ -379,6 +380,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   tab_alert_controller_ =
       GetUserDataFactory().CreateInstance<TabAlertController>(tab, tab);
+
+  tab_contextualization_controller_ =
+      GetUserDataFactory().CreateInstance<lens::TabContextualizationController>(
+          tab, &tab);
 }
 
 TabResourceUsageTabHelper* TabFeatures::SetResourceUsageHelperForTesting(
