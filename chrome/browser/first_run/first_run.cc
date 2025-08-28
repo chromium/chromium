@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <memory>
-#include <string>
 #include <tuple>
 #include <utility>
 
@@ -14,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -27,12 +25,10 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
-#include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/first_run/first_run_features.h"
 #include "chrome/browser/first_run/first_run_internal.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/headless/headless_mode_util.h"
-#include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/importer/external_process_importer_host.h"
 #include "chrome/browser/importer/importer_list.h"
 #include "chrome/browser/importer/importer_progress_observer.h"
@@ -42,7 +38,6 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser.h"
@@ -59,16 +54,11 @@
 #include "chrome/installer/util/initial_preferences_constants.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_model_load_waiter.h"
-#include "components/favicon/core/favicon_service.h"
-#include "components/image_fetcher/core/image_decoder.h"
-#include "components/image_fetcher/core/image_fetcher.h"
-#include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_auth_util.h"
-#include "net/base/data_url.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "url/gurl.h"
 
@@ -92,7 +82,6 @@ constexpr char kImportBookmarksChildrenKey[] = "children";
 constexpr char kImportBookmarksTypeKey[] = "type";
 constexpr char kImportBookmarksNameKey[] = "name";
 constexpr char kImportBookmarksUrlKey[] = "url";
-constexpr char kImportBookmarksIconDataUrlKey[] = "icon_data_url";
 constexpr char kImportBookmarksFolderType[] = "folder";
 constexpr char kImportBookmarksUrlType[] = "url";
 constexpr char kImportBookmarksBookmarksKey[] = "first_run_bookmarks";
@@ -301,70 +290,14 @@ void RecordImportBookmarksResult(FirstRunImportBookmarksResult result) {
   base::UmaHistogramEnumeration("FirstRun.ImportBookmarksDict", result);
 }
 
-void PersistFaviconPostFetch(base::WeakPtr<Profile> profile,
-                             const GURL& page_url,
-                             const GURL& icon_url,
-                             const gfx::Image& image) {
-  if (!profile) {
-    return;
-  }
-
-  favicon::FaviconService* favicon_service =
-      FaviconServiceFactory::GetForProfile(profile.get(),
-                                           ServiceAccessType::IMPLICIT_ACCESS);
-  if (!favicon_service) {
-    return;
-  }
-  favicon_service->SetOnDemandFavicons(page_url, icon_url,
-                                       favicon_base::IconType::kFavicon, image,
-                                       base::DoNothing());
-}
-
-void ParseAndPersistEncodedBookmarkFavicon(Profile& profile,
-                                           const GURL& page_url,
-                                           const GURL& icon_url) {
-  image_fetcher::ImageFetcherService* image_fetcher_service =
-      ImageFetcherServiceFactory::GetForKey(profile.GetProfileKey());
-  if (!image_fetcher_service) {
-    return;
-  }
-
-  if (!icon_url.is_valid() || !icon_url.SchemeIs(url::kDataScheme)) {
-    return;
-  }
-
-  std::string mime_type, charset, parsed_image_data;
-  if (!net::DataURL::Parse(icon_url, &mime_type, &charset,
-                           &parsed_image_data)) {
-    return;
-  }
-
-  image_fetcher::ImageDecoder* image_decoder =
-      image_fetcher_service
-          ->GetImageFetcher(image_fetcher::ImageFetcherConfig::kNetworkOnly)
-          ->GetImageDecoder();
-
-  // Image decoding will happen in a sandboxed utility process.
-  image_decoder->DecodeImage(
-      parsed_image_data, /*desired_image_frame_size=*/gfx::Size(),
-      /*data_decoder=*/nullptr,
-      base::BindOnce(&PersistFaviconPostFetch, profile.GetWeakPtr(), page_url,
-                     icon_url));
-}
-
-bool AddUrlToBookmarkModelIfValid(Profile& profile,
-                                  int index,
+bool AddUrlToBookmarkModelIfValid(int index,
                                   const std::string& url,
                                   const std::string& name,
-                                  const std::string* icon_url,
                                   const bookmarks::BookmarkNode* parent,
                                   bookmarks::BookmarkModel& model) {
   const GURL gurl = GURL(url);
   if (gurl.is_valid()) {
     model.AddURL(parent, index, base::UTF8ToUTF16(name), gurl);
-    if (icon_url) {
-      ParseAndPersistEncodedBookmarkFavicon(profile, gurl, GURL(*icon_url));
-    }
     return true;
   }
   return false;
@@ -373,7 +306,6 @@ bool AddUrlToBookmarkModelIfValid(Profile& profile,
 // Recursive helper that walks the JSON dictionary and creates matching bookmark
 // nodes.
 void ImportBookmarksAndFoldersRecursively(
-    Profile& profile,
     const base::Value::Dict& folder_node_dict,
     const bookmarks::BookmarkNode* parent,
     bookmarks::BookmarkModel& model) {
@@ -400,18 +332,15 @@ void ImportBookmarksAndFoldersRecursively(
 
     if (*type == kImportBookmarksUrlType) {
       const std::string* url = child_dict->FindString(kImportBookmarksUrlKey);
-      const std::string* icon_url =
-          child_dict->FindString(kImportBookmarksIconDataUrlKey);
-      if (url && AddUrlToBookmarkModelIfValid(profile, index, *url, *name,
-                                              icon_url, parent, model)) {
+      if (url &&
+          AddUrlToBookmarkModelIfValid(index, *url, *name, parent, model)) {
         ++index;
       }
     } else if (*type == kImportBookmarksFolderType) {
       const bookmarks::BookmarkNode* new_folder =
           model.AddFolder(parent, index, base::UTF8ToUTF16(*name));
       if (new_folder) {
-        ImportBookmarksAndFoldersRecursively(profile, *child_dict, new_folder,
-                                             model);
+        ImportBookmarksAndFoldersRecursively(*child_dict, new_folder, model);
         ++index;
       }
     }
@@ -431,15 +360,13 @@ void ImportBookmarksFromDict(
     return;
   }
 
-  Profile* profile = const_cast<Profile*>(scoped_profile->profile());
-
   bookmark_model->BeginExtensiveChanges();
   absl::Cleanup end_changes = [bookmark_model] {
     bookmark_model->EndExtensiveChanges();
   };
 
   const bookmarks::BookmarkNode* parent = bookmark_model->bookmark_bar_node();
-  ImportBookmarksAndFoldersRecursively(*profile, *bookmarks_to_import, parent,
+  ImportBookmarksAndFoldersRecursively(*bookmarks_to_import, parent,
                                        *bookmark_model);
 
   RecordImportBookmarksResult(FirstRunImportBookmarksResult::kSuccess);
@@ -704,7 +631,6 @@ void StartBookmarksImportFromDict(Profile* profile,
   auto scoped_profile = std::make_unique<ScopedProfileKeepAlive>(
       profile, ProfileKeepAliveOrigin::kWaitingForBookmarksImportOnFirstRun);
 
-  // TODO(crbug.com/441322666): Migrate this flow to its own file.
   // Transferring ownership of ScopedProfileKeepAlive to callback ensures
   // Profile stays alive while bookmarks are imported.
   bookmarks::ScheduleCallbackOnBookmarkModelLoad(

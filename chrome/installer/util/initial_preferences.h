@@ -147,12 +147,6 @@ class InitialPreferences {
   // that get recursively visited and imported.
   //
   // Bookmark nodes must have 'name', 'type' (set to 'url') and 'url' fields.
-  // Nodes can optionally contain 'icon_data_url' with base64 encoded favicon
-  // data URL that is parsed and shown until the user visits the bookmark's url
-  // and loads a live, fresh version.
-  // If not including 'icon_data_url', or it is not in correctly encoded,
-  // default favicon is shown.
-  //
   // Folder nodes must have 'name', 'type' (set to 'folder') and 'children'
   // fields.
   //
@@ -164,8 +158,7 @@ class InitialPreferences {
   //         {
   //           "name": "ABC",
   //           "type": "url",
-  //           "url": "https://google.com",
-  //           "icon_data_url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEU..."
+  //           "url": "https://google.com"
   //         },
   //         {
   //           "name": "XYZ",
