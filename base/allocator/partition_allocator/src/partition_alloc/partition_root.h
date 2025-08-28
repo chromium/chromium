@@ -184,6 +184,11 @@ struct PartitionOptions {
   // each `ThreadCache` instance.
   internal::SchedulerLoopQuarantineConfig
       scheduler_loop_quarantine_thread_local_config;
+  // Configuration for the AMSC quarantine branch. Used when
+  // `FreeFlags::kSchedulerLoopQuarantineForAdvancedMemorySafetyChecks` is
+  // specified.
+  internal::SchedulerLoopQuarantineConfig
+      scheduler_loop_quarantine_for_advanced_memory_safety_checks_config;
 
   // As the name implies, this is not a security measure, as there is no
   // guarantee that memorys has been zeroed out when handed back to the
@@ -394,6 +399,8 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   size_t scheduler_loop_quarantine_branch_capacity_in_bytes = 0;
   internal::SchedulerLoopQuarantineRoot scheduler_loop_quarantine_root;
   internal::GlobalSchedulerLoopQuarantineBranch scheduler_loop_quarantine;
+  internal::GlobalSchedulerLoopQuarantineBranch
+      scheduler_loop_quarantine_for_advanced_memory_safety_checks;
 
   static constexpr internal::base::TimeDelta kMaxPurgeDuration =
       internal::base::Milliseconds(2);
@@ -1543,6 +1550,13 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(
     } else {
       scheduler_loop_quarantine.Quarantine(object, slot_span, slot_start);
     }
+    return;
+  } else if constexpr (
+      ContainsFlags(
+          flags,
+          FreeFlags::kSchedulerLoopQuarantineForAdvancedMemorySafetyChecks)) {
+    scheduler_loop_quarantine_for_advanced_memory_safety_checks.Quarantine(
+        object, slot_span, slot_start);
     return;
   }
 

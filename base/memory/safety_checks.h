@@ -67,7 +67,7 @@ namespace internal {
 enum class MemorySafetyCheck : uint32_t {
   kNone = 0,
   kForcePartitionAlloc = (1u << 0),
-  // Enables |FreeFlags::kSchedulerLoopQuarantine|.
+  // Enables |FreeFlags::kSchedulerLoopQuarantineForAdvancedMemorySafetyChecks|.
   // Requires PA-E.
   kSchedulerLoopQuarantine = (1u << 1),
 };
@@ -119,7 +119,8 @@ constexpr partition_alloc::AllocFlags GetAllocFlags(MemorySafetyCheck checks) {
 constexpr partition_alloc::FreeFlags GetFreeFlags(MemorySafetyCheck checks) {
   auto flags = partition_alloc::FreeFlags::kNone;
   if (static_cast<bool>(checks & MemorySafetyCheck::kSchedulerLoopQuarantine)) {
-    flags |= partition_alloc::FreeFlags::kSchedulerLoopQuarantine;
+    flags |= partition_alloc::FreeFlags::
+        kSchedulerLoopQuarantineForAdvancedMemorySafetyChecks;
   }
   return flags;
 }

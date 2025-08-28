@@ -168,6 +168,8 @@ void ConfigurePartitions(
         scheduler_loop_quarantine_global_config,
     partition_alloc::internal::SchedulerLoopQuarantineConfig
         scheduler_loop_quarantine_thread_local_config,
+    partition_alloc::internal::SchedulerLoopQuarantineConfig
+        scheduler_loop_quarantine_for_advanced_memory_safety_checks_config,
     EventuallyZeroFreedMemory eventually_zero_freed_memory,
     FewerMemoryRegions fewer_memory_regions);
 

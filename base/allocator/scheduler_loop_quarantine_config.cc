@@ -24,6 +24,7 @@ constexpr char kProcessTypeWildcardStr[] = "*";
 constexpr char kBranchTypeGlobalStr[] = "global";
 constexpr char kBranchTypeThreadLocalDefaultStr[] = "*";
 constexpr char kBranchTypeMainStr[] = "main";
+constexpr char kBranchTypeAdvancedMemorySafetyChecksStr[] = "amsc";
 
 constexpr std::string_view GetSchedulerLoopQuarantineBranchTypeStr(
     SchedulerLoopQuarantineBranchType type) {
@@ -34,6 +35,8 @@ constexpr std::string_view GetSchedulerLoopQuarantineBranchTypeStr(
       return kBranchTypeThreadLocalDefaultStr;
     case SchedulerLoopQuarantineBranchType::kMain:
       return kBranchTypeMainStr;
+    case SchedulerLoopQuarantineBranchType::kAdvancedMemorySafetyChecks:
+      return kBranchTypeAdvancedMemorySafetyChecksStr;
   }
   NOTREACHED();
 }
@@ -104,7 +107,9 @@ GetSchedulerLoopQuarantineConfiguration(
 
     // Falls back to thread-local default unless global.
     if (!config_entry &&
-        branch_type != SchedulerLoopQuarantineBranchType::kGlobal) {
+        branch_type != SchedulerLoopQuarantineBranchType::kGlobal &&
+        branch_type !=
+            SchedulerLoopQuarantineBranchType::kAdvancedMemorySafetyChecks) {
       config_entry =
           config_current_process->FindDict(kBranchTypeThreadLocalDefaultStr);
     }
