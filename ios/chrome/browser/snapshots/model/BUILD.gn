@@ -32,6 +32,7 @@ source_set("model") {
     ":snapshot_source",
     "//base",
     "//build:blink_buildflags",
+    "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/sessions/model:session_constants",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
