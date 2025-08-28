@@ -7,12 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanned_image_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_consumer.h"
 
 @protocol CreditCardScannerMediatorDelegate;
 
 // A mediator for CreditCardScanner which manages processing images.
-@interface CreditCardScannerMediator : NSObject <CreditCardScannerConsumer>
+@interface CreditCardScannerMediator
+    : NSObject <CreditCardScannerConsumer, CreditCardScannedImageDelegate>
 
 // Initializes with Credit Card mediator delegate and Credit Card consumer.
 - (instancetype)initWithDelegate:(id<CreditCardScannerMediatorDelegate>)delegate
