@@ -29,7 +29,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/invalidate_type.h"
-#include "content/public/browser/page.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/prefetch_priority.h"
 #include "content/public/browser/preloading.h"
@@ -122,6 +121,7 @@ class BrowserPluginGuestDelegate;
 class GuestPageHolder;
 class NavigationController;
 class NavigationEntry;
+class Page;
 class PrefetchHandle;
 class PreloadPipelineInfo;
 class PrerenderHandle;

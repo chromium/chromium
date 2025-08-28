@@ -11,6 +11,7 @@
 #include "chrome/grit/dlp_internals_resources.h"
 #include "chrome/grit/dlp_internals_resources_map.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/webui/webui_util.h"
 
 namespace policy {

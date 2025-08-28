@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
 
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/profiles/profile.h"

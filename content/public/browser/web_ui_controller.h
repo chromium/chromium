@@ -12,12 +12,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/page.h"
 
 class GURL;
 
 namespace content {
 
+class Page;
 class PerWebUIBrowserInterfaceBroker;
 class RenderFrameHost;
 class WebUI;

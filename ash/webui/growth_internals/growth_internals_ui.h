@@ -11,6 +11,7 @@
 #include "ash/webui/growth_internals/constants.h"
 #include "ash/webui/growth_internals/growth_internals.mojom-forward.h"
 #include "content/public/common/url_constants.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 namespace ash {
