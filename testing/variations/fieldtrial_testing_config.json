@@ -13429,36 +13429,30 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_8",
+                    "name": "Default",
                     "params": {
-                        "brp-extra-extras-size": "8"
+                        "brp-suppress-corruption-detected-crash": "true"
                     },
                     "enable_features": [
                         "PartitionAllocBackupRefPtr"
                     ]
                 },
                 {
-                    "name": "Enabled_24",
+                    "name": "Enabled_Without_Supression_Holdback",
                     "params": {
-                        "brp-extra-extras-size": "24"
+                        "brp-suppress-corruption-detected-crash": "false"
                     },
                     "enable_features": [
                         "PartitionAllocBackupRefPtr"
                     ]
-                }
-            ]
-        }
-    ],
-    "IOSPartitionAllocMemoryReclaimer": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
+                },
                 {
-                    "name": "Disabled",
+                    "name": "Control_Holdback",
+                    "params": {
+                        "brp-suppress-corruption-detected-crash": "false"
+                    },
                     "disable_features": [
-                        "PartitionAllocMemoryReclaimer"
+                        "PartitionAllocBackupRefPtr"
                     ]
                 }
             ]

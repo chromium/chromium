@@ -300,7 +300,7 @@ declare_args() {
   enable_backup_ref_ptr_feature_flag =
       enable_backup_ref_ptr_support && use_raw_ptr_backup_ref_impl &&
       # Platforms where BackupRefPtr hasn't shipped yet:
-      !is_castos && !is_ios
+      !is_castos
 
   # While keeping BRP support, override a feature flag to make it disabled
   # state. This will overwrite `enable_backup_ref_ptr_feature_flag`.

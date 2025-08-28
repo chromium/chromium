@@ -196,7 +196,13 @@ constinit const FeatureParam<bool> kBackupRefPtrSuppressDoubleFreeDetectedCrash{
     false};
 constinit const FeatureParam<bool> kBackupRefPtrSuppressCorruptionDetectedCrash{
     &kPartitionAllocBackupRefPtr, "brp-suppress-corruption-detected-crash",
+#if PA_BUILDFLAG(IS_IOS)
+    // TODO(crbug.com/41497028): Continue investigation and remove once
+    // addressed.
+    true};
+#else
     false};
+#endif
 
 BASE_FEATURE(PartitionAllocMemoryTagging,
 #if PA_BUILDFLAG(USE_FULL_MTE) || BUILDFLAG(IS_ANDROID)
