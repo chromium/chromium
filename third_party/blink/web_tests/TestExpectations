@@ -9631,3 +9631,4 @@ crbug.com/419705502 [ Win10.20h2 ] http/tests/devtools/elements/styles-2/nested-
 
 # Gardener 2025-08-28
 crbug.com/441519564 [ Mac ] external/wpt/webrtc/RTCRtpParameters-codec.html [ Pass Failure ]
+crbug.com/441011869 [ Linux ] external/wpt/storage-access-api/requestStorageAccess-sandboxed-iframe-allow-storage-access.sub.https.window.html [ Pass Timeout ]
