@@ -1671,6 +1671,17 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method getMetadata
 [Worker]     method toString
 [Worker]     setter data
+[Worker] interface RTCRtpScriptTransformer : EventTarget
+[Worker]     attribute @@toStringTag
+[Worker]     getter options
+[Worker]     getter readable
+[Worker]     getter writable
+[Worker]     method constructor
+[Worker]     method sendKeyFrameRequest
+[Worker] interface RTCTransformEvent : Event
+[Worker]     attribute @@toStringTag
+[Worker]     getter transformer
+[Worker]     method constructor
 [Worker] interface ReadableByteStreamController
 [Worker]     attribute @@toStringTag
 [Worker]     getter byobRequest
@@ -3867,6 +3878,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter name
 [Worker]     getter onmessage
 [Worker]     getter onmessageerror
+[Worker]     getter onrtctransform
 [Worker]     method cancelAnimationFrame
 [Worker]     method close
 [Worker]     method gc
@@ -3879,6 +3891,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter name
 [Worker]     setter onmessage
 [Worker]     setter onmessageerror
+[Worker]     setter onrtctransform
 PASS successfullyParsed is true
 
 TEST COMPLETE

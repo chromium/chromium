@@ -4164,7 +4164,7 @@
     },
     {
       name: "RTCRtpScriptTransform",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "RTCRtpTransport",
