@@ -702,7 +702,7 @@ class GlicWebClientHandler
   }
 
   void WebClientInitialized() override {
-    host().SetWebClient(page_handler_, this);
+    host().SetWebClient(this);
     // If chrome://glic is opened in a tab for testing, send a synthetic open
     // signal.
     if (page_handler_->webui_contents() != host().webui_contents()) {
@@ -1027,7 +1027,7 @@ class GlicWebClientHandler
   }
 
   void SetContextAccessIndicator(bool enabled) override {
-    glic_service_->host().SetContextAccessIndicator(page_handler_, enabled);
+    host().SetContextAccessIndicator(page_handler_, enabled);
   }
 
   void GetUserProfileInfo(GetUserProfileInfoCallback callback) override {
@@ -1348,7 +1348,7 @@ class GlicWebClientHandler
   void Uninstall() {
     page_metadata_manager_.reset();
     SetAudioDucking(false, base::DoNothing());
-    glic_service_->host().SetWebClient(page_handler_, nullptr);
+    host().UnsetWebClient(this);
     pref_change_registrar_.Reset();
     local_state_pref_change_registrar_.Reset();
     glic_service_->window_controller().RemoveStateObserver(this);
@@ -1509,7 +1509,7 @@ GlicPageHandler::GlicPageHandler(
       browser_context_(webui_contents->GetBrowserContext()),
       receiver_(this, std::move(receiver)),
       page_(std::move(page)) {
-  host().WebUIPageHandlerAdded(this);
+  host_ = GetGlicService()->host_manager().WebUIPageHandlerAdded(this);
   subscriptions_.push_back(
       GetGlicService()->enabling().RegisterAllowedChanged(base::BindRepeating(
           &GlicPageHandler::AllowedChanged, base::Unretained(this))));
@@ -1520,7 +1520,8 @@ GlicPageHandler::~GlicPageHandler() {
   WebUiStateChanged(glic::mojom::WebUiState::kUninitialized);
   // `GlicWebClientHandler` holds a pointer back to us, so delete it first.
   web_client_handler_.reset();
-  host().WebUIPageHandlerRemoved(this);
+  host_ = nullptr;
+  GetGlicService()->host_manager().WebUIPageHandlerRemoved(this);
 }
 
 GlicKeyedService* GlicPageHandler::GetGlicService() {
@@ -1626,7 +1627,4 @@ void GlicPageHandler::ZeroStateSuggestionChanged(
       std::move(returned_suggestions), std::move(options));
 }
 
-Host& GlicPageHandler::host() {
-  return GetGlicService()->host();
-}
 }  // namespace glic

@@ -117,16 +117,16 @@ GlicKeyedService::GlicKeyedService(
       metrics_(std::make_unique<GlicMetrics>(profile, enabling_.get())),
       fre_controller_(
           std::make_unique<GlicFreController>(profile, identity_manager)),
-      host_(std::make_unique<Host>(profile)),
+      host_manager_(std::make_unique<HostManager>(profile)),
       window_controller_(CreateWindowController(profile,
                                                 identity_manager,
                                                 this,
                                                 enabling_.get())),
-      sharing_manager_(
-          std::make_unique<GlicSharingManagerImpl>(profile,
-                                                   &window_controller(),
-                                                   host_.get(),
-                                                   metrics_.get())),
+      sharing_manager_(std::make_unique<GlicSharingManagerImpl>(
+          profile,
+          &window_controller(),
+          &host_manager_->primary_host(),
+          metrics_.get())),
       screenshot_capturer_(std::make_unique<GlicScreenshotCapturer>()),
       auth_controller_(std::make_unique<AuthController>(profile,
                                                         identity_manager,
@@ -138,10 +138,10 @@ GlicKeyedService::GlicKeyedService(
               sharing_manager_.get(),
               &window_controller(),
               contextual_cueing_service,
-              host_.get())),
+              &host_manager_->primary_host())),
       contextual_cueing_service_(contextual_cueing_service) {
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
-  host_->Initialize(&window_controller());
+  host_manager_->Initialize(&window_controller());
   metrics_->SetControllers(&window_controller(), sharing_manager_.get());
 
   memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
@@ -171,7 +171,7 @@ GlicKeyedService::GlicKeyedService(
 }
 
 GlicKeyedService::~GlicKeyedService() {
-  host().Destroy();
+  host_manager().Destroy();
   metrics_->SetControllers(nullptr, nullptr);
 }
 
@@ -234,7 +234,7 @@ void GlicKeyedService::OpenFreDialogInNewTab(BrowserWindowInterface* bwi,
 
 void GlicKeyedService::CloseUI() {
   window_controller().Shutdown();
-  host().Shutdown();
+  host_manager().Shutdown();
   fre_controller_->Shutdown();
 }
 
@@ -309,7 +309,7 @@ GlicSharingManager& GlicKeyedService::sharing_manager() {
 }
 
 void GlicKeyedService::GuestAdded(content::WebContents* guest_contents) {
-  host().GuestAdded(guest_contents);
+  host_manager().GuestAdded(guest_contents);
 }
 
 bool GlicKeyedService::IsWindowShowing() const {
@@ -591,6 +591,10 @@ void GlicKeyedService::Reload() {
   }
 }
 
+Host& GlicKeyedService::host() {
+  return host_manager_->primary_host();
+}
+
 void GlicKeyedService::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel level) {
   if (level == base::MemoryPressureListener::MemoryPressureLevel::
@@ -610,7 +614,7 @@ bool GlicKeyedService::IsActiveWebContents(content::WebContents* contents) {
   if (!contents) {
     return false;
   }
-  return contents == host().webui_contents() ||
+  return contents == host_manager().primary_host().webui_contents() ||
          contents == fre_controller().GetWebContents();
 }
 
@@ -650,11 +654,11 @@ bool GlicKeyedService::IsProcessHostForGlic(
       return true;
     }
   }
-  return host().IsGlicWebUiHost(process_host);
+  return host_manager().IsGlicWebUiHost(process_host);
 }
 
 bool GlicKeyedService::IsGlicWebUi(content::WebContents* web_contents) {
-  return host().IsGlicWebUi(web_contents);
+  return host_manager().IsGlicWebUi(web_contents);
 }
 
 }  // namespace glic

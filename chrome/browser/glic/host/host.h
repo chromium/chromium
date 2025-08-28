@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_HOST_HOST_H_
 #define CHROME_BROWSER_GLIC_HOST_HOST_H_
 
+#include <deque>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -13,6 +14,7 @@
 #include "base/observer_list_types.h"
 #include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
+#include "components/tabs/public/tab_interface.h"
 
 class Profile;
 namespace content {
@@ -83,7 +85,9 @@ class Host {
   };
 
   explicit Host(Profile* profile);
+  Host(const Host&) = delete;
   ~Host();
+  Host& operator=(const Host&) = delete;
 
   void Initialize(Delegate* delegate);
 
@@ -112,10 +116,7 @@ class Host {
   content::WebContents* webui_contents();
 
   // Returns whether `contents` is the glic WebUI web contents.
-  bool IsGlicWebUi(content::WebContents* contents);
-
-  // Returns whether `host` is the glic WebUI render process host.
-  bool IsGlicWebUiHost(content::RenderProcessHost* host);
+  bool IsGlicWebUi(content::WebContents* contents) const;
 
   // Returns the list of page handlers for glic WebUI pages.
   std::vector<GlicPageHandler*> GetPageHandlersForTesting();
@@ -162,18 +163,12 @@ class Host {
   // Methods intended to be used by page handler or web client handler
   //////////////////////////////////////////////////////////////////////////
 
-  // Called when a `GlicPageHandler` is created.
-  void WebUIPageHandlerAdded(GlicPageHandler* page_handler);
-
-  // Called when a `GlicPageHandler` is about to be destroyed.
-  void WebUIPageHandlerRemoved(GlicPageHandler* page_handler);
-
   // Called when a login page was committed in a glic webview.
   void LoginPageCommitted(GlicPageHandler* page_handler);
 
   // Called when a page handler's web client is created or destroyed.
-  void SetWebClient(GlicPageHandler* page_handler,
-                    GlicWebClientAccess* web_client);
+  void SetWebClient(GlicWebClientAccess* web_client);
+  void UnsetWebClient(GlicWebClientAccess* web_client);
   void WebClientInitializeFailed(GlicWebClientAccess* web_client);
 
   void SetContextAccessIndicator(GlicPageHandler*, bool enabled);
@@ -215,8 +210,16 @@ class Host {
   const mojom::PanelState& GetPanelState(GlicWebClientAccess* client) const;
 
  private:
-  GlicKeyedService& glic_service();
+  friend class HostManager;
 
+  void WebUIPageHandlerAdded(GlicPageHandler* page_handler);
+  void WebUIPageHandlerRemoved(GlicPageHandler* page_handler);
+  GlicKeyedService& glic_service();
+  GlicPageHandler* page_handler() const;
+  bool IsGlicWebUiHost(content::RenderProcessHost* host) const;
+
+  // Information about the page handler which is cleared when the page handler
+  // goes away.
   struct PageHandlerInfo {
     PageHandlerInfo();
     ~PageHandlerInfo();
@@ -238,6 +241,10 @@ class Host {
   }
   PageHandlerInfo* FindInfoForClient(GlicWebClientAccess* client);
   PageHandlerInfo* FindInfoForWebUiContents(content::WebContents* web_contents);
+  const PageHandlerInfo* FindInfoForWebUiContents(
+      content::WebContents* web_contents) const {
+    return const_cast<Host*>(this)->FindInfoForWebUiContents(web_contents);
+  }
 
   raw_ptr<Profile> profile_;
   // Null before `Initialize()` and after `Shutdown()`.
@@ -249,18 +256,57 @@ class Host {
   std::optional<mojom::InvocationSource> invocation_source_;
   mojom::WebUiState primary_webui_state_ = mojom::WebUiState::kUninitialized;
 
-  // The set of live `GlicPageHandler`s.
-  std::vector<PageHandlerInfo> page_handlers_;
+  std::optional<PageHandlerInfo> handler_info_;
+  // Owns the WebUI contents. May be null for glic hosts in chrome://glic tabs.
   // Keep profile alive as long as the glic web contents. This object should be
   // destroyed when the profile needs to be destroyed.
   std::unique_ptr<WebUIContentsContainer> contents_;
-  // The primary page handler. Glic supports only a single primary page handler,
-  // a page handlers becomes the primary when it's created, if there exists no
-  // other primary page handler.
-  raw_ptr<GlicPageHandler> primary_page_handler_ = nullptr;
 
   // The current view in the primary page handler.
   mojom::CurrentView primary_current_view_ = mojom::CurrentView::kConversation;
+};
+
+// Manages hosts. Note, this is a stopgap that will be replaced by something
+// else soon.
+class HostManager {
+ public:
+  explicit HostManager(Profile* profile);
+  ~HostManager();
+
+  void Initialize(Host::Delegate* delegate);
+  void Shutdown();
+  void Destroy();
+
+  // Called when a `GlicPageHandler` is created.
+  Host* WebUIPageHandlerAdded(GlicPageHandler* page_handler);
+  // Called when a `GlicPageHandler` is about to be destroyed.
+  void WebUIPageHandlerRemoved(GlicPageHandler* page_handler);
+
+  // Called when a glic guest (webview web contents) is added.
+  void GuestAdded(content::WebContents* guest_contents);
+
+  // Returns whether `host` is the glic WebUI render process host.
+  bool IsGlicWebUiHost(content::RenderProcessHost* host);
+
+  // Returns whether `contents` is the glic WebUI web contents.
+  bool IsGlicWebUi(content::WebContents* contents);
+
+  // The primary host which can be shown in a floating window. All other hosts
+  // are ignored.
+  Host& primary_host() { return primary_host_; }
+
+  Host* FindHostForTabForTesting(tabs::TabInterface& tab);
+
+ private:
+  class DummyHostDelegate;
+  std::vector<Host*> GetAllHosts();
+  raw_ptr<Profile> profile_;
+  Host primary_host_;
+  std::unique_ptr<DummyHostDelegate> dummy_host_delegate_;
+  // Hosts for any unclaimed page handlers, which is approximately limited to
+  // chrome://glic in tabs. These are only important for developers, and do not
+  // need to be fully functional.
+  std::vector<std::unique_ptr<Host>> tab_hosts_;
 };
 
 }  // namespace glic
