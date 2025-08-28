@@ -692,8 +692,9 @@ public class TabContextMenuCoordinatorUnitTest {
                 R.id.share_tab, modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
         assertEquals(
                 "Expected text appearance ID to be set to"
-                        + " R.style.TextAppearance_TextLarge_Primary_Baseline_Light in incognito",
-                R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                    + " R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light in"
+                    + " incognito",
+                R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
                 modelList.get(3).model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
 
         // List item 4
@@ -702,8 +703,9 @@ public class TabContextMenuCoordinatorUnitTest {
                 R.id.close_tab, modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
         assertEquals(
                 "Expected text appearance ID to be set to"
-                        + " R.style.TextAppearance_TextLarge_Primary_Baseline_Light in incognito",
-                R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                    + " R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light in"
+                    + " incognito",
+                R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
                 modelList.get(4).model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
     }
 
@@ -739,8 +741,9 @@ public class TabContextMenuCoordinatorUnitTest {
                 R.id.close_tab, modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
         assertEquals(
                 "Expected text appearance ID to be set to"
-                        + " R.style.TextAppearance_TextLarge_Primary_Baseline_Light in incognito",
-                R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                    + " R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light in"
+                    + " incognito",
+                R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
                 modelList.get(3).model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
     }
 

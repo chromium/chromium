@@ -532,8 +532,8 @@ found in the LICENSE file.
         <item name="android:drawablePadding">12dp</item>
         <item name="android:tintMode">src_in</item>
         <item name="chromeDrawableTint">@color/default_icon_color_secondary_tint_list</item>
-        <item name="drawableWidth">24dp</item>
-        <item name="drawableHeight">24dp</item>
+        <item name="drawableWidth">?attr/listItemIconSize</item>
+        <item name="drawableHeight">?attr/listItemIconSize</item>
     </style>
 
     <!--  Dialog for notification blocked message.  -->

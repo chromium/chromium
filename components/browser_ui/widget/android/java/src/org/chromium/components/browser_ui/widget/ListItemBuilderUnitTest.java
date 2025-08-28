@@ -123,7 +123,7 @@ public class ListItemBuilderUnitTest {
         PropertyModel model = listItem.model;
 
         assertEquals(
-                R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
                 model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
         assertEquals(
                 R.color.default_icon_color_light_tint_list,

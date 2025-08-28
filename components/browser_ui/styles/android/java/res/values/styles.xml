@@ -151,6 +151,11 @@ found in the LICENSE file.
         <item name="android:textColor">@color/default_text_color_list</item>
     </style>
 
+    <style name="TextAppearance.DensityAdaptive.TextLarge.Primary.Baseline.Light"
+        parent="TextAppearance.DensityAdaptive.TextLarge">
+        <item name="android:textColor">@color/default_text_color_light_list</item>
+    </style>
+
     <!-- Primary text styles -->
     <style name="TextAppearance.Headline.Primary">
         <item name="android:textColor">@color/default_text_color_list</item>
