@@ -59,7 +59,7 @@ struct InnerTextResultWithTruncation
 struct FetchPageContextResult {
   FetchPageContextResult();
   ~FetchPageContextResult();
-  std::optional<ScreenshotResult> screenshot_result;
+  base::expected<ScreenshotResult, std::string> screenshot_result;
   std::optional<InnerTextResultWithTruncation> inner_text_result;
   std::optional<PdfResult> pdf_result;
   std::optional<optimization_guide::AIPageContentResult>

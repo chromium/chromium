@@ -127,13 +127,14 @@ IN_PROC_BROWSER_TEST_P(MultiSourcePageContextFetcherBrowserTest,
                        future.Take());
 
   ASSERT_TRUE(result);
-  std::optional<ScreenshotResult>& screenshot = result->screenshot_result;
-  ASSERT_TRUE(screenshot);
+  ASSERT_TRUE(result->screenshot_result.has_value());
 
-  EXPECT_FALSE(screenshot->dimensions.IsZero());
-  ASSERT_GT(screenshot->jpeg_data.size(), 0);
+  ScreenshotResult& screenshot = result->screenshot_result.value();
 
-  SkBitmap bitmap = gfx::JPEGCodec::Decode(screenshot->jpeg_data);
+  EXPECT_FALSE(screenshot.dimensions.IsZero());
+  ASSERT_GT(screenshot.jpeg_data.size(), 0);
+
+  SkBitmap bitmap = gfx::JPEGCodec::Decode(screenshot.jpeg_data);
 
   EXPECT_FALSE(bitmap.isNull());
   EXPECT_FALSE(bitmap.empty());

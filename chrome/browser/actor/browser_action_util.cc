@@ -592,7 +592,7 @@ BuildToolRequest(const optimization_guide::proto::Actions& actions) {
 void FillInTabObservation(
     const page_content_annotations::FetchPageContextResult& fetch_result,
     apc::TabObservation& tab_observation) {
-  if (fetch_result.screenshot_result) {
+  if (fetch_result.screenshot_result.has_value()) {
     auto& data = fetch_result.screenshot_result->jpeg_data;
     if (data.size() != 0) {
       tab_observation.set_screenshot_mime_type(kMimeTypeJpeg);

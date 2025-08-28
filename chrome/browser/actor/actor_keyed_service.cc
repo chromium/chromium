@@ -183,8 +183,10 @@ void ActorKeyedService::RequestTabObservation(
             bool has_screenshot = fetch_result.screenshot_result.has_value();
             if (!has_apc || !has_screenshot) {
               std::move(callback).Run(base::unexpected(absl::StrFormat(
-                  "Failed Observation: hasAPC[%g] hasScreenshot[%g]", has_apc,
-                  has_screenshot)));
+                  "Failed Observation: APC[%g] screenshot[%s]", has_apc,
+                  fetch_result.screenshot_result.has_value()
+                      ? std::string("OK")
+                      : fetch_result.screenshot_result.error())));
               return;
             }
 
@@ -224,8 +226,12 @@ void ActorKeyedService::ConvertToBrowserActionResult(
         std::unique_ptr<page_content_annotations::FetchPageContextResult>,
         std::string> context_result) {
   optimization_guide::proto::BrowserActionResult browser_action_result;
+  browser_action_result.set_task_id(task_id.value());
+  browser_action_result.set_tab_id(tab_id);
+
   if (!context_result.has_value()) {
-    VLOG(1) << "Execute Action failed: Error fetching context.";
+    VLOG(1) << "Execute Action - Error fetching context: "
+            << context_result.error();
     browser_action_result.set_action_result(0);
     RunLater(
         base::BindOnce(std::move(callback), std::move(browser_action_result)));
@@ -248,8 +254,6 @@ void ActorKeyedService::ConvertToBrowserActionResult(
   browser_action_result.set_screenshot(data.data(), data.size());
   browser_action_result.set_screenshot_mime_type(kMimeTypeJpeg);
 
-  browser_action_result.set_task_id(task_id.value());
-  browser_action_result.set_tab_id(tab_id);
   browser_action_result.set_action_result(actor::IsOk(*action_result) ? 1 : 0);
   RunLater(
       base::BindOnce(std::move(callback), std::move(browser_action_result)));
