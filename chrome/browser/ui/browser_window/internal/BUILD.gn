@@ -26,7 +26,10 @@ source_set("internal") {
       "android/browser_window_interface_iterator_android.cc",
       "android/create_browser_window_android.cc",
     ]
-    deps += [ ":jni" ]
+    deps += [
+      ":jni",
+      "//ui/android",
+    ]
   } else {
     sources += [
       "browser_window_features.cc",
@@ -118,6 +121,7 @@ source_set("unit_tests") {
       "//chrome/browser/ui/browser_window/test:native_unit_test_support_java",
       "//chrome/browser/ui/browser_window/test:native_unit_test_support_jni",
       "//components/sessions:session_id",
+      "//ui/android",
       "//ui/base",
     ]
   }

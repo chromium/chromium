@@ -34,7 +34,9 @@ if (is_android) {
     ]
     deps = [
       ":junit_test_support",
+      "//base:tasks_java",
       "//build/android:build_java",
+      "//chrome/browser/android/lifecycle:java",
       "//chrome/browser/ui/browser_window/internal:java",
       "//chrome/browser/ui/browser_window/public/android:java",
       "//third_party/jni_zero:jni_zero_java",

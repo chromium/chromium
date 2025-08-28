@@ -5,13 +5,23 @@
 package org.chromium.chrome.browser.ui.browser_window;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Rect;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider;
+import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Supports {@code android_base_window_unittest.cc}.
@@ -26,12 +36,50 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 final class AndroidBaseWindowNativeUnitTestSupport {
     private final AndroidBaseWindow mAndroidBaseWindow;
-    private final ChromeAndroidTask mMockChromeAndroidTask;
+    private final ChromeAndroidTask mChromeAndroidTask;
+    private final WindowAndroid mWindowAndroid;
 
     @CalledByNative
-    private AndroidBaseWindowNativeUnitTestSupport() {
-        mMockChromeAndroidTask = mock(ChromeAndroidTask.class);
-        mAndroidBaseWindow = new AndroidBaseWindow(mMockChromeAndroidTask);
+    private AndroidBaseWindowNativeUnitTestSupport(boolean useRealWindowAndroid) {
+        if (useRealWindowAndroid) {
+            // 1. Get a real context to provide a Theme and Resources for the activity.
+            Context realContext = ContextUtils.getApplicationContext();
+
+            // 2. Create a mock Activity and mock its functionality.
+            Activity mockActivity =
+                    mock(
+                            Activity.class,
+                            withSettings()
+                                    .extraInterfaces(ActivityLifecycleDispatcherProvider.class));
+            when(mockActivity.getResources()).thenReturn(realContext.getResources());
+            when(mockActivity.getTheme()).thenReturn(realContext.getTheme());
+            ActivityLifecycleDispatcher mockDispatcher = mock(ActivityLifecycleDispatcher.class);
+            when(((ActivityLifecycleDispatcherProvider) mockActivity).getLifecycleDispatcher())
+                    .thenReturn(mockDispatcher);
+            when(mockActivity.getTaskId()).thenReturn(1);
+
+            // 3. Create a real tracker and WindowAndroid.
+            IntentRequestTracker tracker = IntentRequestTracker.createFromActivity(mockActivity);
+            mWindowAndroid =
+                    new ActivityWindowAndroid(
+                            mockActivity,
+                            /* listenToActivityState= */ false,
+                            tracker,
+                            /* insetObserver= */ null,
+                            /* trackOcclusion= */ false);
+            mChromeAndroidTask =
+                    new ChromeAndroidTaskImpl(
+                            BrowserWindowType.NORMAL, (ActivityWindowAndroid) mWindowAndroid);
+        } else {
+            mWindowAndroid = mock(WindowAndroid.class);
+            mChromeAndroidTask = mock(ChromeAndroidTask.class);
+        }
+        mAndroidBaseWindow = new AndroidBaseWindow(mChromeAndroidTask);
+    }
+
+    @CalledByNative
+    private WindowAndroid getWindowAndroid() {
+        return mWindowAndroid;
     }
 
     @CalledByNative
@@ -51,6 +99,7 @@ final class AndroidBaseWindowNativeUnitTestSupport {
 
     @CalledByNative
     private void setFakeBounds(int left, int top, int right, int bottom) {
-        when(mMockChromeAndroidTask.getBounds()).thenReturn(new Rect(left, top, right, bottom));
+        assert mockingDetails(mChromeAndroidTask).isMock();
+        when(mChromeAndroidTask.getBounds()).thenReturn(new Rect(left, top, right, bottom));
     }
 }

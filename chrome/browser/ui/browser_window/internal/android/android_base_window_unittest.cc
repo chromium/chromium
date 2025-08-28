@@ -11,11 +11,13 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_window/test/native_unit_test_support_jni/AndroidBaseWindowNativeUnitTestSupport_jni.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/android/window_android.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace {
 using base::android::AttachCurrentThread;
 using base::android::ScopedJavaGlobalRef;
+using base::android::ScopedJavaLocalRef;
 }  // namespace
 
 class AndroidBaseWindowUnitTest : public testing::Test {
@@ -23,13 +25,14 @@ class AndroidBaseWindowUnitTest : public testing::Test {
   AndroidBaseWindowUnitTest() = default;
   ~AndroidBaseWindowUnitTest() override = default;
 
-  void SetUp() override {
-    java_test_support_ =
-        Java_AndroidBaseWindowNativeUnitTestSupport_Constructor(
-            AttachCurrentThread());
-  }
+  void SetUp() override { SetUpJavaSupport(false); }
 
   void TearDown() override { InvokeJavaDestroy(); }
+
+  ScopedJavaLocalRef<jobject> GetJavaWindowAndroid() const {
+    return Java_AndroidBaseWindowNativeUnitTestSupport_getWindowAndroid(
+        AttachCurrentThread(), java_test_support_);
+  }
 
   AndroidBaseWindow* InvokeJavaGetOrCreateNativePtr() const {
     return reinterpret_cast<AndroidBaseWindow*>(
@@ -53,7 +56,13 @@ class AndroidBaseWindowUnitTest : public testing::Test {
         AttachCurrentThread(), java_test_support_, left, top, right, bottom);
   }
 
- private:
+ protected:
+  void SetUpJavaSupport(bool use_real_window_android) {
+    java_test_support_ =
+        Java_AndroidBaseWindowNativeUnitTestSupport_Constructor(
+            AttachCurrentThread(), use_real_window_android);
+  }
+
   ScopedJavaGlobalRef<jobject> java_test_support_;
 };
 
@@ -93,4 +102,32 @@ TEST_F(AndroidBaseWindowUnitTest, GetBoundsMethodReturnsCorrectBounds) {
 
   // Assert.
   EXPECT_EQ(expected_bounds, actual_bounds);
+}
+
+// Derived fixture for tests that REQUIRE a real Java WindowAndroid.
+class AndroidBaseWindowRealWindowTest : public AndroidBaseWindowUnitTest {
+ public:
+  void SetUp() override {
+    // This fixture's setup has a real WindowAndroid.
+    SetUpJavaSupport(true);
+  }
+};
+
+TEST_F(AndroidBaseWindowRealWindowTest,
+       GetNativeWindowReturnsWindowFromActivity) {
+  // Retrieve the native pointer to the WindowAndroid that was created in Java.
+  ScopedJavaLocalRef<jobject> j_window_android = GetJavaWindowAndroid();
+  ui::WindowAndroid* expected_window =
+      ui::WindowAndroid::FromJavaWindowAndroid(j_window_android);
+  ASSERT_NE(nullptr, expected_window);
+
+  // Get the native AndroidBaseWindow that is linked to the Java objects.
+  AndroidBaseWindow* android_base_window = InvokeJavaGetOrCreateNativePtr();
+  ASSERT_NE(nullptr, android_base_window);
+
+  // Act: Call the function under test.
+  gfx::NativeWindow actual_window = android_base_window->GetNativeWindow();
+
+  // Assert: The returned native window should be the one we created.
+  EXPECT_EQ(expected_window, actual_window);
 }
