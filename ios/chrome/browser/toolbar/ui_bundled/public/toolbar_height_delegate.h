@@ -23,6 +23,11 @@ enum class ToolbarType;
 /// constraints.
 - (void)secondaryToolbarRemovedFromKeyboard;
 
+/// Adjust the secondary toolbar when the keyboard is shown.
+- (void)adjustSecondaryToolbarForKeyboardHeight:(CGFloat)keyboardHeight
+                                       duration:(NSTimeInterval)duration
+                                          curve:(UIViewAnimationCurve)curve;
+
 /// Called when the toolbar type changed.
 /// TODO(crbug.com/429955447): Remove when diamond prototype is cleaned.
 - (void)diamondToolbarTypeChanged:(ToolbarType)type;

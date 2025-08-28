@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/public/omnibox_position_util.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -49,6 +50,8 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 // The layout guide center to use to refer to the omnibox.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 @property(nonatomic, strong) UILayoutGuide* topOmniboxGuide;
+// Whether to show the omnibox in the bottom when the popup is open.
+@property(nonatomic, readonly) BOOL useBottomOmniboxInPopup;
 
 @end
 
@@ -59,6 +62,8 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
   ToolbarType _unfocusedOmniboxToolbarType;
   // Whether it's the lens overlay managing this popup.
   BOOL _isLensOverlay;
+  /// The amount of padding to add to the bottom of the popup.
+  CGFloat _bottomOmniboxOffset;
 }
 
 - (instancetype)
@@ -210,55 +215,38 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
   _unfocusedOmniboxToolbarType = toolbarType;
 }
 
+- (void)setBottomOmniboxOffsetForPopup:(CGFloat)bottomOmniboxOffset {
+  _bottomOmniboxOffset = bottomOmniboxOffset;
+  self.bottomConstraintPhone.constant = -bottomOmniboxOffset;
+}
+
 #pragma mark - Private
 
 /// Layouts the popup when it is just added to the view hierarchy.
 - (void)initialLayoutAnimated:(BOOL)isAnimated {
-  UIView* popup = self.popupContainerView;
-  // Creates the constraints if the view is newly added to the view hierarchy.
+  [self updateOmniboxLayoutGuide];
+  [self updatePopupLayer];
+  [self updateConstraints];
 
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    BOOL paddingAmmount =
-        _isLensOverlay
-            ? 0
-            : kPopupBottomPaddingTablet + kSecondaryToolbarWithoutOmniboxHeight;
-    NSLayoutAnchor* superviewAnchor =
-        _isLensOverlay ? popup.superview.bottomAnchor
-                       : popup.superview.safeAreaLayoutGuide.bottomAnchor;
-    self.bottomConstraintPhone =
-        [superviewAnchor constraintGreaterThanOrEqualToAnchor:popup.bottomAnchor
-                                                     constant:paddingAmmount];
-  } else {
-    self.bottomConstraintPhone = [popup.bottomAnchor
-        constraintEqualToAnchor:popup.superview.bottomAnchor];
+  if (isAnimated) {
+    [self animatePopupOnOmniboxFocus];
   }
+}
 
-  // On tablet form factor the popup is padded on the bottom to allow the user
-  // to defocus the omnibox.
-  self.heightConstraintTablet = [popup.heightAnchor
-      constraintLessThanOrEqualToAnchor:popup.superview.heightAnchor
-                             multiplier:0.7];
-
-  // Install in the superview the guide tracking the top omnibox.
+- (void)updateOmniboxLayoutGuide {
+  UIView* popup = self.popupContainerView;
+  // Install in the superview the guide tracking the omnibox.
   if (self.topOmniboxGuide) {
-    [[popup superview] removeLayoutGuide:self.topOmniboxGuide];
+    [popup.superview removeLayoutGuide:self.topOmniboxGuide];
     self.topOmniboxGuide = nil;
   }
+
   GuideName* omniboxGuideName =
       [self.delegate omniboxGuideNameForPresenter:self];
   if (omniboxGuideName) {
     self.topOmniboxGuide =
         [self.layoutGuideCenter makeLayoutGuideNamed:omniboxGuideName];
-    [[popup superview] addLayoutGuide:self.topOmniboxGuide];
-  }
-
-  [self updatePopupLayer];
-  [self updateConstraints];
-
-  [[popup superview] layoutIfNeeded];
-
-  if (isAnimated) {
-    [self animatePopupOnOmniboxFocus];
+    [popup.superview addLayoutGuide:self.topOmniboxGuide];
   }
 }
 
@@ -285,24 +273,55 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 - (void)updateConstraints {
   UIView* popup = self.popupContainerView;
 
-  NSLayoutConstraint* topConstraint;
-  if (self.topOmniboxGuide) {
-    // Position the top anchor of the popup relatively to that layout guide.
-    topConstraint = [popup.topAnchor
-        constraintEqualToAnchor:self.topOmniboxGuide.bottomAnchor
-                       constant:kVerticalOffset];
+  // Creates the constraints if the view is newly added to the view hierarchy.
+  // On tablet form factor the popup is padded on the bottom to allow the user
+  // to defocus the omnibox.
+  self.heightConstraintTablet = [popup.heightAnchor
+      constraintLessThanOrEqualToAnchor:popup.superview.heightAnchor
+                             multiplier:0.7];
+
+  BOOL tabletFormFactor =
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
+
+  // Bottom constraints.
+  if (tabletFormFactor) {
+    BOOL paddingAmmount =
+        _isLensOverlay
+            ? 0
+            : kPopupBottomPaddingTablet + kSecondaryToolbarWithoutOmniboxHeight;
+    NSLayoutAnchor* superviewAnchor =
+        _isLensOverlay ? popup.superview.bottomAnchor
+                       : popup.superview.safeAreaLayoutGuide.bottomAnchor;
+    self.bottomConstraintPhone =
+        [superviewAnchor constraintGreaterThanOrEqualToAnchor:popup.bottomAnchor
+                                                     constant:paddingAmmount];
   } else {
-    topConstraint = [popup.topAnchor
-        constraintEqualToAnchor:[self.delegate popupParentViewForPresenter:self]
-                                    .topAnchor];
+    CGFloat offset = self.useBottomOmniboxInPopup ? _bottomOmniboxOffset : 0;
+    self.bottomConstraintPhone =
+        [popup.bottomAnchor constraintEqualToAnchor:popup.superview.bottomAnchor
+                                           constant:-offset];
   }
+
+  // Top constraints.
+  BOOL constraintTopToOmnibox =
+      self.topOmniboxGuide && !self.useBottomOmniboxInPopup;
+  NSLayoutConstraint* topConstraint =
+      constraintTopToOmnibox
+          ? [popup.topAnchor
+                constraintEqualToAnchor:self.topOmniboxGuide.bottomAnchor
+                               constant:kVerticalOffset]
+          : [popup.topAnchor
+                constraintEqualToAnchor:[self.delegate
+                                            popupParentViewForPresenter:self]
+                                            .safeAreaLayoutGuide.topAnchor];
 
   NSMutableArray<NSLayoutConstraint*>* constraintsToActivate =
       [NSMutableArray arrayWithObject:topConstraint];
 
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
-      IsRegularXRegularSizeClass(self.popupContainerView.traitCollection) &&
-      self.topOmniboxGuide) {
+  BOOL regularXRegularSizeClass =
+      tabletFormFactor &&
+      IsRegularXRegularSizeClass(self.popupContainerView.traitCollection);
+  if (regularXRegularSizeClass && self.topOmniboxGuide) {
     NSLayoutConstraint* leadingConstraint = [popup.leadingAnchor
         constraintEqualToAnchor:self.topOmniboxGuide.leadingAnchor
                        constant:-16];
@@ -349,6 +368,11 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
                    completion:^(BOOL _) {
                      constraintForVisiblePopup();
                    }];
+}
+
+- (BOOL)useBottomOmniboxInPopup {
+  return omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition() &&
+         _unfocusedOmniboxToolbarType == ToolbarType::kSecondary;
 }
 
 @end

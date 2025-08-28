@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_button.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_configuration.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/public/omnibox_position_util.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_height_delegate.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_utils.h"
@@ -143,9 +144,6 @@
 #pragma mark - UIKeyboardNotification
 
 - (void)keyboardWillShow:(NSNotification*)notification {
-  if (![self hasOmnibox]) {
-    return;
-  }
   [self constraintToKeyboard:YES withNotification:notification];
 }
 
@@ -199,24 +197,110 @@
 
 /// Updates keyboard constraints with `notification`. When
 /// `constraintToKeyboard`, the toolbar is collapsed above the keyboard.
-- (void)constraintToKeyboard:(BOOL)constraintToKeyboard
+- (void)constraintToKeyboard:(BOOL)shouldConstraintToKeyboard
             withNotification:(NSNotification*)notification {
-  if (constraintToKeyboard) {
-    if ([self.keyboardStateProvider keyboardIsActiveForWebContent]) {
-      // Enable the constraint only when the keyboard is showing for web
-      // content. This will not evaluate to true each time the keyboard's frame
-      // is updating. Thus, update the keyboard's frame even if this is false.
-      if (![self.view.locationBarKeyboardConstraint isActive]) {
-        self.view.locationBarKeyboardConstraint.active = YES;
-        [self collapseForKeyboard];
-        [self.view layoutIfNeeded];
-      }
-    }
-  } else if ([self.view.locationBarKeyboardConstraint isActive]) {
+  BOOL followSteadyStateEnabled =
+      omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition();
+  BOOL keyboardActiveForWebContent =
+      [self.keyboardStateProvider keyboardIsActiveForWebContent];
+  BOOL hasOmnibox = [self hasOmnibox];
+  BOOL locationIndicatorConstraintActive =
+      self.view.locationBarKeyboardConstraint.active;
+
+  // Whether to show the secondary toolbar as a location indicator when keyboard
+  // is active for web content. Bottom omnibox exclusive.
+  BOOL showLocationIndicator = shouldConstraintToKeyboard &&
+                               keyboardActiveForWebContent && hasOmnibox &&
+                               !locationIndicatorConstraintActive;
+  // Whether to cleanup the location indication previously shown for web
+  // content.
+  BOOL hideLocationIndicator =
+      !shouldConstraintToKeyboard && locationIndicatorConstraintActive;
+  // Whether the toolbar containing the omnibox should follow the keyboard.
+  // This behavior does not happen when the user interacts with text fields in
+  // the web content.
+  BOOL attachOmniboxToKeyboard =
+      !keyboardActiveForWebContent && hasOmnibox && followSteadyStateEnabled;
+
+  if (showLocationIndicator) {
+    self.view.locationBarKeyboardConstraint.active = YES;
+    [self collapseForKeyboard];
+    [self.view layoutIfNeeded];
+  } else if (hideLocationIndicator) {
     self.view.locationBarKeyboardConstraint.active = NO;
     [self removeFromKeyboard];
     [self.view layoutIfNeeded];
+  } else if (attachOmniboxToKeyboard) {
+    NSDictionary* userInfo = notification.userInfo;
+    NSTimeInterval duration =
+        [userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    UIViewAnimationCurve curve = (UIViewAnimationCurve)
+        [userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue];
+    CGFloat visibleKeyboardHeight =
+        shouldConstraintToKeyboard
+            ? [self keyboardHeightInWindowFromNotification:notification]
+            : 0;
+
+    [self.toolbarHeightDelegate
+        adjustSecondaryToolbarForKeyboardHeight:visibleKeyboardHeight
+                                       duration:duration
+                                          curve:curve];
   }
+}
+
+// Returns the user visible height of the keyboard.
+- (CGFloat)keyboardHeightInWindowFromNotification:
+    (NSNotification*)notification {
+  NSDictionary* userInfo = notification.userInfo;
+  // Part of the keyboard might be hidden. Keep only the visible area.
+  CGRect keyboardFrame = [userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+  id<UICoordinateSpace> fromCoordinateSpace =
+      ((UIScreen*)notification.object).coordinateSpace;
+  id<UICoordinateSpace> toCoordinateSpace = self.view.window;
+  CGRect keyboardFrameInWindow =
+      [fromCoordinateSpace convertRect:keyboardFrame
+                     toCoordinateSpace:toCoordinateSpace];
+  return CGRectIntersection(keyboardFrameInWindow, self.view.window.bounds)
+      .size.height;
+}
+
+#pragma mark - ToolbarAnimatee
+
+- (void)expandLocationBar {
+  // TODO(crbug.com/440072313): Implement.
+}
+
+- (void)contractLocationBar {
+  // TODO(crbug.com/440072313): Implement.
+}
+
+- (void)showCancelButton {
+  // TODO(crbug.com/440072313): Implement.
+}
+
+- (void)hideCancelButton {
+  // TODO(crbug.com/440072313): Implement.
+}
+
+- (void)showControlButtons {
+  // TODO(crbug.com/440072313): Implement.
+}
+
+- (void)hideControlButtons {
+  // TODO(crbug.com/440072313): Implement.
+}
+
+- (void)setLocationBarHeightToMatchFakeOmnibox {
+  // NO-OP
+}
+
+- (void)setLocationBarHeightExpanded {
+  // NO-OP
+}
+
+// Changes related to the toolbar itself.
+- (void)setToolbarFaded:(BOOL)faded {
+  // TODO(crbug.com/440072313): Implement.
 }
 
 @end

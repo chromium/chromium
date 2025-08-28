@@ -144,6 +144,10 @@
       steadyStateOmniboxMovedToToolbar:self.steadyStateOmniboxPosition];
 }
 
+- (void)setBottomOmniboxOffsetForPopup:(CGFloat)bottomOffset {
+  [self.omniboxConsumer setBottomOmniboxOffsetForPopup:bottomOffset];
+}
+
 - (void)didNavigateToNTPOnActiveWebState {
   _isNTP = YES;
   if (IsBottomOmniboxAvailable()) {
@@ -231,7 +235,9 @@
 
 /// Computes the toolbar that should contain the omnibox in the current state.
 - (ToolbarType)omniboxPositionInCurrentState {
-  if (_locationBarFocused) {
+  BOOL followSteadyState =
+      omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition();
+  if (_locationBarFocused && !followSteadyState) {
     return ToolbarType::kPrimary;
   } else {
     return [self steadyStateOmniboxPositionInCurrentState];

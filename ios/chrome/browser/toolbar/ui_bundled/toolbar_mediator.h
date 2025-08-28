@@ -69,6 +69,9 @@ class WebStateList;
 /// Sets the omnibox initial position to the correct toolbar.
 - (void)setInitialOmniboxPosition;
 
+/// Sets the bottom offset required by the omnibox.
+- (void)setBottomOmniboxOffsetForPopup:(CGFloat)bottomOffset;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_TOOLBAR_MEDIATOR_H_

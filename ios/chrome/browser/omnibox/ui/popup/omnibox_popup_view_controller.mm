@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_configuration.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/public/omnibox_position_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/device_util.h"
@@ -347,7 +348,13 @@ const CGFloat kHeaderTopPadding = 16.0f;
   self.preselectedMatchGroupIndex = groupIndex;
   self.currentResult = result;
 
-  [self.tableView reloadData];
+  // Explicitly reload without animation to avoid flickering when reloading
+  // the table data.
+  [UIView performWithoutAnimation:^{
+    [self.tableView reloadData];
+    [self.tableView layoutIfNeeded];
+  }];
+
   self.forwardsScrollEvents = YES;
   id<AutocompleteSuggestion> firstSuggestionOfPreselectedGroup =
       [self suggestionAtIndexPath:[NSIndexPath indexPathForRow:0
@@ -1181,7 +1188,10 @@ const CGFloat kHeaderTopPadding = 16.0f;
 // UITrait has been changed.
 - (void)updateUIOnTraitChange {
   [self updateBackgroundColor];
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+  BOOL followSteadyState =
+      omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition();
+  if (followSteadyState ||
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     [self.mutator onTraitCollectionChange];
   }
 }

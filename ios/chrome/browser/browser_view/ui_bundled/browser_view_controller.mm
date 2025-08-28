@@ -1368,8 +1368,11 @@ const CGFloat kTopDynamicIslandInset = 24;
   // area height.
   UIView* toolbarView =
       self.toolbarCoordinator.secondaryToolbarViewController.view;
+  CGFloat secondaryToolbarBaseHeight = [self secondaryToolbarHeightWithInset];
   self.secondaryToolbarHeightConstraint = [toolbarView.heightAnchor
-      constraintEqualToConstant:[self secondaryToolbarHeightWithInset]];
+      constraintEqualToConstant:secondaryToolbarBaseHeight];
+  [self.toolbarCoordinator
+      setBottomOmniboxOffsetForPopup:secondaryToolbarBaseHeight];
   // The bottom toolbar can be constraint to the keyboard in some cases.
   self.secondaryToolbarHeightConstraint.priority = UILayoutPriorityRequired - 1;
   self.secondaryToolbarHeightConstraint.active = YES;
@@ -2202,7 +2205,9 @@ const CGFloat kTopDynamicIslandInset = 24;
   DUMP_WILL_BE_CHECK(height >= (0.0 - FLT_EPSILON) &&
                      height <= (expandedToolbarHeight + FLT_EPSILON));
 
-  self.secondaryToolbarHeightConstraint.constant = height;
+  if (![self.toolbarCoordinator showingOmniboxPopup]) {
+    self.secondaryToolbarHeightConstraint.constant = height;
+  }
 }
 
 // Updates the browser container view such that its viewport is the space
@@ -2807,6 +2812,44 @@ const CGFloat kTopDynamicIslandInset = 24;
   // Return to required priority, otherwise UIKeyboardLayoutGuide would set the
   // toolbar minimum height to the bottom safe area.
   self.secondaryToolbarHeightConstraint.priority = UILayoutPriorityRequired - 1;
+}
+
+- (void)adjustSecondaryToolbarForKeyboardHeight:(CGFloat)keyboardHeight
+                                       duration:(NSTimeInterval)duration
+                                          curve:(UIViewAnimationCurve)curve {
+  CHECK(ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET);
+  CGFloat keyboardAttachedOffset =
+      keyboardHeight +
+      self.toolbarCoordinator.keyboardAttachedBottomOmniboxHeight;
+  CGFloat baseHeight = [self secondaryToolbarHeightWithInset];
+  CGFloat offsetRequired = MAX(keyboardAttachedOffset, baseHeight);
+
+  // No need to start an animation when the offset is already set.
+  BOOL alreadyInPosition =
+      self.secondaryToolbarHeightConstraint.constant == offsetRequired;
+  // Always animate when keyboard is being hidden. When showing the keyboard,
+  // make sure to check editing to avoid manipulating the toolbar when other
+  // textfield is focused.
+  if (alreadyInPosition) {
+    [self.toolbarCoordinator setBottomOmniboxOffsetForPopup:offsetRequired];
+    return;
+  }
+
+  // The shift converts an animation curve to animation options.
+  // Shifting by 16 is a result of Apple reserving 4 bits in
+  // `UIViewAnimationOptions` for the type of curve.
+  UIViewAnimationOptions animationOptions = curve << 16;
+  [UIView animateWithDuration:duration
+                        delay:0.0
+                      options:animationOptions
+                   animations:^{
+                     self.secondaryToolbarHeightConstraint.constant =
+                         offsetRequired;
+                     [self.toolbarCoordinator
+                         setBottomOmniboxOffsetForPopup:offsetRequired];
+                     [self.view layoutIfNeeded];
+                   }
+                   completion:nil];
 }
 
 - (void)diamondToolbarTypeChanged:(ToolbarType)type {

@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_ORCHESTRATOR_UI_BUNDLED_TOOLBAR_ANIMATEE_H_
 #define IOS_CHROME_BROWSER_ORCHESTRATOR_UI_BUNDLED_TOOLBAR_ANIMATEE_H_
 
+#import <UIKit/UIKit.h>
+
 // Protocol defining an interface to trigger changes on the toolbar. Calling
 // those methods should not start any animation.
 @protocol ToolbarAnimatee <NSObject>

@@ -31,6 +31,12 @@
 
 @dynamic viewController;
 
+#pragma mark - Public
+
+- (id<ToolbarAnimatee>)toolbarAnimatee {
+  return self.viewController;
+}
+
 #pragma mark - AdaptiveToolbarCoordinator
 
 - (void)start {
