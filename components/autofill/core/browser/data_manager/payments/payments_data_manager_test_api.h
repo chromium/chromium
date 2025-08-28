@@ -46,10 +46,10 @@ class PaymentsDataManagerTestApi {
     payments_data_manager_->image_fetcher_ = image_fetcher;
   }
 
-  void SetAutofillOptimizationGuide(
-      AutofillOptimizationGuide* autofill_optimization_guide) {
-    payments_data_manager_->autofill_optimization_guide_ =
-        autofill_optimization_guide;
+  void SetAutofillOptimizationGuideDecider(
+      AutofillOptimizationGuideDecider* autofill_optimization_guide_decider) {
+    payments_data_manager_->autofill_optimization_guide_decider_ =
+        autofill_optimization_guide_decider;
   }
 
   bool ShouldSuggestServerPaymentMethods();

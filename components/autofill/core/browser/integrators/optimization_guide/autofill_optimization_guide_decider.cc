@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide.h"
+#include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
 
 #include <algorithm>
 
@@ -232,13 +232,13 @@ void AddOptimizationTypesForBnplIssuers(
 
 }  // namespace
 
-AutofillOptimizationGuide::AutofillOptimizationGuide(
+AutofillOptimizationGuideDecider::AutofillOptimizationGuideDecider(
     optimization_guide::OptimizationGuideDecider* decider)
     : decider_(decider) {}
 
-AutofillOptimizationGuide::~AutofillOptimizationGuide() = default;
+AutofillOptimizationGuideDecider::~AutofillOptimizationGuideDecider() = default;
 
-void AutofillOptimizationGuide::OnPaymentsDataLoaded(
+void AutofillOptimizationGuideDecider::OnPaymentsDataLoaded(
     const PaymentsDataManager& payments_data_manager) {
   // Currently this function is only introduced for BNPL allowlists, and no
   // further steps should be processed if flag
@@ -264,7 +264,7 @@ void AutofillOptimizationGuide::OnPaymentsDataLoaded(
   }
 }
 
-void AutofillOptimizationGuide::OnDidParseForm(
+void AutofillOptimizationGuideDecider::OnDidParseForm(
     const FormStructure& form_structure,
     const PaymentsDataManager& payments_data_manager) {
   // This flat set represents all of the optimization types that we need to
@@ -305,7 +305,7 @@ void AutofillOptimizationGuide::OnDidParseForm(
 }
 
 CreditCardCategoryBenefit::BenefitCategory
-AutofillOptimizationGuide::AttemptToGetEligibleCreditCardBenefitCategory(
+AutofillOptimizationGuideDecider::AttemptToGetEligibleCreditCardBenefitCategory(
     std::string_view benefit_source,
     const GURL& url) const {
   std::vector<optimization_guide::proto::OptimizationType>
@@ -360,7 +360,7 @@ AutofillOptimizationGuide::AttemptToGetEligibleCreditCardBenefitCategory(
   return CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory;
 }
 
-bool AutofillOptimizationGuide::ShouldBlockSingleFieldSuggestions(
+bool AutofillOptimizationGuideDecider::ShouldBlockSingleFieldSuggestions(
     const GURL& url,
     const AutofillField* field) const {
   // If the field's storable type is `IBAN_VALUE`, check whether IBAN
@@ -386,7 +386,7 @@ bool AutofillOptimizationGuide::ShouldBlockSingleFieldSuggestions(
   return false;
 }
 
-bool AutofillOptimizationGuide::ShouldBlockFormFieldSuggestion(
+bool AutofillOptimizationGuideDecider::ShouldBlockFormFieldSuggestion(
     const GURL& url,
     const CreditCard& card) const {
   if (auto optimization_type =
@@ -411,7 +411,7 @@ bool AutofillOptimizationGuide::ShouldBlockFormFieldSuggestion(
   return false;
 }
 
-bool AutofillOptimizationGuide::IsEligibleForAblation(
+bool AutofillOptimizationGuideDecider::IsEligibleForAblation(
     const GURL& url,
     optimization_guide::proto::OptimizationType type) const {
   CHECK(type == optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST1 ||
@@ -427,7 +427,7 @@ bool AutofillOptimizationGuide::IsEligibleForAblation(
   return decision == optimization_guide::OptimizationGuideDecision::kTrue;
 }
 
-bool AutofillOptimizationGuide::
+bool AutofillOptimizationGuideDecider::
     ShouldBlockFlatRateBenefitSuggestionLabelsForUrl(const GURL& url) const {
   // Since the flat rate benefit suggestions hint uses a blocklist, it will
   // return kFalse if the `url` is present, meaning when kFalse is returned,
@@ -443,7 +443,7 @@ bool AutofillOptimizationGuide::
          optimization_guide::OptimizationGuideDecision::kFalse;
 }
 
-bool AutofillOptimizationGuide::IsUrlEligibleForBnplIssuer(
+bool AutofillOptimizationGuideDecider::IsUrlEligibleForBnplIssuer(
     BnplIssuer::IssuerId issuer_id,
     const GURL& url) const {
   if (base::FeatureList::IsEnabled(

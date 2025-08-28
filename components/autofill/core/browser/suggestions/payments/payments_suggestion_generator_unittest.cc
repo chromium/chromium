@@ -32,7 +32,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
-#include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide.h"
+#include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
@@ -348,8 +348,8 @@ class AutofillCreditCardBenefitsLabelTest
     std::u16string benefit_description;
     int64_t instrument_id;
 
-    ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-                autofill_client()->GetAutofillOptimizationGuide()),
+    ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+                autofill_client()->GetAutofillOptimizationGuideDecider()),
             ShouldBlockFlatRateBenefitSuggestionLabelsForUrl)
         .WillByDefault(testing::Return(false));
 
@@ -372,8 +372,8 @@ class AutofillCreditCardBenefitsLabelTest
           benefit.merchant_domains().begin()->GetURL());
     } else if (std::holds_alternative<CreditCardCategoryBenefit>(
                    GetBenefit())) {
-      ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-                  autofill_client()->GetAutofillOptimizationGuide()),
+      ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+                  autofill_client()->GetAutofillOptimizationGuideDecider()),
               AttemptToGetEligibleCreditCardBenefitCategory)
           .WillByDefault(testing::Return(
               CreditCardCategoryBenefit::BenefitCategory::kSubscription));
@@ -478,12 +478,12 @@ TEST_P(AutofillCreditCardBenefitsLabelTest, BenefitSuggestionLabel_Fpan) {
 // when optimization guide is null except category benefits.
 TEST_P(AutofillCreditCardBenefitsLabelTest,
        BenefitSuggestionLabel_Fpan_NoOptimizationGuide) {
-  autofill_client()->ResetAutofillOptimizationGuide();
+  autofill_client()->ResetAutofillOptimizationGuideDecider();
   Suggestion suggestion = CreateCreditCardSuggestionForTest(
       card(), *autofill_client(), CREDIT_CARD_NUMBER,
       /*virtual_card_option=*/false,
       /*card_linked_offer_available=*/false);
-  ASSERT_FALSE(autofill_client()->GetAutofillOptimizationGuide());
+  ASSERT_FALSE(autofill_client()->GetAutofillOptimizationGuideDecider());
   if (IsCreditCardBenefitsSourceSyncEnabled() &&
       GetBenefitSource() == "curinos" &&
       !std::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit())) {
@@ -546,8 +546,8 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
 // for the benefits.
 TEST_P(AutofillCreditCardBenefitsLabelTest,
        BenefitSuggestionFeatureForIph_IsNullWhenCardNotEligibleForBenefits) {
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_client()->GetAutofillOptimizationGuide()),
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client()->GetAutofillOptimizationGuideDecider()),
           ShouldBlockFlatRateBenefitSuggestionLabelsForUrl)
       .WillByDefault(testing::Return(true));
   Suggestion suggestion = CreateCreditCardSuggestionForTest(
@@ -593,8 +593,8 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
 TEST_P(AutofillCreditCardBenefitsLabelTest,
        BenefitSuggestionLabel_VirtualCard_MerchantOptOut) {
   CreditCard virtual_card = CreditCard::CreateVirtualCard(card());
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_client()->GetAutofillOptimizationGuide()),
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client()->GetAutofillOptimizationGuideDecider()),
           ShouldBlockFormFieldSuggestion)
       .WillByDefault(testing::Return(true));
   EXPECT_THAT(
@@ -656,8 +656,8 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
     GTEST_SKIP() << "This test should not run for non-category benefits.";
   }
 
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_client()->GetAutofillOptimizationGuide()),
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client()->GetAutofillOptimizationGuideDecider()),
           AttemptToGetEligibleCreditCardBenefitCategory)
       .WillByDefault(testing::Return(
           CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory));
@@ -674,8 +674,8 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
 // are disabled for the given card and url.
 TEST_P(AutofillCreditCardBenefitsLabelTest,
        BenefitSuggestionLabelNotDisplayed_BlockedUrl) {
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_client()->GetAutofillOptimizationGuide()),
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client()->GetAutofillOptimizationGuideDecider()),
           ShouldBlockFlatRateBenefitSuggestionLabelsForUrl)
       .WillByDefault(testing::Return(true));
   Suggestion suggestion = CreateCreditCardSuggestionForTest(
@@ -763,8 +763,8 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
   scoped_feature_list.InitAndDisableFeature(
       features::kAutofillEnableNewFopDisplayDesktop);
   CreditCard virtual_card = CreditCard::CreateVirtualCard(card());
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_client()->GetAutofillOptimizationGuide()),
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client()->GetAutofillOptimizationGuideDecider()),
           ShouldBlockFormFieldSuggestion)
       .WillByDefault(testing::Return(true));
   Suggestion suggestion = CreateCreditCardSuggestionForTest(
@@ -828,8 +828,8 @@ TEST_P(
     GTEST_SKIP() << "This test should not run for non-category benefits.";
   }
 
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_client()->GetAutofillOptimizationGuide()),
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client()->GetAutofillOptimizationGuideDecider()),
           AttemptToGetEligibleCreditCardBenefitCategory)
       .WillByDefault(testing::Return(
           CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory));
@@ -856,8 +856,8 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       features::kAutofillEnableNewFopDisplayDesktop);
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_client()->GetAutofillOptimizationGuide()),
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client()->GetAutofillOptimizationGuideDecider()),
           ShouldBlockFlatRateBenefitSuggestionLabelsForUrl)
       .WillByDefault(testing::Return(true));
 
@@ -989,8 +989,8 @@ TEST_P(
     GTEST_SKIP() << "This test should not run for non-category benefits.";
   }
 
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_client()->GetAutofillOptimizationGuide()),
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client()->GetAutofillOptimizationGuideDecider()),
           AttemptToGetEligibleCreditCardBenefitCategory)
       .WillByDefault(testing::Return(
           CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory));
@@ -1016,8 +1016,8 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
     GTEST_SKIP() << "This test should not run for non-flat-rate benefits.";
   }
 
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_client()->GetAutofillOptimizationGuide()),
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client()->GetAutofillOptimizationGuideDecider()),
           ShouldBlockFlatRateBenefitSuggestionLabelsForUrl)
       .WillByDefault(testing::Return(true));
   std::vector<CreditCard> cards = {card()};
@@ -2027,14 +2027,14 @@ TEST_F(
 // Test that the virtual card option is shown when the autofill optimization
 // guide is not present.
 TEST_F(PaymentsSuggestionGeneratorTest,
-       ShouldShowVirtualCardOption_AutofillOptimizationGuideNotPresent) {
+       ShouldShowVirtualCardOption_AutofillOptimizationGuideDeciderNotPresent) {
   // Create a server card.
   CreditCard server_card =
       CreateServerCard(/*guid=*/"00000000-0000-0000-0000-000000000001");
   server_card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
   payments_data().AddServerCreditCard(server_card);
-  autofill_client()->ResetAutofillOptimizationGuide();
+  autofill_client()->ResetAutofillOptimizationGuideDecider();
 
   // Create a local card with same information.
   CreditCard local_card =
@@ -2058,8 +2058,8 @@ TEST_F(PaymentsSuggestionGeneratorTest,
 
   // Even if the URL is opted-out of virtual cards for `server_card`, display
   // the virtual card suggestion.
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_client()->GetAutofillOptimizationGuide()),
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client()->GetAutofillOptimizationGuideDecider()),
           ShouldBlockFormFieldSuggestion)
       .WillByDefault(testing::Return(true));
   EXPECT_TRUE(
@@ -3203,8 +3203,8 @@ class AutofillCreditCardSuggestionContentVcnMerchantOptOutTest
  private:
   void SetUp() override {
     AutofillCreditCardSuggestionContentTest::SetUp();
-    ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-                autofill_client()->GetAutofillOptimizationGuide()),
+    ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+                autofill_client()->GetAutofillOptimizationGuideDecider()),
             ShouldBlockFormFieldSuggestion)
         .WillByDefault(testing::Return(is_merchant_opted_out()));
   }
@@ -4442,8 +4442,8 @@ class AutofillCreditCardSuggestionContentForTouchToFillTest
  private:
   void SetUp() override {
     AutofillCreditCardSuggestionContentTest::SetUp();
-    ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-                autofill_client()->GetAutofillOptimizationGuide()),
+    ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+                autofill_client()->GetAutofillOptimizationGuideDecider()),
             ShouldBlockFormFieldSuggestion)
         .WillByDefault(testing::Return(is_merchant_opted_out()));
   }

@@ -49,7 +49,7 @@ class PaymentInstrumentCreationOption;
 
 namespace autofill {
 
-class AutofillOptimizationGuide;
+class AutofillOptimizationGuideDecider;
 class BankAccount;
 class BnplIssuer;
 class Ewallet;
@@ -91,7 +91,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
       signin::IdentityManager* identity_manager,
       GeoIpCountryCode variations_country_code,
       std::string app_locale,
-      AutofillOptimizationGuide* autofill_optimization_guide);
+      AutofillOptimizationGuideDecider* autofill_optimization_guide_decider);
 
   PaymentsDataManager(const PaymentsDataManager&) = delete;
   PaymentsDataManager& operator=(const PaymentsDataManager&) = delete;
@@ -184,7 +184,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   std::u16string GetApplicableBenefitDescriptionForCardAndOrigin(
       const CreditCard& credit_card,
       const url::Origin& origin,
-      const AutofillOptimizationGuide* optimization_guide) const;
+      const AutofillOptimizationGuideDecider* optimization_guide) const;
 
   // Returns just LOCAL_CARD cards.
   virtual std::vector<const CreditCard*> GetLocalCreditCards() const;
@@ -651,11 +651,11 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // The image fetcher to fetch customized images for Autofill data.
   raw_ptr<AutofillImageFetcherBase> image_fetcher_ = nullptr;
 
-  // Pointer to AutofillOptimizationGuide, used for allowlists and blocklists
-  // checks.
-  // Note: AutofillOptimizationGuide is a KeyedService associated with
-  // Profiles, so only one instance exists per profile.
-  raw_ptr<AutofillOptimizationGuide> autofill_optimization_guide_ = nullptr;
+  // Pointer to AutofillOptimizationGuideDecider, used for allowlists and
+  // blocklists checks. Note: AutofillOptimizationGuideDecider is a KeyedService
+  // associated with Profiles, so only one instance exists per profile.
+  raw_ptr<AutofillOptimizationGuideDecider>
+      autofill_optimization_guide_decider_ = nullptr;
 
  private:
   // Check if credit card benefits sync flag is enabled.

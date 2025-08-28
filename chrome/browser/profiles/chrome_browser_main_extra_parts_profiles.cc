@@ -26,7 +26,7 @@
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/autofill_image_fetcher_factory.h"
 #include "chrome/browser/autofill/autofill_offer_manager_factory.h"
-#include "chrome/browser/autofill/autofill_optimization_guide_factory.h"
+#include "chrome/browser/autofill/autofill_optimization_guide_decider_factory.h"
 #include "chrome/browser/autofill/iban_manager_factory.h"
 #include "chrome/browser/autofill/merchant_promo_code_manager_factory.h"
 #include "chrome/browser/autofill/ml_log_router_factory.h"
@@ -718,7 +718,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   autofill::AutofillFieldClassificationModelServiceFactory::GetInstance();
 #endif
   autofill::AutofillOfferManagerFactory::GetInstance();
-  autofill::AutofillOptimizationGuideFactory::GetInstance();
+  autofill::AutofillOptimizationGuideDeciderFactory::GetInstance();
   autofill::IbanManagerFactory::GetInstance();
   autofill::MerchantPromoCodeManagerFactory::GetInstance();
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)

@@ -36,7 +36,7 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/mock_autofill_ai_manager.h"
 #include "components/autofill/core/browser/integrators/fast_checkout/mock_fast_checkout_client.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
-#include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide.h"
+#include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/integrators/password_manager/otp_delegate.h"
 #include "components/autofill/core/browser/integrators/password_manager/password_manager_delegate.h"
 #include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
@@ -159,12 +159,13 @@ class TestAutofillClientTemplate : public T {
                : entity_data_manager_.get();
   }
 
-  MockAutofillOptimizationGuide* GetAutofillOptimizationGuide() const override {
-    return mock_autofill_optimization_guide_.get();
+  MockAutofillOptimizationGuideDecider* GetAutofillOptimizationGuideDecider()
+      const override {
+    return mock_autofill_optimization_guide_decider_.get();
   }
 
-  void ResetAutofillOptimizationGuide() {
-    mock_autofill_optimization_guide_.reset();
+  void ResetAutofillOptimizationGuideDecider() {
+    mock_autofill_optimization_guide_decider_.reset();
   }
 
   MockAutofillAiManager* GetAutofillAiManager() override {
@@ -640,9 +641,9 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<PasswordManagerDelegate> password_manager_delegate_;
   std::unique_ptr<OtpDelegate> otp_delegate_;
   TestAddressNormalizer test_address_normalizer_;
-  std::unique_ptr<::testing::NiceMock<MockAutofillOptimizationGuide>>
-      mock_autofill_optimization_guide_ =
-          std::make_unique<testing::NiceMock<MockAutofillOptimizationGuide>>();
+  std::unique_ptr<::testing::NiceMock<MockAutofillOptimizationGuideDecider>>
+      mock_autofill_optimization_guide_decider_ = std::make_unique<
+          testing::NiceMock<MockAutofillOptimizationGuideDecider>>();
   std::unique_ptr<::testing::NiceMock<MockAutofillAiManager>>
       mock_autofill_ai_delegate_ =
           std::make_unique<testing::NiceMock<MockAutofillAiManager>>(

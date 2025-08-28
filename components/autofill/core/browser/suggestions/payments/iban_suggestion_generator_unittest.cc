@@ -48,7 +48,7 @@ class IbanSuggestionGeneratorTest : public testing::Test,
         test::CreateTestIbanFormData(/*value=*/""));
     test_api(*form_structure_).SetFieldTypes({IBAN_VALUE});
 
-    ON_CALL(*autofill_client_.GetAutofillOptimizationGuide(),
+    ON_CALL(*autofill_client_.GetAutofillOptimizationGuideDecider(),
             ShouldBlockSingleFieldSuggestions)
         .WillByDefault(testing::Return(false));
   }

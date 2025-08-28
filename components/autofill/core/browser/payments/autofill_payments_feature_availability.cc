@@ -27,7 +27,7 @@ bool DidDisplayBenefitForCard(const CreditCard& card,
               .GetApplicableBenefitDescriptionForCardAndOrigin(
                   card,
                   autofill_client.GetLastCommittedPrimaryMainFrameOrigin(),
-                  autofill_client.GetAutofillOptimizationGuide())
+                  autofill_client.GetAutofillOptimizationGuideDecider())
               .empty();
 }
 

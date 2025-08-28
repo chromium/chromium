@@ -87,7 +87,7 @@ class BnplManager {
   // Determines if autofill BNPL is supported.
   // Returns true if:
   // 1. The profile is not off the record.
-  // 2. The client has an `AutofillOptimizationGuide` assigned.
+  // 2. The client has an `AutofillOptimizationGuideDecider` assigned.
   // 3. The URL being visited is within the BNPL issuer allowlist.
   virtual bool IsEligibleForBnpl() const;
 

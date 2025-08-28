@@ -56,7 +56,7 @@ namespace autofill {
 class SaveUpdateAddressProfileFlowManager;
 #endif
 
-class AutofillOptimizationGuide;
+class AutofillOptimizationGuideDecider;
 class FormFieldData;
 class LogRouter;
 enum class SuggestionType;
@@ -108,7 +108,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() final;
   AutofillCrowdsourcingManager& GetCrowdsourcingManager() final;
   VotesUploader& GetVotesUploader() final;
-  AutofillOptimizationGuide* GetAutofillOptimizationGuide() const final;
+  AutofillOptimizationGuideDecider* GetAutofillOptimizationGuideDecider()
+      const final;
   FieldClassificationModelHandler* GetAutofillFieldClassificationModelHandler()
       final;
   FieldClassificationModelHandler*

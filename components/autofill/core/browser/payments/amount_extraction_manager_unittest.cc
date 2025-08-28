@@ -12,7 +12,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
-#include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide.h"
+#include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/metrics/payments/amount_extraction_metrics.h"
 #include "components/autofill/core/browser/payments/amount_extraction_heuristic_regexes.h"
 #include "components/autofill/core/browser/payments/constants.h"
@@ -91,9 +91,10 @@ class AmountExtractionManagerTest : public Test {
 
     test_api(payments_data()).AddBnplIssuer(test::GetTestUnlinkedBnplIssuer());
 
-    ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-                autofill_manager_->client().GetAutofillOptimizationGuide()),
-            IsUrlEligibleForBnplIssuer)
+    ON_CALL(
+        *static_cast<MockAutofillOptimizationGuideDecider*>(
+            autofill_manager_->client().GetAutofillOptimizationGuideDecider()),
+        IsUrlEligibleForBnplIssuer)
         .WillByDefault(Return(true));
   }
 
@@ -263,9 +264,10 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerIfUrlNotEligible) {
   context.is_autofill_available = true;
   context.filling_product = FillingProduct::kCreditCard;
 
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_manager_->client().GetAutofillOptimizationGuide()),
-          IsUrlEligibleForBnplIssuer)
+  ON_CALL(
+      *static_cast<MockAutofillOptimizationGuideDecider*>(
+          autofill_manager_->client().GetAutofillOptimizationGuideDecider()),
+      IsUrlEligibleForBnplIssuer)
       .WillByDefault(Return(false));
 
   EXPECT_THAT(amount_extraction_manager_->GetEligibleFeatures(

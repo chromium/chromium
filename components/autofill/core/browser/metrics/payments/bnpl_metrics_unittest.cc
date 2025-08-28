@@ -325,9 +325,10 @@ TEST_F(BnplFormEventsMetricsTest, SuggestionsShownOnBnplEligibleMerchant) {
   autofill_manager().OnAskForValuesToFillTest(
       form(), form().fields().back().global_id());
 
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_manager().client().GetAutofillOptimizationGuide()),
-          IsUrlEligibleForBnplIssuer)
+  ON_CALL(
+      *static_cast<MockAutofillOptimizationGuideDecider*>(
+          autofill_manager().client().GetAutofillOptimizationGuideDecider()),
+      IsUrlEligibleForBnplIssuer)
       .WillByDefault(testing::Return(true));
 
   DidShowAutofillSuggestions(form(), /*field_index=*/form().fields().size() - 1,
@@ -350,9 +351,10 @@ TEST_F(BnplFormEventsMetricsTest, BnplSuggestionsNotShownDueToUrl) {
   autofill_manager().OnAskForValuesToFillTest(
       form(), form().fields().back().global_id());
 
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_manager().client().GetAutofillOptimizationGuide()),
-          IsUrlEligibleForBnplIssuer)
+  ON_CALL(
+      *static_cast<MockAutofillOptimizationGuideDecider*>(
+          autofill_manager().client().GetAutofillOptimizationGuideDecider()),
+      IsUrlEligibleForBnplIssuer)
       .WillByDefault(testing::Return(false));
 
   DidShowAutofillSuggestions(form(), /*field_index=*/form().fields().size() - 1,

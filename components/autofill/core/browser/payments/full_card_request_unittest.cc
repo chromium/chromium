@@ -822,11 +822,13 @@ class FullCardRequestCardBenefitsTest
     if (IsCreditCardBenefitsSourceSyncEnabled()) {
       test::SetUpCreditCardAndBenefitData(
           card_, /*issuer_id=*/"", GetBenefit(), GetBenefitSource(),
-          personal_data(), autofill_client().GetAutofillOptimizationGuide());
+          personal_data(),
+          autofill_client().GetAutofillOptimizationGuideDecider());
     } else {
       test::SetUpCreditCardAndBenefitData(
           card_, GetIssuerId(), GetBenefit(), /*benefit_source=*/"",
-          personal_data(), autofill_client().GetAutofillOptimizationGuide());
+          personal_data(),
+          autofill_client().GetAutofillOptimizationGuideDecider());
     }
   }
 

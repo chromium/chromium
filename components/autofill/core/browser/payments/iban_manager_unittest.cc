@@ -20,7 +20,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
-#include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide.h"
+#include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/payments/iban_manager_test_api.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -82,7 +82,7 @@ class IbanManagerTest : public testing::Test,
     test_api(*form_structure_).SetFieldTypes({IBAN_VALUE});
     autofill_field_ = form_structure_->field(0);
 
-    ON_CALL(*autofill_client_.GetAutofillOptimizationGuide(),
+    ON_CALL(*autofill_client_.GetAutofillOptimizationGuideDecider(),
             ShouldBlockSingleFieldSuggestions)
         .WillByDefault(testing::Return(false));
   }
@@ -512,7 +512,7 @@ TEST_P(IbanManagerTest, DoesNotShowIbansForBlockedWebsite) {
   // the website is blocked.
   MockSuggestionsReturnedCallback mock_callback;
   EXPECT_CALL(mock_callback, Run).Times(0);
-  ON_CALL(*autofill_client_.GetAutofillOptimizationGuide(),
+  ON_CALL(*autofill_client_.GetAutofillOptimizationGuideDecider(),
           ShouldBlockSingleFieldSuggestions)
       .WillByDefault(testing::Return(true));
 
@@ -523,14 +523,14 @@ TEST_P(IbanManagerTest, DoesNotShowIbansForBlockedWebsite) {
 }
 
 // Test that suggestions are returned on platforms that don't have an
-// AutofillOptimizationGuide. Having no AutofillOptimizationGuide means that
-// suggestions cannot and will not be blocked.
+// AutofillOptimizationGuideDecider. Having no AutofillOptimizationGuideDecider
+// means that suggestions cannot and will not be blocked.
 TEST_P(IbanManagerTest, ShowsIbanSuggestions_OptimizationGuideNotPresent) {
   Suggestion iban_suggestion_0 =
       GetSuggestionForIban(SetUpLocalIban(test::kIbanValue, kNickname_0));
 
-  // Delete the AutofillOptimizationGuide.
-  autofill_client_.ResetAutofillOptimizationGuide();
+  // Delete the AutofillOptimizationGuideDecider.
+  autofill_client_.ResetAutofillOptimizationGuideDecider();
 
   // Setting up mock to verify that the handler is returned a list of
   // IBAN-based suggestions.
@@ -595,7 +595,7 @@ TEST_P(IbanManagerTest, Metrics_Suggestions_Blocked) {
   // the website is blocked.
   MockSuggestionsReturnedCallback mock_callback;
   EXPECT_CALL(mock_callback, Run).Times(0);
-  ON_CALL(*autofill_client_.GetAutofillOptimizationGuide(),
+  ON_CALL(*autofill_client_.GetAutofillOptimizationGuideDecider(),
           ShouldBlockSingleFieldSuggestions)
       .WillByDefault(testing::Return(true));
   // Simulate request for suggestions.
@@ -614,8 +614,8 @@ TEST_P(IbanManagerTest, Metrics_Suggestions_Blocked) {
 TEST_P(IbanManagerTest, Metrics_Suggestions_BlocklistNotAccessible) {
   base::HistogramTester histogram_tester;
   SetUpLocalIban(test::kIbanValue, kNickname_0);
-  // Delete the AutofillOptimizationGuide.
-  autofill_client_.ResetAutofillOptimizationGuide();
+  // Delete the AutofillOptimizationGuideDecider.
+  autofill_client_.ResetAutofillOptimizationGuideDecider();
 
   // Simulate request for suggestions.
   // TODO: handle return value.

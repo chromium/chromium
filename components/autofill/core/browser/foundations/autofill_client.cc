@@ -96,8 +96,8 @@ const ValuablesDataManager* AutofillClient::GetValuablesDataManager() const {
   return const_cast<AutofillClient*>(this)->GetValuablesDataManager();
 }
 
-AutofillOptimizationGuide* AutofillClient::GetAutofillOptimizationGuide()
-    const {
+AutofillOptimizationGuideDecider*
+AutofillClient::GetAutofillOptimizationGuideDecider() const {
   return nullptr;
 }
 

@@ -87,7 +87,7 @@ class AutofillAblationStudy;
 class AutofillComposeDelegate;
 class AutofillCrowdsourcingManager;
 class AutofillDriverFactory;
-class AutofillOptimizationGuide;
+class AutofillOptimizationGuideDecider;
 #if BUILDFLAG(IS_ANDROID)
 class AutofillSnackbarControllerImpl;
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -307,10 +307,12 @@ class AutofillClient {
   virtual EntityDataManager* GetEntityDataManager() = 0;
   const EntityDataManager* GetEntityDataManager() const;
 
-  // Gets the AutofillOptimizationGuide instance associated with the client.
-  // This function can return nullptr if we are on an unsupported platform, or
-  // if the AutofillOptimizationGuide's dependencies are not present.
-  virtual AutofillOptimizationGuide* GetAutofillOptimizationGuide() const;
+  // Gets the AutofillOptimizationGuideDecider instance associated with the
+  // client. This function can return nullptr if we are on an unsupported
+  // platform, or if the AutofillOptimizationGuideDecider's dependencies are not
+  // present.
+  virtual AutofillOptimizationGuideDecider*
+  GetAutofillOptimizationGuideDecider() const;
 
   // Gets the FieldClassificationModelHandler instance for autofill machine
   // learning predictions associated with the client.

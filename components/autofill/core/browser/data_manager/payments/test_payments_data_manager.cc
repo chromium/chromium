@@ -21,12 +21,12 @@ TestPaymentsDataManager::TestPaymentsDataManager(const std::string& app_locale)
                           /*identity_manager=*/nullptr,
                           /*variations_country_code=*/GeoIpCountryCode("US"),
                           app_locale,
-                          /*autofill_optimization_guide=*/nullptr) {
+                          /*autofill_optimization_guide_decider=*/nullptr) {
   is_payments_data_loaded_ = true;
   owned_image_fetcher_ = std::make_unique<TestAutofillImageFetcher>();
   image_fetcher_ = owned_image_fetcher_.get();
-  autofill_optimization_guide_ =
-      std::make_unique<testing::NiceMock<MockAutofillOptimizationGuide>>();
+  autofill_optimization_guide_decider_ = std::make_unique<
+      testing::NiceMock<MockAutofillOptimizationGuideDecider>>();
 }
 
 TestPaymentsDataManager::~TestPaymentsDataManager() {

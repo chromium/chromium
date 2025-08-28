@@ -16,7 +16,7 @@ namespace base {
 class Time;
 }
 namespace autofill {
-class AutofillOptimizationGuide;
+class AutofillOptimizationGuideDecider;
 }
 
 namespace autofill {
@@ -87,7 +87,7 @@ class AutofillAblationStudy {
   AblationGroup GetAblationGroup(
       const GURL& url,
       FormTypeForAblationStudy form_type,
-      AutofillOptimizationGuide* autofill_optimization_guide) const;
+      AutofillOptimizationGuideDecider* autofill_optimization_guide) const;
 
  private:
   AblationGroup GetAblationGroupImpl(const GURL& url,

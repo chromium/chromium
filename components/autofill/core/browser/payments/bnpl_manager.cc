@@ -23,7 +23,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
-#include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide.h"
+#include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/payments/bnpl_strategy.h"
@@ -648,8 +648,8 @@ void BnplManager::OnBnplPaymentInstrumentUpdated(
 }
 
 std::vector<BnplIssuerContext> BnplManager::GetSortedBnplIssuerContext() {
-  AutofillOptimizationGuide* autofill_optimization_guide =
-      browser_autofill_manager_->client().GetAutofillOptimizationGuide();
+  AutofillOptimizationGuideDecider* autofill_optimization_guide =
+      browser_autofill_manager_->client().GetAutofillOptimizationGuideDecider();
   const GURL& merchant_url = browser_autofill_manager_->client()
                                  .GetLastCommittedPrimaryMainFrameOrigin()
                                  .GetURL();
@@ -724,9 +724,9 @@ bool BnplManager::IsEligibleForBnpl() const {
     return false;
   }
 
-  AutofillOptimizationGuide* autofill_optimization_guide =
-      browser_autofill_manager_->client().GetAutofillOptimizationGuide();
-  if (!autofill_optimization_guide) {
+  AutofillOptimizationGuideDecider* autofill_optimization_guide_decider =
+      browser_autofill_manager_->client().GetAutofillOptimizationGuideDecider();
+  if (!autofill_optimization_guide_decider) {
     return false;
   }
 
@@ -735,8 +735,9 @@ bool BnplManager::IsEligibleForBnpl() const {
 
   return std::ranges::any_of(
       payments_autofill_client().GetPaymentsDataManager().GetBnplIssuers(),
-      [&autofill_optimization_guide, &url](const BnplIssuer& bnpl_issuer) {
-        return autofill_optimization_guide->IsUrlEligibleForBnplIssuer(
+      [&autofill_optimization_guide_decider,
+       &url](const BnplIssuer& bnpl_issuer) {
+        return autofill_optimization_guide_decider->IsUrlEligibleForBnplIssuer(
             bnpl_issuer.issuer_id(), url);
       });
 }

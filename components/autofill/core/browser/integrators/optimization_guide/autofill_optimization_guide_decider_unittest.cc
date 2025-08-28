@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide.h"
+#include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
 
 #include <algorithm>
 #include <memory>
@@ -52,15 +52,15 @@ using ::testing::UnorderedElementsAre;
 
 }  // namespace
 
-class AutofillOptimizationGuideTest : public testing::Test {
+class AutofillOptimizationGuideDeciderTest : public testing::Test {
  public:
-  AutofillOptimizationGuideTest()
+  AutofillOptimizationGuideDeciderTest()
       : pref_service_(test::PrefServiceForTesting()),
         autofill_optimization_guide_(&decider()) {
     payments_data_manager_.SetPrefService(pref_service_.get());
     payments_data_manager_.SetSyncServiceForTest(&sync_service_);
     test_api(payments_data_manager_)
-        .SetAutofillOptimizationGuide(&autofill_optimization_guide_);
+        .SetAutofillOptimizationGuideDecider(&autofill_optimization_guide_);
   }
 
   CreditCard GetVcnEnrolledCard(
@@ -94,7 +94,9 @@ class AutofillOptimizationGuideTest : public testing::Test {
   optimization_guide::MockOptimizationGuideDecider& decider() {
     return decider_;
   }
-  AutofillOptimizationGuide& guide() { return autofill_optimization_guide_; }
+  AutofillOptimizationGuideDecider& guide() {
+    return autofill_optimization_guide_;
+  }
   TestPaymentsDataManager& payments_data_manager() {
     return payments_data_manager_;
   }
@@ -106,17 +108,19 @@ class AutofillOptimizationGuideTest : public testing::Test {
   syncer::TestSyncService sync_service_;
   optimization_guide::MockOptimizationGuideDecider decider_;
   TestPaymentsDataManager payments_data_manager_;
-  AutofillOptimizationGuide autofill_optimization_guide_;
+  AutofillOptimizationGuideDecider autofill_optimization_guide_;
 };
 
-TEST_F(AutofillOptimizationGuideTest, EnsureIntegratorInitializedCorrectly) {
+TEST_F(AutofillOptimizationGuideDeciderTest,
+       EnsureIntegratorInitializedCorrectly) {
   EXPECT_TRUE(guide().GetOptimizationGuideKeyedServiceForTesting() ==
               &decider());
 }
 
 // Test that the `IBAN_AUTOFIL L_BLOCKED` optimization type is registered when
 // we have seen an IBAN form.
-TEST_F(AutofillOptimizationGuideTest, IbanFieldFound_IbanAutofillBlocked) {
+TEST_F(AutofillOptimizationGuideDeciderTest,
+       IbanFieldFound_IbanAutofillBlocked) {
   FormStructure form_structure{CreateTestIbanFormData()};
   test_api(form_structure).SetFieldTypes({IBAN_VALUE}, {IBAN_VALUE});
 
@@ -130,7 +134,8 @@ TEST_F(AutofillOptimizationGuideTest, IbanFieldFound_IbanAutofillBlocked) {
 // Test that the corresponding optimization types are registered in the VCN
 // merchant opt-out case when a credit card form is seen, and VCNs that have an
 // associated optimization guide blocklist are present.
-TEST_F(AutofillOptimizationGuideTest, CreditCardFormFound_VcnMerchantOptOut) {
+TEST_F(AutofillOptimizationGuideDeciderTest,
+       CreditCardFormFound_VcnMerchantOptOut) {
   payments_data_manager().AddServerCreditCard(GetVcnEnrolledCard());
   payments_data_manager().AddServerCreditCard(
       GetVcnEnrolledCard(kDiscoverCard));
@@ -153,7 +158,7 @@ TEST_F(AutofillOptimizationGuideTest, CreditCardFormFound_VcnMerchantOptOut) {
 
 // Test that the `VCN_MERCHANT_OPT_OUT_VISA` optimization type is not registered
 // when we have seen a credit card form, but the network is not Visa.
-TEST_F(AutofillOptimizationGuideTest,
+TEST_F(AutofillOptimizationGuideDeciderTest,
        CreditCardFormFound_VcnMerchantOptOut_NotVisaNetwork) {
   payments_data_manager().AddServerCreditCard(
       GetVcnEnrolledCard(/*network=*/kAmericanExpressCard));
@@ -172,7 +177,7 @@ TEST_F(AutofillOptimizationGuideTest,
 // Test that the `VCN_MERCHANT_OPT_OUT_VISA` optimization type is not registered
 // when we have seen a credit card form, but the virtual card is an issuer-level
 // enrollment
-TEST_F(AutofillOptimizationGuideTest,
+TEST_F(AutofillOptimizationGuideDeciderTest,
        CreditCardFormFound_VcnMerchantOptOut_IssuerEnrollment) {
   payments_data_manager().AddServerCreditCard(GetVcnEnrolledCard(
       /*network=*/kVisaCard,
@@ -193,7 +198,7 @@ TEST_F(AutofillOptimizationGuideTest,
 // Test that the `VCN_MERCHANT_OPT_OUT_VISA` optimization type is not registered
 // when we have seen a credit card form, but we do not have a virtual card on
 // the account.
-TEST_F(AutofillOptimizationGuideTest,
+TEST_F(AutofillOptimizationGuideDeciderTest,
        CreditCardFormFound_VcnMerchantOptOut_NotEnrolledInVirtualCard) {
   payments_data_manager().AddServerCreditCard(test::GetMaskedServerCard());
 
@@ -210,7 +215,8 @@ TEST_F(AutofillOptimizationGuideTest,
 
 // Test that if the field type does not correlate to any optimization type we
 // have, that no optimization type is registered.
-TEST_F(AutofillOptimizationGuideTest, OptimizationTypeToRegisterNotFound) {
+TEST_F(AutofillOptimizationGuideDeciderTest,
+       OptimizationTypeToRegisterNotFound) {
   AutofillField field;
   FormData form_data;
   form_data.set_fields({field});
@@ -226,7 +232,7 @@ TEST_F(AutofillOptimizationGuideTest, OptimizationTypeToRegisterNotFound) {
 // Test that if the form denotes that we need to register multiple optimization
 // types, all of the optimization types that we need to register will be
 // registered.
-TEST_F(AutofillOptimizationGuideTest,
+TEST_F(AutofillOptimizationGuideDeciderTest,
        FormWithMultipleOptimizationTypesToRegisterFound) {
   FormData form_data = CreateTestCreditCardFormData(/*is_https=*/true,
                                                     /*use_month_type=*/false);
@@ -251,7 +257,7 @@ TEST_F(AutofillOptimizationGuideTest,
 // suggestions for an IBAN field but the OptimizationGuideDecider denotes that
 // displaying the suggestion is not allowed for the `IBAN_AUTOFILL_BLOCKED`
 // optimization type.
-TEST_F(AutofillOptimizationGuideTest,
+TEST_F(AutofillOptimizationGuideDeciderTest,
        ShouldBlockSingleFieldSuggestions_IbanAutofillBlocked) {
   FormStructure form_structure{CreateTestIbanFormData()};
   test_api(form_structure).SetFieldTypes({IBAN_VALUE}, {IBAN_VALUE});
@@ -271,7 +277,7 @@ TEST_F(AutofillOptimizationGuideTest,
 // display suggestions for an IBAN field and OptimizationGuideDecider denotes
 // that displaying the suggestion is allowed for the `IBAN_AUTOFILL_BLOCKED`
 // use-case.
-TEST_F(AutofillOptimizationGuideTest,
+TEST_F(AutofillOptimizationGuideDeciderTest,
        ShouldNotBlockSingleFieldSuggestions_IbanAutofillBlocked) {
   FormStructure form_structure{CreateTestIbanFormData()};
   test_api(form_structure).SetFieldTypes({IBAN_VALUE}, {IBAN_VALUE});
@@ -290,7 +296,7 @@ TEST_F(AutofillOptimizationGuideTest,
 // Test that single field suggestions are not blocked for the
 // `IBAN_AUTOFILL_BLOCKED` use-case when the field is not an IBAN field.
 TEST_F(
-    AutofillOptimizationGuideTest,
+    AutofillOptimizationGuideDeciderTest,
     ShouldNotBlockSingleFieldSuggestions_IbanAutofillBlocked_FieldTypeForBlockingNotFound) {
   FormStructure form_structure{CreateTestIbanFormData()};
   GURL url("https://example.com/");
@@ -307,7 +313,7 @@ TEST_F(
 
 // Test that blocking a virtual card suggestion works correctly in the VCN
 // merchant opt-out use-case for Visa.
-TEST_F(AutofillOptimizationGuideTest,
+TEST_F(AutofillOptimizationGuideDeciderTest,
        ShouldBlockFormFieldSuggestion_VcnMerchantOptOutVisa) {
   GURL url("https://example.com/");
   CreditCard card = GetVcnEnrolledCard();
@@ -325,7 +331,7 @@ TEST_F(AutofillOptimizationGuideTest,
 
 // Test that blocking a virtual card suggestion works correctly in the VCN
 // merchant opt-out use-case for Discover.
-TEST_F(AutofillOptimizationGuideTest,
+TEST_F(AutofillOptimizationGuideDeciderTest,
        ShouldBlockFormFieldSuggestion_VcnMerchantOptOutDiscover) {
   GURL url("https://example.com/");
   CreditCard card = GetVcnEnrolledCard(kDiscoverCard);
@@ -344,7 +350,7 @@ TEST_F(AutofillOptimizationGuideTest,
 
 // Test that blocking a virtual card suggestion works correctly in the VCN
 // merchant opt-out use-case for Mastercard.
-TEST_F(AutofillOptimizationGuideTest,
+TEST_F(AutofillOptimizationGuideDeciderTest,
        ShouldBlockFormFieldSuggestion_VcnMerchantOptOutMastercard) {
   GURL url("https://example.com/");
   CreditCard card = GetVcnEnrolledCard(kMasterCard);
@@ -363,7 +369,7 @@ TEST_F(AutofillOptimizationGuideTest,
 
 // Test that if the URL is not blocklisted, we do not block a virtual card
 // suggestion in the VCN merchant opt-out use-case.
-TEST_F(AutofillOptimizationGuideTest,
+TEST_F(AutofillOptimizationGuideDeciderTest,
        ShouldNotBlockFormFieldSuggestion_VcnMerchantOptOut_UrlNotBlocked) {
   GURL url("https://example.com/");
   CreditCard card = GetVcnEnrolledCard();
@@ -381,7 +387,7 @@ TEST_F(AutofillOptimizationGuideTest,
 
 // Test that we do not block virtual card suggestions in the VCN merchant
 // opt-out use-case if the card is an issuer-level enrollment.
-TEST_F(AutofillOptimizationGuideTest,
+TEST_F(AutofillOptimizationGuideDeciderTest,
        ShouldNotBlockFormFieldSuggestion_VcnMerchantOptOut_IssuerEnrollment) {
   GURL url("https://example.com/");
   CreditCard card = GetVcnEnrolledCard(
@@ -403,7 +409,7 @@ TEST_F(AutofillOptimizationGuideTest,
 // VCN merchant opt-out use-case if the network does not have a VCN merchant
 // opt-out blocklist.
 TEST_F(
-    AutofillOptimizationGuideTest,
+    AutofillOptimizationGuideDeciderTest,
     ShouldNotBlockFormFieldSuggestion_VcnMerchantOptOut_NetworkDoesNotHaveBlocklist) {
   GURL url("https://example.com/");
   CreditCard card = GetVcnEnrolledCard(/*network=*/kAmericanExpressCard);
@@ -420,7 +426,7 @@ TEST_F(
 }
 
 // Test that we block card flat rate benefits suggestions on blocked URLs.
-TEST_F(AutofillOptimizationGuideTest,
+TEST_F(AutofillOptimizationGuideDeciderTest,
        ShouldBlockFlatRateBenefitSuggestionLabelsForUrl_BlockedUrl) {
   GURL url("https://example.com/");
 
@@ -432,7 +438,7 @@ TEST_F(AutofillOptimizationGuideTest,
 
 // Test that we do not block card flat rate benefits suggestions on unblocked
 // URLs.
-TEST_F(AutofillOptimizationGuideTest,
+TEST_F(AutofillOptimizationGuideDeciderTest,
        ShouldBlockFlatRateBenefitSuggestionLabelsForUrl_UnblockedUrl) {
   GURL url("https://example.com/");
 
@@ -444,7 +450,7 @@ TEST_F(AutofillOptimizationGuideTest,
 
 // Test that we do not block benefits suggestions when a `kUnknown` decision is
 // returned.
-TEST_F(AutofillOptimizationGuideTest,
+TEST_F(AutofillOptimizationGuideDeciderTest,
        ShouldBlockFlatRateBenefitSuggestionLabelsForUrl_UnknownDecision) {
   GURL url("https://example.com/");
   CreditCard card = GetVcnEnrolledCard(
@@ -460,7 +466,7 @@ TEST_F(AutofillOptimizationGuideTest,
 
 // Test that the Amex category-benefit optimization types are registered when we
 // have seen a credit card form and the user has an Amex card.
-TEST_F(AutofillOptimizationGuideTest,
+TEST_F(AutofillOptimizationGuideDeciderTest,
        CreditCardFormFound_AmexCategoryBenefits) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -494,7 +500,7 @@ TEST_F(AutofillOptimizationGuideTest,
 // when we have seen a credit card form and the user has a card with a flat rate
 // benefit.
 TEST_F(
-    AutofillOptimizationGuideTest,
+    AutofillOptimizationGuideDeciderTest,
     CreditCardFormFound_FlatRateBenefitBlockList_WithFlatRateBenefit_FeatureEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -530,7 +536,7 @@ TEST_F(
 // registered when we have seen a credit card form but the user has no card
 // with a flat rate benefit.
 TEST_F(
-    AutofillOptimizationGuideTest,
+    AutofillOptimizationGuideDeciderTest,
     CreditCardFormFound_FlatRateBenefitBlockList_WithoutFlatRateBenefit_FeatureEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -557,7 +563,7 @@ TEST_F(
 // when we have seen a credit card form and the user has a card with flat rate
 // benefit, but the flat rate benefit blocklist flag is disabled.
 TEST_F(
-    AutofillOptimizationGuideTest,
+    AutofillOptimizationGuideDeciderTest,
     CreditCardFormFound_FlatRateBenefitBlockList_WithFlatRateBenefit_FeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -589,7 +595,8 @@ TEST_F(
 
 // Test that the BMO category-benefit optimization types are registered when a
 // credit card form is present and the user has an BMO card.
-TEST_F(AutofillOptimizationGuideTest, CreditCardFormFound_BmoCategoryBenefits) {
+TEST_F(AutofillOptimizationGuideDeciderTest,
+       CreditCardFormFound_BmoCategoryBenefits) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/
@@ -631,7 +638,7 @@ TEST_F(AutofillOptimizationGuideTest, CreditCardFormFound_BmoCategoryBenefits) {
 
 // Test that the Amex category-benefit optimization types are not registered
 // when the `kAutofillEnableCardBenefitsSync` experiment is disabled.
-TEST_F(AutofillOptimizationGuideTest,
+TEST_F(AutofillOptimizationGuideDeciderTest,
        CreditCardFormFound_AmexCategoryBenefits_ExperimentDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -664,7 +671,7 @@ TEST_F(AutofillOptimizationGuideTest,
 // Test that the BMO category-benefit optimization types are not registered when
 // the `kAutofillEnableAllowlistForBmoCardCategoryBenefits` experiment is
 // disabled.
-TEST_F(AutofillOptimizationGuideTest,
+TEST_F(AutofillOptimizationGuideDeciderTest,
        CreditCardFormFound_BmoCategoryBenefits_ExperimentDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -698,7 +705,7 @@ TEST_F(AutofillOptimizationGuideTest,
 // Test the `BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM` optimization type is registered
 // when the amount extraction allowlist is enabled and there is at least one
 // Affirm BNPL issuer with `OnPaymentsDataLoaded()` call.
-TEST_F(AutofillOptimizationGuideTest,
+TEST_F(AutofillOptimizationGuideDeciderTest,
        OnPaymentsDataLoaded_BuyNowPayLaterProviderAffirm) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -722,7 +729,7 @@ TEST_F(AutofillOptimizationGuideTest,
 // Test the `BUY_NOW_PAY_LATER_ALLOWLIST_ZIP` optimization type is registered
 // when the amount extraction allowlist is enabled and there is at least one
 // Zip BNPL issuer with `OnPaymentsDataLoaded()` call.
-TEST_F(AutofillOptimizationGuideTest,
+TEST_F(AutofillOptimizationGuideDeciderTest,
        OnPaymentsDataLoaded_BuyNowPayLaterProviderZip) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -746,7 +753,7 @@ TEST_F(AutofillOptimizationGuideTest,
 // Test the `BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA` optimization type is registered
 // when the amount extraction allowlist is enabled and there is at least one
 // Klarna BNPL issuer with `OnPaymentsDataLoaded()` call.
-TEST_F(AutofillOptimizationGuideTest,
+TEST_F(AutofillOptimizationGuideDeciderTest,
        OnPaymentsDataLoaded_BuyNowPayLaterProviderKlarna) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -772,7 +779,7 @@ TEST_F(AutofillOptimizationGuideTest,
 // least one Klarna BNPL issuer with `OnPaymentsDataLoaded()` call if flag
 // `features::kAutofillEnableLoadBnplAllowlistAfterSyncing` is disabled.
 TEST_F(
-    AutofillOptimizationGuideTest,
+    AutofillOptimizationGuideDeciderTest,
     OnPaymentsDataLoaded_BuyNowPayLaterProviderKlarna_LoadAllowListAfterSyncingDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -797,7 +804,7 @@ TEST_F(
 // when the amount extraction allowlist is enabled and there is at least one
 // Affirm BNPL issuer.
 TEST_F(
-    AutofillOptimizationGuideTest,
+    AutofillOptimizationGuideDeciderTest,
     CreditCardFormFound_AmountExtractionAllowed_BuyNowPayLaterProviderAffirm) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -824,7 +831,7 @@ TEST_F(
 // Test the `BUY_NOW_PAY_LATER_ALLOWLIST_ZIP` optimization type is registered
 // when the amount extraction allowlist is enabled and there is at least one
 // Zip BNPL issuer.
-TEST_F(AutofillOptimizationGuideTest,
+TEST_F(AutofillOptimizationGuideDeciderTest,
        CreditCardFormFound_AmountExtractionAllowed_BuyNowPayLaterProviderZip) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -852,7 +859,7 @@ TEST_F(AutofillOptimizationGuideTest,
 // when the amount extraction allowlist is enabled and there is at least one
 // Klarna BNPL issuer.
 TEST_F(
-    AutofillOptimizationGuideTest,
+    AutofillOptimizationGuideDeciderTest,
     CreditCardFormFound_AmountExtractionAllowed_BuyNowPayLaterProviderKlarna) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -880,7 +887,7 @@ TEST_F(
 // `BUY_NOW_PAY_LATER_ALLOWLIST_ZIP`, and `BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA`
 // optimization types are registered when the amount extraction allowlist flag
 // is off.
-TEST_F(AutofillOptimizationGuideTest,
+TEST_F(AutofillOptimizationGuideDeciderTest,
        CreditCardFormFound_AmountExtractionAllowed_FlagOff) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -908,7 +915,7 @@ TEST_F(AutofillOptimizationGuideTest,
 // Test neither `BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM` nor
 // `BUY_NOW_PAY_LATER_ALLOWLIST_ZIP` optimization types are registered when
 // there is no BNPL issuer synced to the account.
-TEST_F(AutofillOptimizationGuideTest,
+TEST_F(AutofillOptimizationGuideDeciderTest,
        CreditCardFormFound_AmountExtractionAllowed_NoBnplIssuerFound) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -930,7 +937,7 @@ TEST_F(AutofillOptimizationGuideTest,
 
 // Test that we allow checkout amount searching for Affirm on an allowlisted
 // URL.
-TEST_F(AutofillOptimizationGuideTest,
+TEST_F(AutofillOptimizationGuideDeciderTest,
        IsUrlEligibleForBnplIssuer_AffirmUrlAllowed) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableAmountExtractionAllowlist};
@@ -950,7 +957,7 @@ TEST_F(AutofillOptimizationGuideTest,
 
 // Test that we do not allow checkout amount searching for Affirm on a
 // non-allowlisted URL.
-TEST_F(AutofillOptimizationGuideTest,
+TEST_F(AutofillOptimizationGuideDeciderTest,
        IsUrlEligibleForBnplIssuer_AffirmUrlBlocked) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableAmountExtractionAllowlist};
@@ -969,7 +976,7 @@ TEST_F(AutofillOptimizationGuideTest,
 }
 
 // Test that we allow checkout amount searching for Zip on an allowlisted URL.
-TEST_F(AutofillOptimizationGuideTest,
+TEST_F(AutofillOptimizationGuideDeciderTest,
        IsUrlEligibleForBnplIssuer_ZipUrlAllowed) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableAmountExtractionAllowlist};
@@ -989,7 +996,7 @@ TEST_F(AutofillOptimizationGuideTest,
 
 // Test that we do not allow checkout amount searching for Zip on a
 // non-allowlisted URL.
-TEST_F(AutofillOptimizationGuideTest,
+TEST_F(AutofillOptimizationGuideDeciderTest,
        IsUrlEligibleForBnplIssuer_ZipUrlBlocked) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableAmountExtractionAllowlist};
@@ -1009,7 +1016,7 @@ TEST_F(AutofillOptimizationGuideTest,
 
 // Test that we allow checkout amount searching for Klarna on an allowlisted
 // URL.
-TEST_F(AutofillOptimizationGuideTest,
+TEST_F(AutofillOptimizationGuideDeciderTest,
        IsUrlEligibleForBnplIssuer_KlarnaUrlAllowed) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableAmountExtractionAllowlist};
@@ -1029,7 +1036,7 @@ TEST_F(AutofillOptimizationGuideTest,
 
 // Test that we do not allow checkout amount searching for Klarna on a
 // non-allowlisted URL.
-TEST_F(AutofillOptimizationGuideTest,
+TEST_F(AutofillOptimizationGuideDeciderTest,
        IsUrlEligibleForBnplIssuer_KlarnaUrlBlocked) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableAmountExtractionAllowlist};
@@ -1050,7 +1057,7 @@ TEST_F(AutofillOptimizationGuideTest,
 // Test that we allow checkout with BNPL for Affirm on a non-allowlisted URL
 // when AmountExtractionTesting is enabled.
 TEST_F(
-    AutofillOptimizationGuideTest,
+    AutofillOptimizationGuideDeciderTest,
     IsUrlEligibleForBnplIssuer_AmountExtractionTestingEnabled_AffirmUrlAllowed) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableAmountExtractionTesting};
@@ -1072,7 +1079,7 @@ TEST_F(
 // Test that we allow checkout with BNPL for Zip on a non-allowlisted URL when
 // AmountExtractionTesting is enabled.
 TEST_F(
-    AutofillOptimizationGuideTest,
+    AutofillOptimizationGuideDeciderTest,
     IsUrlEligibleForBnplIssuer_AmountExtractionTestingEnabled_ZipUrlAllowed) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableAmountExtractionTesting};
@@ -1094,7 +1101,7 @@ TEST_F(
 // Test that we allow checkout with BNPL for Klarna on a non-allowlisted URL
 // when AmountExtractionTesting is enabled.
 TEST_F(
-    AutofillOptimizationGuideTest,
+    AutofillOptimizationGuideDeciderTest,
     IsUrlEligibleForBnplIssuer_AmountExtractionTestingEnabled_KlarnaUrlAllowed) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableAmountExtractionTesting};
@@ -1115,7 +1122,7 @@ TEST_F(
 
 // Test that we do not allow checkout amount searching when the amount
 // extraction allowlist is off.
-TEST_F(AutofillOptimizationGuideTest,
+TEST_F(AutofillOptimizationGuideDeciderTest,
        IsUrlEligibleForBnplIssuer_AllowlistFlagOff) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
@@ -1137,7 +1144,7 @@ TEST_F(AutofillOptimizationGuideTest,
 
 // Test that the ablation site lists are registered in case the ablation
 // experiment is enabled.
-TEST_F(AutofillOptimizationGuideTest, AutofillAblation) {
+TEST_F(AutofillOptimizationGuideDeciderTest, AutofillAblation) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableAblationStudy};
   FormData form_data = CreateTestCreditCardFormData(/*is_https=*/true,
@@ -1199,7 +1206,7 @@ struct BenefitOptimizationToBenefitCategoryTestCase {
 };
 
 class BenefitOptimizationToBenefitCategoryTest
-    : public AutofillOptimizationGuideTest,
+    : public AutofillOptimizationGuideDeciderTest,
       public testing::WithParamInterface<
           BenefitOptimizationToBenefitCategoryTestCase> {
  public:
@@ -1218,7 +1225,7 @@ class BenefitOptimizationToBenefitCategoryTest
   const CreditCard& credit_card() const { return card_; }
 
   void SetUp() override {
-    AutofillOptimizationGuideTest::SetUp();
+    AutofillOptimizationGuideDeciderTest::SetUp();
     card_ = test::GetMaskedServerCard();
     card_.set_benefit_source(GetParam().benefit_source);
     payments_data_manager().AddServerCreditCard(card_);

@@ -17,7 +17,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
-#include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide.h"
+#include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
@@ -249,8 +249,8 @@ class BnplManagerTest : public Test {
         std::make_unique<BnplManager>(static_cast<BrowserAutofillManager*>(
             &autofill_driver_->GetAutofillManager()));
 
-    ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-                autofill_client_->GetAutofillOptimizationGuide()),
+    ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+                autofill_client_->GetAutofillOptimizationGuideDecider()),
             IsUrlEligibleForBnplIssuer)
         .WillByDefault(Return(true));
   }
@@ -1290,8 +1290,8 @@ TEST_F(BnplManagerTest,
 }
 
 // Tests that `IsEligibleForBnpl()` returns false if the client does not have
-// an `AutofillOptimizationGuide` assigned.
-TEST_F(BnplManagerTest, IsEligibleForBnpl_NoAutofillOptimizationGuide) {
+// an `AutofillOptimizationGuideDecider` assigned.
+TEST_F(BnplManagerTest, IsEligibleForBnpl_NoAutofillOptimizationGuideDecider) {
   // Add one linked issuer and one unlinked issuer to payments data manager.
   SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
                         /*price_higher_bound_in_micros=*/1'000'000'000,
@@ -1300,7 +1300,7 @@ TEST_F(BnplManagerTest, IsEligibleForBnpl_NoAutofillOptimizationGuide) {
                           /*price_higher_bound_in_micros=*/2'000'000'000,
                           IssuerId::kBnplZip);
 
-  autofill_client_->ResetAutofillOptimizationGuide();
+  autofill_client_->ResetAutofillOptimizationGuideDecider();
 
   EXPECT_FALSE(bnpl_manager_->IsEligibleForBnpl());
 }
@@ -1334,8 +1334,8 @@ TEST_F(BnplManagerTest, IsEligibleForBnpl_UrlNotSupported) {
                           /*price_higher_bound_in_micros=*/2'000'000'000,
                           IssuerId::kBnplZip);
 
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_client_->GetAutofillOptimizationGuide()),
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client_->GetAutofillOptimizationGuideDecider()),
           IsUrlEligibleForBnplIssuer)
       .WillByDefault(Return(false));
 
@@ -1353,12 +1353,12 @@ TEST_F(BnplManagerTest, IsEligibleForBnpl_UrlSupportedByOneIssuer) {
                           /*price_higher_bound_in_micros=*/2'000'000'000,
                           IssuerId::kBnplZip);
 
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_client_->GetAutofillOptimizationGuide()),
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client_->GetAutofillOptimizationGuideDecider()),
           IsUrlEligibleForBnplIssuer(IssuerId::kBnplAffirm, _))
       .WillByDefault(Return(false));
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_client_->GetAutofillOptimizationGuide()),
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client_->GetAutofillOptimizationGuideDecider()),
           IsUrlEligibleForBnplIssuer(IssuerId::kBnplZip, _))
       .WillByDefault(Return(true));
 
@@ -1861,13 +1861,13 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_OrdersEligibleFirst) {
                         /*instrument_id=*/4);
 
   // Mock merchant eligibility for issuers based on issuer id.
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_client_->GetAutofillOptimizationGuide()),
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client_->GetAutofillOptimizationGuideDecider()),
           IsUrlEligibleForBnplIssuer(IssuerId::kBnplAfterpay, _))
       .WillByDefault(Return(false));
   ON_CALL(
-      *static_cast<MockAutofillOptimizationGuide*>(
-          autofill_client_->GetAutofillOptimizationGuide()),
+      *static_cast<MockAutofillOptimizationGuideDecider*>(
+          autofill_client_->GetAutofillOptimizationGuideDecider()),
       IsUrlEligibleForBnplIssuer(
           Matcher<IssuerId>(AnyOf(IssuerId::kBnplAffirm, IssuerId::kBnplZip)),
           _))
@@ -1923,15 +1923,15 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_OrdersUneligibleLast) {
                           IssuerId::kBnplAffirm);
 
   // Mock merchant eligibility for issuers based on issuer id.
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_client_->GetAutofillOptimizationGuide()),
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client_->GetAutofillOptimizationGuideDecider()),
           IsUrlEligibleForBnplIssuer(
               Matcher<IssuerId>(
                   AnyOf(IssuerId::kBnplAffirm, IssuerId::kBnplAfterpay)),
               _))
       .WillByDefault(Return(false));
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_client_->GetAutofillOptimizationGuide()),
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client_->GetAutofillOptimizationGuideDecider()),
           IsUrlEligibleForBnplIssuer(IssuerId::kBnplZip, _))
       .WillByDefault(Return(true));
 
@@ -1964,8 +1964,8 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_IsEligible) {
   SetUpUnlinkedBnplIssuer(
       /*price_lower_bound_in_micros=*/10'000'000,
       /*price_higher_bound_in_micros=*/1'000'000'000, IssuerId::kBnplAfterpay);
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_client_->GetAutofillOptimizationGuide()),
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client_->GetAutofillOptimizationGuideDecider()),
           IsUrlEligibleForBnplIssuer)
       .WillByDefault(Return(true));
 
@@ -1989,8 +1989,8 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_NotSupportedMerchant) {
       /*price_lower_bound_in_micros=*/10'000'000,
       /*price_higher_bound_in_micros=*/1'000'000'000, IssuerId::kBnplAfterpay);
 
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_client_->GetAutofillOptimizationGuide()),
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client_->GetAutofillOptimizationGuideDecider()),
           IsUrlEligibleForBnplIssuer)
       .WillByDefault(Return(false));
 
@@ -2015,8 +2015,8 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_CheckoutAmountTooHigh) {
       /*price_lower_bound_in_micros=*/10'000'000,
       /*price_higher_bound_in_micros=*/1'000'000'000, IssuerId::kBnplAfterpay);
 
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_client_->GetAutofillOptimizationGuide()),
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client_->GetAutofillOptimizationGuideDecider()),
           IsUrlEligibleForBnplIssuer)
       .WillByDefault(Return(true));
 
@@ -2041,8 +2041,8 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_CheckoutAmountTooLow) {
       /*price_lower_bound_in_micros=*/1'002'000'000,
       /*price_higher_bound_in_micros=*/2'000'000'000, IssuerId::kBnplAfterpay);
 
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_client_->GetAutofillOptimizationGuide()),
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client_->GetAutofillOptimizationGuideDecider()),
           IsUrlEligibleForBnplIssuer)
       .WillByDefault(Return(true));
 

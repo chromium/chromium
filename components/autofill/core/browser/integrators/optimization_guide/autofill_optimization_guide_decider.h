@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_OPTIMIZATION_GUIDE_AUTOFILL_OPTIMIZATION_GUIDE_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_OPTIMIZATION_GUIDE_AUTOFILL_OPTIMIZATION_GUIDE_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_OPTIMIZATION_GUIDE_AUTOFILL_OPTIMIZATION_GUIDE_DECIDER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_OPTIMIZATION_GUIDE_AUTOFILL_OPTIMIZATION_GUIDE_DECIDER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
@@ -27,14 +27,15 @@ class PaymentsDataManager;
 // Class to enable and disable features on a per-origin basis using
 // optimization_guide::OptimizationGuideDecider.
 // One instance per profile.
-class AutofillOptimizationGuide : public KeyedService {
+class AutofillOptimizationGuideDecider : public KeyedService {
  public:
-  explicit AutofillOptimizationGuide(
+  explicit AutofillOptimizationGuideDecider(
       optimization_guide::OptimizationGuideDecider* decider);
-  AutofillOptimizationGuide(const AutofillOptimizationGuide&) = delete;
-  AutofillOptimizationGuide& operator=(const AutofillOptimizationGuide&) =
+  AutofillOptimizationGuideDecider(const AutofillOptimizationGuideDecider&) =
       delete;
-  ~AutofillOptimizationGuide() override;
+  AutofillOptimizationGuideDecider& operator=(
+      const AutofillOptimizationGuideDecider&) = delete;
+  ~AutofillOptimizationGuideDecider() override;
 
   // Registers the necessary optimization guide deciders based on the payments
   // data cached in `payments_data_manager`. Runs after every payments data
@@ -105,4 +106,4 @@ class AutofillOptimizationGuide : public KeyedService {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_OPTIMIZATION_GUIDE_AUTOFILL_OPTIMIZATION_GUIDE_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_OPTIMIZATION_GUIDE_AUTOFILL_OPTIMIZATION_GUIDE_DECIDER_H_

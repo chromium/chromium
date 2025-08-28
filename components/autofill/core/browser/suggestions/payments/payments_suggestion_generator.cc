@@ -37,7 +37,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
-#include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide.h"
+#include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
@@ -337,7 +337,7 @@ std::optional<Suggestion::Text> GetCreditCardBenefitSuggestionLabel(
           .payments_data_manager()
           .GetApplicableBenefitDescriptionForCardAndOrigin(
               credit_card, client.GetLastCommittedPrimaryMainFrameOrigin(),
-              client.GetAutofillOptimizationGuide());
+              client.GetAutofillOptimizationGuideDecider());
   if (benefit_description.empty()) {
     return std::nullopt;
   }
@@ -1631,7 +1631,7 @@ bool IsCreditCardUploadEnabled(const AutofillClient& client) {
 bool IsCardSuggestionAcceptable(const CreditCard& card,
                                 const AutofillClient& client) {
   if (card.record_type() == CreditCard::RecordType::kVirtualCard) {
-    auto* optimization_guide = client.GetAutofillOptimizationGuide();
+    auto* optimization_guide = client.GetAutofillOptimizationGuideDecider();
     return !(
         optimization_guide &&
         optimization_guide->ShouldBlockFormFieldSuggestion(

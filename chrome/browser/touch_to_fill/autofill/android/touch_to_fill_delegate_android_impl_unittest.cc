@@ -859,8 +859,8 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
       .payments_data_manager()
       .AddCreditCard(credit_card);
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
-  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-              autofill_client_.GetAutofillOptimizationGuide()),
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client_.GetAutofillOptimizationGuideDecider()),
           ShouldBlockFormFieldSuggestion)
       .WillByDefault(testing::Return(false));
 
@@ -1250,8 +1250,8 @@ class TouchToFillDelegateAndroidImplVcnGrayOutForMerchantOptOutUnitTest
     : public TouchToFillDelegateAndroidImplCreditCardUnitTest {
  public:
   TouchToFillDelegateAndroidImplVcnGrayOutForMerchantOptOutUnitTest() {
-    ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
-                autofill_client_.GetAutofillOptimizationGuide()),
+    ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+                autofill_client_.GetAutofillOptimizationGuideDecider()),
             ShouldBlockFormFieldSuggestion)
         .WillByDefault(testing::Return(true));
   }
