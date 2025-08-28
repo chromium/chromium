@@ -465,8 +465,28 @@ void ExecutionEngine::PromptToSelectCredential(
     const base::flat_map<GURL, gfx::Image>& favicons,
     ToolDelegate::CredentialSelectedCallback callback) {
   CHECK(!credentials.empty());
-  // TODO(crbug.com/427817882): Wire this up to the WebClient.
-  std::move(callback).Run(credentials.front());
+
+  // In the same task, another login attempt is made before the previous one
+  // responds. Cancel the previous one.
+  if (credential_selected_callback_) {
+    // TODO(crbug.com/427817882): Explicit error reason (kNewLonginAttempt).
+    std::move(credential_selected_callback_)
+        .Run(/*selected_credential=*/webui::mojom::
+                 SelectCredentialDialogResponse::New());
+  }
+  credential_selected_callback_ = std::move(callback);
+
+  // TODO(crbug.com/438710031): Surface the favicons to the WebClient.
+
+  ActorKeyedService::Get(profile_)
+      ->NotifyRequestToShowCredentialSelectionDialog(task_->id(), credentials);
+}
+
+void ExecutionEngine::OnCredentialSelected(
+    webui::mojom::SelectCredentialDialogResponsePtr response) {
+  if (credential_selected_callback_) {
+    std::move(credential_selected_callback_).Run(std::move(response));
+  }
 }
 
 const ToolRequest& ExecutionEngine::GetNextAction() const {

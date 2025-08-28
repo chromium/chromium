@@ -14,6 +14,7 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
+#include "chrome/common/actor_webui.mojom-forward.h"
 #include "components/tabs/public/tab_interface.h"
 
 class GURL;
@@ -52,12 +53,13 @@ class AttemptLoginTool : public Tool {
                         const favicon_base::FaviconImageResult& result);
   void OnAllFaviconsFetched();
   void OnCredentialSelected(
-      const std::optional<actor_login::Credential>& credential);
+      webui::mojom::SelectCredentialDialogResponsePtr response);
   void OnAttemptLogin(actor_login::LoginStatusResultOrError login_status);
 
   actor_login::ActorLoginService& GetActorLoginService();
 
-  // Holds the credentials after they are returned from the login service.
+  // Holds the credentials after they are returned from the login service. The
+  // credentials are cleared after the login attempt is made.
   std::vector<actor_login::Credential> credentials_;
 
   // Stores the favicons for each unique `source_site_or_app` in `credentials_`.

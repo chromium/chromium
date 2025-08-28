@@ -30,6 +30,21 @@ namespace actor {
 
 namespace {
 
+webui::mojom::SelectCredentialDialogResponsePtr
+MakeSelectCredentialDialogResponse(
+    TaskId task_id,
+    std::optional<actor_login::Credential::Id> selected_credential_id,
+    std::optional<webui::mojom::SelectCredentialDialogErrorReason>
+        error_reason = std::nullopt) {
+  auto response = webui::mojom::SelectCredentialDialogResponse::New();
+  response->task_id = task_id.value();
+  if (selected_credential_id.has_value()) {
+    response->selected_credential_id = selected_credential_id->value();
+  }
+  response->error_reason = error_reason;
+  return response;
+}
+
 const SkBitmap GenerateSquareBitmap(int size, SkColor color) {
   SkBitmap bitmap;
   bitmap.allocPixels(SkImageInfo::MakeN32(size, size, kOpaque_SkAlphaType));
@@ -80,10 +95,11 @@ class ActorAttemptLoginToolTest : public ActorToolsTest {
     // Returns the first credential by default.
     ON_CALL(mock_execution_engine(), PromptToSelectCredential(_, _, _))
         .WillByDefault(
-            [](const std::vector<actor_login::Credential>& credentials,
-               const MockExecutionEngine::FaviconMap&,
-               ToolDelegate::CredentialSelectedCallback callback) {
-              std::move(callback).Run(credentials[0]);
+            [this](const std::vector<actor_login::Credential>& credentials,
+                   const MockExecutionEngine::FaviconMap&,
+                   ToolDelegate::CredentialSelectedCallback callback) {
+              std::move(callback).Run(MakeSelectCredentialDialogResponse(
+                  actor_task().id(), credentials[0].id));
             });
 
     ON_CALL(mock_execution_engine(), GetFaviconService())
@@ -159,11 +175,13 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
                        MultipleCredentialsSelectSecond) {
   ON_CALL(mock_execution_engine(), PromptToSelectCredential(_, _, _))
-      .WillByDefault([](const std::vector<actor_login::Credential>& credentials,
-                        const MockExecutionEngine::FaviconMap&,
-                        ToolDelegate::CredentialSelectedCallback callback) {
-        std::move(callback).Run(credentials[1]);
-      });
+      .WillByDefault(
+          [this](const std::vector<actor_login::Credential>& credentials,
+                 const MockExecutionEngine::FaviconMap&,
+                 ToolDelegate::CredentialSelectedCallback callback) {
+            std::move(callback).Run(MakeSelectCredentialDialogResponse(
+                actor_task().id(), credentials[1].id));
+          });
 
   const GURL url =
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");

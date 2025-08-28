@@ -13,15 +13,16 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
-#include "build/build_config.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
+#include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/tabs/public/tab_interface.h"
 #include "url/gurl.h"
 
@@ -132,6 +133,29 @@ class ActorKeyedService : public KeyedService {
 
   void NotifyTaskStateChanged(const ActorTask& task);
 
+  // Allows the subscribers to get notified when a credential selection prompt
+  // is requested.
+  using CredentialSelectedCallback = base::RepeatingCallback<void(
+      webui::mojom::SelectCredentialDialogResponsePtr)>;
+  using RequestToShowCredentialSelectionDialogSubscriberCallback =
+      base::RepeatingCallback<void(TaskId,
+                                   const std::vector<actor_login::Credential>&,
+                                   CredentialSelectedCallback)>;
+  base::CallbackListSubscription
+  AddRequestToShowCredentialSelectionDialogSubscriberCallback(
+      RequestToShowCredentialSelectionDialogSubscriberCallback callback);
+
+  // Notifies the subscribers that a credential selection prompt is requested
+  // for the given task.
+  void NotifyRequestToShowCredentialSelectionDialog(
+      TaskId task_id,
+      const std::vector<actor_login::Credential>& credentials);
+
+  // Callback for when a credential is selected.
+  void OnCredentialSelected(
+      TaskId request_task_id,
+      webui::mojom::SelectCredentialDialogResponsePtr response);
+
   // Returns the acting task for web_contents. Returns nullptr if acting task
   // does not exist.
   const ActorTask* GetActingActorTaskForWebContents(
@@ -182,6 +206,10 @@ class ActorKeyedService : public KeyedService {
 
   base::RepeatingCallbackList<void(const ActorTask&)>
       tab_state_change_callback_list_;
+
+  base::RepeatingCallbackList<
+      RequestToShowCredentialSelectionDialogSubscriberCallback::RunType>
+      request_to_show_credential_selection_dialog_callback_list_;
 
   // TODO(crbug.com/411462297): Remove
   TaskId last_created_task_id_;

@@ -65,6 +65,7 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/feedback/content/content_tracing_manager.h"
@@ -73,6 +74,7 @@
 #include "components/metrics/metrics_service.h"
 #include "components/optimization_guide/content/browser/page_content_metadata_observer.h"
 #include "components/optimization_guide/core/model_quality/model_quality_util.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/session_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -605,6 +607,13 @@ class GlicWebClientHandler
             actor_service->AddTaskStateChangedCallback(base::BindRepeating(
                 &GlicWebClientHandler::NotifyActorTaskStateChanged,
                 base::Unretained(this)));
+        request_to_show_credential_selection_dialog_subscription_ =
+            actor_service
+                ->AddRequestToShowCredentialSelectionDialogSubscriberCallback(
+                    base::BindRepeating(
+                        &GlicWebClientHandler::
+                            RequestToShowCredentialSelectionDialog,
+                        base::Unretained(this)));
       }
     }
 
@@ -1346,6 +1355,7 @@ class GlicWebClientHandler
     focus_changed_subscription_ = {};
     pinned_tabs_changed_subscription_ = {};
     pinned_tab_data_changed_subscription_ = {};
+    request_to_show_credential_selection_dialog_subscription_ = {};
     browser_attach_observation_.reset();
     glic_service_->zero_state_suggestions_manager().Reset();
   }
@@ -1436,6 +1446,32 @@ class GlicWebClientHandler
     web_client_->NotifyActorTaskStateChanged(task.id().value(), state);
   }
 
+  void RequestToShowCredentialSelectionDialog(
+      actor::TaskId task_id,
+      const std::vector<actor_login::Credential>& credentials,
+      actor::ActorKeyedService::CredentialSelectedCallback
+          on_credential_selected) {
+    // Note: mojom::<Type>Ptr is not copyable, meaning it can't be passed to the
+    // argument of base::RepeatingCallbackList::Notify (who makes a copy of the
+    // argument). All of the mojom::<Type>Ptr will be constructed locally before
+    // being passed into the mojom interface.
+    std::vector<actor::webui::mojom::CredentialPtr> mojo_credentials;
+    for (const auto& credential : credentials) {
+      mojo_credentials.push_back(actor::webui::mojom::Credential::New(
+          credential.id.value(), base::UTF16ToUTF8(credential.username),
+          base::UTF16ToUTF8(credential.source_site_or_app)));
+    }
+    auto dialog_request =
+        actor::webui::mojom::SelectCredentialDialogRequest::New(
+            task_id.value(),
+            // TODO(crbug.com/440147814): `show_dialog` should be based on the
+            // user granted permission duration.
+            /*show_dialog=*/true, std::move(mojo_credentials));
+
+    web_client_->RequestToShowCredentialSelectionDialog(
+        std::move(dialog_request), std::move(on_credential_selected));
+  }
+
   PrefChangeRegistrar pref_change_registrar_;
   PrefChangeRegistrar local_state_pref_change_registrar_;
   raw_ptr<Profile> profile_;
@@ -1452,6 +1488,8 @@ class GlicWebClientHandler
   base::CallbackListSubscription focused_browser_changed_subscription_;
   base::CallbackListSubscription active_browser_changed_subscription_;
   base::CallbackListSubscription actor_task_state_changed_subscription_;
+  base::CallbackListSubscription
+      request_to_show_credential_selection_dialog_subscription_;
   mojo::Receiver<glic::mojom::WebClientHandler> receiver_;
   mojo::Remote<glic::mojom::WebClient> web_client_;
   std::unique_ptr<BrowserAttachObservation> browser_attach_observation_;

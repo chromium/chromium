@@ -52,8 +52,10 @@ source_set("actor") {
     "//chrome/browser/password_manager/actor_login:service",
     "//chrome/browser/profiles",
     "//chrome/common",
+    "//chrome/common:actor_webui_mojom",
     "//components/optimization_guide/content/browser",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/password_manager/core/browser/actor_login:common",
     "//components/tabs:public",
     "//content/public/browser",
     "//ui/base/unowned_user_data",
@@ -301,10 +303,19 @@ source_set("interactive_ui_tests") {
     ":impl",
     ":test_support",
     ":tools_test_support",
+    "//chrome/browser/ui:ui_features",
+    "//content/test:browsertest_support",
     "//testing/gtest",
+    "//ui/base/interaction:test_support",
   ]
   if (enable_glic) {
-    sources = [ "tools/select_tool_interactive_ui_test.cc" ]
-    deps += [ "//chrome/browser/glic" ]
+    sources = [
+      "tools/attempt_login_tool_interactive_ui_test.cc",
+      "tools/select_tool_interactive_ui_test.cc",
+    ]
+    deps += [
+      "//chrome/browser/glic",
+      "//chrome/browser/glic/test_support",
+    ]
   }
 }

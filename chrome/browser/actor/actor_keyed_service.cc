@@ -144,6 +144,47 @@ void ActorKeyedService::NotifyTaskStateChanged(const ActorTask& task) {
   tab_state_change_callback_list_.Notify(task);
 }
 
+base::CallbackListSubscription
+ActorKeyedService::AddRequestToShowCredentialSelectionDialogSubscriberCallback(
+    RequestToShowCredentialSelectionDialogSubscriberCallback callback) {
+  return request_to_show_credential_selection_dialog_callback_list_.Add(
+      std::move(callback));
+}
+
+void ActorKeyedService::NotifyRequestToShowCredentialSelectionDialog(
+    TaskId task_id,
+    const std::vector<actor_login::Credential>& credentials) {
+  request_to_show_credential_selection_dialog_callback_list_.Notify(
+      task_id, credentials,
+      base::BindRepeating(&ActorKeyedService::OnCredentialSelected,
+                          weak_ptr_factory_.GetWeakPtr(), task_id));
+}
+
+void ActorKeyedService::OnCredentialSelected(
+    TaskId request_task_id,
+    webui::mojom::SelectCredentialDialogResponsePtr response) {
+  // TODO(crbug.com/440147814): Update the `UserGrantedPermissionDuration`
+  // if the user changes the permission.
+  TaskId response_task_id(response->task_id);
+  if (response_task_id != request_task_id) {
+    // TODO(crbug.com/441500534): We should also add error handling in
+    // glic_api_host.ts.
+    VLOG(1) << "SelectCredentialDialogResponse has a different task id "
+            << response_task_id << " than requested " << request_task_id;
+    // If the task ID mismatches, generate an empty response with the correct
+    // task ID and error value.
+    response->task_id = request_task_id.value();
+    response->selected_credential_id = std::nullopt;
+    // TODO(crbug.com/427817882): Explicit error reason (kMismatchedTaskId).
+    response->error_reason = std::nullopt;
+  }
+  if (auto* task = GetTask(request_task_id)) {
+    task->GetExecutionEngine()->OnCredentialSelected(std::move(response));
+  } else {
+    VLOG(1) << "Task not found for task id: " << request_task_id;
+  }
+}
+
 void ActorKeyedService::RequestTabObservation(
     tabs::TabInterface& tab,
     TaskId task_id,

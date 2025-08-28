@@ -12,6 +12,7 @@
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/actor_webui.mojom.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "content/public/browser/web_contents.h"
@@ -186,7 +187,31 @@ void AttemptLoginTool::OnAllFaviconsFetched() {
 }
 
 void AttemptLoginTool::OnCredentialSelected(
-    const std::optional<actor_login::Credential>& selected_credential) {
+    webui::mojom::SelectCredentialDialogResponsePtr response) {
+  std::optional<actor_login::Credential> selected_credential;
+  std::vector<actor_login::Credential> credentials = std::move(credentials_);
+  if (response->error_reason ==
+      webui::mojom::SelectCredentialDialogErrorReason::
+          kDialogPromiseNoSubscriber) {
+    VLOG(1) << "selectCredentialDialogRequestHandler() has no subscriber. "
+               "The web client is likely not set up correctly.";
+  } else if (response->selected_credential_id.has_value()) {
+    auto it = std::find_if(
+        credentials.begin(), credentials.end(),
+        [&](const actor_login::Credential& credential) {
+          return credential.id ==
+                 actor_login::Credential::Id(*response->selected_credential_id);
+        });
+    if (it != credentials.end()) {
+      selected_credential = *it;
+    } else {
+      VLOG(1) << "Selected credential id " << *response->selected_credential_id
+              << " not found in the credentials list.";
+    }
+  } else {
+    VLOG(2) << "SelectCredentialDialogResponse has no selected "
+               "credential id.";
+  }
   if (!selected_credential.has_value()) {
     // We don't need to distinguish between no credentials being available and a
     // user declining the usage of a credential.

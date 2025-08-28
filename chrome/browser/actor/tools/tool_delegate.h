@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
+#include "chrome/common/actor_webui.mojom.h"
 #include "url/gurl.h"
 
 namespace actor_login {
@@ -49,8 +50,8 @@ class ToolDelegate {
   // credential.
   // The callback is called with the selected credential or with an empty
   // credential if the user closed the prompt without making a selection.
-  using CredentialSelectedCallback =
-      base::OnceCallback<void(const std::optional<actor_login::Credential>&)>;
+  using CredentialSelectedCallback = base::OnceCallback<void(
+      webui::mojom::SelectCredentialDialogResponsePtr response)>;
   virtual void PromptToSelectCredential(
       const std::vector<actor_login::Credential>& credentials,
       const base::flat_map<GURL, gfx::Image>& favicons,

@@ -215,6 +215,7 @@ source_set("impl") {
     "//components/language/core/common",
     "//components/metrics",
     "//components/metrics_services_manager",
+    "//components/password_manager/core/browser/actor_login:common",
     "//components/pref_registry",
     "//components/prefs",
     "//components/sessions",

@@ -112,6 +112,11 @@ class ExecutionEngine : public ToolDelegate {
       const base::flat_map<GURL, gfx::Image>& favicons,
       ToolDelegate::CredentialSelectedCallback callback) override;
 
+  // Callback for when a credential is selected, in response to
+  // `ToolDelegate::PromptToSelectCredential()`.
+  void OnCredentialSelected(
+      webui::mojom::SelectCredentialDialogResponsePtr response);
+
   static std::string StateToString(State state);
 
   bool ShouldGateNavigation(content::NavigationHandle& navigation_handle);
@@ -192,6 +197,8 @@ class ExecutionEngine : public ToolDelegate {
   // without prompting the user. This is applied to all navigations, including
   // those initiated by the renderer with web content.
   std::set<url::Origin> allowed_navigation_origins_;
+
+  ToolDelegate::CredentialSelectedCallback credential_selected_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
