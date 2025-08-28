@@ -96,6 +96,11 @@ struct ParsingContext {
   ParsingContext& operator=(const ParsingContext&) = delete;
   ~ParsingContext();
 
+  // Contains the parseable names that override FormFieldData::name().
+  // Parsing code should prefer these names but fall back to
+  // FormFieldData::name().
+  base::flat_map<FieldGlobalId, std::u16string> name_overrides;
+
   // Contains the parseable labels that override FormFieldData::label().
   // Parsing code should prefer these labels but fall back to
   // FormFieldData::label().

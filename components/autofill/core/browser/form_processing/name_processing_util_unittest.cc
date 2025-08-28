@@ -7,13 +7,19 @@
 #include <string_view>
 
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
+namespace {
 
 using testing::ElementsAre;
+using testing::IsEmpty;
+using testing::Pair;
+using testing::UnorderedElementsAre;
 
 // Tests that the length of the longest common prefix is computed correctly.
 TEST(NameProcessingUtil, FindLongestCommonAffixLength) {
@@ -65,4 +71,35 @@ TEST(NameProcessingUtil, ComputeParseableNames) {
   EXPECT_THAT(long_prefix, ElementsAre(u"aazzz", u"bbzzz", u"cczzz"));
 }
 
+// Tests that GetParseableNames() returns parseable names if they differ from
+// the original names.
+TEST(NameProcessingUtil, GetParseableNamesWithCommonPrefix) {
+  test::AutofillUnitTestEnvironment autofill_environment;
+  std::vector<std::unique_ptr<AutofillField>> fields;
+  for (const char* name : {"1234567890ABCDEF_Foo", "1234567890ABCDEF_Bar",
+                           "1234567890ABCDEF_Qux"}) {
+    fields.push_back(std::make_unique<AutofillField>(test::CreateTestFormField(
+        /*label=*/"", /*name=*/name,
+        /*value=*/"", /*type=*/FormControlType::kInputText)));
+  }
+  EXPECT_THAT(GetParseableNames(fields),
+              UnorderedElementsAre(Pair(fields[0]->global_id(), u"Foo"),
+                                   Pair(fields[1]->global_id(), u"Bar"),
+                                   Pair(fields[2]->global_id(), u"Qux")));
+}
+
+// Tests that GetParseableNames() does not return parseable names that are
+// identical to the original names.
+TEST(NameProcessingUtil, GetParseableNamesWithoutCommonPrefix) {
+  test::AutofillUnitTestEnvironment autofill_environment;
+  std::vector<std::unique_ptr<AutofillField>> fields;
+  for (const char* name : {"Foo", "Bar", "Qux"}) {
+    fields.push_back(std::make_unique<AutofillField>(test::CreateTestFormField(
+        /*label=*/"", /*name=*/name,
+        /*value=*/"", /*type=*/FormControlType::kInputText)));
+  }
+  EXPECT_THAT(GetParseableNames(fields), IsEmpty());
+}
+
+}  // namespace
 }  // namespace autofill

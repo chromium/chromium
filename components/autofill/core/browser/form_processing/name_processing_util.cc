@@ -11,7 +11,10 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
+#include "base/types/zip.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 
@@ -85,6 +88,20 @@ void ComputeParseableNames(base::span<std::u16string_view> field_names) {
   size_t lcp = FindLongestCommonAffixLength(field_names, /*prefix=*/true);
   if (lcp >= kMinCommonNamePrefixLength)
     MaybeRemoveAffix(field_names, lcp, /*prefix=*/true);
+}
+
+base::flat_map<FieldGlobalId, std::u16string> GetParseableNames(
+    base::span<const std::unique_ptr<AutofillField>> fields) {
+  std::vector<std::u16string_view> names = base::ToVector(
+      fields, [](const auto& f) -> std::u16string_view { return f->name(); });
+  ComputeParseableNames(names);
+  std::vector<std::pair<FieldGlobalId, std::u16string>> name_map;
+  for (const auto [field, name] : base::zip(fields, names)) {
+    if (name != field->name()) {
+      name_map.emplace_back(field->global_id(), name);
+    }
+  }
+  return name_map;
 }
 
 }  // namespace autofill

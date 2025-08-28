@@ -39,6 +39,7 @@
 #include "components/autofill/core/browser/form_parsing/standalone_cvc_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/travel_field_parser.h"
 #include "components/autofill/core/browser/form_processing/label_processing_util.h"
+#include "components/autofill/core/browser/form_processing/name_processing_util.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
@@ -156,7 +157,8 @@ ParsingContext::ParsingContext(
     PatternFile pattern_file,
     DenseSet<RegexFeature> active_features,
     LogManager* log_manager)
-    : label_overrides(GetParseableLabels(fields)),
+    : name_overrides(GetParseableNames(fields)),
+      label_overrides(GetParseableLabels(fields)),
       client_country(std::move(client_country)),
       page_language(std::move(page_language)),
       pattern_file(pattern_file),
@@ -779,7 +781,14 @@ std::optional<FormFieldParser::MatchInfo> FormFieldParser::MatchInName(
       context.log_manager && context.log_manager->IsLoggingActive() ? &matches
                                                                     : nullptr;
 
-  const std::u16string& name = field.parseable_name();
+  const std::u16string& name = [&]() -> const std::u16string& {
+    if (auto it = context.name_overrides.find(field.global_id());
+        it != context.name_overrides.end()) {
+      return it->second;
+    }
+    return field.name();
+  }();
+
   if (MatchesRegexWithCache(context, name, pattern, capture_destination)) {
     MaybePrintMatchLogs(context.log_manager, field, regex_name, "name", name,
                         matches, is_negative_pattern);

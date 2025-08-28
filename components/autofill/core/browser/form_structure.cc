@@ -178,9 +178,6 @@ FormStructure::FormStructure(const FormData& form)
   alternative_form_signature_ = CalculateAlternativeFormSignature(form);
   structural_form_signature_ = CalculateStructuralFormSignature(form);
   // Do further processing on the fields, as needed.
-  // Computes the `parseable_name_` of the fields by removing common affixes
-  // from their names.
-  ExtractParseableFieldNames();
   SetFieldTypesFromAutocompleteAttribute();
   DetermineFieldRanks();
 }
@@ -304,6 +301,9 @@ FormDataPredictions FormStructure::GetFieldTypePredictions() const {
     }
   }
 
+  const base::flat_map<FieldGlobalId, std::u16string> parseable_names =
+      GetParseableNames(fields_);
+
   const base::flat_map<FieldGlobalId, std::u16string> parseable_labels =
       GetParseableLabels(fields_);
 
@@ -338,7 +338,13 @@ FormDataPredictions FormStructure::GetFieldTypePredictions() const {
       return overall_type.ToString();
     }();
 
-    annotated_field.parseable_name = base::UTF16ToUTF8(field->parseable_name());
+    annotated_field.parseable_name = base::UTF16ToUTF8([&]() {
+      if (auto it = parseable_names.find(field->global_id());
+          it != parseable_names.end()) {
+        return it->second;
+      }
+      return field->name();
+    }());
     annotated_field.parseable_label = base::UTF16ToUTF8([&]() {
       if (auto it = parseable_labels.find(field->global_id());
           it != parseable_labels.end()) {
@@ -835,16 +841,6 @@ FormData FormStructure::ToFormData() const {
   return data;
 }
 
-void FormStructure::ExtractParseableFieldNames() {
-  std::vector<std::u16string_view> names = base::ToVector(
-      fields_, [](const auto& f) -> std::u16string_view { return f->name(); });
-  ComputeParseableNames(names);
-  auto names_it = names.begin();
-  for (const std::unique_ptr<AutofillField>& field : fields_) {
-    field->set_parseable_name(std::u16string(*names_it++));
-  }
-}
-
 DenseSet<FormType> FormStructure::GetFormTypes() const {
   DenseSet<FormType> form_types;
   for (const auto& field : fields_) {
@@ -922,7 +918,7 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
                    " - ",
                    base::NumberToString(
                        HashFormSignature(field->host_form_signature()))});
-    buffer << "\n  Name: " << field->parseable_name();
+    buffer << "\n  Name: " << field->name();
 
     auto regex_heuristic_type =
         FieldTypeToStringView(field->heuristic_type(HeuristicSource::kRegexes));
@@ -1006,13 +1002,23 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
     }
   }
 
+  const base::flat_map<FieldGlobalId, std::u16string> parseable_names =
+      GetParseableNames(form.fields());
+
   const base::flat_map<FieldGlobalId, std::u16string> parseable_labels =
       GetParseableLabels(form.fields());
 
   for (size_t i = 0; i < form.field_count(); ++i) {
+    const AutofillField* field = form.field(i);
+    const std::u16string& name = [&]() -> const std::u16string& {
+      if (auto it = parseable_names.find(field->global_id());
+          it != parseable_labels.end()) {
+        return it->second;
+      }
+      return field->name();
+    }();
     buffer << Tag{"tr"};
     buffer << Tag{"td"} << "Field " << i << ": " << CTag{};
-    const AutofillField* field = form.field(i);
     buffer << Tag{"td"};
     buffer << Tag{"table"};
     buffer << Tr{} << "Identifiers:"
@@ -1034,7 +1040,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
                    " - ",
                    base::NumberToString(
                        HashFormSignature(field->host_form_signature()))});
-    buffer << Tr{} << "Name:" << field->parseable_name();
+    buffer << Tr{} << "Name:" << name;
     buffer << Tr{} << "Placeholder:" << field->placeholder();
 
     auto regex_heuristic_type =
