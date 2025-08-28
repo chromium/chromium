@@ -46,6 +46,7 @@
           <div class="hover-layer"></div>
           <a class="tab-group" @click="${() => this.onTabGroupClick_(item.id)}">
             <ntp-icon-container class="icon-container"
+                .style="background-color: var(${this.computeTabGroupColor_(item.color)})"
                 .faviconUrls="${this.getFaviconUrls_(item.faviconUrls)}"
                 .totalTabCount="${item.totalTabCount}">
             </ntp-icon-container>

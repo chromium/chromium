@@ -12,8 +12,10 @@ import './icons.html.js';
 import './icon_container.js';
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {I18nMixinLit} from '../../i18n_setup.js';
+import {Color} from '../../tab_group_types.mojom-webui.js';
 import type {PageHandlerRemote, TabGroup} from '../../tab_groups.mojom-webui.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
 import type {MenuItem} from '../module_header.js';
@@ -25,6 +27,24 @@ import {TabGroupsProxyImpl} from './tab_groups_proxy.js';
 export const MAX_TAB_GROUPS = 4;
 
 const ModuleElementBase = I18nMixinLit(CrLitElement);
+
+export function colorIdToString(id: Color): string {
+  const colorPrefix = '--color-new-tab-page-module-tab-groups-';
+  const colorMap = new Map<Color, string>([
+    [Color.kGrey, 'grey'],
+    [Color.kBlue, 'blue'],
+    [Color.kRed, 'red'],
+    [Color.kYellow, 'yellow'],
+    [Color.kGreen, 'green'],
+    [Color.kPink, 'pink'],
+    [Color.kPurple, 'purple'],
+    [Color.kCyan, 'cyan'],
+    [Color.kOrange, 'orange'],
+  ]);
+
+  assert(colorMap.has(id));
+  return colorPrefix + colorMap.get(id)!;
+}
 
 /**
  * The Tab Groups module, which helps users resume journey and discover tab
@@ -62,6 +82,10 @@ export class ModuleElement extends ModuleElementBase {
 
   protected computeDescription_(time: string, device: string|null): string {
     return (device && device.length > 0) ? `${time} • ${device.trim()}` : time;
+  }
+
+  protected computeTabGroupColor_(color: Color): string {
+    return colorIdToString(color);
   }
 
   protected getMenuItems_(): MenuItem[] {

@@ -4,6 +4,7 @@
 
 module ntp.tab_groups.mojom;
 
+import "components/tab_groups/public/mojom/tab_group_types.mojom";
 import "url/mojom/url.mojom";
 
 // Information about a tab group.
@@ -19,6 +20,8 @@ struct TabGroup {
   string? device_name;
   // The total number of tabs in the tab group.
   int32 total_tab_count;
+  // The color of the tab group.
+  tab_groups.mojom.Color color;
   // The URLs for up to the first three tabs. Used for fetching favicon.
   array<url.mojom.Url> favicon_urls;
 };

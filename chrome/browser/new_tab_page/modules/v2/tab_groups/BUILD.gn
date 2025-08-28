@@ -10,6 +10,7 @@ mojom("mojo_bindings") {
   webui_module_path = ""
 
   public_deps = [
+    "//components/tab_groups/public/mojom:mojo_bindings",
     "//mojo/public/mojom/base",
     "//ui/base/mojom",
     "//url/mojom:url_mojom_gurl",

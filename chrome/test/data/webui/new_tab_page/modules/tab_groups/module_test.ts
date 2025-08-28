@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import type {IconContainerElement, TabGroupsModuleElement} from 'chrome://new-tab-page/lazy_load.js';
-import {tabGroupsDescriptor, TabGroupsProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
+import {colorIdToString, tabGroupsDescriptor, TabGroupsProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
+import {Color} from 'chrome://new-tab-page/tab_group_types.mojom-webui.js';
 import {PageHandlerRemote} from 'chrome://new-tab-page/tab_groups.mojom-webui.js';
 import type {TabGroup} from 'chrome://new-tab-page/tab_groups.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -38,6 +39,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     const tabGroups: TabGroup[] = [
       {
         id: '0',
+        color: Color.kBlue,
         title: 'Tab Group 1',
         updateTime: 'Recently used',
         deviceName: 'Test Device',
@@ -51,6 +53,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
       },
       {
         id: '0',
+        color: Color.kGrey,
         title: 'Tab Group 2',
         updateTime: 'Recently used',
         deviceName: 'Test Device',
@@ -64,6 +67,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
       },
       {
         id: '0',
+        color: Color.kRed,
         title: 'Tab Group 3',
         updateTime: 'Recently used',
         deviceName: null,
@@ -100,6 +104,8 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
       assertDeepEquals(
           tabGroups[i]!.faviconUrls.map(u => u.url), iconContainer.faviconUrls);
       assertEquals(tabGroups[i]!.totalTabCount, iconContainer.totalTabCount);
+      assertTrue(iconContainer.getAttribute('style')!.includes(
+          `background-color: var(${colorIdToString(tabGroups[i]!.color)})`));
     }
 
     // Verify that optional device info is parsed correclty.
@@ -131,6 +137,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     // Arrange.
     const module = await createModule([{
       id: '0',
+      color: Color.kBlue,
       title: 'Tab Group',
       updateTime: 'Recently used',
       deviceName: 'Test Device',
@@ -156,6 +163,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     // Arrange.
     const module = await createModule([{
       id: '0',
+      color: Color.kBlue,
       title: 'Tab Group',
       updateTime: 'Recently used',
       deviceName: 'Test Device',
@@ -184,6 +192,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     // Arrange.
     const module = await createModule([{
       id: '0',
+      color: Color.kBlue,
       title: 'Tab Group',
       updateTime: 'Recently used',
       deviceName: 'Test Device',
@@ -215,6 +224,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     // Arrange.
     const module = await createModule([{
       id: '0',
+      color: Color.kBlue,
       title: 'Tab Group',
       updateTime: 'Recently used',
       deviceName: 'Test Device',
@@ -278,6 +288,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     // Arrange.
     const module = await createModule([{
       id: '0',
+      color: Color.kBlue,
       title: 'Tab Group',
       updateTime: 'Recently used',
       deviceName: 'Test Device',
@@ -317,6 +328,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     // Arrange.
     const module = await createModule([{
       id: '0',
+      color: Color.kBlue,
       title: 'Tab Group',
       updateTime: 'Recently used',
       deviceName: 'Test Device',
@@ -343,6 +355,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     // Arrange.
     const module = await createModule([{
       id: '0',
+      color: Color.kBlue,
       title: 'Tab Group',
       updateTime: 'Recently used',
       deviceName: 'Test Device',
@@ -377,6 +390,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     // Arrange.
     const module = await createModule([{
       id: '0',
+      color: Color.kBlue,
       title: 'Group',
       updateTime: 'Recently used',
       deviceName: null,
@@ -425,6 +439,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     const module = await createModule([
       {
         id: '0',
+        color: Color.kBlue,
         title: 'Group 1',
         updateTime: 'Recently used',
         deviceName: null,
@@ -433,6 +448,7 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
       },
       {
         id: '1',
+        color: Color.kBlue,
         title: 'Group 2',
         updateTime: 'Recently used',
         deviceName: null,

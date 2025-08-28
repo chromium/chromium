@@ -14,7 +14,6 @@
   --cell-inner-radius: 2px;
   --cell-outer-radius: 6px;
   align-items: center;
-  background-color: var(--color-new-tab-page-module-icon-background);
   border-radius: 8px;
   display: flex;
   gap: 4px;

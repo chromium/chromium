@@ -506,5 +506,20 @@ void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode) {
   mixer[kColorNewTabPageDoodleShareButtonBackground] = {
       kColorNewTabPageBackgroundOverride};
   mixer[kColorNewTabPageDoodleShareButtonIcon] = {primary_foreground_color};
+
+  // Tab group colors.
+  mixer[kColorNewTabPageModuleTabGroupsGrey] = {kColorTabGroupBookmarkBarGrey};
+  mixer[kColorNewTabPageModuleTabGroupsBlue] = {kColorTabGroupBookmarkBarBlue};
+  mixer[kColorNewTabPageModuleTabGroupsRed] = {kColorTabGroupBookmarkBarRed};
+  mixer[kColorNewTabPageModuleTabGroupsYellow] = {
+      kColorTabGroupBookmarkBarYellow};
+  mixer[kColorNewTabPageModuleTabGroupsGreen] = {
+      kColorTabGroupBookmarkBarGreen};
+  mixer[kColorNewTabPageModuleTabGroupsPink] = {kColorTabGroupBookmarkBarPink};
+  mixer[kColorNewTabPageModuleTabGroupsPurple] = {
+      kColorTabGroupBookmarkBarPurple};
+  mixer[kColorNewTabPageModuleTabGroupsCyan] = {kColorTabGroupBookmarkBarCyan};
+  mixer[kColorNewTabPageModuleTabGroupsOrange] = {
+      kColorTabGroupBookmarkBarOrange};
   // LINT.ThenChange(chrome/browser/ui/color/material_new_tab_page_color_mixer.cc)
 }

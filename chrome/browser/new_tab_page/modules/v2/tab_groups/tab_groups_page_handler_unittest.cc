@@ -583,6 +583,7 @@ TEST_F(TabGroupsPageHandlerTest, GetSavedTabGroups) {
   ASSERT_EQ(4u, group.size());
 
   const auto& group1 = group[0];
+  EXPECT_EQ(tab_groups::TabGroupColorId::kBlue, group1->color);
   EXPECT_EQ("Newest Group", group1->title);
   EXPECT_EQ("Recently used", group1->update_time);
   EXPECT_EQ(5, group1->total_tab_count);
@@ -593,6 +594,7 @@ TEST_F(TabGroupsPageHandlerTest, GetSavedTabGroups) {
   EXPECT_EQ(GURL("https://g.com/"), group1->favicon_urls[3]);
 
   const auto& group2 = group[1];
+  EXPECT_EQ(tab_groups::TabGroupColorId::kGreen, group2->color);
   EXPECT_EQ("Second Group", group2->title);
   EXPECT_EQ("Used 1 day ago", group2->update_time);
   EXPECT_EQ(2, group2->total_tab_count);
@@ -601,10 +603,12 @@ TEST_F(TabGroupsPageHandlerTest, GetSavedTabGroups) {
   EXPECT_EQ(GURL("https://c.com/"), group2->favicon_urls[1]);
 
   const auto& group3 = group[2];
+  EXPECT_EQ(tab_groups::TabGroupColorId::kGrey, group3->color);
   EXPECT_EQ("Third Group", group3->title);
   EXPECT_EQ("Used 1 week ago", group3->update_time);
 
   const auto& group4 = group[3];
+  EXPECT_EQ(tab_groups::TabGroupColorId::kBlue, group4->color);
   EXPECT_EQ("Fourth Group", group4->title);
   EXPECT_EQ("Used 2 weeks ago", group4->update_time);
 }
@@ -623,6 +627,7 @@ TEST_F(TabGroupsPageHandlerTest, GetFakeTabGroups) {
   ASSERT_FALSE(tab_groups.empty());
 
   const auto& group1 = tab_groups[0];
+  EXPECT_EQ(tab_groups::TabGroupColorId::kBlue, group1->color);
   EXPECT_EQ("Tab Group 1 (3 tabs total)", group1->title);
   EXPECT_EQ(3, group1->total_tab_count);
   EXPECT_EQ(3u, group1->favicon_urls.size());
@@ -635,6 +640,7 @@ TEST_F(TabGroupsPageHandlerTest, GetFakeTabGroups) {
   EXPECT_EQ("Test Device", group1->device_name);
 
   const auto& group2 = tab_groups[1];
+  EXPECT_EQ(tab_groups::TabGroupColorId::kPurple, group2->color);
   EXPECT_EQ("Tab Group 2 (4 tabs total)", group2->title);
   EXPECT_EQ(4u, group2->favicon_urls.size());
   EXPECT_EQ(4, group2->total_tab_count);
@@ -642,6 +648,7 @@ TEST_F(TabGroupsPageHandlerTest, GetFakeTabGroups) {
   EXPECT_EQ("Test Device", group2->device_name);
 
   const auto& group3 = tab_groups[2];
+  EXPECT_EQ(tab_groups::TabGroupColorId::kYellow, group3->color);
   EXPECT_EQ("Tab Group 3 (8 tabs total)", group3->title);
   EXPECT_EQ(4u, group3->favicon_urls.size());
   EXPECT_EQ(8, group3->total_tab_count);
@@ -649,6 +656,7 @@ TEST_F(TabGroupsPageHandlerTest, GetFakeTabGroups) {
   EXPECT_EQ("Test Device", group3->device_name);
 
   const auto& group4 = tab_groups[3];
+  EXPECT_EQ(tab_groups::TabGroupColorId::kGreen, group4->color);
   EXPECT_EQ("Tab Group 4 (199 tabs total)", group4->title);
   EXPECT_EQ(4u, group4->favicon_urls.size());
   EXPECT_EQ(199, group4->total_tab_count);

@@ -29,6 +29,7 @@
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_device_info/local_device_info_provider.h"
+#include "components/tab_groups/tab_group_color.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -66,12 +67,14 @@ ntp::tab_groups::mojom::TabGroupPtr MakeTabGroup(
     const std::string& update_time,
     const std::optional<std::string>& device_name,
     const std::vector<GURL>& urls,
-    int total_tabs) {
+    int total_tabs,
+    tab_groups::TabGroupColorId color_id) {
   auto group = ntp::tab_groups::mojom::TabGroup::New();
   group->id = id;
   group->title = title;
   group->update_time = update_time;
   group->device_name = device_name;
+  group->color = color_id;
   group->favicon_urls.reserve(urls.size());
   for (const GURL& url : urls) {
     group->favicon_urls.emplace_back(url);
@@ -191,9 +194,9 @@ TabGroupsPageHandler::GetSavedTabGroups() {
     std::optional<std::string> device_name =
         GetDeviceName(group->last_updater_cache_guid());
 
-    tab_groups_mojom.push_back(
-        MakeTabGroup(group->saved_guid().AsLowercaseString(), title,
-                     update_time, device_name, favicon_urls, tabs.size()));
+    tab_groups_mojom.push_back(MakeTabGroup(
+        group->saved_guid().AsLowercaseString(), title, update_time,
+        device_name, favicon_urls, tabs.size(), group->color()));
   }
 
   return tab_groups_mojom;
@@ -228,28 +231,28 @@ void TabGroupsPageHandler::GetTabGroups(GetTabGroupsCallback callback) {
           std::vector<GURL>{GURL("https://www.google.com"),
                             GURL("https://www.google.com"),
                             GURL("https://www.google.com")},
-          3));
+          3, tab_groups::TabGroupColorId::kBlue));
 
       tab_groups_mojom.push_back(MakeTabGroup(
           "0", "Tab Group 2 (4 tabs total)", "Used 1 day ago", "Test Device",
           std::vector<GURL>{
               GURL("https://www.google.com"), GURL("https://www.google.com"),
               GURL("https://www.google.com"), GURL("https://www.google.com")},
-          4));
+          4, tab_groups::TabGroupColorId::kPurple));
 
       tab_groups_mojom.push_back(MakeTabGroup(
           "0", "Tab Group 3 (8 tabs total)", "Used 1 week ago", "Test Device",
           std::vector<GURL>{
               GURL("https://www.google.com"), GURL("https://www.google.com"),
               GURL("https://www.google.com"), GURL("https://www.google.com")},
-          8));
+          8, tab_groups::TabGroupColorId::kYellow));
 
       tab_groups_mojom.push_back(MakeTabGroup(
           "0", "Tab Group 4 (199 tabs total)", "Used 2 weeks ago", std::nullopt,
           std::vector<GURL>{
               GURL("https://www.google.com"), GURL("https://www.google.com"),
               GURL("https://www.google.com"), GURL("https://www.google.com")},
-          199));
+          199, tab_groups::TabGroupColorId::kGreen));
     } else if (data_type_param.find("Fake Zero State") != std::string::npos) {
       // No-op: return empty vector to invoke the zero state card.
     }
