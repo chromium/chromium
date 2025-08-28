@@ -62,7 +62,6 @@ using testing::DoAll;
 using testing::Each;
 using testing::ElementsAre;
 using testing::Eq;
-using testing::Invoke;
 using testing::IsEmpty;
 using testing::Matcher;
 using testing::Not;
@@ -262,14 +261,14 @@ class TabGroupSyncServiceImplTest : public testing::Test {
             CanApplyOptimization(
                 _, optimization_guide::proto::SAVED_TAB_GROUP,
                 An<optimization_guide::OptimizationGuideDecisionCallback>()))
-        .WillByDefault(Invoke(
+        .WillByDefault(
             [](const GURL& url,
                optimization_guide::proto::OptimizationType optimization_type,
                optimization_guide::OptimizationGuideDecisionCallback callback) {
               std::move(callback).Run(
                   optimization_guide::OptimizationGuideDecision::kUnknown,
                   optimization_guide::OptimizationMetadata());
-            }));
+            });
 
     auto coordinator =
         std::make_unique<testing::NiceMock<MockTabGroupSyncCoordinator>>();

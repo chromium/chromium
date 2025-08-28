@@ -31,7 +31,6 @@ using base::test::EqualsProto;
 using testing::_;
 using testing::DefaultValue;
 using testing::Eq;
-using testing::Invoke;
 using testing::Matcher;
 using testing::Not;
 using testing::Return;
@@ -212,9 +211,9 @@ class SharedTabGroupAccountDataSyncBridgeTest : public testing::Test {
 
     base::RunLoop run_loop;
     base::RepeatingClosure quit_closure = run_loop.QuitClosure();
-    EXPECT_CALL(processor_, ModelReadyToSync).WillOnce(Invoke([&]() {
+    EXPECT_CALL(processor_, ModelReadyToSync).WillOnce([&]() {
       quit_closure.Run();
-    }));
+    });
 
     if (!model_) {
       model_ = std::make_unique<SavedTabGroupModel>();

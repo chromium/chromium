@@ -28,7 +28,6 @@ using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
 using testing::_;
 using testing::Eq;
-using testing::Invoke;
 using testing::Return;
 using testing::SaveArg;
 
@@ -237,10 +236,10 @@ TEST_F(TabGroupSyncServiceAndroidTest, MakeTabGroupShared) {
                 return cb.is_null();
               })))
       .WillOnce(testing::WithArgs<2>(
-          testing::Invoke([&captured_callback](
-                              TabGroupSyncService::TabGroupSharingCallback cb) {
+          [&captured_callback](
+              TabGroupSyncService::TabGroupSharingCallback cb) {
             captured_callback = std::move(cb);
-          })));
+          }));
 
   ScopedJavaLocalRef<jstring> j_collaboration_id =
       base::android::ConvertUTF8ToJavaString(env, collaboration_id.value());
