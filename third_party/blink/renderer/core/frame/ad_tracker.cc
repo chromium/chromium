@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "v8/include/v8-inspector.h"
 #include "v8/include/v8.h"
 
@@ -451,11 +452,6 @@ AdTracker::AdScriptAncestry AdTracker::GetAncestry(
     const AdScriptIdentifier& ad_script) {
   AdTracker::AdScriptAncestry ancestry;
 
-  // Limits the ancestry chain length to protect against potential cycles in the
-  // ancestry graph (though unexpected).
-  constexpr size_t kMaxScriptAncestrySize = 50;
-  bool max_size_reached = false;
-
   // TODO(yaoxia): Determine if we should CHECK that that the script ID in each
   // step is guaranteed to be present in `ad_script_data_`.
   auto provenance_it = ad_script_data_.find(ad_script.id);
@@ -463,7 +459,11 @@ AdTracker::AdScriptAncestry AdTracker::GetAncestry(
     return ancestry;
   }
 
+  HashSet<int> seen_script_ids;
+  bool duplicate = false;
+
   ancestry.ancestry_chain.push_back(provenance_it->value.id);
+  seen_script_ids.insert(provenance_it->value.id.id);
 
   while (provenance_it != ad_script_data_.end()) {
     const AdProvenance& ad_provenance = provenance_it->value.provenance;
@@ -472,14 +472,14 @@ AdTracker::AdScriptAncestry AdTracker::GetAncestry(
     bool root_reached = std::visit(
         absl::Overload{[&](NoProvenance) { return true; },
                        [&](int script_id) {
-                         auto it = this->ad_script_data_.find(script_id);
-                         ancestry.ancestry_chain.push_back(it->value.id);
-
-                         if (ancestry.ancestry_chain.size() >=
-                             kMaxScriptAncestrySize) {
-                           max_size_reached = true;
+                         // Prevent an infinite loop due to cycles.
+                         if (!seen_script_ids.insert(script_id).is_new_entry) {
+                           duplicate = true;
                            return true;
                          }
+
+                         auto it = this->ad_script_data_.find(script_id);
+                         ancestry.ancestry_chain.push_back(it->value.id);
 
                          // Move on to the next ancestor.
                          return false;
@@ -500,8 +500,8 @@ AdTracker::AdScriptAncestry AdTracker::GetAncestry(
   }
 
   base::UmaHistogramBoolean(
-      "Navigation.IframeCreated.AdTracker.MaxScriptAncestrySizeReached",
-      max_size_reached);
+      "Navigation.IframeCreated.AdTracker.DuplicateAncestryScriptId",
+      duplicate);
 
   return ancestry;
 }
