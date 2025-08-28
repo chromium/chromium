@@ -77,7 +77,8 @@ ThreadPoolImpl::ThreadPoolImpl(std::string_view histogram_label)
 
 ThreadPoolImpl::ThreadPoolImpl(std::string_view histogram_label,
                                std::unique_ptr<TaskTrackerImpl> task_tracker,
-                               bool use_background_threads)
+                               bool use_background_threads,
+                               bool monitor_worker_thread_priorities)
     : histogram_label_(histogram_label),
       task_tracker_(std::move(task_tracker)),
       single_thread_task_runner_manager_(task_tracker_->GetTrackedRef(),
@@ -93,7 +94,7 @@ ThreadPoolImpl::ThreadPoolImpl(std::string_view histogram_label,
       kForegroundPoolEnvironmentParams.name_suffix,
       kForegroundPoolEnvironmentParams.thread_type_hint,
       ThreadGroupType::FOREGROUND, task_tracker_->GetTrackedRef(),
-      tracked_ref_factory_.GetTrackedRef());
+      tracked_ref_factory_.GetTrackedRef(), monitor_worker_thread_priorities);
 
   if (CanUseBackgroundThreadTypeForWorkerThread()) {
     background_thread_group_ = std::make_unique<ThreadGroupImpl>(
@@ -107,7 +108,7 @@ ThreadPoolImpl::ThreadPoolImpl(std::string_view histogram_label,
             ? kBackgroundPoolEnvironmentParams.thread_type_hint
             : kForegroundPoolEnvironmentParams.thread_type_hint,
         ThreadGroupType::BACKGROUND, task_tracker_->GetTrackedRef(),
-        tracked_ref_factory_.GetTrackedRef());
+        tracked_ref_factory_.GetTrackedRef(), monitor_worker_thread_priorities);
   }
 }
 

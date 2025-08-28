@@ -56,7 +56,8 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
   // priority.
   ThreadPoolImpl(std::string_view histogram_label,
                  std::unique_ptr<TaskTrackerImpl> task_tracker,
-                 bool use_background_threads = true);
+                 bool use_background_threads = true,
+                 bool monitor_worker_thread_priorities = true);
 
   ThreadPoolImpl(const ThreadPoolImpl&) = delete;
   ThreadPoolImpl& operator=(const ThreadPoolImpl&) = delete;

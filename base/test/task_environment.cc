@@ -498,9 +498,13 @@ TaskEnvironment::TestTaskTracker* TaskEnvironment::CreateThreadPool() {
   auto task_tracker = std::make_unique<TestTaskTracker>();
   TestTaskTracker* raw_task_tracker = task_tracker.get();
   // Disable background threads to avoid hangs when flushing background tasks.
+  // Also disable thread priority monitoring so that creating worker threads
+  // does not interfere with tests that are sensitive to creation of new
+  // histograms.
   auto thread_pool = std::make_unique<internal::ThreadPoolImpl>(
       std::string(), std::move(task_tracker),
-      /*use_background_threads=*/false);
+      /*use_background_threads=*/false,
+      /*monitor_worker_thread_priorities=*/false);
   ThreadPoolInstance::Set(std::move(thread_pool));
   DCHECK(!g_task_tracker);
   g_task_tracker = raw_task_tracker;

@@ -45,6 +45,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/initialization_util.h"
+#include "base/threading/platform_thread_metrics.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -1059,6 +1060,16 @@ int BrowserMainLoop::PreMainMessageLoopRun() {
                         BindOnce(enable_message_pump_metrics, "BrowserIO"));
                   },
                   base::Unretained(this)));
+
+#if BUILDFLAG(IS_ANDROID)
+  base::PlatformThreadPriorityMonitor::Get().RegisterCurrentThread("UIThread");
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce([] {
+        base::PlatformThreadPriorityMonitor::Get().RegisterCurrentThread(
+            "IOThread");
+      }));
+  base::PlatformThreadPriorityMonitor::Get().Start();
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // If the UI thread blocks, the whole UI is unresponsive. Do not allow
   // unresponsive tasks from the UI thread and instantiate a

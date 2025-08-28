@@ -52,7 +52,8 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
                   ThreadType thread_type_hint,
                   int64_t thread_group_type,
                   TrackedRef<TaskTracker> task_tracker,
-                  TrackedRef<Delegate> delegate);
+                  TrackedRef<Delegate> delegate,
+                  bool monitor_worker_thread_priorities = false);
 
   ThreadGroupImpl(const ThreadGroupImpl&) = delete;
   ThreadGroupImpl& operator=(const ThreadGroupImpl&) = delete;
@@ -155,6 +156,10 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
   // https://crbug.com/810464. Uses AtomicRefCount to make its only public
   // method thread-safe.
   TrackedRefFactory<ThreadGroupImpl> tracked_ref_factory_;
+
+  // This is used by worker threads to decide if they should be reporting thread
+  // priorities to UMA.
+  const bool monitor_worker_thread_priorities_;
 };
 
 }  // namespace internal

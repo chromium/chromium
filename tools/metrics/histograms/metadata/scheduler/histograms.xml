@@ -393,6 +393,26 @@ chromium-metrics-reviews@google.com.
   <token key="NamedThread" variants="NamedThread"/>
 </histogram>
 
+<histogram name="Scheduling.ThreadPriority.Browser.{ThreadName}" units="int"
+    expires_after="2026-08-14">
+  <owner>anandrv@google.com</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    The nice value of {ThreadName} in the browser process.
+
+    Recorded only on Android. Sampled once every five minutes.
+  </summary>
+  <token key="ThreadName">
+    <variant name="IOThread" summary="the IO thread"/>
+    <variant name="NetworkService" summary="the network thread"/>
+    <variant name="ThreadPoolBackgroundWorker"
+        summary="a thread pool background worker thread"/>
+    <variant name="ThreadPoolForegroundWorker"
+        summary="a thread pool foreground worker thread"/>
+    <variant name="UIThread" summary="the main thread"/>
+  </token>
+</histogram>
+
 <histogram
     name="Scheduling.{CompositorTimingHistoryProcess}BeginImplFrameLatency2"
     units="microseconds" expires_after="M85">

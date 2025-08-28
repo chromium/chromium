@@ -35,6 +35,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/platform_thread_metrics.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
@@ -315,6 +316,10 @@ void CreateInProcessNetworkService(
         FROM_HERE, base::BindOnce([]() {
           mojo::InterfaceEndpointClient::SetThreadNameSuffixForMetrics(
               "NetworkService");
+#if BUILDFLAG(IS_ANDROID)
+          base::PlatformThreadPriorityMonitor::Get().RegisterCurrentThread(
+              "NetworkService");
+#endif  // BUILDFLAG(IS_ANDROID)
         }));
   } else {
     task_runner = GetIOThreadTaskRunner({});
