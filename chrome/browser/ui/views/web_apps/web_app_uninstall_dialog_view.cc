@@ -14,8 +14,10 @@
 #include "chrome/browser/ui/views/web_apps/web_app_icon_name_and_origin_view.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/ui/web_applications/web_app_info_image_source.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_uninstall_dialog_user_options.h"
@@ -86,12 +88,15 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
 
   SetTitle(l10n_util::GetStringUTF16(IDS_APP_UNINSTALL_PROMPT_TITLE));
 
-  AddChildViewRaw(WebAppIconNameAndOriginView::Create(
-                   image_,
-                   base::UTF8ToUTF16(
-                       provider_->registrar_unsafe().GetAppShortName(app_id_)),
-                   app_start_url)
-                   .release());
+  const web_app::WebApp* web_app =
+      provider_->registrar_unsafe().GetAppById(app_id_);
+
+  AddChildView(WebAppIconNameAndOriginView::Create(
+      image_,
+      base::UTF8ToUTF16(provider_->registrar_unsafe().GetAppShortName(app_id_)),
+      app_start_url,
+      !web_app->stored_trusted_icon_sizes(web_app::IconPurpose::MASKABLE)
+           .empty()));
   SetButtonLabel(
       ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_UNINSTALL_APP_BUTTON));
@@ -133,8 +138,6 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
     checkbox->SetMultiLine(true);
     checkbox_ = checkbox_container->AddChildView(std::move(checkbox));
   }
-
-  AddChildViewRaw(checkbox_container);
 
   uninstall_source_ = uninstall_source;
   install_manager_observation_.Observe(&provider_->install_manager());

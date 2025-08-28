@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/common/chrome_features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/gfx/skia_util.h"
@@ -315,6 +316,12 @@ std::string IconsWithSizeAny::ToString() const {
   return ToDebugValue().DebugString();
 }
 
+DialogImageInfo::DialogImageInfo() = default;
+DialogImageInfo::~DialogImageInfo() = default;
+DialogImageInfo::DialogImageInfo(DialogImageInfo&& dialog_image_info) = default;
+DialogImageInfo& DialogImageInfo::operator=(
+    DialogImageInfo&& dialog_image_info) = default;
+
 // WebAppInstallInfo
 
 // static
@@ -410,6 +417,26 @@ void WebAppInstallInfo::SetManifestIdAndStartUrl(
   CheckValidManifestIdAndStartUrl(manifest_id, start_url);
   manifest_id_ = manifest_id;
   start_url_ = start_url;
+}
+
+DialogImageInfo WebAppInstallInfo::GetIconBitmapsForSecureSurfaces() const {
+  DialogImageInfo image_info;
+  if (!base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon) ||
+      trusted_icon_bitmaps.empty()) {
+    image_info.bitmaps = icon_bitmaps.any;
+    return image_info;
+  }
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+  if (!trusted_icon_bitmaps.empty() && !trusted_icon_bitmaps.maskable.empty()) {
+    image_info.bitmaps = trusted_icon_bitmaps.maskable;
+    image_info.is_maskable = true;
+    return image_info;
+  }
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+
+  image_info.bitmaps = trusted_icon_bitmaps.any;
+  return image_info;
 }
 
 bool operator==(const IconSizes& icon_sizes1, const IconSizes& icon_sizes2) {

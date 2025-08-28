@@ -54,7 +54,6 @@ constexpr std::array<IconPurpose,
                          static_cast<int>(IconPurpose::kMinValue) + 1>
     kIconPurposes{IconPurpose::ANY, IconPurpose::MONOCHROME,
                   IconPurpose::MASKABLE};
-
 struct SizeComparator {
   constexpr bool operator()(const gfx::Size& left,
                             const gfx::Size& right) const {
@@ -218,6 +217,19 @@ struct IconsWithSizeAny {
   SizeSet home_tab_icon_provided_sizes;
 };
 
+// Data structure to store information about whether the icons obtained from the
+// manifest need to be masked to be shown in dialogs or other UX surfaces while
+// the app has not been installed yet.
+struct DialogImageInfo {
+  DialogImageInfo();
+  ~DialogImageInfo();
+  DialogImageInfo(DialogImageInfo&& dialog_image_info);
+  DialogImageInfo& operator=(DialogImageInfo&& dialog_image_info);
+
+  std::map<SquareSizePx, SkBitmap> bitmaps;
+  bool is_maskable = false;
+};
+
 // Structure used when installing a web page as an app.
 struct WebAppInstallInfo {
   enum MobileCapable {
@@ -298,6 +310,12 @@ struct WebAppInstallInfo {
   // same requirements as in the WebAppInstallInfo constructor.
   void SetManifestIdAndStartUrl(const webapps::ManifestId& manifest_id,
                                 const GURL& start_url);
+
+  // Returns the icons to be shown on security sensitive surfaces that are
+  // visible to the user as part of Chrome (like install/update dialogs).
+  // Returns trusted icons if available, falling back to `any` icons if not
+  // found.
+  DialogImageInfo GetIconBitmapsForSecureSurfaces() const;
 
   // Title of the application.
   std::u16string title;
