@@ -8,11 +8,12 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+
+import java.util.function.Supplier;
 
 /** A factory class to create {@link IncognitoRestoreAppLaunchDrawBlocker}. */
 @NullMarked

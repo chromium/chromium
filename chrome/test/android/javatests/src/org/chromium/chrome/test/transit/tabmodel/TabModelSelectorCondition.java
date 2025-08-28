@@ -4,11 +4,12 @@
 
 package org.chromium.chrome.test.transit.tabmodel;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatusWithResult;
 import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+
+import java.util.function.Supplier;
 
 /** Condition fulfilled when an initialized TabModelSelector exists. */
 public class TabModelSelectorCondition extends ConditionWithResult<TabModelSelector> {

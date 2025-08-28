@@ -15,7 +15,6 @@ import android.widget.TextView;
 import androidx.annotation.DimenRes;
 import androidx.annotation.StringRes;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -34,6 +33,8 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.function.Supplier;
 
 /** Coordinator class for navigation sheet. TODO(jinsukkim): Write tests. */
 @NullMarked

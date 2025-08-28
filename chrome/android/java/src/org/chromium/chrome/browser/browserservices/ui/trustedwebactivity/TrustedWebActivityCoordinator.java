@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.browserservices.ui.trustedwebactivity;
 
 import android.app.Activity;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browserservices.InstalledWebappRegistrar;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.SharedActivityCoordinator;
@@ -16,6 +15,8 @@ import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactiv
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebactivity.TwaSplashController;
 import org.chromium.components.embedder_support.util.Origin;
+
+import java.util.function.Supplier;
 
 /**
  * Coordinator for the Trusted Web Activity component. Add methods here if other components need to

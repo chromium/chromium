@@ -34,7 +34,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
@@ -71,6 +70,7 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Unit tests for the TabSwitcherMessageManager. */
 @RunWith(BaseRobolectricTestRunner.class)

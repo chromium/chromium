@@ -36,7 +36,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
@@ -65,6 +64,7 @@ import org.chromium.ui.widget.RectProvider;
 import org.chromium.url.GURL;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Unit tests for {@link TabGridContextMenuCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)

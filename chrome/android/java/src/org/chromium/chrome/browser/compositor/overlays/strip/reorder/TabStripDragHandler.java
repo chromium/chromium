@@ -27,7 +27,6 @@ import org.chromium.base.Log;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -56,6 +55,7 @@ import org.chromium.ui.widget.Toast;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Manages initiating tab drag and drop and handles the events that are received during drag and

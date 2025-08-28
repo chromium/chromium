@@ -21,7 +21,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
@@ -61,6 +60,8 @@ import org.chromium.printing.PrintingControllerImpl;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
+
+import java.util.function.Supplier;
 
 /**
  * A default {@link ContextMenuItemDelegate} that supports the context menu functionality in Tab.

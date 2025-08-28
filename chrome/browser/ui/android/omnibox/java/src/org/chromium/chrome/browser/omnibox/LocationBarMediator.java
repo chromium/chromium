@@ -37,7 +37,6 @@ import org.chromium.base.metrics.TimingMetric;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Initializer;
@@ -102,6 +101,7 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 /**
  * Mediator for the LocationBar component. Intended location for LocationBar business logic;

@@ -30,7 +30,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.CancelLongPressTabItemEventListener;
@@ -38,6 +37,8 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrch
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.RunnableTimer;
+
+import java.util.function.Supplier;
 
 /** Unit tests for {@link TabGridItemLongPressOrchestrator}. */
 @RunWith(BaseRobolectricTestRunner.class)

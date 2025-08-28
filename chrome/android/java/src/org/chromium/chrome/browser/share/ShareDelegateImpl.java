@@ -19,7 +19,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
@@ -58,6 +57,7 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /** Implementation of share interface. Mostly a wrapper around ShareSheetCoordinator. */
 @NullMarked

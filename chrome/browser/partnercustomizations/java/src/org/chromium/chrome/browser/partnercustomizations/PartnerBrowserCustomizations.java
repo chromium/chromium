@@ -15,7 +15,6 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -35,6 +34,7 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /** Reads and caches partner browser customizations information if it exists. */
 @NullMarked

@@ -10,7 +10,6 @@ import android.app.Activity;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -39,6 +38,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.url.GURL;
+
+import java.util.function.Supplier;
 
 /**
  * Class responsible for handling dismissal of a tab modal dialog on user actions outside the tab

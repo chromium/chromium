@@ -11,12 +11,13 @@ import android.view.ViewConfiguration;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.ui.base.WindowAndroid;
+
+import java.util.function.Supplier;
 
 /** A UI coordinator the app menu. */
 @NullMarked

@@ -7,8 +7,9 @@ package org.chromium.base.test.transit;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
+
+import java.util.function.Supplier;
 
 /**
  * More specific {@link Condition}s related to Android {@link View}s.

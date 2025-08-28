@@ -26,7 +26,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
@@ -43,6 +42,7 @@ import org.chromium.ui.test.util.RenderTestRule;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Render Tests for the View build by the CommerceBottomSheetContent component. */
 @RunWith(ChromeJUnit4ClassRunner.class)

@@ -13,7 +13,6 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -31,6 +30,8 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.DeviceFormFactor;
+
+import java.util.function.Supplier;
 
 /**
  * Optional toolbar button which opens a new tab. May be used by {@link

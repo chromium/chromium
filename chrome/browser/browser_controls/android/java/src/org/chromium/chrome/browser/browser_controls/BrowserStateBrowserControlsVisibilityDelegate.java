@@ -12,13 +12,14 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.CommandLine;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.ui.util.TokenHolder;
+
+import java.util.function.Supplier;
 
 /**
  * Determines the desired visibility of the browser controls based on the current state of the

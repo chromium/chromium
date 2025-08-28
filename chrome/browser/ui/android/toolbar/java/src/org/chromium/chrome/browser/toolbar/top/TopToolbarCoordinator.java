@@ -18,7 +18,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
@@ -64,6 +63,7 @@ import org.chromium.ui.util.TokenHolder;
 import org.chromium.ui.util.XrUtils;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /** A coordinator for the top toolbar component. */
 @NullMarked

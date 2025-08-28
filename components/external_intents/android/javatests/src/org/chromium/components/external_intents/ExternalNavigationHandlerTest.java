@@ -42,7 +42,6 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
@@ -68,6 +67,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
 
 /** Instrumentation tests for {@link ExternalNavigationHandler}. */
 @RunWith(BaseJUnit4ClassRunner.class)

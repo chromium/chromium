@@ -41,7 +41,6 @@ import org.chromium.base.PathUtils;
 import org.chromium.base.RequiredCallback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
@@ -82,11 +81,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
 
 /**
- * Logic related to the URL overriding/intercepting functionality.
- * This feature supports conversion of certain navigations to Android Intents allowing
- * applications like Youtube to direct users clicking on a http(s) link to their native app.
+ * Logic related to the URL overriding/intercepting functionality. This feature supports conversion
+ * of certain navigations to Android Intents allowing applications like Youtube to direct users
+ * clicking on a http(s) link to their native app.
  */
 @NullMarked
 public class ExternalNavigationHandler {

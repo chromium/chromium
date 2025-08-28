@@ -14,7 +14,6 @@ import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
@@ -42,6 +41,8 @@ import org.chromium.components.webxr.XrDelegateProvider;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.function.Supplier;
 
 /**
  * This presenter creates tab modality by blocking interaction with select UI elements while a

@@ -9,9 +9,10 @@ import android.view.View;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
+
+import java.util.function.Supplier;
 
 /** Check that the card at this position in the tab switcher exists in the tab model. */
 public class CardAtPositionCondition extends Condition {

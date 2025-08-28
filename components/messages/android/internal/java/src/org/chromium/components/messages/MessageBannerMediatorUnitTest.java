@@ -32,12 +32,13 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.MathUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.messages.MessageStateHandler.Position;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.function.Supplier;
 
 /** Unit tests for {@link MessageBannerMediator}. */
 @SmallTest

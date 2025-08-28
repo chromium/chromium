@@ -9,7 +9,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.app.Activity;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -30,6 +29,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 /** A class of helper methods that assist in the restore tabs workflow. */
 @NullMarked

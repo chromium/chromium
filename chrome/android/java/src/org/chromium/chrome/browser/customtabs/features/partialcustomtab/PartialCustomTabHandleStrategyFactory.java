@@ -6,11 +6,11 @@ package org.chromium.chrome.browser.customtabs.features.partialcustomtab;
 
 import android.content.Context;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBaseStrategy.PartialCustomTabType;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 /**
  * The factory implementation for creating Partial Custom Tab handle strategies that will be applied

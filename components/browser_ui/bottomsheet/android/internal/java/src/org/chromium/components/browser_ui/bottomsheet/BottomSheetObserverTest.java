@@ -25,7 +25,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -38,6 +37,7 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 
 /** This class tests the functionality of the {@link BottomSheetObserver}. */
 @RunWith(BaseJUnit4ClassRunner.class)

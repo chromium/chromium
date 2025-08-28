@@ -30,7 +30,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -66,6 +65,7 @@ import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
+import java.util.function.Supplier;
 
 /** Unit tests for {@link CustomTabAppMenuPropertiesDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)

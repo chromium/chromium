@@ -21,7 +21,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ViewFlipper;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -38,6 +37,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.function.Supplier;
 
 /** Coordinator of the NTP customization main bottom sheet. */
 @NullMarked

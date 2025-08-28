@@ -16,7 +16,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.lifetime.DestroyChecker;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -46,6 +45,7 @@ import org.chromium.ui.util.AccessibilityUtil;
 import org.chromium.ui.util.XrUtils;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * A {@link Layout} controller for the more complicated Chrome browser. This is currently a superset

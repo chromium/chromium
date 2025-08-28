@@ -10,13 +10,13 @@ import android.view.ViewGroup;
 
 import androidx.annotation.Px;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 import org.chromium.ui.KeyboardUtils;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 
 import java.lang.ref.WeakReference;
+import java.util.function.Supplier;
 
 /**
  * A {@link ActivityKeyboardVisibilityDelegate} that considers UI elements of an {@link Activity}

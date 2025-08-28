@@ -8,12 +8,12 @@ import static org.junit.Assert.assertEquals;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatusWithResult;
 import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 
 import java.util.Set;
+import java.util.function.Supplier;
 
 /** Checks that one new tab group was created. */
 public class TabGroupCreatedCondition extends ConditionWithResult<Token> {

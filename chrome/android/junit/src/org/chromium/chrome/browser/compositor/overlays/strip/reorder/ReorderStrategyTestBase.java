@@ -22,7 +22,6 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.overlays.strip.AnimationHost;
 import org.chromium.chrome.browser.compositor.overlays.strip.ScrollDelegate;
@@ -41,6 +40,7 @@ import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 public abstract class ReorderStrategyTestBase {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

@@ -14,7 +14,6 @@ import android.view.MenuItem;
 import androidx.appcompat.widget.Toolbar;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -39,6 +38,8 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
+
+import java.util.function.Supplier;
 
 // import org.chromium.components.feed.proto.wire.FeedEntryPointSource;
 

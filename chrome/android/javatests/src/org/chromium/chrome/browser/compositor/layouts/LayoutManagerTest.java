@@ -42,7 +42,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -85,6 +84,7 @@ import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.Sw
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 
 /** Unit tests for {@link org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome} */
 @Batch(PER_CLASS)

@@ -18,7 +18,6 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
@@ -30,6 +29,7 @@ import org.chromium.content_public.common.ContentSwitches;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.function.Supplier;
 
 /**
  * Class that controls visibility and content of {@link StatusIndicatorCoordinator} to relay

@@ -11,7 +11,6 @@ import androidx.annotation.VisibleForTesting;
 
 import com.google.errorprone.annotations.FormatMethod;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatus.Status;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.MonotonicNonNull;
@@ -20,6 +19,7 @@ import org.chromium.build.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * A condition that needs to be fulfilled for a state transition to be considered done.

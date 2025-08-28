@@ -23,7 +23,6 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -84,6 +83,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /** An {@link AppMenuPropertiesDelegateImpl} for ChromeTabbedActivity. */
 @NullMarked

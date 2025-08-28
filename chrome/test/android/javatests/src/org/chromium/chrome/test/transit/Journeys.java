@@ -12,7 +12,6 @@ import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread
 
 import org.chromium.base.Log;
 import org.chromium.base.Token;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.TravelException;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -36,6 +35,7 @@ import org.chromium.chrome.test.util.tabmodel.TabBinList.TabBinPosition;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /* Helper class for extended multi-stage Trips. */
 public class Journeys {

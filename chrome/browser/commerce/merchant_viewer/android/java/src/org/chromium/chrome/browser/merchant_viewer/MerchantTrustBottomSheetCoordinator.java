@@ -15,7 +15,6 @@ import android.widget.FrameLayout;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -38,6 +37,8 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.url.GURL;
+
+import java.util.function.Supplier;
 
 /** Coordinator for managing the merchant trust bottom sheet experience. */
 @NullMarked

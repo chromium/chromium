@@ -8,7 +8,6 @@ import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -22,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * This is a {@link MessageObserver} that creates and owns different {@link PropertyModel} based on

@@ -12,7 +12,6 @@ import android.view.ViewStub;
 import androidx.annotation.ColorInt;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -29,6 +28,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
+
+import java.util.function.Supplier;
 
 /**
  * The coordinator for a status indicator that is positioned below the status bar and is persistent.

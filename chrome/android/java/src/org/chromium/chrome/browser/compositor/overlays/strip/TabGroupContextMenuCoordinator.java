@@ -30,7 +30,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
@@ -82,6 +81,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.EmptyTextWatcher;
 import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.RectProvider;
+
+import java.util.function.Supplier;
 
 /**
  * A coordinator for the context menu on the tab strip by long-pressing on the group titles. It is

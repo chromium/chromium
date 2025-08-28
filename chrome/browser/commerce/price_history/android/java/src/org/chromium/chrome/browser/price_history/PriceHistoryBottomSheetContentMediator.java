@@ -19,7 +19,6 @@ import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -34,6 +33,8 @@ import org.chromium.components.commerce.core.ShoppingService.PriceInsightsInfo;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
+
+import java.util.function.Supplier;
 
 /** Mediator for price history bottom sheet responsible for property model update. */
 @NullMarked

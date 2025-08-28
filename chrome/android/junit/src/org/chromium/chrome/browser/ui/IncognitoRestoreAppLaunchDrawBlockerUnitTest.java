@@ -33,7 +33,6 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.IntentHandler;
@@ -46,6 +45,8 @@ import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+
+import java.util.function.Supplier;
 
 /** Robolectric tests for {@link IncognitoRestoreAppLaunchDrawBlocker}. */
 @RunWith(BaseRobolectricTestRunner.class)

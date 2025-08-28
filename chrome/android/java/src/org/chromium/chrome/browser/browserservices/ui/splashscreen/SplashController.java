@@ -17,7 +17,6 @@ import android.view.ViewTreeObserver;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -38,6 +37,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.url.GURL;
 
 import java.lang.reflect.Method;
+import java.util.function.Supplier;
 
 /** Shows and hides splash screen for Webapps, WebAPKs and TWAs. */
 @NullMarked

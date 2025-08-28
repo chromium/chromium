@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode.ImmersiveMode;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.trustedwebactivityui.controller.TrustedWebActivityBrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
@@ -21,6 +20,8 @@ import org.chromium.chrome.browser.customtabs.features.ImmersiveModeController;
 import org.chromium.chrome.browser.customtabs.features.toolbar.BrowserServicesThemeColorProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
+
+import java.util.function.Supplier;
 
 /** Coordinator for shared functionality between Trusted Web Activities and webapps. */
 public class SharedActivityCoordinator implements InflationObserver {

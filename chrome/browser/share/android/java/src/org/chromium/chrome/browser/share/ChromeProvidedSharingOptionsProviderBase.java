@@ -14,7 +14,6 @@ import android.view.View;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -43,6 +42,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /** Provides a list of Chrome-provided sharing options. */
 @NullMarked

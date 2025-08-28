@@ -9,7 +9,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -40,6 +39,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /** Builds DropdownItemViewInfo list from AutocompleteResult for the Suggestions list. */
 @NullMarked

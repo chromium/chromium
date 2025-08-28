@@ -10,10 +10,11 @@ import android.view.View;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+
+import java.util.function.Supplier;
 
 /**
  * An implementation of {@link BottomSheetContent} for the merchant trust bottom sheet experience.

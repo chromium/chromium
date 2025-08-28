@@ -12,7 +12,6 @@ import android.view.View;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -27,6 +26,8 @@ import org.chromium.chrome.browser.toolbar.top.NavigationPopup;
 import org.chromium.chrome.browser.toolbar.top.ToolbarChildButton;
 import org.chromium.chrome.browser.toolbar.top.ToolbarUtils;
 import org.chromium.ui.widget.ChromeImageButton;
+
+import java.util.function.Supplier;
 
 /**
  * Root component for the back button. Exposes public API for external consumers to interact with

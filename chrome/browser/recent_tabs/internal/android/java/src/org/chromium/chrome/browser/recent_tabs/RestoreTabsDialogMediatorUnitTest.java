@@ -29,7 +29,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -50,6 +49,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Tests for RestoreTabsDialogMediator. */
 @RunWith(BaseRobolectricTestRunner.class)

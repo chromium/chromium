@@ -7,7 +7,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.crypto.CipherFactory;
@@ -30,6 +29,8 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.tab_group_sync.TabGroupSyncController;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.user_prefs.UserPrefs;
+
+import java.util.function.Supplier;
 
 /**
  * Performs the same purpose as the other orchestrators, but does not currently share any interface

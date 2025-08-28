@@ -18,7 +18,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.IntentHandler;
@@ -74,6 +73,7 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.function.Supplier;
 
 /** Creates a new Tab or retrieves an existing Tab for the CustomTabActivity, and initializes it. */
 public class CustomTabActivityTabController implements PauseResumeWithNativeObserver, Destroyable {

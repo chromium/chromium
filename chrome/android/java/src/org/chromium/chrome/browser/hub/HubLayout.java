@@ -34,7 +34,6 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -73,6 +72,7 @@ import org.chromium.ui.resources.ResourceManager;
 
 import java.util.Collections;
 import java.util.function.DoubleConsumer;
+import java.util.function.Supplier;
 
 /**
  * A {@link Layout} for Hub that has an empty or single tab {@link SceneLayer}. Android UI for a

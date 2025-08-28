@@ -12,7 +12,6 @@ import android.view.VelocityTracker;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabHandleStrategy.DragEventCallback;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.RenderCoordinates;
@@ -21,6 +20,7 @@ import org.chromium.content_public.browser.WebContents;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 /**
  * Class responsible for detecting swipe and scroll events on the partial custom tab's content view,

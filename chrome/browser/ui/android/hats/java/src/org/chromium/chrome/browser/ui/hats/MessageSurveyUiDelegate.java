@@ -12,7 +12,6 @@ import android.text.TextUtils;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -30,33 +29,25 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.function.Supplier;
 
 /**
- * <p>
  * Public implementation that presents survey with a Clank message. Once a survey is ready to show,
  * the delegate will wait until the current tab is fully loaded and display a survey message. The
- * client features using this implementation will need to supply a {@link PropertyModel} with
- * {@link MessageBannerProperties}.
- * </p>
+ * client features using this implementation will need to supply a {@link PropertyModel} with {@link
+ * MessageBannerProperties}.
  *
- * <p>
- * Several things to be aware of:
+ * <p>Several things to be aware of:
+ *
  * <ul>
- *   <li>
- *     Survey request will be dropped if user is in or switched into incognito mode.
- *   </li>
- *   <li>
- *     {@link MessageBannerProperties#ON_PRIMARY_ACTION} and {@link
- *      MessageBannerProperties#ON_DISMISSED} will be wrapped in a new callback within this class in
- *      order to trigger / clean up surveys accordingly.
- *   </li>
- *   <li>
- *     Due to the nature of message system, the survey invitation is not always guaranteed to be
- *     shown. If {@link MessageBannerProperties#ON_PRIMARY_ACTION} is provided in the input {@link
- *     PropertyModel}, it'll be called once survey invitation is accepted.
- *  </li>
+ *   <li>Survey request will be dropped if user is in or switched into incognito mode.
+ *   <li>{@link MessageBannerProperties#ON_PRIMARY_ACTION} and {@link
+ *       MessageBannerProperties#ON_DISMISSED} will be wrapped in a new callback within this class
+ *       in order to trigger / clean up surveys accordingly.
+ *   <li>Due to the nature of message system, the survey invitation is not always guaranteed to be
+ *       shown. If {@link MessageBannerProperties#ON_PRIMARY_ACTION} is provided in the input {@link
+ *       PropertyModel}, it'll be called once survey invitation is accepted.
  * </ul>
- *</p>
  */
 @NullMarked
 public class MessageSurveyUiDelegate implements SurveyUiDelegate {

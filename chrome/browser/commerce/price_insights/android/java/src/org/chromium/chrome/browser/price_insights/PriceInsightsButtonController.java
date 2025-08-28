@@ -12,7 +12,6 @@ import android.view.View;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -33,6 +32,8 @@ import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.Toast;
+
+import java.util.function.Supplier;
 
 /**
  * Responsible for providing UI resources for showing price insights action on optional toolbar

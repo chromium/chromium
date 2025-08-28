@@ -11,7 +11,6 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.homepage.HomepageManager;
@@ -27,6 +26,8 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.ActiveTabState;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+
+import java.util.function.Supplier;
 
 /**
  * Helper class for blocking {@link ChromeTabbedActivity} content view draw on launch until the

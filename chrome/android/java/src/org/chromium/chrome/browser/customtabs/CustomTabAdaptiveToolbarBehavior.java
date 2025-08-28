@@ -22,7 +22,6 @@ import android.graphics.drawable.Drawable;
 import androidx.browser.customtabs.ExperimentalOpenInBrowser;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -41,6 +40,7 @@ import org.chromium.components.feature_engagement.Tracker;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /** Implements CustomTab-specific behavior of adaptive toolbar button. */
 @NullMarked

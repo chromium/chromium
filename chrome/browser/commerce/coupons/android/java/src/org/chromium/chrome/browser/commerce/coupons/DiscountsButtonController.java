@@ -10,7 +10,6 @@ import android.view.View;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentController;
@@ -22,6 +21,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+
+import java.util.function.Supplier;
 
 /** This class is responsible for providing UI resources for showing the Discounts action. */
 @NullMarked

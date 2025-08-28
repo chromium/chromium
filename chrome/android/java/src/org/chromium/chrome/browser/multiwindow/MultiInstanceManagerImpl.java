@@ -26,7 +26,6 @@ import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -59,6 +58,7 @@ import org.chromium.ui.display.DisplayAndroidManager;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Manages multi-instance mode for an associated activity. After construction, call {@link

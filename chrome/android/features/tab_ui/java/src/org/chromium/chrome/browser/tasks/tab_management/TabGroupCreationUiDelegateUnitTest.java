@@ -24,7 +24,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.PaneManager;
@@ -36,6 +35,7 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 /** Unit tests for {@link TabGroupCreationUiDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)

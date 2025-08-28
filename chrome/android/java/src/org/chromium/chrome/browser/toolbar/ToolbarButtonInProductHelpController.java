@@ -11,7 +11,6 @@ import android.view.View;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -49,6 +48,8 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
+
+import java.util.function.Supplier;
 
 /**
  * A helper class for IPH shown on the toolbar. TODO(crbug.com/40585866): Remove feature-specific

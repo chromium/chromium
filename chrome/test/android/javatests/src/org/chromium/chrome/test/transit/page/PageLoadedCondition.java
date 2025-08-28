@@ -4,11 +4,12 @@
 
 package org.chromium.chrome.test.transit.page;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatusWithResult;
 import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
+
+import java.util.function.Supplier;
 
 /** Fulfilled when a page is loaded. */
 public class PageLoadedCondition extends ConditionWithResult<Tab> {

@@ -27,7 +27,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.common.ChromeUrlConstants;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -46,6 +45,7 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
 import java.util.Collections;
+import java.util.function.Supplier;
 
 /** Unit tests for ToolbarTabControllerImpl. */
 @RunWith(BaseRobolectricTestRunner.class)

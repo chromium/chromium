@@ -20,7 +20,6 @@ import androidx.annotation.StringRes;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
@@ -33,6 +32,8 @@ import org.chromium.components.commerce.core.PriceBucket;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.Toast;
+
+import java.util.function.Supplier;
 
 /** Mediator for price tracking bottom sheet responsible for property model update. */
 @NullMarked

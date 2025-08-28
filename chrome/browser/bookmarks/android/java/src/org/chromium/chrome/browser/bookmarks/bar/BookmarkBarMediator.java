@@ -26,7 +26,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
@@ -63,6 +62,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 /** Mediator for the bookmark bar which provides users with bookmark access from top chrome. */
 @NullMarked

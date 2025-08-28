@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tabbed_mode;
 
 import static org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType.APP;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarCoordinator;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -19,6 +18,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Controls the keyboard focus location for tab strip, toolbar, bookmarks bar on Chrome for Android.

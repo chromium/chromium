@@ -11,7 +11,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.crypto.CipherFactory;
@@ -23,6 +22,8 @@ import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+
+import java.util.function.Supplier;
 
 /** A class that provides functionality to block the initial draw for the Incognito restore flow. */
 @NullMarked

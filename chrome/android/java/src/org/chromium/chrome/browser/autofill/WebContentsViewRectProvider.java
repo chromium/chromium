@@ -10,22 +10,25 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.widget.RectProvider;
 
+import java.util.function.Supplier;
+
 /**
  * Helper class that computes the visible rect of a given {@link WebContents} objects. It observes
  * the given {@link WebContents} object to update the observed suppliers of browser controls and
  * filling component. Use like a standard {@link RectProvider}.
  *
+ * <pre>
  * Examples for observed changes:
  * - {@link BrowserControlsManager} providing height for elements like the Omnibox.
  * - {@link ManualFillingComponent} providing filling surface height like Keyboard Accessory.
  * - A Bottom Inset supplier for the Soft-keyboard.
+ * </pre>
  */
 class WebContentsViewRectProvider extends RectProvider {
     private final WebContents mWebContents;

@@ -22,7 +22,6 @@ import android.view.View;
 import android.widget.ViewFlipper;
 
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.FeedFeatures;
@@ -41,6 +40,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * A mediator class that manages the view flipper and {@link BottomSheetContent} of NTP

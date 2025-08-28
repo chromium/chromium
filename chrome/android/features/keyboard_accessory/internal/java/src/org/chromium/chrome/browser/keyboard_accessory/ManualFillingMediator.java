@@ -32,7 +32,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -89,6 +88,7 @@ import org.chromium.ui.mojom.VirtualKeyboardMode;
 import java.util.HashSet;
 import java.util.List;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 /**
  * This part of the manual filling component manages the state of the manual filling flow depending

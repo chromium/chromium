@@ -37,7 +37,6 @@ import org.robolectric.annotation.Implements;
 import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.Token;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -62,6 +61,7 @@ import org.chromium.url.GURL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /** Unit test for {@link ActivityTabWebContentsDelegateAndroid}. */
 @RunWith(BaseRobolectricTestRunner.class)

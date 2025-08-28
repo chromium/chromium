@@ -16,7 +16,6 @@ import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -26,6 +25,8 @@ import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig.DisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizerUtil;
+
+import java.util.function.Supplier;
 
 /** Applies the padding to the fragment for wide displays. */
 @NullMarked

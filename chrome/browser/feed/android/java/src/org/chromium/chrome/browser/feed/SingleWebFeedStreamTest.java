@@ -35,7 +35,6 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
@@ -65,6 +64,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.nio.charset.StandardCharsets;
+import java.util.function.Supplier;
 
 /** Unit tests for {@link FeedStream}. */
 @RunWith(BaseRobolectricTestRunner.class)

@@ -4,9 +4,10 @@
 
 package org.chromium.base.test.transit;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+
+import java.util.function.Supplier;
 
 /**
  * A {@link Condition} which supplies {@param <ResultT>} when fulfilled.

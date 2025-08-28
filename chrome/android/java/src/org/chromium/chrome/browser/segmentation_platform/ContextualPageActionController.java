@@ -20,7 +20,6 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -39,6 +38,7 @@ import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.components.segmentation_platform.ProcessedValue;
 
 import java.util.HashMap;
+import java.util.function.Supplier;
 
 /**
  * Central class for contextual page actions bridging between UI and backend. Registers itself with

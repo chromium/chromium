@@ -7,12 +7,13 @@ package org.chromium.chrome.browser.tabmodel;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener.DialogType;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
+
+import java.util.function.Supplier;
 
 /**
  * Passthrough implementation of the {@link TabRemover} interface that forwards calls directly

@@ -40,7 +40,6 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -68,6 +67,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Integration tests for the RestoreTabs feature. */
 @RunWith(ChromeJUnit4ClassRunner.class)

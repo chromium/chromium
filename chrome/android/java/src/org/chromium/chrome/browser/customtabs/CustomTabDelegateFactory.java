@@ -17,7 +17,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.blink.mojom.DisplayMode.EnumType;
 import org.chromium.cc.input.BrowserControlsState;
@@ -69,6 +68,7 @@ import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * A {@link TabDelegateFactory} class to be used in all {@link Tab} owned by a {@link

@@ -13,11 +13,12 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.hub.HubColorMixer.OverviewModeAlphaObserver;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+
+import java.util.function.Supplier;
 
 /**
  * Holds dependencies for initialization of {@link HubLayout}. These dependencies come from the

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.toolbar.menu_button;
 import android.content.res.ColorStateList;
 import android.view.View.OnKeyListener;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
@@ -16,6 +15,8 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
+
+import java.util.function.Supplier;
 
 @NullMarked
 class MenuButtonProperties {

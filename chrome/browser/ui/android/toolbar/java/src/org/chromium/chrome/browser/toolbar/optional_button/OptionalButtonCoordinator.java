@@ -17,7 +17,6 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
@@ -36,6 +35,7 @@ import org.chromium.ui.widget.ViewRectProvider;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 /**
  * The coordinator for a button that may appear on the toolbar whose icon and click handler can be

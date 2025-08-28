@@ -28,7 +28,6 @@ import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
@@ -74,6 +73,7 @@ import org.chromium.url.GURL;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /** A mediator for the TabGroupUi. Responsible for managing the internal state of the component. */
 @NullMarked

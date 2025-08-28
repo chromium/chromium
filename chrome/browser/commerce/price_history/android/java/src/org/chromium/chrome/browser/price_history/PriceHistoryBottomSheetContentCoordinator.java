@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentProperties;
@@ -19,6 +18,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.util.function.Supplier;
 
 /** Coordinator of the price history bottom sheet content. */
 @NullMarked

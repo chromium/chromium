@@ -23,7 +23,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -51,6 +50,7 @@ import org.chromium.url.GURL;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /** A class that handles selection action mode for the active {@link Tab}. */
 @NullMarked

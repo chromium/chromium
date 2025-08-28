@@ -10,7 +10,6 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -22,6 +21,8 @@ import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.Highl
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+
+import java.util.function.Supplier;
 
 /**
  * Optional toolbar button which opens the current Custom Tab in BrApp. May be used by {@link

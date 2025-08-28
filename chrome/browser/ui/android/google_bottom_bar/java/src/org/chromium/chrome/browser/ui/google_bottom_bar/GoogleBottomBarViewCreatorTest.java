@@ -42,7 +42,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -62,6 +61,7 @@ import org.chromium.ui.base.ViewUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /** Unit tests for {@link GoogleBottomBarViewCreator}. */
 @RunWith(BaseRobolectricTestRunner.class)

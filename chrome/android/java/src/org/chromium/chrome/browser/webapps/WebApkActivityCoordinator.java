@@ -8,13 +8,14 @@ import android.os.Build;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browserservices.InstalledWebappRegistrar;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionUpdater;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.components.embedder_support.util.Origin;
+
+import java.util.function.Supplier;
 
 /**
  * Coordinator for the WebAPK activity component. Add methods here if other components need to

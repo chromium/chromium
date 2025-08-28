@@ -30,7 +30,6 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -68,6 +67,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /** Displays and manages the content view / list UI for browsing history. */
 @NullMarked

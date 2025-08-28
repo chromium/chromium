@@ -15,7 +15,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -33,6 +32,7 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Action to add one or more tabs to a tab group for the {@link TabListEditorMenu}. */
 @NullMarked

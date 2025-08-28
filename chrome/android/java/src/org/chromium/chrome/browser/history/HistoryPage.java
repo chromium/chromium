@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.history;
 import android.app.Activity;
 import android.net.Uri;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -18,6 +17,8 @@ import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.util.UrlConstants;
+
+import java.util.function.Supplier;
 
 /** Native page for managing browsing history. */
 @NullMarked

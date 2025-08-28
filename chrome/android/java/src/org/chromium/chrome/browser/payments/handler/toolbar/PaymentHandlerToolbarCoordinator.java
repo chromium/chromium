@@ -10,7 +10,6 @@ import android.view.View;
 
 import androidx.annotation.DrawableRes;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.page_info.ChromePageInfoControllerDelegate;
@@ -26,6 +25,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.url.GURL;
+
+import java.util.function.Supplier;
 
 /**
  * PaymentHandlerToolbar coordinator, which owns the component overall, i.e., creates other objects

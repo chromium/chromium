@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.test.transit.edge_to_edge;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatusWithResult;
 import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -12,6 +11,8 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsLayer;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+
+import java.util.function.Supplier;
 
 /** Conditions that provides edge to edge related classes when features are enabled. */
 class EdgeToEdgeConditions {

@@ -8,12 +8,12 @@ import android.view.MotionEvent;
 import android.view.ViewGroup;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 
 /** Utilities to support testing with the {@link BottomSheetController}. */
 public class BottomSheetTestSupport {

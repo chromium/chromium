@@ -35,7 +35,6 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -74,6 +73,7 @@ import org.chromium.ui.widget.OptimizedFrameLayout;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 /** Layout for the browser controls (omnibox, menu, tab strip, etc..). */
 @NullMarked

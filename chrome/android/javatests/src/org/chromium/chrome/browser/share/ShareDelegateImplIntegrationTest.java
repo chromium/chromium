@@ -15,7 +15,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -38,6 +37,7 @@ import org.chromium.net.test.ServerCertificate;
 
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 /** Integration tests for the Share Menu handling. */
 @RunWith(ChromeJUnit4ClassRunner.class)

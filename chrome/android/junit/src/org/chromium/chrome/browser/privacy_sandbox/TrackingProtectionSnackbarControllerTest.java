@@ -19,7 +19,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -27,6 +26,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.content_settings.CookieControlsBridgeJni;
 import org.chromium.components.content_settings.CookieControlsState;
+
+import java.util.function.Supplier;
 
 /** Test for Tracking Protection Snackbar controller for WebApk. */
 @RunWith(BaseRobolectricTestRunner.class)

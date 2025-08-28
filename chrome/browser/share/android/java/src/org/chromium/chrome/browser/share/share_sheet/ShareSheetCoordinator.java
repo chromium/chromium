@@ -18,7 +18,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Initializer;
@@ -56,6 +55,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /** Coordinator for displaying the share sheet. */
 // TODO(crbug.com/40106499): Should be package-protected once modularization is complete.

@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -14,6 +13,7 @@ import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceD
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.Message;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * This is the coordinator for MessageCardProvider component. This component is used to build a

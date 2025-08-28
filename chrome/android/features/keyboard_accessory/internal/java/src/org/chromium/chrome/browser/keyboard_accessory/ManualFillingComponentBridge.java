@@ -15,7 +15,6 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.FooterCommand;
@@ -33,6 +32,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import java.util.HashMap;
+import java.util.function.Supplier;
 
 class ManualFillingComponentBridge {
     private final SparseArray<PropertyProvider<AccessorySheetData>> mProviders =

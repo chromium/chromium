@@ -17,7 +17,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -49,6 +48,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /** App menu properties delegate for {@link CustomTabActivity}. */
 public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateImpl {

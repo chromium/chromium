@@ -36,7 +36,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.Promise;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.Tab;
@@ -52,6 +51,7 @@ import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.ref.WeakReference;
+import java.util.function.Supplier;
 
 /** Unit tests for PageViewObserver. */
 @RunWith(BaseRobolectricTestRunner.class)

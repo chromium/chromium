@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.toolbar.top;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.OffsetTag;
@@ -17,6 +16,8 @@ import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.Drawing
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.resources.ResourceManager;
+
+import java.util.function.Supplier;
 
 /** A SceneLayer to render the top toolbar. This is the "view" piece of the top toolbar overlay. */
 @JNINamespace("android")

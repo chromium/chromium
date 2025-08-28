@@ -37,7 +37,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.autofill.mojom.FocusedFieldType;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -60,6 +59,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 
 /** Integration tests for autofill keyboard accessory. */
 @RunWith(ChromeJUnit4ClassRunner.class)

@@ -17,7 +17,6 @@ import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.DestroyableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -60,6 +59,8 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.util.ColorUtils;
+
+import java.util.function.Supplier;
 
 /**
  * Creates NativePage objects to show chrome-native:// URLs using the native Android view system.

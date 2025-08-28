@@ -32,7 +32,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -42,6 +41,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
+import java.util.function.Supplier;
 
 /** Unit tests for RestoreTabsDialogCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)

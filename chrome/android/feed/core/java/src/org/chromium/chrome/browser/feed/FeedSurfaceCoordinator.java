@@ -44,7 +44,6 @@ import org.chromium.base.jank_tracker.JankScenario;
 import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -98,6 +97,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Provides a surface that displays an interest feed rendered list of content suggestions. */
 @NullMarked

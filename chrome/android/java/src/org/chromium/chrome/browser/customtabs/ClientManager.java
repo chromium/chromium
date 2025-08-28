@@ -28,7 +28,6 @@ import androidx.browser.customtabs.PostMessageServiceConnection;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.IntentHandler;
@@ -57,6 +56,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /** Manages the clients' state for Custom Tabs. This class is threadsafe. */
 class ClientManager {

@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.test.transit.page;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.chrome.browser.tab.Tab;
+
+import java.util.function.Supplier;
 
 /** Fulfilled when a page is interactable (or hidden). */
 class PageInteractableOrHiddenCondition extends UiThreadCondition {

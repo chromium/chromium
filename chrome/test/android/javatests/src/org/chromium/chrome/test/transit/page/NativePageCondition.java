@@ -4,11 +4,12 @@
 
 package org.chromium.chrome.test.transit.page;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatusWithResult;
 import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+
+import java.util.function.Supplier;
 
 /**
  * Fulfilled when the Tab has a native page of the expected type.

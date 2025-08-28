@@ -4,15 +4,16 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.data;
 
-import org.chromium.base.supplier.Supplier;
+import java.util.function.Supplier;
 
 /**
  * Adapter for providers that should only forward provided data if a given propagation condition is
  * met (e.g. if a browser tab is currently active). If the condition isn't met, the provided data is
  * dropped.
+ *
  * @param <T> The type of data the provider forwards conditionally.
  * @see CachedProviderAdapter for a conditional provider adapter that can postpone the notification
- *      about provided data by caching it and trigger it later.
+ *     about provided data by caching it and trigger it later.
  */
 public class ConditionalProviderAdapter<T> extends PropertyProvider<T>
         implements Provider.Observer<T> {

@@ -25,7 +25,6 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.SysUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.blink_public.input.SelectionGranularity;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -88,6 +87,7 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Manages the Contextual Search feature. This class keeps track of the status of Contextual Search

@@ -21,7 +21,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -52,6 +51,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.RecyclerViewAdapter;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Creates and owns all elements which are part of the keyboard accessory component. It's part of

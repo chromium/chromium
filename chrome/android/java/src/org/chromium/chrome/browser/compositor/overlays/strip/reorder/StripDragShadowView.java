@@ -24,7 +24,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -51,6 +50,7 @@ import org.chromium.ui.util.XrUtils;
 import org.chromium.url.GURL;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 public class StripDragShadowView extends FrameLayout {
     private static final FloatProperty<StripDragShadowView> PROGRESS =

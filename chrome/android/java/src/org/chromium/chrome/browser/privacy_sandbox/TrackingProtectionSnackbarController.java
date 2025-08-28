@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.privacy_sandbox;
 import android.content.Context;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -25,6 +24,7 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Supplier;
 
 /**
  * Displays the {@link Snackbar} with provided actions for WebApk (aka PWA - Progressive Web Apps).

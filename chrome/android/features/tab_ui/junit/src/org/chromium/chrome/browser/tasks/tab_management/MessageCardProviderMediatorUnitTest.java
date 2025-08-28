@@ -27,7 +27,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -38,6 +37,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManage
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Unit tests for {@link MessageCardProviderMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)

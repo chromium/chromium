@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ViewFlipper;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
@@ -20,6 +19,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Coordinator to manage the Restore Tabs on FRE feature. */
 @NullMarked

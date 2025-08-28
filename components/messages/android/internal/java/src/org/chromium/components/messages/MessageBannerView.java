@@ -30,7 +30,6 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.SysUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -49,6 +48,8 @@ import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.MotionEventUtils;
 import org.chromium.ui.widget.ChromeImageButton;
+
+import java.util.function.Supplier;
 
 /** View representing the message banner. */
 @NullMarked

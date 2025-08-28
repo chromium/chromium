@@ -20,7 +20,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
@@ -38,6 +37,8 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
+
+import java.util.function.Supplier;
 
 /**
  * The mediator of the autofill options component. Ensures that the model and the pref are in sync

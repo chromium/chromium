@@ -15,7 +15,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -36,10 +35,11 @@ import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.io.Closeable;
+import java.util.function.Supplier;
 
 /**
- * The top level coordinator for the download home UI.  This is currently an in progress class and
- * is not fully fleshed out yet.
+ * The top level coordinator for the download home UI. This is currently an in progress class and is
+ * not fully fleshed out yet.
  */
 @NullMarked
 class DownloadManagerCoordinatorImpl

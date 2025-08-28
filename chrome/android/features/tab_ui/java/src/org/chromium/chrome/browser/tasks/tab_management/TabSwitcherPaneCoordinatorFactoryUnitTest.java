@@ -34,7 +34,6 @@ import org.chromium.base.BaseSwitches;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -85,6 +84,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Unit tests for {@link TabSwitcherPaneCoordinatorFactory}. */
 @RunWith(BaseRobolectricTestRunner.class)

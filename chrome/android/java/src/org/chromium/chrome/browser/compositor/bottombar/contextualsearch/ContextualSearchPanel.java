@@ -20,7 +20,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -60,6 +59,7 @@ import org.chromium.ui.util.ColorUtils;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * Controls the Contextual Search Panel, primarily the Bar - the {@link ContextualSearchBarControl}

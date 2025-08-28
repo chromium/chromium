@@ -19,7 +19,6 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -75,6 +74,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Chrome's customization of PageInfoControllerDelegate. This class provides Chrome-specific info to

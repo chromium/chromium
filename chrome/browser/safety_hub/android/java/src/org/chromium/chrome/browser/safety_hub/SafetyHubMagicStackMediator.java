@@ -8,7 +8,6 @@ import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.record
 
 import android.content.Context;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
@@ -24,6 +23,8 @@ import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.function.Supplier;
 
 /** Mediator for the Safety Hub Magic Stack module. */
 @NullMarked

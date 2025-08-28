@@ -38,7 +38,6 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -63,6 +62,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /** Tests {@link ShareSheetCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)

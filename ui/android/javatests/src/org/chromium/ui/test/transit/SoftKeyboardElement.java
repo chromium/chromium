@@ -6,11 +6,12 @@ package org.chromium.ui.test.transit;
 
 import android.app.Activity;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.base.test.transit.Element;
 import org.chromium.build.annotations.Nullable;
+
+import java.util.function.Supplier;
 
 /** Represents the soft keyboard shown, expecting it to hide after exiting the ConditionalState. */
 public class SoftKeyboardElement extends Element<Boolean> {

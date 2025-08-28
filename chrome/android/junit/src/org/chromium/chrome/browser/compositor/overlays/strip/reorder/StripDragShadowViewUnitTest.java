@@ -45,7 +45,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -67,6 +66,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.TestActivity;
 
 import java.util.Collections;
+import java.util.function.Supplier;
 
 /** Unit tests for {@link StripDragShadowView}. */
 @RunWith(BaseRobolectricTestRunner.class)

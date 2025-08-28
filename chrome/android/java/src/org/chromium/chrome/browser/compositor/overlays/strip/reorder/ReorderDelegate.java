@@ -16,7 +16,6 @@ import androidx.annotation.Nullable;
 import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.overlays.strip.AnimationHost;
 import org.chromium.chrome.browser.compositor.overlays.strip.ScrollDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
@@ -33,6 +32,7 @@ import org.chromium.ui.base.LocalizationUtils;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Delegate to manage the reordering logic for the tab strip. */
 public class ReorderDelegate {

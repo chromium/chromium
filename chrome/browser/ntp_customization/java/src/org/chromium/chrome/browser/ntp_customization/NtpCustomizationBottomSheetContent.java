@@ -9,10 +9,11 @@ import android.content.res.Resources;
 import android.view.View;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+
+import java.util.function.Supplier;
 
 /** Bottom sheet content of the NTP customization. */
 @NullMarked

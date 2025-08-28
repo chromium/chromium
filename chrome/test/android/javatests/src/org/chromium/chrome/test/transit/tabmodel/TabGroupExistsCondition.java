@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.test.transit.tabmodel;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.chrome.browser.tab.Tab;
@@ -14,6 +13,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Check that the tab group represented by the card exists in the tab model. */
 public class TabGroupExistsCondition extends UiThreadCondition {

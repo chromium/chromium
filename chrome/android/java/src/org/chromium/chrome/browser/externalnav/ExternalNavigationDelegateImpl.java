@@ -22,7 +22,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.PackageManagerUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
@@ -45,6 +44,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /** The main implementation of the {@link ExternalNavigationDelegate}. */
 @NullMarked

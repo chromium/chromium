@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.quick_delete;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
@@ -16,6 +15,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * An implementation of the {@link QuickDeleteDelegate} to handle quick delete operations for

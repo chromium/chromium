@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.MonotonicNonNull;
@@ -79,9 +78,10 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
- * Sets up the Coordinator for Cormorant Creator surface.  It is based on the doc at
+ * Sets up the Coordinator for Cormorant Creator surface. It is based on the doc at
  * https://chromium.googlesource.com/chromium/src/+/HEAD/docs/ui/android/mvc_simple_list_tutorial.md
  */
 @NullMarked

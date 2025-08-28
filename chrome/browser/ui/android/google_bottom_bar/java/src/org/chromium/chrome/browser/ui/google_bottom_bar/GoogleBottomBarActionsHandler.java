@@ -26,7 +26,6 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lens.LensController;
@@ -43,6 +42,8 @@ import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.widget.ViewRectProvider;
+
+import java.util.function.Supplier;
 
 /** A handler class for actions triggered by buttons in a GoogleBottomBar. */
 @NullMarked

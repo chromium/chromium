@@ -6,7 +6,6 @@ package org.chromium.content_public.browser.test.transit;
 
 import android.graphics.Rect;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.base.test.transit.Element;
@@ -20,6 +19,7 @@ import org.chromium.content_public.browser.test.transit.HtmlConditions.NotDispla
 import org.chromium.content_public.browser.test.util.DOMUtils;
 
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 
 /**
  * A Public Transit {@link Element} representing an HTML DOM element to be searched for in the given

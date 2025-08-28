@@ -29,7 +29,6 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.memory.MemoryPressureMonitor;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.version_info.VersionConstants;
 import org.chromium.build.BuildConfig;
@@ -50,6 +49,8 @@ import org.chromium.components.crash.PureJavaExceptionHandler.JavaExceptionRepor
 import org.chromium.components.embedder_support.application.FontPreloadingWorkaround;
 import org.chromium.components.module_installer.util.ModuleUtil;
 import org.chromium.ui.base.ResourceBundle;
+
+import java.util.function.Supplier;
 
 /**
  * Application base class which will call through to the given {@link Impl}. Application classes

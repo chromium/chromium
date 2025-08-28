@@ -4,11 +4,12 @@
 
 package org.chromium.chrome.test.transit.page;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Coordinates;
+
+import java.util.function.Supplier;
 
 /** Fulfilled when FrameInfo of the WebContents provided has been updated. */
 public class FrameInfoUpdatedCondition extends UiThreadCondition {

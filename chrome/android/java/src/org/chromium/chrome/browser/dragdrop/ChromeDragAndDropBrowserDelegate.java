@@ -21,7 +21,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -35,6 +34,8 @@ import org.chromium.ui.dragdrop.DropDataAndroid;
 import org.chromium.ui.dragdrop.DropDataProviderImpl;
 import org.chromium.ui.dragdrop.DropDataProviderUtils;
 import org.chromium.ui.util.XrUtils;
+
+import java.util.function.Supplier;
 
 /** Delegate for browser related functions used by Drag and Drop. */
 @NullMarked

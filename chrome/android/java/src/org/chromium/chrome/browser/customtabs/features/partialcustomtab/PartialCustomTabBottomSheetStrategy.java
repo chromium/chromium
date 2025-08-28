@@ -44,7 +44,6 @@ import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 import org.chromium.base.MathUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType;
@@ -66,6 +65,7 @@ import org.chromium.ui.util.ColorUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.function.Supplier;
 
 /**
  * CustomTabHeightStrategy for Partial Custom Tab. An instance of this class should be owned by the

@@ -19,7 +19,6 @@ import androidx.core.view.ViewCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -56,6 +55,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /** Coordinator that handles the interactions with the autocomplete system. */
 @NullMarked

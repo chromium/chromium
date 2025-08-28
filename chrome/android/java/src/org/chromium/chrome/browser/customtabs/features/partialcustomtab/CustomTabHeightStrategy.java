@@ -11,7 +11,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
 import androidx.browser.customtabs.CustomTabsCallback;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
@@ -24,6 +23,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 /** The default strategy for setting the height of the custom tab. */
 public class CustomTabHeightStrategy implements FindToolbarObserver {

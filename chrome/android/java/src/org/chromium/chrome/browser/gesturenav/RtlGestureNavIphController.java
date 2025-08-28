@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -26,6 +25,8 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+
+import java.util.function.Supplier;
 
 /**
  * A controller triggering the Iph Dialog when conditions are satisfied.

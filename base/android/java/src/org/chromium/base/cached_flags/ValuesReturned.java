@@ -8,11 +8,11 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.GuardedBy;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /** Keeps track of values returned for cached flags and field trial parameters. */
 @NullMarked

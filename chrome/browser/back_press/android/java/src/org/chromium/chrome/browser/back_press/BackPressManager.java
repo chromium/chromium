@@ -21,7 +21,6 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -29,6 +28,8 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.Type;
 import org.chromium.components.browser_ui.widget.gesture.OnSystemNavigationObserver;
+
+import java.util.function.Supplier;
 
 /**
  * A central manager class to handle the back gesture. Every component/feature which is going to

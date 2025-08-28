@@ -48,7 +48,6 @@ import org.chromium.base.LocaleUtils;
 import org.chromium.base.jank_tracker.PlaceholderJankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -95,6 +94,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.function.Supplier;
 
 /** Tests for {@link FeedSurfaceCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)

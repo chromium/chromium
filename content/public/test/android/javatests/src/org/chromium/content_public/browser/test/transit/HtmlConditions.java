@@ -6,7 +6,6 @@ package org.chromium.content_public.browser.test.transit;
 
 import android.graphics.Rect;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.ConditionStatusWithResult;
@@ -16,6 +15,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 
 /** {@link Condition}s related to HTML DOM Elements. */
 public class HtmlConditions {

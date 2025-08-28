@@ -6,11 +6,11 @@ package org.chromium.chrome.browser.tabmodel;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.function.Supplier;
 
 /** Defines the policy to determine the next tab after a tab is closed. */
 @Retention(RetentionPolicy.SOURCE)

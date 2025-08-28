@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.vr;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.CompositorView;
@@ -17,6 +16,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.webxr.VrCompositorDelegate;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
+
+import java.util.function.Supplier;
 
 /** Concrete, Chrome-specific implementation of VrCompositorDelegate interface. */
 @NullMarked

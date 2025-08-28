@@ -16,7 +16,6 @@ import android.view.View.OnClickListener;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
@@ -34,6 +33,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Supplier;
 
 /** Mediator for discounts bottom sheet responsible for model list update. */
 @NullMarked

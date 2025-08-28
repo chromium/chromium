@@ -43,7 +43,6 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.Initializer;
@@ -114,6 +113,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * Implementation of the interface {@link Tab}. Contains and manages a {@link ContentView}. This

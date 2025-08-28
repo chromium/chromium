@@ -41,7 +41,6 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -96,6 +95,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.lang.ref.WeakReference;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 /** JUnit tests for BaseCustomTabRootUiCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)

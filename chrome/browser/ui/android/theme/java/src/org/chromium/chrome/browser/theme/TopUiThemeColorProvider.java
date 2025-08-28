@@ -10,7 +10,6 @@ import android.content.res.ColorStateList;
 import androidx.annotation.ColorInt;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
@@ -21,9 +20,12 @@ import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.util.ColorUtils;
 
+import java.util.function.Supplier;
+
 /**
  * Manages the theme color used on the top part of the UI based on Tab's theme color and other
  * conditions such as dark mode settings, incognito mode, security state, etc.
+ *
  * <p>The theme color is only updated when the supplied tab is non-null.
  */
 @NullMarked

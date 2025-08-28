@@ -13,7 +13,6 @@ import android.widget.FrameLayout;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chromecast.base.Observer;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.embedder_support.view.ContentViewRenderView;
@@ -22,6 +21,8 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
+
+import java.util.function.Supplier;
 
 class CastWebContentsScopes {
     interface WindowTokenProvider {

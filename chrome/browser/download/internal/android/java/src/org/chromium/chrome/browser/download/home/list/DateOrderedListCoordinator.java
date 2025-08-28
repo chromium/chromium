@@ -18,7 +18,6 @@ import android.widget.ScrollView;
 import org.chromium.base.Callback;
 import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.Log;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.dialogs.DownloadWarningBypassDialog;
@@ -43,6 +42,7 @@ import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /** The top level coordinator for the download home UI. */
 @NullMarked

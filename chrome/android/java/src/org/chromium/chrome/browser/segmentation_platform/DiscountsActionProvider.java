@@ -6,12 +6,13 @@ package org.chromium.chrome.browser.segmentation_platform;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+
+import java.util.function.Supplier;
 
 /** Provides Discounts signal for showing contextual page action for a given tab. */
 @NullMarked

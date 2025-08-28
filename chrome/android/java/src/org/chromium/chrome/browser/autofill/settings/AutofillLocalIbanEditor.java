@@ -27,7 +27,6 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.UsedByReflection;
@@ -44,6 +43,7 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * This class creates a view for adding, editing, and deleting a local IBAN. A local IBAN gets saved

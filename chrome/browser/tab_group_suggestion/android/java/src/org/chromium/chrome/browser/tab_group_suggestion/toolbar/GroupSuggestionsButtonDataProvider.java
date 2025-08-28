@@ -8,7 +8,6 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -16,6 +15,8 @@ import org.chromium.chrome.browser.tab_group_suggestion.R;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvider;
+
+import java.util.function.Supplier;
 
 /** Defines the UI details and click handler for the tab grouping toolbar button. */
 @NullMarked

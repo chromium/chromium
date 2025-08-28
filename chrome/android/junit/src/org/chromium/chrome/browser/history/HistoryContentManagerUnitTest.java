@@ -21,7 +21,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProviderJni;
@@ -39,6 +38,8 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
+
+import java.util.function.Supplier;
 
 /** Unit tests for {@link HistoryContentManager}. */
 @RunWith(BaseRobolectricTestRunner.class)

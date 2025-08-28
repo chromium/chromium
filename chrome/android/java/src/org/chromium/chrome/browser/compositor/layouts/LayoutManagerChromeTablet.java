@@ -11,7 +11,6 @@ import android.view.ViewStub;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -42,6 +41,8 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
+
+import java.util.function.Supplier;
 
 /** LayoutManagerChromeTablet is the specialization of LayoutManagerChrome for the tablet. */
 @NullMarked

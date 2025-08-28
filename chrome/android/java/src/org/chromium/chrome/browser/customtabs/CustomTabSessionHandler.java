@@ -17,7 +17,6 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsService;
 
 import org.chromium.base.Log;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.SessionHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -32,6 +31,8 @@ import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.NavigationEntry;
+
+import java.util.function.Supplier;
 
 /**
  * Implements {@link SessionHandler} for the given instance of Custom Tab activity; registers and

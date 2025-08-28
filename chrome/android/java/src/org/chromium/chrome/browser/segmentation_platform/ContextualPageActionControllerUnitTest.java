@@ -25,7 +25,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -37,6 +36,8 @@ import org.chromium.chrome.browser.tab_group_suggestion.toolbar.GroupSuggestions
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.components.commerce.core.ShoppingService;
+
+import java.util.function.Supplier;
 
 /** Unit tests for {@link ContextualPageActionController} */
 @RunWith(BaseRobolectricTestRunner.class)

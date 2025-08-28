@@ -20,7 +20,6 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.RequiredCallback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -47,10 +46,11 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
+import java.util.function.Supplier;
+
 /**
  * Content container for an OverlayPanel. This class is responsible for the management of the
- * WebContents displayed inside of a panel and exposes a simple API relevant to actions a
- * panel has.
+ * WebContents displayed inside of a panel and exposes a simple API relevant to actions a panel has.
  */
 @NullMarked
 public class OverlayPanelContent {

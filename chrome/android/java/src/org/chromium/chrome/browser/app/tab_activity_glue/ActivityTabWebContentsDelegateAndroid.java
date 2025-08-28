@@ -27,7 +27,6 @@ import org.chromium.base.Log;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -80,6 +79,7 @@ import org.chromium.url.GURL;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * {@link WebContentsDelegateAndroid} that interacts with {@link Activity} and those of the lifetime

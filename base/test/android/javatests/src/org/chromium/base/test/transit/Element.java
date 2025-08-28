@@ -4,12 +4,12 @@
 
 package org.chromium.base.test.transit;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * Represents an Element added to a {@link ConditionalState} that supplies a {@param <ProductT>}.

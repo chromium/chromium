@@ -8,9 +8,10 @@ import android.graphics.Matrix;
 import android.util.Size;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+
+import java.util.function.Supplier;
 
 /** Handles scaling of the top level frame for the paint preview player. */
 @NullMarked

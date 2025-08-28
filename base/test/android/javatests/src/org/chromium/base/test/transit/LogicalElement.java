@@ -6,13 +6,13 @@ package org.chromium.base.test.transit;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatus.Status;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.concurrent.Callable;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Represents a logical expression that has to be true to consider the Station active and false to

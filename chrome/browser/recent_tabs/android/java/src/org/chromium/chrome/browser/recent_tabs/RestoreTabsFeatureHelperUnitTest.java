@@ -27,7 +27,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -47,6 +46,7 @@ import org.chromium.url.JUnitTestGURLs;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 /** Unit tests for RestoreTabsFeatureHelper. */
 @RunWith(BaseRobolectricTestRunner.class)

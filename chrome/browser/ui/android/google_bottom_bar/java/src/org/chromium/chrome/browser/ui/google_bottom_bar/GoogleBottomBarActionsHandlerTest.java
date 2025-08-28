@@ -53,7 +53,6 @@ import org.robolectric.annotation.Resetter;
 import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowPackageManager;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.lens.LensController;
@@ -70,6 +69,7 @@ import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /** Unit tests for {@link BottomBarConfig}. */
 @RunWith(BaseRobolectricTestRunner.class)

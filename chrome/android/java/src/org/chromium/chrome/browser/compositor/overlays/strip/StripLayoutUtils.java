@@ -13,7 +13,6 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -30,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 
 @NullMarked
 public class StripLayoutUtils {

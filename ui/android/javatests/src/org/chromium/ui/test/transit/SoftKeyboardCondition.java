@@ -7,10 +7,11 @@ package org.chromium.ui.test.transit;
 import android.app.Activity;
 import android.view.View;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatusWithResult;
 import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.ui.KeyboardUtils;
+
+import java.util.function.Supplier;
 
 /**
  * Expects the soft keyboard to be in the expected state (shown or hidden).

@@ -13,7 +13,6 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
@@ -27,6 +26,8 @@ import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.metrics.LegacyTabStartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.WebApkSplashscreenMetrics;
+
+import java.util.function.Supplier;
 
 /** Handles recording user metrics for WebAPK activities. */
 public class WebApkActivityLifecycleUmaTracker

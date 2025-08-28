@@ -7,13 +7,14 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.Context;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+
+import java.util.function.Supplier;
 
 /**
  * A coordinator for the overflow menu in tab groups. This applies to both the TabGridDialog toolbar

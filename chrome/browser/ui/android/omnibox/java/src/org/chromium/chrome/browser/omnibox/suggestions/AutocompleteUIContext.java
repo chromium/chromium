@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import android.content.Context;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
@@ -17,6 +16,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * Immutable context object containing common UI dependencies for Autocomplete suggestion

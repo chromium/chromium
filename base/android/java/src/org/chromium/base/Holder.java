@@ -4,9 +4,10 @@
 
 package org.chromium.base;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+
+import java.util.function.Supplier;
 
 /**
  * A simple mutable reference. Often used to pass a supplier from one object that's later to another

@@ -16,7 +16,6 @@ import androidx.annotation.IdRes;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -32,6 +31,8 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
+
+import java.util.function.Supplier;
 
 /**
  * A coordinator for the menu on tab group cards in GTS. It is responsible for creating a list of

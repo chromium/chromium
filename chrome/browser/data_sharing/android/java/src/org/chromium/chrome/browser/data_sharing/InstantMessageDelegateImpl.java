@@ -20,7 +20,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.Holder;
 import org.chromium.base.Token;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -62,6 +61,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 /**
  * Responsible for displaying browser and OS messages for share. This is effectively a singleton,

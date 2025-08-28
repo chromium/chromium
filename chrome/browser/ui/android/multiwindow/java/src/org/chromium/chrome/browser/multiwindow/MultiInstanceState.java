@@ -10,12 +10,12 @@ import android.util.SparseBooleanArray;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ObserverList;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Tracks multi-instance mode of Chrome browser app.

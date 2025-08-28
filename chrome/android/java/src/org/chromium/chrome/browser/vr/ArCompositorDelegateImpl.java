@@ -9,7 +9,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -17,6 +16,8 @@ import org.chromium.chrome.browser.compositor.CompositorView;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.components.webxr.ArCompositorDelegate;
 import org.chromium.content_public.browser.WebContents;
+
+import java.util.function.Supplier;
 
 /** Concrete, Chrome-specific implementation of ArCompositorDelegate interface. */
 @NullMarked

@@ -14,7 +14,6 @@ import androidx.annotation.StringRes;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.ObserverList;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -25,6 +24,8 @@ import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.function.Supplier;
 
 /** Base class for button data providers used on the adaptive toolbar. */
 @NullMarked

@@ -19,7 +19,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.UserData;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
@@ -37,6 +36,8 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+
+import java.util.function.Supplier;
 
 /**
  * Represents the suspension page presented when a user tries to visit a site whose fully-qualified

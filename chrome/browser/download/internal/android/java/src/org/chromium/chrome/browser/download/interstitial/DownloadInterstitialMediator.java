@@ -29,7 +29,6 @@ import androidx.core.util.Pair;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.home.list.ListProperties;
@@ -61,6 +60,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * Mediator for download interstitials. Handles internal state, event callbacks and interacts with

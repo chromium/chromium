@@ -14,7 +14,6 @@ import android.content.Context;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
@@ -29,6 +28,7 @@ import org.chromium.url.GURL;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.function.Supplier;
 
 /**
  * Class that observes url and tab changes in order to track when browsing stops and starts for each

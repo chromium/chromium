@@ -10,7 +10,6 @@ import android.view.View;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.ObserverList;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.home.filter.Filters.FilterType;
@@ -21,6 +20,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.function.Supplier;
 
 /** A Coordinator responsible for showing the tab filter selection UI for downloads home. */
 @NullMarked

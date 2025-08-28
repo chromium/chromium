@@ -8,7 +8,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -32,6 +31,8 @@ import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetControll
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
+
+import java.util.function.Supplier;
 
 /**
  * A class that manages activity-specific interactions with the BottomSheet component that it

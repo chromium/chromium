@@ -16,7 +16,6 @@ import android.widget.TextView;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -39,6 +38,8 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.url.GURL;
+
+import java.util.function.Supplier;
 
 /** Class for controlling the page info 'About This Site' section. */
 @NullMarked

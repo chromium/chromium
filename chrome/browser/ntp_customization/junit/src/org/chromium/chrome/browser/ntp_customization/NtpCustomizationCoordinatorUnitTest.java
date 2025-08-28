@@ -30,11 +30,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp_customization.ntp_cards.NtpCardsCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+
+import java.util.function.Supplier;
 
 /** Unit tests for {@link NtpCustomizationCoordinator} */
 @RunWith(BaseRobolectricTestRunner.class)

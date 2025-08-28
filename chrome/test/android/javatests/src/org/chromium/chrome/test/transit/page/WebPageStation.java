@@ -7,7 +7,6 @@ package org.chromium.chrome.test.transit.page;
 import android.util.Pair;
 import android.view.View;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.Element;
@@ -24,6 +23,7 @@ import org.chromium.content_public.browser.test.util.TouchCommon;
 
 import java.util.List;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 
 /** The screen that shows a loaded webpage with the omnibox and the toolbar. */
 public class WebPageStation extends CtaPageStation {

@@ -20,7 +20,6 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -37,6 +36,7 @@ import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.function.Supplier;
 
 /**
  * A util helper class to know if e2e is on and eligible for current session and to record metrics

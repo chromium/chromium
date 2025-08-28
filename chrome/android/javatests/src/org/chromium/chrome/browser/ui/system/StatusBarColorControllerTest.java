@@ -29,7 +29,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -66,6 +65,8 @@ import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.util.ColorUtils;
+
+import java.util.function.Supplier;
 
 /**
  * {@link StatusBarColorController} tests. There are additional status bar color tests in {@link

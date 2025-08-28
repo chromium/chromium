@@ -19,7 +19,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -36,6 +35,8 @@ import org.chromium.content_public.common.Referrer;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
+
+import java.util.function.Supplier;
 
 /** Integration tests for {@link TabContextMenuItemDelegate}. */
 @RunWith(ChromeJUnit4ClassRunner.class)

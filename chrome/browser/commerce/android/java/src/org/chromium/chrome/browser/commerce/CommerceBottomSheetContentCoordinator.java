@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView.State;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -34,6 +33,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Coordinator for building a commerce bottom sheet content. */
 @NullMarked

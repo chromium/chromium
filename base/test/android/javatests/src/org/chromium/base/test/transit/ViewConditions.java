@@ -27,13 +27,13 @@ import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.RawFailureHandler;
 import org.chromium.base.test.util.ViewPrinter;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.function.Supplier;
 
 /** {@link Condition}s related to Android {@link View}s. */
 @NullMarked

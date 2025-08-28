@@ -69,7 +69,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
@@ -156,6 +155,7 @@ import org.chromium.url.GURL;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /** The Toolbar layout to be used for a custom tab. This is used for both phone and tablet UIs. */
 public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickListener {

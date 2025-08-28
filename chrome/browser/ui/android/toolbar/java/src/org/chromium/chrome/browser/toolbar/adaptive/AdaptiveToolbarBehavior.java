@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.toolbar.adaptive;
 
 import android.content.Context;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.feature_engagement.Tracker;
@@ -16,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /** Embedder-specific behavior of Adaptive Toolbar. */
 @NullMarked

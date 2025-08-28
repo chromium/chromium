@@ -5,7 +5,6 @@
 package org.chromium.chrome.test.transit.tabmodel;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -14,6 +13,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /** Check that this list of tab group matches the expected list of tab groups. */
 public class TabGroupsExistCondition extends UiThreadCondition {

@@ -52,7 +52,6 @@ import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -108,6 +107,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.DoubleConsumer;
+import java.util.function.Supplier;
 
 /** Unit tests for {@link TabSwitcherPane} and {@link TabSwitcherPaneBase}. */
 @RunWith(BaseRobolectricTestRunner.class)

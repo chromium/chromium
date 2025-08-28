@@ -7,11 +7,11 @@ package org.chromium.base;
 import android.content.Context;
 import android.provider.Settings;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.io.File;
+import java.util.function.Supplier;
 
 /** Provides implementation of command line initialization for Android. */
 @NullMarked

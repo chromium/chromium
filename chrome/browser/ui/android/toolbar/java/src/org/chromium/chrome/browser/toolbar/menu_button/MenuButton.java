@@ -29,7 +29,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -40,6 +39,8 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.highlight.PulseDrawable;
 import org.chromium.ui.interpolators.Interpolators;
+
+import java.util.function.Supplier;
 
 /** The overflow menu button. */
 @NullMarked

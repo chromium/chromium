@@ -8,11 +8,12 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.feature_engagement.Tracker;
+
+import java.util.function.Supplier;
 
 /** This factory creates Tracker for the given {@link Profile}. */
 @NullMarked

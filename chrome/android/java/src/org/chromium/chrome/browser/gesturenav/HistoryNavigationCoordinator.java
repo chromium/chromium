@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.MonotonicNonNull;
@@ -34,6 +33,8 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.util.function.Supplier;
 
 /** Coordinator object for gesture navigation. */
 @NullMarked

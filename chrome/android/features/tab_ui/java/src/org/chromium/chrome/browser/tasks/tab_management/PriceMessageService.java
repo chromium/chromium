@@ -11,7 +11,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFactory;
@@ -26,6 +25,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * One of the concrete {@link MessageService} that only serves {@link MessageType#PRICE_MESSAGE}.

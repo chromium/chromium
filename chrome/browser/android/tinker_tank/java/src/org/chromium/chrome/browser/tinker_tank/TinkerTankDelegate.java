@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tinker_tank;
 import android.app.Activity;
 
 import org.chromium.base.ServiceLoaderUtil;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -17,6 +16,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Interface for working with TinkerTank. */
 @NullMarked
@@ -36,11 +36,25 @@ public interface TinkerTankDelegate {
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.TINKER_TANK_BOTTOM_SHEET);
     }
 
-    void maybeShowBottomSheet(
+    default void maybeShowBottomSheet(
             Activity activity,
             Profile profile,
             BottomSheetController bottomSheetController,
-            Supplier<TabModelSelector> tabModelSelectorSupplier);
+            Supplier<TabModelSelector> tabModelSelectorSupplier) {
+        maybeShowBottomSheet(
+                activity,
+                profile,
+                bottomSheetController,
+                (org.chromium.base.supplier.Supplier<TabModelSelector>)
+                        tabModelSelectorSupplier::get);
+    }
+
+    // TODO(crbug.com/440309602) Delete.
+    default void maybeShowBottomSheet(
+            Activity activity,
+            Profile profile,
+            BottomSheetController bottomSheetController,
+            org.chromium.base.supplier.Supplier<TabModelSelector> tabModelSelectorSupplier) {}
 
     void maybeShowForSelectedTabs(
             Activity activity, BottomSheetController bottomSheetController, List<Tab> tabs);

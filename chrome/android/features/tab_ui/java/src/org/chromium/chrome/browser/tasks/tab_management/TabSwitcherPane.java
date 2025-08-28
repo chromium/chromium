@@ -23,7 +23,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -65,6 +64,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 import java.util.List;
 import java.util.function.DoubleConsumer;
+import java.util.function.Supplier;
 
 /** A {@link Pane} representing the regular tab switcher. */
 @NullMarked

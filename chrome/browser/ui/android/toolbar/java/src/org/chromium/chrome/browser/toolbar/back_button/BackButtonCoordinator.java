@@ -12,7 +12,6 @@ import android.view.View;
 import androidx.core.graphics.Insets;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -25,6 +24,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.util.ClickWithMetaStateCallback;
 import org.chromium.ui.widget.ChromeImageButton;
+
+import java.util.function.Supplier;
 
 /**
  * Root component for the back button. Exposes public API for external consumers to interact with

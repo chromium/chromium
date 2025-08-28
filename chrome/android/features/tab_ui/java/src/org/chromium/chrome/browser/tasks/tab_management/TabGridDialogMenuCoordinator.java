@@ -13,7 +13,6 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -24,6 +23,8 @@ import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+
+import java.util.function.Supplier;
 
 /**
  * A coordinator for the menu in TabGridDialog toolbar. It is responsible for creating a list of

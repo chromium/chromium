@@ -16,7 +16,6 @@ import androidx.core.util.Pair;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
@@ -36,6 +35,8 @@ import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.RectProvider;
+
+import java.util.function.Supplier;
 
 @NullMarked
 public class HomePageButtonsMediator {

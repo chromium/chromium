@@ -19,7 +19,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -46,6 +45,7 @@ import org.chromium.ui.widget.Toast;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 /** A helper class that provides access to common logic involved in tab dragging. */
 @NullMarked

@@ -64,7 +64,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.base.supplier.UnwrapObservableSupplier;
@@ -348,6 +347,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
 
 /**
  * This is the main activity for ChromeMobile when not running in document mode. All the tabs are

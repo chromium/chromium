@@ -37,7 +37,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -56,6 +55,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Tests for {@link TabListEditorAddToGroupAction}. */
 @RunWith(BaseRobolectricTestRunner.class)

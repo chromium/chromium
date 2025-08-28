@@ -15,7 +15,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataKey;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -31,6 +30,7 @@ import org.chromium.ui.permissions.PermissionPrefs;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 /**
  * Central class containing the logic for when to trigger notification permission request optionally

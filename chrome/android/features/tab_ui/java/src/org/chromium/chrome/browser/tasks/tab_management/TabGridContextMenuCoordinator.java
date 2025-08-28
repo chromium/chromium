@@ -16,7 +16,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -43,6 +42,7 @@ import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.RectProvider;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * A coordinator for the context menu accessed by long-pressing on a tab. It is responsible for

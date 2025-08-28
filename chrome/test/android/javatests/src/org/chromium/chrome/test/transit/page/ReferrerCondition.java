@@ -4,11 +4,12 @@
 
 package org.chromium.chrome.test.transit.page;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
+
+import java.util.function.Supplier;
 
 /** Condition checking that the page referrer has the expected value. */
 public class ReferrerCondition extends Condition {

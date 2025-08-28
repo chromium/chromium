@@ -15,7 +15,6 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.TimingMetric;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -54,6 +53,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import java.util.Collections;
+import java.util.function.Supplier;
 
 /** This class creates various kinds of new tabs and adds them to the right {@link TabModel}. */
 @NullMarked

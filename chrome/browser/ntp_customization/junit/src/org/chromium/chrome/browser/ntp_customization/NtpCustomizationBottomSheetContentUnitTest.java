@@ -34,10 +34,11 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+
+import java.util.function.Supplier;
 
 /** Unit tests for {@link NtpCustomizationBottomSheetContent}. */
 @RunWith(BaseRobolectricTestRunner.class)

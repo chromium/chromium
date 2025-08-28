@@ -9,7 +9,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -21,6 +20,8 @@ import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.Highl
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
+
+import java.util.function.Supplier;
 
 /** Controls showing IPH for App Specific history. */
 @NullMarked

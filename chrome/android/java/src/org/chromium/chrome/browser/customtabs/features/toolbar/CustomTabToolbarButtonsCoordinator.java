@@ -22,7 +22,6 @@ import android.view.View;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -48,6 +47,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 public class CustomTabToolbarButtonsCoordinator
         implements MenuButtonCoordinator.VisibilityDelegate,

@@ -8,9 +8,10 @@ import android.graphics.Point;
 import android.util.DisplayMetrics;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
+
+import java.util.function.Supplier;
 
 /** Utility class providing gesture actions for tests. */
 public final class GestureNavigationTestUtils {

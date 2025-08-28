@@ -63,7 +63,6 @@ import org.chromium.base.Token;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
@@ -110,6 +109,7 @@ import org.chromium.url.GURL;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Tests for {@link TabStripDragHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)

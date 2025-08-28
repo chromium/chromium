@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import androidx.annotation.Px;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -29,6 +28,7 @@ import org.chromium.ui.insets.InsetObserver;
 
 import java.util.List;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 /** This component handles the new, non-popup filling UI. */
 @NullMarked

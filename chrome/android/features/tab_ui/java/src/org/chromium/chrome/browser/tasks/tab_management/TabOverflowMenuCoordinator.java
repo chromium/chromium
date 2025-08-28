@@ -40,7 +40,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.LifetimeAssert;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
@@ -74,6 +73,7 @@ import org.chromium.ui.widget.ViewRectProvider;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * A coordinator for the overflow menu for tabs and tab groups. This applies to both the

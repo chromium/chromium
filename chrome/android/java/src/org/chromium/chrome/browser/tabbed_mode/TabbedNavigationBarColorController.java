@@ -22,7 +22,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -59,6 +58,7 @@ import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.ColorUtils;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /** Controls the bottom system navigation bar color for the provided {@link Window}. */
 @NullMarked

@@ -9,7 +9,6 @@ import android.graphics.RectF;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -28,6 +27,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.resources.ResourceManager;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /** The public interface for the top toolbar texture component. */
 @NullMarked

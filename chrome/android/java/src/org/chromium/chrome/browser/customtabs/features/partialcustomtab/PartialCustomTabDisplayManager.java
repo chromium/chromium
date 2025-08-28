@@ -21,7 +21,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBaseStrategy.PartialCustomTabType;
@@ -35,6 +34,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 /**
  * Class responsible for how the Partial Chrome Custom Tabs are displayed on the screen. It creates

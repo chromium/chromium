@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -33,6 +32,7 @@ import org.chromium.components.page_info.PageInfoRowView;
 import org.chromium.components.page_info.PageInfoSubpageController;
 
 import java.util.Date;
+import java.util.function.Supplier;
 
 /** Class for controlling the page info history section. */
 @NullMarked

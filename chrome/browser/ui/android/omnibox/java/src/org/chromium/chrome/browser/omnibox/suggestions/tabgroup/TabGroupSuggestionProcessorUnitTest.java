@@ -23,7 +23,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
@@ -49,6 +48,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /** Tests for {@link TabGroupSuggestionProcessor}. */
 @RunWith(BaseRobolectricTestRunner.class)

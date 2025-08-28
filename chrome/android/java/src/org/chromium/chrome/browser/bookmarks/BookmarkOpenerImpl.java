@@ -16,7 +16,6 @@ import androidx.annotation.Nullable;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.IntentHandler;
@@ -30,6 +29,7 @@ import org.chromium.ui.base.PageTransition;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /** Implementation of {@link BookmarkOpener} which relies on intents. */
 @NullMarked

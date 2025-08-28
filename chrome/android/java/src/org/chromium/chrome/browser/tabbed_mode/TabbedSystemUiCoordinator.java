@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tabbed_mode;
 import android.view.Window;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
@@ -26,6 +25,7 @@ import org.chromium.ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.ui.insets.InsetObserver;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * A UI coordinator that manages the system status bar and bottom navigation bar for

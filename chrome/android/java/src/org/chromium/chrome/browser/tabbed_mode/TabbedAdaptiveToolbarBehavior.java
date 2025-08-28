@@ -9,7 +9,6 @@ import android.content.Context;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -34,6 +33,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Implements tabbed browser-specific behavior of adaptive toolbar button. */
 @NullMarked

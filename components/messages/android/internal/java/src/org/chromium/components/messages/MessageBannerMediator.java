@@ -25,7 +25,6 @@ import androidx.annotation.IntDef;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -42,6 +41,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Mediator responsible for the business logic in a message banner. */
 @NullMarked

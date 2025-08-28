@@ -9,6 +9,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.util.function.Supplier;
+
 /** Utilities for interactions with Suppliers. */
 @NullMarked
 public class SupplierUtils {

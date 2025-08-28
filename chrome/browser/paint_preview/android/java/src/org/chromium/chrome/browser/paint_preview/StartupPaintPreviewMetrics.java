@@ -11,13 +11,13 @@ import androidx.annotation.IntDef;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.paintpreview.player.CompositorStatus;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /** Helper class for recording metrics related to TabbedPaintPreview. */
 @NullMarked

@@ -12,7 +12,6 @@ import android.view.View;
 
 import org.chromium.base.Callback;
 import org.chromium.base.SysUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.MonotonicNonNull;
@@ -43,6 +42,8 @@ import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.url.GURL;
+
+import java.util.function.Supplier;
 
 /**
  * Central class for ephemeral tab, responsible for spinning off other classes necessary to display

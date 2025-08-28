@@ -20,7 +20,6 @@ import androidx.core.view.WindowInsetsCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
@@ -30,6 +29,8 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayUtil;
+
+import java.util.function.Supplier;
 
 /**
  * Implementation of {@link OmniboxSuggestionsDropdownEmbedder} that positions it using an "anchor"

@@ -9,7 +9,6 @@ import android.content.Context;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -57,6 +56,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Acts as a bridge between {@link RootUiCoordinator} and {@link AdaptiveToolbarButtonController}.

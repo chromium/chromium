@@ -12,7 +12,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -37,6 +36,7 @@ import org.chromium.ui.widget.Toast;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * The root coordinator for the bottom controls component. This component is intended for use with

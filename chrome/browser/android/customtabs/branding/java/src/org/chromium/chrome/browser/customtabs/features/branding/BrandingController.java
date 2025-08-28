@@ -15,7 +15,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.MonotonicNonNull;
@@ -26,6 +25,7 @@ import org.chromium.components.crash.PureJavaExceptionReporter;
 import org.chromium.ui.widget.Toast;
 
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 /** Controls the strategy to start branding, and the duration to show branding. */
 @NullMarked

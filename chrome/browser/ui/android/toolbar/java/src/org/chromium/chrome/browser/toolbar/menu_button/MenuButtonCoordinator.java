@@ -19,7 +19,6 @@ import androidx.annotation.IdRes;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
@@ -37,6 +36,8 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.util.KeyboardNavigationListener;
+
+import java.util.function.Supplier;
 
 /**
  * Root component for the app menu button on the toolbar. Owns the MenuButton view and handles

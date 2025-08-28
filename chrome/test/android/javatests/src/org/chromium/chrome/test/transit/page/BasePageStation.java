@@ -9,7 +9,6 @@ import static org.chromium.base.test.transit.Condition.whether;
 import com.google.errorprone.annotations.CheckReturnValue;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.CallbackCondition;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
@@ -31,6 +30,7 @@ import org.chromium.ui.base.PageTransition;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Base class for the screen that shows a web or native page in ChromeActivity. {@link

@@ -9,7 +9,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.text.TextUtils;
 
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersTabHelper;
@@ -37,6 +36,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
+import java.util.function.Supplier;
 
 /**
  * This class controls the interaction of the "edit url" suggestion item with the rest of the

@@ -24,7 +24,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier.NotifyBehavior;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -78,6 +77,7 @@ import org.chromium.url.GURL;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /** Handles updating the model state for the currently visible omnibox suggestions. */
 @NullMarked

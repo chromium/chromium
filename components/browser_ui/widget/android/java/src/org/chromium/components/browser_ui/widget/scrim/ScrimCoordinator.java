@@ -15,7 +15,6 @@ import androidx.core.content.ContextCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.R;
@@ -27,6 +26,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * The coordinator for the scrim components. Creating and owning the mediator and view, and scoped

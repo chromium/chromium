@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.recent_tabs;
 
 import android.content.Context;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
@@ -14,6 +13,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Controller for accessing helper functions for the singleton factory instance. */
 @NullMarked

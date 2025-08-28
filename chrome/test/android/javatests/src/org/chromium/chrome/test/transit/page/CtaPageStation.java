@@ -13,7 +13,6 @@ import android.os.SystemClock;
 import android.view.View;
 import android.widget.ImageButton;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
@@ -35,6 +34,8 @@ import org.chromium.chrome.test.transit.layouts.LayoutTypeVisibleCondition;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.content_public.browser.test.util.TouchCommon;
+
+import java.util.function.Supplier;
 
 /**
  * The screen that shows a web or native page with the toolbar within a tab.

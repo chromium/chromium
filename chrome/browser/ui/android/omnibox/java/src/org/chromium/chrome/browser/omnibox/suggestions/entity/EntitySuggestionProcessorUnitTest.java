@@ -34,7 +34,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
@@ -59,6 +58,7 @@ import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /** Tests for {@link EntitySuggestionProcessor}. */
 @RunWith(BaseRobolectricTestRunner.class)

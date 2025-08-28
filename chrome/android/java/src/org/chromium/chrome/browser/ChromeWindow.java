@@ -9,7 +9,6 @@ import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -22,10 +21,11 @@ import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.lang.ref.WeakReference;
+import java.util.function.Supplier;
 
 /**
- * The window that has access to the main activity and is able to create and receive intents,
- * and show error messages.
+ * The window that has access to the main activity and is able to create and receive intents, and
+ * show error messages.
  */
 @NullMarked
 public class ChromeWindow extends ActivityWindowAndroid {

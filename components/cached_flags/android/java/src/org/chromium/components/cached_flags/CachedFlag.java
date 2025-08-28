@@ -11,7 +11,6 @@ import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Flag;
 import org.chromium.base.cached_flags.ValuesReturned;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -19,6 +18,7 @@ import org.chromium.build.annotations.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * CachedFlags are Flags that may be used before native is loaded and the FeatureList is

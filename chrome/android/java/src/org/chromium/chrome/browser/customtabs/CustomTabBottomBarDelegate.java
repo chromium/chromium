@@ -28,7 +28,6 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -50,6 +49,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.interpolators.Interpolators;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Delegate that manages bottom bar area inside of {@link CustomTabActivity}. */
 public class CustomTabBottomBarDelegate

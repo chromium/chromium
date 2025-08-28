@@ -16,7 +16,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
@@ -32,6 +31,8 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.LoadingView;
 import org.chromium.url.GURL;
+
+import java.util.function.Supplier;
 
 /**
  * Controls showing the follow accelerator upon navigation to pages from a Following Feed

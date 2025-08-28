@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.View.OnDragListener;
 
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -35,6 +34,7 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Define the default behavior when {@link ChromeTabbedActivity} receive drag events that's not

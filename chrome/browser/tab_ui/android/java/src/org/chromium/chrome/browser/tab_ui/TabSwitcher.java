@@ -4,12 +4,12 @@
 
 package org.chromium.chrome.browser.tab_ui;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Interface for the Tab Switcher. */
 @NullMarked

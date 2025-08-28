@@ -12,7 +12,6 @@ import android.content.Context;
 
 import org.jni_zero.CalledByNative;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsCustomTabLauncherImpl;
@@ -22,6 +21,8 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+
+import java.util.function.Supplier;
 
 /** Bridge between Java and native PasswordManager code. */
 @NullMarked

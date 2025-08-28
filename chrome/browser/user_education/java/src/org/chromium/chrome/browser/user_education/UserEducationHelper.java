@@ -12,7 +12,6 @@ import android.os.Handler;
 import android.view.View;
 
 import org.chromium.base.TraceEvent;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -31,6 +30,7 @@ import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Class that manages requests to trigger IPH's. Customizes the IPH with text bubbles, view

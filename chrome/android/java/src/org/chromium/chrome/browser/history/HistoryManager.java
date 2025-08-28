@@ -24,7 +24,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -60,6 +59,7 @@ import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /** Combines and manages the different UI components of browsing history. */
 @NullMarked

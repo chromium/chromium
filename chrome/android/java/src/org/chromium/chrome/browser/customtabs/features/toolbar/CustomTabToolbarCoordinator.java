@@ -22,7 +22,6 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
@@ -48,6 +47,8 @@ import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.url.GURL;
+
+import java.util.function.Supplier;
 
 /**
  * Works with the toolbar in a Custom Tab. Encapsulates interactions with Chrome's toolbar-related

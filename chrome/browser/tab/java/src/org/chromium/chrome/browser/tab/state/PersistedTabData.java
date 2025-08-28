@@ -18,7 +18,6 @@ import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -33,13 +32,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
- * PersistedTabData is Tab data persisted across restarts
- * A constructor of taking a Tab, a PersistedTabDataStorage and
- * PersistedTabDataID (identifier for {@link PersistedTabData}
- * in storage) is required as reflection is used to build
- * the object after acquiring the serialized object from storage.
+ * PersistedTabData is Tab data persisted across restarts A constructor of taking a Tab, a
+ * PersistedTabDataStorage and PersistedTabDataID (identifier for {@link PersistedTabData} in
+ * storage) is required as reflection is used to build the object after acquiring the serialized
+ * object from storage.
  */
 @NullMarked
 public abstract class PersistedTabData implements UserData {

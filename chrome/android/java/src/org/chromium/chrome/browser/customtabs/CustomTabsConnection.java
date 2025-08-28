@@ -50,7 +50,6 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.ChainedTasks;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -108,6 +107,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Implementation of the ICustomTabsService interface.
@@ -1406,7 +1406,19 @@ public class CustomTabsConnection {
     void showSignInToastIfNecessary(
             SessionHolder<?> session,
             Intent intent,
-            Supplier<ProfileProvider> profileProviderSupplier) {}
+            Supplier<ProfileProvider> profileProviderSupplier) {
+        showSignInToastIfNecessary(
+                session,
+                intent,
+                (org.chromium.base.supplier.Supplier<ProfileProvider>)
+                        profileProviderSupplier::get);
+    }
+
+    // TODO(crbug.com/440309602) Delete.
+    void showSignInToastIfNecessary(
+            SessionHolder<?> session,
+            Intent intent,
+            org.chromium.base.supplier.Supplier<ProfileProvider> profileProviderSupplier) {}
 
     /**
      * Returns whether the app launching the CCT may display account mismatch notification UI.

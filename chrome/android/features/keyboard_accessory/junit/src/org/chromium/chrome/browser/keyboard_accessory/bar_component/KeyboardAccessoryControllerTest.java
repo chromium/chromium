@@ -46,7 +46,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
@@ -85,6 +84,7 @@ import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
 import org.chromium.ui.test.util.modelutil.FakeViewProvider;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Controller tests for the keyboard accessory component. */
 @RunWith(BaseRobolectricTestRunner.class)

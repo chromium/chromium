@@ -37,7 +37,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.chrome.R;
@@ -224,6 +223,7 @@ import org.chromium.url.GURL;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /** A {@link RootUiCoordinator} variant that controls tabbed-mode specific UI. */
 public class TabbedRootUiCoordinator extends RootUiCoordinator {

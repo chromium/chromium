@@ -10,7 +10,6 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.UserDataHost;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.navigation_controller.LoadURLType;
@@ -24,11 +23,11 @@ import org.chromium.url.Origin;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
- * Holds parameters for NavigationController.LoadUrl. Parameters should match
- * counterparts in NavigationController::LoadURLParams, including default
- * values.
+ * Holds parameters for NavigationController.LoadUrl. Parameters should match counterparts in
+ * NavigationController::LoadURLParams, including default values.
  */
 @JNINamespace("content")
 @NullMarked

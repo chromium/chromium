@@ -23,13 +23,14 @@ import androidx.browser.trusted.TrustedWebActivityIntentBuilder;
 import androidx.browser.trusted.splashscreens.SplashScreenParamKey;
 
 import org.chromium.base.IntentUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashDelegate;
 import org.chromium.chrome.browser.customtabs.TranslucentCustomTabActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.util.ColorUtils;
+
+import java.util.function.Supplier;
 
 /**
  * Orchestrates the flow of showing and removing splash screens for apps based on Trusted Web

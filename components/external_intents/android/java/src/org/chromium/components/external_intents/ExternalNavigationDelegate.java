@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.pm.ResolveInfo;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
@@ -17,6 +16,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /** A delegate for {@link ExternalNavigationHandler}. */
 @NullMarked

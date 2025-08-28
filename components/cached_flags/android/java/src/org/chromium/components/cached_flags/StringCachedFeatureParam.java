@@ -11,9 +11,10 @@ import androidx.annotation.AnyThread;
 import org.chromium.base.FeatureMap;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.cached_flags.ValuesReturned;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+
+import java.util.function.Supplier;
 
 /** A String-type {@link CachedFeatureParam}. */
 @NullMarked

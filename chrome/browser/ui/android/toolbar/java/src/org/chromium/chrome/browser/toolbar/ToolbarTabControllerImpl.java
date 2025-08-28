@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.toolbar;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -26,6 +25,7 @@ import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.PageTransition;
 
 import java.util.Collections;
+import java.util.function.Supplier;
 
 /** Implementation of {@link ToolbarTabController}. */
 @NullMarked

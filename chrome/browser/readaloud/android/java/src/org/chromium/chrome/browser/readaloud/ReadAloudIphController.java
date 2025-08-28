@@ -12,7 +12,6 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -20,9 +19,10 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.components.feature_engagement.FeatureConstants;
 
-import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
+import java.util.function.Supplier;
 
 /**
  * Controller to manage when and how we show ReadAloud in-product-help messages to users in the app

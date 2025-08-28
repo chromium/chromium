@@ -65,7 +65,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.SyncOneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.UserActionTester;
@@ -98,6 +97,7 @@ import org.chromium.ui.util.XrUtils;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.function.Supplier;
 
 /**
  * Unit tests for {@link HubLayout}.

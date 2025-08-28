@@ -9,7 +9,6 @@ import android.view.Gravity;
 
 import androidx.annotation.GravityInt;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -26,6 +25,8 @@ import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+
+import java.util.function.Supplier;
 
 /** Helper class showing page info dialog for Clank. */
 @NullMarked

@@ -29,7 +29,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
@@ -46,6 +45,8 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.url.JUnitTestGURLs;
+
+import java.util.function.Supplier;
 
 /** Unit tests for {@link MinimizedCustomTabIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)

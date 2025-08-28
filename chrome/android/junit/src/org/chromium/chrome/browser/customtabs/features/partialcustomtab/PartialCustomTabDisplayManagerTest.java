@@ -41,7 +41,6 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.CallbackUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -51,6 +50,8 @@ import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialC
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabDisplayManager.SizeStrategyCreator;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.ui.base.LocalizationUtils;
+
+import java.util.function.Supplier;
 
 /** Tests for {@link PartialCustomTabDisplayManager}. */
 @RunWith(BaseRobolectricTestRunner.class)

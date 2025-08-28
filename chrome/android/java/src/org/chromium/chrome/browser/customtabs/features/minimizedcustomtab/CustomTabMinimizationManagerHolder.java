@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
@@ -20,6 +19,8 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+
+import java.util.function.Supplier;
 
 /** Class that holds the {@link CustomTabMinimizationManager}. */
 public class CustomTabMinimizationManagerHolder implements DestroyObserver {

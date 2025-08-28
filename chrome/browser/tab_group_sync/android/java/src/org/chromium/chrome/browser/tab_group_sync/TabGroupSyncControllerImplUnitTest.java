@@ -29,7 +29,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -45,6 +44,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncController;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 import java.util.ArrayList;
+import java.util.function.Supplier;
 
 /** Unit tests for the {@link TabGroupSyncControllerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)

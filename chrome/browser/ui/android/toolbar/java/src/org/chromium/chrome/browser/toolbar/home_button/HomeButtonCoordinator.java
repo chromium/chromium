@@ -15,7 +15,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
@@ -31,6 +30,8 @@ import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.widget.RectProvider;
+
+import java.util.function.Supplier;
 
 /**
  * Root component for the {@link HomeButton} on the toolbar. Currently owns context menu for the

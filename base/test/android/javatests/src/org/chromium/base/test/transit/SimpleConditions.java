@@ -4,9 +4,8 @@
 
 package org.chromium.base.test.transit;
 
-import org.chromium.base.supplier.Supplier;
-
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /** Simple Conditions to be created from lambdas instead of subclassing. */
 public class SimpleConditions {

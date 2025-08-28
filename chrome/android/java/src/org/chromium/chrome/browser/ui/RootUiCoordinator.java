@@ -38,7 +38,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -203,6 +202,7 @@ import org.chromium.ui.widget.Toast;
 
 import java.lang.ref.WeakReference;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 /**
  * The root UI coordinator. This class will eventually be responsible for inflating and managing

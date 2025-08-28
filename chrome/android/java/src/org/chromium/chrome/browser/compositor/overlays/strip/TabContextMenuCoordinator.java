@@ -35,7 +35,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
@@ -86,6 +85,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * A coordinator for the context menu on the tab strip by long-pressing on a single tab or a tab
