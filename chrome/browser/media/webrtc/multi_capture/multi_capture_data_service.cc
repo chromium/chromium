@@ -75,6 +75,10 @@ bool MultiCaptureDataService::IsMultiCaptureAllowed(const GURL& url) const {
       });
 }
 
+bool MultiCaptureDataService::IsMultiCaptureAllowedForAnyApp() const {
+  return multi_screen_capture_allowlist_on_login_.size();
+}
+
 void MultiCaptureDataService::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 
