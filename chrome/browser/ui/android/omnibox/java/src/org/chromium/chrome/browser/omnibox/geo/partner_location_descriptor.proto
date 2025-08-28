@@ -6,9 +6,6 @@
 // geographical information to the Default Search Engine in omnibox queries
 // when location permissions are granted.
 //
-// TODO(lbargu): Move over to standard Geo header once it is defined, and remove
-// this proto structure from chromium code base.
-//
 // NOTE: This is currently using a Google-defined structure. This explains the
 // jumps in values. New fields cannot be added to this proto directly. See
 // https://goto.google.com/partner_location_proto
@@ -31,6 +28,12 @@ enum LocationProducer {
   DEVICE_LOCATION = 12;
 }
 
+enum PermissionGranularity {
+  PERMISSION_GRANULARITY_UNKNOWN = 0;
+  PERMISSION_GRANULARITY_COARSE = 1;
+  PERMISSION_GRANULARITY_FINE = 2;
+}
+
 message LatLng {
   optional sfixed32 latitude_e7 = 1;
   optional sfixed32 longitude_e7 = 2;
@@ -42,5 +45,6 @@ message LocationDescriptor {
   optional int64 timestamp = 3;
   optional LatLng latlng = 5;
   optional float radius = 7;
+  optional PermissionGranularity permission_granularity = 25;
   reserved 23;
 }
