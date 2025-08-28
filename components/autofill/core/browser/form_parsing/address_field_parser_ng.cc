@@ -474,8 +474,8 @@ std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
       // An address line 3 can only directly follow an address line 2.
       if (partial_classification_.contained_types.contains_all(
               {ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2}) &&
-          partial_classification_.assignments[ADDRESS_HOME_LINE2]->rank() ==
-              scanner_->Cursor()->rank() - 1) {
+          partial_classification_.assignments[ADDRESS_HOME_LINE2] ==
+              scanner_->Predecessor()) {
         if (auto r = Match("ADDRESS_LINE_2", 1.0)) {
           return r;
         }

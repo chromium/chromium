@@ -34,6 +34,9 @@ class AutofillScanner {
   // Returns the current field in the stream.
   AutofillField* Cursor() const;
 
+  // Returns the field before Cursor(), or nullptr if there is none.
+  AutofillField* Predecessor() const;
+
   // Returns |true| if the cursor has reached the end of the stream.
   bool IsEnd() const;
 

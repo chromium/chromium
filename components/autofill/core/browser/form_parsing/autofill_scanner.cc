@@ -30,6 +30,10 @@ AutofillField* AutofillScanner::Cursor() const {
   return *cursor_;
 }
 
+AutofillField* AutofillScanner::Predecessor() const {
+  return cursor_ != begin_ ? *std::prev(cursor_) : nullptr;
+}
+
 bool AutofillScanner::IsEnd() const {
   return cursor_ == end_;
 }
