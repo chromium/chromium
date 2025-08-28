@@ -12,6 +12,7 @@
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/glic_actor_controller.h"
+#include "chrome/browser/glic/host/glic_ui_embedder.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/widget/panel_delegate.h"
 
@@ -64,7 +65,7 @@ class GlicInstance : public PanelDelegate {
       zero_state_suggestions_manager_;
 
   // Replaces GlicWindowController on existing GlicKeyedService.
-  std::unique_ptr<Host::Delegate> embedder_;
+  std::unique_ptr<GlicUiEmbedder> embedder_;
   // bool is_chat_mode = true;
   // Probably initiated from a default setting but can be changed independently
   // per a Panel.
