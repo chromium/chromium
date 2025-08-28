@@ -56,7 +56,7 @@ public class MergedWebappInfo extends WebappInfo {
     }
 
     @Override
-    public String name() {
+    public @Nullable String name() {
         if (mUseOldName) {
             return mOldWebappInfo.getWebappExtras().name;
         }
@@ -64,7 +64,7 @@ public class MergedWebappInfo extends WebappInfo {
     }
 
     @Override
-    public String shortName() {
+    public @Nullable String shortName() {
         if (mUseOldName) {
             return mOldWebappInfo.getWebappExtras().shortName;
         }

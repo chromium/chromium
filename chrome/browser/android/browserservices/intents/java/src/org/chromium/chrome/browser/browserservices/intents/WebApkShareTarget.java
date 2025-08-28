@@ -27,8 +27,8 @@ public class WebApkShareTarget {
             @Nullable String paramText,
             boolean isMethodPost,
             boolean isEncTypeMultipart,
-            String[] fileNames,
-            String[][] fileAccepts) {
+            String @Nullable [] fileNames,
+            String @Nullable [][] fileAccepts) {
         mData = new String[3];
         mData[ACTION_INDEX] = replaceNullWithEmpty(action);
         mData[PARAM_TITLE_INDEX] = replaceNullWithEmpty(paramTitle);

@@ -51,7 +51,7 @@ public class WebappIcon {
      * @param isTrusted Whether the encoded data came from a trusted source. If false, the data
      *     won't be used to generate a bitmap.
      */
-    public WebappIcon(String encoded, boolean isTrusted) {
+    public WebappIcon(@Nullable String encoded, boolean isTrusted) {
         mEncoded = encoded;
         mIsTrusted = isTrusted;
     }

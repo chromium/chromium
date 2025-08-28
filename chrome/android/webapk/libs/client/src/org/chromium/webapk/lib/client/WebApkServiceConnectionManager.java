@@ -89,7 +89,7 @@ public class WebApkServiceConnectionManager {
     private final @Nullable String mCategory;
 
     /** The action of the service to connect to. */
-    private final String mAction;
+    private final @Nullable String mAction;
 
     private final @TaskTraits int mUiThreadTaskTraits;
 
@@ -102,7 +102,9 @@ public class WebApkServiceConnectionManager {
     private final HashMap<String, Connection> mConnections = new HashMap<>();
 
     public WebApkServiceConnectionManager(
-            @TaskTraits int uiThreadTaskTraits, @Nullable String category, String action) {
+            @TaskTraits int uiThreadTaskTraits,
+            @Nullable String category,
+            @Nullable String action) {
         mUiThreadTaskTraits = uiThreadTaskTraits;
         mCategory = category;
         mAction = action;

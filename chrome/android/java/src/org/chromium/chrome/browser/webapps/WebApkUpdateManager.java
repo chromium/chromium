@@ -141,7 +141,8 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
      * Manifest has changed. Skips the check if the check was done recently.
      */
     public void updateIfNeeded(
-            WebappDataStorage storage, BrowserServicesIntentDataProvider intentDataProvider) {
+            WebappDataStorage storage,
+            @Nullable BrowserServicesIntentDataProvider intentDataProvider) {
         mStorage = storage;
         mInfo = WebappInfo.create(intentDataProvider);
 
@@ -262,7 +263,7 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
 
     @Override
     public void onGotManifestData(
-            BrowserServicesIntentDataProvider fetchedIntentDataProvider,
+            @Nullable BrowserServicesIntentDataProvider fetchedIntentDataProvider,
             String primaryIconUrl,
             String splashIconUrl) {
         mFetchedPrimaryIconUrl = primaryIconUrl;

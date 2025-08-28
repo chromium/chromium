@@ -19,7 +19,6 @@ import android.os.Looper;
 import android.os.Messenger;
 import android.os.RemoteException;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -27,6 +26,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
@@ -46,6 +47,7 @@ import org.chromium.webapk.lib.runtime_library.IWebApkApi;
  * Provides APIs for browsers to communicate with WebAPK services. Each WebAPK has its own "WebAPK
  * service".
  */
+@NullMarked
 public class WebApkServiceClient {
     // Callback which catches RemoteExceptions thrown due to IWebApkApi failure.
     @FunctionalInterface
@@ -53,7 +55,7 @@ public class WebApkServiceClient {
         void useApi(IWebApkApi api) throws RemoteException;
 
         @Override
-        default void onConnected(IBinder api) {
+        default void onConnected(@Nullable IBinder api) {
             if (api == null) {
                 return;
             }
@@ -77,7 +79,7 @@ public class WebApkServiceClient {
     // A bundle key for a {@link PermissionStatus}.
     private static final String KEY_PERMISSION_STATUS = "permissionStatus";
 
-    private static WebApkServiceClient sInstance;
+    private static @Nullable WebApkServiceClient sInstance;
 
     /** Manages connections between the browser application and WebAPK services. */
     private final WebApkServiceConnectionManager mConnectionManager;
@@ -257,6 +259,7 @@ public class WebApkServiceClient {
 
     /** Finishes and removes the WebAPK's task. */
     public void finishAndRemoveTaskSdk23(final Activity activity, WebApkExtras webApkExtras) {
+        assert webApkExtras.webApkPackageName != null;
         connect(
                 webApkExtras.webApkPackageName,
                 api -> {

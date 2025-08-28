@@ -14,6 +14,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappIcon;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
@@ -54,7 +55,8 @@ public class WebApkSyncService {
         WebApkSyncServiceJni.get().onWebApkUninstalled(manifestId);
     }
 
-    static WebApkSpecifics getWebApkSpecifics(WebappInfo webApkInfo, WebappDataStorage storage) {
+    static WebApkSpecifics getWebApkSpecifics(
+            @Nullable WebappInfo webApkInfo, WebappDataStorage storage) {
         if (webApkInfo == null || !webApkInfo.isForWebApk()) {
             return null;
         }

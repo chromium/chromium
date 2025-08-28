@@ -71,11 +71,10 @@ public class WebappIntentUtils {
             };
 
     /**
-     * Converts color from signed Integer where an unspecified color is represented as null to
-     * to unsigned long where an unspecified color is represented as
-     * {@link ColorUtils.INVALID_COLOR}.
+     * Converts color from signed Integer where an unspecified color is represented as null to to
+     * unsigned long where an unspecified color is represented as {@link ColorUtils.INVALID_COLOR}.
      */
-    public static long colorFromIntegerColor(Integer color) {
+    public static long colorFromIntegerColor(@Nullable Integer color) {
         if (color != null) {
             return color.intValue();
         }

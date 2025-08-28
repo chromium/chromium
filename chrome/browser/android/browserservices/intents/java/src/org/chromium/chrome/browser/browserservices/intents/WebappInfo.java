@@ -65,11 +65,11 @@ public class WebappInfo {
         return getWebappExtras().scopeUrl;
     }
 
-    public String name() {
+    public @Nullable String name() {
         return getWebappExtras().name;
     }
 
-    public String shortName() {
+    public @Nullable String shortName() {
         return getWebappExtras().shortName;
     }
 
