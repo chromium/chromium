@@ -47,9 +47,10 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="TrustedVault.DownloadAuthenticationFactorsRegistrationState{SecurityDomainId}"
     enum="DownloadAuthenticationFactorsRegistrationStateResult"
-    expires_after="2025-10-05">
-  <owner>agl@google.com</owner>
+    expires_after="2026-10-05">
   <owner>mmoskvitin@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <owner>thomasth@google.com</owner>
   <summary>
     Records the results of DownloadAuthenticationFactorsRegistrationState calls.
     This function determines the recoverability state of a security domain.
