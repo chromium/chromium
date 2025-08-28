@@ -125,12 +125,6 @@ https://clangd.llvm.org/installation.html#editor-plugins).
       flags, so that your editor doesn't automatically add incorrect #include
       lines. The feature doesn't correctly handle some common Chromium headers
       like `base/functional/callback_forward.h`.
-    * If you see an error like `error: module file '.../module.pcm' uses an older
-      format that is no longer supported`, it means your editor is using a
-      different version of `clangd` than the one that comes with Chromium. You
-      need to configure your editor to use the `clangd` binary from your
-      Chromium checkout (see Getting clangd). For example,
-      in VSCode you would set the `clangd.path` setting.
 
 ## Background Indexing
 
