@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/color/color_provider_key.h"
@@ -23,6 +24,7 @@ class Widget;
 }  // namespace views
 
 class Browser;
+class WebUIBrowserSidePanelUI;
 class WebUIBrowserUI;
 class WebUIBrowserWebContentsDelegate;
 class WebUILocationBar;
@@ -248,6 +250,10 @@ class WebUIBrowserWindow : public BrowserWindow,
   // ui::AcceleratorProvider:
   bool GetAcceleratorForCommandId(int command_id,
                                   ui::Accelerator* accelerator) const override;
+
+  void ShowSidePanel(SidePanelEntryKey side_panel_entry_key);
+
+  WebUIBrowserSidePanelUI* GetWebUIBrowserSidePanelUI();
 
   Browser* browser() { return browser_.get(); }
   views::Widget* widget() { return widget_.get(); }

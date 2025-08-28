@@ -33,7 +33,7 @@ export class WebviewElement extends CrLitElement {
     };
   }
 
-  protected accessor guestId: number = -1;
+  accessor guestId: number = -1;
   private attached: boolean = false;
 
   override async connectedCallback() {

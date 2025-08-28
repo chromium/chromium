@@ -5,6 +5,7 @@
 import './bookmark_bar.js';
 import './content_region.js';
 import './icons.html.js';
+import './side_panel.js';
 import '/strings.m.js';
 import './tab_strip.js';
 import './webview.js';
@@ -21,6 +22,7 @@ import type {BookmarkBar} from './bookmark_bar.js';
 import {BookmarkBarController} from './bookmark_bar_controller.js';
 import {BrowserProxy} from './browser_proxy.js';
 import type {ContentRegion} from './content_region.js';
+import type {SidePanel} from './side_panel.js';
 import {TabStrip} from './tab_strip.js';
 import type {TabStripControllerDelegate} from './tab_strip_controller.js';
 import {TabStripController} from './tab_strip_controller.js';
@@ -32,6 +34,7 @@ export interface WebuiBrowserAppElement {
     avatarButton: HTMLElement,
     bookmarkBar: BookmarkBar,
     contentRegion: ContentRegion,
+    sidePanel: SidePanel,
     tabstrip: TabStrip,
   };
 }
@@ -72,6 +75,9 @@ export class WebuiBrowserAppElement extends CrLitElement implements
     this.tabStripController_ =
         new TabStripController(this, this.$.tabstrip, this.$.contentRegion);
     this.trackedElementManager_ = new TrackedElementManager();
+
+    const callbackRouter = BrowserProxy.getCallbackRouter();
+    callbackRouter.showSidePanel.addListener(this.showSidePanel_.bind(this));
   }
 
   override connectedCallback() {
@@ -186,9 +192,9 @@ export class WebuiBrowserAppElement extends CrLitElement implements
 
   protected override firstUpdated() {
     this.bookmarkBarController_.init(this.$.bookmarkBar);
-    BrowserProxy.getInstance().callbackRouter.setFocusToLocationBar.addListener(
+    BrowserProxy.getCallbackRouter().setFocusToLocationBar.addListener(
         this.setFocusToLocationBar.bind(this));
-    BrowserProxy.getInstance().callbackRouter.setReloadStopState.addListener(
+    BrowserProxy.getCallbackRouter().setReloadStopState.addListener(
         this.setReloadStopState.bind(this));
   }
 
@@ -239,6 +245,10 @@ export class WebuiBrowserAppElement extends CrLitElement implements
 
   protected setReloadStopState(isLoading: boolean) {
     this.reloadOrStopIcon_ = isLoading ? 'icon-clear' : 'icon-refresh';
+  }
+
+  protected showSidePanel_(guestContentsId: number) {
+    this.$.sidePanel.show(guestContentsId);
   }
 }
 

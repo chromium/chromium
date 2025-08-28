@@ -15,8 +15,10 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui_base.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_client_view.h"
+#include "chrome/browser/ui/webui_browser/webui_browser_side_panel_ui.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_web_contents_delegate.h"
 #include "chrome/browser/ui/webui_browser/webui_location_bar.h"
@@ -1028,4 +1030,13 @@ WebUIBrowserUI* WebUIBrowserWindow::GetWebUIBrowserUI() const {
       ->GetWebUI()
       ->GetController()
       ->GetAs<WebUIBrowserUI>();
+}
+
+void WebUIBrowserWindow::ShowSidePanel(SidePanelEntryKey side_panel_entry_key) {
+  GetWebUIBrowserUI()->ShowSidePanel(side_panel_entry_key);
+}
+
+WebUIBrowserSidePanelUI* WebUIBrowserWindow::GetWebUIBrowserSidePanelUI() {
+  return static_cast<WebUIBrowserSidePanelUI*>(
+      browser_->browser_window_features()->side_panel_ui());
 }

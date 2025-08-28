@@ -31,6 +31,8 @@ class WebUIBrowserSidePanelUI : public SidePanelUIBase {
   void DisableAnimationsForTesting() override;
   void SetNoDelaysForTesting(bool no_delays_for_testing) override;
 
+  content::WebContents* GetWebContentsForId(SidePanelEntryId entry_id) const;
+
  private:
   // SidePanelUIBase:
   void Close(bool suppress_animations) override;

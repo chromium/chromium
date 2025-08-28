@@ -9,7 +9,21 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_waiter.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/views/controls/webview/webview.h"
+#include "ui/views/view_utils.h"
+
+namespace {
+
+content::WebContents* GetContainingWebContents(views::View* view) {
+  auto* web_view = view->GetViewByID(SidePanelWebUIView::kSidePanelWebViewId);
+  CHECK(web_view);
+  return views::AsViewClass<views::WebView>(web_view)->web_contents();
+}
+
+}  // namespace
 
 WebUIBrowserSidePanelUI::WebUIBrowserSidePanelUI(Browser* browser)
     : SidePanelUIBase(browser) {
@@ -42,6 +56,13 @@ void WebUIBrowserSidePanelUI::SetNoDelaysForTesting(
     bool no_delays_for_testing) {}
 
 void WebUIBrowserSidePanelUI::Close(bool suppress_animations) {}
+
+content::WebContents* WebUIBrowserSidePanelUI::GetWebContentsForId(
+    SidePanelEntryId entry_id) const {
+  // Current assumes one and only one side panel is showing.
+  // TODO(webium): find web contents for entry_id.
+  return GetContainingWebContents(current_side_panel_view_.get());
+}
 
 void WebUIBrowserSidePanelUI::Show(
     const UniqueKey& input,
@@ -93,9 +114,7 @@ void WebUIBrowserSidePanelUI::PopulateSidePanel(
       content_view ? std::move(content_view.value()) : entry->GetContent();
   set_current_key(unique_key);
   set_current_entry(entry->GetWeakPtr());
-
-  // TODO(webium) Implement WebUIBrowserWindow::ShowSidePanel() and call it.
-  // GetWebUIBrowserWindow()->ShowSidePanel(entry->key());
+  GetWebUIBrowserWindow()->ShowSidePanel(entry->key());
 
   if (auto* contextual_registry = GetActiveContextualRegistry()) {
     contextual_registry->ResetActiveEntry();

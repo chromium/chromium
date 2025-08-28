@@ -60,6 +60,7 @@ export function getHtml(this: WebuiBrowserAppElement) {
   <div id="main">
     <content-region id="contentRegion"">
     </content-region>
+    <side-panel id="sidePanel"></side-panel>
   </div>
 </div>
 

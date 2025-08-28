@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/webui_browser/bookmark_bar_page_handler.h"
 #include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_page_handler.h"
+#include "chrome/browser/ui/webui_browser/webui_browser_side_panel_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/tab_strip_api_resources_map.h"
 #include "chrome/grit/webui_browser_resources.h"
@@ -153,8 +154,18 @@ void WebUIBrowserUI::BookmarkBarStateChanged(
 }
 
 void WebUIBrowserUI::ShowSidePanel(SidePanelEntryKey side_panel_entry_key) {
-  // TODO(webium): Create side panel and call page_->ShowSidePanel()
-  NOTIMPLEMENTED();
+  // Create guest contents.
+  WebUIBrowserSidePanelUI* side_panel_ui =
+      browser_window()->GetWebUIBrowserSidePanelUI();
+  content::WebContents* web_contents =
+      side_panel_ui->GetWebContentsForId(side_panel_entry_key.id());
+  web_contents->SetColorProviderSource(browser_window());
+  CHECK(web_contents);
+  auto* guest_handle =
+      guest_contents::GuestContentsHandle::CreateForWebContents(web_contents);
+
+  // Notify JS.
+  page_->ShowSidePanel(guest_handle->id());
 }
 
 void WebUIBrowserUI::CloseSidePanel() {

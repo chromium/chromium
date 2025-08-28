@@ -21,6 +21,7 @@ build_webui("build") {
     "browser_proxy.ts",
     "content_region.ts",
     "icons.html.ts",
+    "side_panel.ts",
     "tab_element.ts",
     "tab_element.html.ts",
     "tab_strip.ts",

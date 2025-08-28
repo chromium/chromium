@@ -16,6 +16,10 @@ export class BrowserProxy {
         this.handler.$.bindNewPipeAndPassReceiver());
   }
 
+  static getCallbackRouter(): PageCallbackRouter {
+    return BrowserProxy.getInstance().callbackRouter;
+  }
+
   static getPageHandler(): PageHandlerRemote {
     return BrowserProxy.getInstance().handler;
   }

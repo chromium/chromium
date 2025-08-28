@@ -26,6 +26,10 @@ interface Page {
 
   // Update the Reload/Stop button's state based on `is_loading`.
   SetReloadStopState(bool is_loading);
+
+  // Shows the side panel UI. The side panel contents is hosted by a guest
+  // contents.
+  ShowSidePanel(int32 guest_contents_id);
 };
 
 // Browser-side handler for requests from WebUI page.
