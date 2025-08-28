@@ -9940,7 +9940,9 @@ class TouchSelectionControllerClientAndroidSiteIsolationTest
     ui::MotionEventAndroid::Pointer p(0, point.x(), point.y(), 10, 0, 0, 0, 0,
                                       0);
     JNIEnv* env = base::android::AttachCurrentThread();
-    auto time_ns = (ui::EventTimeForNow() - base::TimeTicks()).InNanoseconds();
+    auto event_time = ui::EventTimeForNow();
+    auto down_time_ms =
+        base::TimeTicks::FromUptimeMillis(event_time.ToUptimeMillis());
 
     base::android::ScopedJavaLocalRef<jobject> obj =
         JNI_MotionEvent::Java_MotionEvent_obtain(
@@ -9952,7 +9954,9 @@ class TouchSelectionControllerClientAndroidSiteIsolationTest
         /*ticks_x=*/0,
         /*ticks_y=*/0,
         /*tick_multiplier=*/0,
-        /*oldest_event_time=*/base::TimeTicks::FromJavaNanoTime(time_ns),
+        /*oldest_event_time=*/event_time,
+        /*latest_event_time=*/event_time,
+        /*down_time_ms=*/down_time_ms,
         /*android_action=*/ui::MotionEventAndroid::GetAndroidAction(action),
         /*pointer_count=*/1,
         /*history_size=*/0,
@@ -9964,7 +9968,8 @@ class TouchSelectionControllerClientAndroidSiteIsolationTest
         /*raw_offset_y_pixels=*/0,
         /*for_touch_handle=*/false,
         /*pointer0=*/&p,
-        /*pointer1=*/nullptr);
+        /*pointer1=*/nullptr,
+        /*is_latest_event_time_resampled=*/false);
     view->OnTouchEvent(*touch);
   }
 

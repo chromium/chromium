@@ -62,7 +62,7 @@ class MockMotionEvent : public MotionEventGeneric {
   ~MockMotionEvent() override;
 
   // MotionEvent overrides;
-  base::TimeTicks GetDownTime() const override;
+  base::TimeTicks GetRawDownTime() const override;
 
   // Utility methods.
   MockMotionEvent& PressPoint(float x, float y);

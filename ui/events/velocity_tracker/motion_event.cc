@@ -28,7 +28,7 @@ base::TimeTicks MotionEvent::GetLatestEventTime() const {
   return GetEventTime();
 }
 
-base::TimeTicks MotionEvent::GetDownTime() const {
+base::TimeTicks MotionEvent::GetRawDownTime() const {
   NOTREACHED();
 }
 

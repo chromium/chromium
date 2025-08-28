@@ -118,7 +118,7 @@ TEST(MotionEventAndroidTest, Constructor) {
   EXPECT_EQ(MotionEvent::Action::DOWN, event->GetAction());
   EXPECT_EQ(oldest_event_time, event->GetEventTime());
   EXPECT_EQ(latest_event_time, event->GetLatestEventTime());
-  EXPECT_EQ(event->GetDownTime(), down_time_ms);
+  EXPECT_EQ(event->GetRawDownTime(), down_time_ms);
   EXPECT_EQ(p0.pos_x_pixels * kPixToDip, event->GetX(0));
   EXPECT_EQ(p0.pos_y_pixels * kPixToDip, event->GetY(0));
   EXPECT_EQ(p1.pos_x_pixels * kPixToDip, event->GetX(1));
@@ -417,7 +417,7 @@ TEST(MotionEventAndroidTest, NativeBackedConstructor) {
 
   EXPECT_EQ(event->GetEventTime(),
             base::TimeTicks::FromUptimeMillis(event_time_ms));
-  EXPECT_EQ(event->GetDownTime(),
+  EXPECT_EQ(event->GetRawDownTime(),
             base::TimeTicks::FromUptimeMillis(down_time_ms));
 }
 

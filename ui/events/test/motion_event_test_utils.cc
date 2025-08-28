@@ -97,7 +97,7 @@ MockMotionEvent::MockMotionEvent(const MockMotionEvent& other)
 MockMotionEvent::~MockMotionEvent() {
 }
 
-base::TimeTicks MockMotionEvent::GetDownTime() const {
+base::TimeTicks MockMotionEvent::GetRawDownTime() const {
   return cached_down_time_;
 }
 

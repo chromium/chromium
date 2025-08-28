@@ -120,7 +120,7 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
   // chromium it gives timestamp of the oldest input event for batched inputs.
   base::TimeTicks GetEventTime() const override;
   base::TimeTicks GetLatestEventTime() const override;
-  base::TimeTicks GetDownTime() const override;
+  base::TimeTicks GetRawDownTime() const override;
   size_t GetHistorySize() const override;
   base::TimeTicks GetHistoricalEventTime(
       size_t historical_index) const override;
