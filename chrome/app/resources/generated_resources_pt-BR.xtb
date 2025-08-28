@@ -502,7 +502,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1331065030686329928">Gerenciar o grupo de guias "<ph name="GROUP_NAME" />"</translation>
 <translation id="1331977651797684645">Fui eu.</translation>
 <translation id="1333489022424033687">Alguns recursos em <ph name="ORIGIN" /> podem não funcionar até que você limpe os dados de outros sites armazenados no dispositivo</translation>
-<translation id="1333965224356556482">Não permitir que os sites acessem seu local</translation>
+<translation id="1333965224356556482">Não permitir que os sites acessem sua localização</translation>
 <translation id="1335282218035876586">Seu Chromebook deixou de receber atualizações de segurança e de software. Faça upgrade para ter a melhor experiência possível.</translation>
 <translation id="133535873114485416">Entrada preferencial</translation>
 <translation id="1335929031622236846">Inscrever seu dispositivo</translation>
@@ -4292,7 +4292,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3930968231047618417">Cor do plano de fundo</translation>
 <translation id="3932356525934356570">Fixar <ph name="EXTENSION_NAME" /></translation>
 <translation id="3932477678113677556">Tamanho máximo de <ph name="MAX" /> caracteres</translation>
-<translation id="3933121352599513978">Recolher solicitações indesejadas (recomendado)</translation>
+<translation id="3933121352599513978">Fechar solicitações indesejadas (recomendado)</translation>
 <translation id="3936260554100916852">O dispositivo <ph name="DEVICE_NAME" /> está compartilhando uma rede Wi-Fi com você</translation>
 <translation id="3936390757709632190">&amp;Abrir áudio em uma nova guia</translation>
 <translation id="3937640725563832867">Nome alternativo do emissor do certificado</translation>

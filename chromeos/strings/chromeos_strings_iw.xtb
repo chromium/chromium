@@ -32,7 +32,7 @@
 <translation id="1107856713690040084">אודיו בפורמט <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">מידע כללי</translation>
 <translation id="1118572504348554005">יכול להיות שנשתף משוב שנשלח באמצעות הטופס הזה עם השותפים שלנו כדי לתקן באגים ולפתור בעיות אחרות שדווחו. אין להזין מידע רגיש כמו סיסמאות.</translation>
-<translation id="1118596190635569417">העברת התפריט הזה ימינה</translation>
+<translation id="1118596190635569417">העברת התפריט ימינה</translation>
 <translation id="1119403468619527527">יש מעט מדי מילים כדי לפשט</translation>
 <translation id="1119447706177454957">שגיאה פנימית</translation>
 <translation id="1124772482545689468">משתמש</translation>
@@ -159,7 +159,7 @@
 <translation id="1591562245178063882">החודש</translation>
 <translation id="1593528591614229756">‏חשוב לבחור נקודות APN שסופקו על ידי ספק הסלולר או האדמין. בחירת ה-APN תשבית את כל נקודות ה-APN בהתאמה אישית. נקודות APN לא תקינות עלולות לשבש את החיבור לרשת הסלולרית. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="1604959087182679653">הסתרת התמליל</translation>
-<translation id="160633243685262989">התצוגה המקדימה של התמונה</translation>
+<translation id="160633243685262989">תצוגה מקדימה של התמונה</translation>
 <translation id="1611649489706141841">קדימה</translation>
 <translation id="1615335640928990664">שימוש בחבילת הגלישה מאז <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">שימוש בעיצוב</translation>
@@ -437,7 +437,7 @@
 <translation id="2855718259207180827">צמר</translation>
 <translation id="2856429654176718363">‏ספינת חלל ענקית מרחפת מעל העיר, שמוארת באורות רבים. הסצנה כולה מוצגת בסגנון של ציור שמן בגוונים כהים. היא יוצרת אווירה מסתורית עם אלמנטים עתידניים בסגנון מדע בדיוני. הפוסטר הזה נוצר באמצעות תוכנת C4D וכלי OC לעיבוד כדי להדגיש את הרזולוציה הגבוהה והפרטים המדויקים. היו גם כמה בניינים עירוניים בטווח קרוב, שיצרו אפקט של עומק שדה. הסצנה מוצגת בסגנון של ציור שמן, עם גוונים כהים שיוצרים אווירה מסתורית עם אלמנטים עתידניים בסגנון מדע בדיוני.</translation>
 <translation id="2859243502336719778">עדכון קריטי</translation>
-<translation id="2860473693272905224">צריך להניח דף נוסף על הסורק</translation>
+<translation id="2860473693272905224">אפשר להוסיף עוד דף לסריקה</translation>
 <translation id="286265581261662583">בלחיצה ימנית או בלחיצה ארוכה על טקסט, יוצגו הגדרות, תרגומים או המרת יחידות</translation>
 <translation id="2872961005593481000">כיבוי</translation>
 <translation id="2873483161362553159">ניווט באמצעות הדפדפן</translation>
@@ -661,7 +661,7 @@
 <translation id="3941014780699102620">לא ניתן היה להתאים את נתוני המארח</translation>
 <translation id="3942420633017001071">אבחון</translation>
 <translation id="3954678691475912818">סוג המכשיר לא ידוע.</translation>
-<translation id="3959413315969265597">‏לא ניתן להפעיל את ה-APN הזה. צריך להוסיף APN ברירת מחדל.</translation>
+<translation id="3959413315969265597">‏אי אפשר להפעיל את ה-APN הזה. צריך להוסיף APN ברירת מחדל.</translation>
 <translation id="3966286471246132217">כדי לקבל תוצאות מדויקות יותר, סוגרים את כל האפליקציות עד להשלמת הבדיקה.</translation>
 <translation id="3967822245660637423">ההורדה הושלמה</translation>
 <translation id="3969602104473960991">‏הסיסמה של ChromeOS עודכנה</translation>
@@ -809,7 +809,7 @@
 <translation id="4521826082652183069">התאמה של שמות נושאים חלופיים</translation>
 <translation id="4522570452068850558">פרטים</translation>
 <translation id="4536864596629708641">‏תצורת IP</translation>
-<translation id="4546131424594385779">יצירה של סרטון שחוזר על עצמו</translation>
+<translation id="4546131424594385779">יצירה של סרטון בלופ</translation>
 <translation id="4548483925627140043">לא אותר אות</translation>
 <translation id="4556753742174065117">הקושחה מעודכנת במלואה</translation>
 <translation id="455835558791489930">סוללה בהספק של <ph name="CHARGE_VALUE" /> מיליאמפר לשעה</translation>
@@ -849,7 +849,7 @@
 <translation id="4733200407105375152">לא בכלי העזר להוראה</translation>
 <translation id="4734982181169850310">גווני פסטל</translation>
 <translation id="473775607612524610">עדכון</translation>
-<translation id="4744944742468440486">מידע בקשר לבחירה שלך</translation>
+<translation id="4744944742468440486">פרטים על הבחירה שלך</translation>
 <translation id="4750394297954878236">הצעות</translation>
 <translation id="4763771683769971829">רשימת השפות הזמינות</translation>
 <translation id="4771607256327216405">מקלדת בהירה</translation>
@@ -1087,7 +1087,7 @@
 <translation id="5849570051105887917">קוד ספק ביתי</translation>
 <translation id="5856267793478861942">‫<ph name="ATTACH" /> ‏(<ph name="IA" />)</translation>
 <translation id="5859603669299126575">אלבום של גלריית אומנות</translation>
-<translation id="5859969039821714932">מקש הקיצור לא זמין. צריך להקיש על מקש קיצור חדש בלי <ph name="KEY" />.</translation>
+<translation id="5859969039821714932">מקש הקיצור לא זמין. צריך ללחוץ על מקש קיצור חדש בלי <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">כבוי</translation>
 <translation id="5860491529813859533">הפעלה</translation>
 <translation id="586463370326011345">ברק</translation>
@@ -1162,7 +1162,7 @@
 <translation id="6136285399872347291">מחיקת תו אחד</translation>
 <translation id="6137614725462089991">סייברפאנק</translation>
 <translation id="6137767437444130246">אישור משתמש</translation>
-<translation id="6146993107019042706">כדי לסיים, יש להזין את הסיסמה החדשה</translation>
+<translation id="6146993107019042706">כדי לסיים, צריך להזין את הסיסמה החדשה</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6149015141270619212">לא ניתן להתחבר לאינטרנט</translation>
 <translation id="6156030503438652198">ורוד וחום ערמוני</translation>
@@ -1233,7 +1233,7 @@
 <translation id="6439505561246192797">חלש (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">מעבר אל הגדרות החשבון</translation>
 <translation id="6462978824459367242">‏הכפתור 'הוספת ה-APN' מופעל עכשיו</translation>
-<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{לסרוק את הדף מחדש?}=1{לסרוק מחדש את דף {PAGE_NUMBER}?}one{לסרוק מחדש את דף {PAGE_NUMBER}?}two{לסרוק מחדש את דף {PAGE_NUMBER}?}other{לסרוק מחדש את דף {PAGE_NUMBER}?}}</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{לסרוק את הדף מחדש?}=1{לסרוק מחדש את דף {PAGE_NUMBER}?}one{Rescan page {PAGE_NUMBER}?}two{לסרוק מחדש את דף {PAGE_NUMBER}?}other{לסרוק מחדש את דף {PAGE_NUMBER}?}}</translation>
 <translation id="6468146470109254228">‫3 ההנחיות והתוצאות האחרונות שלך. אפשר לגשת אליהן רק כשמשתמשים ב'טפט וסגנון'.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">סירות</translation>
@@ -1328,7 +1328,7 @@
 <translation id="6887967050249348172">התוספים מושבתים כדי למנוע שינויים בהגדרות. חשוב להפעיל רק תוספים מהימנים.</translation>
 <translation id="6889786074662672253">במהלך ההפעלה מחדש אסור לנתק את המכשיר החיצוני או לכבות את המחשב. אפשר למזער את החלון הזה. הפעולה נמשכת כמה דקות ויכול להיות שהמכשיר החיצוני לא יפעל בזמן הזה.</translation>
 <translation id="6899460405678814458">הצגת הסיכום</translation>
-<translation id="6900701049656042631">אין תמונות באלבום הזה. כדי להוסיף תמונה, צריך לעבור אל <ph name="LINK" /></translation>
+<translation id="6900701049656042631">באלבום הזה אין תמונות עדיין. כדי להוסיף תמונה, צריך לעבור אל <ph name="LINK" /></translation>
 <translation id="6902359863093437070">‏יצירת רקע באמצעות AI</translation>
 <translation id="6905163627763043954">רוצה לנסות</translation>
 <translation id="6905275015682612674">‏תמונה בחשיפה ארוכה של חוף עם אוֹרוּת ביולוגית עם שקיעה וכוכבים בשמיים, צבעי פסטל יפים, 4K</translation>
@@ -1395,7 +1395,7 @@
 <translation id="7138614237884624401">טקסט פשוט</translation>
 <translation id="7138668887584231801">יש מעט מדי מילים כדי ליצור סיכום</translation>
 <translation id="7143207342074048698">מתבצע חיבור</translation>
-<translation id="7144878232160441200">יש לנסות שוב</translation>
+<translation id="7144878232160441200">צריך לנסות שוב</translation>
 <translation id="7144954474087165241">פגודה</translation>
 <translation id="7147557737960578492">אפשר להקצות מחדש באמצעות בחירה של מקש חדש</translation>
 <translation id="714876143603641390">‏קישוריות LAN</translation>
@@ -1447,7 +1447,7 @@
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           מותר ליצור טפטים באמצעות AI רק לשימוש אישי ולא לשימוש מסחרי. כשמקבלים עזרה לגבי יצירת טפטים, הטקסט של הבקשה נשלח לשרתים של ה-AI מבית Google כדי ליצור הצעות לטפטים, בכפוף ל<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />מדיניות הפרטיות של Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
-<translation id="7343581795491695942">‏<ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; כדי לראות את התוצאות בחיפוש Google, לוחצים על 'חיפוש' ועל מקש הרווח.</translation>
+<translation id="7343581795491695942">‏<ph name="QUERY_TEXT" />, <ph name="RESULT_TEXT" />, כדי לראות את התוצאות בחיפוש Google, יש ללחוץ על מקש החיפוש ועל מקש הרווח.</translation>
 <translation id="7343649194310845056">מכשירים ברשת</translation>
 <translation id="7344788170842919262">אדמה</translation>
 <translation id="7346768383111016081">הקצאת אמצעי בקרה לפעולה במשחק כדי לשחק באמצעות המקלדת</translation>
@@ -1622,7 +1622,7 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />‎°‎ C</translation>
 <translation id="8131740175452115882">אישור</translation>
 <translation id="8132480444149501833">בקשה למוני תנועה</translation>
-<translation id="8135609423982943441">‏ה-Chromebook שלך אופס להגדרות ברירת מחדל בטוחות. אפשר לשנות זאת בכל שלב ב'הגדרות'.</translation>
+<translation id="8135609423982943441">‏ה-Chromebook שלך אופס להגדרות ברירת מחדל בטוחות. אפשר לערוך אותן בכל שלב ב"הגדרות".</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">יצירת עיצוב משלך</translation>
 <translation id="8142182840415860496">‏צילום תקריב של כמה פרחים לבנים וצהובים, צילום סטילס מתוך סרט אנימציה, פרח עדין בצבע ורוד בהיר עם עלי כותרת ארוכים וגבעול ירוק שמונח בין שני צבעונים צהובים גדולים על רקע שמיים כחולים ללא עלים או עלווה בצבעים פסטליים, צילום סטילס קולנועי ברזולוציה גבוהה עם פרטים מורכבים ומפורטים מאוד, עיבוד של Octane Render עם תאורה יפה, תאורה נפחית ותאורה דרמטית.</translation>
@@ -1766,7 +1766,7 @@
 <translation id="8820817407110198400">סימניות</translation>
 <translation id="8833620912470026819">יער קקטוסים</translation>
 <translation id="8834539327799336565">מחובר עכשיו</translation>
-<translation id="8845001906332463065">קבלת עזרה</translation>
+<translation id="8845001906332463065">לקבלת עזרה</translation>
 <translation id="8849799913685544685">מגדלור</translation>
 <translation id="8851859208664803097">המשימה הופסקה – אין גישה למדפסת</translation>
 <translation id="8855781559874488009">‏לא ניתן להתחבר עם חומת אש לאתרי HTTP</translation>
@@ -1843,7 +1843,7 @@
 <translation id="9106415115617144481">מתבצעת סריקה של עמוד <ph name="PAGE_NUMBER" /></translation>
 <translation id="9108856746036501072">‏מכשיר ההקלטה יכול ליצור תמלילים של הקלטות שכוללות דיבור. בשלב הבא, צריך לבחור את שפת התמלול ולהוריד את המודל (עד 100MB).</translation>
 <translation id="9111102763498581341">ביטול נעילה</translation>
-<translation id="9122492456897874028">סיכום של תוכן, קבלת הגדרות ועוד</translation>
+<translation id="9122492456897874028">מקבלים סיכומים של תוכן, הגדרות של מונחים ועוד</translation>
 <translation id="9122602430962285795">כדי להתחבר מחדש, צריך לעבור להגדרות</translation>
 <translation id="9122865513525855321">זן</translation>
 <translation id="9126720536733509015">‏שמירת מספר דפים בקובץ PDF אחד</translation>
@@ -1857,7 +1857,7 @@
 <translation id="9173638680043580060">נותרה פחות מדקה</translation>
 <translation id="9174334653006917325">הצבע של ממשק המשתמש</translation>
 <translation id="917720651393141712">בדיקה</translation>
-<translation id="9188992814426075118">אפשר להגדיר התאמה אוטומטית של המקלדת לטפט</translation>
+<translation id="9188992814426075118">אפשר לבחור בהתאמה אוטומטית של המקלדת לטפט</translation>
 <translation id="9189000703457422362">‏לא ניתן להתחבר לרשת הזו באמצעות פריטי APN שזוהו באופן אוטומטי. למידע נוסף, צריך ליצור קשר עם ספק הסלולר.</translation>
 <translation id="9190726385682694354"><ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="9193744392140377127">*APN</translation>

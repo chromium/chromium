@@ -801,7 +801,7 @@
 <translation id="1547123415014299762">तेस्रो पक्षीय कुकीहरू प्रयोग गर्न दिइन्छ</translation>
 <translation id="1547808936554660006">म डिभाइस पावरवास गर्दा त्यसमा इन्स्टल गरिएका eSIM प्रोफाइलहरू हट्ने छैनन् भन्ने कुरा बुझ्छु</translation>
 <translation id="1547936895218027488">यसलाई खोल्न साइड प्यानलको आइकनमा क्लिक गर्नुहोस्</translation>
-<translation id="1549275686094429035">ARC सक्षम पारिएको छ</translation>
+<translation id="1549275686094429035">ARC अन गरिएको छ</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> ले <ph name="VOLUME_NAME" /> पहुँच गर्न चाहन्छ। यसले तपाईँका फाइलहरू परिमार्जन गर्न वा मेटाउन सक्छ।</translation>
 <translation id="1549966883323105187">आफ्ना सेभ गरिएका पासवर्डहरू अझ छिटो हेर्नुहोस्</translation>
 <translation id="1550656959113606473">डिफल्ट Chrome</translation>
@@ -3257,7 +3257,7 @@
 <translation id="3253448572569133955">अज्ञात खाता</translation>
 <translation id="3253746622312821295">तारयुक्त हेडफोन</translation>
 <translation id="3254451942070605467"><ph name="FILE_NAME" /> डाउनलोड गरिँदै छ, <ph name="PERCENT_REMAINING" />% बाँकी छ</translation>
-<translation id="3254516606912442756">प्रामाणिक समय स्वत: पत्ता लगाउने सुविधालाई असक्षम पारिएको छ</translation>
+<translation id="3254516606912442756">प्रामाणिक समय स्वत: पत्ता लगाउने सुविधालाई अफ गरिएको छ</translation>
 <translation id="3255747772218936245">अपडेट इन्स्टल गर्नुहोस्</translation>
 <translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> लाई अनुमति दिने हो?</translation>
 <translation id="325797067711573598">शङ्कास्पद सामग्री डाउनलोड गर्ने कार्य ब्लक गरिएको छ</translation>
@@ -4701,7 +4701,7 @@
 <translation id="4251243704979202079"><ph name="ORIGIN" /> ले <ph name="FOLDERNAME" /> मा भएका फाइलहरू हेर्न र ती फाइलका कपीहरू बनाउन सक्छ</translation>
 <translation id="4251377547188244181">किअस्क र साइनेज डिभाइस दर्ता गर्ने प्रक्रिया</translation>
 <translation id="4252828488489674554">यो समूह सम्पादन गर्न ट्याब समूहको नाममा राइट क्लिक गर्नुहोस् वा कोल्याप्स गर्न क्लिक गर्नुहोस्</translation>
-<translation id="4252899949534773101">ब्लुटुथ असक्षम पारिएको छ</translation>
+<translation id="4252899949534773101">ब्लुटुथ अफ गरिएको छ</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - ट्याबको सामग्री आदन-प्रदान गरिएको छ</translation>
 <translation id="4253168017788158739">नोट</translation>
 <translation id="4253183225471855471">कुनै पनि नेटवर्क भेट्टिएन। फेरि प्रयास गर्नुअघि कृपया आफ्नो यन्त्रमा SIM हाल्नुहोस् अनि सो डिभाइस रिबुट गर्नुहोस्।</translation>
@@ -7647,7 +7647,7 @@
 <translation id="6367396429435748845">माउस कीहरू पज वा सुचारु गर्न <ph name="ALT" /> + <ph name="LAUNCHER" /> + <ph name="NUM_4" /> थिच्नुहोस्</translation>
 <translation id="6367985768157257101">नजिकैका डिभाइससँग सेयर गर्ने सुविधा प्रयोग गरी डेटा प्राप्त गर्ने हो?</translation>
 <translation id="6368157733310917710">ठेगाना तथा थप कुराहरू</translation>
-<translation id="6368276408895187373">सक्षम पारिएको छ – <ph name="VARIATION_NAME" /></translation>
+<translation id="6368276408895187373">अन गरिएको छ – <ph name="VARIATION_NAME" /></translation>
 <translation id="636850387210749493">उद्यम भर्ना</translation>
 <translation id="6370021412472292592">म्यानिफेस्ट लोड गर्न सकिएन।</translation>
 <translation id="6370551072524410110">सर्च + सिफ्ट + ब्याकस्पेस</translation>
@@ -9759,7 +9759,7 @@
 <translation id="7851457902707056880">साइन-इनलाई केवल मालिकको खातामा मात्र सीमित गरिएको छ। कृपया रिबुट गर्नुहोस् र  The machine will auto reboot in 30 seconds.</translation>
 <translation id="7851716364080026749">सधैं क्यामेरा र माइक्रोफोन प्रयोग ब्लक गर्नुहोस्</translation>
 <translation id="7851720427268294554">IPP पार्सर</translation>
-<translation id="78526636422538552">योभन्दा बढी Google खाताहरू थप्ने सुविधा असक्षम पारिएको छ</translation>
+<translation id="78526636422538552">योभन्दा बढी Google खाताहरू थप्ने सुविधा अफ गरिएको छ</translation>
 <translation id="785371335555334021"><ph name="TITLE" /> बाट निस्केर पछाडि फर्कन क्लिक गर्नुहोस्</translation>
 <translation id="7853747251428735">थप उपकरणहरू</translation>
 <translation id="7855258394151767387">माउसको कुनै बटन थिच्न “w” प्रयोग गर्नुहोस्</translation>
@@ -10051,7 +10051,7 @@
 <translation id="8042331986490021244">तपाईंका पासवर्डहरू तपाईंको डिभाइसमा इन्क्रिप्ट गरेपछि मात्र Google पासवर्ड म्यानेजरमा सेभ गरिन्छ</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> ले प्रतिक्रिया जनाइरहेको छैन।</translation>
 <translation id="8044899503464538266">मन्द</translation>
-<translation id="8045253504249021590">Google Dashboard मार्फत सिंक असक्षम पारिएको छ।</translation>
+<translation id="8045253504249021590">Google Dashboard मार्फत सिंक अफ गरिएको छ।</translation>
 <translation id="8045752459073395242">कार्यस्थलमा जेनेरेटिभ AI प्रयोग गर्ने बारेमा थप जान्नुहोस्</translation>
 <translation id="8045923671629973368">एपको ID वा वेबस्टोरको URL प्रविष्टि गर्नुहोस्</translation>
 <translation id="804786196054284061">प्रयोगकर्ताको इजाजतपत्रसम्बन्धी सम्झौता</translation>

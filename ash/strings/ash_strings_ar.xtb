@@ -549,7 +549,7 @@
 <translation id="2844169650293029770">‏جهاز USB-C (المنفذ الأمامي الأيسر)</translation>
 <translation id="2844350028562914727">التفاصيل</translation>
 <translation id="2847759467426165163">البث إلى</translation>
-<translation id="2848120746144143659">‏اضغط على المفتاح Enter لالتقاط صورة للشاشة بأكملها</translation>
+<translation id="2848120746144143659">‏يرجى الضغط على المفتاح Enter لالتقاط صورة للشاشة بأكملها</translation>
 <translation id="2849936225196189499">مهمة</translation>
 <translation id="2850207700020959936">يمكن للتطبيقات الوصول إلى الكاميرا</translation>
 <translation id="2860184359326882502">أفضل نتيجة مطابقة</translation>
@@ -608,7 +608,7 @@
 <translation id="304097922505898963">فتح تطبيق "اختصارات لوحة المفاتيح"</translation>
 <translation id="304417730895741346">تطبيقاتك المثبَّتة والمفتوحة معروضة هنا على الرف. لتثبيت تطبيق في الرف، انقر بزر الماوس الأيمن عليه أو انقر بإصبعين على لوحة اللمس.</translation>
 <translation id="3045488863354895414">مساء الخير،</translation>
-<translation id="3045670165536837541">المقبض المحدَّد في أعلى اليسار، ويمكن استخدام مفاتيح الأسهم لتحريكه</translation>
+<translation id="3045670165536837541">تم تحديد المقبض في أعلى اليسار، ويمكن استخدام مفاتيح الأسهم لتحريكه</translation>
 <translation id="3047761520276763270">يُرجى المحاولة بقول:</translation>
 <translation id="3053407068093039599">تفعيل إذن الوصول إلى الكاميرا أو إيقافه</translation>
 <translation id="3055162170959710888">استخدمت هذا الجهاز لمدة <ph name="USED_TIME" /> اليوم</translation>
@@ -961,7 +961,7 @@
 <translation id="4190780880566297084">عدم إعداد ميزة عرض الصور والوسائط والتطبيقات الحديثة في هاتفك</translation>
 <translation id="4192112279662688596">أو</translation>
 <translation id="4193857202545160520">إظهار اختصارات لوحة المفاتيح والنقرات</translation>
-<translation id="4193969623755915875">افتح قسم "المساعدة" في تطبيق "استكشاف" من خلال الاختصار "<ph name="NEW_SHORTCUT" />".</translation>
+<translation id="4193969623755915875">يمكنك فتح قسم "المساعدة" في تطبيق "استكشاف" من خلال الاختصار "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="4195579532193195633">‏الإصدار الحالي ‎<ph name="VERSION_NAME" /> ‏(حالته: <ph name="OFFICIAL_STATUS" />) اسم قناته <ph name="CHANNEL_NAME" /> بنيته <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">المتابعة من حيث توقفت</translation>
 <translation id="4195877955194704651">زر النقرات التلقائية</translation>
@@ -994,7 +994,7 @@
 <translation id="4275663329226226506">الوسائط</translation>
 <translation id="4279490309300973883">النسخ المطابق</translation>
 <translation id="4280601795273309128">انتهت تحديثات الأمان المتوفّرة لهذا الجهاز. يُرجى ترقية الجهاز.</translation>
-<translation id="4283888303416325161">أدخِل كلمة المرور لزيادة مستوى الأمان</translation>
+<translation id="4283888303416325161">إدخال كلمة مرور يزيد مستوى الأمان</translation>
 <translation id="4285498937028063278">إزالة التثبيت</translation>
 <translation id="428715201724021596">جارٍ الاتصال بالملف الشخصي. قد تستغرق هذه العملية بضع دقائق.</translation>
 <translation id="4287250812980588583">‏نافذة Chrome</translation>
@@ -1170,7 +1170,7 @@
 <translation id="4826588772550366629">الكاميرا والميكروفون</translation>
 <translation id="4828935196674083554">جارٍ الإضافة...</translation>
 <translation id="482908187605862807">‏التطبيقات المتوفّرة من "متجر Play"</translation>
-<translation id="4831034276697007977">هل تريد فعلاً إيقاف النقرات التلقائية؟</translation>
+<translation id="4831034276697007977">هل المطلوب فعلاً إيقاف النقرات التلقائية؟</translation>
 <translation id="4835677468087803981">إخفاء رقم التعريف الشخصي</translation>
 <translation id="4849058404725798627">تمييز الكائن باستخدام تركيز لوحة المفاتيح</translation>
 <translation id="485592688953820832">عدم اتخاذ أي إجراء (إيقاف مؤقَّت)</translation>
@@ -1420,7 +1420,7 @@
 <translation id="5596627076506792578">خيارات إضافية</translation>
 <translation id="5599242528220103262">اختصار لوحة المفاتيح غير مفعَّل</translation>
 <translation id="5600415762228455511">"وضع التركيز" مفعَّل، ويتبقّى <ph name="REMAINING_TIME" />، وسيتم التركيز على: <ph name="TASK_NAME" />.</translation>
-<translation id="5600837773213129531">‏اضغط على Ctrl + Alt + Z لإيقاف التعليقات والملاحظات المنطوقة</translation>
+<translation id="5600837773213129531">‏يُرجى الضغط على Ctrl + Alt + Z لإيقاف الوصف الشفهي للشاشة</translation>
 <translation id="5601503069213153581">رقم التعريف الشخصي</translation>
 <translation id="5618148318840095371">تم نقل اتصالك إلى شبكة أفضل</translation>
 <translation id="5619862035903135339">تحظر سياسة المشرف تصوير الشاشة.</translation>
@@ -1587,7 +1587,7 @@
 <translation id="6127395413317891856">جهازك غير متصل بالإنترنت. يُرجى التحقّق من الاتصال والمحاولة مجددًا.</translation>
 <translation id="6129953537138746214">مسافة</translation>
 <translation id="6137566720514957455">فتح مربع الحوار لإزالة الحساب <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="6141205840878048728">ما الذي تريد التركيز عليه؟</translation>
+<translation id="6141205840878048728">ما المطلوب التركيز عليه؟</translation>
 <translation id="6141988275892716286">تأكيد التنزيل</translation>
 <translation id="6143578372829139382">‏المشاركة على YouTube</translation>
 <translation id="6147182561428020853">يمكنك الآن حظر تطبيقات مثبَّتة على جهاز <ph name="DEVICE_TYPE" /> هذا</translation>
@@ -1698,7 +1698,7 @@
 <translation id="6507618042428827377">التبديل إلى أسلوب الإدخال المتاح التالي</translation>
 <translation id="6508923215158854599">‏تأكَّد من اتصال جهاز Chromebook بشبكة Wi-Fi نفسها التي يتصل بها جهاز Chromecast.</translation>
 <translation id="6515727200518652613">انقطع الاتصال بالكاميرا، وجارٍ محاولة إعادة الاتصال.</translation>
-<translation id="6520517963145875092">يُرجى تحديد نافذة للحصول لالتقاط صورة لها.</translation>
+<translation id="6520517963145875092">يُرجى تحديد نافذة لالتقاط صورة لها.</translation>
 <translation id="652139407789908527">ستظهر شاشتك فارغة لمدة أطول من المعتاد (تصل إلى دقيقة واحدة) أثناء هذا التحديث. يُرجى عدم الضغط على زر التشغيل خلال عملية التحديث.</translation>
 <translation id="6528179044667508675">عدم الإزعاج</translation>
 <translation id="65320610082834431">رموز الإيموجي</translation>
@@ -2183,7 +2183,7 @@
 <translation id="8079538659226626406">مشاركة الشاشة</translation>
 <translation id="8083540854303889870">محفوظة لوقت لاحق</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
-<translation id="8088141034189573826">‏استخدِم مفتاح التبويب (Tab) للحصول على مزيد من الخيارات. وللوصول إلى كل أجهزة سطح المكتب، استخدِم مفتاحي السهمَين المتّجهَين لليمين واليسار.</translation>
+<translation id="8088141034189573826">‏يرجى استخدام مفتاح التبويب (Tab) للحصول على مزيد من الخيارات. وللوصول إلى كل أجهزة سطح المكتب، يرجى استخدام مفتاحي السهمَين المتّجهَين لليمين واليسار.</translation>
 <translation id="8091153018031979607">يبدأ الحدث في <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" />.</translation>
 <translation id="8092380135549145188">عناصر التحكّم في الانتقال</translation>
 <translation id="8098591350844501178">إيقاف إرسال الشاشة إلى <ph name="RECEIVER_NAME" /></translation>
@@ -2296,7 +2296,7 @@
 <translation id="8487660088084188539">‏عند تفعيل هذه الميزات، قد يتم إرسال الإدخالات النصية ومحتوى المستندات وعنوان URL لصفحة الويب إلى خوادم Google. وتُستخدم هذه المعلومات لإنشاء اقتراحات الكتابة والملخّصات والإجابة عن الأسئلة وتحسين المنتج، وذلك بما يتوافق مع <ph name="LINK_TO_SERVICE_TERMS" />. يُرجى عدم تضمين أي معلومات شخصية أو حسّاسة أو سرية.</translation>
 <translation id="8487699605742506766">نقطة الاتصال</translation>
 <translation id="8491237443345908933">فتح الرابط في علامة تبويب جديدة</translation>
-<translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> غير متوافق مع <ph name="SPECIFIED_RESOLUTION" />. تم تغيير درجة الدقة إلى <ph name="FALLBACK_RESOLUTION" />. انقر على "تأكيد" لحفظ التغييرات. ستتم استعادة الإعدادات السابقة خلال <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> غير متوافق مع <ph name="SPECIFIED_RESOLUTION" />. تم تغيير درجة الدقة إلى <ph name="FALLBACK_RESOLUTION" />. يرجى النقر على "تأكيد" لحفظ التغييرات. ستتم استعادة الإعدادات السابقة خلال <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8507563469658346379">الجميع: <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">إنشاء سطح مكتب جديد</translation>
 <translation id="85123341071060231">‏البلوتوث غير مفعّل على جهاز Chromebook. لفتح قفل جهاز Chromebook، يُرجى إدخال كلمة المرور.</translation>

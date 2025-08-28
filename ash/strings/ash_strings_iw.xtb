@@ -138,7 +138,7 @@
 <translation id="141170878022560212">הכפתור האמצעי</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, אפליקציה מותקנת</translation>
 <translation id="1414919006379339073">סגירת החלון הנוכחי</translation>
-<translation id="1415846719612499304">צפייה ברשימת הרשתות. <ph name="STATE_TEXT" />.</translation>
+<translation id="1415846719612499304">הצגת רשימת הרשתות. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">כדי לבצע את פעולת ההודעה צריך לפתוח את נעילת המכשיר</translation>
 <translation id="1420408895951708260">הפעלה או כיבוי של תאורת הלילה. <ph name="STATE_TEXT" /></translation>
 <translation id="1421166164855200062">קבוצה מוצעת</translation>
@@ -259,7 +259,7 @@
 <translation id="1787955149152357925">כבוי</translation>
 <translation id="1796561540704213354">אתרים, כולל דפים שביקרת בהם ודפים פתוחים</translation>
 <translation id="1805407494113167797">לא ניתן להשמיע את הצלילים של מצב הריכוז</translation>
-<translation id="181103072419391116">עוצמת האות: <ph name="SIGNAL_STRENGTH" />, הרשת מנוהלת על ידי מנהל המערכת שלך</translation>
+<translation id="181103072419391116">עוצמת האות (<ph name="SIGNAL_STRENGTH" />) של הרשת מנוהלת על ידי האדמין שלך</translation>
 <translation id="1815039896005206046">אם סימנת "לא אהבתי", נקבל את המשוב שלך לגבי הקבוצה המוצעת הזאת</translation>
 <translation id="1816896987747843206">הפעולה הזו מאפשרת גישה למצלמה לכל האפליקציות והאתרים שיש להם הרשאת גישה למצלמה</translation>
 <translation id="1823873187264960516">אתרנט: <ph name="ADDRESS" /></translation>
@@ -397,7 +397,7 @@
 <translation id="2361210043495191221">‏החלפת מצב ה-Wi-Fi. <ph name="STATE" />.</translation>
 <translation id="2364710166605611987">אפקטים למראה</translation>
 <translation id="236574664504281623">נשלחה מ-<ph name="SESSION_NAME" /></translation>
-<translation id="2367186422933365202">‏לא ניתן להיכנס אל ה-Chromebook</translation>
+<translation id="2367186422933365202">‏לא ניתן להיכנס אל ה-Chromebook שלך</translation>
 <translation id="2367972762794486313">הצגת אפליקציות</translation>
 <translation id="2368828502825385061">איתור</translation>
 <translation id="2369165858548251131">"שלום" בסינית</translation>
@@ -542,7 +542,7 @@
 <translation id="2825619548187458965">מדף</translation>
 <translation id="2831035692318564937">התכונה פעילה עד הזריחה</translation>
 <translation id="2834813915651407382">נפתח לאחרונה</translation>
-<translation id="2838589015763961627">צריך לצאת ממסך מלא כדי לשנות את הגודל</translation>
+<translation id="2838589015763961627">כדי לשנות את הגודל צריך לצאת ממצב מסך מלא</translation>
 <translation id="2840766858109427815">מעבר לדף הבא</translation>
 <translation id="2841907151129139818">עברת למצב טאבלט</translation>
 <translation id="2844169650293029770">‏מכשיר עם יציאת USB-C (יציאה שמאלית-קדמית)</translation>
@@ -763,7 +763,7 @@
 <translation id="3563775809269155755">הפעלת נקודה לשיתוף אינטרנט</translation>
 <translation id="3566240529365775567">נפתח ממש עכשיו</translation>
 <translation id="3571734092741541777">הגדרה</translation>
-<translation id="3573179567135747900">לשינוי בחזרה ל"<ph name="FROM_LOCALE" />" (נדרשת הפעלה מחדש)</translation>
+<translation id="3573179567135747900">לשנות בחזרה ל"<ph name="FROM_LOCALE" />" (דורש הפעלה מחדש)</translation>
 <translation id="3576141592585647168">שינוי אזור הזמן</translation>
 <translation id="3577473026931028326">משהו השתבש. יש לנסות שוב.</translation>
 <translation id="3580650856351781466">מתבצעת הורדה של קובצי דיבור</translation>
@@ -985,12 +985,12 @@
 <translation id="4247123849143712100">עדכון וכיבוי</translation>
 <translation id="4250229828105606438">צילום מסך</translation>
 <translation id="425364040945105958">‏אין כרטיס SIM</translation>
-<translation id="4261870227682513959">צפייה בהגדרות של הודעות. ההודעות מושבתות</translation>
+<translation id="4261870227682513959">צפייה בהגדרות של התראות. ההתראות מושבתות</translation>
 <translation id="4264977415328155183">, מכווצת</translation>
 <translation id="4265259722091164182">אות רישית בתחילת כל מילה</translation>
 <translation id="4269883910223712419">מנהל המכשיר הזה יכול:</translation>
 <translation id="4271841440229266861">הצגת כל התוכן של 'קבצים'</translation>
-<translation id="4274537685965975248">‏מקשי הקיצור Ctrl ‏+ ‏Alt + חץ למטה הוחלפו. כדי לדמות את הפעולה של המקש End, יש להקיש על <ph name="LAUNCHER_KEY_NAME" /> + החץ ימינה.</translation>
+<translation id="4274537685965975248">‏מקשי הקיצור Ctrl ‏+ ‏Alt + חץ למטה הוחלפו. כדי לדמות את הפעולה של המקש End, יש ללחוץ על <ph name="LAUNCHER_KEY_NAME" /> + החץ ימינה.</translation>
 <translation id="4275283744500212192">פתיחת האפשרויות לפריסת החלון</translation>
 <translation id="4275663329226226506">מדיה</translation>
 <translation id="4279490309300973883">שיקוף</translation>
@@ -1008,7 +1008,7 @@
 <translation id="4303223480529385476">הרחבה של אזור הסטטוס</translation>
 <translation id="4305133312001648038">איפוס מרחק התצוגה של הדף</translation>
 <translation id="4305817255990598646">מעבר</translation>
-<translation id="4307713728991152670">הגדרת ההצגה של התמונות, המדיה והאפליקציות שבטלפון מהזמן האחרון</translation>
+<translation id="4307713728991152670">הגדרת התצוגה של התמונות, המדיה והאפליקציות שהוספת לאחרונה לטלפון שלך</translation>
 <translation id="4312840429157639164">המצלמה מוצמדת לפינה השמאלית העליונה. התנגשות עם תצוגת המערכת.</translation>
 <translation id="4312935606722154789">קיבוץ או ביטול הקיבוץ של שני חלונות אחד ליד השני</translation>
 <translation id="4316910396681052118">כל האפליקציות</translation>
@@ -1192,7 +1192,7 @@
 <translation id="4884542439842987401"><ph name="PLAYLIST_TYPE" /> ᐧ <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="4889868803215848840">בשביל לקבל הצעות טובות יותר, אפשר לתת משוב:</translation>
 <translation id="4890187583552566966">‏Google Assistant הושבתה על-ידי מנהל המערכת.</translation>
-<translation id="4890408602550914571">‏יש לוודא שהטלפון נמצא בקרבת מקום ושה-Bluetooth מופעל.</translation>
+<translation id="4890408602550914571">‏יש לוודא שהטלפון בקרבת מקום ושה-Bluetooth שלו מופעל.</translation>
 <translation id="4892981359753171125">שליטה באמצעות תנועות הפנים</translation>
 <translation id="4895488851634969361">הסוללה טעונה במלואה.</translation>
 <translation id="4902797682482387055">הצעה למשימה שכדאי להתמקד בה</translation>
@@ -1386,7 +1386,7 @@
 <translation id="5512042095225963688">מחיקת המילה הקודמת</translation>
 <translation id="5519005148254860683">‏הרחבה של Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
-<translation id="5520229639206813572">‏מנהל המערכת שלך הסיר את כל פרופילי ה-eSIM. עליך לפנות למנהל המערכת לקבלת מידע נוסף.</translation>
+<translation id="5520229639206813572">‏האדמין שלך הסיר את כל פרופילי ה-eSIM. יש לפנות לאדמין למידע נוסף.</translation>
 <translation id="5520909879404821039">'שלום' בצרפתית</translation>
 <translation id="5523434445161341166">התכונה <ph name="FEATURE_NAME" /> מתחברת.</translation>
 <translation id="5529587891732734495">השהיית ההעברה</translation>
@@ -1480,7 +1480,7 @@
 <translation id="5777841717266010279">להפסיק את שיתוף המסך?</translation>
 <translation id="5779721926447984944">קבצים מוצמדים</translation>
 <translation id="5785221443435874078">הסרת ההצעה הזו</translation>
-<translation id="5787431783058088906">למימוש ההטבה</translation>
+<translation id="5787431783058088906">לקבלת ההטבה</translation>
 <translation id="5788127256798019331">‏קובצי Play</translation>
 <translation id="5788535737706478207">פתיחה מחדש של הכרטיסייה או החלון האחרונים שנסגרו</translation>
 <translation id="5790085346892983794">הצלחה</translation>
@@ -1558,7 +1558,7 @@
 <translation id="6032620807120418574">אפשר ללחוץ על כל מקום שהוא במסך כדי לצלם את המסך המלא.</translation>
 <translation id="6040071906258664830">הקלטת המיקרופון <ph name="STATE" /></translation>
 <translation id="6040143037577758943">סגירה</translation>
-<translation id="6043212731627905357">אין כימיה בין הצג הזה למכשיר ה-<ph name="DEVICE_TYPE" /> שלך (המכשיר לא תומך בצג).</translation>
+<translation id="6043212731627905357">המסך הזה וה-<ph name="DEVICE_TYPE" /> שלך לא מסתדרים (אין תמיכה במסך).</translation>
 <translation id="6043994281159824495">לצאת עכשיו</translation>
 <translation id="6045629311476491587">בשימוש על ידי <ph name="APP_COUNT" /> אפליקציות</translation>
 <translation id="6045998054441862242">הפעלת מצב של ניגודיות גבוהה</translation>
@@ -1959,8 +1959,8 @@
 <translation id="7401222354741467707">יצירת צילום מסך או הקלטת מסך מלאים</translation>
 <translation id="7401788553834047908">'נא לא להפריע' בזמן מצב ריכוז</translation>
 <translation id="7405710164030118432">‏כדי לבטל את נעילת המכשיר, יש להזין את קוד גישת ההורה של Family Link</translation>
-<translation id="7406608787870898861">סיום ההגדרה של הרשת הסלולרית</translation>
-<translation id="7406854842098869085">לחיצה ארוכה על <ph name="MODIFIER_1" />, לחיצה על <ph name="KEY" /> עד שמגיעים לחלון שרוצים לפתוח, ושחרור</translation>
+<translation id="7406608787870898861">סיום הגדרת הרשת הסלולרית שלך</translation>
+<translation id="7406854842098869085">צריך ללחוץ לחיצה ארוכה על <ph name="MODIFIER_1" />ועל <ph name="KEY" /> עד שמופיע החלון שרצית לפתוח ואז צריך לשחרור</translation>
 <translation id="740790383907119240">קיצורי דרך של אפליקציות</translation>
 <translation id="7413851974711031813">‏כדי לסגור, אפשר ללחוץ על "Esc"</translation>
 <translation id="7416471219712049036">שמירת הדף הנוכחי</translation>
@@ -2014,7 +2014,7 @@
 <translation id="7568154670718626683">‏רוצה להשתמש במקש Delete? שימוש במקש</translation>
 <translation id="7568790562536448087">העדכון מתבצע</translation>
 <translation id="7569509451529460200">‏כתב ברייל ו-ChromeVox מופעלים</translation>
-<translation id="7569886975397378678">ביטול ההגדרה של הצגת ההתראות והאפליקציות שבטלפון</translation>
+<translation id="7569886975397378678">ביטול ההגדרה של הצגת האפליקציות מהטלפון וקבלת התראות ממנו</translation>
 <translation id="7571361473021531288">סוללה: %<ph name="BATTERY_PERCENTAGE" /> | הזמן שנותר לשימוש: <ph name="TIME" /></translation>
 <translation id="7573585051776738856">החלון הפעיל מוצמד לצד שמאל.</translation>
 <translation id="7579778809502851308">צילום מסך</translation>
@@ -2157,7 +2157,7 @@
 <translation id="7982789257301363584">רשת</translation>
 <translation id="7982878511129296052">מתבצע כיבוי…</translation>
 <translation id="7984197416080286869">יותר מדי ניסיונות טביעת אצבע</translation>
-<translation id="798779949890829624">ההגדרה הזו מנוהלת על-ידי האדמין</translation>
+<translation id="798779949890829624">ההגדרה הזו מנוהלת על-ידי האדמין שלך</translation>
 <translation id="7989206653429884947">פתיחה בתדירות גבוהה</translation>
 <translation id="799296642788192631">ניתן להצמיד קבצים חשובים. כדי להצמיד, מעבירים את העכבר מעל פריט או פותחים את 'קבצים' ולוחצים לחיצה ימנית על פריט.</translation>
 <translation id="7994370417837006925">כניסה עם מספר חשבונות</translation>
@@ -2226,7 +2226,7 @@
 <translation id="8205469348819768313">‏רוצה להשתמש במקש Page Down? שימוש במקש</translation>
 <translation id="8213376797713070611">כפתור עכבר שמאלי</translation>
 <translation id="8214996719228530800">‏ערוץ Canary</translation>
-<translation id="8219451629189078428">‏בפרק הזמן הזה, יש להקפיד להשאיר את ה-Chromebook פועל ומחובר לחשמל. יש לוודא שהכבלים של המטען או של המתאם מחוברים כראוי אל ה-Chromebook ואל שקע החשמל. אין לכבות את ה-Chromebook.</translation>
+<translation id="8219451629189078428">‏בפרק הזמן הזה, צריך להשאיר את ה-Chromebook פועל ומחובר לחשמל. חשוב לוודא שהכבלים של המטען או של המתאם מחוברים היטב ל-Chromebook ולשקע החשמל. אין לכבות את ה-Chromebook.</translation>
 <translation id="8220076512072059941">הוספה של <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="8228175756124063692">הסתרת ההצעה הזו</translation>
 <translation id="8230305195727960608">מצב היפוך צבעים</translation>
@@ -2321,7 +2321,7 @@
 <translation id="8569146227972631631">‎°F</translation>
 <translation id="8569751806372591456">הנה כמה הצעות שכדאי לנסות</translation>
 <translation id="857201607579416096">התפריט הועבר לפינה השמאלית התחתונה של המסך.</translation>
-<translation id="8581946341807941670">הקשה על <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> ולחיצה על קישור</translation>
+<translation id="8581946341807941670">לחיצה על <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> ולחיצה על קישור</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">מיון אפליקציות לפי שם או צבע</translation>
 <translation id="8609384513243082612">פתיחת כרטיסייה חדשה</translation>
@@ -2401,7 +2401,7 @@
 <translation id="8834539327799336565">מחובר עכשיו</translation>
 <translation id="8841375032071747811">כפתור 'הקודם'</translation>
 <translation id="8843682306134542540">הפעלה או השבתה של נעילת הסיבוב. <ph name="STATE_TEXT" /></translation>
-<translation id="8845001906332463065">קבלת עזרה</translation>
+<translation id="8845001906332463065">לקבלת עזרה</translation>
 <translation id="8847100217801213944">הצגת הטמפרטורה במעלות פרנהייט</translation>
 <translation id="8849001918648564819">מוסתר</translation>
 <translation id="8855885154700222542">מקש מסך מלא</translation>
@@ -2440,7 +2440,7 @@
 <translation id="8949925099261528566">יש חיבור, אין אינטרנט</translation>
 <translation id="8951539504029375108">‏רק מכשירי Thunderbolt מאושרים תואמים ל-Chromebook</translation>
 <translation id="8956420987536947088">רוצה לפתוח את האפליקציות והחלונות הקודמים?</translation>
-<translation id="8959380109429710384">‏לחצת על מקש הקיצור של 'מגדיל למסך מלא'. כדי לזוז במסך כשמגדילים את התצוגה, משתמשים ב-Ctrl‏ + Alt + מקשי החיצים.</translation>
+<translation id="8959380109429710384">‏לחצת על מקש הקיצור של "מגדיל למסך מלא". כדי לזוז במסך כשמגדילים את התצוגה, משתמשים ב-Ctrl‏ + Alt + מקשי החיצים.</translation>
 <translation id="8964525410783593407">שעה אחת</translation>
 <translation id="8970887620466824814">משהו השתבש.</translation>
 <translation id="8973885907461690937">העברת המיקוד לסמל התפריט</translation>
@@ -2515,7 +2515,7 @@
 <translation id="9211490828691860325">כל שולחנות העבודה הווירטואליים</translation>
 <translation id="9211681782751733685"><ph name="TIME_REMAINING" /> עד לטעינה מלאה של הסוללה.</translation>
 <translation id="9215934040295798075">הגדרת טפט</translation>
-<translation id="9216699844945104164">‏צריך להקיש על Enter כדי להקליט את החלון: <ph name="WINDOW_TITLE" /></translation>
+<translation id="9216699844945104164">‏צריך ללחוץ על Enter כדי להקליט את החלון: <ph name="WINDOW_TITLE" /></translation>
 <translation id="9219103736887031265">תמונות</translation>
 <translation id="921989828232331238">הורה נעל את המכשיר שלך להיום</translation>
 <translation id="9220525904950070496">הסרת החשבון</translation>
@@ -2542,5 +2542,5 @@
 <translation id="990277280839877440">החלון <ph name="WINDOW_TITILE" /> נסגר.</translation>
 <translation id="993398562350683614">‏שלב <ph name="STEP" /> מתוך <ph name="TOTAL_STEPS" /> בסיור. בעזרת האפליקציות אפשר לבצע כל מה שצריך ב-<ph name="PRODUCT_NAME" />. האפליקציות נמצאות במרכז האפליקציות. כדי להתמקד בכפתור של מרכז האפליקציות, לוחצים על Alt + Shift + L.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />,‏ <ph name="SUBTEXT" /></translation>
-<translation id="996204416024568215">קבלה של התכונות ושיפורי האבטחה האחרונים. העדכונים מתבצעים ברקע.</translation>
+<translation id="996204416024568215">קבלה של הפיצ'רים ושיפורי האבטחה האחרונים. העדכונים מתבצעים ברקע.</translation>
 </translationbundle>

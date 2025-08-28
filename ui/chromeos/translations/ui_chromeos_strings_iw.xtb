@@ -247,7 +247,7 @@
 <translation id="2984337792991268709">היום <ph name="TODAY_DAYTIME" /></translation>
 <translation id="299638574917407533">צרפתית (קנדה)</translation>
 <translation id="3003189754374775221">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="NETWORK_PROVIDER_NAME" />, רמת הקליטה: ‎<ph name="SIGNAL_STRENGTH" />%‎, התחברות</translation>
-<translation id="3003633581067744647">מעבר לתצוגה של תמונות ממוזערות</translation>
+<translation id="3003633581067744647">לעבור לתצוגה של תמונות ממוזערות</translation>
 <translation id="3016566519832145558">זהירות: הקבצים האלה זמניים, ויכול להיות שהם יימחקו באופן אוטומטי כדי לפנות מקום בכונן.</translation>
 <translation id="3029114385395636667">‏יש להפעיל את Google Docs Offline כדי ש-Docs,‏ Sheets ו-Slides יהיו זמינים במצב אופליין.</translation>
 <translation id="303198083543495566">גיאוגרפיה</translation>
@@ -260,7 +260,7 @@
 <translation id="3113592018909187986">נישאר לךעוד ניסיון אחד. לא תהיה אפשרות להשתמש ברשת הזו עד שיוגדר קוד אימות חדש.</translation>
 <translation id="3124404833828281817">אדם חולם בהקיץ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3138624403379688522">קוד האימות לא חוקי. נותרו לך עוד <ph name="RETRIES" /> ניסיונות.</translation>
+<translation id="3138624403379688522">קוד האימות לא חוקי. יש לך עוד <ph name="RETRIES" /> ניסיונות.</translation>
 <translation id="3157931365184549694">שחזור</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (בגיבוי חומרה)</translation>
 <translation id="3188257591659621405">הקבצים שלי</translation>
@@ -296,7 +296,7 @@
 <translation id="3358452157379365236">גיטרה</translation>
 <translation id="3368922792935385530">מחובר</translation>
 <translation id="3382143449143186018">‏נפאלית עם מקלדת InScript</translation>
-<translation id="338691029516748599">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="SECURITY_STATUS" />,‏ עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, הרשת מנוהלת על ידי מנהל המערכת שלך, התחברות</translation>
+<translation id="338691029516748599">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="SECURITY_STATUS" />,‏ עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, הרשת מנוהלת על ידי האדמין שלך, התחברות</translation>
 <translation id="3408072735282270043">הפעלה, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">‏גרמנית (גרמניה) עם מקלדת Neo 2</translation>
 <translation id="3414856743105198592">פרמוט המדיה הנשלפת יגרום למחיקת כל הנתונים. רוצה להמשיך?</translation>
@@ -506,7 +506,7 @@
 <translation id="4973523518332075481">יש להשתמש בשם באורך <ph name="MAX_LENGTH" /> תווים לכל היותר</translation>
 <translation id="4984616446166309645">יפנית</translation>
 <translation id="4987699874727873250">אנגלית (הודו)</translation>
-<translation id="4988205478593450158">הקובץ "<ph name="FILE_NAME" />" יימחק. להמשיך?</translation>
+<translation id="4988205478593450158">הקובץ <ph name="FILE_NAME" /> יימחק. להמשיך?</translation>
 <translation id="498902553138568924">פרפר אדום</translation>
 <translation id="4992066212339426712">ביטול השתקה</translation>
 <translation id="5010406651457630570">מחשבים</translation>
@@ -569,7 +569,7 @@
 <translation id="5364067326287025678">אין פריטים באשפה</translation>
 <translation id="5368191757080475556">‏שיתוף תיקייה עם Linux</translation>
 <translation id="5402367795255837559">ברייל</translation>
-<translation id="5411472733320185105">‏אין להשתמש בהגדרות proxy עבור מארחים ודומיינים אלה:</translation>
+<translation id="5411472733320185105">‏לא להשתמש בהגדרות proxy למארחים ודומיינים אלה:</translation>
 <translation id="541890217011173530">כורדית סוראנית עם מקלדת מבוססת-אנגלית</translation>
 <translation id="5422221874247253874">נקודת גישה</translation>
 <translation id="5428105026674456456">ספרדית</translation>
@@ -722,7 +722,7 @@
 <translation id="6594855146910089723">‏התיקייה הזו משותפת עם Linux ועם Parallels Desktop</translation>
 <translation id="6607272825297743757">פרטי הקובץ</translation>
 <translation id="6609332149380188670">‏<ph name="NUMBER_OF_ITEMS" /> תיקיות שותפו עם Parallels Desktop</translation>
-<translation id="6629518321609546825">יש להזין 4 מספרים לפחות</translation>
+<translation id="6629518321609546825">צריך להזין 4 מספרים לפחות</translation>
 <translation id="6643016212128521049">ניקוי</translation>
 <translation id="6650726141019353908">פרפר ורוד</translation>
 <translation id="6657585470893396449">סיסמה</translation>
@@ -1055,12 +1055,12 @@
 <translation id="9035689366572880647">יש להזין את קוד האימות הנוכחי</translation>
 <translation id="9038620279323455325">הקובץ שנקרא "<ph name="FILE_NAME" />" כבר קיים. יש לבחור שם אחר.</translation>
 <translation id="9046895021617826162">החיבור נכשל</translation>
-<translation id="9065512565307033593">אם האימות ייכשל, הגישה שלך לרשת תושבת.</translation>
+<translation id="9065512565307033593">אם האימות ייכשל, הגישה שלך לרשת תיחסם.</translation>
 <translation id="908378762078012445">‏רוסית עם מקלדת פונטית AATSEEL</translation>
 <translation id="9086302186042011942">הסנכרון מתבצע</translation>
 <translation id="9099674669267916096">מספר עמודים</translation>
 <translation id="9100610230175265781">יש להזין ביטוי סיסמה</translation>
-<translation id="9110990317705400362">‏אנחנו מחפשים כל הזמן דרכים לגלישה בטוחה יותר. בעבר, כל אתר יכול היה להציע לך להוסיף תוסף לדפדפן. בגרסאות האחרונות של Google Chrome, עליך לציין באופן מפורש ל-Chrome שברצונך להתקין תוספים אלה על-ידי הוספתם דרך הדף 'תוספים'. <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
+<translation id="9110990317705400362">‏אנחנו מחפשים כל הזמן דרכים לגלישה בטוחה יותר. בעבר, כל אתר יכול היה להציע לך להוסיף תוסף לדפדפן. בגרסאות האחרונות של Google Chrome, עליך לציין באופן מפורש ל-Chrome שברצונך להתקין תוספים אלה על-ידי הוספתם דרך הדף "תוספים". <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">ביטול נעילה</translation>
 <translation id="9116909380156770361">העברת הקובץ אל <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">Codec</translation>

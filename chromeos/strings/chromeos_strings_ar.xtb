@@ -165,7 +165,7 @@
 <translation id="1618566998877964907">استخدام مظهر</translation>
 <translation id="1621067168122174824">تشغيل اختبار فحص البطارية</translation>
 <translation id="1622402072367425417">فقاعات لامعة</translation>
-<translation id="1626590945318984973">هذا الاختصار غير متاح. اضغط على اختصار جديد بدون استخدام مفتاحَي الوظائف و<ph name="META_KEY" />.</translation>
+<translation id="1626590945318984973">هذا الاختصار غير متاح. يُرجى الضغط على اختصار جديد بدون استخدام مفتاحَي الوظائف و<ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">جارٍ التحميل</translation>
 <translation id="1641857168437328880">وحدة تغذية المستندات (وجه واحد)</translation>
 <translation id="1642396894598555413">درّاجات</translation>
@@ -541,7 +541,7 @@
 <translation id="33736539805963175">خلفية <ph name="LETTERS_COLOR" /> على شكل حرف <ph name="LETTERS_LETTER" /></translation>
 <translation id="3382806462014639823">تتم مشاهدة شاشتك من قِبل "<ph name="TEACHER_NAME" />"</translation>
 <translation id="3383623117265110236">مجموعة حصرية</translation>
-<translation id="3404249063913988450">تفعيل شاشة التوقف</translation>
+<translation id="3404249063913988450">تفعيل شاشة الاستراحة</translation>
 <translation id="3413935475507503304">لمواصلة عملية التحديث، يرجى النقر على "التالي".</translation>
 <translation id="3416709353545797224">تسجيل كلّ الأصوات المشغّلة على <ph name="DEVICE_TYPE" /></translation>
 <translation id="3428551088151258685">خارجي</translation>
@@ -937,7 +937,7 @@
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">‏عليك فصل كابل USB في <ph name="DEVICE_NAME" /> ثم إعادة توصيله لمواصلة عملية التحديث</translation>
 <translation id="5099354524039520280">لأعلى</translation>
-<translation id="5107243100836678918">قد يتعارض الاختصار بدون مفتاح <ph name="META_KEY" /> مع اختصار بعض التطبيقات. اضغط على هذا الاختصار مرة أخرى لمواصلة استخدامه، أو اضغط على اختصار جديد يستخدِم مفتاح <ph name="KEY" />. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
+<translation id="5107243100836678918">قد يتعارض الاختصار بدون مفتاح <ph name="META_KEY" /> مع اختصار بعض التطبيقات. يرجى الضغط على هذا الاختصار مرة أخرى لمواصلة استخدامه، أو الضغط على اختصار جديد يستخدِم مفتاح <ph name="KEY" />. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">المرادفات المشابهة:</translation>
 <translation id="5130848777448318809">مهور</translation>
 <translation id="5137451382116112100">ملء الشاشة</translation>
@@ -1283,7 +1283,7 @@
 <translation id="6657240842932274095">هل تريد السماح لخدمات النظام باستخدام موقعك الجغرافي؟</translation>
 <translation id="6657585470893396449">كلمة المرور</translation>
 <translation id="66621959568103627">وردي مرجاني</translation>
-<translation id="6669485505082792176">يتعذّر إنشاء صور الآن استنادًا إلى الطلب الذي أدخلته، لذا يُرجى إعادة صياغة الوصف. يُرجى العِلم أنّه لا يمكنك إنشاء صور لأشخاص أو محتوى ضار أو فاضح. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="6669485505082792176">يتعذّر إنشاء صور الآن استنادًا إلى الطلب الذي أدخلته. يُرجى إعادة صياغة الوصف. يُرجى العِلم أنّه لا يمكنك إنشاء صور لأشخاص أو محتوى ضار أو فاضح. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6673898378497337661">زيادة سطوع لوحة المفاتيح</translation>
 <translation id="6692996468359469499">الحصول على معلومات ذات صلة باختيارك</translation>
 <translation id="6694534975463174713">رمز القفل</translation>
@@ -1821,7 +1821,7 @@
 <translation id="9025198690966128418">الاستخدام كجهاز شخصي</translation>
 <translation id="902638246363752736">إعدادات لوحة المفاتيح</translation>
 <translation id="9028832514430399253">فعِّل التبديل لتحديد خيارات شاشة الاستراحة.</translation>
-<translation id="9030883440316693822">هل تريد حذف التسجيل؟</translation>
+<translation id="9030883440316693822">هل المطلوب حذف التسجيل؟</translation>
 <translation id="9036971622563146214">النتائج</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9045842401566197375">كُتُب</translation>
