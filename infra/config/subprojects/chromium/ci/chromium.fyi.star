@@ -1511,16 +1511,67 @@ ci.builder(
     ),
     targets = targets.bundle(
         targets = [
-            "chromium_gtests",  # gtest module scheme
-            "desktop_chromium_isolated_scripts",  # webtest module scheme
-            "flatbuffers_unittests",  # single module scheme
+            "chromium_linux_gtests",
+            "chromium_linux_rel_isolated_scripts_once",
+            "gtests_once",
             "variations_smoke_tests",  # single module scheme
             "mojo_python_unittests",  # pyunit scheme
             "grit_python_unittests",  # pyunit scheme
         ],
         mixins = [
+            "isolate_profile_data",
             "linux-jammy",
         ],
+        per_test_modifications = {
+            "blink_web_tests": targets.mixin(
+                args = [
+                    "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
+                ],
+                swarming = targets.swarming(
+                    shards = 8,
+                ),
+            ),
+            "blink_wpt_tests": targets.mixin(
+                args = [
+                    "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
+                ],
+            ),
+            "browser_tests": targets.mixin(
+                # Only retry the individual failed tests instead of rerunning
+                # entire shards.
+                # crbug.com/1473501
+                retry_only_failed_tests = True,
+                swarming = targets.swarming(
+                    shards = 20,
+                ),
+            ),
+            "content_browsertests": targets.mixin(
+                # Only retry the individual failed tests instead of rerunning
+                # entire shards.
+                # crbug.com/1473501
+                retry_only_failed_tests = True,
+            ),
+            "not_site_per_process_blink_web_tests": targets.mixin(
+                args = [
+                    "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
+                ],
+            ),
+            "telemetry_perf_unittests": targets.mixin(
+                args = [
+                    "--xvfb",
+                    "--jobs=1",
+                ],
+            ),
+            "unit_tests": targets.mixin(
+                # Only retry the individual failed tests instead of rerunning
+                # entire shards.
+                # crbug.com/1473501
+                retry_only_failed_tests = True,
+            ),
+            "webdriver_wpt_tests": targets.mixin(
+                ci_only = True,
+            ),
+        },
     ),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
