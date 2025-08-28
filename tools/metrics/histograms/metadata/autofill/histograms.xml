@@ -5000,7 +5000,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram
     name="Autofill.PaymentMethods.SettingsPage.StoredCreditCardCountBeforeCardAdded"
-    units="cards" expires_after="2026-02-22">
+    units="cards" expires_after="2026-10-01">
   <owner>darwinyang@google.com</owner>
   <owner>chrome-payments-team@google.com</owner>
   <summary>
@@ -5015,7 +5015,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.PaymentMethodsSettingsPage.AddCardClicked2"
-    enum="Boolean" expires_after="2026-02-22">
+    enum="Boolean" expires_after="2026-10-01">
   <owner>darwinyang@google.com</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
@@ -5029,7 +5029,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram
     name="Autofill.PaymentMethodsSettingsPage.AddCardClickedWithoutExistingCards2"
-    enum="Boolean" expires_after="2026-02-22">
+    enum="Boolean" expires_after="2026-10-01">
   <owner>darwinyang@google.com</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
@@ -5046,9 +5046,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram
     name="Autofill.PaymentMethodsSettingsPage.CardAddedWithoutExistingCards"
-    enum="Boolean" expires_after="2025-12-28">
+    enum="Boolean" expires_after="2026-10-01">
   <owner>darwinyang@google.com</owner>
-  <owner>npnavarro@google.com</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Logs true when a card is saved when the user does not have any existing
@@ -5060,7 +5059,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram
     name="Autofill.PaymentMethodsSettingsPage.CardsViewedWithoutExistingCards"
-    enum="Boolean" expires_after="2025-12-28">
+    enum="Boolean" expires_after="2026-10-01">
   <owner>darwinyang@google.com</owner>
   <owner>smcgruer@google.com</owner>
   <owner>chrome-payments-eng@google.com</owner>
@@ -5079,9 +5078,9 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.PaymentMethodsSettingsPage.ScanCardResult"
-    enum="AutofillScanCreditCardResult" expires_after="2026-02-09">
+    enum="AutofillScanCreditCardResult" expires_after="2026-10-01">
   <owner>darwinyang@google.com</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Logs how (or if) the credit card scanner is used by the user in the payment
     methods settings page. Recorded when a user hits the save button to save a
@@ -6303,9 +6302,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.ScanCreditCard.Duration{CreditCardScanSuccess}"
-    units="ms" expires_after="2025-10-05">
+    units="ms" expires_after="2026-10-01">
   <owner>darwinyang@google.com</owner>
-  <owner>npnavarro@google.com</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
     How long a credit card took to scan. {CreditCardScanSuccess}
