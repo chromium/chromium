@@ -862,16 +862,6 @@ const char kPressAndHoldEscToExitBrowserFullscreenName[] =
 const char kPressAndHoldEscToExitBrowserFullscreenDescription[] =
     "Allows users to press and hold Esc key to exit browser fullscreen.";
 
-#if BUILDFLAG(IS_ANDROID)
-const char kAutofillEnablePaymentSettingsCardPromoAndScanCardName[] =
-    "Use the new card promo and allow for card scanning in the payment "
-    "settings page";
-const char kAutofillEnablePaymentSettingsCardPromoAndScanCardDescription[] =
-    "When enabled, the new card promo UX will be shown on the payment "
-    "settings page and the option for card scans will be available on the add "
-    "card page.";
-#endif
-
 const char kAutofillEnablePrefetchingRiskDataForRetrievalName[] =
     "Enable prefetching of risk data during payments autofill retrieval";
 const char kAutofillEnablePrefetchingRiskDataForRetrievalDescription[] =

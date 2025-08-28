@@ -530,12 +530,6 @@ extern const char kAutofillEnableNewFopDisplayDesktopDescription[];
 extern const char kAutofillEnableOffersInClankKeyboardAccessoryName[];
 extern const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[];
 
-#if BUILDFLAG(IS_ANDROID)
-extern const char kAutofillEnablePaymentSettingsCardPromoAndScanCardName[];
-extern const char
-    kAutofillEnablePaymentSettingsCardPromoAndScanCardDescription[];
-#endif
-
 extern const char kAutofillEnablePrefetchingRiskDataForRetrievalName[];
 extern const char kAutofillEnablePrefetchingRiskDataForRetrievalDescription[];
 
