@@ -39,13 +39,7 @@ content::BrowserContext* DownloadItemMetadata::GetBrowserContext() const {
 }
 
 safe_browsing::ReferrerChain DownloadItemMetadata::GetReferrerChain() const {
-  std::unique_ptr<safe_browsing::ReferrerChainData> referrer_chain_data =
-      safe_browsing::IdentifyReferrerChain(
-          *item_, enterprise_connectors::kReferrerUserGestureLimit);
-  if (referrer_chain_data && referrer_chain_data->GetReferrerChain()) {
-    return *referrer_chain_data->GetReferrerChain();
-  }
-  return safe_browsing::ReferrerChain();
+  return GetOrIdentifyReferrerChainForEnterprise(*item_);
 }
 
 const base::FilePath& DownloadItemMetadata::GetFullPath() const {

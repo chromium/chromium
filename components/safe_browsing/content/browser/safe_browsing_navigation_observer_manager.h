@@ -62,7 +62,6 @@ class ReferrerChainData : public base::SupportsUserData::Data {
   // Unique user data key used to get and set referrer chain data in
   // DownloadItem.
   static const char kDownloadReferrerChainDataKey[];
-  static const char kDownloadReferrerChainDataKeyForEnterprise[];
 
  private:
   // Result of trying to get the referrer chain. Referrer chains are

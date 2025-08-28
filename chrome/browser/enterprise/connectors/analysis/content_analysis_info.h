@@ -16,10 +16,6 @@ namespace download {
 class DownloadItem;
 }  // namespace download
 
-namespace safe_browsing {
-class SafeBrowsingNavigationObserverManager;
-}  // namespace safe_browsing
-
 namespace enterprise_connectors {
 
 // Implementation of `ContentAnalysisInfoBase` for chrome/ platforms.
@@ -73,8 +69,6 @@ class ContentAreaUserProvider : public ContentAnalysisInfo {
 
   explicit ContentAreaUserProvider(
       signin::IdentityManager* im,
-      safe_browsing::SafeBrowsingNavigationObserverManager*
-          nav_observer_manager,
       content::WebContents* web_contents,
       const GURL& tab_url);
 
@@ -90,7 +84,7 @@ class ContentAreaUserProvider : public ContentAnalysisInfo {
 class DownloadContentAreaUserProvider : public ContentAnalysisInfo {
  public:
   explicit DownloadContentAreaUserProvider(
-      const download::DownloadItem& download_item);
+      download::DownloadItem& download_item);
   ~DownloadContentAreaUserProvider();
 
   // ContentAnalysisInfo:
