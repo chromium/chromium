@@ -139,15 +139,18 @@ bool RecordToFile(base::File file,
                   PaintPreviewTracker* tracker,
                   std::optional<size_t> max_capture_size,
                   size_t* serialized_size) {
-  if (!file.IsValid())
+  if (!file.IsValid()) {
     return false;
+  }
 
-  if (max_capture_size.has_value() && max_capture_size.value() == 0)
+  if (max_capture_size.has_value() && max_capture_size.value() == 0) {
     return false;
+  }
 
   FileWStream file_stream(std::move(file), max_capture_size.value_or(0));
-  if (!SerializeSkPicture(skp, tracker, &file_stream))
+  if (!SerializeSkPicture(skp, tracker, &file_stream)) {
     return false;
+  }
 
   file_stream.Close();
   *serialized_size = file_stream.ActualBytesWritten();
@@ -160,19 +163,24 @@ std::optional<mojo_base::BigBuffer> RecordToBuffer(
     std::optional<size_t> maybe_max_capture_size,
     size_t* serialized_size) {
   SkDynamicMemoryWStream memory_stream;
-  if (!SerializeSkPicture(skp, tracker, &memory_stream))
+  if (!SerializeSkPicture(skp, tracker, &memory_stream)) {
     return std::nullopt;
+  }
 
   size_t max_capture_size = maybe_max_capture_size.value_or(SIZE_MAX);
-  if (max_capture_size == 0)
+  if (max_capture_size == 0) {
     return std::nullopt;
+  }
 
+  TRACE_EVENT_BEGIN0("paint_preview", "CopyToBigBuffer");
   sk_sp<SkData> data = memory_stream.detachAsData();
   *serialized_size = std::min(data->size(), max_capture_size);
   mojo_base::BigBuffer buffer(
       skia::as_byte_span(*data).first(*serialized_size));
-  if (data->size() > max_capture_size)
+  TRACE_EVENT_END0("paint_preview", "CopyToBigBuffer");
+  if (data->size() > max_capture_size) {
     return std::nullopt;
+  }
 
   return {std::move(buffer)};
 }
