@@ -88,6 +88,7 @@ function createRuntimeError(
     renderProcessId: 0,
     canInspect: false,
     stackTrace: [],
+    isServiceWorker: false,
     ...customFields,
   };
 }

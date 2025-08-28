@@ -93,7 +93,8 @@ RuntimeError::RuntimeError(const ExtensionId& extension_id,
                            const GURL& context_url,
                            logging::LogSeverity level,
                            int render_frame_id,
-                           int render_process_id)
+                           int render_process_id,
+                           bool is_from_service_worker)
     : ExtensionError(ExtensionError::Type::kRuntimeError,
                      !extension_id.empty() ? extension_id : GURL(source).host(),
                      from_incognito,
@@ -103,7 +104,8 @@ RuntimeError::RuntimeError(const ExtensionId& extension_id,
       context_url_(context_url),
       stack_trace_(stack_trace),
       render_frame_id_(render_frame_id),
-      render_process_id_(render_process_id) {
+      render_process_id_(render_process_id),
+      is_from_service_worker_(is_from_service_worker) {
   CleanUpInit();
 }
 

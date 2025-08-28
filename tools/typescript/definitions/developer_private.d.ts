@@ -121,6 +121,7 @@ declare global {
         renderViewId: number;
         renderProcessId: number;
         canInspect: boolean;
+        isServiceWorker: boolean;
         stackTrace: StackFrame[];
       }
 

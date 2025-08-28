@@ -115,6 +115,7 @@ namespace developerPrivate {
     long renderViewId;
     long renderProcessId;
     boolean canInspect;
+    boolean isServiceWorker;
     StackFrame[] stackTrace;
   };
 

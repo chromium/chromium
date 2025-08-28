@@ -886,7 +886,8 @@ void ServiceWorkerTaskQueue::OnReportConsoleMessageSync(
       message.source_url,
       content::ConsoleMessageLevelToLogSeverity(message.message_level),
       -1 /* a service worker does not have a render_view_id */,
-      render_process_id);
+      render_process_id,
+      /*is_from_service_worker=*/true);
 
   ExtensionsBrowserClient::Get()->ReportError(browser_context_,
                                               std::move(error_instance));

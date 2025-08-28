@@ -71,6 +71,7 @@ suite('ExtensionErrorPageTest', function() {
           id: 1,
           stackTrace: [],
           severity: chrome.developerPrivate.ErrorLevel.ERROR,
+          isServiceWorker: false,
         },
         runtimeErrorBase);
     extensionData = createExtensionInfo({
@@ -173,6 +174,7 @@ suite('ExtensionErrorPageTest', function() {
             columnNumber: 321,
             functionName: 'foo',
           }],
+          isServiceWorker: false,
         },
         runtimeErrorBase);
     // Add a new runtime error to the end.
@@ -237,6 +239,7 @@ suite('ExtensionErrorPageTest', function() {
           stackTrace: [],
           severity: chrome.developerPrivate.ErrorLevel.ERROR,
           source: 'invalid_url',
+          isServiceWorker: false,
         },
         runtimeErrorBase);
     // Replace the runtime error URL with something malformed, and check that

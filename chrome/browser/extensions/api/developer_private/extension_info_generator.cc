@@ -171,9 +171,12 @@ developer::RuntimeError ConstructRuntimeError(const RuntimeError& error) {
   // reasons, but it's not a high priority to change.
   result.render_view_id = error.render_frame_id();
   result.render_process_id = error.render_process_id();
-  result.can_inspect =
+  result.is_service_worker = error.is_from_service_worker();
+  bool can_inspect_frame =
       content::RenderFrameHost::FromID(error.render_process_id(),
                                        error.render_frame_id()) != nullptr;
+  result.can_inspect = can_inspect_frame || result.is_service_worker;
+
   for (const StackFrame& f : error.stack_trace()) {
     developer::StackFrame frame;
     frame.line_number = f.line_number;
