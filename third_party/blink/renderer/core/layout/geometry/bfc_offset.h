@@ -54,7 +54,7 @@ struct CORE_EXPORT BfcOffset {
 
   bool operator!=(const BfcOffset& other) const { return !operator==(other); }
 
-  WTF::String ToString() const;
+  String ToString() const;
 };
 
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const BfcOffset&);

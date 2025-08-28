@@ -101,7 +101,7 @@ struct CORE_EXPORT BoxStrut {
   }
   bool operator!=(const BoxStrut& other) const { return !(*this == other); }
 
-  WTF::String ToString() const;
+  String ToString() const;
 
   LayoutUnit inline_start;
   LayoutUnit inline_end;

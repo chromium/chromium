@@ -198,7 +198,7 @@ struct CORE_EXPORT PhysicalRect {
     size.Scale(s);
   }
 
-  WTF::String ToString() const;
+  String ToString() const;
 };
 
 inline PhysicalRect UnionRect(const PhysicalRect& a, const PhysicalRect& b) {

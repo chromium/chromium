@@ -329,9 +329,9 @@ class ScrollbarsTestWithVirtualTimer : public ScrollbarsTest {
     TimeAdvance();
     scheduler::GetSingleThreadTaskRunnerForTesting()->PostDelayedTask(
         FROM_HERE,
-        WTF::BindOnce(
+        blink::BindOnce(
             &ScrollbarsTestWithVirtualTimer::StopVirtualTimeAndExitRunLoop,
-            WTF::Unretained(this), loop.QuitClosure()),
+            Unretained(this), loop.QuitClosure()),
         delay);
     loop.Run();
   }

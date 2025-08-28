@@ -44,7 +44,7 @@ class GapIntersection {
         block_offset(block_offset),
         is_at_edge_of_container(is_at_edge_of_container) {}
 
-  WTF::String ToString(bool verbose = false) const;
+  String ToString(bool verbose = false) const;
 
   LayoutUnit inline_offset;
   LayoutUnit block_offset;
@@ -75,7 +75,7 @@ using TrackRanges = std::unique_ptr<Vector<TrackRange>>;
 // ranges such as {[2, 4], 7, 9]}, indicating that tracks 2 through 4 and 7
 // through 9 are blocked in gap[0].
 using GapToTrackRangesMap =
-    WTF::HashMap<wtf_size_t, TrackRanges, blink::IntWithZeroKeyHashTraits<int>>;
+    HashMap<wtf_size_t, TrackRanges, blink::IntWithZeroKeyHashTraits<int>>;
 
 // Gap locations are used for painting gap decorations.
 class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
@@ -111,8 +111,8 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   void SetBlockGapSize(LayoutUnit size) { block_gap_size_ = size; }
   LayoutUnit GetBlockGapSize() const { return block_gap_size_; }
 
-  WTF::String IntersectionsToString(GridTrackSizingDirection track_direction,
-                                    bool verbose = false) const;
+  String IntersectionsToString(GridTrackSizingDirection track_direction,
+                               bool verbose = false) const;
 
   // TODO(crbug.com/436140061): These methods are being used to implement the
   // optimized version of GapDecorations. Once the optimized version is

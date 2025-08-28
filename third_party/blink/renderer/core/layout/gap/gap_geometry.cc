@@ -7,20 +7,20 @@
 
 namespace blink {
 
-WTF::String GapIntersection::ToString(bool verbose) const {
-  WTF::String str = WTF::String("(") + WTF::String(inline_offset.ToString()) +
-                    WTF::String(", ") + WTF::String(block_offset.ToString());
+String GapIntersection::ToString(bool verbose) const {
+  String str = String("(") + String(inline_offset.ToString()) + String(", ") +
+               String(block_offset.ToString());
 
   if (verbose) {
-    str = str + WTF::String(" - is_blocked_before: ") +
+    str = str + String(" - is_blocked_before: ") +
           (is_blocked_before ? "true" : "false") +
-          WTF::String(" - is_blocked_after: ") +
+          String(" - is_blocked_after: ") +
           (is_blocked_after ? "true" : "false") +
-          WTF::String(" - is_at_edge_of_container: ") +
+          String(" - is_at_edge_of_container: ") +
           (is_at_edge_of_container ? "true" : "false");
   }
 
-  str = str + WTF::String(")");
+  str = str + String(")");
   return str;
 }
 
@@ -37,7 +37,7 @@ const Vector<GapIntersectionList>& GapGeometry::GetGapIntersections(
                                         : row_intersections_;
 }
 
-WTF::String GapGeometry::IntersectionsToString(
+String GapGeometry::IntersectionsToString(
     GridTrackSizingDirection track_direction,
     bool verbose) const {
   const Vector<GapIntersectionList>* intersections =

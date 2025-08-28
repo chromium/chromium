@@ -129,7 +129,7 @@ namespace blink {
 using mojom::blink::FormControlType;
 
 // Used by flexible boxes when flexing this element and by table cells.
-typedef WTF::HashMap<const LayoutBox*, LayoutUnit> OverrideSizeMap;
+using OverrideSizeMap = HashMap<const LayoutBox*, LayoutUnit>;
 
 // Size of border belt for autoscroll. When mouse pointer in border belt,
 // autoscroll is started.

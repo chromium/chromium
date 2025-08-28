@@ -52,9 +52,9 @@ void AnchorPositionVisibilityObserver::MonitorAnchor(const Element* anchor) {
 
       observer_ = IntersectionObserver::Create(
           anchor_element_->GetDocument(),
-          WTF::BindRepeating(&AnchorPositionVisibilityObserver::
-                                 OnIntersectionVisibilityChanged,
-                             WrapWeakPersistent(this)),
+          BindRepeating(&AnchorPositionVisibilityObserver::
+                            OnIntersectionVisibilityChanged,
+                        WrapWeakPersistent(this)),
           // Do not record metrics for this internal intersection observer.
           std::nullopt,
           IntersectionObserver::Params{
