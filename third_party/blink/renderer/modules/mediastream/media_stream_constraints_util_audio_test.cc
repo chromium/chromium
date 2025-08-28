@@ -1538,6 +1538,12 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, NoDevicesWithConstraints) {
 // sources that have no audio processing.
 TEST_P(MediaStreamConstraintsUtilAudioTest, SourceWithNoAudioProcessing) {
   for (bool enable_properties : {true, false}) {
+    if (enable_properties && media::IsSystemLoopbackAsAecReferenceEnabled()) {
+      // LocalMediaStreamAudioSource is never created with system echo canceller
+      // when loopback AEC is enabled.
+      continue;
+    }
+
     SCOPED_TRACE(enable_properties);
     std::unique_ptr<blink::LocalMediaStreamAudioSource> source =
         GetLocalMediaStreamAudioSource(
@@ -1958,7 +1964,14 @@ TEST_F(MediaStreamConstraintsEchoCancellationModeTest, ExactAll) {
   EXPECT_TRUE(settings.HasValue());
   EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
             EchoCancellationMode::kAll);
-  CheckDevice(*system_echo_canceller_device_, settings);
+  // If loopback AEC is enabled, it can be used to provide system AEC for the
+  // default device. Otherwise, the device that supports system AEC will be
+  // selected.
+  const AudioDeviceCaptureCapability* expected_device =
+      media::IsSystemLoopbackAsAecReferenceEnabled()
+          ? default_device_
+          : system_echo_canceller_device_;
+  CheckDevice(*expected_device, settings);
 }
 
 TEST_F(MediaStreamConstraintsEchoCancellationModeTest, IdealAll) {
@@ -1968,29 +1981,46 @@ TEST_F(MediaStreamConstraintsEchoCancellationModeTest, IdealAll) {
   EXPECT_TRUE(settings.HasValue());
   EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
             EchoCancellationMode::kAll);
-  CheckDevice(*system_echo_canceller_device_, settings);
+  // If loopback AEC is enabled, it can be used to provide system AEC for the
+  // default device. Otherwise, the device that supports system AEC will be
+  // selected.
+  const AudioDeviceCaptureCapability* expected_device =
+      media::IsSystemLoopbackAsAecReferenceEnabled()
+          ? default_device_
+          : system_echo_canceller_device_;
+  CheckDevice(*expected_device, settings);
 }
 
 TEST_F(MediaStreamConstraintsEchoCancellationModeTest,
        ExactAllUnsupportedDevice) {
   constraint_factory_.Reset();
   constraint_factory_.basic().echo_cancellation.SetExactString("all");
+  // Exclude the device with system AEC from consideration.
   constraint_factory_.basic().device_id.SetExact(default_device_->DeviceID());
   AudioCaptureSettings settings = SelectSettings(true, capabilities_);
-  EXPECT_FALSE(settings.HasValue());
-  EXPECT_THAT(settings.failed_constraint_name(),
-              testing::MatchesRegex("echoCancellation|deviceId"));
+  if (media::IsSystemLoopbackAsAecReferenceEnabled()) {
+    CheckDevice(*default_device_, settings);
+  } else {
+    EXPECT_FALSE(settings.HasValue());
+    EXPECT_THAT(settings.failed_constraint_name(),
+                testing::MatchesRegex("echoCancellation|deviceId"));
+  }
 }
 
 TEST_F(MediaStreamConstraintsEchoCancellationModeTest,
        IdealAllUnsupportedDevice) {
   constraint_factory_.Reset();
   constraint_factory_.basic().echo_cancellation.SetIdealString("all");
+  // Exclude the device with system AEC from consideration.
   constraint_factory_.basic().device_id.SetExact(default_device_->DeviceID());
   AudioCaptureSettings settings = SelectSettings(true, capabilities_);
   EXPECT_TRUE(settings.HasValue());
+  // If loopback AEC is available, we use it to provide All AEC. Otherwise, fall
+  // back to BrowserDecides AEC.
   EXPECT_EQ(settings.audio_processing_properties().echo_cancellation_mode,
-            EchoCancellationMode::kBrowserDecides);
+            media::IsSystemLoopbackAsAecReferenceEnabled()
+                ? EchoCancellationMode::kAll
+                : EchoCancellationMode::kBrowserDecides);
   CheckDevice(*default_device_, settings);
 }
 

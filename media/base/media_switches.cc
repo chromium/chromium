@@ -443,7 +443,7 @@ BASE_FEATURE(ChromeWideEchoCancellation, base::FEATURE_ENABLED_BY_DEFAULT);
 // If echo cancellation for a mic signal is requested, use system loopback
 // audio as reference signal to be able to cancel echo from all audio processes
 // and not only audio from Chrome.
-BASE_FEATURE(SystemLoopbackAsAecReference, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(SystemLoopbackAsAecReference, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kSystemLoopbackAsAecReferenceForcedOn{
     &kSystemLoopbackAsAecReference, "forced_on", false};
 // If we are using system loopback as AEC reference, we delay the capture

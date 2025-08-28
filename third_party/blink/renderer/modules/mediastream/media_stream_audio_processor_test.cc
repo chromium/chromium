@@ -20,12 +20,14 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_sample_types.h"
+#include "media/base/media_switches.h"
 #include "media/webrtc/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -754,6 +756,12 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
 
 TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
      FalseWhenOnlyHardwareEffectsAreUsed) {
+  if (media::IsSystemLoopbackAsAecReferenceEnabled()) {
+    // Hardware AEC cannot be enabled by using EchoCancellationMode::kAll when
+    // loopback AEC is enabled.
+    return;
+  }
+
   test::TaskEnvironment task_environment_;
   AudioProcessingProperties properties(AudioProcessingProperties::Disabled());
   properties.echo_cancellation_mode = EchoCancellationMode::kAll;

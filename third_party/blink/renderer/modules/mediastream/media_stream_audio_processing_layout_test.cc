@@ -69,7 +69,7 @@ TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
 }
 
 TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
-     SystemAecDisablesBrowserAec) {
+     EchoCancellationModeAll) {
   AudioProcessingProperties properties{.echo_cancellation_mode =
                                            EchoCancellationMode::kAll};
   media::AudioProcessingSettings settings =
@@ -77,7 +77,15 @@ TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
           properties,
           /*enabled_platform_effects=*/PlatformEffectsMask::ECHO_CANCELLER,
           /*multichannel_processing=*/true);
-  EXPECT_FALSE(settings.echo_cancellation);
+  if (media::IsSystemLoopbackAsAecReferenceEnabled()) {
+    // If loopback AEC is available, it will be used.
+    EXPECT_TRUE(settings.echo_cancellation);
+    EXPECT_TRUE(settings.use_loopback_aec_reference);
+  } else {
+    // If loopback AEC is unavailable, platform AEC will be used, which means
+    // that APM should not be configured to do echo cancellation.
+    EXPECT_FALSE(settings.echo_cancellation);
+  }
 }
 
 TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
@@ -131,7 +139,22 @@ TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
       PlatformEffectsMask::NOISE_SUPPRESSION |
           PlatformEffectsMask::ECHO_CANCELLER,
       /*channels=*/1);
-  EXPECT_TRUE(processing_layout.NoiseSuppressionInTandem());
+
+  if (processing_layout.AecIsPlatformProvided()) {
+    // We are using platform AEC. In this case, platform NS will always be on
+    // (since it's allowed in tandem).
+    EXPECT_TRUE(processing_layout.NoiseSuppressionInTandem());
+  } else {
+#if BUILDFLAG(IS_WIN)
+    bool independent_ns_allowed = false;
+#else
+    bool independent_ns_allowed = true;
+#endif
+    // We are using loopback AEC. In this case, platform NS is still running if
+    // it's allowed to be used independently of platform AEC.
+    EXPECT_EQ(independent_ns_allowed,
+              processing_layout.NoiseSuppressionInTandem());
+  }
 }
 #endif
 
@@ -188,7 +211,12 @@ TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
       PlatformEffectsMask::AUTOMATIC_GAIN_CONTROL |
           PlatformEffectsMask::ECHO_CANCELLER,
       /*channels=*/1);
-  EXPECT_TRUE(processing_layout.AutomaticGainControlInTandem());
+  // If the processing layout selected platform AEC, platform AGC will be used
+  // in tandem. Otherwise, platform AGC is always disabled.
+  // See ConfigureEchoCancellationEffects() in
+  // media_stream_audio_processing_layout.cc.
+  EXPECT_EQ(processing_layout.AecIsPlatformProvided(),
+            processing_layout.AutomaticGainControlInTandem());
 }
 #endif
 
