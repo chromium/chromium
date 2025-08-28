@@ -129,7 +129,6 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/ntp/model:set_up_list_prefs",
     "//ios/chrome/browser/ntp/shared/metrics:constants",
     "//ios/chrome/browser/ntp_tiles/model/tab_resumption:tab_resumption_prefs",
-    "//ios/chrome/browser/parcel_tracking:prefs",
     "//ios/chrome/browser/photos/model:policy",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/prerender/model:prerender_pref",

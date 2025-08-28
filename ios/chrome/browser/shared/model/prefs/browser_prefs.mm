@@ -113,7 +113,6 @@
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
-#import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
 #import "ios/chrome/browser/photos/model/photos_policy.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/prerender/model/prerender_pref.h"
@@ -220,6 +219,7 @@ inline constexpr char kInvalidationClientIDCache[] =
     "invalidation.per_sender_client_id_cache";
 inline constexpr char kInvalidationTopicsToHandler[] =
     "invalidation.per_sender_topics_to_handler";
+inline constexpr char kParcelTrackingDisabled[] = "parcel_tracking.disabled";
 
 // Migrates a boolean pref from source to target PrefService.
 void MigrateBooleanPref(std::string_view pref_name,
@@ -438,7 +438,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   signin::ActivePrimaryAccountsMetricsRecorder::RegisterLocalStatePrefs(
       registry);
   tab_resumption_prefs::RegisterLocalStatePrefs(registry);
-  RegisterParcelTrackingPrefs(registry);
   update_client::RegisterPrefs(registry);
   variations::VariationsService::RegisterPrefs(registry);
   component_updater::RegisterComponentUpdateServicePrefs(registry);
@@ -1143,6 +1142,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Deprecated 08/2025.
   registry->RegisterDictionaryPref(kInvalidationClientIDCache);
   registry->RegisterDictionaryPref(kInvalidationTopicsToHandler);
+  registry->RegisterBooleanPref(kParcelTrackingDisabled, false);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1351,6 +1351,7 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   // Added 08/2025.
   prefs->ClearPref(kInvalidationClientIDCache);
   prefs->ClearPref(kInvalidationTopicsToHandler);
+  prefs->ClearPref(kParcelTrackingDisabled);
 }
 
 void MigrateObsoleteUserDefault() {
