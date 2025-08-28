@@ -91,6 +91,9 @@ public class FakeDataSharingUIDelegateImpl implements DataSharingUIDelegate {
     @Override
     public void destroyFlow(String sessionId) {}
 
+    @Override
+    public void logShareSheet(String sessionId, boolean isTargetChosen) {}
+
     /* Set a callback to be called when showCreateFlow() is called. */
     public void setShowCreateFlowCallback(Callback<Boolean> callback) {
         mShowCreateFlowCallback = callback;
