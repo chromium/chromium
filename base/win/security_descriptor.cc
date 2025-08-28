@@ -302,9 +302,8 @@ std::optional<std::wstring> SecurityDescriptor::ToSddl(
   // populating the `SECURITY_DESCRIPTOR` with them. Since we're in a const-
   // qualified member method, we need to clone ourselves and call `ToAbsolute()`
   // on the clone.
-  auto self = Clone();
-  SECURITY_DESCRIPTOR sd = {};
-  self.ToAbsolute(sd);
+  SecurityDescriptor self = Clone();
+  SECURITY_DESCRIPTOR sd = self.ToAbsolute();
 
   LPWSTR sddl;
   if (!::ConvertSecurityDescriptorToStringSecurityDescriptor(
@@ -315,8 +314,8 @@ std::optional<std::wstring> SecurityDescriptor::ToSddl(
   return sddl_ptr.get();
 }
 
-void SecurityDescriptor::ToAbsolute(SECURITY_DESCRIPTOR& sd) {
-  UNSAFE_TODO(memset(&sd, 0, sizeof(sd)));
+SECURITY_DESCRIPTOR SecurityDescriptor::ToAbsolute() {
+  SECURITY_DESCRIPTOR sd = {};
   sd.Revision = SECURITY_DESCRIPTOR_REVISION;
   sd.Owner = owner_ ? owner_->GetPSID() : nullptr;
   sd.Group = group_ ? group_->GetPSID() : nullptr;
@@ -335,6 +334,7 @@ void SecurityDescriptor::ToAbsolute(SECURITY_DESCRIPTOR& sd) {
     }
   }
   DCHECK(::IsValidSecurityDescriptor(&sd));
+  return sd;
 }
 
 std::optional<SecurityDescriptor::SelfRelative>
@@ -344,8 +344,7 @@ SecurityDescriptor::ToSelfRelative() const {
   // qualified member method, we need to clone ourselves and call `ToAbsolute()`
   // on the clone.
   auto self = Clone();
-  SECURITY_DESCRIPTOR sd = {};
-  self.ToAbsolute(sd);
+  SECURITY_DESCRIPTOR sd = self.ToAbsolute();
 
   DWORD size = sizeof(SECURITY_DESCRIPTOR_MIN_LENGTH);
   std::vector<uint8_t> buffer(SECURITY_DESCRIPTOR_MIN_LENGTH);
@@ -421,8 +420,7 @@ std::optional<AccessCheckResult> SecurityDescriptor::AccessCheck(
   std::vector<char> priv_set(priv_set_length);
   DWORD granted_access = 0;
   BOOL access_status = FALSE;
-  SECURITY_DESCRIPTOR sd = {};
-  ToAbsolute(sd);
+  SECURITY_DESCRIPTOR sd = ToAbsolute();
   if (!::AccessCheck(&sd, token.get(), desired_access, &local_mapping,
                      reinterpret_cast<PPRIVILEGE_SET>(priv_set.data()),
                      &priv_set_length, &granted_access, &access_status)) {

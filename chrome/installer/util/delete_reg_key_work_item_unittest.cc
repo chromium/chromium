@@ -111,15 +111,14 @@ TEST_F(DeleteRegKeyWorkItemTest, DISABLED_TestUndeletableKey) {
   // builtin users read.
   auto sd = base::win::SecurityDescriptor::FromSddl(L"D:PAI(A;OICI;KR;;;BU)");
   ASSERT_TRUE(sd.has_value());
-  SECURITY_DESCRIPTOR sec_desc;
-  sd->ToAbsolute(sec_desc);
+  SECURITY_DESCRIPTOR sec_desc = sd->ToAbsolute();
   EXPECT_EQ(
       ERROR_SUCCESS,
       RegSetKeySecurity(subkey.Handle(), DACL_SECURITY_INFORMATION, &sec_desc));
   // builtin users all access.
   sd = base::win::SecurityDescriptor::FromSddl(L"D:PAI(A;OICI;KA;;;BU)");
   ASSERT_TRUE(sd.has_value());
-  sd->ToAbsolute(sec_desc);
+  sec_desc = sd->ToAbsolute();
   EXPECT_EQ(ERROR_SUCCESS,
             RegSetKeySecurity(subkey2.Handle(), DACL_SECURITY_INFORMATION,
                               &sec_desc));

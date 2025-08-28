@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/win/access_control_list.h"
 #include "base/win/access_token.h"
@@ -130,10 +131,9 @@ class BASE_EXPORT SecurityDescriptor {
   // |security_info| determines what parts are included in the string.
   std::optional<std::wstring> ToSddl(SECURITY_INFORMATION security_info) const;
 
-  // Create an reference to the absolute security descriptor of this instance.
-  // |sd| the SECURITY_DESCRIPTOR structure to populate. This is is only valid
-  // as long as this object is in scope and not modified.
-  void ToAbsolute(SECURITY_DESCRIPTOR& sd);
+  // Create a reference to the absolute security descriptor of this instance.
+  // This is is only valid as long as this object is in scope and not modified.
+  SECURITY_DESCRIPTOR ToAbsolute() LIFETIME_BOUND;
 
   // Create a self-relative security descriptor in a single buffer.
   std::optional<SelfRelative> ToSelfRelative() const;
