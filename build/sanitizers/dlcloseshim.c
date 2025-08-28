@@ -11,6 +11,7 @@
 #if defined(__clang__)
 __attribute__((visibility("default"), noinline))
 #endif
-void __wrap_dlclose(void *handle) {
+int __wrap_dlclose(void *handle) {
   // Do nothing. We don't want to call the real dlclose on libfuzzer builds.
+  return 0;
 }
