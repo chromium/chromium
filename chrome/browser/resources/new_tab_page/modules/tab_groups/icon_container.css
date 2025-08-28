@@ -8,7 +8,7 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --icon-container-size: 64px;
+  --icon-container-size: 56px;
   --icon-size: 16px;
   --cell-size: 26px;
   --cell-inner-radius: 2px;

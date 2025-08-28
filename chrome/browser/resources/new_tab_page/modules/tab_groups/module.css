@@ -287,5 +287,5 @@ a:focus-visible {
 
 #createNewTabGroupIcon,
 #sharedTabGroupIcon {
-  color: var(--color-new-tab-page-primary-foreground);
+  color: var(--color-new-tab-page-secondary-foreground);
 }
