@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/browser/document_picture_in_picture_window_controller.h"
-
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/document_picture_in_picture_window_controller.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_switches.h"
@@ -18,6 +17,8 @@
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/views/test/widget_activation_waiter.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -123,6 +124,15 @@ class DocumentPictureInPicturePixelTest : public UiBrowserTest,
     EXPECT_TRUE(WaitForRenderFrameReady(contents->GetPrimaryMainFrame()));
   }
 
+  void WaitForPipWidgetActivation(content::WebContents* pip_web_contents) {
+    auto* browser_view = BrowserView::GetBrowserViewForNativeWindow(
+        pip_web_contents->GetTopLevelNativeWindow());
+    ASSERT_TRUE(browser_view);
+    auto* pip_widget = browser_view->GetWidget();
+    ASSERT_TRUE(pip_widget);
+    views::test::WaitForWidgetActive(pip_widget, /*active=*/true);
+  }
+
   void ShowUi(const std::string& name) override {
     LoadTabAndEnterPictureInPicture(browser());
 
@@ -132,6 +142,8 @@ class DocumentPictureInPicturePixelTest : public UiBrowserTest,
 
     ASSERT_TRUE(GetRenderWidgetHostView());
     EXPECT_TRUE(GetRenderWidgetHostView()->IsShowing());
+
+    WaitForPipWidgetActivation(pip_web_contents);
     EXPECT_TRUE(GetRenderWidgetHostView()->HasFocus());
   }
 
