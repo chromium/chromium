@@ -381,20 +381,17 @@ class KeyboardAccessoryViewBinder {
         String iphFeature = item.getFeatureForIph();
         if (iphFeature == null) return false;
 
-        if (iphFeature.equals(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE)
-                || iphFeature.equals(
-                        FeatureConstants.KEYBOARD_ACCESSORY_HOME_WORK_PROFILE_SUGGESTION_FEATURE)) {
-            if (item.getSuggestion().getIconId() != 0) {
-                return showHelpBubble(
-                        featureEngagementTracker,
-                        iphFeature,
-                        chipView.getStartIconViewRect(),
-                        chipView.getContext(),
-                        rootViewForIph);
-            } else {
-                return showHelpBubble(
-                        featureEngagementTracker, iphFeature, chipView, rootViewForIph, null);
-            }
+        if ((iphFeature.equals(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE)
+                        || iphFeature.equals(
+                                FeatureConstants
+                                        .KEYBOARD_ACCESSORY_HOME_WORK_PROFILE_SUGGESTION_FEATURE))
+                && item.getSuggestion().getIconId() != 0) {
+            return showHelpBubble(
+                    featureEngagementTracker,
+                    iphFeature,
+                    chipView.getStartIconViewRect(),
+                    chipView.getContext(),
+                    rootViewForIph);
         }
 
         if (iphFeature.equals(
