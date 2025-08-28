@@ -76,6 +76,44 @@ bool TargetCanHaveMotionTransform(const SVGElement& target) {
          IsA<SVGForeignObjectElement>(target);
 }
 
+template <typename CharType>
+std::optional<gfx::PointF> ParsePointInternal(const CharType* ptr,
+                                              const CharType* end) {
+  if (!SkipOptionalSVGSpaces(ptr, end)) {
+    return std::nullopt;
+  }
+
+  float x = 0;
+  if (!ParseNumber(ptr, end, x)) {
+    return std::nullopt;
+  }
+
+  float y = 0;
+  if (!ParseNumber(ptr, end, y)) {
+    return std::nullopt;
+  }
+
+  // disallow anything except spaces at the end
+  if (SkipOptionalSVGSpaces(ptr, end)) {
+    return std::nullopt;
+  }
+  return gfx::PointF(x, y);
+}
+
+base::expected<gfx::PointF, SVGParseStatus> ParsePoint(const String& string) {
+  std::optional<gfx::PointF> point;
+  if (!string.empty()) {
+    point = VisitCharacters(string, [&](auto chars) {
+      return ParsePointInternal(chars.data(), chars.data() + chars.size());
+    });
+
+    if (point.has_value()) {
+      return point.value();
+    }
+  }
+  return base::unexpected(SVGParseStatus::kParsingFailed);
+}
+
 }  // namespace
 
 SVGAnimateMotionElement::SVGAnimateMotionElement(Document& document)
@@ -141,42 +179,6 @@ void SVGAnimateMotionElement::UpdateAnimationPath() {
 
   if (FastHasAttribute(svg_names::kPathAttr))
     animation_path_ = path_;
-}
-
-template <typename CharType>
-static std::optional<gfx::PointF> ParsePointInternal(const CharType* ptr,
-                                                     const CharType* end) {
-  if (!SkipOptionalSVGSpaces(ptr, end))
-    return std::nullopt;
-
-  float x = 0;
-  if (!ParseNumber(ptr, end, x))
-    return std::nullopt;
-
-  float y = 0;
-  if (!ParseNumber(ptr, end, y))
-    return std::nullopt;
-
-  // disallow anything except spaces at the end
-  if (SkipOptionalSVGSpaces(ptr, end)) {
-    return std::nullopt;
-  }
-  return gfx::PointF(x, y);
-}
-
-static base::expected<gfx::PointF, SVGParseStatus> ParsePoint(
-    const String& string) {
-  std::optional<gfx::PointF> point;
-  if (!string.empty()) {
-    point = VisitCharacters(string, [&](auto chars) {
-      return ParsePointInternal(chars.data(), chars.data() + chars.size());
-    });
-
-    if (point.has_value()) {
-      return point.value();
-    }
-  }
-  return base::unexpected(SVGParseStatus::kParsingFailed);
 }
 
 SMILAnimationValue SVGAnimateMotionElement::CreateAnimationValue() const {
