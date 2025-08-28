@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.build.annotations.Initializer;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkActivity;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -43,6 +44,7 @@ public abstract class SynchronousInitializationActivity extends ChromeBaseAppCom
      * Activity specific implementation corresponding to {@link
      * android.app.Activity#onCreate(Bundle)}
      */
+    @Initializer
     protected void onCreateInternal(Bundle savedInstanceState) {}
 
     /**
