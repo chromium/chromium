@@ -17,6 +17,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Looper;
 import android.util.Pair;
 
@@ -65,6 +68,7 @@ import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.components.ukm.UkmRecorderJni;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
+import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -75,6 +79,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.lang.ref.WeakReference;
 import java.util.concurrent.TimeoutException;
 
 /** This class tests the behavior of the {@link ReaderModeManager}. */
@@ -98,6 +103,9 @@ public class ReaderModeManagerTest {
     @Mock private UkmRecorder.Natives mUkmRecorderJniMock;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private LoadCommittedDetails mLoadCommitedDetails;
+    @Mock private Activity mActivity;
+    @Mock private Resources mResources;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     private TabObserver mTabObserver;
@@ -138,6 +146,8 @@ public class ReaderModeManagerTest {
         when(mTab.getContext()).thenReturn(ApplicationProvider.getApplicationContext());
         when(mTab.getProfile()).thenReturn(mProfile);
         when(mWebContents.getNavigationController()).thenReturn(mNavController);
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
+        when(mWebContents.getTitle()).thenReturn("Test Title");
         when(mNavController.getUseDesktopUserAgent()).thenReturn(false);
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
@@ -148,6 +158,18 @@ public class ReaderModeManagerTest {
 
         when(mDistillerUrlUtilsJniMock.getOriginalUrlFromDistillerUrl(MOCK_DISTILLER_URL.getSpec()))
                 .thenReturn(MOCK_URL);
+
+        when(mDistillerUrlUtilsJniMock.getDistillerViewUrlFromUrl(
+                        eq("chrome-distiller"), eq(MOCK_URL.getSpec()), eq("Test Title")))
+                .thenReturn(MOCK_DISTILLER_URL.getSpec());
+
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+        when(mActivity.getResources()).thenReturn(mResources);
+        when(mActivity.getPackageName())
+                .thenReturn(ApplicationProvider.getApplicationContext().getPackageName());
+        Configuration configuration = new Configuration();
+        configuration.uiMode = Configuration.UI_MODE_NIGHT_NO;
+        when(mResources.getConfiguration()).thenReturn(configuration);
 
         mManager = new ReaderModeManager(mTab, () -> mMessageDispatcher);
 
@@ -646,6 +668,75 @@ public class ReaderModeManagerTest {
                         any(), mDistillationCallbackCaptor.capture());
         mDistillationCallbackCaptor.getValue().onResult(false);
         verify(mSnackbarManager).showSnackbar(any());
+    }
+
+    @Test
+    @Feature("ReaderMode")
+    public void testStartedReaderMode_Cct_ShouldNotTriggerStoppedMetric() {
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+        when(mWebContents.getLastCommittedUrl()).thenReturn(MOCK_URL);
+        when(mTab.isCustomTab()).thenReturn(true);
+
+        UserActionTester userActionTester = new UserActionTester();
+
+        mManager.activateReaderMode(EntryPoint.APP_MENU);
+
+        assertEquals(
+                1, userActionTester.getActionCount("DomDistiller.Android.OnStartedReaderMode"));
+        assertEquals(
+                0, userActionTester.getActionCount("DomDistiller.Android.OnStoppedReaderMode"));
+    }
+
+    @Test
+    @Feature("ReaderMode")
+    public void testStoppedReaderMode_onHidden_ShouldTriggerStoppedMetric() {
+        UserActionTester userActionTester = new UserActionTester();
+        when(mTab.isCustomTab()).thenReturn(true);
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("DomDistiller.Time.ViewingReaderModePage")
+                        .build();
+
+        mManager.navigateToReaderMode();
+        mTabObserver.onHidden(mTab, 1);
+
+        assertEquals(
+                1, userActionTester.getActionCount("DomDistiller.Android.OnStoppedReaderMode"));
+        watcher.assertExpected();
+    }
+
+    @Test
+    @Feature("ReaderMode")
+    public void testStartedReaderMode_onDestroyed_ShouldTriggerStoppedMetric() {
+        UserActionTester userActionTester = new UserActionTester();
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("DomDistiller.Time.ViewingReaderModePage")
+                        .build();
+
+        mManager.navigateToReaderMode();
+        mTabObserver.onDestroyed(mTab);
+
+        assertEquals(
+                1, userActionTester.getActionCount("DomDistiller.Android.OnStoppedReaderMode"));
+        watcher.assertExpected();
+    }
+
+    @Test
+    @Feature("ReaderMode")
+    public void testStartedReaderMode_navigationEntryCommitted_ShouldTriggerStoppedMetric() {
+        UserActionTester userActionTester = new UserActionTester();
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("DomDistiller.Time.ViewingReaderModePage")
+                        .build();
+
+        mManager.navigateToReaderMode();
+        mWebContentsObserver.navigationEntryCommitted(mLoadCommitedDetails);
+
+        assertEquals(
+                1, userActionTester.getActionCount("DomDistiller.Android.OnStoppedReaderMode"));
+        watcher.assertExpected();
     }
 
     /**

@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.EntryPoint;
 import org.chromium.dom_distiller.mojom.FontFamily;
 import org.chromium.dom_distiller.mojom.Theme;
 
@@ -66,6 +67,79 @@ public class ReaderModeMetricsTest {
         ReaderModeMetrics.reportReaderModePrefsFontScalingChanged(1.5f);
         Assert.assertEquals(
                 1, mUserActionTester.getActionCount("DomDistiller.Android.FontScalingChanged"));
+        histograms.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testRecordAnyPageSignalWithinTimeout() {
+        HistogramWatcher histograms =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                "DomDistiller.Android.AnyPageSignalWithinTimeout", true)
+                        .build();
+        ReaderModeMetrics.recordAnyPageSignalWithinTimeout(true);
+        histograms.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testRecordDistillablePageSignalWithinTimeout() {
+        HistogramWatcher histograms =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(
+                                "DomDistiller.Android.DistillablePageSignalWithinTimeout", true)
+                        .build();
+        ReaderModeMetrics.recordDistillablePageSignalWithinTimeout(true);
+        histograms.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testRecordTimeToProvideResultToAccumulator() {
+        HistogramWatcher histograms =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("DomDistiller.Time.TimeToProvideResultToAccumulator")
+                        .build();
+        ReaderModeMetrics.recordTimeToProvideResultToAccumulator(1L);
+        histograms.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testRecordReaderModeEntryPoint() {
+        HistogramWatcher histograms =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("DomDistiller.Android.EntryPoint", EntryPoint.APP_MENU)
+                        .build();
+        ReaderModeMetrics.recordReaderModeEntryPoint(EntryPoint.APP_MENU);
+        histograms.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testRecordOnStartedReaderMode() {
+        ReaderModeMetrics.recordOnStartedReaderMode();
+        Assert.assertEquals(
+                1, mUserActionTester.getActionCount("DomDistiller.Android.OnStartedReaderMode"));
+    }
+
+    @Test
+    @SmallTest
+    public void testRecordOnStoppedReaderMode() {
+        ReaderModeMetrics.recordOnStoppedReaderMode();
+        Assert.assertEquals(
+                1, mUserActionTester.getActionCount("DomDistiller.Android.OnStoppedReaderMode"));
+    }
+
+    @Test
+    @SmallTest
+    public void testRecordReaderModeViewDuration() {
+        HistogramWatcher histograms =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("DomDistiller.Time.ViewingReaderModePage")
+                        .build();
+        ReaderModeMetrics.recordReaderModeViewDuration(1L);
         histograms.assertExpected();
     }
 

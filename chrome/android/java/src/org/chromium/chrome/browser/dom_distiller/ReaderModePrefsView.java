@@ -237,7 +237,7 @@ public class ReaderModePrefsView extends LinearLayout
     // DistilledPagePrefs.Observer
 
     @Override
-    public void onChangeFontFamily(int fontFamily) {
+    public void onChangeFontFamily(@FontFamily.EnumType int fontFamily) {
         FontFamily.validate(fontFamily);
         for (Map.Entry<Integer, MaterialButton> entry : mFontFamilyButtons.entrySet()) {
             boolean isSelected = entry.getKey() == fontFamily;
@@ -246,7 +246,7 @@ public class ReaderModePrefsView extends LinearLayout
     }
 
     @Override
-    public void onChangeTheme(int theme) {
+    public void onChangeTheme(@Theme.EnumType int theme) {
         Theme.validate(theme);
         for (Map.Entry<Integer, MaterialButton> entry : mThemeButtons.entrySet()) {
             boolean isSelected = entry.getKey() == theme;

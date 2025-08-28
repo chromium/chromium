@@ -357,9 +357,16 @@ public class ReaderModeManager extends EmptyTabObserver
 
     @Override
     public void onHidden(Tab tab, @TabHidingType int reason) {
-        if (mIsViewingReaderModePage) {
-            long timeMs = onExitReaderMode();
-            recordReaderModeViewDuration(timeMs);
+        boolean isCustomTabDistillation = shouldDistillInCustomTab();
+        boolean isHiddenTabCustomTab = tab.isCustomTab();
+        // When custom tab distillation is first triggered, this onHidden function will trigger for
+        // the non-CCT tab. We want to ensure that we do not trigger onExitReaderMode when starting
+        // up reader mode in CCT. Subsequent onHidden calls when in CCT experience will have
+        // isHiddenTabCustomTab to be true.
+        if (isCustomTabDistillation && !isHiddenTabCustomTab) {
+            return;
+        } else if (mIsViewingReaderModePage) {
+            onExitReaderMode();
         }
     }
 
@@ -374,8 +381,7 @@ public class ReaderModeManager extends EmptyTabObserver
             recordPromptVisibilityForNavigation(false);
         }
         if (mIsViewingReaderModePage) {
-            long timeMs = onExitReaderMode();
-            recordReaderModeViewDuration(timeMs);
+            onExitReaderMode();
         }
         if (mDistillabilityObserver != null) {
             var provider = TabDistillabilityProvider.get(tab);
@@ -436,17 +442,18 @@ public class ReaderModeManager extends EmptyTabObserver
         new UkmRecorder(mTab.getWebContents(), "DomDistiller.Android.ReaderModeShown")
                 .addBooleanMetric("Shown")
                 .record();
-        RecordUserAction.record("DomDistiller.Android.OnStartedReaderMode");
+        ReaderModeMetrics.recordOnStartedReaderMode();
     }
 
     /**
      * A notification that the user is no longer viewing Reader Mode. This could be because of a
      * navigation away from the page, switching tabs, or closing the browser.
-     * @return The amount of time in ms that the user spent viewing Reader Mode.
      */
-    private long onExitReaderMode() {
+    private void onExitReaderMode() {
         mIsViewingReaderModePage = false;
-        return SystemClock.elapsedRealtime() - mViewStartTimeMs;
+        ReaderModeMetrics.recordReaderModeViewDuration(
+                SystemClock.elapsedRealtime() - mViewStartTimeMs);
+        ReaderModeMetrics.recordOnStoppedReaderMode();
     }
 
     /**
@@ -552,19 +559,10 @@ public class ReaderModeManager extends EmptyTabObserver
                 if (mTab != null
                         && !DomDistillerUrlUtils.isDistilledPage(mTab.getUrl())
                         && mIsViewingReaderModePage) {
-                    long timeMs = onExitReaderMode();
-                    recordReaderModeViewDuration(timeMs);
+                    onExitReaderMode();
                 }
             }
         };
-    }
-
-    /**
-     * Record the amount of time the user spent in Reader Mode.
-     * @param timeMs The amount of time in ms that the user spent in Reader Mode.
-     */
-    private void recordReaderModeViewDuration(long timeMs) {
-        RecordHistogram.recordLongTimesHistogram("DomDistiller.Time.ViewingReaderModePage", timeMs);
     }
 
     /** Try showing the reader mode prompt. */
@@ -682,7 +680,7 @@ public class ReaderModeManager extends EmptyTabObserver
         // button for this site on other tabs.
         removeUrlFromMutedSites(mDistillerUrl);
 
-        if (!SysUtils.isLowEndDevice() && !shouldUseRegularTabsForDistillation()) {
+        if (shouldDistillInCustomTab()) {
             distillInCustomTab();
         } else {
             navigateToReaderMode();
@@ -694,9 +692,11 @@ public class ReaderModeManager extends EmptyTabObserver
                     AdaptiveToolbarButtonVariant.READER_MODE,
                     AdaptiveToolbarButtonVariant.MAX_VALUE);
         }
+        ReaderModeMetrics.recordReaderModeEntryPoint(entryPoint);
+    }
 
-        RecordHistogram.recordEnumeratedHistogram(
-                "DomDistiller.Android.EntryPoint", entryPoint, EntryPoint.MAX_VALUE);
+    private boolean shouldDistillInCustomTab() {
+        return !SysUtils.isLowEndDevice() && !shouldUseRegularTabsForDistillation();
     }
 
     private boolean shouldUseRegularTabsForDistillation() {

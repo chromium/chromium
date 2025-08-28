@@ -8,7 +8,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Pair;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -18,6 +17,7 @@ import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeActionRateLimiter;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.DistillationStatus;
+import org.chromium.chrome.browser.dom_distiller.ReaderModeMetrics;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider.DistillabilityObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -34,18 +34,6 @@ import java.util.Objects;
 /** Provides reader mode signal for showing contextual page action for a given tab. */
 @NullMarked
 public class ReaderModeActionProvider implements ContextualPageActionController.ActionProvider {
-    /** Histogram name for if any distillation signal was in time for the CPA timeout. */
-    public static final String SIGNAL_ACCUMULATOR_WITHIN_TIMEOUT_HISTOGRAM =
-            "DomDistiller.Android.AnyPageSignalWithinTimeout";
-
-    /** Histogram name for if a positive distillation signal was in time for the CPA timeout. */
-    public static final String SIGNAL_ACCUMULATOR_DISTILLABLE_WITHIN_TIMEOUT_HISTOGRAM =
-            "DomDistiller.Android.DistillablePageSignalWithinTimeout";
-
-    /** Histogram name that records how long it takes to get a reader mode result. */
-    public static final String READER_MODE_SIGNAL_TIME_HISTOGRAM =
-            "DomDistiller.Time.TimeToProvideResultToAccumulator";
-
     // DistillabilityObserver which automatically un/registers itself as an observer when there is a
     // result.
     private class OneshotDistillabilityObserver extends EmptyTabObserver
@@ -221,13 +209,12 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
 
         long latency = System.currentTimeMillis() - signalAccumulator.getSignalStartTimeMs();
         boolean signalAvailable = !signalAccumulator.hasTimedOut();
-        RecordHistogram.recordBooleanHistogram(
-                SIGNAL_ACCUMULATOR_WITHIN_TIMEOUT_HISTOGRAM, signalAvailable);
-        RecordHistogram.recordLongTimesHistogram(READER_MODE_SIGNAL_TIME_HISTOGRAM, latency);
+        ReaderModeMetrics.recordAnyPageSignalWithinTimeout(signalAvailable);
+        ReaderModeMetrics.recordTimeToProvideResultToAccumulator(latency);
+
         // Record if the signal counted when a page was distillable.
         if (isDistillable) {
-            RecordHistogram.recordBooleanHistogram(
-                    SIGNAL_ACCUMULATOR_DISTILLABLE_WITHIN_TIMEOUT_HISTOGRAM, signalAvailable);
+            ReaderModeMetrics.recordDistillablePageSignalWithinTimeout(signalAvailable);
         }
         if (tab.getWebContents() != null) {
             new UkmRecorder(tab.getWebContents(), "DomDistiller.Android.DistillabilityLatency")

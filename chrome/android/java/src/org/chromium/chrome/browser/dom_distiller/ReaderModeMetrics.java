@@ -7,25 +7,94 @@ package org.chromium.chrome.browser.dom_distiller;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.EntryPoint;
+import org.chromium.dom_distiller.mojom.FontFamily;
+import org.chromium.dom_distiller.mojom.Theme;
 
 /** Metrics utils for use in reader mode. */
 @NullMarked
 public class ReaderModeMetrics {
-    // TODO(crbug.com/434997280): Add remainder of non-native dom_distiller metric calls here.
+    /**
+     * Record if any distillation signal was in time for the CPA timeout.
+     *
+     * @param signalAvailable Boolean of whether any distillation signal was available.
+     */
+    public static void recordAnyPageSignalWithinTimeout(boolean signalAvailable) {
+        RecordHistogram.recordBooleanHistogram(
+                "DomDistiller.Android.AnyPageSignalWithinTimeout", signalAvailable);
+    }
+
+    /**
+     * Record whether a positive distillation signal was in time for the CPA timeout.
+     *
+     * @param signalAvailable Boolean of whether a positive distillation signal was available.
+     */
+    public static void recordDistillablePageSignalWithinTimeout(boolean signalAvailable) {
+        RecordHistogram.recordBooleanHistogram(
+                "DomDistiller.Android.DistillablePageSignalWithinTimeout", signalAvailable);
+    }
+
+    /**
+     * Record how long it takes to get a reader mode result.
+     *
+     * @param timeMs The time in milliseconds to get a reader mode result.
+     */
+    public static void recordTimeToProvideResultToAccumulator(long timeMs) {
+        RecordHistogram.recordLongTimesHistogram(
+                "DomDistiller.Time.TimeToProvideResultToAccumulator", timeMs);
+    }
+
+    /**
+     * Record the entry-point when reader mode is activated.
+     *
+     * @param entryPoint The {@link EntryPoint} from which reader mode was activated.
+     */
+    public static void recordReaderModeEntryPoint(@EntryPoint int entryPoint) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "DomDistiller.Android.EntryPoint", entryPoint, EntryPoint.MAX_VALUE);
+    }
+
+    /** Record when a user enters Reading Mode. */
+    public static void recordOnStartedReaderMode() {
+        RecordUserAction.record("DomDistiller.Android.OnStartedReaderMode");
+    }
+
+    /** Record when a user exits Reading Mode. */
+    public static void recordOnStoppedReaderMode() {
+        RecordUserAction.record("DomDistiller.Android.OnStoppedReaderMode");
+    }
+
+    /**
+     * Record the amount of time the user spent in Reader Mode.
+     *
+     * @param timeMs The amount of time in milliseconds that the user spent in Reader Mode.
+     */
+    public static void recordReaderModeViewDuration(long timeMs) {
+        RecordHistogram.recordLongTimesHistogram("DomDistiller.Time.ViewingReaderModePage", timeMs);
+    }
 
     /** Report when the distilled page prefs are opened. */
     public static void reportReaderModePrefsOpened() {
         RecordUserAction.record("DomDistiller.Android.DistilledPagePrefsOpened");
     }
 
-    /** Report the font family option selected in the prefs. */
-    public static void reportReaderModePrefsFontFamilyChanged(int fontFamily) {
+    /**
+     * Report the font family option selected in the prefs.
+     *
+     * @param fontFamily The selected font family, as a {@link FontFamily.EnumType} integer.
+     *     constant.
+     */
+    public static void reportReaderModePrefsFontFamilyChanged(@FontFamily.EnumType int fontFamily) {
         RecordUserAction.record("DomDistiller.Android.FontFamilyChanged");
         RecordHistogram.recordCount100Histogram(
                 "DomDistiller.Android.FontFamilySelected", fontFamily);
     }
 
-    /** Report the font scaling value selected in the prefs. */
+    /**
+     * Report the font scaling value selected in the prefs.
+     *
+     * @param value The selected font scaling multiplier, from 1f to 2.5f in 0.25f increments.
+     */
     public static void reportReaderModePrefsFontScalingChanged(float value) {
         RecordUserAction.record("DomDistiller.Android.FontScalingChanged");
         // Convert to a percentage for recording purposes.
@@ -35,8 +104,12 @@ public class ReaderModeMetrics {
                 "DomDistiller.Android.FontScalingSelected", percentage);
     }
 
-    /** Report the theme option selected in the prefs. */
-    public static void reportReaderModePrefsThemeChanged(int theme) {
+    /**
+     * Report the theme option selected in the prefs.
+     *
+     * @param theme The selected theme, as a {@link Theme.EnumType} integer constant.
+     */
+    public static void reportReaderModePrefsThemeChanged(@Theme.EnumType int theme) {
         RecordUserAction.record("DomDistiller.Android.ThemeChanged");
         RecordHistogram.recordCount100Histogram("DomDistiller.Android.ThemeSelected", theme);
     }
