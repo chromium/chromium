@@ -7,9 +7,9 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include "base/values.h"
 #include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_preferences/cross_device_pref_tracker.h"
 
@@ -33,11 +33,12 @@ class CrossDevicePrefTrackerImpl : public CrossDevicePrefTracker,
   // `CrossDevicePrefTracker` overrides
   void AddObserver(CrossDevicePrefTracker::Observer* observer) override;
   void RemoveObserver(CrossDevicePrefTracker::Observer* observer) override;
-  std::vector<base::Value> GetValues(const std::string& pref_name,
-                                     const DeviceFilter& filter) const override;
-  std::optional<base::Value> GetMostRecentValue(
-      const std::string& pref_name,
+  std::vector<CrossDevicePrefTracker::TimestampedPrefValue> GetValues(
+      std::string_view pref_name,
       const DeviceFilter& filter) const override;
+  std::optional<CrossDevicePrefTracker::TimestampedPrefValue>
+  GetMostRecentValue(std::string_view pref_name,
+                     const DeviceFilter& filter) const override;
 
   // `KeyedService` override
   void Shutdown() override;
