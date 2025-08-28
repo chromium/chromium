@@ -53,6 +53,10 @@
 /// The container view for the popup.
 @property(nonatomic, readonly) UIView* popupContainerView;
 
+/// Stores the height of the bottom omnibox with respect to the keyboard
+/// height.
+@property(nonatomic, assign) CGFloat keyboardAttachedBottomOmniboxHeight;
+
 /// Uses the popup's intrinsic content size to add or remove the popup view
 /// if necessary. The animation changes depending on:
 /// `isFocusingOmnibox`: Omnibox is being focused.

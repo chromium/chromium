@@ -130,7 +130,10 @@ const CGFloat kHeaderTopPadding = 16.0f;
 
 @end
 
-@implementation OmniboxPopupViewController
+@implementation OmniboxPopupViewController {
+  // The height of the bottom omnibox when attached to the keyboard.
+  CGFloat _keyboardAttachedBottomOmniboxHeight;
+}
 
 @synthesize omniboxGuide = _omniboxGuide;
 
@@ -391,6 +394,11 @@ const CGFloat kHeaderTopPadding = 16.0f;
   }
   [self.mutator
       requestResultsWithVisibleSuggestionCount:self.visibleSuggestionCount];
+}
+
+- (void)setKeyboardAttachedBottomOmniboxHeight:
+    (CGFloat)keyboardAttachedBottomOmniboxHeight {
+  _keyboardAttachedBottomOmniboxHeight = keyboardAttachedBottomOmniboxHeight;
 }
 
 #pragma mark - OmniboxKeyboardDelegate
@@ -1107,11 +1115,15 @@ const CGFloat kHeaderTopPadding = 16.0f;
   CGRect tableViewFrameInCurrentWindowCoordinateSpace =
       [self.tableView convertRect:self.tableView.bounds
                 toCoordinateSpace:self.tableView.window.coordinateSpace];
+  CGFloat bottomOccludedHeight =
+      self.keyboardHeight + _keyboardAttachedBottomOmniboxHeight;
   // Computes the visible area between the omnibox and the keyboard.
+  CGFloat tableViewTopContentOffset = -self.tableView.contentOffset.y;
   CGFloat visibleTableViewHeight =
       CGRectGetHeight(self.tableView.window.bounds) -
       tableViewFrameInCurrentWindowCoordinateSpace.origin.y -
-      self.keyboardHeight - self.tableView.contentInset.top;
+      bottomOccludedHeight - self.tableView.contentInset.top -
+      tableViewTopContentOffset;
   // Use font size to estimate the size of a omnibox search suggestion.
   CGFloat fontSizeHeight = [@"T" sizeWithAttributes:@{
                              NSFontAttributeName : [UIFont

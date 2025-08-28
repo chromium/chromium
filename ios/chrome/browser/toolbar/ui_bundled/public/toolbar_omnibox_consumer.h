@@ -15,6 +15,10 @@
 /// Informs that the unfocused (steady state) omnibox moved to `toolbarType`.
 - (void)steadyStateOmniboxMovedToToolbar:(ToolbarType)toolbarType;
 
+/// Sets the height of the bottom omnibox when it is attached to the keyboard.
+- (void)setKeyboardAttachedBottomOmniboxHeight:
+    (CGFloat)keyboardAttachedBottomOmniboxHeight;
+
 /// Sets the offset to be applied in the bottom of the popup when using the
 /// bottom omnibox.
 - (void)setBottomOmniboxOffsetForPopup:(CGFloat)bottomOffset;
