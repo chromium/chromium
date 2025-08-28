@@ -29,7 +29,7 @@ export interface ReadAloudModelBrowserProxy {
   // that is too long the TTS engine to process at once. This is a workaround
   // for when remote voices are used because some remote voices hang instead of
   // returning a too-long-text error.
-  getAccessibleBoundary(text: string, maxSpeechLength: number): number;
+  getAccessibleText(text: string, maxSpeechLength: number): string;
 
   // Handle speech positioning.
   resetSpeechToBeginning(): void;
@@ -42,7 +42,6 @@ export interface ReadAloudModelBrowserProxy {
 }
 
 class V8ModelImpl implements ReadAloudModelBrowserProxy {
-
   getHighlightForCurrentSegmentIndex(index: number, phrases: boolean):
       Segment[] {
     return chrome.readingMode.getHighlightForCurrentSegmentIndex(index, phrases)
@@ -51,8 +50,7 @@ class V8ModelImpl implements ReadAloudModelBrowserProxy {
                 ({node: new AxReadAloudNode(nodeId), start, length}));
   }
 
-  getCurrentTextSegments():
-      Segment[] {
+  getCurrentTextSegments(): Segment[] {
     return chrome.readingMode.getCurrentTextSegments().map(
         ({nodeId, start, length}) =>
             ({node: new AxReadAloudNode(nodeId), start, length}));
@@ -62,12 +60,14 @@ class V8ModelImpl implements ReadAloudModelBrowserProxy {
     return chrome.readingMode.getCurrentTextContent();
   }
 
-  resetSpeechToBeginning(): void {
-    chrome.readingMode.resetGranularityIndex();
+  getAccessibleText(text: string, maxSpeechLength: number): string {
+    const boundary =
+        chrome.readingMode.getAccessibleBoundary(text, maxSpeechLength);
+    return text.substring(0, boundary);
   }
 
-  getAccessibleBoundary(text: string, maxSpeechLength: number): number {
-    return chrome.readingMode.getAccessibleBoundary(text, maxSpeechLength);
+  resetSpeechToBeginning(): void {
+    chrome.readingMode.resetGranularityIndex();
   }
 
   isInitialized(): boolean {
@@ -95,8 +95,7 @@ class V8ModelImpl implements ReadAloudModelBrowserProxy {
 class TsReadModelImpl implements ReadAloudModelBrowserProxy {
   // TODO: crbug.com/440400392- Implement all of the ReadAloudModelBrowserProxy
   // methods.
-  getHighlightForCurrentSegmentIndex():
-      Segment[] {
+  getHighlightForCurrentSegmentIndex(): Segment[] {
     return [];
   }
 
@@ -108,9 +107,11 @@ class TsReadModelImpl implements ReadAloudModelBrowserProxy {
     return '';
   }
 
-  getAccessibleBoundary(text: string, maxSpeechLength: number): number {
-    return TextSegmenter.getInstance().getAccessibleBoundary(
-        text, maxSpeechLength);
+  getAccessibleText(text: string, maxSpeechLength: number): string {
+    return text.slice(
+        0,
+        TextSegmenter.getInstance().getAccessibleBoundary(
+            text, maxSpeechLength));
   }
 
   resetSpeechToBeginning(): void {

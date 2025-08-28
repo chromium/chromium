@@ -15,7 +15,7 @@ export class TestReadAloudModelBrowserProxy extends TestBrowserProxy implements
       'getHighlightForCurrentSegmentIndex',
       'getCurrentTextSegments',
       'getCurrentTextContent',
-      'getAccessibleBoundary',
+      'getAccessibleText',
       'resetSpeechToBeginning',
       'moveSpeechForward',
       'moveSpeechBackwards',
@@ -49,9 +49,9 @@ export class TestReadAloudModelBrowserProxy extends TestBrowserProxy implements
     return '';
   }
 
-  getAccessibleBoundary(text: string, maxSpeechLength: number): number {
-    this.methodCalled('getAccessibleBoundary', text, maxSpeechLength);
-    return 0;
+  getAccessibleText(text: string, maxSpeechLength: number): string {
+    this.methodCalled('getAccessibleText', text, maxSpeechLength);
+    return text.substring(0, maxSpeechLength);
   }
 
   resetSpeechToBeginning(): void {

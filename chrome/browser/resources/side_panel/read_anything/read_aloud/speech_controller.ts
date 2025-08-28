@@ -493,15 +493,14 @@ export class SpeechController {
     // attempt to speak text that's too long, this will be able to be handled
     // by listening for a text-too-long error in message.onerror.
     const isTextTooLong = this.isTextTooLong_(utteranceText);
-    const endBoundary =
-        this.getUtteranceEndBoundary_(utteranceText, isTextTooLong);
-    this.playTextWithBoundaries_(utteranceText, isTextTooLong, endBoundary);
+    const textToPlay = this.getUtteranceText_(utteranceText, isTextTooLong);
+    this.playTextWithBoundaries_(utteranceText, isTextTooLong, textToPlay);
   }
 
   private playTextWithBoundaries_(
-      utteranceText: string, isTextTooLong: boolean, endBoundary: number) {
-    const message =
-        new SpeechSynthesisUtterance(utteranceText.substring(0, endBoundary));
+      utteranceText: string, isUtteranceTextTooLong: boolean,
+      textToPlay: string) {
+    const message = new SpeechSynthesisUtterance(textToPlay);
 
     message.onerror = (error) => {
       this.handleSpeechSynthesisError_(error, utteranceText);
@@ -512,12 +511,13 @@ export class SpeechController {
 
     const text = message.text;
     message.onend = () => {
-      if (isTextTooLong) {
+      if (isUtteranceTextTooLong) {
         // Since our previous utterance was too long, continue speaking pieces
         // of the current utterance until the utterance is complete. The
         // entire utterance is highlighted, so there's no need to update
         // highlighting until the utterance substring is an acceptable size.
-        this.playText_(utteranceText.substring(endBoundary));
+        const remainingText = utteranceText.substring(textToPlay.length);
+        this.playText_(remainingText);
         return;
       }
 
@@ -571,8 +571,7 @@ export class SpeechController {
       // if this gives a much smaller sentence than TTS would have supported,
       // this is still preferable to no speech.
       this.playTextWithBoundaries_(
-          utteranceText, true,
-          this.getUtteranceEndBoundary_(utteranceText, true));
+          utteranceText, true, this.getUtteranceText_(utteranceText, true));
       return;
     }
     if (error.error === 'invalid-argument') {
@@ -897,13 +896,14 @@ export class SpeechController {
         text.length > MAX_SPEECH_LENGTH;
   }
 
-  private getUtteranceEndBoundary_(text: string, isTextTooLong: boolean):
-      number {
-    return isTextTooLong ? this.getAccessibleTextLength_(text) : text.length;
+  private getUtteranceText_(text: string, isTextTooLong: boolean): string {
+    // If the text is not considered too long, don't get its accessible
+    // utterance to avoid shortening the utterance unnecessarily.
+    return isTextTooLong ? this.getAccessibleUtterance_(text) : text;
   }
 
-  // Gets the accessible text boundary for the given string.
-  private getAccessibleTextLength_(text: string): number {
+  // Gets the accessible utterance for the given string.
+  private getAccessibleUtterance_(text: string): string {
     // Splicing on commas won't work for all locales, but since this is a
     // simple strategy for splicing text in languages that do use commas
     // that reduces the need for calling getAccessibleBoundary.
@@ -916,14 +916,14 @@ export class SpeechController {
     // first character. Otherwise, use getAccessibleBoundary to prevent
     // repeatedly splicing on the first comma of the same substring.
     if (lastCommaIndex > 0) {
-      return lastCommaIndex;
+      return text.substring(0, lastCommaIndex);
     }
 
     // TODO: crbug.com/40927698 - getAccessibleBoundary breaks on the nearest
     // word boundary, but if there's some type of punctuation (such as a comma),
     // it would be preferable to break on the punctuation so the pause in
     // speech sounds more natural.
-    return this.readAloudModel_.getAccessibleBoundary(text, MAX_SPEECH_LENGTH);
+    return this.readAloudModel_.getAccessibleText(text, MAX_SPEECH_LENGTH);
   }
 
   private isSpeechActiveChanged_(isSpeechActive: boolean) {

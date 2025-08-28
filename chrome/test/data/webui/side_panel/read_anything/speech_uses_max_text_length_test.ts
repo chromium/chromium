@@ -152,10 +152,14 @@ suite('SpeechUsesMaxTextLength', () => {
       'long sentence with few commas with remote voice uses last comma and ' +
           'then max length',
       async () => {
-        const expectedFirstText = longSentenceWithFewCommas.substring(
-            0, longSentenceWithFewCommas.lastIndexOf(','));
+        const lastComma =
+            longSentenceWithFewCommas.substring(0, maxSpeechLength)
+                .lastIndexOf(', ');
+        const expectedFirstText =
+            longSentenceWithFewCommas.substring(0, lastComma);
+        const remainingText = longSentenceWithFewCommas.substring(lastComma);
         const expectedNumSegments =
-            Math.ceil(longSentence.length / maxSpeechLength) - 1;
+            Math.ceil(remainingText.length / maxSpeechLength);
         setContentWithText(longSentenceWithFewCommas);
         emitEvent(
             app, ToolbarEvent.VOICE, {detail: {selectedVoice: remoteVoice}});
@@ -186,8 +190,12 @@ suite('SpeechUsesMaxTextLength', () => {
       'long sentence with late commas with remote voice uses comma before max' +
           ' length',
       () => {
+        // Since there are no commas within the first `maxSpeechLength`
+        // characters, this will break on a word boundary. It's hard to know
+        // exactly how many segments there will be, so just verify it's more
+        // than one.
         const expectedNumSegments =
-            Math.ceil(longSentence.length / maxSpeechLength);
+            Math.ceil(longSentenceWithLateComma.length / maxSpeechLength);
         setContentWithText(longSentenceWithLateComma);
         emitEvent(
             app, ToolbarEvent.VOICE, {detail: {selectedVoice: remoteVoice}});
