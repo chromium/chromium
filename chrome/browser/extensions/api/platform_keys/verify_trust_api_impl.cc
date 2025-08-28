@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/platform_keys/verify_trust_api_v2.h"
+#include "chrome/browser/extensions/api/platform_keys/verify_trust_api_impl.h"
 
 #include <algorithm>
 #include <memory>
@@ -63,18 +63,18 @@ CreateCertChain(std::vector<std::vector<uint8_t>> server_certificate_chain) {
 
 }  // namespace
 
-VerifyTrustApiV2::VerifyTrustApiV2(content::BrowserContext* context)
+VerifyTrustApiImpl::VerifyTrustApiImpl(content::BrowserContext* context)
     : browser_context_(context) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
-VerifyTrustApiV2::~VerifyTrustApiV2() {
+VerifyTrustApiImpl::~VerifyTrustApiImpl() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
-void VerifyTrustApiV2::Verify(Params params,
-                              const std::string& extension_id,
-                              VerifyCallback callback) {
+void VerifyTrustApiImpl::Verify(Params params,
+                                const std::string& extension_id,
+                                VerifyCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // WeakPtr usage ensures that `callback` is not called after the
@@ -83,13 +83,13 @@ void VerifyTrustApiV2::Verify(Params params,
       FROM_HERE, {base::TaskPriority::USER_BLOCKING},
       base::BindOnce(&CreateCertChain,
                      std::move(params.details.server_certificate_chain)),
-      base::BindOnce(&VerifyTrustApiV2::OnCertChainCreated,
+      base::BindOnce(&VerifyTrustApiImpl::OnCertChainCreated,
                      weak_factory_.GetWeakPtr(),
                      std::move(params.details.hostname), extension_id,
                      std::move(callback)));
 }
 
-void VerifyTrustApiV2::OnCertChainCreated(
+void VerifyTrustApiImpl::OnCertChainCreated(
     std::string hostname,
     const std::string& extension_id,
     VerifyCallback callback,
@@ -108,16 +108,16 @@ void VerifyTrustApiV2::OnCertChainCreated(
       ->VerifyCert(
           cert_chain, net::HostPortPair(hostname, 443),
           /*ocsp_response=*/{}, /*sct_list=*/{},
-          base::BindOnce(&VerifyTrustApiV2::OnVerifyCert,
+          base::BindOnce(&VerifyTrustApiImpl::OnVerifyCert,
                          // WeakPtr usage ensures that `callback` is not
                          // called after the API is destroyed.
                          weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void VerifyTrustApiV2::OnVerifyCert(VerifyCallback callback,
-                                    int verify_result,
-                                    const net::CertVerifyResult& result,
-                                    bool pkp_bypassed) {
+void VerifyTrustApiImpl::OnVerifyCert(VerifyCallback callback,
+                                      int verify_result,
+                                      const net::CertVerifyResult& result,
+                                      bool pkp_bypassed) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::move(callback).Run(/*error=*/std::string(), verify_result,
                           result.cert_status);

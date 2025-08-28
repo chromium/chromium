@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_API_PLATFORM_KEYS_VERIFY_TRUST_API_V2_H_
-#define CHROME_BROWSER_EXTENSIONS_API_PLATFORM_KEYS_VERIFY_TRUST_API_V2_H_
+#ifndef CHROME_BROWSER_EXTENSIONS_API_PLATFORM_KEYS_VERIFY_TRUST_API_IMPL_H_
+#define CHROME_BROWSER_EXTENSIONS_API_PLATFORM_KEYS_VERIFY_TRUST_API_IMPL_H_
 
 #include <memory>
 #include <optional>
@@ -26,14 +26,14 @@ namespace extensions {
 
 // An implementation of VerifyTrustApiBase which has option
 // of fetching parent certificate using NetworkContext
-class VerifyTrustApiV2 : public VerifyTrustApiBase {
+class VerifyTrustApiImpl : public VerifyTrustApiBase {
  public:
-  explicit VerifyTrustApiV2(content::BrowserContext* context);
+  explicit VerifyTrustApiImpl(content::BrowserContext* context);
 
-  VerifyTrustApiV2(const VerifyTrustApiV2&) = delete;
-  VerifyTrustApiV2& operator=(const VerifyTrustApiV2&) = delete;
+  VerifyTrustApiImpl(const VerifyTrustApiImpl&) = delete;
+  VerifyTrustApiImpl& operator=(const VerifyTrustApiImpl&) = delete;
 
-  ~VerifyTrustApiV2() override;
+  ~VerifyTrustApiImpl() override;
 
   // VerifyTrustApiBase:
   void Verify(Params params,
@@ -54,9 +54,9 @@ class VerifyTrustApiV2 : public VerifyTrustApiBase {
                     bool pkp_bypassed);
 
   raw_ptr<content::BrowserContext> browser_context_;
-  base::WeakPtrFactory<VerifyTrustApiV2> weak_factory_{this};
+  base::WeakPtrFactory<VerifyTrustApiImpl> weak_factory_{this};
 };
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_API_PLATFORM_KEYS_VERIFY_TRUST_API_V2_H_
+#endif  // CHROME_BROWSER_EXTENSIONS_API_PLATFORM_KEYS_VERIFY_TRUST_API_IMPL_H_

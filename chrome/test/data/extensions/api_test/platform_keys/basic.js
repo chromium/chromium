@@ -729,10 +729,6 @@ function testVerifyAbsentCert() {
 }
 
 async function testVerifyTrustedOnlyLeafParentFetchEnabled() {
-  // This test will be run when parent fetching is enabled
-  // Defined by feature flag |kVerifyTLSServerCertificateUseNetFetcher|
-  // in chrome/browser/extensions/api/platform_keys/verify_trust_api_base.h.
-
   // The intermediate cert is not provided, but the leaf has
   // caIssuers section with the link to the intermediate.
   const details = {
@@ -746,30 +742,12 @@ async function testVerifyTrustedOnlyLeafParentFetchEnabled() {
       }));
 }
 
-async function testVerifyUntrustedOnlyLeafParentFetchDisabled() {
-  // This test will be run when parent fetching is NOT enabled
-  // Defined by feature flag |kVerifyTLSServerCertificateUseNetFetcher|
-  // in chrome/browser/extensions/api/platform_keys/verify_trust_api_base.h.
-
-  // The intermediate cert is not provided, but the leaf has
-  // caIssuers section with the link to the intermediate.
-  const details = {
-    serverCertificateChain: await loadServerCerts(['l3_leaf.der']),
-    hostname: 'l3_leaf'
-  };
-  chrome.platformKeys.verifyTLSServerCertificate(
-      details, callbackPass(function(result) {
-        assertFalse(result.trusted);
-        assertEq(['AUTHORITY_INVALID'], result.debug_errors);
-      }));
-}
-
 async function testVerifyUntrustedParentNotFound() {
   // The intermediate cert is not provided and caIssuers points to
   // non existing file.
   const details = {
-    serverCertificateChain: await loadServerCerts(['l4_leaf.der']),
-    hostname: 'l4_leaf'
+    serverCertificateChain: await loadServerCerts(['l3_leaf.der']),
+    hostname: 'l3_leaf'
   };
   chrome.platformKeys.verifyTLSServerCertificate(
       details, callbackPass(function(result) {
@@ -808,27 +786,13 @@ var testSuites = {
     chrome.test.runTests(tests);
   },
 
-  verifyServerCertBasic: async function() {
+  verifyServerCertTests: async function() {
     const tests = [
       testVerifyTrusted, testVerifyTrustedChain, testVerifyCommonNameInvalid,
-      testVerifyUntrusted, testVerifyAbsentCert
-    ];
-
-    chrome.test.runTests(tests);
-  },
-
-  verifyServerCertAiaFetchEnabled: async function() {
-    const tests = [
+      testVerifyUntrusted, testVerifyAbsentCert,
       testVerifyTrustedOnlyLeafParentFetchEnabled,
       testVerifyUntrustedParentNotFound
     ];
-
-    chrome.test.runTests(tests);
-  },
-
-  verifyServerCertAiaFetchDisabled: async function() {
-    const tests = [testVerifyUntrustedOnlyLeafParentFetchDisabled];
-
     chrome.test.runTests(tests);
   },
 
