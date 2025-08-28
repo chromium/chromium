@@ -84,7 +84,10 @@ SplitTabMenuModel::SplitTabMenuModel(TabStripModel* tab_strip_model,
       tab_strip_model_(tab_strip_model),
       menu_source_(menu_source),
       split_tab_index_(split_tab_index) {
-  AddItem(GetCommandIdInt(CommandId::kReversePosition), std::u16string());
+  AddItemWithStringIdAndIcon(
+      GetCommandIdInt(CommandId::kExitSplit), IDS_SPLIT_TAB_SEPARATE_VIEWS,
+      ui::ImageModel::FromVectorIcon(kOpenInFullIcon, ui::kColorMenuIcon,
+                                     ui::SimpleMenuModel::kDefaultIconSize));
   AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
 
   if (menu_source == MenuSource::kMiniToolbar) {
@@ -114,10 +117,8 @@ SplitTabMenuModel::SplitTabMenuModel(TabStripModel* tab_strip_model,
     NOTREACHED() << "Unknown close menu item option";
   }
 
-  AddItemWithStringIdAndIcon(
-      GetCommandIdInt(CommandId::kExitSplit), IDS_SPLIT_TAB_SEPARATE_VIEWS,
-      ui::ImageModel::FromVectorIcon(kOpenInFullIcon, ui::kColorMenuIcon,
-                                     ui::SimpleMenuModel::kDefaultIconSize));
+  AddItem(GetCommandIdInt(CommandId::kReversePosition), std::u16string());
+
   SetElementIdentifierAt(
       GetIndexOfCommandId(GetCommandIdInt(CommandId::kReversePosition)).value(),
       kReversePositionMenuItem);
