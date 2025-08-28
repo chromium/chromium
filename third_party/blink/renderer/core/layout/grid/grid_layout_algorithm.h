@@ -43,12 +43,6 @@ class CORE_EXPORT GridLayoutAlgorithm
       const LogicalSize& border_box_size,
       GridItemData* out_of_flow_item);
 
-  // Helper that computes tracks sizes in a given range.
-  static Vector<std::div_t> ComputeTrackSizesInRange(
-      const GridLayoutTrackCollection& track_collection,
-      wtf_size_t range_starting_set_index,
-      wtf_size_t range_set_count);
-
  private:
   friend class GridLayoutAlgorithmTest;
 

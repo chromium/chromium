@@ -9,6 +9,8 @@
 #include "third_party/blink/renderer/core/layout/constraint_space.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_item.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/style/grid_track_list.h"
 
@@ -178,6 +180,259 @@ wtf_size_t CalculateAutomaticRepetitions(
   const int count = CeilToInt((available_size - non_auto_specified_size) /
                               auto_repeater_size);
   return (count <= 0) ? 1u : count;
+}
+
+namespace {
+
+// TODO(yanlingwang): Update this method to use direct individual track size
+// queries once GridLayoutTrackCollection supports storing and querying
+// individual track sizes, rather than computing them from set offsets.
+Vector<std::div_t> ComputeTrackSizesInRange(
+    const GridLayoutTrackCollection& track_collection,
+    const wtf_size_t range_begin_set_index,
+    const wtf_size_t range_set_count) {
+  Vector<std::div_t> track_sizes;
+  track_sizes.ReserveInitialCapacity(range_set_count);
+
+  const wtf_size_t ending_set_index = range_begin_set_index + range_set_count;
+  for (wtf_size_t i = range_begin_set_index; i < ending_set_index; ++i) {
+    // Set information is stored as offsets. To determine the size of a single
+    // track in a given set, first determine the total size the set takes up
+    // by finding the difference between the offsets and subtracting the gutter
+    // size for each track in the set.
+    LayoutUnit set_size =
+        track_collection.GetSetOffset(i + 1) - track_collection.GetSetOffset(i);
+    const wtf_size_t set_track_count = track_collection.GetSetTrackCount(i);
+
+    DCHECK_GE(set_size, 0);
+    set_size = (set_size - track_collection.GutterSize() * set_track_count)
+                   .ClampNegativeToZero();
+
+    // Once we have determined the size of the set, we can find the size of a
+    // given track by dividing the `set_size` by the `set_track_count`.
+    DCHECK_GT(set_track_count, 0u);
+    track_sizes.emplace_back(std::div(set_size.RawValue(), set_track_count));
+  }
+  return track_sizes;
+}
+
+// For out of flow items that are located in the middle of a range, computes
+// the extra offset relative to the start of its containing range.
+LayoutUnit ComputeTrackOffsetInRange(
+    const GridLayoutTrackCollection& track_collection,
+    const wtf_size_t range_begin_set_index,
+    const wtf_size_t range_set_count,
+    const wtf_size_t offset_in_range) {
+  if (!range_set_count || !offset_in_range) {
+    return LayoutUnit();
+  }
+
+  // To compute the index offset, we have to determine the size of the
+  // tracks within the grid item's span.
+  Vector<std::div_t> track_sizes = ComputeTrackSizesInRange(
+      track_collection, range_begin_set_index, range_set_count);
+
+  // Calculate how many sets there are from the start of the range to the
+  // `offset_in_range`. This division can produce a remainder, which would
+  // mean that not all of the sets are repeated the same amount of times from
+  // the start to the `offset_in_range`.
+  const wtf_size_t floor_set_track_count = offset_in_range / range_set_count;
+  const wtf_size_t remaining_track_count = offset_in_range % range_set_count;
+
+  // Iterate over the sets and add the sizes of the tracks to `index_offset`.
+  LayoutUnit index_offset = track_collection.GutterSize() * offset_in_range;
+  for (wtf_size_t i = 0; i < track_sizes.size(); ++i) {
+    // If we have a remainder from the `floor_set_track_count`, we have to
+    // consider it to get the correct offset.
+    const wtf_size_t set_count =
+        floor_set_track_count + ((remaining_track_count > i) ? 1 : 0);
+    index_offset +=
+        LayoutUnit::FromRawValue(std::min<int>(set_count, track_sizes[i].rem) +
+                                 (set_count * track_sizes[i].quot));
+  }
+  return index_offset;
+}
+
+template <bool snap_to_end_of_track>
+LayoutUnit TrackOffset(const GridLayoutTrackCollection& track_collection,
+                       const wtf_size_t range_index,
+                       const wtf_size_t offset_in_range) {
+  const wtf_size_t range_begin_set_index =
+      track_collection.RangeBeginSetIndex(range_index);
+  const wtf_size_t range_track_count =
+      track_collection.RangeTrackCount(range_index);
+  const wtf_size_t range_set_count =
+      track_collection.RangeSetCount(range_index);
+
+  LayoutUnit track_offset;
+  if (offset_in_range == range_track_count) {
+    DCHECK(snap_to_end_of_track);
+    track_offset =
+        track_collection.GetSetOffset(range_begin_set_index + range_set_count);
+  } else {
+    DCHECK(offset_in_range || !snap_to_end_of_track);
+    DCHECK_LT(offset_in_range, range_track_count);
+
+    // If an out of flow item starts/ends in the middle of a range, compute and
+    // add the extra offset to the start offset of the range.
+    track_offset =
+        track_collection.GetSetOffset(range_begin_set_index) +
+        ComputeTrackOffsetInRange(track_collection, range_begin_set_index,
+                                  range_set_count, offset_in_range);
+  }
+
+  // `track_offset` includes the gutter size at the end of the last track,
+  // when we snap to the end of last track such gutter size should be removed.
+  // However, only snap if this range is not collapsed or if it can snap to the
+  // end of the last track in the previous range of the collection.
+  if (snap_to_end_of_track && (range_set_count || range_index)) {
+    track_offset -= track_collection.GutterSize();
+  }
+  return track_offset;
+}
+
+LayoutUnit TrackStartOffset(const GridLayoutTrackCollection& track_collection,
+                            const wtf_size_t range_index,
+                            const wtf_size_t offset_in_range) {
+  if (!track_collection.RangeCount()) {
+    // If the start line of an out of flow item is not 'auto' in an empty and
+    // undefined grid, start offset is the start border scrollbar padding.
+    DCHECK_EQ(range_index, 0u);
+    DCHECK_EQ(offset_in_range, 0u);
+    return track_collection.GetSetOffset(0);
+  }
+
+  const wtf_size_t range_track_count =
+      track_collection.RangeTrackCount(range_index);
+
+  if (offset_in_range == range_track_count &&
+      range_index == track_collection.RangeCount() - 1) {
+    // The only case where we allow the offset to be equal to the number of
+    // tracks in the range is for the last range in the collection, which should
+    // match the end line of the implicit grid; snap to the track end instead.
+    return TrackOffset</* snap_to_end_of_track */ true>(
+        track_collection, range_index, offset_in_range);
+  }
+
+  DCHECK_LT(offset_in_range, range_track_count);
+  return TrackOffset</* snap_to_end_of_track */ false>(
+      track_collection, range_index, offset_in_range);
+}
+
+LayoutUnit TrackEndOffset(const GridLayoutTrackCollection& track_collection,
+                          const wtf_size_t range_index,
+                          const wtf_size_t offset_in_range) {
+  if (!track_collection.RangeCount()) {
+    // If the end line of an out of flow item is not 'auto' in an empty and
+    // undefined grid, end offset is the start border scrollbar padding.
+    DCHECK_EQ(range_index, 0u);
+    DCHECK_EQ(offset_in_range, 0u);
+    return track_collection.GetSetOffset(0);
+  }
+
+  if (!offset_in_range && !range_index) {
+    // Only allow the offset to be 0 for the first range in the collection,
+    // which is the start line of the implicit grid; don't snap to the end.
+    return TrackOffset</* snap_to_end_of_track */ false>(
+        track_collection, range_index, offset_in_range);
+  }
+
+  DCHECK_GT(offset_in_range, 0u);
+  return TrackOffset</* snap_to_end_of_track */ true>(
+      track_collection, range_index, offset_in_range);
+}
+
+}  // namespace
+
+void ComputeOutOfFlowOffsetAndSize(
+    const GridItemData& out_of_flow_item,
+    const GridLayoutTrackCollection& track_collection,
+    const BoxStrut& borders,
+    const LogicalSize& border_box_size,
+    LayoutUnit* start_offset,
+    LayoutUnit* size) {
+  DCHECK(start_offset && size && out_of_flow_item.IsOutOfFlow());
+  OutOfFlowItemPlacement item_placement;
+  LayoutUnit end_offset;
+
+  // The default padding box value for `size` is used for out of flow items in
+  // which both the start line and end line are defined as 'auto'.
+  if (track_collection.Direction() == kForColumns) {
+    item_placement = out_of_flow_item.column_placement;
+    *start_offset = borders.inline_start;
+    end_offset = border_box_size.inline_size - borders.inline_end;
+  } else {
+    item_placement = out_of_flow_item.row_placement;
+    *start_offset = borders.block_start;
+    end_offset = border_box_size.block_size - borders.block_end;
+  }
+
+  // If the start line is defined, the size will be calculated by subtracting
+  // the offset at `start_index`; otherwise, use the computed border start.
+  if (item_placement.range_index.begin != kNotFound) {
+    DCHECK_NE(item_placement.offset_in_range.begin, kNotFound);
+
+    *start_offset =
+        TrackStartOffset(track_collection, item_placement.range_index.begin,
+                         item_placement.offset_in_range.begin);
+  }
+
+  // If the end line is defined, the offset (which can be the offset at the
+  // start index or the start border) and the added grid gap after the spanned
+  // tracks are subtracted from the offset at the end index.
+  if (item_placement.range_index.end != kNotFound) {
+    DCHECK_NE(item_placement.offset_in_range.end, kNotFound);
+
+    end_offset =
+        TrackEndOffset(track_collection, item_placement.range_index.end,
+                       item_placement.offset_in_range.end);
+  }
+
+  // `start_offset` can be greater than `end_offset` if the used track sizes or
+  // gutter size saturated the set offsets of the track collection.
+  *size = (end_offset - *start_offset).ClampNegativeToZero();
+}
+
+void AlignmentOffsetForOutOfFlow(AxisEdge inline_axis_edge,
+                                 AxisEdge block_axis_edge,
+                                 LogicalSize container_size,
+                                 LogicalStaticPosition::InlineEdge* inline_edge,
+                                 LogicalStaticPosition::BlockEdge* block_edge,
+                                 LogicalOffset* offset) {
+  using InlineEdge = LogicalStaticPosition::InlineEdge;
+  using BlockEdge = LogicalStaticPosition::BlockEdge;
+
+  switch (inline_axis_edge) {
+    case AxisEdge::kStart:
+    case AxisEdge::kFirstBaseline:
+      *inline_edge = InlineEdge::kInlineStart;
+      break;
+    case AxisEdge::kCenter:
+      *inline_edge = InlineEdge::kInlineCenter;
+      offset->inline_offset += container_size.inline_size / 2;
+      break;
+    case AxisEdge::kEnd:
+    case AxisEdge::kLastBaseline:
+      *inline_edge = InlineEdge::kInlineEnd;
+      offset->inline_offset += container_size.inline_size;
+      break;
+  }
+
+  switch (block_axis_edge) {
+    case AxisEdge::kStart:
+    case AxisEdge::kFirstBaseline:
+      *block_edge = BlockEdge::kBlockStart;
+      break;
+    case AxisEdge::kCenter:
+      *block_edge = BlockEdge::kBlockCenter;
+      offset->block_offset += container_size.block_size / 2;
+      break;
+    case AxisEdge::kEnd:
+    case AxisEdge::kLastBaseline:
+      *block_edge = BlockEdge::kBlockEnd;
+      offset->block_offset += container_size.block_size;
+      break;
+  }
 }
 
 }  // namespace blink
