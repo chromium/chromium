@@ -34,7 +34,7 @@
 <translation id="7139724024395191329">إمارة</translation>
 <translation id="7393381084163773901">عنوان الشارع</translation>
 <translation id="7602447984296396718">يبدو أن هذا الرمز البريدي غير متوافق مع بقية هذا العنوان.</translation>
-<translation id="7738983109397305830">يبدو أن هذا الرمز البريدي غير متوافق مع بقية هذا العنوان. إذا لم تكن على دراية بالرمز البريدي، يمكنك التعرف عليه <ph name="BEGIN_LINK" />هنا<ph name="END_LINK" />.</translation>
+<translation id="7738983109397305830">يبدو أن هذا الرمز البريدي لا يتطابق مع بقية العنوان. في حال عدم معرفتك برمزك البريدي، يمكنك العثور عليه <ph name="BEGIN_LINK" />هنا<ph name="END_LINK" />.</translation>
 <translation id="777702478322588152">المديرية</translation>
 <translation id="7805765407568469194">القرية / البلدة</translation>
 <translation id="8184169487503545976">لم يتم التعرف على تنسيق الرمز البريدي هذا.</translation>

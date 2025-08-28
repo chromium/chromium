@@ -1187,6 +1187,7 @@
 <translation id="1805967612549112634">確認 PIN 碼</translation>
 <translation id="1806335016774576568">切換至其他已開啟的應用程式</translation>
 <translation id="1807246157184219062">淺色</translation>
+<translation id="1808571181382454540">前往「設定」頁面</translation>
 <translation id="1808805149659872686">新項目</translation>
 <translation id="1809201888580326312">你已選擇不儲存這些網站和應用程式的密碼</translation>
 <translation id="1809734401532861917">將我的書籤、歷史記錄、密碼和其他設定新增至 <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -1557,6 +1558,7 @@
 <translation id="2059913712424898428">時區</translation>
 <translation id="2060375639911876205">移除 eSIM 設定檔</translation>
 <translation id="2061366302742593739">沒有可顯示的內容</translation>
+<translation id="2061589908388230480">如果 Chromium 發現你的密碼曾在公開資料侵害事件中外洩，Google 密碼管理工具可能會在你登入時建議變更密碼。<ph name="BEGIN_LINK" />進一步瞭解自動密碼變更<ph name="END_LINK" /></translation>
 <translation id="2062354623176996748">如果不希望系統在你使用網路時儲存你的瀏覽記錄，請使用無痕視窗</translation>
 <translation id="206308717637808771">在關閉所有視窗後刪除資料。資料的處理方式與目前瀏覽的網站相同</translation>
 <translation id="2065405795449409761">Chrome 目前受到自動測試軟體控制。</translation>
@@ -2454,6 +2456,7 @@
 <translation id="2669241540496514785">無法開啟「<ph name="APP_NAME" />」</translation>
 <translation id="2669454659051515572">這部裝置的任何使用者都可以看到已下載的檔案</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> 正在共用 Chrome 分頁。</translation>
+<translation id="2670168377011445813">如果 Chrome 發現你的密碼曾在公開資料侵害事件中外洩，Google 密碼管理工具可能會在你登入時建議變更密碼。<ph name="BEGIN_LINK" />進一步瞭解自動密碼變更<ph name="END_LINK" /></translation>
 <translation id="2670350619068134931">經過簡化的動畫</translation>
 <translation id="2670403088701171361">禁止網站查看剪貼簿中的文字或圖片</translation>
 <translation id="2671423594960767771">分享群組項目</translation>
@@ -10643,7 +10646,6 @@
 <translation id="8431190899827883166">顯示觸控回應</translation>
 <translation id="843173223122814223">使用 AI 建立背景</translation>
 <translation id="8431977087510901105">游標設定已重設</translation>
-<translation id="843210078733508372">登入後即可繼續變更密碼</translation>
 <translation id="8433186206711564395">網路設定</translation>
 <translation id="8434109185104929038">閱讀角落</translation>
 <translation id="8434837876193928924">分頁群組詳細資料</translation>
@@ -10781,6 +10783,7 @@
 <translation id="8528962588711550376">登入中。</translation>
 <translation id="8531367864749403520">選取「隱藏群組」即可從分頁列中移除群組</translation>
 <translation id="8531701051932785007">已關閉安全瀏覽強化防護功能</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">已啟用安全瀏覽功能</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{這些分頁會在這部裝置上保持開啟，但該群組會從所有已登入 <ph name="EMAIL" /> 的裝置刪除}other{這些分頁會在這部裝置上保持開啟，但這些群組會從所有已登入 <ph name="EMAIL" /> 的裝置刪除}}</translation>
 <translation id="8535005006684281994">Netscape 憑證更新網址</translation>

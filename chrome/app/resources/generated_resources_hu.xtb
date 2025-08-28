@@ -1196,6 +1196,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1805967612549112634">PIN-kód megerősítése</translation>
 <translation id="1806335016774576568">Váltás másik megnyitott alkalmazásra</translation>
 <translation id="1807246157184219062">Világos</translation>
+<translation id="1808571181382454540">Ugrás a Beállítások oldalra</translation>
 <translation id="1808805149659872686">Új bejegyzés</translation>
 <translation id="1809201888580326312">Úgy döntött, hogy nem menti az ezekhez a webhelyekhez és alkalmazásokhoz tartozó jelszavait.</translation>
 <translation id="1809734401532861917">Saját könyvjelzők, előzmények, jelszavak és egyéb beállítások hozzáadása a következőhöz: <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -4815,7 +4816,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4298660926525614540">Cserélhető tárhely nevei</translation>
 <translation id="4299022904780065004">Új &amp;inkognitó ablak</translation>
 <translation id="4300272766492248925">Alkalmazás megnyitása</translation>
-<translation id="4301231341924904092">Módosítás helyettem</translation>
+<translation id="4301231341924904092">Módosítsa helyettem</translation>
 <translation id="4301671483919369635">Ez az oldal szerkeszthet fájlokat</translation>
 <translation id="4301697210743228350">{COUNT,plural, =1{# ismerős nem áll rendelkezésre. Ha vele szeretné használni a(z) <ph name="FEATURE_NAME" /> funkciót, adja hozzá a Google-fiókjához tartozó e-mail-címét a Névjegyekhez.}other{# ismerős nem áll rendelkezésre. Ha velük szeretné használni a(z) <ph name="FEATURE_NAME" /> funkciót, adja hozzá a Google-fiókjukhoz tartozó e-mail-címüket a Névjegyekhez.}}</translation>
 <translation id="4303079906735388947">Új PIN-kód beállítása a biztonsági hardverkulcshoz</translation>
@@ -10670,7 +10671,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8431190899827883166">Koppintások megjelenítése</translation>
 <translation id="843173223122814223">Létrehozhat háttereket AI segítségével</translation>
 <translation id="8431977087510901105">Kurzorbeállítások visszaállítva</translation>
-<translation id="843210078733508372">Jelentkezzen be a jelszómódosítás folytatásához</translation>
 <translation id="8433186206711564395">Hálózati beállítások</translation>
 <translation id="8434109185104929038">Olvasósarok</translation>
 <translation id="8434837876193928924">Lapcsoport részletei</translation>
@@ -10808,6 +10808,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8528962588711550376">Bejelentkezés.</translation>
 <translation id="8531367864749403520">Válassza a „Csoport elrejtése” lehetőséget, ha szeretné eltávolítani a csoportot a lapsorról</translation>
 <translation id="8531701051932785007">A „Biztonságos Böngészés fokozott védelemmel” funkció ki van kapcsolva.</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">A Biztonságos Böngészés be van kapcsolva</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{A lapok nyitva maradnak ezen az eszközön, de a csoport törlődni fog minden olyan eszközről, amelyen be van jelentkezve ide: <ph name="EMAIL" />.}other{A lapok nyitva maradnak ezen az eszközön, de a csoportok törlődni fognak minden olyan eszközről, amelyen be van jelentkezve ide: <ph name="EMAIL" />.}}</translation>
 <translation id="8535005006684281994">Netscape tanúsítvány - megújítási URL</translation>

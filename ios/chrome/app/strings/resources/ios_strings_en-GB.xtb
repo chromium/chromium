@@ -122,7 +122,6 @@
 <translation id="1469381646033328562">Your account is managed by your parent.
 <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Changed</translation>
-<translation id="1485907716209290998">Package tracking</translation>
 <translation id="1486096554574027028">Search passwords</translation>
 <translation id="1491277525950327607">Double tap to toggle setting</translation>
 <translation id="1491965206608166851">Sign in with your saved passwords and passkeys from any app</translation>
@@ -242,6 +241,7 @@
 <translation id="1902277226107477495">Address detection off. Turn it back on in Settings.</translation>
 <translation id="1904580727789512086">The URLs that you visit are saved to your Google Account</translation>
 <translation id="1911619930368729126">Upload to Google Drive</translation>
+<translation id="1925706052394657380">Open <ph name="BEGIN_BOLD" />Default Apps<ph name="END_BOLD" /> settings in iOS</translation>
 <translation id="1941314575388338491">Double tap to copy.</translation>
 <translation id="1943478190258551035">Menu → Settings</translation>
 <translation id="1952728750904661634">Sign in with managed account</translation>
@@ -251,6 +251,7 @@
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> has shared a password with you for <ph name="WEBSITE" /></translation>
 <translation id="1962969542251276847">Lock Screen</translation>
 <translation id="1963976881984600709">Standard protection</translation>
+<translation id="1964507856799750384">Tap <ph name="BEGIN_BOLD" />Browser App<ph name="END_BOLD" /></translation>
 <translation id="1966313166384086081">site data</translation>
 <translation id="1967461193809857427">{count,plural, =1{Pick up the tab you left on Android?}other{Pick up the tabs you left on Android?}}</translation>
 <translation id="1972325230031091483">You’ll browse faster because content is proactively loaded based on your current web page visit</translation>
@@ -1398,7 +1399,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6406506848690869874">Sync</translation>
 <translation id="6410390304316730527">Safe Browsing protects you against attackers who may trick you into doing something dangerous, like installing malicious software or revealing personal information such as passwords, phone numbers or credit cards. If you turn it off, be careful when browsing unfamiliar or unreputable sites.</translation>
 <translation id="6410883413783534063">Open tabs to visit different pages at the same time</translation>
-<translation id="6416807286621280684">Your tracked parcels and delivery updates.</translation>
 <translation id="6418346271604475326">Preparing PDF</translation>
 <translation id="6421038304268477484">Translated text</translation>
 <translation id="6429213933892582367">Open password options</translation>

@@ -1182,17 +1182,6 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
 <translation id="1829839214911753838">如果此政策已启用，远程协助主机会在具有 <ph name="UIACCESS_PERMISSION_NAME" /> 权限的进程中运行。这样，远程用户就能与本地用户的桌面设备上需有较高权限才能使用的窗口交互。
 
       如果此政策已停用或未设置，远程协助主机会在用户的环境中运行，而且远程用户将无法与本地用户的桌面设备上需有较高权限才能使用的窗口交互。</translation>
-<translation id="183438382744421768">此政策用于控制浏览器在受管理的账号登录内容区域后的行为。
-
-此政策会覆盖 <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />。
-
-如果此政策设为“建议”，在受管理的账号登录后，系统会发出类似于强制执行政策的提示，要求用户继续使用受管理的个人资料。如果用户拒绝，可以在非受管环境中继续浏览。
-
-如果此政策设为“强制”，在受管理的账号登录后，系统会要求用户继续使用受管理的个人资料。如果用户拒绝，系统会强制其退出账号。这项强制措施不受 <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" /> 政策的影响。
-
-如果此政策已停用或未设置，在受管理的账号登录后，系统可能会显示一个信息气泡，要求用户创建新的个人资料。用户可以关闭该气泡，在非受管环境中继续浏览。该气泡受 <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" /> 政策控制。
-
-如果此政策是在机器级设置的，它不会产生任何效力。</translation>
 <translation id="1834796168555733063">禁止使用密码管理工具保存通行密钥</translation>
 <translation id="1836380138559328229">在设备级别保存有效的 Wi-Fi 凭据</translation>
 <translation id="1837165432382702436">页面的高度（以微米为单位）</translation>

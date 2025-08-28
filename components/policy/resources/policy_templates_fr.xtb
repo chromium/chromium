@@ -1191,17 +1191,6 @@ Cette règle n'a aucun effet si l'option permettant de conserver les données de
 <translation id="1829839214911753838">Si cette règle est activée, l'hôte d'assistance à distance est exécuté dans un processus avec des autorisations <ph name="UIACCESS_PERMISSION_NAME" />. Les utilisateurs distants peuvent ainsi interagir avec des fenêtres de niveau administrateur sur le bureau de l'utilisateur local.
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, l'hôte d'assistance à distance est exécuté dans le contexte de l'utilisateur, et les utilisateurs distants ne peuvent pas interagir avec des fenêtres de niveau administrateur sur le bureau.</translation>
-<translation id="183438382744421768">Cette règle détermine le comportement du navigateur une fois l'utilisateur connecté à un compte géré dans la zone de contenu.
-
-Cette règle remplace <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />.
-
-Si cette règle est suggérée, une fois l'utilisateur connecté à un compte géré, il est invité à continuer d'utiliser un profil géré comme si la règle était appliquée. S'il refuse, il peut poursuivre sa navigation dans un environnement non géré.
-
-Si cette règle est appliquée, une fois l'utilisateur connecté à un compte géré, il doit continuer d'utiliser un profil géré. S'il refuse, il sera déconnecté du compte. L'application de cette règle n'est pas affectée par la règle <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
-
-Si cette règle est désactivée ou n'est pas configurée, une fois l'utilisateur connecté à un compte géré, une info-bulle peut lui demander de créer un profil. Il peut l'ignorer et continuer à naviguer dans un environnement non géré. L'info-bulle est contrôlée par la règle <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
-
-Cette règle n'a aucun effet quand elle est définie au niveau de l'ordinateur.</translation>
 <translation id="1834796168555733063">Désactiver l'enregistrement des clés d'accès avec le gestionnaire de mots de passe</translation>
 <translation id="1836380138559328229">Enregistrer les identifiants Wi-Fi actifs au niveau de l'appareil</translation>
 <translation id="1837165432382702436">Hauteur de la page en micromètres.</translation>

@@ -122,7 +122,6 @@
 <translation id="1469381646033328562">Аккаунтуңду ата-энең тескейт.
 <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Өзгөрдү</translation>
-<translation id="1485907716209290998">Таңгакка көз салуу</translation>
 <translation id="1486096554574027028">Сырсөздөрдү издөө</translation>
 <translation id="1491277525950327607">Жөндөөнү которуштуруу үчүн, эки жолу таптаңыз</translation>
 <translation id="1491965206608166851">Сырсөздөр менен киргизүүчү ачкычтарыңыз менен каалаган колдонмодон кириңиз</translation>
@@ -242,6 +241,7 @@
 <translation id="1902277226107477495">Даректи аныктоо өчүк. Аны Параметрлерден кайра күйгүзүңүз.</translation>
 <translation id="1904580727789512086">Сиз кирген URL даректери Google аккаунтуңузга сакталат</translation>
 <translation id="1911619930368729126">Google Drive'га жүкт брүү</translation>
+<translation id="1925706052394657380">iOS'то <ph name="BEGIN_BOLD" />Демейки колдонмолор<ph name="END_BOLD" /> параметрин ачыңыз</translation>
 <translation id="1941314575388338491">Көчүрүү үчүн эки жолу таптап коюңуз.</translation>
 <translation id="1943478190258551035">Меню → Тууралоо</translation>
 <translation id="1952728750904661634">Башкарылган аккаунт менен кириңиз</translation>
@@ -251,6 +251,7 @@
 <translation id="1962348300797608157"><ph name="BEGIN_BOLD" /><ph name="FULL_NAME" /><ph name="END_BOLD" /> сиз менен <ph name="WEBSITE" /> үчүн сырсөздү бөлүштү</translation>
 <translation id="1962969542251276847">Кулпуланган экран</translation>
 <translation id="1963976881984600709">Стандарттуу коргоо</translation>
+<translation id="1964507856799750384"><ph name="BEGIN_BOLD" />Серепчи колдонмосун<ph name="END_BOLD" /> таптап коюңуз</translation>
 <translation id="1966313166384086081">сайттагы маалымат</translation>
 <translation id="1967461193809857427">{count,plural, =1{Android'де көргөн өтмөктү ачасызбы?}other{Android'де көргөн өтмөктү ачасызбы?}}</translation>
 <translation id="1972325230031091483">Мазмун учурда ачылып турган веб-баракчанын негизинде жүктөлгөндүктөн, барактарды тезирээк карап чыгасыз</translation>
@@ -1398,7 +1399,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6406506848690869874">Шайкештирүү</translation>
 <translation id="6410390304316730527">Коопсуз серептөө сизди кесепеттүү программаны орнотуудан же сырсөздөр, телефон номерлери жана насыя карталарынын дайындары сыяктуу маалыматыңыздын чабуулчулар тарабынан уурдалышынан коргойт. Эгер аны өчүрсөңүз, бейтааныш же ишенимсиз сайттарды карап чыгууда өзгөчө этият болуңуз.</translation>
 <translation id="6410883413783534063">Бир учурда бир нече барактарга баш багуу үчүн өтмөктөрдү ачыңыз</translation>
-<translation id="6416807286621280684">Көз салган таңгактарыңыз менен жеткирүү боюнча жаңыртуулар.</translation>
 <translation id="6418346271604475326">PDF даярдалууда</translation>
 <translation id="6421038304268477484">Которулган текст</translation>
 <translation id="6429213933892582367">Сырсөздүн параметрлерин ачыңыз</translation>

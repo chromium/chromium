@@ -1188,6 +1188,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1805967612549112634">Kinnitage PIN-kood</translation>
 <translation id="1806335016774576568">Lülita teisele avatud rakendusele</translation>
 <translation id="1807246157184219062">Hele</translation>
+<translation id="1808571181382454540">Ava seadete leht</translation>
 <translation id="1808805149659872686">Uus kirje</translation>
 <translation id="1809201888580326312">Otsustasite nende saitide ja rakenduste paroole mitte salvestada</translation>
 <translation id="1809734401532861917">Lisa minu järjehoidjad, ajalugu, paroolid ja muud seaded e-posti aadressile <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -10663,7 +10664,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8431190899827883166">Puudutuste kuvamine</translation>
 <translation id="843173223122814223">Looge AI abil taustasid</translation>
 <translation id="8431977087510901105">Kursori seaded on lähtestatud</translation>
-<translation id="843210078733508372">Logige sisse ja parooli muutmise protsess jätkub</translation>
 <translation id="8433186206711564395">Võrguseaded</translation>
 <translation id="8434109185104929038">Lugemisnurk</translation>
 <translation id="8434837876193928924">Vahelehegrupi üksikasjad</translation>
@@ -10801,6 +10801,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8528962588711550376">Sisselogimine.</translation>
 <translation id="8531367864749403520">Tehke valik „Peida grupp“, et eemaldada grupp oma vahelehtede ribalt</translation>
 <translation id="8531701051932785007">Täiustatud ohutu sirvimine on välja lülitatud</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Google'i ohutu sirvimine on sees</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Vahelehed jäävad selles seadmes avatuks, aga grupp kustutatakse kõikidest seadmetest, mis on kontole <ph name="EMAIL" /> sisse logitud}other{Vahelehed jäävad selles seadmes avatuks, aga grupid kustutatakse kõikidest seadmetest, mis on kontole <ph name="EMAIL" /> sisse logitud}}</translation>
 <translation id="8535005006684281994">Netscape'i sertifikaadi uuendus-URL</translation>

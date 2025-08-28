@@ -1195,6 +1195,7 @@
 <translation id="1805967612549112634">पिन निश्चित करा</translation>
 <translation id="1806335016774576568">दुसर्‍या उघड्या अ‍ॅपवर स्विच करा</translation>
 <translation id="1807246157184219062">फिकट</translation>
+<translation id="1808571181382454540">सेटिंग्ज पेजवर जा</translation>
 <translation id="1808805149659872686">नवीन नोंद</translation>
 <translation id="1809201888580326312">तुम्ही या साइट आणि ॲप्ससाठी पासवर्ड सेव्ह करू नका, असे निवडले आहे</translation>
 <translation id="1809734401532861917">माझे बुकमार्क, इतिहास, पासवर्ड आणि अन्य सेटिंग्ज <ph name="USER_EMAIL_ADDRESS" /> मध्ये जोडा</translation>
@@ -1566,6 +1567,7 @@
 <translation id="2059913712424898428">टाइमझोन</translation>
 <translation id="2060375639911876205">eSIM प्रोफाइल काढून टाका</translation>
 <translation id="2061366302742593739">दाखवण्यासाठी काहीही नाही</translation>
+<translation id="2061589908388230480">Chromium ला सार्वजनिक डेटा भंगामध्ये तुमचा एखादा पासवर्ड आढळला, तर तुम्ही साइन इन केले असल्यास Google Password Manager तुमचा पासवर्ड बदलण्याची ऑफर देऊ शकते. <ph name="BEGIN_LINK" />ऑटोमेटेड पासवर्ड बदलाविषयी अधिक माहिती<ph name="END_LINK" /></translation>
 <translation id="2062354623176996748">गुप्त विंडोमधील तुमचा ब्राउझिंग इतिहास सेव्ह न करता वेब वापरा</translation>
 <translation id="206308717637808771">तुम्ही सर्व विंडो बंद करता, तेव्हा डेटा हटवा. डेटा हा तुम्ही पाहत असलेल्या साइटप्रमाणेच हाताळला जातो</translation>
 <translation id="2065405795449409761">स्वयंचलित चाचणी सॉफ्टवेअरने Chrome नियंत्रित केले जात आहे.</translation>
@@ -2466,6 +2468,7 @@
 <translation id="2669241540496514785"><ph name="APP_NAME" /> उघडता आले नाही</translation>
 <translation id="2669454659051515572">हे डिव्हाइस वापरणारे कोणीही डाउनलोड केलेल्या फाइल पाहू शकते</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> Chrome टॅब शेअर करीत आहे.</translation>
+<translation id="2670168377011445813">Chrome ला सार्वजनिक डेटा भंगामध्ये तुमचा एखादा पासवर्ड आढळला, तर तुम्ही साइन इन केले असल्यास ते तुमचा पासवर्ड बदलण्याची ऑफर देऊ शकते. <ph name="BEGIN_LINK" />ऑटोमेटेड पासवर्ड बदलाविषयी अधिक माहिती<ph name="END_LINK" /></translation>
 <translation id="2670350619068134931">कमी केलेली अ‍ॅनिमेशन</translation>
 <translation id="2670403088701171361">साइटना तुमच्या क्लिपबोर्डवरील मजकूर किंवा इमेज पाहाण्याची अनुमती देऊ नका</translation>
 <translation id="2671423594960767771">गट शेअर करा</translation>
@@ -10668,7 +10671,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8431190899827883166">टॅप दाखवा</translation>
 <translation id="843173223122814223">AI वापरून बॅकग्राउंड तयार करा</translation>
 <translation id="8431977087510901105">कर्सर सेटिंग्‍ज रीसेट</translation>
-<translation id="843210078733508372">साइन इन करा आणि पासवर्ड बदलणे पुढे सुरू राहील</translation>
 <translation id="8433186206711564395">नेटवर्क सेटिंग्ज</translation>
 <translation id="8434109185104929038">वाचनाचा कोपरा</translation>
 <translation id="8434837876193928924">टॅब गटाचे तपशील</translation>
@@ -10806,6 +10808,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8528962588711550376">साइन इन करत आहे.</translation>
 <translation id="8531367864749403520">तुमच्या टॅब स्ट्रिपमधून गट काढून टाकण्यासाठी "गट लपवा" हे निवडा</translation>
 <translation id="8531701051932785007">वर्धित सुरक्षित ब्राउझिंग बंद आहे</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">सुरक्षित ब्राउझिंग सुरू आहे</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{टॅब या डिव्हाइसवर खुले राहतील, पण गट हा <ph name="EMAIL" /> मध्ये साइन इन केलेल्या सर्व डिव्हाइसवरून हटवला जाईल}other{टॅब या डिव्हाइसवर खुले राहतील, पण गट हे <ph name="EMAIL" /> मध्ये साइन इन केलेल्या सर्व डिव्हाइसवरून हटवले जातील}}</translation>
 <translation id="8535005006684281994">Netscape सर्टिफिकेट रिन्यूअल URL</translation>

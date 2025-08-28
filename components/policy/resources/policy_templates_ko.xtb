@@ -1211,17 +1211,6 @@ Chrome 앱은 ID(예: <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHRO
 <translation id="1829839214911753838">정책을 사용 설정하면 원격 지원 호스트가 <ph name="UIACCESS_PERMISSION_NAME" /> 권한이 있는 프로세스로 실행됩니다. 이를 통해 원격 사용자는 로컬 사용자의 데스크톱에서 관리자 창과 상호작용할 수 있습니다.
 
       정책을 사용 중지하거나 설정하지 않으면 원격 지원 호스트가 사용자의 컨텍스트에서 실행되며 원격 사용자는 데스크톱의 관리자 창에서 상호작용할 수 없습니다.</translation>
-<translation id="183438382744421768">이 정책은 관리 계정으로 콘텐츠 영역에 로그인한 후의 브라우저 동작을 제어합니다.
-
-이 정책은 <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />보다 우선 적용됩니다.
-
-이 정책을 권장으로 설정하면 관리 계정에 로그인한 후 사용자에게 정책이 시행된 것처럼 관리 프로필을 계속 사용하라는 메시지가 표시됩니다. 거부할 경우 사용자는 관리되지 않는 환경에서 탐색을 계속할 수 있습니다.
-
-정책을 시행으로 설정하면 관리 계정에 로그인한 후 사용자에게 관리 프로필을 계속 사용하라는 메시지가 표시됩니다. 사용자가 거부하면 계정에서 로그아웃됩니다. 이 시행은 <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" /> 정책의 영향을 받지 않습니다.
-
-정책을 사용 안함으로 설정하거나 설정하지 않으면, 관리 계정에 로그인한 후 사용자에게 새 프로필을 만들라는 도움말 풍선이 표시될 수도 있습니다. 도움말 풍선은 닫을 수 있으며, 사용자는 관리되지 않는 환경에서 계속 탐색할 수 있습니다. 도움말 풍선은 <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" /> 정책에 따라 제어됩니다.
-
-이 정책은 머신 수준에서 설정될 경우 아무런 영향을 미치지 않습니다.</translation>
 <translation id="1834796168555733063">비밀번호 관리자를 통한 패스키 저장 기능 사용 안함</translation>
 <translation id="1836380138559328229">기기 수준에서 활성 Wi-Fi 사용자 인증 정보 저장</translation>
 <translation id="1837165432382702436">페이지의 높이(마이크로미터)입니다.</translation>

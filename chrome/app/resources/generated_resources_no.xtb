@@ -1191,6 +1191,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1805967612549112634">Bekreft PIN-koden</translation>
 <translation id="1806335016774576568">Bytt til en annen åpen app</translation>
 <translation id="1807246157184219062">Lys</translation>
+<translation id="1808571181382454540">Gå til Innstillinger-siden</translation>
 <translation id="1808805149659872686">Ny oppføring</translation>
 <translation id="1809201888580326312">Du har valgt å ikke lagre passordene for disse nettstedene og appene</translation>
 <translation id="1809734401532861917">Legg til bokmerker, loggen, passord og andre innstillinger i <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -10661,7 +10662,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8431190899827883166">Vis trykk</translation>
 <translation id="843173223122814223">Lag bakgrunner med AI</translation>
 <translation id="8431977087510901105">Markørinnstillingene er tilbakestilt</translation>
-<translation id="843210078733508372">Logg på, så fortsetter passordendringen</translation>
 <translation id="8433186206711564395">Nettverksinnstillinger</translation>
 <translation id="8434109185104929038">Lesekrok</translation>
 <translation id="8434837876193928924">Detaljer om fanegruppen</translation>
@@ -10799,6 +10799,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8528962588711550376">Logger på.</translation>
 <translation id="8531367864749403520">Velg «Skjul gruppen» for å fjerne gruppen fra faneraden</translation>
 <translation id="8531701051932785007">Safe Browsing med økt beskyttelse er avslått</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Safe Browsing er på</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Fanene forblir åpne på denne enheten, men gruppen blir slettet fra alle enheter som er logget på <ph name="EMAIL" />}other{Fanene forblir åpne på denne enheten, men gruppene blir slettet fra alle enheter som er logget på <ph name="EMAIL" />}}</translation>
 <translation id="8535005006684281994">Fornying av Netscape-sertifikat for nettadresse</translation>

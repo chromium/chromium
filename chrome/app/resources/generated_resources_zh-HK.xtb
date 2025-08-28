@@ -3244,6 +3244,7 @@
 <translation id="3226487301970807183">切換靠左對齊側邊面板</translation>
 <translation id="322708765617468434">設定完成後，你可隨時在裝置中新增其他使用者。每位使用者都可將體驗個人化，以確保資料私隱。</translation>
 <translation id="3227137524299004712">麥克風</translation>
+<translation id="3227701057281907159">正在套用修補檔案</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{請移除擴充程式，或前往「<ph name="BEGIN_LINK" />Chrome 網上應用程式商店<ph name="END_LINK" />」尋找可取代的類似擴充程式。}other{請移除擴充程式，或前往「<ph name="BEGIN_LINK" />Chrome 網上應用程式商店<ph name="END_LINK" />」尋找可取代的類似擴充程式}}</translation>
 <translation id="3229254977651514276">檢查日期</translation>
 <translation id="3230539834943294477">查看說明文章或尋找裝置支援</translation>
@@ -3408,6 +3409,7 @@
 <translation id="3347086966102161372">複製圖片位址(&amp;O)</translation>
 <translation id="3348038390189153836">偵測到卸除式裝置</translation>
 <translation id="3348131053948466246">提供咗 Emoji 建議。㩒向上鍵或者向下鍵就可以導覽，㩒 Enter 鍵就可以插入 Emoji。</translation>
+<translation id="3348973040180736882">正在解壓縮</translation>
 <translation id="3349933790966648062">記憶體使用量</translation>
 <translation id="3350450887151703713">重播 10 秒</translation>
 <translation id="3351472127384196879">新增或尋找觸控筆上的按鈕</translation>
@@ -10659,7 +10661,6 @@
 <translation id="8431190899827883166">顯示輕按選項</translation>
 <translation id="843173223122814223">以 AI 製作背景</translation>
 <translation id="8431977087510901105">重設咗游標設定</translation>
-<translation id="843210078733508372">登入即可繼續變更密碼</translation>
 <translation id="8433186206711564395">網絡設定</translation>
 <translation id="8434109185104929038">閱讀角</translation>
 <translation id="8434837876193928924">分頁群組詳情</translation>
@@ -10797,6 +10798,7 @@
 <translation id="8528962588711550376">正在登入。</translation>
 <translation id="8531367864749403520">選取「隱藏群組」，即可從分頁列中移除群組</translation>
 <translation id="8531701051932785007">「強化安全瀏覽」功能已關閉</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">「安全瀏覽」功能已開啟</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{分頁會在此裝置上保持開啟，但該群組會從所有已登入 <ph name="EMAIL" /> 的裝置刪除}other{分頁會在此裝置上保持開啟，但該群組會從所有已登入 <ph name="EMAIL" /> 的裝置刪除}}</translation>
 <translation id="8535005006684281994">Netscape 憑證更新網址</translation>
@@ -11756,6 +11758,7 @@
 <translation id="9173063514323762371">隱藏書籤列(&amp;H)</translation>
 <translation id="917350715406657904">您已達到家長為 <ph name="APP_NAME" /> 設定的使用時間限制。明天可以使用 <ph name="TIME_LIMIT" />。</translation>
 <translation id="9174401638287877180">傳送使用情況和診斷資料。自動將診斷、裝置及應用程式的使用情況資料傳送至 Google，協助改善您子女的 Android 使用體驗。這些資料不會用來識別您子女的身分，而是用於改善系統和應用程式的穩定性和其他效能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。如果您為子女開啟其他「網絡及應用程式活動記錄」設定，此資料可能會儲存在他們的 Google 帳戶中。</translation>
+<translation id="9174854240439014335">允許將分割檢視拖放到視窗左邊或右邊</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - 已連接藍牙裝置</translation>
 <translation id="9177859716483578738">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 將會與此網站分享你的<ph name="FIELDS_STRING" />，詳情請參閱此網站的《<ph name="BEGIN_LINK" />私隱權政策<ph name="END_LINK" />》。</translation>
 <translation id="9178061802301856367">刪除登入資料</translation>

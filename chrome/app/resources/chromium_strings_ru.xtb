@@ -308,6 +308,7 @@
 <translation id="494490797786467921">Нажмите, чтобы закрыть диалоговое окно входа в Chromium</translation>
 <translation id="4950660488495335294">Профили Chromium нужны для раздельного использования браузера, например разными людьми или в разных целях.</translation>
 <translation id="4987820182225656817">Используйте Chromium в гостевом режиме, если не хотите сохранять данные о посещенных сайтах.</translation>
+<translation id="4992938037305302429">Ваш аккаунт в Chromium</translation>
 <translation id="4994636714258228724">Добавить пользователя Chromium</translation>
 <translation id="5123973130450702873">Chromium необходимо разрешение на отслеживание рук</translation>
 <translation id="5141988424377517949">Вы давно не посещали этот сайт. Браузер Chromium отозвал разрешения "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" и "<ph name="PERMISSION_3" />".</translation>
@@ -386,6 +387,7 @@
 <translation id="6072463441809498330">Chromium может работать ещё быстрее</translation>
 <translation id="6096348254544841612">Новая версия Chromium уже вышла!</translation>
 <translation id="6107893135096467929">Включено • Chromium не может проверить происхождение расширения</translation>
+<translation id="611228897408671387">Ваш аккаунт в Chromium</translation>
 <translation id="6119438414301547735">Разрешить расширению показывать запросы доступа на панели инструментов Chromium</translation>
 <translation id="6129621093834146363">Chromium заблокировал файл <ph name="FILE_NAME" /> как опасный.</translation>
 <translation id="6132897690380286411">Chromium скоро будет закрыт, а данные о работе удалены</translation>

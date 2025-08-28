@@ -1265,17 +1265,6 @@ Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan
 <translation id="1829839214911753838">Jika kebijakan disetel ke Aktif, host bantuan jarak jauh akan berjalan dalam proses dengan izin <ph name="UIACCESS_PERMISSION_NAME" />. Ini memungkinkan pengguna jarak jauh berinteraksi dengan jendela administrator di desktop pengguna lokal.
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, host bantuan jarak jauh akan berjalan dalam konteks pengguna, dan pengguna jarak jauh tidak dapat berinteraksi dengan jendela administrator di desktop.</translation>
-<translation id="183438382744421768">Kebijakan ini mengontrol perilaku browser setelah akun terkelola login ke area konten.
-
-Kebijakan ini menggantikan <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />.
-
-Jika kebijakan ini disetel ke Disarankan, setelah akun terkelola login, pengguna akan diminta untuk terus menggunakan profil terkelola seolah-olah kebijakan ini diterapkan. Jika pengguna menolak, pengguna dapat melanjutkan penjelajahannya di lingkungan yang tidak dikelola.
-
-Jika kebijakan ini disetel ke Diterapkan, setelah akun terkelola login, pengguna akan diwajibkan untuk terus menggunakan profil terkelola. Jika pengguna menolak, pengguna akan diminta logout dari akunnya. Penerapan ini tidak terpengaruh oleh kebijakan <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
-
-Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, pengguna mungkin akan melihat balon yang meminta mereka membuat profil baru setelah akun terkelola login. Balon tersebut dapat ditutup dan pengguna dapat melanjutkan penjelajahan di lingkungan yang tidak dikelola. Balon tersebut dikontrol oleh kebijakan <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
-
-Kebijakan ini tidak berpengaruh jika disetel di tingkat perangkat.</translation>
 <translation id="1834796168555733063">Nonaktifkan penyimpanan kunci sandi menggunakan pengelola sandi</translation>
 <translation id="1836380138559328229">Simpan kredensial Wi-Fi aktif di tingkat perangkat</translation>
 <translation id="1837165432382702436">Tinggi halaman dalam mikrometer.</translation>

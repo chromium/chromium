@@ -1252,17 +1252,6 @@ Questa policy non ha effetto se l'opzione per mantenere i dati di navigazione es
 <translation id="1829839214911753838">Se la policy viene impostata su Attivata, l'host di assistenza remota viene eseguito in un processo con autorizzazioni <ph name="UIACCESS_PERMISSION_NAME" />. In questo modo gli utenti remoti possono interagire con finestre con privilegi più elevati sul desktop dell'utente locale.
 
       Se la policy viene impostata su Disattivata o se non viene configurata, l'host di assistenza remota viene eseguito nel contesto dell'utente e gli utenti remoti non possono interagire con finestre con privilegi più elevati sul desktop.</translation>
-<translation id="183438382744421768">Questa policy consente di controllare il comportamento del browser dopo che un account gestito ha eseguito l'accesso all'area dei contenuti.
-
-Questa policy sostituisce <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />.
-
-Se questa policy viene impostata su Suggerita, dopo l'accesso a un account gestito, all'utente verrà chiesto di continuare a utilizzare un profilo gestito come se fosse stato applicato in modo forzato. Se rifiuta, l'utente può continuare la navigazione in un ambiente non gestito.
-
-Se questa policy viene applicata, dopo l'accesso a un account gestito l'utente dovrà continuare a utilizzare un profilo gestito. Se l'invito viene rifiutato, verrà disconnesso dal proprio account. Questa applicazione non è interessata dalla policy <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
-
-Se questa policy viene impostata su Disabled o se non viene impostata, dopo l'accesso a un account gestito l'utente potrebbe visualizzare un fumetto in cui gli viene chiesto di creare un nuovo profilo. Il fumetto può essere ignorato e l'utente può continuare la navigazione in un ambiente non gestito. Il fumetto è controllato dalla policy <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
-
-Questa policy non ha effetto se viene impostata a livello di macchina.</translation>
 <translation id="1834796168555733063">Disattiva il salvataggio delle passkey utilizzando Gestore delle password</translation>
 <translation id="1836380138559328229">Salva le credenziali Wi-Fi attive a livello di dispositivo</translation>
 <translation id="1837165432382702436">L'altezza della pagina in micron.</translation>

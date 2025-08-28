@@ -1196,6 +1196,7 @@
 <translation id="1805967612549112634">PIN 확인</translation>
 <translation id="1806335016774576568">열려 있는 다른 앱으로 전환</translation>
 <translation id="1807246157184219062">밝게</translation>
+<translation id="1808571181382454540">설정 페이지로 이동</translation>
 <translation id="1808805149659872686">새 항목</translation>
 <translation id="1809201888580326312">이 사이트와 앱에서 비밀번호를 저장하지 않도록 선택했습니다.</translation>
 <translation id="1809734401532861917">북마크, 방문 기록, 비밀번호, 기타 설정을 <ph name="USER_EMAIL_ADDRESS" />에 추가합니다.</translation>
@@ -3248,6 +3249,7 @@
 <translation id="3226487301970807183">왼쪽 정렬 측면 패널 전환</translation>
 <translation id="322708765617468434">설정 후 언제든지 다른 사용자를 기기에 추가할 수 있습니다. 모든 사용자는 자신의 환경을 맞춤설정하고 데이터를 비공개로 유지할 수 있습니다.</translation>
 <translation id="3227137524299004712">마이크</translation>
+<translation id="3227701057281907159">패치</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{<ph name="BEGIN_LINK" />Chrome 웹 스토어<ph name="END_LINK" />의 유사한 확장 프로그램으로 대체하거나 삭제하세요}other{<ph name="BEGIN_LINK" />Chrome 웹 스토어<ph name="END_LINK" />의 유사한 확장 프로그램으로 대체하거나 삭제하세요}}</translation>
 <translation id="3229254977651514276">날짜를 확인하세요.</translation>
 <translation id="3230539834943294477">도움말 보기 또는 기기 지원 찾기</translation>
@@ -3412,6 +3414,7 @@
 <translation id="3347086966102161372">이미지 주소 복사(&amp;O)</translation>
 <translation id="3348038390189153836">이동식 기기가 검색됨</translation>
 <translation id="3348131053948466246">추천 그림 이모티콘이 표시되어 있습니다. 위 또는 아래를 눌러 이동하고 Enter를 눌러 입력합니다.</translation>
+<translation id="3348973040180736882">압축 해제</translation>
 <translation id="3349933790966648062">메모리 사용량</translation>
 <translation id="3350450887151703713">10초 다시 재생</translation>
 <translation id="3351472127384196879">펜에서 버튼 추가 또는 찾기</translation>
@@ -10673,7 +10676,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8431190899827883166">탭한 항목 표시</translation>
 <translation id="843173223122814223">AI로 배경 만들기</translation>
 <translation id="8431977087510901105">커서 설정 재설정</translation>
-<translation id="843210078733508372">로그인하면 비밀번호 변경이 계속됩니다.</translation>
 <translation id="8433186206711564395">네트워크 설정</translation>
 <translation id="8434109185104929038">독서 공간</translation>
 <translation id="8434837876193928924">탭 그룹 세부정보</translation>
@@ -10811,6 +10813,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8528962588711550376">로그인 중입니다.</translation>
 <translation id="8531367864749403520">'그룹 숨기기'를 선택하여 탭 표시줄에서 그룹을 삭제합니다.</translation>
 <translation id="8531701051932785007">향상된 세이프 브라우징 사용 안함</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">세이프 브라우징 사용 설정됨</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{이 기기에서의 탭은 열린 상태로 유지되지만 <ph name="EMAIL" />에 로그인된 모든 기기에서는 그룹이 삭제됩니다.}other{이 기기에서의 탭은 열린 상태로 유지되지만 <ph name="EMAIL" />에 로그인된 모든 기기에서는 그룹이 삭제됩니다.}}</translation>
 <translation id="8535005006684281994">Netscape Certificate Renewal URL</translation>
@@ -11774,6 +11777,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9173063514323762371">북마크바 숨기기</translation>
 <translation id="917350715406657904">부모님이 설정한 <ph name="APP_NAME" /> 사용 제한 시간에 도달했습니다. 내일 <ph name="TIME_LIMIT" /> 동안 다시 사용할 수 있습니다.</translation>
 <translation id="9174401638287877180">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 자녀의 Android 사용 환경 개선에 참여합니다. 데이터는 자녀를 식별하는 용도로 사용되지 않으며, 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 자녀의 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 자녀의 Google 계정에 저장될 수 있습니다.</translation>
+<translation id="9174854240439014335">창 왼쪽 또는 오른쪽 가장자리에서 분할 보기 드래그 앤 드롭 허용</translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - 블루투스 기기 연결됨</translation>
 <translation id="9177859716483578738">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 <ph name="FIELDS_STRING" />을(를) 이 사이트와 공유해야 합니다. 이 사이트의 <ph name="BEGIN_LINK" />개인정보처리방침<ph name="END_LINK" />을 확인하세요.</translation>
 <translation id="9178061802301856367">로그인 데이터 삭제</translation>

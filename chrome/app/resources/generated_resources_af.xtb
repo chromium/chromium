@@ -1196,6 +1196,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1805967612549112634">Bevestig PIN</translation>
 <translation id="1806335016774576568">Skakel oor na 'n ander oop app</translation>
 <translation id="1807246157184219062">Lig</translation>
+<translation id="1808571181382454540">Gaan na instellingsbladsy</translation>
 <translation id="1808805149659872686">Nuwe inskrywing</translation>
 <translation id="1809201888580326312">Jy het gekies om nie wagwoorde vir hierdie werwe en apps te stoor nie</translation>
 <translation id="1809734401532861917">Voeg my boekmerke, geskiedenis, wagwoorde en ander instellings by <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -10671,7 +10672,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8431190899827883166">Wys tikke</translation>
 <translation id="843173223122814223">Skep agtergronde met AI</translation>
 <translation id="8431977087510901105">Terugstelling van skermpyltjie-instellings</translation>
-<translation id="843210078733508372">Meld aan en die wagwoordverandering sal voortgaan</translation>
 <translation id="8433186206711564395">Netwerkinstellings</translation>
 <translation id="8434109185104929038">Leeshoekie</translation>
 <translation id="8434837876193928924">Besonderhede van oortjiegroep</translation>
@@ -10809,6 +10809,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8528962588711550376">Meld tans aan.</translation>
 <translation id="8531367864749403520">Kies “Versteek groep” om die groep van jou oortjiestrook te verwyder</translation>
 <translation id="8531701051932785007">Verbeterde Veiligblaai is af</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Veiligblaai is aan</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Die oortjies sal oop bly op hierdie toestel, maar die groep sal uitgevee word van alle toestelle wat by <ph name="EMAIL" /> aangemeld is}other{Die oortjies sal oop bly op hierdie toestel, maar die groepe sal uitgevee word van alle toestelle wat by <ph name="EMAIL" /> aangemeld is}}</translation>
 <translation id="8535005006684281994">Netscape-sertifikaathernuwing se URL</translation>

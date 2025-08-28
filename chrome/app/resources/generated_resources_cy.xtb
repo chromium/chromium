@@ -1199,6 +1199,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1805967612549112634">Cadarnhau'r PIN</translation>
 <translation id="1806335016774576568">Newid i ap arall sydd ar agor</translation>
 <translation id="1807246157184219062">Golau</translation>
+<translation id="1808571181382454540">Mynd i'r dudalen Gosodiadau</translation>
 <translation id="1808805149659872686">Cofnod newydd</translation>
 <translation id="1809201888580326312">Rydych wedi dewis peidio â chadw cyfrineiriau ar gyfer y gwefannau a'r apiau hyn</translation>
 <translation id="1809734401532861917">Ychwanegu fy nodau tudalen, hanes, cyfrineiriau, a gosodiadau eraill i <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -1570,6 +1571,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2059913712424898428">Cylchfa amser</translation>
 <translation id="2060375639911876205">Tynnu proffil eSIM</translation>
 <translation id="2061366302742593739">Dim byd i'w ddangos</translation>
+<translation id="2061589908388230480">Os bydd Chromium yn dod o hyd i un o'ch cyfrineiriau mewn tor data cyhoeddus, gall Rheolwr Cyfrineiriau Google gynnig newid eich cyfrinair ar eich rhan os ydych chi wedi mewngofnodi. <ph name="BEGIN_LINK" />Rhagor am newid cyfrinair yn awtomatig<ph name="END_LINK" /></translation>
 <translation id="2062354623176996748">Defnyddio'r we heb gadw eich hanes pori gyda ffenestr Anhysbys</translation>
 <translation id="206308717637808771">Dileu data pan fyddwch yn cau pob ffenestr. Mae data'n cael eu trin yr un peth â'r wefan rydych yn edrych arni</translation>
 <translation id="2065405795449409761">Mae Chrome yn cael ei reoli gan feddalwedd prawf awtomataidd.</translation>
@@ -2470,6 +2472,7 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2669241540496514785">Methu ag agor "<ph name="APP_NAME" />"</translation>
 <translation id="2669454659051515572">Gall unrhyw un sy'n defnyddio'r ddyfais hon weld ffeiliau sydd wedi'u lawrlwytho</translation>
 <translation id="2670102641511624474">Mae <ph name="APP_NAME" /> yn rhannu tab Chrome.</translation>
+<translation id="2670168377011445813">Os bydd Chrome yn dod o hyd i un o'ch cyfrineiriau mewn tor data cyhoeddus, gall Rheolwr Cyfrineiriau Google gynnig newid eich cyfrinair ar eich rhan os ydych chi wedi mewngofnodi. <ph name="BEGIN_LINK" />Rhagor am newid cyfrinair yn awtomatig<ph name="END_LINK" /></translation>
 <translation id="2670350619068134931">Llai o animeiddiadau</translation>
 <translation id="2670403088701171361">Peidio â chaniatáu i wefannau weld testun neu luniau ar eich clipfwrdd</translation>
 <translation id="2671423594960767771">Rhannu â grŵp</translation>
@@ -10679,7 +10682,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8431190899827883166">Dangos tapiau</translation>
 <translation id="843173223122814223">Creu cefndiroedd gydag AI</translation>
 <translation id="8431977087510901105">Ailosod gosodiadau cyrchwr</translation>
-<translation id="843210078733508372">Mewngofnodwch a bydd y newid cyfrinair yn parhau</translation>
 <translation id="8433186206711564395">Gosodiadau rhwydwaith</translation>
 <translation id="8434109185104929038">Cwtsh darllen</translation>
 <translation id="8434837876193928924">Manylion grŵp tabiau</translation>
@@ -10817,6 +10819,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8528962588711550376">Wrthi'n mewngofnodi.</translation>
 <translation id="8531367864749403520">Dewiswch "Cuddio Grŵp" i dynnu'r grŵp o'ch stribed tabiau</translation>
 <translation id="8531701051932785007">Mae Gwell Pori'n Ddiogel wedi'i ddiffodd</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Mae Pori'n Ddiogel ymlaen</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Bydd y tabiau'n aros ar agor ar y ddyfais hon ond bydd y grŵp yn cael ei ddileu o bob dyfais sydd wedi'i mewngofnodi i <ph name="EMAIL" />}zero{Bydd y tabiau'n aros ar agor ar y ddyfais hon ond bydd y grwpiau yn cael eu dileu o bob dyfais sydd wedi'u mewngofnodi i <ph name="EMAIL" />}two{Bydd y tabiau'n aros ar agor ar y ddyfais hon ond bydd y grwpiau yn cael eu dileu o bob dyfais sydd wedi'u mewngofnodi i <ph name="EMAIL" />}few{Bydd y tabiau'n aros ar agor ar y ddyfais hon ond bydd y grwpiau yn cael eu dileu o bob dyfais sydd wedi'u mewngofnodi i <ph name="EMAIL" />}many{Bydd y tabiau'n aros ar agor ar y ddyfais hon ond bydd y grwpiau yn cael eu dileu o bob dyfais sydd wedi'u mewngofnodi i <ph name="EMAIL" />}other{Bydd y tabiau'n aros ar agor ar y ddyfais hon ond bydd y grwpiau yn cael eu dileu o bob dyfais sydd wedi'u mewngofnodi i <ph name="EMAIL" />}}</translation>
 <translation id="8535005006684281994">URL Adnewyddu Tystysgrif Netscape</translation>

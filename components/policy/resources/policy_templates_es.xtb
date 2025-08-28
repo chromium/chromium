@@ -1192,17 +1192,6 @@ Esta política no tendrá efecto si la opción de conservar los datos de navegac
 <translation id="1829839214911753838">Si se habilita esta política, el host de asistencia remota se ejecutará en un proceso con permisos <ph name="UIACCESS_PERMISSION_NAME" />. Así, los usuarios remotos podrán interactuar con ventanas a las que se puede acceder con permisos de administrador en el ordenador del usuario local.
 
       Si se inhabilita esta política o no se le asigna ningún valor, el host de asistencia remota se ejecutará en el contexto del usuario, y los usuarios remotos no podrán interactuar con las ventanas que requieren permisos de administrador en el ordenador.</translation>
-<translation id="183438382744421768">Esta política controla el comportamiento del navegador después de que una cuenta gestionada inicie sesión en el área de contenido.
-
-Esta política anula la política <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />.
-
-Si se le asigna el valor Sugerido a esta política, después de iniciar sesión con una cuenta gestionada, se le pedirá al usuario que siga usando un perfil gestionado como si se hubiera implementado obligatoriamente. Si el usuario rechaza esta opción, podrá continuar con la navegación en un entorno no gestionado.
-
-Si se le asigna el valor Con implementación obligatoria a esta política, después de iniciar sesión en una cuenta gestionada, el usuario deberá seguir usando un perfil gestionado. Si el usuario rechaza esta opción, se cerrará la sesión de su cuenta. Esta implementación obligatoria no se ve afectada por la política <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
-
-Si esta política se inhabilita o no se establece, después de iniciar sesión en una cuenta gestionada, es posible que el usuario vea un cuadro en el que se le pide que cree un perfil nuevo. Ese cuadro se puede cerrar y el usuario puede seguir la navegación en un entorno no gestionado. El cuadro está controlado por la política <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
-
-Esta política no tiene efecto cuando se establece en un nivel de equipo.</translation>
 <translation id="1834796168555733063">Inhabilitar el almacenamiento de llaves de acceso con el Gestor de contraseñas</translation>
 <translation id="1836380138559328229">Guardar las credenciales de la red Wi-Fi activa a nivel de dispositivo</translation>
 <translation id="1837165432382702436">Altura de la página en micrómetros</translation>

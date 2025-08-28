@@ -24,7 +24,7 @@
 
 אם האפשרות '<ph name="SERVICE_SCRIPT_NAME" />' כבר מסומנת, יש להסיר את הסימון ואז לסמן מחדש.</translation>
 <translation id="225614027745146050">ברוכים הבאים</translation>
-<translation id="2320166752086256636">הסתרת מקלדת</translation>
+<translation id="2320166752086256636">הסתרה של המקלדת</translation>
 <translation id="2329392777730037872">לא ניתן היה לפתוח את <ph name="URL" /> במכשיר הלקוח.</translation>
 <translation id="2359808026110333948">המשך</translation>
 <translation id="2366718077645204424">לא ניתן להשיג את המארח, כנראה בגלל תצורת הרשת שבשימוש.</translation>
@@ -39,7 +39,7 @@
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">אירעה בעיה באימות. יש להתחבר שוב.</translation>
 <translation id="2803375539583399270">הזנת קוד אימות</translation>
-<translation id="2919669478609886916">שיתפת את המחשב הזה עם משתמש אחר. האם ברצונך להמשיך את השיתוף?</translation>
+<translation id="2919669478609886916">שיתפת את המחשב הזה עם משתמש אחר. רוצה להמשיך את השיתוף?</translation>
 <translation id="2929683002824598593">שיתוף המכשיר</translation>
 <translation id="2939145106548231838">צריך לאמת כדי לארח</translation>
 <translation id="3027681561976217984">מצב מסך מגע</translation>
@@ -137,7 +137,7 @@
 <translation id="7026930240735156896">יש להגדיר את המחשב לגישה מרחוק בהתאם להוראות</translation>
 <translation id="7067321367069083429">המסך פועל כמסך מגע</translation>
 <translation id="7116737094673640201">‏ברוכים הבאים ל-Chrome Remote Desktop</translation>
-<translation id="7144878232160441200">יש לנסות שוב</translation>
+<translation id="7144878232160441200">צריך לנסות שוב</translation>
 <translation id="7298392173540380852">‏זכויות יוצרים 2025‏ The Chromium Authors. כל הזכויות שמורות.</translation>
 <translation id="7312846573060934304">המארח במצב אופליין.</translation>
 <translation id="7319983568955948908">הפסקת השיתוף</translation>
@@ -147,7 +147,7 @@
 <translation id="7444276978508498879">לקוח שהתחבר: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">בחירה בחשבון אחר</translation>
 <translation id="7535110896613603182">פתיחת ההגדרות של אפליקציות ברירת המחדל</translation>
-<translation id="7628469622942688817">אני רוצה לזכור את קוד האימות שלי במכשיר הזה.</translation>
+<translation id="7628469622942688817">יש לזכור את קוד האימות שלי במכשיר הזה.</translation>
 <translation id="7649070708921625228">עזרה</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7665369617277396874">חשבון חדש</translation>
@@ -187,7 +187,7 @@
 <translation id="8804164990146287819">מדיניות פרטיות</translation>
 <translation id="8906511416443321782">‏נדרשת גישה למיקרופון כדי להקליט אודיו ולשדר אותו ללקוח Chrome Remote Desktop.</translation>
 <translation id="9111855907838866522">התחברת למכשיר המרוחק שלך. כדי לפתוח את התפריט יש ללחוץ במסך עם ארבע אצבעות.</translation>
-<translation id="9126115402994542723">אין לבקש שוב קוד אימות בעת התחברות למארח הזה ממכשיר זה.</translation>
+<translation id="9126115402994542723">‏אל תבקש קוד PIN שוב בחיבור למארח הזה מהמכשיר הנוכחי.</translation>
 <translation id="916856682307586697">‏הפעלת ה-XSession שמוגדר כברירת מחדל</translation>
 <translation id="9187628920394877737">מתן הרשאת 'הקלטת מסך' ל-<ph name="PRODUCT_NAME" /></translation>
 <translation id="9213184081240281106">תצורה לא חוקית של המארח.</translation>

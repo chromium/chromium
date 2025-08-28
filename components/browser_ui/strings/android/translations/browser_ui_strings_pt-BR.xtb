@@ -27,7 +27,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="1317194122196776028">Esquecer este site</translation>
 <translation id="1321110954513621549">Ativada • Aproximado</translation>
 <translation id="1323433172918577554">Mostrar mais</translation>
-<translation id="1333965224356556482">Não permitir que os sites acessem seu local</translation>
+<translation id="1333965224356556482">Não permitir que os sites acessem sua localização</translation>
 <translation id="1343356790768851700">Este site determina o seus interesses e sugere anúncios para outros sites</translation>
 <translation id="1369915414381695676">Site <ph name="SITE_NAME" /> adicionado</translation>
 <translation id="1371239764779356792">Permitir que um site salve dados no seu dispositivo</translation>
@@ -267,7 +267,8 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="3903738175795615004">Para sair da tela cheia, arraste a parte de cima da tela ou pressione a tecla Esc.</translation>
 <translation id="3905475044299942653">Parar muitas notificações</translation>
 <translation id="3922092564198021702">No smartphone, acesse as Configurações.</translation>
-<translation id="3933121352599513978">Recolher solicitações indesejadas (recomendado)</translation>
+<translation id="3933121352599513978">Fechar solicitações indesejadas (recomendado)</translation>
+<translation id="3934905113567851655">Faça um gesto de pinça para redimensionar</translation>
 <translation id="3955193568934677022">Permitir que os sites mostrem conteúdo protegido (recomendado)</translation>
 <translation id="3955321697524543127">Não permitir que os sites se conectem a dispositivos USB</translation>
 <translation id="3965467402665811906">Os sites podem pedir para usar informações que salvaram sobre você</translation>
@@ -313,7 +314,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="443121186588148776">Porta serial</translation>
 <translation id="4434045419905280838">Pop-ups e redirecionamentos</translation>
 <translation id="443552056913301231">Essa ação vai excluir todos os dados locais, incluindo cookies, e redefinir todas as permissões de <ph name="ORIGIN" /></translation>
-<translation id="4441527683895888777">A página inferior de cores do Chrome está aberta no tamanho máximo</translation>
+<translation id="4441527683895888777">Painel de cores do Chrome aberto no tamanho máximo</translation>
 <translation id="4468959413250150279">Desativar o som de um site específico.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}one{# cookie}other{# cookies}}</translation>
 <translation id="4478158430052450698">Facilitar a personalização do zoom para sites diferentes</translation>
@@ -348,7 +349,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="4953688446973710931">Quando essa configuração está ativada, os sites podem pedir o download automático de vários arquivos. Quando está desativada, os sites não podem fazer o download automático de vários arquivos.</translation>
 <translation id="4962975101802056554">Revogar todas as permissões para o dispositivo</translation>
 <translation id="4972737347717125191">Os sites podem pedir para usar dispositivos e dados de realidade virtual</translation>
-<translation id="4973805849704516244">Página inferior de cores do Chrome</translation>
+<translation id="4973805849704516244">Painel de cores do Chrome</translation>
 <translation id="497421865427891073">Avançar</translation>
 <translation id="4976702386844183910">Última visita: <ph name="DATE" /></translation>
 <translation id="4978178243417029856">Saiba mais sobre o feed do Discover</translation>

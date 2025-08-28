@@ -1192,17 +1192,6 @@ Dit beleid heeft geen effect als de optie om bestaande browsegegevens te behoude
 <translation id="1829839214911753838">Als je dit beleid toepast, wordt de host voor hulp op afstand uitgevoerd met <ph name="UIACCESS_PERMISSION_NAME" />-rechten. Hierdoor kunnen externe gebruikers vensters met verhoogde bevoegdheid gebruiken op de lokale desktop van de gebruiker.
 
       Als je het beleid niet toepast of niet instelt, wordt de host voor hulp op afstand uitgevoerd in de context van de gebruiker en kunnen externe gebruikers geen vensters met verhoogde bevoegdheid op de desktop gebruiken.</translation>
-<translation id="183438382744421768">Met dit beleid bepaal je het gedrag van de browser nadat een beheerd account inlogt in het contentgedeelte.
-
-Dit beleid overschrijft <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />.
-
-Als je dit beleid instelt op Aanbevolen, wordt de gebruiker nadat die is ingelogd bij een beheerd account gevraagd een beheerd profiel te blijven gebruiken alsof dit is afgedwongen. Als de gebruiker weigert, kan die verder browsen in een onbeheerde omgeving.
-
-Als je dit beleid instelt op Afdwingen, moet de gebruiker nadat die is ingelogd bij een beheerd account een beheerd profiel blijven gebruiken. Als een gebruiker weigert, wordt het account uitgelogd. Het beleid <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" /> heeft geen invloed op deze handhaving.
-
-Als je dit beleid niet toepast of niet instelt, kan de gebruiker na het inloggen op een beheerd account een ballon te zien krijgen met de vraag om een nieuw profiel te maken. De ballon kan worden gesloten en de gebruiker kan verder browsen in een onbeheerde omgeving. De ballon wordt beheerd door het beleid <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
-
-Dit beleid heeft geen effect als het is ingesteld op apparaatniveau.</translation>
 <translation id="1834796168555733063">Opslag van toegangssleutels met de wachtwoordmanager uitzetten</translation>
 <translation id="1836380138559328229">Actieve wifi-inloggegevens opslaan op apparaatniveau</translation>
 <translation id="1837165432382702436">Hoogte van de pagina in micrometers</translation>

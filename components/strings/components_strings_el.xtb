@@ -740,7 +740,6 @@
 <translation id="2215539479425228550">Αναρρίχηση και ορειβασία</translation>
 <translation id="2215727959747642672">Επεξεργασία αρχείου</translation>
 <translation id="2215963164070968490">Σκυλιά</translation>
-<translation id="2218089682233901164">Προσθήκη αριθμού γνωστού ταξιδιώτη</translation>
 <translation id="2219376942605837404">Προσθήκη καρτέλας στον πίνακα σύγκρισης</translation>
 <translation id="2219658597883514593">Επανεκκίνηση οδηγού</translation>
 <translation id="2219735899272417925">Απαιτείται επαναφορά της συσκευής</translation>
@@ -755,7 +754,6 @@
 <translation id="222962001646502673">Σκούρο γκρι 2</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{1 καρτέλα}other{# καρτέλες}}</translation>
 <translation id="2233745931693710080">Compact Disc (CD)</translation>
-<translation id="2235344399760031203">Τα cookie τρίτου μέρους αποκλείστηκαν.</translation>
 <translation id="2239100178324503013">Αποστολή τώρα</translation>
 <translation id="224130779555573777">Προσθήκη αριθμού άρσης συνωνυμίας</translation>
 <translation id="2241693394036365668">Το αρχείο κατέβηκε</translation>
@@ -790,7 +788,6 @@
 <translation id="2288422996159078444">Οτιδήποτε πληκτρολογείτε, τυχόν σελίδες που βλέπετε ή οποιαδήποτε άλλη δραστηριότητα στον ιστό παρακολουθείται. Το περιεχόμενο σε ιστοτόπους μπορεί να αλλάξει χωρίς να το γνωρίζετε.</translation>
 <translation id="2289385804009217824">Περικοπή</translation>
 <translation id="2292556288342944218">Η πρόσβασή σας στο διαδίκτυο είναι αποκλεισμένη</translation>
-<translation id="2293443924986248631">Όταν είναι ενεργοποιημένο, οι ιστότοποι δεν μπορούν να χρησιμοποιήσουν cookie που σας παρακολουθούν στον ιστό. Μπορεί να παρουσιαστούν προβλήματα με τη λειτουργία ορισμένων ιστοτόπων.</translation>
 <translation id="2295831393422400053">Ενεργοποιήστε τη ρύθμιση Βελτιώστε τις αναζητήσεις και την περιήγηση, για να χρησιμοποιήσετε τη λειτουργία Βοήθησέ με να γράψω</translation>
 <translation id="2296244067976588032">Κλειδί πρόσβασης • iCloud Keychain</translation>
 <translation id="2296331629987861142">Εύκολη πληρωμή με δόσεις (ανάλογα με την καταλληλότητα, ισχύουν χρεώσεις)</translation>
@@ -861,7 +858,6 @@
 <translation id="239429038616798445">Αυτός ο τρόπος αποστολής δεν είναι διαθέσιμος. Δοκιμάστε έναν άλλο τρόπο.</translation>
 <translation id="2395840535409704129">Θαλάσσια σπορ</translation>
 <translation id="2396249848217231973">&amp;Αναίρεση διαγραφής</translation>
-<translation id="239708975263889666">Επεξεργασία αριθμού γνωστού ταξιδιώτη</translation>
 <translation id="2399344929880464793">Αυτό το IBAN αποθηκεύτηκε στον Λογαριασμό σας Google, ώστε να μπορείτε να το χρησιμοποιείτε σε όλες τις υπηρεσίες Google.</translation>
 <translation id="2399868464369312507">Το Google Chrome προσπαθεί να επεξεργαστεί τους τρόπους πληρωμής.</translation>
 <translation id="2400263725572336749">Προσθήκη διαβατηρίου</translation>
@@ -890,7 +886,6 @@
 <translation id="2451201933352935301">Ο ιστότοπος <ph name="URL" /> θέλει να διαχειρίζεται τα παράθυρα σε όλες τις οθόνες σας</translation>
 <translation id="2451607499823206582">Παρακολούθηση</translation>
 <translation id="2452098632681057184">Οικολογία και περιβάλλον</translation>
-<translation id="2452689005240417488">Αποθήκευση αριθμού γνωστού ταξιδιώτη;</translation>
 <translation id="2452837234288608067">Δεν μπορούμε να σας βοηθήσουμε με αυτό. Δοκιμάστε ξανά.</translation>
 <translation id="2453045048779611513">Ο οργανισμός σας περιορίζει τα στοιχεία που μπορείτε να αποθηκεύσετε</translation>
 <translation id="2456755709261364512">Το επίπεδο φόρτισης της μπαταρίας σας πρέπει να είναι πάνω από <ph name="REQUIRED_BATTERY_PRECENT" />%</translation>
@@ -2502,8 +2497,6 @@
 <translation id="5137761395480718572">Αυτή η εφαρμογή ζητά άδεια για εγκατάσταση διαπιστευτηρίων Wi-Fi. Μετά τη ρύθμιση, η συσκευή <ph name="DEVICE_TYPE" /> θα συνδεθεί αυτόματα στα δίκτυα Wi-Fi που συμμετέχουν. Για να καταργήσετε αυτά τα διαπιστευτήρια, απεγκαταστήστε την εφαρμογή. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Η εικονική κάρτα δεν είναι διαθέσιμη αυτήν τη στιγμή. Επικοινωνήστε με την τράπεζά σας.</translation>
 <translation id="5138227688689900538">Εμφάνιση λιγότερων</translation>
-<translation id="5143309888746105072">Το Chromium δεν επιτρέπει στους ιστοτόπους να χρησιμοποιούν cookie τρίτου μέρους που σας παρακολουθούν καθώς περιηγείστε.
-            <ph name="NEW_LINE" />Εάν οι λειτουργίες ιστοτόπου δεν λειτουργούν, <ph name="START_LINK" />δοκιμάστε να επιτρέψετε προσωρινά τα cookie τρίτου μέρους<ph name="END_LINK" />.</translation>
 <translation id="5144613843429436866">Έχετε επιτρέψει την άδεια <ph name="PERMISSION" /> για αυτόν τον ιστότοπο</translation>
 <translation id="5145883236150621069">Βρέθηκε κωδικός σφάλματος στην απόκριση πολιτικής</translation>
 <translation id="5146995429444047494">Οι ειδοποιήσεις για την προέλευση <ph name="ORIGIN" /> έχουν αποκλειστεί</translation>
@@ -2719,7 +2712,6 @@
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Διαχειριζόμενοι σελιδοδείκτες</translation>
 <translation id="5509913453990750440">Μόδα και στιλ</translation>
-<translation id="5510481203689988000">Αυτή η ρύθμιση ελέγχεται από τις ρυθμίσεις cookie.</translation>
 <translation id="5510766032865166053">Ενδέχεται να έχει μετακινηθεί ή να έχει διαγραφεί.</translation>
 <translation id="551222491709693708">Κόμικ και κινούμενα σχέδια</translation>
 <translation id="5512812358367123529">Έπιπλα γραφείου</translation>
@@ -2973,7 +2965,6 @@
 <translation id="5951495562196540101">Δεν είναι δυνατή η εγγραφή με λογαριασμό προσωπικής χρήσης (διατίθεται σχετική άδεια).</translation>
 <translation id="5952076224478208938">Μάρκα</translation>
 <translation id="5953516610448771166">Οι Ζωντανοί υπότιτλοι δεν είναι διαθέσιμοι για αυτό το μέσο. Για τη λήψη υποτίτλων, αποκλείστε τις ακόλουθες ρυθμίσεις για αυτόν τον ιστότοπο: <ph name="CONTENT_SETTINGS" />.</translation>
-<translation id="595873925609605681">Αν οι λειτουργίες ιστοτόπου δεν λειτουργούν, <ph name="BEGIN_LINK" />δοκιμάστε να επιτρέψετε προσωρινά τα cookie τρίτου μέρους<ph name="END_LINK" />.</translation>
 <translation id="5960795367348889467">Επαλήθευση</translation>
 <translation id="5963413905009737549">Ενότητα</translation>
 <translation id="5964247741333118902">Ενσωματωμένο περιεχόμενο</translation>
@@ -3014,7 +3005,6 @@
 <translation id="6017514345406065928">Πράσινο</translation>
 <translation id="6018650639991193045">Διαγραφή ιστορικού περιήγησης, cookie, κρυφής μνήμης και άλλων στοιχείων στις ρυθμίσεις του Chrome</translation>
 <translation id="6019118530636932154">Σενάριο Google Apps</translation>
-<translation id="6023810427609440412">VIN (Αναγνωριστικός αριθμός οχήματος)</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (συγχρονισμένο)</translation>
 <translation id="6028591542479806248">Διαχείριση ειδοποιήσεων εφαρμογών για κινητά και ειδοποιήσεων μέσω ηλεκτρονικού ταχυδρομείου</translation>
 <translation id="6028833024483927901">Έθνικ κουζίνα</translation>
@@ -3386,8 +3376,6 @@
 <translation id="6597665340361269064">90 μοίρες</translation>
 <translation id="6598976221101665070">Δραματικές ταινίες</translation>
 <translation id="6599642189720630047">Προϊόντα υπό παρακολούθηση</translation>
-<translation id="6606309334576464871">Το Chrome δεν επιτρέπει στους ιστοτόπους να χρησιμοποιούν cookie τρίτου μέρους που σας παρακολουθούν καθώς περιηγείστε.
-            <ph name="NEW_LINE" />Εάν οι λειτουργίες ιστοτόπου δεν λειτουργούν, <ph name="START_LINK" />δοκιμάστε να επιτρέψετε προσωρινά τα cookie τρίτου μέρους<ph name="END_LINK" />.</translation>
 <translation id="6613742613135780554">παρακολούθηση κινήσεων των χεριών</translation>
 <translation id="6613866251791999074">Μάθετε περισσότερα σχετικά με τη μηχανή αναζήτησης στο Chrome</translation>
 <translation id="6615297766614333076">Μονάδα στοίβαξης 2</translation>
@@ -3538,7 +3526,6 @@
 <translation id="6880941331070119097">Επιλογή υψηλής τιμής</translation>
 <translation id="6881240511396774766">Γρήγορη δημιουργία νέου Εγγράφου Google</translation>
 <translation id="6882210908253838664">Εάν ένας ιστότοπος δεν λειτουργεί, μπορείτε να δοκιμάσετε να του δώσετε προσωρινή άδεια για τη χρήση cookie τρίτου μέρους. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
-<translation id="6883120223439653449">Ενημέρωση αριθμού γνωστού ταξιδιώτη;</translation>
 <translation id="6883221904761970440">Το φύλλο ελέγχου ταυτότητας διαπιστευτηρίων για ασφαλείς πληρωμές είναι κλειστό</translation>
 <translation id="6883745783646124431">διεύθυνση εργασίας</translation>
 <translation id="6886283082988906333">Αρχείο ZIP</translation>
@@ -3650,7 +3637,6 @@
 <translation id="7044081119134178347">Επιτράπηκε η χρήση της κάμερας για αυτήν τη φορά</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Επιχειρήσατε να μεταβείτε στο <ph name="DOMAIN" />, αλλά ο διακομιστής παρουσίασε ένα πιστοποιητικό με περίοδο εγκυρότητας η οποία είναι πολύ μεγάλη για να θεωρηθεί αξιόπιστη.</translation>
-<translation id="7050877504983265321">Αριθμός γνωστού ταξιδιώτη</translation>
 <translation id="7053983685419859001">Αποκλεισμός</translation>
 <translation id="7054717457611655239">Στο εξής, αποθηκεύετε τα αρχεία σας στο <ph name="CLOUD_PROVIDER" />.</translation>
 <translation id="7058163556978339998">Το <ph name="BROWSER" /> επαλήθευσε ότι το πιστοποιητικό αυτού του ιστοτόπου εκδόθηκε από <ph name="ISSUER" />.</translation>
@@ -3801,7 +3787,6 @@
 <translation id="7309058266849426521">Μάθετε περισσότερα σχετικά με τη διαχείριση του απορρήτου διαφημίσεων στο Chrome.</translation>
 <translation id="7310392214323165548">Θα γίνει επανεκκίνηση της συσκευής πολύ σύντομα</translation>
 <translation id="7311244614769792472">Δεν βρέθηκαν αποτελέσματα</translation>
-<translation id="7311837626618954149">Το Chromium δεν επιτρέπει στους ιστοτόπους να χρησιμοποιούν cookie τρίτου μέρους που σας παρακολουθούν καθώς περιηγείστε.</translation>
 <translation id="7313107491291103073">Ο οργανισμός σας έχει επισημάνει αυτόν τον ιστότοπο, καθώς ενδέχεται να παραβαίνει μια πολιτική.</translation>
 <translation id="7316521168101843192">Αποθήκευση αρχείου στο Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -3978,7 +3963,6 @@
 <translation id="7569983096843329377">Μαύρο</translation>
 <translation id="7571813784389228510">Λειτουργία AI της Google</translation>
 <translation id="7574998639136359461">Εξοπλισμός χειμερινών σπορ</translation>
-<translation id="7575130707299232096">Διαγραφή αριθμού γνωστού ταξιδιώτη</translation>
 <translation id="7575207903026901870">Κατάργηση κουμπιού Πρόταση, πατήστε Enter για κατάργηση αυτής της πρότασης.</translation>
 <translation id="7575800019233204241">"Η σύνδεσή σας δεν είναι ιδιωτική" ή "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" ή "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" ή "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" ή "Σφάλμα πιστοποιητικού SSL"</translation>
 <translation id="7575887283389198269">Κινητά Τηλέφωνα</translation>
@@ -4950,7 +4934,6 @@
 <translation id="939736085109172342">Νέος φάκελος</translation>
 <translation id="940524522703752213">Η μεταφόρτωση του αρχείου σας στο <ph name="CLOUD_PROVIDER" /> θα ξεκινήσει σε <ph name="MINUTES" /> λεπτά</translation>
 <translation id="944578681290094302">Εμφάνιση των επιβραβεύσεων και οφελών που διατίθενται για τις κάρτες σας κατά την ολοκλήρωση αγοράς. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Μάθετε σχετικά με τα οφέλη καρτών<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
-<translation id="945646848072568856">Το Chrome δεν επιτρέπει στους ιστοτόπους να χρησιμοποιούν cookie τρίτου μέρους που σας παρακολουθούν καθώς περιηγείστε.</translation>
 <translation id="945673208656386843">Αυτόματη συμπλήρωση αυτής της κάρτας για αγορές που πραγματοποιούνται στο Chromium όταν έχει αποθηκευτεί σε αυτή τη συσκευή</translation>
 <translation id="94613679163347541">Σύγκριση <ph name="CATEGORY" />;</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να δημιουργήσετε γρήγορα έναν νέο ιστότοπο στους Ιστοτόπους Google</translation>

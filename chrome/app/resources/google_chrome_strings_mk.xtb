@@ -437,6 +437,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6180522807229584611">Картичкава користи дополнителни ресурси. За да се подобри изведбата, дозволете му на Chrome да ја деактивира.</translation>
 <translation id="6182736845697986886">Инсталацијата не успеа поради внатрешна грешка на серверот за ажурирање.</translation>
+<translation id="6192058120268468905">Вашата сметка во Chrome</translation>
 <translation id="6235018212288296708">Дојдовно правило за Google Chrome за да овозможи сообраќај mDNS.</translation>
 <translation id="624230925347970731">Chrome ќе се затвори наскоро</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
@@ -569,6 +570,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="778331955594035129">На Chrome му треба дозвола за локација за сајтов</translation>
 <translation id="7787950393032327779">Се чини дека профилот го користи друг процес на Google Chrome (<ph name="PROCESS_ID" />) на друг компјутер (<ph name="HOST_NAME" />). Chrome го заклучи профилот за да не се оштети. Ако сте сигурни дека ниеден друг процес не го користи профилот, може да го отклучите профилот и повторно да стартувате Chrome.</translation>
 <translation id="7801699035218095297">Google Chrome се обидува да копира лозинки. Внесете ја лозинката за Windows за да се дозволи ова.</translation>
+<translation id="7804364787702057554">Вашата сметка во Chrome</translation>
 <translation id="7808348361785373670">Отстрани од Chrome</translation>
 <translation id="7825851276765848807">Инсталацијата не успеа поради неодредена грешка. Преземете го Google Chrome повторно.</translation>
 <translation id="7827099906024714326">Chrome треба да го потврди вашиот идентитет пред да може да се зачуваат некои податоци во вашата сметка на Google и да се користат на сите ваши уреди. Ако се одјавите сега, податоциве ќе се избришат.</translation>

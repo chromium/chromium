@@ -538,15 +538,15 @@ Se definida como PromptInTab, quando a autenticação do usuário expirar, uma n
 Se ela for definida como verdadeira, todos os links serão abertos no navegador Chrome por padrão.
 Se ela for deixada sem definição, os links serão abertos por padrão em apps Android para usuários gerenciados e no navegador para consumidores.</translation>
 <translation id="1402227992519954892">Ativar relatórios de informações de apps do dispositivo</translation>
-<translation id="1402798007140502418">Esta política indica aos navegadores que eles precisam realizar verificações adicionais para extensões, como verificar se uma extensão está em uma categoria bloqueada pelo administrador.
+<translation id="1402798007140502418">Esta política indica aos navegadores que eles precisam realizar verificações adicionais para extensões, como checar se uma extensão está em uma categoria bloqueada pelo administrador.
 
-Esta política será definida automaticamente como "Ativada" se alguma regra for configurada no <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
-Caso contrário, ela será "Desativada".
+A política será ativada automaticamente se alguma regra for configurada no <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+Caso contrário, ela será desativada.
 
-Se esta política for ativada, ela sinaliza ao <ph name="PRODUCT_NAME" /> que ele precisa consultar o serviço do Cloud para determinar se uma extensão deve ser bloqueada.
+Se a política for ativada, ela sinaliza ao <ph name="PRODUCT_NAME" /> que ele precisa consultar o serviço do Cloud para determinar se uma extensão deve ser bloqueada.
 Essa verificação de política é realizada para novas instalações e em todas as extensões instaladas, tanto na inicialização quanto periodicamente.
 
-Quando esta política é desativada, o <ph name="PRODUCT_NAME" /> entende que não precisa fazer outras verificações
+Quando a política é desativada, o <ph name="PRODUCT_NAME" /> entende que não precisa fazer outras verificações
 para determinar se uma extensão deve ser bloqueada com base nas regras corporativas definidas no <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
 
 Se a extensão não for permitida, o <ph name="PRODUCT_NAME" /> vai bloquear a instalação. Para extensões já instaladas, o <ph name="PRODUCT_NAME" /> vai desativá-las.
@@ -1263,17 +1263,6 @@ Esta política não vai ter efeito se a opção de manter os dados de navegaçã
 <translation id="1829839214911753838">Se a política for definida como "Ativada", o host de assistência remota será executado em um processo com permissões <ph name="UIACCESS_PERMISSION_NAME" />. Isso permitirá que usuários remotos interajam com janelas elevadas no computador do usuário local.
 
       Se a política for definida como "Desativada" ou deixada sem definição, o host de assistência remota será executado no contexto do usuário e os usuários remotos não poderão interagir com janelas elevadas no computador.</translation>
-<translation id="183438382744421768">Esta política controla o comportamento do navegador após o login de uma conta gerenciada na área de conteúdo.
-
-Ela substitui a <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />.
-
-Se a política for definida como "Sugerida", após o login de uma conta gerenciada, o usuário precisará continuar usando um perfil gerenciado como se ele tivesse sido aplicado. Se ela for recusada, o usuário poderá continuar navegando em um ambiente não gerenciado.
-
-Se esta política for aplicada, o usuário precisará continuar usando um perfil gerenciado após o login em uma conta gerenciada. Se ela for recusada, a conta será desconectada. Essa aplicação não é afetada pela política <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
-
-Se a política for desativada ou deixada sem definição, após o login em uma conta gerenciada, o usuário vai encontrar um balão solicitando a criação de um perfil. O balão pode ser dispensado, e o usuário pode continuar navegando em um ambiente não gerenciado. O balão é controlado pela política <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
-
-Esta política não terá efeito se for definida no nível da máquina.</translation>
 <translation id="1834796168555733063">Desativar o salvamento de chaves de acesso no gerenciador de senhas</translation>
 <translation id="1836380138559328229">Salvar as credenciais do Wi-Fi ativo no nível do dispositivo</translation>
 <translation id="1837165432382702436">Altura da página em micrômetros.</translation>

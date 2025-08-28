@@ -1262,17 +1262,6 @@ Esta política no tiene efecto si la opción para conservar los datos de navegac
 <translation id="1829839214911753838">Si habilitas la política, el host de asistencia remota se ejecutará en un proceso con permisos <ph name="UIACCESS_PERMISSION_NAME" />. De esta manera los usuarios remotos podrán interactuar con permisos de administrador en el escritorio del usuario local.
 
       Si inhabilitas la política o no la estableces, el host de asistencia remota se ejecutará en el contexto del usuario, y los usuarios remotos no podrán interactuar con permisos de administrador en el escritorio.</translation>
-<translation id="183438382744421768">Esta política controla el comportamiento del navegador después de que acceda una cuenta administrada al área de contenido.
-
-Esta política anula <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />.
-
-Si estableces esta política como sugerida, después de que acceda una cuenta administrada, se le pedirá al usuario que siga usando un perfil administrado como si se hubiera aplicado de manera forzosa. Si lo rechaza, el usuario podrá continuar su navegación en un entorno no administrado.
-
-Si estableces esta política como aplicada, después de que acceda una cuenta administrada, el usuario deberá seguir usando un perfil administrado. Si lo rechaza, el usuario saldrá de su cuenta. Esta aplicación no se ve afectada por la política <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
-
-Si la inhabilitas o no la estableces, es posible que, después de que acceda una cuenta administrada, el usuario vea un cuadro en el que se le solicita crear un perfil nuevo. Ese cuadro se puede descartar y el usuario puede seguir navegando en un entorno no administrado. La política <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" /> controla ese cuadro.
-
-Esta política no tiene efecto cuando se configura al nivel de la máquina.</translation>
 <translation id="1834796168555733063">Inhabilitar el guardado de llaves de acceso en el administrador de contraseñas</translation>
 <translation id="1836380138559328229">Guardar las credenciales de Wi-Fi activo a nivel del dispositivo</translation>
 <translation id="1837165432382702436">Altura de la página en micrómetros.</translation>

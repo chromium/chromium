@@ -243,6 +243,7 @@
 <translation id="139305205187523129"><ph name="HOST_NAME" /> သည်မည်သည့် ဒေတာမျှ မပို့ခဲ့ပါ။</translation>
 <translation id="1393071644879491291">သင်ဝင်ကြည့်ရန်ကြိုးပမ်းသည့် ဝဘ်ဆိုက်ရှိ တိုက်ခိုက်သူများသည် ဆော့ဖ်ဝဲထည့်သွင်းရန် သို့မဟုတ် စကားဝှက်၊ ဖုန်း (သို့) ခရက်ဒစ်ကတ်နံပါတ်ကဲ့သို့သော အရာများပြရန် သင့်ကိုလှည့်စားနိုင်သည်။ ဘေးကင်းရာသို့ ပြန်သွားရန် Chrome က အထူးအကြံပြုပါသည်။ <ph name="BEGIN_LEARN_MORE_LINK" />ဤသတိပေးချက်အကြောင်း ပိုမိုလေ့လာရန်<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1405567553485452995">အစိမ်းဖျော့</translation>
+<translation id="1406370515365284486">သင့်ငွေပေးချေနည်းလမ်းများကို ဆက်သိမ်းထားပါမည်</translation>
 <translation id="1406500794671479665">စိစစ်နေ...</translation>
 <translation id="1406812885827747674">ဤတစ်ကြိမ် ခွင့်ပြုရန်</translation>
 <translation id="14070772729708640"><ph name="CLOUD_PROVIDER" /> တွင် ဖိုင်များကို <ph name="FOLDER_NAME" /> သို့ အပ်လုဒ်လုပ်လိုက်ပြီ</translation>
@@ -740,7 +741,6 @@
 <translation id="2215539479425228550">အမြင့်တက်ခြင်း၊ တောင်တက်ခြင်း</translation>
 <translation id="2215727959747642672">ဖိုင်တည်းဖြတ်ခြင်း</translation>
 <translation id="2215963164070968490">ခွေးများ</translation>
-<translation id="2218089682233901164">သိသော ခရီးသည်နံပါတ် ထည့်ရန်</translation>
 <translation id="2219376942605837404">နှိုင်းယှဉ်ပြဇယားတွင် တဘ်ထည့်ရန်</translation>
 <translation id="2219658597883514593">ရှင်းလင်းပို့ချချက် ပြန်စရန်</translation>
 <translation id="2219735899272417925">စက်ကို ပြင်ဆင်သတ်မှတ်ရန် လိုအပ်သည်</translation>
@@ -755,7 +755,6 @@
 <translation id="222962001646502673">မီးခိုးရင့် ၂</translation>
 <translation id="2233041017768270281">{COUNT,plural, =1{တဘ် ၁ ခု}other{တဘ် # ခု}}</translation>
 <translation id="2233745931693710080">စီဒီခွေ</translation>
-<translation id="2235344399760031203">ပြင်ပအဖွဲ့အစည်း၏ ကွတ်ကီးများကို ပိတ်ထားသည်</translation>
 <translation id="2239100178324503013">ယခုပို့ရန်</translation>
 <translation id="224130779555573777">လျော်ကြေးနံပါတ် ထည့်ရန်</translation>
 <translation id="2241693394036365668">ဖိုင်ကို ဒေါင်းလုဒ်လုပ်လိုက်သည်</translation>
@@ -790,7 +789,6 @@
 <translation id="2288422996159078444">သင်ရိုက်သည့်အရာ၊ သင်ကြည့်သည့် စာမျက်နှာ သို့မဟုတ် ဝဘ်ပေါ်တွင် အခြားလုပ်ဆောင်ချက်တိုင်းကို စောင့်ကြည့်နေသည်။ ဝဘ်ဆိုက်များပေါ်ရှိ အကြောင်းအရာကို သင်မသိဘဲ ပြောင်းနိုင်သည်။</translation>
 <translation id="2289385804009217824">ဖြတ်ထုတ်ရန်</translation>
 <translation id="2292556288342944218">သင့်အင်တာနက် အသုံးပြုမှုကို ပိတ်ဆို့ထားသည်</translation>
-<translation id="2293443924986248631">ဖွင့်ထားသည့်အခါ ဝဘ်တစ်လျှောက် သင့်အားခြေရာခံသည့် ကွတ်ကီးများကို ဝဘ်ဆိုက်များက အသုံးမပြုနိုင်ပါ။ အချို့ဝဘ်ဆိုက်များပေါ်ရှိ ဝန်ဆောင်မှုများ ရပ်သွားနိုင်ပါသည်။</translation>
 <translation id="2295831393422400053">‘ကူရေးပေးပါ’ သုံးရန် ‘ရှာဖွေမှုနှင့် ဖွင့်ကြည့်မှု ပိုကောင်းအောင်ပြုလုပ်ခြင်း’ ဆက်တင်ကို ဖွင့်ပါ</translation>
 <translation id="2296244067976588032">လျှို့ဝှက်ကီး • iCloud Keychain</translation>
 <translation id="2296331629987861142">လွယ်ကူသည့် အရစ်ကျဖြင့်ပေးနိုင်သည် (သတ်မှတ်ချက်ပြည့်မီမှုအပေါ် မူတည်သည်။ အခကြေးငွေ ရှိသည်)</translation>
@@ -861,7 +859,6 @@
 <translation id="239429038616798445">ဤပစ္စည်းပို့ခြင်းနည်းလမ်းသည် မရနိုင်ပါ။ အခြားနည်းလမ်းတစ်ခုကို ရွေးပါ။</translation>
 <translation id="2395840535409704129">ရေအားကစား</translation>
 <translation id="2396249848217231973">&amp;ဖျက်မှုကို ပြန်လုပ်ရန်</translation>
-<translation id="239708975263889666">သိသော ခရီးသည်နံပါတ်ကို ပြင်ရန်</translation>
 <translation id="2399344929880464793">ဤအိုင်ဘီအေအန် (IBAN) ကို သင့် Google Account ၌ သိမ်းထားသဖြင့် Google ဝန်ဆောင်မှုများတွင် သုံးနိုင်သည်။</translation>
 <translation id="2399868464369312507">Google Chrome က ငွေပေးချေနည်းလမ်းများကို ပြင်ရန် ကြိုးပမ်းနေသည်။</translation>
 <translation id="2400263725572336749">နိုင်ငံကူးလက်မှတ် ထည့်ခြင်း</translation>
@@ -890,7 +887,6 @@
 <translation id="2451201933352935301"><ph name="URL" /> က သင့်ဖန်သားပြင်အားလုံးတွင် ဝင်းဒိုးများကို စီမံလိုသည်</translation>
 <translation id="2451607499823206582">စောင့်ကြည့်ခြင်း</translation>
 <translation id="2452098632681057184">ဂေဟဗေဒ၊ ပတ်ဝန်းကျင်</translation>
-<translation id="2452689005240417488">သိသော ခရီးသည်နံပါတ်ကို သိမ်းမလား။</translation>
 <translation id="2452837234288608067">၎င်းကို လုပ်ဆောင်၍မရပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="2453045048779611513">သိမ်းနိုင်သည်များကို သင့်အဖွဲ့အစည်းက ကန့်သတ်ထားသည်</translation>
 <translation id="2456755709261364512">သင့်ဘက်ထရီကို <ph name="REQUIRED_BATTERY_PRECENT" />% အထက် အားသွင်းထားရမည်</translation>
@@ -2500,8 +2496,6 @@
 <translation id="5137761395480718572">ဤအက်ပ်က Wi-Fi အထောက်အထားများ ထည့်သွင်းရန် ခွင့်ပြုချက်တောင်းဆိုနေသည်။ စနစ်ထည့်သွင်းပြီးနောက် သင်၏ <ph name="DEVICE_TYPE" /> သည် ပါဝင်သည့် Wi-Fi ကွန်ရက်များကို အလိုအလျောက်ချိတ်ဆက်မည်။ ဤအထောက်အထားများဖယ်ရှားရန် အက်ပ်ကို ဖြုတ်ပါ။<ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">ပကတိအသွင်ကတ်ကို ယခု မရနိုင်ပါ။ သင်၏ဘဏ်ကို ဆက်သွယ်ပါ</translation>
 <translation id="5138227688689900538">လျှော့ပြရန်</translation>
-<translation id="5143309888746105072">Chromium သည် သင်ဘရောက်စ်လုပ်သည်နှင့်အမျှ သင့်အားခြေရာခံရန် ဝဘ်ဆိုက်များသုံးသည့် ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများကို ပိတ်ထားသည်။
-            <ph name="NEW_LINE" />ဝဘ်ဆိုက်ဝန်ဆောင်မှုများ အလုပ်မလုပ်ပါက <ph name="START_LINK" />ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများကို ယာယီခွင့်ပြုကြည့်ပါ<ph name="END_LINK" />။</translation>
 <translation id="5144613843429436866">ဤဝဘ်ဆိုက်အတွက် <ph name="PERMISSION" /> ကို သင်က ခွင့်ပြုလိုက်သည်</translation>
 <translation id="5145883236150621069">ပေါ်လစီတုံ့ပြန်မှုတွင် အမှားကုဒ်ရှိသည်။</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> အတွက် အကြောင်းကြားချက်များ ပိတ်ထားသည်</translation>
@@ -2717,7 +2711,6 @@
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">စီမံကွပ်ကဲသည့် စာညှပ်များ</translation>
 <translation id="5509913453990750440">ဖက်ရှင်၊ စတိုင်</translation>
-<translation id="5510481203689988000">ဤဆက်တင်ကို 'ကွတ်ကီး' ဆက်တင်များတွင် ထိန်းချုပ်ပါသည်။</translation>
 <translation id="5510766032865166053">၎င်းကို ဖယ်ရှား သို့မဟုတ် ဖျက်ပစ် လိုက်ခြင်းဖြစ်နိုင်ပါသည်။</translation>
 <translation id="551222491709693708">ကာတွန်းနှင့် လှုပ်ရှားသက်ဝင်ပုံ</translation>
 <translation id="5512812358367123529">ရုံးသုံးပရိဘောဂ</translation>
@@ -2971,7 +2964,6 @@
 <translation id="5951495562196540101">အသုံးပြုသူ အကောင့်ဖြင့် စာရင်းသွင်း၍ မရပါ (ပက်ကေ့ချ်လုပ်ထားသော လိုင်စင်ကို ရနိုင်သည်)။</translation>
 <translation id="5952076224478208938">ထုတ်လုပ်သူ</translation>
 <translation id="5953516610448771166">‘တိုက်ရိုက်စာတန်း’ ကို ဤမီဒီယာအတွက် မရနိုင်ပါ။ စာတန်းများရရှိရန် <ph name="CONTENT_SETTINGS" /> ကို ဤဝဘ်ဆိုက်အတွက် ပိတ်ထားနိုင်သည်။</translation>
-<translation id="595873925609605681">ဝဘ်ဆိုက်ဝန်ဆောင်မှုများ အလုပ်မလုပ်ပါက <ph name="BEGIN_LINK" />ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများကို ယာယီခွင့်ပြုကြည့်ပါ<ph name="END_LINK" />။</translation>
 <translation id="5960795367348889467">အတည်ပြုခြင်း</translation>
 <translation id="5963413905009737549">အပိုင်း</translation>
 <translation id="5964247741333118902">မြှုပ်သွင်းထားသော အကြောင်းအရာ</translation>
@@ -3012,7 +3004,6 @@
 <translation id="6017514345406065928">အစိမ်းရောင်</translation>
 <translation id="6018650639991193045">Chrome ဆက်တင်များတွင် ကြည့်ရှုမှုမှတ်တမ်း၊ ကွတ်ကီးများ၊ ကက်ရှ် စသည်တို့ကို ဖျက်နိုင်သည်</translation>
 <translation id="6019118530636932154">Google Apps Script</translation>
-<translation id="6023810427609440412">VIN (မော်တော်ယာဉ် မှတ်ပုံတင်နံပါတ်)</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />၊ <ph name="TYPE_2" />၊ <ph name="TYPE_3" /> (စင့်ခ်လုပ်ထားသည်)</translation>
 <translation id="6028591542479806248">မိုဘိုင်းနှင့် အီးမေးလ် အကြောင်းကြားချက်များကို စီမံနိုင်သည်</translation>
 <translation id="6028833024483927901">ကမ္ဘာ့အစားအစာ</translation>
@@ -3382,8 +3373,6 @@
 <translation id="6597665340361269064">၉၀ ဒီဂရီ</translation>
 <translation id="6598976221101665070">အချစ်အလွမ်းရုပ်ရှင်</translation>
 <translation id="6599642189720630047">စောင့်ကြည့်ထားသည့် ထုတ်ကုန်များ</translation>
-<translation id="6606309334576464871">Chrome သည် သင်ဘရောက်စ်လုပ်သည်နှင့်အမျှ သင့်အားခြေရာခံရန် ဝဘ်ဆိုက်များသုံးသည့် ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများကို ပိတ်ထားသည်။
-            <ph name="NEW_LINE" />ဝဘ်ဆိုက်ဝန်ဆောင်မှုများ အလုပ်မလုပ်ပါက <ph name="START_LINK" />ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများကို ယာယီခွင့်ပြုကြည့်ပါ<ph name="END_LINK" />။</translation>
 <translation id="6613742613135780554">လက်ကို စောင့်ကြည့်ခြင်း</translation>
 <translation id="6613866251791999074">Chrome ရှိ သင့်ရှာဖွေရေး အင်ဂျင်အကြောင်း ပိုမိုလေ့လာရန်</translation>
 <translation id="6615297766614333076">စီထည့်သည့်ပုံး ၂</translation>
@@ -3534,7 +3523,6 @@
 <translation id="6880941331070119097">ဈေးများသော ရွေးစရာ</translation>
 <translation id="6881240511396774766">Google Doc အသစ်တစ်ခု အမြန်ပြုလုပ်ပါ</translation>
 <translation id="6882210908253838664">ဝဘ်ဆိုက်အလုပ်မလုပ်ပါက ၎င်းကို ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများ ယာယီအသုံးပြုခွင့် ပေးကြည့်နိုင်သည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
-<translation id="6883120223439653449">သိသော ခရီးသည်နံပါတ်ကို အပ်ဒိတ်လုပ်မလား။</translation>
 <translation id="6883221904761970440">လုံခြုံသောပေးချေမှု အထောက်အထား စိစစ်ခြင်းစာရွက် ပိတ်ထားသည်</translation>
 <translation id="6883745783646124431">အလုပ်လိပ်စာ</translation>
 <translation id="6886283082988906333">ZIP ဖိုင်</translation>
@@ -3646,7 +3634,6 @@
 <translation id="7044081119134178347">ဤတစ်ကြိမ်အတွက် ကင်မရာ ခွင့်ပြုထားသည်</translation>
 <translation id="7048095965575426564">ဥရောပ ဘာဂျာခေါက်</translation>
 <translation id="7050187094878475250">သင် <ph name="DOMAIN" /> သို့ ရောက်ရန် ကြိုးပမ်းခဲ့သော်လည်း၊ ယုံကြည်နိုင်ရန်အလို့ငှာ ကာလလွန်စွာကြာမြင့်သော ခွင့်ပြုကာလပါသည့် အသိအမှတ်ပြုလက်မှတ်တစ်ခုအား ဆာဗာမှ ပြသခဲ့သည်။</translation>
-<translation id="7050877504983265321">သိသော ခရီးသည်နံပါတ်</translation>
 <translation id="7053983685419859001">ပိတ်ဆို့ရန်</translation>
 <translation id="7054717457611655239">ယခုမှစ၍ သင့်ဖိုင်များကို <ph name="CLOUD_PROVIDER" /> တွင် သိမ်းပါ။</translation>
 <translation id="7058163556978339998"><ph name="ISSUER" /> သည် ဤဝဘ်ဆိုက်၏ အသိအမှတ်ပြုလက်မှတ်ကို ထုတ်ပေးကြောင်း <ph name="BROWSER" /> က အတည်ပြုထားသည်။</translation>
@@ -3797,7 +3784,6 @@
 <translation id="7309058266849426521">Chrome တွင် ကြော်ငြာဆိုင်ရာ အချက်အလက်လုံခြုံမှုကို စီမံခြင်း အကြောင်း ပိုမိုလေ့လာရန်။</translation>
 <translation id="7310392214323165548">များမကြာမီ စက် ပြန်စပါမည်</translation>
 <translation id="7311244614769792472">ရလဒ်မတွေ့ပါ</translation>
-<translation id="7311837626618954149">Chromium သည် သင်ဘရောက်စ်လုပ်သည်နှင့်အမျှ သင့်အားခြေရာခံရန် ဝဘ်ဆိုက်များသုံးသည့် ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများကို ပိတ်ထားသည်။</translation>
 <translation id="7313107491291103073">ဤဝဘ်ဆိုက်သည် မူဝါဒချိုးဖောက်နိုင်သောကြောင့် သင့်အဖွဲ့အစည်းက ၎င်းကို အလံပြထားသည်။</translation>
 <translation id="7316521168101843192">ဖိုင်ကို Microsoft OneDrive တွင် သိမ်းနေသည်</translation>
 <translation id="7319430975418800333">A3</translation>
@@ -3974,7 +3960,6 @@
 <translation id="7569983096843329377">အနက်ရောင်</translation>
 <translation id="7571813784389228510">Google AI မုဒ်</translation>
 <translation id="7574998639136359461">ဆောင်းရာသီအားကစား ပစ္စည်း</translation>
-<translation id="7575130707299232096">သိသော ခရီးသည်နံပါတ်ကို ဖျက်ရန်</translation>
 <translation id="7575207903026901870">'အကြံပြုချက်' ခလုတ်ကို ဖယ်ရှားခြင်း၊ ဤအကြံပြုချက်ကို ဖယ်ရှားရန် Enter ကို နှိပ်ပါ</translation>
 <translation id="7575800019233204241">"သင်၏ ချိတ်ဆက်မှုသည် သီးသန့်မဟုတ်ပါ" သို့မဟုတ် "&lt;span class="error-code"&gt;NET::ERR_CERT_AUTHORITY_INVALID&lt;/span&gt;" သို့မဟုတ် "&lt;span class="error-code"&gt;ERR_CERT_COMMON_NAME_INVALID&lt;/span&gt;" သို့မဟုတ် "&lt;span class="error-code"&gt;NET::ERR_CERT_WEAK_SIGNATURE_ALGORITHM&lt;/span&gt;" သို့မဟုတ် "SSL အသိအမှတ်ပြုလက်မှတ် အမှား"</translation>
 <translation id="7575887283389198269">မိုဘိုင်းဖုန်း</translation>
@@ -4946,7 +4931,6 @@
 <translation id="939736085109172342">ဖိုင်တွဲအသစ်</translation>
 <translation id="940524522703752213"><ph name="CLOUD_PROVIDER" /> သို့ သင့်ဖိုင်အပ်လုဒ်လုပ်ခြင်းသည် <ph name="MINUTES" /> မိနစ်အတွင်း စတင်ပါမည်</translation>
 <translation id="944578681290094302">ငွေရှင်းသည့်အခါ သင့်ကတ်များအတွက် ရနိုင်သော ဆုလာဘ်နှင့် အကျိုးခံစားခွင့်များကို ပြပါ။ <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />ကတ် အကျိုးခံစားခွင့်များအကြောင်း လေ့လာရန်<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
-<translation id="945646848072568856">Chrome သည် သင်ဘရောက်စ်လုပ်သည်နှင့်အမျှ သင့်အားခြေရာခံရန် ဝဘ်ဆိုက်များသုံးသည့် ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများကို ပိတ်ထားသည်။</translation>
 <translation id="945673208656386843">ဤကတ်ကို ဤစက်ပစ္စည်းတွင် သိမ်းထားသောအခါ Chromium ၌ ပြုလုပ်သော ဝယ်ယူမှုများအတွက် ၎င်းကို အော်တိုဖြည့်သည်</translation>
 <translation id="94613679163347541"><ph name="CATEGORY" /> ကို နှိုင်းယှဉ်မလား။</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Google Sites တွင် ဝဘ်ဆိုက်အသစ် အမြန်ပြုလုပ်ရန် ‘တဘ်’ နှိပ်ပြီးနောက် Enter ခလုတ် နှိပ်ပါ</translation>

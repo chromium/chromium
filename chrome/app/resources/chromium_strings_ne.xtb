@@ -310,6 +310,7 @@
 <translation id="494490797786467921">Chromium मा साइन इन गर्ने डायलग बन्द गर्न क्लिक गर्नुहोस्</translation>
 <translation id="4950660488495335294">तपाईं Chromium प्रोफाइलहरू प्रयोग गरी Chromium मा भएका आफ्ना सबै कुराहरू छुट्याएर राख्न सक्नुहुन्छ। साथीभाइ तथा परिवारका सदस्यहरूका लागि अलग्गै प्रोफाइल बनाइदिनुहोस् वा काम तथा मनोरञ्जनसँग सम्बन्धित कुराहरू छुट्याएर राख्नुहोस्।</translation>
 <translation id="4987820182225656817">अतिथिहरूले कुनैपनि कुरालाई पछाडि छोडे बिना Chromium प्रयोग गर्न सक्छन्।</translation>
+<translation id="4992938037305302429">Chromium मा भएको तपाईंको खाता</translation>
 <translation id="4994636714258228724">तपाइँ अफैलाई Chromium मा थप्नुहोस्</translation>
 <translation id="5123973130450702873">Chromium लाई तपाईंका हातहरू ट्रयाक गर्ने अनुमति दिनु पर्ने हुन्छ</translation>
 <translation id="5141988424377517949">तपाईंले हालसालै कुनै पनि साइट खोल्नुभएको छैन। Chromium ले <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> र <ph name="PERMISSION_3" /> सम्बन्धी अनुमति रद्द गरेको छ।</translation>
@@ -387,6 +388,7 @@
 <translation id="6072463441809498330">Chromium लाई अझ छिटो काम गर्ने बनाउनुहोस्</translation>
 <translation id="6096348254544841612">Chromium लाई  कस्टम बनाउने र नियन्त्रण गर्ने कार्य गर्नुहोस्। अद्यावधिक उपलब्ध छ।</translation>
 <translation id="6107893135096467929">अन छ • Chromium ले यो एक्स्टेन्सनको स्रोतका बारेमा पुष्टि गर्न सक्दैन</translation>
+<translation id="611228897408671387">Chromium मा भएको तपाईंको खाता</translation>
 <translation id="6119438414301547735">एक्स्टेन्सनलाई Chromium टुलबारमा साइट प्रयोग गर्ने अनुमतिसम्बन्धी अनुरोध देखाउने अनुमति दिनुहोस्</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> खतरनाक छ, त्यसैले Chromium ले यसमाथि रोक लगाएको छ।</translation>
 <translation id="6132897690380286411">Chromium ले चाँडै नै विन्डोहरू बन्द गर्ने र डेटा मेटाउने छ</translation>

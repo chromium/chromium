@@ -311,6 +311,7 @@
 <translation id="494490797786467921">Chromium-н нэвтрэх харилцах цонхыг хаахын тулд товшино уу</translation>
 <translation id="4950660488495335294">Та Chromium профайлаар Chromium-н бүх зүйлээ тусгаарлах боломжтой. Найз, гэр бүлийнхэндээ зориулж профайл үүсгэх эсвэл ажил, зугааг ялгаж салгаарай.</translation>
 <translation id="4987820182225656817">Зочид Chromium-ийг ашигласнаар хамгийн сүүлийн үеийн мэдээллийг авна.</translation>
+<translation id="4992938037305302429">Таны Chromium дахь бүртгэл</translation>
 <translation id="4994636714258228724">Өөрийгөө Chromium руу нэмэх</translation>
 <translation id="5123973130450702873">Chromium-д таны гарыг хянах зөвшөөрөл шаардлагатай</translation>
 <translation id="5141988424377517949">Та ойрын үед зочлоогүй байна. Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />-г хассан.</translation>
@@ -389,6 +390,7 @@
 <translation id="6072463441809498330">Chromium-г илүү хурдан болгоорой</translation>
 <translation id="6096348254544841612">Chromium-г тохируулж, хянана уу. Шинэчлэх боломжтой.</translation>
 <translation id="6107893135096467929">Асаалттай • Chromium энэ өргөтгөлийг хаанаас гаралтай болохыг баталгаажуулах боломжгүй</translation>
+<translation id="611228897408671387">Таны Chromium дахь бүртгэл</translation>
 <translation id="6119438414301547735">Өргөтгөлд Chromium-н самбарт хандах хүсэлт харуулахыг зөвшөөрнө үү</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> аюултай тул үүнийг Chromium блок хийсэн.</translation>
 <translation id="6132897690380286411">Chromium удахгүй хаах бөгөөд өгөгдлийг устгана</translation>

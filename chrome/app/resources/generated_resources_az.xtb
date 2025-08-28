@@ -1183,6 +1183,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1805967612549112634">PIN kodu təsdiq edin</translation>
 <translation id="1806335016774576568">Başqa bir açıq tətbiqə dəyişin</translation>
 <translation id="1807246157184219062">Yüngül</translation>
+<translation id="1808571181382454540">Ayarlar səhifəsinə keçin</translation>
 <translation id="1808805149659872686">Yeni giriş</translation>
 <translation id="1809201888580326312">Bu sayt və tətbiqlər üçün parolları yadda saxlamamağı seçmisiniz</translation>
 <translation id="1809734401532861917">Əlfəcin, tarixçə, parol və digər ayarlarımı <ph name="USER_EMAIL_ADDRESS" /> ünvanına əlavə edin</translation>
@@ -10652,7 +10653,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8431190899827883166">Vizual reaksiya</translation>
 <translation id="843173223122814223">Sİ ilə arxa fon yaradın</translation>
 <translation id="8431977087510901105">Kursor ayarları sıfırlaması</translation>
-<translation id="843210078733508372">Daxil olun və parol dəyişdirilməsi davam edəcək</translation>
 <translation id="8433186206711564395">Şəbəkə ayarları</translation>
 <translation id="8434109185104929038">Oxu guşəsi</translation>
 <translation id="8434837876193928924">Tab qrupu təfərrüatları</translation>
@@ -10790,6 +10790,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8528962588711550376">Hesaba giriş.</translation>
 <translation id="8531367864749403520">Qrupu tab zolağından silmək üçün "Qrupu gizlədin" seçin</translation>
 <translation id="8531701051932785007">Qabaqcıl Güvənli Baxış deaktivdir</translation>
+<translation id="8533411848724153701">Gemini</translation>
 <translation id="8533670235862049797">Təhlükəsiz Baxış aktivdir</translation>
 <translation id="853377257670044988">{GROUP_COUNT,plural, =1{Tablar bu cihazda açıq qalacaq, lakin qrup <ph name="EMAIL" /> hesabına daxil olmuş bütün cihazlardan silinəcək}other{Tablar bu cihazda açıq qalacaq, lakin qrup <ph name="EMAIL" /> hesabına daxil olmuş bütün cihazlardan silinəcək}}</translation>
 <translation id="8535005006684281994">Netscape Sertifikat Yeniləmə URL</translation>
