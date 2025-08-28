@@ -52,7 +52,6 @@
 using testing::_;
 using testing::Contains;
 using testing::Eq;
-using testing::Invoke;
 using testing::IsEmpty;
 using testing::Key;
 using testing::Ne;

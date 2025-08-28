@@ -416,7 +416,7 @@ TEST_F(OAuthMultiloginHelperTest, Success) {
               SetCanonicalCookie(
                   CookieMatcher("SID", "SID_value", ".google.fr"),
                   CookieSourceMatcher("google.fr"), testing::_, testing::_))
-      .WillOnce(::testing::Invoke(RunSetCookieCallbackWithSuccess));
+      .WillOnce(RunSetCookieCallbackWithSuccess);
 
   // Issue access token.
   OAuth2AccessTokenConsumer::TokenResponse success_response;
@@ -453,7 +453,7 @@ TEST_F(OAuthMultiloginHelperTest, SuccessWithRefreshToken) {
               SetCanonicalCookie(
                   CookieMatcher("SID", "SID_value", ".google.fr"),
                   CookieSourceMatcher("google.fr"), testing::_, testing::_))
-      .WillOnce(::testing::Invoke(RunSetCookieCallbackWithSuccess));
+      .WillOnce(RunSetCookieCallbackWithSuccess);
 
   // Multilogin call.
   EXPECT_FALSE(callback_called_);
@@ -487,7 +487,7 @@ TEST_F(OAuthMultiloginHelperTest, MultipleAccounts) {
               SetCanonicalCookie(
                   CookieMatcher("SID", "SID_value", ".google.fr"),
                   CookieSourceMatcher("google.fr"), testing::_, testing::_))
-      .WillOnce(::testing::Invoke(RunSetCookieCallbackWithSuccess));
+      .WillOnce(RunSetCookieCallbackWithSuccess);
 
   // Issue access tokens.
   OAuth2AccessTokenConsumer::TokenResponse success_response;
@@ -530,12 +530,12 @@ TEST_F(OAuthMultiloginHelperTest, MultipleCookies) {
               SetCanonicalCookie(
                   CookieMatcher("SID", "SID_value", ".google.fr"),
                   CookieSourceMatcher("google.fr"), testing::_, testing::_))
-      .WillOnce(::testing::Invoke(RunSetCookieCallbackWithSuccess));
+      .WillOnce(RunSetCookieCallbackWithSuccess);
   EXPECT_CALL(*cookie_manager(),
               SetCanonicalCookie(
                   CookieMatcher("FOO", "FOO_value", ".google.com"),
                   CookieSourceMatcher("google.com"), testing::_, testing::_))
-      .WillOnce(::testing::Invoke(RunSetCookieCallbackWithSuccess));
+      .WillOnce(RunSetCookieCallbackWithSuccess);
 
   // Issue access token.
   OAuth2AccessTokenConsumer::TokenResponse success_response;
@@ -569,12 +569,12 @@ TEST_F(OAuthMultiloginHelperTest, SuccessWithExternalCcResult) {
               SetCanonicalCookie(
                   CookieMatcher("SID", "SID_value", ".youtube.com"),
                   CookieSourceMatcher("youtube.com"), testing::_, testing::_))
-      .WillOnce(::testing::Invoke(RunSetCookieCallbackWithSuccess));
+      .WillOnce(RunSetCookieCallbackWithSuccess);
   EXPECT_CALL(*cookie_manager(),
               SetCanonicalCookie(
                   CookieMatcher("FOO", "FOO_value", ".google.com"),
                   CookieSourceMatcher("google.com"), testing::_, testing::_))
-      .WillOnce(::testing::Invoke(RunSetCookieCallbackWithSuccess));
+      .WillOnce(RunSetCookieCallbackWithSuccess);
 
   // Issue access token.
   OAuth2AccessTokenConsumer::TokenResponse success_response;
@@ -621,7 +621,7 @@ TEST_F(OAuthMultiloginHelperTest, OneAccountTransientMultiloginError) {
               SetCanonicalCookie(
                   CookieMatcher("SID", "SID_value", ".google.fr"),
                   CookieSourceMatcher("google.fr"), testing::_, testing::_))
-      .WillOnce(::testing::Invoke(RunSetCookieCallbackWithSuccess));
+      .WillOnce(RunSetCookieCallbackWithSuccess);
 
   // Issue access token.
   OAuth2AccessTokenConsumer::TokenResponse success_response;
@@ -732,7 +732,7 @@ TEST_F(OAuthMultiloginHelperTest, InvalidTokenError) {
               SetCanonicalCookie(
                   CookieMatcher("SID", "SID_value", ".google.fr"),
                   CookieSourceMatcher("google.fr"), testing::_, testing::_))
-      .WillOnce(::testing::Invoke(RunSetCookieCallbackWithSuccess));
+      .WillOnce(RunSetCookieCallbackWithSuccess);
 
   url_loader()->AddResponse(multilogin_url(), kMultiloginSuccessResponse);
   EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
@@ -820,7 +820,7 @@ TEST_F(OAuthMultiloginHelperTest, BoundTokenSuccessNoChallenge) {
               SetCanonicalCookie(
                   CookieMatcher("SID", "SID_value", ".google.fr"),
                   CookieSourceMatcher("google.fr"), testing::_, testing::_))
-      .WillOnce(::testing::Invoke(RunSetCookieCallbackWithSuccess));
+      .WillOnce(RunSetCookieCallbackWithSuccess);
 
   // Multilogin call.
   EXPECT_FALSE(callback_called_);
@@ -880,7 +880,7 @@ TEST_F(OAuthMultiloginHelperTest, BoundTokenSuccessWithChallenge) {
               SetCanonicalCookie(
                   CookieMatcher("SID", "SID_value", ".google.fr"),
                   CookieSourceMatcher("google.fr"), testing::_, testing::_))
-      .WillOnce(::testing::Invoke(RunSetCookieCallbackWithSuccess));
+      .WillOnce(RunSetCookieCallbackWithSuccess);
   EXPECT_CALL(*bound_session_delegate(), BeforeSetCookies);
   EXPECT_CALL(*bound_session_delegate(), OnCookiesSet);
 
@@ -933,7 +933,7 @@ TEST_F(OAuthMultiloginHelperTest,
               SetCanonicalCookie(
                   CookieMatcher("SID", kCookieValue, ".google.fr"),
                   CookieSourceMatcher("google.fr"), testing::_, testing::_))
-      .WillOnce(::testing::Invoke(RunSetCookieCallbackWithSuccess));
+      .WillOnce(RunSetCookieCallbackWithSuccess);
 
   std::string response =
       base::StringPrintf(kMultiloginSuccessWithEncryptedCookieResponseFormat,

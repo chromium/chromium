@@ -111,7 +111,7 @@ TEST_F(ThirdPartyCredentialManagerBridgeTest, TestSuccessfulGetCall) {
   EXPECT_CALL(
       mock_callback,
       Run(password_manager::CredentialManagerError::SUCCESS, testing::_))
-      .WillOnce(testing::Invoke([&]() { run_loop.Quit(); }));
+      .WillOnce([&]() { run_loop.Quit(); });
   bridge()->Get(/*is_auto_select_allowed=*/false, /*include_passwords=*/true,
                 /*federations=*/{}, kTestOrigin, mock_callback.Get());
   run_loop.Run();
@@ -125,7 +125,7 @@ TEST_F(ThirdPartyCredentialManagerBridgeTest, TestUnuccessfulGetCall) {
   EXPECT_CALL(
       mock_callback,
       Run(password_manager::CredentialManagerError::UNKNOWN, testing::_))
-      .WillOnce(testing::Invoke([&]() { run_loop.Quit(); }));
+      .WillOnce([&]() { run_loop.Quit(); });
   bridge()->Get(/*is_auto_select_allowed=*/true, /*include_passwords=*/true,
                 /*federations=*/{}, kTestOrigin, mock_callback.Get());
   run_loop.Run();
@@ -136,9 +136,7 @@ TEST_F(ThirdPartyCredentialManagerBridgeTest, TestSuccessfulStoreCall) {
   base::MockCallback<StoreCallback> mock_callback;
   fake_jni_delegate().set_error_simulation(false);
 
-  EXPECT_CALL(mock_callback, Run()).WillOnce(testing::Invoke([&]() {
-    run_loop.Quit();
-  }));
+  EXPECT_CALL(mock_callback, Run()).WillOnce([&]() { run_loop.Quit(); });
   bridge()->Store(kTestUsername, kTestPassword, kTestOrigin,
                   mock_callback.Get());
   run_loop.Run();
@@ -149,9 +147,7 @@ TEST_F(ThirdPartyCredentialManagerBridgeTest, TestUnuccessfulStoreCall) {
   base::MockCallback<StoreCallback> mock_callback;
   fake_jni_delegate().set_error_simulation(true);
 
-  EXPECT_CALL(mock_callback, Run()).WillOnce(testing::Invoke([&]() {
-    run_loop.Quit();
-  }));
+  EXPECT_CALL(mock_callback, Run()).WillOnce([&]() { run_loop.Quit(); });
   bridge()->Store(kTestUsername, kTestPassword, kTestOrigin,
                   mock_callback.Get());
   run_loop.Run();
@@ -164,9 +160,9 @@ TEST_F(ThirdPartyCredentialManagerBridgeTest, TestMultipleCalls) {
   base::MockCallback<GetCallback> mock_get_callback;
   fake_jni_delegate().set_error_simulation(false);
 
-  EXPECT_CALL(mock_store_callback, Run()).WillOnce(testing::Invoke([&]() {
+  EXPECT_CALL(mock_store_callback, Run()).WillOnce([&]() {
     run_loop_store.Quit();
-  }));
+  });
   bridge()->Store(kTestUsername, kTestPassword, kTestOrigin,
                   mock_store_callback.Get());
   run_loop_store.Run();
@@ -174,7 +170,7 @@ TEST_F(ThirdPartyCredentialManagerBridgeTest, TestMultipleCalls) {
   EXPECT_CALL(
       mock_get_callback,
       Run(password_manager::CredentialManagerError::SUCCESS, testing::_))
-      .WillOnce(testing::Invoke([&]() { run_loop_get.Quit(); }));
+      .WillOnce([&]() { run_loop_get.Quit(); });
 
   bridge()->Get(/*is_auto_select_allowed=*/true, /*include_passwords=*/true,
                 /*federations=*/{}, kTestOrigin, mock_get_callback.Get());

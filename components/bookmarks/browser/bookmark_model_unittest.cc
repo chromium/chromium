@@ -70,7 +70,6 @@ using base::ASCIIToUTF16;
 using base::Time;
 using testing::_;
 using testing::ElementsAre;
-using testing::Invoke;
 using testing::IsEmpty;
 using testing::WithArg;
 using testing::WithArgs;

@@ -70,8 +70,7 @@ TEST_F(URLDeduplicationHelperTest, StripURLWithHandlers) {
   auto handler2 = std::make_unique<MockURLStripHandler>();
   EXPECT_CALL(*handler1, StripExtraParams(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [](GURL url) { return GURL("http://google.com/search"); }));
+      .WillOnce([](GURL url) { return GURL("http://google.com/search"); });
   EXPECT_CALL(*handler2, StripExtraParams(testing::_)).Times(0);
   std::vector<std::unique_ptr<URLStripHandler>> handlers;
   handlers.push_back(std::move(handler1));

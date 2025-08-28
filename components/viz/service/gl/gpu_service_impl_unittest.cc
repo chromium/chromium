@@ -169,7 +169,7 @@ TEST_F(GpuServiceTest, PeakGpuMemoryCallback) {
   gpu_service_remote.FlushForTesting();
 
   ON_CALL(*mock_gpu_service(), GetPeakMemoryUsageOnMainThread)
-      .WillByDefault(testing::Invoke(
+      .WillByDefault(
           [](uint32_t sequence_num,
              GpuServiceImpl::GetPeakMemoryUsageCallback callback) {
             ASSERT_EQ(GetPeakMemoryUsageRequestLocation(sequence_num),
@@ -179,7 +179,7 @@ TEST_F(GpuServiceTest, PeakGpuMemoryCallback) {
             allocation_per_source[gpu::GpuPeakMemoryAllocationSource::UNKNOWN] =
                 kPeakMemory;
             std::move(callback).Run(kPeakMemory, allocation_per_source);
-          }));
+          });
 
   base::HistogramTester histogram;
   auto tracker = std::make_unique<PeakGpuMemoryTrackerImpl>(

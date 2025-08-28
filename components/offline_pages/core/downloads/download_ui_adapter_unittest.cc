@@ -44,7 +44,6 @@ using offline_items_collection::OfflineItemState;
 namespace offline_pages {
 namespace {
 using testing::_;
-using testing::Invoke;
 using testing::WithArg;
 
 // Constants for a test OfflinePageItem.
@@ -561,17 +560,15 @@ TEST_F(DownloadUIAdapterTest, GetVisualsForItem) {
       std::make_unique<OfflinePageVisuals>(kVisuals);
   const int kImageWidth = 24;
   EXPECT_CALL(*visuals_decoder, DecodeAndCropImage_(kThumbnailData, _))
-      .WillOnce(
-          WithArg<1>(Invoke([&](VisualsDecoder::DecodeComplete* callback) {
-            std::move(*callback).Run(
-                gfx::test::CreateImage(kImageWidth, kImageWidth));
-          })));
+      .WillOnce(WithArg<1>([&](VisualsDecoder::DecodeComplete* callback) {
+        std::move(*callback).Run(
+            gfx::test::CreateImage(kImageWidth, kImageWidth));
+      }));
   EXPECT_CALL(*visuals_decoder, DecodeAndCropImage_(kFaviconData, _))
-      .WillOnce(
-          WithArg<1>(Invoke([&](VisualsDecoder::DecodeComplete* callback) {
-            std::move(*callback).Run(
-                gfx::test::CreateImage(kImageWidth, kImageWidth));
-          })));
+      .WillOnce(WithArg<1>([&](VisualsDecoder::DecodeComplete* callback) {
+        std::move(*callback).Run(
+            gfx::test::CreateImage(kImageWidth, kImageWidth));
+      }));
   bool called = false;
   auto callback = base::BindLambdaForTesting(
       [&](const offline_items_collection::ContentId& id,
@@ -646,16 +643,14 @@ TEST_F(DownloadUIAdapterTest, GetVisualsForItemNoThumbnail) {
   model->visuals_by_offline_id_result->thumbnail = "";
 
   EXPECT_CALL(*visuals_decoder, DecodeAndCropImage_("", _))
-      .WillOnce(
-          WithArg<1>(Invoke([&](VisualsDecoder::DecodeComplete* callback) {
-            std::move(*callback).Run(gfx::test::CreateImage(0, 0));
-          })));
+      .WillOnce(WithArg<1>([&](VisualsDecoder::DecodeComplete* callback) {
+        std::move(*callback).Run(gfx::test::CreateImage(0, 0));
+      }));
   EXPECT_CALL(*visuals_decoder, DecodeAndCropImage_(kFaviconData, _))
-      .WillOnce(
-          WithArg<1>(Invoke([&](VisualsDecoder::DecodeComplete* callback) {
-            std::move(*callback).Run(
-                gfx::test::CreateImage(kImageWidth, kImageWidth));
-          })));
+      .WillOnce(WithArg<1>([&](VisualsDecoder::DecodeComplete* callback) {
+        std::move(*callback).Run(
+            gfx::test::CreateImage(kImageWidth, kImageWidth));
+      }));
   bool called = false;
   auto callback = base::BindLambdaForTesting(
       [&](const offline_items_collection::ContentId& id,
@@ -683,16 +678,14 @@ TEST_F(DownloadUIAdapterTest, GetVisualsForItemNoFavicon) {
   model->visuals_by_offline_id_result->favicon = "";
 
   EXPECT_CALL(*visuals_decoder, DecodeAndCropImage_(kThumbnailData, _))
-      .WillOnce(
-          WithArg<1>(Invoke([&](VisualsDecoder::DecodeComplete* callback) {
-            std::move(*callback).Run(
-                gfx::test::CreateImage(kImageWidth, kImageWidth));
-          })));
+      .WillOnce(WithArg<1>([&](VisualsDecoder::DecodeComplete* callback) {
+        std::move(*callback).Run(
+            gfx::test::CreateImage(kImageWidth, kImageWidth));
+      }));
   EXPECT_CALL(*visuals_decoder, DecodeAndCropImage_("", _))
-      .WillOnce(
-          WithArg<1>(Invoke([&](VisualsDecoder::DecodeComplete* callback) {
-            std::move(*callback).Run(gfx::test::CreateImage(0, 0));
-          })));
+      .WillOnce(WithArg<1>([&](VisualsDecoder::DecodeComplete* callback) {
+        std::move(*callback).Run(gfx::test::CreateImage(0, 0));
+      }));
   bool called = false;
   auto callback = base::BindLambdaForTesting(
       [&](const offline_items_collection::ContentId& id,
@@ -717,15 +710,13 @@ TEST_F(DownloadUIAdapterTest, GetVisualsForItemBadDecode) {
   model->visuals_by_offline_id_result =
       std::make_unique<OfflinePageVisuals>(kVisuals);
   EXPECT_CALL(*visuals_decoder, DecodeAndCropImage_(kThumbnailData, _))
-      .WillOnce(
-          WithArg<1>(Invoke([&](VisualsDecoder::DecodeComplete* callback) {
-            std::move(*callback).Run(gfx::test::CreateImage(0, 0));
-          })));
+      .WillOnce(WithArg<1>([&](VisualsDecoder::DecodeComplete* callback) {
+        std::move(*callback).Run(gfx::test::CreateImage(0, 0));
+      }));
   EXPECT_CALL(*visuals_decoder, DecodeAndCropImage_(kFaviconData, _))
-      .WillOnce(
-          WithArg<1>(Invoke([&](VisualsDecoder::DecodeComplete* callback) {
-            std::move(*callback).Run(gfx::test::CreateImage(0, 0));
-          })));
+      .WillOnce(WithArg<1>([&](VisualsDecoder::DecodeComplete* callback) {
+        std::move(*callback).Run(gfx::test::CreateImage(0, 0));
+      }));
   bool called = false;
   auto callback = base::BindLambdaForTesting(
       [&](const offline_items_collection::ContentId& id,

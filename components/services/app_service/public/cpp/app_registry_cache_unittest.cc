@@ -528,7 +528,7 @@ TEST_F(AppRegistryCacheTest, Removed) {
 
   // We should see one call informing us that the app was uninstalled.
   EXPECT_CALL(observer, OnAppUpdate(HasAppId("app")))
-      .WillOnce(testing::Invoke([&observer, &cache](const AppUpdate& update) {
+      .WillOnce([&observer, &cache](const AppUpdate& update) {
         EXPECT_EQ(Readiness::kUninstalledByUser, update.Readiness());
         // Even though we have queued the removal, checking the cache now
         // shows the app is still present.
@@ -536,7 +536,7 @@ TEST_F(AppRegistryCacheTest, Removed) {
         cache.ForEachApp([&observer](const AppUpdate& update) {
           observer.OnAppUpdate(update);
         });
-      }));
+      });
 
   OnApps(cache, std::move(apps), AppType::kUnknown,
          false /* should_notify_initialized */);

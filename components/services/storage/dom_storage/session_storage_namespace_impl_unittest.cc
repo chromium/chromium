@@ -228,7 +228,7 @@ TEST_F(SessionStorageNamespaceImplTest, MetadataLoadWithMapOperations) {
   base::RunLoop commit_loop;
   EXPECT_CALL(listener_, OnCommitResult(OKStatus()))
       .Times(1)
-      .WillOnce(testing::Invoke([&](auto error) { commit_loop.Quit(); }));
+      .WillOnce([&](auto error) { commit_loop.Quit(); });
   test::PutSync(leveldb_1.get(), StdStringToUint8Vector("key2"),
                 StdStringToUint8Vector("data2"), std::nullopt, "");
   commit_loop.Run();
@@ -280,8 +280,7 @@ TEST_F(SessionStorageNamespaceImplTest, CloneBeforeBind) {
   auto commit_callback = base::BarrierClosure(2, commit_loop.QuitClosure());
   EXPECT_CALL(listener_, OnCommitResult(OKStatus()))
       .Times(2)
-      .WillRepeatedly(
-          testing::Invoke([&](auto error) { commit_callback.Run(); }));
+      .WillRepeatedly([&](auto error) { commit_callback.Run(); });
   EXPECT_CALL(listener_,
               OnDataMapCreation(StdStringToUint8Vector("1"), testing::_))
       .Times(1);
@@ -349,7 +348,7 @@ TEST_F(SessionStorageNamespaceImplTest, CloneAfterBind) {
   base::RunLoop commit_loop;
   EXPECT_CALL(listener_, OnCommitResult(OKStatus()))
       .Times(1)
-      .WillOnce(testing::Invoke([&](auto error) { commit_loop.Quit(); }));
+      .WillOnce([&](auto error) { commit_loop.Quit(); });
   test::PutSync(leveldb_n2_o2.get(), StdStringToUint8Vector("key2"),
                 StdStringToUint8Vector("data2"), std::nullopt, "");
   commit_loop.Run();
@@ -403,7 +402,7 @@ TEST_F(SessionStorageNamespaceImplTest, RemoveStorageKeyData) {
   base::RunLoop commit_loop;
   EXPECT_CALL(listener_, OnCommitResult(OKStatus()))
       .Times(1)
-      .WillOnce(testing::Invoke([&](auto error) { commit_loop.Quit(); }));
+      .WillOnce([&](auto error) { commit_loop.Quit(); });
   namespace_impl->RemoveStorageKeyData(test_storage_key1_, base::DoNothing());
   commit_loop.Run();
 

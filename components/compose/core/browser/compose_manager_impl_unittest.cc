@@ -111,9 +111,9 @@ class ComposeManagerImplTest : public testing::Test {
     // Record the FormFieldData sent to the client.
     ON_CALL(mock_compose_client(), ShowComposeDialog(_, _, _, _))
         .WillByDefault(testing::WithArg<1>(
-            testing::Invoke([&](const autofill::FormFieldData& trigger_field) {
+            [&](const autofill::FormFieldData& trigger_field) {
               last_form_field_to_client_ = trigger_field;
-            })));
+            }));
     ON_CALL(mock_compose_client(), ShouldTriggerPopup)
         .WillByDefault(testing::Return(true));
     compose_manager_impl_ =
@@ -295,10 +295,10 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_Success) {
 
   // Emulates the expected Autofill driver response.
   EXPECT_CALL(mock_autofill_driver(), ExtractForm(_, _))
-      .WillOnce(testing::WithArg<1>(testing::Invoke(
+      .WillOnce(testing::WithArg<1>(
           [&](autofill::AutofillDriver::BrowserFormHandler callback) {
             std::move(callback).Run(&mock_autofill_driver(), form_data);
-          })));
+          }));
 
   const UiEntryPoint ui_entry_point = UiEntryPoint::kContextMenu;
   EXPECT_CALL(
@@ -344,10 +344,10 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_FormDataMissing) {
 
   // Autofill driver returns no FormData.
   EXPECT_CALL(mock_autofill_driver(), ExtractForm(_, _))
-      .WillOnce(testing::WithArg<1>(testing::Invoke(
+      .WillOnce(testing::WithArg<1>(
           [&](autofill::AutofillDriver::BrowserFormHandler callback) {
             std::move(callback).Run(&mock_autofill_driver(), std::nullopt);
-          })));
+          }));
   // There should be no attempt to open the dialog.
   EXPECT_CALL(mock_compose_client(),
               ShowComposeDialog(/*ui_entry_point=*/_, /*trigger_field=*/_,
@@ -390,10 +390,10 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_FormFieldDataMissing) {
 
   // Emulates the expected Autofill driver response.
   EXPECT_CALL(mock_autofill_driver(), ExtractForm(_, _))
-      .WillOnce(testing::WithArg<1>(testing::Invoke(
+      .WillOnce(testing::WithArg<1>(
           [&](autofill::AutofillDriver::BrowserFormHandler callback) {
             std::move(callback).Run(&mock_autofill_driver(), form_data);
-          })));
+          }));
   // There should be no attempt to open the dialog.
   EXPECT_CALL(mock_compose_client(),
               ShowComposeDialog(/*ui_entry_point=*/_, /*trigger_field=*/_,

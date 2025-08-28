@@ -38,7 +38,6 @@ namespace {
 
 using testing::_;
 using testing::Eq;
-using testing::Invoke;
 using testing::IsEmpty;
 using testing::Ne;
 using testing::NotNull;

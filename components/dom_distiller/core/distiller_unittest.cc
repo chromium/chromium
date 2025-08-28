@@ -35,7 +35,6 @@
 #include "third_party/dom_distiller_js/dom_distiller_json_converter.h"
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 
 using dom_distiller::proto::DomDistillerOptions;

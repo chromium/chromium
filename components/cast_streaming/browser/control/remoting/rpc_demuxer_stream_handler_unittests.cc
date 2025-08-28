@@ -23,7 +23,6 @@
 #include "third_party/openscreen/src/cast/streaming/public/rpc_messenger.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::Return;
 using testing::StrictMock;
 
