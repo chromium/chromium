@@ -57,7 +57,7 @@ import org.chromium.url.GURL;
  * class.
  */
 @NullMarked
-public class ToggleTabStackButtonCoordinator extends ToolbarChild {
+public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
     private static final int IPH_TAB_SWITCHER_XR_WAIT_TIME_MS = 5 * 1000;
     private static final int IPH_TAB_SWITCHER_XR_MIN_TABS = 4;
 
@@ -105,7 +105,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChild {
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             ThemeColorProvider themeColorProvider,
             IncognitoStateProvider incognitoStateProvider) {
-        super(themeColorProvider, incognitoStateProvider);
+        super(context, themeColorProvider, incognitoStateProvider);
         mContext = context;
         mToggleTabStackButton = toggleTabStackButton;
         mUserEducationHelper = userEducationHelper;
@@ -212,6 +212,11 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChild {
         }
 
         mToggleTabStackButton.destroy();
+    }
+
+    @Override
+    public void setVisibility(boolean isVisible) {
+        mToggleTabStackButton.setVisibility(isVisible ? View.VISIBLE : View.GONE);
     }
 
     /** Get container view for drawing, accessibility traversal and animations. */
