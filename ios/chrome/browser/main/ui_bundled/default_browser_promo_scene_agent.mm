@@ -262,19 +262,23 @@
       segmentation_platform::kIosDefaultBrowserPromoKey, options, inputContext,
       base::BindOnce(
           ^(const segmentation_platform::ClassificationResult& result) {
-            // Register the generic promo if the model returned a show result or
-            // if the model execution failed, since failure should not disable
-            // the promo.
-            if (result.status !=
-                    segmentation_platform::PredictionStatus::kSucceeded ||
-                result.ordered_labels[0] ==
-                    segmentation_platform::kIosDefaultBrowserPromoShowLabel) {
-              [weakSelf updateGenericPromoRegistration];
-            } else {
-              weakSelf.promosManager->DeregisterPromo(
-                  promos_manager::Promo::DefaultBrowser);
-            }
+            [weakSelf didReceiveSegmentationServiceResult:result];
           }));
+}
+
+// Handle the segmentation result to determine whether to register the promo.
+- (void)didReceiveSegmentationServiceResult:
+    (const segmentation_platform::ClassificationResult&)result {
+  // Register the generic promo if the model returned a show result or
+  // if the model execution failed, since failure should not disable
+  // the promo.
+  if (result.status != segmentation_platform::PredictionStatus::kSucceeded ||
+      result.ordered_labels[0] ==
+          segmentation_platform::kIosDefaultBrowserPromoShowLabel) {
+    [self updateGenericPromoRegistration];
+  } else {
+    self.promosManager->DeregisterPromo(promos_manager::Promo::DefaultBrowser);
+  }
 }
 
 #pragma mark - ObservingSceneAgent
