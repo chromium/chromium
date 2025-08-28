@@ -11,7 +11,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -222,61 +221,6 @@ public class TabUtilsUnitTest {
         mUseDesktopUserAgent = true;
         Assert.assertTrue(
                 "Should get RDS from WebContents.", TabUtils.isUsingDesktopUserAgent(mWebContents));
-    }
-
-    @Test
-    public void testGetTabUserAgent_UpgradePath() {
-        mTabUserAgent = TabUserAgent.UNSET;
-        mUseDesktopUserAgent = false;
-        Assert.assertEquals(
-                "TabUserAgent is not set up correctly for upgrade path.",
-                TabUserAgent.DEFAULT,
-                TabUtils.getTabUserAgent(mTab));
-        verify(mTab).setUserAgent(TabUserAgent.DEFAULT);
-
-        mTabUserAgent = TabUserAgent.UNSET;
-        mUseDesktopUserAgent = true;
-        Assert.assertEquals(
-                "TabUserAgent is not set up correctly for upgrade path.",
-                TabUserAgent.DESKTOP,
-                TabUtils.getTabUserAgent(mTab));
-        verify(mTab).setUserAgent(TabUserAgent.DESKTOP);
-    }
-
-    @Test
-    public void testGetTabUserAgent_Mobile() {
-        mTabUserAgent = TabUserAgent.MOBILE;
-        mUseDesktopUserAgent = false;
-        Assert.assertEquals(
-                "Read unexpected TabUserAgent value.",
-                TabUserAgent.MOBILE,
-                TabUtils.getTabUserAgent(mTab));
-
-        mUseDesktopUserAgent = true;
-        Assert.assertEquals(
-                "Read unexpected TabUserAgent value.",
-                TabUserAgent.MOBILE,
-                TabUtils.getTabUserAgent(mTab));
-
-        verify(mTab, never()).setUserAgent(anyInt());
-    }
-
-    @Test
-    public void testGetTabUserAgent_Desktop() {
-        mTabUserAgent = TabUserAgent.DESKTOP;
-        mUseDesktopUserAgent = false;
-        Assert.assertEquals(
-                "Read unexpected TabUserAgent value.",
-                TabUserAgent.DESKTOP,
-                TabUtils.getTabUserAgent(mTab));
-
-        mUseDesktopUserAgent = true;
-        Assert.assertEquals(
-                "Read unexpected TabUserAgent value.",
-                TabUserAgent.DESKTOP,
-                TabUtils.getTabUserAgent(mTab));
-
-        verify(mTab, never()).setUserAgent(anyInt());
     }
 
     @Test

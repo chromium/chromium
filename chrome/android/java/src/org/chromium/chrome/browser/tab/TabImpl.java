@@ -2558,20 +2558,11 @@ class TabImpl implements Tab {
     private @UserAgentOverrideOption int calculateUserAgentOverrideOption(@Nullable GURL url) {
         WebContents webContents = getWebContents();
         boolean currentRequestDesktopSite = TabUtils.isUsingDesktopUserAgent(webContents);
-        @TabUserAgent int tabUserAgent = TabUtils.getTabUserAgent(this);
         // INHERIT means use the same UA that was used last time.
         @UserAgentOverrideOption int userAgentOverrideOption = UserAgentOverrideOption.INHERIT;
 
         if (url == null && webContents != null) {
             url = webContents.getVisibleUrl();
-        }
-
-        // Do not override UA if there is a tab level setting.
-        if (tabUserAgent != TabUserAgent.DEFAULT) {
-            recordHistogramUseDesktopUserAgent(currentRequestDesktopSite);
-            RequestDesktopUtils.maybeUpgradeTabLevelDesktopSiteSetting(
-                    this, mProfile, tabUserAgent, url);
-            return userAgentOverrideOption;
         }
 
         CommandLine commandLine = CommandLine.getInstance();

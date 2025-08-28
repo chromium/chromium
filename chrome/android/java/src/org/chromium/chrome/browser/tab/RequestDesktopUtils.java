@@ -174,33 +174,6 @@ public class RequestDesktopUtils {
     }
 
     /**
-     * Upgrade a non-default tab level RDS setting to a domain level setting when RDS exceptions is
-     * supported. This method is expected to be invoked only once after support is added for domain
-     * level exceptions.
-     * @param tab The {@link Tab} for which the RDS setting will be upgraded.
-     * @param profile The {@link Profile} used to upgrade the RDS setting.
-     * @param tabUserAgent The current {@link TabUserAgent} set for the tab.
-     * @param url The {@link GURL} for which a domain level exception will be added.
-     */
-    public static void maybeUpgradeTabLevelDesktopSiteSetting(
-            Tab tab, Profile profile, @TabUserAgent int tabUserAgent, @Nullable GURL url) {
-        if (url == null) {
-            return;
-        }
-
-        // If the tab UA is UNSET, it represents a state before tab level settings were applied for
-        // the tab, so the domain level setting cannot be upgraded to at this time.
-        if (tabUserAgent == TabUserAgent.UNSET) {
-            return;
-        }
-
-        RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(
-                profile, url, tabUserAgent == TabUserAgent.DESKTOP);
-        // Reset the tab level setting after upgrade.
-        tab.setUserAgent(TabUserAgent.DEFAULT);
-    }
-
-    /**
      * Determines whether the desktop site global setting should be enabled by default.
      *
      * @param displaySizeInInches The device primary display size, in inches.

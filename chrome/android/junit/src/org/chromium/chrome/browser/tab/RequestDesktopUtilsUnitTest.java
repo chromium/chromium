@@ -752,21 +752,6 @@ public class RequestDesktopUtilsUnitTest {
     }
 
     @Test
-    public void testUpgradeTabLevelDesktopSiteSetting() {
-        mRdsDefaultValue = ContentSettingValues.BLOCK;
-        @TabUserAgent int tabUserAgent = TabUserAgent.DESKTOP;
-
-        RequestDesktopUtils.maybeUpgradeTabLevelDesktopSiteSetting(
-                mTab, mProfile, tabUserAgent, mGoogleUrl);
-
-        Assert.assertEquals(
-                "Request Desktop Site domain level setting is not set correctly.",
-                ContentSettingValues.ALLOW,
-                mContentSettingMap.get(GOOGLE_COM).intValue());
-        verify(mTab).setUserAgent(TabUserAgent.DEFAULT);
-    }
-
-    @Test
     public void testShouldApplyWindowSetting_IsAutomotive() {
         mShadowPackageManager.setSystemFeature(
                 PackageManager.FEATURE_AUTOMOTIVE, /* supported= */ true);
