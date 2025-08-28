@@ -16,6 +16,7 @@
 #include "ui/views/view.h"
 
 class BrowserView;
+class ContentsContainerOutline;
 class ContentsWebView;
 class MultiContentsViewMiniToolbar;
 class ScrimView;
@@ -168,6 +169,8 @@ class ContentsContainerView : public views::View,
   raw_ptr<glic::GlicBorderView> glic_border_ = nullptr;
 
   raw_ptr<MultiContentsViewMiniToolbar> mini_toolbar_ = nullptr;
+
+  raw_ptr<ContentsContainerOutline> container_outline_ = nullptr;
 
   std::unique_ptr<views::Widget> capture_contents_border_widget_;
   std::optional<gfx::Rect> dynamic_capture_content_border_bounds_;

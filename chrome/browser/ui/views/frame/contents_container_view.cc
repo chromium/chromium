@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_capture_border_view.h"
+#include "chrome/browser/ui/views/frame/contents_container_outline.h"
 #include "chrome/browser/ui/views/frame/contents_separator.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_mini_toolbar.h"
@@ -50,9 +51,6 @@
 namespace {
 constexpr float kContentCornerRadius = 6;
 constexpr gfx::RoundedCornersF kContentRoundedCorners{kContentCornerRadius};
-
-constexpr int kContentOutlineCornerRadius = 8;
-constexpr int kContentOutlineThickness = 1;
 constexpr int kSplitViewContentPadding = 4;
 
 constexpr int kNewTabFooterSeparatorHeight = 1;
@@ -131,6 +129,9 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view)
   if (base::FeatureList::IsEnabled(features::kSideBySide)) {
     mini_toolbar_ = AddChildView(std::make_unique<MultiContentsViewMiniToolbar>(
         browser_view, contents_view_));
+
+    container_outline_ =
+        AddChildView(std::make_unique<ContentsContainerOutline>(mini_toolbar_));
   }
 
   view_bounds_observer_.Observe(contents_view_);
@@ -156,30 +157,23 @@ void ContentsContainerView::UpdateBorderAndOverlay(bool is_in_split,
                                                    bool is_active,
                                                    bool show_scrim) {
   is_in_split_ = is_in_split;
+
   // The border, mini toolbar, and scrim should not be visible if not in a
   // split.
   if (!is_in_split) {
     SetBorder(nullptr);
     ClearBorderRoundedCorners();
     mini_toolbar_->SetVisible(false);
+    container_outline_->SetVisible(false);
     inactive_split_scrim_view_->SetVisible(false);
     return;
   }
 
-  // Draw active/inactive outlines around the contents areas and updates mini
-  // toolbar visibility.
-  const SkColor color =
-      is_active ? GetColorProvider()->GetColor(
-                      kColorMulitContentsViewActiveContentOutline)
-                : GetColorProvider()->GetColor(
-                      kColorMulitContentsViewInactiveContentOutline);
-  SetBorder(views::CreatePaddedBorder(
-      views::CreateRoundedRectBorder(kContentOutlineThickness,
-                                     kContentOutlineCornerRadius, color),
-      gfx::Insets(kSplitViewContentPadding)));
-
+  SetBorder(views::CreateEmptyBorder(gfx::Insets(
+      kSplitViewContentPadding + ContentsContainerOutline::kThickness)));
   UpdateBorderRoundedCorners();
 
+  container_outline_->UpdateState(is_active);
   // Mini toolbar should only be visible for the inactive contents
   // container view or both depending on configuration.
   mini_toolbar_->UpdateState(is_active);
@@ -530,17 +524,21 @@ views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
   if (mini_toolbar_) {
     // |mini_toolbar_| should be offset in the bottom right corner, overlapping
     // the outline.
-    gfx::Size mini_toolbar_size = mini_toolbar_->GetPreferredSize(
-        views::SizeBounds(width - kContentOutlineCornerRadius, height));
-    const int offset_x =
-        width - mini_toolbar_size.width() + (kContentOutlineThickness / 2.0f);
-    const int offset_y =
-        height - mini_toolbar_size.height() + (kContentOutlineThickness / 2.0f);
+    gfx::Size mini_toolbar_size =
+        mini_toolbar_->GetPreferredSize(views::SizeBounds(width, height));
+    const int offset_x = width - mini_toolbar_size.width();
+    const int offset_y = height - mini_toolbar_size.height();
     const gfx::Rect mini_toolbar_rect =
         gfx::Rect(offset_x, offset_y, mini_toolbar_size.width(),
                   mini_toolbar_size.height());
     layouts.child_layouts.emplace_back(
         mini_toolbar_.get(), mini_toolbar_->GetVisible(), mini_toolbar_rect);
+  }
+
+  if (container_outline_) {
+    layouts.child_layouts.emplace_back(container_outline_.get(),
+                                       container_outline_->GetVisible(),
+                                       gfx::Rect(0, 0, width, height));
   }
 
   layouts.host_size = gfx::Size(width, height);

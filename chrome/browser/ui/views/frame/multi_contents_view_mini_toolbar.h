@@ -55,17 +55,11 @@ class MultiContentsViewMiniToolbar : public views::View,
                     TabChangeType change_type) override;
 
   // View:
-  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void OnPaint(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
 
   void UpdateWebContents(views::WebView* web_view);
   void ClearWebContents(views::WebView*);
-
-  // Returns the bounding path for the MultiContentsViewMiniToolbar. If
-  // |border_stroke_only| then only the part of the path for the border stroke
-  // will be returned. Otherwise, the entire bounding path will be returned.
-  SkPath GetPath(bool border_stroke_only) const;
 
   void RegisterTabAlertSubscription();
   void OnAlertStatusIndicatorChanged(std::optional<tabs::TabAlert> new_alert);
@@ -89,7 +83,6 @@ class MultiContentsViewMiniToolbar : public views::View,
 
   raw_ptr<BrowserView> browser_view_;
   raw_ptr<content::WebContents> web_contents_;
-  ui::ColorId stroke_color_ = kColorMulitContentsViewInactiveContentOutline;
   base::CallbackListSubscription web_contents_attached_subscription_;
   base::CallbackListSubscription web_contents_detached_subscription_;
   std::optional<base::CallbackListSubscription> tab_alert_status_subscription_;
