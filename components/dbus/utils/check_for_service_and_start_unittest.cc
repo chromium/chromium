@@ -15,7 +15,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 
 namespace dbus_utils {
@@ -50,9 +49,9 @@ class CheckForServiceAndStartTest : public testing::Test {
     EXPECT_CALL(
         *mock_dbus_proxy_,
         DoCallMethod(MatchMethod(DBUS_INTERFACE_DBUS, "NameHasOwner"), _, _))
-        .WillOnce(Invoke([this, service_name, has_owner, error](
-                             dbus::MethodCall* method_call, int timeout_ms,
-                             dbus::ObjectProxy::ResponseCallback* callback) {
+        .WillOnce([this, service_name, has_owner, error](
+                      dbus::MethodCall* method_call, int timeout_ms,
+                      dbus::ObjectProxy::ResponseCallback* callback) {
           dbus::MessageReader reader(method_call);
           std::string received_service_name;
           EXPECT_TRUE(reader.PopString(&received_service_name));
@@ -70,7 +69,7 @@ class CheckForServiceAndStartTest : public testing::Test {
                 FROM_HERE,
                 base::BindOnce(std::move(*callback), response_.get()));
           }
-        }));
+        });
   }
 
   void ExpectListActivatableNames(
@@ -79,15 +78,15 @@ class CheckForServiceAndStartTest : public testing::Test {
         *mock_dbus_proxy_,
         DoCallMethod(MatchMethod(DBUS_INTERFACE_DBUS, "ListActivatableNames"),
                      _, _))
-        .WillOnce(Invoke([this, activatable_names](
-                             dbus::MethodCall* method_call, int timeout_ms,
-                             dbus::ObjectProxy::ResponseCallback* callback) {
+        .WillOnce([this, activatable_names](
+                      dbus::MethodCall* method_call, int timeout_ms,
+                      dbus::ObjectProxy::ResponseCallback* callback) {
           response_ = dbus::Response::CreateEmpty();
           dbus::MessageWriter writer(response_.get());
           writer.AppendArrayOfStrings(activatable_names);
           task_environment_.GetMainThreadTaskRunner()->PostTask(
               FROM_HERE, base::BindOnce(std::move(*callback), response_.get()));
-        }));
+        });
   }
 
   void ExpectStartServiceByName(const std::string& service_name,
@@ -97,9 +96,9 @@ class CheckForServiceAndStartTest : public testing::Test {
         DoCallMethodWithErrorResponse(
             MatchMethod(DBUS_INTERFACE_DBUS, "StartServiceByName"), _, _))
         .WillOnce(
-            Invoke([this, service_name, reply_code](
-                       dbus::MethodCall* method_call, int timeout_ms,
-                       dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
+            [this, service_name, reply_code](
+                dbus::MethodCall* method_call, int timeout_ms,
+                dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
               dbus::MessageReader reader(method_call);
               std::string received_service_name;
               uint32_t flags;
@@ -114,7 +113,7 @@ class CheckForServiceAndStartTest : public testing::Test {
               task_environment_.GetMainThreadTaskRunner()->PostTask(
                   FROM_HERE, base::BindOnce(std::move(*callback),
                                             response_.get(), nullptr));
-            }));
+            });
   }
 
   void RunCheckForServiceAndStart(const std::string& service_name,

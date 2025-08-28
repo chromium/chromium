@@ -26,7 +26,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::StrEq;
 
@@ -320,20 +319,19 @@ TEST_F(CallMethodTest, ArgumentsPassedCorrectly) {
   EXPECT_CALL(*mock_proxy_, DoCallMethodWithErrorResponse(
                                 IsMethodCall(kTestMethodSuccess),
                                 dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
-      .WillOnce(
-          Invoke([&](dbus::MethodCall* method_call, int timeout_ms,
-                     dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
-            dbus::MessageReader reader(method_call);
-            std::string received_string;
-            uint32_t received_uint;
-            ASSERT_TRUE(reader.PopString(&received_string));
-            ASSERT_TRUE(reader.PopUint32(&received_uint));
-            EXPECT_EQ(received_string, kArgString);
-            EXPECT_EQ(received_uint, kArgUint);
-            EXPECT_FALSE(reader.HasMoreData());
+      .WillOnce([&](dbus::MethodCall* method_call, int timeout_ms,
+                    dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
+        dbus::MessageReader reader(method_call);
+        std::string received_string;
+        uint32_t received_uint;
+        ASSERT_TRUE(reader.PopString(&received_string));
+        ASSERT_TRUE(reader.PopUint32(&received_uint));
+        EXPECT_EQ(received_string, kArgString);
+        EXPECT_EQ(received_uint, kArgUint);
+        EXPECT_FALSE(reader.HasMoreData());
 
-            response_or_error_callback_ = std::move(*callback);
-          }));
+        response_or_error_callback_ = std::move(*callback);
+      });
 
   bool success = false;
   base::RunLoop run_loop;
