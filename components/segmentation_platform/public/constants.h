@@ -237,6 +237,15 @@ const char kParcelTrackingFreshness[] = "parcel_tracking_freshness";
 const char kIsShowingStartSurface[] = "is_showing_start_surface";
 const char kShopCardFreshness[] = "shop_card_freshness";
 
+// Input Context keys for inputs for IOS default browser model.
+const char kClientAgeWeeks[] = "client_age_weeks";
+const char kIsPhone[] = "is_phone";
+const char kCountryBRIIM[] = "is_country_BRIIM";
+const char kSegmentationAndroidPhone[] = "is_segmentation_android_phone_input";
+const char kSegmentationIOSPhoneChrome[] = "is_segmentation_ios_chrome_phone";
+const char kSegmentationSyncedAndFirstDevice[] =
+    "is_segmentation_synced_first_device";
+
 // Labels for desktop new tab page drive module model.
 // Any updates to these strings need to also update the field trials allowlist
 // in go/segmentation-field-trials-map.

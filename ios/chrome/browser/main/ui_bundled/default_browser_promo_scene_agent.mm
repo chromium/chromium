@@ -6,6 +6,8 @@
 
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
+#import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "components/segmentation_platform/public/constants.h"
 #import "components/segmentation_platform/public/result.h"
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
@@ -22,9 +24,11 @@
 #import "ios/chrome/browser/reader_mode/model/reader_mode_prefs.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ui/base/device_form_factor.h"
 
 @interface DefaultBrowserPromoSceneAgent () <ProfileStateObserver>
 
@@ -198,14 +202,64 @@
 }
 
 - (void)checkSegmentationBeforeUpdatingGenericPromoRegistration {
+  segmentation_platform::PredictionOptions options;
+  options.on_demand_execution = true;
+
+  // Add input context values.
+  auto inputContext =
+      base::MakeRefCounted<segmentation_platform::InputContext>();
+  int clientAgeWeeks = ClientAge().InDays() / 7;
+  inputContext->metadata_args.emplace(
+      segmentation_platform::kClientAgeWeeks,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          clientAgeWeeks));
+  inputContext->metadata_args.emplace(
+      segmentation_platform::kIsPhone,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE));
+  BOOL isBRIIM = [@[ @"BR", @"RU", @"IN", @"ID", @"MX" ]
+      containsObject:NSLocale.currentLocale.countryCode];
+  inputContext->metadata_args.emplace(
+      segmentation_platform::kCountryBRIIM,
+      segmentation_platform::processing::ProcessedValue::FromFloat(isBRIIM));
+  segmentation_platform::ClassificationResult deviceSwitcherResult =
+      segmentation_platform::SegmentationPlatformServiceFactory::
+          GetDispatcherForProfile(self.sceneState.profileState.profile)
+              ->GetCachedClassificationResult();
+  BOOL isAndroidPhone = NO;
+  BOOL isIOSPhoneChrome = NO;
+  BOOL isSyncedAndFirstDevice = NO;
+  if (deviceSwitcherResult.status ==
+      segmentation_platform::PredictionStatus::kSucceeded) {
+    isAndroidPhone =
+        deviceSwitcherResult.ordered_labels[0] ==
+        segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel;
+    isIOSPhoneChrome =
+        deviceSwitcherResult.ordered_labels[0] ==
+        segmentation_platform::DeviceSwitcherModel::kIosPhoneChromeLabel;
+    isSyncedAndFirstDevice =
+        deviceSwitcherResult.ordered_labels[0] ==
+        segmentation_platform::DeviceSwitcherModel::kSyncedAndFirstDeviceLabel;
+  }
+  inputContext->metadata_args.emplace(
+      segmentation_platform::kSegmentationAndroidPhone,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          isAndroidPhone));
+  inputContext->metadata_args.emplace(
+      segmentation_platform::kSegmentationIOSPhoneChrome,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          isIOSPhoneChrome));
+  inputContext->metadata_args.emplace(
+      segmentation_platform::kSegmentationSyncedAndFirstDevice,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          isSyncedAndFirstDevice));
+
   segmentation_platform::SegmentationPlatformService* segmentationService =
       segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
           self.sceneState.profileState.profile);
-  segmentation_platform::PredictionOptions options;
-  options.on_demand_execution = true;
   __weak DefaultBrowserPromoSceneAgent* weakSelf = self;
   segmentationService->GetClassificationResult(
-      segmentation_platform::kIosDefaultBrowserPromoKey, options, nil,
+      segmentation_platform::kIosDefaultBrowserPromoKey, options, inputContext,
       base::BindOnce(
           ^(const segmentation_platform::ClassificationResult& result) {
             // Register the generic promo if the model returned a show result or
