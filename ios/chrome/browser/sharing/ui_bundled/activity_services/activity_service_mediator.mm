@@ -11,6 +11,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"

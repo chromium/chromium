@@ -11,6 +11,10 @@
 #include "base/time/clock.h"
 #include "build/build_config.h"
 
+namespace base {
+class TimeDelta;
+}  // namespace base
+
 namespace permissions {
 
 // The URL for the Bluetooth Overview help center article in the Web Bluetooth

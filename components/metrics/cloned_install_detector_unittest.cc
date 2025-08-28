@@ -6,6 +6,7 @@
 
 #include "base/callback_list.h"
 #include "base/test/bind.h"
+#include "base/time/time.h"
 #include "components/metrics/machine_id_provider.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/testing_pref_service.h"

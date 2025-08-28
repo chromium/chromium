@@ -5,6 +5,7 @@
 #include "chrome/browser/screen_ai/screen_ai_downloader_chromeos.h"
 
 #include "base/no_destructor.h"
+#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/screen_ai/pref_names.h"
 #include "chrome/browser/screen_ai/screen_ai_dlc_installer.h"

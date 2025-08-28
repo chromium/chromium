@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
 #include "components/prefs/pref_service.h"

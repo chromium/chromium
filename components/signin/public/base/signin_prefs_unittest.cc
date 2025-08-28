@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/time/time.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/testing_pref_service.h"
 #include "google_apis/gaia/gaia_id.h"

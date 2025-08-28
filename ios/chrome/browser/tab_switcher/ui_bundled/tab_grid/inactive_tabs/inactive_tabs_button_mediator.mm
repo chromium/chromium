@@ -7,6 +7,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/notreached.h"
 #import "base/scoped_observation.h"
+#import "base/time/time.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"

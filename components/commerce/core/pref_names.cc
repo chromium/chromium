@@ -4,6 +4,7 @@
 
 #include "components/commerce/core/pref_names.h"
 
+#include "base/time/time.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 

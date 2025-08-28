@@ -4,6 +4,7 @@
 
 #include "components/plus_addresses/core/common/plus_address_prefs.h"
 
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
