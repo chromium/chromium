@@ -95,6 +95,32 @@ bool CreateStreamDataPipe(mojo::ScopedDataPipeProducerHandle* producer,
   return true;
 }
 
+// Validates the conditions outlined in
+// https://w3c.github.io/webtransport/#webtransport-constructor and returns an
+// error message, or null string if the name is valid.
+[[nodiscard]] String ValidateProtocolName(StringView protocol) {
+  if (protocol.empty()) {
+    return "Protocol name cannot be empty.";
+  }
+  if (!VisitCharacters(protocol, [](auto span) {
+        for (const auto c : span) {
+          // Protocol names are sf-strings, which are defined as sequences of
+          // printable ASCII characters.
+          // See <https://www.rfc-editor.org/rfc/rfc8941.html#name-strings>.
+          if (c < 32 || c >= 127) {
+            return false;
+          }
+        }
+        return true;
+      })) {
+    return "Protocol name contains invalid characters.";
+  }
+  if (protocol.length() >= 512) {
+    return "Protocol name is longer than 512 bytes.";
+  }
+  return String();
+}
+
 }  // namespace
 
 // Sends a datagram on write().
@@ -973,7 +999,7 @@ void WebTransport::OnConnectionEstablished(
     mojo::PendingReceiver<network::mojom::blink::WebTransportClient>
         client_receiver,
     network::mojom::blink::HttpResponseHeadersPtr response_headers,
-    const String& /*selected_application_protocol*/,
+    const String& selected_application_protocol,
     network::mojom::blink::WebTransportStatsPtr initial_stats) {
   DVLOG(1) << "WebTransport::OnConnectionEstablished() this=" << this;
   connector_.reset();
@@ -997,6 +1023,9 @@ void WebTransport::OnConnectionEstablished(
         outgoing_datagram_expiration_duration_);
   }
 
+  if (!selected_application_protocol.IsNull()) {
+    selected_application_protocol_ = selected_application_protocol;
+  }
   latest_stats_ = ConvertStatsFromMojom(std::move(initial_stats));
 
   datagram_underlying_sink_->SendPendingDatagrams();
@@ -1305,6 +1334,26 @@ void WebTransport::Init(const String& url_for_diagnostics,
         WebFeature::kWebTransportServerCertificateHashes);
   }
 
+  if (options.hasProtocols()) {
+    HashSet<String> encountered_protocols;
+    for (const String& protocol : options.protocols()) {
+      String validation_error = ValidateProtocolName(protocol);
+      if (!validation_error.IsNull()) {
+        exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
+                                          validation_error);
+        return;
+      }
+      HashSet<String>::AddResult add_result =
+          encountered_protocols.insert(protocol);
+      if (!add_result.is_new_entry) {
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kSyntaxError,
+            "Duplicate protocols are not allowed.");
+        return;
+      }
+    }
+  }
+
   if (auto* scheduler = execution_context->GetScheduler()) {
     // Two features are registered with `DisableBackForwardCache` policy here:
     // - `kWebTransport`: a non-sticky feature that will disable BFCache for any
@@ -1340,7 +1389,8 @@ void WebTransport::Init(const String& url_for_diagnostics,
             execution_context->GetTaskRunner(TaskType::kNetworking)));
 
     connector_->Connect(
-        url_, std::move(fingerprints), /*application_protocols=*/{},
+        url_, std::move(fingerprints),
+        options.hasProtocols() ? options.protocols() : Vector<String>(),
         handshake_client_receiver_.BindNewPipeAndPassRemote(
             execution_context->GetTaskRunner(TaskType::kNetworking)));
 
@@ -1626,6 +1676,10 @@ WebTransportConnectionStats* WebTransport::ConvertStatsFromMojom(
   }
   out->setDatagrams(datagram_stats);
   return out;
+}
+
+const String& WebTransport::protocol() {
+  return selected_application_protocol_;
 }
 
 }  // namespace blink

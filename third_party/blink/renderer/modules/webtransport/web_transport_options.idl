@@ -6,4 +6,5 @@
 
 dictionary WebTransportOptions {
   [RuntimeEnabled=WebTransportCustomCertificates] sequence<WebTransportHash> serverCertificateHashes;
+  [RuntimeEnabled=WebTransportApplicationProtocol] sequence<DOMString> protocols;
 };

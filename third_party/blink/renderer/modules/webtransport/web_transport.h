@@ -85,6 +85,7 @@ class MODULES_EXPORT WebTransport final
   ScriptPromise<WebTransportCloseInfo> closed(ScriptState*);
   void setDatagramWritableQueueExpirationDuration(double ms);
   ScriptPromise<WebTransportConnectionStats> getStats(ScriptState*);
+  const String& protocol();
 
   // WebTransportHandshakeClient implementation
   void OnBeforeConnect(const net::IPEndPoint& server_address) override;
@@ -183,6 +184,8 @@ class MODULES_EXPORT WebTransport final
   const Member<ScriptState> script_state_;
 
   const KURL url_;
+
+  String selected_application_protocol_ = "";
 
   // Map from stream_id to IncomingStream.
   // Intentionally keeps streams reachable by GC as long as they are open.

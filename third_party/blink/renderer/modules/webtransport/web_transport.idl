@@ -25,4 +25,7 @@
 
   [CallWith=ScriptState, RuntimeEnabled=WebTransportStats]
   Promise<WebTransportConnectionStats> getStats();
+
+   [RuntimeEnabled=WebTransportApplicationProtocol]
+  readonly attribute DOMString protocol;
 };

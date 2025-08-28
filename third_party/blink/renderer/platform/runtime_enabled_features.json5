@@ -5653,6 +5653,11 @@
       status: "experimental",
     },
     {
+      name: "WebTransportApplicationProtocol",
+      status: "experimental",
+      base_feature: "none",
+    },
+    {
       name: "WebTransportCustomCertificates",
       origin_trial_feature_name: "WebTransportCustomCertificates",
       status: "stable",
