@@ -110,6 +110,9 @@ Chromium understands forms better and can autofill them faster for you. This set
     <message name="IDS_SETTINGS_DEFAULT_BROWSER_MAKE_DEFAULT" desc="Default browser checkbox label">
       Make Chromium the default browser
     </message>
+    <message name="IDS_SETTINGS_DEFAULT_BROWSER_MAKE_DEFAULT_AND_PIN" desc="The text of the button to make Chromium the default browser and pin it to the taskbar.">
+      Make Chromium the default browser and pin to the taskbar
+    </message>
     <message name="IDS_SETTINGS_DEFAULT_BROWSER_ERROR" desc="The text displayed when Chrome cannot determine or set the default browser">
       Chromium cannot determine or set the default browser
     </message>
