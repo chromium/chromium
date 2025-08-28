@@ -83,4 +83,12 @@ public interface DataSharingUIDelegate {
      * @param avatarBitmapConfig Used to set properties for getting bitmap for an avatar.
      */
     default void getAvatarBitmap(DataSharingAvatarBitmapConfig avatarBitmapConfig) {}
+
+    /**
+     * Method to log whether user interacted with sharesheet or not.
+     *
+     * @param sessionId The session id for the current share/manage flow.
+     * @param isTargetChosen Whether the share was completed.
+     */
+    void logShareSheet(String sessionId, boolean isTargetChosen);
 }

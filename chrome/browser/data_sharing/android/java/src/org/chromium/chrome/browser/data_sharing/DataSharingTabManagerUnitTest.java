@@ -217,8 +217,8 @@ public class DataSharingTabManagerUnitTest {
 
     @Test
     public void testManageSharing() {
-        mDataSharingTabManager.showManageSharing(
-                mActivity, COLLABORATION_ID1, /* outcomeCallback= */ null);
+        mDataSharingTabManager.showManageSharingWithManageCallback(
+                mActivity, COLLABORATION_ID1, /* manageCallback= */ null);
     }
 
     @Test
