@@ -133,7 +133,6 @@ suite('IndividualPromosTest', () => {
         promo.querySelector<HTMLElement>('#bodyText')!.innerText,
         expected.bodyText);
     assertEquals(promo.ariaLabel, expected.buttonText);
-    assertEquals(promo.role, 'button');
   });
 
   test('press button', async () => {

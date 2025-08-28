@@ -121,4 +121,10 @@ suite('SetupListTest', () => {
           'promo completed');
     }
   });
+
+  test('completed promo is disabled', async () => {
+    getSetupList().onSetPromos([], promos);
+    await waitForVisibilityEvents();
+    assertTrue((getPromoAt(0).$.backing as HTMLButtonElement).disabled);
+  });
 });

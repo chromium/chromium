@@ -4,12 +4,12 @@
 
 <div id="promos">
   ${this.eligiblePromos_.map(item => html`
-  <div id="promo" @click="${this.onClick_.bind(this, item.id)}" role="button"
+  <button id="promo" @click="${this.onClick_.bind(this, item.id)}"
     aria-label="${item.buttonText}"
   >
     <cr-icon id="bodyIcon" icon="ntp-promo:${item.iconName}"></cr-icon>
     <p id="bodyText">${item.bodyText}</p>
     <cr-icon id="actionIcon" icon="cr:chevron-right"></cr-icon>
-  </div>
+  </button>
   `)}
 </div>

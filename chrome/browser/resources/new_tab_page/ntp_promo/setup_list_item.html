@@ -2,14 +2,14 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<div id="backing" @click="${this.onClick_}"
+<button id="backing" @click="${this.onClick_}"
     class="${this.completed ? 'completed' : 'pending'}"
-    aria-label="${this.actionButtonText}" tabindex="0"
-    role="button" ?aria-disabled="${this.completed}"
+    ?disabled="${this.completed}"
+    aria-label="${this.actionButtonText}" ?aria-disabled="${this.completed}"
     >
   <cr-icon id="bodyIcon" class="${this.completed ? 'completed' : ''}"
     icon="${this.completed ? 'cr:check' : 'ntp-promo:' + this.bodyIconName}">
   </cr-icon>
   <p id="bodyText">${this.bodyText}</p>
   <cr-icon id="actionIcon" icon="cr:chevron-right"></cr-icon>
-</div>
+</button>

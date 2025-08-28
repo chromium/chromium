@@ -38,6 +38,7 @@
   margin-inline: 40px;
 }
 
+/* This styling includes overriding default <button> properties. */
 #promo {
   align-items: center;
   background-color: var(--ntp-promo-background);
@@ -47,9 +48,11 @@
   cursor: pointer;
   display: flex;
   flex-direction: row;
+  font: inherit;
   gap: var(--ntp-promo-element-spacing);
   padding: var(--ntp-promo-padding);
   position: relative;
+  text-align: start;
 }
 
 #promo:hover {

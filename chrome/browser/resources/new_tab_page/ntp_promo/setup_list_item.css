@@ -26,13 +26,18 @@
   display: flex;
 }
 
+/* This styling includes overriding default <button> properties. */
 #backing {
   align-items: center;
+  background-color: transparent;
+  border: none;
   color: var(--setup-list-foreground);
   cursor: pointer;
   display: flex;
   flex-grow: 1;
+  font: inherit;
   padding: var(--setup-list-padding);
+  text-align: start;
 }
 
 #backing.pending:hover {
