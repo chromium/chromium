@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest, CaptureFrame) {
   client->CapturePaintPreview(params, GetWebContents()->GetPrimaryMainFrame(),
                               future.GetCallback());
   auto [guid, status, result] = future.Take();
-  EXPECT_EQ(guid, params.inner.document_guid);
+  EXPECT_EQ(guid, params.inner.get_document_guid());
   EXPECT_EQ(status, mojom::PaintPreviewStatus::kOk);
   EXPECT_TRUE(result->proto.has_root_frame());
   EXPECT_EQ(result->proto.subframes_size(), 0);
@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest,
                               future.GetCallback());
 
   auto [guid, status, result] = future.Take();
-  EXPECT_EQ(guid, params.inner.document_guid);
+  EXPECT_EQ(guid, params.inner.get_document_guid());
   EXPECT_EQ(status, mojom::PaintPreviewStatus::kOk);
   EXPECT_TRUE(result->proto.has_root_frame());
   EXPECT_EQ(result->proto.subframes_size(), 1);
@@ -274,7 +274,7 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewFencedFrameBrowserTest,
   auto [guid, status, result] = future.Take();
   // This callback should have a success result without any DCHECK
   // error.
-  EXPECT_EQ(guid, params.inner.document_guid);
+  EXPECT_EQ(guid, params.inner.get_document_guid());
   EXPECT_EQ(status, mojom::PaintPreviewStatus::kOk);
   EXPECT_TRUE(result->proto.has_root_frame());
   EXPECT_EQ(result->proto.subframes_size(), 2);
@@ -337,7 +337,7 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewFencedFrameBrowserTest,
   auto [guid, status, result] = future.Take();
   // This callback should have a partial success result since the
   // fenced frame has been removed during running the capture.
-  EXPECT_EQ(guid, params.inner.document_guid);
+  EXPECT_EQ(guid, params.inner.get_document_guid());
   EXPECT_EQ(status, mojom::PaintPreviewStatus::kPartialSuccess);
   EXPECT_TRUE(result->proto.has_root_frame());
   EXPECT_EQ(result->proto.subframes_size(), 1);
@@ -382,7 +382,7 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest,
   client->CapturePaintPreview(params, GetWebContents()->GetPrimaryMainFrame(),
                               future.GetCallback());
   auto [guid, status, result] = future.Take();
-  EXPECT_EQ(guid, params.inner.document_guid);
+  EXPECT_EQ(guid, params.inner.get_document_guid());
   EXPECT_EQ(status, mojom::PaintPreviewStatus::kOk);
   EXPECT_TRUE(result->proto.has_root_frame());
   EXPECT_EQ(result->proto.subframes_size(), 1);
@@ -428,7 +428,7 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest,
   client->CapturePaintPreview(params, GetWebContents()->GetPrimaryMainFrame(),
                               future.GetCallback());
   auto [guid, status, result] = future.Take();
-  EXPECT_EQ(guid, params.inner.document_guid);
+  EXPECT_EQ(guid, params.inner.get_document_guid());
   EXPECT_EQ(status, mojom::PaintPreviewStatus::kOk);
   EXPECT_TRUE(result->proto.has_root_frame());
   EXPECT_EQ(result->proto.subframes_size(), 0);

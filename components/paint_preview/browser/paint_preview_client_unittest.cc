@@ -58,7 +58,7 @@ mojom::PaintPreviewCaptureParamsPtr ToMojoParams(
   mojom::PaintPreviewCaptureParamsPtr params_ptr =
       mojom::PaintPreviewCaptureParams::New();
   params_ptr->persistence = params.persistence;
-  params_ptr->guid = params.inner.document_guid;
+  params_ptr->guid = params.inner.get_document_guid();
   params_ptr->is_main_frame = params.inner.is_main_frame;
   params_ptr->geometry_metadata_params = mojom::GeometryMetadataParams::New();
   params_ptr->geometry_metadata_params->clip_rect = params.inner.clip_rect;
@@ -199,7 +199,7 @@ TEST_P(PaintPreviewClientRenderViewHostTest, CaptureMainFrameMock) {
   client->CapturePaintPreview(params, rfh, main_capture_future.GetCallback());
 
   auto [returned_guid, status, result] = main_capture_future.Take();
-  EXPECT_EQ(returned_guid, params.inner.document_guid);
+  EXPECT_EQ(returned_guid, params.inner.get_document_guid());
   EXPECT_EQ(status, mojom::PaintPreviewStatus::kOk);
 
   auto token = base::UnguessableToken::Deserialize(
@@ -258,7 +258,7 @@ TEST_P(PaintPreviewClientRenderViewHostTest, CaptureFailureMock) {
                               main_capture_future.GetCallback());
 
   auto [returned_guid, status, result] = main_capture_future.Take();
-  EXPECT_EQ(returned_guid, params.inner.document_guid);
+  EXPECT_EQ(returned_guid, params.inner.get_document_guid());
   EXPECT_EQ(status, mojom::PaintPreviewStatus::kFailed);
   content::RunAllTasksUntilIdle();
   EXPECT_TRUE(base::IsDirectoryEmpty(temp_dir_.GetPath()));
@@ -304,13 +304,13 @@ TEST_F(PaintPreviewClientRenderViewHostTestBase, SubframeFileCreationFails) {
 
   base::SetPosixFilePermissions(temp_dir_.GetPath(), 0555);
 
-  client->CaptureSubframePaintPreview(params.inner.document_guid, gfx::Rect(),
-                                      subframe);
+  client->CaptureSubframePaintPreview(params.inner.get_document_guid(),
+                                      gfx::Rect(), subframe);
 
   recorder.SendResponse();
 
   auto [returned_guid, status, result] = main_capture_future.Take();
-  EXPECT_EQ(returned_guid, params.inner.document_guid);
+  EXPECT_EQ(returned_guid, params.inner.get_document_guid());
   // The precise status from the client depends on thread scheduling.
   EXPECT_THAT(status, AnyOf(mojom::PaintPreviewStatus::kFileCreationError,
                             mojom::PaintPreviewStatus::kFailed));
@@ -437,7 +437,7 @@ TEST_P(PaintPreviewClientRenderViewHostResponseOrderingTest,
 
   PaintPreviewClient::PaintPreviewParams expected_subframe_params =
       PaintPreviewClient::PaintPreviewParams::CreateForTesting(
-          persistence(), main_frame_params.inner.document_guid);
+          persistence(), main_frame_params.inner.get_document_guid());
   expected_subframe_params.root_dir = temp_dir_.GetPath();
   expected_subframe_params.inner.is_main_frame = false;
   MockPaintPreviewRecorder subframe_recorder;
@@ -457,8 +457,8 @@ TEST_P(PaintPreviewClientRenderViewHostResponseOrderingTest,
                               main_capture_future.GetCallback());
   ASSERT_TRUE(main_frame_req.Wait());
 
-  client->CaptureSubframePaintPreview(main_frame_params.inner.document_guid,
-                                      gfx::Rect(), subframe);
+  client->CaptureSubframePaintPreview(
+      main_frame_params.inner.get_document_guid(), gfx::Rect(), subframe);
   ASSERT_TRUE(subframe_req.Wait());
 
   switch (ordering()) {
@@ -473,7 +473,7 @@ TEST_P(PaintPreviewClientRenderViewHostResponseOrderingTest,
   }
 
   auto [main_guid, main_status, result] = main_capture_future.Take();
-  EXPECT_EQ(main_guid, main_frame_params.inner.document_guid);
+  EXPECT_EQ(main_guid, main_frame_params.inner.get_document_guid());
   EXPECT_EQ(main_status, mojom::PaintPreviewStatus::kOk);
 
   auto token = base::UnguessableToken::Deserialize(

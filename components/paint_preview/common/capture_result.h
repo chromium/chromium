@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PAINT_PREVIEW_COMMON_CAPTURE_RESULT_H_
 #define COMPONENTS_PAINT_PREVIEW_COMMON_CAPTURE_RESULT_H_
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/unguessable_token.h"
 #include "components/paint_preview/common/mojom/paint_preview_types.mojom.h"
@@ -20,8 +21,9 @@ namespace paint_preview {
 struct RecordingParams {
   explicit RecordingParams(const base::UnguessableToken& document_guid);
 
-  // The document GUID for this capture.
-  const base::UnguessableToken document_guid;
+  const base::UnguessableToken& get_document_guid() const LIFETIME_BOUND {
+    return document_guid;
+  }
 
   // The rect to which to clip the capture to.
   gfx::Rect clip_rect;
@@ -63,6 +65,10 @@ struct RecordingParams {
   // time of capture). See PaintPreviewBaseService::CaptureParams for a
   // description of the effects of this flag.
   bool skip_accelerated_content{false};
+
+ private:
+  // The document GUID for this capture.
+  base::UnguessableToken document_guid;
 };
 
 // The result of a capture of a WebContents, which may contain recordings of

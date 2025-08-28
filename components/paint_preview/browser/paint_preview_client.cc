@@ -121,7 +121,7 @@ mojom::PaintPreviewCaptureParamsPtr CreateRecordingRequestParams(
       mojom::PaintPreviewCaptureParams::New();
   mojo_params->persistence = persistence;
   mojo_params->capture_links = capture_params.capture_links;
-  mojo_params->guid = capture_params.document_guid;
+  mojo_params->guid = capture_params.get_document_guid();
   mojo_params->geometry_metadata_params = mojom::GeometryMetadataParams::New();
   mojo_params->geometry_metadata_params->clip_rect = capture_params.clip_rect;
   mojo_params->geometry_metadata_params->clip_x_coord_override =
@@ -336,20 +336,21 @@ void PaintPreviewClient::CapturePaintPreview(
     PaintPreviewCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(callback);
-  auto document_data_it = all_document_data_.find(params.inner.document_guid);
+  auto document_data_it =
+      all_document_data_.find(params.inner.get_document_guid());
   if (document_data_it != all_document_data_.end()) {
-    std::move(callback).Run(params.inner.document_guid,
+    std::move(callback).Run(params.inner.get_document_guid(),
                             mojom::PaintPreviewStatus::kGuidCollision, {});
     return;
   }
-  if (!render_frame_host || params.inner.document_guid.is_empty()) {
-    std::move(callback).Run(params.inner.document_guid,
+  if (!render_frame_host || params.inner.get_document_guid().is_empty()) {
+    std::move(callback).Run(params.inner.get_document_guid(),
                             mojom::PaintPreviewStatus::kFailed, {});
     return;
   }
   const GURL& url = render_frame_host->GetLastCommittedURL();
   if (!url.is_valid()) {
-    std::move(callback).Run(params.inner.document_guid,
+    std::move(callback).Run(params.inner.get_document_guid(),
                             mojom::PaintPreviewStatus::kFailed, {});
     return;
   }
@@ -398,7 +399,8 @@ void PaintPreviewClient::CapturePaintPreview(
   document_data.skip_accelerated_content =
       params.inner.skip_accelerated_content;
   document_data_it = all_document_data_.insert(
-      document_data_it, {params.inner.document_guid, std::move(document_data)});
+      document_data_it,
+      {params.inner.get_document_guid(), std::move(document_data)});
   TRACE_EVENT_BEGIN("paint_preview", "PaintPreviewClient::CapturePaintPreview",
                     perfetto::Track::FromPointer(&document_data_it->second));
   CapturePaintPreviewInternal(params.inner, render_frame_host,
@@ -525,14 +527,15 @@ void PaintPreviewClient::RequestCaptureOnUIThread(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto* document_data =
-      base::FindOrNull(all_document_data_, params.document_guid);
+      base::FindOrNull(all_document_data_, params.get_document_guid());
   if (!document_data) {
     return;
   }
   CHECK(document_data->callback);
 
   if (status != mojom::PaintPreviewStatus::kOk) {
-    std::move(document_data->callback).Run(params.document_guid, status, {});
+    std::move(document_data->callback)
+        .Run(params.get_document_guid(), status, {});
     return;
   }
 
@@ -545,13 +548,13 @@ void PaintPreviewClient::RequestCaptureOnUIThread(
           base::UnguessableToken::Null()) != frame_guid ||
       !capture_params) {
     std::move(document_data->callback)
-        .Run(params.document_guid, mojom::PaintPreviewStatus::kCaptureFailed,
-             {});
+        .Run(params.get_document_guid(),
+             mojom::PaintPreviewStatus::kCaptureFailed, {});
     return;
   }
 
   document_data->awaiting_subframes.insert(frame_guid);
-  pending_previews_on_subframe_[frame_guid].insert(params.document_guid);
+  pending_previews_on_subframe_[frame_guid].insert(params.get_document_guid());
 
   auto interface_it = interface_ptrs_.find(frame_guid);
   if (interface_it == interface_ptrs_.end()) {
@@ -581,11 +584,11 @@ void PaintPreviewClient::OnPaintPreviewCapturedCallback(
     mojom::PaintPreviewStatus status,
     mojom::PaintPreviewCaptureResponsePtr response) {
   auto* document_data =
-      base::FindOrNull(all_document_data_, params.document_guid);
+      base::FindOrNull(all_document_data_, params.get_document_guid());
 
   // There is no retry logic so always treat a frame as processed regardless of
   // |status|
-  MarkFrameAsProcessed(params.document_guid, frame_guid, document_data);
+  MarkFrameAsProcessed(params.get_document_guid(), frame_guid, document_data);
 
   // If the RenderFrameHost navigated or is no longer around treat this as a
   // failure as a navigation occurring during capture is bad.
@@ -608,13 +611,13 @@ void PaintPreviewClient::OnPaintPreviewCapturedCallback(
     // If this is the main frame we should just abort the capture on failure.
     if (params.is_main_frame) {
       document_data->awaiting_subframes.clear();
-      OnFinished(params.document_guid, *document_data);
+      OnFinished(params.get_document_guid(), *document_data);
       return;
     }
   }
 
   if (document_data->awaiting_subframes.empty()) {
-    OnFinished(params.document_guid, *document_data);
+    OnFinished(params.get_document_guid(), *document_data);
   }
 }
 
