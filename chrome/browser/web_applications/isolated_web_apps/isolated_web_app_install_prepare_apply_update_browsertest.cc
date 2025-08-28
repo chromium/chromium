@@ -86,7 +86,7 @@ class IsolatedWebAppInstallPrepareApplyUpdateCommandBrowserTest
 
   InstallResult Install(const web_package::SignedWebBundleId& web_bundle_id,
                         const base::FilePath& bundle_path,
-                        const std::optional<base::Version>& expected_version) {
+                        const std::optional<IwaVersion>& expected_version) {
     base::test::TestFuture<InstallResult> future;
     provider()->scheduler().InstallIsolatedWebApp(
         IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id),
@@ -165,8 +165,8 @@ IN_PROC_BROWSER_TEST_P(
                                        test::GetDefaultEcdsaP256KeyPair()});
 
   // Step 1: Install `iwa` and validate web app data.
-  ASSERT_OK_AND_ASSIGN(auto install_result, Install(web_bundle_id, iwa->path(),
-                                                    iwa->version().version()));
+  ASSERT_OK_AND_ASSIGN(auto install_result,
+                       Install(web_bundle_id, iwa->path(), iwa->version()));
 
   ASSERT_THAT(
       GetIsolatedWebAppFor(web_bundle_id),
@@ -254,7 +254,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // Step 1: Install `iwa` and validate web app data.
   ASSERT_OK_AND_ASSIGN(auto install_result,
-                       Install(web_bundle_id, iwa->path(), version.version()));
+                       Install(web_bundle_id, iwa->path(), version));
 
   ASSERT_THAT(
       GetIsolatedWebAppFor(web_bundle_id),

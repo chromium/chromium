@@ -80,7 +80,7 @@ class FakeWebAppCommandScheduler : public WebAppCommandScheduler {
   void InstallIsolatedWebApp(
       const IsolatedWebAppUrlInfo& url_info,
       const IsolatedWebAppInstallSource& install_source,
-      const std::optional<base::Version>& expected_version,
+      const std::optional<IwaVersion>& expected_version,
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
       WebAppCommandScheduler::InstallIsolatedWebAppCallback callback,
@@ -89,7 +89,7 @@ class FakeWebAppCommandScheduler : public WebAppCommandScheduler {
     // behavior, so stub out the install command to avoid needing to
     // configure it correctly.
     std::move(callback).Run(InstallIsolatedWebAppCommandSuccess(
-        url_info, base::Version("0"),
+        url_info, *IwaVersion::Create("0"),
         IwaStorageUnownedBundle(base::FilePath())));
   }
 };

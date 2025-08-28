@@ -199,7 +199,7 @@ class InstallIsolatedWebAppCommandTest : public WebAppTest {
   struct Parameters {
     IsolatedWebAppUrlInfo url_info;
     std::optional<IsolatedWebAppInstallSource> install_source;
-    std::optional<base::Version> expected_version;
+    std::optional<IwaVersion> expected_version;
   };
 
   base::expected<InstallIsolatedWebAppCommandSuccess,
@@ -370,8 +370,9 @@ TEST_F(InstallIsolatedWebAppCommandTest,
   SetUpPageAndIconStates(url_info);
 
   EXPECT_THAT(
-      ExecuteCommand(Parameters{.url_info = url_info,
-                                .expected_version = base::Version("99.99.99")}),
+      ExecuteCommand(
+          Parameters{.url_info = url_info,
+                     .expected_version = *IwaVersion::Create("99.99.99")}),
       ErrorIs(Field(
           &InstallIsolatedWebAppCommandError::message,
           HasSubstr("does not match the version provided in the manifest"))));

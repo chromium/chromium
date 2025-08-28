@@ -149,7 +149,7 @@ void IwaInstaller::IwaInstallCommandWrapperImpl::Install(
   // will be re-attempted the next time they start, assuming that the policy is
   // still set.
   provider_->scheduler().InstallIsolatedWebApp(
-      url_info, install_source, expected_version.version(),
+      url_info, install_source, expected_version,
       /*optional_keep_alive=*/nullptr,
       /*optional_profile_keep_alive=*/nullptr, std::move(callback));
 }

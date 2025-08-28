@@ -12,7 +12,6 @@
 
 #include "base/files/file_path.h"
 #include "base/types/expected.h"
-#include "base/version.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/web_applications/commands/internal/callback_command.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
@@ -226,7 +225,7 @@ class WebAppCommandScheduler {
 
   using ManifestSilentUpdateCompletedCallback =
       base::OnceCallback<void(ManifestSilentUpdateCheckResult check_result)>;
-    // A newer version of `ScheduleManifestUpdateCheck` that uses a more
+  // A newer version of `ScheduleManifestUpdateCheck` that uses a more
   // predictable app updating algorithm. This will eventually replace the
   // original.
   // For more details, go/predictable-app-updating-design-doc.
@@ -281,7 +280,7 @@ class WebAppCommandScheduler {
   virtual void InstallIsolatedWebApp(
       const IsolatedWebAppUrlInfo& url_info,
       const IsolatedWebAppInstallSource& install_source,
-      const std::optional<base::Version>& expected_version,
+      const std::optional<IwaVersion>& expected_version,
       std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
       InstallIsolatedWebAppCallback callback,

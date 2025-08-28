@@ -1465,7 +1465,7 @@ void WebAppIntegrationTestDriver::InstallIsolatedApp(Site site) {
         IsolatedWebAppInstallSource::FromGraphicalInstaller(
             IwaSourceBundleProdModeWithFileOp(
                 bundle_path, IwaSourceBundleProdFileOp::kCopy)),
-        base::Version("1.0.0"),
+        *IwaVersion::Create("1.0.0"),
         /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
     auto install_result = future.Take();

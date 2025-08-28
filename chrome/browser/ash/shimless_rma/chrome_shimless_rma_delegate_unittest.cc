@@ -35,6 +35,7 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/fake_service_worker_context.h"
@@ -119,7 +120,7 @@ class FakeWebAppCommandScheduler : public web_app::WebAppCommandScheduler {
   void InstallIsolatedWebApp(
       const web_app::IsolatedWebAppUrlInfo& url_info,
       const web_app::IsolatedWebAppInstallSource& install_source,
-      const std::optional<base::Version>& expected_version,
+      const std::optional<web_app::IwaVersion>& expected_version,
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
       web_app::WebAppCommandScheduler::InstallIsolatedWebAppCallback callback,
@@ -130,7 +131,7 @@ class FakeWebAppCommandScheduler : public web_app::WebAppCommandScheduler {
         FROM_HERE,
         base::BindOnce(std::move(callback),
                        web_app::InstallIsolatedWebAppCommandSuccess(
-                           url_info, base::Version{},
+                           url_info, *web_app::IwaVersion::Create("0"),
                            web_app::IwaStorageOwnedBundle{
                                "random_folder", /*dev_mode=*/false})));
   }
