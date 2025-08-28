@@ -24,7 +24,6 @@ using testing::AllOf;
 using testing::ByMove;
 using testing::DoAll;
 using testing::ElementsAreArray;
-using testing::Invoke;
 using testing::Return;
 using testing::StrictMock;
 

@@ -19,7 +19,6 @@
 
 using ::testing::_;
 using ::testing::AtLeast;
-using ::testing::Invoke;
 using ::testing::Return;
 
 namespace os_crypt_async {
@@ -61,11 +60,10 @@ class SecretPortalKeyProviderTest : public testing::Test {
         .WillRepeatedly(Return(mock_systemd_proxy_.get()));
     EXPECT_CALL(*mock_systemd_proxy_, DoCallMethod(_, _, _))
         .Times(AtLeast(0))
-        .WillRepeatedly(
-            Invoke([](dbus::MethodCall*, int,
-                      dbus::ObjectProxy::ResponseCallback* callback) {
-              std::move(*callback).Run(nullptr);
-            }));
+        .WillRepeatedly([](dbus::MethodCall*, int,
+                           dbus::ObjectProxy::ResponseCallback* callback) {
+          std::move(*callback).Run(nullptr);
+        });
 
     EXPECT_CALL(*mock_bus_, AssertOnOriginThread()).WillRepeatedly([] {});
 
@@ -75,19 +73,19 @@ class SecretPortalKeyProviderTest : public testing::Test {
 
     EXPECT_CALL(*mock_bus_,
                 GetObjectProxy(SecretPortalKeyProvider::kServiceSecret, _))
-        .WillRepeatedly(Invoke([&](std::string_view service_name,
-                                   const dbus::ObjectPath& object_path) {
+        .WillRepeatedly([&](std::string_view service_name,
+                            const dbus::ObjectPath& object_path) {
           response_path_ = object_path;
           mock_response_proxy_ = base::MakeRefCounted<dbus::MockObjectProxy>(
               mock_bus_.get(), SecretPortalKeyProvider::kServiceSecret,
               response_path_);
           EXPECT_CALL(*mock_response_proxy_, DoConnectToSignal(_, _, _, _))
               .WillOnce(
-                  Invoke([&](const std::string& interface_name,
-                             const std::string& signal_name,
-                             dbus::ObjectProxy::SignalCallback signal_callback,
-                             dbus::ObjectProxy::OnConnectedCallback*
-                                 on_connected_callback) {
+                  [&](const std::string& interface_name,
+                      const std::string& signal_name,
+                      dbus::ObjectProxy::SignalCallback signal_callback,
+                      dbus::ObjectProxy::OnConnectedCallback*
+                          on_connected_callback) {
                     EXPECT_EQ(interface_name,
                               SecretPortalKeyProvider::kInterfaceRequest);
                     EXPECT_EQ(signal_name,
@@ -104,9 +102,9 @@ class SecretPortalKeyProviderTest : public testing::Test {
                     dict.Put("token", MakeDbusVariant(DbusString(kPrefToken)));
                     dict.Write(&writer);
                     signal_callback.Run(&signal);
-                  }));
+                  });
           return mock_response_proxy_.get();
-        }));
+        });
 
     mock_secret_proxy_ = base::MakeRefCounted<dbus::MockObjectProxy>(
         mock_bus_.get(), SecretPortalKeyProvider::kServiceSecret,
@@ -148,8 +146,8 @@ TEST_F(SecretPortalKeyProviderTest, GetKey) {
   EXPECT_CALL(
       *mock_dbus_proxy_,
       DoCallMethod(MatchMethod(DBUS_INTERFACE_DBUS, "NameHasOwner"), _, _))
-      .WillOnce(Invoke([](dbus::MethodCall* method_call, int timeout_ms,
-                          dbus::ObjectProxy::ResponseCallback* callback) {
+      .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
+                   dbus::ObjectProxy::ResponseCallback* callback) {
         dbus::MessageReader reader(method_call);
         std::string service_name;
         EXPECT_TRUE(reader.PopString(&service_name));
@@ -159,9 +157,9 @@ TEST_F(SecretPortalKeyProviderTest, GetKey) {
         dbus::MessageWriter writer(response.get());
         writer.AppendBool(true);
         std::move(*callback).Run(response.get());
-      }))
-      .WillOnce(Invoke([](dbus::MethodCall* method_call, int timeout_ms,
-                          dbus::ObjectProxy::ResponseCallback* callback) {
+      })
+      .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
+                   dbus::ObjectProxy::ResponseCallback* callback) {
         dbus::MessageReader reader(method_call);
         std::string service_name;
         EXPECT_TRUE(reader.PopString(&service_name));
@@ -171,7 +169,7 @@ TEST_F(SecretPortalKeyProviderTest, GetKey) {
         dbus::MessageWriter writer(response.get());
         writer.AppendBool(true);
         std::move(*callback).Run(response.get());
-      }));
+      });
 
   EXPECT_CALL(*mock_bus_, GetConnectionName()).WillOnce(Return(kBusName));
 
@@ -180,21 +178,20 @@ TEST_F(SecretPortalKeyProviderTest, GetKey) {
                   MatchMethod(SecretPortalKeyProvider::kInterfaceSecret,
                               SecretPortalKeyProvider::kMethodRetrieveSecret),
                   _, _))
-      .WillOnce(
-          Invoke([&](dbus::MethodCall* method_call, int timeout_ms,
-                     dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
-            dbus::MessageReader reader(method_call);
-            base::ScopedFD write_fd;
-            EXPECT_TRUE(reader.PopFileDescriptor(&write_fd));
-            EXPECT_EQ(write(write_fd.get(), kSecret, sizeof(kSecret)),
-                      static_cast<ssize_t>(sizeof(kSecret)));
-            write_fd.reset();
+      .WillOnce([&](dbus::MethodCall* method_call, int timeout_ms,
+                    dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
+        dbus::MessageReader reader(method_call);
+        base::ScopedFD write_fd;
+        EXPECT_TRUE(reader.PopFileDescriptor(&write_fd));
+        EXPECT_EQ(write(write_fd.get(), kSecret, sizeof(kSecret)),
+                  static_cast<ssize_t>(sizeof(kSecret)));
+        write_fd.reset();
 
-            auto response = dbus::Response::CreateEmpty();
-            dbus::MessageWriter writer(response.get());
-            writer.AppendObjectPath(dbus::ObjectPath(response_path_));
-            std::move(*callback).Run(response.get(), nullptr);
-          }));
+        auto response = dbus::Response::CreateEmpty();
+        dbus::MessageWriter writer(response.get());
+        writer.AppendObjectPath(dbus::ObjectPath(response_path_));
+        std::move(*callback).Run(response.get(), nullptr);
+      });
 
   bool callback_called = false;
   std::string key_tag;
