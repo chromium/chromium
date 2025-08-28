@@ -532,10 +532,8 @@ ScopedJavaLocalRef<jobject> TabModelJniBridge::GetActivityForWindow(
   if (!window) {
     return jactivity;
   }
-  // TODO(crbug.com/429037015): Enable this check once GetProfile() returns a
-  // non-null Profile.
-  // CHECK_EQ(window->GetProfile()->IsOffTheRecord(),
-  //          GetProfile()->IsOffTheRecord());
+  CHECK_EQ(window->GetProfile()->IsOffTheRecord(),
+           GetProfile()->IsOffTheRecord());
   jactivity = window->GetActivity();
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   return jactivity;
