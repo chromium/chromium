@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
@@ -34,7 +35,7 @@ class GlicInstance : public PanelDelegate {
     virtual void DetachInstance(GlicInstance* instance) = 0;
   };
 
-  GlicInstance();
+  explicit GlicInstance(base::WeakPtr<AttachmentDelegate> attachment_delegate);
   ~GlicInstance() override;
 
   GlicInstance(const GlicInstance&) = delete;
@@ -73,7 +74,7 @@ class GlicInstance : public PanelDelegate {
 
   // The attached browser if currently showing in the side panel of a window.
   raw_ptr<BrowserWindowInterface> attached_bwi_ = nullptr;
-  raw_ptr<AttachmentDelegate> attachment_delegate_ = nullptr;
+  base::WeakPtr<AttachmentDelegate> attachment_delegate_;
 };
 
 }  // namespace glic

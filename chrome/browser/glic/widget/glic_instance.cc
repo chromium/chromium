@@ -14,7 +14,9 @@
 
 namespace glic {
 
-GlicInstance::GlicInstance() = default;
+GlicInstance::GlicInstance(
+    base::WeakPtr<AttachmentDelegate> attachment_delegate)
+    : attachment_delegate_(attachment_delegate) {}
 
 GlicInstance::~GlicInstance() = default;
 
