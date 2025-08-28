@@ -383,8 +383,9 @@ TEST_P(HatsNotificationControllerTest, ShouldShowSurveyToProfile) {
   PrefService* pref_service = profile()->GetPrefs();
   pref_service->SetTime(prefs::kHatsPrioritizedLastInteractionTimestamp,
                         base::Time::Now() - GetParam().prev_prio_hats);
-  pref_service->SetTime(prefs::kHatsLastInteractionTimestamp,
-                        base::Time::Now() - GetParam().prev_non_prio_hats);
+  pref_service->SetInt64(
+      prefs::kHatsLastInteractionTimestamp,
+      (base::Time::Now() - GetParam().prev_non_prio_hats).ToInternalValue());
 
   // Explanation by example:
   // Given HaTS config -> threshold_time: 90 days

@@ -115,9 +115,8 @@ class AdbSideloadingAllowanceModePolicyHandlerTest : public testing::Test {
     // Fake that the first notification had been displayed more than 24 hours
     // ago.
     base::Time yesterday = base::Time::Now() - base::Hours(25);
-    TestingBrowserProcess::GetGlobal()->local_state()->SetInt64(
-        prefs::kAdbSideloadingPowerwashPlannedNotificationShownTime,
-        yesterday.ToDeltaSinceWindowsEpoch().InSeconds());
+    TestingBrowserProcess::GetGlobal()->local_state()->SetTime(
+        prefs::kAdbSideloadingPowerwashPlannedNotificationShownTime, yesterday);
   }
 
   bool is_arc_sideloading_enabled_ = false;

@@ -198,11 +198,10 @@ TEST_F(TPMAutoUpdateModePolicyHandlerTest,
 
   update_available_ = true;
 
-  // First notification was shwed more than 24 hours ago.
+  // First notification was shown more than 24 hours ago.
   base::Time yesterday = base::Time::Now() - base::Hours(25);
-  TestingBrowserProcess::GetGlobal()->local_state()->SetInt64(
-      prefs::kTPMUpdatePlannedNotificationShownTime,
-      yesterday.ToDeltaSinceWindowsEpoch().InSeconds());
+  TestingBrowserProcess::GetGlobal()->local_state()->SetTime(
+      prefs::kTPMUpdatePlannedNotificationShownTime, yesterday);
 
   SetAutoUpdateMode(AutoUpdateMode::kUserAcknowledgment);
   base::RunLoop().RunUntilIdle();
