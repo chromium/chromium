@@ -1199,7 +1199,7 @@ void ExtensionDownloader::CreateExtensionLoader() {
               base::BindOnce(&ExtensionDownloader::OnAccessTokenFetchComplete,
                              base::Unretained(this)),
               signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-              signin::ConsentLevel::kSync);
+              signin::ConsentLevel::kSignin);
       return;
     }
     extension_loader_resource_request_->headers.SetHeader(
@@ -1437,7 +1437,8 @@ bool ExtensionDownloader::IterateFetchCredentialsAfterFailure(
           fetch->oauth2_attempt_count <= kMaxOAuth2Attempts) {
         DCHECK(identity_manager_);
         identity_manager_->RemoveAccessTokenFromCache(
-            identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync),
+            identity_manager_->GetPrimaryAccountId(
+                signin::ConsentLevel::kSignin),
             signin::OAuthConsumerId::kExtensionDownloader, access_token_);
         access_token_.clear();
         return true;

@@ -133,6 +133,9 @@ bool IsUnconsentedSignedInOAuth2Scopes(const std::string& scope) {
       // Required for certain Gemini features.
       GaiaConstants::kGeminiOAuth2Scope,
 
+      // Used by private webstore extension API.
+      GaiaConstants::kWebstoreOAuth2Scope,
+
     // Required by ChromeOS only.
 #if BUILDFLAG(IS_CHROMEOS)
       GaiaConstants::kAssistantOAuth2Scope,
