@@ -388,6 +388,7 @@ public abstract class ChromeFeatureList {
     public static final String DATA_SHARING_NON_PRODUCTION_ENVIRONMENT =
             "DataSharingNonProductionEnvironment";
     public static final String DEFAULT_BROWSER_PROMO_ANDROID2 = "DefaultBrowserPromoAndroid2";
+    public static final String DESKTOP_UA_ON_CONNECTED_DISPLAY = "DesktopUAOnConnectedDisplay";
     public static final String DETAILED_LANGUAGE_SETTINGS = "DetailedLanguageSettings";
     public static final String DEVICE_AUTHENTICATOR_ANDROIDX = "DeviceAuthenticatorAndroidx";
     public static final String DISABLE_INSTANCE_LIMIT = "DisableInstanceLimit";
@@ -891,6 +892,11 @@ public abstract class ChromeFeatureList {
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sCrossDeviceTabPaneAndroid =
             newCachedFlag(CROSS_DEVICE_TAB_PANE_ANDROID, false);
+     public static final CachedFlag sDesktopUAOnConnectedDisplay =
+            newCachedFlag(
+                    DESKTOP_UA_ON_CONNECTED_DISPLAY,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ false);
     public static final CachedFlag sDisableInstanceLimit =
             newCachedFlag(
                     DISABLE_INSTANCE_LIMIT,
@@ -1178,6 +1184,7 @@ public abstract class ChromeFeatureList {
                     sCpaSpecUpdate,
                     sCpaTabGroupingButton,
                     sCrossDeviceTabPaneAndroid,
+                    sDesktopUAOnConnectedDisplay,
                     sDisableInstanceLimit,
                     sDisplayEdgeToEdgeFullscreen,
                     sDrawChromePagesEdgeToEdge,

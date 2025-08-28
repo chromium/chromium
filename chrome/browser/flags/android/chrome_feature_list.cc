@@ -297,6 +297,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kChangeUnfocusedPriority,
     &kChromeNativeUrlOverriding,
     &kDefaultBrowserPromoAndroid2,
+    &kDesktopUAOnConnectedDisplay,
     &kDisableInstanceLimit,
     &kDontAutoHideBrowserControls,
     &kDrawChromePagesEdgeToEdge,
@@ -938,6 +939,10 @@ BASE_FEATURE(kChromeNativeUrlOverriding,
 
 BASE_FEATURE(kChangeUnfocusedPriority,
              "ChangeUnfocusedPriority",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDesktopUAOnConnectedDisplay,
+             "DesktopUAOnConnectedDisplay",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDisableInstanceLimit,
