@@ -5022,13 +5022,13 @@
     // Please see https://issues.chromium.org/40823294
     {
       name: "TouchDragAndContextMenu",
-      implied_by: ["TouchDragOnShortPress"],
       base_feature: "none",
       public: true,
     },
     // This feature enables drag and drop using touch input devices. Replaces
     // the old "--enable-touch-drag-drop" and "--disable-touch-drag-drop"
     // switches.
+    // Enabled by default in Android and ChromeOS.
     {
       name: "TouchDragAndDrop",
       base_feature: "none",
@@ -5039,9 +5039,6 @@
     {
       name: "TouchDragOnShortPress",
       depends_on: ["TouchDragAndDrop"],
-      status: {
-        "Win": "stable",
-      },
     },
     // Many websites disable mouse support when touch APIs are available.  We'd
     // like to enable this always but can't until more websites fix this bug.
