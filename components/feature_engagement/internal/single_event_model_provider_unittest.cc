@@ -17,7 +17,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::Return;
 using testing::ReturnArg;
 using testing::Sequence;
@@ -84,8 +83,8 @@ class SingleEventModelProviderTest : public testing::Test {
 TEST_F(SingleEventModelProviderTest, SuccessfulInitializationForEventProvider) {
   EventModel::OnModelInitializationFinished callback;
   EXPECT_CALL(*mocked_model_, Initialize(_, _))
-      .WillOnce(Invoke([](EventModel::OnModelInitializationFinished cb,
-                          uint32_t /*day*/) { std::move(cb).Run(true); }));
+      .WillOnce([](EventModel::OnModelInitializationFinished cb,
+                   uint32_t /*day*/) { std::move(cb).Run(true); });
   provider_->Initialize(std::move(load_callback_), 2U);
   EXPECT_TRUE(load_success_.value());
 }

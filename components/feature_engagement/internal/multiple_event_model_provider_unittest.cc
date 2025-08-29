@@ -16,7 +16,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::Return;
 
 namespace feature_engagement {
@@ -88,11 +87,11 @@ TEST_F(MultipleEventModelProviderTest,
        SuccessfulInitializationForAllEventModels) {
   EventModel::OnModelInitializationFinished callback;
   EXPECT_CALL(*profile_mocked_model_, Initialize(_, _))
-      .WillOnce(Invoke([](EventModel::OnModelInitializationFinished cb,
-                          uint32_t /*day*/) { std::move(cb).Run(true); }));
+      .WillOnce([](EventModel::OnModelInitializationFinished cb,
+                   uint32_t /*day*/) { std::move(cb).Run(true); });
   EXPECT_CALL(*device_mocked_model_, Initialize(_, _))
-      .WillOnce(Invoke([](EventModel::OnModelInitializationFinished cb,
-                          uint32_t /*day*/) { std::move(cb).Run(true); }));
+      .WillOnce([](EventModel::OnModelInitializationFinished cb,
+                   uint32_t /*day*/) { std::move(cb).Run(true); });
 
   model_->Initialize(std::move(load_callback_), 2U);
   EXPECT_TRUE(load_success_.value());
@@ -101,13 +100,11 @@ TEST_F(MultipleEventModelProviderTest,
 TEST_F(MultipleEventModelProviderTest, FailInitializationWhenOneModelFails) {
   EventModel::OnModelInitializationFinished callback;
   EXPECT_CALL(*profile_mocked_model_, Initialize(_, _))
-      .WillOnce(
-          Invoke([](EventModel::OnModelInitializationFinished callback,
-                    uint32_t /*day*/) { std::move(callback).Run(true); }));
+      .WillOnce([](EventModel::OnModelInitializationFinished callback,
+                   uint32_t /*day*/) { std::move(callback).Run(true); });
   EXPECT_CALL(*device_mocked_model_, Initialize(_, _))
-      .WillOnce(
-          Invoke([](EventModel::OnModelInitializationFinished callback,
-                    uint32_t /*day*/) { std::move(callback).Run(false); }));
+      .WillOnce([](EventModel::OnModelInitializationFinished callback,
+                   uint32_t /*day*/) { std::move(callback).Run(false); });
 
   model_->Initialize(std::move(load_callback_), 2U);
   EXPECT_FALSE(load_success_.value());
