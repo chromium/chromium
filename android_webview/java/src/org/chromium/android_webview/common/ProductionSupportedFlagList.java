@@ -161,7 +161,6 @@ public final class ProductionSupportedFlagList {
                 GpuFeatures.RELAX_LIMIT_A_IMAGE_READER_MAX_SIZE_TO_ONE,
                 "Allow more than 1 buffer from AImageReader on the specific set of devices. "
                         + "Only supported on TV."),
-        Flag.baseFeature(GpuFeatures.WEBVIEW_THREAD_SAFE_MEDIA, "Use thread-safe media path."),
         Flag.baseFeature(
                 GpuFeatures.PRUNE_OLD_TRANSFER_CACHE_ENTRIES,
                 "Prune old transfer cache entries and disable pruning from client"),

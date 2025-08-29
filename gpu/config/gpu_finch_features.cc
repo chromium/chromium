@@ -68,9 +68,6 @@ BASE_FEATURE(WebViewSurfaceControl, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(WebViewSurfaceControlForTV, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Use thread-safe media path on WebView.
-BASE_FEATURE(WebViewThreadSafeMedia, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // This is used as default state because it's different for webview and chrome.
 // WebView hardcodes this as enabled in AwMainDelegate.
 BASE_FEATURE(WebViewThreadSafeMediaDefault, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -504,13 +501,6 @@ bool IsUsingThreadSafeMediaForWebView() {
     return false;
   }
 
-  // If the feature is overridden from command line or finch we will use its
-  // value. If not we use kWebViewThreadSafeMediaDefault which is set in
-  // AwMainDelegate for WebView.
-  if (auto state =
-          base::FeatureList::GetStateIfOverridden(kWebViewThreadSafeMedia)) {
-    return *state;
-  }
   return base::FeatureList::IsEnabled(kWebViewThreadSafeMediaDefault);
 #else
   return false;
