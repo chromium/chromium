@@ -1551,7 +1551,7 @@ bool IsMacSckSystemLoopbackCaptureSupported() {
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
-bool IsWindowsSystemLoopbackCaptureSupported() {
+bool IsWindowsProcessLoopbackCaptureSupported() {
   return (base::win::GetVersion() >= base::win::Version::WIN11);
 }
 #endif  // BUILDFLAG(IS_WIN)
@@ -1577,7 +1577,7 @@ bool IsSystemLoopbackAsAecReferenceEnabled() {
     return false;
   }
 #elif BUILDFLAG(IS_WIN)
-  if (!IsWindowsSystemLoopbackCaptureSupported()) {
+  if (!IsWindowsProcessLoopbackCaptureSupported()) {
     return false;
   }
 #endif
@@ -1681,7 +1681,7 @@ bool IsRestrictOwnAudioSupported() {
   return IsMacCatapSystemLoopbackCaptureSupported() &&
          base::FeatureList::IsEnabled(kMacCatapLoopbackAudioForScreenShare);
 #elif BUILDFLAG(IS_WIN)
-  return IsWindowsSystemLoopbackCaptureSupported();
+  return IsWindowsProcessLoopbackCaptureSupported();
 #else
   return false;
 #endif
