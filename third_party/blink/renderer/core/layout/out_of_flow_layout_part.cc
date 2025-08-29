@@ -523,37 +523,36 @@ OutOfFlowLayoutPart::OutOfFlowLayoutPart(BoxFragmentBuilder* container_builder)
     return;
   }
 
+  const BlockNode& node = container_builder->Node();
   const ConstraintSpace& space = GetConstraintSpace();
   const WritingDirectionMode writing_direction = space.GetWritingDirection();
-  const bool is_scroll_container =
-      container_builder->Node().IsScrollContainer();
+  const bool is_scroll_container = node.IsScrollContainer();
   const bool is_hidden_for_paint = space.IsHiddenForPaint();
 
   const BoxStrut border_scrollbar =
       container_builder->Borders() + container_builder->Scrollbar();
   const LogicalOffset container_offset = border_scrollbar.StartOffset();
 
-  LogicalSize absolute_size;
-  LogicalSize fixed_size;
-  if (container_builder_->HasBlockSize()) {
-    absolute_size =
-        ShrinkLogicalSize(container_builder_->Size(), border_scrollbar);
-    fixed_size = ShrinkLogicalSize(
-        InitialContainingBlockFixedSize(container_builder->Node())
-            .value_or(container_builder_->Size()),
-        border_scrollbar);
-  }
+  const bool has_block_size = container_builder_->HasBlockSize();
+  const LogicalSize container_size =
+      has_block_size
+          ? ShrinkLogicalSize(container_builder_->Size(), border_scrollbar)
+          : LogicalSize();
 
-  default_containing_block_info_for_absolute_ = {
-      .writing_direction = writing_direction,
-      .is_scroll_container = is_scroll_container,
-      .is_hidden_for_paint = is_hidden_for_paint,
-      .rect = {container_offset, absolute_size}};
-  default_containing_block_info_for_fixed_ = {
-      .writing_direction = writing_direction,
-      .is_scroll_container = is_scroll_container,
-      .is_hidden_for_paint = is_hidden_for_paint,
-      .rect = {container_offset, fixed_size}};
+  default_containing_block_ = {.writing_direction = writing_direction,
+                               .is_scroll_container = is_scroll_container,
+                               .is_hidden_for_paint = is_hidden_for_paint,
+                               .rect = {container_offset, container_size}};
+
+  if (std::optional<LogicalSize> viewport_size =
+          InitialContainingBlockFixedSize(node)) {
+    viewport_containing_block_ = {
+        .writing_direction = writing_direction,
+        .is_scroll_container = is_scroll_container,
+        .is_hidden_for_paint = is_hidden_for_paint,
+        .rect = {container_offset,
+                 ShrinkLogicalSize(*viewport_size, border_scrollbar)}};
+  }
 }
 
 void OutOfFlowLayoutPart::Run() {
@@ -905,9 +904,12 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
          container_builder_->FragmentBlockSize()});
   }
 
-  return node_style.GetPosition() == EPosition::kAbsolute
-             ? default_containing_block_info_for_absolute_
-             : default_containing_block_info_for_fixed_;
+  if (node_style.GetPosition() == EPosition::kFixed &&
+      viewport_containing_block_) {
+    return *viewport_containing_block_;
+  }
+
+  return default_containing_block_;
 }
 
 void OutOfFlowLayoutPart::ComputeInlineContainingBlocks(
@@ -933,10 +935,9 @@ void OutOfFlowLayoutPart::ComputeInlineContainingBlocks(
   LogicalSize container_builder_size = container_builder_->Size();
   PhysicalSize container_builder_physical_size = ToPhysicalSize(
       container_builder_size, GetConstraintSpace().GetWritingMode());
-  AddInlineContainingBlockInfo(
-      inline_container_fragments,
-      default_containing_block_info_for_absolute_.writing_direction,
-      container_builder_physical_size);
+  AddInlineContainingBlockInfo(inline_container_fragments,
+                               default_containing_block_.writing_direction,
+                               container_builder_physical_size);
 }
 
 void OutOfFlowLayoutPart::ComputeInlineContainingBlocksForFragmentainer(

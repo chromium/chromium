@@ -447,8 +447,8 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   // The OutOfFlowLayoutPart for the outer block fragmentation context when this
   // is an inner layout of nested block fragmentation.
   OutOfFlowLayoutPart* outer_oof_layout_part_ = nullptr;
-  ContainingBlockInfo default_containing_block_info_for_absolute_;
-  ContainingBlockInfo default_containing_block_info_for_fixed_;
+  ContainingBlockInfo default_containing_block_;
+  std::optional<ContainingBlockInfo> viewport_containing_block_;
   HeapHashMap<Member<const LayoutObject>, ContainingBlockInfo>
       containing_blocks_map_;
 
