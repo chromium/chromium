@@ -338,6 +338,9 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
       request_info.shared_storage_writable_eligible;
   new_request->is_ad_tagged = request_info.is_ad_tagged;
 
+  new_request->skip_service_worker =
+      request_info.begin_params->skip_service_worker;
+
   // TODO(crbug.com/382291442): Remove feature guarding once launched.
   if (base::FeatureList::IsEnabled(
           network::features::kPopulatePermissionsPolicyOnRequest) &&
