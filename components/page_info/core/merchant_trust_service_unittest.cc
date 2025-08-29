@@ -33,7 +33,6 @@
 namespace page_info {
 using testing::_;
 using testing::An;
-using testing::Invoke;
 using testing::Return;
 
 using DecisionWithMetadata = MerchantTrustService::DecisionAndMetadata;
@@ -113,12 +112,10 @@ class MerchantTrustServiceTest : public ::testing::Test {
         CanApplyOptimization(
             _, _, An<optimization_guide::OptimizationGuideDecisionCallback>()))
         .WillByDefault(
-            Invoke([decision, metadata](
-                       const GURL& url, OptimizationType optimization_type,
-                       optimization_guide::OptimizationGuideDecisionCallback
-                           callback) {
-              std::move(callback).Run(decision, metadata);
-            }));
+            [decision, metadata](
+                const GURL& url, OptimizationType optimization_type,
+                optimization_guide::OptimizationGuideDecisionCallback
+                    callback) { std::move(callback).Run(decision, metadata); });
   }
 
   void SetOptimizationGuideAllowed(bool allowed) {

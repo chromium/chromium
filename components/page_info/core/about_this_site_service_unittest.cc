@@ -26,7 +26,6 @@
 
 namespace page_info {
 using testing::_;
-using testing::Invoke;
 using testing::Return;
 
 using about_this_site_validation::AboutThisSiteStatus;

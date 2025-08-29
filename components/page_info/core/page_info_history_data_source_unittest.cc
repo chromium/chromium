@@ -36,7 +36,6 @@ class MockHistoryService : public HistoryService {
 namespace page_info {
 
 using testing::_;
-using testing::Invoke;
 
 base::Time kBase = base::Time::FromTimeT(1000);
 base::Time kLastVisit = base::Time::FromTimeT(500);
@@ -181,7 +180,7 @@ class PageInfoHistoryDataSourceTest : public testing::Test {
 TEST_F(PageInfoHistoryDataSourceTest, NoHistory) {
   // GetLastVisitToHost is called only once.
   EXPECT_CALL(*history_service(), GetLastVisitToHost(_, _, _, _, _))
-      .WillOnce(Invoke(&ReturnVisitedNever));
+      .WillOnce(&ReturnVisitedNever);
   data_source()->GetLastVisitedTimestamp(base::BindOnce(
       [](std::optional<base::Time> time) { EXPECT_FALSE(time.has_value()); }));
 }
@@ -190,8 +189,8 @@ TEST_F(PageInfoHistoryDataSourceTest, LastVisitedTimestamp) {
   // GetLastVisitToHost is called twice, once to get the latest visit (base) and
   // the second to get the visit before it (last visit).
   EXPECT_CALL(*history_service(), GetLastVisitToHost(_, _, _, _, _))
-      .WillOnce(Invoke(&ReturnVisitedBase))
-      .WillOnce(Invoke(&ReturnLastVisited));
+      .WillOnce(&ReturnVisitedBase)
+      .WillOnce(&ReturnLastVisited);
   data_source()->GetLastVisitedTimestamp(
       base::BindOnce([](std::optional<base::Time> time) {
         EXPECT_TRUE(time.has_value());
