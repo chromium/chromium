@@ -772,47 +772,27 @@ RendererBlinkPlatformImpl::CreateWebGLGraphicsContextProvider(
 
 std::unique_ptr<blink::WebGraphicsContext3DProvider>
 RendererBlinkPlatformImpl::CreateRasterGraphicsContextProvider(
-    const blink::Platform::ContextAttributes& web_attributes,
-    const blink::WebURL& document_url,
-    blink::Platform::GraphicsInfo* gl_info) {
-  DCHECK(gl_info);
+    const blink::WebURL& document_url) {
   if (!RenderThreadImpl::current()) {
-    std::string error_message("Failed to run in Current RenderThreadImpl");
-    gl_info->error_message = WebString::FromUTF8(error_message);
     return nullptr;
   }
-
   scoped_refptr<gpu::GpuChannelHost> gpu_channel_host(
       RenderThreadImpl::current()->EstablishGpuChannelSync());
   if (!gpu_channel_host) {
-    std::string error_message(
-        "OffscreenContext Creation failed, GpuChannelHost creation failed");
-    gl_info->error_message = WebString::FromUTF8(error_message);
     return nullptr;
   }
-
-  if (web_attributes.enable_raster_interface &&
-      gpu_channel_host->gpu_info().skia_backend_type ==
-          gpu::SkiaBackendType::kNone) {
+  if (gpu_channel_host->gpu_info().skia_backend_type ==
+      gpu::SkiaBackendType::kNone) {
     return nullptr;
   }
-
-  const auto& gpu_info = gpu_channel_host->gpu_info();
-  Collect3DContextInformation(gl_info, gpu_info);
 
   gpu::ContextCreationAttribs attributes;
-  attributes.enable_raster_interface = web_attributes.enable_raster_interface;
-  attributes.enable_gpu_rasterization = attributes.enable_raster_interface;
-  attributes.enable_gles2_interface = !attributes.enable_gpu_rasterization;
-
-  attributes.gpu_preference = web_attributes.prefer_low_power_gpu
-                                  ? gl::GpuPreference::kLowPower
-                                  : gl::GpuPreference::kHighPerformance;
-
-  attributes.fail_if_major_perf_caveat =
-      web_attributes.fail_if_major_performance_caveat;
-
-  attributes.context_type = ToGpuContextType(web_attributes.context_type);
+  attributes.enable_raster_interface = true;
+  attributes.enable_gpu_rasterization = true;
+  attributes.enable_gles2_interface = false;
+  attributes.gpu_preference = gl::GpuPreference::kLowPower;
+  attributes.fail_if_major_perf_caveat = false;
+  attributes.context_type = gpu::CONTEXT_TYPE_OPENGLES2;
 
   constexpr bool automatic_flushes = true;
   constexpr bool support_locking = false;

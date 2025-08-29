@@ -519,9 +519,7 @@ class BLINK_PLATFORM_EXPORT Platform {
                                      const WebURL& document_url,
                                      GraphicsInfo*);
   virtual std::unique_ptr<WebGraphicsContext3DProvider>
-  CreateRasterGraphicsContextProvider(const ContextAttributes&,
-                                      const WebURL& document_url,
-                                      GraphicsInfo*);
+  CreateRasterGraphicsContextProvider(const WebURL& document_url);
 
   // Returns a newly allocated and initialized offscreen context provider,
   // backed by the process-wide shared main thread context. Returns null if

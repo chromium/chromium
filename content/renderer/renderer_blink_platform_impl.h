@@ -183,9 +183,7 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
       blink::Platform::GraphicsInfo* gl_info) override;
   std::unique_ptr<blink::WebGraphicsContext3DProvider>
   CreateRasterGraphicsContextProvider(
-      const blink::Platform::ContextAttributes& attributes,
-      const blink::WebURL& document_url,
-      blink::Platform::GraphicsInfo* gl_info) override;
+      const blink::WebURL& document_url) override;
   std::unique_ptr<blink::WebGraphicsContext3DProvider>
   CreateSharedOffscreenGraphicsContext3DProvider() override;
   std::unique_ptr<blink::WebGraphicsContext3DProvider>

@@ -96,23 +96,14 @@ static void CreateContextProviderOnMainThread(
     base::WaitableEvent* waitable_event) {
   DCHECK(IsMainThread());
 
-  Platform::ContextAttributes context_attributes;
-  context_attributes.enable_raster_interface = true;
-
-  // The shared GPU context should not trigger a switch to the high-performance
-  // GPU.
-  context_attributes.prefer_low_power_gpu = true;
-
   *gpu_compositing_disabled = Platform::Current()->IsGpuCompositingDisabled();
   if (*gpu_compositing_disabled && only_if_gpu_compositing) {
     waitable_event->Signal();
     return;
   }
 
-  Platform::GraphicsInfo graphics_info;
   auto context_provider =
-      Platform::Current()->CreateRasterGraphicsContextProvider(
-          context_attributes, WebURL(), &graphics_info);
+      Platform::Current()->CreateRasterGraphicsContextProvider(WebURL());
   if (context_provider) {
     *wrapper = std::make_unique<WebGraphicsContext3DProviderWrapper>(
         std::move(context_provider));
