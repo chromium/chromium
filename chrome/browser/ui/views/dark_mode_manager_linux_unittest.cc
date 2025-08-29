@@ -81,6 +81,7 @@ using testing::_;
 using testing::AtLeast;
 using testing::ByMove;
 using testing::Invoke;
+using testing::Mock;
 using testing::Return;
 using testing::StrictMock;
 
@@ -312,12 +313,12 @@ TEST_F(DarkModeManagerLinuxTest, UsePortalAccentColor) {
   inner_variant_writer.CloseContainer(&struct1_writer);
   outer_variant_writer.CloseContainer(&inner_variant_writer);
   writer.CloseContainer(&outer_variant_writer);
-  std::optional<SkColor> expected_color = SkColorSetRGB(0, 127, 255);
-  EXPECT_CALL(*mock_linux_ui(), SetAccentColor(expected_color));
+  static constexpr std::optional<SkColor> kExpectedColor1 =
+      SkColorSetRGB(0, 127, 255);
+  EXPECT_CALL(*mock_linux_ui(), SetAccentColor(kExpectedColor1));
   std::move(accent_color_callback()).Run(response.get(), nullptr);
-  auto const user_color1 = mock_native_theme()->user_color();
-  EXPECT_TRUE(user_color1.has_value());
-  EXPECT_EQ(*user_color1, expected_color);
+  EXPECT_EQ(mock_native_theme()->user_color(), kExpectedColor1);
+  Mock::VerifyAndClearExpectations(mock_linux_ui());
 
   // Changes in the portal accent color should be processed by the manager and
   // the native theme should be updated.
@@ -330,16 +331,16 @@ TEST_F(DarkModeManagerLinuxTest, UsePortalAccentColor) {
   signal_writer.OpenVariant("(ddd)", &variant_writer);
   dbus::MessageWriter struct2_writer(nullptr);
   variant_writer.OpenStruct(&struct2_writer);
-  struct2_writer.AppendDouble(0.0);
-  struct2_writer.AppendDouble(0.5);
   struct2_writer.AppendDouble(1.0);
+  struct2_writer.AppendDouble(0.5);
+  struct2_writer.AppendDouble(0.0);
   variant_writer.CloseContainer(&struct2_writer);
   signal_writer.CloseContainer(&variant_writer);
-  EXPECT_CALL(*mock_linux_ui(), SetAccentColor(expected_color));
+  static constexpr std::optional<SkColor> kExpectedColor2 =
+      SkColorSetRGB(255, 127, 0);
+  EXPECT_CALL(*mock_linux_ui(), SetAccentColor(kExpectedColor2));
   std::move(setting_changed_callback()).Run(&signal);
-  auto const user_color2 = mock_native_theme()->user_color();
-  EXPECT_TRUE(user_color2.has_value());
-  EXPECT_EQ(*user_color2, expected_color);
+  EXPECT_EQ(mock_native_theme()->user_color(), kExpectedColor2);
 }
 
 }  // namespace ui
