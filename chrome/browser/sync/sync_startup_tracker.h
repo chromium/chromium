@@ -18,6 +18,8 @@
 // `SyncStartupTracker` provides an easier way to wait for `SyncService` to be
 // successfully started up, or to be notified when startup has failed due to
 // some kind of error.
+// TODO(crbug.com/40067025): Delete this class once
+// kReplaceSyncPromosWithSigninPromos is launched.
 class SyncStartupTracker : public syncer::SyncServiceObserver {
  public:
   enum class ServiceStartupState {
