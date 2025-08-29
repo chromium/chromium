@@ -1044,7 +1044,7 @@ void BoxFragmentPainter::PaintFloatingItems(const PaintInfo& paint_info,
 }
 
 void BoxFragmentPainter::PaintFloatingChildren(
-    const PhysicalFragment& container,
+    const PhysicalBoxFragment& container,
     const PaintInfo& paint_info) {
   DCHECK(container.HasFloatingDescendantsForPaint());
   const PaintInfo* local_paint_info = &paint_info;
@@ -1082,26 +1082,30 @@ void BoxFragmentPainter::PaintFloatingChildren(
     if (!child_fragment.HasFloatingDescendantsForPaint())
       continue;
 
-    if (child_fragment.HasNonVisibleOverflow()) {
-      // We need to properly visit this fragment for painting, rather than
-      // jumping directly to its children (which is what we normally do when
-      // looking for floats), in order to set up the clip rectangle.
-      BoxFragmentPainter(To<PhysicalBoxFragment>(child_fragment))
-          .Paint(*local_paint_info);
+    const auto* box_child_fragment =
+        DynamicTo<PhysicalBoxFragment>(&child_fragment);
+    if (!box_child_fragment) {
       continue;
     }
 
-    if (child_fragment.IsFragmentainerBox()) {
+    if (box_child_fragment->HasNonVisibleOverflow()) {
+      // We need to properly visit this fragment for painting, rather than
+      // jumping directly to its children (which is what we normally do when
+      // looking for floats), in order to set up the clip rectangle.
+      BoxFragmentPainter(*box_child_fragment).Paint(*local_paint_info);
+      continue;
+    }
+
+    if (box_child_fragment->IsFragmentainerBox()) {
       // This is a fragmentainer, and when node inside a fragmentation context
       // paints multiple block fragments, we need to distinguish between them
-      // somehow, for paint caching to work. Therefore, establish a display item
-      // scope here.
-      unsigned identifier = FragmentainerUniqueIdentifier(
-          To<PhysicalBoxFragment>(child_fragment));
+      // somehow, for paint caching to work. Therefore, establish a display
+      // item scope here.
+      unsigned identifier = FragmentainerUniqueIdentifier(*box_child_fragment);
       ScopedDisplayItemFragment scope(paint_info.context, identifier);
-      PaintFloatingChildren(child_fragment, *local_paint_info);
+      PaintFloatingChildren(*box_child_fragment, *local_paint_info);
     } else {
-      PaintFloatingChildren(child_fragment, *local_paint_info);
+      PaintFloatingChildren(*box_child_fragment, *local_paint_info);
     }
   }
 
@@ -1111,21 +1115,18 @@ void BoxFragmentPainter::PaintFloatingChildren(
   // inline formatting context when fragmented, we should only have to one of
   // these things; either walk the inline items, OR walk the box fragment
   // children (above).
-  if (const PhysicalBoxFragment* box =
-          DynamicTo<PhysicalBoxFragment>(&container)) {
-    if (const FragmentItems* items = box->Items()) {
-      InlineCursor cursor(*box, *items);
-      PaintFloatingItems(*local_paint_info, &cursor);
-      return;
-    }
-    if (inline_box_cursor_) {
-      DCHECK(box->IsInlineBox());
-      InlineCursor descendants = inline_box_cursor_->CursorForDescendants();
-      PaintFloatingItems(*local_paint_info, &descendants);
-      return;
-    }
-    DCHECK(!box->IsInlineBox());
+  if (const FragmentItems* items = container.Items()) {
+    InlineCursor cursor(container, *items);
+    PaintFloatingItems(*local_paint_info, &cursor);
+    return;
   }
+  if (inline_box_cursor_) {
+    DCHECK(container.IsInlineBox());
+    InlineCursor descendants = inline_box_cursor_->CursorForDescendants();
+    PaintFloatingItems(*local_paint_info, &descendants);
+    return;
+  }
+  DCHECK(!container.IsInlineBox());
 }
 
 void BoxFragmentPainter::PaintFloats(const PaintInfo& paint_info) {
@@ -2959,7 +2960,7 @@ bool BoxFragmentPainter::HitTestItemsChildren(
 
 bool BoxFragmentPainter::HitTestFloatingChildren(
     const HitTestContext& hit_test,
-    const PhysicalFragment& container,
+    const PhysicalBoxFragment& container,
     const PhysicalOffset& accumulated_offset) {
   DCHECK_EQ(hit_test.phase, HitTestPhase::kFloat);
   DCHECK(container.HasFloatingDescendantsForPaint());
@@ -2987,35 +2988,42 @@ bool BoxFragmentPainter::HitTestFloatingChildren(
 
     const PhysicalOffset child_offset = accumulated_offset + child.offset;
 
-    if (child_fragment.IsFloating()) {
-      if (HitTestAllPhasesInFragment(To<PhysicalBoxFragment>(child_fragment),
-                                     hit_test.location, child_offset,
-                                     hit_test.result)) {
+    const auto* box_child_fragment =
+        DynamicTo<PhysicalBoxFragment>(&child_fragment);
+    if (!box_child_fragment) {
+      continue;
+    }
+    if (box_child_fragment->IsFloating()) {
+      if (HitTestAllPhasesInFragment(*box_child_fragment, hit_test.location,
+                                     child_offset, hit_test.result)) {
         return true;
       }
       continue;
     }
 
-    if (child_fragment.IsPaintedAtomically())
+    if (box_child_fragment->IsPaintedAtomically()) {
       continue;
+    }
 
-    if (!child_fragment.HasFloatingDescendantsForPaint())
+    if (!box_child_fragment->HasFloatingDescendantsForPaint()) {
       continue;
+    }
 
-    if (child_fragment.HasNonVisibleOverflow()) {
+    if (box_child_fragment->HasNonVisibleOverflow()) {
       // We need to properly visit this fragment for hit-testing, rather than
       // jumping directly to its children (which is what we normally do when
       // looking for floats), in order to set up the clip rectangle.
-      if (NodeAtPointInFragment(To<PhysicalBoxFragment>(child_fragment),
-                                hit_test.location, child_offset,
-                                HitTestPhase::kFloat, hit_test.result)) {
+      if (NodeAtPointInFragment(*box_child_fragment, hit_test.location,
+                                child_offset, HitTestPhase::kFloat,
+                                hit_test.result)) {
         return true;
       }
       continue;
     }
 
-    if (HitTestFloatingChildren(hit_test, child_fragment, child_offset))
+    if (HitTestFloatingChildren(hit_test, *box_child_fragment, child_offset)) {
       return true;
+    }
   }
   return false;
 }
