@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/document_scan/document_scan_type_converters.h"
 
 #include "base/containers/contains.h"
+#include "chrome/browser/ash/crosapi/document_scan_ash_type_converters.h"
 #include "chrome/browser/extensions/api/document_scan/document_scan_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -683,9 +684,11 @@ TEST(DocumentScanTypeConvertersTest, SetOptionsResponse_NonEmpty) {
       "name2", mojom::ScannerOperationResult::kSuccess));
   input->options.emplace();
   input->options->try_emplace(
-      "option1", extensions::CreateTestScannerOption("option1", 5));
+      "option1", mojo::ConvertForTesting(
+                     extensions::CreateTestScannerOption("option1", 5)));
   input->options->try_emplace(
-      "option2", extensions::CreateTestScannerOption("option2", 10));
+      "option2", mojo::ConvertForTesting(
+                     extensions::CreateTestScannerOption("option2", 10)));
 
   auto output = input.To<document_scan::SetOptionsResponse>();
   EXPECT_EQ(output.scanner_handle, "scanner-handle");

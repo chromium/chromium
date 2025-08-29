@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/document_scan/document_scan_test_utils.h"
 
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 
 namespace extensions {
@@ -18,15 +19,15 @@ lorgnette::ScannerInfo CreateTestScannerInfo() {
   return scanner;
 }
 
-crosapi::mojom::ScannerOptionPtr CreateTestScannerOption(
-    const std::string& name,
-    int32_t val) {
-  auto option = crosapi::mojom::ScannerOption::New();
-  option->name = name;
-  option->title = name + " title";
-  option->description = name + " description";
-  option->value = crosapi::mojom::OptionValue::NewIntValue(val);
-  option->isActive = true;
+lorgnette::ScannerOption CreateTestScannerOption(std::string_view name,
+                                                 int32_t val) {
+  lorgnette::ScannerOption option;
+  option.set_name(std::string(name));
+  option.set_title(base::StrCat({name, " title"}));
+  option.set_description(base::StrCat({name, " description"}));
+  option.set_option_type(lorgnette::OptionType::TYPE_INT);
+  option.mutable_int_value()->add_value(val);
+  option.set_active(true);
   return option;
 }
 

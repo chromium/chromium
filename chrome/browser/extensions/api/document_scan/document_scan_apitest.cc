@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "chrome/browser/ash/crosapi/document_scan_ash_type_converters.h"
 #include "chrome/browser/ash/scanning/fake_lorgnette_scanner_manager.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager_factory.h"
 #include "chrome/browser/extensions/api/document_scan/document_scan_api_handler.h"
@@ -140,7 +141,7 @@ class DocumentScanApiTest : public ExtensionApiTest,
       open_response->scanner_handle = scanner.name() + "-handle";
       open_response->options.emplace();
       open_response->options.value()["option1"] =
-          CreateTestScannerOption("option1", 5);
+          mojo::ConvertForTesting(CreateTestScannerOption("option1", 5));
       document_scan()->SetOpenScannerResponse(scanner.name(),
                                               std::move(open_response));
 
