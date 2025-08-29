@@ -257,14 +257,14 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)buttonWithPrimaryColor {
   return grey_allOf([self buttonWithForegroundColor:kSolidButtonTextColor],
-                    [self buttonWithBackgroundColor:kBlueColor], nil);
+                    [self buttonWithBackgroundColorNamed:kBlueColor], nil);
 }
 
 + (id<GREYMatcher>)buttonWithSecondaryColor {
 #if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
     return grey_allOf([self buttonWithForegroundColor:kSolidBlackColor],
-                      [self buttonWithBackgroundColor:kSolidWhiteColor], nil);
+                      [self buttonWithBackgroundColor:UIColor.clearColor], nil);
   }
 #endif
   return grey_allOf([self buttonWithForegroundColor:kBlueColor], nil);
@@ -272,10 +272,14 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)buttonWithEqualWeightColor {
   return grey_allOf([self buttonWithForegroundColor:kBlueColor],
-                    [self buttonWithBackgroundColor:kBlueHaloColor], nil);
+                    [self buttonWithBackgroundColorNamed:kBlueHaloColor], nil);
 }
 
-+ (id<GREYMatcher>)buttonWithBackgroundColor:(NSString*)colorName {
++ (id<GREYMatcher>)buttonWithBackgroundColorNamed:(NSString*)colorName {
+  return [self buttonWithBackgroundColor:[UIColor colorNamed:colorName]];
+}
+
++ (id<GREYMatcher>)buttonWithBackgroundColor:(UIColor*)color {
   GREYMatchesBlock matches = ^BOOL(id element) {
     if (![element isKindOfClass:UIButton.class]) {
       return NO;
@@ -283,17 +287,15 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
     UIButton* button = base::apple::ObjCCastStrict<UIButton>(element);
 #if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
     if (@available(iOS 26, *)) {
-      return CGColorEqualToColor([UIColor colorNamed:colorName].CGColor,
-                                 button.tintColor.CGColor);
+      return CGColorEqualToColor(color.CGColor, button.tintColor.CGColor);
     }
 #endif
     return CGColorEqualToColor(
-        [UIColor colorNamed:colorName].CGColor,
-        button.configuration.background.backgroundColor.CGColor);
+        color.CGColor, button.configuration.background.backgroundColor.CGColor);
   };
 
   NSString* descriptionString =
-      [NSString stringWithFormat:@"Background color %@", colorName];
+      [NSString stringWithFormat:@"Background color %@", color];
 
   GREYDescribeToBlock describe = ^(id<GREYDescription> description) {
     [description appendText:descriptionString];

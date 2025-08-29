@@ -65,7 +65,7 @@ id<GREYMatcher> ButtonWithEqualWeightColor() {
 }
 
 id<GREYMatcher> ButtonWithBackgroundColor(NSString* colorName) {
-  return [ChromeMatchersAppInterface buttonWithBackgroundColor:colorName];
+  return [ChromeMatchersAppInterface buttonWithBackgroundColorNamed:colorName];
 }
 
 id<GREYMatcher> ContextMenuItemWithAccessibilityLabel(NSString* label) {

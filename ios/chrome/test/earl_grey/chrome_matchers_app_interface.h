@@ -45,9 +45,10 @@
 // and accessibility trait UIAccessibilityTraitButton.
 + (id<GREYMatcher>)buttonWithForegroundColor:(NSString*)colorName;
 
-// Matcher for element with background color corresponding to `colorName`
-// and accessibility trait UIAccessibilityTraitButton.
-+ (id<GREYMatcher>)buttonWithBackgroundColor:(NSString*)colorName;
+// Matcher for element with background color corresponding to `colorName` or
+// `color` and accessibility trait UIAccessibilityTraitButton.
++ (id<GREYMatcher>)buttonWithBackgroundColor:(UIColor*)color;
++ (id<GREYMatcher>)buttonWithBackgroundColorNamed:(NSString*)colorName;
 
 // Returns a matcher for element with with background/foreground colors related
 // to the Primary type and accessibility trait UIAccessibilityTraitButton.
