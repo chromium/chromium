@@ -63,6 +63,8 @@ GetDetailsForUpdateBnplPaymentInstrumentRequest::GetRequestContent() {
 
   base::Value::Dict buy_now_pay_later_info;
   buy_now_pay_later_info.Set("type", static_cast<int>(request_details_.type));
+  buy_now_pay_later_info.Set("issuer_id",
+                             std::move(request_details_.issuer_id));
   request_dict.Set("buy_now_pay_later_info", std::move(buy_now_pay_later_info));
 
   return base::WriteJson(request_dict).value();

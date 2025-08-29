@@ -324,7 +324,8 @@ void BnplManager::GetDetailsForUpdateBnplPaymentInstrument() {
   request_details.type =
       GetDetailsForUpdateBnplPaymentInstrumentRequestDetails::
           GetDetailsForUpdateBnplPaymentInstrumentType::kGetDetailsForAcceptTos;
-
+  request_details.issuer_id = autofill::ConvertToBnplIssuerIdString(
+      ongoing_flow_state_->issuer.issuer_id());
   payments_autofill_client()
       .GetPaymentsNetworkInterface()
       ->GetDetailsForUpdateBnplPaymentInstrument(

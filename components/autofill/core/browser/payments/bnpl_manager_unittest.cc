@@ -1008,7 +1008,8 @@ TEST_F(
                   /*request_details=*/
                   FieldsAre(kAppLocale, kBillingCustomerNumber,
                             issuer.payment_instrument()->instrument_id(),
-                            /*type=*/kGetDetailsForAcceptTos),
+                            /*type=*/kGetDetailsForAcceptTos,
+                            /*issuer_id=*/kBnplKlarnaIssuerId),
                   /*callback=*/_))
       .Times(1);
 
@@ -1146,7 +1147,8 @@ TEST_F(BnplManagerTest,
 TEST_F(BnplManagerTest, GetDetailsForUpdateBnplPaymentInstrument_Success) {
   bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
 
-  BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
+  BnplIssuer issuer = test::GetTestLinkedBnplIssuer(
+      IssuerId::kBnplKlarna, {PaymentInstrument::ActionRequired::kAcceptTos});
   test_api(*bnpl_manager_).GetOngoingFlowState()->issuer = issuer;
 
   EXPECT_CALL(*payments_network_interface_,
@@ -1154,7 +1156,8 @@ TEST_F(BnplManagerTest, GetDetailsForUpdateBnplPaymentInstrument_Success) {
                   /*request_details=*/
                   FieldsAre(kAppLocale, kBillingCustomerNumber,
                             issuer.payment_instrument()->instrument_id(),
-                            /*type=*/kGetDetailsForAcceptTos),
+                            /*type=*/kGetDetailsForAcceptTos,
+                            /*issuer_id=*/kBnplKlarnaIssuerId),
                   /*callback=*/_));
 
   test_api(*bnpl_manager_).GetDetailsForUpdateBnplPaymentInstrument();

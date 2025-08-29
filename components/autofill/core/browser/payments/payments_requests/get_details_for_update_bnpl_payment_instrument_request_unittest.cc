@@ -7,6 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_details_for_update_bnpl_payment_instrument_request_test_api.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -34,6 +35,7 @@ class GetDetailsForUpdateBnplPaymentInstrumentRequestTest
         GetDetailsForUpdateBnplPaymentInstrumentType::kGetDetailsForAcceptTos;
     request_details.billing_customer_number = kBillingCustomerNumber;
     request_details.instrument_id = kInstrumentId;
+    request_details.issuer_id = kBnplKlarnaIssuerId;
     request_ =
         std::make_unique<GetDetailsForUpdateBnplPaymentInstrumentRequest>(
             request_details, /*full_sync_enabled=*/true, base::DoNothing());
@@ -80,6 +82,8 @@ TEST_F(GetDetailsForUpdateBnplPaymentInstrumentRequestTest,
   EXPECT_NE(GetRequest()->GetRequestContent().find("buy_now_pay_later_info"),
             std::string::npos);
   EXPECT_NE(GetRequest()->GetRequestContent().find("type"), std::string::npos);
+  EXPECT_NE(GetRequest()->GetRequestContent().find("issuer_id"),
+            std::string::npos);
   EXPECT_NE(GetRequest()->GetRequestContent().find("instrument_id"),
             std::string::npos);
 }

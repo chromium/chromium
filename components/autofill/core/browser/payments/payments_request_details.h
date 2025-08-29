@@ -571,6 +571,8 @@ struct GetDetailsForUpdateBnplPaymentInstrumentRequestDetails {
   int64_t instrument_id;
   // The type of the GetDetailsForUpdateBnplPaymentInstrument request.
   GetDetailsForUpdateBnplPaymentInstrumentType type;
+  // The BNPL issuer ID this request is being sent for.
+  std::string issuer_id;
 };
 
 // A collection of information required to create an update BNPL payment
