@@ -26,10 +26,6 @@ namespace enterprise_management {
 class PolicyFetchResponse;
 }
 
-namespace features {
-BASE_DECLARE_FEATURE(kDeviceIdValidation);
-}  // namespace features
-
 namespace policy {
 
 // CloudPolicyStore implementation for device policy on Ash. Policy is

@@ -15,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/common/pref_names.h"
@@ -311,8 +310,6 @@ TEST_F(DeviceCloudPolicyStoreAshTest, StorePolicyBadDomain) {
 }
 
 TEST_F(DeviceCloudPolicyStoreAshTest, StoreDeviceIdValidationEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kDeviceIdValidation);
   TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetManagedPref(
       prefs::kEnrollmentVersionOS, base::Value("128"));
   PrepareExistingPolicy();
@@ -331,8 +328,6 @@ TEST_F(DeviceCloudPolicyStoreAshTest, StoreDeviceIdValidationEnabled) {
 }
 
 TEST_F(DeviceCloudPolicyStoreAshTest, StoreDeviceIdValidationEnabledError) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kDeviceIdValidation);
   TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetManagedPref(
       prefs::kEnrollmentVersionOS, base::Value("128"));
   PrepareExistingPolicy();

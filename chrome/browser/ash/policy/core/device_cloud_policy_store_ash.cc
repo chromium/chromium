@@ -35,14 +35,6 @@
 
 namespace em = enterprise_management;
 
-namespace features {
-
-BASE_FEATURE(kDeviceIdValidation,
-             "DeviceIdValidation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-}  // namespace features
-
 namespace policy {
 
 namespace {
@@ -51,10 +43,6 @@ const char kDMTokenCheckHistogram[] = "Enterprise.EnrolledPolicyHasDMToken";
 const char kPolicyCheckHistogram[] = "Enterprise.EnrolledDevicePolicyPresent";
 
 bool CanUseDeviceIdValidation() {
-  if (!base::FeatureList::IsEnabled(features::kDeviceIdValidation)) {
-    return false;
-  }
-
   // The devices are storing the OS version in the local state at enrollment,
   // starting from version M122. For those devices the stats shows 100%
   // matching of device_id from policy with the value from install attributes.
