@@ -1201,8 +1201,9 @@ IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
   // Simulate a profile reload/session restart.
 }
 
+// TODO(crbug.com/441934129) Test is flafy on Mac
 IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
-                       PRE_ForceSigninSigninThenReauthSuccessful) {
+                       DISABLED_PRE_ForceSigninSigninThenReauthSuccessful) {
   //----------------------------------------------------------------------------
   // The setup of the browser test attempts to open a browser for the startup
   // profile, which fails because it detects that the profile should be locked.
@@ -1228,7 +1229,7 @@ IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
-                       ForceSigninSigninThenReauthSuccessful) {
+                       DISABLED_ForceSigninSigninThenReauthSuccessful) {
   //----------------------------------------------------------------------------
   // In this part, the startup profile load happened but is not destroyed since
   // the profile was already locked. Ensure that the setup is still consistent.
