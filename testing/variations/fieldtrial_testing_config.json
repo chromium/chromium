@@ -13551,8 +13551,10 @@
                         "EnableReadabilityHeuristic",
                         "EnableReaderMode",
                         "EnableReaderModeDefaultBrowserPromo",
-                        "EnableReaderModePageEligibilityForToolsMenu",
                         "ReaderModeUseReadability"
+                    ],
+                    "disable_features": [
+                        "EnableReaderModePageEligibilityForToolsMenu"
                     ]
                 }
             ]
