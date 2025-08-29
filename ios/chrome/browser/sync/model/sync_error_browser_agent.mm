@@ -147,8 +147,8 @@ void SyncErrorBrowserAgent::WebStateListDidChange(
       web::WebState* detached_web_state = detach_change.detached_web_state();
       if (!detached_web_state->IsRealized()) {
         web_state_observations_.RemoveObservation(detached_web_state);
-        RemovePasswordFormManagerObserver(detached_web_state);
       }
+      RemovePasswordFormManagerObserver(detached_web_state);
       break;
     }
     case WebStateListChange::Type::kMove:
@@ -160,8 +160,8 @@ void SyncErrorBrowserAgent::WebStateListDidChange(
       web::WebState* replaced_web_state = replace_change.replaced_web_state();
       if (!replaced_web_state->IsRealized()) {
         web_state_observations_.RemoveObservation(replaced_web_state);
-        RemovePasswordFormManagerObserver(replaced_web_state);
       }
+      RemovePasswordFormManagerObserver(replaced_web_state);
       CreateReSignInInfoBarDelegate(replace_change.inserted_web_state());
       break;
     }
@@ -194,7 +194,6 @@ void SyncErrorBrowserAgent::WebStateDestroyed(web::WebState* web_state) {
 
 void SyncErrorBrowserAgent::WebStateRealized(web::WebState* web_state) {
   web_state_observations_.RemoveObservation(web_state);
-  RemovePasswordFormManagerObserver(web_state);
   CreateReSignInInfoBarDelegate(web_state);
 }
 
