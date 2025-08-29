@@ -680,10 +680,23 @@ void OnListFamilyMembersResponse(
   }
   UserActivityBrowserAgent* userActivityBrowserAgent =
       UserActivityBrowserAgent::FromBrowser(self.currentInterface.browser);
+
+  NSSet<UIOpenURLContext*>* contexts =
+      self.sceneState.connectionOptions.URLContexts;
+
+  BOOL widgetsForMIMEnabled = BUILDFLAG(ENABLE_WIDGETS_FOR_MIM);
+  if (widgetsForMIMEnabled || IsShareExtensionForMultiprofileEnabled()) {
+    // Find the first context that requires an account change.
+    WidgetContext* context = [self findContextRequiringAccountChange:contexts];
+    // Perform profile switching if needed.
+    if ([self changeProfileForContext:context contexts:contexts]) {
+      return;
+    }
+  }
+
   // Handle URL opening from
   // `UIWindowSceneDelegate scene:willConnectToSession:options:`.
-  for (UIOpenURLContext* context in self.sceneState.connectionOptions
-           .URLContexts) {
+  for (UIOpenURLContext* context in contexts) {
     URLOpenerParams* params =
         [[URLOpenerParams alloc] initWithUIOpenURLContext:context];
     [self openTabFromLaunchWithParams:params
@@ -947,39 +960,53 @@ void OnListFamilyMembersResponse(
   if (widgetsForMIMEnabled || IsShareExtensionForMultiprofileEnabled()) {
     // Find the first context that requires an account change.
     WidgetContext* context = [self findContextRequiringAccountChange:contexts];
-    if (context) {
-      // Perform profile switching if needed.
-      id<ChangeProfileCommands> changeProfileHandler = HandlerForProtocol(
-          self.sceneState.profileState.appState.appCommandDispatcher,
-          ChangeProfileCommands);
-
-      std::optional<std::string> profileName;
-
-      if ([context.gaiaID isEqualToString:app_group::kNoAccount]) {
-        // Use the personal profile name if there is no GaiaID (this happens in
-        // the sign-out scenario).
-        profileName = GetApplicationContext()
-                          ->GetProfileManager()
-                          ->GetProfileAttributesStorage()
-                          ->GetPersonalProfileName();
-      } else {
-        profileName = GetApplicationContext()
-                          ->GetAccountProfileMapper()
-                          ->FindProfileNameForGaiaID(GaiaId(context.gaiaID));
-      }
-      if (profileName.has_value()) {
-        [changeProfileHandler
-            changeProfile:*profileName
-                 forScene:self.sceneState
-                   reason:ChangeProfileReason::kSwitchAccountsFromWidget
-             continuation:CreateChangeProfileAuthenticationContinuation(
-                              context, contexts)];
-        return;
-      }
+    // Perform profile switching if needed.
+    if ([self changeProfileForContext:context contexts:contexts]) {
+      // Don't open the URLs if the profile was changed.
+      return;
     }
   }
 
   [self openURLContexts:contexts];
+}
+
+// Returns YES if a profile change was triggered.
+- (BOOL)changeProfileForContext:(WidgetContext*)context
+                       contexts:(NSSet<UIOpenURLContext*>*)contexts {
+  if (!context) {
+    return NO;
+  }
+
+  // Perform profile switching if needed.
+  id<ChangeProfileCommands> changeProfileHandler = HandlerForProtocol(
+      self.sceneState.profileState.appState.appCommandDispatcher,
+      ChangeProfileCommands);
+
+  std::optional<std::string> profileName;
+
+  if ([context.gaiaID isEqualToString:app_group::kNoAccount]) {
+    // Use the personal profile name if there is no GaiaID (this happens in
+    // the sign-out scenario).
+    profileName = GetApplicationContext()
+                      ->GetProfileManager()
+                      ->GetProfileAttributesStorage()
+                      ->GetPersonalProfileName();
+  } else {
+    profileName = GetApplicationContext()
+                      ->GetAccountProfileMapper()
+                      ->FindProfileNameForGaiaID(GaiaId(context.gaiaID));
+  }
+
+  if (!profileName.has_value()) {
+    return NO;
+  }
+  [changeProfileHandler
+      changeProfile:*profileName
+           forScene:self.sceneState
+             reason:ChangeProfileReason::kSwitchAccountsFromWidget
+       continuation:CreateChangeProfileAuthenticationContinuation(context,
+                                                                  contexts)];
+  return YES;
 }
 
 - (BOOL)multipleAccountSwitchesRequired:(NSSet<UIOpenURLContext*>*)URLContexts {
