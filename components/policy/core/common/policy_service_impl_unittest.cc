@@ -32,7 +32,6 @@
 
 using ::testing::_;
 using ::testing::AnyNumber;
-using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::Mock;
 using ::testing::Return;
@@ -155,11 +154,11 @@ class PolicyServiceTest : public testing::Test {
     providers.push_back(&provider2_);
     auto migrator = std::make_unique<MockPolicyMigrator>();
     EXPECT_CALL(*migrator, Migrate(_))
-        .WillRepeatedly(Invoke([](PolicyBundle* bundle) {
+        .WillRepeatedly([](PolicyBundle* bundle) {
           bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
               .Set("migrated", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                    POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
-        }));
+        });
     PolicyServiceImpl::Migrators migrators;
     migrators.push_back(std::move(migrator));
     policy_service_ = std::make_unique<PolicyServiceImpl>(

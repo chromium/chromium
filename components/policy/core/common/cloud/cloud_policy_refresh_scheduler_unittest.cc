@@ -34,7 +34,6 @@
 namespace em = enterprise_management;
 
 using testing::_;
-using testing::Invoke;
 using testing::Mock;
 
 namespace policy {
@@ -88,9 +87,9 @@ class CloudPolicyRefreshSchedulerTest : public testing::Test {
 
     // Remove mock observer from any scheduler that is being destroyed.
     ON_CALL(mock_observer_, OnRefreshSchedulerDestruction)
-        .WillByDefault(Invoke([&](CloudPolicyRefreshScheduler* scheduler) {
+        .WillByDefault([&](CloudPolicyRefreshScheduler* scheduler) {
           scheduler->RemoveObserver(&mock_observer_);
-        }));
+        });
   }
 
   CloudPolicyRefreshScheduler* CreateRefreshScheduler() {

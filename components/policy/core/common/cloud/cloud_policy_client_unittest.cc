@@ -63,7 +63,6 @@ using testing::_;
 using testing::Contains;
 using testing::DoAll;
 using testing::ElementsAre;
-using testing::Invoke;
 using testing::Key;
 using testing::Mock;
 using testing::NiceMock;

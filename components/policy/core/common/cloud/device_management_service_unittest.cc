@@ -42,7 +42,6 @@
 
 using testing::_;
 using testing::DoAll;
-using testing::Invoke;
 using testing::Mock;
 
 namespace em = enterprise_management;
@@ -107,10 +106,10 @@ class DeviceManagementServiceTestBase : public testing::Test {
   void SetUp() override {
     // Verify the metrics when job is done.
     ON_CALL(*this, OnJobDone(_, _, _, _))
-        .WillByDefault(Invoke(
+        .WillByDefault(
             [this](DeviceManagementService::Job*, DeviceManagementStatus status,
                    int net_error,
-                   const std::string&) { VerifyMetrics(status, net_error); }));
+                   const std::string&) { VerifyMetrics(status, net_error); });
   }
 
   void TearDown() override {
@@ -1049,12 +1048,11 @@ TEST_F(DeviceManagementServiceTest, CancelDuringCallback) {
   ASSERT_TRUE(request);
 
   EXPECT_CALL(*this, OnJobDone(_, _, _, _))
-      .WillOnce(DoAll(ResetPointer(&request_job),
-                      Invoke([this](DeviceManagementService::Job*,
-                                    DeviceManagementStatus status,
-                                    int net_error, const std::string&) {
-                        VerifyMetrics(status, net_error);
-                      })));
+      .WillOnce(DoAll(
+          ResetPointer(&request_job),
+          [this](DeviceManagementService::Job*, DeviceManagementStatus status,
+                 int net_error,
+                 const std::string&) { VerifyMetrics(status, net_error); }));
   EXPECT_CALL(*this, OnJobRetry(_, _)).Times(0);
   EXPECT_CALL(*this, OnShouldJobRetry(500, std::string()));
 
