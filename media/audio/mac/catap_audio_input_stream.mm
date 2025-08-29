@@ -83,15 +83,19 @@ OSStatus DeviceIoProc(AudioDeviceID,
                       const AudioTimeStamp* output_time,
                       void* client_data) {
   CatapAudioInputStream* catap_input_stream =
-      (CatapAudioInputStream*)client_data;
+      reinterpret_cast<CatapAudioInputStream*>(client_data);
   CHECK(catap_input_stream != nullptr);
-  // SAFETY: The type of inputData cannot be changed since it's received from
-  // the OS. Wrap it immediately using its specified size.
-  base::span UNSAFE_BUFFERS(
-      input_buffers(input_data->mBuffers, input_data->mNumberBuffers));
 
-  catap_input_stream->OnCatapSample(input_buffers, input_time);
+  // Multiple buffers correspond to multiple streams. This is not expected
+  // during system audio capture, and the OnCatapSample() function is designed
+  // to only process the first buffer. A DCHECK is used here to notify us in
+  // debug builds if the OS provides more than one buffer. This would indicate
+  // an unexpected change in behavior that requires investigation.
+  DCHECK_EQ(input_data->mNumberBuffers, 1u);
 
+  if (input_data->mNumberBuffers > 0 && input_data->mBuffers->mData != NULL) {
+    catap_input_stream->OnCatapSample(input_data->mBuffers, input_time);
+  }
   return noErr;
 }
 
@@ -633,12 +637,12 @@ void CatapAudioInputStream::SetOutputDeviceForAec(
   return;
 }
 
-void CatapAudioInputStream::OnCatapSample(
-    const base::span<const AudioBuffer> input_buffers,
-    const AudioTimeStamp* input_time) {
+void CatapAudioInputStream::OnCatapSample(const AudioBuffer* input_buffer,
+                                          const AudioTimeStamp* input_time) {
+  CHECK(input_buffer);
+  CHECK(input_time);
   base::TimeTicks capture_time;
-  glitch_helper_.OnFramesReceived(
-      *input_time, input_buffers.size() * params_.frames_per_buffer());
+  glitch_helper_.OnFramesReceived(*input_time, params_.frames_per_buffer());
   if (!(input_time->mFlags & kAudioTimeStampHostTimeValid)) {
     // Fallback if there's no host time stamp. There's no evidence that this
     // ever happens, so this is just in case.
@@ -653,24 +657,20 @@ void CatapAudioInputStream::OnCatapSample(
   TRACE_EVENT1("audio", "CatapAudioInputStream::OnCatapSample", "capture_time",
                capture_time);
 
-  for (auto buffer : input_buffers) {
-    float* data = (float*)buffer.mData;
-    int frames =
-        buffer.mDataByteSize / (buffer.mNumberChannels * sizeof(Float32));
-    CHECK_EQ(static_cast<unsigned int>(params_.channels()),
-             buffer.mNumberChannels);
-    CHECK_EQ(params_.frames_per_buffer(), frames);
-    audio_bus_->FromInterleaved<Float32SampleTypeTraits>(data, frames);
+  float* data = (float*)input_buffer->mData;
+  int frames = input_buffer->mDataByteSize /
+               (input_buffer->mNumberChannels * sizeof(Float32));
+  CHECK_EQ(static_cast<unsigned int>(params_.channels()),
+           input_buffer->mNumberChannels);
+  CHECK_EQ(params_.frames_per_buffer(), frames);
+  audio_bus_->FromInterleaved<Float32SampleTypeTraits>(data, frames);
 
-    sink_->OnData(audio_bus_.get(), capture_time, kMaxVolume,
-                  glitch_helper_.ConsumeGlitchInfo());
+  sink_->OnData(audio_bus_.get(), capture_time, kMaxVolume,
+                glitch_helper_.ConsumeGlitchInfo());
 
-    capture_time += buffer_frames_duration_;
-  }
-
-  // Store the current capture time and use as a fallback in case there's no
-  // host time provided with the next callback.
-  next_expected_capture_time_ = capture_time;
+  // Stores the time of the next expected audio callback. This is used as a
+  // fallback if the host doesn't provide a timestamp.
+  next_expected_capture_time_ = capture_time + buffer_frames_duration_;
 }
 
 NSArray<NSNumber*>* CatapAudioInputStream::GetProcessAudioDeviceIds(

@@ -102,7 +102,7 @@ class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStream
   bool IsMuted() override;
   void SetOutputDeviceForAec(const std::string& output_device_id) override;
 
-  void OnCatapSample(const base::span<const AudioBuffer> input_buffers,
+  void OnCatapSample(const AudioBuffer* input_buffer,
                      const AudioTimeStamp* input_time);
   void OnError();
 
