@@ -12,6 +12,7 @@
 #include "base/version.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/install_static/install_details.h"
+#include "chrome/updater/registration_data.h"
 #include "components/version_info/version_info.h"
 
 std::string BrowserUpdaterClient::GetAppId() {
@@ -27,7 +28,7 @@ updater::RegistrationRequest BrowserUpdaterClient::GetRegistrationRequest() {
   updater::RegistrationRequest req;
   req.app_id = GetAppId();
   google_brand::GetBrand(&req.brand_code);
-  req.version = base::Version(version_info::GetVersionNumber());
+  req.version = version_info::GetVersionNumber();
   req.ap =
       base::SysWideToUTF8(install_static::InstallDetails::Get().update_ap());
   return req;

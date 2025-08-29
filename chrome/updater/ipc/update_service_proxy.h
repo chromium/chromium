@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
+#include "chrome/updater/registration_data.h"
 #include "chrome/updater/update_service.h"
 
 #if BUILDFLAG(IS_POSIX)
@@ -29,8 +30,6 @@ enum class PolicyFetchReason;
 }  // namespace policy
 
 namespace updater {
-
-struct RegistrationRequest;
 
 // UpdateServiceProxy is an UpdateService that connects to the active updater
 // instance server and runs its implementation of UpdateService methods. All

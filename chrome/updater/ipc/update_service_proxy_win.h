@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
+#include "chrome/updater/registration_data.h"
 #include "chrome/updater/update_service.h"
 
 namespace base {
@@ -28,7 +29,6 @@ namespace updater {
 
 using RpcError = HRESULT;
 
-struct RegistrationRequest;
 enum class UpdaterScope;
 class UpdateServiceProxyImplImpl;
 

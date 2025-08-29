@@ -17,6 +17,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
+#include "chrome/updater/registration_data.h"
 #include "chrome/updater/update_service.h"
 
 namespace base {
@@ -37,7 +38,6 @@ namespace updater {
 class Configurator;
 class PersistedData;
 class PolicyService;
-struct RegistrationRequest;
 
 // All functions and callbacks must be called on the same sequence.
 class UpdateServiceImplImpl : public UpdateService {

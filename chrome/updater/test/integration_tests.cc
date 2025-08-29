@@ -2576,7 +2576,7 @@ TEST_F(IntegrationTest, RegisterApp) {
   registration.brand_code = "TSBD";
   registration.brand_path = base::FilePath::FromUTF8Unsafe("/bp");
   registration.ap = "TestAp";
-  registration.version = base::Version("11.22.33.44");
+  registration.version = "11.22.33.44";
   registration.existence_checker_path = base::FilePath::FromUTF8Unsafe("/tmp");
   registration.cohort = "cohort_test";
   test_commands_->RegisterApp(registration);

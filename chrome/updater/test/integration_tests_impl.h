@@ -21,6 +21,7 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/external_constants.h"
+#include "chrome/updater/registration_data.h"
 #include "chrome/updater/test/server.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_version.h"
@@ -42,7 +43,6 @@ class TimeDelta;
 
 namespace updater {
 enum class UpdaterScope;
-struct RegistrationRequest;
 }  // namespace updater
 
 namespace wireless_android_enterprise_devicemanagement {

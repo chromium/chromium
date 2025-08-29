@@ -688,7 +688,7 @@ void UpdateServiceImplImpl::MaybeInstallEnterpriseCompanionAppOTA(
   VLOG(1) << "Starting an OTA installation of the enterprise companion app.";
   RegistrationRequest registration;
   registration.app_id = enterprise_companion::kCompanionAppId;
-  registration.version = base::Version(kNullVersion);
+  registration.version = kNullVersion;
   RegisterApp(
       registration,
       base::BindOnce([](int registration_result) {})
@@ -773,23 +773,24 @@ void UpdateServiceImplImpl::RegisterApp(
   if (!IsUpdaterOrCompanionApp(request.app_id)) {
     config_->GetUpdaterPersistedData()->SetHadApps();
   }
-  bool send_event = !config_->GetUpdaterPersistedData()
-                         ->GetProductVersion(request.app_id)
-                         .IsValid() &&
-                    request.version.IsValid() &&
-                    request.version > base::Version(kNullVersion) &&
-                    !config_->GetUpdaterPersistedData()->GetEulaRequired() &&
-                    !base::EqualsCaseInsensitiveASCII(
-                        request.app_id, enterprise_companion::kCompanionAppId);
+  bool send_event =
+      !config_->GetUpdaterPersistedData()
+           ->GetProductVersion(request.app_id)
+           .IsValid() &&
+      base::Version(request.version).IsValid() &&
+      base::Version(request.version) > base::Version(kNullVersion) &&
+      !config_->GetUpdaterPersistedData()->GetEulaRequired() &&
+      !base::EqualsCaseInsensitiveASCII(request.app_id,
+                                        enterprise_companion::kCompanionAppId);
   config_->GetUpdaterPersistedData()->RegisterApp(request);
   if (send_event) {
     update_client::CrxComponent install_data;
     install_data.ap = request.ap;
     install_data.app_id = request.app_id;
     install_data.brand = request.brand_code;
-    install_data.lang = request.lang;
+    install_data.lang = request.lang.value_or("");
     install_data.requires_network_encryption = false;
-    install_data.version = request.version;
+    install_data.version = base::Version(request.version);
     update_client_->SendPing(
         install_data,
         {.event_type = update_client::protocol_request::kEventInstall,
@@ -857,7 +858,7 @@ void UpdateServiceImplImpl::RunPeriodicTasks(base::OnceClosure callback) {
       base::Version(kUpdaterVersion) > registered_updater_version) {
     RegistrationRequest updater_request;
     updater_request.app_id = kUpdaterAppId;
-    updater_request.version = base::Version(kUpdaterVersion);
+    updater_request.version = kUpdaterVersion;
     RegisterApp(updater_request, base::DoNothing());
   }
 

@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/updater/external_constants.h"
+#include "chrome/updater/registration_data.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test/test_scope.h"
 #include "chrome/updater/update_service.h"
@@ -22,10 +23,6 @@ namespace base {
 class FilePath;
 class Version;
 }  // namespace base
-
-namespace updater {
-struct RegistrationRequest;
-}  // namespace updater
 
 namespace updater::test {
 

@@ -1225,10 +1225,10 @@ bool MigrateLegacyUpdaters(
         continue;
       }
 
-      registration.version = base::Version(base::SysWideToUTF8(pv));
-      if (!registration.version.IsValid()) {
+      if (!base::Version(base::SysWideToUTF8(pv)).IsValid()) {
         continue;
       }
+      registration.version = base::SysWideToUTF8(pv);
 
       base::win::RegKey client_state_key;
       if (client_state_key.Open(root, GetAppClientStateKey(app_id).c_str(),
@@ -1282,9 +1282,8 @@ bool MigrateLegacyUpdaters(
                 ERROR_SUCCESS) {
               registration.cohort_hint = base::SysWideToUTF8(cohort_hint);
             }
-            VLOG(2) << "Cohort values: " << registration.cohort << ", "
-                    << registration.cohort_name << ", "
-                    << registration.cohort_hint;
+            VLOG(2) << "Cohort values: " << cohort << ", " << cohort_name
+                    << ", " << cohort_hint;
           }
         }
       }

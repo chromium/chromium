@@ -2081,7 +2081,7 @@ void InstallApp(UpdaterScope scope,
             ERROR_SUCCESS);
   RegistrationRequest registration;
   registration.app_id = app_id;
-  registration.version = version;
+  registration.version = version.GetString();
   RegisterApp(scope, registration);
 }
 

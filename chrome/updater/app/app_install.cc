@@ -58,7 +58,7 @@ class AppInstallControllerImpl : public AppInstallController {
     // TODO(crbug.com/40282228): Factor out common code from app_install_win.cc.
     RegistrationRequest request;
     request.app_id = app_id;
-    request.version = base::Version(kNullVersion);
+    request.version = kNullVersion;
     std::optional<tagging::AppArgs> app_args = GetAppArgs(app_id);
     std::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
     if (app_args) {
@@ -290,7 +290,7 @@ void AppInstall::RegisterUpdater() {
 
   RegistrationRequest request;
   request.app_id = kUpdaterAppId;
-  request.version = base::Version(kUpdaterVersion);
+  request.version = kUpdaterVersion;
   update_service_->RegisterApp(
       request, base::BindOnce(
                    [](scoped_refptr<AppInstall> app_install, int result) {

@@ -20,6 +20,7 @@
 #include "chrome/updater/branded_constants.h"
 #include "chrome/updater/check_for_updates_task.h"
 #include "chrome/updater/configurator.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/registration_data.h"
@@ -97,10 +98,9 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
     // by registering a higher version of the qualification app. This is because
     // the qualification app update will not happen if the update check period
     // is set to zero.
-    registration.version =
-        base::Version(config_->NextCheckDelay().is_zero()
-                          ? kQualificationUpdatesSuppressedVersion
-                          : kQualificationInitialVersion);
+    registration.version = config_->NextCheckDelay().is_zero()
+                               ? kQualificationUpdatesSuppressedVersion
+                               : kQualificationInitialVersion;
     base::MakeRefCounted<UpdateServiceImpl>(GetUpdaterScope(), config_)
         ->RegisterApp(registration,
                       base::BindOnce(&UpdateServiceInternalQualifyingImpl::

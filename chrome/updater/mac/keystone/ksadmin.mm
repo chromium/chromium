@@ -504,7 +504,7 @@ void KSAdminApp::Register() {
   registration.app_id = SwitchValue(kCommandProductId);
   registration.ap = SwitchValue(kCommandTag);
   registration.brand_path = base::FilePath(SwitchValue(kCommandBrandPath));
-  registration.version = base::Version(SwitchValue(kCommandVersion));
+  registration.version = SwitchValue(kCommandVersion);
   registration.existence_checker_path =
       base::FilePath(SwitchValue(kCommandXCPath));
   const std::string brand_key = SwitchValue(kCommandBrandKey);

@@ -204,7 +204,7 @@ TEST(KSAdminTest, Register) {
         EXPECT_EQ(request.ap_path, base::FilePath("tag_path"));
         EXPECT_EQ(request.version_key, "version_key");
         EXPECT_EQ(request.version_path, base::FilePath("version_path"));
-        EXPECT_EQ(request.version, base::Version("1.2.3.4"));
+        EXPECT_EQ(request.version, "1.2.3.4");
         EXPECT_EQ(request.existence_checker_path, base::FilePath("/xc_path"));
         std::move(callback).Run(0);
       });

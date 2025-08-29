@@ -140,7 +140,7 @@ class UpdaterIPCTestCase : public testing::Test {
     r.ap = "ap";
     r.ap_path = base::FilePath("ap_path");
     r.ap_key = "ap_key";
-    r.version = base::Version("1.2.3.4");
+    r.version = "1.2.3.4";
     r.version_path = base::FilePath("version_path");
     r.version_key = "version_key";
     r.existence_checker_path = base::FilePath("ecp");

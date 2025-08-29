@@ -219,7 +219,7 @@ void InstallApp(UpdaterScope scope,
                 const base::Version& version) {
   RegistrationRequest registration;
   registration.app_id = app_id;
-  registration.version = version;
+  registration.version = version.GetString();
   RegisterApp(scope, registration);
 }
 

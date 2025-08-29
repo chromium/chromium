@@ -638,15 +638,17 @@ class UpdateServiceProxyImplImpl
           if (!base::UTF8ToWide(request.ap.c_str(), request.ap.size(), &ap_w)) {
             return false;
           }
-          std::string version_str = request.version.GetString();
+          std::string version_str = request.version;
           if (!base::UTF8ToWide(version_str.c_str(), version_str.size(),
                                 &version_w)) {
             return false;
           }
           existence_checker_path_w = request.existence_checker_path.value();
-          if (!base::UTF8ToWide(request.install_id.c_str(),
-                                request.install_id.size(), &install_id_w)) {
-            return false;
+          if (request.install_id) {
+            if (!base::UTF8ToWide(request.install_id->c_str(),
+                                  request.install_id->size(), &install_id_w)) {
+              return false;
+            }
           }
           return true;
         }()) {
@@ -894,7 +896,7 @@ class UpdateServiceProxyImplImpl
           if (!base::UTF8ToWide(request.ap.c_str(), request.ap.size(), &ap_w)) {
             return false;
           }
-          std::string version_str = request.version.GetString();
+          std::string version_str = request.version;
           if (!base::UTF8ToWide(version_str.c_str(), version_str.size(),
                                 &version_w)) {
             return false;
@@ -910,9 +912,11 @@ class UpdateServiceProxyImplImpl
                                 &install_data_index_w)) {
             return false;
           }
-          if (!base::UTF8ToWide(request.install_id.c_str(),
-                                request.install_id.size(), &install_id_w)) {
-            return false;
+          if (request.install_id) {
+            if (!base::UTF8ToWide(request.install_id->c_str(),
+                                  request.install_id->size(), &install_id_w)) {
+              return false;
+            }
           }
           if (!base::UTF8ToWide(language.c_str(), language.size(),
                                 &language_w)) {

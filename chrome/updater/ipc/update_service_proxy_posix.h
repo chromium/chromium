@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
-#include "chrome/updater/mojom/updater_service.mojom.h"
+#include "chrome/updater/registration_data.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -35,8 +35,6 @@ class PlatformChannelEndpoint;
 namespace updater {
 
 using RpcError = int;
-
-struct RegistrationRequest;
 
 // UpdateServiceProxyImpl connects to the active updater instance server and
 // runs its implementation of UpdateService methods. All functions and

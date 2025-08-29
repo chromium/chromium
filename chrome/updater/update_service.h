@@ -15,6 +15,7 @@
 #include "base/version.h"
 #include "chrome/updater/enum_traits.h"
 #include "chrome/updater/mojom/updater_service.mojom.h"
+#include "chrome/updater/registration_data.h"
 #include "chrome/updater/util/util.h"
 #include "components/update_client/update_client.h"
 
@@ -23,8 +24,6 @@ enum class PolicyFetchReason;
 }  // namespace policy
 
 namespace updater {
-
-struct RegistrationRequest;
 
 enum class UpdaterScope;
 

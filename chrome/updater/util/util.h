@@ -20,6 +20,7 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "chrome/updater/registration_data.h"
 #include "chrome/updater/tag.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
@@ -44,8 +45,6 @@ inline std::ostream& operator<<(std::ostream& os, std::optional<T> opt) {
 }  // namespace base
 
 namespace updater {
-
-struct RegistrationRequest;
 
 // Converts an unsigned integral to a signed one. Returns -1 if the value is
 // out of the range of the target type.

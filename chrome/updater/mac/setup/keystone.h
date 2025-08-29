@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "chrome/updater/registration_data.h"
 #include "chrome/updater/updater_scope.h"
 
 namespace base {
@@ -16,8 +17,6 @@ class FilePath;
 }  // namespace base
 
 namespace updater {
-
-struct RegistrationRequest;
 
 // Create a plist file that makes legacy Keystone installer believe that a
 // healthy newer version updater already exists and thus won't over-install.

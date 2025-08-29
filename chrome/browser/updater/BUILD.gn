@@ -27,6 +27,7 @@ if (is_win || is_mac) {
       "//chrome/common:version_header",
       "//chrome/updater:branding_header",
       "//chrome/updater:browser_sources",
+      "//chrome/updater/mojom",
       "//components/version_info",
     ]
 

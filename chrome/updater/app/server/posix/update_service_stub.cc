@@ -19,6 +19,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/version.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/ipc/ipc_names.h"
 #include "chrome/updater/ipc/ipc_security.h"
 #include "chrome/updater/mojom/updater_service.mojom-forward.h"
@@ -30,37 +31,6 @@
 
 namespace updater {
 namespace {
-
-// Helper functions for converting between mojom types and their native
-// counterparts.
-[[nodiscard]] updater::RegistrationRequest MakeRegistrationRequest(
-    const mojom::RegistrationRequestPtr& mojom) {
-  CHECK(mojom);
-
-  updater::RegistrationRequest request;
-  request.app_id = mojom->app_id;
-  request.brand_code = mojom->brand_code;
-  request.brand_path = mojom->brand_path;
-  request.ap = mojom->ap;
-  request.version = base::Version(mojom->version);
-  request.existence_checker_path = mojom->existence_checker_path;
-  if (mojom->version_path) {
-    request.version_path = *mojom->version_path;
-  }
-  if (mojom->version_key) {
-    request.version_key = *mojom->version_key;
-  }
-  if (mojom->ap_path) {
-    request.ap_path = *mojom->ap_path;
-  }
-  if (mojom->ap_key) {
-    request.ap_key = *mojom->ap_key;
-  }
-  if (mojom->install_id) {
-    request.install_id = *mojom->install_id;
-  }
-  return request;
-}
 
 [[nodiscard]] mojom::AppStatePtr MakeMojoAppState(
     const updater::UpdateService::AppState& app_state) {
@@ -266,8 +236,8 @@ void UpdateServiceStub::RegisterApp(mojom::RegistrationRequestPtr request,
                                     RegisterAppCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
-  impl_->RegisterApp(MakeRegistrationRequest(request),
-                     std::move(callback).Then(task_end_listener_));
+  CHECK(request);
+  impl_->RegisterApp(*request, std::move(callback).Then(task_end_listener_));
 }
 
 void UpdateServiceStub::GetAppStates(GetAppStatesCallback callback) {
@@ -351,8 +321,8 @@ void UpdateServiceStub::Install(mojom::RegistrationRequestPtr registration,
 
   auto [state_change_callback, on_complete_callback] =
       MakeStateChangeObserverCallbacks(std::move(observer));
-  impl_->Install(MakeRegistrationRequest(registration), client_install_data,
-                 install_data_index,
+  CHECK(registration);
+  impl_->Install(*registration, client_install_data, install_data_index,
                  static_cast<updater::UpdateService::Priority>(priority),
                  language.value_or(""), std::move(state_change_callback),
                  std::move(on_complete_callback).Then(task_end_listener_));

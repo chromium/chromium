@@ -662,6 +662,9 @@ inline constexpr char kInstallSourceOffline[] = "offline";
 inline constexpr char kInstallSourcePolicy[] = "policy";
 inline constexpr char kInstallSourceOnDemand[] = "ondemand";
 
+inline constexpr int kRegistrationSuccess = 0;
+inline constexpr int kRegistrationError = 1;
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_CONSTANTS_H_

@@ -471,7 +471,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
           if (!persisted_data->GetProductVersion(obj->app_id_).IsValid()) {
             result->new_install = true;
             request.brand_code = obj->brand_code_;
-            request.version = base::Version(kNullVersion);
+            request.version = kNullVersion;
           }
 
           persisted_data->RegisterApp(request);
@@ -579,7 +579,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
 
     RegistrationRequest request;
     request.app_id = app_id_;
-    request.version = base::Version(kNullVersion);
+    request.version = kNullVersion;
     request.brand_code = brand_code_;
     request.ap = ap_;
 

@@ -104,11 +104,7 @@ constexpr base::TimeDelta kConnectionTimeout = base::Minutes(3);
 
 [[nodiscard]] mojom::RegistrationRequestPtr MakeRegistrationRequest(
     const RegistrationRequest& request) {
-  return mojom::RegistrationRequest::New(
-      request.app_id, request.brand_code, request.brand_path, request.ap,
-      request.version.GetString(), request.existence_checker_path,
-      request.ap_path, request.ap_key, request.version_path,
-      request.version_key, request.install_id);
+  return mojom::RegistrationRequest::New(request);
 }
 
 class StateChangeObserverImpl : public mojom::StateChangeObserver {

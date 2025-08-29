@@ -517,7 +517,7 @@ void AppInstallControllerImpl::InstallApp(
 
   RegistrationRequest request;
   request.app_id = app_id_;
-  request.version = base::Version(kNullVersion);
+  request.version = kNullVersion;
   std::optional<tagging::AppArgs> app_args = GetAppArgs(app_id_);
   std::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
   if (app_args) {
@@ -653,8 +653,8 @@ void AppInstallControllerImpl::DoInstallAppOffline(
   request.app_id = app_id_;
   const base::Version installed_version =
       LookupVersion(GetUpdaterScope(), app_id_, {}, {}, {});
-  request.version = installed_version.IsValid() ? installed_version
-                                                : base::Version(kNullVersion);
+  request.version = installed_version.IsValid() ? installed_version.GetString()
+                                                : kNullVersion;
 
   std::optional<tagging::AppArgs> app_args = GetAppArgs(app_id_);
   if (app_args) {

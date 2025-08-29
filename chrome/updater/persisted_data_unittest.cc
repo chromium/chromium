@@ -107,7 +107,7 @@ TEST(PersistedDataTest, RemoveAppId) {
   data.lang = "somelang";
   data.brand_code = "somebrand";
   data.ap = "arandom-ap=likethis";
-  data.version = base::Version("1.0");
+  data.version = "1.0";
   data.existence_checker_path =
       base::FilePath(FILE_PATH_LITERAL("some/file/path"));
 
@@ -118,7 +118,7 @@ TEST(PersistedDataTest, RemoveAppId) {
   data.lang = "somelang";
   data.brand_code = "somebrand";
   data.ap = "arandom-ap=likethis";
-  data.version = base::Version("2.0");
+  data.version = "2.0";
   data.existence_checker_path =
       base::FilePath(FILE_PATH_LITERAL("some/file/path"));
 
@@ -147,21 +147,21 @@ TEST(PersistedDataTest, RegisterApp_SetFirstActive) {
   data.lang = "somelang";
   data.brand_code = "somebrand";
   data.ap = "arandom-ap=likethis";
-  data.version = base::Version("1.0");
+  data.version = "1.0";
   data.existence_checker_path =
       base::FilePath(FILE_PATH_LITERAL("some/file/path"));
   metadata->RegisterApp(data);
   EXPECT_EQ(metadata->GetDateLastActive("someappid"), -1);
   EXPECT_EQ(metadata->GetDateLastRollCall("someappid"), -1);
 
-  data.version = base::Version("2.0");
+  data.version = "2.0";
   data.dla = 1221;
   data.dlrc = 1221;
   metadata->RegisterApp(data);
   EXPECT_EQ(metadata->GetDateLastActive("someappid"), 1221);
   EXPECT_EQ(metadata->GetDateLastRollCall("someappid"), 1221);
 
-  data.version = base::Version("3.0");
+  data.version = "3.0";
   data.dla = std::nullopt;
   data.dlrc = std::nullopt;
   metadata->RegisterApp(data);
@@ -264,7 +264,7 @@ TEST_F(PersistedDataRegistrationRequestTest, RegistrationRequest) {
   data.lang = "somelang";
   data.brand_code = "somebrand";
   data.ap = "arandom-ap=likethis";
-  data.version = base::Version("1.0");
+  data.version = "1.0";
   data.existence_checker_path =
       base::FilePath(FILE_PATH_LITERAL("some/file/path"));
   data.cohort = "testcohort";
@@ -316,7 +316,7 @@ TEST_F(PersistedDataRegistrationRequestTest, RegistrationRequestPartial) {
   data.lang = "somelang";
   data.brand_code = "somebrand";
   data.ap = "arandom-ap=likethis";
-  data.version = base::Version("1.0");
+  data.version = "1.0";
   data.existence_checker_path =
       base::FilePath(FILE_PATH_LITERAL("some/file/path"));
   metadata->RegisterApp(data);
@@ -342,7 +342,7 @@ TEST_F(PersistedDataRegistrationRequestTest, RegistrationRequestPartial) {
   RegistrationRequest data3;
   data3.app_id = "someappid3";
   data3.brand_code = "somebrand";
-  data3.version = base::Version("1.0");
+  data3.version = "1.0";
   metadata->RegisterApp(data3);
   EXPECT_TRUE(metadata->GetProductVersion("someappid3").IsValid());
   EXPECT_EQ("1.0", metadata->GetProductVersion("someappid3").GetString());

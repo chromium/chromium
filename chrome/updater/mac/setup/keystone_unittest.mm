@@ -109,7 +109,7 @@ TEST_F(KeystoneTest, MigrateKeystoneApps) {
   EXPECT_TRUE(registration_requests[0].brand_code.empty());
   EXPECT_TRUE(registration_requests[0].brand_path.empty());
   EXPECT_EQ(registration_requests[0].ap, "canary");
-  EXPECT_EQ(registration_requests[0].version, base::Version("1.2.1"));
+  EXPECT_EQ(registration_requests[0].version, "1.2.1");
   EXPECT_EQ(registration_requests[0].existence_checker_path,
             base::FilePath("/"));
   EXPECT_FALSE(registration_requests[0].dla);   // Value is too big.
@@ -119,8 +119,7 @@ TEST_F(KeystoneTest, MigrateKeystoneApps) {
   EXPECT_TRUE(registration_requests[1].brand_code.empty());
   EXPECT_EQ(registration_requests[1].brand_path, base::FilePath("/"));
   EXPECT_EQ(registration_requests[1].ap, "GOOG");
-  EXPECT_EQ(registration_requests[1].version,
-            base::Version("101.100.1000.9999"));
+  EXPECT_EQ(registration_requests[1].version, "101.100.1000.9999");
   EXPECT_EQ(registration_requests[1].existence_checker_path,
             base::FilePath("/"));
   EXPECT_EQ(registration_requests[1].cohort, "TestCohort");

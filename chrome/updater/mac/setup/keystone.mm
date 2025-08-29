@@ -25,6 +25,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/mac/setup/ks_tickets.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/updater_branding.h"
@@ -340,9 +341,9 @@ bool MigrateKeystoneApps(
       const base::Version version(
           base::SysNSStringToUTF8([ticket determineVersion]));
       if (version.IsValid()) {
-        registration.version = version;
+        registration.version = version.GetString();
       } else {
-        registration.version = base::Version(kNullVersion);
+        registration.version = kNullVersion;
       }
       if (ticket.versionPath && ticket.versionKey) {
         registration.version_path =
