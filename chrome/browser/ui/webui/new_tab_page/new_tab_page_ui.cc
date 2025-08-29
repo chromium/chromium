@@ -87,6 +87,8 @@
 #include "components/google/core/common/google_util.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/history_clusters/core/features.h"
+#include "components/ntp_tiles/features.h"
+#include "components/ntp_tiles/most_visited_sites.h"
 #include "components/ntp_tiles/tile_type.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -1014,7 +1016,9 @@ void NewTabPageUI::CreatePageHandler(
       web_contents(), GURL(chrome::kChromeUINewTabPageURL),
       navigation_start_time_);
   most_visited_page_handler_->EnableTileTypes(
-      /*enable_custom_links=*/IsCustomLinksEnabled());
+      ntp_tiles::MostVisitedSites::EnableTileTypesOptions()
+          .with_custom_links(IsCustomLinksEnabled())
+          .with_enterprise_shortcuts(IsEnterpriseShortcutsEnabled()));
   most_visited_page_handler_->SetShortcutsVisible(IsShortcutsVisible());
 }
 
@@ -1121,8 +1125,23 @@ void NewTabPageUI::DidStartNavigation(
 }
 
 bool NewTabPageUI::IsCustomLinksEnabled() const {
-  return profile_->GetPrefs()->GetInteger(ntp_prefs::kNtpShortcutsType) ==
-         static_cast<int>(ntp_tiles::TileType::kCustomLinks);
+  // If the enterprise shortcuts feature is disabled, but the preference is set
+  // to enterprise shortcuts, treat MostVisitedSites as if enterpise shortcuts
+  // is disabled and custom links is enabled. This may occur if the user is
+  // moved in and out of the experiment.
+  const ntp_tiles::TileType type = static_cast<ntp_tiles::TileType>(
+      profile_->GetPrefs()->GetInteger(ntp_prefs::kNtpShortcutsType));
+  return type == ntp_tiles::TileType::kCustomLinks ||
+         (type == ntp_tiles::TileType::kEnterpriseShortcuts &&
+          !base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts));
+}
+
+bool NewTabPageUI::IsEnterpriseShortcutsEnabled() const {
+  // See comment in `IsCustomLinksEnabled()`.
+  const ntp_tiles::TileType type = static_cast<ntp_tiles::TileType>(
+      profile_->GetPrefs()->GetInteger(ntp_prefs::kNtpShortcutsType));
+  return type == ntp_tiles::TileType::kEnterpriseShortcuts &&
+         base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts);
 }
 
 bool NewTabPageUI::IsShortcutsVisible() const {
@@ -1132,7 +1151,9 @@ bool NewTabPageUI::IsShortcutsVisible() const {
 void NewTabPageUI::OnShortcutsTypePrefChanged() {
   if (most_visited_page_handler_) {
     most_visited_page_handler_->EnableTileTypes(
-        /*enable_custom_links=*/IsCustomLinksEnabled());
+        ntp_tiles::MostVisitedSites::EnableTileTypesOptions()
+            .with_custom_links(IsCustomLinksEnabled())
+            .with_enterprise_shortcuts(IsEnterpriseShortcutsEnabled()));
   }
 }
 

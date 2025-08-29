@@ -13,6 +13,8 @@ struct MostVisitedTile {
   mojo_base.mojom.TextDirection title_direction;
   url.mojom.Url url;
   bool is_query_tile;
+  bool allow_user_edit;
+  bool allow_user_delete;
 
   // ======= METRICS =======
   // Identifier of most visited entry source (e.g. top sites).
@@ -32,6 +34,7 @@ struct MostVisitedTheme {
 
 struct MostVisitedInfo {
   bool custom_links_enabled;
+  bool enterprise_shortcuts_enabled;
   bool visible;
   array<MostVisitedTile> tiles;
 };

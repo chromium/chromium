@@ -25,20 +25,28 @@ export function getHtml(this: MostVisitedElement) {
           draggable="false">
       </a>
       <cr-icon-button id="actionMenuButton" class="icon-more-vert"
-          title="${this.getMoreActionText_(item.title)}"
+          title="${this.getMoreActionText_(item.title,
+            item.allowUserEdit, item.allowUserDelete)}"
           @click="${this.onTileActionButtonClick_}" tabindex="0"
-          ?hidden="${!this.customLinksEnabled_}"
+          ?hidden="${!this.customLinksEnabled_ &&
+            !this.enterpriseShortcutsEnabled_}"
           data-index="${index}"></cr-icon-button>
       <cr-icon-button id="removeButton" class="icon-clear"
           title="${this.i18n('linkRemove')}"
           @click="${this.onTileRemoveButtonClick_}" tabindex="0"
-          ?hidden="${this.customLinksEnabled_}"
+          ?hidden="${this.customLinksEnabled_ ||
+            this.enterpriseShortcutsEnabled_}"
           data-index="${index}"></cr-icon-button>
       <div class="tile-icon">
         <img src="${this.getFaviconUrl_(item.url)}" draggable="false"
             ?hidden="${item.isQueryTile}" alt=""></img>
         <div class="query-tile-icon" draggable="false"
             ?hidden="${!item.isQueryTile}"></div>
+        <div class="managed-tile-icon"
+          ?hidden="${!this.enterpriseShortcutsEnabled_}">
+          <cr-policy-indicator indicator-type="userPolicy">
+          </cr-policy-indicator>
+        </div>
       </div>
       <div class="tile-title ${this.getTileTitleDirectionClass_(item)}">
         <span>${item.title}</span>
@@ -67,7 +75,8 @@ export function getHtml(this: MostVisitedElement) {
           ?invalid="${this.dialogTileUrlInvalid_}"
           .errorMessage="${this.dialogTileUrlError_}" spellcheck="false"
           type="url" @blur="${this.onDialogTileUrlBlur_}"
-          @value-changed="${this.onDialogTileUrlChange_}">
+          @value-changed="${this.onDialogTileUrlChange_}"
+          ?readonly="${this.enterpriseShortcutsEnabled_}">
       </cr-input>
     </div>
     <div slot="button-container">
@@ -81,11 +90,13 @@ export function getHtml(this: MostVisitedElement) {
     </div>
   </cr-dialog>
   <cr-action-menu id="actionMenu">
-    <button id="actionMenuEdit" class="dropdown-item" @click="${this.onEdit_}">
+    <button id="actionMenuEdit" class="dropdown-item" @click="${this.onEdit_}"
+        ?disabled="${this.actionMenuEditDisabled_}">
       ${this.i18n('editLinkTitle')}
     </button>
     <button id="actionMenuRemove" class="dropdown-item"
-        @click="${this.onRemove_}">
+        @click="${this.onRemove_}"
+        ?disabled="${this.actionMenuRemoveDisabled_}">
       ${this.i18n('linkRemove')}
     </button>
   </cr-action-menu>

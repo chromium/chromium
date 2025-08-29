@@ -48,7 +48,7 @@ function assertHiddenTileLength(length: number) {
 
 async function addTiles(
     n: number|MostVisitedTile[], customLinksEnabled: boolean = true,
-    visible: boolean = true) {
+    visible: boolean = true, enterpriseShortcutsEnabled: boolean = false) {
   const tiles = Array.isArray(n) ? n : Array(n).fill(0).map((_x, i) => {
     const char = String.fromCharCode(i + /* 'a' */ 97);
     return {
@@ -58,10 +58,13 @@ async function addTiles(
       source: i,
       titleSource: i,
       isQueryTile: false,
+      allowUserEdit: true,
+      allowUserDelete: true,
     };
   });
   callbackRouterRemote.setMostVisitedInfo({
     customLinksEnabled,
+    enterpriseShortcutsEnabled,
     tiles,
     visible,
   });
@@ -536,6 +539,8 @@ suite('LoggingAndUpdates', () => {
       source: 0,
       titleSource: 0,
       isQueryTile: false,
+      allowUserEdit: true,
+      allowUserDelete: true,
     });
     assertDeepEquals(tiles[1], {
       title: 'b',
@@ -544,6 +549,8 @@ suite('LoggingAndUpdates', () => {
       source: 1,
       titleSource: 1,
       isQueryTile: false,
+      allowUserEdit: true,
+      allowUserDelete: true,
     });
   });
 
@@ -568,6 +575,8 @@ suite('LoggingAndUpdates', () => {
       source: 0,
       titleSource: 0,
       isQueryTile: false,
+      allowUserEdit: true,
+      allowUserDelete: true,
     });
   });
 
@@ -924,6 +933,8 @@ suite('Modification', () => {
       source: 0,
       titleSource: 0,
       isQueryTile: true,
+      allowUserEdit: true,
+      allowUserDelete: true,
     }]);
     const actionMenuButton =
         queryTiles()[0]!.querySelector<HTMLElement>('#actionMenuButton')!;
@@ -963,6 +974,8 @@ suite('Modification', () => {
           source: 0,
           titleSource: 0,
           isQueryTile: true,
+          allowUserEdit: true,
+          allowUserDelete: true,
         }],
         /* customLinksEnabled */ false);
     const removeButton =
@@ -1207,6 +1220,8 @@ suite('Theming', () => {
       source: 0,
       titleSource: 0,
       isQueryTile: false,
+      allowUserEdit: true,
+      allowUserDelete: true,
     }]);
     const tile = queryTiles()[0]!;
     const titleElement = tile.querySelector('.tile-title')!;
@@ -1221,6 +1236,8 @@ suite('Theming', () => {
       source: 0,
       titleSource: 0,
       isQueryTile: false,
+      allowUserEdit: true,
+      allowUserDelete: true,
     }]);
     const tile = queryTiles()[0]!;
     const titleElement = tile.querySelector('.tile-title')!;
@@ -1296,5 +1313,143 @@ suite('Prerendering', () => {
 
     // Make sure Prerendering has been triggered.
     await handler.whenCalled('prerenderMostVisitedTile');
+  });
+});
+
+suite('EnterpriseShortcuts', () => {
+  suiteSetup(() => {
+    loadTimeData.overrideValues({
+      enterpriseShortcutMoreActionsDisabled: 'Tooltip text',
+    });
+  });
+
+  setup(async () => {
+    await setUpTest(/*singleRow=*/ false, /*reflowOnOverflow=*/ false);
+  });
+
+  function createEnterpriseShortcut(
+      i: number, allowUserEdit: boolean,
+      allowUserDelete: boolean): MostVisitedTile {
+    const char = String.fromCharCode(i + /* 'a' */ 97);
+    return {
+      title: char,
+      titleDirection: TextDirection.LEFT_TO_RIGHT,
+      url: {url: `https://${char}/`},
+      source: i,
+      titleSource: i,
+      isQueryTile: false,
+      allowUserEdit: allowUserEdit,
+      allowUserDelete: allowUserDelete,
+    };
+  }
+
+  test('shows managed icon', async () => {
+    await addTiles(
+        [createEnterpriseShortcut(
+            0, /*allowUserEdit=*/ true, /*allowUserDelete=*/ true)],
+        /*customLinksEnabled=*/ false, /*visible=*/ true,
+        /*enterpriseShortcutsEnabled=*/ true);
+    const tile = queryTiles()[0]!;
+    const managedIcon = tile.querySelector('.managed-tile-icon');
+    assertTrue(isVisible(managedIcon));
+  });
+
+  test('edit dialog has readonly url', async () => {
+    await addTiles(
+        [createEnterpriseShortcut(
+            0, /*allowUserEdit=*/ true, /*allowUserDelete=*/ true)],
+        /*customLinksEnabled=*/ false, /*visible=*/ true,
+        /*enterpriseShortcutsEnabled=*/ true);
+    const tile = queryTiles()[0]!;
+    tile.querySelector<HTMLElement>('#actionMenuButton')!.click();
+    $$<HTMLElement>(mostVisited, '#actionMenuEdit').click();
+    await microtasksFinished();
+
+    assertTrue(mostVisited.$.dialog.open);
+    const urlInput = $$<CrInputElement>(mostVisited, '#dialogInputUrl');
+    assertTrue(urlInput.readonly);
+    const nameInput = $$<CrInputElement>(mostVisited, '#dialogInputName');
+    assertFalse(nameInput.readonly);
+
+    // Check that we can still save a title change.
+    nameInput.value = 'new title';
+    await nameInput.updateComplete;
+    const saveButton =
+        mostVisited.$.dialog.querySelector<CrButtonElement>('.action-button')!;
+    assertFalse(saveButton.disabled);
+    const updateCalled = handler.whenCalled('updateMostVisitedTile');
+    saveButton.click();
+    const [_url, _newUrl, newTitle] = await updateCalled;
+    assertEquals('new title', newTitle);
+  });
+
+  test('action menu enabled/disabled based on permissions', async () => {
+    const tiles = [
+      createEnterpriseShortcut(
+          0, /*allowUserEdit=*/ true, /*allowUserDelete=*/ true),
+      createEnterpriseShortcut(
+          1, /*allowUserEdit=*/ true, /*allowUserDelete=*/ false),
+      createEnterpriseShortcut(
+          2, /*allowUserEdit=*/ false, /*allowUserDelete=*/ true),
+      createEnterpriseShortcut(
+          3, /*allowUserEdit=*/ false, /*allowUserDelete=*/ false),
+    ];
+    await addTiles(
+        tiles, /*customLinksEnabled=*/ false, /*visible=*/ true,
+        /*enterpriseShortcutsEnabled=*/ true);
+
+    const tileElements = queryTiles();
+    assertEquals(4, tileElements.length);
+
+    // Case 1: edit and delete allowed.
+    let tile = tileElements[0]!;
+    tile.querySelector<HTMLElement>('#actionMenuButton')!.click();
+    await microtasksFinished();
+    assertTrue(mostVisited.$.actionMenu.open);
+    assertFalse($$<HTMLButtonElement>(mostVisited, '#actionMenuEdit').disabled);
+    assertFalse(
+        $$<HTMLButtonElement>(mostVisited, '#actionMenuRemove').disabled);
+    mostVisited.$.actionMenu.close();
+    await microtasksFinished();
+
+    // Case 2: only edit allowed.
+    tile = tileElements[1]!;
+    tile.querySelector<HTMLElement>('#actionMenuButton')!.click();
+    await microtasksFinished();
+    assertTrue(mostVisited.$.actionMenu.open);
+    assertFalse($$<HTMLButtonElement>(mostVisited, '#actionMenuEdit').disabled);
+    assertTrue(
+        $$<HTMLButtonElement>(mostVisited, '#actionMenuRemove').disabled);
+    mostVisited.$.actionMenu.close();
+    await microtasksFinished();
+
+    // Case 3: only delete allowed.
+    tile = tileElements[2]!;
+    tile.querySelector<HTMLElement>('#actionMenuButton')!.click();
+    await microtasksFinished();
+    assertTrue(mostVisited.$.actionMenu.open);
+    assertTrue($$<HTMLButtonElement>(mostVisited, '#actionMenuEdit').disabled);
+    assertFalse(
+        $$<HTMLButtonElement>(mostVisited, '#actionMenuRemove').disabled);
+    mostVisited.$.actionMenu.close();
+    await microtasksFinished();
+
+    // Case 4: neither allowed.
+    tile = tileElements[3]!;
+    tile.querySelector<HTMLElement>('#actionMenuButton')!.click();
+    await microtasksFinished();
+    assertFalse(mostVisited.$.actionMenu.open);
+  });
+
+  test('action menu button has disabled tooltip', async () => {
+    const tile = createEnterpriseShortcut(
+        0, /*allowUserEdit=*/ false, /*allowUserDelete=*/ false);
+    await addTiles(
+        [tile], /*customLinksEnabled=*/ false, /*visible=*/ true,
+        /*enterpriseShortcutsEnabled=*/ true);
+
+    const actionMenuButton =
+        queryTiles()[0]!.querySelector<HTMLElement>('#actionMenuButton')!;
+    assertEquals('Tooltip text', actionMenuButton.title);
   });
 });

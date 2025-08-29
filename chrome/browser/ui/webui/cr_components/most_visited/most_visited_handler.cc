@@ -78,12 +78,9 @@ MostVisitedHandler::MostVisitedHandler(
 
 MostVisitedHandler::~MostVisitedHandler() = default;
 
-// TODO(crbug.com/438304256): Update input parameter to take
-// `EnableTileTypesOptions`.
-void MostVisitedHandler::EnableTileTypes(bool enable_custom_links) {
-  most_visited_sites_->EnableTileTypes(
-      ntp_tiles::MostVisitedSites::EnableTileTypesOptions().with_custom_links(
-          enable_custom_links));
+void MostVisitedHandler::EnableTileTypes(
+    const ntp_tiles::MostVisitedSites::EnableTileTypesOptions& options) {
+  most_visited_sites_->EnableTileTypes(options);
 }
 
 void MostVisitedHandler::SetShortcutsVisible(bool visible) {
@@ -104,7 +101,9 @@ void MostVisitedHandler::AddMostVisitedTile(
 }
 
 void MostVisitedHandler::DeleteMostVisitedTile(const GURL& url) {
-  if (most_visited_sites_->IsCustomLinksEnabled()) {
+  if (most_visited_sites_->IsEnterpriseShortcutsEnabled()) {
+    most_visited_sites_->DeleteEnterpriseShortcut(url);
+  } else if (most_visited_sites_->IsCustomLinksEnabled()) {
     most_visited_sites_->DeleteCustomLink(url);
     logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_REMOVE,
                      base::TimeDelta() /* unused */);
@@ -115,7 +114,9 @@ void MostVisitedHandler::DeleteMostVisitedTile(const GURL& url) {
 }
 
 void MostVisitedHandler::RestoreMostVisitedDefaults() {
-  if (most_visited_sites_->IsCustomLinksEnabled()) {
+  if (most_visited_sites_->IsEnterpriseShortcutsEnabled()) {
+    most_visited_sites_->RestoreEnterpriseShortcutsDefaults();
+  } else if (most_visited_sites_->IsCustomLinksEnabled()) {
     most_visited_sites_->UninitializeCustomLinks();
     logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_RESTORE_ALL,
                      base::TimeDelta() /* unused */);
@@ -126,13 +127,17 @@ void MostVisitedHandler::RestoreMostVisitedDefaults() {
 
 void MostVisitedHandler::ReorderMostVisitedTile(const GURL& url,
                                                 uint8_t new_pos) {
-  if (most_visited_sites_->IsCustomLinksEnabled()) {
+  if (most_visited_sites_->IsEnterpriseShortcutsEnabled()) {
+    most_visited_sites_->ReorderEnterpriseShortcut(url, new_pos);
+  } else if (most_visited_sites_->IsCustomLinksEnabled()) {
     most_visited_sites_->ReorderCustomLink(url, new_pos);
   }
 }
 
 void MostVisitedHandler::UndoMostVisitedTileAction() {
-  if (most_visited_sites_->IsCustomLinksEnabled()) {
+  if (most_visited_sites_->IsEnterpriseShortcutsEnabled()) {
+    most_visited_sites_->UndoEnterpriseShortcutAction();
+  } else if (most_visited_sites_->IsCustomLinksEnabled()) {
     most_visited_sites_->UndoCustomLinkAction();
     logger_.LogEvent(NTP_CUSTOMIZE_SHORTCUT_UNDO,
                      base::TimeDelta() /* unused */);
@@ -151,7 +156,11 @@ void MostVisitedHandler::UpdateMostVisitedTile(
     const GURL& new_url,
     const std::string& new_title,
     UpdateMostVisitedTileCallback callback) {
-  if (most_visited_sites_->IsCustomLinksEnabled()) {
+  if (most_visited_sites_->IsEnterpriseShortcutsEnabled()) {
+    bool success = most_visited_sites_->UpdateEnterpriseShortcut(
+        url, base::UTF8ToUTF16(new_title));
+    std::move(callback).Run(success);
+  } else if (most_visited_sites_->IsCustomLinksEnabled()) {
     bool success = most_visited_sites_->UpdateCustomLink(
         url, new_url != url ? new_url : GURL(), base::UTF8ToUTF16(new_title));
     std::move(callback).Run(success);
@@ -284,10 +293,14 @@ void MostVisitedHandler::OnURLsAvailable(
         template_url_service &&
         template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
             tile.url);
+    value->allow_user_edit = tile.allow_user_edit;
+    value->allow_user_delete = tile.allow_user_delete;
     tiles.push_back(std::move(value));
   }
   result->tiles = std::move(tiles);
   result->custom_links_enabled = most_visited_sites_->IsCustomLinksEnabled();
+  result->enterprise_shortcuts_enabled =
+      most_visited_sites_->IsEnterpriseShortcutsEnabled();
   result->visible = most_visited_sites_->IsShortcutsVisible();
   page_->SetMostVisitedInfo(std::move(result));
 }

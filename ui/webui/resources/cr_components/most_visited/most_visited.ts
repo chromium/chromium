@@ -8,6 +8,7 @@ import '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/cr_elements/cr_toast/cr_toast_manager.js';
+import '//resources/cr_elements/policy/cr_policy_indicator.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
@@ -117,6 +118,11 @@ export class MostVisitedElement extends MostVisitedElementBase {
         reflect: true,
       },
 
+      enterpriseShortcutsEnabled_: {
+        type: Boolean,
+        reflect: true,
+      },
+
       dialogTileTitle_: {type: String, state: true},
       dialogTileUrl_: {type: String, state: true},
       dialogTileUrlInvalid_: {type: Boolean, state: true},
@@ -125,6 +131,9 @@ export class MostVisitedElement extends MostVisitedElementBase {
       dialogShortcutAlreadyExists_: {type: Boolean, state: true},
       dialogTileUrlError_: {type: String, state: true},
       info_: {type: Object, state: true},
+
+      actionMenuEditDisabled_: {type: Boolean, state: true},
+      actionMenuRemoveDisabled_: {type: Boolean, state: true},
 
       isDark_: {
         type: Boolean,
@@ -162,6 +171,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
   protected accessor columnCount_: number = 3;
   protected accessor rowCount_: number = 1;
   protected accessor customLinksEnabled_: boolean = false;
+  protected accessor enterpriseShortcutsEnabled_: boolean = false;
   protected accessor dialogTileTitle_: string = '';
   protected accessor dialogTileUrl_: string = '';
   protected accessor dialogTileUrlInvalid_: boolean = false;
@@ -169,6 +179,8 @@ export class MostVisitedElement extends MostVisitedElementBase {
   protected accessor dialogSaveDisabled_: boolean = true;
   private accessor dialogShortcutAlreadyExists_: boolean = false;
   protected accessor dialogTileUrlError_: string = '';
+  protected accessor actionMenuEditDisabled_: boolean = false;
+  protected accessor actionMenuRemoveDisabled_: boolean = false;
   protected accessor isDark_: boolean = false;
   private accessor reordering_: boolean = false;
   private accessor maxTiles_: number = 0;
@@ -270,7 +282,9 @@ export class MostVisitedElement extends MostVisitedElementBase {
     if (changedPrivateProperties.has('info_') && this.info_ !== null) {
       this.visible_ = this.info_.visible;
       this.customLinksEnabled_ = this.info_.customLinksEnabled;
-      this.maxTiles_ = this.customLinksEnabled_ ? 10 : 8;
+      this.enterpriseShortcutsEnabled_ = this.info_.enterpriseShortcutsEnabled;
+      this.maxTiles_ =
+          this.customLinksEnabled_ || this.enterpriseShortcutsEnabled_ ? 10 : 8;
       this.tiles_ = this.info_.tiles.slice(0, this.maxTiles_);
     }
 
@@ -378,8 +392,8 @@ export class MostVisitedElement extends MostVisitedElementBase {
   }
 
   private computeShowAdd_(): boolean {
-    return this.customLinksEnabled_ && this.tiles_ &&
-        this.tiles_.length < this.maxVisibleTiles_;
+    return this.customLinksEnabled_ && !this.enterpriseShortcutsEnabled_ &&
+        this.tiles_ && this.tiles_.length < this.maxVisibleTiles_;
   }
 
   private computeDialogSaveDisabled_(): boolean {
@@ -426,7 +440,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
    * issue.
    */
   private dragEnd_() {
-    if (!this.customLinksEnabled_) {
+    if (!this.customLinksEnabled_ && !this.enterpriseShortcutsEnabled_) {
       this.reordering_ = false;
       return;
     }
@@ -470,7 +484,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
    * indicate that the dragged tile was successfully dropped.
    */
   private drop_(x: number, y: number) {
-    if (!this.customLinksEnabled_) {
+    if (!this.customLinksEnabled_ && !this.enterpriseShortcutsEnabled_) {
       return;
     }
 
@@ -583,8 +597,9 @@ export class MostVisitedElement extends MostVisitedElementBase {
 
   protected getRestoreButtonText_(): string {
     return loadTimeData.getString(
-        this.customLinksEnabled_ ? 'restoreDefaultLinks' :
-                                   'restoreThumbnailsShort');
+        this.customLinksEnabled_ || this.enterpriseShortcutsEnabled_ ?
+            'restoreDefaultLinks' :
+            'restoreThumbnailsShort');
   }
 
   protected getTileTitleDirectionClass_(tile: MostVisitedTile): string {
@@ -687,7 +702,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
   }
 
   protected onDragStart_(e: DragEvent) {
-    if (!this.customLinksEnabled_) {
+    if (!this.customLinksEnabled_ && !this.enterpriseShortcutsEnabled_) {
       return;
     }
     // |dataTransfer| is null in tests.
@@ -785,6 +800,16 @@ export class MostVisitedElement extends MostVisitedElementBase {
   protected onTileActionButtonClick_(e: Event) {
     e.preventDefault();
     this.actionMenuTargetIndex_ = this.getCurrentTargetIndex_(e);
+    const item = this.tiles_[this.getCurrentTargetIndex_(e)];
+    assert(item);
+    // If the tile cannot be edited or deleted, do not do anything when the
+    // action button is clicked. This currently only applies to enterprise
+    // shortcuts.
+    if (!item.allowUserEdit && !item.allowUserDelete) {
+      return;
+    }
+    this.actionMenuEditDisabled_ = !item.allowUserEdit;
+    this.actionMenuRemoveDisabled_ = !item.allowUserDelete;
     this.$.actionMenu.showAt(e.target as HTMLElement);
   }
 
@@ -883,7 +908,8 @@ export class MostVisitedElement extends MostVisitedElementBase {
   }
 
   protected onTouchStart_(e: TouchEvent) {
-    if (this.reordering_ || !this.customLinksEnabled_) {
+    if (this.reordering_ ||
+        (!this.customLinksEnabled_ && !this.enterpriseShortcutsEnabled_)) {
       return;
     }
     const tileElement =
@@ -935,7 +961,8 @@ export class MostVisitedElement extends MostVisitedElementBase {
     // a custom link. Removal is not reversible for non custom link query tiles.
     this.toast_(
         'linkRemovedMsg',
-        /* showButtons= */ this.customLinksEnabled_ || !isQueryTile);
+        /* showButtons= */ this.customLinksEnabled_ ||
+            this.enterpriseShortcutsEnabled_ || !isQueryTile);
 
     // Move focus after the next render so that tileElements_ is updated.
     await this.updateComplete;
@@ -949,7 +976,12 @@ export class MostVisitedElement extends MostVisitedElementBase {
         this.tiles_.slice(0, this.maxVisibleTiles_), this.windowProxy_.now());
   }
 
-  protected getMoreActionText_(title: string) {
+  protected getMoreActionText_(
+      title: string, allowUserEdit: boolean, allowUserDelete: boolean) {
+    if (this.enterpriseShortcutsEnabled_ && !allowUserEdit &&
+        !allowUserDelete) {
+      return loadTimeData.getString('enterpriseShortcutMoreActionsDisabled');
+    }
     // Check that 'shortcutMoreActions' is set to more than an empty string,
     // since we do not use this text for third party NTP.
     return loadTimeData.getString('shortcutMoreActions') ?

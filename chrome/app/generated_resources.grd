@@ -2480,9 +2480,6 @@ are declared in tools/grit/grit_args.gni.
                desc="Tooltip of a button on the downloads page that shows a menu with actions like 'Open downloads folder' or 'Clear all'">
         More actions
       </message>
-      <message name="IDS_NTP_ENTERPRISE_SHORTCUTS_MORE_ACTIONS_DISABLED" desc="The tooltip and accessibility label for the 3 dot menu on an eneterprise shortcut if customization is disabled. (On the New Tab Page)">
-        Customization is disabled by your Admin
-      </message>
       <message name="IDS_DOWNLOAD_ACTION_MENU_DESCRIPTION" desc="Text used to identify the drop-down menu with actions like 'Open downloads folder' or 'Clear all'">
         Actions
       </message>
@@ -7643,6 +7640,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_NTP_CUSTOM_LINKS_MORE_ACTIONS" desc="The tooltip and accessibility label for the 3 dot menu on a shortcut. (On the New Tab Page)">
         More actions for <ph name="SHORTCUT_TITLE">$1<ex>YouTube</ex></ph> shortcut
+      </message>
+      <message name="IDS_NTP_ENTERPRISE_SHORTCUTS_MORE_ACTIONS_DISABLED" desc="The tooltip and accessibility label for the 3 dot menu on an eneterprise shortcut if customization is disabled. (On the New Tab Page)">
+        Customization is disabled by your Admin
       </message>
       <message name="IDS_UPLOAD_IMAGE_FORMAT" desc="The permitted upload image format for the custom background. (On the New Tab Page)">
         *.jpeg, *.jpg, *.png

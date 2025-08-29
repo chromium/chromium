@@ -302,6 +302,7 @@ class NewTabPageUI
   void OnColorProviderChanged() override;
 
   bool IsCustomLinksEnabled() const;
+  bool IsEnterpriseShortcutsEnabled() const;
   bool IsShortcutsVisible() const;
 
   // Callback for when the value of the pref for determining the type of NTP

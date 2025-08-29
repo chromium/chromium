@@ -28,6 +28,7 @@ interface SourceInfo {
   popular: boolean|PopularInfo;
   topSites: boolean;
   customLinks: boolean;
+  enterpriseShortcuts: boolean;
 }
 
 // Keep in sync with ntp_tiles::TileSource in
@@ -39,6 +40,7 @@ enum TileSource {
   CUSTOM_LINKS,
   ALLOWLIST,
   HOMEPAGE,
+  ENTERPRISE_SHORTCUTS,
 }
 
 interface Icon {
@@ -146,6 +148,14 @@ function getSourcesHtml(
         <tr>
           <td class="detail">enabled</td>
           <td class="value">${state.customLinks ? 'yes' : 'no'}</td>
+        </tr>
+      </tbody>
+        <tr>
+          <th colspan="2">ENTEPRISE_SHORTCUTS</th>
+        </tr>
+        <tr>
+          <td class="detail">enabled</td>
+          <td class="value">${state.enterpriseShortcuts ? 'yes' : 'no'}</td>
         </tr>
       </tbody>
     </table>

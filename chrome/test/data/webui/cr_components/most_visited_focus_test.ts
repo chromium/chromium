@@ -31,10 +31,13 @@ suite('CrComponentsMostVisitedFocusTest', () => {
         source: i,
         titleSource: i,
         isQueryTile: false,
+        allowUserEdit: true,
+        allowUserDelete: true,
       };
     });
     callbackRouterRemote.setMostVisitedInfo({
       customLinksEnabled: true,
+      enterpriseShortcutsEnabled: false,
       tiles: tiles,
       visible: true,
     });

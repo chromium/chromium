@@ -212,5 +212,5 @@ void NewTabPageThirdPartyUI::CreatePageHandler(
       web_contents_, GURL(chrome::kChromeUINewTabPageThirdPartyURL),
       navigation_start_time_);
   most_visited_page_handler_->EnableTileTypes(
-      /*enable_custom_links=*/false);
+      ntp_tiles::MostVisitedSites::EnableTileTypesOptions());
 }

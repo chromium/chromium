@@ -92,6 +92,7 @@ void NTPTilesInternalsMessageHandler::HandleRegisterForEvents(
     disabled.Set("topSites", false);
     disabled.Set("popular", false);
     disabled.Set("customLinks", false);
+    disabled.Set("enterpriseShortcuts", false);
     client_->CallJavascriptFunction("cr.webUIListenerCallback",
                                     base::Value("receive-source-info"),
                                     base::Value(std::move(disabled)));
@@ -188,6 +189,8 @@ void NTPTilesInternalsMessageHandler::SendSourceInfo() {
             most_visited_sites_->DoesSourceExist(TileSource::TOP_SITES));
   value.Set("customLinks",
             most_visited_sites_->DoesSourceExist(TileSource::CUSTOM_LINKS));
+  value.Set("enterpriseShortcuts", most_visited_sites_->DoesSourceExist(
+                                       TileSource::ENTERPRISE_SHORTCUTS));
 
   if (most_visited_sites_->DoesSourceExist(TileSource::POPULAR)) {
     auto* popular_sites = most_visited_sites_->popular_sites();
