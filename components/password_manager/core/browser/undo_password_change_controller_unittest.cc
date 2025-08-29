@@ -302,6 +302,7 @@ TEST_F(UndoPasswordChangeControllerTest, FullFlowMultipleCredentials) {
             PasswordRecoveryState::kIncludeBackup);
 }
 
+#if !BUILDFLAG(IS_IOS)
 TEST_F(UndoPasswordChangeControllerTest, OnLoginPotentiallyFailedFlagOn) {
   base::test::ScopedFeatureList feature_list(features::kShowRecoveryPassword);
   best_match_form_.SetPasswordBackupNote(kBackupPassword);
@@ -459,5 +460,6 @@ TEST_F(UndoPasswordChangeControllerTest, OnSuggestionsHidden) {
       ChangeRecoveryUkmEntry::kPasswordChangeRecoveryFlowName,
       static_cast<int>(expected_metric_state));
 }
+#endif
 
 }  // namespace password_manager

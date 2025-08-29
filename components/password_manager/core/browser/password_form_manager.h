@@ -303,9 +303,13 @@ class PasswordFormManager : public PasswordFormManagerForUI,
     return votes_uploader_.has_value() ? &votes_uploader_.value() : nullptr;
   }
 #endif
-
+#if !BUILDFLAG(IS_IOS)
   void AddObserver(PasswordFormManagerObserver* observer);
   void RemoveObserver(PasswordFormManagerObserver* observer);
+#else
+  void SetObserver(base::WeakPtr<PasswordFormManagerObserver> observer);
+  void ResetObserver();
+#endif
 
  protected:
   // Constructor for Credentials API.
@@ -519,8 +523,11 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   // For generating timing metrics on retrieving server-side predictions.
   std::unique_ptr<base::ElapsedTimer> server_side_predictions_timer_;
-
+#if !BUILDFLAG(IS_IOS)
   base::ObserverList<PasswordFormManagerObserver> form_parsed_observers_;
+#else
+  base::WeakPtr<PasswordFormManagerObserver> form_parsed_observer_;
+#endif
 };
 
 // Returns whether `form_data` differs from the form observed by `form_manager`

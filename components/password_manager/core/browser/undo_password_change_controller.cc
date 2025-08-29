@@ -71,6 +71,7 @@ void UndoPasswordChangeController::OnTroubleSigningInClicked(
 void UndoPasswordChangeController::OnLoginPotentiallyFailed(
     PasswordManagerDriver* driver,
     const PasswordForm& login_form) {
+#if !BUILDFLAG(IS_IOS)
   auto password_field_it = std::ranges::find(
       login_form.form_data.fields(), login_form.password_element_renderer_id,
       &autofill::FormFieldData::renderer_id);
@@ -84,6 +85,7 @@ void UndoPasswordChangeController::OnLoginPotentiallyFailed(
   failed_login_form_ = login_form;
   password_form_cache_ = driver_->GetPasswordManager()->GetPasswordFormCache();
   password_form_cache_->AddObserver(this);
+#endif
 }
 
 PasswordRecoveryState UndoPasswordChangeController::GetState(
@@ -147,15 +149,18 @@ void UndoPasswordChangeController::ResetFlow() {
 }
 
 void UndoPasswordChangeController::FinishObserving() {
+#if !BUILDFLAG(IS_IOS)
   failed_login_form_ = std::nullopt;
   driver_ = nullptr;
   if (password_form_cache_) {
     password_form_cache_->RemoveObserver(this);
   }
+#endif
 }
 
 void UndoPasswordChangeController::OnPasswordFormParsed(
     PasswordFormManager* form_manager) {
+#if !BUILDFLAG(IS_IOS)
   CHECK(form_manager);
   if (!failed_login_form_ || !driver_) {
     return;
@@ -192,6 +197,7 @@ void UndoPasswordChangeController::OnPasswordFormParsed(
             form_manager->GetParsedObservedForm()
                 ->password_element_renderer_id));
   }
+#endif
 }
 
 }  // namespace password_manager
