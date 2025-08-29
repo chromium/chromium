@@ -10,11 +10,17 @@
 
 #include "base/check_op.h"
 #include "base/win/resource_exhaustion.h"
+#include "base/win/win_util.h"
 
 namespace ui {
 
 ScopedOleInitializer::ScopedOleInitializer() {
-  hr_ = OleInitialize(NULL);
+  // OLEAUT32.dll is delayloaded but several OLE facilities will use it
+  // so ensure all its imports are resolved early on.
+  auto loaded = base::win::LoadAllImportsForDll("OLEAUT32.dll");
+  CHECK(loaded.has_value());
+
+  hr_ = ::OleInitialize(NULL);
   DCHECK_NE(OLE_E_WRONGCOMPOBJ, hr_) << "Incompatible DLLs on machine";
   DCHECK_NE(RPC_E_CHANGED_MODE, hr_) << "Invalid COM thread model change";
 

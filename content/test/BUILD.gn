@@ -822,7 +822,7 @@ static_library("test_support") {
 
   if (is_win) {
     deps += [ "//sandbox" ]
-    public_configs = [ "//build/config/win:delayloads" ]
+    public_configs = [ "//build/config/win:delayloads_for_tests" ]
   }
 
   if (v8_use_external_startup_data) {
