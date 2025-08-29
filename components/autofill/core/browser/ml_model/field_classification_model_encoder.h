@@ -17,8 +17,8 @@
 
 namespace autofill {
 
-class AutofillField;
-class FormStructure;
+class FormFieldData;
+class FormData;
 
 // The Encoder performs vectorization for on-device field type prediction ML
 // model. It changes the string input for preprocessing by standardizing and
@@ -66,17 +66,17 @@ class FieldClassificationModelEncoder {
   // Encodes the `form` into the `ModelInput` representation understood by the
   // `FieldClassificationModelExecutor`. This is done by encoding the attributes
   // of the form's fields.
-  ModelInput EncodeForm(const FormStructure& form) const;
+  ModelInput EncodeForm(const FormData& form) const;
 
   // Constructs from `field` the input for Field Classification ML model using
   // field attributes. More specifically, handles the attributes encoding and
   // prepares the final input.
-  std::vector<TokenId> EncodeField(const AutofillField& field) const;
+  std::vector<TokenId> EncodeField(const FormFieldData& field) const;
 
   // Constructs the input for Field Classification ML model using
   // form level attributes.
   std::vector<FieldClassificationModelEncoder::TokenId> EncodeFormFeatures(
-      const FormStructure& form) const;
+      const FormData& form) const;
 
   // Tokenizes the specific `input` to a vector of size
   // `max_tokens_per_feature`. The token IDs are looked up in token_to_id_

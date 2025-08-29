@@ -144,7 +144,7 @@ void ApplyMlModel(
     optimization_guide::proto::OptimizationTarget optimization_target,
     base::OnceCallback<void(std::vector<std::unique_ptr<FormStructure>>)>
         callback,
-    std::vector<std::unique_ptr<FormStructure>> forms) {
+    std::vector<std::unique_ptr<FormStructure>> form_structures) {
   if (!manager) {
     return;
   }
@@ -164,20 +164,25 @@ void ApplyMlModel(
   }
   if (ml_handler) {
     manager->SubscribeToMlModelChanges(*ml_handler, optimization_target);
+    std::vector<FormData> form_datas = base::ToVector(
+        form_structures,
+        [](auto& form_structure) { return form_structure->ToFormData(); });
     ml_handler->GetModelPredictionsForForms(
-        std::move(forms), manager->client().GetVariationConfigCountryCode(),
-        base::BindOnce([](std::vector<std::pair<std::unique_ptr<FormStructure>,
-                                                ModelPredictions>>
-                              form_structures_and_predictions) {
-          for (const auto& [form_structure, predictions] :
-               form_structures_and_predictions) {
-            predictions.ApplyTo(form_structure->fields());
-          }
-          return base::ToVector(std::move(form_structures_and_predictions),
-                                [](auto& p) { return std::move(p).first; });
-        }).Then(std::move(callback)));
+        std::move(form_datas),
+        manager->client().GetVariationConfigCountryCode(),
+        base::BindOnce(
+            [](std::vector<std::unique_ptr<FormStructure>> form_structures,
+               std::vector<ModelPredictions> all_predictions) {
+              for (const auto [form_structure, predictions] :
+                   base::zip(form_structures, all_predictions)) {
+                predictions.ApplyTo(form_structure->fields());
+              }
+              return form_structures;
+            },
+            std::move(form_structures))
+            .Then(std::move(callback)));
   } else {
-    std::move(callback).Run(std::move(forms));
+    std::move(callback).Run(std::move(form_structures));
   }
 }
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)

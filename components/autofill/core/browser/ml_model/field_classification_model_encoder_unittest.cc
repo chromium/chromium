@@ -147,7 +147,7 @@ TEST_F(FieldClassificationModelEncoderTest, InputConstructedCorrectly) {
 
 TEST_F(FieldClassificationModelEncoderTest, FormEncodedCorrectly_BasicModel) {
   FieldClassificationModelEncoder encoder(CreateBasicEncoder());
-  FormStructure form(test::GetFormData(
+  FormData form = test::GetFormData(
       {.fields = {
            {
                .label = u"Phone 'number",
@@ -159,7 +159,7 @@ TEST_F(FieldClassificationModelEncoderTest, FormEncodedCorrectly_BasicModel) {
                .placeholder = u"City Number Phone Address Card Last Zip ",
                .autocomplete_attribute =
                    "City Number Phone Address Card Last Zip ",
-           }}}));
+           }}});
   EXPECT_THAT(
       encoder.EncodeForm(form),
       ElementsAre(ElementsAre(
@@ -207,7 +207,7 @@ TEST_F(FieldClassificationModelEncoderTest,
       {{u"Submit Telefone",
         mojom::ButtonTitleType::BUTTON_ELEMENT_BUTTON_TYPE}});
   form.set_url(GURL("https://www.example.com/account/form/number"));
-  EXPECT_THAT(encoder.EncodeForm(FormStructure(form)),
+  EXPECT_THAT(encoder.EncodeForm(form),
               ElementsAre(ElementsAre(
                               // CLS
                               kCLS,

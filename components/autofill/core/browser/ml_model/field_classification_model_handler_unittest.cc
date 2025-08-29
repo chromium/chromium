@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/types/zip.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
@@ -106,31 +107,26 @@ class FieldClassificationModelHandlerTest : public testing::Test {
   virtual FieldClassificationModelHandler& model_handler() = 0;
 
   void ApplyModelPredictions(std::unique_ptr<FormStructure>& form_structure) {
-    base::test::TestFuture<std::unique_ptr<FormStructure>, ModelPredictions>
-        future;
-    GeoIpCountryCode client_country = form_structure->client_country();
-    model_handler().GetModelPredictionsForForm(
-        std::move(form_structure), client_country, future.GetCallback());
-    std::tuple<std::unique_ptr<FormStructure>, ModelPredictions> args =
-        std::move(future).Take();
-    std::get<1>(args).ApplyTo(std::get<0>(args)->fields());
-    form_structure = std::move(std::get<0>(args));
+    base::test::TestFuture<ModelPredictions> future;
+    model_handler().GetModelPredictionsForForm(form_structure->ToFormData(),
+                                               form_structure->client_country(),
+                                               future.GetCallback());
+    future.Get().ApplyTo(form_structure->fields());
   }
 
   void ApplyModelPredictions(
-      std::vector<std::unique_ptr<FormStructure>>& form_structures) {
-    base::test::TestFuture<std::vector<
-        std::pair<std::unique_ptr<FormStructure>, ModelPredictions>>>
-        future;
-    GeoIpCountryCode client_country = form_structures.front()->client_country();
+      base::span<const std::unique_ptr<FormStructure>> form_structures) {
+    base::test::TestFuture<std::vector<ModelPredictions>> future;
     model_handler().GetModelPredictionsForForms(
-        std::move(form_structures), client_country, future.GetCallback());
-    form_structures = base::ToVector(
-        std::move(future).Take(),
-        [](std::pair<std::unique_ptr<FormStructure>, ModelPredictions>& p) {
-          p.second.ApplyTo(p.first->fields());
-          return std::move(p.first);
-        });
+        base::ToVector(form_structures,
+                       [](const auto& form_structure) {
+                         return form_structure->ToFormData();
+                       }),
+        form_structures.front()->client_country(), future.GetCallback());
+    for (auto [form_structure, predictions] :
+         base::zip(form_structures, future.Get())) {
+      predictions.ApplyTo(form_structure->fields());
+    }
   }
 
   // The overfitted model is overtrained on this form. Which is the only form

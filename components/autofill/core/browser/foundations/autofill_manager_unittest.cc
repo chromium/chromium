@@ -82,11 +82,9 @@ class MockFieldClassificationModelHandler
 
   MOCK_METHOD(void,
               GetModelPredictionsForForms,
-              (std::vector<std::unique_ptr<FormStructure>>,
+              (std::vector<FormData>,
                const GeoIpCountryCode& client_country,
-               base::OnceCallback<
-                   void(std::vector<std::pair<std::unique_ptr<FormStructure>,
-                                              ModelPredictions>>)>),
+               base::OnceCallback<void(std::vector<ModelPredictions>)>),
               (override));
 };
 #endif
@@ -508,17 +506,14 @@ class AutofillManagerTestForModelPredictions : public AutofillManagerTest {
         std::make_unique<MockFieldClassificationModelHandler>(&model_provider_);
     ON_CALL(*handler, GetModelPredictionsForForms)
         .WillByDefault(
-            [](std::vector<std::unique_ptr<FormStructure>> forms,
+            [](std::vector<FormData> forms,
                const GeoIpCountryCode& client_country,
-               base::OnceCallback<void(
-                   std::vector<std::pair<std::unique_ptr<FormStructure>,
-                                         ModelPredictions>>)> callback) {
+               base::OnceCallback<void(std::vector<ModelPredictions>)>
+                   callback) {
               const ModelPredictions kEmptyPredictions = ModelPredictions(
                   HeuristicSource::kAutofillMachineLearning, {}, {});
-              std::move(callback).Run(base::ToVector(
-                  std::move(forms), [&](std::unique_ptr<FormStructure>& form) {
-                    return std::pair(std::move(form), kEmptyPredictions);
-                  }));
+              std::move(callback).Run(std::vector<ModelPredictions>(
+                  forms.size(), kEmptyPredictions));
             });
     return handler;
   }
