@@ -173,7 +173,7 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
 - (void)creditCardUploadCompleted:(BOOL)card_saved {
   if (!_loadingDismissedByUser) {
     autofill::autofill_metrics::LogCreditCardUploadLoadingViewResultMetric(
-        autofill::autofill_metrics::SaveCardPromptResult::kNotInteracted);
+        autofill::autofill_metrics::LegacySaveCardPromptResult::kNotInteracted);
   }
   if (card_saved) {
     autofill::autofill_metrics::LogCreditCardUploadConfirmationViewShownMetric(
@@ -273,7 +273,7 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
     } else {
       _loadingDismissedByUser = YES;
       autofill::autofill_metrics::LogCreditCardUploadLoadingViewResultMetric(
-          autofill::autofill_metrics::SaveCardPromptResult::kClosed);
+          autofill::autofill_metrics::LegacySaveCardPromptResult::kClosed);
     }
   } else {
     autofill::AutofillSaveCardInfoBarDelegateIOS* delegate =
@@ -307,8 +307,9 @@ static constexpr base::TimeDelta kConfirmationStateDurationIfVoiceOverRunning =
 - (void)onConfirmationClosedWithAutoClose:(BOOL)autoClosed {
   autofill::autofill_metrics::LogCreditCardUploadConfirmationViewResultMetric(
       autoClosed
-          ? autofill::autofill_metrics::SaveCardPromptResult::kNotInteracted
-          : autofill::autofill_metrics::SaveCardPromptResult::kClosed,
+          ? autofill::autofill_metrics::LegacySaveCardPromptResult::
+                kNotInteracted
+          : autofill::autofill_metrics::LegacySaveCardPromptResult::kClosed,
       /*is_card_uploaded=*/true);
   _autoCloseConfirmationTimer.Stop();
   if (!self.saveCardDelegate) {

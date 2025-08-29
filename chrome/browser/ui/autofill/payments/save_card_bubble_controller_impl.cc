@@ -428,8 +428,8 @@ void SaveCardBubbleControllerImpl::OnSaveButton(
       // metrics are logged) after OnSaveButton() and logging now aligns the
       // timing of the log with the other cases.
       autofill_metrics::LogSaveCardPromptResultMetric(
-          autofill_metrics::SaveCardPromptResult::kAccepted, is_upload_save_,
-          is_reshow_, options_,
+          autofill_metrics::LegacySaveCardPromptResult::kAccepted,
+          is_upload_save_, is_reshow_, options_,
           payments_data_manager_->GetPaymentsSigninStateForMetrics(),
           /*has_saved_cards=*/
           !payments_data_manager_->GetCreditCards().empty());
@@ -514,17 +514,17 @@ void SaveCardBubbleControllerImpl::OnBubbleClosed(
   auto get_metric = [](PaymentsUiClosedReason reason) {
     switch (reason) {
       case PaymentsUiClosedReason::kAccepted:
-        return autofill_metrics::SaveCardPromptResult::kAccepted;
+        return autofill_metrics::LegacySaveCardPromptResult::kAccepted;
       case PaymentsUiClosedReason::kCancelled:
-        return autofill_metrics::SaveCardPromptResult::kCancelled;
+        return autofill_metrics::LegacySaveCardPromptResult::kCancelled;
       case PaymentsUiClosedReason::kClosed:
-        return autofill_metrics::SaveCardPromptResult::kClosed;
+        return autofill_metrics::LegacySaveCardPromptResult::kClosed;
       case PaymentsUiClosedReason::kNotInteracted:
-        return autofill_metrics::SaveCardPromptResult::kNotInteracted;
+        return autofill_metrics::LegacySaveCardPromptResult::kNotInteracted;
       case PaymentsUiClosedReason::kLostFocus:
-        return autofill_metrics::SaveCardPromptResult::kLostFocus;
+        return autofill_metrics::LegacySaveCardPromptResult::kLostFocus;
       case PaymentsUiClosedReason::kUnknown:
-        return autofill_metrics::SaveCardPromptResult::kUnknown;
+        return autofill_metrics::LegacySaveCardPromptResult::kUnknown;
     }
   };
 

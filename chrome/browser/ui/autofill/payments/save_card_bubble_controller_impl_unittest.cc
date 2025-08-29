@@ -419,7 +419,8 @@ TEST_F(SaveCardBubbleControllerImplTest,
 }
 
 using SaveCreditCardPromptResultMetricTestData =
-    std::tuple<PaymentsUiClosedReason, autofill_metrics::SaveCardPromptResult>;
+    std::tuple<PaymentsUiClosedReason,
+               autofill_metrics::LegacySaveCardPromptResult>;
 
 // Test fixture to ensure the correct reporting of UMA metric
 // Autofill.SaveCreditCardPromptResult{SaveDestination}.{UserGroup}.
@@ -435,27 +436,28 @@ class SaveCreditCardPromptResultMetricTest
 
  protected:
   const PaymentsUiClosedReason closed_reason_;
-  const autofill_metrics::SaveCardPromptResult prompt_result_;
+  const autofill_metrics::LegacySaveCardPromptResult prompt_result_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     ,
     SaveCreditCardPromptResultMetricTest,
-    testing::Values(SaveCreditCardPromptResultMetricTestData(
-                        PaymentsUiClosedReason::kAccepted,
-                        autofill_metrics::SaveCardPromptResult::kAccepted),
-                    SaveCreditCardPromptResultMetricTestData(
-                        PaymentsUiClosedReason::kCancelled,
-                        autofill_metrics::SaveCardPromptResult::kCancelled),
-                    SaveCreditCardPromptResultMetricTestData(
-                        PaymentsUiClosedReason::kClosed,
-                        autofill_metrics::SaveCardPromptResult::kClosed),
-                    SaveCreditCardPromptResultMetricTestData(
-                        PaymentsUiClosedReason::kNotInteracted,
-                        autofill_metrics::SaveCardPromptResult::kNotInteracted),
-                    SaveCreditCardPromptResultMetricTestData(
-                        PaymentsUiClosedReason::kLostFocus,
-                        autofill_metrics::SaveCardPromptResult::kLostFocus)));
+    testing::Values(
+        SaveCreditCardPromptResultMetricTestData(
+            PaymentsUiClosedReason::kAccepted,
+            autofill_metrics::LegacySaveCardPromptResult::kAccepted),
+        SaveCreditCardPromptResultMetricTestData(
+            PaymentsUiClosedReason::kCancelled,
+            autofill_metrics::LegacySaveCardPromptResult::kCancelled),
+        SaveCreditCardPromptResultMetricTestData(
+            PaymentsUiClosedReason::kClosed,
+            autofill_metrics::LegacySaveCardPromptResult::kClosed),
+        SaveCreditCardPromptResultMetricTestData(
+            PaymentsUiClosedReason::kNotInteracted,
+            autofill_metrics::LegacySaveCardPromptResult::kNotInteracted),
+        SaveCreditCardPromptResultMetricTestData(
+            PaymentsUiClosedReason::kLostFocus,
+            autofill_metrics::LegacySaveCardPromptResult::kLostFocus)));
 
 // Tests that after the user interacts with a "save *local* card" dialog and
 // *does not* have any card data on file, metrics
@@ -778,7 +780,7 @@ TEST_P(SaveCardBubbleLoggingTest, Metrics_SaveButton) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptResult" + GetHistogramNameSuffix(),
-      autofill_metrics::SaveCardPromptResult::kAccepted, 1);
+      autofill_metrics::LegacySaveCardPromptResult::kAccepted, 1);
 }
 
 TEST_P(SaveCardBubbleLoggingTest, Metrics_CancelButton) {
@@ -788,7 +790,7 @@ TEST_P(SaveCardBubbleLoggingTest, Metrics_CancelButton) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptResult" + GetHistogramNameSuffix(),
-      autofill_metrics::SaveCardPromptResult::kCancelled, 1);
+      autofill_metrics::LegacySaveCardPromptResult::kCancelled, 1);
 }
 
 TEST_P(SaveCardBubbleLoggingTest, Metrics_Closed) {
@@ -798,7 +800,7 @@ TEST_P(SaveCardBubbleLoggingTest, Metrics_Closed) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptResult" + GetHistogramNameSuffix(),
-      autofill_metrics::SaveCardPromptResult::kClosed, 1);
+      autofill_metrics::LegacySaveCardPromptResult::kClosed, 1);
 }
 
 TEST_P(SaveCardBubbleLoggingTest, Metrics_NotInteracted) {
@@ -808,7 +810,7 @@ TEST_P(SaveCardBubbleLoggingTest, Metrics_NotInteracted) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptResult" + GetHistogramNameSuffix(),
-      autofill_metrics::SaveCardPromptResult::kNotInteracted, 1);
+      autofill_metrics::LegacySaveCardPromptResult::kNotInteracted, 1);
 }
 
 TEST_P(SaveCardBubbleLoggingTest, Metrics_LostFocus) {
@@ -818,7 +820,7 @@ TEST_P(SaveCardBubbleLoggingTest, Metrics_LostFocus) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptResult" + GetHistogramNameSuffix(),
-      autofill_metrics::SaveCardPromptResult::kLostFocus, 1);
+      autofill_metrics::LegacySaveCardPromptResult::kLostFocus, 1);
 }
 
 TEST_P(SaveCardBubbleLoggingTest, Metrics_Unknown) {
@@ -828,7 +830,7 @@ TEST_P(SaveCardBubbleLoggingTest, Metrics_Unknown) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptResult" + GetHistogramNameSuffix(),
-      autofill_metrics::SaveCardPromptResult::kUnknown, 1);
+      autofill_metrics::LegacySaveCardPromptResult::kUnknown, 1);
 }
 
 TEST_P(SaveCardBubbleLoggingTest, Metrics_LegalMessageLinkedClicked) {
@@ -1095,7 +1097,7 @@ TEST_P(SaveCvcBubbleLoggingTest, Metrics_SaveButton) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCvcPromptResult." + save_destination_ + "." + show_type_,
-      autofill_metrics::SaveCardPromptResult::kAccepted, 1);
+      autofill_metrics::LegacySaveCardPromptResult::kAccepted, 1);
 }
 
 TEST_P(SaveCvcBubbleLoggingTest, Metrics_CancelButton) {
@@ -1105,7 +1107,7 @@ TEST_P(SaveCvcBubbleLoggingTest, Metrics_CancelButton) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCvcPromptResult." + save_destination_ + "." + show_type_,
-      autofill_metrics::SaveCardPromptResult::kCancelled, 1);
+      autofill_metrics::LegacySaveCardPromptResult::kCancelled, 1);
 }
 
 TEST_P(SaveCvcBubbleLoggingTest, Metrics_Closed) {
@@ -1115,7 +1117,7 @@ TEST_P(SaveCvcBubbleLoggingTest, Metrics_Closed) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCvcPromptResult." + save_destination_ + "." + show_type_,
-      autofill_metrics::SaveCardPromptResult::kClosed, 1);
+      autofill_metrics::LegacySaveCardPromptResult::kClosed, 1);
 }
 
 TEST_P(SaveCvcBubbleLoggingTest, Metrics_NotInteracted) {
@@ -1125,7 +1127,7 @@ TEST_P(SaveCvcBubbleLoggingTest, Metrics_NotInteracted) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCvcPromptResult." + save_destination_ + "." + show_type_,
-      autofill_metrics::SaveCardPromptResult::kNotInteracted, 1);
+      autofill_metrics::LegacySaveCardPromptResult::kNotInteracted, 1);
 }
 
 TEST_P(SaveCvcBubbleLoggingTest, Metrics_LostFocus) {
@@ -1135,7 +1137,7 @@ TEST_P(SaveCvcBubbleLoggingTest, Metrics_LostFocus) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCvcPromptResult." + save_destination_ + "." + show_type_,
-      autofill_metrics::SaveCardPromptResult::kLostFocus, 1);
+      autofill_metrics::LegacySaveCardPromptResult::kLostFocus, 1);
 }
 
 TEST_P(SaveCvcBubbleLoggingTest, Metrics_Unknown) {
@@ -1145,7 +1147,7 @@ TEST_P(SaveCvcBubbleLoggingTest, Metrics_Unknown) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCvcPromptResult." + save_destination_ + "." + show_type_,
-      autofill_metrics::SaveCardPromptResult::kUnknown, 1);
+      autofill_metrics::LegacySaveCardPromptResult::kUnknown, 1);
 }
 
 TEST_F(SaveCardBubbleControllerImplTest, LocalCvcOnlySaveDialogContent) {
@@ -1384,7 +1386,7 @@ TEST_F(SaveCardBubbleControllerImplTest, Metrics_Upload_AfterSave_OnClose) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptResult.Upload.FirstShow",
-      autofill_metrics::SaveCardPromptResult::kAccepted, 1);
+      autofill_metrics::LegacySaveCardPromptResult::kAccepted, 1);
 
   ShowConfirmationBubbleView(/*card_saved=*/true);
   CloseBubble();
@@ -1393,7 +1395,7 @@ TEST_F(SaveCardBubbleControllerImplTest, Metrics_Upload_AfterSave_OnClose) {
       "Autofill.CreditCardUpload.ConfirmationShown.CardUploaded", true, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CreditCardUpload.ConfirmationResult.CardUploaded",
-      autofill_metrics::SaveCardPromptResult::kNotInteracted, 1);
+      autofill_metrics::LegacySaveCardPromptResult::kNotInteracted, 1);
   // Expect the metric not to change from the save button interaction.
   histogram_tester.ExpectTotalCount(
       "Autofill.SaveCreditCardPromptResult.Upload.FirstShow", 1);
@@ -1415,7 +1417,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
       "Autofill.CreditCardUpload.ConfirmationShown.CardNotUploaded", true, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CreditCardUpload.ConfirmationResult.CardNotUploaded",
-      autofill_metrics::SaveCardPromptResult::kNotInteracted, 1);
+      autofill_metrics::LegacySaveCardPromptResult::kNotInteracted, 1);
 }
 
 // Test that the `Accepted` upload result metric is not recorded and the loading
@@ -1429,7 +1431,7 @@ TEST_F(SaveCardBubbleControllerImplTest, Metrics_Upload_DuringSave_OnClose) {
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptResult.Upload.FirstShow",
-      autofill_metrics::SaveCardPromptResult::kAccepted, 1);
+      autofill_metrics::LegacySaveCardPromptResult::kAccepted, 1);
 
   CloseBubble();
 
@@ -1437,7 +1439,7 @@ TEST_F(SaveCardBubbleControllerImplTest, Metrics_Upload_DuringSave_OnClose) {
                                       true, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CreditCardUpload.LoadingResult",
-      autofill_metrics::SaveCardPromptResult::kNotInteracted, 1);
+      autofill_metrics::LegacySaveCardPromptResult::kNotInteracted, 1);
   // Expect the upload result metric not to change from the save button
   // interaction.
   histogram_tester.ExpectTotalCount(

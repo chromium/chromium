@@ -121,9 +121,15 @@ enum class SaveCardPromptOffer {
   kMaxValue = kCvcMissingForPotentialUpdate,
 };
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class SaveCardPromptResult {
+// This is a legacy enum used by card save and cvc save metrics on desktop. The
+// outcomes here are also represented by `enum SaveCardPromptResult` in
+// credit_card_save_metrics_desktop.h to be used for desktop-specific metrics.
+// The enum SaveCardPromptResult in this file represents only platform-agnostic
+// outcomes. These values are persisted to logs. Entries should not be
+// renumbered and numeric values should never be reused.
+// TODO(crbug.com/430588721): Clean up this enum once refactored save card
+// metrics have rolled out.
+enum class LegacySaveCardPromptResult {
   // The user explicitly accepted the prompt by clicking the ok button.
   kAccepted = 0,
   // The user explicitly cancelled the prompt by clicking the cancel button.
@@ -223,7 +229,7 @@ void LogSaveCardPromptOfferMetric(
 // `has_saved_cards` indicates that local or server cards existed before the
 // save prompt was accepted/denied.
 void LogSaveCardPromptResultMetric(
-    SaveCardPromptResult metric,
+    LegacySaveCardPromptResult metric,
     bool is_uploading,
     bool is_reshow,
     payments::PaymentsAutofillClient::SaveCreditCardOptions options,
@@ -234,7 +240,7 @@ void LogSaveCvcPromptOfferMetric(SaveCardPromptOffer metric,
                                  bool is_uploading,
                                  bool is_reshow);
 
-void LogSaveCvcPromptResultMetric(SaveCardPromptResult metric,
+void LogSaveCvcPromptResultMetric(LegacySaveCardPromptResult metric,
                                   bool is_uploading,
                                   bool is_reshow);
 
@@ -251,10 +257,15 @@ void LogCreditCardUploadLoadingViewShownMetric(bool is_shown);
 void LogCreditCardUploadConfirmationViewShownMetric(bool is_shown,
                                                     bool is_card_uploaded);
 
-void LogCreditCardUploadLoadingViewResultMetric(SaveCardPromptResult metric);
+// TODO(crbug.com/395731509): Replace use of LegacySaveCardPromptResult with
+// SaveCardPromptResult for LogCreditCardUploadLoadingViewResultMetric() and
+// LogCreditCardUploadConfirmationViewResultMetric() once refactored save card
+// metrics have rolled out.
+void LogCreditCardUploadLoadingViewResultMetric(
+    LegacySaveCardPromptResult metric);
 
 void LogCreditCardUploadConfirmationViewResultMetric(
-    SaveCardPromptResult metric,
+    LegacySaveCardPromptResult metric,
     bool is_card_uploaded);
 
 void LogGetCardUploadDetailsRequestLatencyMetric(base::TimeDelta duration,

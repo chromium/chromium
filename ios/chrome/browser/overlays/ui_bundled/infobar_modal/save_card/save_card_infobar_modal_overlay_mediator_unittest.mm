@@ -558,7 +558,7 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest,
 
   histogramTester.ExpectUniqueSample(
       "Autofill.CreditCardUpload.LoadingResult",
-      autofill::autofill_metrics::SaveCardPromptResult::kClosed, 1);
+      autofill::autofill_metrics::LegacySaveCardPromptResult::kClosed, 1);
 }
 
 // Tests metrics for loading view shown and dismissed on receiving result from
@@ -580,10 +580,11 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest,
 
   histogramTester.ExpectUniqueSample(
       "Autofill.CreditCardUpload.LoadingResult",
-      autofill::autofill_metrics::SaveCardPromptResult::kNotInteracted, 1);
+      autofill::autofill_metrics::LegacySaveCardPromptResult::kNotInteracted,
+      1);
   histogramTester.ExpectBucketCount(
       "Autofill.CreditCardUpload.LoadingResult",
-      autofill::autofill_metrics::SaveCardPromptResult::kClosed, 0);
+      autofill::autofill_metrics::LegacySaveCardPromptResult::kClosed, 0);
 }
 
 // Tests metrics for confirmation view shown and dismissed by user.
@@ -608,10 +609,11 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest,
 
   histogramTester.ExpectUniqueSample(
       "Autofill.CreditCardUpload.ConfirmationResult.CardUploaded",
-      autofill::autofill_metrics::SaveCardPromptResult::kClosed, 1);
+      autofill::autofill_metrics::LegacySaveCardPromptResult::kClosed, 1);
   histogramTester.ExpectBucketCount(
       "Autofill.CreditCardUpload.ConfirmationResult.CardUploaded",
-      autofill::autofill_metrics::SaveCardPromptResult::kNotInteracted, 0);
+      autofill::autofill_metrics::LegacySaveCardPromptResult::kNotInteracted,
+      0);
 }
 
 // Tests metrics for confirmation view shown and auto-closed on
@@ -635,10 +637,11 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest,
 
   histogramTester.ExpectUniqueSample(
       "Autofill.CreditCardUpload.ConfirmationResult.CardUploaded",
-      autofill::autofill_metrics::SaveCardPromptResult::kNotInteracted, 1);
+      autofill::autofill_metrics::LegacySaveCardPromptResult::kNotInteracted,
+      1);
   histogramTester.ExpectBucketCount(
       "Autofill.CreditCardUpload.ConfirmationResult.CardUploaded",
-      autofill::autofill_metrics::SaveCardPromptResult::kClosed, 0);
+      autofill::autofill_metrics::LegacySaveCardPromptResult::kClosed, 0);
 }
 
 // Tests that the mediator correctly handles an empty CVC when the user saves.

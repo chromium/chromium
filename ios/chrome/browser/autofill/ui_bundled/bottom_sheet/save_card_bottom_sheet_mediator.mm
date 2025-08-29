@@ -128,14 +128,14 @@ static constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
     case autofill::SaveCardBottomSheetModel::SaveCardState::kSaveInProgress:
       CHECK(_saveCardBottomSheetModel->save_card_delegate()->is_for_upload());
       autofill::autofill_metrics::LogCreditCardUploadLoadingViewResultMetric(
-          autofill::autofill_metrics::SaveCardPromptResult::kClosed);
+          autofill::autofill_metrics::LegacySaveCardPromptResult::kClosed);
       break;
     // Bottomsheet is being dismissed while showing success confirmation state
     // due to being swiped away, tab changed or link clicked.
     case autofill::SaveCardBottomSheetModel::SaveCardState::kSaved:
       autofill::autofill_metrics::
           LogCreditCardUploadConfirmationViewResultMetric(
-              autofill::autofill_metrics::SaveCardPromptResult::kClosed,
+              autofill::autofill_metrics::LegacySaveCardPromptResult::kClosed,
               /*is_card_uploaded=*/_saveCardBottomSheetModel
                   ->save_card_delegate()
                   ->is_for_upload());
@@ -264,7 +264,7 @@ static constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
 
 - (void)onCreditCardUploadCompleted:(BOOL)cardSaved {
   autofill::autofill_metrics::LogCreditCardUploadLoadingViewResultMetric(
-      autofill::autofill_metrics::SaveCardPromptResult::kNotInteracted);
+      autofill::autofill_metrics::LegacySaveCardPromptResult::kNotInteracted);
 
   if (cardSaved) {
     [self showConfirmationForUploadSave:YES];
@@ -300,7 +300,7 @@ static constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
 - (void)dimissConfirmationStateOnTimeout {
   _autoDismissConfirmationTimer.Stop();
   autofill::autofill_metrics::LogCreditCardUploadConfirmationViewResultMetric(
-      autofill::autofill_metrics::SaveCardPromptResult::kNotInteracted,
+      autofill::autofill_metrics::LegacySaveCardPromptResult::kNotInteracted,
       /*is_card_uploaded=*/_saveCardBottomSheetModel->save_card_delegate()
           ->is_for_upload());
   _dismissing = YES;

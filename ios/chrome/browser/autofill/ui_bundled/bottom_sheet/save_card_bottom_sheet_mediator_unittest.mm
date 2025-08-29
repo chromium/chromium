@@ -39,7 +39,8 @@
 
 namespace {
 
-using SaveCardPromptResult = autofill::autofill_metrics::SaveCardPromptResult;
+using LegacySaveCardPromptResult =
+    autofill::autofill_metrics::LegacySaveCardPromptResult;
 using SaveCreditCardPromptResultIOS =
     autofill::autofill_metrics::SaveCreditCardPromptResultIOS;
 
@@ -303,8 +304,9 @@ TEST_F(SaveCardBottomSheetMediatorTest,
 
   [mediator_ onCreditCardUploadCompleted:YES];
 
-  histogram_tester.ExpectUniqueSample(kCreditCardUploadLoadingResultPrefix,
-                                      SaveCardPromptResult::kNotInteracted, 1);
+  histogram_tester.ExpectUniqueSample(
+      kCreditCardUploadLoadingResultPrefix,
+      LegacySaveCardPromptResult::kNotInteracted, 1);
   histogram_tester.ExpectUniqueSample(
       base::StrCat(
           {kCreditCardUploadSuccessConfirmationShownPrefix, ".CardUploaded"}),
@@ -332,8 +334,9 @@ TEST_F(SaveCardBottomSheetMediatorTest, OnFailureLogs_LoadingResult) {
 
   [mediator_ onCreditCardUploadCompleted:NO];
 
-  histogram_tester.ExpectUniqueSample(kCreditCardUploadLoadingResultPrefix,
-                                      SaveCardPromptResult::kNotInteracted, 1);
+  histogram_tester.ExpectUniqueSample(
+      kCreditCardUploadLoadingResultPrefix,
+      LegacySaveCardPromptResult::kNotInteracted, 1);
 }
 
 // Tests that bottomsheet is auto-dismissed when the timer for confirmation
@@ -381,7 +384,7 @@ TEST_F(SaveCardBottomSheetMediatorTest,
   histogram_tester.ExpectUniqueSample(
       base::StrCat(
           {kCreditCardUploadSuccessConfirmationResultPrefix, ".CardUploaded"}),
-      autofill::autofill_metrics::SaveCardPromptResult::kNotInteracted, 1);
+      LegacySaveCardPromptResult::kNotInteracted, 1);
 }
 
 // Test that `OnCanceled` is called on the model and bottomsheet is dismissed
@@ -506,7 +509,7 @@ TEST_F(SaveCardBottomSheetMediatorTest,
   EXPECT_EQ([mediator_ isDismissingForTesting], YES);
 
   histogram_tester.ExpectUniqueSample(kCreditCardUploadLoadingResultPrefix,
-                                      SaveCardPromptResult::kClosed,
+                                      LegacySaveCardPromptResult::kClosed,
                                       /*expected_count=*/1);
 }
 
@@ -532,7 +535,7 @@ TEST_F(SaveCardBottomSheetMediatorTest,
   histogram_tester.ExpectUniqueSample(
       base::StrCat(
           {kCreditCardUploadSuccessConfirmationResultPrefix, ".CardUploaded"}),
-      autofill::autofill_metrics::SaveCardPromptResult::kClosed, 1);
+      LegacySaveCardPromptResult::kClosed, 1);
 }
 
 class SaveCardBottomSheetMediatorTestForLocalSave
@@ -651,7 +654,7 @@ TEST_F(SaveCardBottomSheetMediatorTestForLocalSave,
   histogram_tester.ExpectUniqueSample(
       base::StrCat({kCreditCardUploadSuccessConfirmationResultPrefix,
                     ".CardNotUploaded"}),
-      autofill::autofill_metrics::SaveCardPromptResult::kNotInteracted, 1);
+      LegacySaveCardPromptResult::kNotInteracted, 1);
 }
 
 // Test that local save bottomsheet dismissal before timeout in confirmation
@@ -674,5 +677,5 @@ TEST_F(SaveCardBottomSheetMediatorTestForLocalSave,
   histogram_tester.ExpectUniqueSample(
       base::StrCat({kCreditCardUploadSuccessConfirmationResultPrefix,
                     ".CardNotUploaded"}),
-      autofill::autofill_metrics::SaveCardPromptResult::kClosed, 1);
+      LegacySaveCardPromptResult::kClosed, 1);
 }
