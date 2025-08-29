@@ -55,31 +55,40 @@ class ClosingPageVoterTest : public GraphTestHarness {
 
 }  // namespace
 
-// Tests that a USER_BLOCKING vote is cast when a page is closing and
-// invalidated when it is no longer closing.
-TEST_F(ClosingPageVoterTest, VoteWhenClosing) {
-  MockSinglePageInSingleProcessGraph mock_graph(graph());
+// Tests that a USER_BLOCKING vote is cast for the entire frame tree when a page
+// is closing.
+TEST_F(ClosingPageVoterTest, VoteWhenClosingWithChildFrame) {
+  MockSinglePageWithMultipleProcessesGraph mock_graph(graph());
   auto* page_node = mock_graph.page.get();
   auto* main_frame_node = mock_graph.frame.get();
+  auto* child_frame_node = mock_graph.child_frame.get();
 
-  // No vote initially.
+  // No votes initially.
   EXPECT_EQ(observer_.GetVoteCount(), 0u);
   EXPECT_FALSE(
       observer_.HasVote(voter_id(), GetExecutionContext(main_frame_node)));
+  EXPECT_FALSE(
+      observer_.HasVote(voter_id(), GetExecutionContext(child_frame_node)));
 
-  // Set to closing, expect a USER_BLOCKING vote.
+  // Set to closing, expect a USER_BLOCKING vote on each frame.
   closing_page_voter_.SetPageIsClosing(page_node, true);
-  EXPECT_EQ(observer_.GetVoteCount(), 1u);
+  EXPECT_EQ(observer_.GetVoteCount(), 2u);
   EXPECT_TRUE(observer_.HasVote(voter_id(),
                                 GetExecutionContext(main_frame_node),
                                 base::TaskPriority::USER_BLOCKING,
                                 ClosingPageVoter::kPageIsClosingReason));
+  EXPECT_TRUE(observer_.HasVote(voter_id(),
+                                GetExecutionContext(child_frame_node),
+                                base::TaskPriority::USER_BLOCKING,
+                                ClosingPageVoter::kPageIsClosingReason));
 
-  // Set back to not closing, expect the vote to be invalidated.
+  // Set back to not closing, expect the votes to be invalidated.
   closing_page_voter_.SetPageIsClosing(page_node, false);
   EXPECT_EQ(observer_.GetVoteCount(), 0u);
   EXPECT_FALSE(
       observer_.HasVote(voter_id(), GetExecutionContext(main_frame_node)));
+  EXPECT_FALSE(
+      observer_.HasVote(voter_id(), GetExecutionContext(child_frame_node)));
 }
 
 // Tests that the vote is invalidated when the page node is removed.
@@ -99,6 +108,53 @@ TEST_F(ClosingPageVoterTest, VoteInvalidatedOnRemoval) {
   // vote in OnBeforePageNodeRemoved.
   mock_graph.reset();
   EXPECT_EQ(observer_.GetVoteCount(), 0u);
+}
+
+// Tests that a frame added to a closing page gets a USER_BLOCKING vote.
+TEST_F(ClosingPageVoterTest, FrameAddedToClosingPage) {
+  MockSinglePageInSingleProcessGraph mock_graph(graph());
+  auto* page_node = mock_graph.page.get();
+  auto* main_frame_node = mock_graph.frame.get();
+
+  // Set to closing, expect a USER_BLOCKING vote on the main frame.
+  closing_page_voter_.SetPageIsClosing(page_node, true);
+  EXPECT_EQ(observer_.GetVoteCount(), 1u);
+  EXPECT_TRUE(
+      observer_.HasVote(voter_id(), GetExecutionContext(main_frame_node)));
+
+  // Add a child frame, expect a vote on it.
+  auto child_frame_node = graph()->CreateFrameNodeAutoId(
+      mock_graph.process.get(), page_node, main_frame_node);
+  EXPECT_EQ(observer_.GetVoteCount(), 2u);
+  EXPECT_TRUE(observer_.HasVote(voter_id(),
+                                GetExecutionContext(child_frame_node.get())));
+
+  // Set back to not closing, expect all votes to be invalidated.
+  closing_page_voter_.SetPageIsClosing(page_node, false);
+  EXPECT_EQ(observer_.GetVoteCount(), 0u);
+}
+
+// Tests that the vote is invalidated when a frame is removed from a closing
+// page.
+TEST_F(ClosingPageVoterTest, FrameRemovedFromClosingPage) {
+  MockSinglePageWithMultipleProcessesGraph mock_graph(graph());
+  auto* page_node = mock_graph.page.get();
+  auto* main_frame_node = mock_graph.frame.get();
+  auto* child_frame_node = mock_graph.child_frame.get();
+
+  // Set to closing, expect a USER_BLOCKING vote on each frame.
+  closing_page_voter_.SetPageIsClosing(page_node, true);
+  EXPECT_EQ(observer_.GetVoteCount(), 2u);
+  EXPECT_TRUE(
+      observer_.HasVote(voter_id(), GetExecutionContext(main_frame_node)));
+  EXPECT_TRUE(
+      observer_.HasVote(voter_id(), GetExecutionContext(child_frame_node)));
+
+  // Remove the child frame, its vote should be invalidated.
+  mock_graph.child_frame.reset();
+  EXPECT_EQ(observer_.GetVoteCount(), 1u);
+  EXPECT_TRUE(
+      observer_.HasVote(voter_id(), GetExecutionContext(main_frame_node)));
 }
 
 }  // namespace performance_manager::execution_context_priority
