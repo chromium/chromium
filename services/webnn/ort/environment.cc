@@ -62,15 +62,18 @@ constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view, EpInfo>({
             // https://onnxruntime.ai/docs/execution-providers/OpenVINO-ExecutionProvider.html#summary-of-options.
             //
             // To get more accurate inference results, WebNN requires the
-            // accuracy execution mode on OpenVINO GPU to override the default
-            // FP16 precision configuration, maintain original model precision
-            // (f32→f32, f16→f16) and disable dynamic quantization. See:
+            // accuracy execution mode on OpenVINO GPU/NPU to avoid lowering the
+            // execution accuracy for performance reasons, maintain original
+            // model precision (f32→f32, f16→f16) and disable dynamic
+            // quantization. See:
             // https://docs.openvino.ai/2025/openvino-workflow/running-inference/optimize-inference/precision-control.html.
             .config_entries =
                 (const Environment::SessionConfigEntry[]){
                     {.key = "ep.openvinoexecutionprovider.load_config",
-                     .value =
-                         R"({"GPU": {"EXECUTION_MODE_HINT": "ACCURACY"}})"}},
+                     .value = R"({
+         "GPU": {"EXECUTION_MODE_HINT": "ACCURACY"},
+         "NPU": {"EXECUTION_MODE_HINT": "ACCURACY"}
+       })"}},
         },
     },
 });
