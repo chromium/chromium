@@ -890,13 +890,19 @@ void WebUIBrowserWindow::OnWebApiWindowResizableChanged() {
 }
 
 bool WebUIBrowserWindow::GetCanResize() {
-  NOTIMPLEMENTED();
-  return false;
+  return widget_delegate_->CanResize();
 }
 
 ui::mojom::WindowShowState WebUIBrowserWindow::GetWindowShowState() const {
-  NOTIMPLEMENTED();
-  return ui::mojom::WindowShowState::kDefault;
+  if (IsMaximized()) {
+    return ui::mojom::WindowShowState::kMaximized;
+  } else if (IsMinimized()) {
+    return ui::mojom::WindowShowState::kMinimized;
+  } else if (IsFullscreen()) {
+    return ui::mojom::WindowShowState::kFullscreen;
+  } else {
+    return ui::mojom::WindowShowState::kDefault;
+  }
 }
 
 void WebUIBrowserWindow::ShowChromeLabs() {
@@ -1041,7 +1047,13 @@ void WebUIBrowserWindow::OnWindowCloseRequested(
 WebUIBrowserWindow::WidgetDelegate::WidgetDelegate(
     WebUIBrowserWindow* window,
     WebUIBrowserWebContentsDelegate* web_contents_delegate)
-    : browser_window_(window), web_contents_delegate_(web_contents_delegate) {}
+    : browser_window_(window), web_contents_delegate_(web_contents_delegate) {
+  // TODO(webium): May want to override these for Apps or Picture-in-picture.
+  SetCanResize(browser_window_->browser_->create_params().can_resize);
+  SetCanMaximize(browser_window_->browser_->create_params().can_maximize);
+  SetCanFullscreen(browser_window_->browser_->create_params().can_fullscreen);
+  SetCanMinimize(true);
+}
 
 views::ClientView* WebUIBrowserWindow::WidgetDelegate::CreateClientView(
     views::Widget* widget) {
