@@ -29,6 +29,7 @@ include_rules = [
   "+services/network/public/cpp",
   "+services/network/public/mojom",
   "+services/network/test",
+  "+services/preferences/tracked",
   "+sql",
   "+ui/resources",
   "+third_party/metrics_proto",

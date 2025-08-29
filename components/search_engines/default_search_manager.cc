@@ -17,9 +17,11 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
+#include "services/preferences/tracked/pref_hash_filter.h"
 
 namespace {
 bool g_fallback_search_engines_disabled = false;
@@ -261,6 +263,21 @@ void DefaultSearchManager::OnDefaultSearchPrefChanged() {
       pref_service_->GetDict(kDefaultSearchProviderDataPrefName);
   pref_service_->SetDict(kMirroredDefaultSearchProviderDataPrefName,
                          url_dict.Clone());
+
+  // The tracked pref subsystem performs an encrypted hash check of the DSE
+  // pref. If tampering is detected, the DSE pref is reset and a reset time pref
+  // is set. This operation is performed asynchronously shortly after startup.
+  // This log statement will be used to confirm that the DSE reset will be
+  // captured by this observer on all platforms.
+  // TODO: crbug.com/441953697 - Remove after confirming behavior on all
+  // platforms.
+  if (base::FeatureList::IsEnabled(
+          switches::kResetTamperedDefaultSearchEngine)) {
+    base::Time reset_time = PrefHashFilter::GetResetTime(pref_service_);
+    DVLOG(1) << "DefaultSearchManager::OnDefaultSearchPrefChanged() called "
+                "with time "
+             << reset_time;
+  }
 
   // The effective DSE may have changed unless we were using the fallback source
   // both before and after the above load.
