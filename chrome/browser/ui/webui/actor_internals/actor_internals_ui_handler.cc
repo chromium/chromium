@@ -70,7 +70,12 @@ void ActorInternalsUIHandler::StartLogging() {
 
   base::FilePath default_file;
   base::PathService::Get(chrome::DIR_USER_DOCUMENTS, &default_file);
-  default_file = default_file.AppendASCII("actor_trace.pftrace");
+  base::Time::Exploded exploded;
+  base::Time::Now().LocalExplode(&exploded);
+  default_file = default_file.AppendASCII(
+      absl::StrFormat("actor_trace_%.2d_%.2d_%.2d_%.2d_%.2d_%.2d.pftrace",
+                      exploded.year, exploded.month, exploded.day_of_month,
+                      exploded.hour, exploded.minute, exploded.second));
   select_file_dialog_ = ui::SelectFileDialog::Create(this, /*policy=*/nullptr);
   select_file_dialog_->SelectFile(ui::SelectFileDialog::SELECT_SAVEAS_FILE,
                                   std::u16string(), default_file, nullptr, 0,
