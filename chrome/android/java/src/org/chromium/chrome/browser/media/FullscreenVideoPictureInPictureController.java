@@ -789,6 +789,7 @@ public class FullscreenVideoPictureInPictureController {
     /** Protected to allow tests to override, since mocking statics is error-prone. */
     @VisibleForTesting
     /* package */ @Nullable InfoBarContainer getInfoBarContainerForTab(@Nullable Tab tab) {
+        if (tab == null) return null;
         return InfoBarContainer.get(tab);
     }
 

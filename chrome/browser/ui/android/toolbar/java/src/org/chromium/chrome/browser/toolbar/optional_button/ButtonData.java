@@ -46,7 +46,7 @@ public interface ButtonData {
     /** A set of button properties which are not expected to change values often. */
     final class ButtonSpec {
         public static final int INVALID_TOOLTIP_TEXT_ID = 0;
-        private final Drawable mDrawable;
+        private final @Nullable Drawable mDrawable;
         // TODO(crbug.com/40753109): make mOnClickListener
         private final View.OnClickListener mOnClickListener;
         private final View.@Nullable OnLongClickListener mOnLongClickListener;
@@ -61,7 +61,7 @@ public interface ButtonData {
         private final boolean mIsChecked;
 
         public ButtonSpec(
-                Drawable drawable,
+                @Nullable Drawable drawable,
                 View.OnClickListener onClickListener,
                 View.@Nullable OnLongClickListener onLongClickListener,
                 String contentDescription,
@@ -86,7 +86,7 @@ public interface ButtonData {
         }
 
         public ButtonSpec(
-                Drawable drawable,
+                @Nullable Drawable drawable,
                 View.OnClickListener onClickListener,
                 View.@Nullable OnLongClickListener onLongClickListener,
                 String contentDescription,
@@ -112,7 +112,7 @@ public interface ButtonData {
         }
 
         /** Returns the {@link Drawable} for the button icon. */
-        public Drawable getDrawable() {
+        public @Nullable Drawable getDrawable() {
             return mDrawable;
         }
 

@@ -4,12 +4,13 @@
 
 package org.chromium.chrome.browser.identity_disc;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -17,6 +18,9 @@ import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -61,6 +65,7 @@ import org.chromium.components.user_prefs.UserPrefs;
  * Handles displaying IdentityDisc on toolbar depending on several conditions (user sign-in state,
  * whether NTP is shown)
  */
+@NullMarked
 public class IdentityDiscController
         implements ProfileDataCache.Observer,
                 IdentityManager.Observer,
@@ -70,16 +75,16 @@ public class IdentityDiscController
     private final Context mContext;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Profile> mProfileSupplierObserver = this::setProfile;
-    private Profile mProfile;
+    private @Nullable Profile mProfile;
 
     // We observe IdentityManager to receive primary account state change notifications.
-    private IdentityManager mIdentityManager;
+    private @Nullable IdentityManager mIdentityManager;
 
     // SyncService is observed to update mIdentityError.
-    private SyncService mSyncService;
+    private @Nullable SyncService mSyncService;
 
     // ProfileDataCache facilitates retrieving profile picture.
-    private ProfileDataCache mProfileDataCache;
+    private @Nullable ProfileDataCache mProfileDataCache;
 
     private final ButtonDataImpl mButtonData;
     private final ObserverList<ButtonDataObserver> mObservers = new ObserverList<>();
@@ -124,7 +129,7 @@ public class IdentityDiscController
     }
 
     @Override
-    public ButtonData get(Tab tab) {
+    public ButtonData get(@Nullable Tab tab) {
         mIsTabNtp = tab != null && tab.getNativePage() instanceof NewTabPage;
         if (!mIsTabNtp) {
             mButtonData.setCanShow(false);
@@ -177,14 +182,16 @@ public class IdentityDiscController
      * Creates and initializes ProfileDataCache if it wasn't created previously. Subscribes
      * IdentityDiscController for profile data updates.
      */
+    @EnsuresNonNull("mProfileDataCache")
     private void ensureProfileDataCache(Profile profile) {
         if (mProfileDataCache != null) return;
 
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(profile);
+        assert identityManager != null;
         mProfileDataCache =
                 ProfileDataCache.createWithoutBadge(
-                        mContext,
-                        IdentityServicesProvider.get().getIdentityManager(profile),
-                        R.dimen.toolbar_identity_disc_size);
+                        mContext, identityManager, R.dimen.toolbar_identity_disc_size);
         mProfileDataCache.addObserver(this);
     }
 
@@ -192,6 +199,7 @@ public class IdentityDiscController
      * Returns Profile picture Drawable. The size of the image corresponds to current visual state.
      */
     private Drawable getProfileImage(@Nullable String email) {
+        assumeNonNull(mProfileDataCache);
         return email == null
                 ? AppCompatResources.getDrawable(mContext, R.drawable.account_circle)
                 : mProfileDataCache.getProfileDataOrDefault(email).getImage();
@@ -323,11 +331,12 @@ public class IdentityDiscController
     }
 
     /**
-     * Returns the account info of mIdentityManager if current profile is regular, and
-     * null for off-the-record ones.
+     * Returns the account info of mIdentityManager if current profile is regular, and null for
+     * off-the-record ones.
+     *
      * @return account info for the current profile. Returns null for OTR profile.
      */
-    private CoreAccountInfo getSignedInAccountInfo() {
+    private @Nullable CoreAccountInfo getSignedInAccountInfo() {
         return mIdentityManager != null
                 ? mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)
                 : null;
@@ -353,6 +362,7 @@ public class IdentityDiscController
             mSyncService = null;
         } else {
             mIdentityManager = IdentityServicesProvider.get().getIdentityManager(profile);
+            assumeNonNull(mIdentityManager);
             mIdentityManager.addObserver(this);
             calculateButtonData();
 
@@ -371,6 +381,7 @@ public class IdentityDiscController
             return mContext.getString(R.string.accessibility_toolbar_btn_signed_out_identity_disc);
         }
 
+        assumeNonNull(mProfileDataCache);
         DisplayableProfileData profileData = mProfileDataCache.getProfileDataOrDefault(email);
         String userName = profileData.getFullName();
         if (profileData.hasDisplayableEmailAddress()) {

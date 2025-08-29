@@ -30,7 +30,7 @@ public class ButtonDataImpl implements ButtonData {
 
     public ButtonDataImpl(
             boolean canShow,
-            Drawable drawable,
+            @Nullable Drawable drawable,
             OnClickListener onClickListener,
             String contentDescription,
             boolean supportsTinting,
@@ -53,7 +53,7 @@ public class ButtonDataImpl implements ButtonData {
 
     public ButtonDataImpl(
             boolean canShow,
-            Drawable drawable,
+            @Nullable Drawable drawable,
             OnClickListener onClickListener,
             String contentDescription,
             @StringRes int actionChipLabelResId,
@@ -151,7 +151,7 @@ public class ButtonDataImpl implements ButtonData {
     }
 
     /** Convenience method to update the action chip string resource ID. */
-    public void updateDrawable(Drawable newDrawable) {
+    public void updateDrawable(@Nullable Drawable newDrawable) {
         ButtonSpec currentSpec = getButtonSpec();
         ButtonSpec newSpec =
                 new ButtonSpec(
