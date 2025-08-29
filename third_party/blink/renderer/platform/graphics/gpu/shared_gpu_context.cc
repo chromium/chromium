@@ -111,7 +111,7 @@ static void CreateContextProviderOnMainThread(
 
   Platform::GraphicsInfo graphics_info;
   auto context_provider =
-      Platform::Current()->CreateOffscreenGraphicsContext3DProvider(
+      Platform::Current()->CreateRasterGraphicsContextProvider(
           context_attributes, WebURL(), &graphics_info);
   if (context_provider) {
     *wrapper = std::make_unique<WebGraphicsContext3DProviderWrapper>(

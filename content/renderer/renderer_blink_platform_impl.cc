@@ -716,7 +716,7 @@ void RendererBlinkPlatformImpl::Collect3DContextInformation(
 }
 
 std::unique_ptr<blink::WebGraphicsContext3DProvider>
-RendererBlinkPlatformImpl::CreateOffscreenGraphicsContext3DProvider(
+RendererBlinkPlatformImpl::CreateWebGLGraphicsContextProvider(
     const blink::Platform::ContextAttributes& web_attributes,
     const blink::WebURL& document_url,
     blink::Platform::GraphicsInfo* gl_info) {
@@ -768,6 +768,61 @@ RendererBlinkPlatformImpl::CreateOffscreenGraphicsContext3DProvider(
           kGpuStreamPriorityDefault, GURL(document_url), automatic_flushes,
           support_locking, gpu::SharedMemoryLimits(), attributes,
           viz::command_buffer_metrics::ContextType::WEBGL));
+}
+
+std::unique_ptr<blink::WebGraphicsContext3DProvider>
+RendererBlinkPlatformImpl::CreateRasterGraphicsContextProvider(
+    const blink::Platform::ContextAttributes& web_attributes,
+    const blink::WebURL& document_url,
+    blink::Platform::GraphicsInfo* gl_info) {
+  DCHECK(gl_info);
+  if (!RenderThreadImpl::current()) {
+    std::string error_message("Failed to run in Current RenderThreadImpl");
+    gl_info->error_message = WebString::FromUTF8(error_message);
+    return nullptr;
+  }
+
+  scoped_refptr<gpu::GpuChannelHost> gpu_channel_host(
+      RenderThreadImpl::current()->EstablishGpuChannelSync());
+  if (!gpu_channel_host) {
+    std::string error_message(
+        "OffscreenContext Creation failed, GpuChannelHost creation failed");
+    gl_info->error_message = WebString::FromUTF8(error_message);
+    return nullptr;
+  }
+
+  if (web_attributes.enable_raster_interface &&
+      gpu_channel_host->gpu_info().skia_backend_type ==
+          gpu::SkiaBackendType::kNone) {
+    return nullptr;
+  }
+
+  const auto& gpu_info = gpu_channel_host->gpu_info();
+  Collect3DContextInformation(gl_info, gpu_info);
+
+  gpu::ContextCreationAttribs attributes;
+  attributes.enable_raster_interface = web_attributes.enable_raster_interface;
+  attributes.enable_gpu_rasterization = attributes.enable_raster_interface;
+  attributes.enable_gles2_interface = !attributes.enable_gpu_rasterization;
+
+  attributes.gpu_preference = web_attributes.prefer_low_power_gpu
+                                  ? gl::GpuPreference::kLowPower
+                                  : gl::GpuPreference::kHighPerformance;
+
+  attributes.fail_if_major_perf_caveat =
+      web_attributes.fail_if_major_performance_caveat;
+
+  attributes.context_type = ToGpuContextType(web_attributes.context_type);
+
+  constexpr bool automatic_flushes = true;
+  constexpr bool support_locking = false;
+
+  return std::make_unique<WebGraphicsContext3DProviderImpl>(
+      base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
+          std::move(gpu_channel_host), kGpuStreamIdDefault,
+          kGpuStreamPriorityDefault, GURL(document_url), automatic_flushes,
+          support_locking, gpu::SharedMemoryLimits(), attributes,
+          viz::command_buffer_metrics::ContextType::RENDER_COMPOSITOR));
 }
 
 //------------------------------------------------------------------------------

@@ -271,7 +271,14 @@ Platform::CompositorThreadTaskRunner() {
 }
 
 std::unique_ptr<WebGraphicsContext3DProvider>
-Platform::CreateOffscreenGraphicsContext3DProvider(
+Platform::CreateWebGLGraphicsContextProvider(const Platform::ContextAttributes&,
+                                             const WebURL& document_url,
+                                             Platform::GraphicsInfo*) {
+  return nullptr;
+}
+
+std::unique_ptr<WebGraphicsContext3DProvider>
+Platform::CreateRasterGraphicsContextProvider(
     const Platform::ContextAttributes&,
     const WebURL& document_url,
     Platform::GraphicsInfo*) {

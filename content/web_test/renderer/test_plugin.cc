@@ -218,8 +218,8 @@ bool TestPlugin::Initialize(blink::WebPluginContainer* container) {
   blink::WebURL url = container->GetDocument().Url();
   blink::Platform::GraphicsInfo gl_info;
   std::unique_ptr<blink::WebGraphicsContext3DProvider> context_provider =
-      blink::Platform::Current()->CreateOffscreenGraphicsContext3DProvider(
-          attrs, url, &gl_info);
+      blink::Platform::Current()->CreateWebGLGraphicsContextProvider(attrs, url,
+                                                                     &gl_info);
   if (context_provider && !context_provider->BindToCurrentSequence()) {
     context_provider = nullptr;
   }

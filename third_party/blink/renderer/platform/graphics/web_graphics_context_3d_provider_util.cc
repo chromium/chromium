@@ -58,7 +58,7 @@ CreateRasterGraphicsContextProvider(const KURL& url) {
   attributes.prefer_low_power_gpu = true;
   Platform::GraphicsInfo gl_info;
   if (IsMainThread()) {
-    return Platform::Current()->CreateOffscreenGraphicsContext3DProvider(
+    return Platform::Current()->CreateRasterGraphicsContextProvider(
         attributes, url, &gl_info);
   } else {
     base::WaitableEvent waitable_event;
@@ -77,7 +77,7 @@ CreateRasterGraphicsContextProvider(const KURL& url) {
               // when making the context. The context will be lost if the mode
               // changes.
               *out_provider =
-                  Platform::Current()->CreateOffscreenGraphicsContext3DProvider(
+                  Platform::Current()->CreateRasterGraphicsContextProvider(
                       attributes, url, gl_info);
               waitable_event->Signal();
             },
@@ -95,7 +95,7 @@ CreateWebGLGraphicsContextProvider(
     Platform::GraphicsInfo* gl_info,
     const KURL& url) {
   if (IsMainThread()) {
-    return Platform::Current()->CreateOffscreenGraphicsContext3DProvider(
+    return Platform::Current()->CreateWebGLGraphicsContextProvider(
         context_attributes, url, gl_info);
   } else {
     base::WaitableEvent waitable_event;
@@ -114,7 +114,7 @@ CreateWebGLGraphicsContextProvider(
               // when making the context. The context will be lost if the mode
               // changes.
               *out_provider =
-                  Platform::Current()->CreateOffscreenGraphicsContext3DProvider(
+                  Platform::Current()->CreateWebGLGraphicsContextProvider(
                       context_attributes, url, gl_info);
               waitable_event->Signal();
             },
