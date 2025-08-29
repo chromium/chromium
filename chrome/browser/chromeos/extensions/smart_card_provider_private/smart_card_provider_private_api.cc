@@ -1079,7 +1079,13 @@ std::optional<std::string> SmartCardProviderPrivateAPI::GetListenerExtensionId(
     return std::nullopt;
   }
 
-  if (listener_set.size() > 1) {
+  // There may be multiple listeners within the same extension.
+  std::set<std::string> extension_ids;
+  std::ranges::transform(
+      listener_set, std::inserter(extension_ids, extension_ids.end()),
+      [](auto* event_listener) { return event_listener->extension_id(); });
+
+  if (extension_ids.size() > 1) {
     LOG(ERROR) << "Multiple extensions listening to " << event.event_name
                << ". This should never happen, as multiple PC/SC providers "
                   "will collide with each other. Check whether you have not "
@@ -1087,7 +1093,7 @@ std::optional<std::string> SmartCardProviderPrivateAPI::GetListenerExtensionId(
     return std::nullopt;
   }
 
-  return (*listener_set.cbegin())->extension_id();
+  return *extension_ids.begin();
 }
 
 template <typename ResultPtr>
