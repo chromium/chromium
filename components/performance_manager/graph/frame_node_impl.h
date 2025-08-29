@@ -193,6 +193,9 @@ class FrameNodeImpl
   void RemoveEmbeddedPage(base::PassKey<PageNodeImpl> key,
                           PageNodeImpl* page_node);
 
+  // Returns true if the mojom::DocumentCoordinationUnit connection is bound.
+  bool IsDocumentCoordinationUnitBoundForTesting() const;
+
  private:
   friend class FrameNodeImplDescriber;
   friend class ProcessNodeImpl;

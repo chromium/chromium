@@ -705,6 +705,10 @@ void FrameNodeImpl::RemoveEmbeddedPage(base::PassKey<PageNodeImpl>,
   DCHECK_EQ(1u, removed);
 }
 
+bool FrameNodeImpl::IsDocumentCoordinationUnitBoundForTesting() const {
+  return receiver_.is_bound();
+}
+
 const FrameNode* FrameNodeImpl::GetParentFrameNode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return graph()->NodeEdgesArePublic(this) ? parent_frame_node() : nullptr;
