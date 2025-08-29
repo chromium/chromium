@@ -44,6 +44,10 @@ constexpr CGFloat kHeaderViewHorizontalPadding = 16;
 constexpr CGFloat kHeaderViewTopPadding = 8;
 // Top padding for the header view when in a bottom popover.
 constexpr CGFloat kHeaderViewPopoverTopPadding = 22;
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+// Opacity of the segmented control background color.
+constexpr CGFloat kSegmentedControlBackgroundColorOpacity = 0.05;
+#endif
 // Height of the segmented control.
 constexpr CGFloat kSegmentedControlHeight = 32;
 // Multiplier used to constraint the view's height.
@@ -484,6 +488,13 @@ CGFloat GetHeaderViewTopConstraintConstant(bool is_compact_height) {
   [segmentedControl addTarget:self
                        action:@selector(onSegmentSelected:)
              forControlEvents:UIControlEventValueChanged];
+
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    segmentedControl.backgroundColor = [[UIColor colorNamed:kGrey700Color]
+        colorWithAlphaComponent:kSegmentedControlBackgroundColorOpacity];
+  }
+#endif
 
   return segmentedControl;
 }
