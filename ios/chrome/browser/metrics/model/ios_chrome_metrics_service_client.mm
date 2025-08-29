@@ -82,6 +82,7 @@
 #import "ios/chrome/browser/metrics/model/ios_profile_session_metrics_provider.h"
 #import "ios/chrome/browser/metrics/model/ios_push_notifications_metrics_provider.h"
 #import "ios/chrome/browser/metrics/model/mobile_session_shutdown_metrics_provider.h"
+#import "ios/chrome/browser/regional_capabilities/model/ios_regional_capabilities_metrics_provider.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -377,6 +378,10 @@ void IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<IOSPushNotificationsMetricsProvider>());
+
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<
+          regional_capabilities::IOSRegionalCapabilitiesMetricsProvider>());
 }
 
 void IOSChromeMetricsServiceClient::RegisterUKMProviders() {

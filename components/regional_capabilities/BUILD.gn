@@ -86,6 +86,7 @@ source_set("data") {
     ":*",
     "//components/search_engines",
     "//components/search_engines:unit_tests",
+    "//ios/chrome/browser/regional_capabilities/model",
   ]
 
   sources = [

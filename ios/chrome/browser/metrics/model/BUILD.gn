@@ -151,6 +151,7 @@ source_set("model") {
     "//ios/chrome/browser/push_notification/model:push_notification_client_id",
     "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
     "//ios/chrome/browser/push_notification/model:push_notification_util",
+    "//ios/chrome/browser/regional_capabilities/model",
     "//ios/chrome/browser/sessions/model:restoration_observer",
     "//ios/chrome/browser/sessions/model:session_restoration_service",
     "//ios/chrome/browser/sessions/model:session_restoration_service_factory",

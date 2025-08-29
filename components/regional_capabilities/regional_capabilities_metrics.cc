@@ -88,8 +88,10 @@ void RecordActiveRegionalProgram(
   switch (programs.size()) {
     case 0:
       // There should always be at least one profile, and therefore at least one
-      // program.
-      NOTREACHED();
+      // program. To be conservative, treat this case as equivalent to there
+      // being a profile with the default program.
+      merged_program = ActiveRegionalProgram::kDefault;
+      break;
     case 1:
       merged_program = *programs.cbegin();
       break;
