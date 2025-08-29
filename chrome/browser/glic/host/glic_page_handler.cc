@@ -16,6 +16,7 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -366,10 +367,25 @@ class JournalHandler {
             actor::mojom::JournalTrack::kFrontEnd, event, details);
   }
 
-  void LogEndAsyncEvent(uint64_t event_async_id, const std::string& details) {
+  void LogEndAsyncEvent(mojom::WebClientModel model,
+                        uint64_t event_async_id,
+                        const std::string& details) {
     auto it = active_journal_events_.find(event_async_id);
     if (it != active_journal_events_.end()) {
       it->second->EndEntry(details);
+
+      if (model == mojom::WebClientModel::kActor) {
+        // Log a histogram for each async event.
+        std::string histogram_name;
+        // The event name may have whitespaces and that won't work as a
+        // histogram name.
+        base::RemoveChars(it->second->event_name(), " ", &histogram_name);
+
+        base::UmaHistogramLongTimes100(
+            "Glic.Actor.JournalEvent." + histogram_name,
+            base::TimeTicks::Now() - it->second->begin_time());
+      }
+
       active_journal_events_.erase(it);
     }
   }
@@ -1072,7 +1088,8 @@ class GlicWebClientHandler
 
   void LogEndAsyncEvent(uint64_t event_async_id,
                         const std::string& details) override {
-    journal_handler_.LogEndAsyncEvent(event_async_id, details);
+    journal_handler_.LogEndAsyncEvent(glic_service_->metrics()->current_model(),
+                                      event_async_id, details);
   }
 
   void LogInstantEvent(int32_t task_id,

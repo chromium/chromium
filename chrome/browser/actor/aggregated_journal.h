@@ -61,6 +61,9 @@ class AggregatedJournal {
     AggregatedJournal& GetJournal();
     TaskId GetTaskId();
 
+    const std::string& event_name() const { return event_name_; }
+    base::TimeTicks begin_time() const { return begin_time_; }
+
    private:
     base::PassKey<AggregatedJournal> pass_key_;
     bool terminated_ = false;
@@ -68,6 +71,7 @@ class AggregatedJournal {
     TaskId task_id_;
     mojom::JournalTrack track_;
     std::string event_name_;
+    base::TimeTicks begin_time_;
   };
 
   // Observing class for new entries.

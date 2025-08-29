@@ -86,7 +86,8 @@ AggregatedJournal::PendingAsyncEntry::PendingAsyncEntry(
       journal_(journal),
       task_id_(task_id),
       track_(track),
-      event_name_(event_name) {}
+      event_name_(event_name),
+      begin_time_(base::TimeTicks::Now()) {}
 
 AggregatedJournal::PendingAsyncEntry::~PendingAsyncEntry() {
   if (!terminated_) {

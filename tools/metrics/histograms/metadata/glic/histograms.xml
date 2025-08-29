@@ -22,6 +22,19 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Glic.Actor.JournalEvent.{EventType}" units="ms"
+    expires_after="2026-08-29">
+  <owner>dtapuska@google.com</owner>
+  <owner>erikchen@google.com</owner>
+  <owner>chrome-synapse-team@google.com</owner>
+  <summary>Recorded whenever a glic async journal event is ended.</summary>
+  <token key="EventType">
+    <variant name="Turn"/>
+    <variant name="UploadContext"/>
+    <variant name="UploadScreenshot"/>
+  </token>
+</histogram>
+
 <histogram name="Glic.Api.FetchZeroStateSuggestionsLatency" units="ms"
     expires_after="2026-01-15">
   <owner>sophiechang@chromium.org</owner>
