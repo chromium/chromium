@@ -818,6 +818,21 @@
             ]
         }
     ],
+    "AndroidOmniboxAimShortcut": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_all_20250815",
+                    "enable_features": [
+                        "OmniboxAimShortcutTypedState"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidPauseMutedBackgroundAudio": [
         {
             "platforms": [
