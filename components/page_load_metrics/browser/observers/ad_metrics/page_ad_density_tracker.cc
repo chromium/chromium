@@ -162,11 +162,6 @@ class BoundedSegmentLength {
 
 }  // namespace
 
-PageAdDensityTracker::RectId::RectId(RectType rect_type, int id)
-    : rect_type(rect_type), id(id) {}
-
-PageAdDensityTracker::RectId::RectId(const RectId& other) = default;
-
 PageAdDensityTracker::RectEvent::RectEvent(RectId id,
                                            bool is_bottom,
                                            const gfx::Rect& rect)
@@ -207,9 +202,7 @@ int PageAdDensityTracker::ViewportAdDensityByArea() const {
   return last_viewport_ad_density_by_area_;
 }
 
-void PageAdDensityTracker::AddRect(RectId rect_id,
-                                   const gfx::Rect& rect,
-                                   bool recalculate_density) {
+void PageAdDensityTracker::AddRect(RectId rect_id, const gfx::Rect& rect) {
   // Check that we do not already have rect events for the rect.
   DCHECK(rect_events_iterators_.find(rect_id) == rect_events_iterators_.end());
 
@@ -229,19 +222,9 @@ void PageAdDensityTracker::AddRect(RectId rect_id,
       rect_events_.insert(RectEvent(rect_id, true /*is_bottom*/, rect)).first;
   rect_events_iterators_.emplace(rect_id,
                                  RectEventSetIterators(top_it, bottom_it));
-
-  if (recalculate_density) {
-    // TODO(crbug.com/40683539): Improve performance by adding additional
-    // throttling to only calculate when max density can decrease (frame deleted
-    // or moved).
-    CalculatePageAdDensity();
-
-    CalculateViewportAdDensity();
-  }
 }
 
-void PageAdDensityTracker::RemoveRect(RectId rect_id,
-                                      bool recalculate_viewport_density) {
+void PageAdDensityTracker::RemoveRect(RectId rect_id) {
   auto it = rect_events_iterators_.find(rect_id);
 
   if (it == rect_events_iterators_.end())
@@ -251,10 +234,6 @@ void PageAdDensityTracker::RemoveRect(RectId rect_id,
   rect_events_.erase(set_its.top_it);
   rect_events_.erase(set_its.bottom_it);
   rect_events_iterators_.erase(it);
-
-  if (recalculate_viewport_density) {
-    CalculateViewportAdDensity();
-  }
 }
 
 void PageAdDensityTracker::UpdateMainFrameRect(const gfx::Rect& rect) {
@@ -276,12 +255,12 @@ void PageAdDensityTracker::UpdateMainFrameViewportRect(const gfx::Rect& rect) {
 void PageAdDensityTracker::UpdateMainFrameAdRects(
     const base::flat_map<int, gfx::Rect>& main_frame_ad_rects) {
   for (auto const& [element_id, rect] : main_frame_ad_rects) {
-    RectId rect_id = RectId(RectType::kElement, element_id);
+    RectId rect_id = element_id;
 
-    RemoveRect(rect_id, /*recalculate_viewport_density=*/false);
+    RemoveRect(rect_id);
 
     if (!rect.IsEmpty()) {
-      AddRect(rect_id, rect, /*recalculate_density=*/false);
+      AddRect(rect_id, rect);
     }
   }
 

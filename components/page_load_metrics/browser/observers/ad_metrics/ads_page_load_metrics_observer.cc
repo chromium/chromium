@@ -67,9 +67,6 @@ namespace page_load_metrics {
 
 namespace {
 
-using RectId = PageAdDensityTracker::RectId;
-using RectType = PageAdDensityTracker::RectType;
-
 #define ADS_HISTOGRAM(suffix, hist_macro, visibility, value)        \
   switch (visibility) {                                             \
     case kNonVisible:                                               \
@@ -715,35 +712,9 @@ void AdsPageLoadMetricsObserver::MediaStartedPlaying(
 void AdsPageLoadMetricsObserver::OnMainFrameIntersectionRectChanged(
     content::RenderFrameHost* render_frame_host,
     const gfx::Rect& main_frame_intersection_rect) {
-  content::FrameTreeNodeId frame_tree_node_id =
-      render_frame_host->GetFrameTreeNodeId();
   if (render_frame_host->IsInPrimaryMainFrame()) {
     page_ad_density_tracker_.UpdateMainFrameRect(main_frame_intersection_rect);
-    return;
   }
-
-  // If the frame whose size has changed is the root of the ad ancestry chain,
-  // then update it.
-  FrameTreeData* ancestor_data = FindFrameData(frame_tree_node_id);
-  if (ancestor_data &&
-      frame_tree_node_id == ancestor_data->root_frame_tree_node_id()) {
-    RectId rect_id = RectId(RectType::kIFrame, frame_tree_node_id.value());
-
-    // Only add frames if they are visible.
-    if (!ancestor_data->is_display_none()) {
-      page_ad_density_tracker_.RemoveRect(
-          rect_id,
-          /*recalculate_viewport_density=*/false);
-      page_ad_density_tracker_.AddRect(rect_id, main_frame_intersection_rect,
-                                       /*recalculate_density=*/true);
-    } else {
-      page_ad_density_tracker_.RemoveRect(
-          rect_id,
-          /*recalculate_viewport_density=*/true);
-    }
-  }
-
-  CheckForAdDensityViolation();
 }
 
 void AdsPageLoadMetricsObserver::OnMainFrameViewportRectChanged(
@@ -755,6 +726,8 @@ void AdsPageLoadMetricsObserver::OnMainFrameViewportRectChanged(
 void AdsPageLoadMetricsObserver::OnMainFrameAdRectsChanged(
     const base::flat_map<int, gfx::Rect>& main_frame_ad_rects) {
   page_ad_density_tracker_.UpdateMainFrameAdRects(main_frame_ad_rects);
+
+  CheckForAdDensityViolation();
 }
 
 // TODO(crbug.com/40727873): Evaluate imposing width requirements
@@ -974,8 +947,8 @@ void AdsPageLoadMetricsObserver::RecordPageResourceTotalHistograms(
 
   auto* ukm_recorder = ukm::UkmRecorder::Get();
 
-  // AdPageLoadCustomSampling3 is recorded on all pages
-  ukm::builders::AdPageLoadCustomSampling3 custom_sampling_builder(source_id);
+  // AdPageLoadCustomSampling4 is recorded on all pages
+  ukm::builders::AdPageLoadCustomSampling4 custom_sampling_builder(source_id);
 
   page_ad_density_tracker_.Finalize();
 
@@ -1611,11 +1584,6 @@ void AdsPageLoadMetricsObserver::CleanupDeletedFrame(
 
   if (record_metrics) {
     RecordPerFrameMetrics(*frame_data, GetDelegate().GetPageUkmSourceId());
-  }
-
-  if (update_density_tracker) {
-    page_ad_density_tracker_.RemoveRect(RectId(RectType::kIFrame, id.value()),
-                                        /*recalculate_viewport_density=*/true);
   }
 }
 

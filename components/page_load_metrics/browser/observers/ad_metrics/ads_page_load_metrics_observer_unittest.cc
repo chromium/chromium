@@ -1780,8 +1780,6 @@ TEST_P(AdsPageLoadMetricsObserverTest, AdDensityDistributionMoments) {
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
-  RenderFrameHost* non_ad_frame =
-      CreateAndNavigateSubFrame(kNonAdUrlSameOrigin, main_frame);
 
   page_load_metrics::mojom::FrameMetadata metadata1;
   metadata1.main_frame_intersection_rect = gfx::Rect(0, 0, 1, 100);
@@ -1794,40 +1792,40 @@ TEST_P(AdsPageLoadMetricsObserverTest, AdDensityDistributionMoments) {
                      /*mime_type=*/"",
                      /*is_ad_resource=*/true);
 
+  const int id1 = 1;
+  const int id2 = 2;
+
   page_load_metrics::mojom::FrameMetadata metadata2;
-  metadata2.main_frame_intersection_rect = gfx::Rect(0, 0, 1, 10);
-  tester_->SimulateMetadataUpdate(metadata2, ad_frame);
-  AdvancePageDuration(base::Seconds(2));
+  metadata2.main_frame_ad_rects = {{id1, gfx::Rect(0, 0, 1, 10)}};
 
-  metadata2.main_frame_intersection_rect = gfx::Rect(0, 0, 1, 80);
-  tester_->SimulateMetadataUpdate(metadata2, non_ad_frame);
-  AdvancePageDuration(base::Seconds(1));
+  tester_->SimulateMetadataUpdate(metadata2, main_frame);
+  AdvancePageDuration(base::Seconds(3));
 
-  metadata2.main_frame_intersection_rect = gfx::Rect(0, 0, 1, 50);
-  tester_->SimulateMetadataUpdate(metadata2, ad_frame);
+  metadata2.main_frame_ad_rects = {{id2, gfx::Rect(0, 0, 1, 50)}};
+  tester_->SimulateMetadataUpdate(metadata2, main_frame);
   AdvancePageDuration(base::Seconds(1));
 
   NavigateFrame(kNonAdUrl, main_frame);
 
   auto entries = ukm_recorder.GetEntriesByName(
-      ukm::builders::AdPageLoadCustomSampling3::kEntryName);
+      ukm::builders::AdPageLoadCustomSampling4::kEntryName);
   EXPECT_EQ(1u, entries.size());
 
   ukm_recorder.ExpectEntryMetric(
       entries.front(),
-      ukm::builders::AdPageLoadCustomSampling3::kAverageViewportAdDensityName,
+      ukm::builders::AdPageLoadCustomSampling4::kAverageViewportAdDensityName,
       20);
   ukm_recorder.ExpectEntryMetric(
       entries.front(),
-      ukm::builders::AdPageLoadCustomSampling3::kVarianceViewportAdDensityName,
+      ukm::builders::AdPageLoadCustomSampling4::kVarianceViewportAdDensityName,
       /*ukm::GetExponentialBucketMin(300, 1.3)=*/248);
   ukm_recorder.ExpectEntryMetric(
       entries.front(),
-      ukm::builders::AdPageLoadCustomSampling3::kSkewnessViewportAdDensityName,
+      ukm::builders::AdPageLoadCustomSampling4::kSkewnessViewportAdDensityName,
       /*ukm::GetExponentialBucketMin(std::llround(1.1547), 1.3)=*/1);
   ukm_recorder.ExpectEntryMetric(
       entries.front(),
-      ukm::builders::AdPageLoadCustomSampling3::kKurtosisViewportAdDensityName,
+      ukm::builders::AdPageLoadCustomSampling4::kKurtosisViewportAdDensityName,
       /*-ukm::GetExponentialBucketMin(-std::llround(-0.666667), 1.3)=*/-1);
 
   histogram_tester().ExpectUniqueSample(
@@ -1841,7 +1839,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, AdDensityOnPageWithoutAdBytes) {
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
 
-  // No ad resource so that only AdPageLoadCustomSampling3 is recorded in the
+  // No ad resource so that only AdPageLoadCustomSampling4 is recorded in the
   // end.
 
   AdvancePageDuration(base::Seconds(1));
@@ -1849,23 +1847,23 @@ TEST_P(AdsPageLoadMetricsObserverTest, AdDensityOnPageWithoutAdBytes) {
   NavigateFrame(kNonAdUrl, main_frame);
 
   auto entries = ukm_recorder.GetEntriesByName(
-      ukm::builders::AdPageLoadCustomSampling3::kEntryName);
+      ukm::builders::AdPageLoadCustomSampling4::kEntryName);
   EXPECT_EQ(1u, entries.size());
   ukm_recorder.ExpectEntryMetric(
       entries.front(),
-      ukm::builders::AdPageLoadCustomSampling3::kAverageViewportAdDensityName,
+      ukm::builders::AdPageLoadCustomSampling4::kAverageViewportAdDensityName,
       0);
   ukm_recorder.ExpectEntryMetric(
       entries.front(),
-      ukm::builders::AdPageLoadCustomSampling3::kVarianceViewportAdDensityName,
+      ukm::builders::AdPageLoadCustomSampling4::kVarianceViewportAdDensityName,
       0);
   ukm_recorder.ExpectEntryMetric(
       entries.front(),
-      ukm::builders::AdPageLoadCustomSampling3::kSkewnessViewportAdDensityName,
+      ukm::builders::AdPageLoadCustomSampling4::kSkewnessViewportAdDensityName,
       0);
   ukm_recorder.ExpectEntryMetric(
       entries.front(),
-      ukm::builders::AdPageLoadCustomSampling3::kKurtosisViewportAdDensityName,
+      ukm::builders::AdPageLoadCustomSampling4::kKurtosisViewportAdDensityName,
       -3);
 
   histogram_tester().ExpectUniqueSample(

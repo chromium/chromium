@@ -58,17 +58,20 @@ int GetDocumentHeight(content::WebContents* web_contents) {
   return EvalJs(web_contents, "document.body.scrollHeight").ExtractInt();
 }
 
+void AddTextForFirstContentfulPaint(content::WebContents* web_contents) {
+  ASSERT_TRUE(ExecJs(web_contents, R"(
+          const p = document.createElement('p');
+          p.textContent = 'Trigger First Contentful Paint';
+          p.style.position = 'fixed';
+          document.body.appendChild(p);
+        )"));
+}
+
 void CreateAndWaitForIframeAtRect(content::WebContents* web_contents,
                                   PageLoadMetricsTestWaiter* waiter,
                                   const GURL& url,
                                   const gfx::Rect& rect) {
-  // The intersections returned by the renderer are scaled to the device's
-  // scale factor.
-  gfx::Rect scaled_rect = ScaleRectByDeviceScaleFactor(rect, web_contents);
-
-  // The renderer propagates values scaled by the device scale factor.
-  // Wait on these values.
-  waiter->AddMainFrameIntersectionExpectation(scaled_rect);
+  waiter->SetMainFrameAdRectsExpectation();
 
   EXPECT_TRUE(ExecJs(
       web_contents,
@@ -78,6 +81,11 @@ void CreateAndWaitForIframeAtRect(content::WebContents* web_contents,
                          url.spec())));
 
   waiter->Wait();
+
+  // The intersections returned by the renderer are scaled to the device's
+  // scale factor.
+  gfx::Rect scaled_rect = ScaleRectByDeviceScaleFactor(rect, web_contents);
+  waiter->AddMainFrameIntersectionExpectation(scaled_rect);
 }
 
 // Navigate to |url| in |web_contents| and wait until we see the first

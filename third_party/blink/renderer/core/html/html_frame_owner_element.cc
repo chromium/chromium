@@ -201,6 +201,11 @@ Node::InsertionNotificationRequest HTMLFrameOwnerElement::InsertedInto(
     ContainerNode& insertion_point) {
   InsertionNotificationRequest result =
       HTMLElement::InsertedInto(insertion_point);
+
+  if (display_ad_element_monitor_) {
+    display_ad_element_monitor_->EnsureStarted();
+  }
+
   // If a state-preserving atomic move is in progress, then we have to manually
   // perform some bookkeeping that ordinarily would only be done deeper in the
   // frame setup logic that gets triggered in the *NON* state-preserving atomic
@@ -222,6 +227,10 @@ Node::InsertionNotificationRequest HTMLFrameOwnerElement::InsertedInto(
 }
 
 void HTMLFrameOwnerElement::RemovedFrom(ContainerNode& insertion_point) {
+  if (display_ad_element_monitor_) {
+    display_ad_element_monitor_->OnElementRemovedOrUntagged();
+  }
+
   // See documentation in `InsertedInto()` above. In the state-preserving atomic
   // move case, we don't invoke `ClearContentFrame()`, which would normally do
   // at least two things:
@@ -818,7 +827,20 @@ void HTMLFrameOwnerElement::ParseAttribute(
   }
 }
 
-void HTMLFrameOwnerElement::DidSetAdStatus() {}
+void HTMLFrameOwnerElement::DidSetAdStatus() {
+  if (display_ad_element_monitor_) {
+    if (!IsAdRelated()) {
+      display_ad_element_monitor_->OnElementRemovedOrUntagged();
+      display_ad_element_monitor_.Clear();
+    }
+    return;
+  }
+
+  if (IsAdRelated()) {
+    display_ad_element_monitor_ =
+        MakeGarbageCollected<DisplayAdElementMonitor>(this);
+  }
+}
 
 bool HTMLFrameOwnerElement::IsAdRelated() const {
   if (!content_frame_)
@@ -868,6 +890,7 @@ void HTMLFrameOwnerElement::Trace(Visitor* visitor) const {
   visitor->Trace(content_frame_);
   visitor->Trace(embedded_content_view_);
   visitor->Trace(lazy_load_frame_observer_);
+  visitor->Trace(display_ad_element_monitor_);
   HTMLElement::Trace(visitor);
   FrameOwner::Trace(visitor);
 }

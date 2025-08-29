@@ -77,6 +77,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(content::NavigateToURL(web_contents, url));
   waiter->Wait();
 
+  page_load_metrics::AddTextForFirstContentfulPaint(web_contents);
+
   int document_height = page_load_metrics::GetDocumentHeight(web_contents);
 
   int frame_width = 100;  // Ad density by height is independent of frame width.
@@ -130,6 +132,8 @@ IN_PROC_BROWSER_TEST_F(
   waiter->SetMainFrameIntersectionExpectation();
   EXPECT_TRUE(content::NavigateToURL(web_contents, url));
   waiter->Wait();
+
+  page_load_metrics::AddTextForFirstContentfulPaint(web_contents);
 
   int document_height = page_load_metrics::GetDocumentHeight(web_contents);
 
@@ -206,6 +210,8 @@ IN_PROC_BROWSER_TEST_F(
   waiter->SetMainFrameIntersectionExpectation();
   EXPECT_TRUE(content::NavigateToURL(web_contents, url));
   waiter->Wait();
+
+  page_load_metrics::AddTextForFirstContentfulPaint(web_contents);
 
   int document_height = page_load_metrics::GetDocumentHeight(web_contents);
 

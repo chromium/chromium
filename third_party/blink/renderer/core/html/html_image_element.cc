@@ -603,7 +603,7 @@ Node::InsertionNotificationRequest HTMLImageElement::InsertedInto(
 
 void HTMLImageElement::RemovedFrom(ContainerNode& insertion_point) {
   if (display_ad_element_monitor_) {
-    display_ad_element_monitor_->OnElementRemoved();
+    display_ad_element_monitor_->OnElementRemovedOrUntagged();
   }
 
   if (!form_ || NodeTraversal::HighestAncestorOrSelf(*form_.Get()) !=

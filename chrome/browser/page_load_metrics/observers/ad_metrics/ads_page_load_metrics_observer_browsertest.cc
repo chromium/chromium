@@ -278,9 +278,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   // the subframe rect.
   waiter->AddMainFrameViewportRectExpectation(
       gfx::Rect(0, 5000, viewport_size.width(), viewport_size.height()));
-  gfx::Rect expected_rect =
-      gfx::Rect(/*x=*/0, /*y=*/4950, /*width=*/500, /*height=*/500);
-  waiter->AddMainFrameIntersectionExpectation(expected_rect);
+  waiter->SetMainFrameAdRectsExpectation();
 
   ASSERT_TRUE(ExecJs(web_contents, "window.scrollTo(0, 5000)"));
 
@@ -294,6 +292,8 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
                          subframe_url.spec())));
 
   waiter->Wait();
+  EXPECT_TRUE(waiter->DidObserveMainFrameAdRect(
+      gfx::Rect(/*x=*/0, /*y=*/4950, /*width=*/500, /*height=*/500)));
 
   gfx::Rect viewport_rect =
       gfx::Rect(0, 0, viewport_size.width(), viewport_size.height());
@@ -307,12 +307,12 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   auto entries = ukm_recorder.GetEntriesByName(
-      ukm::builders::AdPageLoadCustomSampling3::kEntryName);
+      ukm::builders::AdPageLoadCustomSampling4::kEntryName);
   EXPECT_EQ(1u, entries.size());
 
   const int64_t* reported_average_viewport_density =
       ukm_recorder.GetEntryMetric(entries.front(),
-                                  ukm::builders::AdPageLoadCustomSampling3::
+                                  ukm::builders::AdPageLoadCustomSampling4::
                                       kAverageViewportAdDensityName);
 
   EXPECT_TRUE(reported_average_viewport_density);
@@ -368,12 +368,12 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   auto entries = ukm_recorder.GetEntriesByName(
-      ukm::builders::AdPageLoadCustomSampling3::kEntryName);
+      ukm::builders::AdPageLoadCustomSampling4::kEntryName);
   EXPECT_EQ(1u, entries.size());
 
   const int64_t* reported_average_viewport_density =
       ukm_recorder.GetEntryMetric(entries.front(),
-                                  ukm::builders::AdPageLoadCustomSampling3::
+                                  ukm::builders::AdPageLoadCustomSampling4::
                                       kAverageViewportAdDensityName);
 
   EXPECT_TRUE(reported_average_viewport_density);
@@ -410,29 +410,39 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   waiter->Wait();
   web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 
-  // Create a frame at 100,100 of size 200,200.
+  // Create a frame at 100,100 of size 200,200, with b.com as origin to not get
+  // caught by restricted ad tagging.
   gfx::Rect large_rect = gfx::Rect(100, 100, 200, 200);
-  waiter->AddMainFrameIntersectionExpectation(large_rect);
-
-  // Create the frame with b.com as origin to not get caught by
-  // restricted ad tagging.
+  waiter->SetMainFrameAdRectsExpectation();
   EXPECT_TRUE(ExecJs(
       web_contents,
       content::JsReplace(
-          "let frame = createAdIframeAtRect(100, 100, 200, 200); "
-          "frame.src = $1; ",
+          R"(
+          const p = document.createElement('p');
+          p.textContent = 'Trigger First Contentful Paint';
+          document.body.appendChild(p);
+
+          let frame = createAdIframeAtRect(100, 100, 200, 200);
+          frame.src = $1;
+        )",
           embedded_test_server()->GetURL("b.com", "/ads_observer/pixel.png"))));
   waiter->Wait();
+  EXPECT_TRUE(waiter->DidObserveMainFrameAdRect(large_rect));
 
   // Load should stop before we remove the frame.
   EXPECT_TRUE(WaitForLoadStop(web_contents));
+
+  // Remove the frame.
+  waiter->SetMainFrameAdRectsExpectation();
   EXPECT_TRUE(ExecJs(web_contents,
                      "let frames = document.getElementsByTagName('iframe'); "
                      "frames[0].remove(); "));
-  waiter->AddMainFrameIntersectionExpectation(gfx::Rect(400, 400, 10, 10));
+  waiter->Wait();
+  EXPECT_TRUE(waiter->DidObserveMainFrameAdRect(gfx::Rect()));
 
-  // Delete the frame and create a new frame at 400,400 of size 10x10. The
-  // ad density resulting from this frame is lower than the 200x200.
+  // Create a new frame at 400,400 of size 10x10. The ad density resulting from
+  // this frame is lower than the 200x200.
+  waiter->SetMainFrameAdRectsExpectation();
   EXPECT_TRUE(ExecJs(
       web_contents,
       content::JsReplace("let frame = createAdIframeAtRect(400, 400, 10, 10); "
@@ -441,9 +451,10 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
                              ->GetURL("b.com", "/ads_observer/pixel.png")
                              .spec())));
   waiter->Wait();
+  EXPECT_TRUE(waiter->DidObserveMainFrameAdRect(gfx::Rect(400, 400, 10, 10)));
 
-  // Evaluate the height and width of the page as the browser_test can
-  // vary the dimensions.
+  // Evaluate the height and width of the page as the browser_test can vary the
+  // dimensions.
   document_height =
       EvalJs(web_contents, "document.body.scrollHeight").ExtractInt();
   document_width =
@@ -501,25 +512,29 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   waiter->Wait();
   web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 
-  // Create a frame of size 100,100 at 400,400.
+  // Create a frame of size 100,100 at 400,400, with b.com as origin to not get
+  // caught by restricted ad tagging.
   gfx::Rect rect1 = gfx::Rect(400, 400, 100, 100);
-  waiter->AddMainFrameIntersectionExpectation(rect1);
+  waiter->SetMainFrameAdRectsExpectation();
+  EXPECT_TRUE(
+      ExecJs(web_contents,
+             content::JsReplace(R"(
+          const p = document.createElement('p');
+          p.textContent = 'Trigger First Contentful Paint';
+          document.body.appendChild(p);
 
-  // Create the frame with b.com as origin to not get caught by
-  // restricted ad tagging.
-  EXPECT_TRUE(ExecJs(
-      web_contents, content::JsReplace(
-                        "let frame = createAdIframeAtRect(400, 400, 100, 100); "
-                        "frame.src = $1",
-                        embedded_test_server()
-                            ->GetURL("b.com", "/ads_observer/pixel.png")
-                            .spec())));
-
+          let frame = createAdIframeAtRect(400, 400, 100, 100);
+          frame.src = $1;
+        )",
+                                embedded_test_server()
+                                    ->GetURL("b.com", "/ads_observer/pixel.png")
+                                    .spec())));
   waiter->Wait();
+  EXPECT_TRUE(waiter->DidObserveMainFrameAdRect(rect1));
 
   // Create a frame at of size 200,200 at 450,450.
   gfx::Rect rect2 = gfx::Rect(450, 450, 200, 200);
-  waiter->AddMainFrameIntersectionExpectation(rect2);
+  waiter->SetMainFrameAdRectsExpectation();
   EXPECT_TRUE(ExecJs(
       web_contents, content::JsReplace(
                         "let frame = createAdIframeAtRect(450, 450, 200, 200); "
@@ -528,6 +543,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
                             ->GetURL("b.com", "/ads_observer/pixel.png")
                             .spec())));
   waiter->Wait();
+  EXPECT_TRUE(waiter->DidObserveMainFrameAdRect(rect2));
 
   // Evaluate the height and width of the page as the browser_test can
   // vary the dimensions.
@@ -567,69 +583,6 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   ukm_recorder.ExpectEntryMetric(
       entries.front(), ukm::builders::AdPageLoad::kMaxAdDensityByHeightName,
       expected_page_density_height);
-}
-
-// Creates a frame with display:none styling and verifies that it has an
-// empty intersection with the main frame.
-//
-// TODO(crbug.com/40715497): This test is disabled due to flaky failures on
-// multiple platforms.
-IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       DISABLED_PageAdDensityIgnoreDisplayNoneFrame) {
-  base::HistogramTester histogram_tester;
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
-  auto waiter = CreatePageLoadMetricsTestWaiter();
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  // Evaluate the height and width of the page as the browser_test can
-  // vary the dimensions.
-  int document_height =
-      EvalJs(web_contents, "document.body.scrollHeight").ExtractInt();
-  int document_width =
-      EvalJs(web_contents, "document.body.scrollWidth").ExtractInt();
-
-  // Expectation is before NavigateToUrl for this test as the expectation can be
-  // met after NavigateToUrl and before the Wait.
-  waiter->AddMainFrameIntersectionExpectation(
-      gfx::Rect(0, 0, document_width,
-                document_height));  // Initial main frame rect.
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      embedded_test_server()->GetURL(
-          "a.com", "/ads_observer/blank_with_adiframe_writer.html")));
-  waiter->Wait();
-  web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-
-  // Create a frame at 100,100 of size 200,200. The expectation is an empty rect
-  // as the frame is display:none and as a result has no main frame
-  // intersection.
-  waiter->AddMainFrameIntersectionExpectation(gfx::Rect(0, 0, 0, 0));
-
-  // Create the frame with b.com as origin to not get caught by
-  // restricted ad tagging.
-  EXPECT_TRUE(ExecJs(
-      web_contents, content::JsReplace(
-                        "let frame = createAdIframeAtRect(100, 100, 200, 200); "
-                        "frame.src = $1; "
-                        "frame.style.display = \"none\";",
-                        embedded_test_server()
-                            ->GetURL("b.com", "/ads_observer/pixel.png")
-                            .spec())));
-
-  waiter->Wait();
-
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-
-  auto entries =
-      ukm_recorder.GetEntriesByName(ukm::builders::AdPageLoad::kEntryName);
-  EXPECT_EQ(1u, entries.size());
-  ukm_recorder.ExpectEntryMetric(
-      entries.front(), ukm::builders::AdPageLoad::kMaxAdDensityByAreaName, 0);
-  ukm_recorder.ExpectEntryMetric(
-      entries.front(), ukm::builders::AdPageLoad::kMaxAdDensityByHeightName, 0);
 }
 
 // Each CreativeOriginStatus* browser test inputs a pointer to a frame object

@@ -730,7 +730,7 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="AdPageLoadCustomSampling3" singular="True">
+<event name="AdPageLoadCustomSampling4" singular="True">
   <owner>yaoxia@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
@@ -739,7 +739,8 @@ be describing additional metrics about the same event.
     enters the background on mobile. This is separate from the `AdPageLoad`
     event to allow it to be recorded on all pages (i.e. not only pages that have
     loaded non-zero ad byte), and to allow a potentially different sampling.
-    Both iframe and img ads are covered.
+    Both iframe and img ads are covered. Ads obscured by non-ad content are
+    excluded.
   </summary>
   <metric name="AverageViewportAdDensity">
     <summary>

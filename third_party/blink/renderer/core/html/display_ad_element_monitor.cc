@@ -62,7 +62,7 @@ void DisplayAdElementMonitor::EnsureStarted() {
   element_->GetDocument().View()->RegisterForLifecycleNotifications(this);
 }
 
-void DisplayAdElementMonitor::OnElementRemoved() {
+void DisplayAdElementMonitor::OnElementRemovedOrUntagged() {
   if (!started_) {
     return;
   }
@@ -105,7 +105,7 @@ void DisplayAdElementMonitor::DidFinishLifecycleUpdate(
     gfx::Rect rect_in_viewport =
         r->AbsoluteBoundingBoxRect(kTraverseDocumentBoundaries);
 
-    // Exclude image ads that are invisible or too small (e.g. tracking pixels).
+    // Exclude ads that are invisible or too small (e.g. tracking pixels).
     if (rect_in_viewport.width() > 1 && rect_in_viewport.height() > 1) {
       OverlayVisibility overlay_visibility =
           CheckOverlayVisibility(local_root_main_frame, rect_in_viewport);
