@@ -4,7 +4,10 @@
 
 #include <windows.h>
 
+#include <optional>
+
 #include "base/command_line.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
@@ -147,10 +150,8 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
 
   // Use the system accent color as the Chrome accent color, if present and only
   // if dwm colors are enabled.
-  const auto* accent_color_observer = AccentColorObserver::Get();
-  const auto& accent_color = accent_color_observer->accent_color();
-  if (accent_color.has_value() &&
-      accent_color_observer->use_dwm_frame_color()) {
+  if (const std::optional<SkColor> accent_color =
+          AccentColorObserver::Get()->accent_color()) {
     mixer[kColorAccent] = PickGoogleColor(accent_color.value());
   }
 

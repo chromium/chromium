@@ -39,22 +39,58 @@ base::CallbackListSubscription AccentColorObserver::Subscribe(
 void AccentColorObserver::SetAccentColorForTesting(
     std::optional<SkColor> accent_color) {
   accent_color_ = accent_color;
-  callbacks_.Notify();
-}
-
-void AccentColorObserver::SetUseDwmFrameColorForTesting(
-    bool use_dwm_frame_color) {
-  use_dwm_frame_color_ = use_dwm_frame_color;
+  if (!accent_color_.has_value()) {
+    // Maintain invariant that a null accent color implies null other colors.
+    accent_color_inactive_.reset();
+    accent_border_color_.reset();
+  }
   callbacks_.Notify();
 }
 
 void AccentColorObserver::OnDwmKeyUpdated() {
-  accent_border_color_ = std::nullopt;
-  DWORD colorization_color, colorization_color_balance;
-  if ((dwm_key_->ReadValueDW(L"ColorizationColor", &colorization_color) ==
-       ERROR_SUCCESS) &&
-      (dwm_key_->ReadValueDW(L"ColorizationColorBalance",
-                             &colorization_color_balance) == ERROR_SUCCESS)) {
+  UpdateAccentColors();
+  callbacks_.Notify();
+
+  // Watch for future changes. If there is no task runner, this is a test or
+  // tool context and watching is unnecessary.
+  if (!base::SequencedTaskRunner::HasCurrentDefault() ||
+      !dwm_key_->StartWatching(base::BindOnce(
+          &AccentColorObserver::OnDwmKeyUpdated, base::Unretained(this)))) {
+    dwm_key_.reset();
+  }
+}
+
+void AccentColorObserver::UpdateAccentColors() {
+  // Ignore accent colors unless color prevalence is enabled.
+  accent_color_.reset();
+  accent_color_inactive_.reset();
+  accent_border_color_.reset();
+  if (DWORD color_prevalence = 0;
+      dwm_key_->ReadValueDW(L"ColorPrevalence", &color_prevalence) !=
+          ERROR_SUCCESS ||
+      color_prevalence != 1) {
+    return;
+  }
+
+  if (DWORD accent_color = 0;
+      dwm_key_->ReadValueDW(L"AccentColor", &accent_color) == ERROR_SUCCESS) {
+    accent_color_ = skia::COLORREFToSkColor(accent_color);
+  } else {
+    // When there is no accent color, ignore inactive/border colors.
+    return;
+  }
+
+  if (DWORD accent_color_inactive = 0;
+      dwm_key_->ReadValueDW(L"AccentColorInactive", &accent_color_inactive) ==
+      ERROR_SUCCESS) {
+    accent_color_inactive_ = skia::COLORREFToSkColor(accent_color_inactive);
+  }
+
+  if (DWORD colorization_color, colorization_color_balance;
+      dwm_key_->ReadValueDW(L"ColorizationColor", &colorization_color) ==
+          ERROR_SUCCESS &&
+      dwm_key_->ReadValueDW(L"ColorizationColorBalance",
+                            &colorization_color_balance) == ERROR_SUCCESS) {
     // The accent border color is a linear blend between the colorization
     // color and the neutral #d9d9d9. colorization_color_balance is the
     // percentage of the colorization color in that blend.
@@ -75,35 +111,6 @@ void AccentColorObserver::OnDwmKeyUpdated() {
     accent_border_color_ =
         color_utils::AlphaBlend(input_color, SkColorSetRGB(0xd9, 0xd9, 0xd9),
                                 colorization_color_balance / 100.0f);
-  }
-
-  accent_color_ = std::nullopt;
-  accent_color_inactive_ = std::nullopt;
-  DWORD accent_color = 0;
-  if (dwm_key_->ReadValueDW(L"AccentColor", &accent_color) == ERROR_SUCCESS) {
-    accent_color_ = skia::COLORREFToSkColor(accent_color);
-    DWORD accent_color_inactive = 0;
-    if (dwm_key_->ReadValueDW(L"AccentColorInactive", &accent_color_inactive) ==
-        ERROR_SUCCESS) {
-      accent_color_inactive_ = skia::COLORREFToSkColor(accent_color_inactive);
-    }
-  }
-
-  DWORD color_prevalence;
-  use_dwm_frame_color_ =
-      accent_color_.has_value() &&
-      (dwm_key_->ReadValueDW(L"ColorPrevalence", &color_prevalence) ==
-       ERROR_SUCCESS) &&
-      color_prevalence == 1;
-
-  callbacks_.Notify();
-
-  // Watch for future changes. If there is no task runner, this is a test or
-  // tool context and watching is unnecessary.
-  if (!base::SequencedTaskRunner::HasCurrentDefault() ||
-      !dwm_key_->StartWatching(base::BindOnce(
-          &AccentColorObserver::OnDwmKeyUpdated, base::Unretained(this)))) {
-    dwm_key_.reset();
   }
 }
 

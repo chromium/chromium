@@ -30,6 +30,8 @@ class COMPONENT_EXPORT(COLOR) AccentColorObserver {
   // Registers `callback` to be called whenever the accent color changes.
   base::CallbackListSubscription Subscribe(base::RepeatingClosure callback);
 
+  // NOTE: If `accent_color()` does not contain a value, both other colors are
+  // guaranteed to also not contain values.
   std::optional<SkColor> accent_color() const { return accent_color_; }
   std::optional<SkColor> accent_color_inactive() const {
     return accent_color_inactive_;
@@ -37,13 +39,13 @@ class COMPONENT_EXPORT(COLOR) AccentColorObserver {
   std::optional<SkColor> accent_border_color() const {
     return accent_border_color_;
   }
-  bool use_dwm_frame_color() const { return use_dwm_frame_color_; }
 
   void SetAccentColorForTesting(std::optional<SkColor> accent_color);
-  void SetUseDwmFrameColorForTesting(bool use_dwm_frame_color);
 
  private:
   void OnDwmKeyUpdated();
+
+  void UpdateAccentColors();
 
   // Registry key containing the params that determine the accent color.
   std::unique_ptr<base::win::RegKey> dwm_key_;
@@ -52,7 +54,6 @@ class COMPONENT_EXPORT(COLOR) AccentColorObserver {
   std::optional<SkColor> accent_color_;
   std::optional<SkColor> accent_color_inactive_;
   std::optional<SkColor> accent_border_color_;
-  bool use_dwm_frame_color_ = false;
 };
 
 }  // namespace ui

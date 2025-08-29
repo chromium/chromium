@@ -4,6 +4,8 @@
 
 #include "chrome/browser/win/mica_titlebar.h"
 
+#include <optional>
+
 #include "base/win/windows_version.h"
 #include "ui/color/win/accent_color_observer.h"
 #include "ui/native_theme/native_theme.h"
@@ -16,7 +18,7 @@ BASE_FEATURE(kWindows11MicaTitlebar,
 
 bool ShouldDefaultThemeUseMicaTitlebar() {
   return SystemTitlebarCanUseMicaMaterial() &&
-         !ui::AccentColorObserver::Get()->use_dwm_frame_color() &&
+         !ui::AccentColorObserver::Get()->accent_color().has_value() &&
          !ui::NativeTheme::GetInstanceForNativeUi()
               ->UserHasContrastPreference();
 }

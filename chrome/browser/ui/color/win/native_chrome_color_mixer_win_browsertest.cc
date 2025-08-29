@@ -2,69 +2,59 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/profiles/profile.h"
+#include <optional>
+
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/win/accent_color_observer.h"
 #include "ui/native_theme/native_theme.h"
 
-class NativeChromeColorMixerWinBrowsertest : public InProcessBrowserTest {
- public:
-  NativeChromeColorMixerWinBrowsertest() = default;
-
- protected:
-  void SetFollowDevice(bool follow_device) {
-    ThemeServiceFactory::GetForProfile(browser()->profile())
-        ->UseDeviceTheme(follow_device);
-  }
-};
+using NativeChromeColorMixerWinBrowserTest = InProcessBrowserTest;
 
 // Tests that windows header colors track the accent color when configured to
-// use dwm frame colors.
-IN_PROC_BROWSER_TEST_F(NativeChromeColorMixerWinBrowsertest,
+// use DWM frame colors.
+IN_PROC_BROWSER_TEST_F(NativeChromeColorMixerWinBrowserTest,
                        HeaderColorsFollowAccentColor) {
-  // Ensure the accent color starts unset and we are not following device
-  // colors.
-  auto* accent_color_observer = ui::AccentColorObserver::Get();
+  // Get a baseline header color when the accent color observer is in a default
+  // state and the theme service is not following the device theme.
+  auto* const accent_color_observer = ui::AccentColorObserver::Get();
   accent_color_observer->SetAccentColorForTesting(std::nullopt);
-  accent_color_observer->SetUseDwmFrameColorForTesting(false);
-  SetFollowDevice(false);
-
-  auto get_header_color = [&]() {
+  auto* const theme_service =
+      ThemeServiceFactory::GetForProfile(browser()->profile());
+  theme_service->UseDeviceTheme(false);
+  const auto get_header_color = [&]() {
     return browser()->window()->GetColorProvider()->GetColor(
         ui::kColorSysHeader);
   };
-
-  // Query the window header color.
   const auto initial_header_color = get_header_color();
 
-  // Configure the observer to follow dwm colors.
+  // Configure the observer to use a specific accent color. The header color
+  // should be unaffected as the theme service has not been set to follow the
+  // device theme.
   constexpr SkColor kAccentColor = SK_ColorMAGENTA;
   accent_color_observer->SetAccentColorForTesting(kAccentColor);
-  accent_color_observer->SetUseDwmFrameColorForTesting(true);
-
-  // The header color should be unaffected as the theme service has not been set
-  // to follow the device theme.
   EXPECT_EQ(initial_header_color, get_header_color());
 
-  // Set the browser to follow the device colors. The header color should be
-  // updated to track the accent color.
-  SetFollowDevice(true);
+  // Configure the theme service to follow the device theme. The header color
+  // should be updated to track the accent color set above.
+  theme_service->UseDeviceTheme(true);
   EXPECT_EQ(kAccentColor, get_header_color());
 
-  // Unset the accent color. The header color should revert to its initial value
-  // even though the browser is still configured to follow the device theme.
+  // Configure the observer to have no accent color. The header color should
+  // revert to its initial value even though the theme service is still
+  // following the device theme.
   accent_color_observer->SetAccentColorForTesting(std::nullopt);
-  accent_color_observer->SetUseDwmFrameColorForTesting(false);
   EXPECT_EQ(initial_header_color, get_header_color());
 }
 
-IN_PROC_BROWSER_TEST_F(NativeChromeColorMixerWinBrowsertest,
+IN_PROC_BROWSER_TEST_F(NativeChromeColorMixerWinBrowserTest,
                        NativeThemeForWebWithAccentColor) {
   // Configure the observer with accent color for testing.
   auto* accent_color_observer = ui::AccentColorObserver::Get();
