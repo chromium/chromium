@@ -343,9 +343,9 @@ TEST_F(AshMessagePopupCollectionTest, Extended) {
   EXPECT_LT(700, for_2nd_display.GetBaseline());
 }
 
-// TODO(b/301625873): Fix notification pop-up dismissal on full-screen activated
-// with multiple displays. The unit test is passing but the behavior it is
-// testing does not work in production.
+// This test is disabled because it fails, exposing a bug in the feature.
+// TODO(crbug.com/301625873): Fix notification pop-up dismissal on full-screen
+// activated with multiple displays.
 TEST_F(AshMessagePopupCollectionTest, DISABLED_MixedFullscreenNone) {
   UpdateDisplay("601x600,801x800");
   Shelf* shelf1 = GetPrimaryShelf();
@@ -372,9 +372,10 @@ TEST_F(AshMessagePopupCollectionTest, DISABLED_MixedFullscreenNone) {
   EXPECT_TRUE(collection2.popup_shown());
 }
 
-// TODO(b/301625873): Fix notification pop-up dismissal on full-screen activated
-// with multiple displays. The unit test is passing but the behavior it is
-// testing does not work in production.
+// This test passes, but the feature is not working correctly in production.
+// The test is disabled to avoid giving a false sense of security. The failing
+// test that correctly captures the bug is DISABLED_MixedFullscreenNone.
+// TODO(crbug.com/301625873): Re-enable this test once the feature is fixed.
 TEST_F(AshMessagePopupCollectionTest, DISABLED_MixedFullscreenSome) {
   UpdateDisplay("601x600,801x800");
   Shelf* shelf1 = GetPrimaryShelf();
@@ -401,9 +402,10 @@ TEST_F(AshMessagePopupCollectionTest, DISABLED_MixedFullscreenSome) {
   EXPECT_TRUE(collection2.popup_shown());
 }
 
-// TODO(b/301625873): Fix notification pop-up dismissal on full-screen activated
-// with multiple displays. The unit test is passing but the behavior it is
-// testing does not work in production.
+// This test passes, but the feature is not working correctly in production.
+// The test is disabled to avoid giving a false sense of security. The failing
+// test that correctly captures the bug is DISABLED_MixedFullscreenNone.
+// TODO(crbug.com/301625873): Re-enable this test once the feature is fixed.
 TEST_F(AshMessagePopupCollectionTest, DISABLED_MixedFullscreenAll) {
   UpdateDisplay("601x600,801x800");
   Shelf* shelf1 = GetPrimaryShelf();
