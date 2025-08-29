@@ -14,6 +14,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/hang_watcher.h"
+#include "base/threading/platform_thread_metrics.h"
 #include "base/threading/thread.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
@@ -77,6 +78,8 @@ std::unique_ptr<VizCompositorThreadType> CreateAndStartCompositorThread() {
   thread->task_runner()->PostTask(
       FROM_HERE, base::BindOnce([]() {
         mojo::InterfaceEndpointClient::SetThreadNameSuffixForMetrics(
+            "VizCompositor");
+        base::PlatformThreadPriorityMonitor::Get().RegisterCurrentThread(
             "VizCompositor");
       }));
   return thread;
