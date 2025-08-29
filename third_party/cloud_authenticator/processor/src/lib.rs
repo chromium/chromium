@@ -207,6 +207,7 @@ map_keys! {
     COHORT_PUBLIC_KEY, COHORT_PUBLIC_KEY_KEY = "cohort_public_key",
     CERT_XML_SERIAL_NUMBER, CERT_XML_SERIAL_NUMBER_KEY = "cert_xml_serial_number",
     COUNTER_ID, COUNTER_ID_KEY = "counter_id",
+    CREATE_NEW_VAULT, CREATE_NEW_VAULT_KEY = "create_new_vault",
     DEVICE_ID, DEVICE_ID_KEY = "device_id",
     DEVICES, DEVICES_KEY = "devices",
     ENCODED_REQUESTS, ENCODED_REQUESTS_KEY = "encoded_requests",
@@ -813,6 +814,10 @@ enum RequestError {
     /// those previously used.
     RecoveryKeyStoreDowngrade,
 
+    /// Client attempted to refresh a PIN, but the Vault cohort hasn't been
+    /// deprecated yet.
+    CohortNotYetDeprecated,
+
     /// An error that should never happen and thus is only reported for
     /// debugging purposes. Clients are not expected to handle these errors
     /// other than to log them.
@@ -827,6 +832,7 @@ impl RequestError {
             RequestError::IncorrectPIN => Value::Int(3),
             RequestError::PINLocked => Value::Int(4),
             RequestError::RecoveryKeyStoreDowngrade => Value::Int(6),
+            RequestError::CohortNotYetDeprecated => Value::Int(7),
             RequestError::Debug(s) => Value::String(String::from(*s)),
         }
     }
@@ -1189,6 +1195,8 @@ mod tests {
     extern crate bytes;
     extern crate hex;
     extern crate std;
+
+    use crate::pin::VaultCohortDetails;
 
     use super::*;
     use alloc::boxed::Box;
@@ -3019,5 +3027,243 @@ mod tests {
             TEST_CERT_XML_SERIAL_NUMBER
         );
         assert!(!vault_cohort_details.cohort_public_key.is_empty());
+    }
+
+    #[test]
+    fn test_rewrap_new_vault_mode_handles_no_vault_cohort_details() {
+        // Tests that calling rewrap with `create_new_vault` does not attempt
+        // creating a new Vault if cohort details are not present, and fills
+        // cohort details for next time.
+        let mut metrics = MetricsUpdate::default();
+        let pin_data = pin::Data {
+            pin_hash: [1u8; 32],
+            claim_key: [2u8; 32],
+            counter_id: [3u8; recovery_key_store::COUNTER_ID_LEN],
+            vault_handle_without_type: [4u8; recovery_key_store::VAULT_HANDLE_LEN - 1],
+            vault_cohort_details: None,
+        };
+        let wrapped_pin_data = pin_data.encrypt(SAMPLE_SECURITY_DOMAIN_SECRET);
+        let (output, _) = process_client_msg(
+            REGISTERED_STATE.clone(),
+            &mut metrics,
+            EXTERNAL_CONTEXT.clone(),
+            TEST_HANDSHAKE_HASH.as_slice(),
+            sign_request(cbor!({
+                CMD: "recovery_key_store/rewrap",
+                CERT_XML: (recovery_key_store::SAMPLE_CERTS_XML),
+                CREATE_NEW_VAULT: (true),
+                SIG_XML: (recovery_key_store::SAMPLE_SIG_XML),
+                WRAPPED_SECRET: (REGISTERED_STATE_WRAPPED_SECRET.clone()),
+                WRAPPED_PIN_DATA: wrapped_pin_data,
+            })),
+        )
+        .unwrap();
+        let Value::Map(result) = ok_value(&output).unwrap() else {
+            panic!("{:?}", output);
+        };
+        let Value::Bytestring(wrapped_pin) = result
+            .get(&MapKeyRef::Str("wrapped_pin") as &dyn MapLookupKey)
+            .unwrap()
+        else {
+            panic!("{:?}", result);
+        };
+        // Processing should default to replacing the PIN because there was no
+        // cohort data, so the Vault parameters shouldn't have changed.
+        let result_pin_data =
+            pin::Data::from_wrapped(wrapped_pin, SAMPLE_SECURITY_DOMAIN_SECRET).unwrap();
+        assert_eq!(result_pin_data.pin_hash, pin_data.pin_hash);
+        assert_eq!(result_pin_data.claim_key, pin_data.claim_key);
+        assert_eq!(result_pin_data.counter_id, pin_data.counter_id);
+        assert_eq!(
+            result_pin_data.vault_handle_without_type,
+            pin_data.vault_handle_without_type
+        );
+        // Vault cohort details must have been updated so we can create a new
+        // Vault next time.
+        let vault_cohort_details = result_pin_data.vault_cohort_details.unwrap();
+        assert_eq!(
+            vault_cohort_details.cert_xml_serial_number,
+            TEST_CERT_XML_SERIAL_NUMBER
+        );
+        assert!(!vault_cohort_details.cohort_public_key.is_empty());
+    }
+
+    #[test]
+    fn test_rewrap_new_vault_mode_downgrade_cert_xml() {
+        // Tests that calling rewrap with `create_new_vault` returns an error if
+        // the cert XML version is lower than the serial number on the wrapped
+        // PIN data.
+        let mut metrics = MetricsUpdate::default();
+        let pin_data = pin::Data {
+            pin_hash: [1u8; 32],
+            claim_key: [2u8; 32],
+            counter_id: [3u8; recovery_key_store::COUNTER_ID_LEN],
+            vault_handle_without_type: [4u8; recovery_key_store::VAULT_HANDLE_LEN - 1],
+            vault_cohort_details: Some(VaultCohortDetails {
+                cert_xml_serial_number: TEST_CERT_XML_SERIAL_NUMBER + 1,
+                cohort_public_key: vec![1, 2, 3, 4],
+            }),
+        };
+        let wrapped_pin_data = pin_data.encrypt(SAMPLE_SECURITY_DOMAIN_SECRET);
+        let (output, _) = process_client_msg(
+            REGISTERED_STATE.clone(),
+            &mut metrics,
+            EXTERNAL_CONTEXT.clone(),
+            TEST_HANDSHAKE_HASH.as_slice(),
+            sign_request(cbor!({
+                CMD: "recovery_key_store/rewrap",
+                CERT_XML: (recovery_key_store::SAMPLE_CERTS_XML),
+                CREATE_NEW_VAULT: (true),
+                SIG_XML: (recovery_key_store::SAMPLE_SIG_XML),
+                WRAPPED_SECRET: (REGISTERED_STATE_WRAPPED_SECRET.clone()),
+                WRAPPED_PIN_DATA: wrapped_pin_data,
+            })),
+        )
+        .unwrap();
+        assert_eq!(
+            output,
+            cbor!([{"err": (RequestError::RecoveryKeyStoreDowngrade.to_cbor())}])
+        );
+    }
+
+    #[test]
+    fn test_rewrap_new_vault_mode_cohort_not_yet_deprecated() {
+        // Tests that calling rewrap with `create_new_vault` returns an error if
+        // the cohort hasn't been deprecated yet.
+        let mut metrics = MetricsUpdate::default();
+        let pin_data = pin::Data {
+            pin_hash: [1u8; 32],
+            claim_key: [2u8; 32],
+            counter_id: [3u8; recovery_key_store::COUNTER_ID_LEN],
+            vault_handle_without_type: [4u8; recovery_key_store::VAULT_HANDLE_LEN - 1],
+            vault_cohort_details: Some(VaultCohortDetails {
+                cert_xml_serial_number: TEST_CERT_XML_SERIAL_NUMBER,
+                cohort_public_key: recovery_key_store::SAMPLE_ENDPOINT_PUBLIC_KEY.to_vec(),
+            }),
+        };
+        let wrapped_pin_data = pin_data.encrypt(SAMPLE_SECURITY_DOMAIN_SECRET);
+        let (output, _) = process_client_msg(
+            REGISTERED_STATE.clone(),
+            &mut metrics,
+            EXTERNAL_CONTEXT.clone(),
+            TEST_HANDSHAKE_HASH.as_slice(),
+            sign_request(cbor!({
+                CMD: "recovery_key_store/rewrap",
+                CERT_XML: (recovery_key_store::SAMPLE_CERTS_XML),
+                CREATE_NEW_VAULT: (true),
+                SIG_XML: (recovery_key_store::SAMPLE_SIG_XML),
+                WRAPPED_SECRET: (REGISTERED_STATE_WRAPPED_SECRET.clone()),
+                WRAPPED_PIN_DATA: wrapped_pin_data,
+            })),
+        )
+        .unwrap();
+        assert_eq!(
+            output,
+            cbor!([{"err": (RequestError::CohortNotYetDeprecated.to_cbor())}])
+        );
+    }
+
+    #[test]
+    fn test_rewrap_new_vault_mode_cohort_deprecated() {
+        // Tests that calling rewrap with a deprecated cohort returns new Vault
+        // parameters that are a function of the previous wrapped parameters.
+        let mut metrics = MetricsUpdate::default();
+        let pin_data = pin::Data {
+            pin_hash: [1u8; 32],
+            claim_key: [2u8; 32],
+            counter_id: [3u8; recovery_key_store::COUNTER_ID_LEN],
+            vault_handle_without_type: [4u8; recovery_key_store::VAULT_HANDLE_LEN - 1],
+            vault_cohort_details: Some(VaultCohortDetails {
+                // Pretend the PIN had last been wrapped using a previous
+                // version of the cert.xml file.
+                cert_xml_serial_number: TEST_CERT_XML_SERIAL_NUMBER - 1,
+                // "Deprecated", as in, not present in the new cert.xml file.
+                cohort_public_key: b"Deprecated".to_vec(),
+            }),
+        };
+        let wrapped_pin_data = pin_data.encrypt(SAMPLE_SECURITY_DOMAIN_SECRET);
+        let (output, _) = process_client_msg(
+            REGISTERED_STATE.clone(),
+            &mut metrics,
+            EXTERNAL_CONTEXT.clone(),
+            TEST_HANDSHAKE_HASH.as_slice(),
+            sign_request(cbor!({
+                CMD: "recovery_key_store/rewrap",
+                CERT_XML: (recovery_key_store::SAMPLE_CERTS_XML),
+                CREATE_NEW_VAULT: (true),
+                SIG_XML: (recovery_key_store::SAMPLE_SIG_XML),
+                WRAPPED_SECRET: (REGISTERED_STATE_WRAPPED_SECRET.clone()),
+                WRAPPED_PIN_DATA: wrapped_pin_data,
+            })),
+        )
+        .unwrap();
+        let Value::Map(result) = ok_value(&output).unwrap() else {
+            panic!("{:?}", output);
+        };
+
+        // The wrapped PIN should contain the new details.
+        let Value::Bytestring(wrapped_pin) = result
+            .get(&MapKeyRef::Str("wrapped_pin") as &dyn MapLookupKey)
+            .unwrap()
+        else {
+            panic!("{:?}", result);
+        };
+        let result_pin_data =
+            pin::Data::from_wrapped(wrapped_pin, SAMPLE_SECURITY_DOMAIN_SECRET).unwrap();
+        assert_eq!(result_pin_data.pin_hash, pin_data.pin_hash);
+        assert_eq!(result_pin_data.claim_key, pin_data.claim_key);
+        assert_eq!(result_pin_data.counter_id, pin_data.counter_id);
+        // The vault handle should be incremented by one.
+        let mut expected_vault_handle = pin_data.vault_handle_without_type;
+        *expected_vault_handle.last_mut().unwrap() += 1;
+        assert_eq!(
+            result_pin_data.vault_handle_without_type,
+            expected_vault_handle
+        );
+        let vault_cohort_details = result_pin_data.vault_cohort_details.unwrap();
+        assert_eq!(
+            vault_cohort_details.cert_xml_serial_number,
+            TEST_CERT_XML_SERIAL_NUMBER
+        );
+        assert!(!vault_cohort_details.cohort_public_key.is_empty());
+
+        // The vault parameters should also have been updated.
+        let Value::Map(vault_params) = result
+            .get(&MapKeyRef::Str("wrapped") as &dyn MapLookupKey)
+            .unwrap()
+        else {
+            panic!("{:?}", result);
+        };
+        let Value::Bytestring(vault_counter_id) = vault_params
+            .get(&MapKeyRef::Str("counter_id") as &dyn MapLookupKey)
+            .unwrap()
+        else {
+            panic!("Could not find vault counter ID");
+        };
+        let Value::Bytestring(vault_handle) = vault_params
+            .get(&MapKeyRef::Str("vault_handle") as &dyn MapLookupKey)
+            .unwrap()
+        else {
+            panic!("Could not find vault handle");
+        };
+        let Value::Int(cert_xml_serial) = vault_params
+            .get(&MapKeyRef::Str("serial") as &dyn MapLookupKey)
+            .unwrap()
+        else {
+            panic!("Could not find serial number");
+        };
+        let Value::Bytestring(cohort_public_key) = vault_params
+            .get(&MapKeyRef::Str("cohort_public_key") as &dyn MapLookupKey)
+            .unwrap()
+        else {
+            panic!("Could not find cohort public key");
+        };
+        assert_eq!(vault_counter_id.to_vec(), pin_data.counter_id.to_vec());
+        assert_eq!(vault_handle[1..].to_vec(), expected_vault_handle);
+        assert_eq!(*cert_xml_serial, TEST_CERT_XML_SERIAL_NUMBER);
+        assert_eq!(
+            vault_cohort_details.cohort_public_key.to_vec(),
+            cohort_public_key.to_vec()
+        );
     }
 }
