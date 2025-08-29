@@ -15,6 +15,8 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/public/web/web_script_source.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
@@ -182,7 +184,7 @@ class ScrollbarsTest : public PaintTestConfigurations, public SimTest {
     WebMouseWheelEvent event(
         WebInputEvent::Type::kMouseWheel, blink::WebInputEvent::kNoModifiers,
         blink::WebInputEvent::GetStaticTimeStampForTests());
-    event.SetPositionInScreen(x, y);
+    event.SetPositionInWidget(x, y);
     event.delta_x = delta_x;
     event.delta_y = delta_y;
     event.phase = phase;
@@ -3609,6 +3611,60 @@ TEST_P(ScrollbarsTestWithVirtualTimer,
   EXPECT_EQ(
       WebInputEventResult::kHandledSystem,
       HandleWheelEvent(100, 100, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
+}
+
+TEST_P(ScrollbarsTestWithVirtualTimer,
+       FadeInOverlayScrollbarWhenMouseWheelEventMayBeginPhaseOnSlottedText) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kFadeInScrollbarWhenMouseWheelMayBegin);
+
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style> body { font-size: 100px; } </style>
+    <test-element id="test-element">test</test-element>
+    <template id="template"><slot id="test-slot"></slot></template>
+    <script>
+      class TestElement extends HTMLElement {
+        constructor() {
+          super();
+          const shadow = this.attachShadow({ mode: 'open' });
+          const tpl = document.getElementById('template');
+          shadow.appendChild(tpl.content.cloneNode(true));
+        }
+      }
+      customElements.define('test-element', TestElement);
+    </script>
+  )HTML");
+  Compositor().BeginFrame();
+
+  auto* test_slot = DynamicTo<HTMLSlotElement>(
+      GetDocument()
+          .getElementById(AtomicString("test-element"))
+          ->GetShadowRoot()
+          ->getElementById(AtomicString("test-slot")));
+  EXPECT_EQ(nullptr, HitTestResult::GetScrollableArea(test_slot));
+
+  HitTestResult hit_test_result = HitTest(50, 50);
+  EXPECT_EQ(test_slot->FirstAssignedNode(), hit_test_result.InnerNode());
+
+  ScrollableArea* scrollable_area = GetDocument().View()->LayoutViewport();
+  DCHECK(scrollable_area);
+
+  EXPECT_EQ(scrollable_area,
+            HitTestResult::GetScrollableArea(hit_test_result.InnerNode()));
+
+  auto* scrollbar_animator = MakeGarbageCollected<MockMacScrollbarAnimator>();
+  scrollable_area->SetMacScrollbarAnimatorForTesting(scrollbar_animator);
+
+  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
+      .WillOnce([]() -> bool { return true; });
+  EXPECT_EQ(WebInputEventResult::kHandledSystem,
+            HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
   testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
 }
 #endif  // BUILDFLAG(IS_MAC)

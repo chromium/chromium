@@ -146,8 +146,13 @@ Node* MouseWheelEventManager::FindTargetNode(const WebMouseWheelEvent& event,
 
   Node* node = result.InnerNode();
   // Wheel events should not dispatch to text nodes.
-  if (node && node->IsTextNode())
-    node = FlatTreeTraversal::Parent(*node);
+  if (node && node->IsTextNode()) {
+    // Find first ancestor that has layout object.
+    for (node = FlatTreeTraversal::Parent(*node);
+         node && !node->GetLayoutObject();
+         node = FlatTreeTraversal::Parent(*node)) {
+    }
+  }
 
   // If we're over the frame scrollbar, scroll the document.
   if (!node && result.GetScrollbar())
