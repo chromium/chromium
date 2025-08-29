@@ -408,7 +408,7 @@ CacheStorageHandle CacheStorageManager::OpenCacheStorage(
   if (!memory_pressure_listener_) {
     memory_pressure_listener_ =
         std::make_unique<base::AsyncMemoryPressureListener>(
-            FROM_HERE, base::MemoryPressureListenerTag::kCacheStorageManager,
+            FROM_HERE,
             base::BindRepeating(&CacheStorageManager::OnMemoryPressure,
                                 base::Unretained(this)));
   }

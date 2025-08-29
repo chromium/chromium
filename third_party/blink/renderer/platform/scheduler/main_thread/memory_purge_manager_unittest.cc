@@ -26,7 +26,7 @@ class MemoryPurgeManagerTest : public testing::Test {
 
   void SetUp() override {
     memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-        FROM_HERE, base::MemoryPressureListenerTag::kTest,
+        FROM_HERE,
         base::BindRepeating(&MemoryPurgeManagerTest::OnMemoryPressure,
                             base::Unretained(this)));
     base::MemoryPressureListener::SetNotificationsSuppressed(false);

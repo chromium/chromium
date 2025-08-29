@@ -454,9 +454,8 @@ bool DemuxerManager::IsLiveContent() const {
 std::unique_ptr<Demuxer> DemuxerManager::CreateChunkDemuxer() {
   if (base::FeatureList::IsEnabled(kMemoryPressureBasedSourceBufferGC)) {
     memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-        FROM_HERE, base::MemoryPressureListenerTag::kDemuxerManager,
-        base::BindRepeating(&DemuxerManager::OnMemoryPressure,
-                            base::Unretained(this)));
+        FROM_HERE, base::BindRepeating(&DemuxerManager::OnMemoryPressure,
+                                       base::Unretained(this)));
   }
 
   return std::make_unique<ChunkDemuxer>(

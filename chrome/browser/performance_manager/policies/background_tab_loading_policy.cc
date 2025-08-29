@@ -153,7 +153,6 @@ BackgroundTabLoadingPolicy::BackgroundTabLoadingPolicy(
       page_loader_(std::make_unique<mechanism::PageLoader>()),
       memory_pressure_listener_(
           FROM_HERE,
-          base::MemoryPressureListenerTag::kBackgroundTabLoadingPolicy,
           base::BindRepeating(&BackgroundTabLoadingPolicy::OnMemoryPressure,
                               base::Unretained(this))) {
   DCHECK(!g_background_tab_loading_policy);

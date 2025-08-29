@@ -263,7 +263,7 @@ void CompositorGpuThread::Init() {
   // created on.
   memory_pressure_listener_ =
       std::make_unique<base::AsyncMemoryPressureListener>(
-          FROM_HERE, base::MemoryPressureListenerTag::kCompositorGpuThread,
+          FROM_HERE,
           base::BindRepeating(&CompositorGpuThread::HandleMemoryPressure,
                               base::Unretained(this))),
   init_succeeded_ = true;

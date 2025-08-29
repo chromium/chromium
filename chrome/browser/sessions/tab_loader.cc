@@ -211,7 +211,6 @@ void TabLoader::SetAllTabsScored(bool all_tabs_scored) {
 TabLoader::TabLoader()
     : memory_pressure_listener_(
           FROM_HERE,
-          base::MemoryPressureListenerTag::kTabLoader,
           base::BindRepeating(&TabLoader::OnMemoryPressure,
                               base::Unretained(this))),
       clock_(GetDefaultTickClock()) {

@@ -135,7 +135,6 @@ void MaybeFlushBFCacheImpl(content::WebContents* contents,
 BFCachePolicy::BFCachePolicy()
     : memory_pressure_listener_(
           FROM_HERE,
-          base::MemoryPressureListenerTag::kBFCachePolicy,
           base::BindRepeating(&BFCachePolicy::OnMemoryPressure,
                               base::Unretained(this))) {}
 

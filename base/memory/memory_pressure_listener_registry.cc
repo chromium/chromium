@@ -6,9 +6,7 @@
 
 #include <atomic>
 
-#include "base/feature_list.h"
 #include "base/memory/memory_pressure_level.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/trace_event/interned_args_helper.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_pressure_level_proto.h"
@@ -20,18 +18,6 @@ namespace base {
 namespace {
 
 std::atomic<bool> g_notifications_suppressed = false;
-
-BASE_FEATURE(kSuppressMemoryListeners,
-             "SuppressMemoryListeners",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<int> kSuppressMemoryListenersStart{
-    &kSuppressMemoryListeners, "suppress_memory_listeners_start",
-    static_cast<int>(base::MemoryPressureListenerTag::kMax)};
-
-const base::FeatureParam<int> kSuppressMemoryListenersEnd{
-    &kSuppressMemoryListeners, "suppress_memory_listeners_end",
-    static_cast<int>(base::MemoryPressureListenerTag::kMax)};
 
 }  // namespace
 
@@ -77,22 +63,7 @@ void MemoryPressureListenerRegistry::RemoveObserver(
 
 void MemoryPressureListenerRegistry::DoNotifyMemoryPressure(
     MemoryPressureLevel memory_pressure_level) {
-  if (base::FeatureList::IsEnabled(kSuppressMemoryListeners)) {
-    int start = kSuppressMemoryListenersStart.Get();
-    int end = kSuppressMemoryListenersEnd.Get();
-
-    for (auto& listener : listeners_) {
-      // Only Notify observers that aren't suppressed. An observer is suppressed
-      // if its tag is between `start` (inclusive) and `end` (exclusive)
-      if (static_cast<int>(listener.tag()) < start ||
-          static_cast<int>(listener.tag()) >= end) {
-        listener.Notify(memory_pressure_level);
-      }
-    }
-  } else {
-    listeners_.Notify(&SyncMemoryPressureListener::Notify,
-                      memory_pressure_level);
-  }
+  listeners_.Notify(&SyncMemoryPressureListener::Notify, memory_pressure_level);
 }
 
 // static

@@ -44,7 +44,6 @@ SharedStorageManager::SharedStorageManager(
           options_->GetDatabaseOptions())),
       memory_pressure_listener_(std::make_unique<base::MemoryPressureListener>(
           FROM_HERE,
-          base::MemoryPressureListenerTag::kSharedStorageManager,
           base::BindRepeating(&SharedStorageManager::OnMemoryPressure,
                               base::Unretained(this),
                               base::DoNothing()))) {

@@ -146,7 +146,7 @@ TEST_F(SystemMemoryPressureEvaluatorFuchsiaTest, Periodic) {
   ASSERT_TRUE(have_watcher());
 
   base::MemoryPressureListener listener(
-      FROM_HERE, base::MemoryPressureListenerTag::kTest,
+      FROM_HERE,
       base::BindRepeating(&TestSystemMemoryPressureEvaluator::OnMemoryPressure,
                           base::Unretained(&evaluator)));
 

@@ -430,7 +430,6 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
  public:
   NetworkServiceTestImpl() : test_host_resolver_(new TestHostResolver()) {
     memory_pressure_listener_.emplace(
-        base::MemoryPressureListenerTag::kTest,
         base::BindRepeating(
             &NetworkServiceTestHelper::NetworkServiceTestImpl::OnMemoryPressure,
             weak_factory_.GetWeakPtr()));

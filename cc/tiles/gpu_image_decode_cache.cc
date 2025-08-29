@@ -1277,9 +1277,8 @@ GpuImageDecodeCache::GpuImageDecodeCache(
   }
   memory_pressure_listener_ =
       std::make_unique<base::AsyncMemoryPressureListener>(
-          FROM_HERE, base::MemoryPressureListenerTag::kGpuImageDecodeCache,
-          base::BindRepeating(&GpuImageDecodeCache::OnMemoryPressure,
-                              base::Unretained(this)));
+          FROM_HERE, base::BindRepeating(&GpuImageDecodeCache::OnMemoryPressure,
+                                         base::Unretained(this)));
 
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "GpuImageDecodeCache::DarkModeFilter", "dark_mode_filter",

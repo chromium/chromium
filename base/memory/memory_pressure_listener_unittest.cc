@@ -16,8 +16,7 @@ namespace base {
 class MemoryPressureListenerTest : public testing::Test {
  public:
   MemoryPressureListenerTest()
-      : listener_(base::MemoryPressureListenerTag::kTest,
-                  BindRepeating(&MemoryPressureListenerTest::OnMemoryPressure,
+      : listener_(BindRepeating(&MemoryPressureListenerTest::OnMemoryPressure,
                                 Unretained(this))) {}
 
  protected:
@@ -72,13 +71,11 @@ TEST_F(MemoryPressureListenerTest, SyncCallbackDeletesListener) {
   base::test::SingleThreadTaskEnvironment task_env;
 
   auto listener_to_be_deleted = std::make_unique<MemoryPressureListener>(
-      FROM_HERE, base::MemoryPressureListenerTag::kTest,
-      BindRepeating([](MemoryPressureListener::MemoryPressureLevel) {
+      FROM_HERE, BindRepeating([](MemoryPressureListener::MemoryPressureLevel) {
         FAIL() << "Async callback should not be called.";
       }));
 
   auto deleter_listener = std::make_unique<SyncMemoryPressureListener>(
-      base::MemoryPressureListenerTag::kTest,
       BindLambdaForTesting([&](MemoryPressureLevel) {
         // This should not deadlock.
         listener_to_be_deleted.reset();

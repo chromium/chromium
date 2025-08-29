@@ -444,7 +444,6 @@ void WorkingSetTrimmerPolicyChromeOS::OnPassedToGraph(Graph* graph) {
   params_ = features::TrimOnMemoryPressureParams::GetParams();
   memory_pressure_listener_.emplace(
       FROM_HERE,
-      base::MemoryPressureListenerTag::kWorkingSetTrimmerPolicyChromeOS,
       base::BindRepeating(&WorkingSetTrimmerPolicyChromeOS::OnMemoryPressure,
                           base::Unretained(this)));
 

@@ -170,9 +170,8 @@ void GpuChildThread::Init(const base::TimeTicks& process_start_time) {
 
   memory_pressure_listener_ =
       std::make_unique<base::AsyncMemoryPressureListener>(
-          FROM_HERE, base::MemoryPressureListenerTag::kGpuChildThread,
-          base::BindRepeating(&GpuChildThread::OnMemoryPressure,
-                              base::Unretained(this)));
+          FROM_HERE, base::BindRepeating(&GpuChildThread::OnMemoryPressure,
+                                         base::Unretained(this)));
 }
 
 bool GpuChildThread::in_process_gpu() const {
