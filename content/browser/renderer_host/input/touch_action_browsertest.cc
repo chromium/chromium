@@ -1018,9 +1018,8 @@ class ScrollBeginObserver : public RenderWidgetHost::InputEventObserver {
   base::OnceClosure quit_closure_;
 };
 
-// TODO(https://crbug.com/441994116): Disabled due to being flaky.
 IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
-                       DISABLED_CursorControlDetachViewMidScroll) {
+                       CursorControlDetachViewMidScroll) {
   if (!::features::IsSwipeToMoveCursorEnabled()) {
     return;
   }
@@ -1067,9 +1066,8 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
   // We expect the run loop be exited when ScrollBeginObserver processes
   // ScrollBegin ack.
   run_loop.Run();
-  EXPECT_EQ(rwhv_android->GetTouchSelectionControllerInputObserver()
-                ->LastSeenAckTypeForTesting(),
-            blink::WebInputEvent::Type::kGestureScrollBegin);
+  EXPECT_TRUE(rwhv_android->GetTouchSelectionControllerInputObserver()
+                  ->HasSeenScrollBeginAckForTesting());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

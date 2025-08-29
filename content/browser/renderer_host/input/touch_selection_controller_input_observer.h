@@ -43,12 +43,12 @@ class TouchSelectionControllerInputObserver
     controller_ = controller;
   }
 
-  blink::WebInputEvent::Type LastSeenAckTypeForTesting() const {
-    return last_seen_ack_type_;
+  bool HasSeenScrollBeginAckForTesting() const {
+    return has_seen_scroll_begin_ack_;
   }
 
  private:
-  blink::WebInputEvent::Type last_seen_ack_type_;
+  bool has_seen_scroll_begin_ack_ = false;
   raw_ptr<ui::TouchSelectionController> controller_;
   raw_ptr<TouchSelectionControllerClientManager> manager_;
 };
