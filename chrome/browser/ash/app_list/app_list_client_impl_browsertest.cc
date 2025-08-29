@@ -71,7 +71,6 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -122,6 +121,7 @@
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/menus/simple_menu_model.h"
+#include "ui/message_center/test/message_center_waiter.h"
 #include "ui/wm/core/window_util.h"
 #include "url/gurl.h"
 
@@ -1121,7 +1121,6 @@ class DurationBetweenSeesionActivationAndFirstLauncherShowingBrowserTest
   }
   ~DurationBetweenSeesionActivationAndFirstLauncherShowingBrowserTest()
       override = default;
-
  protected:
   void ShowAppListAndVerify() {
     auto* client = AppListClientImpl::GetInstance();
@@ -1440,8 +1439,6 @@ class AppListSurveyTriggerTest
   void SetUpOnMainThread() override {
     AppListClientImplBrowserTest::SetUpOnMainThread();
 
-    display_service_ = std::make_unique<NotificationDisplayServiceTester>(
-        browser()->profile());
     user_manager::UserManager::Get()->SetIsCurrentUserNew(true);
     AppListClientImpl::GetInstance()->InitializeAsIfNewUserLoginForTest();
   }
@@ -1466,9 +1463,8 @@ class AppListSurveyTriggerTest
   }
 
   bool IsHatsNotificationActive() const {
-    return display_service_
-        ->GetNotification(ash::HatsNotificationController::kNotificationId)
-        .has_value();
+    return message_center::MessageCenter::Get()->FindVisibleNotificationById(
+               ash::HatsNotificationController::kNotificationId) != nullptr;
   }
 
   void MaybeWaitForHatsNotification() {
@@ -1476,9 +1472,9 @@ class AppListSurveyTriggerTest
       return;
     }
 
-    base::RunLoop loop;
-    display_service_->SetNotificationAddedClosure(loop.QuitClosure());
-    loop.Run();
+    message_center::MessageCenterWaiter(
+        ash::HatsNotificationController::kNotificationId)
+        .Wait();
   }
 
   const ash::HatsNotificationController* GetHatsNotificationController() const {
@@ -1505,8 +1501,6 @@ class AppListSurveyTriggerTest
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  std::unique_ptr<NotificationDisplayServiceTester> display_service_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

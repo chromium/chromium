@@ -156,6 +156,8 @@ if (enable_message_center) {
       "fake_message_center.h",
       "lock_screen/fake_lock_screen_controller.cc",
       "lock_screen/fake_lock_screen_controller.h",
+      "test/message_center_waiter.cc",
+      "test/message_center_waiter.h",
     ]
 
     deps = [

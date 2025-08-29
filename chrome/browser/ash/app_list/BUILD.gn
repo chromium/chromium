@@ -303,6 +303,7 @@ source_set("browser_tests") {
     "//ui/display:display_manager_test_api",
     "//ui/events:test_support",
     "//ui/gfx",
+    "//ui/message_center:test_support",
     "//ui/views",
     "//ui/views:test_support",
     "//ui/wm",

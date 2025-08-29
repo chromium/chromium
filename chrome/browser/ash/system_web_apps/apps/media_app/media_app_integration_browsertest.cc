@@ -42,8 +42,6 @@
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/error_reporting/mock_chrome_js_error_report_processor.h"
 #include "chrome/browser/extensions/component_loader.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
@@ -76,7 +74,9 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/test/message_center_waiter.h"
 
 using ash::SystemWebAppType;
 using platform_util::OpenOperationResult;
@@ -279,50 +279,6 @@ class MediaAppIntegrationPhotosIntegrationTest
 using MediaAppIntegrationAllProfilesTest = MediaAppIntegrationTest;
 using MediaAppIntegrationWithFilesAppAllProfilesTest =
     MediaAppIntegrationWithFilesAppTest;
-
-// Scoped observer of notifications that will spin a run loop until a
-// notification is displayed.
-class NotificationWatcher : public NotificationDisplayService::Observer {
- public:
-  NotificationWatcher(Profile* profile,
-                      ash::NetworkPortalDetectorMixin& network_portal_detector)
-      : profile_(profile) {
-    // Notifications only fire if the device is "online". Simulate that.
-    network_portal_detector.SimulateDefaultNetworkState(
-        ash::NetworkPortalDetectorMixin::NetworkStatus::kOnline);
-
-    NotificationDisplayServiceFactory::GetForProfile(profile_)->AddObserver(
-        this);
-  }
-  ~NotificationWatcher() override {
-    NotificationDisplayServiceFactory::GetForProfile(profile_)->RemoveObserver(
-        this);
-  }
-  std::string NextSeenNotificationId() {
-    if (seen_notification_id_.empty()) {
-      run_loop_.Run();
-    }
-    return seen_notification_id_;
-  }
-
- private:
-  raw_ptr<Profile> profile_;
-  base::RunLoop run_loop_;
-  std::string seen_notification_id_;
-
-  void OnNotificationDisplayed(
-      const message_center::Notification& notification,
-      const NotificationCommon::Metadata* const metadata) override {
-    seen_notification_id_ = notification.id();
-    if (run_loop_.IsRunningOnCurrentThread()) {
-      run_loop_.Quit();
-    }
-  }
-
-  void OnNotificationClosed(const std::string& notification_id) override {}
-  void OnNotificationDisplayServiceDestroyed(
-      NotificationDisplayService* service) override {}
-};
 
 class BrowserWindowWaiter : public BrowserListObserver {
  public:
@@ -1588,11 +1544,16 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MaybeTriggerPdfHats) {
       })();
   )";
 
-  NotificationWatcher notification_watcher(profile(), network_portal_detector_);
+  // Notifications only fire if the device is "online". Simulate that.
+  network_portal_detector_.SimulateDefaultNetworkState(
+      ash::NetworkPortalDetectorMixin::NetworkStatus::kOnline);
+  message_center::MessageCenterWaiter waiter("hats_notification");
 
   EXPECT_EQ("success",
             ExtractStringInGlobalScope(web_ui, kMaybeTriggerPdfHats));
-  EXPECT_EQ(notification_watcher.NextSeenNotificationId(), "hats_notification");
+  waiter.Wait();
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
+      "hats_notification"));
 }
 
 // Tests that the Photos happiness tracking survey triggers when the monitored
@@ -1608,12 +1569,17 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MaybeTriggerPhotosHats) {
   std::string media_app_app_id = MediaAppAppId();
   SetPhotosExperienceSurveyTriggerAppIdForTesting(media_app_app_id.c_str());
 
-  NotificationWatcher notification_watcher(profile(), network_portal_detector_);
+  // Notifications only fire if the device is "online". Simulate that.
+  network_portal_detector_.SimulateDefaultNetworkState(
+      ash::NetworkPortalDetectorMixin::NetworkStatus::kOnline);
+  message_center::MessageCenterWaiter waiter("hats_notification");
 
   LaunchWithNoFiles();
   chrome::FindBrowserWithActiveWindow()->window()->Close();
 
-  EXPECT_EQ(notification_watcher.NextSeenNotificationId(), "hats_notification");
+  waiter.Wait();
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
+      "hats_notification"));
 
   // Avoid leaving a ref to the std::string about to be destroyed.
   SetPhotosExperienceSurveyTriggerAppIdForTesting("");

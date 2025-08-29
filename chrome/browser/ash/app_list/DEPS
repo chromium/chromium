@@ -43,7 +43,6 @@ include_rules = [
   "+chrome/browser/favicon",
   "+chrome/browser/feature_engagement",
   "+chrome/browser/history",
-  "+chrome/browser/notifications",
   "+chrome/browser/platform_util.h",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
@@ -121,5 +120,9 @@ specific_include_rules = {
 
   "app_list_syncable_service_unittest\\.cc": [
     "+cc/base/math_util.h",
+  ],
+
+  "app_list_client_impl_browsertest\\.cc": [
+    "+ui/message_center/test/message_center_waiter.h",
   ],
 }

@@ -201,5 +201,7 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/base",
     "//ui/chromeos/strings",
+    "//ui/message_center",
+    "//ui/message_center:test_support",
   ]
 }

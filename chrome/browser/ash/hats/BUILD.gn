@@ -28,6 +28,7 @@ static_library("hats") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles",
+    "//chrome/browser/themes",
     "//chrome/common",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/network",
