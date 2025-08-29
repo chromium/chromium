@@ -1378,12 +1378,6 @@ static_library("browser") {
     "segmentation_platform/segmentation_platform_service_factory.cc",
     "segmentation_platform/ukm_database_client.cc",
     "segmentation_platform/ukm_database_client.h",
-    "send_tab_to_self/send_tab_to_self_client_service.cc",
-    "send_tab_to_self/send_tab_to_self_client_service.h",
-    "send_tab_to_self/send_tab_to_self_client_service_factory.cc",
-    "send_tab_to_self/send_tab_to_self_client_service_factory.h",
-    "send_tab_to_self/send_tab_to_self_util.cc",
-    "send_tab_to_self/send_tab_to_self_util.h",
     "sessions/chrome_serialized_navigation_driver.cc",
     "sessions/chrome_serialized_navigation_driver.h",
     "sessions/chrome_tab_restore_service_client.cc",
@@ -2004,6 +1998,7 @@ static_library("browser") {
     "//chrome/browser/search_engines",
     "//chrome/browser/segmentation_platform",
     "//chrome/browser/send_tab_to_self",
+    "//chrome/browser/send_tab_to_self:impl",
     "//chrome/browser/serial",
     "//chrome/browser/serial:impl",
     "//chrome/browser/sessions",
@@ -2924,10 +2919,6 @@ static_library("browser") {
       "android/seccomp_support_detector.h",
       "android/selection/chrome_selection_dropdown_menu_delegate.cc",
       "android/selection/chrome_selection_dropdown_menu_delegate.h",
-      "android/send_tab_to_self/android_notification_handler.cc",
-      "android/send_tab_to_self/android_notification_handler.h",
-      "android/send_tab_to_self/metrics_recorder.cc",
-      "android/send_tab_to_self/send_tab_to_self_android_bridge.cc",
       "android/service_tab_launcher.cc",
       "android/service_tab_launcher.h",
       "android/shortcut_helper.cc",
@@ -3655,6 +3646,12 @@ static_library("browser") {
       # - c/b/ntp_tiles/chrome_most_visited_sites_factory.h
       # - c/b/visited_url_ranking/visited_url_ranking_service_factory.h
       "//chrome/browser/auxiliary_search:impl",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when the following
+      # headers get componentized:
+      # - c/b/android/android_theme_resources.h
+      # - c/b/android/resource_mapper.h
+      "//chrome/browser/send_tab_to_self:impl",
     ]
 
     if (safe_browsing_mode == 2) {
@@ -4194,8 +4191,6 @@ static_library("browser") {
       "safe_browsing/generated_safe_browsing_pref.h",
       "safe_browsing/generated_security_settings_bundle_pref.cc",
       "safe_browsing/generated_security_settings_bundle_pref.h",
-      "send_tab_to_self/desktop_notification_handler.cc",
-      "send_tab_to_self/desktop_notification_handler.h",
       "sessions/restore_on_startup_policy_handler.cc",
       "sessions/restore_on_startup_policy_handler.h",
       "sharing/click_to_call/click_to_call_context_menu_observer.cc",

@@ -2410,6 +2410,7 @@ if (!is_android) {
       "//chrome/browser/search",
       "//chrome/browser/search_engines",
       "//chrome/browser/segmentation_platform:test_utils",
+      "//chrome/browser/send_tab_to_self:browser_tests",
       "//chrome/browser/serial:browser_tests",
       "//chrome/browser/signin/e2e_tests:test_support",
       "//chrome/browser/storage_access_api",
@@ -3482,7 +3483,6 @@ if (!is_android) {
       "../browser/search_engines/template_url_scraper_browsertest.cc",
       "../browser/search_engines/template_url_service_browsertest.cc",
       "../browser/secure_origin_allowlist_browsertest.cc",
-      "../browser/send_tab_to_self/desktop_notification_handler_browsertest.cc",
       "../browser/sessions/better_session_restore_browsertest.cc",
       "../browser/sessions/exit_type_service_browsertest.cc",
       "../browser/sessions/session_id_generator_browsertest.cc",
@@ -8103,7 +8103,6 @@ test("unit_tests") {
       "../browser/search/background/wallpaper_search/wallpaper_search_background_manager_unittest.cc",
       "../browser/search/most_visited_iframe_source_unittest.cc",
       "../browser/search/search_unittest.cc",
-      "../browser/send_tab_to_self/send_tab_to_self_client_service_unittest.cc",
       "../browser/sessions/restore_on_startup_policy_handler_unittest.cc",
       "../browser/sessions/tab_restore_service_unittest.cc",
       "../browser/sharing/shared_clipboard/remote_copy_message_handler_unittest.cc",
@@ -8297,6 +8296,7 @@ test("unit_tests") {
       "//chrome/browser/password_manager/password_change",
       "//chrome/browser/password_manager/password_change:unit_tests",
       "//chrome/browser/resource_coordinator",
+      "//chrome/browser/send_tab_to_self:unit_tests",
       "//chrome/browser/tab_group_sync:factories",
       "//chrome/browser/task_manager/common",
       "//chrome/browser/ui/bookmarks:unit_tests",
@@ -8367,10 +8367,6 @@ test("unit_tests") {
     # TODO(crbug.com/437811373): Remove this dependency when
     # c/b/ui/passwords/password_change_ui_controller.h gets built from `//c/b/ui/passwords:passwords`.
     deps += [ "//chrome/browser/ui/passwords:impl" ]
-
-    # TODO(416215722): Remove when # send_tab_to_self_client_service_unittest.cc
-    # gets modularized.
-    deps += [ "//chrome/browser/send_tab_to_self" ]
 
     if (is_chrome_branded) {
       sources += [
