@@ -1819,6 +1819,7 @@ class AuditorUI:
                                                  self.path_filters,
                                                  self.skip_compdb)
     errors = []
+
     errors.extend(self.auditor.parse_extractor_output(all_annotations))
 
     # If we already have errors from parsing annotations, report them. Otherwise
@@ -1874,15 +1875,6 @@ class AuditorUI:
             'pyproto/chrome/browser/privacy/traffic_annotation_pb2.py'))
     return src_proto_mtime > build_proto_mtime
 
-def is_inside_git_directory() -> bool:
-  """Returns true if the script is currently running inside a git repository."""
-  logger.info("Checking if running inside a git repo.")
-  if platform.system() == "Windows":
-    command_line = ["git.bat", "rev-parse", "--is-inside-work-tree"]
-  else:
-    command_line = ["git", "rev-parse", "--is-inside-work-tree"]
-  process = subprocess.run(command_line, capture_output=True)
-  return process.returncode == 0
 
 if __name__ == "__main__":
   args_parser = argparse.ArgumentParser(
@@ -1946,13 +1938,7 @@ if __name__ == "__main__":
       " --all-files, using the python extractor.")
 
   args = args_parser.parse_args()
-
   build_path = Path(args.build_path)
-  # Check if in git repo - otherwise fail early.
-  if not is_inside_git_directory():
-    print("This script must be run inside a git repository.")
-    print("Note that running this script from Cider-G is not supported.")
-    sys.exit(1)
 
   print("Starting traffic annotation auditor. This may take a few minutes.")
   print("If you find a bug in this script, file bugs against the 'Enterprise>"
@@ -1961,6 +1947,7 @@ if __name__ == "__main__":
                          args.test_only, args.limit, args.annotations_file,
                          args.errors_file, args.skip_compdb,
                          args.skip_stale_build_check)
+
   try:
     sys.exit(auditor_ui.main())
   except extractor.SourceCodeParsingError:
