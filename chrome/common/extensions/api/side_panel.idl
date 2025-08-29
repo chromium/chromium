@@ -164,6 +164,6 @@ namespace sidePanel {
 
   interface Events {
     // Fired when the extension's side panel is opened.
-    [nodoc] static void onOpened(PanelOpenedInfo info);
+    static void onOpened(PanelOpenedInfo info);
   };
 };
