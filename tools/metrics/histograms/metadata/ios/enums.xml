@@ -634,8 +634,9 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(IOSInstallAttributionType) -->
 
 <enum name="IOSInstallAttributionType">
-  <int value="0" label="Within 24 hours"/>
-  <int value="1" label="Within 15 days"/>
+  <int value="0" label="None"/>
+  <int value="1" label="Within 24 hours"/>
+  <int value="2" label="Within 15 days"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/default_browser/model/install_attribution/install_attribution_helper.h:InstallAttributionType) -->
