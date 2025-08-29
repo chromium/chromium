@@ -745,6 +745,67 @@ IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
   ASSERT_EQ(expected, GetObservedRequests());
 }
 
+// A variant of PrefetchTimeoutPrerenderFailure, where the navigation is started
+// while prefetch is ongoing and thus the prefetch-ahead-prerender failure
+// occurs during the navigation.
+//
+// Scenario:
+//
+// - Trigger prefetch ahead of prerender A for URL U.
+// - Trigger prerender A' for URL U.
+//   - A blocks A'.
+// - Navigation is started.
+//   - A' blocks it.
+// - A failed due to timeout.
+//   - The failure is propagated to A'.
+//   - It unblocks the navigation.
+// - No preloads are used.
+IN_PROC_BROWSER_TEST_P(
+    PrerendererImplBrowserTestPrefetchAhead,
+    PrefetchTimeoutNavigationStartedWithoutWaitForPrerenderPrerenderFailure) {
+  // Prefetch will fail as
+  // `prefetch_timeout_ms = 1500 < response_delay_ = 1500 + 1000`.
+  SetResponseDelay(base::Milliseconds(1500 + 1000));
+
+  ASSERT_TRUE(NavigateToURL(shell(), GetUrl("/empty.html")));
+
+  const GURL prerender_url = GetUrl("/title1.html");
+  blink::mojom::SpeculationCandidatePtr candidate =
+      CreateSpeculationCandidate(prerender_url);
+  PreloadingPredictor enacting_predictor = GetPredictorForPreloadingTriggerType(
+      PreloadingTriggerType::kSpeculationRule);
+  GetPrerendererImpl().MaybePrerender(candidate, enacting_predictor,
+                                      PreloadingConfidence{100});
+  // Don't `prerender_helper().WaitForPrerenderLoadCompletion(prerender_url);`
+  // here, different from PrefetchTimeoutPrerenderFailure.
+
+  ASSERT_TRUE(NavigateToURLFromRenderer(shell(), prerender_url));
+
+  histogram_tester().ExpectUniqueSample(
+      "Preloading.Prefetch.Attempt.SpeculationRules.TriggeringOutcome",
+      PreloadingTriggeringOutcome::kFailure, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Preloading.Prerender.Attempt.SpeculationRules.TriggeringOutcome",
+      PreloadingTriggeringOutcome::kFailure, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+      PrerenderFinalStatus::kPrerenderFailedDuringPrefetch, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.PrefetchAheadOfPrerenderFailed.PrefetchStatus."
+      "SpeculationRule",
+      PrefetchStatus::kPrefetchNotFinishedInTime, 1);
+
+  std::vector<RequestPathAndSecPurposeHeader> expected{
+      {.path = "/empty.html", .sec_purpose_header_value = ""},
+      // Prefetch and prerender, timed out and aborted.
+      {.path = "/title1.html",
+       .sec_purpose_header_value =
+           blink::kSecPurposePrefetchPrerenderHeaderValue},
+      // Normal navigation.
+      {.path = "/title1.html", .sec_purpose_header_value = ""}};
+  ASSERT_EQ(expected, GetObservedRequests());
+}
+
 // Consider a case that a site uses a SpecRules containing prefetch and
 // prerender for a URL U.
 //
