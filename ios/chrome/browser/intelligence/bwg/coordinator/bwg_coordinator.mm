@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_coordinator.h"
 
+#import "base/barrier_closure.h"
+#import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -18,6 +20,8 @@
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_fre_wrapper_view_controller.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -75,35 +79,10 @@ const CGFloat kPromoMaxImpressionCount = 3;
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  _prefService = self.profile->GetPrefs();
-  CHECK(_prefService);
-
-  BOOL willShowFRE = [self shouldShowBWGConsent];
-  // Record entry point with FRE context.
-  RecordBWGEntryPointClick(_entryPoint, willShowFRE);
-
-  if (_entryPoint == bwg::EntryPoint::AIHub) {
-    feature_engagement::TrackerFactory::GetForProfile(self.profile)
-        ->NotifyEvent(feature_engagement::events::kIOSPageActionMenuIPHUsed);
-  }
-
-  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-  _BWGCommandsHandler = HandlerForProtocol(dispatcher, BWGCommands);
-  _helpCommandsHandler = HandlerForProtocol(dispatcher, HelpCommands);
-
-  _mediator = [[BWGMediator alloc]
-      initWithPrefService:_prefService
-             webStateList:self.browser->GetWebStateList()
-       baseViewController:self.baseViewController
-               BWGService:BwgServiceFactory::GetForProfile(self.profile)
-          BWGBrowserAgent:BwgBrowserAgent::FromBrowser(self.browser)];
-  _mediator.applicationHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationCommands);
-
-  _mediator.delegate = self;
-  [_mediator presentBWGFlow];
-
-  [super start];
+  __weak BWGCoordinator* weakSelf = self;
+  [self dismissBWGFromOtherWindowsWithCompletion:^() {
+    [weakSelf startCoordinator];
+  }];
 }
 
 - (void)stop {
@@ -194,6 +173,39 @@ const CGFloat kPromoMaxImpressionCount = 3;
 
 #pragma mark - Private
 
+// Starts the BWG coordinator.
+- (void)startCoordinator {
+  _prefService = self.profile->GetPrefs();
+  CHECK(_prefService);
+
+  BOOL willShowFRE = [self shouldShowBWGConsent];
+  // Record entry point with FRE context.
+  RecordBWGEntryPointClick(_entryPoint, willShowFRE);
+
+  if (_entryPoint == bwg::EntryPoint::AIHub) {
+    feature_engagement::TrackerFactory::GetForProfile(self.profile)
+        ->NotifyEvent(feature_engagement::events::kIOSPageActionMenuIPHUsed);
+  }
+
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  _BWGCommandsHandler = HandlerForProtocol(dispatcher, BWGCommands);
+  _helpCommandsHandler = HandlerForProtocol(dispatcher, HelpCommands);
+
+  _mediator = [[BWGMediator alloc]
+      initWithPrefService:_prefService
+             webStateList:self.browser->GetWebStateList()
+       baseViewController:self.baseViewController
+               BWGService:BwgServiceFactory::GetForProfile(self.profile)
+          BWGBrowserAgent:BwgBrowserAgent::FromBrowser(self.browser)];
+  _mediator.applicationHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+
+  _mediator.delegate = self;
+  [_mediator presentBWGFlow];
+
+  [super start];
+}
+
 // Dismisses presented view.
 - (void)dismissPresentedViewWithCompletion:(void (^)())completion {
   if (self.baseViewController.presentedViewController) {
@@ -236,6 +248,37 @@ const CGFloat kPromoMaxImpressionCount = 3;
   if (_entryPoint != bwg::EntryPoint::AIHub) {
     [_helpCommandsHandler
         presentInProductHelpWithType:InProductHelpType::kPageActionMenu];
+  }
+}
+
+// Dismisses BWG from all other windows and executes the completion block.
+- (void)dismissBWGFromOtherWindowsWithCompletion:(ProceduralBlock)completion {
+  base::OnceCallback closure = base::BindOnce(completion);
+  std::set<Browser*> browser_list =
+      BrowserListFactory::GetForProfile(self.profile)
+          ->BrowsersOfType(BrowserList::BrowserType::kRegular);
+
+  if (browser_list.size() == 1) {
+    std::move(closure).Run();
+    return;
+  }
+
+  // Gate the completion behind this barrier closure which executes it when all
+  // other browsers have dismissed their BWG sessions.
+  base::RepeatingClosure barrier =
+      base::BarrierClosure(browser_list.size() - 1, std::move(closure));
+
+  // Dismiss BWG in all browsers other than the current one.
+  for (Browser* browser : browser_list) {
+    if (browser == self.browser) {
+      continue;
+    }
+
+    id<BWGCommands> BWGCommandsHandler =
+        HandlerForProtocol(browser->GetCommandDispatcher(), BWGCommands);
+    [BWGCommandsHandler dismissBWGFlowWithCompletion:^() {
+      barrier.Run();
+    }];
   }
 }
 
