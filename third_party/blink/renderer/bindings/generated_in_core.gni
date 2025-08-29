@@ -1026,6 +1026,8 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_font_face_set.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_font_face_set_load_event.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_font_face_set_load_event.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_form_control_range.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_form_control_range.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_form_data.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_form_data.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_form_data_event.cc",

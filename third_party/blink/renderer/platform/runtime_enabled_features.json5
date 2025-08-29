@@ -2484,6 +2484,7 @@
       // crbug.com/421421332
       // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/FormControlRange/explainer.md
       name: "FormControlRange",
+      status: "test",
     },
     {
       // TODO(crbug.com/1419161): Remove this feature after M113 has been stable
