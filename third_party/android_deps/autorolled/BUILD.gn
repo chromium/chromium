@@ -754,7 +754,7 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("org_checkerframework_checker_qual_java") {
-      jar_path = "autorolled/cipd/libs/org_checkerframework_checker_qual/checker-qual-3.49.5.jar"
+      jar_path = "autorolled/cipd/libs/org_checkerframework_checker_qual/checker-qual-3.50.0.jar"
       output_name = "org_checkerframework_checker_qual"
       supports_android = true
       requires_android = true
@@ -763,7 +763,7 @@ template("define_autorolled_targets") {
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("org_checkerframework_checker_util_java") {
-      jar_path = "autorolled/cipd/libs/org_checkerframework_checker_util/checker-util-3.49.5.jar"
+      jar_path = "autorolled/cipd/libs/org_checkerframework_checker_util/checker-util-3.50.0.jar"
       output_name = "org_checkerframework_checker_util"
       supports_android = true
       requires_android = true
