@@ -12,6 +12,22 @@
 
 namespace actor {
 
+// The result of each action with latency information.
+struct ActionResultWithLatencyInfo {
+  base::TimeTicks start_time;
+  base::TimeTicks end_time;
+  mojom::ActionResultPtr result;
+
+  ActionResultWithLatencyInfo(base::TimeTicks start_time,
+                              base::TimeTicks end_time,
+                              mojom::ActionResultPtr result);
+  ActionResultWithLatencyInfo(ActionResultWithLatencyInfo&&);
+  ActionResultWithLatencyInfo(const ActionResultWithLatencyInfo&);
+  ActionResultWithLatencyInfo& operator=(const ActionResultWithLatencyInfo&) =
+      delete;
+  ~ActionResultWithLatencyInfo();
+};
+
 bool IsOk(const mojom::ActionResult& result);
 
 bool IsOk(mojom::ActionResultCode code);

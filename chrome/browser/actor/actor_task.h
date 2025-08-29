@@ -32,14 +32,15 @@ class ExecutionEngine;
 namespace ui {
 class UiEventDispatcher;
 }
+struct ActionResultWithLatencyInfo;
 
 // Represents a task that Chrome is executing on behalf of the user.
 class ActorTask {
  public:
-  using ActCallback = base::OnceCallback<void(
-      mojom::ActionResultPtr,
-      std::optional<size_t>,
-      std::vector<optimization_guide::proto::ScriptToolResult>)>;
+  using ActCallback =
+      base::OnceCallback<void(mojom::ActionResultPtr,
+                              std::optional<size_t>,
+                              std::vector<ActionResultWithLatencyInfo>)>;
 
   ActorTask() = delete;
   ActorTask(Profile* profile,
@@ -137,8 +138,7 @@ class ActorTask {
   void OnFinishedAct(ActCallback callback,
                      mojom::ActionResultPtr result,
                      std::optional<size_t> index_of_failed_action,
-                     std::vector<optimization_guide::proto::ScriptToolResult>
-                         script_tool_results);
+                     std::vector<ActionResultWithLatencyInfo> action_results);
   void OnTabWillDetach(tabs::TabInterface* tab,
                        tabs::TabInterface::DetachReason reason);
 

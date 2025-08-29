@@ -400,6 +400,11 @@ struct ActionResult {
   // If the action is a script tool, provides the result of that execution. This
   // is only populated if the execution was successful.
   string? script_tool_response;
+
+  // Time at which execution of the action was complete and page
+  // stabilization was started. This field may not be available if the action's
+  // execution did not fully complete.
+  mojo_base.mojom.TimeTicks? execution_end_time;
 };
 
 // The type of the journal entry.

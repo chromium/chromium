@@ -70,14 +70,13 @@ void PostTaskForActCallback(
     ActorTask::ActCallback callback,
     mojom::ActionResultPtr result,
     std::optional<size_t> index_of_failed_action,
-    std::vector<optimization_guide::proto::ScriptToolResult>
-        script_tool_results) {
+    std::vector<ActionResultWithLatencyInfo> action_results) {
   UMA_HISTOGRAM_ENUMERATION("Actor.ExecutionEngine.Action.ResultCode",
                             result->code);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), std::move(result),
-                     index_of_failed_action, std::move(script_tool_results)));
+                     index_of_failed_action, std::move(action_results)));
 }
 
 }  // namespace
@@ -336,6 +335,7 @@ void ExecutionEngine::ExecuteNextAction() {
   CHECK(tool_controller_);
 
   ++next_action_index_;
+  action_start_time_ = base::TimeTicks::Now();
 
   SetState(State::kToolCreateAndVerify);
   tool_controller_->CreateToolAndValidate(
@@ -376,17 +376,16 @@ void ExecutionEngine::FinishedToolInvoke(mojom::ActionResultPtr result) {
                     InProgressActionIndex());
     return;
   }
+
   if (!IsOk(*result)) {
+    action_results_.emplace_back(action_start_time_, base::TimeTicks::Now(),
+                                 result->Clone());
     CompleteActions(std::move(result), InProgressActionIndex());
     return;
   }
 
-  if (result->script_tool_response) {
-    auto& script_tool_result = script_tool_results_.emplace_back();
-    script_tool_result.set_index_of_script_tool_action(InProgressActionIndex());
-    script_tool_result.set_result(*result->script_tool_response);
-  }
-
+  action_results_.emplace_back(action_start_time_, base::TimeTicks::Now(),
+                               std::move(result));
   SetState(State::kUiPostInvoke);
   ui_event_dispatcher_->OnPostTool(
       GetInProgressAction(),
@@ -428,7 +427,7 @@ void ExecutionEngine::CompleteActions(mojom::ActionResultPtr result,
 
   // TODO(crbug.com/411462297): Populate observation.
   PostTaskForActCallback(std::move(act_callback_), std::move(result),
-                         action_index, std::move(script_tool_results_));
+                         action_index, std::move(action_results_));
 
   action_sequence_.clear();
   next_action_index_ = 0;

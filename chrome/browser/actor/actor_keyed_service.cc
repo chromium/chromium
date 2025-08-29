@@ -266,8 +266,7 @@ void ActorKeyedService::ConvertToBrowserActionResult(
     int32_t tab_id,
     const GURL& url,
     actor::mojom::ActionResultPtr action_result,
-    std::vector<optimization_guide::proto::ScriptToolResult>
-        script_tool_results,
+    std::vector<ActionResultWithLatencyInfo> action_results,
     base::expected<
         std::unique_ptr<page_content_annotations::FetchPageContextResult>,
         std::string> context_result) {
@@ -290,7 +289,7 @@ void ActorKeyedService::ConvertToBrowserActionResult(
 
   CopyScriptToolResults(*fetch_result.annotated_page_content_result->proto
                              .mutable_main_frame_data(),
-                        script_tool_results);
+                        action_results);
 
   browser_action_result.mutable_annotated_page_content()->Swap(
       &fetch_result.annotated_page_content_result->proto);
@@ -311,8 +310,7 @@ void ActorKeyedService::OnActionFinished(
     TaskId task_id,
     actor::mojom::ActionResultPtr action_result,
     std::optional<size_t> index_of_failed_action,
-    std::vector<optimization_guide::proto::ScriptToolResult>
-        script_tool_results) {
+    std::vector<ActionResultWithLatencyInfo> action_results) {
   auto* task = GetTask(actor::TaskId(task_id));
   CHECK(task);
   tabs::TabInterface* tab = task->GetTabForObservation();
@@ -329,20 +327,20 @@ void ActorKeyedService::OnActionFinished(
       base::BindOnce(&ActorKeyedService::ConvertToBrowserActionResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      task_id, tab_id, tab->GetContents()->GetLastCommittedURL(),
-                     std::move(action_result), std::move(script_tool_results)));
+                     std::move(action_result), std::move(action_results)));
 }
 
 void ActorKeyedService::PerformActions(
     TaskId task_id,
     std::vector<std::unique_ptr<ToolRequest>>&& actions,
     PerformActionsCallback callback) {
-  const std::vector<optimization_guide::proto::ScriptToolResult> empty_results;
+  std::vector<ActionResultWithLatencyInfo> empty_results;
   auto* task = GetTask(task_id);
   if (!task) {
     VLOG(1) << "PerformActions failed: Task not found.";
     RunLater(base::BindOnce(std::move(callback),
                             mojom::ActionResultCode::kTaskWentAway,
-                            std::nullopt, empty_results));
+                            std::nullopt, std::move(empty_results)));
     return;
   }
 
@@ -350,7 +348,7 @@ void ActorKeyedService::PerformActions(
     VLOG(1) << "PerformActions failed: No actions provided.";
     RunLater(base::BindOnce(std::move(callback),
                             mojom::ActionResultCode::kEmptyActionSequence,
-                            std::nullopt, empty_results));
+                            std::nullopt, std::move(empty_results)));
     return;
   }
 
@@ -364,13 +362,11 @@ void ActorKeyedService::OnActionsFinished(
     PerformActionsCallback callback,
     mojom::ActionResultPtr result,
     std::optional<size_t> index_of_failed_action,
-    std::vector<optimization_guide::proto::ScriptToolResult>
-        script_tool_results) {
+    std::vector<ActionResultWithLatencyInfo> action_results) {
   // If the result if Ok then we must not have a failed action.
   CHECK(!IsOk(*result) || !index_of_failed_action);
   RunLater(base::BindOnce(std::move(callback), result->code,
-                          index_of_failed_action,
-                          std::move(script_tool_results)));
+                          index_of_failed_action, std::move(action_results)));
 }
 
 void ActorKeyedService::StopTask(TaskId task_id, bool success) {

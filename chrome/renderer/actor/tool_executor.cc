@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
@@ -160,6 +161,7 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
 void ToolExecutor::ToolFinished(int32_t task_id,
                                 mojom::ActionResultPtr result) {
   execute_journal_entry_.reset();
+  result->execution_end_time = base::TimeTicks::Now();
   page_stability_monitor_->WaitForStable(
       *tool_, task_id, *journal_,
       base::BindOnce(&ToolExecutor::PageStabilized,

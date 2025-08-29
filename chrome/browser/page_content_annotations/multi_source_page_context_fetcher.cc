@@ -374,6 +374,10 @@ class PageContextFetcher : public content::WebContentsObserver {
       base::UmaHistogramTimes(
           "Glic.PageContextFetcher.GetEncodedScreenshot.Failure", elapsed);
     }
+    if (pending_result_->screenshot_result.has_value()) {
+      pending_result_->screenshot_result.value().end_time =
+          base::TimeTicks::Now();
+    }
     RunCallbackIfComplete();
   }
 
@@ -400,7 +404,10 @@ class PageContextFetcher : public content::WebContentsObserver {
 
   void ReceivedAnnotatedPageContent(
       std::optional<optimization_guide::AIPageContentResult> content) {
-    pending_result_->annotated_page_content_result = std::move(content);
+    if (content.has_value()) {
+      pending_result_->annotated_page_content_result.emplace(
+          std::move(*content));
+    }
     annotated_page_content_done_ = true;
     base::UmaHistogramTimes("Glic.PageContextFetcher.GetAnnotatedPageContent",
                             elapsed_timer_.Elapsed());
@@ -569,6 +576,11 @@ InnerTextResultWithTruncation::InnerTextResultWithTruncation(
       truncated(truncated) {}
 
 InnerTextResultWithTruncation::~InnerTextResultWithTruncation() = default;
+
+PageContentResultWithEndTime::PageContentResultWithEndTime(
+    optimization_guide::AIPageContentResult&& result)
+    : optimization_guide::AIPageContentResult(std::move(result)),
+      end_time(base::TimeTicks::Now()) {}
 
 void FetchPageContext(content::WebContents& web_contents,
                       const FetchPageContextOptions& options,

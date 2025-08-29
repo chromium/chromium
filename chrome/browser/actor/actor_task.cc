@@ -139,15 +139,14 @@ void ActorTask::OnFinishedAct(
     ActCallback callback,
     mojom::ActionResultPtr result,
     std::optional<size_t> index_of_failed_action,
-    std::vector<optimization_guide::proto::ScriptToolResult>
-        script_tool_results) {
+    std::vector<ActionResultWithLatencyInfo> action_results) {
   if (state_ != State::kActing) {
     std::move(callback).Run(MakeErrorResult(), std::nullopt, {});
     return;
   }
   SetState(State::kReflecting);
   std::move(callback).Run(std::move(result), std::nullopt,
-                          std::move(script_tool_results));
+                          std::move(action_results));
 }
 
 void ActorTask::Stop(bool success) {

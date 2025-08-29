@@ -45,12 +45,12 @@ class ExperimentalActorStartTaskFunction : public ExperimentalActorApiFunction {
   ~ExperimentalActorStartTaskFunction() override;
   ResponseAction Run() override;
   void OnTaskStarted(actor::TaskId task_id, int32_t tab_id);
-  void OnTabCreated(base::WeakPtr<Browser> browser,
-                    actor::TaskId task_id,
-                    actor::mojom::ActionResultCode result_code,
-                    std::optional<size_t> index_of_failed_action,
-                    std::vector<optimization_guide::proto::ScriptToolResult>
-                        script_tool_results);
+  void OnTabCreated(
+      base::WeakPtr<Browser> browser,
+      actor::TaskId task_id,
+      actor::mojom::ActionResultCode result_code,
+      std::optional<size_t> index_of_failed_action,
+      std::vector<actor::ActionResultWithLatencyInfo> action_results);
 
   DECLARE_EXTENSION_FUNCTION("experimentalActor.startTask",
                              EXPERIMENTALACTOR_STARTTASK)
@@ -125,10 +125,10 @@ class ExperimentalActorPerformActionsFunction
   ResponseAction Run() override;
   void OnActionsFinished(
       actor::TaskId task_id,
+      base::TimeTicks start_time,
       actor::mojom::ActionResultCode result_code,
       std::optional<size_t> index_of_failed_action,
-      std::vector<optimization_guide::proto::ScriptToolResult>
-          script_tool_results);
+      std::vector<actor::ActionResultWithLatencyInfo> action_results);
   void OnObservationResult(
       std::unique_ptr<optimization_guide::proto::ActionsResult> response,
       std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>

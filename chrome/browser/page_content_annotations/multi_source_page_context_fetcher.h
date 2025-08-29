@@ -45,6 +45,7 @@ struct ScreenshotResult {
   ~ScreenshotResult();
   std::vector<uint8_t> jpeg_data;
   gfx::Size dimensions;
+  base::TimeTicks end_time;
 };
 
 struct InnerTextResultWithTruncation
@@ -56,14 +57,20 @@ struct InnerTextResultWithTruncation
   bool truncated = false;
 };
 
+struct PageContentResultWithEndTime
+    : public optimization_guide::AIPageContentResult {
+  explicit PageContentResultWithEndTime(
+      optimization_guide::AIPageContentResult&& result);
+  base::TimeTicks end_time;
+};
+
 struct FetchPageContextResult {
   FetchPageContextResult();
   ~FetchPageContextResult();
   base::expected<ScreenshotResult, std::string> screenshot_result;
   std::optional<InnerTextResultWithTruncation> inner_text_result;
   std::optional<PdfResult> pdf_result;
-  std::optional<optimization_guide::AIPageContentResult>
-      annotated_page_content_result;
+  std::optional<PageContentResultWithEndTime> annotated_page_content_result;
 };
 
 enum class FetchPageContextError {

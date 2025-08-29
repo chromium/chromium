@@ -27,13 +27,13 @@ class BrowserWindowInterface;
 class Profile;
 class ProfileManager;
 
+namespace actor {
+struct ActionResultWithLatencyInfo;
+}  // namespace actor
+
 namespace contextual_cueing {
 class ContextualCueingService;
 }  // namespace contextual_cueing
-
-namespace optimization_guide::proto {
-class ScriptToolResult;
-}  // namespace optimization_guide::proto
 
 namespace signin {
 class IdentityManager;
@@ -237,10 +237,10 @@ class GlicKeyedService : public KeyedService {
   void PerformActionsFinished(
       mojom::WebClientHandler::PerformActionsCallback callback,
       actor::TaskId task_id,
+      base::TimeTicks start_time,
       actor::mojom::ActionResultCode result_code,
       std::optional<size_t> index_of_failed_action,
-      std::vector<optimization_guide::proto::ScriptToolResult>
-          script_tool_results);
+      std::vector<actor::ActionResultWithLatencyInfo> action_results);
 
   // List of callbacks to be notified when the client requests a change to the
   // context access indicator status.

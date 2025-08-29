@@ -609,14 +609,18 @@ void FillInTabObservation(
 
 namespace {
 
-void FetchCallback(base::WeakPtr<Profile> profile,
-                   TaskId task_id,
-                   base::RepeatingClosure barrier,
-                   apc::TabObservation* tab_observation,
-                   std::vector<optimization_guide::proto::ScriptToolResult>
-                       script_tool_results,
-                   ActorKeyedService::TabObservationResult result) {
+void FetchCallback(
+    base::WeakPtr<Profile> profile,
+    TaskId task_id,
+    base::RepeatingClosure barrier,
+    apc::TabObservation* tab_observation,
+    std::vector<actor::ActionResultWithLatencyInfo> action_results,
+    base::TimeTicks start_time,
+    base::TimeTicks fetch_context_time,
+    apc::ActionsResult_LatencyInformation* latency_info,
+    ActorKeyedService::TabObservationResult result) {
   CHECK(tab_observation);
+  CHECK(latency_info);
   base::ScopedClosureRunner run_barrier_at_return(barrier);
 
   if (!profile) {
@@ -639,11 +643,35 @@ void FetchCallback(base::WeakPtr<Profile> profile,
   CHECK(fetch_result.screenshot_result.has_value());
   CHECK(fetch_result.annotated_page_content_result.has_value());
 
+  {
+    apc::ActionsResult_LatencyInformation_LatencyStep* latency_step =
+        latency_info->add_latency_steps();
+    latency_step->mutable_annotated_page_content()->set_id(
+        tab_observation->id());
+    latency_step->set_latency_start_ms(
+        (fetch_context_time - start_time).InMilliseconds());
+    latency_step->set_latency_stop_ms(
+        (fetch_result.annotated_page_content_result.value().end_time -
+         start_time)
+            .InMilliseconds());
+  }
+
+  {
+    apc::ActionsResult_LatencyInformation_LatencyStep* latency_step =
+        latency_info->add_latency_steps();
+    latency_step->mutable_screenshot()->set_id(tab_observation->id());
+    latency_step->set_latency_start_ms(
+        (fetch_context_time - start_time).InMilliseconds());
+    latency_step->set_latency_stop_ms(
+        (fetch_result.screenshot_result.value().end_time - start_time)
+            .InMilliseconds());
+  }
+
   // TODO(khushalsagar): Remove this once consumers use ActionResults for script
   // tool results.
   CopyScriptToolResults(*fetch_result.annotated_page_content_result->proto
                              .mutable_main_frame_data(),
-                        script_tool_results);
+                        action_results);
 
   FillInTabObservation(fetch_result, *tab_observation);
 }
@@ -652,10 +680,10 @@ void FetchCallback(base::WeakPtr<Profile> profile,
 
 void BuildActionsResultWithObservations(
     content::BrowserContext& browser_context,
+    base::TimeTicks actions_start_time,
     mojom::ActionResultCode result_code,
     std::optional<size_t> index_of_failed_action,
-    std::vector<optimization_guide::proto::ScriptToolResult>
-        script_tool_results,
+    std::vector<actor::ActionResultWithLatencyInfo> action_results,
     const ActorTask& task,
     base::OnceCallback<
         void(std::unique_ptr<apc::ActionsResult>,
@@ -676,7 +704,34 @@ void BuildActionsResultWithObservations(
   if (index_of_failed_action) {
     response->set_index_of_failed_action(*index_of_failed_action);
   }
-  CopyScriptToolResults(*response, script_tool_results);
+  CopyScriptToolResults(*response, action_results);
+
+  apc::ActionsResult_LatencyInformation* latency_info =
+      response->mutable_latency_information();
+  for (size_t i = 0; i < action_results.size(); ++i) {
+    auto& action_result = action_results.at(i);
+    CHECK(action_result.result->execution_end_time);
+    {
+      apc::ActionsResult_LatencyInformation_LatencyStep* latency_step =
+          latency_info->add_latency_steps();
+      latency_step->mutable_action()->set_action_index(i);
+      latency_step->set_latency_start_ms(
+          (action_result.start_time - actions_start_time).InMilliseconds());
+      latency_step->set_latency_stop_ms(
+          (*action_result.result->execution_end_time - actions_start_time)
+              .InMilliseconds());
+    }
+    {
+      apc::ActionsResult_LatencyInformation_LatencyStep* latency_step =
+          latency_info->add_latency_steps();
+      latency_step->mutable_page_stabilization()->set_action_index(i);
+      latency_step->set_latency_start_ms(
+          (*action_result.result->execution_end_time - actions_start_time)
+              .InMilliseconds());
+      latency_step->set_latency_stop_ms(
+          (action_result.end_time - actions_start_time).InMilliseconds());
+    }
+  }
 
   std::vector<Browser*> browsers = chrome::FindAllTabbedBrowsersWithProfile(
       profile, /*ignore_closing_browsers=*/true);
@@ -735,7 +790,9 @@ void BuildActionsResultWithObservations(
     actor_service->RequestTabObservation(
         *tab, task.id(),
         base::BindOnce(FetchCallback, profile->GetWeakPtr(), task.id(), barrier,
-                       base::Unretained(tab_observation), script_tool_results));
+                       base::Unretained(tab_observation), action_results,
+                       actions_start_time, base::TimeTicks::Now(),
+                       base::Unretained(latency_info)));
   }
 }
 

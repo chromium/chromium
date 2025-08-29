@@ -18,6 +18,7 @@
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/common/actor.mojom-forward.h"
+#include "chrome/common/actor/action_result.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
@@ -46,14 +47,14 @@ auto UiEventDispatcherCallback(
   };
 }
 
-using ActResultFuture = base::test::TestFuture<
-    mojom::ActionResultPtr,
-    std::optional<size_t>,
-    std::vector<optimization_guide::proto::ScriptToolResult>>;
-using PerformActionsFuture = base::test::TestFuture<
-    mojom::ActionResultCode,
-    std::optional<size_t>,
-    std::vector<optimization_guide::proto::ScriptToolResult>>;
+using ActResultFuture =
+    base::test::TestFuture<mojom::ActionResultPtr,
+                           std::optional<size_t>,
+                           std::vector<ActionResultWithLatencyInfo>>;
+using PerformActionsFuture =
+    base::test::TestFuture<mojom::ActionResultCode,
+                           std::optional<size_t>,
+                           std::vector<ActionResultWithLatencyInfo>>;
 
 /////////////////////////
 // Proto action makers

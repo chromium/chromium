@@ -385,10 +385,10 @@ void GlicKeyedService::CreateTask(
 void GlicKeyedService::PerformActionsFinished(
     mojom::WebClientHandler::PerformActionsCallback callback,
     actor::TaskId task_id,
+    base::TimeTicks start_time,
     actor::mojom::ActionResultCode result_code,
     std::optional<size_t> index_of_failed_action,
-    std::vector<optimization_guide::proto::ScriptToolResult>
-        script_tool_results) {
+    std::vector<actor::ActionResultWithLatencyInfo> action_results) {
   actor::ActorTask* task =
       actor::ActorKeyedService::Get(profile_)->GetTask(task_id);
 
@@ -410,13 +410,14 @@ void GlicKeyedService::PerformActionsFinished(
       std::move(callback));
 
   actor::BuildActionsResultWithObservations(
-      *profile_, result_code, index_of_failed_action,
-      std::move(script_tool_results), *task, std::move(result_callback));
+      *profile_, start_time, result_code, index_of_failed_action,
+      std::move(action_results), *task, std::move(result_callback));
 }
 
 void GlicKeyedService::PerformActions(
     const std::vector<uint8_t>& actions_proto,
     mojom::WebClientHandler::PerformActionsCallback callback) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
   // TODO(bokan): Refactor the actor code in this class into an actor-specific
   // wrapper for proto-to-actor conversion.
   optimization_guide::proto::Actions actions;
@@ -468,7 +469,7 @@ void GlicKeyedService::PerformActions(
   actor_service->PerformActions(
       task_id, std::move(requests.value()),
       base::BindOnce(&GlicKeyedService::PerformActionsFinished, GetWeakPtr(),
-                     std::move(callback), task_id));
+                     std::move(callback), task_id, start_time));
 }
 
 void GlicKeyedService::StopActorTask(actor::TaskId task_id,

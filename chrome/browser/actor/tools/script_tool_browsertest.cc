@@ -49,10 +49,11 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, Basic) {
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
-  const auto& script_tool_results = result.Get<2>();
-  ASSERT_EQ(script_tool_results.size(), 1u);
-  EXPECT_EQ(script_tool_results.at(0).index_of_script_tool_action(), 0);
-  EXPECT_EQ(script_tool_results.at(0).result(), "This is an example sentence.");
+  const auto& action_results = result.Get<2>();
+  ASSERT_EQ(action_results.size(), 1u);
+  ASSERT_TRUE(action_results.at(0).result->script_tool_response);
+  EXPECT_EQ(*action_results.at(0).result->script_tool_response,
+            "This is an example sentence.");
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, BadToolName) {

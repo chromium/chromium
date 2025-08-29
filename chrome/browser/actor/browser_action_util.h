@@ -11,6 +11,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/common/actor.mojom-forward.h"
+#include "chrome/common/actor/action_result.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
@@ -71,10 +72,10 @@ BuildToolRequestResult BuildToolRequest(
 // tabs relevant to the actions.
 void BuildActionsResultWithObservations(
     content::BrowserContext& browser_context,
+    base::TimeTicks start_time,
     mojom::ActionResultCode result_code,
     std::optional<size_t> index_of_failed_action,
-    std::vector<optimization_guide::proto::ScriptToolResult>
-        script_tool_results,
+    std::vector<actor::ActionResultWithLatencyInfo> action_results,
     const ActorTask& task,
     base::OnceCallback<
         void(std::unique_ptr<optimization_guide::proto::ActionsResult>,
@@ -108,14 +109,18 @@ optimization_guide::proto::BrowserActionResult BuildBrowserActionResult(
     mojom::ActionResultCode result_code,
     int32_t tab_id);
 
-// Copies `script_tool_results` to the input proto.
+// Copies script tool results in `action_results` to the input proto.
 template <typename T>
 void CopyScriptToolResults(
     T& proto,
-    const std::vector<optimization_guide::proto::ScriptToolResult>&
-        script_tool_results) {
-  for (const auto& result : script_tool_results) {
-    *proto.add_script_tool_results() = result;
+    const std::vector<ActionResultWithLatencyInfo>& action_results) {
+  for (size_t i = 0; i < action_results.size(); ++i) {
+    if (action_results[i].result->script_tool_response) {
+      auto* script_tool_result = proto.add_script_tool_results();
+      script_tool_result->set_index_of_script_tool_action(i);
+      script_tool_result->set_result(
+          *action_results[i].result->script_tool_response);
+    }
   }
 }
 

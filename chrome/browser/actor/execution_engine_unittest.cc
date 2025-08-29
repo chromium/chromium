@@ -454,6 +454,25 @@ TEST_F(ExecutionEngineTest, CancelledHistogram) {
   histograms_.ExpectBucketCount(kActorTaskCountCancelledHistogram, 2, 1);
 }
 
+TEST_F(ExecutionEngineTest, LatencyInfo) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://localhost/"));
+
+  ActResultFuture result;
+
+  FakeChromeRenderFrame fake_chrome_render_frame;
+  fake_chrome_render_frame.OverrideBinder(main_rfh());
+
+  std::unique_ptr<ToolRequest> action =
+      MakeClickCallback(kFakeContentNodeId).Run();
+  task_->Act(ToRequestList(action), result.GetCallback());
+
+  auto& actions_result = result.Get<2>();
+  EXPECT_EQ(actions_result.size(), 1u);
+  EXPECT_NE(actions_result[0].start_time, base::TimeTicks());
+  EXPECT_NE(actions_result[0].end_time, base::TimeTicks());
+}
+
 class ExecutionEngineOriginGatingTest : public ExecutionEngineTest {
  public:
   void SetUp() override {

@@ -190,6 +190,12 @@ void ToolController::Invoke(ResultCallback result_callback) {
 
 void ToolController::DidFinishToolInvoke(mojom::ActionResultPtr result) {
   CHECK(active_state_);
+
+  // Renderers will mark end of execution time.
+  if (!result->execution_end_time) {
+    result->execution_end_time = base::TimeTicks::Now();
+  }
+
   if (observation_delayer_ && IsOk(*result)) {
     observation_delayer_->Wait(
         *active_state_->journal_entry,
