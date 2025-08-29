@@ -210,6 +210,7 @@
 #include "chrome/browser/sync/account_bookmark_sync_service_factory.h"
 #include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/browser/sync/local_or_syncable_bookmark_sync_service_factory.h"
+#include "chrome/browser/sync/prefs/cross_device_pref_tracker_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
@@ -833,6 +834,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   contextual_cueing::ContextualCueingServiceFactory::GetInstance();
 #endif
   CookieSettingsFactory::GetInstance();
+  CrossDevicePrefTrackerFactory::GetInstance();
   DataTypeStoreServiceFactory::GetInstance();
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
   data_controls::ChromeRulesServiceFactory::GetInstance();

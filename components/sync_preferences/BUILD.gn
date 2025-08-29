@@ -4,6 +4,14 @@
 
 import("//build/config/features.gni")
 
+source_set("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("cross_device_pref_tracker") {
   sources = [
     "cross_device_pref_tracker.cc",

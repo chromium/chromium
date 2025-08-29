@@ -603,6 +603,12 @@ const char kEnableBookmarksSelectedTypeOnSigninForTestingDescription[] =
     "sync-enable-bookmarks-in-transport-mode. Enables the bookmarks "
     "UserSelectableType upon sign-in";
 
+const char kEnableCrossDevicePrefTrackerName[] =
+    "Enable Cross-Device Pref Tracker";
+const char kEnableCrossDevicePrefTrackerDescription[] =
+    "Enables the tracking and sharing of select non-syncing preference values "
+    "across a user's signed-in devices.";
+
 const char kPreinstalledWebAppAlwaysMigrateCalculatorName[] =
     "Preinstalled web app always migrate - Calculator";
 const char kPreinstalledWebAppAlwaysMigrateCalculatorDescription[] =

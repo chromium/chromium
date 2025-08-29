@@ -8709,6 +8709,7 @@ from previous Chrome versions.
   <int value="-1999617045" label="PDFAnnotations:disabled"/>
   <int value="-1998927516" label="enable-md-settings"/>
   <int value="-1998811299" label="VcSegmentationInferenceBackend:enabled"/>
+  <int value="-1998724434" label="EnableCrossDevicePrefTracker:disabled"/>
   <int value="-1996887988" label="WaylandLinuxDrmSyncobj:disabled"/>
   <int value="-1996592771" label="FedCmAccountAutoSelectedFlag:enabled"/>
   <int value="-1996233283"
@@ -13557,6 +13558,7 @@ from previous Chrome versions.
   <int value="-242441279" label="SafetyCheckUnusedSitePermissions:enabled"/>
   <int value="-242431978" label="StartSurfaceRefactor:enabled"/>
   <int value="-241353344" label="MidiManagerWinrt:disabled"/>
+  <int value="-241273075" label="EnableCrossDevicePrefTracker:enabled"/>
   <int value="-241065111" label="BackForwardTransitions:disabled"/>
   <int value="-241061180" label="NotificationImageDrag:enabled"/>
   <int value="-240531943" label="ContextualSearchRankerQuery:disabled"/>

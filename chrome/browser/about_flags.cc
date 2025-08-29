@@ -181,6 +181,7 @@
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/features.h"
+#include "components/sync_preferences/features.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/browser/translate_ranker_impl.h"
@@ -13271,6 +13272,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidAnimatedProgressBarInBrowser)},
 #endif  // BUILDFLAG(IS_ANDROID)
+
+    {"enable-cross-device-pref-tracker",
+     flag_descriptions::kEnableCrossDevicePrefTrackerName,
+     flag_descriptions::kEnableCrossDevicePrefTrackerDescription, kOsAll,
+     FEATURE_VALUE_TYPE(
+         sync_preferences::features::kEnableCrossDevicePrefTracker)},
 
     // Add new entries above this line.
 

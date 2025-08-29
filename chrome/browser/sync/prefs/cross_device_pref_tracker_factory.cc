@@ -1,0 +1,51 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/sync/prefs/cross_device_pref_tracker_factory.h"
+
+#include "base/feature_list.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/device_info_sync_service_factory.h"
+#include "components/sync_preferences/cross_device_pref_tracker_impl.h"
+#include "components/sync_preferences/features.h"
+
+CrossDevicePrefTrackerFactory::CrossDevicePrefTrackerFactory()
+    : ProfileKeyedServiceFactory(
+          "CrossDevicePrefTracker",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              .WithAshInternals(ProfileSelection::kNone)
+              .Build()) {
+  DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
+}
+
+CrossDevicePrefTrackerFactory::~CrossDevicePrefTrackerFactory() = default;
+
+// static
+sync_preferences::CrossDevicePrefTracker*
+CrossDevicePrefTrackerFactory::GetForProfile(Profile* profile) {
+  return static_cast<sync_preferences::CrossDevicePrefTracker*>(
+      GetInstance()->GetServiceForBrowserContext(profile, true));
+}
+
+// static
+CrossDevicePrefTrackerFactory* CrossDevicePrefTrackerFactory::GetInstance() {
+  static base::NoDestructor<CrossDevicePrefTrackerFactory> instance;
+  return instance.get();
+}
+
+std::unique_ptr<KeyedService>
+CrossDevicePrefTrackerFactory::BuildServiceInstanceForBrowserContext(
+    content::BrowserContext* context) const {
+  if (!base::FeatureList::IsEnabled(
+          sync_preferences::features::kEnableCrossDevicePrefTracker)) {
+    return nullptr;
+  }
+
+  Profile* profile = Profile::FromBrowserContext(context);
+  return std::make_unique<sync_preferences::CrossDevicePrefTrackerImpl>(
+      profile->GetPrefs(), g_browser_process->local_state(),
+      DeviceInfoSyncServiceFactory::GetForProfile(profile));
+}

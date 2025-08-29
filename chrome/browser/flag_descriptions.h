@@ -370,6 +370,9 @@ extern const char kEnableBenchmarkingChoiceMatchFieldTrialTestingConfig[];
 extern const char kEnableBookmarksSelectedTypeOnSigninForTestingName[];
 extern const char kEnableBookmarksSelectedTypeOnSigninForTestingDescription[];
 
+extern const char kEnableCrossDevicePrefTrackerName[];
+extern const char kEnableCrossDevicePrefTrackerDescription[];
+
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kEnableDevtoolsDeepLinkViaExtensibilityApiName[];
 extern const char kEnableDevtoolsDeepLinkViaExtensibilityApiDescription[];
