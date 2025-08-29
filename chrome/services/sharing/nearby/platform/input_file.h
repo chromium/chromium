@@ -6,6 +6,7 @@
 #define CHROME_SERVICES_SHARING_NEARBY_PLATFORM_INPUT_FILE_H_
 
 #include "base/files/file.h"
+#include "third_party/abseil-cpp/absl/time/time.h"
 #include "third_party/nearby/src/internal/platform/implementation/input_file.h"
 
 namespace nearby::chrome {
@@ -22,6 +23,7 @@ class InputFile : public api::InputFile {
   // api::InputFile:
   std::string GetFilePath() const override;
   std::int64_t GetTotalSize() const override;
+  absl::Time GetLastModifiedTime() const override;
   ExceptionOr<ByteArray> Read(std::int64_t size) override;
   Exception Close() override;
 

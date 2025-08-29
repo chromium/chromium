@@ -1516,7 +1516,6 @@ TEST_F(NearbyConnectionsTest, ReceiveFilePayload) {
   OutputFile core_output_file(kPayloadId);
   EXPECT_TRUE(
       core_output_file.Write(ByteArrayFromMojom(expected_payload)).Ok());
-  EXPECT_TRUE(core_output_file.Flush().Ok());
   EXPECT_TRUE(core_output_file.Close().Ok());
 
   base::RunLoop payload_run_loop;
@@ -1584,7 +1583,6 @@ TEST_F(NearbyConnectionsTest, ReceiveFilePayloadNotRegistered) {
   OutputFile core_output_file(kPayloadId);
   EXPECT_TRUE(core_output_file.Write(ByteArrayFromMojom(expected_payload))
                   .Raised(Exception::kIo));
-  EXPECT_TRUE(core_output_file.Flush().Raised(Exception::kIo));
   EXPECT_TRUE(core_output_file.Close().Raised(Exception::kIo));
 }
 
@@ -1982,7 +1980,6 @@ TEST_F(NearbyConnectionsTest, OnPayloadReceivedV3ReceiveFilePayload) {
   OutputFile core_output_file(kPayloadId);
   EXPECT_TRUE(
       core_output_file.Write(ByteArrayFromMojom(expected_payload)).Ok());
-  EXPECT_TRUE(core_output_file.Flush().Ok());
   EXPECT_TRUE(core_output_file.Close().Ok());
 
   base::RunLoop on_payload_received_run_loop;
