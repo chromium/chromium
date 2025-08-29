@@ -91,6 +91,11 @@ class JniDelegateImpl : public AudioManagerAndroid::JniDelegate {
                                                 j_audio_manager_);
   }
 
+  void InitScoStateListener() override {
+    Java_AudioManagerAndroid_initScoStateListener(AttachCurrentThread(),
+                                                  j_audio_manager_);
+  }
+
   std::vector<JniAudioDevice> GetDevices(bool inputs) override {
     ScopedJavaLocalRef<jobjectArray> j_devices =
         Java_AudioManagerAndroid_getDevices(AttachCurrentThread(),
@@ -750,13 +755,9 @@ AudioOutputStream* AudioManagerAndroid::MakeLowLatencyOutputStream(
     if (device->GetAssociatedScoDevice().has_value()) {
       // Use a specialized stream implementation to handle "combined" A2DP/SCO
       // devices.
-
-      // TODO(crbug.com/405955144): Set `use_sco_device` based on the SCO state
-      // as reported by the system in order to handle SCO management by other
-      // apps.
       auto* stream = new AAudioBluetoothOutputStream(
           *this, params, std::move(device).value(),
-          /*use_sco_device=*/!input_streams_requiring_sco_.empty(), usage,
+          /*use_sco_device=*/is_bluetooth_sco_enabled_, usage,
           peak_detected_cb);
       bluetooth_output_streams_.insert(stream);
       return stream;
@@ -897,15 +898,6 @@ void AudioManagerAndroid::OnStartAAudioInputStream(AAudioInputStream* stream) {
 
   // SCO can safely be re-enabled even if it is already on.
   GetJniDelegate().MaybeSetBluetoothScoState(true);
-
-  // TODO(crbug.com/405955144): Call this in response to an appropriate system
-  // broadcast instead, in order to correctly react to SCO state changes caused
-  // by other apps.
-  DVLOG(1) << "Calling SetUseSco(true) for " << bluetooth_output_streams_.size()
-           << " Bluetooth streams";
-  for (auto bluetooth_output_stream : bluetooth_output_streams_) {
-    bluetooth_output_stream->SetUseSco(true);
-  }
 }
 
 void AudioManagerAndroid::OnStopAAudioInputStream(AAudioInputStream* stream) {
@@ -922,21 +914,19 @@ void AudioManagerAndroid::OnStopAAudioInputStream(AAudioInputStream* stream) {
   }
 
   GetJniDelegate().MaybeSetBluetoothScoState(false);
-
-  // TODO(crbug.com/405955144): Call this in response to an appropriate system
-  // broadcast instead, in order to correctly react to SCO state changes caused
-  // by other apps.
-  DVLOG(1) << "Calling SetUseSco(false) for "
-           << bluetooth_output_streams_.size() << " Bluetooth streams";
-  for (auto bluetooth_output_stream : bluetooth_output_streams_) {
-    bluetooth_output_stream->SetUseSco(false);
-  }
 }
 
 void AudioManagerAndroid::SetMute(JNIEnv* env, jboolean muted) {
   GetTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&AudioManagerAndroid::DoSetMuteOnAudioThread,
                                 base::Unretained(this), muted));
+}
+
+void AudioManagerAndroid::OnScoStateChanged(JNIEnv* env, jboolean state) {
+  GetTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AudioManagerAndroid::OnScoStateChangedOnAudioThread,
+                     base::Unretained(this), state));
 }
 
 void AudioManagerAndroid::SetOutputVolumeOverride(double volume) {
@@ -976,8 +966,7 @@ AudioParameters AudioManagerAndroid::GetPreferredOutputStreamParameters(
                              .value_or(AudioDevice::Default());
 
     // Use the device's associated SCO device when applicable
-    bool sco_enabled = !input_streams_requiring_sco_.empty();
-    if (sco_enabled) {
+    if (is_bluetooth_sco_enabled_) {
       std::optional<AudioDevice> associated_sco_device =
           device.GetAssociatedScoDevice();
       if (associated_sco_device.has_value()) {
@@ -1053,10 +1042,16 @@ AudioManagerAndroid::JniDelegate& AudioManagerAndroid::GetJniDelegate() {
     // devices and register receivers for device notifications.
     jni_delegate_ = std::make_unique<JniDelegateImpl>(this);
 
-    // This feature is checked for on the native side in order to avoid build
-    // dependency conflicts when using the Java ChromeFeatureList.
+    // These features are checked for on the native side in order to avoid build
+    // dependency conflicts when using the Java `ChromeFeatureList`.
     if (base::FeatureList::IsEnabled(features::kAndroidAudioDeviceListener)) {
       jni_delegate_->InitDeviceListener();
+    }
+    if (base::FeatureList::IsEnabled(
+            features::kAAudioPerStreamDeviceSelection)) {
+      // Listen for SCO state changes to forward them to
+      // `AAudioBluetoothOutputStream`s.
+      jni_delegate_->InitScoStateListener();
     }
   }
   return *jni_delegate_;
@@ -1147,6 +1142,24 @@ void AudioManagerAndroid::DoSetVolumeOnAudioThread(double volume) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   for (auto stream : output_streams_) {
     stream->SetVolume(volume);
+  }
+}
+
+void AudioManagerAndroid::OnScoStateChangedOnAudioThread(bool state) {
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+
+  DCHECK_NE(is_bluetooth_sco_enabled_, state);
+  is_bluetooth_sco_enabled_ = state;
+
+  if (bluetooth_output_streams_.empty()) {
+    return;
+  }
+
+  DVLOG(1) << "Calling SetUseScoDevice(" << base::ToString(state) << ") for "
+           << bluetooth_output_streams_.size() << " Bluetooth streams";
+
+  for (auto stream : bluetooth_output_streams_) {
+    stream->SetUseSco(state);
   }
 }
 

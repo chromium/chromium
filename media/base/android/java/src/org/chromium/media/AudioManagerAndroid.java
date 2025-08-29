@@ -133,6 +133,8 @@ class AudioManagerAndroid {
 
     private @Nullable AudioDeviceListener mDeviceListener;
 
+    private @Nullable ScoStateListener mScoStateListener;
+
     private final CommunicationDeviceSelector mCommunicationDeviceSelector;
 
     /** Construction */
@@ -180,6 +182,7 @@ class AudioManagerAndroid {
         }
 
         mCommunicationDeviceSelector.init();
+
         mIsInitialized = true;
     }
 
@@ -191,6 +194,20 @@ class AudioManagerAndroid {
     private void initDeviceListener() {
         mDeviceListener =
                 new AudioDeviceListener(() -> AudioManagerAndroidJni.get().onDevicesChanged());
+    }
+
+    /**
+     * Initializes the SCO state listener, which listens for changes to the SCO state reported by
+     * the OS.
+     */
+    @CalledByNative
+    private void initScoStateListener() {
+        mScoStateListener =
+                new ScoStateListener(
+                        state -> {
+                            AudioManagerAndroidJni.get()
+                                    .onScoStateChanged(mNativeAudioManagerAndroid, state);
+                        });
     }
 
     /**
@@ -207,6 +224,10 @@ class AudioManagerAndroid {
 
         if (mDeviceListener != null) {
             mDeviceListener.destroy();
+        }
+
+        if (mScoStateListener != null) {
+            mScoStateListener.destroy();
         }
 
         mCommunicationDeviceSelector.close();
@@ -759,5 +780,7 @@ class AudioManagerAndroid {
         void onDevicesChanged();
 
         void setMute(long nativeAudioManagerAndroid, boolean muted);
+
+        void onScoStateChanged(long nativeAudioManagerAndroid, boolean state);
     }
 }

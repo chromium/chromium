@@ -56,6 +56,10 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
     // audio devices exposed by the OS.
     virtual void InitDeviceListener() = 0;
 
+    // Initializes the SCO state listener, which listens for changes to the SCO
+    // state reported by the OS.
+    virtual void InitScoStateListener() = 0;
+
     // Returns metadata about the available audio devices as reported by the
     // Android framework, filtered to input devices if `inputs` is true, and to
     // output devices otherwise.
@@ -150,6 +154,10 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
 
   void SetMute(JNIEnv* env, jboolean muted);
 
+  // Called by the Java `AudioManagerAndroid` when the Bluetooth SCO state
+  // changes. Note that this is called on the main thread.
+  void OnScoStateChanged(JNIEnv* env, jboolean state);
+
   // Sets a volume that applies to all this manager's output audio streams.
   // This overrides other SetVolume calls (e.g. through AudioHostMsg_SetVolume).
   // TODO(https://crbug.com/422733084): this functionality is likely unused.
@@ -232,8 +240,14 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
 
   void DoSetMuteOnAudioThread(bool muted);
   void DoSetVolumeOnAudioThread(double volume);
+  void OnScoStateChangedOnAudioThread(bool state);
 
   std::unique_ptr<JniDelegate> jni_delegate_;
+
+  // The current system-wide SCO state. If the actual initial SCO state is
+  // `true`, an SCO state change callback will immediately update the value, so
+  // it can initially be assumed to be `false` here.
+  bool is_bluetooth_sco_enabled_ = false;
 
   // Most recently fetched device data. See `GetDeviceCache` for more details.
   DeviceCache input_device_cache_;

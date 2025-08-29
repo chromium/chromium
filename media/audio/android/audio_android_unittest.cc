@@ -175,6 +175,7 @@ class MockJniDelegate : public JniDelegate {
   ~MockJniDelegate() override = default;
 
   MOCK_METHOD(void, InitDeviceListener, (), (override));
+  MOCK_METHOD(void, InitScoStateListener, (), (override));
   MOCK_METHOD(std::vector<JniAudioDevice>, GetDevices, (bool), (override));
   MOCK_METHOD(std::optional<std::vector<JniAudioDevice>>,
               GetCommunicationDevices,
@@ -557,25 +558,14 @@ class AudioAndroidOutputTest : public testing::TestWithParam<AudioApi> {
 
   // Synchronously runs the provided callback/closure on the audio thread.
   void RunOnAudioThread(base::OnceClosure closure) {
-    if (!audio_manager()->GetTaskRunner()->BelongsToCurrentThread()) {
-      base::WaitableEvent event(
-          base::WaitableEvent::ResetPolicy::AUTOMATIC,
-          base::WaitableEvent::InitialState::NOT_SIGNALED);
-      audio_manager()->GetTaskRunner()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&AudioAndroidOutputTest::RunOnAudioThreadImpl,
-                         base::Unretained(this), std::move(closure), &event));
-      event.Wait();
-    } else {
-      std::move(closure).Run();
-    }
-  }
+    audio_manager_->GetTaskRunner()->PostTask(FROM_HERE, std::move(closure));
 
-  void RunOnAudioThreadImpl(base::OnceClosure closure,
-                            base::WaitableEvent* event) {
-    DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
-    std::move(closure).Run();
-    event->Signal();
+    // Block on a newly posted dummy task in order to wait for the completion of
+    // the `closure` task and any nested tasks it may have created.
+    base::RunLoop run_loop;
+    audio_manager()->GetTaskRunner()->PostTaskAndReply(
+        FROM_HERE, base::DoNothing(), run_loop.QuitClosure());
+    run_loop.Run();
   }
 
   AudioParameters GetDefaultOutputStreamParametersOnAudioThread() {
@@ -601,6 +591,12 @@ class AudioAndroidOutputTest : public testing::TestWithParam<AudioApi> {
         &AudioDeviceInfoAccessorForTests::GetAudioOutputDeviceDescriptions,
         base::Unretained(audio_manager_device_info()), &devices));
     return devices;
+  }
+
+  void SetScoStateOnAudioThread(bool state) {
+    RunOnAudioThread(base::BindOnce(&AudioManagerAndroid::OnScoStateChanged,
+                                    base::Unretained(audio_manager()),
+                                    /*env=*/nullptr, state));
   }
 
   void MakeAudioOutputStreamOnAudioThread(
@@ -1008,11 +1004,8 @@ TEST_F(AudioAndroidOutputTest, GetOutputStreamParametersForDevice) {
 
 // Get the audio output parameters for a combined Bluetooth device. This test is
 // only relevant for AAudioWithPerStreamDeviceSelection.
-//
-// TODO(crbug.com/405955144): Re-enable this test once SCO checks can be mocked
-// via `MockJniDelegate`.
 TEST_F(AudioAndroidOutputTest,
-       DISABLED_GetOutputStreamParametersForCombinedBluetoothDevice) {
+       GetOutputStreamParametersForCombinedBluetoothDevice) {
   InitFeatures(AudioApi::AAudioWithPerStreamDeviceSelection);
   if (IsSkipped()) {
     return;
@@ -1028,35 +1021,31 @@ TEST_F(AudioAndroidOutputTest,
            /*type=*/kAudioDeviceTypeIntBluetoothSco,
            /*sample_rates=*/{20000}},
       }));
-  EXPECT_CALL(jni_delegate, GetDevices(/*inputs=*/true))
-      .WillOnce(Return(
-          std::vector<JniAudioDevice>{{/*id=*/30, /*name=*/"In SCO",
-                                       /*type=*/kAudioDeviceTypeIntBluetoothSco,
-                                       /*sample_rates=*/{}}}));
   EXPECT_CALL(jni_delegate, IsAudioLowLatencySupported())
       .WillRepeatedly(Return(true));
   EXPECT_CALL(jni_delegate, GetAudioLowLatencyOutputFramesPerBuffer())
       .WillRepeatedly(Return(64));
+  EXPECT_CALL(jni_delegate, GetMinOutputFramesPerBuffer(_, _))
+      .WillRepeatedly(Return(64));
   EXPECT_CALL(jni_delegate, GetHdmiOutputEncodingFormats())
       .WillRepeatedly(Return(static_cast<AudioParameters::Format>(0)));
-  EXPECT_CALL(jni_delegate, MaybeSetBluetoothScoState(_))
-      .WillRepeatedly(Return());
 
   // Ensure device metadata is fetched and cached.
   GetAudioOutputDeviceDescriptionsOnAudioThread();
 
   AudioParameters params;
 
-  params = GetOutputStreamParametersOnAudioThread("10");
-  EXPECT_TRUE(params.IsValid()) << params.AsHumanReadableString();
-  EXPECT_EQ(params.sample_rate(), 10000);
-
-  // TODO(crbug.com/405955144): Mock-enable SCO here once it is possible to do
-  // so.
-
+  // Enable SCO and check that the SCO device parameters are returned
+  SetScoStateOnAudioThread(true);
   params = GetOutputStreamParametersOnAudioThread("10");
   EXPECT_TRUE(params.IsValid()) << params.AsHumanReadableString();
   EXPECT_EQ(params.sample_rate(), 20000);
+
+  // Disable SCO and check that the A2DP device parameters are returned
+  SetScoStateOnAudioThread(false);
+  params = GetOutputStreamParametersOnAudioThread("10");
+  EXPECT_TRUE(params.IsValid()) << params.AsHumanReadableString();
+  EXPECT_EQ(params.sample_rate(), 10000);
 }
 
 // Verify input device enumeration when using communication devices.
