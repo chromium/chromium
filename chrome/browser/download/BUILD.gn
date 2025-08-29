@@ -2,42 +2,32 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/safe_browsing/buildflags.gni")
+
 source_set("download") {
-  public = [
+  sources = [
     "download_item_warning_data.h",
     "download_prompt_status.h",
     "download_stats.h",
     "download_ui_model.h",
   ]
-
-  sources = [
-    "download_item_warning_data.cc",
-    "download_stats.cc",
-  ]
-
   public_deps = [
+    ":status_text_builder_utils",
     "//base",
     "//components/download/public/common:public",
     "//components/offline_items_collection/core",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/content/common/proto:download_file_types_proto",
     "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/strings",
     "//ui/base",
     "//ui/color:color_headers",
     "//ui/gfx",
-  ]
-
-  deps = [
-    ":status_text_builder_utils",
-    "//chrome/browser/profiles:profile",
-    "//components/profile_metrics",
-    "//components/safe_browsing/content/browser/download:download_stats",
-    "//components/strings",
     "//url",
   ]
 
   if (!is_android) {
-    public += [ "download_commands.h" ]
+    sources += [ "download_commands.h" ]
   }
 }
 
@@ -46,7 +36,7 @@ source_set("status_text_builder_utils") {
 
   sources = [ "status_text_builder_utils.cc" ]
 
-  deps = [
+  public_deps = [
     "//base",
     "//chrome/app:generated_resources",
     "//ui/base",
