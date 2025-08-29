@@ -1813,10 +1813,9 @@ class PKIMetadataComponentChromeRootStoreUpdateWithStaleDoHServerTest
   }
 };
 
-// TODO(crbug.com/414630735): debug the failures and re-enable
 IN_PROC_BROWSER_TEST_F(
     PKIMetadataComponentChromeRootStoreUpdateWithStaleDoHServerTest,
-    DISABLED_TrustAnchorIDsRetry) {
+    TrustAnchorIDsRetry) {
   // Install CRS update that contains two trusted Trust Anchor IDs, including
   // one that is advertised by the server corresponding to its intermediate
   // certificate, and one that is advertised by the server but not actually used
@@ -1880,9 +1879,14 @@ IN_PROC_BROWSER_TEST_F(
   // the test hit the expected result. After the connection is successful
   // another entry may be recorded for the favicon fetch, but it should record
   // kDnsSuccessInitial since it will use TLS session resumption.
-  histogram_tester.ExpectBucketCount(
-      "Net.SSL.TrustAnchorIDsResult",
-      net::SSLClientSocket::TrustAnchorIDsResult::kDnsSuccessRetry, 1);
+  //
+  // Sometimes (on builds where browser_tests isn't using
+  // fieldtrial_testing_config), the browser makes two connections. So just
+  // check that the bucket has been logged at least once.
+  EXPECT_GE(histogram_tester.GetBucketCount(
+                "Net.SSL.TrustAnchorIDsResult",
+                net::SSLClientSocket::TrustAnchorIDsResult::kDnsSuccessRetry),
+            1);
 
   // TODO(crbug.com/427778127): when Trust Anchor ID netlogs are added, check
   // them here.
