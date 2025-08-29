@@ -466,6 +466,8 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kXSLProcessingInstruction,
           WebFeature::kXSLTProcessor,
           WebFeature::kXMLExternalResourceLoad,
+          WebFeature::kProofreader_Create,
+          WebFeature::kProofreader_Proofread,
           // NOTE: before adding new use counters here, verify in UMA that their
           // emissions are very rare, e.g. <1% of page loads.
       }));
