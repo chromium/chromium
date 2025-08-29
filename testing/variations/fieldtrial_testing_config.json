@@ -15954,6 +15954,15 @@
                     "enable_features": [
                         "NewContentForCheckerboardedScrolls"
                     ]
+                },
+                {
+                    "name": "per_frame",
+                    "params": {
+                        "mode": "per_frame"
+                    },
+                    "enable_features": [
+                        "NewContentForCheckerboardedScrolls"
+                    ]
                 }
             ]
         }
