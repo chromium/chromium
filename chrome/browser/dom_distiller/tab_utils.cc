@@ -49,11 +49,12 @@ using dom_distiller::ViewerHandle;
 using dom_distiller::ViewRequestDelegate;
 
 // An no-op ViewRequestDelegate which holds a ViewerHandle and deletes itself
-// after the WebContents navigates or goes away. This class is a band-aid to
-// keep a TaskTracker around until the distillation starts from the viewer. An
-// optional callback can be provided which will be called when the article
-// content is ready. The callback will be invoked with false if the object is
-// destroyed before the callback is invoked.
+// if the WebContents navigates or goes away as well as if the distillation
+// finishes. This class is a band-aid to keep a TaskTracker around until the
+// distillation fininishes, and makes it to the cache. An optional callback can
+// be provided which will be called when the article content is ready. The
+// callback will be invoked with false if the object is destroyed before the
+//callback is invoked.
 class SelfDeletingRequestDelegate : public ViewRequestDelegate,
                                     public content::WebContentsObserver {
  public:
@@ -84,6 +85,7 @@ class SelfDeletingRequestDelegate : public ViewRequestDelegate,
   std::unique_ptr<ViewerHandle> viewer_handle_;
   std::optional<base::OnceCallback<void(bool)>> callback_;
   base::Time start_time_;
+  bool deleting_ = false;
 };
 
 SelfDeletingRequestDelegate::SelfDeletingRequestDelegate(
@@ -96,8 +98,14 @@ SelfDeletingRequestDelegate::SelfDeletingRequestDelegate(
 SelfDeletingRequestDelegate::~SelfDeletingRequestDelegate() = default;
 
 void SelfDeletingRequestDelegate::DeleteSelf() {
+  if (deleting_) {
+    return;
+  }
+  deleting_ = true;
+
   // Ensure the callback is executed if the delegate is deleted before the
-  // aricle distillation finishes (e.g. the user navigates away).
+  // article distillation finishes (e.g. the user navigates away). The callback
+  // is a OnceCallback, so if it has already been run, this will do nothing.
   if (callback_ && !callback_->is_null()) {
     std::move(callback_.value()).Run(false);
   }
@@ -115,8 +123,9 @@ void SelfDeletingRequestDelegate::OnArticleReady(
                        !article_proto->pages(0).html().empty();
     bool success = article_proto != nullptr && has_title && has_content;
     std::move(callback_.value()).Run(success);
-    DeleteSelf();
   }
+  // Now that the work is done, always schedule for deletion.
+  DeleteSelf();
 }
 
 void SelfDeletingRequestDelegate::OnArticleUpdated(
@@ -208,15 +217,14 @@ void DistillCurrentPageAndViewIfSuccessful(
           web_contents,
           base::BindOnce(
               [](base::OnceCallback<void(bool)> callback,
-                 content::WebContents* web_contents,
-                 SelfDeletingRequestDelegate* delegate, bool success) {
+                 content::WebContents* web_contents, bool success) {
                 std::move(callback).Run(success);
                 if (success) {
                   StartNavigationToDistillerViewer(
                       web_contents, web_contents->GetLastCommittedURL());
                 }
               },
-              std::move(callback), web_contents, view_request_delegate));
+              std::move(callback), web_contents));
 
   std::unique_ptr<SourcePageHandleWebContents> source_page_handle(
       new SourcePageHandleWebContents(web_contents, false));
