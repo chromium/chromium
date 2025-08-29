@@ -409,17 +409,6 @@ class EventRouter : public KeyedService,
   void ObserveProcess(content::RenderProcessHost* process);
   content::RenderProcessHost* GetRenderProcessHostForCurrentReceiver();
 
-  // Gets off-the-record browser context if
-  //     - The extension has incognito mode set to "split"
-  //     - The on-the-record browser context has an off-the-record context
-  //       attached
-  content::BrowserContext* GetIncognitoContextIfAccessible(
-      const ExtensionId& extension_id);
-
-  // Returns the off-the-record context for the BrowserContext associated
-  // with this EventRouter, if any.
-  content::BrowserContext* GetIncognitoContext();
-
   // Adds an extension as an event listener for `event_name`.
   //
   // Note that multiple extensions can share a process due to process
