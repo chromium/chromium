@@ -4,12 +4,14 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/home_customization/ui/background_collection_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_cell.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_cell.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_collection_configurator.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_framing_coordinates.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_mutator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_search_engine_logo_mediator_provider.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_toggle_cell.h"
@@ -312,17 +314,41 @@
   id<BackgroundCustomizationConfiguration> backgroundConfiguration =
       _backgroundCollectionConfiguration.configurations[itemIdentifier];
 
-  // TODO(crbug.com/438568944): Display user-uploaded background images as well.
-  if (backgroundConfiguration &&
-      !backgroundConfiguration.thumbnailURL.is_empty()) {
+  if (!backgroundConfiguration) {
+    return;
+  }
+
+  HomeCustomizationBackgroundCell* backgroundCell =
+      base::apple::ObjCCast<HomeCustomizationBackgroundCell>(cell);
+
+  if (!cell) {
+    return;
+  }
+
+  if (backgroundConfiguration.backgroundStyle ==
+      HomeCustomizationBackgroundStyle::kPreset) {
     [self.mutator
         fetchBackgroundCustomizationThumbnailURLImage:backgroundConfiguration
                                                           .thumbnailURL
                                            completion:^(UIImage* image) {
-                                             [(HomeCustomizationBackgroundCell*)
-                                                     cell
-                                                 updateBackgroundImage:image];
+                                             [backgroundCell
+                                                 updateBackgroundImage:image
+                                                    framingCoordinates:nil];
                                            }];
+  } else if (backgroundConfiguration.backgroundStyle ==
+             HomeCustomizationBackgroundStyle::kUserUploaded) {
+    HomeCustomizationFramingCoordinates* framingCoordinates =
+        backgroundConfiguration.userUploadedFramingCoordinates;
+    __weak __typeof(self) weakSelf = self;
+    void (^imageHandler)(UIImage*) = ^(UIImage* image) {
+      [weakSelf handleLoadedUserUploadedImage:image
+                           framingCoordinates:framingCoordinates
+                               backgroundCell:backgroundCell];
+    };
+    [self.mutator
+        fetchBackgroundCustomizationUserUploadedImage:backgroundConfiguration
+                                                          .userUploadedImagePath
+                                           completion:imageHandler];
   }
 }
 
@@ -452,4 +478,47 @@
       removeObject:identifier];
   [self.diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
+
+// Handles a loaded user-uploaded image, including optimizations for displaying
+// large images in the small menu thumbnails.
+//
+// TODO(crbug.com/441181385): Improve optimization logic. Some possible options:
+// - Cache prepared image so scrolling the carousel doesn't take time to re-load
+// image.
+// - pre-crop larger images, possibly to a square around the framing
+// coordinates, as highly zoomed in images look even worse when made into a low
+// resolution thumbnail.
+// - pick thumbnail sized based on a combination of view size and frame size.
+- (void)handleLoadedUserUploadedImage:(UIImage*)image
+                   framingCoordinates:
+                       (HomeCustomizationFramingCoordinates*)framingCoordinates
+                       backgroundCell:
+                           (HomeCustomizationBackgroundCell*)backgroundCell {
+  // This thumnail size gives a good balance between quality and responsiveness.
+  CGFloat thumbnailDimension =
+      3 * MAX(self.view.bounds.size.width, self.view.bounds.size.height);
+  CGSize thumbnailSize = CGSize(thumbnailDimension, thumbnailDimension);
+  CGFloat originalImageHeight = image.size.height;
+
+  void (^thumbnailHandler)(UIImage*) = ^(UIImage* preparedImage) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      // Scale the framing coordinates down to the size of the prepared image.
+      CGFloat scale = preparedImage.size.height / originalImageHeight;
+      CGRect visibleRect = framingCoordinates.visibleRect;
+      CGRect scaledVisibleRect = CGRectMake(
+          visibleRect.origin.x * scale, visibleRect.origin.y * scale,
+          visibleRect.size.width * scale, visibleRect.size.height * scale);
+      HomeCustomizationFramingCoordinates* newFramingCoordinates =
+          [[HomeCustomizationFramingCoordinates alloc]
+              initWithVisibleRect:scaledVisibleRect];
+
+      [backgroundCell updateBackgroundImage:preparedImage
+                         framingCoordinates:newFramingCoordinates];
+    });
+  };
+
+  [image prepareThumbnailOfSize:thumbnailSize
+              completionHandler:thumbnailHandler];
+}
+
 @end

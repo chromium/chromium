@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_cell.h"
 
 #import "ios/chrome/browser/home_customization/ui/background_customization_configuration.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_image_view.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_mutator.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/mediator/search_engine_logo_mediator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
@@ -94,7 +95,7 @@ const CGFloat kAlphaValueWhenImageBackround = 0.6;
   id<BackgroundCustomizationConfiguration> _backgroundConfiguration;
 
   // The background image of the cell.
-  UIImageView* _backgroundImageView;
+  HomeCustomizationImageView* _backgroundImageView;
 
   // Search Engine Logo Mediator controlling the Logo display.
   SearchEngineLogoMediator* _searchEngineLogoMediator;
@@ -133,9 +134,7 @@ const CGFloat kAlphaValueWhenImageBackround = 0.6;
     self.innerContentView.axis = UILayoutConstraintAxisVertical;
 
     // Adds the empty background image.
-    _backgroundImageView = [[UIImageView alloc] init];
-    _backgroundImageView.contentMode = UIViewContentModeScaleAspectFill;
-    _backgroundImageView.clipsToBounds = YES;
+    _backgroundImageView = [[HomeCustomizationImageView alloc] init];
     _backgroundImageView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.innerContentView addSubview:_backgroundImageView];
     AddSameConstraints(_backgroundImageView, self.innerContentView);
@@ -177,6 +176,8 @@ const CGFloat kAlphaValueWhenImageBackround = 0.6;
   [traitAccessor
       setBoolForNewTabPageImageBackgroundTrait:[NewTabPageImageBackgroundTrait
                                                    defaultValue]];
+
+  [_backgroundImageView setImage:nil framingCoordinates:nil];
 }
 
 - (void)setupContentView:(UIStackView*)contentView {
@@ -248,8 +249,10 @@ const CGFloat kAlphaValueWhenImageBackround = 0.6;
   [self applyTheme];
 }
 
-- (void)updateBackgroundImage:(UIImage*)image {
-  [_backgroundImageView setImage:image];
+- (void)updateBackgroundImage:(UIImage*)image
+           framingCoordinates:
+               (HomeCustomizationFramingCoordinates*)framingCoordinates {
+  [_backgroundImageView setImage:image framingCoordinates:framingCoordinates];
 }
 
 #pragma mark - Setters

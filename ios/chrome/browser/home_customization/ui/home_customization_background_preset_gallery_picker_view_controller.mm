@@ -248,8 +248,8 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
                                                      forItemAtIndexPath:
                                                          indexPath];
                                              } else {
-                                               [cell
-                                                   updateBackgroundImage:image];
+                                               [cell updateBackgroundImage:image
+                                                        framingCoordinates:nil];
                                              }
                                            }];
   }

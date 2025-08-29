@@ -8,10 +8,10 @@
 #import <UIKit/UIKit.h>
 
 @protocol BackgroundCustomizationConfiguration;
+@class HomeCustomizationFramingCoordinates;
 @protocol HomeCustomizationMutator;
-@class SearchEngineLogoMediator;
-
 @class NewTabPageColorPalette;
+@class SearchEngineLogoMediator;
 
 // Represents a mini preview of how the NTP will look with a particular
 // background selected. This cell is part of the background customization
@@ -38,8 +38,12 @@
              searchEngineLogoMediator:
                  (SearchEngineLogoMediator*)searchEngineLogoMediator;
 
-// Updates the background image displayed behind the cell’s content.
-- (void)updateBackgroundImage:(UIImage*)image;
+// Updates the background image displayed behind the cell’s content, using the
+// provided framing coordinates to choose a sub-portion of the image to make
+// visible.
+- (void)updateBackgroundImage:(UIImage*)image
+           framingCoordinates:
+               (HomeCustomizationFramingCoordinates*)framingCoordinates;
 
 // Applies the current theme.
 - (void)applyTheme;

@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_delegate.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_mediator.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
+#import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager_factory.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_color_picker_view_controller.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_presentation_delegate.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_discover_view_controller.h"
@@ -99,6 +100,8 @@ CGFloat const kSheetCornerRadius = 30;
   image_fetcher::ImageFetcherService* imageFetcherService =
       ImageFetcherServiceFactory::GetForProfile(self.profile);
   _activeSearchEngineLogoMediator = [NSMutableDictionary dictionary];
+  UserUploadedImageManager* userUploadedImageManager =
+      UserUploadedImageManagerFactory::GetForProfile(self.profile);
 
   _mediator = [[HomeCustomizationMediator alloc]
                      initWithPrefService:self.profile->GetPrefs()
@@ -107,7 +110,8 @@ CGFloat const kSheetCornerRadius = 30;
                        backgroundService:
                            HomeBackgroundCustomizationServiceFactory::
                                GetForProfile(self.profile)
-                     imageFetcherService:imageFetcherService];
+                     imageFetcherService:imageFetcherService
+                userUploadedImageManager:userUploadedImageManager];
   _mediator.navigationDelegate = self;
 
   // The Customization menu consists of a stack of presenting view controllers.
