@@ -263,8 +263,10 @@ Browser* LaunchWebAppBrowserAndWait(Profile* profile,
           app_id));
   Browser* const app_browser =
       LaunchWebAppBrowser(profile, app_id, disposition);
-  url_observer.Wait();
-  content::WaitForLoadStop(url_observer.web_contents());
+  if (app_browser) {
+    url_observer.Wait();
+    content::WaitForLoadStop(url_observer.web_contents());
+  }
   return app_browser;
 }
 
