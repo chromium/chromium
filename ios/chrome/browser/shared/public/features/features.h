@@ -1094,4 +1094,9 @@ BASE_DECLARE_FEATURE(kIOSUseDefaultAppsDestinationForPromos);
 bool IsDefaultAppsDestinationAvailable();
 bool IsUseDefaultAppsDestinationForPromosEnabled();
 
+// Feature flag for a workaround on iOS26 to show edit menu items synchronously.
+// Enabled by default. Can be disabled if the bug is fixed on iOS 26.
+BASE_DECLARE_FEATURE(kSynchronousEditMenuItems);
+bool ShouldShowEditMenuItemsSynchronously();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

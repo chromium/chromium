@@ -1152,3 +1152,12 @@ bool IsDefaultAppsDestinationAvailable() {
 bool IsUseDefaultAppsDestinationForPromosEnabled() {
   return base::FeatureList::IsEnabled(kIOSUseDefaultAppsDestinationForPromos);
 }
+
+BASE_FEATURE(SynchronousEditMenuItems, base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool ShouldShowEditMenuItemsSynchronously() {
+  if (@available(iOS 26, *)) {
+    return base::FeatureList::IsEnabled(kSynchronousEditMenuItems);
+  }
+  return false;
+}
