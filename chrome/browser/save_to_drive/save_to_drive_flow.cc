@@ -4,12 +4,46 @@
 
 #include "chrome/browser/save_to_drive/save_to_drive_flow.h"
 
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+
+#include "base/byte_count.h"
+#include "base/check_is_test.h"
+#include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/save_to_drive/content_reader.h"
+#include "chrome/browser/save_to_drive/drive_uploader.h"
+#include "chrome/browser/save_to_drive/multipart_drive_uploader.h"
+#include "chrome/browser/save_to_drive/resumable_drive_uploader.h"
 #include "chrome/browser/save_to_drive/save_to_drive_event_dispatcher.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/common/extensions/api/pdf_viewer_private.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 
 namespace save_to_drive {
+namespace {
+
+using extensions::api::pdf_viewer_private::SaveToDriveErrorType;
+using extensions::api::pdf_viewer_private::SaveToDriveProgress;
+using extensions::api::pdf_viewer_private::SaveToDriveStatus;
+
+constexpr base::ByteCount kMultipartUploadThreshold = base::MiB(5);
+
+signin::IdentityManager* GetIdentityManagerFromRenderFrameHost(
+    content::RenderFrameHost* render_frame_host) {
+  auto* profile =
+      Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
+  return profile ? IdentityManagerFactory::GetForProfile(profile) : nullptr;
+}
+
+}  // namespace
 
 SaveToDriveFlow::SaveToDriveFlow(
     content::RenderFrameHost* render_frame_host,
@@ -17,17 +51,129 @@ SaveToDriveFlow::SaveToDriveFlow(
     std::unique_ptr<ContentReader> content_reader)
     : content::DocumentUserData<SaveToDriveFlow>(render_frame_host),
       event_dispatcher_(std::move(event_dispatcher)),
-      content_reader_(std::move(content_reader)) {}
+      content_reader_(std::move(content_reader)) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+}
 
 SaveToDriveFlow::~SaveToDriveFlow() = default;
 
 void SaveToDriveFlow::Run() {
-  // TODO(crbug.com/424208776): Implement the flow.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  SaveToDriveProgress progress;
+  progress.status = SaveToDriveStatus::kInitiated;
+  progress.error_type = SaveToDriveErrorType::kNoError;
+  OnUploadProgress(std::move(progress));
+
+  ShowAccountChooser(base::BindOnce(&SaveToDriveFlow::OnAccountChosen,
+                                    weak_ptr_factory_.GetWeakPtr()));
+}
+
+void SaveToDriveFlow::ShowAccountChooser(AccountChooserCallback callback) {
+  if (account_info_for_testing_) {
+    CHECK_IS_TEST();
+    // Invoking the `callback` can cause the `SaveToDriveFlow` to be destroyed.
+    // Hence, reset the `account_info_for_testing_` before invoking the
+    // callback.
+    auto account_info = std::move(*account_info_for_testing_);
+    account_info_for_testing_.reset();
+    std::move(callback).Run(std::move(account_info));
+    return;
+  }
+  // TODO(crbug.com/434686397): Call the account chooser and get the selected
+  // account. For now, just use the primary account.
+  auto* identity_manager =
+      GetIdentityManagerFromRenderFrameHost(&render_frame_host());
+  if (!identity_manager ||
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  AccountInfo account_info =
+      identity_manager->FindExtendedAccountInfoByAccountId(
+          identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
+  std::move(callback).Run(std::move(account_info));
+}
+
+void SaveToDriveFlow::OnAccountChosen(std::optional<AccountInfo> account_info) {
+  if (!account_info) {
+    SaveToDriveProgress progress;
+    progress.status = SaveToDriveStatus::kUploadFailed;
+    progress.error_type = SaveToDriveErrorType::kAccountChooserCanceled;
+    OnUploadProgress(std::move(progress));
+    return;
+  }
+  auto open_content_callback = base::BindOnce(&SaveToDriveFlow::OnOpenContent,
+                                              weak_ptr_factory_.GetWeakPtr(),
+                                              std::move(account_info.value()));
+  content_reader_->Open(std::move(open_content_callback));
+}
+
+void SaveToDriveFlow::OnOpenContent(AccountInfo account_info, bool success) {
+  if (!success) {
+    SaveToDriveProgress progress;
+    progress.status = SaveToDriveStatus::kUploadFailed;
+    progress.error_type = SaveToDriveErrorType::kUnknownError;
+    OnUploadProgress(std::move(progress));
+    return;
+  }
+  auto* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
+  std::string title = base::UTF16ToUTF8(web_contents->GetTitle());
+
+  auto upload_progress_callback = base::BindRepeating(
+      &SaveToDriveFlow::OnUploadProgress, weak_ptr_factory_.GetWeakPtr());
+
+  if (base::ByteCount(content_reader_->GetSize()) < kMultipartUploadThreshold) {
+    drive_uploader_ = std::make_unique<MultipartDriveUploader>(
+        std::move(title), std::move(account_info),
+        std::move(upload_progress_callback));
+  } else {
+    drive_uploader_ = std::make_unique<ResumableDriveUploader>(
+        std::move(title), std::move(account_info),
+        std::move(upload_progress_callback));
+  }
+  drive_uploader_->Start();
+}
+
+void SaveToDriveFlow::OnUploadProgress(SaveToDriveProgress progress) {
+  bool should_stop = progress.status == SaveToDriveStatus::kUploadCompleted ||
+                     progress.status == SaveToDriveStatus::kUploadFailed;
+  event_dispatcher_->Notify(std::move(progress));
+  if (should_stop) {
+    Stop();
+  }
 }
 
 void SaveToDriveFlow::Stop() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DeleteForCurrentDocument(&render_frame_host());
   // Don't do anything else here. The flow will be destroyed after this line.
+}
+
+SaveToDriveFlow::TestApi::TestApi(SaveToDriveFlow* flow)
+    : flow_(flow->weak_ptr_factory_.GetWeakPtr()) {}
+
+SaveToDriveFlow::TestApi::~TestApi() = default;
+
+const ContentReader* SaveToDriveFlow::TestApi::content_reader() const {
+  return flow_ ? flow_->content_reader_.get() : nullptr;
+}
+
+const DriveUploader* SaveToDriveFlow::TestApi::drive_uploader() const {
+  return flow_ ? flow_->drive_uploader_.get() : nullptr;
+}
+
+const SaveToDriveEventDispatcher* SaveToDriveFlow::TestApi::event_dispatcher()
+    const {
+  return flow_ ? flow_->event_dispatcher_.get() : nullptr;
+}
+
+void SaveToDriveFlow::TestApi::SimulateAccountChooserAction(
+    std::optional<AccountInfo> account_info) {
+  if (flow_) {
+    flow_->account_info_for_testing_ =
+        std::make_unique<std::optional<AccountInfo>>(std::move(account_info));
+  }
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(SaveToDriveFlow);

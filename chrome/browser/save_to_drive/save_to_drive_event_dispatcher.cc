@@ -86,7 +86,7 @@ std::unique_ptr<SaveToDriveEventDispatcher> SaveToDriveEventDispatcher::Create(
 SaveToDriveEventDispatcher::~SaveToDriveEventDispatcher() = default;
 
 void SaveToDriveEventDispatcher::Notify(
-    extensions::api::pdf_viewer_private::SaveToDriveProgress progress) {
+    extensions::api::pdf_viewer_private::SaveToDriveProgress progress) const {
   CHECK_NE(progress.error_type,
            extensions::api::pdf_viewer_private::SaveToDriveErrorType::kNone);
   CHECK_NE(progress.status, SaveToDriveStatus::kNone);

@@ -9,13 +9,19 @@ assert(enable_pdf_save_to_drive)
 source_set("save_to_drive") {
   public = [
     "content_reader.h",
+    "drive_uploader.h",
+    "multipart_drive_uploader.h",
     "pdf_content_reader.h",
+    "resumable_drive_uploader.h",
     "save_to_drive_event_dispatcher.h",
     "save_to_drive_flow.h",
   ]
 
   sources = [
+    "drive_uploader.cc",
+    "multipart_drive_uploader.cc",
     "pdf_content_reader.cc",
+    "resumable_drive_uploader.cc",
     "save_to_drive_event_dispatcher.cc",
     "save_to_drive_flow.cc",
   ]
@@ -29,8 +35,7 @@ source_set("save_to_drive") {
     "//base",
     "//chrome/browser/download:status_text_builder_utils",
     "//chrome/browser/pdf",
-    "//chrome/browser/ui",
-    "//chrome/browser/ui/save_to_drive",
+    "//chrome/browser/signin",
     "//chrome/common/extensions",
     "//chrome/common/extensions/api",
     "//components/pdf/browser",
@@ -47,6 +52,23 @@ source_set("browser_tests") {
     "pdf_content_reader_browsertest.cc",
     "save_to_drive_event_dispatcher_browsertest.cc",
   ]
+  deps = [
+    ":save_to_drive",
+    "//chrome/browser/pdf:pdf_extension_test_utils",
+    "//chrome/common/extensions/api",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//extensions/browser:test_support",
+    "//pdf:features",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "save_to_drive_flow_unittest.cc" ]
   deps = [
     ":save_to_drive",
     "//chrome/browser/pdf:pdf_extension_test_utils",

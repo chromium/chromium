@@ -14,7 +14,6 @@
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/pdf/pdf_test_util.h"
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
-#include "chrome/browser/save_to_drive/save_to_drive_flow.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/pdf/common/constants.h"
 #include "content/public/browser/navigation_entry.h"
@@ -24,6 +23,13 @@
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "pdf/buildflags.h"
 #include "pdf/pdf_features.h"
+
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+#include "chrome/browser/save_to_drive/content_reader.h"
+#include "chrome/browser/save_to_drive/save_to_drive_event_dispatcher.h"
+#include "chrome/browser/save_to_drive/save_to_drive_flow.h"
+#include "extensions/browser/test_event_router.h"
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 
 namespace extensions {
 
@@ -53,6 +59,10 @@ class PdfViewerPrivateApiUnitTest : public ChromeRenderViewHostTestHarness {
 
     pdf::PdfViewerStreamManager::Create(web_contents());
 
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+    event_router_ = extensions::CreateAndUseTestEventRouter(browser_context());
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+
     // For testing purposes, `main_rfh()` represents the extension's
     // embedder's frame host, while `extension_host` represents the
     // extension's frame host. The embedder's frame host is the parent of the
@@ -64,6 +74,10 @@ class PdfViewerPrivateApiUnitTest : public ChromeRenderViewHostTestHarness {
 
   void TearDown() override {
     extension_host_ = nullptr;
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+    event_router_ = nullptr;
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+
     web_contents()->RemoveUserData(pdf::PdfViewerStreamManager::UserDataKey());
     ChromeRenderViewHostTestHarness::TearDown();
   }
@@ -100,6 +114,9 @@ class PdfViewerPrivateApiUnitTest : public ChromeRenderViewHostTestHarness {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+  raw_ptr<extensions::TestEventRouter> event_router_ = nullptr;
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
   raw_ptr<content::RenderFrameHost> extension_host_ = nullptr;
 };
 
@@ -335,11 +352,12 @@ TEST_F(PdfViewerPrivateApiUnitTest, SaveToDrive) {
 TEST_F(PdfViewerPrivateApiUnitTest, SaveToDriveFailedIfAlreadyInProgress) {
   CreateAndClaimStreamContainer();
   {
-    auto function = base::MakeRefCounted<PdfViewerPrivateSaveToDriveFunction>();
-    function->SetRenderFrameHost(extension_host());
-
-    EXPECT_TRUE(api_test_utils::RunFunction(function.get(), R"(["ORIGINAL"])",
-                                            profile()));
+    // Create a new flow to simulate the previous request is in progress.
+    save_to_drive::SaveToDriveFlow::CreateForCurrentDocument(extension_host(),
+                                                             nullptr, nullptr);
+    auto* flow =
+        save_to_drive::SaveToDriveFlow::GetForCurrentDocument(extension_host());
+    ASSERT_TRUE(flow);
   }
   {
     auto function = base::MakeRefCounted<PdfViewerPrivateSaveToDriveFunction>();
@@ -356,11 +374,9 @@ TEST_F(PdfViewerPrivateApiUnitTest, SaveToDriveFailedIfAlreadyInProgress) {
 TEST_F(PdfViewerPrivateApiUnitTest, SaveToDriveCanceledAndStartNew) {
   CreateAndClaimStreamContainer();
   {
-    auto function = base::MakeRefCounted<PdfViewerPrivateSaveToDriveFunction>();
-    function->SetRenderFrameHost(extension_host());
-
-    EXPECT_TRUE(api_test_utils::RunFunction(function.get(), R"(["ORIGINAL"])",
-                                            profile()));
+    // Create a new flow to simulate the previous request is canceled.
+    save_to_drive::SaveToDriveFlow::CreateForCurrentDocument(extension_host(),
+                                                             nullptr, nullptr);
     auto* flow =
         save_to_drive::SaveToDriveFlow::GetForCurrentDocument(extension_host());
     ASSERT_TRUE(flow);

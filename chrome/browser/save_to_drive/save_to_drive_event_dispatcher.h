@@ -29,17 +29,19 @@ class SaveToDriveEventDispatcher {
   static std::unique_ptr<SaveToDriveEventDispatcher> Create(
       content::RenderFrameHost* render_frame_host);
 
-  ~SaveToDriveEventDispatcher();
+  virtual ~SaveToDriveEventDispatcher();
 
   // Dispatches a save to drive progress event to the PDF viewer extension.
-  // `progress` must have a status and error type that is not none.
-  void Notify(
-      extensions::api::pdf_viewer_private::SaveToDriveProgress progress);
+  // `progress` must have a status and error type that is not none. The function
+  // is marked virtual for testing purposes.
+  virtual void Notify(
+      extensions::api::pdf_viewer_private::SaveToDriveProgress progress) const;
 
- private:
+ protected:
   SaveToDriveEventDispatcher(content::RenderFrameHost* render_frame_host,
                              const GURL& stream_url);
 
+ private:
   const raw_ptr<content::BrowserContext> browser_context_;
   // The stream URL of the PDF that is being saved to Drive.
   const GURL stream_url_;
