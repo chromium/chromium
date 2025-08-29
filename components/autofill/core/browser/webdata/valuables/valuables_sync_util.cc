@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/webdata/valuables/valuables_sync_util.h"
 
+#include "components/autofill/core/browser/webdata/autofill_ai/entity_sync_util.h"
 #include "components/sync/protocol/autofill_valuable_specifics.pb.h"
 #include "url/gurl.h"
 
@@ -46,11 +47,24 @@ std::unique_ptr<syncer::EntityData> CreateEntityDataFromLoyaltyCard(
       CreateSpecificsFromLoyaltyCard(loyalty_card);
   std::unique_ptr<syncer::EntityData> entity_data =
       std::make_unique<syncer::EntityData>();
-
   entity_data->name = card_specifics.id();
   AutofillValuableSpecifics* specifics =
       entity_data->specifics.mutable_autofill_valuable();
   specifics->CopyFrom(card_specifics);
+
+  return entity_data;
+}
+
+std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntityInstance(
+    EntityInstance entity) {
+  sync_pb::AutofillValuableSpecifics valuable_specifics =
+      CreateSpecificsFromEntityInstance(entity);
+  std::unique_ptr<syncer::EntityData> entity_data =
+      std::make_unique<syncer::EntityData>();
+  entity_data->name = valuable_specifics.id();
+  AutofillValuableSpecifics* specifics =
+      entity_data->specifics.mutable_autofill_valuable();
+  specifics->CopyFrom(valuable_specifics);
 
   return entity_data;
 }

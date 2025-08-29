@@ -4,7 +4,9 @@
 
 #include "components/autofill/core/browser/webdata/valuables/valuables_sync_util.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/types/zip.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_sync_test_utils.h"
 #include "components/sync/protocol/autofill_valuable_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
@@ -16,9 +18,7 @@ namespace {
 constexpr char kId1[] = "1";
 }  // namespace
 
-class LoyaltyCardSyncUtilTest : public testing::Test {};
-
-TEST_F(LoyaltyCardSyncUtilTest, CreateValuableSpecificsFromLoyaltyCard) {
+TEST(LoyaltyCardSyncUtilTest, CreateValuableSpecificsFromLoyaltyCard) {
   LoyaltyCard card = TestLoyaltyCard();
   sync_pb::AutofillValuableSpecifics specifics =
       CreateSpecificsFromLoyaltyCard(card);
@@ -37,7 +37,7 @@ TEST_F(LoyaltyCardSyncUtilTest, CreateValuableSpecificsFromLoyaltyCard) {
   }
 }
 
-TEST_F(LoyaltyCardSyncUtilTest, CreateEntityDataFromLoyaltyCard) {
+TEST(LoyaltyCardSyncUtilTest, CreateEntityDataFromLoyaltyCard) {
   LoyaltyCard card = TestLoyaltyCard();
   std::unique_ptr<syncer::EntityData> entity_data =
       CreateEntityDataFromLoyaltyCard(card);
@@ -61,16 +61,60 @@ TEST_F(LoyaltyCardSyncUtilTest, CreateEntityDataFromLoyaltyCard) {
   }
 }
 
-TEST_F(LoyaltyCardSyncUtilTest, CreateAutofillLoyaltyCardFromSpecifics) {
+TEST(LoyaltyCardSyncUtilTest, CreateAutofillLoyaltyCardFromSpecifics) {
   EXPECT_EQ(TestLoyaltyCard(), CreateAutofillLoyaltyCardFromSpecifics(
                                    TestLoyaltyCardSpecifics(kId1)));
 }
 
-TEST_F(LoyaltyCardSyncUtilTest, TrimAutofillValuableSpecificsDataForCaching) {
+TEST(LoyaltyCardSyncUtilTest, TrimAutofillValuableSpecificsDataForCaching) {
   EXPECT_EQ(TrimAutofillValuableSpecificsDataForCaching(
                 TestLoyaltyCardSpecifics(kId1))
                 .ByteSizeLong(),
             0u);
+}
+
+TEST(EntityInstanceSyncUtilTest, CreateEntityDataFromEntityInstance) {
+  EntityInstance vehicle_entity = test::GetVehicleEntityInstance();
+  std::unique_ptr<syncer::EntityData> entity_data =
+      CreateEntityDataFromEntityInstance(vehicle_entity);
+
+  sync_pb::AutofillValuableSpecifics specifics =
+      entity_data->specifics.autofill_valuable();
+  ASSERT_TRUE(entity_data->specifics.has_autofill_valuable());
+
+  const sync_pb::VehicleRegistration& vehicle_specifics =
+      specifics.vehicle_registration();
+
+  EXPECT_EQ(vehicle_entity.guid().value(), specifics.id());
+  EXPECT_EQ(
+      vehicle_entity.attribute(AttributeType(AttributeTypeName::kVehicleMake))
+          ->GetCompleteRawInfo(),
+      base::UTF8ToUTF16(vehicle_specifics.vehicle_make()));
+  EXPECT_EQ(
+      vehicle_entity.attribute(AttributeType(AttributeTypeName::kVehicleModel))
+          ->GetCompleteRawInfo(),
+      base::UTF8ToUTF16(vehicle_specifics.vehicle_model()));
+  EXPECT_EQ(
+      vehicle_entity.attribute(AttributeType(AttributeTypeName::kVehicleYear))
+          ->GetCompleteRawInfo(),
+      base::UTF8ToUTF16(vehicle_specifics.vehicle_year()));
+  EXPECT_EQ(
+      vehicle_entity.attribute(AttributeType(AttributeTypeName::kVehicleOwner))
+          ->GetCompleteRawInfo(),
+      base::UTF8ToUTF16(vehicle_specifics.owner_name()));
+  EXPECT_EQ(
+      vehicle_entity
+          .attribute(AttributeType(AttributeTypeName::kVehiclePlateNumber))
+          ->GetCompleteRawInfo(),
+      base::UTF8ToUTF16(vehicle_specifics.vehicle_license_plate()));
+  EXPECT_EQ(
+      vehicle_entity.attribute(AttributeType(AttributeTypeName::kVehicleVin))
+          ->GetCompleteRawInfo(),
+      base::UTF8ToUTF16(vehicle_specifics.vehicle_identification_number()));
+  EXPECT_EQ(vehicle_entity
+                .attribute(AttributeType(AttributeTypeName::kVehiclePlateState))
+                ->GetCompleteRawInfo(),
+            base::UTF8ToUTF16(vehicle_specifics.license_plate_region()));
 }
 
 }  // namespace autofill
