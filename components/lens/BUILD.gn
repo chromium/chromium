@@ -31,7 +31,6 @@ static_library("lens") {
     "lens_overlay_invocation_source.h",
     "lens_overlay_metrics.cc",
     "lens_overlay_metrics.h",
-    "lens_overlay_mime_type.h",
     "lens_overlay_new_tab_source.h",
     "lens_overlay_request_id_generator.cc",
     "lens_overlay_request_id_generator.h",
@@ -63,7 +62,10 @@ static_library("lens") {
     "//third_party/lens_server_proto:lens_overlay_proto",
     "//url",
   ]
-  public_deps = [ ":features" ]
+  public_deps = [
+    ":features",
+    ":mime_type",
+  ]
 
   sources += [
     "lens_bitmap_processing.cc",
@@ -81,6 +83,10 @@ static_library("lens") {
     ]
     public_deps += [ "//ui/base/unowned_user_data" ]
   }
+}
+
+source_set("mime_type") {
+  sources = [ "lens_overlay_mime_type.h" ]
 }
 
 component("features") {
