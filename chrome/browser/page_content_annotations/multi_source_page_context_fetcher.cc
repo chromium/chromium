@@ -44,6 +44,18 @@ namespace page_content_annotations {
 
 namespace {
 
+template <typename T, typename E>
+// Conditionally emits to a given timing histogram, given the start_time.
+base::expected<T, E> EmitTimingHistogram(const std::string& histogram_name,
+                                         base::TimeTicks start_time,
+                                         base::expected<T, E> result) {
+  if (result.has_value()) {
+    base::UmaHistogramTimes(histogram_name,
+                            base::TimeTicks::Now() - start_time);
+  }
+  return std::move(result);
+}
+
 gfx::Size GetScreenshotSize(const gfx::Size& original_size) {
   // By default, no scaling.
   if (!base::FeatureList::IsEnabled(kGlicTabScreenshotExperiment)) {
@@ -258,8 +270,13 @@ class PageContextFetcher : public content::WebContentsObserver {
               .clip_y_coord_override =
                   paint_preview::mojom::ClipCoordOverride::kScrollOffset,
           },
-          base::BindOnce(&PageContextFetcher::ReceivedViewportBitmapOrError,
-                         GetWeakPtr()));
+          base::BindOnce(
+              EmitTimingHistogram<const SkBitmap*, std::string>,
+              "Glic.PageContextFetcher.GetScreenshot.TimeoutAgnostic",
+              elapsed_timer_.start_time())
+              .Then(base::BindOnce(
+                  &PageContextFetcher::ReceivedViewportBitmapOrError,
+                  GetWeakPtr())));
     } else {
       SetCaptureCountLock(web_contents);
       ScheduleScreenshotTimeout();
@@ -319,8 +336,12 @@ class PageContextFetcher : public content::WebContentsObserver {
                 return reply;
               },
               *bitmap),
-          base::BindOnce(&PageContextFetcher::RecievedJpegScreenshot,
-                         GetWeakPtr()));
+          base::BindOnce(
+              EmitTimingHistogram<std::vector<uint8_t>, std::string>,
+              "Glic.PageContextFetcher.GetEncodedScreenshot.TimeoutAgnostic",
+              elapsed_timer_.start_time())
+              .Then(base::BindOnce(&PageContextFetcher::RecievedJpegScreenshot,
+                                   GetWeakPtr())));
     } else {
       RecievedJpegScreenshot(base::unexpected(bitmap_result.error()));
     }
