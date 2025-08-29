@@ -92,6 +92,8 @@ class PredictionBasedPermissionUiSelector
                      permissions::PermissionRequest* request,
                      DecisionMadeCallback callback) override;
 
+  // Resets the callback, the language detection observer and the passage
+  // embedder delegate, which cancels all async operations managed by them.
   void Cancel() override;
 
   bool IsPermissionRequestSupported(
@@ -134,6 +136,14 @@ class PredictionBasedPermissionUiSelector
       HoldbackHistogramTest);
   FRIEND_TEST_ALL_PREFIXES(PredictionBasedPermissionUiSelectorTest,
                            HoldbackDecisionTest);
+
+  // A safe way to invoke the callback with a decision.
+  void FinishRequest(Decision decision);
+
+  // Resets the permission request, the language detection observer and the
+  // passage embedder delegate, which cancels all async operations managed by
+  // them.
+  void Cleanup();
 
   // Callback for the Aiv1ModelHandler, with the first to parameters being
   // curryed to be used for the server side model call.

@@ -214,7 +214,7 @@ void PredictionBasedPermissionUiSelector::InquireCpssV1OnDeviceModelIfAvailable(
     return;
   }
   VLOG(1) << "[CPSS] On device CPSSv1 model unavailable";
-  std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
+  FinishRequest(Decision::UseNormalUiAndShowNoWarning());
 }
 
 void PredictionBasedPermissionUiSelector::
@@ -349,7 +349,7 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
 
   if (prediction_source == PredictionSource::kNoCpssModel) {
     VLOG(1) << "[CPSS] Configuration does not allow CPSS requests";
-    std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
+    FinishRequest(Decision::UseNormalUiAndShowNoWarning());
     return;
   }
 
@@ -362,7 +362,7 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
               << features.requested_permission_counts.total()
               << ") is smaller than threshold ("
               << kRequestedPermissionMinimumHistoricalActions << ")";
-      std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
+      FinishRequest(Decision::UseNormalUiAndShowNoWarning());
       return;
     }
   }
@@ -372,11 +372,10 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
                "command line";
     if (ShouldPredictionTriggerQuietUi(
             likelihood_override_for_testing_.value())) {
-      std::move(callback_).Run(
-          Decision(QuietUiReason::kServicePredictedVeryUnlikelyGrant,
-                   Decision::ShowNoWarning()));
+      FinishRequest(Decision(QuietUiReason::kServicePredictedVeryUnlikelyGrant,
+                             Decision::ShowNoWarning()));
     } else {
-      std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
+      FinishRequest(Decision::UseNormalUiAndShowNoWarning());
     }
     return;
   }
@@ -410,7 +409,7 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
     case PredictionSource::kOnDeviceCpssV1Model:
       VLOG(1) << "[CPSS] Client doesn't support on-device tflite: "
               << static_cast<int>(prediction_source);
-      std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
+      FinishRequest(Decision::UseNormalUiAndShowNoWarning());
       return;
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     case PredictionSource::kNoCpssModel:
@@ -478,8 +477,21 @@ void PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel(
 }
 
 void PredictionBasedPermissionUiSelector::Cancel() {
-  request_.reset();
   callback_.Reset();
+  Cleanup();
+}
+
+void PredictionBasedPermissionUiSelector::FinishRequest(Decision decision) {
+  if (!callback_) {
+    return;
+  }
+
+  VLOG(1) << "[CPSS] Finishing permission prediction request.";
+  std::move(callback_).Run(std::move(decision));
+}
+
+void PredictionBasedPermissionUiSelector::Cleanup() {
+  request_.reset();
   passage_embedder_delegate_->Reset();
   language_detection_observer_->Reset();
 }
@@ -619,7 +631,7 @@ void PredictionBasedPermissionUiSelector::LookupResponseReceived(
             << (!lookup_successful ? "the lookup was not successful."
                                    : (!response ? "the response is empty."
                                                 : "the prediction is empty."));
-    std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
+    FinishRequest(Decision::UseNormalUiAndShowNoWarning());
     return;
   }
 
@@ -629,8 +641,7 @@ void PredictionBasedPermissionUiSelector::LookupResponseReceived(
   if (ShouldHoldBack(request_metadata)) {
     VLOG(1) << "[CPSS] Prediction service decision held back";
     was_decision_held_back_ = true;
-    std::move(callback_).Run(
-        Decision(Decision::UseNormalUi(), Decision::ShowNoWarning()));
+    FinishRequest(Decision(Decision::UseNormalUi(), Decision::ShowNoWarning()));
     return;
   }
   was_decision_held_back_ = false;
@@ -639,7 +650,7 @@ void PredictionBasedPermissionUiSelector::LookupResponseReceived(
           << last_request_grant_likelihood_.value();
 
   if (ShouldPredictionTriggerQuietUi(last_request_grant_likelihood_.value())) {
-    std::move(callback_).Run(
+    FinishRequest(
         Decision(is_on_device_cpss_v1
                      ? QuietUiReason::kOnDevicePredictedVeryUnlikelyGrant
                      : QuietUiReason::kServicePredictedVeryUnlikelyGrant,
@@ -647,8 +658,7 @@ void PredictionBasedPermissionUiSelector::LookupResponseReceived(
     return;
   }
 
-  std::move(callback_).Run(
-      Decision(Decision::UseNormalUi(), Decision::ShowNoWarning()));
+  FinishRequest(Decision(Decision::UseNormalUi(), Decision::ShowNoWarning()));
 }
 
 bool PredictionBasedPermissionUiSelector::ShouldHoldBack(
@@ -812,7 +822,7 @@ void PredictionBasedPermissionUiSelector::TakeSnapshot(
                                     snapshot_for_testing_.value());
   } else if (!host_view) {
     VLOG(1) << "[CPSS] Snapshot cannot be taken because host_view is nullptr.";
-    std::move(callback_).Run(Decision::UseNormalUiAndShowNoWarning());
+    FinishRequest(Decision::UseNormalUiAndShowNoWarning());
   } else {
     host_view->CopyFromSurface(
         gfx::Rect(), gfx::Size(),
