@@ -350,6 +350,15 @@ extern const char kIOSReaderModeUsed[];
 // Event fired when the Reader Mode "What's new" badge is displayed.
 extern const char kIOSIPHBadgedReaderModeTriggered[];
 
+// Event fired when the AI Hub's "New" badge entrypoint is tapped.
+extern const char kIOSAIHubNewBadgeTriggered[];
+
+// AI Hub's "New" badge entrypoint was used.
+extern const char kIOSAIHubNewBadgeUsed[];
+
+// Event fired when the Gemini Promo is completed for the first time on iOS.
+extern const char kIOSGeminiPromoFirstCompletion[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

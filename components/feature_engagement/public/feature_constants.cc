@@ -830,6 +830,10 @@ BASE_FEATURE(kDefaultBrowserTriggerCriteriaExperiment,
              "DefaultBrowserTriggerCriteriaExperiment",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIPHiOSAIHubNewBadge,
+             "IPH_iOSAIHubNewBadge",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
