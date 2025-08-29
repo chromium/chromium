@@ -1204,7 +1204,8 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest, StitchDocumentTree) {
       "++++genericContainer\n"
       "++++++canvas htmlTag='canvas'\n"
       "++++++++staticText name='<newline>          '\n"
-      "++++++++staticText name='Text that is not replaced by child tree.'\n"
+      "++++++++paragraph htmlTag='p'\n"
+      "++++++++++staticText name='Text that is not replaced by child tree.'\n"
       "++++++++staticText name='<newline>        '\n"
       "++++++graphicsDocument htmlTag='div' name='graphics-document'\n"
       "++++++++paragraph htmlTag='p'\n"
@@ -1234,7 +1235,8 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest, StitchDocumentTree) {
       "++++genericContainer\n"
       "++++++canvas htmlTag='canvas'\n"
       "++++++++staticText name='<newline>          '\n"
-      "++++++++staticText name='Text that is not replaced by child tree.'\n"
+      "++++++++paragraph htmlTag='p'\n"
+      "++++++++++staticText name='Text that is not replaced by child tree.'\n"
       "++++++++staticText name='<newline>        '\n"
       "++++++graphicsDocument htmlTag='div' name='graphics-document'\n",
       browser()

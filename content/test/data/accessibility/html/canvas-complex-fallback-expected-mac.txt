@@ -6,7 +6,8 @@ AXWebArea
 ++++++AXStaticText AXValue='<newline>    '
 ++++++AXGroup
 ++++++++AXStaticText AXValue='<newline>      '
-++++++++AXStaticText AXValue='Here we list the contents:'
+++++++++AXGroup
+++++++++++AXStaticText AXValue='Here we list the contents:'
 ++++++++AXStaticText AXValue='<newline>      '
 ++++++++AXList AXSubrole=AXContentList
 ++++++++++AXStaticText AXValue='<newline>        '

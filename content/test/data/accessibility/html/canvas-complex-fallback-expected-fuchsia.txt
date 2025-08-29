@@ -7,7 +7,8 @@ UNKNOWN focusable has_input_focus
 ++++++++STATIC_TEXT label='<newline>    '
 ++++++++UNKNOWN
 ++++++++++STATIC_TEXT label='<newline>      '
-++++++++++STATIC_TEXT label='Here we list the contents:'
+++++++++++PARAGRAPH
+++++++++++++STATIC_TEXT label='Here we list the contents:'
 ++++++++++STATIC_TEXT label='<newline>      '
 ++++++++++LIST list_size=3
 ++++++++++++STATIC_TEXT label='<newline>        '

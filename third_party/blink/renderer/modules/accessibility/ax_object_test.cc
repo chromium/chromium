@@ -115,6 +115,27 @@ TEST_F(AccessibilityTest, IsEditableInTextField) {
   EXPECT_FALSE(textarea_text->IsRichlyEditable());
 }
 
+TEST_F(AccessibilityTest, IsEditableInTextFieldInCanvas) {
+  // Script is required to create a real LayoutHTMLCanvas, see:
+  // `HTMLCanvasElement::CreateLayoutObject`.
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  SetBodyInnerHTML(R"HTML(
+    <canvas id="canvas" width="300" height="300">
+      <input type="text" id="input" value="test"/>
+    </canvas>
+  )HTML");
+
+  const AXObject* root = GetAXRootObject();
+  ASSERT_NE(nullptr, root);
+  const AXObject* input = GetAXObjectByElementId("input");
+  ASSERT_NE(nullptr, input);
+  const AXObject* input_text =
+      input->FirstChildIncludingIgnored()->UnignoredChildAtSlow(0);
+  ASSERT_NE(nullptr, input_text);
+  ASSERT_EQ("test", input_text->GetNode()->nodeValue());
+  EXPECT_EQ(ax::mojom::blink::Role::kStaticText, input_text->RoleValue());
+}
+
 TEST_F(AccessibilityTest, IsEditableInTextFieldWithContentEditableTrue) {
   SetBodyInnerHTML(R"HTML(
       <!-- This is technically an authoring error, but we should still handle
@@ -233,6 +254,9 @@ TEST_F(AccessibilityTest, IsEditableInContentEditable) {
 }
 
 TEST_F(AccessibilityTest, IsEditableInCanvasFallback) {
+  // Script is required to create a real LayoutHTMLCanvas, see:
+  // `HTMLCanvasElement::CreateLayoutObject`.
+  GetDocument().GetSettings()->SetScriptEnabled(true);
   SetBodyInnerHTML(R"HTML(
       <canvas id="canvas" width="300" height="300">
         <input id="input" value="Test">
@@ -1811,6 +1835,9 @@ TEST_F(AccessibilityTest, ComputeIsInertWithNonHTMLElements_CSSInertDisabled) {
 }
 
 TEST_F(AccessibilityTest, CanSetFocusInCanvasFallbackContent) {
+  // Script is required to create a real LayoutHTMLCanvas, see:
+  // `HTMLCanvasElement::CreateLayoutObject`.
+  GetDocument().GetSettings()->SetScriptEnabled(true);
   SetBodyInnerHTML(R"HTML(
     <canvas>
       <section>
@@ -2007,6 +2034,9 @@ TEST_F(AccessibilityTest, CanComputeAsNaturalParent) {
 }
 
 TEST_F(AccessibilityTest, StitchChildTree) {
+  // Script is required to create a real LayoutHTMLCanvas, see:
+  // `HTMLCanvasElement::CreateLayoutObject`.
+  GetDocument().GetSettings()->SetScriptEnabled(true);
   // Nodes that are descendants of the node at which a child tree was stitched
   // (the host node) make all descendants accessibility ignored, hence the
   // "ignored text" and "ignoredButton" nomenclature. The child tree will take

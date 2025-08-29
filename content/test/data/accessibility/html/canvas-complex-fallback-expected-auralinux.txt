@@ -6,7 +6,8 @@
 ++++++[static] name='<newline>    '
 ++++++[section]
 ++++++++[static] name='<newline>      '
-++++++++[static] name='Here we list the contents:'
+++++++++[paragraph]
+++++++++++[static] name='Here we list the contents:'
 ++++++++[static] name='<newline>      '
 ++++++++[list]
 ++++++++++[static] name='<newline>        '

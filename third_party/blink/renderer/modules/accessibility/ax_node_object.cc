@@ -1258,8 +1258,8 @@ bool AXNodeObject::ComputeIsIgnored(IgnoredReasons* ignored_reasons) const {
     }
 
     // Fallback elements inside of a <canvas> are invisible, but are not ignored
-    if (IsHiddenViaStyle() || !node || !node->parentElement() ||
-        !node->parentElement()->IsCanvasOrInCanvasSubtree()) {
+    if (IsHiddenViaStyle() || !node || !node->ParentOrShadowHostElement() ||
+        !node->ParentOrShadowHostElement()->IsCanvasOrInCanvasSubtree()) {
       return true;
     }
   }
@@ -1278,6 +1278,15 @@ bool AXNodeObject::ComputeIsIgnored(IgnoredReasons* ignored_reasons) const {
     // explicitly hidden, e.g. is in a <canvas> fallback or is display locked.
     if (IsA<Text>(node)) {
       return false;
+    }
+    // Similarly, elements in <canvas> fallback should not be ignored.
+    if (node->ParentOrShadowHostElement() &&
+        node->ParentOrShadowHostElement()->IsCanvasOrInCanvasSubtree()) {
+      // TODO: We should not exclude display: contents (crbug.com/41384724) in
+      // canvas.
+      if (!GetElement() || !GetElement()->HasDisplayContentsStyle()) {
+        return false;
+      }
     }
     if (ignored_reasons) {
       ignored_reasons->push_back(IgnoredReason(kAXUninteresting));
@@ -5537,8 +5546,8 @@ void AXNodeObject::GetRelativeBounds(AXObject** out_container,
   Element* element = GetElement();
   // If it's in a canvas but doesn't have an explicit rect, or has display:
   // contents set, get the bounding rect of its children.
-  if ((GetNode()->parentElement() &&
-       GetNode()->parentElement()->IsCanvasOrInCanvasSubtree()) ||
+  if ((GetNode()->ParentOrShadowHostElement() &&
+       GetNode()->ParentOrShadowHostElement()->IsCanvasOrInCanvasSubtree()) ||
       (element && element->HasDisplayContentsStyle())) {
     Vector<gfx::RectF> rects;
     for (Node& child : NodeTraversal::ChildrenOf(*GetNode())) {
