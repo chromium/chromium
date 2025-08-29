@@ -28363,6 +28363,26 @@
             ]
         }
     ],
+    "ZeroStateSuggestionsV2": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "ZSSMaxPinnedPagesForTriggeringSuggestions": "10"
+                    },
+                    "enable_features": [
+                        "ZeroStateSuggestionsV2"
+                    ]
+                }
+            ]
+        }
+    ],
     "iOSCPEPerformanceImprovements": [
         {
             "platforms": [
