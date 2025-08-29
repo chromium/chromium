@@ -589,7 +589,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 - (void)cacheIndexPathRow {
   // Cache IndexPathRow for BookmarkTableView.
   int topMostVisibleIndexPathRow = [self topMostVisibleIndexPathRow];
-  if (self.displayedFolderNode) {
+  if (self.displayedFolderNode && self.profile) {
     [BookmarkPathCache
         cacheBookmarkTopMostRowWithPrefService:self.profile->GetPrefs()
                                       folderId:self.displayedFolderNode->id()
@@ -598,11 +598,6 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
                                                        self.displayedFolderNode,
                                                        _bookmarkModel.get())
                                     topMostRow:topMostVisibleIndexPathRow];
-  } else {
-    // TODO(crbug.com/40679851):Remove DCHECK once we know the root cause of the
-    // bug, for now this will cause a crash on Dev/Canary and we should get
-    // breadcrumbs.
-    DCHECK(NO);
   }
 }
 
