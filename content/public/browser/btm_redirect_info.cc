@@ -8,19 +8,24 @@
 
 #include "base/rand_util.h"
 #include "content/browser/btm/btm_utils.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace content {
 
-BtmRedirectChainInfo::BtmRedirectChainInfo(const UrlAndSourceId& initial_url,
-                                           const UrlAndSourceId& final_url,
+BtmRedirectChainInfo::BtmRedirectChainInfo(const GURL& initial_url,
+                                           ukm::SourceId initial_source_id,
+                                           const GURL& final_url,
+                                           ukm::SourceId final_source_id,
                                            size_t length,
                                            bool is_partial_chain,
                                            bool are_3pcs_generally_enabled)
     : chain_id(static_cast<int32_t>(base::RandUint64())),
       initial_url(initial_url),
-      initial_site(GetSiteForBtm(initial_url.url)),
+      initial_source_id(initial_source_id),
+      initial_site(GetSiteForBtm(initial_url)),
       final_url(final_url),
-      final_site(GetSiteForBtm(final_url.url)),
+      final_source_id(final_source_id),
+      final_site(GetSiteForBtm(final_url)),
       initial_and_final_sites_same(initial_site == final_site),
       length(length),
       is_partial_chain(is_partial_chain),
@@ -33,14 +38,16 @@ BtmRedirectChainInfo::~BtmRedirectChainInfo() = default;
 
 /* static */
 std::unique_ptr<BtmRedirectInfo> BtmRedirectInfo::CreateForServer(
-    const UrlAndSourceId& url,
+    const GURL& redirector_url,
+    ukm::SourceId redirector_source_id,
     BtmDataAccessType access_type,
     base::Time time,
     bool was_response_cached,
     int response_code,
     base::TimeDelta server_bounce_delay) {
   return base::WrapUnique<BtmRedirectInfo>(new BtmRedirectInfo(
-      url, /*redirect_type=*/BtmRedirectType::kServer, access_type, time,
+      redirector_url, redirector_source_id,
+      /*redirect_type=*/BtmRedirectType::kServer, access_type, time,
       /*client_bounce_delay=*/base::TimeDelta(),
       /*has_sticky_activation=*/false,
       /*web_authn_assertion_request_succeeded=*/false, was_response_cached,
@@ -49,14 +56,16 @@ std::unique_ptr<BtmRedirectInfo> BtmRedirectInfo::CreateForServer(
 
 /* static */
 std::unique_ptr<BtmRedirectInfo> BtmRedirectInfo::CreateForClient(
-    const UrlAndSourceId& url,
+    const GURL& redirector_url,
+    ukm::SourceId redirector_source_id,
     BtmDataAccessType access_type,
     base::Time time,
     base::TimeDelta client_bounce_delay,
     bool has_sticky_activation,
     bool web_authn_assertion_request_succeeded) {
   return base::WrapUnique<BtmRedirectInfo>(new BtmRedirectInfo(
-      url, /*redirect_type=*/BtmRedirectType::kClient, access_type, time,
+      redirector_url, redirector_source_id,
+      /*redirect_type=*/BtmRedirectType::kClient, access_type, time,
       client_bounce_delay, has_sticky_activation,
       web_authn_assertion_request_succeeded,
       /*was_response_cached=*/false,
@@ -64,7 +73,8 @@ std::unique_ptr<BtmRedirectInfo> BtmRedirectInfo::CreateForClient(
       /*server_bounce_delay=*/base::TimeDelta()));
 }
 
-BtmRedirectInfo::BtmRedirectInfo(const UrlAndSourceId& redirector,
+BtmRedirectInfo::BtmRedirectInfo(const GURL& redirector_url,
+                                 ukm::SourceId redirector_source_id,
                                  BtmRedirectType redirect_type,
                                  BtmDataAccessType access_type,
                                  base::Time time,
@@ -74,8 +84,9 @@ BtmRedirectInfo::BtmRedirectInfo(const UrlAndSourceId& redirector,
                                  bool was_response_cached,
                                  int response_code,
                                  base::TimeDelta server_bounce_delay)
-    : redirector(redirector),
-      site(GetSiteForBtm(redirector.url)),
+    : redirector_url(redirector_url),
+      redirector_source_id(redirector_source_id),
+      site(GetSiteForBtm(redirector_url)),
       redirect_type(redirect_type),
       access_type(access_type),
       time(time),

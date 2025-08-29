@@ -27,8 +27,8 @@ BtmNavigationInfo::BtmNavigationInfo(NavigationHandle& navigation_handle)
                          navigation_handle.HasUserGesture()),
       was_renderer_initiated(navigation_handle.IsRendererInitiated()),
       page_transition(navigation_handle.GetPageTransition()),
-      destination({navigation_handle.GetURL(),
-                   navigation_handle.GetNextPageUkmSourceId()}) {
+      destination_url(navigation_handle.GetURL()),
+      destination_source_id(navigation_handle.GetNextPageUkmSourceId()) {
   CHECK(navigation_handle.HasCommitted());
 }
 BtmNavigationInfo::BtmNavigationInfo(BtmNavigationInfo&&) = default;

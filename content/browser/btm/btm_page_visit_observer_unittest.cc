@@ -53,12 +53,12 @@ TEST_F(BtmPageVisitObserverTest, PreviousPage) {
   tester->NavigateAndCommit(url1);
   ASSERT_TRUE(recorder.WaitForSize(1));
   EXPECT_EQ(recorder.visits()[0].prev_page.url, GURL());
-  EXPECT_EQ(recorder.visits()[0].navigation.destination.url, url1);
+  EXPECT_EQ(recorder.visits()[0].navigation.destination_url, url1);
 
   tester->NavigateAndCommit(url2);
   ASSERT_TRUE(recorder.WaitForSize(2));
   EXPECT_EQ(recorder.visits()[1].prev_page.url, url1);
-  EXPECT_EQ(recorder.visits()[1].navigation.destination.url, url2);
+  EXPECT_EQ(recorder.visits()[1].navigation.destination_url, url2);
 }
 
 TEST_F(BtmPageVisitObserverTest, ServerRedirects) {
@@ -79,11 +79,11 @@ TEST_F(BtmPageVisitObserverTest, ServerRedirects) {
   // Two navigations are observed, the second with a redirect.
   const BtmNavigationInfo& navigation1 = recorder.visits()[0].navigation;
   EXPECT_EQ(navigation1.server_redirects.size(), 0u);
-  EXPECT_EQ(navigation1.destination.url, url1);
+  EXPECT_EQ(navigation1.destination_url, url1);
   const BtmNavigationInfo& navigation2 = recorder.visits()[1].navigation;
   ASSERT_EQ(navigation2.server_redirects.size(), 1u);
   EXPECT_EQ(navigation2.server_redirects[0].url, url2);
-  EXPECT_EQ(navigation2.destination.url, url3);
+  EXPECT_EQ(navigation2.destination_url, url3);
 }
 
 TEST_F(BtmPageVisitObserverTest, IgnoreUncommitted) {
@@ -103,9 +103,9 @@ TEST_F(BtmPageVisitObserverTest, IgnoreUncommitted) {
   ASSERT_TRUE(recorder.WaitForSize(2));
 
   // Only url1 and url3 navigations are observed.
-  EXPECT_EQ(recorder.visits()[0].navigation.destination.url, url1);
+  EXPECT_EQ(recorder.visits()[0].navigation.destination_url, url1);
   EXPECT_EQ(recorder.visits()[1].prev_page.url, url1);
-  EXPECT_EQ(recorder.visits()[1].navigation.destination.url, url3);
+  EXPECT_EQ(recorder.visits()[1].navigation.destination_url, url3);
 }
 
 TEST_F(BtmPageVisitObserverTest, IgnoreSubframes) {
@@ -126,9 +126,9 @@ TEST_F(BtmPageVisitObserverTest, IgnoreSubframes) {
   ASSERT_TRUE(recorder.WaitForSize(2));
 
   // Only url1 and url3 navigations are observed.
-  EXPECT_EQ(recorder.visits()[0].navigation.destination.url, url1);
+  EXPECT_EQ(recorder.visits()[0].navigation.destination_url, url1);
   EXPECT_EQ(recorder.visits()[1].prev_page.url, url1);
-  EXPECT_EQ(recorder.visits()[1].navigation.destination.url, url3);
+  EXPECT_EQ(recorder.visits()[1].navigation.destination_url, url3);
 }
 
 // Same-document navigations are ignored.
@@ -149,9 +149,9 @@ TEST_F(BtmPageVisitObserverTest, IgnoreSameDocument) {
   ASSERT_TRUE(recorder.WaitForSize(2));
 
   // Only the url1a and url2 navigations are observed.
-  EXPECT_EQ(recorder.visits()[0].navigation.destination.url, url1a);
+  EXPECT_EQ(recorder.visits()[0].navigation.destination_url, url1a);
   EXPECT_EQ(recorder.visits()[1].prev_page.url, url1a);
-  EXPECT_EQ(recorder.visits()[1].navigation.destination.url, url2);
+  EXPECT_EQ(recorder.visits()[1].navigation.destination_url, url2);
 }
 
 TEST_F(BtmPageVisitObserverTest, FlushPendingVisitsAtDestruction) {

@@ -26,8 +26,8 @@ bool Has3pcException(BrowserContext* browser_context,
                      const GURL& initial_url,
                      const GURL& final_url) {
   BtmRedirectInfoPtr redirect = BtmRedirectInfo::CreateForServer(
-      UrlAndSourceId(url, ukm::kInvalidSourceId), BtmDataAccessType::kWrite,
-      base::Time::Now(), false, net::HTTP_FOUND, base::TimeDelta());
+      url, ukm::kInvalidSourceId, BtmDataAccessType::kWrite, base::Time::Now(),
+      false, net::HTTP_FOUND, base::TimeDelta());
   Populate3PcExceptions(browser_context, web_contents, initial_url, final_url,
                         base::span_from_ref(redirect));
   return redirect->has_3pc_exception.value();

@@ -17,6 +17,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/btm_redirect_info.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -51,7 +52,8 @@ struct CONTENT_EXPORT BtmNavigationInfo {
   bool was_renderer_initiated;
   ui::PageTransition page_transition;
   // The page where the navigation ultimately committed.
-  UrlAndSourceId destination;
+  GURL destination_url;
+  ukm::SourceId destination_source_id;
 };
 
 // Observes a `WebContents` and reports page visit information to a callback. A

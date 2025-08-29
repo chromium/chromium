@@ -83,7 +83,8 @@ class ClientBounceDetectionState {
 // Either the URL navigated away from (starting a new chain), or the client-side
 // redirect connecting the navigation to the currently-committed chain.
 // TODO: crbug.com/324573484 - rename to remove association with DIPS.
-using BtmNavigationStart = std::variant<UrlAndSourceId, BtmRedirectInfoPtr>;
+using BtmNavigationStart =
+    std::variant<std::pair<GURL, ukm::SourceId>, BtmRedirectInfoPtr>;
 
 // In case of a client-side redirect loop, we need to impose a limit on the
 // stored redirect chain to avoid boundless memory use. Past this limit,
@@ -104,7 +105,8 @@ class CONTENT_EXPORT BtmRedirectContext {
   BtmRedirectContext(BtmRedirectChainHandler handler,
                      BtmIssueHandler issue_handler,
                      Btm3PcSettingsCallback are_3pcs_generally_enabled_callback,
-                     const UrlAndSourceId& initial_url,
+                     const GURL& initial_url,
+                     ukm::SourceId initial_source_id,
                      size_t redirect_prefix_count);
   ~BtmRedirectContext();
 
@@ -119,15 +121,18 @@ class CONTENT_EXPORT BtmRedirectContext {
   // `navigation_start`.
   void AppendCommitted(BtmNavigationStart navigation_start,
                        std::vector<BtmRedirectInfoPtr> server_redirects,
-                       const UrlAndSourceId& final_url,
+                       const GURL& final_url,
+                       ukm::SourceId final_source_id,
                        bool current_page_has_interaction);
 
   // Terminates the in-progress redirect chain, ending it with `final_url`, and
   // passing it to the `BtmRedirectChainHandler` iff the chain is valid. It
-  // also starts a fresh redirect chain with `final_url` whilst clearing the
-  // state of the terminated chain.
-  // NOTE: A chain is valid if it has a non-empty `initial_url_`.
-  void EndChain(UrlAndSourceId final_url, bool current_page_has_interaction);
+  // also starts a fresh redirect chain with `final_url` and `final_source_id`
+  // whilst clearing the state of the terminated chain. NOTE: A chain is valid
+  // if it has a non-empty `initial_url_`.
+  void EndChain(GURL final_url,
+                ukm::SourceId final_source_id,
+                bool current_page_has_interaction);
 
   // Reports a BTM issue to the inspector (e.g., DevTools).
   void ReportIssue(const GURL& final_url);
@@ -140,7 +145,7 @@ class CONTENT_EXPORT BtmRedirectContext {
 
   size_t size() const { return redirects_.size(); }
 
-  const GURL& GetInitialURLForTesting() const { return initial_url_.url; }
+  const GURL& GetInitialURLForTesting() const { return initial_url_; }
 
   void SetRedirectChainHandlerForTesting(BtmRedirectChainHandler handler) {
     handler_ = handler;
@@ -185,7 +190,8 @@ class CONTENT_EXPORT BtmRedirectContext {
   Btm3PcSettingsCallback are_3pcs_generally_enabled_callback_;
   // Represents the start of a chain and also indicates the presence of a valid
   // chain.
-  UrlAndSourceId initial_url_;
+  GURL initial_url_;
+  ukm::SourceId initial_source_id_;
   // Whether the initial_url_ had a user activation or web authentication
   // interaction while loaded.
   bool initial_url_had_interaction_;
@@ -208,7 +214,8 @@ class CONTENT_EXPORT BtmRedirectContext {
 class CONTENT_EXPORT BtmBounceDetectorDelegate {
  public:
   virtual ~BtmBounceDetectorDelegate();
-  virtual UrlAndSourceId GetLastCommittedURL() const = 0;
+  virtual GURL GetLastCommittedURL() const = 0;
+  virtual ukm::SourceId GetLastCommittedSourceId() const = 0;
   virtual void HandleRedirectChain(std::vector<BtmRedirectInfoPtr> redirects,
                                    BtmRedirectChainInfoPtr chain) = 0;
   // Report `sites` as redirectors to the inspector (e.g., DevTools).
@@ -455,7 +462,8 @@ class CONTENT_EXPORT RedirectChainDetector
   friend class WebContentsUserData<RedirectChainDetector>;
 
   // BtmBounceDetectorDelegate overrides:
-  UrlAndSourceId GetLastCommittedURL() const override;
+  GURL GetLastCommittedURL() const override;
+  ukm::SourceId GetLastCommittedSourceId() const override;
   void HandleRedirectChain(std::vector<BtmRedirectInfoPtr> redirects,
                            BtmRedirectChainInfoPtr chain) override;
   void ReportRedirectors(std::set<std::string> sites) override;

@@ -142,7 +142,7 @@ void RecordRedirectMetrics(const BtmRedirectInfo& redirect,
   bool final_site_same = (redirect.site == chain.final_site);
 
   if (!chain.are_3pcs_generally_enabled) {
-    ukm::builders::BTM_Redirect(redirect.redirector.source_id)
+    ukm::builders::BTM_Redirect(redirect.redirector_source_id)
         .SetSiteHadUserActivation(redirect.site_had_user_activation.value())
         .SetSiteHadWebAuthnAssertion(
             redirect.site_had_webauthn_assertion.value())
@@ -438,16 +438,16 @@ void BtmServiceImpl::HandleRedirectChain(
   }
 
   if (!chain->are_3pcs_generally_enabled &&
-      chain->initial_url.source_id != ukm::kInvalidSourceId) {
-    ukm::builders::BTM_ChainBegin(chain->initial_url.source_id)
+      chain->initial_source_id != ukm::kInvalidSourceId) {
+    ukm::builders::BTM_ChainBegin(chain->initial_source_id)
         .SetChainId(chain->chain_id)
         .SetInitialAndFinalSitesSame(chain->initial_and_final_sites_same)
         .Record(ukm::UkmRecorder::Get());
   }
 
   if (!chain->are_3pcs_generally_enabled &&
-      chain->final_url.source_id != ukm::kInvalidSourceId) {
-    ukm::builders::BTM_ChainEnd(chain->final_url.source_id)
+      chain->final_source_id != ukm::kInvalidSourceId) {
+    ukm::builders::BTM_ChainEnd(chain->final_source_id)
         .SetChainId(chain->chain_id)
         .SetInitialAndFinalSitesSame(chain->initial_and_final_sites_same)
         .Record(ukm::UkmRecorder::Get());
@@ -459,7 +459,7 @@ void BtmServiceImpl::HandleRedirectChain(
     if (redirect->redirect_type == BtmRedirectType::kServer) {
       total_server_bounce_delay += redirect->server_bounce_delay;
     }
-    redirect_sites.insert(GetSiteForBtm(redirect->redirector.url));
+    redirect_sites.insert(GetSiteForBtm(redirect->redirector_url));
   }
   UmaHistogramBounceChainDelay(total_server_bounce_delay);
 
@@ -525,7 +525,7 @@ void BtmServiceImpl::RecordBounce(
     StatefulBounceCallback stateful_bounce_callback,
     const BtmRedirectInfo& redirect,
     const BtmRedirectChainInfo& chain) {
-  const GURL& url = redirect.redirector.url;
+  const GURL& url = redirect.redirector_url;
   bool stateful = redirect.access_type > BtmDataAccessType::kRead;
 
   // If the bounced URL has a 3PC exception when embedded under the initial or
@@ -571,7 +571,7 @@ void BtmServiceImpl::RecordBounce(
   // If the bounce is stateful and not excepted by cookie settings, run the
   // callback.
   if (stateful) {
-    stateful_bounce_callback.Run(chain.final_url.url);
+    stateful_bounce_callback.Run(chain.final_url);
   }
 
   // Record the bounce at the storage layer.

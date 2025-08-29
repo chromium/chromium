@@ -33,16 +33,13 @@ enum class BtmDataAccessType {
   kReadWrite = 3
 };
 
-struct UrlAndSourceId {
-  GURL url;
-  ukm::SourceId source_id;
-};
-
 // Properties of a redirect chain common to all the URLs within the chain.
 struct CONTENT_EXPORT BtmRedirectChainInfo {
  public:
-  BtmRedirectChainInfo(const UrlAndSourceId& initial_url,
-                       const UrlAndSourceId& final_url,
+  BtmRedirectChainInfo(const GURL& initial_url,
+                       ukm::SourceId initial_source_id,
+                       const GURL& final_url,
+                       ukm::SourceId final_source_id,
                        size_t length,
                        bool is_partial_chain,
                        bool are_3pcs_generally_enabled);
@@ -53,11 +50,13 @@ struct CONTENT_EXPORT BtmRedirectChainInfo {
   // metrics reporting.
   const int32_t chain_id;
 
-  const UrlAndSourceId initial_url;
+  const GURL initial_url;
+  const ukm::SourceId initial_source_id;
   // The eTLD+1 of initial_url, cached.
   const std::string initial_site;
 
-  const UrlAndSourceId final_url;
+  const GURL final_url;
+  const ukm::SourceId final_source_id;
   // The eTLD+1 of final_url, cached.
   const std::string final_site;
 
@@ -78,7 +77,8 @@ struct CONTENT_EXPORT BtmRedirectChainInfo {
 struct CONTENT_EXPORT BtmRedirectInfo {
  public:
   static std::unique_ptr<BtmRedirectInfo> CreateForServer(
-      const UrlAndSourceId& url,
+      const GURL& redirector_url,
+      ukm::SourceId redirector_source_id,
       BtmDataAccessType access_type,
       base::Time time,
       bool was_response_cached,
@@ -86,7 +86,8 @@ struct CONTENT_EXPORT BtmRedirectInfo {
       base::TimeDelta server_bounce_delay);
 
   static std::unique_ptr<BtmRedirectInfo> CreateForClient(
-      const UrlAndSourceId& url,
+      const GURL& redirector_url,
+      ukm::SourceId redirector_source_id,
       BtmDataAccessType access_type,
       base::Time time,
       base::TimeDelta client_bounce_delay,
@@ -102,7 +103,8 @@ struct CONTENT_EXPORT BtmRedirectInfo {
   // server redirects, the URL that received a redirect status code e.g. 301. In
   // the case of a client redirect, the URL of the page that initiated the
   // navigation e.g. called `window.location.href = "https://foo.example";`
-  const UrlAndSourceId redirector;
+  const GURL redirector_url;
+  const ukm::SourceId redirector_source_id;
   const std::string site;  // The cached result of GetSiteForBtm(url).
   const BtmRedirectType redirect_type;
   BtmDataAccessType
@@ -136,7 +138,8 @@ struct CONTENT_EXPORT BtmRedirectInfo {
   const base::TimeDelta server_bounce_delay;
 
  private:
-  BtmRedirectInfo(const UrlAndSourceId& redirector,
+  BtmRedirectInfo(const GURL& redirector_url,
+                  ukm::SourceId redirector_source_id,
                   BtmRedirectType redirect_type,
                   BtmDataAccessType access_type,
                   base::Time time,

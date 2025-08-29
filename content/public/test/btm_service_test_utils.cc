@@ -34,7 +34,7 @@ BtmRedirectChainObserver::~BtmRedirectChainObserver() = default;
 void BtmRedirectChainObserver::OnChainHandled(
     const std::vector<BtmRedirectInfoPtr>& redirects,
     const BtmRedirectChainInfoPtr& chain) {
-  if (chain->final_url.url == final_url_) {
+  if (chain->final_url == final_url_) {
     if (!redirects_.has_value()) {
       redirects_.emplace();
       for (const BtmRedirectInfoPtr& redirect : redirects) {
