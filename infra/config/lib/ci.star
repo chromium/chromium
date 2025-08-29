@@ -240,7 +240,7 @@ def _gpu_windows_builder(*, name, **kwargs):
 def thin_tester(
         *,
         name,
-        triggered_by,
+        parent,
         cores = args.DEFAULT,
         **kwargs):
     """Define a thin tester.
@@ -253,9 +253,7 @@ def thin_tester(
 
     Args:
       name: The name of the builder.
-      triggered_by: The triggering builder. See
-        https://chromium.googlesource.com/infra/luci/luci-go/+/refs/heads/main/lucicfg/doc/README.md#luci.builder
-        for more information.
+      parent: Reference to the parent builder.
       cores: See `builders.builder` for more information. The `thin_tester_core`
         module-level default in `ci.defaults` will be used as the default if it
         is set.
@@ -272,7 +270,7 @@ def thin_tester(
     kwargs.setdefault("os", builders.os.LINUX_DEFAULT)
     return ci.builder(
         name = name,
-        triggered_by = triggered_by,
+        parent = parent,
         cores = cores,
         **kwargs
     )

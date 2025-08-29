@@ -447,6 +447,7 @@ def builder(
         bootstrap = args.DEFAULT,
         builder_group = args.DEFAULT,
         builder_spec = None,
+        parent = None,
         mirrors = None,
         builder_config_settings = args.DEFAULT,
         pool = args.DEFAULT,
@@ -589,6 +590,8 @@ def builder(
             None.
         builder_spec: The spec describing the configuration for the builder.
             Cannot be set if `mirrors` is set.
+        parent: Reference to the parent builder of the builder. Can only be set
+            if `builder_spec` is set.
         mirrors: References to the builders that the builder should mirror.
             Cannot be set if `builder_spec` is set.
         builder_config_settings: Additional builder configuration that used by
@@ -1033,7 +1036,10 @@ def builder(
     if notifies != None:
         kwargs["notifies"] = defaults.get_value("notifies", notifies, merge = args.MERGE_LIST)
 
-    triggered_by = defaults.get_value("triggered_by", triggered_by)
+    if parent:
+        triggered_by = [parent]
+    else:
+        triggered_by = defaults.get_value("triggered_by", triggered_by)
     if triggered_by != args.COMPUTE:
         kwargs["triggered_by"] = triggered_by
 
@@ -1118,6 +1124,7 @@ def builder(
         name,
         builder_group,
         builder_spec,
+        parent,
         mirrors,
         builder_config_settings,
         targets,
