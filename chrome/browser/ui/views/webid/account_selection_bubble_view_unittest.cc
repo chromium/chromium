@@ -40,6 +40,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
@@ -71,6 +72,8 @@ class FakeTabInterface : public tabs::MockTabInterface {
   explicit FakeTabInterface(content::WebContents* contents)
       : contents_(contents) {}
   content::WebContents* GetContents() const override { return contents_; }
+  bool IsActivated() const override { return true; }
+  bool CanShowModalUI() const override { return true; }
 
  private:
   raw_ptr<content::WebContents> contents_;
@@ -113,6 +116,14 @@ class FakeFedCmAccountSelectionView : public FedCmAccountSelectionView {
                          ui::EF_LEFT_MOUSE_BUTTON, 0);
 
     account_hover_button->OnPressed(event);
+  }
+
+ protected:
+  void ShowDialog(
+      views::Widget* widget,
+      std::unique_ptr<tabs::TabDialogManager::Params> params) override {
+    widget->Show();
+    widget->SetVisible(true);
   }
 
  private:
@@ -171,7 +182,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
       const std::u16string& iframe_for_display = u"") {
     Reset();
     views::Widget::InitParams params =
-        CreateParams(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        CreateParams(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
                      views::Widget::InitParams::TYPE_WINDOW);
 
     anchor_widget_ = std::make_unique<views::Widget>();
@@ -238,11 +249,11 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
                            bool expected_icon_visibility,
                            const std::u16string& expected_subtitle = u"") {
     // Perform some basic dialog checks.
-    EXPECT_FALSE(dialog()->ShouldShowCloseButton());
-    EXPECT_FALSE(dialog()->ShouldShowWindowTitle());
+    EXPECT_FALSE(dialog_delegate()->ShouldShowCloseButton());
+    EXPECT_FALSE(dialog_delegate()->ShouldShowWindowTitle());
 
-    EXPECT_FALSE(dialog()->GetOkButton());
-    EXPECT_FALSE(dialog()->GetCancelButton());
+    EXPECT_FALSE(dialog_delegate()->GetOkButton());
+    EXPECT_FALSE(dialog_delegate()->GetCancelButton());
 
     // Order: Potentially hidden IDP brand icon, potentially hidden back button,
     // titles, close button.
@@ -564,6 +575,10 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
   }
 
   AccountSelectionBubbleView* dialog() { return dialog_; }
+  views::BubbleDialogDelegate* dialog_delegate() {
+    CHECK(dialog()->GetWidget());
+    return dialog()->GetWidget()->widget_delegate()->AsBubbleDialogDelegate();
+  }
 
   content::WebContents* web_contents() { return test_web_contents_.get(); }
 
@@ -732,7 +747,7 @@ TEST_F(AccountSelectionBubbleViewTest,
   CreateAccountSelectionBubble();
 
   // Set the dialog background color to white.
-  dialog()->SetBackgroundColor(SK_ColorWHITE);
+  dialog_delegate()->SetBackgroundColor(SK_ColorWHITE);
 
   const std::string kDarkBlue = "#1a73e8";
   SkColor bg_color;
@@ -765,7 +780,7 @@ TEST_F(AccountSelectionBubbleViewTest,
   CreateAccountSelectionBubble();
 
   // Set the dialog background color to white.
-  dialog()->SetBackgroundColor(SK_ColorWHITE);
+  dialog_delegate()->SetBackgroundColor(SK_ColorWHITE);
 
   const std::string kWhite = "#fff";
   SkColor bg_color;

@@ -64,6 +64,7 @@
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace webid {
 
@@ -139,6 +140,49 @@ std::unique_ptr<views::View> CreateButtonContainer() {
 }
 }  // namespace
 
+AccountSelectionModalDelegate::AccountSelectionModalDelegate(
+    std::unique_ptr<AccountSelectionModalView> account_selection_modal_view) {
+  auto* selection_modal =
+      SetContentsView(std::move(account_selection_modal_view));
+  SetModalType(ui::mojom::ModalType::kChild);
+  SetOwnershipOfNewWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  set_fixed_width(kDialogWidth);
+  SetShowTitle(false);
+  SetShowCloseButton(false);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  SetTitle(selection_modal->dialog_title());
+}
+
+AccountSelectionModalDelegate::~AccountSelectionModalDelegate() = default;
+
+views::View* AccountSelectionModalDelegate::GetInitiallyFocusedView() {
+  if (auto* initially_focused_view =
+          GetAccountSelectionView()->GetInitiallyFocusedView()) {
+    return initially_focused_view;
+  }
+  return views::DialogDelegate::GetInitiallyFocusedView();
+}
+
+views::Widget* AccountSelectionModalDelegate::GetWidget() {
+  return GetAccountSelectionView()->GetWidget();
+}
+
+const views::Widget* AccountSelectionModalDelegate::GetWidget() const {
+  return const_cast<AccountSelectionModalDelegate*>(this)
+      ->GetAccountSelectionView()
+      ->GetWidget();
+}
+
+AccountSelectionModalView*
+AccountSelectionModalDelegate::GetAccountSelectionView() {
+  if (auto* account_selection_modal_view =
+          views::AsViewClass<AccountSelectionModalView>(GetContentsView())) {
+    return account_selection_modal_view;
+  }
+  NOTREACHED()
+      << "Dialog ContentsView isn't of type AccountSelectionModalView!";
+}
+
 AccountSelectionModalView::AccountSelectionModalView(
     const content::RelyingPartyData& rp_data,
     const std::optional<std::u16string>& idp_title,
@@ -152,19 +196,11 @@ AccountSelectionModalView::AccountSelectionModalView(
                                    ->GetPrimaryMainFrame()
                                    ->GetRenderWidgetHost()
                                    ->GetDeviceScaleFactor()) {
-  SetModalType(ui::mojom::ModalType::kChild);
-  SetOwnedByWidget(OwnedByWidgetPassKey());
-  SetOwnershipOfNewWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  set_fixed_width(kDialogWidth);
-  SetShowTitle(false);
-  SetShowCloseButton(false);
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-      kBetweenChildSpacing));
-  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  // Configure the BoxLayoutView
+  SetOrientation(views::BoxLayout::Orientation::kVertical);
+  SetBetweenChildSpacing(kBetweenChildSpacing);
 
   title_ = GetTitle(rp_data_, idp_title, rp_context);
-  SetTitle(title_);
 
   subtitle_ = GetSubtitle(rp_data_);
 
@@ -567,7 +603,9 @@ void AccountSelectionModalView::ShowErrorDialog(
 
   title_ = summary_text;
   title_label_->SetText(title_);
-  SetTitle(title_);
+  if (auto* widget = GetWidget()) {
+    widget->widget_delegate()->SetTitle(title_);
+  }
 
   // body_label_ may be invisible if the preceding UI is the disclosure UI. When
   // error is triggered directly from the loading UI in case of auto re-authn,
@@ -860,6 +898,14 @@ std::optional<std::string> AccountSelectionModalView::GetDialogSubtitle()
   return base::UTF16ToUTF8(subtitle_);
 }
 
+void AccountSelectionModalView::VisibilityChanged(View* starting_from,
+                                                  bool is_visible) {
+  if (is_visible && !queued_announcement_.empty()) {
+    GetViewAccessibility().AnnounceAlert(queued_announcement_);
+    queued_announcement_ = u"";
+  }
+}
+
 std::u16string AccountSelectionModalView::GetQueuedAnnouncementForTesting() {
   return queued_announcement_;
 }
@@ -876,16 +922,8 @@ views::View* AccountSelectionModalView::GetInitiallyFocusedView() {
     return continue_button_;
   }
 
-  // Default to superclass.
-  return views::DialogDelegateView::GetInitiallyFocusedView();
-}
-
-void AccountSelectionModalView::VisibilityChanged(View* starting_from,
-                                                  bool is_visible) {
-  if (is_visible && !queued_announcement_.empty()) {
-    GetViewAccessibility().AnnounceAlert(queued_announcement_);
-    queued_announcement_ = u"";
-  }
+  // Return null to indicate to the delegate to use the delegate's super-class.
+  return nullptr;
 }
 
 void AccountSelectionModalView::

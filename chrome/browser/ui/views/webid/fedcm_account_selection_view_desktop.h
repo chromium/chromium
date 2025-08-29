@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBID_FEDCM_ACCOUNT_SELECTION_VIEW_DESKTOP_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBID_FEDCM_ACCOUNT_SELECTION_VIEW_DESKTOP_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_observer.h"
 #include "chrome/browser/picture_in_picture/scoped_picture_in_picture_occlusion_observation.h"
+#include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
 #include "chrome/browser/ui/views/webid/fedcm_modal_dialog_view.h"
@@ -18,6 +21,8 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/input_event_activation_protector.h"
+#include "ui/views/widget/widget_delegate.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace tabs {
 class TabInterface;
@@ -145,10 +150,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Public for testing.
   void TabForegrounded(tabs::TabInterface* tab);
 
-  // Called when the associated tab will enter the background.
-  // Public for testing.
-  void TabWillEnterBackground(tabs::TabInterface* tab);
-
   // Called after the widget associated with Show() has been shown.
   void OnAccountsDisplayed();
 
@@ -213,6 +214,10 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Returns whether the dialog widget exists and is visible.
   bool IsDialogWidgetVisible() const;
 
+  // Returns whether the dialog had been created but is no longer visible and
+  // may be made visible again with the same contents. Used for Testing.
+  bool HasDialogContentsViewForTesting() const;
+
   // Called when the tab will be removed from the window.
   // Public for testing.
   void WillDetach(tabs::TabInterface* tab,
@@ -244,10 +249,27 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // dialog is bubble or modal.
   // Virtual for testing.
   virtual std::unique_ptr<views::Widget> CreateDialogWidget();
+  // Remove the content view from the dialog/bubble and return ownership.
+  // virtual for testing.
+  virtual std::unique_ptr<views::View> ExtractDialogContentsView();
 
   // Creates a popup window that is used to sign in to the IdP, or other flows.
   // Virtual for testing.
   virtual std::unique_ptr<FedCmModalDialogView> CreatePopupWindow();
+
+ protected:
+  virtual void ShowDialog(
+      views::Widget* widget,
+      std::unique_ptr<tabs::TabDialogManager::Params> params);
+  virtual void UpdateDialogVisibility(bool requested_visibility);
+  virtual bool IsDialogManaged(views::Widget* widget);
+
+  // This contains the "parked" contents of the dialog_widget_. It is placed
+  // here prior to the dialog_widget_ being constructed or when the
+  // dialog_widget_ is destroyed when it is hidden. The dialog_widget_ will be
+  // recreated on-demand and this view handed off to the new instance. It is
+  // protected for testing.
+  std::unique_ptr<views::View> parked_dialog_view_;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewBrowserTest,
@@ -429,6 +451,18 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Called when any of the Show*() methods is called.
   void ResetDialogWidgetStateOnAnyShow();
 
+  // Returns the intended bounds and position of the dialog. Rather than
+  // directly setting the bounds, the bounds are instead returned since the
+  // dialog manager may decide to animate the bounds if they happen to change.
+  gfx::Rect GetDialogBounds();
+
+  // Set |should_show| to false if the dialog should be hidden. Since
+  // |should_show| is initially set by the caller, this function should only set
+  // it to false if it determines the dialog should be hidden for whatever
+  // reason. The caller *may* have decided to not show the dialog by setting the
+  // initial value to false.
+  void ShouldShowDialog(bool& should_show);
+
   std::vector<IdentityProviderDataPtr> idp_list_;
 
   std::vector<IdentityRequestAccountPtr> accounts_;
@@ -528,14 +562,18 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   std::unique_ptr<tabs::ScopedAcceptMouseEventsWhileWindowInactive>
       tab_accept_mouse_events_;
 
+  // This is the delegate used by the dialog_widget_. It is owned by this class
+  // and is constructed/destroyed as needed to create the dialog_widget_.
+  std::unique_ptr<views::WidgetDelegate> widget_delegate_;
+
   // Widget that owns the view.
   std::unique_ptr<views::Widget> dialog_widget_;
 
-  // This view controls the contents of the dialog_widget_. Conceptually there
+  // This controls the contents of the dialog_widget_. Conceptually there
   // is a view if and only if there is a widget. The two are constructed
   // together and destroyed together. `dialog_widget_` owns
-  // `account_selection_view_` via DialogDelegate.
-  raw_ptr<AccountSelectionViewBase> account_selection_view_;
+  // `account_selection_view_` as a View attached to the root of the Widget.
+  raw_ptr<AccountSelectionViewBase> account_selection_view_ = nullptr;
 
   base::WeakPtrFactory<FedCmAccountSelectionView> weak_ptr_factory_{this};
 };

@@ -252,7 +252,7 @@ class SubAppsInstallDialogController;
 }  // namespace web_app
 
 namespace webid {
-class AccountSelectionModalView;
+class TestAccountSelectionView;
 }  // namespace webid
 
 namespace views {
@@ -447,7 +447,6 @@ class VIEWS_EXPORT WidgetDelegate {
     friend class borealis::BorealisLaunchErrorDialog;
     friend class ::web_app::IsolatedWebAppInstallerViewController;
     friend class ::web_app::SubAppsInstallDialogController;
-    friend class ::webid::AccountSelectionModalView;
 
     OwnedByWidgetPassKey() = default;
   };
@@ -983,6 +982,7 @@ class VIEWS_EXPORT WidgetDelegateView : public WidgetDelegate, public View {
   friend class examples::ExamplesWindowContents;
   friend class test::GetNativeThemeFromDestructorView;
   friend class test::TestingWidgetDelegateView;
+  friend class webid::TestAccountSelectionView;
   FRIEND_TEST_ALL_PREFIXES(test::WidgetOwnsNativeWidgetTest,
                            WidgetDelegateView);
 

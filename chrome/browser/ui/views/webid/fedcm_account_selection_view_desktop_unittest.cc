@@ -9,23 +9,32 @@
 #include <type_traits>
 
 #include "base/callback_list.h"
+#include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
+#include "chrome/browser/ui/views/webid/account_selection_view_base.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_test_base.h"
+#include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/browser/ui/webid/identity_ui_utils.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/test/mock_input_event_activation_protector.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "url/gurl.h"
 
 namespace webid {
@@ -35,10 +44,25 @@ using SignInMode = content::IdentityRequestAccount::SignInMode;
 using TokenError = content::IdentityCredentialTokenError;
 using DismissReason = content::IdentityRequestDialogController::DismissReason;
 class FedCmAccountSelectionViewDesktopTest;
+class TestAccountSelectionView;
+
+class TestAccountWidgetDelegate : public views::WidgetDelegate {
+ public:
+  explicit TestAccountWidgetDelegate(
+      std::unique_ptr<TestAccountSelectionView> account_selection_view) {
+    SetContentsView(std::move(account_selection_view));
+  }
+  ~TestAccountWidgetDelegate() override = default;
+  TestAccountWidgetDelegate(const TestAccountWidgetDelegate&) = delete;
+  TestAccountWidgetDelegate& operator=(const TestAccountWidgetDelegate&) =
+      delete;
+};
 
 // Mock AccountSelectionViewBase which tracks state.
 class TestAccountSelectionView : public AccountSelectionViewBase,
-                                 public views::WidgetDelegate {
+                                 public views::View {
+  METADATA_HEADER(TestAccountSelectionView, views::View)
+
  public:
   explicit TestAccountSelectionView(FedCmAccountSelectionView* owner)
       : AccountSelectionViewBase(
@@ -123,6 +147,8 @@ class TestAccountSelectionView : public AccountSelectionViewBase,
   std::optional<SheetType> sheet_type_{SheetType::kLoading};
   std::vector<std::string> account_ids_;
 };
+BEGIN_METADATA(TestAccountSelectionView)
+END_METADATA
 
 namespace {
 
@@ -229,11 +255,19 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
     ON_CALL(*input_protector, IsPossiblyUnintendedInteraction)
         .WillByDefault(testing::Return(false));
     SetInputEventActivationProtectorForTesting(std::move(input_protector));
+    // Hook some tab interface events to simulate some TabDialogManager
+    // behaviors.
+    tab_subscriptions_.push_back(
+        tab->RegisterWillDeactivate(base::BindRepeating(
+            &TestFedCmAccountSelectionView::TabWillEnterBackground,
+            base::Unretained(this))));
+    tab_subscriptions_.push_back(tab->RegisterDidActivate(
+        base::BindRepeating(&TestFedCmAccountSelectionView::TabForegrounded,
+                            base::Unretained(this))));
   }
   ~TestFedCmAccountSelectionView() override {
-    if (auto* widget = GetDialogWidget()) {
-      widget->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
-    }
+    // Ensure the dialog is closed before the widget delegate is destroyed.
+    Close(/*notify_delegate=*/false, /*hide_widget=*/false);
   }
 
   TestFedCmAccountSelectionView(const TestFedCmAccountSelectionView&) = delete;
@@ -267,20 +301,65 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
     } else {
       *out_dialog_type = FedCmAccountSelectionView::DialogType::BUBBLE;
     }
-    account_selection_view_owned_ =
-        std::make_unique<TestAccountSelectionView>(this);
-    return account_selection_view_owned_.get();
+    parked_dialog_view_ = std::make_unique<TestAccountSelectionView>(this);
+    return static_cast<AccountSelectionViewBase*>(
+        views::AsViewClass<TestAccountSelectionView>(
+            parked_dialog_view_.get()));
   }
 
   bool CanFitInWebContents() override { return can_fit_in_web_contents_; }
   void UpdateDialogPosition() override { dialog_position_updated_ = true; }
   std::unique_ptr<views::Widget> CreateDialogWidget() override;
+  std::unique_ptr<views::View> ExtractDialogContentsView() override;
   std::unique_ptr<FedCmModalDialogView> CreatePopupWindow() override;
 
+ protected:
+  // Let's stub-out the ShowDialog operation for testing.
+  void ShowDialog(
+      views::Widget* widget,
+      std::unique_ptr<tabs::TabDialogManager::Params> params) override {
+    params_ = std::move(params);
+    widget->Show();
+    widget->SetVisible(true);
+    dialog_managed_ = true;
+  }
+
+  void UpdateDialogVisibility(bool requested_visibility) override {
+    if (dialog_managed_) {
+      GetDialogWidget()->SetVisible(requested_visibility);
+    }
+  }
+
+  bool IsDialogManaged(views::Widget* widget) override {
+    return dialog_managed_;
+  }
+
+  // We also need to simulate some of the TabDialogManager behaviors.
+  void TabWillEnterBackground(tabs::TabInterface* tab) {
+    if (auto* widget = GetDialogWidget()) {
+      widget->Hide();
+    }
+  }
+
+  void TabForegrounded(tabs::TabInterface* tab) {
+    if (auto* widget = GetDialogWidget()) {
+      bool should_show = true;
+      if (params_ && params_->should_show_callback) {
+        params_->should_show_callback.Run(should_show);
+      }
+      if (tab->IsActivated() && should_show) {
+        widget->SetVisible(true);
+      }
+    }
+  }
+
  private:
+  std::vector<base::CallbackListSubscription> tab_subscriptions_;
+  std::unique_ptr<tabs::TabDialogManager::Params> params_;
+  std::unique_ptr<TestAccountWidgetDelegate> account_widget_delegate_;
   blink::mojom::RpContext rp_context_;
   raw_ptr<FedCmAccountSelectionViewDesktopTest> test_;
-  std::unique_ptr<TestAccountSelectionView> account_selection_view_owned_;
+  bool dialog_managed_ = false;
 };
 
 // Stub AccountSelectionView::Delegate.
@@ -594,8 +673,17 @@ TestFedCmAccountSelectionView::CreateDialogWidget() {
   views::Widget::InitParams params =
       test_->CreateParams(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
                           views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  params.delegate = GetTestView();
+  account_widget_delegate_ = std::make_unique<TestAccountWidgetDelegate>(
+      base::WrapUnique(views::AsViewClass<TestAccountSelectionView>(
+          parked_dialog_view_.release())));
+  params.delegate = account_widget_delegate_.get();
   return test_->CreateTestWidget(std::move(params));
+}
+
+std::unique_ptr<views::View>
+TestFedCmAccountSelectionView::ExtractDialogContentsView() {
+  return GetDialogWidget()
+      ->RemoveClientContentsView<TestAccountSelectionView>();
 }
 
 std::unique_ptr<FedCmModalDialogView>
@@ -1140,8 +1228,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // Emulate IdentityProvider.close() being called in the pop-up window.
   controller->CloseModalDialog();
 
-  // Widget should not be closed.
-  EXPECT_FALSE(controller->GetDialogWidget()->IsClosed());
+  // Widget should not be visible here.
+  EXPECT_FALSE(controller->IsDialogWidgetVisible());
 }
 
 // Test closing the IdP sign-in pop-up window through means other than
@@ -2304,8 +2392,11 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 // Tests that changing visibility from hidden to visible, also updates the
 // dialog position. This is needed in case the web contents was resized while
 // hidden.
+// TODO(https://crbug.com/441908440): Is this test really valid here since
+// visibility is controlled by the TabDialogManager rather than it the
+// controller handling all that work.
 TEST_F(FedCmAccountSelectionViewDesktopTest,
-       VisibilityChangesUpdatesDialogPosition) {
+       DISABLED_VisibilityChangesUpdatesDialogPosition) {
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShow(accounts_);
   controller->dialog_position_updated_ = false;
@@ -2440,8 +2531,8 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
       CreateAndShow(accounts_);
   // This is choose another account since there are accounts being shown.
   OpenLoginToIdpPopup(controller.get());
-  // The dialog is not closed but is hidden.
-  EXPECT_FALSE(controller->GetDialogWidget()->IsClosed());
+  // The dialog widget is hidden but not destroyed.
+  EXPECT_TRUE(controller->GetDialogWidget());
   EXPECT_FALSE(controller->IsDialogWidgetVisible());
 
   // Emulate user closing the pop-up window.
@@ -2539,13 +2630,12 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, LoadingDialogResultMetric) {
 
 // Tests that the correct disclosure dialog result metrics are recorded.
 TEST_F(FedCmAccountSelectionViewDesktopTest, DisclosureDialogResultMetric) {
-  auto CheckForSampleAndReset(
-      [&](webid::DisclosureDialogResult result) {
-        histogram_tester_->ExpectUniqueSample(
-            "Blink.FedCm.Button.DisclosureDialogResult",
-            static_cast<int>(result), 1);
-        histogram_tester_ = std::make_unique<base::HistogramTester>();
-      });
+  auto CheckForSampleAndReset([&](webid::DisclosureDialogResult result) {
+    histogram_tester_->ExpectUniqueSample(
+        "Blink.FedCm.Button.DisclosureDialogResult", static_cast<int>(result),
+        1);
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+  });
 
   {
     // User proceeds with an account.

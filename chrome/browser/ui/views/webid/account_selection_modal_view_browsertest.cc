@@ -31,6 +31,7 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace webid {
 namespace {
@@ -164,12 +165,15 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
                            bool expect_visible_idp_icon = true,
                            bool expect_visible_combined_icons = false) {
     // Perform some basic dialog checks.
-    EXPECT_FALSE(dialog()->ShouldShowCloseButton());
-    EXPECT_FALSE(dialog()->ShouldShowWindowTitle());
+    auto* delegate = dialog_delegate();
+    ASSERT_TRUE(delegate);
+
+    EXPECT_FALSE(delegate->ShouldShowCloseButton());
+    EXPECT_FALSE(delegate->ShouldShowWindowTitle());
 
     // Default buttons should not be shown.
-    EXPECT_FALSE(dialog()->GetOkButton());
-    EXPECT_FALSE(dialog()->GetCancelButton());
+    EXPECT_FALSE(delegate->GetOkButton());
+    EXPECT_FALSE(delegate->GetCancelButton());
 
     bool has_subtitle = !iframe_for_display_.empty();
 
@@ -707,6 +711,13 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
   }
 
   AccountSelectionModalView* dialog() { return dialog_; }
+
+  views::DialogDelegate* dialog_delegate() {
+    if (auto* widget = dialog()->GetWidget()) {
+      return widget->widget_delegate()->AsDialogDelegate();
+    }
+    return nullptr;
+  }
 
   IdentityProviderDataPtr idp_data() { return idp_data_; }
 

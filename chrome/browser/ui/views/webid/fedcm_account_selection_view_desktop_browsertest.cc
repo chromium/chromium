@@ -83,6 +83,12 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
     return account_selection_view_->GetDialogWidget();
   }
 
+  bool IsDialogVisible() { return GetDialog() && GetDialog()->IsVisible(); }
+
+  bool HasDialogContentsView() {
+    return account_selection_view_->HasDialogContentsViewForTesting();
+  }
+
   FakeDelegate* delegate() { return delegate_.get(); }
 
   FedCmAccountSelectionView* account_selection_view() {
@@ -147,10 +153,11 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, ShowWhileHidden) {
   EXPECT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
   ShowUi("");
 
-  // Since Show() was called while hidden, the dialog should have been created,
-  // but should not be visible.
+  // Since Show() was called while hidden, the dialog should not be visible but
+  // Still has the contents.
   ASSERT_TRUE(GetDialog());
-  EXPECT_FALSE(GetDialog()->IsVisible());
+  EXPECT_FALSE(IsDialogVisible());
+  EXPECT_TRUE(HasDialogContentsView());
 
   browser()->tab_strip_model()->ActivateTabAt(0);
   ASSERT_TRUE(GetDialog());
@@ -164,9 +171,10 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
 
   Show();
   // Since Show() was called while the web contents is too small, the dialog
-  // should have been created, but should not be visible.
+  // should not be visible, but the contents should still be available.
   ASSERT_TRUE(GetDialog());
-  EXPECT_FALSE(GetDialog()->IsVisible());
+  EXPECT_FALSE(IsDialogVisible());
+  EXPECT_TRUE(HasDialogContentsView());
 }
 
 IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
@@ -445,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewPopupTest,
         account_selection_view_->account_selection_view());
     EXPECT_TRUE(
         popup->GetActiveTabInterface()->GetContents()->GetViewBounds().Contains(
-            bubble->GetBubbleBounds()));
+            bubble->GetBubbleBounds(gfx::Rect())));
     Reset();
   }
 
