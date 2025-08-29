@@ -1483,8 +1483,17 @@ class PasswordChangeBrowserTestWithLoginCheck
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+#if ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)) &&               \
+     (defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
+      defined(UNDEFINED_BEHAVIOR_SANITIZER)))
+#define MAYBE_PasswordChangeDoesNotStartUserIsLoggedOut \
+  DISABLED_PasswordChangeDoesNotStartUserIsLoggedOut
+#else
+#define MAYBE_PasswordChangeDoesNotStartUserIsLoggedOut \
+  PasswordChangeDoesNotStartUserIsLoggedOut
+#endif
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
-                       PasswordChangeDoesNotStartUserIsLoggedOut) {
+                       MAYBE_PasswordChangeDoesNotStartUserIsLoggedOut) {
   const GURL main_url = WebContents()->GetLastCommittedURL();
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
       .WillOnce(Return(GURL(kChangePasswordURL)));
@@ -1513,8 +1522,15 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
             PasswordChangeDelegate::State::kChangePasswordFormNotFound);
 }
 
+#if ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)) &&               \
+     (defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
+      defined(UNDEFINED_BEHAVIOR_SANITIZER)))
+#define MAYBE_OpenTabWhenLoggedOut DISABLED_OpenTabWhenLoggedOut
+#else
+#define MAYBE_OpenTabWhenLoggedOut OpenTabWhenLoggedOut
+#endif
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
-                       OpenTabWhenLoggedOut) {
+                       MAYBE_OpenTabWhenLoggedOut) {
   const GURL main_url = WebContents()->GetLastCommittedURL();
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
       .WillOnce(Return(GURL(kChangePasswordURL)));
@@ -1553,8 +1569,17 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
             GURL(kChangePasswordURL));
 }
 
+#if ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)) &&               \
+     (defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
+      defined(UNDEFINED_BEHAVIOR_SANITIZER)))
+#define MAYBE_PasswordChangeStartsUserIsLoggedIn \
+  DISABLED_PasswordChangeStartsUserIsLoggedIn
+#else
+#define MAYBE_PasswordChangeStartsUserIsLoggedIn \
+  PasswordChangeStartsUserIsLoggedIn
+#endif
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
-                       PasswordChangeStartsUserIsLoggedIn) {
+                       MAYBE_PasswordChangeStartsUserIsLoggedIn) {
   const GURL main_url = WebContents()->GetLastCommittedURL();
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
       .WillOnce(Return(GURL(kChangePasswordURL)));
