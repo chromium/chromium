@@ -38,6 +38,8 @@ class NotificationTelemetryStore : public NotificationTelemetryStoreInterface {
                                  SuccessCallback success_callback) override;
   void DeleteAll(SuccessCallback success_callback) override;
 
+  bool IsInitializedForTest();
+
  protected:
   // Used only for testing.
   explicit NotificationTelemetryStore(

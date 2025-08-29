@@ -157,4 +157,8 @@ void NotificationTelemetryStore::AddServiceWorkerBehavior(
                      std::move(success_callback)));
 }
 
+bool NotificationTelemetryStore::IsInitializedForTest() {
+  return initialized_;
+}
+
 }  // namespace safe_browsing

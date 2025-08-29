@@ -6,10 +6,17 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/protobuf_matchers.h"
+#include "base/test/run_until.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/leveldb_proto/testing/fake_db.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -51,7 +58,6 @@ CSBRR::ServiceWorkerBehavior MakeServiceWorkerPushBehavior(
 
 }  // namespace
 
-// TODO(crbug.com/438234675): Add coverage for prod constructor.
 class MockNotificationTelemetryStore : public NotificationTelemetryStore {
  public:
   explicit MockNotificationTelemetryStore(
@@ -73,7 +79,7 @@ class NotificationTelemetryStoreTest : public testing::Test {
   void SetUp() override {
     auto fake_db = std::make_unique<FakeDB<CSBRR::ServiceWorkerBehavior>>(
         &fake_db_entries_);
-    fake_service_worker_behavor_db_ = fake_db.get();
+    fake_service_worker_behavior_db_ = fake_db.get();
     notification_telemetry_store_ =
         std::make_unique<MockNotificationTelemetryStore>(std::move(fake_db));
   }
@@ -85,7 +91,7 @@ class NotificationTelemetryStoreTest : public testing::Test {
     return fake_db_entries_;
   }
   FakeDB<CSBRR::ServiceWorkerBehavior>* fake_service_worker_behavior_db() {
-    return fake_service_worker_behavor_db_;
+    return fake_service_worker_behavior_db_;
   }
 
   void VerifyServiceWorkerBehaviors(
@@ -102,17 +108,161 @@ class NotificationTelemetryStoreTest : public testing::Test {
         *service_worker_behaviors,
         UnorderedPointwise(EqualsProto(), expected_service_worker_behaviors));
   }
+
+  void AddSuccessCallback(base::OnceClosure run_loop_closure, bool success) {
+    store_op_success_ = success;
+    std::move(run_loop_closure).Run();
+  }
+
+  void LoadEntriesCallback(
+      base::OnceClosure run_loop_closure,
+      bool success,
+      std::unique_ptr<std::vector<CSBRR::ServiceWorkerBehavior>> entries) {
+    store_op_success_ = success;
+    entries_ = std::move(*entries);
+    std::move(run_loop_closure).Run();
+  }
+
+  Profile* profile() { return &profile_; }
   MOCK_METHOD1(OnIsEmpty, void(bool));
   MOCK_METHOD1(OnDone, void(bool));
   MOCK_METHOD2(
       OnGetServiceWorkersBehaviors,
       void(bool, std::unique_ptr<std::vector<CSBRR::ServiceWorkerBehavior>>));
 
+ protected:
+  // Set to true during database callback when the operation is successful.
+  bool store_op_success_;
+  // ServiceWorkerBehaviors stored in the database populated by
+  // `LoadEntriesCallback`.
+  std::vector<CSBRR::ServiceWorkerBehavior> entries_;
+
  private:
   std::unique_ptr<NotificationTelemetryStore> notification_telemetry_store_;
   std::map<std::string, CSBRR::ServiceWorkerBehavior> fake_db_entries_;
-  raw_ptr<FakeDB<CSBRR::ServiceWorkerBehavior>> fake_service_worker_behavor_db_;
+  raw_ptr<FakeDB<CSBRR::ServiceWorkerBehavior>>
+      fake_service_worker_behavior_db_;
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
 };
+
+TEST_F(NotificationTelemetryStoreTest, ConstructStoreFromProfile) {
+  std::vector<GURL> requested_urls = {GURL("http://dest.com")};
+  auto store = std::make_unique<NotificationTelemetryStore>(profile());
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return store->IsInitializedForTest(); }));
+
+  // Verify that the store functions as expected.
+  base::RunLoop wait_for_add;
+  store->AddServiceWorkerPushBehavior(
+      GURL("http://script1.com"), requested_urls,
+      base::BindOnce(&NotificationTelemetryStoreTest::AddSuccessCallback,
+                     base::Unretained(this), wait_for_add.QuitClosure()));
+  wait_for_add.Run();
+  ASSERT_TRUE(store_op_success_);
+
+  base::RunLoop wait_for_get;
+  EXPECT_CALL(*this, OnDone(true));
+  store->GetServiceWorkerBehaviors(
+      base::BindOnce(&NotificationTelemetryStoreTest::LoadEntriesCallback,
+                     base::Unretained(this), wait_for_get.QuitClosure()),
+      base::BindOnce(&NotificationTelemetryStoreTest::OnDone,
+                     base::Unretained(this)));
+  wait_for_get.Run();
+  std::vector<CSBRR::ServiceWorkerBehavior> expected_service_worker_behaviors =
+      {MakeServiceWorkerPushBehavior(GURL("http://script1.com"),
+                                     requested_urls)};
+  EXPECT_THAT(entries_, UnorderedPointwise(EqualsProto(),
+                                           expected_service_worker_behaviors));
+}
+
+TEST_F(NotificationTelemetryStoreTest,
+       QueueAddServiceWorkerBehaviorsWhileNotInitialized) {
+  // Queue operation before the db is initialized.
+  EXPECT_FALSE(notification_telemetry_store()->IsInitializedForTest());
+  GURL script_url = GURL("http://script.com");
+  std::vector<GURL> requested_urls = {GURL("http://dest.com")};
+  notification_telemetry_store()->AddServiceWorkerPushBehavior(
+      script_url, requested_urls,
+      base::BindOnce(&NotificationTelemetryStoreTest::OnDone,
+                     base::Unretained(this)));
+
+  // Initialize the db.
+  fake_service_worker_behavior_db()->InitStatusCallback(
+      leveldb_proto::Enums::InitStatus::kOK);
+  EXPECT_TRUE(notification_telemetry_store()->IsInitializedForTest());
+
+  // Verify that the queued operation is executed after db is initialized.
+  EXPECT_CALL(*this, OnDone(true));
+  fake_service_worker_behavior_db()->UpdateCallback(true);
+}
+
+TEST_F(NotificationTelemetryStoreTest,
+       QueueGetServiceWorkerBehaviorsWhileNotInitialized) {
+  // Queue operation before the db is initialized.
+  EXPECT_FALSE(notification_telemetry_store()->IsInitializedForTest());
+  notification_telemetry_store()->GetServiceWorkerBehaviors(
+      base::BindOnce(
+          &NotificationTelemetryStoreTest::OnGetServiceWorkersBehaviors,
+          base::Unretained(this)),
+      base::BindOnce(&NotificationTelemetryStoreTest::OnDone,
+                     base::Unretained(this)));
+
+  // Initialize the db.
+  fake_service_worker_behavior_db()->InitStatusCallback(
+      leveldb_proto::Enums::InitStatus::kOK);
+  EXPECT_TRUE(notification_telemetry_store()->IsInitializedForTest());
+
+  // Verify that the queued operation is executed after db is initialized.
+  EXPECT_CALL(*this, OnDone(true));
+  EXPECT_CALL(*this, OnGetServiceWorkersBehaviors(true, _));
+  fake_service_worker_behavior_db()->LoadCallback(true);
+}
+
+TEST_F(NotificationTelemetryStoreTest,
+       QueueAddGetServiceWorkerBehaviorsWhileNotInitialized) {
+  // Queue operations before the db is initialized.
+  EXPECT_FALSE(notification_telemetry_store()->IsInitializedForTest());
+  GURL script_url = GURL("http://script.com");
+  std::vector<GURL> requested_urls = {GURL("http://dest.com")};
+  notification_telemetry_store()->AddServiceWorkerPushBehavior(
+      script_url, requested_urls,
+      base::BindOnce(&NotificationTelemetryStoreTest::OnDone,
+                     base::Unretained(this)));
+  notification_telemetry_store()->GetServiceWorkerBehaviors(
+      base::BindOnce(
+          &NotificationTelemetryStoreTest::OnGetServiceWorkersBehaviors,
+          base::Unretained(this)),
+      base::BindOnce(&NotificationTelemetryStoreTest::OnDone,
+                     base::Unretained(this)));
+
+  // Initialize the db.
+  fake_service_worker_behavior_db()->InitStatusCallback(
+      leveldb_proto::Enums::InitStatus::kOK);
+  EXPECT_TRUE(notification_telemetry_store()->IsInitializedForTest());
+
+  // Verify that the queued operations are executed after db is initialized.
+  EXPECT_CALL(*this, OnDone(true)).Times(2);
+  EXPECT_CALL(*this, OnGetServiceWorkersBehaviors(true, _));
+  fake_service_worker_behavior_db()->UpdateCallback(true);
+  fake_service_worker_behavior_db()->LoadCallback(true);
+}
+
+TEST_F(NotificationTelemetryStoreTest, QueueDeleteAllWhileNotInitialized) {
+  // Queue operation before the db is initialized.
+  EXPECT_FALSE(notification_telemetry_store()->IsInitializedForTest());
+  notification_telemetry_store()->DeleteAll(base::BindOnce(
+      &NotificationTelemetryStoreTest::OnDone, base::Unretained(this)));
+
+  // Initialize the db.
+  fake_service_worker_behavior_db()->InitStatusCallback(
+      leveldb_proto::Enums::InitStatus::kOK);
+  EXPECT_TRUE(notification_telemetry_store()->IsInitializedForTest());
+
+  //  Verify that the queued operation is executed after db is initialized.
+  EXPECT_CALL(*this, OnDone(true));
+  fake_service_worker_behavior_db()->UpdateCallback(true);
+}
 
 TEST_F(NotificationTelemetryStoreTest, AddServiceWorkerBehaviorsToDb) {
   fake_service_worker_behavior_db()->InitStatusCallback(
