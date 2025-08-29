@@ -632,14 +632,13 @@ TEST_P(WebGPUMailboxTextureTest, WriteToMailboxThenReadFromIt) {
   // Part 2: Read back the texture using Dawn
   {
     // Register the shared image as a Dawn texture in the wire.
-    gpu::webgpu::ReservedTexture reservation =
-        webgpu()->ReserveTexture(device_.Get());
-
-    webgpu()->AssociateMailbox(
-        reservation.deviceId, reservation.deviceGeneration, reservation.id,
-        reservation.generation, WGPUTextureUsage_CopySrc,
-        webgpu::WEBGPU_MAILBOX_NONE, shared_image->mailbox());
-    wgpu::Texture texture = wgpu::Texture::Acquire(reservation.texture);
+    wgpu::TextureDescriptor desc = {
+        .usage = wgpu::TextureUsage::CopySrc,
+    };
+    std::unique_ptr<WebGPUTextureScopedAccess> webgpu_scoped_access =
+        shared_image->BeginWebGPUTextureAccess(webgpu(), gpu::SyncToken(),
+                                               device_, desc, /*usage=*/0,
+                                               webgpu::WEBGPU_MAILBOX_NONE);
 
     // Copy the texture in a mappable buffer.
     wgpu::BufferDescriptor buffer_desc;
@@ -648,7 +647,7 @@ TEST_P(WebGPUMailboxTextureTest, WriteToMailboxThenReadFromIt) {
     wgpu::Buffer readback_buffer = device_.CreateBuffer(&buffer_desc);
 
     wgpu::TexelCopyTextureInfo copy_src = {};
-    copy_src.texture = texture;
+    copy_src.texture = webgpu_scoped_access->texture();
     copy_src.mipLevel = 0;
     copy_src.origin = {0, 0, 0};
 
@@ -666,7 +665,7 @@ TEST_P(WebGPUMailboxTextureTest, WriteToMailboxThenReadFromIt) {
     wgpu::Queue queue = device_.GetQueue();
     queue.Submit(1, &commands);
 
-    webgpu()->DissociateMailbox(reservation.id, reservation.generation);
+    WebGPUTextureScopedAccess::EndAccess(std::move(webgpu_scoped_access));
 
     // Map the buffer and assert the pixel is the correct value.
     readback_buffer.MapAsync(wgpu::MapMode::Read, 0, 4,
@@ -1029,22 +1028,19 @@ TEST_P(WebGPUMailboxTextureTest,
   InitializeTextureColor(device_, shared_image, {1.0, 0, 0, 1.0});
 
   // Register the shared image as a Dawn texture in the wire.
-  gpu::webgpu::ReservedTexture reservation =
-      webgpu()->ReserveTexture(device_.Get());
-
-  // Associate the mailbox. Using WEBGPU_MAILBOX_DISCARD will set the contents
-  // to uncleared.
-  webgpu()->AssociateMailbox(
-      reservation.deviceId, reservation.deviceGeneration, reservation.id,
-      reservation.generation,
-      WGPUTextureUsage_CopySrc | WGPUTextureUsage_RenderAttachment,
-      webgpu::WEBGPU_MAILBOX_DISCARD, shared_image->mailbox());
-  wgpu::Texture texture = wgpu::Texture::Acquire(reservation.texture);
+  wgpu::TextureDescriptor desc = {
+      .usage =
+          wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::RenderAttachment,
+  };
+  std::unique_ptr<WebGPUTextureScopedAccess> webgpu_scoped_access =
+      shared_image->BeginWebGPUTextureAccess(webgpu(), gpu::SyncToken(),
+                                             device_, desc, /*usage=*/0,
+                                             webgpu::WEBGPU_MAILBOX_DISCARD);
 
   // Read the texture using a render pass. Load+Store the contents.
   // Uninitialized contents should not be loaded.
   wgpu::RenderPassColorAttachment color_desc = {};
-  color_desc.view = texture.CreateView();
+  color_desc.view = webgpu_scoped_access->texture().CreateView();
   color_desc.loadOp = wgpu::LoadOp::Load;
   color_desc.storeOp = wgpu::StoreOp::Store;
 
@@ -1063,7 +1059,7 @@ TEST_P(WebGPUMailboxTextureTest,
   wgpu::Buffer readback_buffer = device_.CreateBuffer(&buffer_desc);
 
   wgpu::TexelCopyTextureInfo copy_src = {};
-  copy_src.texture = texture;
+  copy_src.texture = webgpu_scoped_access->texture();
   copy_src.mipLevel = 0;
   copy_src.origin = {0, 0, 0};
 
@@ -1080,7 +1076,7 @@ TEST_P(WebGPUMailboxTextureTest,
   wgpu::Queue queue = device_.GetQueue();
   queue.Submit(1, &commands);
 
-  webgpu()->DissociateMailbox(reservation.id, reservation.generation);
+  WebGPUTextureScopedAccess::EndAccess(std::move(webgpu_scoped_access));
 
   // Map the buffer and assert the pixel is the correct value.
   readback_buffer.MapAsync(wgpu::MapMode::Read, 0, buffer_desc.size,
@@ -1119,17 +1115,13 @@ TEST_P(
   InitializeTextureColor(device_, shared_image, {1.0, 0, 0, 1.0});
 
   // Register the shared image as a Dawn texture in the wire.
-  gpu::webgpu::ReservedTexture reservation =
-      webgpu()->ReserveTexture(device_.Get());
-
-  // Associate the mailbox. Using WEBGPU_MAILBOX_DISCARD will set the contents
-  // to uncleared.
-  webgpu()->AssociateMailbox(
-      reservation.deviceId, reservation.deviceGeneration, reservation.id,
-      reservation.generation, WGPUTextureUsage_CopySrc,
-      WGPUTextureUsage_RenderAttachment, webgpu::WEBGPU_MAILBOX_DISCARD,
-      shared_image->mailbox());
-  wgpu::Texture texture = wgpu::Texture::Acquire(reservation.texture);
+  wgpu::TextureDescriptor desc = {
+      .usage = wgpu::TextureUsage::CopySrc,
+  };
+  std::unique_ptr<WebGPUTextureScopedAccess> webgpu_scoped_access =
+      shared_image->BeginWebGPUTextureAccess(
+          webgpu(), gpu::SyncToken(), device_, desc,
+          WGPUTextureUsage_RenderAttachment, webgpu::WEBGPU_MAILBOX_DISCARD);
 
   // Copy the texture in a mappable buffer.
   wgpu::BufferDescriptor buffer_desc;
@@ -1138,7 +1130,7 @@ TEST_P(
   wgpu::Buffer readback_buffer = device_.CreateBuffer(&buffer_desc);
 
   wgpu::TexelCopyTextureInfo copy_src = {};
-  copy_src.texture = texture;
+  copy_src.texture = webgpu_scoped_access->texture();
   copy_src.mipLevel = 0;
   copy_src.origin = {0, 0, 0};
 
@@ -1156,7 +1148,7 @@ TEST_P(
   wgpu::Queue queue = device_.GetQueue();
   queue.Submit(1, &commands);
 
-  webgpu()->DissociateMailbox(reservation.id, reservation.generation);
+  WebGPUTextureScopedAccess::EndAccess(std::move(webgpu_scoped_access));
 
   // Map the buffer and assert the pixel is the correct value.
   readback_buffer.MapAsync(wgpu::MapMode::Read, 0, buffer_desc.size,
