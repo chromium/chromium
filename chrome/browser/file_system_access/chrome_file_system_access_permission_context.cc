@@ -36,6 +36,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/download/download_prefs.h"
+#include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_factory.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
@@ -1005,21 +1006,24 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     return value;
   }
 
-  // Updates the permission grant for the `new_path` in the `grants` map using
-  // the same grant from the `old_path`, and removes the grant entry for the
-  // `old_path`.
+  // Updates the in-memory permission grant for the `new_path` in the `grants`
+  // map using the same grant from the `old_path`, and removes the grant entry
+  // for the `old_path`.
+  // If `allow_overwrite` is true, this will replace any pre-existing grant at
+  // `new_path`.
   static void UpdateGrantPath(
       std::map<base::FilePath, raw_ptr<PermissionGrantImpl, CtnExperimental>>&
           grants,
       const content::PathInfo& old_path,
-      const content::PathInfo& new_path) {
+      const content::PathInfo& new_path,
+      bool allow_overwrite) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    auto entry_it =
+    auto old_path_it =
         std::ranges::find_if(grants, [&old_path](const auto& entry) {
           return entry.first == old_path.path;
         });
 
-    if (entry_it == grants.end()) {
+    if (old_path_it == grants.end()) {
       // There must be an entry for an ancestor of this entry. Nothing to do
       // here.
       //
@@ -1028,15 +1032,57 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
       return;
     }
 
-    DCHECK_EQ(entry_it->second->GetActivePermissionStatus(),
+    DCHECK_EQ(old_path_it->second->GetActivePermissionStatus(),
               PermissionStatus::GRANTED);
 
-    auto* const grant_impl = entry_it->second.get();
-    grant_impl->SetPath(new_path);
+    auto* const grant_to_move = old_path_it->second.get();
 
-    // Update the permission grant's key in the map of active permissions.
-    grants.erase(entry_it);
-    grants.emplace(new_path.path, grant_impl);
+    if (allow_overwrite) {
+      // Check for a collision at the new path. If a different grant already
+      // exists at the destination, its status must be set to DENIED before it
+      // is replaced in the `grants` map.
+      //
+      // This prevents a DCHECK failure in `PermissionGrantDestroyed()` that can
+      // occur depending on object destruction order. Consider this scenario:
+      //   1. `grant1` (for `handle1`) exists for `path1`.
+      //   2. `handle2` (with `grant2`) is moved to `path1`.
+      //   3. The `grants` map entry for `path1` is updated to point to
+      //   `grant2`,
+      //      orphaning `grant1`. `grant1` is now untracked but still `GRANTED`.
+      //   4. If `handle2` is destroyed first, the map entry for `path1` is
+      //   removed.
+      //   5. When `handle1` is later destroyed, `PermissionGrantDestroyed()` is
+      //      called for `grant1`. It fails a DCHECK because the grant is not in
+      //      the map and its status is `GRANTED` instead of the expected
+      //      `DENIED`.
+      //
+      // By setting the orphaned grant's status to DENIED here, the DCHECK will
+      // pass regardless of destruction order.
+      auto new_path_it = grants.find(new_path.path);
+      if (new_path_it != grants.end() &&
+          new_path_it->second.get() != grant_to_move) {
+        // A different grant exists at the destination. Revoke it before it gets
+        // orphaned.
+        new_path_it->second->SetStatus(
+            PermissionStatus::DENIED,
+            // Only update the in-memory permission, as the persistent
+            // permission should be updated by the call site.
+            PersistedPermissionOptions::kDoNotUpdatePersistedPermission);
+      }
+    }
+
+    grant_to_move->SetPath(new_path);
+
+    // `insert_or_assign` is used when overwriting is allowed, as it will
+    // replace any grant that already exists at the destination path. `emplace`
+    // is used otherwise to preserve the old behavior of not overwriting
+    // existing grants.
+    grants.erase(old_path_it);
+    if (allow_overwrite) {
+      grants.insert_or_assign(new_path.path, grant_to_move);
+    } else {
+      grants.emplace(new_path.path, grant_to_move);
+    }
   }
 
   // Downgrades the in-memory read permission grant for the `path` if it exist
@@ -2368,14 +2414,19 @@ void ChromeFileSystemAccessPermissionContext::NotifyEntryMoved(
     return;
   }
 
+  // It's possible `new_path` already has existing persistent permission.
+  // See crbug.com/423663220.
+  bool allow_overwrite = base::FeatureList::IsEnabled(
+      features::kFileSystemAccessMoveWithOverwrite);
+
   bool updated = false;
   auto it = active_permissions_map_.find(origin);
   if (it != active_permissions_map_.end()) {
     // TODO(crbug.com/40245144): Consolidate superfluous child grants.
     PermissionGrantImpl::UpdateGrantPath(it->second.write_grants, old_path,
-                                         new_path);
+                                         new_path, allow_overwrite);
     PermissionGrantImpl::UpdateGrantPath(it->second.read_grants, old_path,
-                                         new_path);
+                                         new_path, allow_overwrite);
     updated = true;
   }
   if (base::FeatureList::IsEnabled(
@@ -2385,6 +2436,14 @@ void ChromeFileSystemAccessPermissionContext::NotifyEntryMoved(
     const std::unique_ptr<Object> object =
         GetGrantedObject(origin, PathAsPermissionKey(old_path.path));
     if (object) {
+      if (allow_overwrite) {
+        // Revoke any pre-existing permission at the destination first. This is
+        // a no-op if no permission exists. Otherwise this will notify
+        // permission observers twice: once for revocation and once for update.
+        const std::string new_key(PathAsPermissionKey(new_path.path));
+        RevokeObjectPermission(origin, new_key);
+      }
+
       base::Value::Dict new_object = object->value.Clone();
       new_object.Set(kPermissionPathKey, base::FilePathToValue(new_path.path));
       new_object.Set(kPermissionDisplayNameKey, new_path.display_name);

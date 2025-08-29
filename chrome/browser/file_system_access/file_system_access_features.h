@@ -11,6 +11,8 @@ namespace features {
 
 // Alphabetical:
 
+BASE_DECLARE_FEATURE(kFileSystemAccessMoveWithOverwrite);
+
 BASE_DECLARE_FEATURE(kFileSystemAccessPersistentPermissions);
 
 BASE_DECLARE_FEATURE(kFileSystemAccessSymbolicLinkCheck);

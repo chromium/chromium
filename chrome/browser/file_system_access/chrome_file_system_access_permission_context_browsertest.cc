@@ -9,10 +9,12 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
+#include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -126,9 +128,8 @@ class ChromeFileSystemAccessPermissionContextBrowserTestBase
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
-
     permission_context_ =
-        std::make_unique<TestFileSystemAccessPermissionContext>(
+        std::make_unique<ChromeFileSystemAccessPermissionContext>(
             browser()->profile());
     content::SetFileSystemAccessPermissionContext(browser()->profile(),
                                                   permission_context_.get());
@@ -140,6 +141,7 @@ class ChromeFileSystemAccessPermissionContextBrowserTestBase
     permission_context_.reset();
   }
 
+ protected:
   base::FilePath CreateTestFile(const std::string& contents) {
     base::ScopedAllowBlockingForTesting allow_blocking;
     base::FilePath result;
@@ -158,25 +160,10 @@ class ChromeFileSystemAccessPermissionContextBrowserTestBase
 
   base::ScopedTempDir& temp_dir() { return temp_dir_; }
 
-  TestFileSystemAccessPermissionContext* permission_context() {
+  ChromeFileSystemAccessPermissionContext* permission_context() {
     return permission_context_.get();
   }
 
-  base::ScopedTempDir temp_dir_;
-  std::unique_ptr<TestFileSystemAccessPermissionContext> permission_context_;
-};
-
-class ChromeFileSystemAccessPermissionContextRevokeAndRestoreBrowserTest
-    : public ChromeFileSystemAccessPermissionContextBrowserTestBase {
- public:
-  ChromeFileSystemAccessPermissionContextRevokeAndRestoreBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kFileSystemAccessRevokeReadOnRemove);
-  }
-  ~ChromeFileSystemAccessPermissionContextRevokeAndRestoreBrowserTest()
-      override = default;
-
- protected:
   // Verifies the read, write, and extended permissions for a given `path` and
   // `handle_type`.
   void VerifyPermissions(
@@ -208,6 +195,150 @@ class ChromeFileSystemAccessPermissionContextRevokeAndRestoreBrowserTest
                   ChromeFileSystemAccessPermissionContext::GrantType::kWrite),
               expected_extended_write);
   }
+
+  // Sets up the test environment with a file handle.
+  // This includes creating a test file with at `path_to_verify`, setting up a
+  // fake file picker, obtaining a file handle with `handle_name`, and verifying
+  // initial read/write permissions.
+  void SetUpAndGetHandleWithInitialPermissions(
+      const std::string& handle_name,
+      const base::FilePath& path_to_verify) {
+    ui::SelectFileDialog::SetFactory(
+        std::make_unique<content::FakeSelectFileDialogFactory>(
+            std::vector<base::FilePath>{path_to_verify}));
+
+    // Auto-grant permissions.
+    FileSystemAccessPermissionRequestManager::FromWebContents(GetWebContents())
+        ->set_auto_response_for_test(permissions::PermissionAction::GRANTED);
+
+    // Get a handle via showSaveFilePicker. This should grant read/write.
+    ASSERT_TRUE(
+        content::ExecJs(GetWebContents(), base::StringPrintf(R"(
+      (async () => {  self.%s = await self.showSaveFilePicker(); })()
+    )",
+                                                             handle_name)));
+
+    // Verify initial permissions are granted.
+    const url::Origin origin = GetOrigin();
+    VerifyPermissions(
+        origin, path_to_verify,
+        ChromeFileSystemAccessPermissionContext::HandleType::kFile,
+        content::PermissionStatus::GRANTED, content::PermissionStatus::GRANTED,
+        /*expected_extended_read=*/false,
+        /*expected_extended_write=*/false);
+  }
+
+  base::ScopedTempDir temp_dir_;
+
+ private:
+  std::unique_ptr<ChromeFileSystemAccessPermissionContext> permission_context_;
+};
+
+class ChromeFileSystemAccessPermissionContextBrowserTest
+    : public ChromeFileSystemAccessPermissionContextBrowserTestBase {
+ public:
+  ChromeFileSystemAccessPermissionContextBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kFileSystemAccessPersistentPermissions,
+         features::kFileSystemAccessMoveWithOverwrite},
+        {});
+  }
+  ~ChromeFileSystemAccessPermissionContextBrowserTest() override = default;
+
+ protected:
+  // Removes the file via the handle.
+  void RemoveFile(const std::string& handle_name) {
+    // Remove the file via the handle.
+    ASSERT_TRUE(
+        content::ExecJs(GetWebContents(), base::StringPrintf(R"((async () => {
+          await self.%s.remove();
+        })())",
+                                                             handle_name)));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that moving a file to a destination with a pre-existing permission
+// grant should work correctly.
+IN_PROC_BROWSER_TEST_F(ChromeFileSystemAccessPermissionContextBrowserTest,
+                       Move_FileDestinationPermissionExists) {
+  // Navigate to a test page.
+  const GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Create a file under a directory, and get their handles.
+  const base::FilePath dir_path = temp_dir().GetPath();
+  const base::FilePath test_file_path = dir_path.AppendASCII("test.txt");
+  SetUpAndGetHandleWithInitialPermissions("handle", test_file_path);
+
+  // Remove the file.
+  RemoveFile("handle");
+
+  // Create a new file handle at a different path.
+  const base::FilePath test_file_path2 = CreateTestFile("test file contents");
+  SetUpAndGetHandleWithInitialPermissions("handle2", test_file_path2);
+
+  // Move the new file to the removed file path which is under the target
+  // directory `dir_path`.
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<content::FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{dir_path}));
+  ASSERT_TRUE(content::ExecJs(GetWebContents(), R"((async () => {
+        self.dirHandle = await self.showDirectoryPicker({mode: 'readwrite'});
+      })())"));
+
+  ASSERT_TRUE(content::ExecJs(GetWebContents(), R"((async () => {
+        await self.handle2.move(self.dirHandle, 'test.txt');
+      })())"));
+
+  // Not verifying any permissions, but the test should end without crashing.
+
+  ui::SelectFileDialog::SetFactory(nullptr);
+}
+
+// Tests that renaming a file to a destination with a pre-existing permission
+// grant should work correctly.
+IN_PROC_BROWSER_TEST_F(ChromeFileSystemAccessPermissionContextBrowserTest,
+                       Rename_FileDestinationPermissionExists) {
+  // Navigate to a test page.
+  const GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Create a file and get its handle.
+  const base::FilePath test_file_path = CreateTestFile("test file contents");
+  SetUpAndGetHandleWithInitialPermissions("handle", test_file_path);
+
+  // Remove the file.
+  RemoveFile("handle");
+
+  // Create a new file handle at a different path.
+  const base::FilePath test_file_path2 = CreateTestFile("test file contents 2");
+  SetUpAndGetHandleWithInitialPermissions("handle2", test_file_path2);
+
+  // Rename the new file to the removed file path.
+  ASSERT_TRUE(content::ExecJs(
+      GetWebContents(),
+      content::JsReplace(R"((async () => {
+        await self.handle2.move($1);
+      })())",
+                         test_file_path.BaseName().AsUTF8Unsafe())));
+
+  // Not verifying any permissions, but the test should end without crashing.
+
+  ui::SelectFileDialog::SetFactory(nullptr);
+}
+
+class ChromeFileSystemAccessPermissionContextRevokeAndRestoreBrowserTest
+    : public ChromeFileSystemAccessPermissionContextBrowserTestBase {
+ public:
+  ChromeFileSystemAccessPermissionContextRevokeAndRestoreBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kFileSystemAccessRevokeReadOnRemove}, {});
+  }
+  ~ChromeFileSystemAccessPermissionContextRevokeAndRestoreBrowserTest()
+      override = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
