@@ -11,7 +11,9 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/debug/crash_logging.h"
 #include "base/debug/debugging_buildflags.h"
+#include "base/numerics/clamped_math.h"
 #include "build/build_config.h"
 #include "build/config/compiler/compiler_buildflags.h"
 
@@ -149,10 +151,19 @@ uintptr_t ScanStackForNextFrame(uintptr_t fp, uintptr_t stack_end) {
     return 0;
   }
 
+  SCOPED_CRASH_KEY_NUMBER("402542102", "input_fp", fp);
+  SCOPED_CRASH_KEY_NUMBER("402542102", "stack_end", stack_end);
+
   fp += sizeof(uintptr_t);  // current frame is known to be invalid
   uintptr_t last_fp_to_scan =
-      std::min(fp + kMaxStackScanArea, stack_end) - sizeof(uintptr_t);
+      (base::ClampedNumeric<uintptr_t>(fp) + kMaxStackScanArea).Min(stack_end) -
+      sizeof(uintptr_t);
+
+  SCOPED_CRASH_KEY_NUMBER("402542102", "last_fp_to_scan", last_fp_to_scan);
+
   for (; fp <= last_fp_to_scan; fp += sizeof(uintptr_t)) {
+    SCOPED_CRASH_KEY_NUMBER("402542102", "fp", fp);
+
     uintptr_t next_fp = GetNextStackFrame(fp);
     if (IsStackFrameValid(next_fp, fp, stack_end)) {
       // Check two frames deep. Since stack frame is just a pointer to
