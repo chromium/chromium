@@ -46,9 +46,18 @@ BASE_FEATURE(kClientSideDetectionClipboardCopyApi,
              "ClientSideDetectionClipboardCopyApi",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<double> kCSDClipboardCopyApiHCAcceptanceRate{
+const base::FeatureParam<double> kCsdClipboardCopyApiHCAcceptanceRate{
     &kClientSideDetectionClipboardCopyApi, "HCAcceptanceRate",
     /*default_value=*/0.0};
+const base::FeatureParam<double> kCsdClipboardCopyApiSampleRate{
+    &kClientSideDetectionClipboardCopyApi, "SampleRate",
+    /*default_value=*/0.0};
+const base::FeatureParam<int> kCsdClipboardCopyApiMaxLength{
+    &kClientSideDetectionClipboardCopyApi, "MaxLength",
+    /*default_value=*/1000};
+const base::FeatureParam<int> kCsdClipboardCopyApiMinLength{
+    &kClientSideDetectionClipboardCopyApi, "MinLength",
+    /*default_value=*/0};
 
 BASE_FEATURE(kClientSideDetectionDebuggingMetadataCache,
              "ClientSideDetectionDebuggingMetadataCache",

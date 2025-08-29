@@ -6216,6 +6216,12 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "HCAcceptanceRate": "1.0",
+                        "MaxLength": "100",
+                        "MinLength": "30",
+                        "SampleRate": "1.0"
+                    },
                     "enable_features": [
                         "ClientSideDetectionClipboardCopyApi"
                     ]

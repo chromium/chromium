@@ -545,15 +545,15 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
       return;  // No point in doing anything else.
     }
 
+    // The purpose of triggering preclassification for these APIs is to have
+    // an initial assessment on how often we'll be hitting the allowlist and
+    // triggering the classification. We will not go further than checking
+    // for this metric, unless otherwise specified by feature flags.
     if (phishing_detection_request_type_ ==
             ClientSideDetectionType::FULLSCREEN_API ||
         (phishing_detection_request_type_ ==
              ClientSideDetectionType::CLIPBOARD_COPY_API &&
-         !base::FeatureList::IsEnabled(kClientSideDetectionClipboardCopyApi))) {
-      // The purpose of triggering preclassification for these APIs is to have
-      // an initial assessment on how often we'll be hitting the allowlist and
-      // triggering the classification. We will not go further than checking
-      // for this metric, unless otherwise specified by feature flags.
+         base::RandDouble() >= kCsdClipboardCopyApiSampleRate.Get())) {
       DontClassifyForPhishing(
           PreClassificationCheckResult::NO_CLASSIFY_ALLOWLIST_METRIC);
     }
@@ -632,10 +632,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
         return base::RandDouble() <=
                probability_for_accepting_hc_allowlist_trigger_;
       case ClientSideDetectionType::CLIPBOARD_COPY_API:
-        return base::FeatureList::IsEnabled(
-                   kClientSideDetectionClipboardCopyApi) &&
-               (base::RandDouble() <
-                kCSDClipboardCopyApiHCAcceptanceRate.Get());
+        return base::RandDouble() < kCsdClipboardCopyApiHCAcceptanceRate.Get();
       default:
         return false;
     }
@@ -919,11 +916,24 @@ void ClientSideDetectionHost::OnTextCopiedToClipboard(
   if (!IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
     return;
   }
-
-  if (!HasDonePreclassificationCheckOnSameURL(
+  if (HasDonePreclassificationCheckOnSameURL(
           ClientSideDetectionType::CLIPBOARD_COPY_API)) {
-    MaybeStartPreClassification(ClientSideDetectionType::CLIPBOARD_COPY_API);
+    return;
   }
+
+  base::UmaHistogramCounts10000(
+      "SBClientPhishing.ClipboardCopyApi.PayloadLength", copied_text.length());
+
+  if (copied_text.length() <
+      static_cast<size_t>(kCsdClipboardCopyApiMinLength.Get())) {
+    return;
+  }
+  if (copied_text.length() >
+      static_cast<size_t>(kCsdClipboardCopyApiMaxLength.Get())) {
+    return;
+  }
+
+  MaybeStartPreClassification(ClientSideDetectionType::CLIPBOARD_COPY_API);
 }
 
 bool ClientSideDetectionHost::HasDonePreclassificationCheckOnSameURL(

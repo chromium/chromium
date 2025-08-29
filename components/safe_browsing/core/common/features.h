@@ -41,7 +41,10 @@ BASE_DECLARE_FEATURE(kClientSideDetectionBrandAndIntentForScamDetection);
 // the page.
 BASE_DECLARE_FEATURE(kClientSideDetectionClipboardCopyApi);
 
-extern const base::FeatureParam<double> kCSDClipboardCopyApiHCAcceptanceRate;
+extern const base::FeatureParam<double> kCsdClipboardCopyApiHCAcceptanceRate;
+extern const base::FeatureParam<double> kCsdClipboardCopyApiSampleRate;
+extern const base::FeatureParam<int> kCsdClipboardCopyApiMaxLength;
+extern const base::FeatureParam<int> kCsdClipboardCopyApiMinLength;
 
 BASE_DECLARE_FEATURE(kClientSideDetectionDebuggingMetadataCache);
 

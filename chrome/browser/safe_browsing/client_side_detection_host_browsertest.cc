@@ -1000,7 +1000,10 @@ class ClientSideDetectionHostClipboardTest
   ClientSideDetectionHostClipboardTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         kClientSideDetectionClipboardCopyApi,
-        {{kCSDClipboardCopyApiHCAcceptanceRate.name, "0.0"}});
+        {{kCsdClipboardCopyApiHCAcceptanceRate.name, "0.0"},
+         {kCsdClipboardCopyApiSampleRate.name, "1.0"},
+         {kCsdClipboardCopyApiMinLength.name, "30"},
+         {kCsdClipboardCopyApiMaxLength.name, "50"}});
   }
 
   ClientSideDetectionHostClipboardTest(
@@ -1128,6 +1131,10 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionHostClipboardTest,
 
   EXPECT_TRUE(waiter.DidCopyToClipboard());
   histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.ClipboardCopyApi.PayloadLength", 2);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.ClipboardCopyApi.PayloadLength", 36, 2);
+  histogram_tester.ExpectTotalCount(
       "SBClientPhishing.PreClassificationCheckResult.ClipboardCopyApi", 2);
 }
 
@@ -1166,6 +1173,8 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionHostClipboardTest,
       "SBClientPhishing.ClientSideDetectionTypeRequest", 0);
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.ServerModelDetectsPhishing.ClipboardCopyApi", 0);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.ClipboardCopyApi.PayloadLength", 0);
 
   // Bypass the pre-classification check because it would otherwise return
   // `PreClassificationCheckResult::NO_CLASSIFY_PRIVATE_IP`.
@@ -1197,6 +1206,79 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionHostClipboardTest,
       "SBClientPhishing.ClientSideDetectionTypeRequest", 1);
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.ServerModelDetectsPhishing.ClipboardCopyApi", 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.ClipboardCopyApi.PayloadLength", 0);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    ClientSideDetectionHostClipboardTest,
+    ClipboardApiDoesNotTriggerPreclassificationCheckWithShortPayload) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+
+  base::HistogramTester histogram_tester;
+
+  const GURL initial_url(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PreClassificationCheckResult.ClipboardCopyApi", 0);
+
+  ClipboardObserverWaiter waiter(GetWebContents());
+  ASSERT_FALSE(waiter.DidCopyToClipboard());
+
+  base::RunLoop run_loop;
+  TriggerClipboardCopy("this payload is too short", run_loop.QuitClosure());
+  run_loop.Run();
+  waiter.Wait();
+
+  EXPECT_TRUE(waiter.DidCopyToClipboard());
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.ClipboardCopyApi.PayloadLength", 1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.ClipboardCopyApi.PayloadLength", 25, 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PreClassificationCheckResult.ClipboardCopyApi", 0);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    ClientSideDetectionHostClipboardTest,
+    ClipboardApiDoesNotTriggerPreclassificationCheckWithLongPayload) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+
+  base::HistogramTester histogram_tester;
+
+  const GURL initial_url(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PreClassificationCheckResult.ClipboardCopyApi", 0);
+
+  ClipboardObserverWaiter waiter(GetWebContents());
+  ASSERT_FALSE(waiter.DidCopyToClipboard());
+
+  base::RunLoop run_loop;
+  TriggerClipboardCopy(
+      "this is a very long payload and will be filtered out because it is "
+      "longer than 50 characters",
+      run_loop.QuitClosure());
+  run_loop.Run();
+  waiter.Wait();
+
+  EXPECT_TRUE(waiter.DidCopyToClipboard());
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.ClipboardCopyApi.PayloadLength", 1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.ClipboardCopyApi.PayloadLength", 92, 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PreClassificationCheckResult.ClipboardCopyApi", 0);
 }
 
 }  // namespace safe_browsing
