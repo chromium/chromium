@@ -7,6 +7,9 @@
 
 #import "base/feature_list.h"
 
+// Enables a new blur method for the autofill bottom sheet.
+BASE_DECLARE_FEATURE(kAutofillBottomSheetNewBlur);
+
 // Enables the stateless form suggestion controller.
 BASE_DECLARE_FEATURE(kStatelessFormSuggestionController);
 

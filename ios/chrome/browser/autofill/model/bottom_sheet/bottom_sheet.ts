@@ -6,7 +6,7 @@ import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrw
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
- * @fileoverview Adds listeners on the focus event, specifically for elements
+ * @fileoverview Adds listeners on focus related events, specifically for elements
  * provided through a list of renderer IDs, in order for to allow showing a
  * bottom sheet in that context.
  */
@@ -39,11 +39,11 @@ function isObservable(element: HTMLElement): boolean {
  * Returns true if the bottom sheet can be triggered.
  * @private
  */
-function canTriggerBottomSheet(focusedElement: Element) {
+function canTriggerBottomSheet(element: Element) {
   // Verify that the window's layout viewport has a height and a width and also
   // that the element is visible.
   return window.innerHeight > 0 && window.innerWidth > 0 &&
-      gCrWebLegacy.fill.isVisibleNode(focusedElement);
+      gCrWebLegacy.fill.isVisibleNode(element);
 }
 
 /*
@@ -84,11 +84,37 @@ function showBottomSheet(hasUserGesture: boolean): void {
 }
 
 /**
- * Focus events for observed input elements are messaged to the main
- * application for broadcast to WebStateObservers.
+ * Handles mousedown events for listeners.
  * @private
  */
-function focusEventHandler(event: Event): void {
+function onMouseDown(event: MouseEvent): void {
+  if (!event.target || !(event.target instanceof HTMLElement)) {
+    return;
+  }
+
+  // Field must be empty (ignoring white spaces).
+  if ((event.target instanceof HTMLInputElement) &&
+      event.target.value.trim()) {
+    return;
+  }
+
+  // Show the bottom sheet iff the conditions are right, or bail out otherwise
+  // and let the user fallback to using keyboard for filling the field.
+  if (canTriggerBottomSheet(event.target!)) {
+    // Prevent the keyboard from showing up iff the bottom sheet can be
+    // triggered by preventing the default action of mousedown (focus).
+    event.preventDefault();
+    lastBlurredElement_ = event.target;
+
+    showBottomSheet(event.isTrusted);
+  }
+}
+
+/**
+ * Handles focus events for listeners.
+ * @private
+ */
+function onFocus(event: Event): void {
   if (!event.target || !(event.target instanceof HTMLElement) ||
       (event.target !== document.activeElement)) {
     return;
@@ -121,19 +147,28 @@ function detachListenersInternal(rendererIds: number[]): void {
     const element = gCrWebLegacy.fill.getElementByUniqueID(rendererId);
     const index = observedElements_.indexOf(element);
     if (index > -1) {
-      element.removeEventListener('focus', focusEventHandler, true);
+        // Detach all possible handlers. If the listener wasn't attached, this
+        // will be no op, no errors thrown.
+        element.removeEventListener(
+            'mousedown', onMouseDown as EventListener, true);
+        element.removeEventListener('focus', onFocus, true);
       observedElements_.splice(index, 1);
     }
   }
 }
 
 /**
- * Finds the element associated with each provided renderer ID and
- * attaches a listener to each of these elements for the focus event.
- * "allowAutofocus" specifies whether the bottom sheet can be triggered by an
- * already focused field.
+ * Finds the element associated with each provided renderer ID and attaches a
+ * listener to trigger the bottom sheet.
+ * @param rendererIds The IDs of the elements to observe.
+ * @param allowAutofocus Whether the bottom sheet can be triggered by an
+ *     already focused field.
+ * @param useMousedownBlur Whether to do virtual blur from the 'mousedown' event
+ *     instead of doing a brute force 'blur' on the element.
  */
-function attachListeners(rendererIds: number[], allowAutofocus: boolean): void {
+function attachListeners(
+    rendererIds: number[], allowAutofocus: boolean,
+    useMousedownBlur: boolean): void {
   // Build list of elements
   let elementToBlur: HTMLElement|null = null;
   const elementsToObserve: Element[] = [];
@@ -164,7 +199,12 @@ function attachListeners(rendererIds: number[], allowAutofocus: boolean): void {
 
   // Attach the listeners once the IDs are set.
   for (const element of elementsToObserve) {
-    element.addEventListener('focus', focusEventHandler, true);
+    if (useMousedownBlur) {
+      element.addEventListener(
+          'mousedown', onMouseDown as EventListener, true);
+    } else {
+      element.addEventListener('focus', onFocus as EventListener, true);
+    }
     observedElements_.push(element);
   }
 
@@ -173,8 +213,8 @@ function attachListeners(rendererIds: number[], allowAutofocus: boolean): void {
   // and (3) the sheet can be triggered, trigger the bottom sheet immediately
   // and allow restoring the focus later on once the sheet is dismissed.
   if (elementToBlur && canTriggerBottomSheet(elementToBlur!)) {
-    // Remove the focus so the sheet can take over filling without conflicting
-    // with the keyboard.
+    // Blur elements that are already actively focused which is the only effective
+    // way to blur in this case.
     elementToBlur.blur();
     lastBlurredElement_ = elementToBlur;
     showBottomSheet(/*hasUserGesture=*/ false);

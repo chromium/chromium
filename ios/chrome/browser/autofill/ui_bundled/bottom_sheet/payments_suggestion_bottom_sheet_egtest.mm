@@ -64,11 +64,18 @@ id<GREYMatcher> KeyboardAccessoryCreditCardSuggestionChip() {
 }  // namespace
 
 @interface PaymentsSuggestionBottomSheetEGTest : ChromeTestCase
+
+- (bool)shouldUseNewBlur;
+
 @end
 
 @implementation PaymentsSuggestionBottomSheetEGTest {
   // Last digits of the credit card
   NSString* _lastDigits;
+}
+
+- (bool)shouldUseNewBlur {
+  return NO;
 }
 
 - (void)setUp {
@@ -130,6 +137,13 @@ id<GREYMatcher> KeyboardAccessoryCreditCardSuggestionChip() {
     config.features_enabled.push_back(
         autofill::features::kAutofillEnableFpanRiskBasedAuthentication);
   }
+
+  if ([self shouldUseNewBlur]) {
+    config.features_enabled.push_back(kAutofillBottomSheetNewBlur);
+  } else {
+    config.features_disabled.push_back(kAutofillBottomSheetNewBlur);
+  }
+
   return config;
 }
 
@@ -310,6 +324,30 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
           expectTotalCount:1
               forHistogram:@"IOS.PaymentsBottomSheet.TimeToSelection"],
       @"IOS.PaymentsBottomSheet.TimeToSelection wasn't recorded");
+
+  // Verify that the page is filled properly.
+  [self verifyCreditCardInfosHaveBeenFilled:autofill::test::GetCreditCard()];
+}
+
+// Tests that the Payments Bottom Sheet appears when tapping on a credit card
+// related field with the new blur logic.
+- (void)testOpenPaymentsBottomSheetUseCreditCardWithNewBlur {
+  [self loadPaymentsPage];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormCardName)];
+
+  id<GREYMatcher> continueButton = WaitOnResponsiveContinueButton();
+
+  // Verify that the credit card is visible to the user.
+  [[EarlGrey selectElementWithMatcher:grey_text(_lastDigits)]
+      assertWithMatcher:grey_notNil()];
+
+  // Make sure the user is seeing 1 card on the bottom sheet.
+  GREYAssertEqual(1, [AutofillAppInterface localCreditCount],
+                  @"Wrong number of stored credit cards.");
+
+  [[EarlGrey selectElementWithMatcher:continueButton] performAction:grey_tap()];
 
   // Verify that the page is filled properly.
   [self verifyCreditCardInfosHaveBeenFilled:autofill::test::GetCreditCard()];
@@ -867,6 +905,24 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   // autofocused field. Use the continue button of the sheet as a proxy.
   [[EarlGrey selectElementWithMatcher:ContinueButton()]
       assertWithMatcher:grey_nil()];
+}
+
+@end
+
+// Test suite for testing the new blur approach.
+@interface PaymentsSuggestionBottomSheetWithNewBlurEGTest : PaymentsSuggestionBottomSheetEGTest
+
+@end
+
+
+@implementation  PaymentsSuggestionBottomSheetWithNewBlurEGTest
+
+- (bool)shouldUseNewBlur {
+  return YES;
+}
+
+// No op test to have the test fixture visible.
+- (void)testVoid {
 }
 
 @end

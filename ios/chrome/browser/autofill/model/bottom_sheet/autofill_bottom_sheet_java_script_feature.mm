@@ -4,11 +4,13 @@
 
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 
+#import "base/feature_list.h"
 #import "base/values.h"
 #import "components/autofill/core/common/password_form_fill_data.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
 #import "components/autofill/ios/form_util/autofill_renderer_id_java_script_feature.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
+#import "ios/chrome/browser/autofill/model/features.h"
 
 namespace {
 constexpr char kScriptName[] = "bottom_sheet";
@@ -68,6 +70,7 @@ void AutofillBottomSheetJavaScriptFeature::AttachListeners(
   base::Value::List parameters;
   parameters.Append(std::move(renderer_id_list));
   parameters.Append(allow_autofocus);
+  parameters.Append(base::FeatureList::IsEnabled(kAutofillBottomSheetNewBlur));
   CallJavaScriptFunction(frame, "bottomSheet.attachListeners", parameters);
 }
 

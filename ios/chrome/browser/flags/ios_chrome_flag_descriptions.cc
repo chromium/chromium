@@ -47,6 +47,12 @@ extern const char kAutofillAcrossIframesDescription[] =
     "When enabled, Autofill will fill and save information on forms that "
     "spread across multiple iframes.";
 
+const char kAutofillBottomSheetNewBlurName[] =
+    "New Blur Method for Autofill Bottom Sheet";
+const char kAutofillBottomSheetNewBlurDescription[] =
+    "Enables a new method for blurring the autofill bottom sheet to prevent "
+    "the keyboard from showing up. This uses `mousedown` instead of `focus`.";
+
 const char kAutofillCreditCardScannerIosName[] =
     "Enable the credit card scanner for Autofill";
 const char kAutofillCreditCardScannerIosDescription[] =

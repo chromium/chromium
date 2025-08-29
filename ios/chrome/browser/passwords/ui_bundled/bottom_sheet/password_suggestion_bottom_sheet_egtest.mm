@@ -14,6 +14,7 @@
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_app_interface.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
@@ -185,9 +186,16 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
 }  // namespace
 
 @interface PasswordSuggestionBottomSheetEGTest : ChromeTestCase
+
+- (BOOL)useNewBlur;
+
 @end
 
 @implementation PasswordSuggestionBottomSheetEGTest
+
+- (bool)useNewBlur {
+  return NO;
+}
 
 - (void)setUp {
   [super setUp];
@@ -241,6 +249,12 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
             (testAvailableContextMenuItemsForBackupPassword)]) {
     config.features_enabled.push_back(
         password_manager::features::kIOSFillRecoveryPassword);
+  }
+
+  if ([self useNewBlur]) {
+    config.features_enabled.push_back(kAutofillBottomSheetNewBlur);
+  } else {
+    config.features_disabled.push_back(kAutofillBottomSheetNewBlur);
   }
 
   return config;
@@ -385,6 +399,41 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   // Verify that the subtitle string appears.
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:SubtitleString([self loginPageURL])];
+
+  [[EarlGrey selectElementWithMatcher:UsePasswordButton()]
+      performAction:grey_tap()];
+
+  // No histogram logged because there is only 1 credential shown to the user.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:0
+              forHistogram:@"PasswordManager.TouchToFill.CredentialIndex"],
+      @"Unexpected histogram error for touch to fill credential index");
+
+  // Verify that the acceptance of the password suggestion at index 0 was
+  // correctly recorded.
+  CheckAutofillSuggestionAcceptedIndexMetricsCount(/*suggestion_index=*/0);
+
+  [self verifyPasswordFieldsHaveBeenFilled:@"user"];
+}
+
+// Tests that the bottom sheet can be used with the new blur.
+- (void)testOpenPasswordBottomSheetUsePasswordWithNewBlur {
+  GURL URL = [self loginPageURL];
+  [PasswordManagerAppInterface
+      storeCredentialWithUsername:@"user"
+                         password:@"password"
+                              URL:net::NSURLWithGURL(URL)];
+  [self loadLoginPage];
+
+  [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
+
+  // Verify that the subtitle string appears.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:SubtitleString(URL)];
 
   [[EarlGrey selectElementWithMatcher:UsePasswordButton()]
       performAction:grey_tap()];
@@ -1142,5 +1191,22 @@ void LongPressElementOnceVisible(id<GREYMatcher> matcher) {
   [[EarlGrey selectElementWithMatcher:ShowDetailsContextMenuItem()]
       assertWithMatcher:grey_nil()];
 }
+
+@end
+
+// Test suite for testing the new blur approach.
+@interface PasswordSuggestionBottomSheetNewBlurEGTest : PasswordSuggestionBottomSheetEGTest
+@end
+
+@implementation PasswordSuggestionBottomSheetNewBlurEGTest
+
+- (BOOL)useNewBlur {
+  return YES;
+}
+
+// No Op test to have the test fixture visible.
+- (void)testVoid {
+}
+
 
 @end

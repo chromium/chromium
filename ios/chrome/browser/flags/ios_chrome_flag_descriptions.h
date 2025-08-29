@@ -44,6 +44,9 @@ extern const char kApplyClientsideModelPredictionsForOtpsDescription[];
 extern const char kAutofillAcrossIframesName[];
 extern const char kAutofillAcrossIframesDescription[];
 
+extern const char kAutofillBottomSheetNewBlurName[];
+extern const char kAutofillBottomSheetNewBlurDescription[];
+
 extern const char kAutofillCreditCardScannerIosName[];
 extern const char kAutofillCreditCardScannerIosDescription[];
 
