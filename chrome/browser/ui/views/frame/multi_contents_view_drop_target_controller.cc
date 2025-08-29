@@ -159,9 +159,7 @@ void MultiContentsViewDropTargetController::DoDrop(
   MultiContentsDropTargetView::DropSide side =
       drop_target_view_->side().value();
   drop_target_view_->Hide();
-  auto urls = event.data().GetURLs(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
-  CHECK(urls.has_value());
-  drop_delegate_->HandleLinkDrop(side, urls.value());
+  drop_delegate_->HandleLinkDrop(side, event);
   output_drag_op = ui::mojom::DragOperation::kLink;
 }
 

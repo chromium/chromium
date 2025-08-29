@@ -46,10 +46,11 @@ class MultiContentsViewDelegateImpl : public MultiContentsViewDelegate {
   // Must already be in a split.
   void ReverseWebContents() override;
 
-  // Creates a new tab for the first URL in `urls` and creates a split with it
-  // and the active tab.
+  // Creates a new tab for the first valid URL in `urls` and creates a split
+  // with it and the active tab. If all URLs are blocked, then it will open
+  // that.
   void HandleLinkDrop(MultiContentsDropTargetView::DropSide side,
-                      const std::vector<GURL>& urls) override;
+                      const ui::DropTargetEvent& event) override;
 
   // Detaches a dragged tab from its current tabstrip and inserts it into a
   // split view in this delegate's tab strip.

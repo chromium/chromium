@@ -33,7 +33,7 @@ class MultiContentsViewDropTargetController final
 
     // Handles links that are dropped on the view.
     virtual void HandleLinkDrop(MultiContentsDropTargetView::DropSide side,
-                                const std::vector<GURL>& urls) = 0;
+                                const ui::DropTargetEvent& event) = 0;
 
     // Handles tabs that are dropped on the view.
     virtual void HandleTabDrop(MultiContentsDropTargetView::DropSide side,

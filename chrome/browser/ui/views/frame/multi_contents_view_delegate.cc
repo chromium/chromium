@@ -7,6 +7,7 @@
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
@@ -65,13 +66,14 @@ void MultiContentsViewDelegateImpl::ResizeWebContents(double start_ratio,
 
 void MultiContentsViewDelegateImpl::HandleLinkDrop(
     MultiContentsDropTargetView::DropSide side,
-    const std::vector<GURL>& urls) {
-  CHECK(!urls.empty());
+    const ui::DropTargetEvent& event) {
+  auto urls = event.data().GetURLs(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
+  CHECK(urls.has_value() && !urls.value().empty());
   CHECK(!tab_strip_model_->GetActiveTab()->IsSplit());
 
   // Disallow javascript: URLs to prevent self-XSS.
   std::vector<GURL> filtered_urls;
-  for (const GURL& url : urls) {
+  for (const GURL& url : urls.value()) {
     if (url.SchemeIs(url::kJavaScriptScheme)) {
       filtered_urls.emplace_back(content::kBlockedURL);
     } else {
@@ -90,8 +92,14 @@ void MultiContentsViewDelegateImpl::HandleLinkDrop(
 
   // We currently only support creating a split with one link; i.e., the first
   // link in the provided list.
-  tab_strip_model_->delegate()->AddTabAt(filtered_urls.front(), new_tab_idx,
-                                         /*foreground=*/true);
+  NavigateParams params(&browser_.get(), filtered_urls.front(),
+                        ui::PAGE_TRANSITION_LINK);
+  params.tabstrip_index = new_tab_idx;
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.initiator_origin = event.data().GetRendererTaintedOrigin();
+
+  Navigate(&params);
+
   // Create a split with the previously active tab, which should be before or
   // after the newly created tab.
   tab_strip_model_->AddToNewSplit(
