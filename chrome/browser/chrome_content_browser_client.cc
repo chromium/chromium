@@ -4958,10 +4958,10 @@ bool ChromeContentBrowserClient::OverrideWebPreferencesAfterNavigation(
   const auto old_preferred_color_scheme = web_prefs->preferred_color_scheme;
   const auto old_preferred_root_scrollbar_color_scheme =
       web_prefs->preferred_root_scrollbar_color_scheme;
-  const GURL& url = web_contents->GetLastCommittedURL();
   std::tie(web_prefs->preferred_color_scheme,
            web_prefs->preferred_root_scrollbar_color_scheme) =
-      GetPreferredColorScheme(*web_prefs, url, web_contents, GetWebTheme());
+      GetPreferredColorScheme(*web_prefs, main_frame_site.GetSiteURL(),
+                              web_contents, GetWebTheme());
   prefs_changed |=
       web_prefs->preferred_color_scheme != old_preferred_color_scheme ||
       web_prefs->preferred_root_scrollbar_color_scheme !=
