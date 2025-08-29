@@ -654,12 +654,8 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     }
 
     private void updateControlContainerHeight(int height) {
-        if (height == LayoutParams.WRAP_CONTENT) {
-            mControlContainerHeight = mControlContainer.getToolbarHeight();
-        } else {
-            mControlContainerHeight = height;
-        }
-
+        assert height >= 0;
+        mControlContainerHeight = height;
         mBottomControlsStacker.requestLayerUpdate(false);
     }
 

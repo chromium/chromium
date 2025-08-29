@@ -34,6 +34,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -100,6 +101,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     private final ObserverList<TouchEventObserver> mTouchEventObservers = new ObserverList<>();
     private final Callback<Boolean> mOnXrSpaceModeChanged = this::onXrSpaceModeChanged;
     private @Nullable ObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
+    private @Nullable ObservableSupplierImpl<Integer> mHeightChangedSupplier;
 
     /**
      * Constructs a new control container.
@@ -184,6 +186,18 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             maybeUpdateTempTabStripDrawableBackground(incognito, mAppHeaderState);
             mIncognito = incognito;
         }
+    }
+
+    @Override
+    protected void onSizeChanged(int newW, int newH, int oldW, int oldH) {
+        if (newH != oldH && mHeightChangedSupplier != null) {
+            mHeightChangedSupplier.set(newH);
+        }
+    }
+
+    public void setOnHeightChangedListener(
+            @Nullable ObservableSupplierImpl<Integer> heightChangedSupplier) {
+        mHeightChangedSupplier = heightChangedSupplier;
     }
 
     public void onPageLoadStopped() {

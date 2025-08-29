@@ -24,7 +24,6 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLayoutChangeListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.view.ViewStub;
 
 import androidx.activity.BackEventCompat;
@@ -1788,7 +1787,10 @@ public class ToolbarManager
         ObservableSupplierImpl<Integer> controlContainerTranslationSupplier =
                 new ObservableSupplierImpl<>(0);
         ObservableSupplierImpl<Integer> controlContainerHeightSupplier =
-                new ObservableSupplierImpl<>(LayoutParams.WRAP_CONTENT);
+                new ObservableSupplierImpl<>(mControlContainer.getToolbarHeight());
+
+        mControlContainer.setOnHeightChangedListener(controlContainerHeightSupplier);
+
         mToolbarPositionController =
                 new ToolbarPositionController(
                         mBrowserControlsSizer,
@@ -1823,7 +1825,6 @@ public class ToolbarManager
                             mBrowserControlsSizer,
                             mWindowAndroid.getInsetObserver(),
                             controlContainerTranslationSupplier,
-                            controlContainerHeightSupplier,
                             keyboardAccessoryStateSupplier.getIsSheetShowingSupplier(),
                             this::isUrlBarFocused);
         }

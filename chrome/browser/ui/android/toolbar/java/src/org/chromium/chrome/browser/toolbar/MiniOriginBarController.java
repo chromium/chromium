@@ -113,7 +113,6 @@ public class MiniOriginBarController implements Observer {
     private final ControlContainer mControlContainer;
     private final ObservableSupplierImpl<Boolean> mSuppressToolbarSceneLayerSupplier;
     private final BrowserControlsSizer mBrowserControlsSizer;
-    private final ObservableSupplierImpl<Integer> mControlContainerHeightSupplier;
     private final ObservableSupplier<Boolean> mIsKeyboardAccessorySheetShowing;
     private final MiniOriginWindowInsetsAnimationListener mWindowInsetsAnimationListener;
     private final Callback<Boolean> mAccessorySheetShowingObserver;
@@ -150,7 +149,6 @@ public class MiniOriginBarController implements Observer {
             BrowserControlsSizer browserControlsSizer,
             InsetObserver insetObserver,
             ObservableSupplierImpl<Integer> controlContainerTranslationSupplier,
-            ObservableSupplierImpl<Integer> controlContainerHeightSupplier,
             ObservableSupplier<Boolean> isKeyboardAccessorySheetShowing,
             BooleanSupplier isOmniboxFocusedSupplier) {
         mLocationBar = locationBar;
@@ -160,7 +158,6 @@ public class MiniOriginBarController implements Observer {
         mControlContainer = controlContainer;
         mSuppressToolbarSceneLayerSupplier = suppressToolbarSceneLayerSupplier;
         mBrowserControlsSizer = browserControlsSizer;
-        mControlContainerHeightSupplier = controlContainerHeightSupplier;
         mIsKeyboardAccessorySheetShowing = isKeyboardAccessorySheetShowing;
         mInsetObserver = insetObserver;
         mIsOmniboxFocusedSupplier = isOmniboxFocusedSupplier;
@@ -243,24 +240,10 @@ public class MiniOriginBarController implements Observer {
                 isMiniOriginBarVisibleForState(newMiniOriginState)
                         != isMiniOriginBarVisibleForState(mMiniOriginBarState);
         boolean finishedShowing = newMiniOriginState == MiniOriginState.SHOWING;
-        boolean startingHideAnimation =
-                mMiniOriginBarState == MiniOriginState.SHOWING
-                        && newMiniOriginState == MiniOriginState.ANIMATING;
         mMiniOriginBarState = newMiniOriginState;
 
-        if (startingHideAnimation) {
-            // Change the control container height at the start of the animation to avoid a visible
-            // jump in webcontents size at the end of the animation; doing it at the start means the
-            // jump is hidden by the keyboard.
-            mControlContainerHeightSupplier.set(LayoutParams.WRAP_CONTENT);
-        }
         if (finishedShowing) {
             setMinimizationProgress(1.0f);
-            // Re-set the control container height at the end of a show animation in case the hide
-            // animation, which sets the height at its start, was cancelled, which can happen for
-            // predictive back animations.
-            mControlContainerHeightSupplier.set(
-                    mContext.getResources().getDimensionPixelSize(R.dimen.mini_origin_bar_height));
         }
 
         if (!isChangingVisibility) return;
@@ -295,7 +278,6 @@ public class MiniOriginBarController implements Observer {
 
         int newLocationBarHeight =
                 mContext.getResources().getDimensionPixelSize(R.dimen.mini_origin_bar_height);
-        mControlContainerHeightSupplier.set(newLocationBarHeight);
         mControlContainer.mutateLayoutParams().height =
                 newLocationBarHeight
                         + mContext.getResources()
@@ -330,7 +312,6 @@ public class MiniOriginBarController implements Observer {
         mControlContainer.toggleLocationBarOnlyMode(false);
 
         mControlContainer.mutateLayoutParams().height = LayoutParams.WRAP_CONTENT;
-        mControlContainerHeightSupplier.set(LayoutParams.WRAP_CONTENT);
 
         var locationBarView = mLocationBar.getContainerView();
         locationBarView.setLayoutParams(mDefaultLocationBarLayoutParams);

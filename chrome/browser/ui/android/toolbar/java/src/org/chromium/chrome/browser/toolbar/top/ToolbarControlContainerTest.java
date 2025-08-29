@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -129,6 +130,7 @@ public class ToolbarControlContainerTest {
             new OneshotSupplierImpl<>();
 
     private ToolbarViewResourceAdapter mAdapter;
+    private TestActivity mActivity;
 
     private void makeAdapter() {
         mAdapter =
@@ -233,6 +235,12 @@ public class ToolbarControlContainerTest {
                         mConstraintsSupplier.set(result);
                     }
                 });
+        mActivity = Robolectric.buildActivity(TestActivity.class).get();
+    }
+
+    @After
+    public void after() {
+        mActivity.finish();
     }
 
     @Test
@@ -452,8 +460,7 @@ public class ToolbarControlContainerTest {
 
     @Test
     public void testTempDrawableWithAppHeaderState() {
-        TestActivity activity = Robolectric.buildActivity(TestActivity.class).get();
-        ToolbarControlContainer controlContainer = new ToolbarControlContainer(activity, null);
+        ToolbarControlContainer controlContainer = new ToolbarControlContainer(mActivity, null);
         // This is needed for the control container to read the height of the toolbar.
         controlContainer.setToolbarForTesting(mToolbar);
 
@@ -487,14 +494,11 @@ public class ToolbarControlContainerTest {
                 "Right padding for tab drawable is wrong.",
                 0,
                 background.getLayerInsetRight(tabDrawableIndex));
-
-        activity.finish();
     }
 
     @Test
     public void testTempDrawableAfterCompositorInitialized() {
-        TestActivity activity = Robolectric.buildActivity(TestActivity.class).get();
-        ToolbarControlContainer controlContainer = new ToolbarControlContainer(activity, null);
+        ToolbarControlContainer controlContainer = new ToolbarControlContainer(mActivity, null);
         // This is needed for the control container to read the height of the toolbar.
         controlContainer.setToolbarForTesting(mToolbar);
         controlContainer.setCompositorBackgroundInitialized();
@@ -510,14 +514,11 @@ public class ToolbarControlContainerTest {
         assertNull(
                 "Control container background should not respond to app header state anymore.",
                 controlContainer.getBackground());
-
-        activity.finish();
     }
 
     @Test
     public void testTempDrawableInUnfocusedDesktopWindow() {
-        TestActivity activity = Robolectric.buildActivity(TestActivity.class).get();
-        ToolbarControlContainer controlContainer = new ToolbarControlContainer(activity, null);
+        ToolbarControlContainer controlContainer = new ToolbarControlContainer(mActivity, null);
         // This is needed for the control container to read the height of the toolbar.
         controlContainer.setToolbarForTesting(mToolbar);
 
@@ -534,20 +535,17 @@ public class ToolbarControlContainerTest {
         var stripBackgroundColorDrawable = (ColorDrawable) backgroundLayerDrawable.getDrawable(0);
         assertEquals(
                 "Tab strip background color drawable color is incorrect.",
-                SurfaceColorUpdateUtils.getTabStripBackgroundColorUnfocused(activity),
+                SurfaceColorUpdateUtils.getTabStripBackgroundColorUnfocused(mActivity),
                 stripBackgroundColorDrawable.getColor());
-
-        activity.finish();
     }
 
     @Test
     public void testShowLocationBarOnly() {
         doReturn(mLocationBarView).when(mToolbar).removeLocationBarView();
         doReturn(Color.RED).when(mToolbar).getPrimaryColor();
-        TestActivity activity = Robolectric.buildActivity(TestActivity.class).get();
         ToolbarControlContainer controlContainer =
                 (ToolbarControlContainer)
-                        activity.getLayoutInflater().inflate(R.layout.control_container, null);
+                        mActivity.getLayoutInflater().inflate(R.layout.control_container, null);
         controlContainer.initWithToolbar(R.layout.toolbar_phone);
         controlContainer.setPostInitializationDependencies(
                 mToolbar,
@@ -606,10 +604,9 @@ public class ToolbarControlContainerTest {
 
     @Test
     public void testInterceptTouchEvent() {
-        TestActivity activity = Robolectric.buildActivity(TestActivity.class).get();
         ToolbarControlContainer controlContainer =
                 (ToolbarControlContainer)
-                        activity.getLayoutInflater().inflate(R.layout.control_container, null);
+                        mActivity.getLayoutInflater().inflate(R.layout.control_container, null);
         controlContainer.initWithToolbar(R.layout.toolbar_phone);
         controlContainer.setPostInitializationDependencies(
                 mToolbar,
@@ -639,5 +636,23 @@ public class ToolbarControlContainerTest {
 
         doReturn(true).when(mTouchEventObserver).onInterceptTouchEvent(clickEvent);
         assertTrue(controlContainer.onInterceptTouchEvent(clickEvent));
+    }
+
+    @Test
+    public void testHeightSupplier() {
+        var controlContainer = new ToolbarControlContainer(mActivity, null);
+        ObservableSupplierImpl<Integer> heightSupplier = new ObservableSupplierImpl<>();
+        controlContainer.setOnHeightChangedListener(heightSupplier);
+        controlContainer.onSizeChanged(100, 200, 100, 100);
+        assertEquals(200, (int) heightSupplier.get());
+    }
+
+    @Test
+    public void testHeightSupplier_noHeightChange() {
+        var controlContainer = new ToolbarControlContainer(mActivity, null);
+        ObservableSupplierImpl<Integer> heightSupplier = new ObservableSupplierImpl<>();
+        controlContainer.setOnHeightChangedListener(heightSupplier);
+        controlContainer.onSizeChanged(100, 100, 100, 100);
+        assertEquals(null, heightSupplier.get());
     }
 }
