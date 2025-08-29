@@ -420,7 +420,7 @@ targets.mixin(
     name = "android_desktop_wpt_args",
     generate_pyl_entry = False,
     args = [
-        "--additional-driver-flag=--force-android-desktop",
+        "--additional-driver-flag=--force-desktop-android",
     ],
 )
 
@@ -828,10 +828,10 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "force-android-desktop",
+    name = "force-desktop-android",
     generate_pyl_entry = False,
     args = [
-        "--force-android-desktop",
+        "--force-desktop-android",
     ],
 )
 

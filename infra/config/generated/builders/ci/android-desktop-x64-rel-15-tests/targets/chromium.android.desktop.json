@@ -3,7 +3,7 @@
     "gtest_tests": [
       {
         "args": [
-          "--force-android-desktop",
+          "--force-desktop-android",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_tablet_x64_tablet_landscape.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.emulator_15.android_browsertests.filter",
           "--emulator-debug-tags=all",
@@ -59,7 +59,6 @@
           "--git-revision=${got_revision}",
           "--force-desktop-android",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_tablet_x64_tablet_landscape.textpb",
-          "--force-desktop-android",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -115,7 +114,7 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--force-android-desktop",
+          "--force-desktop-android",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_tablet_x64_tablet_landscape.textpb",
           "--gtest_filter=-org.chromium.chrome.browser.ui.appmenu.AppMenuTest.testShowAppMenu_AnchorTop",
           "--gs-results-bucket=chromium-result-details",
@@ -172,7 +171,7 @@
       },
       {
         "args": [
-          "--force-android-desktop",
+          "--force-desktop-android",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_tablet_x64_tablet_landscape.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -221,7 +220,7 @@
       },
       {
         "args": [
-          "--force-android-desktop",
+          "--force-desktop-android",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_tablet_x64_tablet_landscape.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.emulator_15.unit_tests.filter",
           "--gs-results-bucket=chromium-result-details",
@@ -272,7 +271,7 @@
       },
       {
         "args": [
-          "--force-android-desktop",
+          "--force-desktop-android",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_tablet_x64_tablet_landscape.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -330,7 +329,7 @@
           "reftest",
           "crashtest",
           "print-reftest",
-          "--additional-driver-flag=--force-android-desktop",
+          "--additional-driver-flag=--force-desktop-android",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_tablet_x64_tablet_landscape.textpb"
         ],
         "ci_only": true,
