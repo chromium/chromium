@@ -42,9 +42,14 @@ GeolocationPermissionResolver::DeterminePermissionStatus(
     const PermissionSetting& setting) const {
   GeolocationSetting geo_setting = std::get<GeolocationSetting>(setting);
 
-  return requested_precise_
-             ? GeolocationOptionToPermissionStatus(geo_setting.precise)
-             : GeolocationOptionToPermissionStatus(geo_setting.approximate);
+  if (requested_precise_) {
+    if (geo_setting.precise != PermissionOption::kAllowed &&
+        geo_setting.approximate == PermissionOption::kAllowed) {
+      return content::PermissionStatus::UNSATISFIED_OPTIONS;
+    }
+    return GeolocationOptionToPermissionStatus(geo_setting.precise);
+  }
+  return GeolocationOptionToPermissionStatus(geo_setting.approximate);
 }
 
 PermissionSetting
