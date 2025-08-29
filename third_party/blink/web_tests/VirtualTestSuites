@@ -65,7 +65,7 @@
       "fullscreen"
     ],
     "args": [
-      "--enable-features=OverlayScrollbar",
+      "--enable-features=OverlayScrollbar,FluentOverlayScrollbar",
       "--enable-threaded-compositing",
       "--enable-prefer-compositing-to-lcd-text",
       "--enable-overscroll-notifications",
@@ -2187,7 +2187,7 @@
     ],
     "bases": [],
     "args": [
-      "--disable-features=OverlayScrollbar"
+      "--disable-features=OverlayScrollbar,FluentOverlayScrollbar"
     ],
     "expires": "never",
     "owners": [
@@ -2353,7 +2353,6 @@
     "prefix": "overlay-scrollbar",
     "platforms": [
       "Linux",
-      "Mac",
       "Win"
     ],
     "bases": [
@@ -2361,7 +2360,7 @@
       "external/wpt/css/css-ui/pointer-events-no-scrollbars-002.html"
     ],
     "args": [
-      "--enable-features=OverlayScrollbar"
+      "--enable-features=OverlayScrollbar,FluentOverlayScrollbar"
     ],
     "expires": "never",
     "owners": [
