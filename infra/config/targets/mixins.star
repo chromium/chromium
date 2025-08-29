@@ -288,7 +288,6 @@ targets.mixin(
     description = "Run with android_35_google_apis_tablet_x64",
     args = [
         "--avd-config=../../tools/android/avd/proto/android_35_google_apis_tablet_x64_tablet_landscape.textpb",
-        "--force-desktop-android",
     ],
     swarming = targets.swarming(
         # soft affinity so that bots with caches will be picked first
@@ -421,7 +420,7 @@ targets.mixin(
     name = "android_desktop_wpt_args",
     generate_pyl_entry = False,
     args = [
-        "--additional-driver-flag=--force-desktop-android",
+        "--additional-driver-flag=--force-android-desktop",
     ],
 )
 
@@ -829,10 +828,10 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "force-desktop-android",
+    name = "force-android-desktop",
     generate_pyl_entry = False,
     args = [
-        "--force-desktop-android",
+        "--force-android-desktop",
     ],
 )
 
