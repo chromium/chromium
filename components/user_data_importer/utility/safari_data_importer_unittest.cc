@@ -343,6 +343,35 @@ class SafariDataImporterTest : public testing::Test {
     EXPECT_THAT(account_store()->stored_passwords(), IsEmpty());
   }
 
+  // Helper to set up common expectations for the "Ready" phase of an
+  // end-to-end file import.
+  void SetUpEndToEndPrepareExpectations() {
+    EXPECT_CALL(client_, OnPasswordsReady(AllOf(
+                             Field(&ImportResults::number_imported, 0u),
+                             Field(&ImportResults::number_to_import, 3u))));
+
+#if BUILDFLAG(IS_IOS)
+    ExpectBookmarksReady(6u);
+#else
+    ExpectBookmarksReady(5u);
+#endif
+
+    EXPECT_CALL(client_, OnPaymentCardsReady(3u));
+    EXPECT_CALL(client_, OnHistoryReady(13u, _));  // Approximation.
+  }
+
+  // Helper to set up common expectations for the "Imported" phase of an
+  // end-to-end file import.
+  void SetUpEndToEndCompleteExpectations() {
+    EXPECT_CALL(client_, OnPasswordsImported(AllOf(
+                             Field(&ImportResults::number_imported, 3u),
+                             Field(&ImportResults::number_to_import, 0u))));
+
+    EXPECT_CALL(client_, OnBookmarksImported(5u));
+    EXPECT_CALL(client_, OnPaymentCardsImported(3u));
+    EXPECT_CALL(client_, OnHistoryImported(7u));  // Actual.
+  }
+
   ReadingListModel* GetReadingListModel() { return reading_list_model_.get(); }
 
   password_manager::TestPasswordStore* profile_store() {
@@ -858,33 +887,22 @@ TEST_F(SafariDataImporterTest, CancelImport) {
 }
 
 TEST_F(SafariDataImporterTest, ImportFileEndToEnd) {
-  EXPECT_CALL(client_, OnPasswordsReady(
-                           AllOf(Field(&ImportResults::number_imported, 0u),
-                                 Field(&ImportResults::number_to_import, 3u))));
-
-#if BUILDFLAG(IS_IOS)
-  ExpectBookmarksReady(6u);
-#else
-  ExpectBookmarksReady(5u);
-#endif
-
-  EXPECT_CALL(client_, OnPaymentCardsReady(3u));
-  EXPECT_CALL(client_, OnHistoryReady(13u, _));  // Approximation.
+  SetUpEndToEndPrepareExpectations();
+  SetUpEndToEndCompleteExpectations();
 
   PrepareImportFromFile();
 
   // Use a small history size threshold so that ParseHistoryCallback gets called
   // multiple times internally.
   SetHistorySizeThreshold(3u);
+  CompleteImport({});
+}
 
-  EXPECT_CALL(client_, OnPasswordsImported(
-                           AllOf(Field(&ImportResults::number_imported, 3u),
-                                 Field(&ImportResults::number_to_import, 0u))));
+TEST_F(SafariDataImporterTest, ImportFileEndToEndWithDefaultThreshold) {
+  SetUpEndToEndPrepareExpectations();
+  SetUpEndToEndCompleteExpectations();
 
-  EXPECT_CALL(client_, OnBookmarksImported(5u));
-  EXPECT_CALL(client_, OnPaymentCardsImported(3u));
-  EXPECT_CALL(client_, OnHistoryImported(7u));  // Actual.
-
+  PrepareImportFromFile();
   CompleteImport({});
 }
 
