@@ -14,6 +14,7 @@
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -45,6 +46,8 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
@@ -346,6 +349,101 @@ void WaitForFirstNonEmptyPaint(const GURL& url, content::WebContents* target) {
   PageNonEmptyPaintObserver observer(url, target);
   observer.Wait();
 }
+
+// Browser extra part used to be notified early enough to track the
+// `ProfileManager` in `g_browser_process` before any profile creation.
+class ProfileManagerInitializationInterceptExtraParts
+    : public ChromeBrowserMainExtraParts {
+ public:
+  explicit ProfileManagerInitializationInterceptExtraParts(
+      base::OnceClosure on_post_early_initialization_callback,
+      base::OnceClosure on_post_main_message_loop_run_callback)
+      : on_post_early_initialization_callback_(
+            std::move(on_post_early_initialization_callback)),
+        on_post_main_message_loop_run_callback_(
+            std::move(on_post_main_message_loop_run_callback)) {}
+
+  // ChromeBrowserMainExtraParts:
+  void PostEarlyInitialization() override {
+    std::move(on_post_early_initialization_callback_).Run();
+  }
+  void PostMainMessageLoopRun() override {
+    std::move(on_post_main_message_loop_run_callback_).Run();
+  }
+
+ private:
+  base::OnceClosure on_post_early_initialization_callback_;
+  base::OnceClosure on_post_main_message_loop_run_callback_;
+};
+
+// Helper structure to count the number of profile loads/destruction.
+// Through `RegisterBrowserMainParts()`, ensures that the observation happens
+// right after the creation of the `ProfileManager` within `g_browser_process`
+// and before the creation of the Startup Profile, this way all profiles should
+// be tracked properly.
+class ProfileManagementCounter : public ProfileManagerObserver,
+                                 public ProfileObserver {
+ public:
+  void RegisterBrowserMainParts(content::BrowserMainParts* parts) {
+    ChromeBrowserMainParts* chrome_browser_main_parts =
+        static_cast<ChromeBrowserMainParts*>(parts);
+    chrome_browser_main_parts->AddParts(
+        std::make_unique<ProfileManagerInitializationInterceptExtraParts>(
+            base::BindOnce(&ProfileManagementCounter::OnPostEarlyInitialization,
+                           base::Unretained(this)),
+            base::BindOnce(&ProfileManagementCounter::OnPostMainMessageLoopRun,
+                           base::Unretained(this))));
+  }
+
+  size_t user_profile_added_count() { return user_profile_added_count_; }
+  size_t user_profile_destroyed_count() {
+    return user_profile_destroyed_count_;
+  }
+
+  // ProfileManagerObserver:
+  void OnProfileAdded(Profile* profile) override {
+    // Do not count the System Profile.
+    if (profile->IsSystemProfile()) {
+      return;
+    }
+
+    scoped_profile_observation_.AddObservation(profile);
+    ++user_profile_added_count_;
+  }
+
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override {
+    if (profile->IsSystemProfile() || profile->IsOffTheRecord()) {
+      return;
+    }
+
+    scoped_profile_observation_.RemoveObservation(profile);
+    CHECK_LT(user_profile_destroyed_count_, user_profile_added_count_);
+    ++user_profile_destroyed_count_;
+  }
+
+ private:
+  // Callbacks from `ProfileManagerInitializationInterceptExtraParts` to
+  // intercept ProfileManager initialization/descrution.
+  void OnPostEarlyInitialization() {
+    CHECK(g_browser_process);
+    ProfileManager* profile_manager = g_browser_process->profile_manager();
+    CHECK(profile_manager);
+    CHECK(profile_manager->GetLoadedProfiles().empty());
+    scoped_profile_manager_observation_.Observe(profile_manager);
+  }
+  void OnPostMainMessageLoopRun() {
+    scoped_profile_manager_observation_.Reset();
+  }
+
+  size_t user_profile_added_count_ = 0;
+  size_t user_profile_destroyed_count_ = 0;
+
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      scoped_profile_manager_observation_{this};
+  base::ScopedMultiSourceObservation<Profile, ProfileObserver>
+      scoped_profile_observation_{this};
+};
 
 }  // namespace
 
@@ -839,6 +937,12 @@ class ForceSigninProfilePickerCreationFlowBrowserTest
       bool force_signin_enabled = true)
       : force_signin_setter_(force_signin_enabled) {}
 
+  // ProfilePickerCreationFlowBrowserTest:
+  void CreatedBrowserMainParts(content::BrowserMainParts* parts) override {
+    ProfilePickerCreationFlowBrowserTest::CreatedBrowserMainParts(parts);
+    profile_management_counter_.RegisterBrowserMainParts(parts);
+  }
+
   void SimulateSuccesfulSignin(signin::IdentityManager* identity_manager,
                                const std::string& email) {
     // Simulate a successful reauth by making the account available.
@@ -880,6 +984,9 @@ class ForceSigninProfilePickerCreationFlowBrowserTest
   }
 
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
+  ProfileManagementCounter& profile_management_counter() {
+    return profile_management_counter_;
+  }
 
  private:
   void CheckMainProfilePickerUrlOpened() {
@@ -900,6 +1007,7 @@ class ForceSigninProfilePickerCreationFlowBrowserTest
 
   signin_util::ScopedForceSigninSetterForTesting force_signin_setter_;
   base::HistogramTester histogram_tester_;
+  ProfileManagementCounter profile_management_counter_;
 };
 
 IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
@@ -1015,7 +1123,7 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
 // - Profile should be locked.
 // - Perform reauth through the Picker.
 IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
-                       PRE_ForceSigninSigninThenReauthSuccessful) {
+                       PRE_PRE_ForceSigninSigninThenReauthSuccessful) {
   ASSERT_TRUE(signin_util::IsForceSigninEnabled());
   ASSERT_EQ(BrowserList::GetInstance()->size(), 0u);
 
@@ -1068,13 +1176,42 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
+                       PRE_ForceSigninSigninThenReauthSuccessful) {
+  //----------------------------------------------------------------------------
+  // The setup of the browser test attempts to open a browser for the startup
+  // profile, which fails because it detects that the profile should be locked.
+  // So it actually locks and destroys it.
+  // To ensure that the profile is properly destroyed (and prefs committed),
+  // this part needs to be encapsulated into it's own section, separate from the
+  // rest of the test.
+  //----------------------------------------------------------------------------
+  ASSERT_EQ(profile_management_counter().user_profile_added_count(), 1u);
+  ASSERT_EQ(profile_management_counter().user_profile_destroyed_count(), 1u);
+
+  ASSERT_TRUE(ProfilePicker::IsOpen());
+  ASSERT_EQ(BrowserList::GetInstance()->size(), 0u);
+  std::vector<ProfileAttributesEntry*> entries =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetAllProfilesAttributes();
+  ASSERT_GE(entries.size(), 1u);
+  ProfileAttributesEntry* entry = entries[0];
+  ASSERT_TRUE(entry);
+  ASSERT_EQ(base::UTF16ToUTF8(entry->GetUserName()), kConsumerEmail);
+  ASSERT_TRUE(entry->IsSigninRequired());
+}
+
+IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
                        ForceSigninSigninThenReauthSuccessful) {
   //----------------------------------------------------------------------------
-  // The setup of the browser test attempts to open a browser for the previous
-  // profile, which fails because it detects that the profile should be locked.
-  // So it actually locks and destroys it. No profile except for the System
-  // profile (rendering the Profile Picker) are loaded at this point.
+  // In this part, the startup profile load happened but is not destroyed since
+  // the profile was already locked. Ensure that the setup is still consistent.
+  // TODO(crbug.com/441717182): In this scenario, the startup profile should not
+  // be loaded since it is already locked.
   //----------------------------------------------------------------------------
+  ASSERT_EQ(profile_management_counter().user_profile_added_count(), 1u);
+  ASSERT_EQ(profile_management_counter().user_profile_destroyed_count(), 0u);
+
   ASSERT_TRUE(ProfilePicker::IsOpen());
   ASSERT_EQ(BrowserList::GetInstance()->size(), 0u);
   std::vector<ProfileAttributesEntry*> entries =
