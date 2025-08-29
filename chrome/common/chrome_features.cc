@@ -1559,10 +1559,6 @@ BASE_FEATURE(UmaStorageDimensions, base::FEATURE_DISABLED_BY_DEFAULT);
 // Kill switch for pinning PWA Shortcut to the Windows taskbar with the Taskbar
 // pinning Limited Access Feature.
 BASE_FEATURE(WinPinPWAShortcutWithLAF, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables the accelerated default browser flow for Windows 10.
-BASE_FEATURE(Win10AcceleratedDefaultBrowserFlow,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)
