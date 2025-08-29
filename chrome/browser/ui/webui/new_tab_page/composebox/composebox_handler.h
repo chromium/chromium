@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/base_composebox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/omnibox/composebox/composebox_metrics_recorder.h"
@@ -29,7 +30,8 @@ class Profile;
 class ComposeboxHandler
     : public composebox::mojom::PageHandler,
       public ComposeboxQueryController::FileUploadStatusObserver,
-      public SearchboxHandler {
+      public SearchboxHandler,
+      public composebox::BaseComposeboxHandler {
  public:
   explicit ComposeboxHandler(
       mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
@@ -48,7 +50,7 @@ class ComposeboxHandler
   // was no match present. The latter only happens when submit is clicked with
   // only a file and no input.
   void SubmitQuery(const std::string& query_text,
-                   WindowOpenDisposition disposition);
+                   WindowOpenDisposition disposition) override;
 
   // composebox::mojom::PageHandler:
   void NotifySessionStarted() override;

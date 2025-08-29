@@ -8,6 +8,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/base_composebox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "content/public/browser/web_contents.h"
@@ -25,15 +26,22 @@ namespace lens {
 class LensComposeboxController;
 
 class LensComposeboxHandler : public composebox::mojom::PageHandler,
-                              public SearchboxHandler {
+                              public SearchboxHandler,
+                              public composebox::BaseComposeboxHandler {
  public:
   explicit LensComposeboxHandler(
       lens::LensComposeboxController* parent_controller,
+      Profile* profile,
+      content::WebContents* web_contents,
       mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
       mojo::PendingRemote<composebox::mojom::Page> pending_page,
       mojo::PendingReceiver<searchbox::mojom::PageHandler>
           pending_searchbox_handler);
   ~LensComposeboxHandler() override;
+
+  // BaseComposeboxHandler:
+  void SubmitQuery(const std::string& query_text,
+                   WindowOpenDisposition disposition) override;
 
   // composebox::mojom::PageHandler:
   void NotifySessionStarted() override;

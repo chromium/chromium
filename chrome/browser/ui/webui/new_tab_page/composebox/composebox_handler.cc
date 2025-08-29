@@ -10,93 +10,16 @@
 
 #include "base/containers/span.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_omnibox_client.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
-#include "chrome/browser/ui/webui/searchbox/searchbox_omnibox_client.h"
 #include "components/lens/contextual_input.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/composebox/composebox_image_helper.h"
 #include "content/public/browser/page_navigator.h"
 
 using composebox::SessionState;
-
-namespace {
-class ComposeboxOmniboxClient final : public SearchboxOmniboxClient {
- public:
-  ComposeboxOmniboxClient(Profile* profile,
-                          content::WebContents* web_contents,
-                          ComposeboxHandler* composebox_handler,
-                          ComposeboxQueryController* query_controller);
-
-  ~ComposeboxOmniboxClient() override;
-
-  // OmniboxClient:
-  metrics::OmniboxEventProto::PageClassification GetPageClassification(
-      bool is_prefetch) const override;
-
-  void OnAutocompleteAccept(
-      const GURL& destination_url,
-      TemplateURLRef::PostContent* post_content,
-      WindowOpenDisposition disposition,
-      ui::PageTransition transition,
-      AutocompleteMatchType::Type match_type,
-      base::TimeTicks match_selection_timestamp,
-      bool destination_url_entered_without_scheme,
-      bool destination_url_entered_with_http_scheme,
-      const std::u16string& text,
-      const AutocompleteMatch& match,
-      const AutocompleteMatch& alternative_nav_match) override;
-
- private:
-  std::optional<lens::proto::LensOverlaySuggestInputs>
-  GetLensOverlaySuggestInputs() const override;
-
-  raw_ptr<ComposeboxHandler> composebox_handler_;
-  raw_ptr<ComposeboxQueryController> query_controller_;
-};
-
-ComposeboxOmniboxClient::ComposeboxOmniboxClient(
-    Profile* profile,
-    content::WebContents* web_contents,
-    ComposeboxHandler* composebox_handler,
-    ComposeboxQueryController* query_controller)
-    : SearchboxOmniboxClient(profile, web_contents),
-      composebox_handler_(composebox_handler),
-      query_controller_(query_controller) {}
-
-ComposeboxOmniboxClient::~ComposeboxOmniboxClient() = default;
-
-metrics::OmniboxEventProto::PageClassification
-ComposeboxOmniboxClient::GetPageClassification(bool is_prefetch) const {
-  return metrics::OmniboxEventProto::NTP_COMPOSEBOX;
-}
-
-void ComposeboxOmniboxClient::OnAutocompleteAccept(
-    const GURL& destination_url,
-    TemplateURLRef::PostContent* post_content,
-    WindowOpenDisposition disposition,
-    ui::PageTransition transition,
-    AutocompleteMatchType::Type match_type,
-    base::TimeTicks match_selection_timestamp,
-    bool destination_url_entered_without_scheme,
-    bool destination_url_entered_with_http_scheme,
-    const std::u16string& text,
-    const AutocompleteMatch& match,
-    const AutocompleteMatch& alternative_nav_match) {
-  composebox_handler_->SubmitQuery(base::UTF16ToUTF8(text), disposition);
-}
-
-std::optional<lens::proto::LensOverlaySuggestInputs>
-ComposeboxOmniboxClient::GetLensOverlaySuggestInputs() const {
-  const auto& suggest_inputs = query_controller_->suggest_inputs();
-  if (suggest_inputs.has_encoded_request_id()) {
-    return suggest_inputs;
-  }
-
-  return std::nullopt;
-}
-
-}  // namespace
 
 ComposeboxHandler::ComposeboxHandler(
     mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
@@ -108,23 +31,24 @@ ComposeboxHandler::ComposeboxHandler(
     Profile* profile,
     content::WebContents* web_contents,
     MetricsReporter* metrics_reporter)
-    : SearchboxHandler(std::move(pending_searchbox_handler),
-                       profile,
-                       web_contents,
-                       metrics_reporter),
+    : SearchboxHandler(
+          std::move(pending_searchbox_handler),
+          profile,
+          web_contents,
+          metrics_reporter,
+          std::make_unique<OmniboxController>(
+              /*view=*/nullptr,
+              std::make_unique<composebox::ComposeboxOmniboxClient>(
+                  profile,
+                  web_contents,
+                  this,
+                  query_controller.get()))),
       query_controller_(std::move(query_controller)),
       metrics_recorder_(std::move(metrics_recorder)),
       web_contents_(web_contents),
       page_{std::move(pending_page)},
       handler_(this, std::move(pending_handler)) {
   query_controller_->AddObserver(this);
-
-  // TODO(crbug.com/435470637): Consider moving to SearchboxHandler base class.
-  owned_controller_ = std::make_unique<OmniboxController>(
-      /*view=*/nullptr,
-      std::make_unique<ComposeboxOmniboxClient>(profile_, web_contents_, this,
-                                                query_controller_.get()));
-  controller_ = owned_controller_.get();
 
   autocomplete_controller_observation_.Observe(autocomplete_controller());
 }

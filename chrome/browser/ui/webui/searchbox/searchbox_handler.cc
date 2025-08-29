@@ -722,12 +722,16 @@ SearchboxHandler::SearchboxHandler(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
     Profile* profile,
     content::WebContents* web_contents,
-    MetricsReporter* metrics_reporter)
+    MetricsReporter* metrics_reporter,
+    std::unique_ptr<OmniboxController> controller)
     : profile_(profile),
       web_contents_(web_contents),
       metrics_reporter_(metrics_reporter),
+      owned_controller_(std::move(controller)),
       page_set_(false),
-      page_handler_(this, std::move(pending_page_handler)) {}
+      page_handler_(this, std::move(pending_page_handler)) {
+  controller_ = owned_controller_.get();
+}
 
 SearchboxHandler::~SearchboxHandler() {
   // Avoids dangling pointer warning when `controller_` is not owned.

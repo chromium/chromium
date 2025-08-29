@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/lens/lens_session_metrics_logger.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_mime_type.h"
+#include "components/tabs/public/tab_interface.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 
 namespace {
@@ -42,12 +43,17 @@ LensComposeboxController::~LensComposeboxController() = default;
 void LensComposeboxController::BindComposebox(
     mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
     mojo::PendingRemote<composebox::mojom::Page> pending_page,
+    mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page,
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
         pending_searchbox_handler) {
   composebox_handler_.reset();
   composebox_handler_ = std::make_unique<LensComposeboxHandler>(
-      this, std::move(pending_handler), std::move(pending_page),
+      this, profile_, lens_search_controller_->GetTabInterface()->GetContents(),
+      std::move(pending_handler), std::move(pending_page),
       std::move(pending_searchbox_handler));
+
+  // TODO(crbug.com/435288212): Move searchbox mojom to use factory pattern.
+  composebox_handler_->SetPage(std::move(pending_searchbox_page));
 
   // Record that the composebox was shown. The composebox handler is always
   // bound, so check if the composebox is actually enabled before logging as

@@ -263,9 +263,9 @@ void LensSidePanelUntrustedUI::CreatePageHandler(
         pending_searchbox_handler) {
   DCHECK(pending_page.is_valid());
   auto* controller = GetLensSearchController().lens_composebox_controller();
-  controller->BindComposebox(std::move(pending_page_handler),
-                             std::move(pending_page),
-                             std::move(pending_searchbox_handler));
+  controller->BindComposebox(
+      std::move(pending_page_handler), std::move(pending_page),
+      std::move(pending_searchbox_page), std::move(pending_searchbox_handler));
 }
 
 LensSearchController& LensSidePanelUntrustedUI::GetLensSearchController() {

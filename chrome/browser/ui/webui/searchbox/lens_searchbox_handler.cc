@@ -107,18 +107,18 @@ LensSearchboxHandler::LensSearchboxHandler(
     content::WebContents* web_contents,
     MetricsReporter* metrics_reporter,
     LensSearchboxClient* lens_searchbox_client)
-    : SearchboxHandler(std::move(pending_page_handler),
-                       profile,
-                       web_contents,
-                       metrics_reporter),
+    : SearchboxHandler(
+          std::move(pending_page_handler),
+          profile,
+          web_contents,
+          metrics_reporter,
+          std::make_unique<OmniboxController>(
+              /*view=*/nullptr,
+              std::make_unique<LensOmniboxClient>(profile,
+                                                  web_contents,
+                                                  lens_searchbox_client),
+              lens::features::GetLensSearchboxAutocompleteTimeout())),
       lens_searchbox_client_(lens_searchbox_client) {
-  owned_controller_ = std::make_unique<OmniboxController>(
-      /*view=*/nullptr,
-      std::make_unique<LensOmniboxClient>(profile_, web_contents_,
-                                          lens_searchbox_client),
-      lens::features::GetLensSearchboxAutocompleteTimeout());
-  controller_ = owned_controller_.get();
-
   autocomplete_controller_observation_.Observe(autocomplete_controller());
 }
 

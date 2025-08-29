@@ -90,24 +90,25 @@ RealboxHandler::RealboxHandler(
     content::WebContents* web_contents,
     MetricsReporter* metrics_reporter,
     OmniboxController* omnibox_controller)
-    : SearchboxHandler(std::move(pending_page_handler),
-                       profile,
-                       web_contents,
-                       metrics_reporter) {
+    : SearchboxHandler(
+          std::move(pending_page_handler),
+          profile,
+          web_contents,
+          metrics_reporter,
+          !omnibox_controller
+              ? std::make_unique<OmniboxController>(
+                    /*view=*/nullptr,
+                    std::make_unique<RealboxOmniboxClient>(profile,
+                                                           web_contents),
+                    kAutocompleteDefaultStopTimerDuration)
+              : nullptr) {
   // Keep a reference to the OmniboxController instance owned by the OmniboxView
   // when the handler is being used in the context of the omnibox popup.
-  // Otherwise, create own instance of OmniboxController. Either way, observe
-  // the AutocompleteController instance owned by the OmniboxController.
+  // Otherwise, create own instance of OmniboxController above. Either way,
+  // observe the AutocompleteController instance owned by the OmniboxController.
   if (omnibox_controller) {
     controller_ = omnibox_controller;
-  } else {
-    owned_controller_ = std::make_unique<OmniboxController>(
-        /*view=*/nullptr,
-        std::make_unique<RealboxOmniboxClient>(profile_, web_contents_),
-        kAutocompleteDefaultStopTimerDuration);
-    controller_ = owned_controller_.get();
   }
-
   autocomplete_controller_observation_.Observe(autocomplete_controller());
 }
 
