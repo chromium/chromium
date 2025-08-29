@@ -221,8 +221,7 @@ class ChromeURLDataManagerWebUITrustedTypesTest
     }
 
     const std::string kMessageFilter =
-        "*Creating a TrustedTypePolicy * violates the following Content "
-        "Security Policy directive *";
+        "*Refused to create a TrustedTypePolicy*";
     content::WebContents* content =
         browser()->tab_strip_model()->GetActiveWebContents();
     content::WebContentsConsoleObserver console_observer(content);

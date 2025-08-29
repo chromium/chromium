@@ -229,23 +229,23 @@ bool SupportedInMeta(CSPDirectiveName directive) {
 // Return the error message specific to one CSP |directive|.
 // $1: Blocked URL.
 // $2: Blocking policy.
-std::string ErrorMessage(CSPDirectiveName directive,
-                         mojom::ContentSecurityPolicyType type) {
-  std::string action;
+const char* ErrorMessage(CSPDirectiveName directive) {
   switch (directive) {
     case CSPDirectiveName::FencedFrameSrc:
-      action = "Framing '$1' as a fenced frame";
-      break;
+      return "Refused to frame '$1' as a fenced frame because it violates the "
+             "following Content Security Policy directive: \"$2\".";
     case CSPDirectiveName::FormAction:
-      action = "Sending form data to '$1'";
-      break;
+      return "Refused to send form data to '$1' because it violates the "
+             "following Content Security Policy directive: \"$2\".";
     case CSPDirectiveName::FrameAncestors:
+      return "Refused to frame '$1' because an ancestor violates the following "
+             "Content Security Policy directive: \"$2\".";
     case CSPDirectiveName::FrameSrc:
-      action = "Framing '$1'";
-      break;
+      return "Refused to frame '$1' because it violates the "
+             "following Content Security Policy directive: \"$2\".";
     case CSPDirectiveName::ConnectSrc:
-      action = "Connecting to '$1'";
-      break;
+      return "Refused to connect to '$1' because it violates the "
+             "following Content Security Policy directive: \"$2\".";
 
     case CSPDirectiveName::BaseURI:
     case CSPDirectiveName::BlockAllMixedContent:
@@ -274,15 +274,6 @@ std::string ErrorMessage(CSPDirectiveName directive,
     case CSPDirectiveName::Unknown:
       NOTREACHED();
   };
-
-  return base::StrCat(
-      {action, " violates the following ",
-       type == mojom::ContentSecurityPolicyType::kReport ? "report-only " : "",
-       "Content Security Policy directive: \"$2\". ",
-       type == mojom::ContentSecurityPolicyType::kReport
-           ? "The violation has been logged, but no further action has been "
-             "taken."
-           : "The request has been blocked."});
 }
 
 void ReportViolation(CSPContext* context,
@@ -306,8 +297,12 @@ void ReportViolation(CSPContext* context,
                                             safe_source_location.get());
 
   std::stringstream message;
+
+  if (policy->header->type == mojom::ContentSecurityPolicyType::kReport)
+    message << "[Report Only] ";
+
   message << base::ReplaceStringPlaceholders(
-      ErrorMessage(directive_name, policy->header->type),
+      ErrorMessage(directive_name),
       {ElideURLForReportViolation(blocked_url),
        ToString(effective_directive_name) + " " +
            ToString(policy->directives[effective_directive_name])},

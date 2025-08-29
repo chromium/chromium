@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCspApiTest,
   // Blocking the script load should emit a log.
   content::WebContents* web_contents = GetActiveWebContents();
   content::WebContentsConsoleObserver console_observer(web_contents);
-  console_observer.SetPattern("Loading the script '*' violates the following*");
+  console_observer.SetPattern("Refused to load the script '*");
 
   ASSERT_TRUE(
       NavigateToURL(web_contents, extension->GetResourceURL("page.html")));

@@ -167,9 +167,10 @@ TEST_F(ContentSecurityPolicyTest, AddPolicies) {
       example_url, ResourceRequest::RedirectStatus::kNoRedirect,
       ReportingDisposition::kReport,
       ContentSecurityPolicy::CheckHeaderType::kCheckReportOnly));
-  EXPECT_THAT(test_delegate->console_messages(),
-              Contains(HasConsole("Loading the script 'http://example.com/'",
-                                  ConsoleMessage::Level::kInfo)));
+  EXPECT_THAT(
+      test_delegate->console_messages(),
+      Contains(HasConsole("Refused to load the script 'http://example.com/'",
+                          ConsoleMessage::Level::kInfo)));
 
   test_delegate->console_messages().clear();
   EXPECT_TRUE(csp2->AllowImageFromSource(
@@ -184,9 +185,10 @@ TEST_F(ContentSecurityPolicyTest, AddPolicies) {
       ResourceRequest::RedirectStatus::kNoRedirect,
       ReportingDisposition::kReport,
       ContentSecurityPolicy::CheckHeaderType::kCheckReportOnly));
-  EXPECT_THAT(test_delegate->console_messages(),
-              Contains(HasConsole("Loading the image 'http://not-example.com/'",
-                                  ConsoleMessage::Level::kInfo)));
+  EXPECT_THAT(
+      test_delegate->console_messages(),
+      Contains(HasConsole("Refused to load the image 'http://not-example.com/'",
+                          ConsoleMessage::Level::kInfo)));
 }
 
 TEST_F(ContentSecurityPolicyTest, IsActiveForConnectionsWithConnectSrc) {
