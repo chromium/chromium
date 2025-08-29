@@ -38,10 +38,14 @@ using ::testing::Return;
 class PrivacySandboxNoticeViewManagerTest : public InProcessBrowserTest {
  public:
   PrivacySandboxNoticeViewManagerTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{privacy_sandbox::kPrivacySandboxNoticeFramework,
-                               {}}},
-        {});
+    // Intentionally disabled the PrivacySandboxService's Prompt. Not doing this
+    // will result in 2 prompts opened: through the DIalogManager + through the
+    // PrivacySandboxService.
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{privacy_sandbox::kPrivacySandboxNoticeFramework,
+                              privacy_sandbox::kDisablePrivacySandboxPrompts},
+        /*disabled_features=*/{
+            privacy_sandbox::kPrivacySandboxGetPromptFromNoticeService});
   }
 
   void SetUpOnMainThread() override {

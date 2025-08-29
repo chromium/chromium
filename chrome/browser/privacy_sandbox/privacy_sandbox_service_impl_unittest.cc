@@ -3002,7 +3002,7 @@ TEST_F(PrivacySandboxServiceM1NoticePromptTest, M1EEAFlowInterrupted) {
                 {kM1ConsentDecisionPreviouslyMade, true},
                 {kM1EEANoticePreviouslyAcknowledged, false}},
       TestInput{{kForceChromeBuild, true}},
-      TestOutput{{kPromptType, static_cast<int>(PromptType::kM1NoticeROW)},
+      TestOutput{{kPromptType, static_cast<int>(PromptType::kM1NoticeEEA)},
                  {kM1PromptSuppressedReason,
                   static_cast<int>(PromptSuppressedReason::kNone)}});
   // The Histogram Mismatch here is known, and is expected. This is because

@@ -717,9 +717,10 @@ PromptType PrivacySandboxServiceImpl::GetRequiredPromptType(
           static_cast<int>(ps_prompt_type) |
           (static_cast<int>(notice_service_prompt_type) << 3)));
 
-  // TODO(crbug.com/420707919) Conditionally return notice_service_prompt_type
-  // based on Feature check.
-  return ps_prompt_type;
+  return base::FeatureList::IsEnabled(
+             privacy_sandbox::kPrivacySandboxGetPromptFromNoticeService)
+             ? notice_service_prompt_type
+             : ps_prompt_type;
 }
 
 void MaybeUpdateNoticeService(
