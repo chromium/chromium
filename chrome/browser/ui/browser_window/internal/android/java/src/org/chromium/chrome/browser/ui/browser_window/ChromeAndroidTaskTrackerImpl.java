@@ -169,6 +169,20 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
         }
     }
 
+    /** Activates the second to last activated task, if there are at least two tasks. */
+    void activatePenultimatelyActivatedTask() {
+        synchronized (mTasksLock) {
+            List<ChromeAndroidTask> tasks = new ArrayList<>(mTasks.values());
+            tasks.sort(
+                    Comparator.comparingLong(ChromeAndroidTask::getLastActivatedTimeMillis)
+                            .reversed());
+
+            if (tasks.size() >= 2) {
+                tasks.get(1).activate();
+            }
+        }
+    }
+
     /**
      * Removes all {@link ChromeAndroidTask}s.
      *

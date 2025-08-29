@@ -86,7 +86,7 @@ gfx::Rect AndroidBaseWindow::GetBounds() const {
 }
 
 void AndroidBaseWindow::Show() {
-  NOTREACHED();
+  Java_AndroidBaseWindow_show(AttachCurrentThread(), java_android_base_window_);
 }
 
 void AndroidBaseWindow::Hide() {
@@ -99,7 +99,8 @@ bool AndroidBaseWindow::IsVisible() const {
 }
 
 void AndroidBaseWindow::ShowInactive() {
-  NOTREACHED();
+  Java_AndroidBaseWindow_showInactive(AttachCurrentThread(),
+                                      java_android_base_window_);
 }
 
 void AndroidBaseWindow::Close() {
@@ -113,7 +114,8 @@ void AndroidBaseWindow::Activate() {
 }
 
 void AndroidBaseWindow::Deactivate() {
-  NOTREACHED();
+  Java_AndroidBaseWindow_deactivate(AttachCurrentThread(),
+                                    java_android_base_window_);
 }
 
 void AndroidBaseWindow::Maximize() {

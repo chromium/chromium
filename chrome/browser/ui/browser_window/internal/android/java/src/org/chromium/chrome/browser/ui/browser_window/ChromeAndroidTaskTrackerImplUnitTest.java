@@ -6,11 +6,18 @@ package org.chromium.chrome.browser.ui.browser_window;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+
+import android.app.ActivityManager;
+import android.content.Context;
 
 import org.junit.After;
 import org.junit.Rule;
@@ -19,8 +26,10 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedWithNativeObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** Unit tests for {@link ChromeAndroidTaskTrackerImpl}. */
@@ -28,6 +37,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 @RunWith(BaseRobolectricTestRunner.class)
 public class ChromeAndroidTaskTrackerImplUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public FakeTimeTestRule mFakeTime = new FakeTimeTestRule();
 
     private final ChromeAndroidTaskTrackerImpl mChromeAndroidTaskTracker =
             ChromeAndroidTaskTrackerImpl.getInstance();
@@ -276,5 +286,98 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
 
         // Cleanup.
         mChromeAndroidTaskTracker.removeObserver(observer);
+    }
+
+    @Test
+    public void activatePenultimatelyActivatedTask_noTasks_doesNothing() {
+        // Act.
+        mChromeAndroidTaskTracker.activatePenultimatelyActivatedTask();
+
+        // Assert.
+        // No crash.
+    }
+
+    @Test
+    public void activatePenultimatelyActivatedTask_oneTask_doesNothing() {
+        // Arrange.
+        var activityWindowAndroid1 =
+                ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(/* taskId= */ 1);
+        var task1 =
+                mChromeAndroidTaskTracker.obtainTask(
+                        BrowserWindowType.NORMAL,
+                        activityWindowAndroid1,
+                        () -> mock(Profile.class));
+        ((TopResumedActivityChangedWithNativeObserver) task1)
+                .onTopResumedActivityChangedWithNative(/* isTopResumedActivity= */ true);
+        ((TopResumedActivityChangedWithNativeObserver) task1)
+                .onTopResumedActivityChangedWithNative(/* isTopResumedActivity= */ false);
+        assertNotNull(activityWindowAndroid1.getActivity().get());
+        var activityManager =
+                (ActivityManager)
+                        activityWindowAndroid1
+                                .getActivity()
+                                .get()
+                                .getSystemService(Context.ACTIVITY_SERVICE);
+
+        // Act.
+        mChromeAndroidTaskTracker.activatePenultimatelyActivatedTask();
+
+        // Assert.
+        verify(activityManager, never()).moveTaskToFront(anyInt(), anyInt());
+    }
+
+    @Test
+    public void activatePenultimatelyActivatedTask_twoTasks_activatesSecondToLast() {
+        // Arrange.
+        var activityWindowAndroid1 =
+                ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(/* taskId= */ 1);
+        var task1 =
+                mChromeAndroidTaskTracker.obtainTask(
+                        BrowserWindowType.NORMAL,
+                        activityWindowAndroid1,
+                        () -> mock(Profile.class));
+        ((TopResumedActivityChangedWithNativeObserver) task1)
+                .onTopResumedActivityChangedWithNative(/* isTopResumedActivity= */ true);
+        assertNotNull(activityWindowAndroid1.getActivity().get());
+        var activityManager1 =
+                (ActivityManager)
+                        activityWindowAndroid1
+                                .getActivity()
+                                .get()
+                                .getSystemService(Context.ACTIVITY_SERVICE);
+        mFakeTime.advanceMillis(1);
+        var activityWindowAndroid2 =
+                ChromeAndroidTaskUnitTestSupport.createMockActivityWindowAndroid(/* taskId= */ 2);
+        var task2 =
+                mChromeAndroidTaskTracker.obtainTask(
+                        BrowserWindowType.NORMAL,
+                        activityWindowAndroid2,
+                        () -> mock(Profile.class));
+        // Switch the order of activation.
+        ((TopResumedActivityChangedWithNativeObserver) task1)
+                .onTopResumedActivityChangedWithNative(/* isTopResumedActivity= */ false);
+        ((TopResumedActivityChangedWithNativeObserver) task2)
+                .onTopResumedActivityChangedWithNative(/* isTopResumedActivity= */ true);
+        assertNotNull(activityWindowAndroid2.getActivity().get());
+        var activityManager2 =
+                (ActivityManager)
+                        activityWindowAndroid2
+                                .getActivity()
+                                .get()
+                                .getSystemService(Context.ACTIVITY_SERVICE);
+
+        long task1LastActivatedTime = task1.getLastActivatedTimeMillis();
+        long task2LastActivatedTime = task2.getLastActivatedTimeMillis();
+        assertTrue(
+                "Task 2 should have a later activation time",
+                task2LastActivatedTime > task1LastActivatedTime);
+
+        // Act.
+        mChromeAndroidTaskTracker.activatePenultimatelyActivatedTask();
+
+        // Assert.
+        // task2 was the last activated, so task1 (the second to last) should be activated.
+        verify(activityManager2, never()).moveTaskToFront(eq(task2.getId()), anyInt());
+        verify(activityManager1).moveTaskToFront(eq(task1.getId()), anyInt());
     }
 }

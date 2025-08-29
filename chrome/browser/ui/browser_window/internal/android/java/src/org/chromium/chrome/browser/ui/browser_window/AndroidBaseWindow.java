@@ -77,8 +77,18 @@ final class AndroidBaseWindow {
     }
 
     @CalledByNative
+    private void show() {
+        mChromeAndroidTask.show();
+    }
+
+    @CalledByNative
     private boolean isVisible() {
         return mChromeAndroidTask.isVisible();
+    }
+
+    @CalledByNative
+    private void showInactive() {
+        mChromeAndroidTask.showInactive();
     }
 
     @CalledByNative
@@ -89,6 +99,11 @@ final class AndroidBaseWindow {
     @CalledByNative
     private void activate() {
         mChromeAndroidTask.activate();
+    }
+
+    @CalledByNative
+    private void deactivate() {
+        mChromeAndroidTask.deactivate();
     }
 
     @CalledByNative

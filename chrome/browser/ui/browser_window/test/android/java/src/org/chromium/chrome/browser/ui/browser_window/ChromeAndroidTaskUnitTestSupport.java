@@ -11,6 +11,8 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.view.WindowManager;
 
 import org.chromium.build.annotations.NullMarked;
@@ -151,9 +153,12 @@ public final class ChromeAndroidTaskUnitTestSupport {
                         withSettings().extraInterfaces(ActivityLifecycleDispatcherProvider.class));
         var mockActivityLifecycleDispatcher = mock(ActivityLifecycleDispatcher.class);
         var mockWindowManager = mock(WindowManager.class);
+        var mockActivityManager = mock(ActivityManager.class);
 
         when(mockActivity.getTaskId()).thenReturn(taskId);
         when(mockActivity.getWindowManager()).thenReturn(mockWindowManager);
+        when(mockActivity.getSystemService(Context.ACTIVITY_SERVICE))
+                .thenReturn(mockActivityManager);
         when(((ActivityLifecycleDispatcherProvider) mockActivity).getLifecycleDispatcher())
                 .thenReturn(mockActivityLifecycleDispatcher);
         when(mockActivityWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mockActivity));
