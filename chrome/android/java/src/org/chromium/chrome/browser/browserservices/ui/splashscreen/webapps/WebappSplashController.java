@@ -15,6 +15,7 @@ import android.widget.ImageView;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
@@ -30,6 +31,7 @@ import org.chromium.webapk.lib.common.WebApkCommonUtils;
 import org.chromium.webapk.lib.common.splash.SplashLayout;
 
 /** Displays the splash screen for homescreen shortcuts and WebAPKs. */
+@NullMarked
 public class WebappSplashController implements SplashDelegate {
     public static final int HIDE_ANIMATION_DURATION_MS = 300;
 
@@ -37,7 +39,7 @@ public class WebappSplashController implements SplashDelegate {
     private final TabObserverRegistrar mTabObserverRegistrar;
     private final WebappInfo mWebappInfo;
 
-    private WebApkSplashNetworkErrorObserver mWebApkNetworkErrorObserver;
+    private @Nullable WebApkSplashNetworkErrorObserver mWebApkNetworkErrorObserver;
 
     public WebappSplashController(
             Activity activity,
@@ -145,12 +147,12 @@ public class WebappSplashController implements SplashDelegate {
         ImageView splashView = new ImageView(appContext);
         splashView.setBackgroundColor(backgroundColor);
 
+        String packageName = mWebappInfo.webApkPackageName();
+        assert packageName != null;
         Bitmap splashBitmap =
                 FileUtils.queryBitmapFromContentProvider(
                         appContext,
-                        Uri.parse(
-                                WebApkCommonUtils.generateSplashContentProviderUri(
-                                        mWebappInfo.webApkPackageName())));
+                        Uri.parse(WebApkCommonUtils.generateSplashContentProviderUri(packageName)));
         if (splashBitmap != null) {
             splashView.setScaleType(ImageView.ScaleType.FIT_CENTER);
             splashView.setImageBitmap(splashBitmap);
