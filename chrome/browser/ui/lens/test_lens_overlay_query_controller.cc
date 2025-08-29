@@ -346,7 +346,7 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
   if (!disable_page_upload_response_callback &&
       !last_upload_progress_callback_.is_null()) {
     // Simulate the upload progress callback completing the upload.
-    std::move(last_upload_progress_callback_).Run(1, 1);
+    std::move(last_upload_progress_callback_).Run(10, 10);
   }
 
   auto response = std::make_unique<FakeEndpointFetcher>(fake_endpoint_response);

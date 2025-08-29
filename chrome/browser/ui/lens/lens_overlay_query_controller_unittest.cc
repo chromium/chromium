@@ -3881,6 +3881,11 @@ TEST_F(LensOverlayQueryControllerTest, UploadChunkingPDF) {
   ASSERT_EQ(query_controller.latency_gen_204_counter(
                 LatencyType::kInvocationToInitialPageContentRequestSent),
             1);
+
+  // Test controller calls the progress callback with position 10 for each
+  // chunk, so expect total of 20 for the 2 chunks.
+  EXPECT_EQ(query_controller.total_chunk_progress_for_testing(), 20UL);
+  EXPECT_EQ(query_controller.total_chunk_upload_size_for_testing(), 22UL);
 }
 
 TEST_F(LensOverlayQueryControllerTest, UploadChunkingPDF_SmallPdf) {

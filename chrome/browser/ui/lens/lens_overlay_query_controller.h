@@ -232,6 +232,12 @@ class LensOverlayQueryController {
     return suggest_inputs_;
   }
 
+  size_t total_chunk_progress_for_testing() { return total_chunk_progress_; }
+
+  size_t total_chunk_upload_size_for_testing() {
+    return total_chunk_upload_size_;
+  }
+
   friend class lens::LensComposeboxController;
 
  protected:
@@ -485,6 +491,12 @@ class LensOverlayQueryController {
 
   // Handles the prgress of the page content upload request.
   void PageContentUploadProgressHandler(uint64_t position, uint64_t total);
+
+  // Handles the progress of chunk upload requests by calculating the total
+  // progress across all chunks.
+  void UploadChunkProgressHandler(size_t chunk_request_index,
+                                  uint64_t position,
+                                  uint64_t total);
 
   // Marks that the page content upload is no longer in progress and sends the
   // pending contextual query.
@@ -883,6 +895,19 @@ class LensOverlayQueryController {
 
   // Whether or not a page content upload request is in progress.
   bool page_content_request_in_progress_ = false;
+
+  // Whether or not the upload is being chunked.
+  bool chunk_upload_in_progress_ = false;
+
+  // Stores the last reported upload progress position for each chunk, indexed
+  // by chunk id.
+  std::vector<size_t> chunk_progress;
+
+  // The sum of the last reported upload progress position of each chunk.
+  size_t total_chunk_progress_ = 0;
+
+  // Total size of data being uploaded during a chunk upload.
+  size_t total_chunk_upload_size_ = 0;
 
   // Callback for a pending contextual query that is waiting for the page
   // content request to finish uploading.

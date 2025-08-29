@@ -1249,6 +1249,7 @@ void LensOverlayQueryController::PrepareAndFetchPageContentRequest() {
   compression_task_tracker_->TryCancelAll();
   page_contents_request_start_time_ = base::TimeTicks::Now();
   page_content_request_in_progress_ = true;
+  chunk_upload_in_progress_ = false;
   remaining_upload_chunk_responses_ = 0;
   remaining_chunk_retries = lens::features::GetLensOverlayUploadChunkRetries();
 
@@ -1262,6 +1263,7 @@ void LensOverlayQueryController::PrepareAndFetchPageContentRequest() {
       primary_content_type_ == lens::MimeType::kPdf &&
       underlying_page_contents_.front().bytes_.size() >
           lens::features::GetLensOverlayChunkSizeBytes()) {
+    chunk_upload_in_progress_ = true;
     // Post MakeChunks to a task off the main thread so compression does not
     // throttle the main thread.
     compression_task_tracker_->PostTaskAndReplyWithResult(
@@ -1305,12 +1307,17 @@ void LensOverlayQueryController::PrepareAndFetchUploadChunkRequests(
   if (!chunks.size()) {
     return;
   }
+  chunk_progress = std::vector<size_t>(chunks.size());
+  total_chunk_progress_ = 0;
+  total_chunk_upload_size_ = 0;
+
   lens::LensOverlayRequestContext request_context;
   request_context.mutable_request_id()->CopyFrom(request_id);
   request_context.mutable_client_context()->CopyFrom(CreateClientContext());
 
   std::vector<lens::LensOverlayUploadChunkRequest> requests;
   for (size_t i = 0; i < chunks.size(); i++) {
+    total_chunk_upload_size_ += chunks[i].size();
     requests.push_back(
         CreateUploadChunkRequest(i, chunks.size(), chunks[i], request_context));
   }
@@ -1351,7 +1358,9 @@ void LensOverlayQueryController::FetchUploadChunkRequest(
                      weak_ptr_factory_.GetWeakPtr(),
                      request.request_context().request_id(),
                      pending_upload_chunk_requests_.size()),
-      base::NullCallback(),
+      base::BindRepeating(
+          &LensOverlayQueryController::UploadChunkProgressHandler,
+          weak_ptr_factory_.GetWeakPtr(), chunk_request_index),
       GURL(lens::features::GetLensOverlayUploadChunkEndpointURL()));
 }
 
@@ -1418,9 +1427,14 @@ void LensOverlayQueryController::PerformPageContentRequest(
       base::BindOnce(&LensOverlayQueryController::PageContentResponseHandler,
                      weak_ptr_factory_.GetWeakPtr(),
                      request.objects_request().request_context().request_id()),
-      base::BindRepeating(
-          &LensOverlayQueryController::PageContentUploadProgressHandler,
-          weak_ptr_factory_.GetWeakPtr()));
+      // If this is a chunked upload, upload progress will have already been
+      // reported by the chunk uploads, so skip passing in the upload progress
+      // handler here.
+      chunk_upload_in_progress_
+          ? base::NullCallback()
+          : base::BindRepeating(
+                &LensOverlayQueryController::PageContentUploadProgressHandler,
+                weak_ptr_factory_.GetWeakPtr()));
 }
 
 void LensOverlayQueryController::PageContentResponseHandler(
@@ -1518,9 +1532,36 @@ void LensOverlayQueryController::PageContentUploadProgressHandler(
   }
 }
 
+void LensOverlayQueryController::UploadChunkProgressHandler(
+    size_t chunk_request_index,
+    uint64_t position,
+    uint64_t total) {
+  // Caller of this callback should be sequenced.
+
+  // Save the reported position of each chunk to the chunk_progress vector.
+  // Instead of repeatedly summing over the entire vector, increment the total
+  // chunk progress by the difference between the currently reported position
+  // and the last reported position of the chunk.
+  total_chunk_progress_ += position - chunk_progress[chunk_request_index];
+  chunk_progress[chunk_request_index] = position;
+
+  // Overhead causes the total progress to be very slightly above the total
+  // upload size (by about 0.01%). Cap to avoid reporting progress > 100%.
+  if (total_chunk_progress_ > total_chunk_upload_size_) {
+    total_chunk_progress_ = total_chunk_upload_size_;
+  }
+
+  if (page_content_upload_progress_callback_) {
+    page_content_upload_progress_callback_.Run(total_chunk_progress_,
+                                               total_chunk_upload_size_);
+  }
+}
+
 void LensOverlayQueryController::PageContentUploadFinished() {
   pending_page_content_request_.Clear();
   page_content_request_in_progress_ = false;
+  chunk_upload_in_progress_ = false;
+  chunk_progress.clear();
   if (pending_contextual_query_callback_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(pending_contextual_query_callback_));
