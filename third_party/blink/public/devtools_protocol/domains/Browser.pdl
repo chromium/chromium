@@ -103,15 +103,19 @@ domain Browser
       closeTabSearch
       openGlic
 
-  # Set permission settings for given origin.
+  # Set permission settings for given requesting and embedding origins.
   experimental command setPermission
     parameters
       # Descriptor of permission to override.
       PermissionDescriptor permission
       # Setting of the permission.
       PermissionSetting setting
-      # Origin the permission applies to, all origins if not specified.
+      # Requesting origin the permission applies to, all origins if not specified.
       optional string origin
+      # Embedding origin the permission applies to. It is ignored unless the requesting origin is
+      # present and valid. If the requesting origin is provided but the embedding origin isn't, the
+      # requesting origin is used as the embedding origin.
+      optional string embeddingOrigin
       # Context to override. When omitted, default browser context is used.
       optional BrowserContextID browserContextId
 

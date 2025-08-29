@@ -23,6 +23,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/expected_macros.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_item.h"
 #include "components/embedder_support/user_agent_utils.h"
@@ -49,6 +50,25 @@ using blink::PermissionType;
 
 namespace content {
 namespace protocol {
+
+namespace {
+
+base::expected<std::optional<url::Origin>, Response> ParseOriginString(
+    base::optional_ref<const std::string> origin_string) {
+  if (!origin_string.has_value()) {
+    return std::nullopt;
+  }
+
+  url::Origin origin = url::Origin::Create(GURL(origin_string.value()));
+  if (origin.opaque()) {
+    return base::unexpected(Response::InvalidParams(
+        "Permission can't be granted to opaque origins."));
+  }
+
+  return origin;
+}
+
+}  // namespace
 
 BrowserHandler::BrowserHandler(bool allow_set_download_behavior)
     : DevToolsDomainHandler(Browser::Metainfo::domainName),
@@ -369,6 +389,7 @@ Response BrowserHandler::SetPermission(
     std::unique_ptr<protocol::Browser::PermissionDescriptor> permission,
     const protocol::Browser::PermissionSetting& setting,
     std::optional<std::string> origin,
+    std::optional<std::string> embedding_origin,
     std::optional<std::string> browser_context_id) {
   BrowserContext* browser_context = nullptr;
   Response response = FindBrowserContext(browser_context_id, &browser_context);
@@ -390,19 +411,24 @@ Response BrowserHandler::SetPermission(
   PermissionControllerImpl* permission_controller =
       PermissionControllerImpl::FromBrowserContext(browser_context);
 
-  std::optional<url::Origin> overridden_origin;
+  std::optional<url::Origin> overridden_requesting_origin;
+  std::optional<url::Origin> overridden_embedding_origin;
   if (origin.has_value()) {
-    overridden_origin = url::Origin::Create(GURL(origin.value()));
-    if (overridden_origin->opaque())
-      return Response::InvalidParams(
-          "Permission can't be granted to opaque origins.");
+    ASSIGN_OR_RETURN(overridden_requesting_origin, ParseOriginString(origin));
+
+    // Only consider the embedding origin if there's a requesting origin. Use
+    // the requesting origin as the embedding origin, if one is not provided.
+    ASSIGN_OR_RETURN(overridden_embedding_origin,
+                     ParseOriginString(embedding_origin));
+    if (!overridden_embedding_origin) {
+      overridden_embedding_origin = overridden_requesting_origin;
+    }
   }
-  // TODO(crbug.com/434724810): Once SetPermission accepts a requesting
-  // and embedding origin, we will pass those rather than just
-  // 'overridden_origin.'
+
   PermissionControllerImpl::OverrideStatus status =
       permission_controller->SetOverrideForDevTools(
-          overridden_origin, overridden_origin, type, permission_status);
+          overridden_requesting_origin, overridden_embedding_origin, type,
+          permission_status);
   if (status != PermissionControllerImpl::OverrideStatus::kOverrideSet) {
     return Response::InvalidParams(
         "Permission can't be granted in current context.");
@@ -441,9 +467,6 @@ Response BrowserHandler::GrantPermissions(
       return Response::InvalidParams(
           "Permission can't be granted to opaque origins.");
   }
-  // TODO(crbug.com/434724810): Once GrantPermissions accepts a requesting
-  // and embedding origin, we will pass those rather than just
-  // 'overridden_origin.'
   PermissionControllerImpl::OverrideStatus status =
       permission_controller->GrantOverridesForDevTools(
           overridden_origin, overridden_origin, internal_permissions);

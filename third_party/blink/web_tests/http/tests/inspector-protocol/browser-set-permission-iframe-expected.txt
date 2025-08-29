@@ -1,0 +1,11 @@
+Tests that permission can be changed and properly queried from iframes.
+Query success: {"name":"storage-access"}: prompt
+- Set: {"name":"storage-access"} to 'granted'
+Query success: {"name":"storage-access"}: granted
+Query success: {"name":"storage-access"}: prompt
+Query success: {"name":"notifications"}: denied
+- Set: {"name":"notifications"} to 'granted'
+Query success: {"name":"notifications"}: granted
+- Failed to set permission: {"name":"storage-access"} error: Permission can't be granted to opaque origins.
+- Failed to set permission: {"name":"storage-access"} error: Permission can't be granted to opaque origins.
+
