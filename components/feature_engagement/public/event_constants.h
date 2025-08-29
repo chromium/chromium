@@ -344,6 +344,12 @@ extern const char kIOSFirstRunComplete[];
 // Event fired after the quiet period following FRE completion has elapsed.
 extern const char kIOSFREBadgeHoldbackPeriodElapsed[];
 
+// The user has tapped on the Reader Mode entrypoint.
+extern const char kIOSReaderModeUsed[];
+
+// Event fired when the Reader Mode "What's new" badge is displayed.
+extern const char kIOSIPHBadgedReaderModeTriggered[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

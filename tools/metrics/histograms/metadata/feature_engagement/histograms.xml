@@ -105,6 +105,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_BackNavigationMenu"
       summary="educating users about the back navigation menu to navigate
                back more than one page at a time."/>
+  <variant name="IPH_BadgedReaderMode"
+      summary="What's New badge for Reading Mode"/>
   <variant name="IPH_BadgedReadingList" summary="badged reading list"/>
   <variant name="IPH_BatterySaverMode" summary="battery saver mode"/>
   <variant name="IPH_Bookmark" summary="bookmark"/>

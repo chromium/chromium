@@ -5,8 +5,11 @@
 #import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent.h"
 
 #import "base/task/single_thread_task_runner.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/page_side_swipe_commands.h"
@@ -45,6 +48,9 @@ ReaderModeBrowserAgent::ReaderModeBrowserAgent(Browser* browser)
 }
 
 void ReaderModeBrowserAgent::ShowReaderModeUI(BOOL animated) {
+  // Notify that the Reader Mode UI has been started.
+  feature_engagement::TrackerFactory::GetForProfile(browser_->GetProfile())
+      ->NotifyEvent(feature_engagement::events::kIOSReaderModeUsed);
   crash_keys::SetCurrentlyInReaderMode(true);
   [delegate_ readerModeBrowserAgent:this showContentAnimated:animated];
 

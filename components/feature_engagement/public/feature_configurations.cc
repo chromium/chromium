@@ -2527,6 +2527,27 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHBadgedReaderModeFeature.name == feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    // No availability requirement for this feature.
+    config.availability = Comparator(ANY, 0);
+    // No session rate limit for this feature.
+    config.session_rate = Comparator(ANY, 0);
+    // Initially, show to users who haven't interacted with Reading Mode.
+    config.used =
+        EventConfig(feature_engagement::events::kIOSReaderModeUsed,
+                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    // The New Badge IPH should not be triggered more than 3 times
+    // in total.
+    config.trigger = EventConfig(
+        feature_engagement::events::kIOSIPHBadgedReaderModeTriggered,
+        Comparator(LESS_THAN, 3), feature_engagement::kMaxStoragePeriod,
+        feature_engagement::kMaxStoragePeriod);
+    return config;
+  }
+
   if (kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature.name ==
       feature->name) {
     FeatureConfig config;

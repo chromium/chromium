@@ -35,6 +35,18 @@ class FeatureEngagementTest : public PlatformTest {
   FeatureEngagementTest();
   ~FeatureEngagementTest() override;
 
+  std::map<std::string, std::string> BadgedReaderModeParams() {
+    std::map<std::string, std::string> params;
+    params["event_trigger"] = "name:ios_iph_badged_reader_mode_triggered;"
+                              "comparator:==0;window:1095;storage:"
+                              "1095";
+    params["event_used"] =
+        "name:ios_reader_mode_used;comparator:==0;window:90;storage:90";
+    params["session_rate"] = "==0";
+    params["availability"] = "any";
+    return params;
+  }
+
   std::map<std::string, std::string> BadgedReadingListParams() {
     std::map<std::string, std::string> params;
     params["event_1"] =
@@ -1429,4 +1441,28 @@ TEST_F(FeatureEngagementTest,
   // The badge should no longer trigger.
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSHomepageLensNewBadge));
+}
+
+TEST_F(FeatureEngagementTest, TestReaderModeNewBadge_TriggeredBeforeUseOnly) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeaturesWithParameters(
+      /*features=*/{{feature_engagement::kIPHBadgedReaderModeFeature,
+                     BadgedReaderModeParams()}});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // The badge should be shown initially.
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHBadgedReaderModeFeature));
+  tracker->Dismissed(feature_engagement::kIPHBadgedReaderModeFeature);
+
+  // Simulate the user using Reading Mode while the badge is displayed.
+  tracker->NotifyEvent(feature_engagement::events::kIOSReaderModeUsed);
+
+  // The badge should no longer trigger.
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHBadgedReaderModeFeature));
 }
