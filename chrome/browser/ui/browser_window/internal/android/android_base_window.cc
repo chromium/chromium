@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "chrome/browser/ui/browser_window/internal/jni/AndroidBaseWindow_jni.h"
 #include "ui/android/window_android.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace {
@@ -140,7 +141,7 @@ void AndroidBaseWindow::FlashFrame(bool flash) {
 }
 
 ui::ZOrderLevel AndroidBaseWindow::GetZOrderLevel() const {
-  NOTREACHED();
+  return ui::ZOrderLevel::kNormal;
 }
 
 void AndroidBaseWindow::SetZOrderLevel(ui::ZOrderLevel order) {
