@@ -22,15 +22,13 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 namespace {
 
-const char kTestEmail[] = "me@gmail.com";
-const char kTestEmail2[] = "me2@gmail.com";
-const char kExampleEmail[] = "me@example.com";
+constexpr char kTestEmail[] = "me@gmail.com";
+constexpr char kTestEmail2[] = "me2@gmail.com";
+constexpr char kExampleEmail[] = "me@example.com";
 
 }  // namespace
-#endif  //  BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 class AccountsPolicyManagerTest : public testing::Test {
  public:
@@ -62,10 +60,8 @@ class AccountsPolicyManagerTest : public testing::Test {
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
     AccountsPolicyManagerFactory::GetForProfile(GetProfile())
         ->SetHideUIForTesting(true);
-#endif
   }
 
   void DestroyProfile() {
@@ -107,12 +103,6 @@ class AccountsPolicyManagerTest : public testing::Test {
       identity_test_env_adaptor_;
 };
 
-#if !BUILDFLAG(IS_CHROMEOS)
-// All primary accounts are allowed on ChromeOS, so this
-// AccountsPolicyManagerTest does not clear the primary account on ChromeOS.
-//
-// TODO(msarda): Exclude |AccountsPolicyManager| from the ChromeOS
-// build.
 TEST_F(AccountsPolicyManagerTest, ClearPrimarySyncAccountWhenSigninNotAllowed) {
   GetIdentityTestEnv()->MakePrimaryAccountAvailable(
       "test@foo.com", signin::ConsentLevel::kSync);
@@ -137,7 +127,6 @@ TEST_F(AccountsPolicyManagerTest,
       signin::ConsentLevel::kSignin));
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 TEST_F(AccountsPolicyManagerTest, ClearProfileWhenSigninAndSignoutNotAllowed) {
   GetIdentityTestEnv()->MakePrimaryAccountAvailable(
       "test@foo.com", signin::ConsentLevel::kSync);
@@ -265,6 +254,3 @@ TEST_F(AccountsPolicyManagerTest, ClearProfileUnallowedAccountsDisabled) {
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id2));
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id3));
 }
-#endif  // #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-
-#endif  // !BUILDFLAG(IS_CHROMEOS)

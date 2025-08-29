@@ -65,7 +65,6 @@
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
-#include "chrome/browser/signin/accounts_policy_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
@@ -1409,11 +1408,6 @@ void ProfileManager::DoFinalInit(ProfileInfo* profile_info,
 
   for (auto& observer : observers_)
     observer.OnProfileAdded(profile);
-
-  if (AccountsPolicyManager* accounts_policy_manager =
-          AccountsPolicyManagerFactory::GetForProfile(profile)) {
-    accounts_policy_manager->Initialize();
-  }
 
 #if !BUILDFLAG(IS_ANDROID)
   // The caret browsing command-line switch toggles caret browsing on

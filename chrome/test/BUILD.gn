@@ -6579,7 +6579,6 @@ test("unit_tests") {
     "../browser/sharing/sharing_device_registration_impl_unittest.cc",
     "../browser/signin/account_consistency_mode_manager_unittest.cc",
     "../browser/signin/account_id_from_account_info_unittest.cc",
-    "../browser/signin/accounts_policy_manager_unittest.cc",
     "../browser/signin/chrome_device_id_helper_unittest.cc",
     "../browser/signin/chrome_signin_client_unittest.cc",
     "../browser/signin/chrome_signin_helper_unittest.cc",
@@ -10100,6 +10099,7 @@ test("unit_tests") {
       "../browser/enterprise/webstore/chrome_web_store_navigation_throttle_unittest.cc",
       "../browser/net/disk_cache_dir_policy_handler_unittest.cc",
       "../browser/profiles/guest_mode_policy_handler_unittest.cc",
+      "../browser/signin/accounts_policy_manager_unittest.cc",
     ]
 
     deps += [
