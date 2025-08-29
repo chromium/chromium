@@ -175,6 +175,8 @@ using blink::mojom::CableAuthenticationPtr;
 using blink::mojom::CommonCredentialInfo;
 using blink::mojom::GetAssertionAuthenticatorResponse;
 using blink::mojom::GetAssertionAuthenticatorResponsePtr;
+using blink::mojom::GetCredentialOptions;
+using blink::mojom::GetCredentialOptionsPtr;
 using blink::mojom::MakeCredentialAuthenticatorResponse;
 using blink::mojom::MakeCredentialAuthenticatorResponsePtr;
 using blink::mojom::PublicKeyCredentialCreationOptions;
@@ -492,7 +494,11 @@ class AuthenticatorImplTest : public AuthenticatorTestBase {
     mojo::Remote<blink::mojom::Authenticator> authenticator =
         ConnectToAuthenticator();
     TestGetCredentialFuture future;
-    authenticator->GetCredential(std::move(options), future.GetCallback());
+    GetCredentialOptionsPtr get_credential_options =
+        GetCredentialOptions::New();
+    get_credential_options->public_key = std::move(options);
+    authenticator->GetCredential(std::move(get_credential_options),
+                                 future.GetCallback());
     EXPECT_TRUE(future.Wait());
     auto get_assertion_response =
         std::move(future.Take()->get_get_assertion_response());
@@ -502,6 +508,23 @@ class AuthenticatorImplTest : public AuthenticatorTestBase {
 
   GetAssertionResult AuthenticatorGetAssertionAndWaitForTimeout(
       PublicKeyCredentialRequestOptionsPtr options) {
+    mojo::Remote<blink::mojom::Authenticator> authenticator =
+        ConnectToAuthenticator();
+    TestGetCredentialFuture future;
+    GetCredentialOptionsPtr get_credential_options =
+        GetCredentialOptions::New();
+    get_credential_options->public_key = std::move(options);
+    authenticator->GetCredential(std::move(get_credential_options),
+                                 future.GetCallback());
+    task_environment()->FastForwardBy(kTestTimeout);
+    auto get_assertion_response =
+        std::move(future.Take()->get_get_assertion_response());
+    return {get_assertion_response->status,
+            std::move(get_assertion_response->credential)};
+  }
+
+  GetAssertionResult AuthenticatorGetCredential(
+      GetCredentialOptionsPtr options) {
     mojo::Remote<blink::mojom::Authenticator> authenticator =
         ConnectToAuthenticator();
     TestGetCredentialFuture future;
@@ -1354,16 +1377,14 @@ TEST_F(AuthenticatorImplTest, GetAssertionPendingRequest) {
       ConnectToAuthenticator();
 
   // Make first request.
-  PublicKeyCredentialRequestOptionsPtr options =
-      GetTestPublicKeyCredentialRequestOptions();
+  GetCredentialOptionsPtr options = GetTestGetCredentialOptions();
   TestGetCredentialFuture future;
   authenticator->GetCredential(std::move(options), future.GetCallback());
 
   // Make second request.
   // TODO(crbug.com/41355992): Rework to ensure there are potential race
   // conditions once we have VirtualAuthenticatorEnvironment.
-  PublicKeyCredentialRequestOptionsPtr options2 =
-      GetTestPublicKeyCredentialRequestOptions();
+  GetCredentialOptionsPtr options2 = GetTestGetCredentialOptions();
   TestGetCredentialFuture future2;
   authenticator->GetCredential(std::move(options2), future2.GetCallback());
   EXPECT_TRUE(future2.Wait());
@@ -1380,8 +1401,7 @@ TEST_F(AuthenticatorImplTest, ReportPendingRequest) {
       ConnectToAuthenticator();
 
   // Make first request.
-  PublicKeyCredentialRequestOptionsPtr options =
-      GetTestPublicKeyCredentialRequestOptions();
+  GetCredentialOptionsPtr options = GetTestGetCredentialOptions();
   TestGetCredentialFuture future;
   authenticator->GetCredential(std::move(options), future.GetCallback());
 
@@ -1406,8 +1426,7 @@ TEST_F(AuthenticatorImplTest, NavigationDuringOperation) {
   authenticator.set_disconnect_handler(run_loop.QuitClosure());
 
   // Make first request.
-  PublicKeyCredentialRequestOptionsPtr options =
-      GetTestPublicKeyCredentialRequestOptions();
+  GetCredentialOptionsPtr options = GetTestGetCredentialOptions();
   TestGetCredentialFuture future;
   authenticator->GetCredential(std::move(options), future.GetCallback());
 
@@ -2866,8 +2885,7 @@ TEST_F(AuthenticatorContentBrowserClientTest,
   mojo::Remote<blink::mojom::Authenticator> authenticator =
       ConnectToAuthenticator();
 
-  PublicKeyCredentialRequestOptionsPtr options =
-      GetTestPublicKeyCredentialRequestOptions();
+  GetCredentialOptionsPtr options = GetTestGetCredentialOptions();
 
   TestRequestStartedFuture request_started_future;
   test_client_.action_callbacks_registered_callback =
@@ -2910,8 +2928,7 @@ TEST_F(AuthenticatorContentBrowserClientTest, GetAssertionStartOver) {
   mojo::Remote<blink::mojom::Authenticator> authenticator =
       ConnectToAuthenticator();
 
-  PublicKeyCredentialRequestOptionsPtr options =
-      GetTestPublicKeyCredentialRequestOptions();
+  GetCredentialOptionsPtr options = GetTestGetCredentialOptions();
 
   TestRequestStartedFuture request_started_future;
   test_client_.action_callbacks_registered_callback =
@@ -3367,8 +3384,7 @@ TEST_F(AuthenticatorImplRequestDelegateTest,
   ReplaceDiscoveryFactory(std::move(discovery_factory));
 
   NavigateAndCommit(GURL(kTestOrigin1));
-  PublicKeyCredentialRequestOptionsPtr options =
-      GetTestPublicKeyCredentialRequestOptions();
+  GetCredentialOptionsPtr options = GetTestGetCredentialOptions();
   TestGetCredentialFuture future;
 
   auto mock_delegate =
@@ -3420,7 +3436,7 @@ TEST_F(AuthenticatorImplRequestDelegateTest, FailureReasonForTimeout) {
   auto authenticator = ConnectToFakeAuthenticator(std::move(mock_delegate));
 
   TestGetCredentialFuture future;
-  authenticator->GetCredential(GetTestPublicKeyCredentialRequestOptions(),
+  authenticator->GetCredential(GetTestGetCredentialOptions(),
                                future.GetCallback());
 
   task_environment()->FastForwardBy(kTestTimeout);
@@ -3475,7 +3491,7 @@ TEST_F(AuthenticatorImplRequestDelegateTest,
   auto authenticator = ConnectToFakeAuthenticator(std::move(mock_delegate));
 
   TestGetCredentialFuture future;
-  authenticator->GetCredential(GetTestPublicKeyCredentialRequestOptions(),
+  authenticator->GetCredential(GetTestGetCredentialOptions(),
                                future.GetCallback());
 
   EXPECT_TRUE(future.Wait());
@@ -8014,9 +8030,11 @@ TEST_F(ResidentKeyAuthenticatorImplTest, ConditionalUI_Incognito) {
     SCOPED_TRACE(is_off_the_record ? "off the record" : "on the record");
     static_cast<TestBrowserContext*>(GetBrowserContext())
         ->set_is_off_the_record(is_off_the_record);
-    PublicKeyCredentialRequestOptionsPtr options(get_credential_options());
+    auto options = GetCredentialOptions::New();
+    PublicKeyCredentialRequestOptionsPtr public_key(get_credential_options());
     options->mediation = blink::mojom::Mediation::CONDITIONAL;
-    GetAssertionResult result = AuthenticatorGetAssertion(std::move(options));
+    options->public_key = std::move(public_key);
+    GetAssertionResult result = AuthenticatorGetCredential(std::move(options));
     EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
     ASSERT_TRUE(fake_win_webauthn_api_.last_get_credentials_options());
     EXPECT_EQ(fake_win_webauthn_api_.last_get_credentials_options()
@@ -8532,9 +8550,11 @@ TEST_F(ResidentKeyAuthenticatorImplTest, ConditionalUI) {
   // |SelectAccount| should not be called for conditional UI requests.
   test_client_.delegate_config.expected_accounts = "<invalid>";
   test_client_.delegate_config.expect_conditional = true;
-  PublicKeyCredentialRequestOptionsPtr options(get_credential_options());
+  auto options = GetCredentialOptions::New();
+  PublicKeyCredentialRequestOptionsPtr public_key(get_credential_options());
   options->mediation = blink::mojom::Mediation::CONDITIONAL;
-  GetAssertionResult result = AuthenticatorGetAssertion(std::move(options));
+  options->public_key = std::move(public_key);
+  GetAssertionResult result = AuthenticatorGetCredential(std::move(options));
   EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
   VerifyGetAssertionOutcomeUkm(0, GetAssertionOutcome::kSuccess,
                                AuthenticationRequestMode::kConditional);
@@ -9059,11 +9079,10 @@ TEST_F(ResidentKeyAuthenticatorImplTest,
 
   ReplaceDiscoveryFactory(std::make_unique<device::FidoDiscoveryFactory>());
 
-  PublicKeyCredentialRequestOptionsPtr options =
-      GetTestPublicKeyCredentialRequestOptions();
+  GetCredentialOptionsPtr options = GetTestGetCredentialOptions();
   options->mediation = blink::mojom::Mediation::IMMEDIATE;
-  options->allow_credentials.clear();
-  options->timeout = kTestTimeout;
+  options->public_key->allow_credentials.clear();
+  options->public_key->timeout = kTestTimeout;
 
   mojo::Remote<blink::mojom::Authenticator> authenticator =
       ConnectToAuthenticator();
@@ -9096,11 +9115,10 @@ TEST_F(ResidentKeyAuthenticatorImplTest,
 
   ReplaceDiscoveryFactory(std::make_unique<device::FidoDiscoveryFactory>());
 
-  PublicKeyCredentialRequestOptionsPtr options =
-      GetTestPublicKeyCredentialRequestOptions();
+  auto options = GetTestGetCredentialOptions();
   options->mediation = blink::mojom::Mediation::IMMEDIATE;
-  options->allow_credentials.clear();
-  options->timeout = kTestTimeout;
+  options->public_key->allow_credentials.clear();
+  options->public_key->timeout = kTestTimeout;
 
   mojo::Remote<blink::mojom::Authenticator> authenticator =
       ConnectToAuthenticator();
@@ -10179,8 +10197,10 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, GetAssertionAlreadyProxied) {
 TEST_F(AuthenticatorImplWithRequestProxyTest, GetAssertionConditionalUI) {
   NavigateAndCommit(GURL(kTestOrigin1));
   auto request = GetTestPublicKeyCredentialRequestOptions();
-  request->mediation = blink::mojom::Mediation::CONDITIONAL;
-  GetAssertionResult result = AuthenticatorGetAssertion(std::move(request));
+  auto options = GetCredentialOptions::New();
+  options->mediation = blink::mojom::Mediation::CONDITIONAL;
+  options->public_key = std::move(request);
+  GetAssertionResult result = AuthenticatorGetCredential(std::move(options));
 
   EXPECT_EQ(result.status, AuthenticatorStatus::NOT_ALLOWED_ERROR);
   EXPECT_EQ(request_proxy().observations().get_requests.size(), 0u);

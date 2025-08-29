@@ -61,7 +61,7 @@ void AuthenticatorImpl::MakeCredential(
 
 // mojom::Authenticator
 void AuthenticatorImpl::GetCredential(
-    blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
+    blink::mojom::GetCredentialOptionsPtr options,
     GetCredentialCallback callback) {
   authenticator_common_impl_->GetCredential(origin(), std::move(options),
                                             /*payment=*/nullptr,

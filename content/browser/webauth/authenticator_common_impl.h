@@ -127,7 +127,7 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
       blink::mojom::Authenticator::MakeCredentialCallback callback) override;
   void GetCredential(
       url::Origin caller_origin,
-      blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
+      blink::mojom::GetCredentialOptionsPtr options,
       blink::mojom::PaymentOptionsPtr payment,
       blink::mojom::Authenticator::GetCredentialCallback callback) override;
   void IsUserVerifyingPlatformAuthenticatorAvailable(
@@ -201,7 +201,7 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
   void ContinueGetAssertionAfterRpIdCheck(
       RequestKey request_key,
       url::Origin caller_origin,
-      blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
+      blink::mojom::GetCredentialOptionsPtr options,
       blink::mojom::PaymentOptionsPtr payment_options,
       bool is_cross_origin_iframe,
       blink::mojom::AuthenticatorStatus rp_id_validation_result);

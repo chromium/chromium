@@ -5086,7 +5086,7 @@ class TestAuthenticator : public blink::mojom::Authenticator {
                               nullptr, nullptr);
     }
   }
-  void GetCredential(blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
+  void GetCredential(blink::mojom::GetCredentialOptionsPtr options,
                      GetCredentialCallback callback) override {
     if (behavior_ == kStallRequest) {
       pending_get_credential_callback_ = std::move(callback);

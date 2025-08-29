@@ -32,6 +32,8 @@ namespace content {
 
 using blink::mojom::AuthenticationExtensionsClientInputs;
 using blink::mojom::AuthenticatorStatus;
+using blink::mojom::GetCredentialOptions;
+using blink::mojom::GetCredentialOptionsPtr;
 using blink::mojom::PublicKeyCredentialCreationOptions;
 using blink::mojom::PublicKeyCredentialCreationOptionsPtr;
 using blink::mojom::PublicKeyCredentialRequestOptions;
@@ -205,6 +207,8 @@ GetTestPublicKeyCredentialCreationOptions();
 
 PublicKeyCredentialRequestOptionsPtr GetTestPublicKeyCredentialRequestOptions();
 
+GetCredentialOptionsPtr GetTestGetCredentialOptions();
+
 // TestWebAuthenticationRequestProxy is a test fake implementation of the
 // WebAuthenticationRequestProxy embedder interface.
 class TestWebAuthenticationRequestProxy : public WebAuthenticationRequestProxy {
@@ -244,10 +248,8 @@ class TestWebAuthenticationRequestProxy : public WebAuthenticationRequestProxy {
     Observations();
     ~Observations();
 
-    std::vector<blink::mojom::PublicKeyCredentialCreationOptionsPtr>
-        create_requests;
-    std::vector<blink::mojom::PublicKeyCredentialRequestOptionsPtr>
-        get_requests;
+    std::vector<PublicKeyCredentialCreationOptionsPtr> create_requests;
+    std::vector<PublicKeyCredentialRequestOptionsPtr> get_requests;
     size_t num_isuvpaa = 0;
     size_t num_cancel = 0;
   };
@@ -262,7 +264,7 @@ class TestWebAuthenticationRequestProxy : public WebAuthenticationRequestProxy {
   bool IsActive(const url::Origin& caller_origin) override;
 
   RequestId SignalCreateRequest(
-      const blink::mojom::PublicKeyCredentialCreationOptionsPtr& options,
+      const PublicKeyCredentialCreationOptionsPtr& options,
       CreateCallback callback) override;
 
   RequestId SignalGetRequest(

@@ -728,7 +728,7 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
     return mojo_options;
   }
 
-  blink::mojom::PublicKeyCredentialRequestOptionsPtr BuildBasicGetOptions() {
+  blink::mojom::GetCredentialOptionsPtr BuildBasicGetOptions() {
     std::vector<device::PublicKeyCredentialDescriptor> credentials;
     base::flat_set<device::FidoTransportProtocol> transports;
     transports.emplace(device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
@@ -749,7 +749,10 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
     mojo_options->allow_credentials = std::move(credentials);
     mojo_options->user_verification =
         device::UserVerificationRequirement::kPreferred;
-    return mojo_options;
+
+    auto mojo_get_options = blink::mojom::GetCredentialOptions::New();
+    mojo_get_options->public_key = std::move(mojo_options);
+    return mojo_get_options;
   }
 
   void WaitForConnectionError() {
@@ -1996,13 +1999,13 @@ IN_PROC_BROWSER_TEST_F(WebAuthBrowserCtapTest, TestGetAssertion) {
   for (const auto protocol : kAllProtocols) {
     auto* virtual_device_factory = InjectVirtualFidoDeviceFactory();
     virtual_device_factory->SetSupportedProtocol(protocol);
-    auto get_assertion_request_params = BuildBasicGetOptions();
+    auto get_options = BuildBasicGetOptions();
     ASSERT_TRUE(virtual_device_factory->mutable_state()->InjectRegistration(
         base::ToVector(device::test_data::kTestGetAssertionCredentialId),
-        get_assertion_request_params->relying_party_id));
+        get_options->public_key->relying_party_id));
 
     TestGetFuture get_future;
-    authenticator()->GetCredential(std::move(get_assertion_request_params),
+    authenticator()->GetCredential(std::move(get_options),
                                    get_future.GetCallback());
     EXPECT_TRUE(get_future.Wait());
     EXPECT_EQ(AuthenticatorStatus::SUCCESS,
@@ -2015,10 +2018,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthBrowserCtapTest,
   for (const auto protocol : kAllProtocols) {
     auto* virtual_device_factory = InjectVirtualFidoDeviceFactory();
     virtual_device_factory->SetSupportedProtocol(protocol);
-    auto get_assertion_request_params = BuildBasicGetOptions();
 
     TestGetFuture get_future;
-    authenticator()->GetCredential(std::move(get_assertion_request_params),
+    authenticator()->GetCredential(BuildBasicGetOptions(),
                                    get_future.GetCallback());
     EXPECT_TRUE(get_future.Wait());
     EXPECT_EQ(AuthenticatorStatus::NOT_ALLOWED_ERROR,
@@ -2066,14 +2068,13 @@ IN_PROC_BROWSER_TEST_F(WebAuthBrowserCtapTest,
   device::test::VirtualFidoDeviceFactory* virtual_device_factory =
       InjectVirtualFidoDeviceFactory();
   virtual_device_factory->SetSupportedProtocol(device::ProtocolVersion::kCtap2);
-  blink::mojom::PublicKeyCredentialRequestOptionsPtr
-      get_assertion_request_params = BuildBasicGetOptions();
+  auto get_options = BuildBasicGetOptions();
   ASSERT_TRUE(virtual_device_factory->mutable_state()->InjectRegistration(
       base::ToVector(device::test_data::kTestGetAssertionCredentialId),
-      get_assertion_request_params->relying_party_id));
+      get_options->public_key->relying_party_id));
 
   TestGetFuture get_future;
-  authenticator()->GetCredential(std::move(get_assertion_request_params),
+  authenticator()->GetCredential(std::move(get_options),
                                  get_future.GetCallback());
   EXPECT_TRUE(get_future.Wait());
   EXPECT_EQ(AuthenticatorStatus::SUCCESS,
@@ -2090,11 +2091,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthBrowserCtapTest,
   device::test::VirtualFidoDeviceFactory* virtual_device_factory =
       InjectVirtualFidoDeviceFactory();
   virtual_device_factory->SetSupportedProtocol(device::ProtocolVersion::kCtap2);
-  blink::mojom::PublicKeyCredentialRequestOptionsPtr
-      get_assertion_request_params = BuildBasicGetOptions();
 
   TestGetFuture get_future;
-  authenticator()->GetCredential(std::move(get_assertion_request_params),
+  authenticator()->GetCredential(BuildBasicGetOptions(),
                                  get_future.GetCallback());
   EXPECT_TRUE(get_future.Wait());
   EXPECT_EQ(AuthenticatorStatus::NOT_ALLOWED_ERROR,

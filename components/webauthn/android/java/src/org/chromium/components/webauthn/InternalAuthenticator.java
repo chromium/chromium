@@ -16,6 +16,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.blink.mojom.AuthenticatorStatus;
+import org.chromium.blink.mojom.GetCredentialOptions;
 import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
@@ -143,8 +144,10 @@ public class InternalAuthenticator {
      */
     @CalledByNative
     public void getAssertion(ByteBuffer optionsByteBuffer) {
+        GetCredentialOptions options = new GetCredentialOptions();
+        options.publicKey = PublicKeyCredentialRequestOptions.deserialize(optionsByteBuffer);
         mAuthenticator.getCredential(
-                PublicKeyCredentialRequestOptions.deserialize(optionsByteBuffer),
+                options,
                 (getCredentialResponse) -> {
                     // DOMExceptions can only be passed through the webAuthenticationProxy
                     // extensions API, which doesn't exist on Android.

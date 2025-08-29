@@ -30,8 +30,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.CredentialInfo;
 import org.chromium.blink.mojom.CredentialType;
-import org.chromium.blink.mojom.CredentialTypeFlags;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
+import org.chromium.blink.mojom.GetCredentialOptions;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
 import org.chromium.blink.mojom.Mediation;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
@@ -195,7 +195,7 @@ public class CredManHelper {
     /** Queries credential availability using the Android 14 CredMan API. */
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void startPrefetchRequest(
-            PublicKeyCredentialRequestOptions options,
+            GetCredentialOptions options,
             String originString,
             byte @Nullable [] clientDataJson,
             byte @Nullable [] clientDataHash,
@@ -209,6 +209,7 @@ public class CredManHelper {
         final ErrorCallback localErrorCallback = errorCallback;
         final Barrier localBarrier = barrier;
         final WebauthnBrowserBridge localBridge = assumeNonNull(mBridgeProvider.getBridge());
+        assumeNonNull(options.publicKey);
 
         RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
         OutcomeReceiver<PrepareGetCredentialResponse, GetCredentialException> receiver =
@@ -295,7 +296,7 @@ public class CredManHelper {
         mCancellableUiState = CancellableUiState.WAITING_FOR_CREDENTIAL_LIST;
         final GetCredentialRequest getCredentialRequest =
                 buildGetCredentialRequest(
-                        options,
+                        options.publicKey,
                         originString,
                         clientDataHash,
                         /* requestPasswords= */ false,
@@ -325,7 +326,7 @@ public class CredManHelper {
     /** Gets the credential using the Android 14 CredMan API. */
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public int startGetRequest(
-            PublicKeyCredentialRequestOptions options,
+            GetCredentialOptions options,
             String originString,
             byte @Nullable [] clientDataJson,
             byte @Nullable [] clientDataHash,
@@ -338,6 +339,7 @@ public class CredManHelper {
         final ErrorCallback localErrorCallback = errorCallback;
         final Barrier localBarrier = assumeNonNull(mBarrier);
         final WebauthnBrowserBridge localBridge = assumeNonNull(mBridgeProvider.getBridge());
+        assumeNonNull(options.publicKey);
 
         // The Android 14 APIs have to be called via reflection until Chromium
         // builds with the Android 14 SDK by default.
@@ -487,7 +489,8 @@ public class CredManHelper {
                         if (mClientDataJson != null) {
                             response.info.clientDataJson = mClientDataJson;
                         }
-                        response.extensions.echoAppidExtension = options.extensions.appid != null;
+                        response.extensions.echoAppidExtension =
+                                assumeNonNull(options.publicKey).extensions.appid != null;
                         mCancellableUiState =
                                 options.mediation == Mediation.CONDITIONAL
                                         ? CancellableUiState.WAITING_FOR_SELECTION
@@ -512,18 +515,14 @@ public class CredManHelper {
             return AuthenticatorStatus.NOT_ALLOWED_ERROR;
         }
 
-        boolean passwordCredentialsRequested =
-                (options.requestedCredentialTypeFlags & CredentialTypeFlags.PASSWORD) != 0;
-        if (options.mediation == Mediation.IMMEDIATE && passwordCredentialsRequested) {
-            mRequestPasswords = true;
-        }
+        mRequestPasswords = options.mediation == Mediation.IMMEDIATE && options.password;
         mCancellableUiState =
                 options.mediation == Mediation.CONDITIONAL
                         ? CancellableUiState.WAITING_FOR_CREDENTIAL_LIST
                         : CancellableUiState.NONE;
         final GetCredentialRequest getCredentialRequest =
                 buildGetCredentialRequest(
-                        options,
+                        options.publicKey,
                         originString,
                         clientDataHash,
                         mRequestPasswords,

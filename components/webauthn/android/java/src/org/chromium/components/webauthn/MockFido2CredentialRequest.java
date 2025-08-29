@@ -8,9 +8,9 @@ import android.content.Context;
 import android.os.Bundle;
 
 import org.chromium.blink.mojom.AuthenticatorStatus;
+import org.chromium.blink.mojom.GetCredentialOptions;
 import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
-import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.Origin;
@@ -60,7 +60,7 @@ public class MockFido2CredentialRequest extends Fido2CredentialRequest {
 
     @Override
     public void handleGetCredentialRequest(
-            PublicKeyCredentialRequestOptions options,
+            GetCredentialOptions options,
             Origin callerOrigin,
             Origin topOrigin,
             PaymentOptions payment,

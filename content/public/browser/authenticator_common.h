@@ -41,12 +41,12 @@ class CONTENT_EXPORT AuthenticatorCommon {
   // The optional `payment` is inserted into the asserted `clientDataJson` after
   // the browser displays the Secure Payment Confirmation dialog to the user.
   //
-  // Depending on the `options.requested_credential_type_flags`, the callback
-  // may be called with a `CredentialInfo`. For WebAuthn assertions the
-  // `callback` will be called with a `GetAssertionResponse`.
+  // Depending on the `options.password`, the callback may be called with a
+  // `CredentialInfo`. For WebAuthn assertions the `callback` will be called
+  // with a `GetAssertionResponse`.
   virtual void GetCredential(
       url::Origin caller_origin,
-      blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
+      blink::mojom::GetCredentialOptionsPtr options,
       blink::mojom::PaymentOptionsPtr payment,
       blink::mojom::Authenticator::GetCredentialCallback callback) = 0;
 

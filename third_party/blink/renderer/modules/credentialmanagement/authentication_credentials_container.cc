@@ -103,6 +103,7 @@ using mojom::blink::CredentialMediationRequirement;
 using mojom::blink::WebAuthnDOMExceptionDetailsPtr;
 using MojoPublicKeyCredentialCreationOptions =
     mojom::blink::PublicKeyCredentialCreationOptions;
+using mojom::blink::GetCredentialOptions;
 using mojom::blink::MakeCredentialAuthenticatorResponsePtr;
 using MojoPublicKeyCredentialRequestOptions =
     mojom::blink::PublicKeyCredentialRequestOptions;
@@ -1355,9 +1356,6 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
     return promise;
   }
 
-  uint32_t requested_credential_types =
-      static_cast<int>(mojom::blink::CredentialTypeFlags::kNone);
-
   // TODO(cbiesinger): Consider removing the hasIdentity() check after FedCM
   // ships. Before then, it is useful for RPs to pass both identity and
   // federated while transitioning from the older to the new API.
@@ -1367,16 +1365,9 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
         context, WebFeature::kCredentialManagerGetLegacyFederatedCredential);
   }
 
-  if (options->hasPublicKey()) {
-    requested_credential_types |=
-        static_cast<int>(mojom::blink::CredentialTypeFlags::kPublicKey);
-  }
-
   if (options->hasPassword() && options->password()) {
     UseCounter::Count(context,
                       WebFeature::kCredentialManagerGetPasswordCredential);
-    requested_credential_types |=
-        static_cast<int>(mojom::blink::CredentialTypeFlags::kPassword);
   }
 
   // TODO(crbug.com/358119268): For prototyping, any conditionally-mediated
@@ -1551,19 +1542,21 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
         return promise;
       }
     }
-    auto mojo_options =
+    mojom::blink::GetCredentialOptionsPtr get_credential_options =
+        GetCredentialOptions::New();
+    get_credential_options->mediation = mediation;
+    auto public_key_options =
         MojoPublicKeyCredentialRequestOptions::From(*options->publicKey());
-    if (mojo_options) {
-      mojo_options->mediation = mediation;
-      if (!mojo_options->relying_party_id) {
-        mojo_options->relying_party_id = context->GetSecurityOrigin()->Domain();
+    if (public_key_options) {
+      if (!public_key_options->relying_party_id) {
+        public_key_options->relying_party_id =
+            context->GetSecurityOrigin()->Domain();
       }
-      mojo_options->requested_credential_type_flags =
-          requested_credential_types;
       auto* authenticator =
           CredentialManagerProxy::From(script_state)->Authenticator();
+      get_credential_options->public_key = std::move(public_key_options);
       authenticator->GetCredential(
-          std::move(mojo_options),
+          std::move(get_credential_options),
           BindOnce(&OnAuthenticatorGetCredentialComplete,
                    std::make_unique<ScopedPromiseResolver>(resolver),
                    std::move(scoped_abort_state),

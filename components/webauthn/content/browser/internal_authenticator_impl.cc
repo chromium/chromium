@@ -53,8 +53,10 @@ void InternalAuthenticatorImpl::MakeCredential(
 }
 
 void InternalAuthenticatorImpl::GetAssertion(
-    blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
+    blink::mojom::PublicKeyCredentialRequestOptionsPtr pk_options,
     GetAssertionCallback callback) {
+  auto options = blink::mojom::GetCredentialOptions::New();
+  options->public_key = std::move(pk_options);
   authenticator_common_->GetCredential(
       effective_origin_, std::move(options), std::move(payment_),
       base::BindOnce(

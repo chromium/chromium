@@ -542,4 +542,11 @@ GetTestPublicKeyCredentialRequestOptions() {
   return options;
 }
 
+GetCredentialOptionsPtr GetTestGetCredentialOptions() {
+  auto options = GetCredentialOptions::New();
+  options->public_key = GetTestPublicKeyCredentialRequestOptions();
+
+  return options;
+}
+
 }  // namespace content

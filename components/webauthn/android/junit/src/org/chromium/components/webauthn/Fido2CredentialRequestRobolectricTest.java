@@ -52,6 +52,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.blink.mojom.AuthenticatorStatus;
+import org.chromium.blink.mojom.GetCredentialOptions;
 import org.chromium.blink.mojom.Mediation;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialDescriptor;
@@ -87,7 +88,7 @@ public class Fido2CredentialRequestRobolectricTest {
 
     private Fido2CredentialRequest mRequest;
     private PublicKeyCredentialCreationOptions mCreationOptions;
-    private PublicKeyCredentialRequestOptions mRequestOptions;
+    private GetCredentialOptions mRequestOptions;
     private Fido2ApiTestHelper.AuthenticatorCallback mCallback;
     private Origin mOrigin;
     private Bundle mBrowserOptions;
@@ -137,8 +138,9 @@ public class Fido2CredentialRequestRobolectricTest {
         // Set rk=required and empty allowlist on the assumption that most test cases care about
         // exercising the passkeys case.
         mCreationOptions.authenticatorSelection.residentKey = ResidentKeyRequirement.REQUIRED;
-        mRequestOptions = Fido2ApiTestHelper.createDefaultGetAssertionOptions();
-        mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
+        mRequestOptions = new GetCredentialOptions();
+        mRequestOptions.publicKey = Fido2ApiTestHelper.createDefaultGetAssertionOptions();
+        mRequestOptions.publicKey.allowCredentials = new PublicKeyCredentialDescriptor[0];
         WebauthnModeProvider.setInstanceForTesting(mModeProviderMock);
         Mockito.when(mModeProviderMock.getWebauthnMode(any())).thenReturn(WebauthnMode.CHROME);
         Mockito.when(mModeProviderMock.getGlobalWebauthnMode()).thenReturn(WebauthnMode.CHROME);
@@ -765,7 +767,7 @@ public class Fido2CredentialRequestRobolectricTest {
         verify(mGmsCoreGetCredentialsHelperMock)
                 .getCredentials(
                         eq(mAuthenticationContextProviderMock),
-                        eq(mRequestOptions.relyingPartyId),
+                        eq(mRequestOptions.publicKey.relyingPartyId),
                         eq(reason),
                         successCallbackCaptor.capture(),
                         any());
@@ -779,7 +781,7 @@ public class Fido2CredentialRequestRobolectricTest {
         verify(mGmsCoreGetCredentialsHelperMock)
                 .getCredentials(
                         eq(mAuthenticationContextProviderMock),
-                        eq(mRequestOptions.relyingPartyId),
+                        eq(mRequestOptions.publicKey.relyingPartyId),
                         eq(reason),
                         any(),
                         failureCallbackCaptor.capture());
@@ -798,7 +800,8 @@ public class Fido2CredentialRequestRobolectricTest {
         descriptor.type = 0;
         descriptor.id = new byte[] {1, 2, 3, 4};
         descriptor.transports = new int[] {0};
-        mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[] {descriptor};
+        mRequestOptions.publicKey.allowCredentials =
+                new PublicKeyCredentialDescriptor[] {descriptor};
 
         WebauthnCredentialDetails details = new WebauthnCredentialDetails();
         details.mCredentialId = descriptor.id;
@@ -811,9 +814,10 @@ public class Fido2CredentialRequestRobolectricTest {
             descriptor.type = 0;
             descriptor.id = new byte[] {1, 2, 3, 4};
             descriptor.transports = new int[] {0};
-            mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[] {descriptor};
+            mRequestOptions.publicKey.allowCredentials =
+                    new PublicKeyCredentialDescriptor[] {descriptor};
         } else {
-            mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
+            mRequestOptions.publicKey.allowCredentials = new PublicKeyCredentialDescriptor[0];
         }
     }
 

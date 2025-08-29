@@ -149,9 +149,8 @@ class MockAuthenticatorInterface : public mojom::blink::Authenticator {
   void MakeCredential(
       blink::mojom::blink::PublicKeyCredentialCreationOptionsPtr options,
       MakeCredentialCallback callback) override {}
-  void GetCredential(
-      blink::mojom::blink::PublicKeyCredentialRequestOptionsPtr options,
-      GetCredentialCallback callback) override {
+  void GetCredential(blink::mojom::blink::GetCredentialOptionsPtr options,
+                     GetCredentialCallback callback) override {
     get_callback_ = std::move(callback);
     loop_->Quit();
   }
