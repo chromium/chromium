@@ -45,6 +45,11 @@ std::string GetSchemeString(PaymentLinkValidator::Scheme scheme) {
   }
 }
 
+struct A2AInvokePaymentAppMetricsTestParam {
+  bool result;
+  PaymentLinkValidator::Scheme scheme;
+};
+
 }  // namespace
 
 TEST(FacilitatedPaymentsMetricsTest, LogPixCodeCopied) {
@@ -651,6 +656,49 @@ TEST_P(FacilitatedPaymentsFopSelectorTypesMetricsParameterizedTest,
       base::StrCat({"FacilitatedPayments.",
                     GetPaymentLinkFopSelectorTypeString(),
                     ".FopSelectorShown.LatencyAfterDetectingPaymentLink.",
+                    GetSchemeString(scheme())}),
+      /*sample=*/10,
+      /*expected_bucket_count=*/1);
+}
+
+class FacilitatedPaymentsA2AInvokePaymentAppMetricsParameterizedTest
+    : public testing::TestWithParam<A2AInvokePaymentAppMetricsTestParam> {
+ public:
+  bool result() const { return GetParam().result; }
+
+  PaymentLinkValidator::Scheme scheme() const { return GetParam().scheme; }
+
+  std::string GetResultString() const {
+    return result() ? "Success" : "Failure";
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    FacilitatedPaymentsMetricsTest,
+    FacilitatedPaymentsA2AInvokePaymentAppMetricsParameterizedTest,
+    testing::Values(A2AInvokePaymentAppMetricsTestParam{
+                        /*result=*/true,
+                        /*scheme=*/PaymentLinkValidator::Scheme::kPromptPay},
+                    A2AInvokePaymentAppMetricsTestParam{
+                        /*result=*/false,
+                        /*scheme=*/PaymentLinkValidator::Scheme::kPromptPay}));
+
+TEST_P(FacilitatedPaymentsA2AInvokePaymentAppMetricsParameterizedTest,
+       LogInvokePaymentAppResultAndLatency) {
+  base::HistogramTester histogram_tester;
+
+  LogInvokePaymentAppResultAndLatency(result(), base::Milliseconds(10),
+                                      scheme());
+
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"FacilitatedPayments.A2A.InvokePaymentApp.",
+                    GetResultString(), ".LatencyAfterDetectingPaymentLink"}),
+      /*sample=*/10,
+      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"FacilitatedPayments.A2A.InvokePaymentApp.",
+                    GetResultString(), ".LatencyAfterDetectingPaymentLink.",
                     GetSchemeString(scheme())}),
       /*sample=*/10,
       /*expected_bucket_count=*/1);

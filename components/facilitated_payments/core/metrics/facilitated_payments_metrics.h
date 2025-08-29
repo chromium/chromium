@@ -359,6 +359,13 @@ void LogPaymentLinkFopSelectorShownLatency(
     base::TimeDelta latency,
     std::optional<PaymentLinkValidator::Scheme> scheme = std::nullopt);
 
+// Logs the result and latency for invoking a payment app after a payment link
+// was detected.
+void LogInvokePaymentAppResultAndLatency(
+    bool result,
+    base::TimeDelta latency,
+    std::optional<PaymentLinkValidator::Scheme> scheme);
+
 // Logs that the Pix account linking prompt was shown.
 void LogPixAccountLinkingPromptShown();
 

@@ -57,6 +57,43 @@ reviewer.
   <variant name="Succeeded" summary="Successful InitiatePurchaseAction call"/>
 </variants>
 
+<histogram
+    name="FacilitatedPayments.A2A.InvokePaymentApp.{Result}.LatencyAfterDetectingPaymentLink"
+    units="ms" expires_after="2026-06-01">
+  <owner>joshuatan@google.com</owner>
+  <owner>junhuihe@google.com</owner>
+  <owner>tushartushar@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage with a valid payment link, this histogram logs the latency for
+    invoking the payment app since a payment link was detected. {Result}
+    indicates whether the initial launch of the payment app was successful or
+    not. [Frequency] Logged once per A2A payflow. [Trigger] The histogram is
+    logged when the payment app is invoked.
+  </summary>
+  <token key="Result" variants="BooleanResult"/>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.A2A.InvokePaymentApp.{Result}.LatencyAfterDetectingPaymentLink.{Scheme}"
+    units="ms" expires_after="2026-06-01">
+  <owner>joshuatan@google.com</owner>
+  <owner>junhuihe@google.com</owner>
+  <owner>tushartushar@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    On a webpage with a valid payment link, this histogram logs the latency for
+    invoking the payment app since a payment link was detected. {Result}
+    indicates whether the initial launch of the payment app was successful or
+    not. The payment is supported by {Scheme}. [Frequency] Logged once per A2A
+    payflow. [Trigger] The histogram is logged when the payment app is invoked.
+  </summary>
+  <token key="Result" variants="BooleanResult"/>
+  <token key="Scheme" variants="PaymentLinkScheme"/>
+</histogram>
+
 <histogram name="FacilitatedPayments.A2A.PayflowExitedReason"
     enum="FacilitatedPayments.A2AFlowExitedReason" expires_after="2026-07-01">
   <owner>joshuatan@google.com</owner>

@@ -458,6 +458,25 @@ void LogPaymentLinkFopSelectorShownLatency(
   }
 }
 
+void LogInvokePaymentAppResultAndLatency(
+    bool result,
+    base::TimeDelta latency,
+    std::optional<PaymentLinkValidator::Scheme> scheme) {
+  std::string result_string = ResultToString(result);
+  base::UmaHistogramLongTimes(
+      base::StrCat({"FacilitatedPayments.A2A.InvokePaymentApp.", result_string,
+                    ".LatencyAfterDetectingPaymentLink"}),
+      latency);
+
+  if (scheme.has_value() && *scheme != PaymentLinkValidator::Scheme::kInvalid) {
+    base::UmaHistogramLongTimes(
+        base::StrCat({"FacilitatedPayments.A2A.InvokePaymentApp.",
+                      result_string, ".LatencyAfterDetectingPaymentLink.",
+                      SchemeToString(*scheme)}),
+        latency);
+  }
+}
+
 void LogPixAccountLinkingPromptAccepted() {
   base::UmaHistogramBoolean(
       base::StrCat({kPixAccountLinkingHistogramPrefix, "PromptAccepted"}),

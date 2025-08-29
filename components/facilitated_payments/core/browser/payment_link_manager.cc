@@ -276,9 +276,13 @@ void PaymentLinkManager::OnPaymentAppSelected(std::string_view package_name,
       GetPaymentLinkFopSelectorType(),
       PaymentLinkFopSelectorAction::kPaymentAppSelected, scheme_);
 
-  client_->GetDeviceDelegate()->InvokePaymentApp(
+  bool result = client_->GetDeviceDelegate()->InvokePaymentApp(
       package_name, activity_name,
       GURL(initiate_payment_request_details_->payment_link_));
+
+  LogInvokePaymentAppResultAndLatency(
+      result, base::TimeTicks::Now() - payment_flow_triggered_timestamp_,
+      scheme_);
 
   DismissPrompt();
 }
