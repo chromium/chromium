@@ -8,6 +8,8 @@ assert(enable_pdf_save_to_drive)
 
 source_set("save_to_drive") {
   sources = [
+    "account_chooser_controller.cc",
+    "account_chooser_controller.h",
     "account_chooser_radio_group_view.cc",
     "account_chooser_radio_group_view.h",
     "account_chooser_util.cc",
