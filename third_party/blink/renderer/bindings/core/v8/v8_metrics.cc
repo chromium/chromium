@@ -443,6 +443,9 @@ void V8MetricsRecorder::AddMainThreadEvent(
         .SetReduceMemory(event.reduce_memory)
         .SetIsLoading(event.is_loading)
         .SetReason_IncrementalMarking(event.incremental_marking_reason)
+        .SetDuration_SinceLastMarkCompact(
+            ukm::GetExponentialBucketMinForFineUserTiming(
+                event.total_duration_since_last_mark_compact))
         .SetDuration_Total(ukm::GetExponentialBucketMinForFineUserTiming(
             event.total.total_wall_clock_duration_in_us))
         .SetDuration_MainThread(ukm::GetExponentialBucketMinForFineUserTiming(
