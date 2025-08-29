@@ -125,9 +125,9 @@ FrameMetadataObserverRegistry::FrameMetadataObserverRegistry(
       metatags_observers_(frame.DomWindow()),
       meta_tags_mutation_observer_(
           MakeGarbageCollected<MetaTagsMutationObserver>(this)) {
-  // TODO(gklassen): Update with comment to document why this disconnect
-  //                 handler is necessary. We might need to update the
-  //                 .mojom file as well to add more documentation.
+  // Observer endpoints are explicitly closed when the other side is no
+  // longer interested, so clean up the meta tags requested by that
+  // observer at disconnect time.
   metatags_observers_.set_disconnect_handler(
       blink::BindRepeating(&FrameMetadataObserverRegistry::DisconnectHandler,
                            WrapWeakPersistent(this)));
