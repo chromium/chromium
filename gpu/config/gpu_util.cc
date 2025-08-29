@@ -893,8 +893,9 @@ IntelGpuSeriesType GetIntelGpuSeriesType(uint32_t vendor_id,
       case 0xA700:
         return IntelGpuSeriesType::kRaptorlake;
       case 0x7D00:
+      case 0xB600:
         if (device_id == 0x7D41 || device_id == 0x7D51 || device_id == 0x7D67 ||
-            device_id == 0x7DD1) {
+            device_id == 0x7DD1 || device_id == 0xB640) {
           return IntelGpuSeriesType::kArrowlake;
         }
         return IntelGpuSeriesType::kMeteorlake;
@@ -911,24 +912,25 @@ IntelGpuSeriesType GetIntelGpuSeriesType(uint32_t vendor_id,
   return IntelGpuSeriesType::kUnknown;
 }
 
-std::string GetIntelGpuGeneration(uint32_t vendor_id, uint32_t device_id) {
+IntelGpuGeneration GetIntelGpuGeneration(uint32_t vendor_id,
+                                         uint32_t device_id) {
   if (vendor_id == 0x8086) {
     IntelGpuSeriesType gpu_series = GetIntelGpuSeriesType(vendor_id, device_id);
     switch (gpu_series) {
       case IntelGpuSeriesType::kBroadwater:
       case IntelGpuSeriesType::kEaglelake:
-        return "4";
+        return IntelGpuGeneration::kGen4;
       case IntelGpuSeriesType::kIronlake:
-        return "5";
+        return IntelGpuGeneration::kGen5;
       case IntelGpuSeriesType::kSandybridge:
-        return "6";
+        return IntelGpuGeneration::kGen6;
       case IntelGpuSeriesType::kBaytrail:
       case IntelGpuSeriesType::kIvybridge:
       case IntelGpuSeriesType::kHaswell:
-        return "7";
+        return IntelGpuGeneration::kGen7;
       case IntelGpuSeriesType::kCherrytrail:
       case IntelGpuSeriesType::kBroadwell:
-        return "8";
+        return IntelGpuGeneration::kGen8;
       case IntelGpuSeriesType::kApollolake:
       case IntelGpuSeriesType::kSkylake:
       case IntelGpuSeriesType::kGeminilake:
@@ -937,13 +939,13 @@ std::string GetIntelGpuGeneration(uint32_t vendor_id, uint32_t device_id) {
       case IntelGpuSeriesType::kCoffeelake:
       case IntelGpuSeriesType::kWhiskeylake:
       case IntelGpuSeriesType::kCometlake:
-        return "9";
+        return IntelGpuGeneration::kGen9;
       case IntelGpuSeriesType::kCannonlake:
-        return "10";
+        return IntelGpuGeneration::kGen10;
       case IntelGpuSeriesType::kIcelake:
       case IntelGpuSeriesType::kElkhartlake:
       case IntelGpuSeriesType::kJasperlake:
-        return "11";
+        return IntelGpuGeneration::kGen11;
       case IntelGpuSeriesType::kTigerlake:
       case IntelGpuSeriesType::kRocketlake:
       case IntelGpuSeriesType::kDG1:
@@ -952,17 +954,17 @@ std::string GetIntelGpuGeneration(uint32_t vendor_id, uint32_t device_id) {
       case IntelGpuSeriesType::kRaptorlake:
       case IntelGpuSeriesType::kMeteorlake:
       case IntelGpuSeriesType::kArrowlake:
-        return "12";
+        return IntelGpuGeneration::kXe;
       case IntelGpuSeriesType::kLunarlake:
       case IntelGpuSeriesType::kBattlemage:
-        return "13";
+        return IntelGpuGeneration::kXe2;
       case IntelGpuSeriesType::kPantherlake:
-        return "14";
+        return IntelGpuGeneration::kXe3;
       default:
-        break;
+        return IntelGpuGeneration::kUnknownIntel;
     }
   }
-  return "";
+  return IntelGpuGeneration::kNonIntel;
 }
 
 IntelGpuGeneration GetIntelGpuGeneration(const GPUInfo& gpu_info) {
@@ -979,14 +981,11 @@ IntelGpuGeneration GetIntelGpuGeneration(const GPUInfo& gpu_info) {
     return latest;
   latest = IntelGpuGeneration::kUnknownIntel;
   for (uint32_t device_id : intel_device_ids) {
-    std::string gen_str = gpu::GetIntelGpuGeneration(kIntelVendorId, device_id);
-    int gen_int = 0;
-    if (gen_str.empty() || !base::StringToInt(gen_str, &gen_int))
-      continue;
-    DCHECK_GE(gen_int, static_cast<int>(IntelGpuGeneration::kUnknownIntel));
-    DCHECK_LE(gen_int, static_cast<int>(IntelGpuGeneration::kMaxValue));
-    if (gen_int > static_cast<int>(latest))
-      latest = static_cast<IntelGpuGeneration>(gen_int);
+    IntelGpuGeneration gen =
+        gpu::GetIntelGpuGeneration(kIntelVendorId, device_id);
+    if (gen > latest) {
+      latest = gen;
+    }
   }
   return latest;
 }

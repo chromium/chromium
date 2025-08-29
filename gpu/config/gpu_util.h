@@ -78,8 +78,8 @@ GPU_CONFIG_EXPORT bool EnableSwiftShaderIfNeeded(
 GPU_CONFIG_EXPORT IntelGpuSeriesType GetIntelGpuSeriesType(uint32_t vendor_id,
                                                            uint32_t device_id);
 
-GPU_CONFIG_EXPORT std::string GetIntelGpuGeneration(uint32_t vendor_id,
-                                                    uint32_t device_id);
+GPU_CONFIG_EXPORT IntelGpuGeneration GetIntelGpuGeneration(uint32_t vendor_id,
+                                                           uint32_t device_id);
 
 // If multiple Intel GPUs are detected, this returns the latest generation.
 GPU_CONFIG_EXPORT IntelGpuGeneration

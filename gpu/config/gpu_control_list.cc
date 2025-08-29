@@ -18,6 +18,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
+#include "gpu/config/device_perf_info.h"
 #include "gpu/config/gpu_util.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -418,11 +419,13 @@ bool GpuControlList::IntelConditions::Contains(
   } else {
     DCHECK(intel_gpu_generation.IsSpecified());
     for (auto& candidate : candidates) {
-      std::string candidate_generation =
+      IntelGpuGeneration gen =
           GetIntelGpuGeneration(candidate.vendor_id, candidate.device_id);
-      if (candidate_generation.empty()) {
+      if (gen <= IntelGpuGeneration::kUnknownIntel) {
         continue;
       }
+      std::string candidate_generation =
+          base::NumberToString(static_cast<int>(gen));
       if (intel_gpu_generation.Contains(candidate_generation)) {
         return true;
       }
