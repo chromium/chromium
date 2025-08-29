@@ -7,13 +7,6 @@ module printing.mojom;
 import "mojo/public/mojom/base/values.mojom";
 import "printing/mojom/print.mojom";
 
-// The capabilities of a printer as a `base::Value`, or the `ResultCode` if
-// there was an error when trying to retrieve this data.
-union PrinterCapabilitiesValueResult {
-  mojo_base.mojom.Value capabilities;
-  ResultCode result_code;
-};
-
 // An interface that is used by printing utility services to send XML parse
 // requests to the browser process. The browser process can then facilitate
 // safely parsing the XML.
@@ -22,6 +15,6 @@ interface PrinterXmlParser {
   // base::Value of the parsed XML or ResultCode if there was an error
   // retrieving the data.
   [Sync]
-  ParseXmlForPrinterCapabilities(string capabilities_xml) =>
-    (PrinterCapabilitiesValueResult value_result);
+  ParseXmlForPrinterCapabilities(string capabilities_xml)
+      => result<mojo_base.mojom.Value, ResultCode>;
 };
