@@ -401,6 +401,17 @@ media::MediaPermission::Type ToMediaPermissionType(
   }
 }
 
+void RecordUma(EnumerateDevicesGetUserMediaInteraction value) {
+  base::UmaHistogramEnumeration(
+      "Media.MediaDevices.EnumerateDevices.GetUserMediaInteraction", value);
+}
+
+void RecordUma(EnumerateDevicesFirstStateOnContextDestroyed value) {
+  base::UmaHistogramEnumeration(
+      "Media.MediaDevices.EnumerateDevices.FirstStateOnContextDestroyed",
+      value);
+}
+
 }  // namespace
 
 const char MediaDevices::kSupplementName[] = "MediaDevices";
@@ -1106,6 +1117,30 @@ void MediaDevices::ContextDestroyed() {
   is_execution_context_active_ = false;
   enumerate_device_requests_.clear();
   StopObserving();
+
+  switch (first_ed_state_) {
+    case FirstEnumerateDevicesState::kNoEnumeration:
+      break;
+    case FirstEnumerateDevicesState::kFailed:
+      RecordUma(EnumerateDevicesFirstStateOnContextDestroyed::kFailed);
+      break;
+    case FirstEnumerateDevicesState::kSuccessful:
+      switch (first_gum_state_) {
+        case FirstGetUserMediaState::kNoGetUserMedia:
+          RecordUma(EnumerateDevicesFirstStateOnContextDestroyed::
+                        kSuccessfulNeverGetUserMedia);
+          break;
+        case FirstGetUserMediaState::kBeforeEnumerateDevices:
+          RecordUma(EnumerateDevicesFirstStateOnContextDestroyed::
+                        kSuccessfulAfterGetUserMedia);
+          break;
+        case FirstGetUserMediaState::kAfterEnumerateDevices:
+          RecordUma(EnumerateDevicesFirstStateOnContextDestroyed::
+                        kSuccessfulFollowedByGetUserMedia);
+          break;
+      }
+      break;
+  }
 }
 
 void MediaDevices::OnDevicesChanged(
@@ -1301,6 +1336,7 @@ void MediaDevices::DevicesEnumerated(
   }
 
   MediaDeviceInfoVector media_devices;
+  bool result_contains_nonempty_input_device_ids = false;
   for (wtf_size_t i = 0;
        i < static_cast<wtf_size_t>(
                mojom::blink::MediaDeviceType::kNumMediaDeviceTypes);
@@ -1312,6 +1348,9 @@ void MediaDevices::DevicesEnumerated(
       String device_label = String::FromUTF8(device_info.label);
       if (device_type == mojom::blink::MediaDeviceType::kMediaAudioInput ||
           device_type == mojom::blink::MediaDeviceType::kMediaVideoInput) {
+        if (!device_info.device_id.empty()) {
+          result_contains_nonempty_input_device_ids = true;
+        }
         InputDeviceInfo* input_device_info =
             MakeGarbageCollected<InputDeviceInfo>(
                 String::FromUTF8(device_info.device_id), device_label,
@@ -1336,6 +1375,7 @@ void MediaDevices::DevicesEnumerated(
   }
 
   RecordEnumeratedDevices(result_tracker->GetScriptState(), media_devices);
+  ReportCompletedEnumerateDevices(result_contains_nonempty_input_device_ids);
   result_tracker->Resolve(media_devices);
   tracer->End();
 }
@@ -1529,6 +1569,67 @@ void MediaDevices::ResolveCropTargetPromise(Element* element,
   resolver->Resolve(MakeGarbageCollected<CropTarget>(id));
   RecordUma(SubCaptureTarget::Type::kCropTarget,
             ProduceTargetPromiseResult::kPromiseResolved);
+}
+
+void MediaDevices::ReportSuccessfulGetUserMedia() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (first_gum_state_ != FirstGetUserMediaState::kNoGetUserMedia) {
+    return;
+  }
+
+  switch (first_ed_state_) {
+    case FirstEnumerateDevicesState::kNoEnumeration:
+      first_gum_state_ = FirstGetUserMediaState::kBeforeEnumerateDevices;
+      RecordUma(EnumerateDevicesGetUserMediaInteraction::kGetUserMediaFirst);
+      break;
+    case FirstEnumerateDevicesState::kFailed:
+      first_gum_state_ = FirstGetUserMediaState::kAfterEnumerateDevices;
+      RecordUma(EnumerateDevicesGetUserMediaInteraction::
+                    kFailedEnumerateDevicesThenGetUserMedia);
+      break;
+    case FirstEnumerateDevicesState::kSuccessful:
+      first_gum_state_ = FirstGetUserMediaState::kAfterEnumerateDevices;
+      RecordUma(EnumerateDevicesGetUserMediaInteraction::
+                    kSuccessfulEnumerateDevicesThenGetUserMedia);
+      break;
+  }
+}
+
+void MediaDevices::ReportCompletedEnumerateDevices(bool is_successful) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (first_ed_state_ != FirstEnumerateDevicesState::kNoEnumeration) {
+    return;
+  }
+
+  if (is_successful) {
+    first_ed_state_ = FirstEnumerateDevicesState::kSuccessful;
+    switch (first_gum_state_) {
+      case FirstGetUserMediaState::kNoGetUserMedia:
+        RecordUma(EnumerateDevicesGetUserMediaInteraction::
+                      kSuccessfulEnumerateDevicesFirst);
+        break;
+      case FirstGetUserMediaState::kBeforeEnumerateDevices:
+        RecordUma(EnumerateDevicesGetUserMediaInteraction::
+                      kGetUserMediaThenSuccessfulEnumerateDevices);
+        break;
+      case FirstGetUserMediaState::kAfterEnumerateDevices:
+        NOTREACHED();
+    }
+  } else {
+    first_ed_state_ = FirstEnumerateDevicesState::kFailed;
+    switch (first_gum_state_) {
+      case FirstGetUserMediaState::kNoGetUserMedia:
+        RecordUma(EnumerateDevicesGetUserMediaInteraction::
+                      kFailedEnumerateDevicesFirst);
+        break;
+      case FirstGetUserMediaState::kBeforeEnumerateDevices:
+        RecordUma(EnumerateDevicesGetUserMediaInteraction::
+                      kGetUserMediaThenFailedEnumerateDevices);
+        break;
+      case FirstGetUserMediaState::kAfterEnumerateDevices:
+        NOTREACHED();
+    }
+  }
 }
 
 }  // namespace blink

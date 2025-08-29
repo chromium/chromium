@@ -37,11 +37,13 @@
 #include "third_party/blink/public/web/modules/mediastream/web_media_stream_device_observer.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
+#include "third_party/blink/renderer/core/frame/dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/mediastream/local_media_stream_audio_source.h"
 #include "third_party/blink/renderer/modules/mediastream/local_video_capturer_source.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
+#include "third_party/blink/renderer/modules/mediastream/media_devices.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_audio_processing_layout.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_audio_processor.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
@@ -2130,6 +2132,10 @@ void UserMediaProcessor::DelayedGetUserMediaRequestSucceeded(
     // FinalizeTransferredTrackInitialization.
     user_media_request->Succeed(*components);
   }
+
+  if (MediaDevices* media_devices = GetMediaDevices()) {
+    media_devices->ReportSuccessfulGetUserMedia();
+  }
 }
 
 void UserMediaProcessor::GetUserMediaRequestFailed(
@@ -2428,6 +2434,18 @@ void UserMediaProcessor::KeepDeviceAliveForTransfer(
     KeepDeviceAliveForTransferCallback keep_alive_cb) {
   GetMediaStreamDispatcherHost()->KeepDeviceAliveForTransfer(
       session_id, transfer_id, std::move(keep_alive_cb));
+}
+
+MediaDevices* UserMediaProcessor::GetMediaDevices() const {
+  if (!frame_) {
+    return nullptr;
+  }
+  if (LocalDOMWindow* window = frame_->DomWindow()) {
+    if (Navigator* navigator = window->navigator()) {
+      return MediaDevices::mediaDevices(*navigator);
+    }
+  }
+  return nullptr;
 }
 
 }  // namespace blink

@@ -606,6 +606,29 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="(Obsolete) Persistent Usage Record"/>
 </enum>
 
+<enum name="EnumerateDevicesFirstStateOnContextDestroyed">
+  <int value="0" label="enumerateDevices without permission"/>
+  <int value="1" label="Successful enumerateDevices with no getUserMedia"/>
+  <int value="2" label="getUserMedia before successful enumerateDevices"/>
+  <int value="3" label="getUserMedia after successful enumerateDevices"/>
+</enum>
+
+<enum name="EnumerateDevicesGetUserMediaInteraction">
+  <int value="0" label="enumerateDevices without permission first"/>
+  <int value="1" label="Successful enumerateDevices first"/>
+  <int value="2" label="Successful getUserMedia first"/>
+  <int value="3"
+      label="enumerateDevices without permission before successful
+             getUserMedia"/>
+  <int value="4"
+      label="Successful enumerateDevices before successful getUserMedia"/>
+  <int value="5"
+      label="Successful getUserMedia before enumerateDevices without
+             permission"/>
+  <int value="6"
+      label="Successful getUserMedia before successful enumerateDevices"/>
+</enum>
+
 <enum name="EnumerateDevicesResult">
   <int value="0" label="OK"/>
   <int value="1" label="Unknown error"/>

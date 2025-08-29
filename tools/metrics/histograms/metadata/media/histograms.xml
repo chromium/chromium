@@ -4412,6 +4412,30 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Media.MediaDevices.EnumerateDevices.FirstStateOnContextDestroyed"
+    enum="EnumerateDevicesFirstStateOnContextDestroyed"
+    expires_after="2026-08-28">
+  <owner>guidou@chromium.org</owner>
+  <owner>agpalak@chromium.org</owner>
+  <summary>
+    Tracks the state of the first enumerateDevices call in relation to the first
+    successful getUserMedia call. Recorded on execution context destruction only
+    if there was at least one enumerateDevices call.
+  </summary>
+</histogram>
+
+<histogram name="Media.MediaDevices.EnumerateDevices.GetUserMediaInteraction"
+    enum="EnumerateDevicesGetUserMediaInteraction" expires_after="2026-08-28">
+  <owner>guidou@chromium.org</owner>
+  <owner>agpalak@chromium.org</owner>
+  <summary>
+    Recorded when the first enumerateDevices call and/or the first successful
+    getUserMedia call are resolved. The members of the histogram are not
+    mutually exclusive.
+  </summary>
+</histogram>
+
 <histogram name="Media.MediaDevices.EnumerateDevices.Latency" units="ms"
     expires_after="2026-02-09">
   <owner>toprice@chromium.org</owner>

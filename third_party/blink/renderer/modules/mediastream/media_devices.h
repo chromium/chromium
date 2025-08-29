@@ -71,6 +71,25 @@ enum class AudioOutputSelectionResult {
   kMaxValue = kNotSupported
 };
 
+enum class EnumerateDevicesFirstStateOnContextDestroyed {
+  kFailed = 0,
+  kSuccessfulNeverGetUserMedia = 1,
+  kSuccessfulAfterGetUserMedia = 2,
+  kSuccessfulFollowedByGetUserMedia = 3,
+  kMaxValue = kSuccessfulFollowedByGetUserMedia
+};
+
+enum class EnumerateDevicesGetUserMediaInteraction {
+  kFailedEnumerateDevicesFirst = 0,
+  kSuccessfulEnumerateDevicesFirst = 1,
+  kGetUserMediaFirst = 2,
+  kFailedEnumerateDevicesThenGetUserMedia = 3,
+  kSuccessfulEnumerateDevicesThenGetUserMedia = 4,
+  kGetUserMediaThenFailedEnumerateDevices = 5,
+  kGetUserMediaThenSuccessfulEnumerateDevices = 6,
+  kMaxValue = kGetUserMediaThenSuccessfulEnumerateDevices
+};
+
 class MODULES_EXPORT MediaDevices final
     : public EventTarget,
       public ActiveScriptWrappable<MediaDevices>,
@@ -143,6 +162,9 @@ class MODULES_EXPORT MediaDevices final
 
   void SetDispatcherHostForTesting(
       mojo::PendingRemote<mojom::blink::MediaDevicesDispatcherHost>);
+
+  void ReportSuccessfulGetUserMedia();
+  void ReportCompletedEnumerateDevices(bool is_successful);
 
   void Trace(Visitor*) const override;
 
@@ -265,6 +287,23 @@ class MODULES_EXPORT MediaDevices final
 
   bool starting_observation_ = false;
   Vector<Vector<WebMediaDeviceInfo>> current_device_infos_;
+
+  enum class FirstEnumerateDevicesState {
+    kNoEnumeration,
+    kFailed,
+    kSuccessful
+  };
+
+  enum class FirstGetUserMediaState {
+    kNoGetUserMedia,
+    kBeforeEnumerateDevices,
+    kAfterEnumerateDevices,
+  };
+
+  FirstEnumerateDevicesState first_ed_state_ =
+      FirstEnumerateDevicesState::kNoEnumeration;
+  FirstGetUserMediaState first_gum_state_ =
+      FirstGetUserMediaState::kNoGetUserMedia;
 };
 
 }  // namespace blink
