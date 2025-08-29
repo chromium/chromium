@@ -12,6 +12,7 @@
 #include "base/types/expected.h"
 #include "components/paint_preview/browser/paint_preview_base_service.h"
 #include "components/paint_preview/common/mojom/paint_preview_types.mojom.h"
+#include "components/paint_preview/common/redaction_params.h"
 #include "components/paint_preview/public/paint_preview_compositor_service.h"
 #include "content/public/browser/web_contents.h"
 
@@ -41,6 +42,7 @@ class PageContentScreenshotService
         paint_preview::mojom::ClipCoordOverride::kNone;
     paint_preview::mojom::ClipCoordOverride clip_y_coord_override =
         paint_preview::mojom::ClipCoordOverride::kNone;
+    paint_preview::RedactionParams redaction_params;
   };
 
   void RequestScreenshot(content::WebContents* web_contents,

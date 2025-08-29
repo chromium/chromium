@@ -22,6 +22,7 @@
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom.h"
 #include "components/paint_preview/common/mojom/paint_preview_types.mojom.h"
 #include "components/paint_preview/common/proto/paint_preview.pb.h"
+#include "components/paint_preview/common/redaction_params.h"
 #include "components/paint_preview/common/serialized_recording.h"
 #include "content/public/browser/web_contents.h"
 
@@ -117,6 +118,9 @@ class PaintPreviewBaseService : public KeyedService {
     // At present this flag:
     // - Shows a poster or blank space instead of live video frames.
     bool skip_accelerated_content{false};
+
+    // Params for redacting content from the screenshot.
+    RedactionParams redaction_params;
   };
 
   using OnCapturedCallback =

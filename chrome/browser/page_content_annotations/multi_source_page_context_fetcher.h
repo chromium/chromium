@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/types/expected.h"
 #include "components/content_extraction/content/browser/inner_text.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
@@ -105,6 +106,19 @@ extern const base::FeatureParam<base::TimeDelta> kScreenshotTimeout;
 
 // Enables the Paint Preview backend for taking screenshots.
 BASE_DECLARE_FEATURE(kGlicTabScreenshotPaintPreviewBackend);
+
+enum class ScreenshotIframeRedactionScope {
+  // No redaction.
+  kNone,
+  // Redact cross-site iframes.
+  kCrossSite,
+  // Redact cross-origin iframes.
+  kCrossOrigin,
+};
+
+// Controls whether iframe redaction is enabled, and which scope is used if so.
+extern const base::FeatureParam<ScreenshotIframeRedactionScope>
+    kScreenshotIframeRedaction;
 
 // Enables page context eligibility checks.
 BASE_DECLARE_FEATURE(kGlicPageContextEligibility);

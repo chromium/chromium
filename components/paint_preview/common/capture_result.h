@@ -10,6 +10,7 @@
 #include "base/unguessable_token.h"
 #include "components/paint_preview/common/mojom/paint_preview_types.mojom.h"
 #include "components/paint_preview/common/proto/paint_preview.pb.h"
+#include "components/paint_preview/common/redaction_params.h"
 #include "components/paint_preview/common/serialized_recording.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "ui/gfx/geometry/rect.h"
@@ -72,6 +73,9 @@ struct RecordingParams {
   // time of capture). See PaintPreviewBaseService::CaptureParams for a
   // description of the effects of this flag.
   bool skip_accelerated_content{false};
+
+  // Allows optional redaction of screenshots.
+  RedactionParams redaction_params;
 
  private:
   // The document GUID for this capture.

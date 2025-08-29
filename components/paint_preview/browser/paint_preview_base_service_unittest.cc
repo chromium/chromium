@@ -307,10 +307,6 @@ TEST_P(PaintPreviewBaseServiceTest, CaptureDisallowed) {
   params->is_main_frame = true;
   params->max_capture_size = 0;
   recorder.SetExpectedParams(std::move(params));
-  auto response = mojom::PaintPreviewCaptureResponse::New();
-  response->geometry_metadata = mojom::GeometryMetadataResponse::New();
-  response->embedding_token = std::nullopt;
-  recorder.SetResponse(mojom::PaintPreviewStatus::kFailed, std::move(response));
   OverrideInterface(&recorder);
 
   auto* service = GetServiceWithRejectionPolicy();

@@ -1,0 +1,12 @@
+
+specific_include_rules = {
+  "redaction_params\\.h": [
+    "+net/base/schemeful_site.h"
+  ],
+  "redaction_params\\.cc": [
+    "+net/base/schemeful_site.h"
+  ],
+  "redaction_params_unittest\\.cc": [
+    "+net/base/schemeful_site.h"
+  ],
+}

@@ -15,15 +15,18 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
 #include "base/version.h"
 #include "components/paint_preview/common/capture_result.h"
+#include "components/paint_preview/common/file_stream.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom.h"
 #include "components/paint_preview/common/mojom/paint_preview_types.mojom.h"
 #include "components/paint_preview/common/proto_validator.h"
+#include "components/paint_preview/common/redaction_params.h"
 #include "components/paint_preview/common/serialized_recording.h"
 #include "components/paint_preview/common/version.h"
 #include "components/version_info/version_info.h"
@@ -32,12 +35,23 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkPaint.h"
+#include "third_party/skia/include/core/SkPicture.h"
+#include "third_party/skia/include/core/SkPictureRecorder.h"
+#include "third_party/skia/include/core/SkRect.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/core/SkStream.h"
 
 namespace paint_preview {
 
@@ -176,6 +190,92 @@ void OnSerializedRecordingFileCreated(
     std::move(callback).Run(std::move(capture_params),
                             mojom::PaintPreviewStatus::kOk, std::move(params));
   }
+}
+
+// Creates and returns an SkPicture representing a black rectangle of the
+// specified width and height.
+sk_sp<SkPicture> CreateBlackRectangle(const gfx::Size& size) {
+  SkPictureRecorder recorder;
+  const SkRect bounds = SkRect::MakeWH(static_cast<float>(size.width()),
+                                       static_cast<float>(size.height()));
+  SkCanvas* canvas = recorder.beginRecording(bounds);
+
+  SkPaint paint;
+  paint.setColor(SkColors::kBlack);
+  paint.setStyle(SkPaint::Style::kFill_Style);
+
+  canvas->drawRect(bounds, paint);
+
+  return recorder.finishRecordingAsPicture();
+}
+
+sk_sp<SkData> SerializeToBytes(sk_sp<SkPicture> skp) {
+  SkDynamicMemoryWStream memory_stream;
+  skp->serialize(&memory_stream);
+  return memory_stream.detachAsData();
+}
+
+std::pair<mojom::PaintPreviewStatus, mojom::PaintPreviewCaptureResponsePtr>
+SerializeRedactedFrameToFile(const gfx::Size& size,
+                             std::optional<size_t> max_capture_size,
+                             const base::FilePath& file_path,
+                             mojom::PaintPreviewCaptureResponsePtr response) {
+  CHECK(max_capture_size != 0);
+  sk_sp<SkData> data = SerializeToBytes(CreateBlackRectangle(size));
+
+  base::span<const uint8_t> bytes = skia::as_byte_span(*data);
+  if (max_capture_size && data->size() > max_capture_size) {
+    return {mojom::PaintPreviewStatus::kFileCreationError, std::move(response)};
+  }
+
+  base::File file = CreateOrOverwriteFileForWriting(file_path);
+
+  if (!file.IsValid() || !file.WriteAndCheck(/*offset=*/0, bytes)) {
+    return {mojom::PaintPreviewStatus::kFileCreationError, std::move(response)};
+  }
+
+  return {mojom::PaintPreviewStatus::kOk, std::move(response)};
+}
+
+struct BufferAndMetadata {
+  mojo_base::BigBuffer buffer;
+  uint64_t buffer_size;
+};
+
+std::optional<BufferAndMetadata> SerializeRedactedFrameToBuffer(
+    const gfx::Size& size,
+    std::optional<size_t> max_capture_size) {
+  CHECK(max_capture_size != 0);
+  sk_sp<SkData> data = SerializeToBytes(CreateBlackRectangle(size));
+
+  if (max_capture_size && data->size() > max_capture_size) {
+    return std::nullopt;
+  }
+  size_t serialized_size = data->size();
+
+  return BufferAndMetadata{
+      .buffer = mojo_base::BigBuffer(skia::as_byte_span(*data)),
+      .buffer_size = serialized_size,
+  };
+}
+
+content::GlobalRenderFrameHostId GetGlobalRenderFrameHostId(
+    content::RenderFrameHost* rfh) {
+  // TODO(https://crbug.com/441908441): use `rfh->GetGlobalId()` here.
+  return content::GlobalRenderFrameHostId(rfh->GetProcess()->GetDeprecatedID(),
+                                          rfh->GetRoutingID());
+}
+
+// Converts a callback that accepts two args into a callback that accepts a
+// single std::pair arg.
+template <typename T, typename U>
+base::OnceCallback<void(std::pair<T, U>)> ConvertToPairArgCallback(
+    base::OnceCallback<void(T, U)> callback) {
+  return base::BindOnce(
+      [](base::OnceCallback<void(T, U)> callback, std::pair<T, U> pair) {
+        std::move(callback).Run(std::move(pair.first), std::move(pair.second));
+      },
+      std::move(callback));
 }
 
 }  // namespace
@@ -412,6 +512,7 @@ void PaintPreviewClient::CapturePaintPreview(
       params.inner.max_decoded_image_size_bytes;
   document_data.skip_accelerated_content =
       params.inner.skip_accelerated_content;
+  document_data.redaction_params = params.inner.redaction_params;
   document_data_it = all_document_data_.insert(
       document_data_it,
       {params.inner.get_document_guid(), std::move(document_data)});
@@ -425,7 +526,7 @@ void PaintPreviewClient::CaptureSubframePaintPreview(
     const base::UnguessableToken& guid,
     const gfx::Rect& rect,
     content::RenderFrameHost* render_subframe_host) {
-  if (guid.is_empty()) {
+  if (guid.is_empty() || !render_subframe_host || rect.IsEmpty()) {
     return;
   }
 
@@ -447,8 +548,137 @@ void PaintPreviewClient::CaptureSubframePaintPreview(
   params.max_decoded_image_size_bytes =
       document_data->max_decoded_image_size_bytes;
   params.skip_accelerated_content = document_data->skip_accelerated_content;
+
+  if (document_data->redaction_params.ShouldRedactSubframe(
+          render_subframe_host->GetLastCommittedOrigin())) {
+    BeginSubframeRedaction(guid, std::move(params), render_subframe_host,
+                           *document_data);
+    return;
+  }
+
   CapturePaintPreviewInternal(std::move(params), render_subframe_host,
                               *document_data);
+}
+
+void PaintPreviewClient::BeginSubframeRedaction(
+    const base::UnguessableToken& guid,
+    RecordingParams params,
+    content::RenderFrameHost* render_subframe_host,
+    InProgressDocumentCaptureState& document_data) {
+  std::optional<base::UnguessableToken> token =
+      render_subframe_host->GetEmbeddingToken();
+  if (!token.has_value()) {
+    DVLOG(1) << "Error: Attempted to capture a frame without an "
+                "embedding token.";
+    DUMP_WILL_BE_NOTREACHED();
+    return;
+  }
+  base::UnguessableToken frame_guid = token.value();
+
+  // This bookkeeping would normally be done by `RequestCaptureOnUIThread`,
+  // but we're skipping that, so we do it here instead.
+  AwaitSubframeCapture(frame_guid, params, document_data);
+
+  auto geometry_metadata_params = mojom::GeometryMetadataParams::New();
+  geometry_metadata_params->clip_rect = params.clip_rect;
+  // All clip rects are treated as hints for now.
+  geometry_metadata_params->clip_rect_is_hint = true;
+  // Same as defaults, but just to be explicit:
+  geometry_metadata_params->clip_x_coord_override =
+      mojom::ClipCoordOverride::kNone;
+  geometry_metadata_params->clip_y_coord_override =
+      mojom::ClipCoordOverride::kNone;
+
+  content::GlobalRenderFrameHostId render_frame_id =
+      GetGlobalRenderFrameHostId(render_subframe_host);
+
+  GetOrInsertRecorder(frame_guid, *render_subframe_host)
+      ->GetGeometryMetadata(
+          std::move(geometry_metadata_params),
+          base::BindOnce(
+              &PaintPreviewClient::RedactSubframe,
+              weak_ptr_factory_.GetWeakPtr(), frame_guid, render_frame_id,
+              std::move(params),
+              base::BindOnce(
+                  &PaintPreviewClient::OnPaintPreviewCapturedCallback,
+                  weak_ptr_factory_.GetWeakPtr(), frame_guid,
+                  render_frame_id)));
+}
+
+void PaintPreviewClient::RedactSubframe(
+    const base::UnguessableToken& frame_guid,
+    const content::GlobalRenderFrameHostId& render_frame_id,
+    RecordingParams params,
+    base::OnceCallback<void(RecordingParams,
+                            mojom::PaintPreviewStatus,
+                            mojom::PaintPreviewCaptureResponsePtr)> callback,
+    mojom::GeometryMetadataResponsePtr response) {
+  auto* document_data =
+      base::FindOrNull(all_document_data_, params.get_document_guid());
+  if (!document_data) {
+    return;
+  }
+
+  auto* render_frame_host = content::RenderFrameHost::FromID(render_frame_id);
+
+  if (!render_frame_host ||
+      render_frame_host->GetEmbeddingToken().value_or(
+          base::UnguessableToken::Null()) != frame_guid ||
+      !response) {
+    std::move(callback).Run(std::move(params),
+                            mojom::PaintPreviewStatus::kCaptureFailed, {});
+    return;
+  }
+
+  auto capture_response = mojom::PaintPreviewCaptureResponse::New();
+  capture_response->embedding_token = frame_guid;
+  capture_response->geometry_metadata = std::move(response);
+
+  switch (document_data->persistence) {
+    case RecordingPersistence::kFileSystem: {
+      gfx::Size clip_rect_size = params.clip_rect.size();
+      std::optional<size_t> max_capture_size =
+          params.max_capture_size == 0U
+              ? std::nullopt
+              : std::make_optional(params.max_capture_size);
+      base::ThreadPool::PostTaskAndReplyWithResult(
+          FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+          base::BindOnce(&SerializeRedactedFrameToFile, clip_rect_size,
+                         max_capture_size,
+                         document_data->FilePathForFrame(frame_guid),
+                         std::move(capture_response)),
+          ConvertToPairArgCallback(
+              base::BindOnce(std::move(callback), std::move(params))));
+      return;
+    }
+    case RecordingPersistence::kMemoryBuffer: {
+      mojom::PaintPreviewStatus capture_status =
+          mojom::PaintPreviewStatus::kCaptureFailed;
+      std::optional<BufferAndMetadata> serialized =
+          SerializeRedactedFrameToBuffer(
+              params.clip_rect.size(),
+              document_data->max_per_capture_size == 0
+                  ? std::nullopt
+                  : std::make_optional(document_data->max_per_capture_size));
+      if (serialized) {
+        capture_status = mojom::PaintPreviewStatus::kOk;
+        capture_response->skp.emplace(std::move(serialized->buffer));
+        capture_response->serialized_size = serialized->buffer_size;
+      }
+
+      std::move(callback).Run(std::move(params), capture_status,
+                              std::move(capture_response));
+      return;
+    }
+  }
+}
+
+void PaintPreviewClient::AwaitSubframeCapture(
+    const base::UnguessableToken& frame_guid,
+    const RecordingParams& params,
+    InProgressDocumentCaptureState& document_data) {
+  document_data.awaiting_subframes.insert(frame_guid);
+  pending_previews_on_subframe_[frame_guid].insert(params.get_document_guid());
 }
 
 void PaintPreviewClient::RenderFrameDeleted(
@@ -528,9 +758,7 @@ void PaintPreviewClient::CapturePaintPreviewInternal(
       std::move(params), frame_guid,
       base::BindOnce(&PaintPreviewClient::RequestCaptureOnUIThread,
                      weak_ptr_factory_.GetWeakPtr(), frame_guid,
-                     content::GlobalRenderFrameHostId(
-                         render_frame_host->GetProcess()->GetDeprecatedID(),
-                         render_frame_host->GetRoutingID())));
+                     GetGlobalRenderFrameHostId(render_frame_host)));
 }
 
 void PaintPreviewClient::RequestCaptureOnUIThread(
@@ -568,34 +796,44 @@ void PaintPreviewClient::RequestCaptureOnUIThread(
     return;
   }
 
-  document_data->awaiting_subframes.insert(frame_guid);
-  pending_previews_on_subframe_[frame_guid].insert(params.get_document_guid());
-
-  auto interface_it = interface_ptrs_.find(frame_guid);
-  if (interface_it == interface_ptrs_.end()) {
-    interface_it = interface_ptrs_.insert(
-        interface_it,
-        {frame_guid, mojo::AssociatedRemote<mojom::PaintPreviewRecorder>()});
-    render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
-        &interface_it->second);
-  }
+  AwaitSubframeCapture(frame_guid, params, *document_data);
 
   // For the main frame, apply a clip rect if one is provided.
   if (params.is_main_frame) {
     capture_params->geometry_metadata_params->clip_rect_is_hint = false;
   }
 
-  interface_it->second->CapturePaintPreview(
-      std::move(capture_params),
-      base::BindOnce(&PaintPreviewClient::OnPaintPreviewCapturedCallback,
-                     weak_ptr_factory_.GetWeakPtr(), frame_guid,
-                     std::move(params), render_frame_id));
+  GetOrInsertRecorder(frame_guid, *render_frame_host)
+      ->CapturePaintPreview(
+          std::move(capture_params),
+          base::BindOnce(&PaintPreviewClient::OnPaintPreviewCapturedCallback,
+                         weak_ptr_factory_.GetWeakPtr(), frame_guid,
+                         render_frame_id, std::move(params)));
+}
+
+mojo::AssociatedRemote<mojom::PaintPreviewRecorder>&
+PaintPreviewClient::GetOrInsertRecorder(
+    const base::UnguessableToken& frame_guid,
+    content ::RenderFrameHost& render_frame_host) {
+  CHECK_EQ(render_frame_host.GetEmbeddingToken().value_or(
+               base::UnguessableToken::Null()),
+           frame_guid);
+  auto interface_it = interface_ptrs_.find(frame_guid);
+  if (interface_it == interface_ptrs_.end()) {
+    interface_it = interface_ptrs_.insert(
+        interface_it,
+        {frame_guid, mojo::AssociatedRemote<mojom::PaintPreviewRecorder>()});
+    render_frame_host.GetRemoteAssociatedInterfaces()->GetInterface(
+        &interface_it->second);
+  }
+
+  return interface_it->second;
 }
 
 void PaintPreviewClient::OnPaintPreviewCapturedCallback(
     const base::UnguessableToken& frame_guid,
-    const RecordingParams& params,
     const content::GlobalRenderFrameHostId& render_frame_id,
+    RecordingParams params,
     mojom::PaintPreviewStatus status,
     mojom::PaintPreviewCaptureResponsePtr response) {
   auto* document_data =

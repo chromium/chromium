@@ -23,6 +23,7 @@
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom-shared.h"
 #include "components/paint_preview/common/proto/paint_preview.pb.h"
 #include "components/paint_preview/common/recording_map.h"
+#include "components/paint_preview/common/redaction_params.h"
 #include "components/paint_preview/common/serialized_recording.h"
 #include "components/paint_preview/common/test_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -235,6 +236,43 @@ IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest,
     auto pair = RecordingMapFromCaptureResult(std::move(*result));
     EnsureSkPictureIsValid(&pair.first, pair.second.root_frame(), 1);
     EnsureSkPictureIsValid(&pair.first, pair.second.subframes(0), 0);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(PaintPreviewBrowserTest,
+                       CaptureMainFrameWithCrossProcessSubframeWithRedaction) {
+  LoadPage(
+      http_server_.GetURL("a.com", "/cross_site_iframe_factory.html?a(b)"));
+  auto params = MakeParams();
+  params.inner.redaction_params = RedactionParams(
+      {url::Origin::Create(http_server_.GetURL("b.com", "/"))}, {});
+
+  CreateClient();
+  auto* client = PaintPreviewClient::FromWebContents(GetWebContents());
+  WaitForLoadStopWithoutSuccessCheck();
+  base::test::TestFuture<base::UnguessableToken, mojom::PaintPreviewStatus,
+                         std::unique_ptr<CaptureResult>>
+      future;
+  client->CapturePaintPreview(params.Clone(),
+                              GetWebContents()->GetPrimaryMainFrame(),
+                              future.GetCallback());
+
+  auto [guid, status, result] = future.Take();
+  EXPECT_EQ(guid, params.inner.get_document_guid());
+  EXPECT_EQ(status, mojom::PaintPreviewStatus::kOk);
+  EXPECT_TRUE(result->proto.has_root_frame());
+  EXPECT_EQ(result->proto.subframes_size(), 1);
+  EXPECT_EQ(result->proto.root_frame().content_id_to_embedding_tokens_size(),
+            1);
+  EXPECT_TRUE(result->proto.root_frame().is_main_frame());
+  EXPECT_EQ(result->proto.subframes(0).content_id_to_embedding_tokens_size(),
+            0);
+  EXPECT_FALSE(result->proto.subframes(0).is_main_frame());
+  {
+    base::ScopedAllowBlockingForTesting scoped_blocking;
+    auto [map, proto] = RecordingMapFromCaptureResult(std::move(*result));
+    EnsureSkPictureIsValid(&map, proto.root_frame(), 1);
+    EnsureSkPictureIsValid(&map, proto.subframes(0), 0);
   }
 }
 

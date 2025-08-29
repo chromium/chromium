@@ -11,7 +11,11 @@ namespace paint_preview {
 
 MockPaintPreviewRecorder::MockPaintPreviewRecorder() = default;
 
-MockPaintPreviewRecorder::~MockPaintPreviewRecorder() = default;
+MockPaintPreviewRecorder::~MockPaintPreviewRecorder() {
+  // All responses should have been sent.
+  CHECK(!response_);
+  CHECK(!geometry_response_);
+}
 
 void MockPaintPreviewRecorder::CapturePaintPreview(
     mojom::PaintPreviewCaptureParamsPtr params,
@@ -29,9 +33,30 @@ void MockPaintPreviewRecorder::CapturePaintPreview(
   }
 }
 
+void MockPaintPreviewRecorder::GetGeometryMetadata(
+    mojom::GeometryMetadataParamsPtr params,
+    mojom::PaintPreviewRecorder::GetGeometryMetadataCallback callback) {
+  CheckGeometryParams(params);
+
+  if (received_request_closure_) {
+    send_geometry_response_callback_ = std::move(callback);
+    std::move(received_request_closure_).Run();
+  } else {
+    if (!geometry_response_) {
+      geometry_response_ = mojom::GeometryMetadataResponse::New();
+    }
+    std::move(callback).Run(std::move(geometry_response_));
+  }
+}
+
 void MockPaintPreviewRecorder::SetExpectedParams(
     mojom::PaintPreviewCaptureParamsPtr params) {
   expected_params_ = std::move(params);
+}
+
+void MockPaintPreviewRecorder::SetExpectedGeometryParams(
+    mojom::GeometryMetadataParamsPtr params) {
+  expected_geometry_params_ = std::move(params);
 }
 
 void MockPaintPreviewRecorder::SetResponse(
@@ -39,6 +64,11 @@ void MockPaintPreviewRecorder::SetResponse(
     mojom::PaintPreviewCaptureResponsePtr response) {
   status_ = status;
   response_ = std::move(response);
+}
+
+void MockPaintPreviewRecorder::SetGeometryResponse(
+    mojom::GeometryMetadataResponsePtr response) {
+  geometry_response_ = std::move(response);
 }
 
 void MockPaintPreviewRecorder::SetReceivedRequestClosure(
@@ -53,6 +83,12 @@ void MockPaintPreviewRecorder::SendResponse() {
     response_ = NewResponse();
   }
   std::move(send_response_callback_).Run(status_, std::move(response_));
+}
+
+void MockPaintPreviewRecorder::SendGeometryResponse() {
+  ASSERT_TRUE(send_geometry_response_callback_);
+  std::move(send_geometry_response_callback_)
+      .Run(std::move(geometry_response_));
 }
 
 void MockPaintPreviewRecorder::BindRequest(
@@ -92,6 +128,12 @@ void MockPaintPreviewRecorder::CheckParams(
     EXPECT_EQ(input_params->geometry_metadata_params->clip_y_coord_override,
               mojom::ClipCoordOverride::kNone);
   }
+}
+
+void MockPaintPreviewRecorder::CheckGeometryParams(
+    const mojom::GeometryMetadataParamsPtr& input_params) {
+  ASSERT_TRUE(expected_geometry_params_) << "SetExpectedGeoParams() not called";
+  EXPECT_EQ(expected_geometry_params_->clip_rect, input_params->clip_rect);
 }
 
 }  // namespace paint_preview

@@ -17,9 +17,13 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "components/paint_preview/common/capture_result.h"
+#include "components/paint_preview/common/file_stream.h"
 #include "components/paint_preview/common/mock_paint_preview_recorder.h"
+#include "components/paint_preview/common/mojom/paint_preview_recorder.mojom-data-view.h"
+#include "components/paint_preview/common/mojom/paint_preview_recorder.mojom-forward.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom.h"
 #include "components/paint_preview/common/proto/paint_preview.pb.h"
+#include "components/paint_preview/common/redaction_params.h"
 #include "components/paint_preview/common/serialized_recording.h"
 #include "components/paint_preview/common/test_utils.h"
 #include "components/paint_preview/common/version.h"
@@ -36,11 +40,17 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkSurfaceProps.h"
 
 namespace paint_preview {
 
 using base::test::EqualsProto;
 using testing::AnyOf;
+using testing::Key;
+using testing::UnorderedElementsAre;
 
 using CaptureResultFuture =
     base::test::TestFuture<base::UnguessableToken,
@@ -48,6 +58,9 @@ using CaptureResultFuture =
                            std::unique_ptr<CaptureResult>>;
 
 namespace {
+
+const std::string_view kMainFrameUrl = "https://www.chromium.org";
+const std::string_view kOtherOriginUrl = "https://chromium.org";
 
 // Convert |params| to the mojo::PaintPreviewServiceParams format. NOTE: this
 // does not set the file parameter as the file is created in the client
@@ -66,17 +79,55 @@ mojom::PaintPreviewCaptureParamsPtr ToMojoParams(
   return params_ptr;
 }
 
-void VerifyFilePath(std::string_view raw_path,
-                    const base::Location& location = FROM_HERE) {
-  base::ScopedAllowBlockingForTesting scope;
-  base::FilePath path(
+base::FilePath ParseStringFilePath(std::string_view raw_path) {
+  return base::FilePath(
 #if BUILDFLAG(IS_WIN)
       base::UTF8ToWide(raw_path)
 #else
       raw_path
 #endif
   );
-  EXPECT_TRUE(base::PathExists(path)) << "Expected at " << location.ToString();
+}
+
+void VerifyFilePath(std::string_view raw_path,
+                    const base::Location& location = FROM_HERE) {
+  base::ScopedAllowBlockingForTesting scope;
+  EXPECT_TRUE(base::PathExists(ParseStringFilePath(raw_path)))
+      << "Expected at " << location.ToString();
+}
+
+base::UnguessableToken DeserializeFrameToken(
+    const PaintPreviewFrameProto& frame) {
+  auto token = base::UnguessableToken::Deserialize(frame.embedding_token_high(),
+                                                   frame.embedding_token_low())
+                   .value();
+  CHECK_NE(token, base::UnguessableToken::Null());
+  return token;
+}
+
+sk_sp<SkPicture> ReadPictureFromFile(std::string_view raw_path) {
+  base::ScopedAllowBlockingForTesting scope;
+  FileRStream rstream(
+      base::File(ParseStringFilePath(raw_path),
+                 base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ));
+  return SkPicture::MakeFromStream(&rstream, nullptr);
+}
+
+sk_sp<SkPicture> ReadPictureFromBuffer(mojo_base::BigBuffer buffer) {
+  base::ScopedAllowBlockingForTesting scope;
+  SkMemoryStream stream(buffer.data(), buffer.size(),
+                        /*copyData=*/false);
+  return SkPicture::MakeFromStream(&stream, nullptr);
+}
+
+SkBitmap MakeBitmapFromPicture(sk_sp<SkPicture> pic) {
+  SkBitmap bitmap;
+  CHECK(bitmap.tryAllocN32Pixels(pic->cullRect().width(),
+                                 pic->cullRect().height()));
+  SkCanvas canvas(bitmap, SkSurfaceProps{});
+  canvas.drawPicture(pic);
+
+  return bitmap;
 }
 
 }  // namespace
@@ -98,7 +149,7 @@ class PaintPreviewClientRenderViewHostTestBase
     content::RenderFrameHostTester::For(main_rfh())
         ->InitializeRenderFrameIfNeeded();
     content::NavigationSimulator::NavigateAndCommitFromBrowser(
-        web_contents(), GURL("https://www.chromium.org"));
+        web_contents(), GURL(kMainFrameUrl));
   }
 
   void TearDown() override {
@@ -203,11 +254,7 @@ TEST_P(PaintPreviewClientRenderViewHostTest, CaptureMainFrameMock) {
   EXPECT_EQ(returned_guid, params.inner.get_document_guid());
   EXPECT_EQ(status, mojom::PaintPreviewStatus::kOk);
 
-  auto token = base::UnguessableToken::Deserialize(
-                   result->proto.root_frame().embedding_token_high(),
-                   result->proto.root_frame().embedding_token_low())
-                   .value();
-  EXPECT_NE(token, base::UnguessableToken::Null());
+  auto token = DeserializeFrameToken(result->proto.root_frame());
 
   // The token for the main frame is set internally since the render frame
   // host won't have one. To simplify the proto comparison using
@@ -337,6 +384,7 @@ TEST_P(PaintPreviewClientRenderViewHostTest, RenderFrameDeletedDuringCapture) {
   content::RenderFrameHost* rfh = main_rfh();
 
   auto response = NewMockPaintPreviewCaptureResponse();
+  response->geometry_metadata = mojom::GeometryMetadataResponse::New();
   response->embedding_token = std::nullopt;
 
   MockPaintPreviewRecorder service;
@@ -437,11 +485,13 @@ TEST_P(PaintPreviewClientRenderViewHostResponseOrderingTest,
   main_frame_recorder.SetReceivedRequestClosure(main_frame_req.GetCallback());
   OverrideInterface(rfh, &main_frame_recorder);
 
+  const gfx::Rect subframe_rect(0, 0, 100, 200);
   PaintPreviewClient::PaintPreviewParams expected_subframe_params =
       PaintPreviewClient::PaintPreviewParams::CreateForTesting(
           persistence(), main_frame_params.inner.get_document_guid());
   expected_subframe_params.root_dir = temp_dir_.GetPath();
   expected_subframe_params.inner.is_main_frame = false;
+  expected_subframe_params.inner.clip_rect = subframe_rect;
   MockPaintPreviewRecorder subframe_recorder;
   subframe_recorder.SetExpectedParams(ToMojoParams(expected_subframe_params));
   subframe_recorder.SetResponse(mojom::PaintPreviewStatus::kOk,
@@ -460,7 +510,7 @@ TEST_P(PaintPreviewClientRenderViewHostResponseOrderingTest,
   ASSERT_TRUE(main_frame_req.Wait());
 
   client->CaptureSubframePaintPreview(
-      main_frame_params.inner.get_document_guid(), gfx::Rect(), subframe);
+      main_frame_params.inner.get_document_guid(), subframe_rect, subframe);
   ASSERT_TRUE(subframe_req.Wait());
 
   switch (ordering()) {
@@ -478,11 +528,7 @@ TEST_P(PaintPreviewClientRenderViewHostResponseOrderingTest,
   EXPECT_EQ(main_guid, main_frame_params.inner.get_document_guid());
   EXPECT_EQ(main_status, mojom::PaintPreviewStatus::kOk);
 
-  auto token = base::UnguessableToken::Deserialize(
-                   result->proto.root_frame().embedding_token_high(),
-                   result->proto.root_frame().embedding_token_low())
-                   .value();
-  EXPECT_NE(token, base::UnguessableToken::Null());
+  auto token = DeserializeFrameToken(result->proto.root_frame());
 
   switch (persistence()) {
     case RecordingPersistence::kFileSystem:
@@ -499,6 +545,108 @@ TEST_P(PaintPreviewClientRenderViewHostResponseOrderingTest,
     default:
       NOTREACHED();
   }
+}
+
+TEST_P(PaintPreviewClientRenderViewHostResponseOrderingTest,
+       CaptureMainFrameWithSubframe_RedactedIframe) {
+  content::RenderFrameHost* rfh = main_rfh();
+  content::RenderFrameHost* subframe =
+      AddChildRFH(rfh, "https://www.chromium.org");
+
+  GURL expected_url = rfh->GetLastCommittedURL();
+
+  PaintPreviewClient::PaintPreviewParams main_frame_params(persistence());
+  main_frame_params.root_dir = temp_dir_.GetPath();
+  main_frame_params.inner.is_main_frame = true;
+  main_frame_params.inner.redaction_params =
+      RedactionParams({url::Origin::Create(GURL(kOtherOriginUrl))}, {});
+
+  auto main_frame_response = NewMockPaintPreviewCaptureResponse();
+  main_frame_response->embedding_token = std::nullopt;
+  main_frame_response->geometry_metadata->scroll_offsets = gfx::Point(0, 0);
+  main_frame_response->geometry_metadata->frame_offsets = gfx::Point(0, 0);
+
+  auto subframe_response = mojom::GeometryMetadataResponse::New();
+  subframe_response->scroll_offsets = gfx::Point(0, 0);
+  subframe_response->frame_offsets = gfx::Point(0, 0);
+
+  MockPaintPreviewRecorder main_frame_recorder;
+  main_frame_recorder.SetExpectedParams(ToMojoParams(main_frame_params));
+  main_frame_recorder.SetResponse(mojom::PaintPreviewStatus::kOk,
+                                  std::move(main_frame_response));
+  base::test::TestFuture<void> main_frame_req;
+  main_frame_recorder.SetReceivedRequestClosure(main_frame_req.GetCallback());
+  OverrideInterface(rfh, &main_frame_recorder);
+
+  const gfx::Rect subframe_rect(0, 0, 100, 200);
+
+  MockPaintPreviewRecorder subframe_recorder;
+  auto subframe_geo_params = mojom::GeometryMetadataParams::New();
+  subframe_geo_params->clip_rect = subframe_rect;
+  subframe_recorder.SetExpectedGeometryParams(subframe_geo_params.Clone());
+  subframe_recorder.SetGeometryResponse(subframe_response.Clone());
+  base::test::TestFuture<void> subframe_req;
+  subframe_recorder.SetReceivedRequestClosure(subframe_req.GetCallback());
+  OverrideInterface(subframe, &subframe_recorder);
+
+  PaintPreviewClient::CreateForWebContents(web_contents());
+  auto* client = PaintPreviewClient::FromWebContents(web_contents());
+  ASSERT_NE(client, nullptr);
+
+  CaptureResultFuture main_capture_future;
+  client->CapturePaintPreview(main_frame_params.Clone(), rfh,
+                              main_capture_future.GetCallback());
+  ASSERT_TRUE(main_frame_req.Wait());
+
+  client->CaptureSubframePaintPreview(
+      main_frame_params.inner.get_document_guid(), subframe_rect, subframe);
+  ASSERT_TRUE(subframe_req.Wait());
+
+  switch (ordering()) {
+    case ResponseOrdering::kMainFrameThenSubframe:
+      main_frame_recorder.SendResponse();
+      subframe_recorder.SendGeometryResponse();
+      break;
+    case ResponseOrdering::kSubframeThenMainFrame:
+      subframe_recorder.SendGeometryResponse();
+      main_frame_recorder.SendResponse();
+      break;
+  }
+
+  auto [main_guid, main_status, result] = main_capture_future.Take();
+  EXPECT_EQ(main_guid, main_frame_params.inner.get_document_guid());
+  EXPECT_EQ(main_status, mojom::PaintPreviewStatus::kOk);
+
+  sk_sp<SkPicture> skp;
+  switch (persistence()) {
+    case RecordingPersistence::kFileSystem:
+      VerifyFilePath(result->proto.root_frame().file_path());
+      ASSERT_EQ(result->proto.subframes().size(), 1);
+      VerifyFilePath(result->proto.subframes(0).file_path());
+      skp = ReadPictureFromFile(result->proto.subframes(0).file_path());
+      break;
+
+    case RecordingPersistence::kMemoryBuffer: {
+      auto subframe_token = DeserializeFrameToken(result->proto.subframes(0));
+      ASSERT_THAT(result->serialized_skps,
+                  UnorderedElementsAre(
+                      Key(DeserializeFrameToken(result->proto.root_frame())),
+                      Key(subframe_token)));
+      skp = ReadPictureFromBuffer(
+          std::move(result->serialized_skps.at(subframe_token)));
+      break;
+    }
+  }
+
+  SkBitmap subframe_bitmap = MakeBitmapFromPicture(skp);
+
+  EXPECT_EQ(subframe_bitmap.width(), subframe_rect.width());
+  EXPECT_EQ(subframe_bitmap.height(), subframe_rect.height());
+
+  EXPECT_EQ(subframe_bitmap.getColor(0, 0), SK_ColorBLACK);
+  EXPECT_EQ(subframe_bitmap.getColor(subframe_bitmap.width() - 1,
+                                     subframe_bitmap.height() - 1),
+            SK_ColorBLACK);
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -75,6 +75,7 @@ class ScreenshotRequest {
     capture_params.persistence =
         paint_preview::RecordingPersistence::kMemoryBuffer;
     capture_params.max_per_capture_size = kMaxScreenshotFileSize;
+    capture_params.redaction_params = std::move(params_.redaction_params);
 
     screenshot_service_->CapturePaintPreview(
         capture_params, base::BindOnce(&ScreenshotRequest::OnScreenshotCaptured,

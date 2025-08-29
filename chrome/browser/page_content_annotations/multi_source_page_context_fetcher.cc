@@ -12,10 +12,13 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "chrome/browser/page_content_annotations/page_content_screenshot_service.h"
 #include "chrome/browser/page_content_annotations/page_content_screenshot_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,6 +28,7 @@
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/paint_preview/common/mojom/paint_preview_types.mojom.h"
+#include "components/paint_preview/common/redaction_params.h"
 #include "components/pdf/browser/pdf_document_helper.h"
 #include "components/pdf/common/constants.h"
 #include "components/tabs/public/tab_interface.h"
@@ -32,6 +36,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
+#include "net/base/schemeful_site.h"
 #include "pdf/mojom/pdf.mojom.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -43,6 +48,13 @@
 namespace page_content_annotations {
 
 namespace {
+
+constexpr base::FeatureParam<ScreenshotIframeRedactionScope>::Option
+    kScreenshotIframeRedactionOptions[] = {
+        {ScreenshotIframeRedactionScope::kNone, "none"},
+        {ScreenshotIframeRedactionScope::kCrossSite, "cross-site"},
+        {ScreenshotIframeRedactionScope::kCrossOrigin, "cross-origin"},
+};
 
 template <typename T, typename E>
 // Conditionally emits to a given timing histogram, given the start_time.
@@ -107,6 +119,29 @@ int GetScreenshotJpegQuality() {
   }
   // Must be an int from 0 to 100.
   return std::max(0, std::min(100, kScreenshotJpegQuality.Get()));
+}
+
+base::expected<paint_preview::RedactionParams, std::string> GetRedactionParams(
+    content::WebContents& web_contents) {
+  auto* frame = web_contents.GetPrimaryMainFrame();
+  if (!frame) {
+    return base::unexpected("Could not get primary main frame.");
+  }
+
+  switch (kScreenshotIframeRedaction.Get()) {
+    case ScreenshotIframeRedactionScope::kNone:
+      return paint_preview::RedactionParams();
+    case ScreenshotIframeRedactionScope::kCrossSite:
+      return paint_preview::RedactionParams(
+          /*allowed_origins=*/{},
+          /*allowed_sites=*/{
+              net::SchemefulSite(frame->GetLastCommittedOrigin())});
+    case ScreenshotIframeRedactionScope::kCrossOrigin:
+      return paint_preview::RedactionParams(
+          /*allowed_origins=*/{frame->GetLastCommittedOrigin()},
+          /*allowed_sites=*/{});
+  }
+  NOTREACHED();
 }
 
 // Combination of tracked states for when a PDF contents request is made.
@@ -253,6 +288,13 @@ class PageContextFetcher : public content::WebContentsObserver {
         return;
       }
 
+      ASSIGN_OR_RETURN(
+          paint_preview::RedactionParams redaction_params,
+          GetRedactionParams(web_contents), [&](std::string error) {
+            RecievedJpegScreenshot(base::unexpected(std::move(error)));
+            return;
+          });
+
       SetCaptureCountLock(web_contents);
       ScheduleScreenshotTimeout();
       service->RequestScreenshot(
@@ -269,6 +311,7 @@ class PageContextFetcher : public content::WebContentsObserver {
                   paint_preview::mojom::ClipCoordOverride::kScrollOffset,
               .clip_y_coord_override =
                   paint_preview::mojom::ClipCoordOverride::kScrollOffset,
+              .redaction_params = std::move(redaction_params),
           },
           base::BindOnce(
               EmitTimingHistogram<const SkBitmap*, std::string>,
@@ -541,6 +584,12 @@ const base::FeatureParam<base::TimeDelta> kScreenshotTimeout{
 BASE_FEATURE(kGlicTabScreenshotPaintPreviewBackend,
              "GlicTabScreenshotPaintPreviewBackend",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<ScreenshotIframeRedactionScope>
+    kScreenshotIframeRedaction{&kGlicTabScreenshotPaintPreviewBackend,
+                               "screenshot_iframe_redaction",
+                               ScreenshotIframeRedactionScope::kCrossSite,
+                               &kScreenshotIframeRedactionOptions};
 
 BASE_FEATURE(kGlicPageContextEligibility,
              "GlicPageContextEligibility",

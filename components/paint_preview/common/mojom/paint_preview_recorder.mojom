@@ -158,4 +158,9 @@ interface PaintPreviewRecorder {
   CapturePaintPreview(PaintPreviewCaptureParams params) =>
     (PaintPreviewStatus status,
      PaintPreviewCaptureResponse response);
+
+  // Computes the geometry that would be used for a capture with the given
+  // geometry params. Returns null if the geometry couldn't be calculated.
+  GetGeometryMetadata(GeometryMetadataParams params) =>
+    (GeometryMetadataResponse? response);
 };

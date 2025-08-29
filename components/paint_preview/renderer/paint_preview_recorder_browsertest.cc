@@ -10,6 +10,8 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "components/paint_preview/common/file_stream.h"
+#include "components/paint_preview/common/mojom/paint_preview_recorder.mojom-data-view.h"
+#include "components/paint_preview/common/mojom/paint_preview_recorder.mojom-forward.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom.h"
 #include "components/paint_preview/common/mojom/paint_preview_types.mojom.h"
 #include "components/paint_preview/renderer/paint_preview_recorder_impl.h"
@@ -118,6 +120,26 @@ class PaintPreviewRecorderRenderViewTest
 
     EXPECT_EQ(status, mojom::PaintPreviewStatus::kOk);
     return {skp_path, std::move(response)};
+  }
+
+  mojom::GeometryMetadataResponsePtr GetGeometryMetadata(
+      content::RenderFrame* frame,
+      gfx::Rect clip_rect = gfx::Rect(),
+      mojom::ClipCoordOverride clip_x_coord_override =
+          mojom::ClipCoordOverride::kNone,
+      mojom::ClipCoordOverride clip_y_coord_override =
+          mojom::ClipCoordOverride::kNone) {
+    auto params = mojom::GeometryMetadataParams::New();
+    params->clip_rect = clip_rect;
+    params->clip_x_coord_override = clip_x_coord_override;
+    params->clip_y_coord_override = clip_y_coord_override;
+    params->clip_rect_is_hint = false;
+
+    base::test::TestFuture<mojom::GeometryMetadataResponsePtr> future;
+    PaintPreviewRecorderImpl paint_preview_recorder(frame);
+    paint_preview_recorder.GetGeometryMetadata(std::move(params),
+                                               future.GetCallback());
+    return future.Take();
   }
 
  private:
@@ -1157,6 +1179,37 @@ TEST_P(PaintPreviewRecorderRenderViewTest, CaptureSaveRestore) {
   EXPECT_NEAR(out_response->links[1]->rect.y(), 40, 3);
   EXPECT_NEAR(out_response->links[1]->rect.width(), 70, 3);
   EXPECT_NEAR(out_response->links[1]->rect.height(), 20, 3);
+}
+
+TEST_P(PaintPreviewRecorderRenderViewTest, TestGetGeometryMetadata) {
+  LoadHTML(
+      "<!doctype html>"
+      "<body>"
+      "  <div style='width: 600px; height: 200px; "
+      "              background-color: #ff0000'>&nbsp;</div>"
+      "  <div style='width: 5000px; height: 5000px; "
+      "              background-color: #00ff00'>&nbsp;</div>"
+      "</body>");
+
+  // Scroll to bottom right of page.
+  ExecuteJavaScriptForTests(
+      "window.scrollTo(document.body.scrollWidth,document.body.scrollHeight);");
+  content::RunAllTasksUntilIdle();
+
+  mojom::GeometryMetadataResponsePtr metadata =
+      GetGeometryMetadata(GetMainRenderFrame(), gfx::Rect(0, 0, 500, 500),
+                          mojom::ClipCoordOverride::kCenterOnScrollOffset,
+                          mojom::ClipCoordOverride::kCenterOnScrollOffset);
+
+  ASSERT_TRUE(metadata);
+
+  // Scroll offset should be within the [0, 500] bounds.
+  EXPECT_THAT(metadata->scroll_offsets.x(), AllOf(Gt(0), Lt(500)));
+  EXPECT_THAT(metadata->scroll_offsets.y(), AllOf(Gt(0), Lt(500)));
+
+  // Both frame offsets should be > 0 in this case.
+  EXPECT_GT(metadata->frame_offsets.x(), 0);
+  EXPECT_GT(metadata->frame_offsets.y(), 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

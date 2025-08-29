@@ -26,6 +26,7 @@ RecordingParams RecordingParams::Clone() const {
   copy.max_capture_size = max_capture_size;
   copy.max_decoded_image_size_bytes = max_decoded_image_size_bytes;
   copy.skip_accelerated_content = skip_accelerated_content;
+  copy.redaction_params = redaction_params;
 
   return copy;
 }

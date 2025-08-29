@@ -74,6 +74,7 @@ void PaintPreviewBaseService::CapturePaintPreview(CaptureParams capture_params,
       capture_params.max_decoded_image_size_bytes;
   params.inner.skip_accelerated_content =
       capture_params.skip_accelerated_content;
+  params.inner.redaction_params = std::move(capture_params.redaction_params);
 
   // TODO(crbug.com/40123632): Consider moving to client so that this always
   // happens. Although, it is harder to get this right in the client due to its
