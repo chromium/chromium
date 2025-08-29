@@ -70,7 +70,9 @@ class CORE_EXPORT ImageResource final
                                const DOMWrapperWorld* world);
   static ImageResource* CreateForTest(const KURL&);
 
-  static constexpr int kSpeculativeDecodeMinImageSize = 25;
+  // This will exclude ~65% of images on the web, based on:
+  //   https://almanac.httparchive.org/en/2024/media#image-dimensions
+  static constexpr int kSpeculativeDecodeMinImageSize = 100000;
 
   ImageResource(const ResourceRequest&,
                 const ResourceLoaderOptions&,
