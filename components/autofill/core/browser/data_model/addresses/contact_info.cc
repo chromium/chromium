@@ -393,6 +393,10 @@ bool NameInfo::IsNameVariantOf(const std::u16string& value,
       normalization::NormalizeForComparison(value));
 }
 
+std::optional<FieldType> NameInfo::GetStorableTypeOf(FieldType type) const {
+  return GetRootForType(type)->GetStorableTypeOf(type);
+}
+
 bool NameInfo::HasNameEligibleForPhoneticNameMigration() const {
   // A full name is eligible to be migrated into a phonetic name if it contains
   // only Katakana or Hiragana characters (Japanese phonetic symbols) and
@@ -547,7 +551,7 @@ AddressComponent* NameInfo::GetRootForType(FieldType field_type) {
 }
 
 const AddressComponent* NameInfo::GetRootForType(FieldType field_type) const {
-  DCHECK_EQ(FieldTypeGroup::kName, GroupTypeOfFieldType(field_type));
+  CHECK_EQ(FieldTypeGroup::kName, GroupTypeOfFieldType(field_type));
   if (IsAlternativeNameType(field_type)) {
     return alternative_name_.get();
   }

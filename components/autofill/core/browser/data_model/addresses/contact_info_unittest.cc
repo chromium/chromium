@@ -1144,25 +1144,24 @@ TEST_F(NameInfoTest, HaveMergeableNamesWithGermanTransliteration) {
   NameInfo p1_us = CreateNameInfo(u"Hänsel", u"", u"Köhn", u"", u"", u"");
   NameInfo p2_us = CreateNameInfo(u"Haensel", u"", u"Koehn", u"");
 
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(
-      p1_de, AddressCountryCode("DE"), p2_de, AddressCountryCode("AT")));
-  EXPECT_FALSE(NameInfo::AreNamesMergeable(
-      p1_us, AddressCountryCode("US"), p2_us, AddressCountryCode("US")));
+  EXPECT_TRUE(NameInfo::AreNamesMergeable(p1_de, AddressCountryCode("DE"),
+                                          p2_de, AddressCountryCode("AT")));
+  EXPECT_FALSE(NameInfo::AreNamesMergeable(p1_us, AddressCountryCode("US"),
+                                           p2_us, AddressCountryCode("US")));
 }
 
 // Tests that name info with additional last name is mergeable with the
 // existing one and merging works correctly.
-TEST_F(NameInfoTest,
-       NameInfoWithAdditionalLastNameIsMergeable) {
-   NameInfo ni1 = CreateNameInfo(u"John", u"", u"", u"", u"", u"");
+TEST_F(NameInfoTest, NameInfoWithAdditionalLastNameIsMergeable) {
+  NameInfo ni1 = CreateNameInfo(u"John", u"", u"", u"", u"", u"");
   NameInfo ni2 = CreateNameInfo(u"John", u"", u"Doe", u"", u"", u"");
-  EXPECT_TRUE(NameInfo::AreNamesMergeable(ni1, kLegacyHierarchyCountryCode,
-                                          ni2, kLegacyHierarchyCountryCode));
+  EXPECT_TRUE(NameInfo::AreNamesMergeable(ni1, kLegacyHierarchyCountryCode, ni2,
+                                          kLegacyHierarchyCountryCode));
 
   NameInfo expected = CreateNameInfo(u"John", u"", u"Doe", u"", u"", u"");
   NameInfo actual;
   NameInfo::MergeNames(ni1, kLegacyHierarchyCountryCode, ni2,
-                           kLegacyHierarchyCountryCode, actual);
+                       kLegacyHierarchyCountryCode, actual);
   EXPECT_EQ(expected, actual);
 }
 
@@ -1180,6 +1179,31 @@ TEST_F(NameInfoTest, NameInfoWithExtraMiddleNameIsMergeable) {
                            kLegacyHierarchyCountryCode, actual);
   EXPECT_EQ(expected, actual);
 }
+
+struct GetStorableTypeOfTestCase {
+  FieldType input;
+  std::optional<FieldType> expected;
+};
+
+class NameInfoGetStorableTypeOfTest
+    : public NameInfoTest,
+      public testing::WithParamInterface<GetStorableTypeOfTestCase> {};
+
+TEST_P(NameInfoGetStorableTypeOfTest, GetStorableTypeOf) {
+  NameInfo name_info = CreateNameInfo(u"John", u"", u"Doe", u"");
+  EXPECT_EQ(name_info.GetStorableTypeOf(GetParam().input),
+            GetParam().expected);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NameInfoGetStorableTypeOfTest,
+    testing::Values(
+        GetStorableTypeOfTestCase{NAME_MIDDLE_INITIAL,
+                                  std::make_optional(NAME_MIDDLE)},
+        GetStorableTypeOfTestCase{NAME_FULL, std::make_optional(NAME_FULL)},
+        GetStorableTypeOfTestCase{ALTERNATIVE_GIVEN_NAME,
+                                  std::make_optional(ALTERNATIVE_GIVEN_NAME)}));
 
 INSTANTIATE_TEST_SUITE_P(
     ContactInfoTest,

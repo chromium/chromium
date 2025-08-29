@@ -463,7 +463,7 @@ FieldType AutofillProfile::GetStorableTypeOf(FieldType type) const {
   if (group == FieldTypeGroup::kAddress) {
     return address_.GetRoot().GetStorableTypeOf(type).value_or(type);
   } else if (group == FieldTypeGroup::kName) {
-    return name_.GetStructuredName().GetStorableTypeOf(type).value_or(type);
+    return name_.GetStorableTypeOf(type).value_or(type);
   } else if (group == FieldTypeGroup::kPhone) {
     // The only storable phone number type is PHONE_HOME_WHOLE_NUMBER.
     return PHONE_HOME_WHOLE_NUMBER;

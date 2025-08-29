@@ -130,6 +130,10 @@ class NameInfo : public FormGroup {
   bool IsNameVariantOf(const std::u16string& full_name,
                        const std::string& app_locale) const;
 
+  // Returns the storable type of `type`, if it exists.
+  // It should only be used for `FieldTypeGroup::kName` types.
+  std::optional<FieldType> GetStorableTypeOf(FieldType type) const;
+
   // Returns true if the regular name should be migrated to a phonetic name.
   // The incorrect assignment happened in the past when we did not have proper
   // support for phonetic names.
