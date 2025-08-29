@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 
+#include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
@@ -46,6 +47,16 @@ class MockChromePasswordManagerClient
               (),
               (override, const));
 };
+
+autofill::FormFieldData CreateNonFocusableTestFormField(
+    std::string label,
+    std::string name,
+    std::string value,
+    autofill::FormControlType type) {
+  auto field = CreateTestFormField(label, name, value, type);
+  field.set_is_focusable(false);
+  return field;
+}
 
 }  // namespace
 
@@ -203,6 +214,65 @@ TEST_F(ChangePasswordFormWaiterTest, PasswordChangeFormIdentified) {
       /*label=*/"New password:", /*name=*/"new_password_1",
       /*value=*/"", autofill::FormControlType::kInputPassword));
   fields.push_back(CreateTestFormField(
+      /*label=*/"Password confirmation:", /*name=*/"new_password_2",
+      /*value=*/"", autofill::FormControlType::kInputPassword));
+  autofill::FormData form;
+  form.set_url(GURL("https://www.foo.com"));
+  form.set_fields(std::move(fields));
+  auto form_manager = CreateFormManager(form);
+
+  auto waiter = ChangePasswordFormWaiter::Builder(web_contents(), client(),
+                                                  completion_callback.Get())
+                    .Build();
+
+  EXPECT_CALL(completion_callback, Run(form_manager.get()));
+  static_cast<password_manager::PasswordFormManagerObserver*>(waiter.get())
+      ->OnPasswordFormParsed(form_manager.get());
+}
+
+TEST_F(ChangePasswordFormWaiterTest,
+       PasswordChangeFormIdentified_HiddenFormIgnored) {
+  base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
+      completion_callback;
+
+  std::vector<autofill::FormFieldData> fields;
+  fields.push_back(CreateNonFocusableTestFormField(
+      /*label=*/"Password:", /*name=*/"password",
+      /*value=*/"", autofill::FormControlType::kInputPassword));
+  fields.push_back(CreateNonFocusableTestFormField(
+      /*label=*/"New password:", /*name=*/"new_password_1",
+      /*value=*/"", autofill::FormControlType::kInputPassword));
+  fields.push_back(CreateNonFocusableTestFormField(
+      /*label=*/"Password confirmation:", /*name=*/"new_password_2",
+      /*value=*/"", autofill::FormControlType::kInputPassword));
+  autofill::FormData form;
+  form.set_url(GURL("https://www.foo.com"));
+  form.set_fields(std::move(fields));
+  auto form_manager = CreateFormManager(form);
+
+  auto waiter = ChangePasswordFormWaiter::Builder(web_contents(), client(),
+                                                  completion_callback.Get())
+                    .IgnoreHiddenForms()
+                    .Build();
+
+  EXPECT_CALL(completion_callback, Run(form_manager.get())).Times(0);
+  static_cast<password_manager::PasswordFormManagerObserver*>(waiter.get())
+      ->OnPasswordFormParsed(form_manager.get());
+}
+
+TEST_F(ChangePasswordFormWaiterTest,
+       PasswordChangeFormIdentified_HiddenFormNotIgnored) {
+  base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
+      completion_callback;
+
+  std::vector<autofill::FormFieldData> fields;
+  fields.push_back(CreateNonFocusableTestFormField(
+      /*label=*/"Password:", /*name=*/"password",
+      /*value=*/"", autofill::FormControlType::kInputPassword));
+  fields.push_back(CreateNonFocusableTestFormField(
+      /*label=*/"New password:", /*name=*/"new_password_1",
+      /*value=*/"", autofill::FormControlType::kInputPassword));
+  fields.push_back(CreateNonFocusableTestFormField(
       /*label=*/"Password confirmation:", /*name=*/"new_password_2",
       /*value=*/"", autofill::FormControlType::kInputPassword));
   autofill::FormData form;

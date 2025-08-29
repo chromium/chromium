@@ -28,8 +28,21 @@ PasswordFormCache* GetFormCache(
   return cache;
 }
 
+bool IsNewPasswordFieldVisible(const password_manager::PasswordForm& form) {
+  const auto fields = form.form_data.fields();
+  if (form.new_password_element_renderer_id) {
+    auto field =
+        std::ranges::find(fields, form.new_password_element_renderer_id,
+                          &autofill::FormFieldData::renderer_id);
+    return field != fields.end() ? field->is_focusable() : false;
+  }
+  // No new password field found, this is not a password change form
+  return false;
+}
+
 bool IsLikelyChangePasswordForm(
-    const password_manager::PasswordForm* parsed_form) {
+    const password_manager::PasswordForm* parsed_form,
+    bool ignore_hidden_forms) {
   CHECK(parsed_form);
 
   // New password field must be present in a change password form.
@@ -45,15 +58,21 @@ bool IsLikelyChangePasswordForm(
     return false;
   }
 
+  if (ignore_hidden_forms) {
+    return IsNewPasswordFieldVisible(*parsed_form);
+  }
+
   return true;
 }
 
 password_manager::PasswordFormManager* GetExistingChangePasswordForm(
     PasswordFormCache* cache,
-    base::span<autofill::FieldRendererId> fields_to_ignore) {
+    base::span<autofill::FieldRendererId> fields_to_ignore,
+    bool ignore_hidden_forms) {
   for (const auto& manager : cache->GetFormManagers()) {
     if (manager->GetParsedObservedForm() &&
-        IsLikelyChangePasswordForm(manager->GetParsedObservedForm())) {
+        IsLikelyChangePasswordForm(manager->GetParsedObservedForm(),
+                                   ignore_hidden_forms)) {
       if (std::ranges::count(fields_to_ignore,
                              manager->GetParsedObservedForm()
                                  ->new_password_element_renderer_id)) {
@@ -91,6 +110,12 @@ ChangePasswordFormWaiter::Builder::SetTimeoutCallback(
 }
 
 ChangePasswordFormWaiter::Builder&
+ChangePasswordFormWaiter::Builder::IgnoreHiddenForms() {
+  form_waiter_->ignore_hidden_forms_ = true;
+  return *this;
+}
+
+ChangePasswordFormWaiter::Builder&
 ChangePasswordFormWaiter::Builder::SetFieldsToIgnore(
     const std::vector<autofill::FieldRendererId>& fields_to_ignore) {
   form_waiter_->fields_to_ignore_ = fields_to_ignore;
@@ -120,8 +145,8 @@ ChangePasswordFormWaiter::~ChangePasswordFormWaiter() {
 
 void ChangePasswordFormWaiter::Init() {
   if (PasswordFormCache* cache = GetFormCache(client_)) {
-    if (auto* manager =
-            GetExistingChangePasswordForm(cache, fields_to_ignore_)) {
+    if (auto* manager = GetExistingChangePasswordForm(cache, fields_to_ignore_,
+                                                      ignore_hidden_forms_)) {
       // Change password form is already present on a page. Simply post a
       // callback with result.
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -140,16 +165,18 @@ void ChangePasswordFormWaiter::OnPasswordFormParsed(
   CHECK(callback_);
   CHECK(form_manager);
 
-  if (IsLikelyChangePasswordForm(form_manager->GetParsedObservedForm())) {
-    if (!std::ranges::count(fields_to_ignore_,
-                            form_manager->GetParsedObservedForm()
-                                ->new_password_element_renderer_id)) {
-      // Do not invoke anything after calling the `callback_` as object might be
-      // destroyed immediately after.
-      std::move(callback_).Run(form_manager);
-      return;
-    }
+  if (!IsLikelyChangePasswordForm(form_manager->GetParsedObservedForm(),
+                                  ignore_hidden_forms_)) {
+    return;
   }
+
+  if (std::ranges::count(fields_to_ignore_,
+                         form_manager->GetParsedObservedForm()
+                             ->new_password_element_renderer_id)) {
+    return;
+  }
+
+  std::move(callback_).Run(form_manager);
 }
 
 void ChangePasswordFormWaiter::DidStartLoading() {

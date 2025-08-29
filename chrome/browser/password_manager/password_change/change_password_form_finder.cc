@@ -76,6 +76,7 @@ ChangePasswordFormFinder::ChangePasswordFormFinder(
           .SetTimeoutCallback(
               base::BindOnce(&ChangePasswordFormFinder::OnFormNotFoundInitially,
                              weak_ptr_factory_.GetWeakPtr()))
+          .IgnoreHiddenForms()
           .Build();
 
   timeout_timer_.Start(FROM_HERE, kFormWaitingTimeout,

@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_cache.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -45,6 +46,7 @@ class ChangePasswordFormWaiter
     Builder& SetTimeoutCallback(base::OnceClosure timeout_callback);
     Builder& SetFieldsToIgnore(
         const std::vector<autofill::FieldRendererId>& fields_to_ignore);
+    Builder& IgnoreHiddenForms();
 
     std::unique_ptr<ChangePasswordFormWaiter> Build();
 
@@ -79,6 +81,9 @@ class ChangePasswordFormWaiter
   base::TimeDelta timeout_ = base::TimeDelta::Max();
   base::OneShotTimer timeout_timer_;
   base::OnceClosure timeout_callback_;
+  // If true, this will skip forms with new password field that is not focusable
+  // (hidden).
+  bool ignore_hidden_forms_ = false;
 
   // new_password_element_renderer_ids which ChangePasswordFormWaiter should
   // ignore. This helps avoid detecting the same change password form over and
