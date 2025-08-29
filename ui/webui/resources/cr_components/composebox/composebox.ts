@@ -1,6 +1,7 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import './context_menu_entrypoint.js';
 import './composebox_dropdown.js';
 import './file_carousel.js';
 import './icons.html.js';
@@ -83,6 +84,7 @@ export class ComposeboxElement extends I18nMixinLit
   static override get properties() {
     return {
       attachmentFileTypes_: {type: String},
+      contextMenuEnabled_: {type: Boolean},
       files_: {type: Object},
       input_: {type: String},
       imageFileTypes_: {type: String},
@@ -138,6 +140,8 @@ export class ComposeboxElement extends I18nMixinLit
 
   protected accessor attachmentFileTypes_: string =
       loadTimeData.getString('composeboxAttachmentFileTypes');
+  protected accessor contextMenuEnabled_: boolean =
+      loadTimeData.getBoolean('composeboxShowContextMenu');
   protected accessor files_: Map<UnguessableToken, ComposeboxFile> = new Map();
   protected accessor imageFileTypes_: string =
       loadTimeData.getString('composeboxImageFileTypes');

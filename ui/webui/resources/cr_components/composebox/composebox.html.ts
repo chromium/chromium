@@ -48,16 +48,21 @@ export function getHtml(this: ComposeboxElement) {
           @match-click="${this.onMatchClick_}"
           ?hidden="${!this.showDropdown_}">
       </ntp-composebox-dropdown>
+    ${this.contextMenuEnabled_ ? html`
+      <composebox-context-menu-entrypoint id="contextEntrypoint"
+        class="icon-fade upload-icon no-overlap">
+      </composebox-context-menu-entrypoint>
+    ` : html`
       <div id="uploadContainer" class="icon-fade">
-        <cr-icon-button
-            class="upload-icon no-overlap"
-            id="imageUploadButton"
-            iron-icon="composebox:imageUpload"
-            title="$i18n{composeboxImageUploadButtonTitle}"
-            .disabled="${this.inputsDisabled_}"
-            @click="${this.openImageUpload_}">
-        </cr-icon-button>
-        ${this.composeboxShowPdfUpload_ ? html`
+          <cr-icon-button
+              class="upload-icon no-overlap"
+              id="imageUploadButton"
+              iron-icon="composebox:imageUpload"
+              title="$i18n{composeboxImageUploadButtonTitle}"
+              .disabled="${this.inputsDisabled_}"
+              @click="${this.openImageUpload_}">
+          </cr-icon-button>
+          ${this.composeboxShowPdfUpload_ ? html`
           <cr-icon-button
               class="upload-icon no-overlap"
               id="fileUploadButton"
@@ -66,9 +71,11 @@ export function getHtml(this: ComposeboxElement) {
               .disabled="${this.inputsDisabled_}"
               @click="${this.openFileUpload_}">
           </cr-icon-button>
-        `: ''}
+          `: ''}
       </div>
-      <!-- A seperate container is needed for the submit button so the
+    `}
+    </div>
+    <!-- A seperate container is needed for the submit button so the
          expand/collapse animation can be applied without affecting the submit
          button enabled/disabled state. -->
       <div id="submitContainer" class="icon-fade">

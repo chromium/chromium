@@ -260,6 +260,11 @@ ntp-composebox-dropdown {
   transition: var(--icon-entry-transition);
 }
 
+#contextEntrypoint {
+  margin-inline-start: -18px;
+  margin-top: 8px;
+}
+
 #uploadContainer {
   display: flex;
   padding-inline-start: var(--text-input-left-spacing);

@@ -799,4 +799,21 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(handler.getCallCount('submitQuery'), 1);
     assertEquals(searchboxHandler.getCallCount('openAutocompleteMatch'), 0);
   });
+
+  suite('Context menu', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({
+        composeboxShowContextMenu: true,
+      });
+    });
+
+    test('context button replaces upload container', () => {
+      createComposeboxElement();
+
+      const uploadContainer = $$(composeboxElement, '#uploadContainer');
+      assertFalse(!!uploadContainer);
+      const contextMenuButton = $$(composeboxElement, '#contextEntrypoint');
+      assertTrue(!!contextMenuButton);
+    });
+  });
 });

@@ -478,6 +478,8 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       {"voiceSearchButtonLabel", IDS_TOOLTIP_MIC_SEARCH},
 
       // Composebox.
+      {"addContext", IDS_NTP_COMPOSE_ADD_CONTEXT},
+      {"addContextTitle", IDS_NTP_COMPOSE_ADD_CONTEXT_TITLE},
       {"searchboxComposeButtonText", IDS_NTP_COMPOSE_ENTRYPOINT},
       {"searchboxComposeButtonTitle", IDS_NTP_COMPOSE_ENTRYPOINT_A11Y_LABEL},
       {"composeboxCancelButtonTitle", IDS_NTP_COMPOSE_CANCEL_BUTTON_A11Y_LABEL},

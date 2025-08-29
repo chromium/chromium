@@ -160,6 +160,8 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean("composeboxShowZps", false);
   // Disable typed suggest.
   html_source->AddBoolean("composeboxShowTypedSuggest", false);
+  // Disable context menu.
+  html_source->AddBoolean("composeboxShowContextMenu", false);
   // Send event when escape is pressed.
   html_source->AddBoolean("composeboxCloseByEscape", true);
 
