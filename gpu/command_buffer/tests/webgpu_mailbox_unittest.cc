@@ -240,21 +240,22 @@ class WebGPUMailboxTextureTest
     return si_usage;
   }
 
-  void InitializeTextureColor(wgpu::Device device,
-                              const Mailbox& mailbox,
-                              wgpu::Color clearValue) {
-    gpu::webgpu::ReservedTexture reservation =
-        webgpu()->ReserveTexture(device.Get());
+  void InitializeTextureColor(
+      wgpu::Device device,
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
+      wgpu::Color clearValue) {
+    wgpu::TextureDescriptor desc = {
+        .usage = wgpu::TextureUsage::RenderAttachment,
+    };
 
-    webgpu()->AssociateMailbox(
-        reservation.deviceId, reservation.deviceGeneration, reservation.id,
-        reservation.generation, WGPUTextureUsage_RenderAttachment,
-        webgpu::WEBGPU_MAILBOX_NONE, mailbox);
-    wgpu::Texture texture = wgpu::Texture::Acquire(reservation.texture);
+    std::unique_ptr<WebGPUTextureScopedAccess> webgpu_scoped_access =
+        shared_image->BeginWebGPUTextureAccess(
+            webgpu(), GetSharedImageInterface()->GenVerifiedSyncToken(), device,
+            desc, /*usage=*/0, webgpu::WEBGPU_MAILBOX_NONE);
 
     // Clear the texture using a render pass.
     wgpu::RenderPassColorAttachment color_desc = {};
-    color_desc.view = texture.CreateView();
+    color_desc.view = webgpu_scoped_access->texture().CreateView();
     color_desc.loadOp = wgpu::LoadOp::Clear;
     color_desc.storeOp = wgpu::StoreOp::Store;
     color_desc.clearValue = clearValue;
@@ -271,7 +272,7 @@ class WebGPUMailboxTextureTest
     wgpu::Queue queue = device.GetQueue();
     queue.Submit(1, &commands);
 
-    webgpu()->DissociateMailbox(reservation.id, reservation.generation);
+    WebGPUTextureScopedAccess::EndAccess(std::move(webgpu_scoped_access));
   }
 
   void UninitializeTexture(wgpu::Device device, wgpu::Texture texture) {
@@ -624,12 +625,9 @@ TEST_P(WebGPUMailboxTextureTest, WriteToMailboxThenReadFromIt) {
                               GetSharedImageUsage(AccessType::ReadWrite),
                               "TestLabel"},
                              kNullSurfaceHandle);
-  SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
-  webgpu()->WaitSyncTokenCHROMIUM(mailbox_produced_token.GetConstData());
 
   // Part 1: Write to the texture using Dawn
-  InitializeTextureColor(device_, shared_image->mailbox(),
-                         {0.0, 0.0, 1.0, 1.0});
+  InitializeTextureColor(device_, shared_image, {0.0, 0.0, 1.0, 1.0});
 
   // Part 2: Read back the texture using Dawn
   {
@@ -1026,11 +1024,9 @@ TEST_P(WebGPUMailboxTextureTest,
                               GetSharedImageUsage(AccessType::ReadWrite),
                               "TestLabel"},
                              kNullSurfaceHandle);
-  SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
-  webgpu()->WaitSyncTokenCHROMIUM(mailbox_produced_token.GetConstData());
 
   // Set the texture contents to non-zero so we can test a lazy clear occurs.
-  InitializeTextureColor(device_, shared_image->mailbox(), {1.0, 0, 0, 1.0});
+  InitializeTextureColor(device_, shared_image, {1.0, 0, 0, 1.0});
 
   // Register the shared image as a Dawn texture in the wire.
   gpu::webgpu::ReservedTexture reservation =
@@ -1118,11 +1114,9 @@ TEST_P(
                               GetSharedImageUsage(AccessType::ReadWrite),
                               "TestLabel"},
                              kNullSurfaceHandle);
-  SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
-  webgpu()->WaitSyncTokenCHROMIUM(mailbox_produced_token.GetConstData());
 
   // Set the texture contents to non-zero so we can test a lazy clear occurs.
-  InitializeTextureColor(device_, shared_image->mailbox(), {1.0, 0, 0, 1.0});
+  InitializeTextureColor(device_, shared_image, {1.0, 0, 0, 1.0});
 
   // Register the shared image as a Dawn texture in the wire.
   gpu::webgpu::ReservedTexture reservation =
