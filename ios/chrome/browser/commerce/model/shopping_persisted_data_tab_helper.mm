@@ -97,8 +97,7 @@ void ShoppingPersistedDataTabHelper::GetPriceDrop(
     shopping_service->GetProductInfoForUrl(
         url, base::BindOnce(&ShoppingPersistedDataTabHelper::OnFetchProductInfo,
                             weak_factory_.GetWeakPtr(), std::move(callback)));
-  }
-  if (price_drop_) {
+  } else if (price_drop_) {
     std::move(callback).Run(*price_drop_.get());
   }
 }
