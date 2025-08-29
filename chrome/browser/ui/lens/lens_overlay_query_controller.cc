@@ -37,6 +37,7 @@
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_mime_type.h"
+#include "components/lens/lens_payload_construction.h"
 #include "components/lens/lens_request_construction.h"
 #include "components/lens/lens_url_utils.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
@@ -68,7 +69,6 @@
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_surface.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_visual_search_interaction_data.pb.h"
-#include "third_party/zstd/src/lib/zstd.h"
 #include "ui/gfx/geometry/rect.h"
 
 using endpoint_fetcher::CredentialsMode;
@@ -200,28 +200,6 @@ lens::LensOverlayInteractionRequestMetadata::Type ContentTypeToInteractionType(
   return lens::LensOverlayInteractionRequestMetadata::CONTEXTUAL_SEARCH_QUERY;
 }
 
-lens::ContentData::ContentType MimeTypeToContentType(
-    lens::MimeType content_type) {
-  switch (content_type) {
-    case lens::MimeType::kPdf:
-      return lens::ContentData::CONTENT_TYPE_PDF;
-    case lens::MimeType::kHtml:
-      return lens::ContentData::CONTENT_TYPE_INNER_HTML;
-    case lens::MimeType::kPlainText:
-      return lens::ContentData::CONTENT_TYPE_INNER_TEXT;
-    case lens::MimeType::kUnknown:
-      return lens::ContentData::CONTENT_TYPE_UNSPECIFIED;
-    case lens::MimeType::kAnnotatedPageContent:
-      return lens::ContentData::CONTENT_TYPE_ANNOTATED_PAGE_CONTENT;
-    case lens::MimeType::kImage:
-    case lens::MimeType::kVideo:
-    case lens::MimeType::kAudio:
-    case lens::MimeType::kJson:
-      // These content types are not supported for the page content upload flow.
-      NOTREACHED() << "Unsupported option in page content upload";
-  }
-}
-
 lens::LensOverlayClientLogs::LensOverlayEntryPoint
 LenOverlayEntryPointFromInvocationSource(
     lens::LensOverlayInvocationSource invocation_source) {
@@ -258,31 +236,6 @@ LenOverlayEntryPointFromInvocationSource(
   return lens::LensOverlayClientLogs::UNKNOWN_ENTRY_POINT;
 }
 
-// Compresses the given bytes using Zstd and store them into `dst_bytes`.
-// Returns true if the compression is successful.
-bool ZstdCompressBytes(base::span<const uint8_t> src_bytes,
-                       std::string* dst_bytes) {
-  CHECK(dst_bytes);
-  size_t uncompressed_size = src_bytes.size();
-  size_t buffer_bounds = ZSTD_compressBound(uncompressed_size);
-
-  // Resize the output buffer to the upper bound of the compressed size.
-  dst_bytes->resize(buffer_bounds);
-
-  // Do the compression.
-  const size_t compressed_size = ZSTD_compress(
-      dst_bytes->data(), buffer_bounds, src_bytes.data(), uncompressed_size,
-      lens::features::GetZstdCompressionLevel());
-
-  if (ZSTD_isError(compressed_size)) {
-    return false;
-  }
-
-  // Resize the output vector to the actual compressed size.
-  dst_bytes->resize(compressed_size);
-  return true;
-}
-
 // Divides the content_bytes into small chunks, which are then compressed.
 std::vector<std::string> MakeChunks(base::span<const uint8_t> content_bytes) {
   base::SpanReader reader(content_bytes);
@@ -295,7 +248,7 @@ std::vector<std::string> MakeChunks(base::span<const uint8_t> content_bytes) {
     CHECK(current_chunk.has_value());
 
     std::string chunk;
-    const bool success = ZstdCompressBytes(current_chunk.value(), &chunk);
+    const bool success = lens::ZstdCompressBytes(current_chunk.value(), &chunk);
     if (!success) {
       // If any of the chunks fail to compress, then the request should fail.
       return std::vector<std::string>();
@@ -339,7 +292,8 @@ lens::Payload CreatePageContentPayloadForChunks(
   }
 
   auto* content_data = content->add_content_data();
-  content_data->set_content_type(MimeTypeToContentType(primary_content_type));
+  content_data->set_content_type(
+      lens::MimeTypeToContentType(primary_content_type));
   content_data->mutable_stored_chunk_options()->set_read_stored_chunks(true);
   content_data->mutable_stored_chunk_options()->set_total_stored_chunks(
       total_stored_chunks);
@@ -372,8 +326,8 @@ lens::Payload CreatePageContentPayload(
     if (page_content.content_type_ == lens::MimeType::kPdf) {
       // If compression is successful, set the compression type and return.
       // Otherwise, fall back to the original bytes.
-      if (ZstdCompressBytes(page_content.bytes_,
-                            content_data->mutable_data())) {
+      if (lens::ZstdCompressBytes(page_content.bytes_,
+                                  content_data->mutable_data())) {
         content_data->set_compression_type(lens::CompressionType::ZSTD);
         continue;
       }

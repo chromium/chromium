@@ -12,6 +12,7 @@ include_rules = [
   "+services/metrics/public/cpp",
   "+third_party/skia",
   "+third_party/lens_server_proto",
+  "+third_party/zstd",
   "+ui/base",
   "+ui/gfx",
   "+ui/gfx/geometry/size_f.h",

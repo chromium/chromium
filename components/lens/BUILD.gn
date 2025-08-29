@@ -36,6 +36,8 @@ static_library("lens") {
     "lens_overlay_request_id_generator.h",
     "lens_overlay_side_panel_menu_option.h",
     "lens_overlay_side_panel_result.h",
+    "lens_payload_construction.cc",
+    "lens_payload_construction.h",
     "lens_permission_user_action.h",
     "lens_request_construction.cc",
     "lens_request_construction.h",
@@ -82,6 +84,10 @@ static_library("lens") {
       "tab_contextualization_controller.h",
     ]
     public_deps += [ "//ui/base/unowned_user_data" ]
+  }
+
+  if (!is_android) {
+    deps += [ "//third_party/zstd:compress" ]
   }
 }
 

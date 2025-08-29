@@ -189,7 +189,6 @@ source_set("impl") {
     "//third_party/lens_server_proto:lens_overlay_proto",
     "//third_party/omnibox_proto",
     "//third_party/zlib/google:compression_utils",
-    "//third_party/zstd:compress",
     "//ui/base:types",
     "//ui/gfx",
     "//ui/gfx/codec",

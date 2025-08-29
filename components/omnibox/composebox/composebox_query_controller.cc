@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_payload_construction.h"
 #include "components/lens/lens_request_construction.h"
 #include "components/lens/lens_url_utils.h"
 #include "components/lens/ref_counted_lens_overlay_client_logs.h"
@@ -104,15 +105,45 @@ ComposeboxQueryController::FileInfo::FileInfo() = default;
 ComposeboxQueryController::FileInfo::~FileInfo() = default;
 
 namespace {
-// Creates a pdf file upload request payload.
-lens::Payload CreatePDFFileUploadPayload(const std::vector<uint8_t>& data) {
+
+// Creates a payload for a contextual data upload request, for webpage contents
+// or for uploaded pdf files.
+lens::Payload CreateContentextualDataUploadPayload(
+    std::vector<lens::ContextualInput> context_inputs,
+    std::optional<GURL> page_url,
+    std::optional<std::string> page_title) {
   lens::Payload payload;
   auto* content = payload.mutable_content();
-  auto* content_data = content->add_content_data();
-  content_data->set_content_type(lens::ContentData::CONTENT_TYPE_PDF);
 
-  // TODO(crbug.com/427618282): Add compression for PDF bytes.
-  content_data->mutable_data()->assign(data.begin(), data.end());
+  if (page_url.has_value() && !page_url->is_empty()) {
+    content->set_webpage_url(page_url->spec());
+  }
+  if (page_title.has_value() && !page_title.value().empty()) {
+    content->set_webpage_title(page_title.value());
+  }
+
+  for (const lens::ContextualInput& context_input : context_inputs) {
+    auto* content_data = content->add_content_data();
+    content_data->set_content_type(
+        MimeTypeToContentType(context_input.content_type_));
+
+    // Compress PDF bytes.
+    if (context_input.content_type_ == lens::MimeType::kPdf) {
+      // If compression is successful, set the compression type and return.
+      // Otherwise, fall back to the original bytes.
+      if (lens::ZstdCompressBytes(context_input.bytes_,
+                                  content_data->mutable_data())) {
+        content_data->set_compression_type(lens::CompressionType::ZSTD);
+        continue;
+      }
+    }
+
+    // Add non compressed bytes. This happens if compression fails or its not
+    // a PDF.
+    content_data->mutable_data()->assign(context_input.bytes_.begin(),
+                                         context_input.bytes_.end());
+  }
+
   return payload;
 }
 
@@ -623,16 +654,16 @@ void ComposeboxQueryController::CreateFileUploadRequestBodyAndContinue(
   switch (file_info->mime_type_) {
     case lens::MimeType::kPdf:
       CHECK(contextual_input_data->context_input.has_value() &&
-            contextual_input_data->context_input->size() == 1);
-      // Call CreatePDFFileUploadPayload off the main thread to avoid blocking
-      // the main thread on compression.
-      // TODO(crbug.com/441142997): Support multiple contextual inputs in one
-      // request.
+            contextual_input_data->context_input->size() > 0);
+      // Call CreateContentextualDataUploadPayload off the main thread to avoid
+      // blocking the main thread on compression.
       create_request_task_runner_->PostTaskAndReplyWithResult(
           FROM_HERE,
           base::BindOnce(
-              &CreatePDFFileUploadPayload,
-              std::move(contextual_input_data->context_input->front().bytes_)),
+              &CreateContentextualDataUploadPayload,
+              std::move(contextual_input_data->context_input.value()),
+              contextual_input_data->page_url,
+              contextual_input_data->page_title),
           base::BindOnce(&CreateFileUploadRequestProtoWithPayloadAndContinue,
                          *file_info->request_id_, CreateClientContext(),
                          std::move(callback)));
