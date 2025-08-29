@@ -515,13 +515,13 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
         browser->window()->GetNativeWindow()));
   }
 
-  if (webui_browser::IsWebUIBrowserEnabled()) {
+  if (WebUIBrowserWindow* webui_browser_window =
+          WebUIBrowserWindow::FromBrowser(browser)) {
     webui_browser_side_panel_ui_ =
         std::make_unique<WebUIBrowserSidePanelUI>(browser);
 
-    CHECK(!accelerator_provider_);
     // WebUIBrowserWindow is an AcceleratorProvider.
-    accelerator_provider_ = static_cast<WebUIBrowserWindow*>(browser->window());
+    accelerator_provider_ = webui_browser_window;
   }
 }
 

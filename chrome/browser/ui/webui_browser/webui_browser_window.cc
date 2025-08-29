@@ -38,6 +38,8 @@
 
 namespace {
 
+const char* const kWebUIBrowserWindowKey = "__WEBUI_BROWSER_WINDOW__";
+
 // Copied from chrome/browser/ui/views/frame/browser_frame.cc.
 bool IsUsingLinuxSystemTheme(Profile* profile) {
 #if BUILDFLAG(IS_LINUX)
@@ -89,6 +91,7 @@ WebUIBrowserWindow::WebUIBrowserWindow(std::unique_ptr<Browser> browser)
   params.delegate = widget_delegate_.get();
   params.native_widget = CreateNativeWidget();
   widget_->Init(std::move(params));
+  widget_->SetNativeWindowProperty(kWebUIBrowserWindowKey, this);
   widget_->MakeCloseSynchronous(base::BindOnce(
       &WebUIBrowserWindow::OnWindowCloseRequested, base::Unretained(this)));
   auto web_view = std::make_unique<views::WebView>(browser_->profile());
@@ -126,6 +129,26 @@ WebUIBrowserWindow* WebUIBrowserWindow::FromWebShellWebContents(
   }
 
   return user_data->browser_window_;
+}
+
+// static
+WebUIBrowserWindow* WebUIBrowserWindow::FromBrowser(Browser* browser) {
+  // This function is implemented based on
+  // BrowserView::GetBrowserViewForBrowser(). Please see the comments in that
+  // function for the implementation rationale.
+  if (!browser->window() || !browser->window()->GetNativeWindow()) {
+    return nullptr;
+  }
+  return FromNativeWindow(browser->window()->GetNativeWindow());
+}
+
+// static
+WebUIBrowserWindow* WebUIBrowserWindow::FromNativeWindow(
+    gfx::NativeWindow window) {
+  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
+  return widget ? reinterpret_cast<WebUIBrowserWindow*>(
+                      widget->GetNativeWindowProperty(kWebUIBrowserWindowKey))
+                : nullptr;
 }
 
 void WebUIBrowserWindow::Show() {

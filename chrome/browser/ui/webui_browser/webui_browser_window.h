@@ -45,6 +45,13 @@ class WebUIBrowserWindow : public BrowserWindow,
   static WebUIBrowserWindow* FromWebShellWebContents(
       content::WebContents* web_contents);
 
+  // Returns the WebUIBrowserWindow for a Browser. If browser does not use
+  // WebUIBrowserWindow, returns nullptr.
+  static WebUIBrowserWindow* FromBrowser(Browser* browser);
+
+  // Returns the WebUIBrowserWindow for the given `window`.
+  static WebUIBrowserWindow* FromNativeWindow(gfx::NativeWindow window);
+
   // BrowserWindow:
   gfx::NativeWindow GetNativeWindow() const override;
   bool IsOnCurrentWorkspace() const override;
