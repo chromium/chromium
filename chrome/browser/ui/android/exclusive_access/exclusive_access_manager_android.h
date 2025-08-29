@@ -31,7 +31,8 @@ class ExclusiveAccessManagerAndroid {
   void EnterFullscreenModeForTab(JNIEnv* env,
                                  jlong requesting_frame,
                                  bool prefersNavigationBar,
-                                 bool prefersStatusBar);
+                                 bool prefersStatusBar,
+                                 jlong displayId);
 
   void ExitFullscreenModeForTab(
       JNIEnv* env,

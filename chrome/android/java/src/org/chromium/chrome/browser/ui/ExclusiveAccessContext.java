@@ -79,9 +79,11 @@ public class ExclusiveAccessContext implements Destroyable {
     }
 
     @CalledByNative
-    public void enterFullscreenModeForTab() {
+    public void enterFullscreenModeForTab(
+            long displayId, boolean showNavigationBar, boolean showStatusBar) {
         if (mActiveTab != null) {
-            mFullscreenManager.onEnterFullscreen(mActiveTab, new FullscreenOptions(false, false));
+            mFullscreenManager.onEnterFullscreen(
+                    mActiveTab, new FullscreenOptions(showNavigationBar, showStatusBar, displayId));
         }
     }
 

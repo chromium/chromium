@@ -23,6 +23,7 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/resource_request_body_android.h"
@@ -383,7 +384,8 @@ void WebContentsDelegateAndroid::EnterFullscreenModeForTab(
     return;
   Java_WebContentsDelegateAndroid_enterFullscreenModeForTab(
       env, obj, reinterpret_cast<jlong>(requesting_frame),
-      options.prefers_navigation_bar, options.prefers_status_bar);
+      options.prefers_navigation_bar, options.prefers_status_bar,
+      options.display_id);
 }
 
 void WebContentsDelegateAndroid::FullscreenStateChangedForTab(
@@ -394,7 +396,8 @@ void WebContentsDelegateAndroid::FullscreenStateChangedForTab(
   if (obj.is_null())
     return;
   Java_WebContentsDelegateAndroid_fullscreenStateChangedForTab(
-      env, obj, options.prefers_navigation_bar, options.prefers_status_bar);
+      env, obj, options.prefers_navigation_bar, options.prefers_status_bar,
+      options.display_id);
 }
 
 void WebContentsDelegateAndroid::ExitFullscreenModeForTab(
@@ -465,6 +468,20 @@ bool WebContentsDelegateAndroid::IsFullscreenForTabOrPending(
   if (obj.is_null())
     return false;
   return Java_WebContentsDelegateAndroid_isFullscreenForTabOrPending(env, obj);
+}
+
+content::FullscreenState WebContentsDelegateAndroid::GetFullscreenState(
+    const WebContents* web_contents) const {
+  content::FullscreenState state;
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null()) {
+    return state;
+  }
+  state = WebContentsDelegate::GetFullscreenState(web_contents);
+  state.target_display_id =
+      Java_WebContentsDelegateAndroid_getFullscreenTargetDisplay(env, obj);
+  return state;
 }
 
 void WebContentsDelegateAndroid::OnDidBlockNavigation(

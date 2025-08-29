@@ -42,6 +42,9 @@ public interface FullscreenManager {
      */
     boolean getPersistentFullscreenMode();
 
+    /** Returns target display id for which full screen was requested. */
+    long getFullscreenTargetDisplay();
+
     /**
      * @return Supplier of whether the activity is in persistent fullscreen mode.
      */

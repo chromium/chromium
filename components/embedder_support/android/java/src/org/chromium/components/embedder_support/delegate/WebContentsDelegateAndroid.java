@@ -4,6 +4,8 @@
 
 package org.chromium.components.embedder_support.delegate;
 
+import static android.view.Display.INVALID_DISPLAY;
+
 import android.graphics.Bitmap;
 import android.view.KeyEvent;
 
@@ -125,11 +127,14 @@ public class WebContentsDelegateAndroid {
 
     @CalledByNative
     public void enterFullscreenModeForTab(
-            long requestingFrame, boolean prefersNavigationBar, boolean prefersStatusBar) {}
+            long requestingFrame,
+            boolean prefersNavigationBar,
+            boolean prefersStatusBar,
+            long displayId) {}
 
     @CalledByNative
     public void fullscreenStateChangedForTab(
-            boolean prefersNavigationBar, boolean prefersStatusBar) {}
+            boolean prefersNavigationBar, boolean prefersStatusBar, long displayId) {}
 
     @CalledByNative
     public void exitFullscreenModeForTab() {}
@@ -137,6 +142,11 @@ public class WebContentsDelegateAndroid {
     @CalledByNative
     public boolean isFullscreenForTabOrPending() {
         return false;
+    }
+
+    @CalledByNative
+    public long getFullscreenTargetDisplay() {
+        return INVALID_DISPLAY;
     }
 
     @CalledByNative

@@ -50,7 +50,8 @@ public class ExclusiveAccessManager implements Destroyable {
                         mExclusiveAccessManagerAndroidNativePointer,
                         requestingFrame,
                         options.showNavigationBar,
-                        options.showStatusBar);
+                        options.showStatusBar,
+                        options.displayId);
     }
 
     /**
@@ -147,7 +148,8 @@ public class ExclusiveAccessManager implements Destroyable {
                 long nativeExclusiveAccessManagerAndroid,
                 long requestingFrame,
                 boolean showNavigationBar,
-                boolean showStatusBar);
+                boolean showStatusBar,
+                long displayId);
 
         void exitFullscreenModeForTab(
                 long nativeExclusiveAccessManagerAndroid, @Nullable WebContents webContents);

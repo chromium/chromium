@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.app.tab_activity_glue;
 
+import static android.view.Display.INVALID_DISPLAY;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
@@ -200,6 +202,17 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                     ? mFullscreenManager.getPersistentFullscreenMode()
                     : false;
         }
+    }
+
+    @Override
+    public long getFullscreenTargetDisplay() {
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.ENABLE_FULLSCREEN_TO_ANY_SCREEN_ANDROID)) {
+            if (mFullscreenManager != null) {
+                return mFullscreenManager.getFullscreenTargetDisplay();
+            }
+        }
+        return INVALID_DISPLAY;
     }
 
     @Override
@@ -596,29 +609,37 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
     @Override
     public void enterFullscreenModeForTab(
-            long requestingFrame, boolean prefersNavigationBar, boolean prefersStatusBar) {
+            long requestingFrame,
+            boolean prefersNavigationBar,
+            boolean prefersStatusBar,
+            long displayId) {
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList.ENABLE_FULLSCREEN_TO_ANY_SCREEN_ANDROID)) {
+            displayId = INVALID_DISPLAY;
+        }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER)) {
             if (mExclusiveAccessManager != null) {
                 mExclusiveAccessManager.enterFullscreenModeForTab(
                         requestingFrame,
-                        new FullscreenOptions(prefersNavigationBar, prefersStatusBar));
+                        new FullscreenOptions(prefersNavigationBar, prefersStatusBar, displayId));
             }
         } else {
             if (mFullscreenManager != null) {
                 mFullscreenManager.onEnterFullscreen(
-                        mTab, new FullscreenOptions(prefersNavigationBar, prefersStatusBar));
+                        mTab,
+                        new FullscreenOptions(prefersNavigationBar, prefersStatusBar, displayId));
             }
         }
     }
 
     @Override
     public void fullscreenStateChangedForTab(
-            boolean prefersNavigationBar, boolean prefersStatusBar) {
+            boolean prefersNavigationBar, boolean prefersStatusBar, long displayId) {
         // State-only changes are useful for recursive fullscreen activation. Early out if
         // fullscreen mode is not on.
         if (mFullscreenManager == null || !mFullscreenManager.getPersistentFullscreenMode()) return;
         mFullscreenManager.onEnterFullscreen(
-                mTab, new FullscreenOptions(prefersNavigationBar, prefersStatusBar));
+                mTab, new FullscreenOptions(prefersNavigationBar, prefersStatusBar, displayId));
     }
 
     @Override

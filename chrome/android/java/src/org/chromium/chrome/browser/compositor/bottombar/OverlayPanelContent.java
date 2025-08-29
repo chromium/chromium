@@ -284,7 +284,8 @@ public class OverlayPanelContent {
                     public void enterFullscreenModeForTab(
                             long requestingFrame,
                             boolean prefersNavigationBar,
-                            boolean prefersStatusBar) {
+                            boolean prefersStatusBar,
+                            long displayId) {
                         mIsFullscreen = true;
                     }
 

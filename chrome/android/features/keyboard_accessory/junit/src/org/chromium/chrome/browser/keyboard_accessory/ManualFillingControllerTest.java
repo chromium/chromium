@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.keyboard_accessory;
 
 import static android.content.res.Configuration.HARDKEYBOARDHIDDEN_UNDEFINED;
+import static android.view.Display.INVALID_DISPLAY;
 
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
@@ -1053,7 +1054,7 @@ public class ManualFillingControllerTest {
         // Simulate entering fullscreen mode which makes the keyboard overlaying.
         mFullscreenObserverCaptor
                 .getValue()
-                .onEnterFullscreen(tab, new FullscreenOptions(false, false));
+                .onEnterFullscreen(tab, new FullscreenOptions(false, false, INVALID_DISPLAY));
 
         // Ensure it's not insetting the page.
         assertEquals(0, (int) mController.getBottomInsetSupplier().get());
@@ -1087,7 +1088,7 @@ public class ManualFillingControllerTest {
         // Simulate entering fullscreen mode which makes the keyboard overlaying.
         mFullscreenObserverCaptor
                 .getValue()
-                .onEnterFullscreen(tab, new FullscreenOptions(false, false));
+                .onEnterFullscreen(tab, new FullscreenOptions(false, false, INVALID_DISPLAY));
 
         // Ensure it's not insetting the page.
         assertEquals(

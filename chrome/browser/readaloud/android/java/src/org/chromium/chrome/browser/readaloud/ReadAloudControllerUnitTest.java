@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.readaloud;
 
+import static android.view.Display.INVALID_DISPLAY;
+
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.Matchers.hasItems;
@@ -404,7 +406,9 @@ public class ReadAloudControllerUnitTest {
   @Test
   public void testHidePlayer_FullScreen() {
     requestAndStartPlayback();
-    mFullscreenObserver.getValue().onEnterFullscreen(mTab, new FullscreenOptions(true, true));
+
+    FullscreenOptions fo = new FullscreenOptions(true, true, INVALID_DISPLAY);
+    mFullscreenObserver.getValue().onEnterFullscreen(mTab, fo);
     verify(mPlayerCoordinator).hidePlayers();
 
     mFullscreenObserver.getValue().onExitFullscreen(mTab);

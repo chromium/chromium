@@ -44,7 +44,10 @@ void ExclusiveAccessContextAndroid::EnterFullscreen(
     ExclusiveAccessBubbleType bubble_type,
     FullscreenTabParams fullscreen_tab_params) {
   JNIEnv* env = jni_zero::AttachCurrentThread();
-  Java_ExclusiveAccessContext_enterFullscreenModeForTab(env, java_context_);
+  Java_ExclusiveAccessContext_enterFullscreenModeForTab(
+      env, java_context_, fullscreen_tab_params.display_id,
+      fullscreen_tab_params.prefers_navigation_bar,
+      fullscreen_tab_params.prefers_status_bar);
 }
 
 void ExclusiveAccessContextAndroid::ExitFullscreen() {

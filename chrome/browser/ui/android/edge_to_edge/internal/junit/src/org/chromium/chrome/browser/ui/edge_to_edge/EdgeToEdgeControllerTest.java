@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
+import static android.view.Display.INVALID_DISPLAY;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -695,7 +697,8 @@ public class EdgeToEdgeControllerTest {
     @Test
     public void switchFullscreenMode_NoStatusBarNoNavBar() {
         doReturn(true).when(mFullscreenManager).getPersistentFullscreenMode();
-        mEdgeToEdgeControllerImpl.onEnterFullscreen(mTab, new FullscreenOptions(false, false));
+        mEdgeToEdgeControllerImpl.onEnterFullscreen(
+                mTab, new FullscreenOptions(false, false, INVALID_DISPLAY));
 
         verify(mOsWrapper, atLeastOnce()).setPadding(any(), eq(0), eq(0), eq(0), eq(0));
 

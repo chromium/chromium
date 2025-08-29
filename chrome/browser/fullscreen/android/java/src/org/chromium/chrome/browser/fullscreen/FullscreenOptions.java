@@ -15,6 +15,9 @@ public class FullscreenOptions {
     /** Whether the status bar should be shown. */
     public final boolean showStatusBar;
 
+    /** Target display for the fullscreen transition */
+    public final long displayId;
+
     // Used by FullscreenHtmlApiHandler internally to indicate that the fullscreen request
     // associated with this option got canceled at the pending state.
     private boolean mCanceled;
@@ -24,10 +27,12 @@ public class FullscreenOptions {
      *
      * @param showNavigationBar Whether the navigation bar should be shown.
      * @param showStatusBar Whether the status bar should be shown.
+     * @param displayId target display id.
      */
-    public FullscreenOptions(boolean showNavigationBar, boolean showStatusBar) {
+    public FullscreenOptions(boolean showNavigationBar, boolean showStatusBar, long displayId) {
         this.showNavigationBar = showNavigationBar;
         this.showStatusBar = showStatusBar;
+        this.displayId = displayId;
     }
 
     void setCanceled() {
@@ -45,7 +50,8 @@ public class FullscreenOptions {
         }
         FullscreenOptions options = (FullscreenOptions) obj;
         return showNavigationBar == options.showNavigationBar
-                && showStatusBar == options.showStatusBar;
+                && showStatusBar == options.showStatusBar
+                && displayId == options.displayId;
     }
 
     @Override
@@ -54,6 +60,8 @@ public class FullscreenOptions {
                 + showNavigationBar
                 + ",showStatusBar="
                 + showStatusBar
+                + ", displayId="
+                + displayId
                 + ", canceled="
                 + mCanceled
                 + ")";

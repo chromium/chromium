@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.fullscreen;
 
+import static android.view.Display.INVALID_DISPLAY;
+
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 
 import android.graphics.Point;
@@ -383,7 +385,7 @@ public class FullscreenManagerTest {
 
         // Enter fullscreen w/ all system UI hidden:
         FullscreenTestUtils.togglePersistentFullscreenAndAssert(
-                tab, true, activity, false, false, false);
+                tab, true, activity, false, false, false, INVALID_DISPLAY);
 
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
 
@@ -393,7 +395,7 @@ public class FullscreenManagerTest {
 
         // Adjust the fullscreen options to show navigation bar mid-fullscreen:
         FullscreenTestUtils.togglePersistentFullscreenAndAssert(
-                tab, true, activity, true, false, false);
+                tab, true, activity, true, false, false, INVALID_DISPLAY);
 
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
 
@@ -403,7 +405,7 @@ public class FullscreenManagerTest {
 
         // Adjust the fullscreen options to show status bar mid-fullscreen:
         FullscreenTestUtils.togglePersistentFullscreenAndAssert(
-                tab, true, activity, false, true, false);
+                tab, true, activity, false, true, false, INVALID_DISPLAY);
 
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
 
@@ -431,7 +433,7 @@ public class FullscreenManagerTest {
 
         // Enter fullscreen w/ all system UI hidden:
         FullscreenTestUtils.togglePersistentFullscreenAndAssert(
-                tab, true, activity, false, false, true);
+                tab, true, activity, false, false, true, INVALID_DISPLAY);
 
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
 
@@ -441,7 +443,7 @@ public class FullscreenManagerTest {
 
         // Adjust the fullscreen options to show navigation bar mid-fullscreen:
         FullscreenTestUtils.togglePersistentFullscreenAndAssert(
-                tab, true, activity, true, false, true);
+                tab, true, activity, true, false, true, INVALID_DISPLAY);
 
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
 
@@ -451,7 +453,7 @@ public class FullscreenManagerTest {
 
         // Adjust the fullscreen options to show status bar mid-fullscreen:
         FullscreenTestUtils.togglePersistentFullscreenAndAssert(
-                tab, true, activity, false, true, true);
+                tab, true, activity, false, true, true, INVALID_DISPLAY);
 
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
 
