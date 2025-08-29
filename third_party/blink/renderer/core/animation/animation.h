@@ -763,7 +763,7 @@ class CORE_EXPORT Animation : public EventTarget,
                            NoCompositeWithoutCompositedElementId);
   FRIEND_TEST_ALL_PREFIXES(AnimationAnimationTestNoCompositing,
                            PendingActivityWithFinishedEventListener);
-  friend class ScriptedAnimationTriggerTest;
+  friend class ScriptedTimelineTriggerTest;
   FRIEND_TEST_ALL_PREFIXES(CSSAnimationsTriggerTest, ChangeTriggerName);
 };
 

@@ -4,7 +4,7 @@
 
 // https://drafts.csswg.org/web-animations-2/#the-animationtriggeroptions-dictionary
 
-dictionary AnimationTriggerOptions {
+dictionary TimelineTriggerOptions {
   AnimationTriggerBehavior behavior = "once";
   AnimationTimeline? timeline;
   (DOMString or TimelineRangeOffset) rangeStart = "normal";

@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/animation/css/css_animation.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
+#include "third_party/blink/renderer/core/animation/timeline_trigger.h"
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
@@ -1284,8 +1285,8 @@ TEST_P(CSSAnimationsTest, AnimationTriggerNames) {
 }
 
 void VerifyTriggerRangeBoundary(
-    const AnimationTrigger::RangeBoundary* actual,
-    const AnimationTrigger::RangeBoundary* expected) {
+    const TimelineTrigger::RangeBoundary* actual,
+    const TimelineTrigger::RangeBoundary* expected) {
   if (expected->IsString()) {
     EXPECT_EQ(actual->GetAsString(), expected->GetAsString());
   } else {
@@ -1305,20 +1306,19 @@ class CSSAnimationsTriggerTest : public CSSAnimationsTest {
  public:
   using Behavior = AnimationTrigger::Behavior;
 
-  void TestAnimationTrigger(
-      AnimationTrigger* trigger,
-      AnimationTrigger::Behavior expected_behavior,
-      std::optional<bool> expect_view_timeline,
-      AnimationTrigger::RangeBoundary* expected_start,
-      AnimationTrigger::RangeBoundary* expected_end,
-      AnimationTrigger::RangeBoundary* expected_exit_start,
-      AnimationTrigger::RangeBoundary* expected_exit_end);
+  void TestTimelineTrigger(TimelineTrigger* trigger,
+                           AnimationTrigger::Behavior expected_behavior,
+                           std::optional<bool> expect_view_timeline,
+                           TimelineTrigger::RangeBoundary* expected_start,
+                           TimelineTrigger::RangeBoundary* expected_end,
+                           TimelineTrigger::RangeBoundary* expected_exit_start,
+                           TimelineTrigger::RangeBoundary* expected_exit_end);
 
   void TestRangeStartChange(
       Element* target,
       AtomicString new_class,
       bool expect_same,
-      const AnimationTrigger::RangeBoundary* expected_bounday);
+      const TimelineTrigger::RangeBoundary* expected_bounday);
 
   AnimationTrigger* TestTriggerAssociations(Element& target,
                                             Element& scroller,
@@ -1362,7 +1362,7 @@ class CSSAnimationsTriggerTest : public CSSAnimationsTest {
     return nullptr;
   }
 
-  AnimationTrigger::RangeBoundary* MakeRangeOffsetBoundary(
+  TimelineTrigger::RangeBoundary* MakeRangeOffsetBoundary(
       std::optional<V8TimelineRange::Enum> range,
       std::optional<int> pct) {
     TimelineRangeOffset* offset = MakeGarbageCollected<TimelineRangeOffset>();
@@ -1374,20 +1374,20 @@ class CSSAnimationsTriggerTest : public CSSAnimationsTest {
           CSSNumericValue::FromCSSValue(*CSSNumericLiteralValue::Create(
               *pct, CSSNumericLiteralValue::UnitType::kPercentage)));
     }
-    return MakeGarbageCollected<AnimationTrigger::RangeBoundary>(offset);
+    return MakeGarbageCollected<TimelineTrigger::RangeBoundary>(offset);
   }
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(CSSAnimationsTriggerTest);
 
-void CSSAnimationsTriggerTest::TestAnimationTrigger(
-    AnimationTrigger* trigger,
+void CSSAnimationsTriggerTest::TestTimelineTrigger(
+    TimelineTrigger* trigger,
     AnimationTrigger::Behavior expected_behavior,
     std::optional<bool> expect_view_timeline,
-    AnimationTrigger::RangeBoundary* expected_start,
-    AnimationTrigger::RangeBoundary* expected_end,
-    AnimationTrigger::RangeBoundary* expected_exit_start,
-    AnimationTrigger::RangeBoundary* expected_exit_end) {
+    TimelineTrigger::RangeBoundary* expected_start,
+    TimelineTrigger::RangeBoundary* expected_end,
+    TimelineTrigger::RangeBoundary* expected_exit_start,
+    TimelineTrigger::RangeBoundary* expected_exit_end) {
   EXPECT_NE(trigger, nullptr);
   EXPECT_EQ(trigger->behavior(), expected_behavior);
 
@@ -1400,23 +1400,23 @@ void CSSAnimationsTriggerTest::TestAnimationTrigger(
     EXPECT_TRUE(timeline->IsViewTimeline());
   }
 
-  const AnimationTrigger::RangeBoundary* range_start =
+  const TimelineTrigger::RangeBoundary* range_start =
       trigger->rangeStart(nullptr);
   VerifyTriggerRangeBoundary(range_start, expected_start);
 
-  const AnimationTrigger::RangeBoundary* range_end = trigger->rangeEnd(nullptr);
+  const TimelineTrigger::RangeBoundary* range_end = trigger->rangeEnd(nullptr);
   VerifyTriggerRangeBoundary(range_end, expected_end);
 
-  const AnimationTrigger::RangeBoundary* exit_range_start =
+  const TimelineTrigger::RangeBoundary* exit_range_start =
       trigger->exitRangeStart(nullptr);
   VerifyTriggerRangeBoundary(exit_range_start, expected_exit_start);
 
-  const AnimationTrigger::RangeBoundary* exit_range_end =
+  const TimelineTrigger::RangeBoundary* exit_range_end =
       trigger->exitRangeEnd(nullptr);
   VerifyTriggerRangeBoundary(exit_range_end, expected_exit_end);
 }
 
-TEST_P(CSSAnimationsTriggerTest, AnimationTriggerOnceOnly) {
+TEST_P(CSSAnimationsTriggerTest, TimelineTriggerOnceOnly) {
   SetBodyInnerHTML(R"HTML(
     <style>
       @keyframes myAnim {
@@ -1452,20 +1452,20 @@ TEST_P(CSSAnimationsTriggerTest, AnimationTriggerOnceOnly) {
   Element* target = GetDocument().getElementById(AtomicString("target"));
   Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
 
-  AnimationTrigger* trigger =
-      TestTriggerAssociations(*target, *scroller, AtomicString("--trigger"));
+  TimelineTrigger* trigger = DynamicTo<TimelineTrigger>(
+      TestTriggerAssociations(*target, *scroller, AtomicString("--trigger")));
 
-  AnimationTrigger::RangeBoundary* normal =
-      MakeGarbageCollected<AnimationTrigger::RangeBoundary>("normal");
-  AnimationTrigger::RangeBoundary* auto_offset =
-      MakeGarbageCollected<AnimationTrigger::RangeBoundary>("auto");
-  TestAnimationTrigger(trigger,
-                       V8AnimationTriggerBehavior(Behavior::Enum::kOnce),
-                       /* expect_view_timeline */ std::nullopt, normal, normal,
-                       auto_offset, auto_offset);
+  TimelineTrigger::RangeBoundary* normal =
+      MakeGarbageCollected<TimelineTrigger::RangeBoundary>("normal");
+  TimelineTrigger::RangeBoundary* auto_offset =
+      MakeGarbageCollected<TimelineTrigger::RangeBoundary>("auto");
+  TestTimelineTrigger(trigger,
+                      V8AnimationTriggerBehavior(Behavior::Enum::kOnce),
+                      /* expect_view_timeline */ std::nullopt, normal, normal,
+                      auto_offset, auto_offset);
 }
 
-TEST_P(CSSAnimationsTriggerTest, AnimationTriggerViewOnly) {
+TEST_P(CSSAnimationsTriggerTest, TimelineTriggerViewOnly) {
   SetBodyInnerHTML(R"HTML(
     <style>
       @keyframes myAnim {
@@ -1501,20 +1501,20 @@ TEST_P(CSSAnimationsTriggerTest, AnimationTriggerViewOnly) {
   Element* target = GetDocument().getElementById(AtomicString("target"));
   Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
 
-  AnimationTrigger* trigger =
-      TestTriggerAssociations(*target, *scroller, AtomicString("--trigger"));
+  TimelineTrigger* trigger = DynamicTo<TimelineTrigger>(
+      TestTriggerAssociations(*target, *scroller, AtomicString("--trigger")));
 
-  AnimationTrigger::RangeBoundary* normal =
-      MakeGarbageCollected<AnimationTrigger::RangeBoundary>("normal");
-  AnimationTrigger::RangeBoundary* auto_offset =
-      MakeGarbageCollected<AnimationTrigger::RangeBoundary>("auto");
-  TestAnimationTrigger(trigger,
-                       V8AnimationTriggerBehavior(Behavior::Enum::kOnce),
-                       /* expect_view_timeline */ true, normal, normal,
-                       auto_offset, auto_offset);
+  TimelineTrigger::RangeBoundary* normal =
+      MakeGarbageCollected<TimelineTrigger::RangeBoundary>("normal");
+  TimelineTrigger::RangeBoundary* auto_offset =
+      MakeGarbageCollected<TimelineTrigger::RangeBoundary>("auto");
+  TestTimelineTrigger(trigger,
+                      V8AnimationTriggerBehavior(Behavior::Enum::kOnce),
+                      /* expect_view_timeline */ true, normal, normal,
+                      auto_offset, auto_offset);
 }
 
-TEST_P(CSSAnimationsTriggerTest, AnimationTriggerScrollOnce) {
+TEST_P(CSSAnimationsTriggerTest, TimelineTriggerScrollOnce) {
   SetBodyInnerHTML(R"HTML(
     <style>
       @keyframes myAnim {
@@ -1550,22 +1550,22 @@ TEST_P(CSSAnimationsTriggerTest, AnimationTriggerScrollOnce) {
   Element* target = GetDocument().getElementById(AtomicString("target"));
   Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
 
-  AnimationTrigger* trigger =
-      TestTriggerAssociations(*target, *scroller, AtomicString("--trigger"));
+  TimelineTrigger* trigger = DynamicTo<TimelineTrigger>(
+      TestTriggerAssociations(*target, *scroller, AtomicString("--trigger")));
 
-  AnimationTrigger::RangeBoundary* pct25 =
+  TimelineTrigger::RangeBoundary* pct25 =
       MakeRangeOffsetBoundary(std::nullopt, 25);
-  AnimationTrigger::RangeBoundary* pct75 =
+  TimelineTrigger::RangeBoundary* pct75 =
       MakeRangeOffsetBoundary(std::nullopt, 75);
-  AnimationTrigger::RangeBoundary* auto_offset =
-      MakeGarbageCollected<AnimationTrigger::RangeBoundary>("auto");
+  TimelineTrigger::RangeBoundary* auto_offset =
+      MakeGarbageCollected<TimelineTrigger::RangeBoundary>("auto");
 
-  TestAnimationTrigger(
+  TestTimelineTrigger(
       trigger, V8AnimationTriggerBehavior(Behavior::Enum::kOnce),
       /* expect_view_timeline */ false, pct25, pct75, auto_offset, auto_offset);
 }
 
-TEST_P(CSSAnimationsTriggerTest, AnimationTriggerViewAlternate) {
+TEST_P(CSSAnimationsTriggerTest, TimelineTriggerViewAlternate) {
   SetBodyInnerHTML(R"HTML(
     <style>
       @keyframes myAnim {
@@ -1601,23 +1601,23 @@ TEST_P(CSSAnimationsTriggerTest, AnimationTriggerViewAlternate) {
   Element* target = GetDocument().getElementById(AtomicString("target"));
   Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
 
-  AnimationTrigger* trigger =
-      TestTriggerAssociations(*target, *scroller, AtomicString("--trigger"));
+  TimelineTrigger* trigger = DynamicTo<TimelineTrigger>(
+      TestTriggerAssociations(*target, *scroller, AtomicString("--trigger")));
 
-  AnimationTrigger::RangeBoundary* contain10 =
+  TimelineTrigger::RangeBoundary* contain10 =
       MakeRangeOffsetBoundary(V8TimelineRange::Enum::kContain, 10);
-  AnimationTrigger::RangeBoundary* contain90 =
+  TimelineTrigger::RangeBoundary* contain90 =
       MakeRangeOffsetBoundary(V8TimelineRange::Enum::kContain, 90);
-  AnimationTrigger::RangeBoundary* auto_offset =
-      MakeGarbageCollected<AnimationTrigger::RangeBoundary>("auto");
+  TimelineTrigger::RangeBoundary* auto_offset =
+      MakeGarbageCollected<TimelineTrigger::RangeBoundary>("auto");
 
-  TestAnimationTrigger(trigger,
-                       V8AnimationTriggerBehavior(Behavior::Enum::kAlternate),
-                       /* expect_view_timeline */ true, contain10, contain90,
-                       auto_offset, auto_offset);
+  TestTimelineTrigger(trigger,
+                      V8AnimationTriggerBehavior(Behavior::Enum::kAlternate),
+                      /* expect_view_timeline */ true, contain10, contain90,
+                      auto_offset, auto_offset);
 }
 
-TEST_P(CSSAnimationsTriggerTest, AnimationTriggerViewRepeat) {
+TEST_P(CSSAnimationsTriggerTest, TimelineTriggerViewRepeat) {
   SetBodyInnerHTML(R"HTML(
     <style>
       @keyframes myAnim {
@@ -1654,24 +1654,24 @@ TEST_P(CSSAnimationsTriggerTest, AnimationTriggerViewRepeat) {
   Element* target = GetDocument().getElementById(AtomicString("target"));
   Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
 
-  AnimationTrigger* trigger =
-      TestTriggerAssociations(*target, *scroller, AtomicString("--trigger"));
+  TimelineTrigger* trigger = DynamicTo<TimelineTrigger>(
+      TestTriggerAssociations(*target, *scroller, AtomicString("--trigger")));
 
-  AnimationTrigger::RangeBoundary* contain10 =
+  TimelineTrigger::RangeBoundary* contain10 =
       MakeRangeOffsetBoundary(V8TimelineRange::Enum::kContain, 10);
-  AnimationTrigger::RangeBoundary* contain90 =
+  TimelineTrigger::RangeBoundary* contain90 =
       MakeRangeOffsetBoundary(V8TimelineRange::Enum::kContain, 90);
-  AnimationTrigger::RangeBoundary* cover1 =
+  TimelineTrigger::RangeBoundary* cover1 =
       MakeRangeOffsetBoundary(V8TimelineRange::Enum::kCover, 1);
-  AnimationTrigger::RangeBoundary* cover99 =
+  TimelineTrigger::RangeBoundary* cover99 =
       MakeRangeOffsetBoundary(V8TimelineRange::Enum::kCover, 99);
 
-  TestAnimationTrigger(trigger,
-                       V8AnimationTriggerBehavior(Behavior::Enum::kRepeat),
-                       true, contain10, contain90, cover1, cover99);
+  TestTimelineTrigger(trigger,
+                      V8AnimationTriggerBehavior(Behavior::Enum::kRepeat), true,
+                      contain10, contain90, cover1, cover99);
 }
 
-TEST_P(CSSAnimationsTriggerTest, AnimationTriggerNamedTimeline) {
+TEST_P(CSSAnimationsTriggerTest, TimelineTriggerNamedTimeline) {
   SetBodyInnerHTML(R"HTML(
     <style>
       @keyframes myAnim {
@@ -1715,7 +1715,7 @@ TEST_P(CSSAnimationsTriggerTest, AnimationTriggerNamedTimeline) {
 
   Element* target = GetDocument().getElementById(AtomicString("target"));
 
-  AnimationTrigger* trigger = GetTrigger(*target);
+  TimelineTrigger* trigger = DynamicTo<TimelineTrigger>(GetTrigger(*target));
 
   EXPECT_EQ(trigger->behavior(), V8AnimationTriggerBehavior::Enum::kRepeat);
 
@@ -1723,7 +1723,7 @@ TEST_P(CSSAnimationsTriggerTest, AnimationTriggerNamedTimeline) {
   EXPECT_TRUE(trigger->timeline()->IsViewTimeline());
 }
 
-TEST_P(CSSAnimationsTriggerTest, AnimationTriggerChangeTimeline) {
+TEST_P(CSSAnimationsTriggerTest, TimelineTriggerChangeTimeline) {
   SetBodyInnerHTML(R"HTML(
     <style>
       @keyframes stretch {
@@ -1774,14 +1774,16 @@ TEST_P(CSSAnimationsTriggerTest, AnimationTriggerChangeTimeline) {
 
   target->setAttribute(html_names::kClassAttr, AtomicString("view_trigger"));
   UpdateAllLifecyclePhasesForTest();
-  AnimationTrigger* view_trigger = GetTrigger(*target);
+  TimelineTrigger* view_trigger =
+      DynamicTo<TimelineTrigger>(GetTrigger(*target));
 
   EXPECT_NE(view_trigger->timeline(), nullptr);
   EXPECT_TRUE(view_trigger->timeline()->IsViewTimeline());
 
   target->setAttribute(html_names::kClassAttr, AtomicString("scroll_trigger"));
   UpdateAllLifecyclePhasesForTest();
-  AnimationTrigger* scroll_trigger = GetTrigger(*target);
+  TimelineTrigger* scroll_trigger =
+      DynamicTo<TimelineTrigger>(GetTrigger(*target));
 
   EXPECT_NE(view_trigger, scroll_trigger);
   EXPECT_NE(scroll_trigger->GetTimelineInternal(), nullptr);
@@ -1790,7 +1792,7 @@ TEST_P(CSSAnimationsTriggerTest, AnimationTriggerChangeTimeline) {
   EXPECT_TRUE(scroll_trigger->timeline()->IsScrollTimeline());
 }
 
-TEST_P(CSSAnimationsTriggerTest, AnimationTriggerChangeBehavior) {
+TEST_P(CSSAnimationsTriggerTest, TimelineTriggerChangeBehavior) {
   SetBodyInnerHTML(R"HTML(
     <style>
       @keyframes stretch {
@@ -1834,8 +1836,8 @@ TEST_P(CSSAnimationsTriggerTest, AnimationTriggerChangeBehavior) {
   target->classList().Add(AtomicString("repeat_trigger"));
   UpdateAllLifecyclePhasesForTest();
 
-  AnimationTrigger* repeat_trigger =
-      TestTriggerAssociations(*target, *scroller, AtomicString("--trigger"));
+  TimelineTrigger* repeat_trigger = DynamicTo<TimelineTrigger>(
+      TestTriggerAssociations(*target, *scroller, AtomicString("--trigger")));
   EXPECT_EQ(repeat_trigger->behavior(),
             AnimationTrigger::Behavior::Enum::kRepeat);
 
@@ -1843,8 +1845,8 @@ TEST_P(CSSAnimationsTriggerTest, AnimationTriggerChangeBehavior) {
   target->classList().Add(AtomicString("once_trigger"));
   UpdateAllLifecyclePhasesForTest();
 
-  AnimationTrigger* once_trigger =
-      TestTriggerAssociations(*target, *scroller, AtomicString("--trigger"));
+  TimelineTrigger* once_trigger = DynamicTo<TimelineTrigger>(
+      TestTriggerAssociations(*target, *scroller, AtomicString("--trigger")));
   EXPECT_NE(once_trigger, repeat_trigger);
   EXPECT_EQ(once_trigger->behavior(), AnimationTrigger::Behavior::Enum::kOnce);
 }
@@ -1853,11 +1855,13 @@ void CSSAnimationsTriggerTest::TestRangeStartChange(
     Element* target,
     AtomicString new_class,
     bool expect_same,
-    const AnimationTrigger::RangeBoundary* expected_boundary) {
-  AnimationTrigger* old_trigger = GetTrigger(*target);
+    const TimelineTrigger::RangeBoundary* expected_boundary) {
+  TimelineTrigger* old_trigger =
+      DynamicTo<TimelineTrigger>(GetTrigger(*target));
   target->setAttribute(html_names::kClassAttr, new_class);
   UpdateAllLifecyclePhasesForTest();
-  AnimationTrigger* new_trigger = GetTrigger(*target);
+  TimelineTrigger* new_trigger =
+      DynamicTo<TimelineTrigger>(GetTrigger(*target));
   if (expect_same) {
     EXPECT_EQ(old_trigger, new_trigger);
   } else {
@@ -1867,7 +1871,7 @@ void CSSAnimationsTriggerTest::TestRangeStartChange(
                              expected_boundary);
 }
 
-TEST_P(CSSAnimationsTriggerTest, AnimationTriggerChangeRangeStart) {
+TEST_P(CSSAnimationsTriggerTest, TimelineTriggerChangeRangeStart) {
   SetBodyInnerHTML(R"HTML(
     <style>
       @keyframes stretch {
@@ -1922,23 +1926,23 @@ TEST_P(CSSAnimationsTriggerTest, AnimationTriggerChangeRangeStart) {
 
   Element* target = GetDocument().getElementById(AtomicString("target"));
 
-  const AnimationTrigger::RangeBoundary* normal =
-      MakeGarbageCollected<AnimationTrigger::RangeBoundary>(String("normal"));
+  const TimelineTrigger::RangeBoundary* normal =
+      MakeGarbageCollected<TimelineTrigger::RangeBoundary>(String("normal"));
   TestRangeStartChange(target, AtomicString("normal_trigger2"),
                        /* expect_same */ true, normal);
-  AnimationTrigger::RangeBoundary* contain10 =
+  TimelineTrigger::RangeBoundary* contain10 =
       MakeRangeOffsetBoundary(V8TimelineRange::Enum::kContain, 10);
   TestRangeStartChange(target, AtomicString("contain10_trigger"),
                        /* expect_same */ false, contain10);
   TestRangeStartChange(target, AtomicString("contain10_trigger2"),
                        /* expect_same */ true, contain10);
 
-  AnimationTrigger::RangeBoundary* contain90 =
+  TimelineTrigger::RangeBoundary* contain90 =
       MakeRangeOffsetBoundary(V8TimelineRange::Enum::kContain, 90);
   TestRangeStartChange(target, AtomicString("contain90_trigger"),
                        /* expect_same */ false, contain90);
 
-  AnimationTrigger::RangeBoundary* cover90 =
+  TimelineTrigger::RangeBoundary* cover90 =
       MakeRangeOffsetBoundary(V8TimelineRange::Enum::kCover, 90);
   TestRangeStartChange(target, AtomicString("cover90_trigger"),
                        /* expect_same */ false, cover90);
@@ -2004,7 +2008,8 @@ TEST_P(CSSAnimationsTriggerTest, NonTriggerChange) {
   CSSAnimation* animation =
       DynamicTo<CSSAnimation>((*animations->Animations().begin()).key.Get());
 
-  AnimationTrigger* original_trigger = GetTrigger(*target);
+  TimelineTrigger* original_trigger =
+      DynamicTo<TimelineTrigger>(GetTrigger(*target));
   EXPECT_NE(original_trigger, nullptr);
   EXPECT_TRUE(original_trigger->timeline()->IsViewTimeline());
 
@@ -2025,13 +2030,13 @@ TEST_P(CSSAnimationsTriggerTest, NonTriggerChange) {
   EXPECT_EQ(original_trigger, GetTrigger(*target));
   EXPECT_TRUE(animation->timeline()->IsViewTimeline());
 
-  const AnimationTrigger::RangeBoundary* normal =
-      MakeGarbageCollected<AnimationTrigger::RangeBoundary>(String("normal"));
+  const TimelineTrigger::RangeBoundary* normal =
+      MakeGarbageCollected<TimelineTrigger::RangeBoundary>(String("normal"));
   VerifyTriggerRangeBoundary(animation->rangeStart(), normal);
   target->classList().Add(AtomicString("range_contain"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(original_trigger, GetTrigger(*target));
-  AnimationTrigger::RangeBoundary* contain10 =
+  TimelineTrigger::RangeBoundary* contain10 =
       MakeRangeOffsetBoundary(V8TimelineRange::Enum::kContain, 10);
   VerifyTriggerRangeBoundary(animation->rangeStart(), contain10);
 
@@ -2039,13 +2044,13 @@ TEST_P(CSSAnimationsTriggerTest, NonTriggerChange) {
   target->classList().Add(AtomicString("range_cover"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(original_trigger, GetTrigger(*target));
-  AnimationTrigger::RangeBoundary* cover1 =
+  TimelineTrigger::RangeBoundary* cover1 =
       MakeRangeOffsetBoundary(V8TimelineRange::Enum::kCover, 1);
   VerifyTriggerRangeBoundary(animation->rangeStart(), cover1);
 }
 
 TEST_P(CSSAnimationsTriggerTest, DeviceScaleFactor) {
-  using RangeBoundary = AnimationTrigger::RangeBoundary;
+  using RangeBoundary = TimelineTrigger::RangeBoundary;
 
   GetFrame().SetLayoutZoomFactor(2.0f);
 
@@ -2070,7 +2075,7 @@ TEST_P(CSSAnimationsTriggerTest, DeviceScaleFactor) {
 
   Element* target = GetDocument().getElementById(AtomicString("target"));
 
-  AnimationTrigger* trigger = GetTrigger(*target);
+  TimelineTrigger* trigger = DynamicTo<TimelineTrigger>(GetTrigger(*target));
   const RangeBoundary* range_start = trigger->rangeStart(nullptr);
   const RangeBoundary* range_end = trigger->rangeEnd(nullptr);
 

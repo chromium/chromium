@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_timeline_range_offset.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
-#include "third_party/blink/renderer/core/animation/animation_trigger.h"
 #include "third_party/blink/renderer/core/animation/animation_utils.h"
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_value_factory.h"
@@ -59,6 +58,7 @@
 #include "third_party/blink/renderer/core/animation/interpolation_types_map.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
+#include "third_party/blink/renderer/core/animation/timeline_trigger.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/animation/timing_calculations.h"
 #include "third_party/blink/renderer/core/animation/transition_interpolation.h"
@@ -1204,8 +1204,9 @@ void CSSAnimations::UpdateNamedTriggers(
         continue;
       }
 
-      AnimationTrigger* existing_trigger = element.NamedTrigger(name);
-      AnimationTrigger* new_trigger = CSSAnimations::ComputeTimelineTrigger(
+      TimelineTrigger* existing_trigger =
+          DynamicTo<TimelineTrigger>(element.NamedTrigger(name));
+      TimelineTrigger* new_trigger = CSSAnimations::ComputeTimelineTrigger(
           data, i, update, style_builder.EffectiveZoom(), &element,
           existing_trigger);
 
@@ -1570,9 +1571,9 @@ AnimationTimeline* CSSAnimations::ComputeTimeline(
                                        existing_timeline);
 }
 
-bool AnimationTriggerBoundariesMatch(
-    const AnimationTrigger::RangeBoundary* existing_boundary,
-    const AnimationTrigger::RangeBoundary* new_boundary) {
+bool TimelineTriggerBoundariesMatch(
+    const TimelineTrigger::RangeBoundary* existing_boundary,
+    const TimelineTrigger::RangeBoundary* new_boundary) {
   if (existing_boundary->IsString()) {
     return new_boundary->IsString() &&
            new_boundary->GetAsString() == existing_boundary->GetAsString();
@@ -1601,30 +1602,30 @@ bool AnimationTriggerBoundariesMatch(
   return !existing_range_offset->offset() && !new_range_offset->offset();
 }
 
-bool AnimationTriggerRangeBoundariesUnchanged(
-    AnimationTrigger* trigger,
-    const AnimationTrigger::RangeBoundary* new_range_start,
-    const AnimationTrigger::RangeBoundary* new_range_end,
-    const AnimationTrigger::RangeBoundary* new_exit_range_start,
-    const AnimationTrigger::RangeBoundary* new_exit_range_end) {
+bool TimelineTriggerRangeBoundariesUnchanged(
+    TimelineTrigger* const trigger,
+    TimelineTrigger::RangeBoundary* new_range_start,
+    const TimelineTrigger::RangeBoundary* new_range_end,
+    const TimelineTrigger::RangeBoundary* new_exit_range_start,
+    const TimelineTrigger::RangeBoundary* new_exit_range_end) {
   DCHECK(trigger);
-  return AnimationTriggerBoundariesMatch(trigger->rangeStart(nullptr),
-                                         new_range_start) &&
-         AnimationTriggerBoundariesMatch(trigger->rangeEnd(nullptr),
-                                         new_range_end) &&
-         AnimationTriggerBoundariesMatch(trigger->exitRangeStart(nullptr),
-                                         new_exit_range_start) &&
-         AnimationTriggerBoundariesMatch(trigger->exitRangeEnd(nullptr),
-                                         new_exit_range_end);
+  return TimelineTriggerBoundariesMatch(trigger->rangeStart(nullptr),
+                                        new_range_start) &&
+         TimelineTriggerBoundariesMatch(trigger->rangeEnd(nullptr),
+                                        new_range_end) &&
+         TimelineTriggerBoundariesMatch(trigger->exitRangeStart(nullptr),
+                                        new_exit_range_start) &&
+         TimelineTriggerBoundariesMatch(trigger->exitRangeEnd(nullptr),
+                                        new_exit_range_end);
 }
 
-AnimationTrigger* CSSAnimations::ComputeTimelineTrigger(
+TimelineTrigger* CSSAnimations::ComputeTimelineTrigger(
     const CSSAnimationData* data,
     wtf_size_t animation_index,
     const CSSAnimationUpdate& update,
     float zoom,
     Element* element,
-    AnimationTrigger* existing_trigger) {
+    TimelineTrigger* existing_trigger) {
   AnimationTimeline* existing_timeline =
       (existing_trigger ? existing_trigger->GetTimelineInternal() : nullptr);
   AnimationTimeline* new_timeline =
@@ -1666,12 +1667,12 @@ AnimationTrigger* CSSAnimations::ComputeTimelineTrigger(
   bool need_new_trigger = !existing_trigger ||
                           existing_timeline != new_timeline ||
                           existing_trigger->behavior() != new_behavior ||
-                          !AnimationTriggerRangeBoundariesUnchanged(
+                          !TimelineTriggerRangeBoundariesUnchanged(
                               existing_trigger, new_range_start, new_range_end,
                               new_exit_range_start, new_exit_range_end);
 
   return need_new_trigger
-             ? MakeGarbageCollected<AnimationTrigger>(
+             ? MakeGarbageCollected<TimelineTrigger>(
                    new_timeline, new_behavior, new_range_start, new_range_end,
                    new_exit_range_start, new_exit_range_end)
              : existing_trigger;

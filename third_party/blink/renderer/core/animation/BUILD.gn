@@ -291,6 +291,8 @@ blink_core_sources("animation") {
     "timeline_offset.h",
     "timeline_range.cc",
     "timeline_range.h",
+    "timeline_trigger.cc",
+    "timeline_trigger.h",
     "timing.cc",
     "timing.h",
     "timing_calculations.cc",

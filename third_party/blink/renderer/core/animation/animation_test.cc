@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
 #include "third_party/blink/renderer/core/animation/pending_animations.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
+#include "third_party/blink/renderer/core/animation/timeline_trigger.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unit_values.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
@@ -2676,9 +2677,9 @@ TEST_P(AnimationAnimationTestCompositing,
     // Create a trigger.
     TimelineRangeOffset* dummy_offset =
         MakeGarbageCollected<TimelineRangeOffset>();
-    AnimationTrigger::RangeBoundary* dummy_range_boundary =
-        MakeGarbageCollected<AnimationTrigger::RangeBoundary>(dummy_offset);
-    trigger = MakeGarbageCollected<AnimationTrigger>(
+    TimelineTrigger::RangeBoundary* dummy_range_boundary =
+        MakeGarbageCollected<TimelineTrigger::RangeBoundary>(dummy_offset);
+    trigger = MakeGarbageCollected<TimelineTrigger>(
         timeline,
         AnimationTrigger::Behavior(AnimationTrigger::Behavior::Enum::kRepeat),
         dummy_range_boundary, dummy_range_boundary, dummy_range_boundary,
@@ -2713,13 +2714,13 @@ TEST_P(AnimationAnimationTestCompositing,
       target->GetElementAnimations()->Animations().Contains(animation));
 }
 
-class ScriptedAnimationTriggerTest : public PageTestBase {
+class ScriptedTimelineTriggerTest : public PageTestBase {
  public:
   static void ConfigureSettings(WebSettings* settings) {
     settings->SetJavaScriptEnabled(true);
   }
 
-  ScriptedAnimationTriggerTest() {
+  ScriptedTimelineTriggerTest() {
     helper_.InitializeWithSettings(&ConfigureSettings);
   }
 
@@ -2761,7 +2762,7 @@ class ScriptedAnimationTriggerTest : public PageTestBase {
             { duration: 300, fill: "none" }
           ));
 
-        let trigger = new AnimationTrigger({
+        let trigger = new TimelineTrigger({
           type: "alternate",
           timeline: new ViewTimeline({
             subject: document.getElementById('subject'), axis: "y"
@@ -2784,7 +2785,7 @@ class ScriptedAnimationTriggerTest : public PageTestBase {
     subject_ = document_->getElementById(AtomicString("subject"));
     animation_ = target_->GetElementAnimations()->Animations().begin()->key;
     trigger_ = *animation_->triggers_.begin();
-    timeline_ = trigger_->timeline();
+    timeline_ = DynamicTo<TimelineTrigger>(trigger_.Get())->timeline();
 
     ThreadState::Current()->CollectAllGarbageForTesting();
 
@@ -2811,7 +2812,7 @@ class ScriptedAnimationTriggerTest : public PageTestBase {
   Persistent<Document> document_;
 };
 
-TEST_F(ScriptedAnimationTriggerTest, AttachDetachTrigger) {
+TEST_F(ScriptedTimelineTriggerTest, AttachDetachTrigger) {
   // Keep no reference.
   // Attach trigger to animation.
   // Detach trigger from animation.
@@ -2839,7 +2840,7 @@ TEST_F(ScriptedAnimationTriggerTest, AttachDetachTrigger) {
   EXPECT_EQ(animation_, nullptr);
 }
 
-TEST_F(ScriptedAnimationTriggerTest, RemoveTriggerTimelineSubject) {
+TEST_F(ScriptedTimelineTriggerTest, RemoveTriggerTimelineSubject) {
   // Keep no reference.
   // Remove trigger timeline subject.
   Initialize();
@@ -2873,8 +2874,7 @@ TEST_F(ScriptedAnimationTriggerTest, RemoveTriggerTimelineSubject) {
   EXPECT_EQ(animation_, nullptr);
 }
 
-TEST_F(ScriptedAnimationTriggerTest,
-       KeepTriggerTimelineSubjectFinishAnimation) {
+TEST_F(ScriptedTimelineTriggerTest, KeepTriggerTimelineSubjectFinishAnimation) {
   // Keep no reference.
   // Add finish event listener.
   // Remove trigger timeline subject.
@@ -2899,7 +2899,7 @@ TEST_F(ScriptedAnimationTriggerTest,
   EXPECT_NE(animation_, nullptr);
 }
 
-TEST_F(ScriptedAnimationTriggerTest, KeepTriggerTimelineReference) {
+TEST_F(ScriptedTimelineTriggerTest, KeepTriggerTimelineReference) {
   // Keep trigger timeline reference.
   // Remove trigger timeline subject.
   Initialize();
@@ -2922,7 +2922,7 @@ TEST_F(ScriptedAnimationTriggerTest, KeepTriggerTimelineReference) {
   EXPECT_NE(animation_, nullptr);
 }
 
-TEST_F(ScriptedAnimationTriggerTest, RemoveAnimationTargetAddFinishListener) {
+TEST_F(ScriptedTimelineTriggerTest, RemoveAnimationTargetAddFinishListener) {
   // Keep no reference.
   // Add finish event listener.
   // Remove animation target.
@@ -2946,7 +2946,7 @@ TEST_F(ScriptedAnimationTriggerTest, RemoveAnimationTargetAddFinishListener) {
   EXPECT_NE(animation_, nullptr);
 }
 
-TEST_F(ScriptedAnimationTriggerTest, RemoveAnimationTarget) {
+TEST_F(ScriptedTimelineTriggerTest, RemoveAnimationTarget) {
   // Keep no reference.
   // Remove animation target.
   Initialize();

@@ -69,7 +69,7 @@ void UpdateAnimationTiming(
     // animation's timeline is serviced first and then the trigger's timeline is
     // serviced afterwards.
     for (auto& timeline : timelines) {
-      timeline->ServiceAnimationTriggers();
+      timeline->ServiceTriggers();
     }
   }
 

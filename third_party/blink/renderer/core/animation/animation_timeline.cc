@@ -6,11 +6,10 @@
 
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
-#include "third_party/blink/renderer/core/animation/animation_trigger.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
-#include "third_party/blink/renderer/core/animation/scroll_timeline.h"
+#include "third_party/blink/renderer/core/animation/timeline_trigger.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/named_animation_trigger_map.h"
@@ -218,18 +217,17 @@ void AnimationTimeline::MarkPendingIfCompositorPropertyAnimationChanges(
   }
 }
 
-void AnimationTimeline::AddAnimationTrigger(AnimationTrigger* trigger) {
-  DCHECK(trigger && trigger->GetTimelineInternal() == this);
+void AnimationTimeline::AddTrigger(TimelineTrigger* trigger) {
   triggers_.insert(trigger);
   update_triggers_ = true;
 }
 
-void AnimationTimeline::RemoveAnimationTrigger(AnimationTrigger* trigger) {
+void AnimationTimeline::RemoveTrigger(TimelineTrigger* trigger) {
   DCHECK(trigger && trigger->GetTimelineInternal() == this);
   triggers_.erase(trigger);
 }
 
-void AnimationTimeline::ServiceAnimationTriggers() {
+void AnimationTimeline::ServiceTriggers() {
   DCHECK(RuntimeEnabledFeatures::AnimationTriggerEnabled());
   PhaseAndTime current_phase_and_time = CurrentPhaseAndTime();
 
@@ -238,7 +236,7 @@ void AnimationTimeline::ServiceAnimationTriggers() {
   }
 
   if (update_triggers_) {
-    for (AnimationTrigger* trigger : triggers_) {
+    for (TimelineTrigger* trigger : triggers_) {
       trigger->Update();
     }
   }

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset=utf-8>
-<title>AnimationTrigger constructor</title>
+<title>TimelineTrigger constructor</title>
 <link rel="help"
       href="https://drafts.csswg.org/web-animations-2/#the-animationtrigger-interface">
 <script src="/resources/testharness.js"></script>
@@ -10,7 +10,7 @@
 <script>
 
   test(t => {
-    const trigger = new AnimationTrigger();
+    const trigger = new TimelineTrigger();
     assert_equals(trigger.behavior, "once", "default behavior is once.");
     assert_equals(trigger.timeline, document.timeline,
       "default timeline is document.timeline.");
@@ -23,7 +23,7 @@
   }, "Default values when no property bag is supplied");
 
   test(t => {
-    const trigger = new AnimationTrigger({});
+    const trigger = new TimelineTrigger({});
     assert_equals(trigger.behavior, "once", "default behavior is once.");
     assert_equals(trigger.timeline, document.timeline,
       "default timeline is document.timeline.");
@@ -37,7 +37,7 @@
 
   test(t => {
     const scroll_timeline = new ScrollTimeline();
-    const trigger = new AnimationTrigger({
+    const trigger = new TimelineTrigger({
       behavior: "repeat",
       timeline: scroll_timeline,
       rangeStart: "contain 10%",
@@ -60,7 +60,7 @@
 
   test(t => {
     const view_timeline = new ViewTimeline();
-    const trigger = new AnimationTrigger({
+    const trigger = new TimelineTrigger({
       behavior: "repeat",
       timeline: view_timeline,
       rangeStart: "contain 10%",

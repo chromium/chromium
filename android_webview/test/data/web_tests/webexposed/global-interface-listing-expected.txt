@@ -118,11 +118,6 @@ interface AnimationTimeline
 interface AnimationTrigger
     attribute @@toStringTag
     getter behavior
-    getter exitRangeEnd
-    getter exitRangeStart
-    getter rangeEnd
-    getter rangeStart
-    getter timeline
     method addAnimation
     method constructor
     method removeAnimation
@@ -9702,6 +9697,14 @@ interface TimeRanges
     method constructor
     method end
     method start
+interface TimelineTrigger : AnimationTrigger
+    attribute @@toStringTag
+    getter exitRangeEnd
+    getter exitRangeStart
+    getter rangeEnd
+    getter rangeStart
+    getter timeline
+    method constructor
 interface TimestampTrigger
     attribute @@toStringTag
     getter timestamp

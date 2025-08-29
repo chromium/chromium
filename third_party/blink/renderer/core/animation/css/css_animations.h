@@ -58,7 +58,7 @@ class StylePropertyShorthand;
 class StyleResolver;
 class StyleTimeline;
 class WritingDirectionMode;
-class AnimationTrigger;
+class TimelineTrigger;
 
 class CORE_EXPORT CSSAnimations final {
   DISALLOW_NEW();
@@ -471,13 +471,13 @@ class CORE_EXPORT CSSAnimations final {
       TransitionUpdateState& state,
       const PropertyHandle& transitioning_property);
 
-  static AnimationTrigger* ComputeTimelineTrigger(
+  static TimelineTrigger* ComputeTimelineTrigger(
       const CSSAnimationData* data,
       wtf_size_t animation_index,
       const CSSAnimationUpdate& update,
       float zoom,
       Element* element,
-      AnimationTrigger* existing_trigger);
+      TimelineTrigger* existing_trigger);
 
   class AnimationEventDelegate final : public AnimationEffect::EventDelegate {
    public:

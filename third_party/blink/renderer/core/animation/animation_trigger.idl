@@ -10,13 +10,7 @@ enum AnimationTriggerBehavior { "once", "repeat", "alternate", "state" };
     Exposed=Window,
     RuntimeEnabled=AnimationTrigger
 ] interface AnimationTrigger {
-  [CallWith=ExecutionContext, Measure, RaisesException] constructor(optional AnimationTriggerOptions options = {});
-  readonly attribute AnimationTimeline? timeline;
   readonly attribute AnimationTriggerBehavior behavior;
-  [CallWith=ExecutionContext] readonly attribute (TimelineRangeOffset or DOMString) rangeStart;
-  [CallWith=ExecutionContext] readonly attribute (TimelineRangeOffset or DOMString) rangeEnd;
-  [CallWith=ExecutionContext] readonly attribute (TimelineRangeOffset or DOMString) exitRangeStart;
-  [CallWith=ExecutionContext] readonly attribute (TimelineRangeOffset or DOMString) exitRangeEnd;
   [RaisesException] void addAnimation(Animation animation);
   void removeAnimation(Animation animation);
 };
