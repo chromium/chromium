@@ -47,6 +47,10 @@ class CORE_EXPORT SMILInstanceTimeList {
   void Append(SMILTime, SMILTimeOrigin);
   void InsertSortedAndUnique(SMILTime, SMILTimeOrigin);
   void RemoveWithOrigin(SMILTimeOrigin);
+  void RemoveBeforeWithOrigin(SMILTime, SMILTimeOrigin);
+  void RemoveBelowThresholdWithOrigin(wtf_size_t num_to_remove,
+                                      const Vector<SMILTime>& times_to_keep,
+                                      SMILTimeOrigin origin);
   void Sort();
   SMILTime NextAfter(SMILTime) const;
 
@@ -58,6 +62,8 @@ class CORE_EXPORT SMILInstanceTimeList {
   const_iterator end() const { return instance_times_.end(); }
 
  private:
+  void RemoveTimeOriginIfNotFound(SMILTimeOrigin origin);
+
   Vector<SMILTimeWithOrigin> instance_times_;
   SMILTimeOriginSet time_origins_;
 };
@@ -169,6 +175,7 @@ class CORE_EXPORT SVGSMILElement : public SVGElement, public SVGTests {
 
   void StartedActiveInterval();
   void EndedActiveInterval();
+  void PruneOldInstanceTimes(SMILInstanceTimeList& instance_times);
 
   bool LayoutObjectIsNeeded(const DisplayStyle&) const override {
     return false;
@@ -274,6 +281,7 @@ class CORE_EXPORT SVGSMILElement : public SVGElement, public SVGTests {
   HeapVector<Member<Condition>> conditions_;
   bool conditions_connected_;
   bool has_end_event_conditions_;
+  bool has_end_attribute_specified_;
 
   bool is_waiting_for_first_interval_;
   bool is_scheduled_;

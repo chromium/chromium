@@ -4751,6 +4751,10 @@
       status: "experimental",
     },
     {
+      name: "SvgSmilPruneInstanceTimes",
+      status: "stable",
+    },
+    {
       name: "SvgTextCentralBaselineTextDecorationFix",
       status: "stable",
     },
