@@ -36,7 +36,6 @@
 using optimization_guide::MockSession;
 using testing::_;
 using testing::AtMost;
-using testing::Invoke;
 using testing::NiceMock;
 
 namespace {
@@ -148,14 +147,14 @@ TEST_F(AIManagerTest, AIContextBoundObjectSet) {
   AITestUtils::MockCreateLanguageModelClient mock_create_language_model_client;
   base::RunLoop run_loop;
   EXPECT_CALL(mock_create_language_model_client, OnResult(_, _))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](mojo::PendingRemote<blink::mojom::AILanguageModel> language_model,
               blink::mojom::AILanguageModelInstanceInfoPtr info) {
             EXPECT_TRUE(language_model);
             mock_session = mojo::Remote<blink::mojom::AILanguageModel>(
                 std::move(language_model));
             run_loop.Quit();
-          }));
+          });
 
   mojo::Remote<blink::mojom::AIManager> mock_remote = GetAIManagerRemote();
   // Initially the `AIContextBoundObjectSet` is empty.

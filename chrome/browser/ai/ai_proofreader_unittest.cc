@@ -115,14 +115,13 @@ class AIProofreaderTest : public AITestUtils::AITestBase {
     MockCreateProofreaderClient mock_create_proofreader_client;
     base::RunLoop run_loop;
     EXPECT_CALL(mock_create_proofreader_client, OnResult(_))
-        .WillOnce(testing::Invoke(
-            [&](mojo::PendingRemote<::blink::mojom::AIProofreader>
-                    proofreader) {
-              EXPECT_TRUE(proofreader);
-              proofreader_remote = mojo::Remote<blink::mojom::AIProofreader>(
-                  std::move(proofreader));
-              run_loop.Quit();
-            }));
+        .WillOnce([&](mojo::PendingRemote<::blink::mojom::AIProofreader>
+                          proofreader) {
+          EXPECT_TRUE(proofreader);
+          proofreader_remote =
+              mojo::Remote<blink::mojom::AIProofreader>(std::move(proofreader));
+          run_loop.Quit();
+        });
 
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateProofreader(
@@ -143,7 +142,7 @@ class AIProofreaderTest : public AITestUtils::AITestBase {
     expected.set_allocated_options(
         AIProofreader::ToProtoOptions(options).release());
     EXPECT_CALL(session_, ExecuteModel(_, _))
-        .WillOnce(testing::Invoke(
+        .WillOnce(
             [&](const google::protobuf::MessageLite& request,
                 optimization_guide::
                     OptimizationGuideModelExecutionResultStreamingCallback
@@ -151,21 +150,20 @@ class AIProofreaderTest : public AITestUtils::AITestBase {
               EXPECT_THAT(request, EqualsProto(expected));
               callback.Run(CreateExecutionResult("Result text",
                                                  /*is_complete=*/true));
-            }));
+            });
 
     mojo::Remote<blink::mojom::AIProofreader> proofreader_remote;
     {
       MockCreateProofreaderClient mock_create_proofreader_client;
       base::RunLoop run_loop;
       EXPECT_CALL(mock_create_proofreader_client, OnResult(_))
-          .WillOnce(testing::Invoke(
-              [&](mojo::PendingRemote<::blink::mojom::AIProofreader>
-                      proofreader) {
-                EXPECT_TRUE(proofreader);
-                proofreader_remote = mojo::Remote<blink::mojom::AIProofreader>(
-                    std::move(proofreader));
-                run_loop.Quit();
-              }));
+          .WillOnce([&](mojo::PendingRemote<::blink::mojom::AIProofreader>
+                            proofreader) {
+            EXPECT_TRUE(proofreader);
+            proofreader_remote = mojo::Remote<blink::mojom::AIProofreader>(
+                std::move(proofreader));
+            run_loop.Quit();
+          });
 
       mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
       ai_manager->CreateProofreader(
@@ -177,15 +175,13 @@ class AIProofreaderTest : public AITestUtils::AITestBase {
 
     base::RunLoop run_loop;
     EXPECT_CALL(mock_responder, OnStreaming(_))
-        .WillOnce(testing::Invoke([&](const std::string& text) {
-          EXPECT_THAT(text, "Result text");
-        }));
+        .WillOnce(
+            [&](const std::string& text) { EXPECT_THAT(text, "Result text"); });
 
     EXPECT_CALL(mock_responder, OnCompletion(_))
-        .WillOnce(testing::Invoke(
-            [&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
-              run_loop.Quit();
-            }));
+        .WillOnce([&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
+          run_loop.Quit();
+        });
 
     proofreader_remote->Proofread(kInputString,
                                   mock_responder.BindNewPipeAndPassRemote());
@@ -199,13 +195,13 @@ TEST_F(AIProofreaderTest, CreateProofreaderNoService) {
   MockCreateProofreaderClient mock_create_proofreader_client;
   base::RunLoop run_loop;
   EXPECT_CALL(mock_create_proofreader_client, OnError(_, _))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](blink::mojom::AIManagerCreateClientError error,
               blink::mojom::QuotaErrorInfoPtr quota_error_info) {
             ASSERT_EQ(error, blink::mojom::AIManagerCreateClientError::
                                  kUnableToCreateSession);
             run_loop.Quit();
-          }));
+          });
 
   mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
   ai_manager->CreateProofreader(
@@ -217,10 +213,10 @@ TEST_F(AIProofreaderTest, CreateProofreaderNoService) {
 TEST_F(AIProofreaderTest, CreateProofreaderModelNotEligible) {
   SetupMockOptimizationGuideKeyedService();
   EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
               const std::optional<optimization_guide::SessionConfigParams>&
-                  config_params) { return nullptr; }));
+                  config_params) { return nullptr; });
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               GetOnDeviceModelEligibilityAsync(_, _, _))
       .WillOnce([](auto feature, auto capabilities, auto callback) {
@@ -232,13 +228,13 @@ TEST_F(AIProofreaderTest, CreateProofreaderModelNotEligible) {
   MockCreateProofreaderClient mock_create_proofreader_client;
   base::RunLoop run_loop;
   EXPECT_CALL(mock_create_proofreader_client, OnError(_, _))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](blink::mojom::AIManagerCreateClientError error,
               blink::mojom::QuotaErrorInfoPtr quota_error_info) {
             ASSERT_EQ(error, blink::mojom::AIManagerCreateClientError::
                                  kUnableToCreateSession);
             run_loop.Quit();
-          }));
+          });
 
   mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
   ai_manager->CreateProofreader(
@@ -252,10 +248,10 @@ TEST_F(AIProofreaderTest,
   SetupMockOptimizationGuideKeyedService();
 
   EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
               const std::optional<optimization_guide::SessionConfigParams>&
-                  config_params) { return nullptr; }));
+                  config_params) { return nullptr; });
 
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               GetOnDeviceModelEligibilityAsync(_, _, _))
@@ -272,20 +268,20 @@ TEST_F(AIProofreaderTest,
   base::RunLoop run_loop_for_remove_observer;
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               AddOnDeviceModelAvailabilityChangeObserver(_, _))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
               optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
             availability_observer = observer;
             run_loop_for_add_observer.Quit();
-          }));
+          });
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
               RemoveOnDeviceModelAvailabilityChangeObserver(_, _))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](optimization_guide::ModelBasedCapabilityKey feature,
               optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
             EXPECT_EQ(availability_observer, observer);
             run_loop_for_remove_observer.Quit();
-          }));
+          });
 
   auto mock_create_proofreader_client =
       std::make_unique<MockCreateProofreaderClient>();
@@ -379,17 +375,17 @@ TEST_F(AIProofreaderTest, InputLimitExceededError) {
   auto proofreader_remote = GetAIProofreaderRemote();
 
   EXPECT_CALL(session_, GetExecutionInputSizeInTokens(_, _))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [](optimization_guide::MultimodalMessageReadView request_metadata,
              optimization_guide::OptimizationGuideModelSizeInTokenCallback
                  callback) {
             std::move(callback).Run(
                 blink::mojom::kWritingAssistanceMaxInputTokenSize + 1);
-          }));
+          });
   AITestUtils::MockModelStreamingResponder mock_responder;
   base::RunLoop run_loop;
   EXPECT_CALL(mock_responder, OnError(_, _))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](blink::mojom::ModelStreamingResponseStatus status,
               blink::mojom::QuotaErrorInfoPtr quota_error_info) {
             EXPECT_EQ(status, blink::mojom::ModelStreamingResponseStatus::
@@ -400,7 +396,7 @@ TEST_F(AIProofreaderTest, InputLimitExceededError) {
             ASSERT_EQ(quota_error_info->quota,
                       blink::mojom::kWritingAssistanceMaxInputTokenSize);
             run_loop.Quit();
-          }));
+          });
 
   proofreader_remote->Proofread(kInputString,
                                 mock_responder.BindNewPipeAndPassRemote());
@@ -411,7 +407,7 @@ TEST_F(AIProofreaderTest, ModelExecutionError) {
   SetupMockOptimizationGuideKeyedService();
   SetupMockSession();
   EXPECT_CALL(session_, ExecuteModel(_, _))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [](const google::protobuf::MessageLite& request,
              optimization_guide::
                  OptimizationGuideModelExecutionResultStreamingCallback
@@ -423,19 +419,19 @@ TEST_F(AIProofreaderTest, ModelExecutionError) {
                         optimization_guide::
                             OptimizationGuideModelExecutionError::
                                 ModelExecutionError::kPermissionDenied)));
-          }));
+          });
 
   auto proofreader_remote = GetAIProofreaderRemote();
   AITestUtils::MockModelStreamingResponder mock_responder;
   base::RunLoop run_loop;
   EXPECT_CALL(mock_responder, OnError(_, _))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](blink::mojom::ModelStreamingResponseStatus status,
               blink::mojom::QuotaErrorInfoPtr quota_error_info) {
             EXPECT_EQ(status, blink::mojom::ModelStreamingResponseStatus::
                                   kErrorPermissionDenied);
             run_loop.Quit();
-          }));
+          });
 
   proofreader_remote->Proofread(kInputString,
                                 mock_responder.BindNewPipeAndPassRemote());
@@ -446,7 +442,7 @@ TEST_F(AIProofreaderTest, ProofreadMultipleResponse) {
   SetupMockOptimizationGuideKeyedService();
   SetupMockSession();
   EXPECT_CALL(session_, ExecuteModel(_, _))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [](const google::protobuf::MessageLite& request,
              optimization_guide::
                  OptimizationGuideModelExecutionResultStreamingCallback
@@ -456,22 +452,19 @@ TEST_F(AIProofreaderTest, ProofreadMultipleResponse) {
                 CreateExecutionResult("Result ", /*is_complete=*/false));
             callback.Run(CreateExecutionResult("text",
                                                /*is_complete=*/true));
-          }));
+          });
 
   auto proofreader_remote = GetAIProofreaderRemote();
   AITestUtils::MockModelStreamingResponder mock_responder;
   base::RunLoop run_loop;
   EXPECT_CALL(mock_responder, OnStreaming(_))
-      .WillOnce(testing::Invoke(
-          [&](const std::string& text) { EXPECT_THAT(text, "Result "); }))
-      .WillOnce(testing::Invoke(
-          [&](const std::string& text) { EXPECT_THAT(text, "text"); }));
+      .WillOnce([&](const std::string& text) { EXPECT_THAT(text, "Result "); })
+      .WillOnce([&](const std::string& text) { EXPECT_THAT(text, "text"); });
 
   EXPECT_CALL(mock_responder, OnCompletion(_))
-      .WillOnce(testing::Invoke(
-          [&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
-            run_loop.Quit();
-          }));
+      .WillOnce([&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
+        run_loop.Quit();
+      });
 
   proofreader_remote->Proofread(kInputString,
                                 mock_responder.BindNewPipeAndPassRemote());
@@ -482,7 +475,7 @@ TEST_F(AIProofreaderTest, MultipleProofread) {
   SetupMockOptimizationGuideKeyedService();
   SetupMockSession();
   EXPECT_CALL(session_, ExecuteModel(_, _))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [](const google::protobuf::MessageLite& request,
              optimization_guide::
                  OptimizationGuideModelExecutionResultStreamingCallback
@@ -490,8 +483,8 @@ TEST_F(AIProofreaderTest, MultipleProofread) {
             EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
             callback.Run(CreateExecutionResult("Result text",
                                                /*is_complete=*/true));
-          }))
-      .WillOnce(testing::Invoke(
+          })
+      .WillOnce(
           [](const google::protobuf::MessageLite& request,
              optimization_guide::
                  OptimizationGuideModelExecutionResultStreamingCallback
@@ -500,22 +493,20 @@ TEST_F(AIProofreaderTest, MultipleProofread) {
             EXPECT_THAT(request, EqualsProto(expect));
             callback.Run(CreateExecutionResult("Result text 2",
                                                /*is_complete=*/true));
-          }));
+          });
 
   auto proofreader_remote = GetAIProofreaderRemote();
   {
     AITestUtils::MockModelStreamingResponder mock_responder;
     base::RunLoop run_loop;
     EXPECT_CALL(mock_responder, OnStreaming(_))
-        .WillOnce(testing::Invoke([&](const std::string& text) {
-          EXPECT_THAT(text, "Result text");
-        }));
+        .WillOnce(
+            [&](const std::string& text) { EXPECT_THAT(text, "Result text"); });
 
     EXPECT_CALL(mock_responder, OnCompletion(_))
-        .WillOnce(testing::Invoke(
-            [&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
-              run_loop.Quit();
-            }));
+        .WillOnce([&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
+          run_loop.Quit();
+        });
 
     proofreader_remote->Proofread(kInputString,
                                   mock_responder.BindNewPipeAndPassRemote());
@@ -525,15 +516,14 @@ TEST_F(AIProofreaderTest, MultipleProofread) {
     AITestUtils::MockModelStreamingResponder mock_responder;
     base::RunLoop run_loop;
     EXPECT_CALL(mock_responder, OnStreaming(_))
-        .WillOnce(testing::Invoke([&](const std::string& text) {
+        .WillOnce([&](const std::string& text) {
           EXPECT_THAT(text, "Result text 2");
-        }));
+        });
 
     EXPECT_CALL(mock_responder, OnCompletion(_))
-        .WillOnce(testing::Invoke(
-            [&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
-              run_loop.Quit();
-            }));
+        .WillOnce([&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
+          run_loop.Quit();
+        });
 
     proofreader_remote->Proofread("input string 2",
                                   mock_responder.BindNewPipeAndPassRemote());
@@ -555,7 +545,7 @@ TEST_F(AIProofreaderTest, GetCorretionTypeDefault) {
   expected.set_allocated_options(
       AIProofreader::ToProtoOptions(options).release());
   EXPECT_CALL(session_, ExecuteModel(_, _))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](const google::protobuf::MessageLite& request,
               optimization_guide::
                   OptimizationGuideModelExecutionResultStreamingCallback
@@ -563,21 +553,20 @@ TEST_F(AIProofreaderTest, GetCorretionTypeDefault) {
             EXPECT_THAT(request, EqualsProto(expected));
             callback.Run(CreateExecutionResult("Correction type",
                                                /*is_complete=*/true));
-          }));
+          });
 
   mojo::Remote<blink::mojom::AIProofreader> proofreader_remote;
   {
     MockCreateProofreaderClient mock_create_proofreader_client;
     base::RunLoop run_loop;
     EXPECT_CALL(mock_create_proofreader_client, OnResult(_))
-        .WillOnce(testing::Invoke(
-            [&](mojo::PendingRemote<::blink::mojom::AIProofreader>
-                    proofreader) {
-              EXPECT_TRUE(proofreader);
-              proofreader_remote = mojo::Remote<blink::mojom::AIProofreader>(
-                  std::move(proofreader));
-              run_loop.Quit();
-            }));
+        .WillOnce([&](mojo::PendingRemote<::blink::mojom::AIProofreader>
+                          proofreader) {
+          EXPECT_TRUE(proofreader);
+          proofreader_remote =
+              mojo::Remote<blink::mojom::AIProofreader>(std::move(proofreader));
+          run_loop.Quit();
+        });
 
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     ai_manager->CreateProofreader(
@@ -589,15 +578,14 @@ TEST_F(AIProofreaderTest, GetCorretionTypeDefault) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(mock_responder, OnStreaming(_))
-      .WillOnce(testing::Invoke([&](const std::string& text) {
+      .WillOnce([&](const std::string& text) {
         EXPECT_THAT(text, "Correction type");
-      }));
+      });
 
   EXPECT_CALL(mock_responder, OnCompletion(_))
-      .WillOnce(testing::Invoke(
-          [&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
-            run_loop.Quit();
-          }));
+      .WillOnce([&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
+        run_loop.Quit();
+      });
 
   proofreader_remote->GetCorrectionType(
       kInputStringWithError, kCorrectedInputWithCorrection,
@@ -612,15 +600,14 @@ TEST_F(AIProofreaderTest, ResponderDisconnected) {
   optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
       streaming_callback;
   EXPECT_CALL(session_, ExecuteModel(_, _))
-      .WillOnce(testing::Invoke(
-          [&](const google::protobuf::MessageLite& request,
-              optimization_guide::
-                  OptimizationGuideModelExecutionResultStreamingCallback
-                      callback) {
-            EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
-            streaming_callback = std::move(callback);
-            run_loop_for_callback.Quit();
-          }));
+      .WillOnce([&](const google::protobuf::MessageLite& request,
+                    optimization_guide::
+                        OptimizationGuideModelExecutionResultStreamingCallback
+                            callback) {
+        EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
+        streaming_callback = std::move(callback);
+        run_loop_for_callback.Quit();
+      });
 
   auto proofreader_remote = GetAIProofreaderRemote();
   std::unique_ptr<AITestUtils::MockModelStreamingResponder> mock_responder =
@@ -646,27 +633,26 @@ TEST_F(AIProofreaderTest, ProofreaderDisconnected) {
   optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
       streaming_callback;
   EXPECT_CALL(session_, ExecuteModel(_, _))
-      .WillOnce(testing::Invoke(
-          [&](const google::protobuf::MessageLite& request,
-              optimization_guide::
-                  OptimizationGuideModelExecutionResultStreamingCallback
-                      callback) {
-            EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
-            streaming_callback = std::move(callback);
-            run_loop_for_callback.Quit();
-          }));
+      .WillOnce([&](const google::protobuf::MessageLite& request,
+                    optimization_guide::
+                        OptimizationGuideModelExecutionResultStreamingCallback
+                            callback) {
+        EXPECT_THAT(request, EqualsProto(GetExecuteRequest()));
+        streaming_callback = std::move(callback);
+        run_loop_for_callback.Quit();
+      });
 
   auto proofreader_remote = GetAIProofreaderRemote();
   AITestUtils::MockModelStreamingResponder mock_responder;
   base::RunLoop run_loop_for_response;
   EXPECT_CALL(mock_responder, OnError(_, _))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](blink::mojom::ModelStreamingResponseStatus status,
               blink::mojom::QuotaErrorInfoPtr quota_error_info) {
             EXPECT_EQ(status, blink::mojom::ModelStreamingResponseStatus::
                                   kErrorSessionDestroyed);
             run_loop_for_response.Quit();
-          }));
+          });
 
   proofreader_remote->Proofread(kInputString,
                                 mock_responder.BindNewPipeAndPassRemote());
