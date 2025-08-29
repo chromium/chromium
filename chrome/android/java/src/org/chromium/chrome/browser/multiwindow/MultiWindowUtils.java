@@ -99,6 +99,7 @@ public class MultiWindowUtils implements ActivityStateListener {
     static final String HISTOGRAM_DESKTOP_WINDOW_COUNT_NEW_INSTANCE_SUFFIX = ".NewInstance";
     static final String HISTOGRAM_DESKTOP_WINDOW_COUNT_EXISTING_INSTANCE_SUFFIX =
             ".ExistingInstance";
+    static final String OPEN_ADJACENTLY_PARAM = "open_adjacently";
 
     private static MultiWindowUtils sInstance = new MultiWindowUtils();
     protected static @Nullable Supplier<Activity> sActivitySupplierForTesting;
@@ -109,7 +110,6 @@ public class MultiWindowUtils implements ActivityStateListener {
     private final boolean mMultiInstanceApi31Enabled;
     private static @Nullable Boolean sIsMultiInstanceApi31Enabled;
 
-    private static final String OPEN_ADJACENTLY_PARAM = "open_adjacently";
 
     // Used to keep track of whether ChromeTabbedActivity2 is running. A tri-state Boolean is
     // used in case both activities die in the background and MultiWindowUtils is recreated.
@@ -959,7 +959,9 @@ public class MultiWindowUtils implements ActivityStateListener {
      */
     public static boolean shouldOpenInAdjacentWindow() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT, OPEN_ADJACENTLY_PARAM, true);
+                ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
+                OPEN_ADJACENTLY_PARAM,
+                true);
     }
 
     /**

@@ -39,6 +39,7 @@ import android.util.Pair;
 import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
 
+import org.chromium.base.FeatureOverrides;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -1992,5 +1993,71 @@ public class MultiInstanceManagerApi31UnitTest {
 
         // Verify we resume the TabGroupSyncService to begin observing local changes.
         verify(mTabGroupSyncService).setLocalObservationMode(/* observeLocalChanges */ true);
+    }
+
+    @Test
+    public void testOpenNewWindow_RemovesAdjacentFlag_NonMultiWindowMode() {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
+                MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
+                false);
+
+        when(mCurrentActivity.isInMultiWindowMode()).thenReturn(false);
+        when(mCurrentActivity.getPackageName())
+                .thenReturn(ContextUtils.getApplicationContext().getPackageName());
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+
+        mMultiInstanceManager.openNewWindow("", false);
+
+        verify(mCurrentActivity).startActivity(intentCaptor.capture());
+        Intent intent = intentCaptor.getValue();
+        int flags = intent.getFlags();
+        assertFalse(
+                "FLAG_ACTIVITY_LAUNCH_ADJACENT should be removed.",
+                (flags & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
+    }
+
+    @Test
+    public void testOpenNewWindow_KeepsAdjacentFlag_NonMultiWindowMode() {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
+                MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
+                true);
+
+        when(mCurrentActivity.isInMultiWindowMode()).thenReturn(false);
+        when(mCurrentActivity.getPackageName())
+                .thenReturn(ContextUtils.getApplicationContext().getPackageName());
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+
+        mMultiInstanceManager.openNewWindow("", false);
+
+        verify(mCurrentActivity).startActivity(intentCaptor.capture());
+        Intent intent = intentCaptor.getValue();
+        int flags = intent.getFlags();
+        assertTrue(
+                "FLAG_ACTIVITY_LAUNCH_ADJACENT should not be removed.",
+                (flags & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
+    }
+
+    @Test
+    public void testOpenNewWindow_KeepsAdjacentFlag_MultiWindowMode() {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
+                MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
+                true);
+
+        when(mCurrentActivity.isInMultiWindowMode()).thenReturn(true);
+        when(mCurrentActivity.getPackageName())
+                .thenReturn(ContextUtils.getApplicationContext().getPackageName());
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+
+        mMultiInstanceManager.openNewWindow("", false);
+
+        verify(mCurrentActivity).startActivity(intentCaptor.capture());
+        Intent intent = intentCaptor.getValue();
+        int flags = intent.getFlags();
+        assertTrue(
+                "FLAG_ACTIVITY_LAUNCH_ADJACENT should not be removed.",
+                (flags & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
     }
 }
