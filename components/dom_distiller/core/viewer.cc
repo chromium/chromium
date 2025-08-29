@@ -312,9 +312,25 @@ const std::string GetLoadingImage() {
       IDR_DISTILLER_LOADING_IMAGE);
 }
 
+static std::string GetMinPinchZoomScale() {
+  std::string min_scale = "0.5";
+#if BUILDFLAG(IS_ANDROID)
+  // Make the minimum pinch zoom value to be 1.0 for distillation in app to
+  // align with prefs UI.
+  if (base::FeatureList::IsEnabled(kReaderModeDistillInApp)) {
+    min_scale = "1.0";
+  }
+#endif
+  return min_scale;
+}
+
 const std::string GetJavaScript() {
-  return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-      IDR_DOM_DISTILLER_VIEWER_JS);
+  std::string js =
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+          IDR_DOM_DISTILLER_VIEWER_JS);
+  base::ReplaceFirstSubstringAfterOffset(&js, 0, "$MIN_SCALE",
+                                         GetMinPinchZoomScale());
+  return js;
 }
 
 std::unique_ptr<ViewerHandle> CreateViewRequest(

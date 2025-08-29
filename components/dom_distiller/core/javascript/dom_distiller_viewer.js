@@ -334,7 +334,7 @@ class Pincher {
   refreshTransform_() {
     const slowedScale = Math.exp(Math.log(this.scale) * FONT_SCALE_MULTIPLIER);
     this.clampedScale =
-        Math.max(0.5, Math.min(2.0, this.fontSizeAnchor * slowedScale));
+        Math.max($MIN_SCALE, Math.min(2.0, this.fontSizeAnchor * slowedScale));
 
     // Use "fake" 3D transform so that the layer is not repainted.
     // With 2D transform, the frame rate would be much lower.
