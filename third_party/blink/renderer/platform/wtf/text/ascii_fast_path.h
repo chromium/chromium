@@ -83,6 +83,9 @@ struct AsciiStringAttributes {
       : contains_only_ascii(contains_only_ascii),
         is_lower_ascii(is_lower_ascii) {}
   unsigned contains_only_ascii : 1;
+
+  // True if there are no upper-case ascii characters in the string.
+  // Only valid if contains_only_ascii is true.
   unsigned is_lower_ascii : 1;
 };
 
@@ -104,6 +107,12 @@ CharacterAttributes(base::span<const CharacterType> chars) {
 
   return AsciiStringAttributes(IsASCII(all_char_bits), !contains_upper_case);
 }
+
+// Fast-path specialization for LChar as it's called very frequently by
+// String::FromUTF8.
+template <>
+WTF_EXPORT AsciiStringAttributes
+CharacterAttributes(base::span<const LChar> chars);
 
 template <typename CharacterType>
 ALWAYS_INLINE bool IsLowerAscii(base::span<const CharacterType> chars) {
