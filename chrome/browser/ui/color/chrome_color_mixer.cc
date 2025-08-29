@@ -262,8 +262,7 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       PickGoogleColor(ui::kColorAccent, kColorToolbar,
                       color_utils::kMinimumVisibleContrastRatio);
   mixer[kColorMediaRouterIconWarning] = {ui::kColorAlertMediumSeverityIcon};
-  mixer[kColorMulitContentsViewActiveContentOutline] = {
-      ui::kColorSysOnSurfacePrimary};
+  mixer[kColorMulitContentsViewActiveContentOutline] = {ui::kColorSysOutline};
   mixer[kColorMulitContentsViewInactiveContentOutline] = {
       ui::kColorSysNeutralOutline};
   mixer[kColorMulitContentsViewMiniToolbarForeground] = {kColorToolbarText};
