@@ -504,6 +504,7 @@ CGFloat SpaceBetweenModules() {
           .translatesAutoresizingMaskIntoConstraints = NO;
       [_feedContainer addSubview:_feedVisualEffectBackgroundView];
       AddSameConstraints(_feedContainer, _feedVisualEffectBackgroundView);
+      [self applyBackgroundThemeToFeedContainer];
     } else {
       _feedContainer.backgroundColor = [UIColor colorNamed:kBackgroundColor];
     }
@@ -646,6 +647,7 @@ CGFloat SpaceBetweenModules() {
   if (_feedContainer) {
     [_feedContainer removeFromSuperview];
     _feedContainer = nil;
+    _feedVisualEffectBackgroundView = nil;
   }
 
   [self removeFromViewHierarchy:self.feedWrapperViewController];
@@ -1122,11 +1124,11 @@ CGFloat SpaceBetweenModules() {
 // Sets the background using the current color palette, or defaults if none is
 // set.
 - (void)applyBackgroundTheme {
+  [self applyBackgroundThemeToFeedContainer];
+
   BOOL hasImageBackground =
       [self.traitCollection boolForNewTabPageImageBackgroundTrait];
   if (hasImageBackground) {
-    _feedContainer.backgroundColor = UIColor.clearColor;
-    _feedVisualEffectBackgroundView.hidden = NO;
     _backgroundGradientView.hidden = YES;
     self.view.backgroundColor = [UIColor colorNamed:@"ntp_background_color"];
     return;
@@ -1134,7 +1136,6 @@ CGFloat SpaceBetweenModules() {
 
   _backgroundGradientView.hidden =
       self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleLight;
-  _feedVisualEffectBackgroundView.hidden = YES;
 
   NewTabPageColorPalette* colorPalette =
       [self.traitCollection objectForNewTabPageTrait];
@@ -1143,14 +1144,32 @@ CGFloat SpaceBetweenModules() {
     self.view.backgroundColor = colorPalette.primaryColor;
     [_backgroundGradientView setStartColor:colorPalette.secondaryColor
                                   endColor:colorPalette.primaryColor];
-    _feedContainer.backgroundColor = colorPalette.secondaryCellColor;
   } else {
     self.view.backgroundColor = [UIColor colorNamed:@"ntp_background_color"];
     [_backgroundGradientView
         setStartColor:[UIColor colorNamed:kSecondaryBackgroundColor]
              endColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
-    _feedContainer.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   }
+}
+
+// Sets the feed container's background views correctly based on the current
+// theme settings.
+- (void)applyBackgroundThemeToFeedContainer {
+  BOOL hasImageBackground =
+      [self.traitCollection boolForNewTabPageImageBackgroundTrait];
+  if (hasImageBackground) {
+    _feedContainer.backgroundColor = UIColor.clearColor;
+    _feedVisualEffectBackgroundView.hidden = NO;
+    return;
+  }
+  _feedVisualEffectBackgroundView.hidden = YES;
+
+  NewTabPageColorPalette* colorPalette =
+      [self.traitCollection objectForNewTabPageTrait];
+
+  _feedContainer.backgroundColor = colorPalette
+                                       ? colorPalette.secondaryCellColor
+                                       : [UIColor colorNamed:kBackgroundColor];
 }
 
 - (void)setNTPShortcutsHandler:
