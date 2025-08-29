@@ -48,6 +48,12 @@ class LensOverlayBlurLayerDelegate : public ui::LayerOwner,
 
   bool IsCapturingBackgroundImageForTesting();
 
+  // Fetches a new background screenshot to use for blurring.
+  void FetchBackgroundImage();
+
+  // Returns true if the background image is being captured and blurred.
+  bool IsLiveBlurActive();
+
  private:
   // ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override;
@@ -57,9 +63,6 @@ class LensOverlayBlurLayerDelegate : public ui::LayerOwner,
   // content::RenderWidgetHostObserver:
   void RenderWidgetHostDestroyed(
       content::RenderWidgetHost* widget_host) override;
-
-  // Fetches a new background screenshot to use for blurring.
-  void FetchBackgroundImage();
 
   // Updates background_screenshot_ to the new bitmap and rerenders IFF bitmap
   // is visually different than background_screenshot_.

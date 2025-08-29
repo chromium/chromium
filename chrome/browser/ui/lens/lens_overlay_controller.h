@@ -1069,6 +1069,9 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // dependent on whether the page is context eligible or not.
   bool should_send_screenshot_on_init_ = false;
 
+  // Indicates whether live blur should be enabled when the overlay is shown.
+  bool should_enable_live_blur_on_show_ = false;
+
   // TODO(384778180): The two `pre_initialization_*` fields below are used to
   // store data that came back before the initialization data was ready. This
   // should be refactored into one struct to make it cleaner.
