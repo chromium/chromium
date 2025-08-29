@@ -48,6 +48,7 @@ import org.chromium.content_public.browser.WebContents;
     ChromeFeatureList.DISPLAY_EDGE_TO_EDGE_FULLSCREEN,
     ChromeFeatureList.ENABLE_FULLSCREEN_TO_ANY_SCREEN_ANDROID
 })
+@Features.DisableFeatures({ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER})
 @RunWith(BaseRobolectricTestRunner.class)
 public class FullscreenHtmlApiHandlerLegacyUnitTest {
     private static final int DEVICE_WIDTH = 900;

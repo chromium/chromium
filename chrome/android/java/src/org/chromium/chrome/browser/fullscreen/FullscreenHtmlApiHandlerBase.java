@@ -369,7 +369,13 @@ public abstract class FullscreenHtmlApiHandlerBase
     @VisibleForTesting
     private FullscreenToast getToast() {
         if (mToast == null) {
-            mToast = new FullscreenToast.AndroidToast(mActivity, this::getPersistentFullscreenMode);
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER)) {
+                mToast = new FullscreenToast.NoEffectToastStub();
+            } else {
+                mToast =
+                        new FullscreenToast.AndroidToast(
+                                mActivity, this::getPersistentFullscreenMode);
+            }
         }
         return mToast;
     }

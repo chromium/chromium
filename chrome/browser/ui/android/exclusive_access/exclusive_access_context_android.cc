@@ -48,6 +48,15 @@ void ExclusiveAccessContextAndroid::EnterFullscreen(
       env, java_context_, fullscreen_tab_params.display_id,
       fullscreen_tab_params.prefers_navigation_bar,
       fullscreen_tab_params.prefers_status_bar);
+
+  auto params = ExclusiveAccessBubbleParams{origin, bubble_type};
+  if (!exclusive_access_bubble_) {
+    exclusive_access_bubble_ = std::make_unique<ExclusiveAccessBubbleAndroid>(
+        params, base::NullCallback(), java_context_);
+  }
+  {
+    exclusive_access_bubble_->Update(params, base::NullCallback());
+  }
 }
 
 void ExclusiveAccessContextAndroid::ExitFullscreen() {

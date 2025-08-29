@@ -120,4 +120,29 @@ interface FullscreenToast {
             }
         }
     }
+
+    // Used when Exclusive Access Manager is used for the Toast control.
+    class NoEffectToastStub implements FullscreenToast {
+        NoEffectToastStub() {}
+
+        @Override
+        public void onExitPersistentFullscreen() {}
+
+        @Override
+        public void onEnterFullscreen() {}
+
+        @Override
+        public void onFullscreenLayout() {}
+
+        @Override
+        public void onExitFullscreen() {}
+
+        @Override
+        public void onWindowFocusChanged(boolean hasWindowFocus) {}
+
+        @Override
+        public boolean isVisible() {
+            return false;
+        }
+    }
 }
