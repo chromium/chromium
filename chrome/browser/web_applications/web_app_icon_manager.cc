@@ -92,9 +92,12 @@ struct TypedResult {
   bool HasErrors() const { return !error_log.empty(); }
 };
 
-std::string CreateError(std::initializer_list<std::string_view> parts) {
+std::string CreateError(std::initializer_list<std::string_view> parts,
+                        bool skip_logging = false) {
   std::string error = base::StrCat(parts);
-  LOG(ERROR) << error;
+  if (!skip_logging) {
+    LOG(ERROR) << error;
+  }
   return error;
 }
 
@@ -254,7 +257,8 @@ TypedResult<SkBitmap> ReadIconBlocking(scoped_refptr<FileUtilsWrapper> utils,
   auto icon_data = base::MakeRefCounted<base::RefCountedString>();
   if (!utils->ReadFileToString(icon_file, &icon_data->as_string())) {
     return {.error_log = {CreateError(
-                {"Could not read icon file: ", icon_file.AsUTF8Unsafe()})}};
+                {"Could not read icon file: ", icon_file.AsUTF8Unsafe()},
+                read_trusted_icons)}};
   }
 
   TypedResult<SkBitmap> result;
@@ -271,12 +275,14 @@ TypedResult<SkBitmap> ReadIconBlocking(scoped_refptr<FileUtilsWrapper> utils,
 // Returns null base::Time if any errors occurred.
 TypedResult<base::Time> ReadIconTimeBlocking(
     scoped_refptr<FileUtilsWrapper> utils,
-    base::FilePath icon_file) {
+    base::FilePath icon_file,
+    bool read_trusted_icon) {
   TRACE_EVENT0("ui", "web_app_icon_manager::ReadIconTimeBlocking");
   base::File::Info file_info;
   if (!utils->GetFileInfo(icon_file, &file_info)) {
     return {.error_log = {CreateError(
-                {"Could not read icon file: ", icon_file.AsUTF8Unsafe()})}};
+                {"Could not read icon file: ", icon_file.AsUTF8Unsafe()},
+                read_trusted_icon)}};
   }
 
   TypedResult<base::Time> access_time;
@@ -445,7 +451,7 @@ ReadIconsLastUpdateTimeBlocking(scoped_refptr<FileUtilsWrapper> utils,
             ? GetTrustedIconsFileName(web_apps_directory, icon_id)
             : GetIconFileName(web_apps_directory, icon_id);
     TypedResult<base::Time> read_result =
-        ReadIconTimeBlocking(utils, icon_file);
+        ReadIconTimeBlocking(utils, icon_file, consider_trusted_icons);
     base::Extend(result.error_log, std::move(read_result.error_log));
     if (!read_result.value.is_null())
       result.value[icon_size_px] = std::move(read_result.value);
@@ -548,7 +554,7 @@ ReadShortcutMenuIconsWithTimestampBlocking(
             GetManifestResourcesShortcutsMenuIconFileName(
                 web_apps_directory, app_id, purpose, curr_index, icon_size_px);
         TypedResult<base::Time> read_result =
-            ReadIconTimeBlocking(utils, file_name);
+            ReadIconTimeBlocking(utils, file_name, /*read_trusted_icon=*/false);
         base::Extend(results.error_log, std::move(read_result.error_log));
         if (!read_result.value.is_null()) {
           bitmap_with_time[icon_size_px] = std::move(read_result.value);
@@ -581,7 +587,8 @@ TypedResult<std::vector<uint8_t>> ReadCompressedIconBlocking(
   std::string icon_data;
   if (!utils->ReadFileToString(icon_file, &icon_data)) {
     return {.error_log = {CreateError(
-                {"Could not read icon file: ", icon_file.AsUTF8Unsafe()})}};
+                {"Could not read icon file: ", icon_file.AsUTF8Unsafe()},
+                is_trusted)}};
   }
 
   // Copy data: we can't std::move std::string into std::vector.
