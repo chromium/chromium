@@ -23,8 +23,9 @@ LRURendererCache::LRURendererCache(
       weak_factory_(this) {
   DCHECK(browser_context_);
   memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-      FROM_HERE, base::BindRepeating(&LRURendererCache::OnMemoryPressure,
-                                     weak_factory_.GetWeakPtr()));
+      FROM_HERE, base::MemoryPressureListenerTag::kLruRendererCache,
+      base::BindRepeating(&LRURendererCache::OnMemoryPressure,
+                          weak_factory_.GetWeakPtr()));
 }
 
 LRURendererCache::~LRURendererCache() = default;

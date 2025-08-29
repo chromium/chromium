@@ -103,7 +103,7 @@ DOMStorageContextWrapper::DOMStorageContextWrapper(
     StoragePartitionImpl* partition)
     : partition_(partition) {
   memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-      FROM_HERE,
+      FROM_HERE, base::MemoryPressureListenerTag::kDOMStorageContextWrapper,
       base::BindRepeating(&DOMStorageContextWrapper::OnMemoryPressure,
                           base::Unretained(this)));
 

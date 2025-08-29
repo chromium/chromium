@@ -46,6 +46,7 @@ ImageDecodingStore::ImageDecodingStore()
       heap_memory_usage_in_bytes_(0),
       memory_pressure_listener_(
           FROM_HERE,
+          base::MemoryPressureListenerTag::kImageDecodingStore,
           blink::BindRepeating(&ImageDecodingStore::OnMemoryPressure,
                                blink::Unretained(this))) {}
 

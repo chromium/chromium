@@ -144,8 +144,9 @@ GlicKeyedService::GlicKeyedService(
   metrics_->SetControllers(&window_controller(), sharing_manager_.get());
 
   memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-      FROM_HERE, base::BindRepeating(&GlicKeyedService::OnMemoryPressure,
-                                     weak_ptr_factory_.GetWeakPtr()));
+      FROM_HERE, base::MemoryPressureListenerTag::kGlicKeyedService,
+      base::BindRepeating(&GlicKeyedService::OnMemoryPressure,
+                          weak_ptr_factory_.GetWeakPtr()));
 
   // If `--glic-always-open-fre` is present, unset this pref to ensure the FRE
   // is shown for testing convenience.

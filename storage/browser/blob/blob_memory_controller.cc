@@ -554,6 +554,7 @@ BlobMemoryController::BlobMemoryController(
           base::LRUCache<uint64_t, ShareableBlobDataItem*>::NO_AUTO_EVICT),
       memory_pressure_listener_(
           FROM_HERE,
+          base::MemoryPressureListenerTag::kBlobMemoryController,
           base::BindRepeating(&BlobMemoryController::OnMemoryPressure,
                               base::Unretained(this))) {}
 

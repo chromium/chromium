@@ -522,6 +522,7 @@ bool IsSlowNetwork(WebContents* web_contents) {
 PrerenderHostRegistry::PrerenderHostRegistry(WebContents& web_contents)
     : memory_pressure_listener_(
           FROM_HERE,
+          base::MemoryPressureListenerTag::kPrerenderHostRegistry,
           base::BindRepeating(&PrerenderHostRegistry::OnMemoryPressure,
                               base::Unretained(this))) {
   Observe(&web_contents);

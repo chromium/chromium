@@ -113,7 +113,7 @@ SharedDictionaryManager::SharedDictionaryManager()
     : cached_storages_(kCachedStorageMaxSize) {
   memory_pressure_listener_ =
       std::make_unique<base::AsyncMemoryPressureListener>(
-          FROM_HERE,
+          FROM_HERE, base::MemoryPressureListenerTag::kSharedDictionaryManager,
           base::BindRepeating(&SharedDictionaryManager::OnMemoryPressure,
                               weak_factory_.GetWeakPtr()));
 }

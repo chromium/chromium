@@ -435,8 +435,9 @@ void HistoryBackend::Init(
 
   memory_pressure_listener_ =
       std::make_unique<base::AsyncMemoryPressureListener>(
-          FROM_HERE, base::BindRepeating(&HistoryBackend::OnMemoryPressure,
-                                         base::Unretained(this)));
+          FROM_HERE, base::MemoryPressureListenerTag::kHistoryBackend,
+          base::BindRepeating(&HistoryBackend::OnMemoryPressure,
+                              base::Unretained(this)));
 }
 
 void HistoryBackend::SetOnBackendDestroyTask(

@@ -72,6 +72,7 @@ class Globals {
         // time it is called.
         memory_pressure_listener_(
             FROM_HERE,
+            base::MemoryPressureListenerTag::kLevelDb,
             base::BindRepeating(&Globals::OnMemoryPressure,
                                 base::Unretained(this))) {}
 

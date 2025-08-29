@@ -25,6 +25,7 @@ class MemoryWarningHelperTest : public PlatformTest {
     // will store the memory pressure level sent to the callback in
     // `memory_pressure_level_` so that tests can verify the level is correct.
     memory_pressure_listener_.reset(new base::SyncMemoryPressureListener(
+        base::MemoryPressureListenerTag::kTest,
         base::BindRepeating(&MemoryWarningHelperTest::OnMemoryPressure,
                             base::Unretained(this))));
     memory_pressure_level_ =

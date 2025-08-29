@@ -114,8 +114,10 @@ class UserLevelMemoryPressureSignalGeneratorTest : public testing::Test {
     // If SequencedTaskRunner::HasCurrentDefault() returns true, async
     // OnMemoryPressure() is available, but the test environment seems not
     // to initialize it.
-    memory_pressure_listener_ =
-        std::make_unique<base::SyncMemoryPressureListener>(blink::BindRepeating(
+    memory_pressure_listener_ = std::make_unique<
+        base::SyncMemoryPressureListener>(
+        base::MemoryPressureListenerTag::kTest,
+        blink::BindRepeating(
             &UserLevelMemoryPressureSignalGeneratorTest::OnSyncMemoryPressure,
             base::Unretained(this)));
     base::MemoryPressureListener::SetNotificationsSuppressed(false);

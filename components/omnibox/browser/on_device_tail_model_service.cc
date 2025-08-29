@@ -120,7 +120,7 @@ OnDeviceTailModelService::OnDeviceTailModelService(
       /* model_metadata= */ std::nullopt, this);
 
   memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-      FROM_HERE,
+      FROM_HERE, base::MemoryPressureListenerTag::kOnDeviceTailModelService,
       base::BindRepeating(&OnDeviceTailModelService::OnMemoryPressure,
                           weak_ptr_factory_.GetWeakPtr()));
 }

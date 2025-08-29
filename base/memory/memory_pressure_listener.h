@@ -26,6 +26,59 @@ namespace base {
 
 class SingleThreadTaskRunner;
 
+enum class MemoryPressureListenerTag {
+  kTest = 0,
+  kHangWatcher = 1,
+  kMemBackend = 2,
+  kLevelDb = 3,
+  kSSLClientSessionCache = 4,
+  kVulkanInProcessContextProvider = 5,
+  kDemuxerManager = 6,
+  kFrameEvictionManager = 7,
+  kSlopBucket = 8,
+  kDiscardableSharedMemoryManager = 9,
+  kSharedStorageManager = 10,
+  kStagingBufferPool = 11,
+  kSharedDictionaryStorageOnDisk = 12,
+  kHttpNetworkSession = 13,
+  kBlobMemoryController = 14,
+  kQuicSessionPool = 15,
+  kImageDecodingStore = 16,
+  kCompositorGpuThread = 17,
+  kApplicationBreadcrumbsLogger = 18,
+  kSkiaOutputSurfaceImpl = 19,
+  kGpuImageDecodeCache = 20,
+  kResourcePool = 21,
+  kOnDeviceTailModelService = 22,
+  kGpuChannelManager = 23,
+  kSharedDictionaryManagerOnDisk = 24,
+  kSharedDictionaryManager = 25,
+  kHistoryBackend = 26,
+  kMediaUrlIndex = 27,
+  kBFCachePolicy = 28,
+  kLayerTreeHostImpl = 29,
+  kCacheStorageManager = 30,
+  kPlayerCompositorDelegate = 31,
+  kNetworkServiceClient = 32,
+  kGpuChildThread = 33,
+  kNavigationEntryScreenshotManager = 34,
+  kGlicKeyedService = 35,
+  kRenderThreadImpl = 36,
+  kSpareRenderProcessHostManagerImpl = 37,
+  kDOMStorageContextWrapper = 38,
+  kGpuProcessHost = 39,
+  kPrerenderHostRegistry = 40,
+  kUrgentPageDiscardingPolicy = 41,
+  kTabLoader = 42,
+  kBackgroundTabLoadingPolicy = 43,
+  kThumbnailCache = 44,
+  kUserspaceSwapPolicy = 45,
+  kWorkingSetTrimmerPolicyChromeOS = 46,
+  kLruRendererCache = 47,
+  kCastMemoryPressureControllerImpl = 48,
+  kMax,
+};
+
 // To start listening, create a new instance, passing a callback to a
 // function that takes a MemoryPressureLevel parameter. To stop listening,
 // simply delete the listener object. The implementation guarantees
@@ -65,6 +118,7 @@ class BASE_EXPORT SyncMemoryPressureListener {
   using MemoryPressureCallback = RepeatingCallback<void(MemoryPressureLevel)>;
 
   explicit SyncMemoryPressureListener(
+      MemoryPressureListenerTag tag,
       MemoryPressureCallback memory_pressure_callback);
 
   SyncMemoryPressureListener(const SyncMemoryPressureListener&) = delete;
@@ -75,9 +129,13 @@ class BASE_EXPORT SyncMemoryPressureListener {
 
   void Notify(MemoryPressureLevel memory_pressure_level);
 
+  MemoryPressureListenerTag tag() { return tag_; }
+
  private:
   MemoryPressureCallback memory_pressure_callback_
       GUARDED_BY_CONTEXT(thread_checker_);
+
+  MemoryPressureListenerTag tag_;
 
   THREAD_CHECKER(thread_checker_);
 };
@@ -89,6 +147,7 @@ class BASE_EXPORT AsyncMemoryPressureListener {
   using MemoryPressureCallback = RepeatingCallback<void(MemoryPressureLevel)>;
 
   AsyncMemoryPressureListener(const base::Location& creation_location,
+                              MemoryPressureListenerTag tag,
                               MemoryPressureCallback memory_pressure_callback);
 
   AsyncMemoryPressureListener(const AsyncMemoryPressureListener&) = delete;
@@ -134,6 +193,7 @@ class BASE_EXPORT MemoryPressureListener {
   using MemoryPressureCallback = RepeatingCallback<void(MemoryPressureLevel)>;
 
   MemoryPressureListener(const Location& creation_location,
+                         MemoryPressureListenerTag tag,
                          MemoryPressureCallback memory_pressure_callback);
 
   MemoryPressureListener(const MemoryPressureListener&) = delete;

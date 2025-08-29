@@ -496,6 +496,7 @@ SharedDictionaryManagerOnDisk::SharedDictionaryManagerOnDisk(
   memory_pressure_listener_ =
       std::make_unique<base::AsyncMemoryPressureListener>(
           FROM_HERE,
+          base::MemoryPressureListenerTag::kSharedDictionaryManagerOnDisk,
           base::BindRepeating(&SharedDictionaryManagerOnDisk::OnMemoryPressure,
                               weak_factory_.GetWeakPtr()));
   disk_cache_.Initialize(cache_directory_path,

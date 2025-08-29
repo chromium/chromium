@@ -79,6 +79,7 @@ VulkanInProcessContextProvider::VulkanInProcessContextProvider(
   memory_pressure_listener_ =
       std::make_unique<base::AsyncMemoryPressureListener>(
           FROM_HERE,
+          base::MemoryPressureListenerTag::kVulkanInProcessContextProvider,
           base::BindRepeating(&VulkanInProcessContextProvider::OnMemoryPressure,
                               base::Unretained(this)));
 }

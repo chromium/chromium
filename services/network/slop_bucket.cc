@@ -251,8 +251,9 @@ class SlopBucket::Manager {
     // This use of base::Unretained() is safe because the callback won't be
     // called after `memory_pressure_listener_` is destroyed.
     memory_pressure_listener_.emplace(
-        FROM_HERE, base::BindRepeating(&Manager::OnMemoryPressure,
-                                       base::Unretained(this)));
+        FROM_HERE, base::MemoryPressureListenerTag::kSlopBucket,
+        base::BindRepeating(&Manager::OnMemoryPressure,
+                            base::Unretained(this)));
   }
 
   Manager(const Manager&) = delete;

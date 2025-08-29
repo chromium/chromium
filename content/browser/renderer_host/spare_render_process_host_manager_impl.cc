@@ -306,6 +306,7 @@ GetMemoryPressureLevelThreshold() {
 SpareRenderProcessHostManagerImpl::SpareRenderProcessHostManagerImpl()
     : memory_pressure_listener_(
           FROM_HERE,
+          base::MemoryPressureListenerTag::kSpareRenderProcessHostManagerImpl,
           base::BindRepeating(
               &SpareRenderProcessHostManagerImpl::OnMemoryPressure,
               base::Unretained(this))),

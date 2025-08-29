@@ -364,6 +364,7 @@ GpuChannelManager::GpuChannelManager(
       use_shader_cache_shm_count_(use_shader_cache_shm_count),
       memory_pressure_listener_(
           FROM_HERE,
+          base::MemoryPressureListenerTag::kGpuChannelManager,
           base::BindRepeating(&GpuChannelManager::HandleMemoryPressure,
                               base::Unretained(this))),
       dawn_caching_interface_factory_(dawn_caching_interface_factory),
