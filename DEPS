@@ -298,7 +298,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'src_internal_revision': '209dfaa8e25409ce99226c187e450ebf40be7659',
+  'src_internal_revision': '547e8dc9c05483d518bc797765d4224d4bf236ac',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
@@ -1607,7 +1607,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '4a98e06f0493907d8150c0fd59cbfd004be6c235',
+    '3b86b645b995514d9db1e708b7a901757aea191c',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
