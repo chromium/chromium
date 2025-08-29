@@ -9604,8 +9604,8 @@ crbug.com/438933773 [ Win11-arm64 ] external/wpt/bluetooth/bidi/requestDevice/ca
 crbug.com/439012788 [ Linux ] wpt_internal/html/canvas/drawHTMLElement/allow-readback/html-images-ignored.https.sub.html [ Failure Pass ]
 
 # Temporarily disable to unblock WebRTC roll
-crbug.com/406585888 external/wpt/webrtc/rtp-stats-lifetime.https.html [ Failure Pass ]
-crbug.com/406585888 external/wpt/webrtc-stats/rtp-stats-creation.html [ Failure Pass ]
+crbug.com/406585888 external/wpt/webrtc/rtp-stats-lifetime.https.html [ Failure Pass Timeout ]
+crbug.com/406585888 external/wpt/webrtc-stats/rtp-stats-creation.html [ Failure Pass Timeout ]
 
 # Gardener 2025-08-18
 crbug.com/439456643 [ Linux ] external/wpt/content-security-policy/parsing/invalid-bytes.html [ Failure Timeout ]
