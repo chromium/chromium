@@ -19,7 +19,9 @@
 #include "base/types/expected_macros.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
@@ -582,6 +584,14 @@ void SafariDataImporter::PreparePasswords(std::string csv_data) {
 
 void SafariDataImporter::PreparePaymentCards(
     SafariDataImporter::BlockingWorker::PaymentCardParseResult result) {
+  if (IsImportBlockedByEnablingPolicy(
+          pref_service_, autofill::prefs::kAutofillCreditCardEnabled)) {
+    // TODO(crbug.com/407587751): Signal to UI that payment cards import is
+    // blocked by policy.
+    client_->OnPaymentCardsReady(/* count= */ 0);
+    return;
+  }
+
   if (result.entries.empty()) {
     metrics_recorder_.payment_card_metrics().LogOutcome(
         DataTypeMetrics::ImportOutcome::kNotPresent);
@@ -607,6 +617,14 @@ void SafariDataImporter::PreparePaymentCards(
 
 void SafariDataImporter::PrepareBookmarks(
     SafariDataImporter::BlockingWorker::BookmarkUnzipResult result) {
+  if (IsImportBlockedByEnablingPolicy(
+          pref_service_, bookmarks::prefs::kEditBookmarksEnabled)) {
+    // TODO(crbug.com/407587751): Signal to UI that bookmarks import is blocked
+    // by policy.
+    client_->OnBookmarksReady(/* count= */ 0);
+    return;
+  }
+
   if (!result.path || result.path->empty()) {
     metrics_recorder_.bookmark_metrics().LogOutcome(
         DataTypeMetrics::ImportOutcome::kNotPresent);
@@ -752,7 +770,9 @@ void SafariDataImporter::OnPasswordImportCompleted(
 }
 
 void SafariDataImporter::ContinueImportPaymentCards() {
-  if (cards_to_import_.empty()) {
+  if (IsImportBlockedByEnablingPolicy(
+          pref_service_, autofill::prefs::kAutofillCreditCardEnabled) ||
+      cards_to_import_.empty()) {
     client_->OnPaymentCardsImported(/* count= */ 0);
     return;
   }
@@ -787,6 +807,12 @@ void SafariDataImporter::ContinueImportPaymentCards() {
 }
 
 void SafariDataImporter::ContinueImportBookmarks() {
+  if (IsImportBlockedByEnablingPolicy(
+          pref_service_, bookmarks::prefs::kEditBookmarksEnabled)) {
+    client_->OnBookmarksImported(0);
+    return;
+  }
+
   size_t imported_bookmarks_count = user_data_importer::ImportBookmarks(
       &*bookmark_model_, std::move(pending_bookmarks_),
       l10n_util::GetStringUTF16(IDS_IMPORTED_FROM_SAFARI_FOLDER));

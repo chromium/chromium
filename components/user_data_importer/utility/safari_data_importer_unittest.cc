@@ -20,7 +20,9 @@
 #include "base/time/default_clock.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/bookmarks/test/test_matchers.h"
@@ -157,6 +159,10 @@ class SafariDataImporterTest : public testing::Test {
         password_manager::prefs::kCredentialsEnableService, true);
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kSavingBrowserHistoryDisabled, false);
+    pref_service_.registry()->RegisterBooleanPref(
+        bookmarks::prefs::kEditBookmarksEnabled, true);
+    pref_service_.registry()->RegisterBooleanPref(
+        autofill::prefs::kAutofillCreditCardEnabled, true);
 
 #if BUILDFLAG(IS_IOS)
     auto parser = MakeBookmarkParser();
@@ -345,6 +351,8 @@ class SafariDataImporterTest : public testing::Test {
   password_manager::TestPasswordStore* account_store() {
     return account_store_.get();
   }
+
+  autofill::TestAutofillClient* autofill_client() { return &autofill_client_; }
 
   history::HistoryService* history_service() { return history_service_.get(); }
 
@@ -1277,6 +1285,79 @@ TEST_F(SafariDataImporterTest, ImportHistoryBlockedByPolicy) {
   history::BlockUntilHistoryProcessesPendingRequests(history_service());
 
   EXPECT_TRUE(results.empty());
+}
+
+// Tests that bookmark import is blocked when disabled by enterprise policy.
+TEST_F(SafariDataImporterTest, ImportBookmarksBlockedByPolicy) {
+  pref_service_.SetManagedPref(bookmarks::prefs::kEditBookmarksEnabled,
+                               std::make_unique<base::Value>(false));
+
+  ExpectBookmarksReady(0u);
+  PrepareBookmarks(R"(
+      <!DOCTYPE NETSCAPE-Bookmark-file-1>
+      <DL><DT><A HREF="https://www.google.com/">Google</A></DL>)");
+
+  EXPECT_CALL(client_, OnPasswordsImported(_));
+  EXPECT_CALL(client_, OnBookmarksImported(0));
+  EXPECT_CALL(client_, OnHistoryImported(0));
+  EXPECT_CALL(client_, OnPaymentCardsImported(0));
+
+  CompleteImport({});
+
+  EXPECT_THAT(GetOtherBookmarkNode()->children(), IsEmpty());
+}
+
+#if BUILDFLAG(IS_IOS)
+// Tests that reading list import is blocked when disabled by enterprise policy.
+TEST_F(SafariDataImporterTest, ImportReadingListBlockedByPolicy) {
+  pref_service_.SetManagedPref(bookmarks::prefs::kEditBookmarksEnabled,
+                               std::make_unique<base::Value>(false));
+
+  ExpectBookmarksReady(0u);
+  PrepareBookmarks(
+      R"(<!DOCTYPE NETSCAPE-Bookmark-file-1>
+          <DL>
+            <DT><H3 id="com.apple.ReadingList">Reading List</H3>
+            <DL>
+              <DT><A HREF="https://www.item1.com/">First Item</A>
+            </DL>
+          </DL>)");
+
+  EXPECT_CALL(client_, OnPasswordsImported(_));
+  EXPECT_CALL(client_, OnBookmarksImported(0));
+  EXPECT_CALL(client_, OnHistoryImported(0));
+  EXPECT_CALL(client_, OnPaymentCardsImported(0));
+
+  CompleteImport({});
+
+  EXPECT_TRUE(GetReadingListModel()->GetKeys().empty());
+}
+#endif  // BUILDFLAG(IS_IOS)
+
+// Tests that payment card import is blocked when disabled by enterprise policy.
+TEST_F(SafariDataImporterTest, ImportPaymentCardsBlockedByPolicy) {
+  pref_service_.SetManagedPref(autofill::prefs::kAutofillCreditCardEnabled,
+                               std::make_unique<base::Value>(false));
+
+  EXPECT_CALL(client_, OnPaymentCardsReady(0));
+  PreparePaymentCards({PaymentCardEntry{.card_number = u"1234567812345678",
+                                        .card_name = u"Test Card",
+                                        .cardholder_name = "Test Name",
+                                        .card_expiration_month = 12,
+                                        .card_expiration_year = 2025}});
+
+  EXPECT_CALL(client_, OnPasswordsImported(_));
+  EXPECT_CALL(client_, OnBookmarksImported(0));
+  EXPECT_CALL(client_, OnHistoryImported(0));
+  EXPECT_CALL(client_, OnPaymentCardsImported(0));
+
+  CompleteImport({});
+
+  EXPECT_TRUE(autofill_client()
+                  ->GetPersonalDataManager()
+                  .payments_data_manager()
+                  .GetCreditCards()
+                  .empty());
 }
 
 }  // namespace user_data_importer
