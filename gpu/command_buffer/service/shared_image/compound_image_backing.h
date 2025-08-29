@@ -5,7 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_COMPOUND_IMAGE_BACKING_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_COMPOUND_IMAGE_BACKING_H_
 
-#include <array>
+#include <vector>
 
 #include "base/containers/enum_set.h"
 #include "base/memory/scoped_refptr.h"
@@ -145,6 +145,8 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
     ElementHolder();
     ElementHolder(const ElementHolder& other) = delete;
     ElementHolder& operator=(const ElementHolder& other) = delete;
+    ElementHolder(ElementHolder&& other);
+    ElementHolder& operator=(ElementHolder&& other);
     ~ElementHolder();
 
     // Will invoke `create_callback` to create backing if
@@ -190,6 +192,10 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
   // sometimes, eg. the create callback failed to produce a backing.
   SharedImageBacking* GetBacking(SharedImageAccessStream stream);
 
+  // Returns the gpu backing from the list of |element_| which has a shm and a
+  // gpu backing.
+  SharedImageBacking* GetGpuBacking();
+
   bool HasLatestContent(ElementHolder& element);
 
   // Sets the element used for `stream` as having the latest content. If
@@ -213,7 +219,10 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
   // to access it. Note that it's possible the backing for a given access stream
   // can't actually support that type of usage, in which case the backing will
   // be null or the ProduceX() call will just fail.
-  std::array<ElementHolder, 2> elements_;
+  // As of now, CompoundImageBacking only has 2 backings,i.e., 1 shm and 1 gpu
+  // backing. In future, it will evolve into a dynamic CompoundImageBacking
+  // where it can have any number of gpu backings and at most 1 cpu backing.
+  std::vector<ElementHolder> elements_;
 
   base::OnceCallback<void(bool)> pending_copy_to_gmb_callback_;
 };

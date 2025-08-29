@@ -106,31 +106,53 @@ class CompoundImageBackingTest : public testing::Test {
         memory_type_tracker_(memory_tracker_) {}
 
   bool HasGpuBacking(CompoundImageBacking* backing) {
-    return !!backing->elements_[1].backing;
+    for (const auto& element : backing->elements_) {
+      if (!element.access_streams.Has(SharedImageAccessStream::kMemory)) {
+        return !!element.backing;
+      }
+    }
+    return false;
   }
 
   bool HasGpuCreateBackingCallback(CompoundImageBacking* backing) {
-    return !backing->elements_[1].create_callback.is_null();
+    for (const auto& element : backing->elements_) {
+      if (!element.access_streams.Has(SharedImageAccessStream::kMemory)) {
+        return !element.create_callback.is_null();
+      }
+    }
+    return false;
   }
 
   TestImageBacking* GetGpuBacking(CompoundImageBacking* backing) {
-    auto* gpu_backing = backing->elements_[1].backing.get();
-    DCHECK_EQ(gpu_backing->GetType(), SharedImageBackingType::kTest);
-    return static_cast<TestImageBacking*>(gpu_backing);
+    for (auto& element : backing->elements_) {
+      if (!element.access_streams.Has(SharedImageAccessStream::kMemory)) {
+        auto* gpu_backing = element.backing.get();
+        DCHECK_EQ(gpu_backing->GetType(), SharedImageBackingType::kTest);
+        return static_cast<TestImageBacking*>(gpu_backing);
+      }
+    }
+    return nullptr;
   }
 
   SharedMemoryImageBacking* GetShmImageBacking(CompoundImageBacking* backing) {
-    auto* shm_backing = backing->elements_[0].backing.get();
-    DCHECK_EQ(shm_backing->GetType(), SharedImageBackingType::kSharedMemory);
+    auto* shm_backing =
+        backing->GetElement(SharedImageAccessStream::kMemory).backing.get();
+    CHECK_EQ(shm_backing->GetType(), SharedImageBackingType::kSharedMemory);
     return static_cast<SharedMemoryImageBacking*>(shm_backing);
   }
 
   bool GetShmHasLatestContent(CompoundImageBacking* backing) {
-    return backing->elements_[0].content_id_ == backing->latest_content_id_;
+    return backing->HasLatestContent(
+        backing->GetElement(SharedImageAccessStream::kMemory));
   }
 
   bool GetGpuHasLatestContent(CompoundImageBacking* backing) {
-    return backing->elements_[1].content_id_ == backing->latest_content_id_;
+    for (auto& element : backing->elements_) {
+      if (!element.access_streams.Has(SharedImageAccessStream::kMemory)) {
+        return backing->HasLatestContent(element);
+      }
+    }
+    return false;
   }
 
   // Create a compound backing containing shared memory + GPU backing.

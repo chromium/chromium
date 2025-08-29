@@ -492,18 +492,27 @@ CompoundImageBacking::CompoundImageBacking(
                          std::move(buffer_usage)) {
   DCHECK(shm_backing);
   DCHECK_EQ(size, shm_backing->size());
-  elements_[0].backing = std::move(shm_backing);
-  elements_[0].access_streams = kMemoryStreamSet;
-  if (kAllowShmOverlays && usage.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)) {
-    elements_[0].access_streams.Put(SharedImageAccessStream::kOverlay);
-  }
-  elements_[0].content_id_ = latest_content_id_;
 
-  elements_[1].create_callback = base::BindOnce(
+  // Create shared-memory element (stream = kMemory).
+  ElementHolder shm_element;
+  shm_element.access_streams = kMemoryStreamSet;
+  if (kAllowShmOverlays && usage.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)) {
+    shm_element.access_streams.Put(SharedImageAccessStream::kOverlay);
+  }
+  shm_element.content_id_ = latest_content_id_;
+  shm_element.backing = std::move(shm_backing);
+  elements_.push_back(std::move(shm_element));
+
+  // Create placeholder for GPU-backed element (streams = all except kMemory).
+  ElementHolder gpu_element;
+  gpu_element.access_streams =
+      base::Difference(AccessStreamSet::All(), kMemoryStreamSet);
+
+  // LazyCreateBacking will be called on demand.
+  gpu_element.create_callback = base::BindOnce(
       &CompoundImageBacking::LazyCreateBacking, base::Unretained(this),
       std::move(gpu_backing_factory), std::move(debug_label));
-  elements_[1].access_streams =
-      base::Difference(AccessStreamSet::All(), kMemoryStreamSet);
+  elements_.push_back(std::move(gpu_element));
 }
 
 CompoundImageBacking::~CompoundImageBacking() {
@@ -568,7 +577,7 @@ bool CompoundImageBacking::CopyToGpuMemoryBuffer() {
     return true;
   }
 
-  auto* gpu_backing = elements_[1].GetBacking();
+  auto* gpu_backing = GetGpuBacking();
   const std::vector<SkPixmap>& pixmaps = GetSharedMemoryPixmaps();
   if (!gpu_backing || !gpu_backing->ReadbackToMemory(pixmaps)) {
     DLOG(ERROR) << "Failed to copy from GPU backing to shared memory";
@@ -595,7 +604,7 @@ void CompoundImageBacking::CopyToGpuMemoryBufferAsync(
     return;
   }
 
-  auto* gpu_backing = elements_[1].GetBacking();
+  auto* gpu_backing = GetGpuBacking();
   if (!gpu_backing) {
     DLOG(ERROR) << "Failed to copy from GPU backing to shared memory";
     std::move(callback).Run(false);
@@ -795,6 +804,16 @@ SharedImageBacking* CompoundImageBacking::GetBacking(
   return GetElement(stream).GetBacking();
 }
 
+SharedImageBacking* CompoundImageBacking::GetGpuBacking() {
+  for (auto& element : elements_) {
+    if (!element.access_streams.Has(SharedImageAccessStream::kMemory)) {
+      return element.GetBacking();
+    }
+  }
+  LOG(ERROR) << "No GPU backing found.";
+  return nullptr;
+}
+
 void CompoundImageBacking::LazyCreateBacking(
     base::WeakPtr<SharedImageBackingFactory> factory,
     std::string debug_label,
@@ -858,6 +877,10 @@ void CompoundImageBacking::OnAddSecondaryReference() {
 
 CompoundImageBacking::ElementHolder::ElementHolder() = default;
 CompoundImageBacking::ElementHolder::~ElementHolder() = default;
+CompoundImageBacking::ElementHolder::ElementHolder(ElementHolder&& other) =
+    default;
+CompoundImageBacking::ElementHolder&
+CompoundImageBacking::ElementHolder::operator=(ElementHolder&& other) = default;
 
 void CompoundImageBacking::ElementHolder::CreateBackingIfNecessary() {
   if (create_callback) {
