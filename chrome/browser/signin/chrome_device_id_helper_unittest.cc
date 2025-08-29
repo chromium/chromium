@@ -38,7 +38,7 @@ TEST(DeviceIdHelper, NonEphemeralDeviceIdsDoNotHaveTheEphemeralPrefix) {
 TEST(DeviceIdHelper,
      NonEphemeralDeviceIdsAreUniqueIfStableDeviceIdFeatureIsDisabled) {
   base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(kStableDeviceId);
+  features.InitAndDisableFeature(switches::kStableDeviceId);
 
   const std::string device_id1 =
       GenerateSigninScopedDeviceId(/*for_ephemeral=*/false);
@@ -53,7 +53,7 @@ TEST(DeviceIdHelper,
 TEST(DeviceIdHelper,
      NonEphemeralDeviceIdsAreNotUniqueIfStableDeviceIdFeatureIsEnabled) {
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(kStableDeviceId);
+  features.InitAndEnableFeature(switches::kStableDeviceId);
 
   const std::string device_id1 =
       GenerateSigninScopedDeviceId(/*for_ephemeral=*/false);
@@ -78,7 +78,7 @@ TEST(DeviceIdHelper, EphemeralDeviceIdsHaveTheEphemeralPrefix) {
 TEST(DeviceIdHelper,
      EphemeralDeviceIdsAreUniqueIfStableDeviceIdFeatureIsDisabled) {
   base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(kStableDeviceId);
+  features.InitAndDisableFeature(switches::kStableDeviceId);
 
   const std::string device_id1 =
       GenerateSigninScopedDeviceId(/*for_ephemeral=*/true);
@@ -93,7 +93,7 @@ TEST(DeviceIdHelper,
 TEST(DeviceIdHelper,
      EphemeralDeviceIdsAreUniqueIfStableDeviceIdFeatureIsEnabled) {
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(kStableDeviceId);
+  features.InitAndEnableFeature(switches::kStableDeviceId);
 
   const std::string device_id1 =
       GenerateSigninScopedDeviceId(/*for_ephemeral=*/true);

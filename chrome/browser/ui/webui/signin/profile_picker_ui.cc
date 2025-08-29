@@ -215,8 +215,9 @@ void AddFlags(content::WebUIDataSource* html_source, bool is_glic_version) {
   html_source->AddBoolean("askOnStartup",
                           g_browser_process->local_state()->GetBoolean(
                               prefs::kBrowserShowProfilePickerOnStartup));
-  html_source->AddBoolean("profilesReorderingEnabled",
-                          base::FeatureList::IsEnabled(kProfilesReordering));
+  html_source->AddBoolean(
+      "profilesReorderingEnabled",
+      base::FeatureList::IsEnabled(switches::kProfilesReordering));
   html_source->AddBoolean("signInProfileCreationFlowSupported",
                           AccountConsistencyModeManager::IsDiceSignInAllowed());
 

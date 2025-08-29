@@ -2275,7 +2275,7 @@ class ProfileAttributesStorageTestWithProfileReorderingParam
       public ProfileAttributesStorageTest {
  public:
   ProfileAttributesStorageTestWithProfileReorderingParam()
-      : base::test::WithFeatureOverride(kProfilesReordering) {}
+      : base::test::WithFeatureOverride(switches::kProfilesReordering) {}
 };
 
 // In this test we are checking the order of which the method

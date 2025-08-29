@@ -10678,7 +10678,7 @@ const FeatureEntry kFeatureEntries[] = {
 #if !BUILDFLAG(IS_CHROMEOS)
     {"profiles-reordering", flag_descriptions::kProfilesReorderingName,
      flag_descriptions::kProfilesReorderingDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(kProfilesReordering)},
+     FEATURE_VALUE_TYPE(switches::kProfilesReordering)},
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

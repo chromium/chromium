@@ -415,8 +415,6 @@ base::TimeDelta GetAvatarSyncPromoFeatureMinimumCookeAgeParam() {
 #endif
 }
 
-}  // namespace switches
-
 #if BUILDFLAG(IS_CHROMEOS)
 // Enables the generation of pseudo-stable per-user per-device device
 // identifiers. This identifier can be reset by the user by powerwashing the
@@ -439,3 +437,5 @@ BASE_FEATURE(kIgnoreMirrorHeadersInBackgoundTabs,
 BASE_FEATURE(kNonDefaultGaiaOriginCheck,
              "NonDefaultGaiaOriginCheck",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+}  // namespace switches

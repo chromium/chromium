@@ -1637,7 +1637,7 @@ void UserSessionManager::InitializeDeviceId(
     return;
   }
 
-  if (!base::FeatureList::IsEnabled(kStableDeviceId)) {
+  if (!base::FeatureList::IsEnabled(::switches::kStableDeviceId)) {
     // Do not generate and store new device identifiers if the feature is not
     // enabled yet.
     return;

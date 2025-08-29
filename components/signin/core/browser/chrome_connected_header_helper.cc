@@ -199,7 +199,7 @@ std::string ChromeConnectedHeaderHelper::BuildRequestHeader(
         base::StringPrintf("%s=%s", kSourceAttrName, source.c_str()));
   }
 
-  if (base::FeatureList::IsEnabled(kNonDefaultGaiaOriginCheck) &&
+  if (base::FeatureList::IsEnabled(switches::kNonDefaultGaiaOriginCheck) &&
       !GaiaUrls::GetInstance()->IsUsingDefaultGaiaOrigin()) {
     parts.push_back(
         base::StringPrintf("%s=%s", kGaiaOriginAttrName,

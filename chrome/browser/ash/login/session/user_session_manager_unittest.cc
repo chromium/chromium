@@ -281,7 +281,7 @@ TEST_F(UserSessionManagerTest, RespectLocale_Demo_WithoutProfileLocale) {
 
 TEST_F(UserSessionManagerTest, InitializeDeviceIdForNewUsers) {
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(kStableDeviceId);
+  features.InitAndEnableFeature(switches::kStableDeviceId);
   LoginTestUser();
   test::UserSessionManagerTestApi test_api(user_session_manager_.get());
   user_manager::KnownUser known_user(g_browser_process->local_state());
@@ -301,7 +301,7 @@ TEST_F(UserSessionManagerTest, InitializeDeviceIdForNewUsers) {
 
 TEST_F(UserSessionManagerTest, InitializeDeviceIdForExistingUsers) {
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(kStableDeviceId);
+  features.InitAndEnableFeature(switches::kStableDeviceId);
   LoginTestUser();
   test::UserSessionManagerTestApi test_api(user_session_manager_.get());
   user_manager::KnownUser known_user(g_browser_process->local_state());
