@@ -192,6 +192,7 @@ bool StructTraits<ui::mojom::ImeTextSpanDataView, ui::ImeTextSpan>::Read(
   out->interim_char_selection = data.interim_char_selection();
   if (!data.ReadSuggestions(&out->suggestions))
     return false;
+  out->should_hide_suggestion_menu = data.should_hide_suggestion_menu();
   return true;
 }
 

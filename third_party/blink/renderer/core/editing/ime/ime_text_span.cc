@@ -40,7 +40,8 @@ ImeTextSpan::ImeTextSpan(Type type,
                          const Color& suggestion_highlight_color,
                          bool remove_on_finish_composing,
                          bool interim_char_selection,
-                         const Vector<String>& suggestions)
+                         const Vector<String>& suggestions,
+                         bool should_hide_suggestion_menu)
     : type_(type),
       underline_color_(underline_color),
       thickness_(thickness),
@@ -50,7 +51,8 @@ ImeTextSpan::ImeTextSpan(Type type,
       suggestion_highlight_color_(suggestion_highlight_color),
       remove_on_finish_composing_(remove_on_finish_composing),
       interim_char_selection_(interim_char_selection),
-      suggestions_(suggestions) {
+      suggestions_(suggestions),
+      should_hide_suggestion_menu_(should_hide_suggestion_menu) {
   // Sanitize offsets by ensuring a valid range corresponding to the last
   // possible position.
   // TODO(wkorman): Consider replacing with DCHECK_LT(startOffset, endOffset).
@@ -150,6 +152,7 @@ ui::ImeTextSpan ImeTextSpan::ToUiImeTextSpan() {
                               StartOffset(), EndOffset());
   span.suggestions =
       ConvertVectorOfStringsToStdVectorOfStdStrings(Suggestions());
+  span.should_hide_suggestion_menu = should_hide_suggestion_menu_;
   return span;
 }
 

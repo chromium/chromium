@@ -2035,7 +2035,7 @@ std::vector<ui::ImeTextSpan> InputMethodController::GetImeTextSpans() const {
                       ImeTextSpanThickness::kNone,
                       ImeTextSpanUnderlineStyle::kNone, Color::kTransparent,
                       Color::kTransparent, Color::kTransparent, false, false,
-                      suggestions)
+                      suggestions, marker->ShouldHideSuggestionMenu())
               .ToUiImeTextSpan());
     }
   }

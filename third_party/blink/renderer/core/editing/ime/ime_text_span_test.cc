@@ -120,5 +120,65 @@ TEST(ImeTextSpanTest, InterimCharSelection) {
   EXPECT_EQ(true, ime_text_span.InterimCharSelection());
 }
 
+TEST(ImeTextSpanTest, ShouldHideSuggestionMenuTrue) {
+  ImeTextSpan ime_text_span(
+      ImeTextSpan::Type::kMisspellingSuggestion, /* start_offset= */ 0,
+      /* end_offset= */ 1, Color::kTransparent,
+      ui::mojom::ImeTextSpanThickness::kNone,
+      ui::mojom::ImeTextSpanUnderlineStyle::kNone, Color::kTransparent,
+      Color::kTransparent, Color::kTransparent,
+      /* remove_on_finish_composing=*/false,
+      /*  interim_char_selection= */ false,
+      /* suggestions= */ Vector<String>(),
+      /* should_hide_suggestion_menu= */ true);
+
+  EXPECT_TRUE(ime_text_span.ShouldHideSuggestionMenu());
+}
+
+TEST(ImeTextSpanTest, ShouldHideSuggestionMenuFalse) {
+  ImeTextSpan ime_text_span(
+      ImeTextSpan::Type::kMisspellingSuggestion, /* start_offset= */ 0,
+      /* end_offset= */ 1, Color::kTransparent,
+      ui::mojom::ImeTextSpanThickness::kNone,
+      ui::mojom::ImeTextSpanUnderlineStyle::kNone, Color::kTransparent,
+      Color::kTransparent, Color::kTransparent,
+      /* remove_on_finish_composing=*/false,
+      /*  interim_char_selection= */ false,
+      /* suggestions= */ Vector<String>(),
+      /* should_hide_suggestion_menu= */ false);
+
+  EXPECT_FALSE(ime_text_span.ShouldHideSuggestionMenu());
+}
+
+TEST(ImeTextSpanTest, ShouldHideSuggestionMenuToUiImeTextSpanTrue) {
+  ImeTextSpan ime_text_span(
+      ImeTextSpan::Type::kMisspellingSuggestion, /* start_offset= */ 0,
+      /* end_offset= */ 1, Color::kTransparent,
+      ui::mojom::ImeTextSpanThickness::kNone,
+      ui::mojom::ImeTextSpanUnderlineStyle::kNone, Color::kTransparent,
+      Color::kTransparent, Color::kTransparent,
+      /* remove_on_finish_composing=*/false,
+      /*  interim_char_selection= */ false,
+      /* suggestions= */ Vector<String>(),
+      /* should_hide_suggestion_menu= */ true);
+
+  EXPECT_TRUE(ime_text_span.ToUiImeTextSpan().should_hide_suggestion_menu);
+}
+
+TEST(ImeTextSpanTest, ShouldHideSuggestionMenuToUiImeTextSpanFalse) {
+  ImeTextSpan ime_text_span(
+      ImeTextSpan::Type::kMisspellingSuggestion, /* start_offset= */ 0,
+      /* end_offset= */ 1, Color::kTransparent,
+      ui::mojom::ImeTextSpanThickness::kNone,
+      ui::mojom::ImeTextSpanUnderlineStyle::kNone, Color::kTransparent,
+      Color::kTransparent, Color::kTransparent,
+      /* remove_on_finish_composing=*/false,
+      /*  interim_char_selection= */ false,
+      /* suggestions= */ Vector<String>(),
+      /* should_hide_suggestion_menu= */ false);
+
+  EXPECT_FALSE(ime_text_span.ToUiImeTextSpan().should_hide_suggestion_menu);
+}
+
 }  // namespace
 }  // namespace blink
