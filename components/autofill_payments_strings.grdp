@@ -1465,7 +1465,7 @@
     Card saved
   </message>
   <message name="IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_TITLE_TEXT" desc="Title text for confirmation shown after save card upload to the server was unsuccessful.">
-    Card saved to device only
+    Card saved on device only
   </message>
   <message name="IDS_AUTOFILL_SAVE_IBAN_CONFIRMATION_SUCCESS_TITLE_TEXT" desc="Title text for confirmation shown after upload save IBAN attempt was successful and it was uploaded to the server.">
     IBAN saved
