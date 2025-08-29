@@ -82,6 +82,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/actor/actor_util.h"
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
@@ -836,4 +840,14 @@ bool ChromePermissionsClient::IsSystemDenied(ContentSettingsType type) const {
 bool ChromePermissionsClient::CanPromptSystemPermission(
     ContentSettingsType type) const {
   return system_permission_settings::CanPrompt(type);
+}
+
+bool ChromePermissionsClient::IsActorOperatingOnWebContents(
+    content::WebContents* web_contents) const {
+#if !BUILDFLAG(IS_ANDROID)
+  return actor::IsActorOperatingOnWebContents(web_contents->GetBrowserContext(),
+                                              web_contents);
+#else
+  return false;
+#endif
 }

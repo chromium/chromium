@@ -319,6 +319,10 @@ class PermissionsClient {
   // `false` otherwise.
   virtual bool CanPromptSystemPermission(ContentSettingsType type) const;
 
+  // Returns true if an actor is currently operating on a tab.
+  virtual bool IsActorOperatingOnWebContents(
+      content::WebContents* web_contents) const;
+
   virtual favicon::FaviconService* GetFaviconService(
       content::BrowserContext* browser_context);
 };

@@ -154,6 +154,8 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
       ContentSettingsType type) const override;
   bool IsSystemDenied(ContentSettingsType type) const override;
   bool CanPromptSystemPermission(ContentSettingsType type) const override;
+  bool IsActorOperatingOnWebContents(
+      content::WebContents* web_contents) const override;
 
  private:
   friend base::NoDestructor<ChromePermissionsClient>;

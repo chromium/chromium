@@ -881,6 +881,7 @@ void PermissionUmaUtil::RecordEmbargoPromptSuppressionFromSource(
       break;
     case content::PermissionStatusSource::UNSPECIFIED:
     case content::PermissionStatusSource::KILL_SWITCH:
+    case content::PermissionStatusSource::ACTOR_OVERRIDE:
     case content::PermissionStatusSource::INSECURE_ORIGIN:
     case content::PermissionStatusSource::FEATURE_POLICY:
     case content::PermissionStatusSource::VIRTUAL_URL_DIFFERENT_ORIGIN:

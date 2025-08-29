@@ -682,6 +682,7 @@ bool PermissionUtil::CanPermissionRequestIgnoreStatus(
 
   switch (source) {
     case content::PermissionStatusSource::KILL_SWITCH:
+    case content::PermissionStatusSource::ACTOR_OVERRIDE:
     case content::PermissionStatusSource::FEATURE_POLICY:
     case content::PermissionStatusSource::FENCED_FRAME:
     case content::PermissionStatusSource::INSECURE_ORIGIN:

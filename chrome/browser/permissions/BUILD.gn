@@ -177,7 +177,10 @@ source_set("permissions") {
   }
 
   if (!is_android) {
-    deps += [ "//chrome/browser/ui/permission_bubble" ]
+    deps += [
+      "//chrome/browser/actor",
+      "//chrome/browser/ui/permission_bubble",
+    ]
   }
 
   if (safe_browsing_mode != 0) {
