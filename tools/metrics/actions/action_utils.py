@@ -1,7 +1,6 @@
 # Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """A utility module for parsing and applying action suffixes in actions.xml.
 
 Note: There is a copy of this file used internally by the UMA processing
@@ -12,6 +11,7 @@ internal copy. Please contact tools/metrics/OWNERS for more details.
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+from typing import Dict, List
 
 
 class Error(Exception):
@@ -47,20 +47,124 @@ class Action(object):
   """
 
   def __init__(self,
-               name,
-               description,
-               owners,
-               not_user_triggered=False,
-               obsolete=None,
-               from_suffix=False):
+               name: str,
+               description: str | None,
+               owners: List[str] | None,
+               not_user_triggered: bool = False,
+               obsolete: str | None = None,
+               tokens: List | None = [],
+               from_suffix: bool | None = False):
     self.name = name
     self.description = description
     self.owners = owners
     self.not_user_triggered = not_user_triggered
     self.obsolete = obsolete
     self.from_suffix = from_suffix
+    self.tokens = tokens or []
 
 
+class Variants(object):
+  """Variants object in actions.xml.
+
+  Attributes:
+    name: name used as token key.
+
+  Raises:
+    SuffixNameEmptyError: if the variant does not have a name
+  """
+
+  def __init__(self, name: str):
+    if not name:
+      raise SuffixNameEmptyError('Variants name cannot be empty.')
+
+    self.name = name
+
+
+class Variant(object):
+  """Represents a single variant within variants object.
+
+  Attributes:
+    name: variant name.
+    summary: description of the variant.
+  """
+
+  def __init__(self, name: str, summary: str):
+    self.name = name
+    self.summary = summary
+
+
+class Token(object):
+  """Token tag of an action.
+
+  Attributes:
+    key: token key.
+  """
+
+  def __init__(self, key: str):
+    self.key = key
+    self.variants_name = None
+    self.variants = []
+    self.implicit = False
+
+
+def _CreateActionFromVariant(actions_dict: Dict[str, Action], action: Action,
+                             variant: Variant, token: Token) -> None:
+  """Creates a new action with action and variant and adds it to actions_dict.
+
+  Args:
+    actions_dict: dict of existing action name to Action object.
+    action: an Action object to combine with suffix.
+    variant: a Variant object to combine with action.
+    token: a Token object to get the key from.
+  """
+  new_name = action.name.replace('{' + token.key + '}', variant.name)
+
+  if action.description:
+    new_action_description = action.description + ' ' + variant.summary
+  else:
+    new_action_description = (
+        'Please enter the description of this user action. ' + variant.summary)
+
+  actions_dict[new_name] = Action(new_name, new_action_description,
+                                  list(action.owners) if action.owners else [],
+                                  action.not_user_triggered, action.obsolete)
+
+
+def CreateActionsFromVariants(actions_dict: Dict[str, Action],
+                              variants_dict: Dict[str, List[Variant]]) -> bool:
+  """Creates new actions from variants and adds them to actions_dict.
+
+  If an action contains a token that refers to a variants block that is not
+  defined, this is silently ignored.
+
+  Args:
+    actions_dict: A dict of existing action name to Action object.
+    variants_dict: A dict of variants name to list of Variant objects.
+  """
+  # Create a dict of action name to Action object for actions with tokens.
+  action_to_variants_dict = {
+      name: action.tokens
+      for name, action in actions_dict.items() if action.tokens
+  }
+
+  expanded_actions = set()
+
+  for action_name, tokens in action_to_variants_dict.items():
+    if not action_name in actions_dict:
+      continue
+    existing_action = actions_dict[action_name]
+    for token in tokens:
+      variants = token.variants
+      if token.variants_name:
+        variants = variants_dict.get(token.variants_name, [])
+      for variant in variants:
+        _CreateActionFromVariant(actions_dict, existing_action, variant, token)
+
+      expanded_actions.add(action_name)
+
+
+# TODO(crbug.com/438483590): Remove suffix related code once the migration
+#  is complete.
 class Suffix(object):
   """Action suffix in actions.xml.
 
@@ -130,21 +234,25 @@ def _CreateActionToSuffixesDict(action_suffix_nodes):
   for action_suffix_node in action_suffix_nodes:
     separator = _GetAttribute(action_suffix_node, 'separator', '_')
     ordering = _GetAttribute(action_suffix_node, 'ordering', 'suffix')
-    suffixes = [Suffix(suffix_node.getAttribute('name'),
-                       suffix_node.getAttribute('label'),
-                       separator, ordering) for suffix_node in
-                action_suffix_node.getElementsByTagName('suffix')]
+    suffixes = [
+        Suffix(suffix_node.getAttribute('name'),
+               suffix_node.getAttribute('label'), separator, ordering)
+        for suffix_node in action_suffix_node.getElementsByTagName('suffix')
+    ]
 
     action_nodes = action_suffix_node.getElementsByTagName('affected-action')
     for action_node in action_nodes:
       action_name = action_node.getAttribute('name')
       # If <affected-action> has <with-suffix> child nodes, only those suffixes
       # should be used with that action. filter the list of suffix names if so.
-      action_suffix_names = [suffix_node.getAttribute('name') for suffix_node in
-                             action_node.getElementsByTagName('with-suffix')]
+      action_suffix_names = [
+          suffix_node.getAttribute('name')
+          for suffix_node in action_node.getElementsByTagName('with-suffix')
+      ]
       if action_suffix_names:
-        action_suffixes = [suffix for suffix in suffixes if suffix.name in
-                           action_suffix_names]
+        action_suffixes = [
+            suffix for suffix in suffixes if suffix.name in action_suffix_names
+        ]
       else:
         action_suffixes = list(suffixes)
 
@@ -230,10 +338,9 @@ def _CreateActionFromSuffix(actions_dict, action, suffix):
 
   new_action_description = action.description + ' ' + suffix.description
 
-  actions_dict[new_action_name] = Action(
-      new_action_name,
-      new_action_description,
-      list(action.owners),
-      action.not_user_triggered,
-      action.obsolete,
-      from_suffix=True)
+  actions_dict[new_action_name] = Action(new_action_name,
+                                         new_action_description,
+                                         list(action.owners),
+                                         action.not_user_triggered,
+                                         action.obsolete,
+                                         from_suffix=True)

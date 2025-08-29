@@ -41,34 +41,28 @@ ACTIONS_XML = """
 
 </actions>"""
 
-NO_OWNER_EXPECTED_XML = (
-    '<actions>\n\n'
-    '<action name="action1">\n'
-    '  <owner>Please list the metric\'s owners. '
-    'Add more owner tags as needed.</owner>\n'
-    '  <description>Description.</description>\n'
-    '</action>\n\n'
-    '</actions>\n'
-)
+NO_OWNER_EXPECTED_XML = ('<actions>\n\n'
+                         '<action name="action1">\n'
+                         '  <owner>Please list the metric\'s owners. '
+                         'Add more owner tags as needed.</owner>\n'
+                         '  <description>Description.</description>\n'
+                         '</action>\n\n'
+                         '</actions>\n')
 
-ONE_OWNER_EXPECTED_XML = (
-    '<actions>\n\n'
-    '<action name="action1">\n'
-    '  <owner>name1@google.com</owner>\n'
-    '  <description>Description.</description>\n'
-    '</action>\n\n'
-    '</actions>\n'
-)
+ONE_OWNER_EXPECTED_XML = ('<actions>\n\n'
+                          '<action name="action1">\n'
+                          '  <owner>name1@google.com</owner>\n'
+                          '  <description>Description.</description>\n'
+                          '</action>\n\n'
+                          '</actions>\n')
 
-TWO_OWNERS_EXPECTED_XML = (
-    '<actions>\n\n'
-    '<action name="action1">\n'
-    '  <owner>name1@google.com</owner>\n'
-    '  <owner>name2@google.com</owner>\n'
-    '  <description>Description.</description>\n'
-    '</action>\n\n'
-    '</actions>\n'
-)
+TWO_OWNERS_EXPECTED_XML = ('<actions>\n\n'
+                           '<action name="action1">\n'
+                           '  <owner>name1@google.com</owner>\n'
+                           '  <owner>name2@google.com</owner>\n'
+                           '  <description>Description.</description>\n'
+                           '</action>\n\n'
+                           '</actions>\n')
 
 NO_DESCRIPTION_EXPECTED_XML = (
     '<actions>\n\n'
@@ -77,8 +71,7 @@ NO_DESCRIPTION_EXPECTED_XML = (
     '  <owner>name2@google.com</owner>\n'
     '  <description>Please enter the description of the metric.</description>\n'
     '</action>\n\n'
-    '</actions>\n'
-)
+    '</actions>\n')
 
 OBSOLETE_EXPECTED_XML = (
     '<actions>\n\n'
@@ -88,8 +81,7 @@ OBSOLETE_EXPECTED_XML = (
     '  <owner>name2@google.com</owner>\n'
     '  <description>Description.</description>\n'
     '</action>\n\n'
-    '</actions>\n'
-)
+    '</actions>\n')
 
 ADD_ACTION_EXPECTED_XML = (
     '<actions>\n\n'
@@ -103,19 +95,16 @@ ADD_ACTION_EXPECTED_XML = (
     ' Add more owner tags as needed.</owner>\n'
     '  <description>Please enter the description of the metric.</description>\n'
     '</action>\n\n'
-    '</actions>\n'
-)
+    '</actions>\n')
 
-COMMENT_EXPECTED_XML = (
-    '<!--comment-->\n\n'
-    '<actions>\n\n'
-    '<action name="action1">\n'
-    '  <owner>name1@google.com</owner>\n'
-    '  <owner>name2@google.com</owner>\n'
-    '  <description>Description.</description>\n'
-    '</action>\n\n'
-    '</actions>\n'
-)
+COMMENT_EXPECTED_XML = ('<!--comment-->\n\n'
+                        '<actions>\n\n'
+                        '<action name="action1">\n'
+                        '  <owner>name1@google.com</owner>\n'
+                        '  <owner>name2@google.com</owner>\n'
+                        '  <description>Description.</description>\n'
+                        '</action>\n\n'
+                        '</actions>\n')
 
 NOT_USER_TRIGGERED_EXPECTED_XML = (
     '<actions>\n\n'
@@ -124,8 +113,7 @@ NOT_USER_TRIGGERED_EXPECTED_XML = (
     'Add more owner tags as needed.</owner>\n'
     '  <description>Description.</description>\n'
     '</action>\n\n'
-    '</actions>\n'
-)
+    '</actions>\n')
 
 BASIC_SUFFIX_EXPECTED_XML = (
     '<actions>\n\n'
@@ -137,8 +125,7 @@ BASIC_SUFFIX_EXPECTED_XML = (
     '  <owner>name1@chromium.org</owner>\n'
     '  <description>Description. Suffix Description 1.</description>\n'
     '</action>\n\n'
-    '</actions>\n'
-)
+    '</actions>\n')
 
 MULTI_ACTION_MULTI_SUFFIX_CHAIN = (
     '<actions>\n\n'
@@ -180,8 +167,7 @@ MULTI_ACTION_MULTI_SUFFIX_CHAIN = (
     '  <owner>name2@chromium.org</owner>\n'
     '  <description>Description. Suffix Description 2.</description>\n'
     '</action>\n\n'
-    '</actions>\n'
-)
+    '</actions>\n')
 
 SUFFIX_CUSTOM_SEPARATOR = (
     '<actions>\n\n'
@@ -193,8 +179,7 @@ SUFFIX_CUSTOM_SEPARATOR = (
     '  <owner>name1@chromium.org</owner>\n'
     '  <description>Description. Suffix Description 1.</description>\n'
     '</action>\n\n'
-    '</actions>\n'
-)
+    '</actions>\n')
 
 SUFFIX_OREDERING_PREFIX = (
     '<actions>\n\n'
@@ -206,8 +191,7 @@ SUFFIX_OREDERING_PREFIX = (
     '  <owner>name1@chromium.org</owner>\n'
     '  <description>Description.</description>\n'
     '</action>\n\n'
-    '</actions>\n'
-)
+    '</actions>\n')
 
 AFFECTED_ACTION_WITH_SUFFIX_TAG = (
     '<actions>\n\n'
@@ -231,13 +215,79 @@ AFFECTED_ACTION_WITH_SUFFIX_TAG = (
     '  <owner>name2@chromium.org</owner>\n'
     '  <description>Description. Suffix Description 2.</description>\n'
     '</action>\n\n'
-    '</actions>\n'
-)
+    '</actions>\n')
+
+BASIC_VARIANT_EXPANDED_XML = (
+    '<actions>\n\n'
+    '<action name="action1_variant1">\n'
+    '  <owner>name1@chromium.org</owner>\n'
+    '  <description>Description for {TestToken}.'
+    ' Variant Description 1.</description>\n'
+    '</action>\n\n'
+    '<action name="action1{TestToken}">\n'
+    '  <owner>name1@chromium.org</owner>\n'
+    '  <description>Description for {TestToken}.</description>\n'
+    '  <token key="TestToken">\n'
+    '    <variant name="_variant1" summary="Variant Description 1."/>\n'
+    '  </token>\n'
+    '</action>\n\n'
+    '</actions>\n')
+
+MULTI_ACTION_MULTI_VARIANT_XML = (
+    '<actions>\n\n'
+    '<variants name="Variants1">\n'
+    '  <variant name=".variant1" summary="Variant Description 1."/>\n'
+    '  <variant name=".variant2" summary="Variant Description 2."/>\n'
+    '</variants>\n\n'
+    '<variants name="Variants2">\n'
+    '  <variant name=".variant3" summary="Variant Description 3."/>\n'
+    '</variants>\n\n'
+    '<action name="action1.variant1">\n'
+    '  <owner>name1@chromium.org</owner>\n'
+    '  <description>Description1. Variant Description 1.</description>\n'
+    '</action>\n\n'
+    '<action name="action1.variant2">\n'
+    '  <owner>name1@chromium.org</owner>\n'
+    '  <description>Description1. Variant Description 2.</description>\n'
+    '</action>\n\n'
+    '<action name="action1{Token1}">\n'
+    '  <owner>name1@chromium.org</owner>\n'
+    '  <description>Description1.</description>\n'
+    '  <token key="Token1" variants="Variants1"/>\n'
+    '</action>\n\n'
+    '<action name="action2.variant1">\n'
+    '  <owner>name2@chromium.org</owner>\n'
+    '  <description>Description2. Variant Description 1.</description>\n'
+    '</action>\n\n'
+    '<action name="action2.variant2">\n'
+    '  <owner>name2@chromium.org</owner>\n'
+    '  <description>Description2. Variant Description 2.</description>\n'
+    '</action>\n\n'
+    '<action name="action2{Token2}">\n'
+    '  <owner>name2@chromium.org</owner>\n'
+    '  <description>Description2.</description>\n'
+    '  <token key="Token2" variants="Variants1"/>\n'
+    '</action>\n\n'
+    '<action name="action3.variant3">\n'
+    '  <owner>name3@chromium.org</owner>\n'
+    '  <description>Description3. Variant Description 3.</description>\n'
+    '</action>\n\n'
+    '<action name="action3{Token3}">\n'
+    '  <owner>name3@chromium.org</owner>\n'
+    '  <description>Description3.</description>\n'
+    '  <token key="Token3" variants="Variants2"/>\n'
+    '</action>\n\n'
+    '</actions>\n')
+
 
 class ActionXmlTest(unittest.TestCase):
 
-  def _GetProcessedAction(self, owner, description, obsolete,
-                          not_user_triggered=NO_VALUE, new_actions=[],
+  def _GetProcessedAction(self,
+                          owner,
+                          description,
+                          obsolete,
+                          not_user_triggered=NO_VALUE,
+                          new_actions=[],
                           comment=NO_VALUE):
     """Forms an actions XML string and returns it after processing.
 
@@ -256,14 +306,32 @@ class ActionXmlTest(unittest.TestCase):
       An updated and pretty-printed action XML string.
     """
     # Form the actions.xml mock content based on the input parameters.
-    current_xml = ACTIONS_XML.format(owners=owner, description=description,
-                                     obsolete=obsolete, comment=comment,
+    current_xml = ACTIONS_XML.format(owners=owner,
+                                     description=description,
+                                     obsolete=obsolete,
+                                     comment=comment,
                                      not_user_triggered=not_user_triggered)
-    actions_dict, comments, suffixes = extract_actions.ParseActionFile(
-        current_xml)
+    actions_dict, comments, variants_dict, suffixes = \
+      extract_actions.ParseActionFile(current_xml)
     for action_name in new_actions:
       actions_dict[action_name] = action_utils.Action(action_name, None, [])
-    return extract_actions.PrettyPrint(actions_dict, comments, suffixes)
+    return extract_actions.PrettyPrint(actions_dict, comments, variants_dict,
+                                       suffixes)
+
+  def _ExpandVariantsInActionsXML(self, actions_xml):
+    """Parses the given actions XML, expands variants and pretty prints it.
+
+    Args:
+      actions_xml: actions XML string.
+
+    Returns:
+      An updated and pretty-printed actions XML string with variants expanded.
+    """
+    actions_dict, comments, variants_dict, action_suffix_nodes = \
+      extract_actions.ParseActionFile(actions_xml)
+    action_utils.CreateActionsFromVariants(actions_dict, variants_dict)
+    return extract_actions.PrettyPrint(actions_dict, comments, variants_dict,
+                                       action_suffix_nodes)
 
   def _ExpandSuffixesInActionsXML(self, actions_xml):
     """Parses the given actions XML, expands suffixes and pretty prints it.
@@ -274,14 +342,14 @@ class ActionXmlTest(unittest.TestCase):
     Returns:
       An updated and pretty-printed actions XML string with suffixes expanded.
     """
-    actions_dict, comments, suffixes = extract_actions.ParseActionFile(
+    actions, comments, variants, suffixes = extract_actions.ParseActionFile(
         actions_xml)
     # Clear suffixes and mark actions as not coming from suffixes, so that
     # the returned XML file is the expanded one.
     suffixes = []
-    for action in actions_dict.values():
+    for action in actions.values():
       action.from_suffix = False
-    return extract_actions.PrettyPrint(actions_dict, comments, suffixes)
+    return extract_actions.PrettyPrint(actions, comments, variants, suffixes)
 
   def _PrettyPrintActionsXML(self, actions_xml):
     """Parses the given actions XML and pretty prints it.
@@ -292,9 +360,10 @@ class ActionXmlTest(unittest.TestCase):
     Returns:
       A pretty-printed actions XML string.
     """
-    actions_dict, comments, suffixes = extract_actions.ParseActionFile(
-        actions_xml)
-    return extract_actions.PrettyPrint(actions_dict, comments, suffixes)
+    actions_dict, comments, variants_dict, action_suffix_nodes = \
+      extract_actions.ParseActionFile(actions_xml)
+    return extract_actions.PrettyPrint(actions_dict, comments, variants_dict,
+                                       action_suffix_nodes)
 
   def testNoOwner(self):
     xml_result = self._GetProcessedAction(NO_VALUE, DESCRIPTION, NO_VALUE)
@@ -313,39 +382,45 @@ class ActionXmlTest(unittest.TestCase):
     self.assertEqual(NO_DESCRIPTION_EXPECTED_XML, xml_result)
 
   def testTwoDescriptions(self):
-    current_xml = ACTIONS_XML.format(owners=TWO_OWNERS, obsolete=NO_VALUE,
+    current_xml = ACTIONS_XML.format(owners=TWO_OWNERS,
+                                     obsolete=NO_VALUE,
                                      description=TWO_DESCRIPTIONS,
                                      comment=NO_VALUE,
                                      not_user_triggered=NO_VALUE)
     # Since there are two description tags, the function ParseActionFile will
     # raise SystemExit with exit code 1.
     with self.assertRaises(SystemExit) as cm:
-      _, _ = extract_actions.ParseActionFile(current_xml)
+      extract_actions.ParseActionFile(current_xml)
     self.assertEqual(cm.exception.code, 1)
 
   def testObsolete(self):
     xml_result = self._GetProcessedAction(TWO_OWNERS, DESCRIPTION, OBSOLETE)
     self.assertEqual(OBSOLETE_EXPECTED_XML, xml_result)
 
-
   def testTwoObsoletes(self):
-    current_xml = ACTIONS_XML.format(owners=TWO_OWNERS, obsolete=TWO_OBSOLETE,
-                                     description=DESCRIPTION, comment=NO_VALUE,
+    current_xml = ACTIONS_XML.format(owners=TWO_OWNERS,
+                                     obsolete=TWO_OBSOLETE,
+                                     description=DESCRIPTION,
+                                     comment=NO_VALUE,
                                      not_user_triggered=NO_VALUE)
 
     # Since there are two obsolete tags, the function ParseActionFile will
     # raise SystemExit with exit code 1.
     with self.assertRaises(SystemExit) as cm:
-      _, _ = extract_actions.ParseActionFile(current_xml)
+      extract_actions.ParseActionFile(current_xml)
     self.assertEqual(cm.exception.code, 1)
 
   def testAddNewActions(self):
-    xml_result = self._GetProcessedAction(TWO_OWNERS, DESCRIPTION, NO_VALUE,
+    xml_result = self._GetProcessedAction(TWO_OWNERS,
+                                          DESCRIPTION,
+                                          NO_VALUE,
                                           new_actions=['action2'])
     self.assertEqual(ADD_ACTION_EXPECTED_XML, xml_result)
 
   def testComment(self):
-    xml_result = self._GetProcessedAction(TWO_OWNERS, DESCRIPTION, NO_VALUE,
+    xml_result = self._GetProcessedAction(TWO_OWNERS,
+                                          DESCRIPTION,
+                                          NO_VALUE,
                                           comment=COMMENT)
     self.assertEqual(COMMENT_EXPECTED_XML, xml_result)
 
@@ -551,29 +626,29 @@ class ActionXmlTest(unittest.TestCase):
 
   def testUserMetricsActionSpanningTwoLines(self):
     code = 'base::UserMetricsAction(\n"Foo.Bar"));'
-    finder = extract_actions.ActionNameFinder('dummy', code,
-        extract_actions.USER_METRICS_ACTION_RE)
+    finder = extract_actions.ActionNameFinder(
+        'dummy', code, extract_actions.USER_METRICS_ACTION_RE)
     self.assertEqual('Foo.Bar', finder.FindNextAction())
     self.assertFalse(finder.FindNextAction())
 
   def testUserMetricsActionAsAParam(self):
     code = 'base::UserMetricsAction("Test.Foo"), "Test.Bar");'
-    finder = extract_actions.ActionNameFinder('dummy', code,
-        extract_actions.USER_METRICS_ACTION_RE)
+    finder = extract_actions.ActionNameFinder(
+        'dummy', code, extract_actions.USER_METRICS_ACTION_RE)
     self.assertEqual('Test.Foo', finder.FindNextAction())
     self.assertFalse(finder.FindNextAction())
 
   def testNonLiteralUserMetricsAction(self):
     code = 'base::UserMetricsAction(FOO)'
-    finder = extract_actions.ActionNameFinder('dummy', code,
-        extract_actions.USER_METRICS_ACTION_RE)
+    finder = extract_actions.ActionNameFinder(
+        'dummy', code, extract_actions.USER_METRICS_ACTION_RE)
     with self.assertRaises(Exception):
       finder.FindNextAction()
 
   def testTernaryUserMetricsAction(self):
     code = 'base::UserMetricsAction(foo ? "Foo.Bar" : "Bar.Foo"));'
-    finder = extract_actions.ActionNameFinder('dummy', code,
-        extract_actions.USER_METRICS_ACTION_RE)
+    finder = extract_actions.ActionNameFinder(
+        'dummy', code, extract_actions.USER_METRICS_ACTION_RE)
     with self.assertRaises(Exception):
       finder.FindNextAction()
 
@@ -581,77 +656,168 @@ class ActionXmlTest(unittest.TestCase):
     code = """base::UserMetricsAction(
       foo_bar ? "Bar.Foo" :
       "Foo.Car")"""
-    finder = extract_actions.ActionNameFinder('dummy', code,
-        extract_actions.USER_METRICS_ACTION_RE)
+    finder = extract_actions.ActionNameFinder(
+        'dummy', code, extract_actions.USER_METRICS_ACTION_RE)
     with self.assertRaises(extract_actions.InvalidStatementException):
       finder.FindNextAction()
 
   def testUserMetricsActionWithExtraWhitespace(self):
     code = """base::UserMetricsAction("Foo.Bar" )"""
-    finder = extract_actions.ActionNameFinder('dummy', code,
-        extract_actions.USER_METRICS_ACTION_RE)
+    finder = extract_actions.ActionNameFinder(
+        'dummy', code, extract_actions.USER_METRICS_ACTION_RE)
     with self.assertRaises(extract_actions.InvalidStatementException):
       finder.FindNextAction()
 
   def testUserMetricsActionSpanningTwoLinesJs(self):
     code = "chrome.send('coreOptionsUserMetricsAction',\n['Foo.Bar']);"
-    finder = extract_actions.ActionNameFinder('dummy', code,
-        extract_actions.USER_METRICS_ACTION_RE_JS)
+    finder = extract_actions.ActionNameFinder(
+        'dummy', code, extract_actions.USER_METRICS_ACTION_RE_JS)
     self.assertEqual('Foo.Bar', finder.FindNextAction())
     self.assertFalse(finder.FindNextAction())
 
   def testNonLiteralUserMetricsActionJs(self):
     code = "chrome.send('coreOptionsUserMetricsAction',\n[FOO]);"
-    finder = extract_actions.ActionNameFinder('dummy', code,
-        extract_actions.USER_METRICS_ACTION_RE_JS)
+    finder = extract_actions.ActionNameFinder(
+        'dummy', code, extract_actions.USER_METRICS_ACTION_RE_JS)
     self.assertFalse(finder.FindNextAction())
 
   def testTernaryUserMetricsActionJs(self):
     code = ("chrome.send('coreOptionsUserMetricsAction', "
             "[foo ? 'Foo.Bar' : 'Bar.Foo']);")
-    finder = extract_actions.ActionNameFinder('dummy', code,
-        extract_actions.USER_METRICS_ACTION_RE_JS)
+    finder = extract_actions.ActionNameFinder(
+        'dummy', code, extract_actions.USER_METRICS_ACTION_RE_JS)
     self.assertFalse(finder.FindNextAction())
 
   def testTernaryUserMetricsActionWithNewLinesJs(self):
     code = """chrome.send('coreOptionsUserMetricsAction',
       [foo ? 'Foo.Bar' :
       'Bar.Foo']);"""
-    finder = extract_actions.ActionNameFinder('dummy', code,
-        extract_actions.USER_METRICS_ACTION_RE_JS)
+    finder = extract_actions.ActionNameFinder(
+        'dummy', code, extract_actions.USER_METRICS_ACTION_RE_JS)
     self.assertFalse(finder.FindNextAction())
 
   def testUserMetricsActionWithExtraCharactersJs(self):
     code = """chrome.send('coreOptionsUserMetricsAction',
       ['Foo.Bar' + 1]);"""
-    finder = extract_actions.ActionNameFinder('dummy', code,
-        extract_actions.USER_METRICS_ACTION_RE_JS)
+    finder = extract_actions.ActionNameFinder(
+        'dummy', code, extract_actions.USER_METRICS_ACTION_RE_JS)
     self.assertFalse(finder.FindNextAction())
 
   def testComputedUserMetricsActionJs(self):
     code = """chrome.send('coreOptionsUserMetricsAction',
       ['Foo.' + foo_bar ? 'Bar' : 'Foo']);"""
-    finder = extract_actions.ActionNameFinder('dummy', code,
-        extract_actions.USER_METRICS_ACTION_RE_JS)
+    finder = extract_actions.ActionNameFinder(
+        'dummy', code, extract_actions.USER_METRICS_ACTION_RE_JS)
     self.assertFalse(finder.FindNextAction())
 
   def testUserMetricsActionWithMismatchedQuotes(self):
     code = "chrome.send('coreOptionsUserMetricsAction', [\"Foo.Bar']);"
-    finder = extract_actions.ActionNameFinder('dummy', code,
-        extract_actions.USER_METRICS_ACTION_RE_JS)
+    finder = extract_actions.ActionNameFinder(
+        'dummy', code, extract_actions.USER_METRICS_ACTION_RE_JS)
     self.assertFalse(finder.FindNextAction())
 
   def testUserMetricsActionFromPropertyJs(self):
     code = "chrome.send('coreOptionsUserMetricsAction', [objOrArray[key]]);"
-    finder = extract_actions.ActionNameFinder('dummy', code,
-        extract_actions.USER_METRICS_ACTION_RE_JS)
+    finder = extract_actions.ActionNameFinder(
+        'dummy', code, extract_actions.USER_METRICS_ACTION_RE_JS)
     self.assertFalse(finder.FindNextAction())
 
   def testUserMetricsActionFromFunctionJs(self):
     code = "chrome.send('coreOptionsUserMetricsAction', [getAction(param)]);"
-    finder = extract_actions.ActionNameFinder('dummy', code,
-        extract_actions.USER_METRICS_ACTION_RE_JS)
+    finder = extract_actions.ActionNameFinder(
+        'dummy', code, extract_actions.USER_METRICS_ACTION_RE_JS)
     self.assertFalse(finder.FindNextAction())
+
+  def testBasicVariant(self):
+    original_xml = """
+    <actions>
+    <action name="action1{TestToken}">
+      <owner>name1@chromium.org</owner>
+      <description>Description for {TestToken}.</description>
+      <token key="TestToken">
+        <variant name="_variant1" summary="Variant Description 1."/>
+      </token>
+    </action>
+    </actions>
+    """
+    xml_result = self._ExpandVariantsInActionsXML(original_xml)
+    self.assertMultiLineEqual(BASIC_VARIANT_EXPANDED_XML, xml_result)
+
+  def testCreateActionFromVariantWithTokenInMiddle(self):
+    actions_dict = {}
+    action = action_utils.Action('TestAction{Token}Name', 'Test description.',
+                                 ['owner@chromium.org'])
+    variant = action_utils.Variant('Variant', 'Variant summary.')
+    token = action_utils.Token('Token')
+
+    action_utils._CreateActionFromVariant(actions_dict, action, variant, token)
+
+    self.assertIn('TestActionVariantName', actions_dict)
+    new_action = actions_dict['TestActionVariantName']
+    self.assertEqual('TestActionVariantName', new_action.name)
+    self.assertEqual('Test description. Variant summary.',
+                     new_action.description)
+
+  def testVariantPrettyPrint(self):
+    """Tests that variants are preserved when pretty-printing."""
+    original_xml = """<actions>
+  <variants name="TestVariants">
+    <variant name="_variant1" summary="Variant Description 1."/>
+  </variants>
+  <action name="action1{TestToken}">
+    <owner>name1@chromium.org</owner>
+    <description>Description.</description>
+    <token key="TestToken" variants="TestVariants"/>
+  </action>
+  </actions>
+  """
+    xml_result = self._PrettyPrintActionsXML(original_xml)
+    expected_pretty_xml = """<actions>
+
+<variants name="TestVariants">
+  <variant name="_variant1" summary="Variant Description 1."/>
+</variants>
+
+<action name="action1{TestToken}">
+  <owner>name1@chromium.org</owner>
+  <description>Description.</description>
+  <token key="TestToken" variants="TestVariants"/>
+</action>
+
+</actions>
+"""
+    self.assertMultiLineEqual(expected_pretty_xml, xml_result)
+
+  def testMultiActionMultiVariant(self):
+    """Tests multiple actions using multiple variants blocks."""
+    original_xml = """
+    <actions>
+      <variants name="Variants1">
+        <variant name=".variant1" summary="Variant Description 1."/>
+        <variant name=".variant2" summary="Variant Description 2."/>
+      </variants>
+      <variants name="Variants2">
+        <variant name=".variant3" summary="Variant Description 3."/>
+      </variants>
+      <action name="action1{Token1}">
+        <owner>name1@chromium.org</owner>
+        <description>Description1.</description>
+        <token key="Token1" variants="Variants1"/>
+      </action>
+      <action name="action2{Token2}">
+        <owner>name2@chromium.org</owner>
+        <description>Description2.</description>
+        <token key="Token2" variants="Variants1"/>
+      </action>
+      <action name="action3{Token3}">
+        <owner>name3@chromium.org</owner>
+        <description>Description3.</description>
+        <token key="Token3" variants="Variants2"/>
+      </action>
+    </actions>
+    """
+    xml_result = self._ExpandVariantsInActionsXML(original_xml)
+    self.assertMultiLineEqual(MULTI_ACTION_MULTI_VARIANT_XML, xml_result)
 
 
 if __name__ == '__main__':

@@ -3,7 +3,6 @@
 # Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Extract UserMetrics "actions" strings from the Chrome source.
 
 This program generates the list of known actions we expect to see in the
@@ -25,11 +24,12 @@ from __future__ import print_function
 
 __author__ = 'evanm (Evan Martin)'
 
+import copy
 import logging
 import os
 import re
-import shutil
 import sys
+from typing import Dict, List, Optional, Tuple
 from xml.dom import minidom
 
 if sys.version_info.major == 2:
@@ -43,10 +43,10 @@ import actions_model
 # Import the metrics/common module for pretty print xml.
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
 import presubmit_util
-import diff_util
-import pretty_print_xml
+import xml_utils
 
-USER_METRICS_ACTION_RE = re.compile(r"""
+USER_METRICS_ACTION_RE = re.compile(
+    r"""
   [^a-zA-Z]                   # Preceded by a non-alphabetical character.
   (?:                         # Begin non-capturing group.
   UserMetricsAction           # C++ / Objective C function name.
@@ -58,9 +58,10 @@ USER_METRICS_ACTION_RE = re.compile(r"""
   (.+?)                       # A sequence of characters for the param.
   \)                          # Closing parenthesis.
   """,
-  re.VERBOSE | re.DOTALL      # Verbose syntax and makes . also match new lines.
+    re.VERBOSE | re.DOTALL  # Verbose syntax and makes . also match new lines.
 )
-USER_METRICS_ACTION_RE_JS = re.compile(r"""
+USER_METRICS_ACTION_RE_JS = re.compile(
+    r"""
   chrome\.send                # Start of function call.
   \(                          # Opening parenthesis.
   \s*                         # Any amount of whitespace, including new lines.
@@ -76,9 +77,10 @@ USER_METRICS_ACTION_RE_JS = re.compile(r"""
   \s*                         # Any amount of whitespace, including new lines.
   \)                          # Closing parenthesis.
   """,
-  re.VERBOSE | re.DOTALL      # Verbose syntax and makes . also match new lines.
+    re.VERBOSE | re.DOTALL  # Verbose syntax and makes . also match new lines.
 )
-USER_METRICS_ACTION_RE_DEVTOOLS = re.compile(r"""
+USER_METRICS_ACTION_RE_DEVTOOLS = re.compile(
+    r"""
   InspectorFrontendHost\.recordUserMetricsAction     # Start of function call.
   \(                          # Opening parenthesis.
   \s*                         # Any amount of whitespace, including new lines.
@@ -86,7 +88,7 @@ USER_METRICS_ACTION_RE_DEVTOOLS = re.compile(r"""
   \s*                         # Any amount of whitespace, including new lines.
   \)                          # Closing parenthesis.
   """,
-  re.VERBOSE | re.DOTALL      # Verbose syntax and makes . also match new lines.
+    re.VERBOSE | re.DOTALL  # Verbose syntax and makes . also match new lines.
 )
 COMPUTED_ACTION_RE = re.compile(r'RecordComputedAction')
 QUOTED_STRING_RE = re.compile(r"""('[^']+'|"[^"]+")$""")
@@ -117,9 +119,11 @@ REPOSITORY_ROOT = os.path.join(os.path.dirname(__file__), '..', '..', '..')
 number_of_files_total = 0
 
 # Tags that need to be inserted to each 'action' tag and their default content.
-TAGS = {'description': 'Please enter the description of the metric.',
-        'owner': ('Please list the metric\'s owners. Add more owner tags as '
-                  'needed.')}
+TAGS = {
+    'description': 'Please enter the description of the metric.',
+    'owner': ('Please list the metric\'s owners. Add more owner tags as '
+              'needed.')
+}
 
 SHARE_TARGETS = {
     'CopyURLSelected', 'QRCodeSelected', 'ScreenshotSelected',
@@ -172,6 +176,7 @@ def AddPDFPluginActions(actions):
   actions.add('PDF_Unsupported_Shared_Review')
   actions.add('PDF_Unsupported_Sound')
   actions.add('PDF_Unsupported_XFA')
+
 
 def AddBookmarkManagerActions(actions):
   """Add actions that are used by BookmarkManager.
@@ -235,6 +240,7 @@ def AddChromeOSActions(actions):
   # Actions sent by Chrome OS update engine.
   actions.add('Updater.ServerCertificateChanged')
   actions.add('Updater.ServerCertificateFailed')
+
 
 def AddExtensionActions(actions):
   """Add actions reported by extensions via chrome.metricsPrivate API.
@@ -308,8 +314,8 @@ class ActionNameFinder:
     # Add 1 to |match_start| since the RE checks the preceding character.
     statement = self.__contents[match_start + 1:match_end]
     raise InvalidStatementException(
-      '%s uses UserMetricsAction incorrectly on line %d:\n%s' %
-      (self.__path, line_number, statement))
+        '%s uses UserMetricsAction incorrectly on line %d:\n%s' %
+        (self.__path, line_number, statement))
 
 
 def GrepForActions(path, actions):
@@ -365,6 +371,7 @@ def GrepForActions(path, actions):
         logging.warning('%s has RecordComputedAction statement on line %d' %
                         (path, line_number))
 
+
 class WebUIActionsParser(HTMLParser):
   """Parses an HTML file, looking for all tags with a 'metric' attribute.
   Adds user actions corresponding to any metrics found.
@@ -372,6 +379,7 @@ class WebUIActionsParser(HTMLParser):
   Arguments:
     actions: set of actions to add to
   """
+
   def __init__(self, actions):
     HTMLParser.__init__(self)
     self.actions = actions
@@ -392,7 +400,7 @@ class WebUIActionsParser(HTMLParser):
       else:
         # Radio buttons are boolean if and only if their values are 'true' or
         # 'false'.
-        assert(attrs['type'] == 'radio')
+        assert (attrs['type'] == 'radio')
         if 'value' in attrs and attrs['value'] in ['true', 'false']:
           is_boolean = True
 
@@ -401,6 +409,7 @@ class WebUIActionsParser(HTMLParser):
       self.actions.add(attrs['metric'] + '_Disable')
     else:
       self.actions.add(attrs['metric'])
+
 
 def GrepForWebUIActions(path, actions):
   """Grep a WebUI source file for elements with associated metrics.
@@ -423,6 +432,7 @@ def GrepForWebUIActions(path, actions):
   finally:
     if not close_called:
       parser.close()
+
 
 def GrepForDevToolsActions(path, actions):
   """Grep a DevTools source file for calls to UserMetrics functions.
@@ -449,6 +459,7 @@ def GrepForDevToolsActions(path, actions):
       actions.add(action_name)
     except InvalidStatementException as e:
       logging.warning(str(e))
+
 
 def WalkDirectory(root_path, actions, extensions, callback):
   """Walk directory chooses which files to process based on a set
@@ -487,6 +498,7 @@ def WalkDirectory(root_path, actions, extensions, callback):
       if ext in extensions and not filename.endswith('test'):
         callback(os.path.join(path, file), actions)
 
+
 def AddLiteralActions(actions):
   """Add literal actions specified via calls to UserMetrics functions.
 
@@ -503,7 +515,7 @@ def AddLiteralActions(actions):
   content_root = os.path.normpath(os.path.join(REPOSITORY_ROOT, 'content'))
   WalkDirectory(content_root, actions, EXTENSIONS, GrepForActions)
   components_root = os.path.normpath(os.path.join(REPOSITORY_ROOT,
-                    'components'))
+                                                  'components'))
   WalkDirectory(components_root, actions, EXTENSIONS, GrepForActions)
   net_root = os.path.normpath(os.path.join(REPOSITORY_ROOT, 'net'))
   WalkDirectory(net_root, actions, EXTENSIONS, GrepForActions)
@@ -513,9 +525,9 @@ def AddLiteralActions(actions):
   WalkDirectory(os.path.join(webkit_root, 'port'), actions, EXTENSIONS,
                 GrepForActions)
   webkit_core_root = os.path.normpath(
-                     os.path.join(REPOSITORY_ROOT,
-                                  'third_party/blink/renderer/core'))
+      os.path.join(REPOSITORY_ROOT, 'third_party/blink/renderer/core'))
   WalkDirectory(webkit_core_root, actions, EXTENSIONS, GrepForActions)
+
 
 def AddWebUIActions(actions):
   """Add user actions defined in WebUI files.
@@ -528,6 +540,7 @@ def AddWebUIActions(actions):
   WalkDirectory(resources_root, actions, ('.html'), GrepForWebUIActions)
   WalkDirectory(resources_root, actions, ('.js'), GrepForActions)
 
+
 def AddDevToolsActions(actions):
   """Add user actions defined in DevTools frontend files.
 
@@ -537,6 +550,7 @@ def AddDevToolsActions(actions):
   resources_root = os.path.join(REPOSITORY_ROOT, 'third_party', 'blink',
                                 'renderer', 'devtools', 'front_end')
   WalkDirectory(resources_root, actions, ('.js'), GrepForDevToolsActions)
+
 
 def AddHistoryPageActions(actions):
   """Add actions that are used in History page.
@@ -559,6 +573,7 @@ def AddHistoryPageActions(actions):
   actions.add('HistoryPage_SearchResultRemove')
   actions.add('HistoryPage_ConfirmRemoveSelected')
   actions.add('HistoryPage_CancelRemoveSelected')
+
 
 def AddAutomaticResetBannerActions(actions):
   """Add actions that are used for the automatic profile settings reset banners
@@ -585,7 +600,76 @@ class Error(Exception):
   pass
 
 
-def _ExtractText(parent_dom, tag_name):
+def ExtractVariants(
+    variants_node: minidom.Element) -> List[action_utils.Variant]:
+  """Extracts a list of variants from a <variants> or <token> node."""
+  variants = []
+  for variant_node in xml_utils.IterElementsWithTag(variants_node, 'variant',
+                                                    1):
+    name = variant_node.getAttribute('name')
+    summary = variant_node.getAttribute('summary')
+    if not summary:
+      summary = xml_utils.GetTextFromChildNodes(variant_node)
+    variants.append(action_utils.Variant(name, summary))
+  return variants
+
+
+def ExtractTokens(
+    action: minidom.Element, variants_dict: Dict[str,
+                                                 List[action_utils.Variant]]
+) -> List[action_utils.Token]:
+  """Extracts tokens and variants from the given action element.
+
+  Args:
+    action: A DOM Element corresponding to a action.
+    variants_dict: A dictionary of variants extracted from the tree.
+
+  Returns:
+    A tuple where the first element is a list of extracted Tokens, and the
+      second indicates if any errors were detected while extracting them.
+  """
+  tokens_seen = set()
+  tokens = []
+  action_name = action.getAttribute('name')
+
+  for token_node in xml_utils.IterElementsWithTag(action, 'token', 1):
+    token_key = token_node.getAttribute('key')
+    if token_key in tokens_seen:
+      logging.error(f'Histogram {action_name} contains duplicate token key '
+                    f'{token_key}, please ensure token keys are unique.')
+      continue
+    tokens_seen.add(token_key)
+
+    token_key_format = '{' + token_key + '}'
+    if token_key_format not in action_name:
+      logging.error(
+          f'User Action {action_name} includes a token tag but the token key '
+          f'is not present in action name. Please insert the token key into '
+          f'the action name in order for the token to be added.')
+      continue
+
+    token = action_utils.Token(key=token_key)
+
+    # If 'variants' attribute is set for the <token>, get the list of Variant
+    # objects from from the |variants_dict| (out-of-line variants).
+    if token_node.hasAttribute('variants'):
+      variants_name = token_node.getAttribute('variants')
+      if variants_name not in variants_dict:
+        logging.error(
+            f'The variants attribute {variants_name} of token key {token_key} '
+            f'of action {action_name} does not have a corresponding '
+            f'<variants> tag.')
+      token.variants_name = variants_name
+
+    # Extract any inline variants.
+    else:
+      token.variants = ExtractVariants(token_node)
+    tokens.append(token)
+
+  return tokens
+
+
+def _ExtractText(parent_dom: minidom.Element, tag_name: str) -> List[str]:
   """Extract the text enclosed by |tag_name| under |parent_dom|
 
   Args:
@@ -596,26 +680,27 @@ def _ExtractText(parent_dom, tag_name):
     A (list of) string enclosed by |tag_name| under |parent_dom|.
   """
   texts = []
-  for child_dom in parent_dom.getElementsByTagName(tag_name):
-    text_dom = child_dom.childNodes
-    if text_dom.length != 1:
-      raise Error('More than 1 child node exists under %s' % tag_name)
-    if text_dom[0].nodeType != minidom.Node.TEXT_NODE:
-      raise Error('%s\'s child node is not a text node.' % tag_name)
-    texts.append(text_dom[0].data)
+  for node in parent_dom.getElementsByTagName(tag_name):
+    text = xml_utils.GetTextFromChildNodes(node)
+    if text:
+      texts.append(text)
   return texts
 
 
-def ParseActionFile(file_content):
+def ParseActionFile(
+    file_content: str
+) -> Tuple[Dict[str, action_utils.Action], List[minidom.Node], Dict[
+    str, List[action_utils.Variant]], List[minidom.Node]]:
   """Parse the XML data currently stored in the file.
 
   Args:
     file_content: a string containing the action XML file content.
 
   Returns:
-    (actions_dict, comment_nodes, suffixes):
+    (actions_dict, comment_nodes, suffixes, variants_dict):
       - actions_dict is a dict from user action name to Action object.
       - comment_nodes is a list of top-level comment nodes.
+      - variants_dict is a dict of Variant objects.
       - suffixes is a list of <action-suffix> DOM elements.
   """
   dom = minidom.parseString(file_content)
@@ -631,6 +716,11 @@ def ParseActionFile(file_content):
       break
 
   actions_dict = {}
+  variants_dict = {}
+  for variants_dom in dom.getElementsByTagName('variants'):
+    variants_name = variants_dom.getAttribute('name')
+    variants_dict[variants_name] = ExtractVariants(variants_dom)
+
   # Get each user action data.
   for action_dom in dom.getElementsByTagName('action'):
     action_name = action_dom.getAttribute('name')
@@ -641,36 +731,50 @@ def ParseActionFile(file_content):
     # of the returned list.
     description_list = _ExtractText(action_dom, 'description')
     if len(description_list) > 1:
-      logging.error('User action "%s" has more than one description. Exactly '
-                    'one description is needed for each user action. Please '
-                    'fix.', action_name)
+      logging.error(
+          'User action "%s" has more than one description. Exactly '
+          'one description is needed for each user action. Please '
+          'fix.', action_name)
       sys.exit(1)
     description = description_list[0] if description_list else None
     # There is at most one obsolete tag for each user action.
     obsolete_list = _ExtractText(action_dom, 'obsolete')
     if len(obsolete_list) > 1:
-      logging.error('User action "%s" has more than one obsolete tag. At most '
-                    'one obsolete tag can be added for each user action. Please'
-                    ' fix.', action_name)
+      logging.error(
+          'User action "%s" has more than one obsolete tag. At most '
+          'one obsolete tag can be added for each user action. Please'
+          ' fix.', action_name)
       sys.exit(1)
     obsolete = obsolete_list[0] if obsolete_list else None
+
+    tokens = ExtractTokens(action_dom, variants_dict)
+
     actions_dict[action_name] = action_utils.Action(action_name, description,
-        owners, not_user_triggered, obsolete)
+                                                    owners, not_user_triggered,
+                                                    obsolete, tokens)
 
   suffixes = dom.getElementsByTagName('action-suffix')
+
+  # TODO: remove suffix logic after migrating to variants
+  # crbug.com/374120501
   action_utils.CreateActionsFromSuffixes(actions_dict, suffixes)
 
-  return actions_dict, comment_nodes, suffixes
+  return actions_dict, comment_nodes, variants_dict, suffixes
 
 
-def _CreateActionTag(doc, action):
+def _CreateActionTag(doc: minidom.Document,
+                     action: action_utils.Action) -> Optional[minidom.Element]:
   """Create a new action tag.
 
   Format of an action tag:
-  <action name="name" not_user_triggered="true">
+  <action name="name.{tokenName}" not_user_triggered="true">
     <obsolete>Deprecated.</obsolete>
     <owner>Owner</owner>
     <description>Description.</description>
+    <token key="tokenName">
+      <variant name="V1" summary="Variant number one.">
+      <variant name="V2" summary="Variant number two.">
+    </token>
   </action>
 
   not_user_triggered is an optional attribute. If set, it implies that the
@@ -730,18 +834,36 @@ def _CreateActionTag(doc, action):
     # Otherwise, use the default value.
     description_dom.appendChild(doc.createTextNode(action.description))
   else:
-    description_dom.appendChild(doc.createTextNode(
-        TAGS.get('description', '')))
+    description_dom.appendChild(doc.createTextNode(TAGS.get('description', '')))
+
+  for token in action.tokens:
+    if token.implicit:
+      continue
+    token_dom = doc.createElement('token')
+    token_dom.setAttribute('key', token.key)
+    if token.variants_name:
+      token_dom.setAttribute('variants', token.variants_name)
+    else:
+      for variant in token.variants:
+        variant_dom = doc.createElement('variant')
+        variant_dom.setAttribute('name', variant.name)
+        variant_dom.setAttribute('summary', variant.summary)
+        token_dom.appendChild(variant_dom)
+    action_dom.appendChild(token_dom)
 
   return action_dom
 
 
-def PrettyPrint(actions_dict, comment_nodes, suffixes):
+def PrettyPrint(actions_dict: Dict[str, action_utils.Action],
+                comment_nodes: List[minidom.Node],
+                variants_dict: Dict[str, List[action_utils.Variant]],
+                suffixes: List[minidom.Node]) -> str:
   """Given a list of actions, create a well-printed minidom document.
 
   Args:
-    actions_dict: A mappting from action name to Action object.
+    actions_dict: A mapping from action name to Action object.
     comment_nodes: A list of top-level comment nodes.
+    variants_dict: A mapping from variants dict to shared <variants> tags.
     suffixes: A list of <action-suffix> tags to be appended as-is.
 
   Returns:
@@ -756,6 +878,17 @@ def PrettyPrint(actions_dict, comment_nodes, suffixes):
   actions_element = doc.createElement('actions')
   doc.appendChild(actions_element)
 
+  # Attach variants node based on updated |variants_dict|.
+  for name, variants in sorted(variants_dict.items()):
+    variants_tag = doc.createElement('variants')
+    variants_tag.setAttribute('name', name)
+    for variant in variants:
+      variant_tag = doc.createElement('variant')
+      variant_tag.setAttribute('name', variant.name)
+      variant_tag.setAttribute('summary', variant.summary)
+      variants_tag.appendChild(variant_tag)
+    actions_element.appendChild(variants_tag)
+
   # Attach action node based on updated |actions_dict|.
   for _, action in sorted(actions_dict.items()):
     action_tag = _CreateActionTag(doc, action)
@@ -769,7 +902,19 @@ def PrettyPrint(actions_dict, comment_nodes, suffixes):
 
 
 def UpdateXml(original_xml):
-  actions_dict, comment_nodes, suffixes = ParseActionFile(original_xml)
+  actions_dict, comment_nodes, variants_dict, suffixes = ParseActionFile(
+      original_xml)
+
+  expanded_actions_dict = copy.deepcopy(actions_dict)
+  # Created a deep copy of the actions dictionary to expand variants into. This
+  # is to avoid modifying the original Action objects in case of variants
+  # present in the xml file, which would remove their token definitions.
+  if variants_dict:
+    try:
+      action_utils.CreateActionsFromVariants(expanded_actions_dict,
+                                             variants_dict)
+    except Exception as e:
+      logging.warning(str(e))
 
   actions = set()
   AddComputedActions(actions)
@@ -785,19 +930,18 @@ def UpdateXml(original_xml):
   AddPDFPluginActions(actions)
 
   for action_name in actions:
-    if action_name not in actions_dict:
+    if action_name not in expanded_actions_dict:
       actions_dict[action_name] = action_utils.Action(action_name, None, [])
 
-  return PrettyPrint(actions_dict, comment_nodes, suffixes)
+  return PrettyPrint(actions_dict, comment_nodes, variants_dict, suffixes)
 
 
 def main(argv):
-  presubmit_util.DoPresubmitMain(
-      argv,
-      'actions.xml',
-      'actions.old.xml',
-      UpdateXml,
-      script_name='extract_actions.py')
+  presubmit_util.DoPresubmitMain(argv,
+                                 'actions.xml',
+                                 'actions.old.xml',
+                                 UpdateXml,
+                                 script_name='extract_actions.py')
 
 
 if '__main__' == __name__:
