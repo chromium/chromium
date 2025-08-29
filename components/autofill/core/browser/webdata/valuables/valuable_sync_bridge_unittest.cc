@@ -10,6 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
@@ -31,6 +32,7 @@
 namespace autofill {
 namespace {
 
+using base::test::EqualsProto;
 using testing::_;
 using testing::ElementsAre;
 using testing::Return;
@@ -363,11 +365,9 @@ TEST_F(ValuableSyncBridgeTest,
   loyalty_card->mutable_loyalty_card_number()->assign("card_number");
   *loyalty_card->add_merchant_domains() = "https://www.domain.example";
 
-  EXPECT_EQ(bridge()
-                .TrimAllSupportedFieldsFromRemoteSpecifics(
-                    specifics_with_known_and_unknown_fields)
-                .SerializeAsString(),
-            specifics_with_only_unknown_fields.SerializePartialAsString());
+  EXPECT_THAT(bridge().TrimAllSupportedFieldsFromRemoteSpecifics(
+                  specifics_with_known_and_unknown_fields),
+              EqualsProto(specifics_with_only_unknown_fields));
 }
 
 // Tests that when the server sends the same data as the client has, nothing

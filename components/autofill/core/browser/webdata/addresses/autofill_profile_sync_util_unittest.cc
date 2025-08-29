@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_util.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/country_type.h"
@@ -27,6 +28,7 @@ namespace {
 using base::ASCIIToUTF16;
 using base::UTF16ToUTF8;
 using base::UTF8ToUTF16;
+using base::test::EqualsProto;
 using sync_pb::AutofillProfileSpecifics;
 using syncer::EntityData;
 
@@ -1028,8 +1030,8 @@ TEST_P(AutofillProfileSyncUtilTest, CreateEntityDataFromAutofillProfile) {
   // The non-unique name should be set to the guid of the profile.
   EXPECT_EQ(entity_data->name, profile.guid());
 
-  EXPECT_EQ(specifics.SerializeAsString(),
-            entity_data->specifics.autofill_profile().SerializeAsString());
+  EXPECT_THAT(specifics,
+              EqualsProto(entity_data->specifics.autofill_profile()));
 }
 
 // Test that fields not set for the input are empty in the output.

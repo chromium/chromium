@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/strings/to_string.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
@@ -19,6 +20,7 @@
 namespace autofill {
 namespace {
 
+using base::test::EqualsProto;
 using sync_pb::ContactInfoSpecifics;
 
 constexpr char kGuid[] = "00000000-0000-0000-0000-000000000001";
@@ -764,8 +766,7 @@ TEST_P(ContactInfoSyncUtilTest,
 
   ASSERT_TRUE(entity_data != nullptr);
   EXPECT_EQ(entity_data->name, profile.guid());
-  EXPECT_EQ(specifics.SerializeAsString(),
-            entity_data->specifics.contact_info().SerializeAsString());
+  EXPECT_THAT(specifics, EqualsProto(entity_data->specifics.contact_info()));
 }
 
 // Test that only profiles with valid GUID are converted.
@@ -820,9 +821,8 @@ TEST_F(ContactInfoSyncUtilTest, TrimAllSupportedFieldsFromRemoteSpecifics) {
           ContactInfoSpecifics_VerificationStatus_OBSERVED);
 
   sync_pb::ContactInfoSpecifics empty_contact_info_specifics;
-  EXPECT_EQ(TrimContactInfoSpecificsDataForCaching(contact_info_specifics)
-                .SerializeAsString(),
-            empty_contact_info_specifics.SerializeAsString());
+  EXPECT_THAT(TrimContactInfoSpecificsDataForCaching(contact_info_specifics),
+              EqualsProto(empty_contact_info_specifics));
 }
 
 // Test that supported fields and nested messages are successfully trimmed but
@@ -846,11 +846,9 @@ TEST_F(ContactInfoSyncUtilTest,
   contact_info_specifics_with_known_and_unknown_fields.mutable_address_city()
       ->set_value("City");
 
-  EXPECT_EQ(TrimContactInfoSpecificsDataForCaching(
-                contact_info_specifics_with_known_and_unknown_fields)
-                .SerializeAsString(),
-            contact_info_specifics_with_only_unknown_fields
-                .SerializePartialAsString());
+  EXPECT_THAT(TrimContactInfoSpecificsDataForCaching(
+                  contact_info_specifics_with_known_and_unknown_fields),
+              EqualsProto(contact_info_specifics_with_only_unknown_fields));
 }
 
 // Test that the conversion of a profile to specifics preserve the unsupported
@@ -876,8 +874,8 @@ TEST_P(ContactInfoSyncUtilTest, ContactInfoSpecificsFromAutofillProfile) {
   *expected_contact_info.mutable_address_city()->mutable_unknown_fields() =
       "unsupported_field_in_nested_message";
 
-  EXPECT_EQ(contact_info_specifics_from_profile.SerializeAsString(),
-            expected_contact_info.SerializeAsString());
+  EXPECT_THAT(contact_info_specifics_from_profile,
+              EqualsProto(expected_contact_info));
 }
 
 // Test that converting ContactInfoSpecifics -> AutofillProfile works.

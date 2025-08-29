@@ -17,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
@@ -44,6 +45,7 @@
 using base::ScopedTempDir;
 using base::Time;
 using base::UTF8ToUTF16;
+using base::test::EqualsProto;
 using sync_pb::AutofillSpecifics;
 using sync_pb::DataTypeState;
 using sync_pb::EntityMetadata;
@@ -461,7 +463,7 @@ TEST_F(AutocompleteSyncBridgeTest, ApplyIncrementalSyncChangesEmpty) {
 TEST_F(AutocompleteSyncBridgeTest, ApplyIncrementalSyncChangesSimple) {
   AutofillSpecifics specifics1 = CreateSpecifics(1);
   AutofillSpecifics specifics2 = CreateSpecifics(2);
-  ASSERT_NE(specifics1.SerializeAsString(), specifics2.SerializeAsString());
+  ASSERT_THAT(specifics1, Not(EqualsProto(specifics2)));
   ASSERT_NE(GetStorageKey(specifics1), GetStorageKey(specifics2));
 
   EXPECT_CALL(*backend(), CommitChanges());
