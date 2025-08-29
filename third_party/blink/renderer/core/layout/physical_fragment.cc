@@ -915,14 +915,6 @@ void PhysicalFragment::AddOutlineRectsForDescendant(
     }
     return;
   }
-
-  if (const auto* descendant_line_box =
-          DynamicTo<PhysicalLineBoxFragment>(descendant.get())) {
-    descendant_line_box->AddOutlineRectsForNormalChildren(
-        collector, additional_offset + descendant.Offset(), outline_type,
-        containing_block);
-    // We don't add the line box itself. crbug.com/1203247.
-  }
 }
 
 bool PhysicalFragment::DependsOnPercentageBlockSize(
