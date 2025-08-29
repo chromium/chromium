@@ -33,13 +33,13 @@ class BaseSignalsCollector : public SignalsCollector {
                                    base::OnceClosure)>;
 
   explicit BaseSignalsCollector(
-      std::unordered_map<const SignalName, GetSignalCallback>
+      std::unordered_map<SignalName, GetSignalCallback>
           signals_collection_map);
 
  private:
   // Map used to forward signal collection requests to the right function keyed
   // from a given signal name.
-  std::unordered_map<const SignalName, GetSignalCallback>
+  std::unordered_map<SignalName, GetSignalCallback>
       signals_collection_map_;
 };
 

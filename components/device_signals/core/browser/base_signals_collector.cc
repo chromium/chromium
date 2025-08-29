@@ -14,7 +14,7 @@
 namespace device_signals {
 
 BaseSignalsCollector::BaseSignalsCollector(
-    std::unordered_map<const SignalName, GetSignalCallback>
+    std::unordered_map<SignalName, GetSignalCallback>
         signals_collection_map)
     : signals_collection_map_(std::move(signals_collection_map)) {
   DCHECK(!signals_collection_map_.empty());
