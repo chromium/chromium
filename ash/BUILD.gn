@@ -3503,7 +3503,6 @@ component("ash") {
     "//components/history/core/browser",
     "//components/language/core/browser",
     "//components/language/core/common",
-    "//components/lens",
     "//components/lens:enterprise_policy",
     "//components/lens:lens_mojo_shared_cpp_sources",
     "//components/live_caption",
