@@ -26,6 +26,7 @@ export class TestBrowserService extends TestBrowserProxy implements
       'navigateToUrl',
       'openForeignSessionTab',
       'otherDevicesInitialized',
+      'recordBooleanHistogram',
       'recordHistogram',
       'recordLongTime',
       'startTurnOnSyncFlow',
@@ -98,6 +99,10 @@ export class TestBrowserService extends TestBrowserProxy implements
 
     this.histogramMap[histogram]![value]!++;
     this.methodCalled('recordHistogram');
+  }
+
+  recordBooleanHistogram(histogram: string, value: boolean) {
+    this.methodCalled('recordBooleanHistogram', [histogram, value]);
   }
 
   recordTime() {}

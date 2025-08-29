@@ -5,10 +5,11 @@
 import 'chrome://history/history.js';
 import 'chrome://history/lazy_load.js';
 
-import type {HistoryAppElement, HistoryEntry} from 'chrome://history/history.js';
-import {BrowserServiceImpl, ensureLazyLoaded, HistoryPageViewHistogram, HistorySignInState, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram} from 'chrome://history/history.js';
+import type {HistoryAppElement, HistoryEntry, HistoryItemElement} from 'chrome://history/history.js';
+import {BrowserServiceImpl, ensureLazyLoaded, HistoryPageViewHistogram, HistorySignInState, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram, VisitContextMenuAction} from 'chrome://history/history.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserService} from './test_browser_service.js';
@@ -21,6 +22,9 @@ suite('Metrics', function() {
   let actionMap: {[key: string]: number};
 
   suiteSetup(function() {
+    loadTimeData.overrideValues(
+        {enableBrowsingHistoryActorIntegrationM1: true});
+
     disableLinkClicks();
   });
 
@@ -59,6 +63,23 @@ suite('Metrics', function() {
               'sign-in-state-changed', HistorySignInState.SIGNED_OUT);
           return microtasksFinished();
         });
+  }
+
+  /**
+   * @param historyItem The history item element to open the context menu on.
+   * @param buttonId The id of the button inside the context menu to perform a
+   *     click on.
+   */
+  async function contextMenuButtonClick(
+      historyItem: HistoryItemElement, buttonId: string) {
+    historyItem.$['menu-button'].click();
+    await microtasksFinished();
+
+    const sharedMenu = app.$.history.$.sharedMenu.get();
+    const button = sharedMenu.querySelector<HTMLElement>(buttonId);
+    assertTrue(!!button);
+    button.click();
+    await microtasksFinished();
   }
 
   test('History.HistoryPageView', async () => {
@@ -240,5 +261,150 @@ suite('Metrics', function() {
 
     const args = await testService.whenCalled('recordLongTime');
     assertEquals(args[0], 'History.Clusters.WebUISessionDuration');
+  });
+
+  test('history-list-with-actor-visit', async () => {
+    // History page loaded with no actor-annotated visit.
+    await finishSetup([
+      createHistoryEntry('2025-08-27 10:00', 'http://www.example.com'),
+      createHistoryEntry('2025-08-26 10:00', 'http://www.google.com'),
+    ]);
+    await microtasksFinished();
+
+    const recordedHistograms1 =
+        await testService.getArgs('recordBooleanHistogram');
+    assertEquals(1, recordedHistograms1.length);
+    assertEquals('HistoryPage.ActorItemsShown', recordedHistograms1[0][0]);
+    assertFalse(recordedHistograms1[0][1]);
+
+    const historyEntry =
+        createHistoryEntry('2025-08-26 10:00', 'http://www.google.com');
+    historyEntry.isActorVisit = true;
+
+    // History page re-loaded with actor-annotated visits.
+    testService.handler.resetResolver('queryHistory');
+    testService.handler.setResultFor(
+        'queryHistoryContinuation', Promise.resolve({
+          results: {
+            info: createHistoryInfo(),
+            value: [
+              historyEntry,
+              historyEntry,
+              createHistoryEntry('2025-08-25 10:00', 'http://www.example.com'),
+            ],
+          },
+        }));
+    app.dispatchEvent(new CustomEvent(
+        'query-history', {detail: true, bubbles: true, composed: true}));
+    await testService.handler.whenCalled('queryHistoryContinuation');
+
+    const recordedHistogram2 =
+        await testService.getArgs('recordBooleanHistogram');
+    assertEquals(2, recordedHistogram2.length);
+    assertEquals('HistoryPage.ActorItemsShown', recordedHistogram2[1][0]);
+    assertTrue(recordedHistogram2[1][1]);
+  });
+
+  test('more-button-clicked-for-actor-visit', async () => {
+    const historyEntry =
+        createHistoryEntry('2025-08-26 10:00', 'http://www.google.com');
+    historyEntry.isActorVisit = true;
+    await finishSetup([historyEntry]);
+    await microtasksFinished();
+
+    const item = app.$.history.shadowRoot.querySelector('history-item');
+    assertTrue(!!item);
+    await contextMenuButtonClick(item, '#menuMoreButton');
+
+    const histogram = histogramMap['HistoryPage.ActorContextMenuActions'];
+    assertTrue(!!histogram);
+    assertEquals(
+        1, histogram[VisitContextMenuAction.MORE_FROM_THIS_SITE_CLICKED]);
+  });
+
+  test('more-button-clicked-for-non-actor-visit', async () => {
+    await finishSetup(
+        [createHistoryEntry('2025-08-26 10:00', 'http://www.google.com')]);
+    await microtasksFinished();
+
+    const item = app.$.history.shadowRoot.querySelector('history-item');
+    assertTrue(!!item);
+    await contextMenuButtonClick(item, '#menuMoreButton');
+
+    const histogram = histogramMap['HistoryPage.NonActorContextMenuActions'];
+    assertTrue(!!histogram);
+    assertEquals(
+        1, histogram[VisitContextMenuAction.MORE_FROM_THIS_SITE_CLICKED]);
+  });
+
+  test('remove-history-button-clicked-for-actor-visit', async () => {
+    // Resolve `removeVisits` call so that the #menuRemoveButton click is
+    // handled correctly.
+    testService.handler.setResultFor('removeVisits', Promise.resolve());
+    const historyEntry =
+        createHistoryEntry('2025-08-26 10:00', 'http://www.google.com');
+    historyEntry.isActorVisit = true;
+    await finishSetup([historyEntry]);
+    await microtasksFinished();
+
+    const item = app.$.history.shadowRoot.querySelector('history-item');
+    assertTrue(!!item);
+    await contextMenuButtonClick(item, '#menuRemoveButton');
+
+    const histogram = histogramMap['HistoryPage.ActorContextMenuActions'];
+    assertTrue(!!histogram);
+    assertEquals(
+        1, histogram[VisitContextMenuAction.REMOVE_FROM_HISTORY_CLICKED]);
+  });
+
+  test('remove-history-button-clicked-for-non-actor-visit', async () => {
+    // Resolve `removeVisits` call so that the #menuRemoveButton click is
+    // handled correctly.
+    testService.handler.setResultFor('removeVisits', Promise.resolve());
+    await finishSetup(
+        [createHistoryEntry('2025-08-26 10:00', 'http://www.google.com')]);
+    await microtasksFinished();
+
+    const item = app.$.history.shadowRoot.querySelector('history-item');
+    assertTrue(!!item);
+    await contextMenuButtonClick(item, '#menuRemoveButton');
+
+    const histogram = histogramMap['HistoryPage.NonActorContextMenuActions'];
+    assertTrue(!!histogram);
+    assertEquals(
+        1, histogram[VisitContextMenuAction.REMOVE_FROM_HISTORY_CLICKED]);
+  });
+
+  test('remove-bookmark-button-clicked-for-actor-visit', async () => {
+    const historyEntry =
+        createHistoryEntry('2025-08-26 10:00', 'http://www.google.com');
+    historyEntry.starred = true;
+    historyEntry.isActorVisit = true;
+    await finishSetup([historyEntry]);
+    await microtasksFinished();
+
+    const item = app.$.history.shadowRoot.querySelector('history-item');
+    assertTrue(!!item);
+    await contextMenuButtonClick(item, '#menuRemoveBookmarkButton');
+
+    const histogram = histogramMap['HistoryPage.ActorContextMenuActions'];
+    assertTrue(!!histogram);
+    assertEquals(1, histogram[VisitContextMenuAction.REMOVE_BOOKMARK_CLICKED]);
+  });
+
+  test('remove-bookmark-button-clicked-for-non-actor-visit', async () => {
+    const historyEntry =
+        createHistoryEntry('2025-08-26 10:00', 'http://www.google.com');
+    historyEntry.starred = true;
+    await finishSetup([historyEntry]);
+    await microtasksFinished();
+
+    const item = app.$.history.shadowRoot.querySelector('history-item');
+    assertTrue(!!item);
+    await contextMenuButtonClick(item, '#menuRemoveBookmarkButton');
+
+    const histogram = histogramMap['HistoryPage.NonActorContextMenuActions'];
+    assertTrue(!!histogram);
+    assertEquals(1, histogram[VisitContextMenuAction.REMOVE_BOOKMARK_CLICKED]);
   });
 });

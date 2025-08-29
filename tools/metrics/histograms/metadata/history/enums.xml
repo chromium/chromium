@@ -308,6 +308,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/storage_partition_impl.cc:TracingDataType) -->
 
+<!-- LINT.IfChange(VisitContextMenuAction) -->
+
+<enum name="VisitContextMenuAction">
+  <int value="0" label="More from this site clicked"/>
+  <int value="1" label="Remove from history clicked"/>
+  <int value="2" label="Remove bookmark clicked"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/history/constants.ts:VisitContextMenuAction) -->
+
 </enums>
 
 </histogram-configuration>

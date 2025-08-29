@@ -62,3 +62,21 @@ export enum SyncedTabsHistogram {
   OPENED_LINK_VIA_CONTEXT_MENU = 11,
   LIMIT = 12  // Should always be the last one.
 }
+
+/**
+ * Contains all context menu interactions for a visit in the history page.
+ *
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ *
+ * Must be kept in sync with the VisitContextMenuAction enum in
+ * histograms/metadata/history/enums.xml
+ */
+// LINT.IfChange(VisitContextMenuAction)
+export enum VisitContextMenuAction {
+  MORE_FROM_THIS_SITE_CLICKED = 0,
+  REMOVE_FROM_HISTORY_CLICKED = 1,
+  REMOVE_BOOKMARK_CLICKED = 2,
+  MAX_VALUE = 3,
+}
+// LINT.ThenChange(/tools/metrics/histograms/metadata/history/enums.xml:VisitContextMenuAction)

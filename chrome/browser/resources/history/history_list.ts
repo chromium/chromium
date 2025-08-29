@@ -20,7 +20,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {BrowserService} from './browser_service.js';
 import {BrowserServiceImpl} from './browser_service.js';
-import {BROWSING_GAP_TIME} from './constants.js';
+import {BROWSING_GAP_TIME, VisitContextMenuAction} from './constants.js';
 import type {HistoryItemElement} from './history_item.js';
 import {getCss} from './history_list.css.js';
 import {getHtml} from './history_list.html.js';
@@ -258,6 +258,18 @@ export class HistoryListElement extends HistoryListElementBase {
 
     this.historyData_ = [...this.historyData_, ...results];
     this.resultLoadingDisabled_ = finished;
+
+    if (loadTimeData.getBoolean('enableBrowsingHistoryActorIntegrationM1')) {
+      this.recordActorVisitShown_(results);
+    }
+  }
+
+  private recordActorVisitShown_(historyResults: HistoryEntry[]) {
+    const historyResultsContainActorVisit =
+        historyResults.some((result) => result.isActorVisit);
+
+    this.browserService_.recordBooleanHistogram(
+        'HistoryPage.ActorItemsShown', historyResultsContainActorVisit);
   }
 
   private onHistoryDeleted_() {
@@ -457,16 +469,6 @@ export class HistoryListElement extends HistoryListElementBase {
     this.$.sharedMenu.get().showAt(target);
   }
 
-  protected onMoreFromSiteClick_() {
-    this.browserService_.recordAction('EntryMenuShowMoreFromSite');
-
-    assert(this.$.sharedMenu.getIfExists());
-    this.fire(
-        'change-query', {search: 'host:' + this.actionMenuModel_!.item.domain});
-    this.actionMenuModel_ = null;
-    this.closeMenu_();
-  }
-
   private deleteItems_(items: HistoryEntry[]): Promise<void> {
     const removalList = items.map(item => ({
                                     url: item.url,
@@ -477,7 +479,35 @@ export class HistoryListElement extends HistoryListElementBase {
     return this.pageHandler_.removeVisits(removalList);
   }
 
+  private recordContextMenuActionsHistogram_(action: VisitContextMenuAction) {
+    if (!loadTimeData.getBoolean('enableBrowsingHistoryActorIntegrationM1')) {
+      return;
+    }
+
+    this.browserService_.recordHistogram(
+        this.actionMenuModel_!.item.isActorVisit ?
+            'HistoryPage.ActorContextMenuActions' :
+            'HistoryPage.NonActorContextMenuActions',
+        action, VisitContextMenuAction.MAX_VALUE);
+  }
+
+  protected onMoreFromSiteClick_() {
+    this.browserService_.recordAction('EntryMenuShowMoreFromSite');
+    this.recordContextMenuActionsHistogram_(
+        VisitContextMenuAction.MORE_FROM_THIS_SITE_CLICKED);
+
+
+    assert(this.$.sharedMenu.getIfExists());
+    this.fire(
+        'change-query', {search: 'host:' + this.actionMenuModel_!.item.domain});
+    this.actionMenuModel_ = null;
+    this.closeMenu_();
+  }
+
   protected onRemoveBookmarkClick_() {
+    this.recordContextMenuActionsHistogram_(
+        VisitContextMenuAction.REMOVE_BOOKMARK_CLICKED);
+
     this.pageHandler_.removeBookmark(this.actionMenuModel_!.item.url);
     this.fire('remove-bookmark-stars', this.actionMenuModel_!.item.url);
     this.closeMenu_();
@@ -485,6 +515,8 @@ export class HistoryListElement extends HistoryListElementBase {
 
   protected onRemoveFromHistoryClick_() {
     this.browserService_.recordAction('EntryMenuRemoveFromHistory');
+    this.recordContextMenuActionsHistogram_(
+        VisitContextMenuAction.REMOVE_FROM_HISTORY_CLICKED);
 
     assert(!this.pendingDelete);
     assert(this.$.sharedMenu.getIfExists());

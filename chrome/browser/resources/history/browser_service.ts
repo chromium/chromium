@@ -26,6 +26,7 @@ export interface BrowserService {
   openForeignSessionTab(sessionTag: string, tabId: number, e: MouseEvent): void;
   deleteForeignSession(sessionTag: string): void;
   recordHistogram(histogram: string, value: number, max: number): void;
+  recordBooleanHistogram(histogram: string, value: boolean): void;
   recordAction(action: string): void;
   recordTime(histogram: string, time: number): void;
   recordLongTime(histogram: string, time: number): void;
@@ -84,6 +85,10 @@ export class BrowserServiceImpl implements BrowserService {
 
   recordHistogram(histogram: string, value: number, max: number) {
     chrome.send('metricsHandler:recordInHistogram', [histogram, value, max]);
+  }
+
+  recordBooleanHistogram(histogram: string, value: boolean): void {
+    chrome.metricsPrivate.recordBoolean(histogram, value);
   }
 
   /**
