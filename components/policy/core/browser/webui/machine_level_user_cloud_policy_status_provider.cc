@@ -60,9 +60,8 @@ base::Value::Dict MachineLevelUserCloudPolicyStatusProvider::GetStatus() {
                    refresh_scheduler
                        ? refresh_scheduler->GetActualRefreshDelay()
                        : CloudPolicyRefreshScheduler::kDefaultRefreshDelayMs)));
-  dict.Set(
-      "policiesPushAvailable",
-      refresh_scheduler ? refresh_scheduler->invalidations_available() : false);
+  dict.Set("policiesPushAvailable",
+           refresh_scheduler && refresh_scheduler->invalidations_available());
 
   if (!context_->enrollmentToken.empty())
     dict.Set(kEnrollmentTokenKey, context_->enrollmentToken);

@@ -152,7 +152,7 @@ FieldType AutofillType::ServerPrediction::server_type() const {
 }
 
 bool AutofillType::ServerPrediction::is_override() const {
-  return server_predictions.empty() ? false : server_predictions[0].override();
+  return !server_predictions.empty() && server_predictions[0].override();
 }
 
 AutofillType::AutofillType(FieldTypeSet field_types, bool is_country_code)

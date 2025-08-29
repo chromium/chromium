@@ -1451,10 +1451,9 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
   // We should clear destination if BlitRequest asked to letterbox everything
   // outside of intended destination region:
   const bool clear_destination =
-      request->has_blit_request()
-          ? request->blit_request().letterboxing_behavior() ==
-                LetterboxingBehavior::kLetterbox
-          : false;
+      request->has_blit_request() &&
+      request->blit_request().letterboxing_behavior() ==
+          LetterboxingBehavior::kLetterbox;
 
   SkYUVAInfo yuva_info(
       gfx::SizeToSkISize(mailbox_access_data.representation->size()),

@@ -176,7 +176,7 @@ bool HashPasswordManager::SavePasswordHash(
   bool should_save = password_hash_data.force_update ||
                      !HasPasswordHash(password_hash_data.username,
                                       password_hash_data.is_gaia_password);
-  return should_save ? EncryptAndSave(password_hash_data) : false;
+  return should_save && EncryptAndSave(password_hash_data);
 }
 
 void HashPasswordManager::ClearSavedPasswordHash(const std::string& username,

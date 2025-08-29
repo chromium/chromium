@@ -465,7 +465,7 @@ std::string MaybeScrubIPAddress(const std::string& addr) {
   IPAddress input_addr;
   if (input_addr.AssignFromIPLiteral(addr) && input_addr.IsValid()) {
     bool mapped = MaybeUnmapAddress(&input_addr);
-    bool translated = !mapped ? MaybeUntranslateAddress(&input_addr) : false;
+    bool translated = !mapped && MaybeUntranslateAddress(&input_addr);
     for (const auto& range : *kNonIdentifyingIPRanges) {
       if (IPAddressMatchesPrefix(input_addr, range.ip_addr,
                                  range.prefix_length)) {

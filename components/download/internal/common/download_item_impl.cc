@@ -1207,8 +1207,8 @@ bool DownloadItemImpl::RequireSafetyChecks() const {
 }
 
 bool DownloadItemImpl::IsParallelDownload() const {
-  bool is_parallelizable = job_ ? job_->IsParallelizable() : false;
-  return is_parallelizable && download::IsParallelDownloadEnabled();
+  return job_ && job_->IsParallelizable() &&
+         download::IsParallelDownloadEnabled();
 }
 
 DownloadItem::DownloadCreationType DownloadItemImpl::GetDownloadCreationType()

@@ -39,7 +39,7 @@ ShouldUpdateDownloadDBResult ShouldUpdateDownloadDB(
   base::FilePath previous_path =
       previous_info ? previous_info->current_path : base::FilePath();
 
-  bool previous_paused = previous_info ? previous_info->paused : false;
+  bool previous_paused = previous_info && previous_info->paused;
 
   std::optional<InProgressInfo> current_info;
   if (current.download_info)

@@ -66,7 +66,7 @@ void* Init(TfLiteContext* context, const char* buffer, size_t length) {
   const uint8* buffer_t = reinterpret_cast<const uint8*>(buffer);
   const Map& m = GetRoot(buffer_t, length).AsMap();
   const bool is_quantized =
-      (m["is_quantized"].IsNull() ? false : m["is_quantized"].AsBool());
+      !m["is_quantized"].IsNull() && m["is_quantized"].AsBool();
   const int num_precision_bits = m["num_precision_bits"].AsInt32();
   return new EmbeddingLookupOpParams(is_quantized, num_precision_bits);
 }

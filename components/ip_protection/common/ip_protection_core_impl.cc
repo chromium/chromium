@@ -208,9 +208,8 @@ IpProtectionCoreImpl::GetIpProtectionProxyConfigManagerForTesting() {
 }
 
 bool IpProtectionCoreImpl::IsProxyListAvailable() {
-  return ipp_proxy_config_manager_ != nullptr
-             ? ipp_proxy_config_manager_->IsProxyListAvailable()
-             : false;
+  return ipp_proxy_config_manager_ &&
+         ipp_proxy_config_manager_->IsProxyListAvailable();
 }
 
 void IpProtectionCoreImpl::QuicProxiesFailed() {

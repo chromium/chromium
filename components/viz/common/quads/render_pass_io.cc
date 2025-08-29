@@ -1373,7 +1373,7 @@ bool CompositorRenderPassDrawQuadFromDict(
       common.needs_blending, t_render_pass_id, mask_resource_id, t_mask_uv_rect,
       t_mask_texture_size, t_filters_scale, t_filters_origin, t_tex_coord_rect,
       force_anti_aliasing_off.value(), backdrop_filter_quality.value(),
-      intersects_damage_under ? intersects_damage_under.value() : false);
+      intersects_damage_under && intersects_damage_under.value());
   return true;
 }
 

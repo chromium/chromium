@@ -214,7 +214,7 @@ bool MediaDeviceSaltDatabase::EnsureOpen(bool is_retry) {
   }
 
   db_.Raze();
-  return is_retry ? false : EnsureOpen(/*is_retry=*/true);
+  return !is_retry && EnsureOpen(/*is_retry=*/true);
 }
 
 void MediaDeviceSaltDatabase::OnDatabaseError(int error,

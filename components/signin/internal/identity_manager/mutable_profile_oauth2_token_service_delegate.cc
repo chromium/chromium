@@ -854,9 +854,8 @@ void MutableProfileOAuth2TokenServiceDelegate::OnConnectionChanged(
 }
 
 bool MutableProfileOAuth2TokenServiceDelegate::FixAccountErrorIfPossible() {
-  return !fix_request_error_callback_.is_null()
-             ? fix_request_error_callback_.Run()
-             : false;
+  return !fix_request_error_callback_.is_null() &&
+         fix_request_error_callback_.Run();
 }
 
 void MutableProfileOAuth2TokenServiceDelegate::FinishLoadingCredentials() {

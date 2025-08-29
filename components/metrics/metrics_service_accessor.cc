@@ -38,9 +38,8 @@ bool MetricsServiceAccessor::IsMetricsReportingEnabled(
   return IsMetricsReportingEnabledForOfficialBuild(local_state);
 #else
   // In non-official builds, disable metrics reporting completely.
-  return g_force_official_enabled_test
-             ? IsMetricsReportingEnabledForOfficialBuild(local_state)
-             : false;
+  return g_force_official_enabled_test &&
+         IsMetricsReportingEnabledForOfficialBuild(local_state);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 

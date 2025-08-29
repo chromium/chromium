@@ -141,8 +141,7 @@ bool ChromeConnectedHeaderHelper::IsUrlEligibleToIncludeGaiaId(
   // usage:
   // * Avoid sending it in the cookie as not needed on iOS.
   // * Only send it in the header to Drive URLs.
-  return is_header_request ? IsDriveOrigin(url.DeprecatedGetOriginAsURL())
-                           : false;
+  return is_header_request && IsDriveOrigin(url.DeprecatedGetOriginAsURL());
 }
 
 bool ChromeConnectedHeaderHelper::IsDriveOrigin(const GURL& url) {
