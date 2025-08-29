@@ -119,6 +119,11 @@ const NSUInteger kSearchCharacterLimit = 1000;
     [UISheetPresentationControllerDetent largeDetent]
   ];
   presentationController.preferredCornerRadius = kShareSheetCornerRadius;
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    [self addChildViewController:self.shareSheet];
+  }
+#endif
   [self loadAvailableAccounts];
   [self loadElementsFromContext];
 }
@@ -368,11 +373,25 @@ const NSUInteger kSearchCharacterLimit = 1000;
   }
 
   __weak ExtendedShareViewController* weakSelf = self;
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [weakSelf moveShareSheet];
+    });
+    return;
+  }
+#endif
+
   dispatch_async(dispatch_get_main_queue(), ^{
     [weakSelf presentViewController:weakSelf.shareSheet
                            animated:YES
                          completion:nil];
   });
+}
+
+- (void)moveShareSheet {
+  [self.view addSubview:self.shareSheet.view];
+  [self.shareSheet didMoveToParentViewController:self];
 }
 
 - (void)displayErrorView {
@@ -563,6 +582,13 @@ const NSUInteger kSearchCharacterLimit = 1000;
 }
 
 - (void)dismissAndReturnItem:(NSExtensionItem*)item error:(NSError*)error {
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    [self handleSheetDismissalForItem:item error:error];
+    return;
+  }
+#endif
+
   __weak ExtendedShareViewController* weakSelf = self;
   [self.shareSheet.presentingViewController
       dismissViewControllerAnimated:YES
