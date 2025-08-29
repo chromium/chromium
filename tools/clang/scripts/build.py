@@ -227,6 +227,9 @@ def GitCherryPick(git_repository,
 
 def GitRevert(git_repository, commit):
   print(f'Reverting {commit} in {git_repository}')
+  if not IsGitAncestorToHead(git_repository, commit):
+    print('Commit not an ancestor; skipping.')
+    return
   env = os.environ.copy()
   env.update(MODIFICATION_DATES)
   RunCommand(['git', '-C', git_repository, 'revert', '--no-edit', commit],
