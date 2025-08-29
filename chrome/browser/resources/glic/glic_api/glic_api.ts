@@ -680,8 +680,7 @@ export declare interface GlicBrowserHost {
    *
    * When the tab is destroyed, the observable will complete.
    */
-  getPageMetadata?
-      (tabId: string, names: string[]): ObservableValue<PageMetadata>|undefined;
+  getPageMetadata?(tabId: string, names: string[]): ObservableValue<PageMetadata>;
 
   /**
    * Returns an observable that emits when the browser wants the web client to
