@@ -18,7 +18,7 @@ DesktopBnplStrategy::GetNextActionOnSuggestionShown() {
 
 BnplStrategy::BnplSuggestionAcceptedNextAction
 DesktopBnplStrategy::GetNextActionOnBnplSuggestionAcceptance() {
-  return BnplSuggestionAcceptedNextAction::kShowSelectBnplIssuerDialog;
+  return BnplSuggestionAcceptedNextAction::kShowSelectBnplIssuerUi;
 }
 
 }  // namespace autofill::payments

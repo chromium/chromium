@@ -30,10 +30,8 @@ class BnplStrategy {
   // accepted a BNPL autofill suggestion. The strategy implementation determines
   // which action to return based on the platform.
   enum class BnplSuggestionAcceptedNextAction {
-    // TODO(crbug.com/430575808): Rename this to `kShowSelectBnplIssuerUi` as it
-    // will not be a "dialog" on mobile.
-    // The flow should show the Select BNPL Issuer Dialog.
-    kShowSelectBnplIssuerDialog = 0,
+    // The flow should show the Select BNPL Issuer UI.
+    kShowSelectBnplIssuerUi = 0,
 
     // The flow should check if amount extraction has finished extracting the
     // checkout amount from the webpage. If complete, show the BNPL selection
