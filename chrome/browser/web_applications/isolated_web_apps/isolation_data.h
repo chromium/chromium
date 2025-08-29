@@ -9,8 +9,8 @@
 #include <set>
 #include <string>
 
-#include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "url/gurl.h"
@@ -22,7 +22,7 @@ class IsolationData {
  public:
   struct PendingUpdateInfo {
     PendingUpdateInfo(IsolatedWebAppStorageLocation location,
-                      base::Version version,
+                      IwaVersion version,
                       std::optional<IsolatedWebAppIntegrityBlockData>
                           integrity_block_data = std::nullopt);
     ~PendingUpdateInfo();
@@ -38,7 +38,7 @@ class IsolationData {
     }
 
     IsolatedWebAppStorageLocation location;
-    base::Version version;
+    IwaVersion version;
 
     std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data;
   };
@@ -89,7 +89,7 @@ class IsolationData {
   }
 
   const IsolatedWebAppStorageLocation& location() const { return location_; }
-  const base::Version& version() const { return version_; }
+  const IwaVersion& version() const { return version_; }
   const std::set<std::string>& controlled_frame_partitions() const {
     return controlled_frame_partitions_;
   }
@@ -115,7 +115,7 @@ class IsolationData {
  private:
   IsolationData(
       IsolatedWebAppStorageLocation location,
-      base::Version version,
+      IwaVersion version,
       std::set<std::string> controlled_frame_partitions,
       std::optional<PendingUpdateInfo> pending_update_info,
       std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data,
@@ -125,7 +125,7 @@ class IsolationData {
           opened_tabs_counter_notification_state);
 
   IsolatedWebAppStorageLocation location_;
-  base::Version version_;
+  IwaVersion version_;
 
   std::set<std::string> controlled_frame_partitions_;
 
@@ -156,7 +156,7 @@ class IsolationData {
  public:
   class Builder {
    public:
-    Builder(IsolatedWebAppStorageLocation location, base::Version version);
+    Builder(IsolatedWebAppStorageLocation location, IwaVersion version);
     explicit Builder(const IsolationData& isolation_data);
     ~Builder();
 
@@ -216,7 +216,7 @@ class IsolationData {
 
    private:
     IsolatedWebAppStorageLocation location_;
-    base::Version version_;
+    IwaVersion version_;
 
     std::set<std::string> controlled_frame_partitions_;
     std::optional<IsolationData::PendingUpdateInfo> pending_update_info_;

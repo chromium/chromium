@@ -80,11 +80,7 @@ base::expected<IwaVersion, RemoveObsoleteBundleVersionsError> GetIwaVersion(
         RemoveObsoleteBundleVersionsError::Type::kAppNotInstalled});
   }
 
-  CHECK(app->isolation_data());
-  // TODO(crbug.com/437038363): Adjust to IwaVersion after migrating isolation
-  // data.
-  return IwaVersion::Create(app->isolation_data()->version().components())
-      .value();
+  return app->isolation_data().value().version();
 }
 
 RemoveObsoleteBundleVersionsResult RecordMetric(

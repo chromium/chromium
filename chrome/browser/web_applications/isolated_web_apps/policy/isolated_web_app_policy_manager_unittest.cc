@@ -272,7 +272,7 @@ TEST_F(IsolatedWebAppPolicyManagerTest, AppInstalledAtPinnedVersion) {
   const WebApp* web_app =
       provider().registrar_unsafe().GetAppById(url_info.app_id());
   ASSERT_THAT(web_app, NotNull());
-  ASSERT_EQ(web_app->isolation_data()->version(), pinned_version.version());
+  ASSERT_EQ(web_app->isolation_data()->version(), pinned_version);
   EXPECT_THAT(web_app->GetSources(),
               Eq(WebAppManagementTypes({WebAppManagement::Type::kIwaPolicy})));
 }

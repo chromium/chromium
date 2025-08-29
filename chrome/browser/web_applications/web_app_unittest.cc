@@ -377,7 +377,7 @@ TEST(WebAppTest, IsolationDataDebugValue) {
   app.SetIsolationData(
       IsolationData::Builder(
           IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
-          base::Version("1.0.0"))
+          *IwaVersion::Create("1.0.0"))
           .Build());
 
   EXPECT_TRUE(app.isolation_data().has_value());
@@ -417,11 +417,11 @@ TEST(WebAppTest, IsolationDataPendingUpdateInfoDebugValue) {
   app.SetIsolationData(
       IsolationData::Builder(
           IwaStorageOwnedBundle{"random_name", /*dev_mode=*/true},
-          base::Version("1.0.0"))
+          *IwaVersion::Create("1.0.0"))
           .SetPendingUpdateInfo(IsolationData::PendingUpdateInfo(
               IwaStorageUnownedBundle{
                   base::FilePath(FILE_PATH_LITERAL("random_folder"))},
-              base::Version("2.0.0"), integrity_block_data))
+              *IwaVersion::Create("2.0.0"), integrity_block_data))
           .SetIntegrityBlockData(integrity_block_data)
           .SetUpdateManifestUrl(GURL(kUpdateManifestUrl))
           .SetUpdateChannel(kUpdateChannel)

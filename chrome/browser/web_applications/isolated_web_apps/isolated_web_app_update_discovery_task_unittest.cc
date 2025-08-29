@@ -18,7 +18,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "base/version.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
@@ -323,10 +322,10 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskUpdateManifestTest,
     web_app->SetIsolationData(
         IsolationData::Builder(
             IwaStorageOwnedBundle{"some_folder", /*dev_mode=*/false},
-            base::Version("1.0.0"))
+            *IwaVersion::Create("1.0.0"))
             .SetPendingUpdateInfo(IsolationData::PendingUpdateInfo(
                 IwaStorageOwnedBundle{"another_folder", /*dev_mode=*/false},
-                base::Version("2.0.0")))
+                *IwaVersion::Create("2.0.0")))
             .Build());
   }
 
@@ -452,7 +451,7 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest, Fails) {
   EXPECT_THAT(web_app,
               test::IwaIs(Eq("installed iwa"),
                           test::IsolationDataIs(
-                              /*location=*/_, Eq(base::Version("1.0.0")),
+                              /*location=*/_, Eq(*IwaVersion::Create("1.0.0")),
                               /*controlled_frame_partitions=*/_,
                               /*pending_update_info=*/Eq(std::nullopt),
                               /*integrity_block_data=*/_)))
@@ -485,12 +484,12 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest, Succeeds) {
       test::IwaIs(
           Eq("installed iwa"),
           test::IsolationDataIs(
-              /*location=*/_, Eq(base::Version("1.0.0")),
+              /*location=*/_, Eq(*IwaVersion::Create("1.0.0")),
               /*controlled_frame_partitions=*/_,
               test::PendingUpdateInfoIs(
                   Property("variant", &IsolatedWebAppStorageLocation::variant,
                            VariantWith<IwaStorageOwnedBundle>(_)),
-                  GetDefaultVersionEntry().version.version(),
+                  GetDefaultVersionEntry().version,
                   /*integrity_block_data=*/_),
               /*integrity_block_data=*/_)))
       << task.AsDebugValue();
@@ -592,12 +591,12 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest,
       test::IwaIs(
           Eq("installed iwa"),
           test::IsolationDataIs(
-              /*location=*/_, Eq(base::Version("1.0.0")),
+              /*location=*/_, Eq(*IwaVersion::Create("1.0.0")),
               /*controlled_frame_partitions=*/_,
               test::PendingUpdateInfoIs(
                   Property("variant", &IsolatedWebAppStorageLocation::variant,
                            VariantWith<IwaStorageOwnedBundle>(_)),
-                  GetDefaultVersionEntry().version.version(),
+                  GetDefaultVersionEntry().version,
                   /*integrity_block_data=*/_),
               /*integrity_block_data=*/_)))
       << task.AsDebugValue();
@@ -622,10 +621,10 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest,
     web_app->SetIsolationData(
         IsolationData::Builder(
             IwaStorageOwnedBundle{"some_folder", /*dev_mode=*/false},
-            base::Version("1.0.0"))
+            *IwaVersion::Create("1.0.0"))
             .SetPendingUpdateInfo(IsolationData::PendingUpdateInfo(
                 IwaStorageOwnedBundle{"another_folder", /*dev_mode=*/false},
-                base::Version("3.0.0")))
+                *IwaVersion::Create("3.0.0")))
             .Build());
   }
 
@@ -650,12 +649,12 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest,
       test::IwaIs(
           Eq("installed iwa"),
           test::IsolationDataIs(
-              /*location=*/_, Eq(base::Version("1.0.0")),
+              /*location=*/_, Eq(*IwaVersion::Create("1.0.0")),
               /*controlled_frame_partitions=*/_,
               test::PendingUpdateInfoIs(
                   Property("variant", &IsolatedWebAppStorageLocation::variant,
                            VariantWith<IwaStorageOwnedBundle>(_)),
-                  base::Version("2.0.0"),
+                  *IwaVersion::Create("2.0.0"),
                   /*integrity_block_data=*/_),
               /*integrity_block_data=*/_)))
       << task.AsDebugValue();

@@ -289,7 +289,7 @@ class IsolatedWebAppPolicyManagerAshBrowserTestBase
                                                               {kBetaChannel})));
   }
 
-  base::Version GetIsolatedWebAppVersion(const webapps::AppId& app_id) {
+  IwaVersion GetIsolatedWebAppVersion(const webapps::AppId& app_id) {
     return provider()
         .registrar_unsafe()
         .GetAppById(app_id)
@@ -521,7 +521,8 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
 
   ASSERT_EQ(provider().registrar_unsafe().GetInstallState(kAppId1),
             proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
-  EXPECT_EQ(GetIsolatedWebAppVersion(kAppId1), base::Version(kPinnedVersion));
+  EXPECT_EQ(GetIsolatedWebAppVersion(kAppId1),
+            *IwaVersion::Create(kPinnedVersion));
 }
 
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,

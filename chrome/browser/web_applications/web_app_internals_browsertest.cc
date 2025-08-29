@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
         const WebApp& iwa,
         GetIsolatedWebAppById(provider().registrar_unsafe(), app_id));
 
-    EXPECT_EQ(iwa.isolation_data()->version(), base::Version("1.0.0"));
+    EXPECT_EQ(iwa.isolation_data()->version(), *IwaVersion::Create("1.0.0"));
     EXPECT_EQ(iwa.isolation_data()->update_manifest_url(), update_manifest_url);
     EXPECT_EQ(iwa.isolation_data()->update_channel(),
               UpdateChannel::default_channel());
@@ -315,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
         const WebApp& iwa,
         GetIsolatedWebAppById(provider().registrar_unsafe(), app_id));
 
-    EXPECT_EQ(iwa.isolation_data()->version(), base::Version("2.0.0"));
+    EXPECT_EQ(iwa.isolation_data()->version(), *IwaVersion::Create("2.0.0"));
     EXPECT_EQ(iwa.isolation_data()->update_manifest_url(), update_manifest_url);
     EXPECT_EQ(iwa.isolation_data()->update_channel(),
               UpdateChannel::default_channel());
@@ -333,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
     ASSERT_OK_AND_ASSIGN(
         const WebApp& iwa,
         GetIsolatedWebAppById(provider().registrar_unsafe(), app_id));
-    EXPECT_EQ(iwa.isolation_data()->version(), base::Version("2.0.0"));
+    EXPECT_EQ(iwa.isolation_data()->version(), *IwaVersion::Create("2.0.0"));
     EXPECT_EQ(iwa.isolation_data()->update_manifest_url(), update_manifest_url);
     EXPECT_EQ(iwa.isolation_data()->update_channel(), beta_channel);
   }
@@ -360,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
         const WebApp& iwa,
         GetIsolatedWebAppById(provider().registrar_unsafe(), app_id));
 
-    EXPECT_EQ(iwa.isolation_data()->version(), base::Version("2.1.0"));
+    EXPECT_EQ(iwa.isolation_data()->version(), *IwaVersion::Create("2.1.0"));
     EXPECT_EQ(iwa.isolation_data()->update_manifest_url(), update_manifest_url);
     EXPECT_EQ(iwa.isolation_data()->update_channel(), beta_channel);
   }
@@ -408,7 +408,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
         const WebApp& iwa,
         GetIsolatedWebAppById(provider().registrar_unsafe(), app_id));
 
-    EXPECT_EQ(iwa.isolation_data()->version(), base::Version("2.3.0"));
+    EXPECT_EQ(iwa.isolation_data()->version(), *IwaVersion::Create("2.3.0"));
     EXPECT_EQ(iwa.isolation_data()->update_manifest_url(), update_manifest_url);
     EXPECT_EQ(iwa.isolation_data()->update_channel(), beta_channel);
   }
@@ -425,7 +425,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
         const WebApp& iwa,
         GetIsolatedWebAppById(provider().registrar_unsafe(), app_id));
 
-    EXPECT_EQ(iwa.isolation_data()->version(), base::Version("2.4.0"));
+    EXPECT_EQ(iwa.isolation_data()->version(), *IwaVersion::Create("2.4.0"));
   }
 
   // Pin to v2.3.0, allow downgrades. Expect update to v2.3.0.
@@ -445,7 +445,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsIwaInstallationBrowserTest,
         const WebApp& iwa,
         GetIsolatedWebAppById(provider().registrar_unsafe(), app_id));
 
-    EXPECT_EQ(iwa.isolation_data()->version(), base::Version("2.3.0"));
+    EXPECT_EQ(iwa.isolation_data()->version(), *IwaVersion::Create("2.3.0"));
   }
 }
 
@@ -517,7 +517,7 @@ IN_PROC_BROWSER_TEST_F(
         GetIsolatedWebAppById(provider().registrar_unsafe(), app_id));
 
     // Expect the app to stay at v1.0.0.
-    EXPECT_EQ(iwa.isolation_data()->version(), base::Version("1.0.0"));
+    EXPECT_EQ(iwa.isolation_data()->version(), *IwaVersion::Create("1.0.0"));
   }
 
   // Fails to pin the app to invalid version.

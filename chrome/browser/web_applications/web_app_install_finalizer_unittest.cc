@@ -545,7 +545,7 @@ TEST_F(WebAppInstallFinalizerUnitTest, IsolationDataSetInWebAppDB) {
   const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
   EXPECT_THAT(
       installed_app,
-      test::IwaIs(_, test::IsolationDataIs(location, version.version(),
+      test::IwaIs(_, test::IsolationDataIs(location, version,
                                            /*controlled_frame_partiions=*/_,
                                            /*pending_update_info=*/std::nullopt,
                                            integrity_block_data)));

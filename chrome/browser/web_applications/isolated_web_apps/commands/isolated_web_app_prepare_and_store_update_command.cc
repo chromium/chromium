@@ -25,7 +25,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
-#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/callback_utils.h"
@@ -177,10 +176,8 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::CheckIfUpdateIsStillApplicable(
       GetIsolatedWebAppById(lock_->registrar(), url_info_.app_id()),
       [&](const std::string& error) { ReportFailure(error); });
 
-  // TODO: (crbug.com/437038363) Adjust to IwaVersion.
   const auto& isolation_data = *iwa.isolation_data();
-  installed_version_ = base::OptionalFromExpected(
-      IwaVersion::Create(isolation_data.version().components()));
+  installed_version_ = isolation_data.version();
 
   GetMutableDebugValue().Set("installed_version",
                              installed_version_.value().GetString());
@@ -331,7 +328,7 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::SetPendingUpdateInfo(
       IsolationData::Builder(*app_to_update->isolation_data())
           .SetPendingUpdateInfo(IsolationData::PendingUpdateInfo(
               *destination_storage_location_,
-              install_info.isolated_web_app_version().version(),
+              install_info.isolated_web_app_version(),
               std::move(integrity_block_data_)))
           .Build());
 }

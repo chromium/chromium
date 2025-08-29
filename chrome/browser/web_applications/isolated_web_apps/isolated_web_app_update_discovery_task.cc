@@ -294,10 +294,7 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
       GetIsolatedWebAppById(*registrar_, task_params_.url_info().app_id()),
       [&](const std::string&) { FailWith(Error::kIwaNotInstalled); });
   const auto& isolation_data = *iwa.isolation_data();
-  //  TODO(crbug.com/437038363): Adjust to IwaVersion after migrating isolation
-  //  data.
-  currently_installed_version_ =
-      IwaVersion::Create(isolation_data.version().components()).value();
+  currently_installed_version_ = isolation_data.version();
   debug_log_.Set("currently_installed_version",
                  currently_installed_version_->GetString());
 
@@ -327,8 +324,7 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
     }
   }
 
-  if (pending_update &&
-      pending_update->version == version_entry->version().version() &&
+  if (pending_update && pending_update->version == version_entry->version() &&
       !pending_info_overwrite_allowed_by_key_rotation) {
     // If we already have a pending update for this version, stop. However,
     // we do allow overwriting a pending update with a different pending

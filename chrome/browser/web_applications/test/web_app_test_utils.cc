@@ -1109,8 +1109,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
         random.next_uint(),
     });
 
-    auto idb =
-        IsolationData::Builder(get_location_type(), iwa_version.version());
+    auto idb = IsolationData::Builder(get_location_type(), iwa_version);
     std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data =
         CreateIntegrityBlockData(random);
     if (integrity_block_data) {
@@ -1137,7 +1136,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
       }();
       CHECK_GE(pending_version, iwa_version);
       IsolationData::PendingUpdateInfo pending_update_info(
-          get_location_type(), pending_version.version(), integrity_block_data);
+          get_location_type(), pending_version, integrity_block_data);
       idb.SetPendingUpdateInfo(std::move(pending_update_info));
     }
     if (dev_mode && random.next_bool()) {

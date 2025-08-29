@@ -148,7 +148,7 @@ class WebAppInstallFinalizer {
   void UpdateIsolationDataAndResetPendingUpdateInfo(
       WebApp* web_app,
       const IsolatedWebAppStorageLocation& location,
-      const base::Version& version,
+      const IwaVersion& version,
       std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data);
 
   void SetWebAppManifestFieldsAndWriteData(

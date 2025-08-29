@@ -8,7 +8,6 @@
 #include "base/files/file_util.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
-#include "base/version.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
@@ -132,14 +131,9 @@ void CopyBundleToCacheCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      // TODO(crbug.com/437038363): Adjust to IwaVersion after isolation data
-      // is migrated.
-      base::BindOnce(
-          &CopyBundleToCacheCommandImpl, bundle_path.value(),
-          url_info_.web_bundle_id(),
-          IwaVersion::Create(app->isolation_data()->version().components())
-              .value(),
-          session_type_),
+      base::BindOnce(&CopyBundleToCacheCommandImpl, bundle_path.value(),
+                     url_info_.web_bundle_id(),
+                     app->isolation_data()->version(), session_type_),
       base::BindOnce(&CopyBundleToCacheCommand::CommandComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 }

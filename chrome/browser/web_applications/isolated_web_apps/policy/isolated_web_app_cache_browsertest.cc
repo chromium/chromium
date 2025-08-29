@@ -400,7 +400,7 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
 
     const WebApp* app = GetIsolatedWebApp(bundle_id);
     ASSERT_TRUE(app);
-    ASSERT_EQ(app->isolation_data()->version(), version.version());
+    ASSERT_EQ(app->isolation_data()->version(), version);
   }
 
   base::FilePath GetCachedBundlePath(const SignedWebBundleId& bundle_id,

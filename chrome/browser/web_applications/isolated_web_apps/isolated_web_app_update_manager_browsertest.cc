@@ -247,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest, Succeeds) {
                               Property("variant",
                                        &IsolatedWebAppStorageLocation::variant,
                                        VariantWith<IwaStorageOwnedBundle>(_)),
-                              Eq(base::Version("7.0.6")),
+                              Eq(*IwaVersion::Create("7.0.6")),
                               /*controlled_frame_partitions=*/_,
                               /*pending_update_info=*/Eq(std::nullopt),
                               /*integrity_block_data=*/_)));
@@ -278,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   }
 
   EXPECT_THAT(GetIsolatedWebApp(GetAppId())->isolation_data()->version(),
-              base::Version("3.0.4"));
+              *IwaVersion::Create("3.0.4"));
 
   AddNewBundleToUpdateServer("app-7.0.6", "7.0.6");
 
@@ -294,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                               Property("variant",
                                        &IsolatedWebAppStorageLocation::variant,
                                        VariantWith<IwaStorageOwnedBundle>(_)),
-                              Eq(base::Version("3.0.4")),
+                              Eq(*IwaVersion::Create("3.0.4")),
                               /*controlled_frame_partitions=*/_,
                               /*pending_update_info=*/Eq(std::nullopt),
                               /*integrity_block_data=*/_)));
@@ -326,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   }
 
   EXPECT_THAT(GetIsolatedWebApp(GetAppId())->isolation_data()->version(),
-              base::Version("3.0.4"));
+              *IwaVersion::Create("3.0.4"));
 
   AddNewBundleToUpdateServer("app-7.0.6", "7.0.6");
 
@@ -342,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                               Property("variant",
                                        &IsolatedWebAppStorageLocation::variant,
                                        VariantWith<IwaStorageOwnedBundle>(_)),
-                              Eq(base::Version("3.0.4")),
+                              Eq(*IwaVersion::Create("3.0.4")),
                               /*controlled_frame_partitions=*/_,
                               /*pending_update_info=*/Eq(std::nullopt),
                               /*integrity_block_data=*/_)));
@@ -366,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
       .BeginListeningAndWait({GetAppId()});
 
   EXPECT_EQ(GetIsolatedWebApp(GetAppId())->isolation_data()->version(),
-            base::Version("3.0.4"));
+            *IwaVersion::Create("3.0.4"));
 
   // Pin IWA to version 1.0.0 and allow downgrading.
   profile()->GetPrefs()->SetList(
@@ -406,7 +406,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                               Property("variant",
                                        &IsolatedWebAppStorageLocation::variant,
                                        VariantWith<IwaStorageOwnedBundle>(_)),
-                              Eq(base::Version("1.0.0")),
+                              Eq(*IwaVersion::Create("1.0.0")),
                               /*controlled_frame_partitions=*/_,
                               /*pending_update_info=*/Eq(std::nullopt),
                               /*integrity_block_data=*/_)));
@@ -424,7 +424,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
       .BeginListeningAndWait({GetAppId()});
 
   EXPECT_EQ(GetIsolatedWebApp(GetAppId())->isolation_data()->version(),
-            base::Version("3.0.4"));
+            *IwaVersion::Create("3.0.4"));
 
   // Pin IWA to version 1.0.0 and allow downgrading.
   profile()->GetPrefs()->SetList(
@@ -462,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
       .BeginListeningAndWait({GetAppId()});
 
   EXPECT_EQ(GetIsolatedWebApp(GetAppId())->isolation_data()->version(),
-            base::Version("3.0.4"));
+            *IwaVersion::Create("3.0.4"));
 
   // Pin IWA to version 5.0.5 and allow downgrading.
   profile()->GetPrefs()->SetList(
@@ -490,7 +490,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                               Property("variant",
                                        &IsolatedWebAppStorageLocation::variant,
                                        VariantWith<IwaStorageOwnedBundle>(_)),
-                              Eq(base::Version("1.0.5")),
+                              Eq(*IwaVersion::Create("1.0.5")),
                               /*controlled_frame_partitions=*/_,
                               /*pending_update_info=*/Eq(std::nullopt),
                               /*integrity_block_data=*/_)));
@@ -501,7 +501,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(0ul));
 
   EXPECT_EQ(GetIsolatedWebApp(GetAppId())->isolation_data()->version(),
-            base::Version("1.0.5"));
+            *IwaVersion::Create("1.0.5"));
 
   histogram_tester.ExpectBucketCount("WebApp.Isolated.UpdateSuccess",
                                      /*sample=*/true, /*expected_count=*/1);
@@ -554,7 +554,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                               Property("variant",
                                        &IsolatedWebAppStorageLocation::variant,
                                        VariantWith<IwaStorageOwnedBundle>(_)),
-                              Eq(base::Version("3.0.4")),
+                              Eq(*IwaVersion::Create("3.0.4")),
                               /*controlled_frame_partitions=*/_,
                               /*pending_update_info=*/Eq(std::nullopt),
                               /*integrity_block_data=*/_)));
@@ -585,7 +585,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
             test::IsolationDataIs(
                 Property("variant", &IsolatedWebAppStorageLocation::variant,
                          VariantWith<IwaStorageOwnedBundle>(_)),
-                Eq(base::Version("7.0.6")),
+                Eq(*IwaVersion::Create("7.0.6")),
                 /*controlled_frame_partitions=*/_,
                 /*pending_update_info=*/Eq(std::nullopt),
                 /*integrity_block_data=*/_)));
@@ -633,7 +633,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                               Property("variant",
                                        &IsolatedWebAppStorageLocation::variant,
                                        VariantWith<IwaStorageOwnedBundle>(_)),
-                              Eq(base::Version("5.0.5")),
+                              Eq(*IwaVersion::Create("5.0.5")),
                               /*controlled_frame_partitions=*/_,
                               /*pending_update_info=*/Eq(std::nullopt),
                               /*integrity_block_data=*/_)));
@@ -689,7 +689,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest, Unpinning) {
             test::IsolationDataIs(
                 Property("variant", &IsolatedWebAppStorageLocation::variant,
                          VariantWith<IwaStorageOwnedBundle>(_)),
-                Eq(base::Version("7.0.6")),
+                Eq(*IwaVersion::Create("7.0.6")),
                 /*controlled_frame_partitions=*/_,
                 /*pending_update_info=*/Eq(std::nullopt),
                 /*integrity_block_data=*/_)));
@@ -735,7 +735,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                               Property("variant",
                                        &IsolatedWebAppStorageLocation::variant,
                                        VariantWith<IwaStorageOwnedBundle>(_)),
-                              Eq(base::Version("5.0.5")),
+                              Eq(*IwaVersion::Create("5.0.5")),
                               /*controlled_frame_partitions=*/_,
                               /*pending_update_info=*/Eq(std::nullopt),
                               /*integrity_block_data=*/_)));
@@ -804,7 +804,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
             test::IsolationDataIs(
                 Property("variant", &IsolatedWebAppStorageLocation::variant,
                          VariantWith<IwaStorageOwnedBundle>(_)),
-                Eq(base::Version("6.0.0")),
+                Eq(*IwaVersion::Create("6.0.0")),
                 /*controlled_frame_partitions=*/_,
                 /*pending_update_info=*/Eq(std::nullopt),
                 /*integrity_block_data=*/_)));
@@ -860,7 +860,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                               Property("variant",
                                        &IsolatedWebAppStorageLocation::variant,
                                        VariantWith<IwaStorageOwnedBundle>(_)),
-                              Eq(base::Version("7.0.6")),
+                              Eq(*IwaVersion::Create("7.0.6")),
                               /*controlled_frame_partitions=*/_,
                               /*pending_update_info=*/Eq(std::nullopt),
                               /*integrity_block_data=*/_)));
@@ -907,7 +907,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                               Property("variant",
                                        &IsolatedWebAppStorageLocation::variant,
                                        VariantWith<IwaStorageOwnedBundle>(_)),
-                              Eq(base::Version("3.0.4")),
+                              Eq(*IwaVersion::Create("3.0.4")),
                               /*controlled_frame_partitions=*/_,
                               /*pending_update_info=*/Eq(std::nullopt),
                               /*integrity_block_data=*/_)));
@@ -955,7 +955,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                               Property("variant",
                                        &IsolatedWebAppStorageLocation::variant,
                                        VariantWith<IwaStorageOwnedBundle>(_)),
-                              Eq(base::Version("3.0.4")),
+                              Eq(*IwaVersion::Create("3.0.4")),
                               /*controlled_frame_partitions=*/_,
                               /*pending_update_info=*/Eq(std::nullopt),
                               /*integrity_block_data=*/_)));
@@ -980,7 +980,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                               Property("variant",
                                        &IsolatedWebAppStorageLocation::variant,
                                        VariantWith<IwaStorageOwnedBundle>(_)),
-                              Eq(base::Version("7.0.6")),
+                              Eq(*IwaVersion::Create("7.0.6")),
                               /*controlled_frame_partitions=*/_,
                               /*pending_update_info=*/Eq(std::nullopt),
                               /*integrity_block_data=*/_)));
@@ -1046,7 +1046,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                               Property("variant",
                                        &IsolatedWebAppStorageLocation::variant,
                                        VariantWith<IwaStorageOwnedBundle>(_)),
-                              Eq(base::Version("7.0.6")),
+                              Eq(*IwaVersion::Create("7.0.6")),
                               /*controlled_frame_partitions=*/_,
                               /*pending_update_info=*/Eq(std::nullopt),
                               /*integrity_block_data=*/_)));
@@ -1088,7 +1088,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                        AppliesUpdateOnStartupIfAppWindowNeverCloses) {
   // Wait for the update to be applied if it hasn't already.
   const auto* web_app = GetIsolatedWebApp(GetAppId());
-  if (web_app->isolation_data()->version() != base::Version("7.0.6")) {
+  if (web_app->isolation_data()->version() != *IwaVersion::Create("7.0.6")) {
     WebAppTestManifestUpdatedObserver manifest_updated_observer(
         &provider().install_manager());
     manifest_updated_observer.BeginListening({GetAppId()});
@@ -1102,7 +1102,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                               Property("variant",
                                        &IsolatedWebAppStorageLocation::variant,
                                        VariantWith<IwaStorageOwnedBundle>(_)),
-                              Eq(base::Version("7.0.6")),
+                              Eq(*IwaVersion::Create("7.0.6")),
                               /*controlled_frame_partitions=*/_,
                               /*pending_update_info=*/Eq(std::nullopt),
                               /*integrity_block_data=*/_)));
@@ -1247,7 +1247,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
       GetIsolatedWebApp(app_id),
       test::IwaIs(Eq("app-1.0.0"),
                   test::IsolationDataIs(
-                      /*location=*/_, Eq(base::Version("1.0.0")),
+                      /*location=*/_, Eq(*IwaVersion::Create("1.0.0")),
                       /*controlled_frame_partitions=*/_,
                       /*pending_update_info=*/Eq(std::nullopt),
                       /*integrity_block_data=*/
@@ -1273,7 +1273,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
       GetIsolatedWebApp(app_id),
       test::IwaIs(Eq("app-1.0.0"),
                   test::IsolationDataIs(
-                      /*location=*/_, Eq(base::Version("1.0.0")),
+                      /*location=*/_, Eq(*IwaVersion::Create("1.0.0")),
                       /*controlled_frame_partitions=*/_,
                       /*pending_update_info=*/Eq(std::nullopt),
                       /*integrity_block_data=*/
@@ -1304,7 +1304,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
       GetIsolatedWebApp(app_id),
       test::IwaIs(Eq("app-1.0.0"),
                   test::IsolationDataIs(
-                      /*location=*/_, Eq(base::Version("1.0.0")),
+                      /*location=*/_, Eq(*IwaVersion::Create("1.0.0")),
                       /*controlled_frame_partitions=*/_,
                       /*pending_update_info=*/Eq(std::nullopt),
                       /*integrity_block_data=*/
@@ -1392,7 +1392,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
       GetIsolatedWebApp(app_id),
       test::IwaIs(Eq("app-1.0.0"),
                   test::IsolationDataIs(
-                      /*location=*/_, Eq(base::Version("1.0.0")),
+                      /*location=*/_, Eq(*IwaVersion::Create("1.0.0")),
                       /*controlled_frame_partitions=*/_,
                       /*pending_update_info=*/Eq(std::nullopt),
                       /*integrity_block_data=*/
@@ -1497,7 +1497,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
       GetIsolatedWebApp(app_id),
       test::IwaIs(Eq("app-1.0.0"),
                   test::IsolationDataIs(
-                      /*location=*/_, Eq(base::Version("1.0.0")),
+                      /*location=*/_, Eq(*IwaVersion::Create("1.0.0")),
                       /*controlled_frame_partitions=*/_,
                       /*pending_update_info=*/Eq(std::nullopt),
                       /*integrity_block_data=*/

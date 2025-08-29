@@ -395,7 +395,7 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
   if (options.iwa_options) {
     UpdateIsolationDataAndResetPendingUpdateInfo(
         web_app.get(), options.iwa_options->location,
-        web_app_info.isolated_web_app_version().version(),
+        web_app_info.isolated_web_app_version(),
         options.iwa_options->integrity_block_data);
 
     HostContentSettingsMap* const host_content_settings_map =
@@ -477,7 +477,7 @@ void WebAppInstallFinalizer::FinalizeUpdate(
     CHECK(pending_update_info.has_value())
         << "Isolated Web Apps can only be updated if "
            "`IsolationData::PendingUpdateInfo` is set.";
-    CHECK_EQ(web_app_info.isolated_web_app_version().version(),
+    CHECK_EQ(web_app_info.isolated_web_app_version(),
              pending_update_info->version);
     UpdateIsolationDataAndResetPendingUpdateInfo(
         web_app.get(), pending_update_info->location,
@@ -519,10 +519,8 @@ void WebAppInstallFinalizer::SetClockForTesting(base::Clock* clock) {
 void WebAppInstallFinalizer::UpdateIsolationDataAndResetPendingUpdateInfo(
     WebApp* web_app,
     const IsolatedWebAppStorageLocation& location,
-    const base::Version& version,
+    const IwaVersion& version,
     std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data) {
-  CHECK(version.IsValid());
-
   IsolationData::Builder builder(location, version);
   if (web_app->isolation_data()) {
     builder.PersistFieldsForUpdate(*web_app->isolation_data());

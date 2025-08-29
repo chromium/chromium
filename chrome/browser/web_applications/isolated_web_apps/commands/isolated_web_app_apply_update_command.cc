@@ -155,8 +155,8 @@ void IsolatedWebAppApplyUpdateCommand::OnTrustAndSignaturesChecked(
 
 void IsolatedWebAppApplyUpdateCommand::HandleKeyRotationOrDowngradeIfNecessary(
     base::OnceClosure next_step_callback) {
-  const base::Version& pending_version = pending_update_info().version;
-  const base::Version& current_version = isolation_data().version();
+  const IwaVersion& pending_version = pending_update_info().version;
+  const IwaVersion& current_version = isolation_data().version();
 
   if (pending_version > current_version) {
     std::move(next_step_callback).Run();
@@ -191,15 +191,11 @@ void IsolatedWebAppApplyUpdateCommand::CreateStoragePartition(
 void IsolatedWebAppApplyUpdateCommand::PrepareInstallInfo(
     base::OnceCallback<void(PrepareInstallInfoJob::InstallInfoOrFailure)>
         next_step_callback) {
-  // TODO: (crbug.com/437038363) Adjust to IwaVersion.
-  std::optional<IwaVersion> pending_version = base::OptionalFromExpected(
-      IwaVersion::Create(pending_update_info().version.components()));
-
   prepare_install_info_job_ = PrepareInstallInfoJob::CreateAndStart(
       profile(),
       IwaSourceWithMode::FromStorageLocation(profile().GetPath(),
                                              pending_update_info().location),
-      pending_version, *web_contents_, *command_helper_,
+      pending_update_info().version, *web_contents_, *command_helper_,
       lock_->web_contents_manager().CreateUrlLoader(),
       std::move(next_step_callback));
 }

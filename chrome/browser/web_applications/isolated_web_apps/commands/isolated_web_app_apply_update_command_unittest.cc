@@ -38,6 +38,7 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "content/public/browser/web_contents.h"
@@ -77,7 +78,7 @@ std::vector<base::FilePath> GetDirContents(const base::FilePath& directory) {
 }
 
 blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url,
-                                                const base::Version version) {
+                                                const IwaVersion& version) {
   auto manifest = blink::mojom::Manifest::New();
   manifest->id = application_url.DeprecatedGetOriginAsURL();
   manifest->scope = application_url.Resolve("/");
@@ -222,11 +223,11 @@ class IsolatedWebAppApplyUpdateCommandTest : public WebAppTest {
 
   IsolatedWebAppStorageLocation installed_location_ =
       IwaStorageOwnedBundle{"installed_folder", /*dev_mode=*/false};
-  base::Version installed_version_ = base::Version("1.0.0");
+  IwaVersion installed_version_ = *IwaVersion::Create("1.0.0");
 
   IwaStorageOwnedBundle update_bundle_location_{"update_folder",
                                                 /*dev_mode=*/false};
-  base::Version update_version_ = base::Version("2.0.0");
+  IwaVersion update_version_ = *IwaVersion::Create("2.0.0");
 };
 
 TEST_F(IsolatedWebAppApplyUpdateCommandTest, Succeeds) {
@@ -298,7 +299,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfInstalledAppIsNotIsolated) {
 TEST_F(IsolatedWebAppApplyUpdateCommandTest,
        FailsIfInstalledAppHasNoPendingUpdate) {
   test::AwaitStartWebAppProviderAndSubsystems(profile());
-  installed_version_ = base::Version("3.0.0");
+  installed_version_ = *IwaVersion::Create("3.0.0");
   InstallIwa(/*pending_update_info=*/std::nullopt);
   CreateDefaultPageState();
 

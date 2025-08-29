@@ -213,13 +213,12 @@ bool ShouldProceedWithVersionChange(
     bool allow_downgrades,
     const web_package::SignedWebBundleId& web_bundle_id,
     const IsolationData& isolation_data) {
-  if ((pinned_version.version() > isolation_data.version()) ||
-      (pinned_version.version() < isolation_data.version() &&
-       allow_downgrades)) {
+  if ((pinned_version > isolation_data.version()) ||
+      (pinned_version < isolation_data.version() && allow_downgrades)) {
     return true;
   }
 
-  if (pinned_version.version() == isolation_data.version()) {
+  if (pinned_version == isolation_data.version()) {
     switch (LookupRotatedKey(web_bundle_id)) {
       case KeyRotationLookupResult::kNoKeyRotation:
         return false;

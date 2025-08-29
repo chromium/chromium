@@ -104,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromUrlBrowserTest,
                        VariantWith<IwaStorageProxy>(
                            Property(&IwaStorageProxy::proxy_url,
                                     Eq(url::Origin::Create(GetAppUrl()))))),
-              Eq(base::Version("1.0.0")),
+              Eq(*IwaVersion::Create("1.0.0")),
               /*controlled_frame_partitions=*/_,
               /*pending_update_info=*/Eq(std::nullopt),
               /*integrity_block_data=*/_)));
@@ -168,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromFileBrowserTest,
               Property("variant", &IsolatedWebAppStorageLocation::variant,
                        VariantWith<IwaStorageOwnedBundle>(Property(
                            &IwaStorageOwnedBundle::dev_mode, IsTrue()))),
-              Eq(base::Version("1.0.0")),
+              Eq(*IwaVersion::Create("1.0.0")),
               /*controlled_frame_partitions=*/_,
               /*pending_update_info=*/Eq(std::nullopt),
               test::IntegrityBlockDataPublicKeysAre(

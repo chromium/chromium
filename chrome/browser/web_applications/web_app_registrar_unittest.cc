@@ -964,7 +964,7 @@ TEST_F(WebAppRegistrarTest, GetAllIsolatedWebAppStoragePartitionConfigs) {
   isolated_web_app->SetIsolationData(
       IsolationData::Builder(
           IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
-          base::Version("1.0.0"))
+          *IwaVersion::Create("1.0.0"))
           .Build());
   RegisterAppUnsafe(std::move(isolated_web_app));
 
@@ -994,7 +994,7 @@ TEST_F(
   isolated_web_app->SetIsolationData(
       IsolationData::Builder(
           IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
-          base::Version("1.0.0"))
+          *IwaVersion::Create("1.0.0"))
           .Build());
   isolated_web_app->SetInstallState(
       proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE);
@@ -1025,7 +1025,7 @@ TEST_F(WebAppRegistrarTest, SaveAndGetInMemoryControlledFramePartitionConfig) {
   isolated_web_app->SetIsolationData(
       IsolationData::Builder(
           IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
-          base::Version("1.0.0"))
+          *IwaVersion::Create("1.0.0"))
           .Build());
   RegisterAppUnsafe(std::move(isolated_web_app));
 
@@ -1110,7 +1110,7 @@ TEST_F(WebAppRegistrarTest,
   web_app->SetIsolationData(
       IsolationData::Builder(
           IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
-          base::Version("1.0.0"))
+          *IwaVersion::Create("1.0.0"))
           .Build());
 
   RegisterAppUnsafe(std::move(web_app));
@@ -1135,7 +1135,7 @@ TEST_F(WebAppRegistrarTest,
   web_app->SetIsolationData(
       IsolationData::Builder(
           IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
-          base::Version("1.0.0"))
+          *IwaVersion::Create("1.0.0"))
           .Build());
 
   RegisterAppUnsafe(std::move(web_app));
@@ -1159,7 +1159,7 @@ TEST_F(WebAppRegistrarTest,
   web_app->SetIsolationData(
       IsolationData::Builder(
           IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
-          base::Version("1.0.0"))
+          *IwaVersion::Create("1.0.0"))
           .Build());
 
   RegisterAppUnsafe(std::move(web_app));
@@ -1847,7 +1847,7 @@ class WebAppRegistrarDisplayModeTest
       web_app->SetIsolationData(
           IsolationData::Builder(
               IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
-              base::Version("1.0.0"))
+              *IwaVersion::Create("1.0.0"))
               .Build());
     }
 
@@ -2131,7 +2131,7 @@ TEST_P(WebAppRegistrarParameterizedTest, Filter_IsIsolatedApp) {
   isolated_web_app->SetIsolationData(
       IsolationData::Builder(
           IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
-          base::Version("1.0.0"))
+          *IwaVersion::Create("1.0.0"))
           .Build());
   isolated_web_app->SetDisplayMode(DisplayMode::kBrowser);
   isolated_web_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);

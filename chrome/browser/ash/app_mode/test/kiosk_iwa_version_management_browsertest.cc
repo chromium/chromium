@@ -158,7 +158,7 @@ const web_app::WebApp& GetIsolatedWebApp(const webapps::AppId& app_id) {
 void ExpectTestAppInstalledAtVersion(
     const web_app::IwaVersion& expected_version) {
   EXPECT_EQ(GetIsolatedWebApp(GetTestWebAppId()).isolation_data()->version(),
-            expected_version.version());
+            expected_version);
 }
 
 void ExpectTestAppUpdatedToVersion(

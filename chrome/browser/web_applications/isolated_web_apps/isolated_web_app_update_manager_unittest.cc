@@ -227,7 +227,7 @@ class IsolatedWebAppUpdateManagerTest : public IsolatedWebAppTest {
 
     ASSERT_EQ(install_observer.Wait(), GetAppId(bundle_id));
 
-    AssertAppInstalledAtVersion(bundle_id, version.version());
+    AssertAppInstalledAtVersion(bundle_id, version);
   }
 
   std::unique_ptr<ScopedBundledIsolatedWebApp> CreateIwa1Bundle(
@@ -284,7 +284,7 @@ class IsolatedWebAppUpdateManagerTest : public IsolatedWebAppTest {
 
   void AssertAppInstalledAtVersion(
       const web_package::SignedWebBundleId& web_bundle_id,
-      base::Version version) {
+      IwaVersion version) {
     ASSERT_EQ(provider()
                   .registrar_unsafe()
                   .GetAppById(GetAppId(web_bundle_id))
@@ -357,7 +357,7 @@ TEST_F(IsolatedWebAppUpdateManagerDevModeUpdateTest,
                               Property("variant",
                                        &IsolatedWebAppStorageLocation::variant,
                                        VariantWith<IwaStorageOwnedBundle>(_)),
-                              Eq(base::Version(kUpdateIwaVersion)),
+                              Eq(*IwaVersion::Create(kUpdateIwaVersion)),
                               /*controlled_frame_partitions=*/_,
                               /*pending_update_info=*/Eq(std::nullopt),
                               /*integrity_block_data=*/_)));
@@ -457,7 +457,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
         {GetAppId(GetIwa1WebBundleId())});
 
     AssertAppInstalledAtVersion(GetIwa1WebBundleId(),
-                                base::Version(kInitialIwaVersion));
+                                *IwaVersion::Create(kInitialIwaVersion));
   }
 
   test_update_server().AddBundle(CreateIwa1Bundle(kUpdateIwaVersion),
@@ -468,7 +468,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
       base::TimeTicks::Now());
 
   AssertAppInstalledAtVersion(GetIwa1WebBundleId(),
-                              base::Version(kUpdateIwaVersion));
+                              *IwaVersion::Create(kUpdateIwaVersion));
 
   EXPECT_THAT(
       UpdateDiscoveryLog(),
@@ -498,7 +498,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
       ValueIs(IsolatedWebAppUpdateDiscoveryTask::Success::kNoUpdateFound));
 
   AssertAppInstalledAtVersion(GetIwa1WebBundleId(),
-                              base::Version(kInitialIwaVersion));
+                              *IwaVersion::Create(kInitialIwaVersion));
 
   EXPECT_THAT(UpdateDiscoveryLog(),
               UnorderedElementsAre(DictionaryHasValue(
@@ -525,7 +525,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
       base::TimeTicks::Now());
 
   AssertAppInstalledAtVersion(GetIwa1WebBundleId(),
-                              base::Version(kUpdateIwaVersion));
+                              *IwaVersion::Create(kUpdateIwaVersion));
 
   EXPECT_THAT(
       UpdateDiscoveryLog(),
@@ -543,7 +543,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
       base::TimeTicks::Now());
 
   AssertAppInstalledAtVersion(GetIwa1WebBundleId(),
-                              base::Version(kUpdateIwaVersion));
+                              *IwaVersion::Create(kUpdateIwaVersion));
 
   EXPECT_THAT(UpdateDiscoveryLog(), IsEmpty());
 }
@@ -565,7 +565,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
         {GetAppId(GetIwa1WebBundleId())});
 
     AssertAppInstalledAtVersion(GetIwa1WebBundleId(),
-                                base::Version(kUpdateIwaVersion));
+                                *IwaVersion::Create(kUpdateIwaVersion));
   }
   test_update_server().AddBundle(CreateIwa1Bundle("3.0.0"));
 
@@ -597,7 +597,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
       base::TimeTicks::Now());
 
   AssertAppInstalledAtVersion(GetIwa1WebBundleId(),
-                              base::Version(kInitialIwaVersion));
+                              *IwaVersion::Create(kInitialIwaVersion));
 
   // Pin IWA to lower version than the current one (downgrading by setting
   // `pinned_version` without setting `allow_downgrades` to true is impossible.
@@ -613,7 +613,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
       base::TimeTicks::Now());
 
   AssertAppInstalledAtVersion(GetIwa1WebBundleId(),
-                              base::Version(kInitialIwaVersion));
+                              *IwaVersion::Create(kInitialIwaVersion));
 
   EXPECT_THAT(
       UpdateDiscoveryLog(),
@@ -644,7 +644,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
       base::TimeTicks::Now());
 
   AssertAppInstalledAtVersion(GetIwa1WebBundleId(),
-                              base::Version(kInitialIwaVersion));
+                              *IwaVersion::Create(kInitialIwaVersion));
 
   EXPECT_THAT(
       UpdateDiscoveryLog(),
@@ -677,7 +677,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
                                           GetIwa1WebBundleId());
 
   AssertAppInstalledAtVersion(GetIwa1WebBundleId(),
-                              base::Version(kInitialIwaVersion));
+                              *IwaVersion::Create(kInitialIwaVersion));
 
   // Trigger updates for an app that is not installed via policy. This should
   // fail.
@@ -825,7 +825,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
 
   // Due to not closed IWA window, update is not applied yet.
   AssertAppInstalledAtVersion(GetIwa1WebBundleId(),
-                              base::Version(kInitialIwaVersion));
+                              *IwaVersion::Create(kInitialIwaVersion));
 
   EXPECT_THAT(
       UpdateDiscoveryLog(),
@@ -837,7 +837,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
 
   AssertInstallationFinish(GetIwa1WebBundleId());
   AssertAppInstalledAtVersion(GetIwa1WebBundleId(),
-                              base::Version(kUpdateIwaVersion));
+                              *IwaVersion::Create(kUpdateIwaVersion));
 }
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
@@ -892,9 +892,11 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
         << base::JoinString(ToVector(times, &base::Value::DebugString), "");
   }
 
-  AssertAppInstalledAtVersion(GetIwa1WebBundleId(), base::Version("1.1.0"));
+  AssertAppInstalledAtVersion(GetIwa1WebBundleId(),
+                              *IwaVersion::Create("1.1.0"));
 
-  AssertAppInstalledAtVersion(GetIwa2WebBundleId(), base::Version("2.2.0"));
+  AssertAppInstalledAtVersion(GetIwa2WebBundleId(),
+                              *IwaVersion::Create("2.2.0"));
 }
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
@@ -946,8 +948,9 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
       base::BucketsAre(base::Bucket(false, 2), base::Bucket(true, 2)));
 
   AssertAppInstalledAtVersion(GetIwa1WebBundleId(),
-                              base::Version(kUpdateIwaVersion));
-  AssertAppInstalledAtVersion(GetIwa2WebBundleId(), base::Version("3.1.0"));
+                              *IwaVersion::Create(kUpdateIwaVersion));
+  AssertAppInstalledAtVersion(GetIwa2WebBundleId(),
+                              *IwaVersion::Create("3.1.0"));
 }
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
@@ -998,7 +1001,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest, StopsWaitingIfIwaIsUninstalled) {
                   "app_id", base::Value(GetAppId(GetIwa1WebBundleId())))));
 
   AssertAppInstalledAtVersion(GetIwa1WebBundleId(),
-                              base::Version(kInitialIwaVersion));
+                              *IwaVersion::Create(kInitialIwaVersion));
 
   // IWA uninstallation.
   {
@@ -1097,9 +1100,9 @@ class IsolatedWebAppUpdateManagerUpdateApplyOnStartupTest
         url_info.origin().GetURL(),
         IsolationData::Builder(
             IwaStorageOwnedBundle{"iwa1", /*dev_mode=*/false},
-            base::Version(kInitialIwaVersion))
+            *IwaVersion::Create(kInitialIwaVersion))
             .SetPendingUpdateInfo(IsolationData::PendingUpdateInfo(
-                update_location_, base::Version(kUpdateIwaVersion)))
+                update_location_, *IwaVersion::Create(kUpdateIwaVersion)))
             .Build());
 
     CreateStoragePartition(url_info);
@@ -1145,12 +1148,12 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateApplyOnStartupTest,
 
   EXPECT_THAT(
       provider().registrar_unsafe().GetAppById(GetAppId(GetIwa1WebBundleId())),
-      test::IwaIs("updated iwa",
-                  test::IsolationDataIs(
-                      update_location_, Eq(base::Version(kUpdateIwaVersion)),
-                      /*controlled_frame_partitions=*/_,
-                      /*pending_update_info=*/Eq(std::nullopt),
-                      /*integrity_block_data=*/_)));
+      test::IwaIs("updated iwa", test::IsolationDataIs(
+                                     update_location_,
+                                     Eq(*IwaVersion::Create(kUpdateIwaVersion)),
+                                     /*controlled_frame_partitions=*/_,
+                                     /*pending_update_info=*/Eq(std::nullopt),
+                                     /*integrity_block_data=*/_)));
 }
 
 class IsolatedWebAppUpdateManagerDiscoveryTimerTest

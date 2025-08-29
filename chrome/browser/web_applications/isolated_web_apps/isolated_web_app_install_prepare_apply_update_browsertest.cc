@@ -168,7 +168,7 @@ IN_PROC_BROWSER_TEST_P(
       GetIsolatedWebAppFor(web_bundle_id),
       test::IwaIs(Eq("installed app"),
                   test::IsolationDataIs(
-                      install_result.location, iwa->version().version(),
+                      install_result.location, iwa->version(),
                       /*controlled_frame_partitions=*/_,
                       /*pending_update_info=*/std::nullopt,
                       /*integrity_block_data=*/
@@ -187,20 +187,20 @@ IN_PROC_BROWSER_TEST_P(
 
   ASSERT_THAT(
       GetIsolatedWebAppFor(web_bundle_id),
-      test::IwaIs(Eq("installed app"),
-                  test::IsolationDataIs(
-                      install_result.location, iwa->version().version(),
-                      /*controlled_frame_partitions=*/_,
-                      /*pending_update_info=*/
-                      test::PendingUpdateInfoIs(
-                          prep_store_update_result.location,
-                          update_iwa->version().version(),
-                          test::IntegrityBlockDataPublicKeysAre(
-                              test::GetDefaultEd25519KeyPair().public_key,
-                              test::GetDefaultEcdsaP256KeyPair().public_key)),
-                      /*integrity_block_data=*/
-                      test::IntegrityBlockDataPublicKeysAre(
-                          test::GetDefaultEd25519KeyPair().public_key))));
+      test::IwaIs(
+          Eq("installed app"),
+          test::IsolationDataIs(
+              install_result.location, iwa->version(),
+              /*controlled_frame_partitions=*/_,
+              /*pending_update_info=*/
+              test::PendingUpdateInfoIs(
+                  prep_store_update_result.location, update_iwa->version(),
+                  test::IntegrityBlockDataPublicKeysAre(
+                      test::GetDefaultEd25519KeyPair().public_key,
+                      test::GetDefaultEcdsaP256KeyPair().public_key)),
+              /*integrity_block_data=*/
+              test::IntegrityBlockDataPublicKeysAre(
+                  test::GetDefaultEd25519KeyPair().public_key))));
 
   // Step 3: Apply the update and ensure that pending info has been successfully
   // transferred.
@@ -210,8 +210,7 @@ IN_PROC_BROWSER_TEST_P(
       GetIsolatedWebAppFor(web_bundle_id),
       test::IwaIs(Eq("updated app"),
                   test::IsolationDataIs(
-                      prep_store_update_result.location,
-                      update_iwa->version().version(),
+                      prep_store_update_result.location, update_iwa->version(),
                       /*controlled_frame_partitions=*/_,
                       /*pending_update_info=*/std::nullopt,
                       /*integrity_block_data=*/
@@ -253,7 +252,7 @@ IN_PROC_BROWSER_TEST_P(
       GetIsolatedWebAppFor(web_bundle_id),
       test::IwaIs(Eq("installed app"),
                   test::IsolationDataIs(
-                      install_result.location, version.version(),
+                      install_result.location, version,
                       /*controlled_frame_partitions=*/_,
                       /*pending_update_info=*/std::nullopt,
                       /*integrity_block_data=*/
@@ -286,11 +285,11 @@ IN_PROC_BROWSER_TEST_P(
       GetIsolatedWebAppFor(web_bundle_id),
       test::IwaIs(Eq("installed app"),
                   test::IsolationDataIs(
-                      install_result.location, version.version(),
+                      install_result.location, version,
                       /*controlled_frame_partitions=*/_,
                       /*pending_update_info=*/
                       test::PendingUpdateInfoIs(
-                          prep_store_update_result.location, version.version(),
+                          prep_store_update_result.location, version,
                           test::IntegrityBlockDataPublicKeysAre(ecdsa_p256_pk)),
                       /*integrity_block_data=*/
                       test::IntegrityBlockDataPublicKeysAre(ed25519_pk))));
@@ -303,7 +302,7 @@ IN_PROC_BROWSER_TEST_P(
       GetIsolatedWebAppFor(web_bundle_id),
       test::IwaIs(Eq("updated app"),
                   test::IsolationDataIs(
-                      prep_store_update_result.location, version.version(),
+                      prep_store_update_result.location, version,
                       /*controlled_frame_partitions=*/_,
                       /*pending_update_info=*/std::nullopt,
                       /*integrity_block_data=*/
