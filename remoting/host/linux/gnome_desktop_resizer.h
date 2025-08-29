@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
@@ -19,6 +20,7 @@
 #include "remoting/host/linux/gnome_display_config.h"
 #include "remoting/host/linux/gnome_display_config_dbus_client.h"
 #include "remoting/host/linux/pipewire_capture_stream_manager.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/base/glib/scoped_gobject.h"
 
@@ -50,12 +52,29 @@ class GnomeDesktopResizer : public DesktopResizer {
   // See: https://gitlab.gnome.org/GNOME/mutter/-/issues/4275
 
   struct PreferredMonitorConfig {
+    // The expected resolution in physical screen pixels. The preferred monitor
+    // config is not applied until the screen resolution in
+    // `current_display_config_` matches this.
     webrtc::DesktopSize expected_resolution;
+
+    // The preferred position of the monitor in physical screen pixels.
     webrtc::DesktopVector position;
-    double scale;
+
+    // The preferred scale. A supported monitor scale that is proportionally
+    // closest to this scale will be used. For the primary monitor, an
+    // additional text scale will be applied to adjust for the discrepancy
+    // between the monitor scale and the preferred scale; it won't be applied
+    // for non-primary monitors. Note that the text scale is global, so it won't
+    // work very well with a mixed DPI setup.
+    double scale = 1.0;
   };
 
-  void OnAddStreamResult(PipewireCaptureStreamManager::AddStreamResult result);
+  void SetResolutionAndPosition(const ScreenResolution& resolution,
+                                std::optional<webrtc::DesktopVector> position,
+                                webrtc::ScreenId screen_id);
+
+  void OnAddStreamResult(const PreferredMonitorConfig& monitor_config,
+                         PipewireCaptureStreamManager::AddStreamResult result);
 
   void QueryDisplayInfo();
   void OnGnomeDisplayConfigReceived(GnomeDisplayConfig config);
@@ -86,22 +105,31 @@ class GnomeDesktopResizer : public DesktopResizer {
   bool apply_monitors_config_scheduled_ GUARDED_BY_CONTEXT(sequence_checker_) =
       false;
 
-  // Preferred monitors config, which may or may be be reflected in
+  // Preferred monitors config, which may or may not be reflected in
   // `current_display_config_`. This field is used to:
   //
   // 1. Store pending config so that it can be applied later to prevent race
   //    conditions. For example, we wait for screen resolution changes via
   //    pipewire to be reflected in the display config before we apply display
   //    scales or offsets.
-  // 2. Make adjustments if the display config has changed externally. For
-  //    example, if the preferred scale for the primary display is 2 and we have
-  //    previously set the text scale to 2, if the user manually sets the
-  //    monitor scale to 2, then we use this map to look up the preferred scale
-  //    and change the text scale to 1 so that the combined scale is 2.
+  // 2. Prevent the preferred config from being reverted, since Mutter tends to
+  //    change the monitor layout multiple times during and after resizes, and
+  //    we can't tell which change is the last one.
   //
   // We can't use flat_map since we may remove elements during iteration.
-  std::map<std::string /* monitor_name */, PreferredMonitorConfig>
+  std::map<webrtc::ScreenId /* screen_id */, PreferredMonitorConfig>
       preferred_monitors_config_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // The preferred layout calculated from either the VideoLayout protobuf or
+  // the Gnome display config prior to monitor resizes. If this is set, it
+  // will be used to relayout monitors before passing the new config to
+  // ApplyMonitorsConfig.
+  // Mutter tends to switch to the horizontal start-aligned monitor layout
+  // whenever a monitor is resize, which is subpar to our relayout algorithm.
+  // This field allows us to maintain the layout direction and alignment after
+  // resizes.
+  std::optional<GnomeDisplayConfig::LayoutInfo> preferred_layout_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Used to set the text-scaling-factor.
   ScopedGObject<GSettings> registry_;

@@ -5,6 +5,7 @@
 #include "remoting/host/linux/gnome_desktop_resizer.h"
 
 #include <functional>
+#include <optional>
 
 #include "base/check.h"
 #include "base/containers/flat_set.h"
@@ -13,6 +14,7 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "remoting/base/constants.h"
@@ -22,6 +24,7 @@
 #include "remoting/host/linux/gnome_interaction_strategy.h"
 #include "remoting/host/linux/pipewire_capture_stream.h"
 #include "remoting/host/linux/pipewire_capture_stream_manager.h"
+#include "remoting/proto/control.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/base/glib/gsettings.h"
@@ -66,6 +69,25 @@ inline double FindBestScale(double preferred_scale,
 
 inline bool IsSameScale(double s1, double s2) {
   return std::abs(s1 - s2) < 0.01;
+}
+
+// Note: this method only adds a monitor for the purpose of layout calculation.
+// DO NOT call ApplyMonitorsConfig with the updated `config`.
+void AddMonitorForLayoutCalculation(GnomeDisplayConfig& config,
+                                    const protocol::VideoTrackLayout& track) {
+  // We can't use the screen_id as the key, since it may be empty.
+  GnomeDisplayConfig::MonitorInfo& info =
+      config.monitors[base::NumberToString(config.monitors.size())];
+  info.x = track.position_x();
+  info.y = track.position_y();
+  info.scale = track.x_dpi() == 0.0
+                   ? 1.0
+                   : static_cast<double>(track.x_dpi()) / kDefaultDpi;
+  GnomeDisplayConfig::MonitorMode mode;
+  mode.width = track.width();
+  mode.height = track.height();
+  mode.is_current = true;
+  info.modes.push_back(mode);
 }
 
 }  // namespace
@@ -127,6 +149,78 @@ void GnomeDesktopResizer::SetResolution(const ScreenResolution& resolution,
                                         webrtc::ScreenId screen_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // Sometimes the client will send multiple SetResolution requests. The display
+  // layout will become horizontal start-aligned after
+  // SetResolutionAndPosition(), so we only set the preferred layout if it
+  // hasn't been set.
+  if (!preferred_layout_) {
+    preferred_layout_ = current_display_config_.GetLayoutInfo();
+  }
+  SetResolutionAndPosition(resolution, /*position=*/std::nullopt, screen_id);
+}
+
+void GnomeDesktopResizer::RestoreResolution(const ScreenResolution& original,
+                                            webrtc::ScreenId screen_id) {}
+
+void GnomeDesktopResizer::SetVideoLayout(const protocol::VideoLayout& layout) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!stream_manager_) {
+    return;
+  }
+  // TODO: crbug.com/432217140 - Implement support for change of primary
+  // display.
+  auto unseen_screen_ids = base::MakeFlatSet<webrtc::ScreenId>(
+      stream_manager_->GetActiveStreams(), std::less<>(),
+      [](const auto& kv) { return kv.first; });
+  GnomeDisplayConfig display_config_for_layout_calculation;
+  display_config_for_layout_calculation.layout_mode =
+      GnomeDisplayConfig::LayoutMode::kPhysical;
+  for (const auto& track : layout.video_track()) {
+    webrtc::DesktopSize physical_resolution{track.width(), track.height()};
+    ScreenResolution screen_resolution{physical_resolution,
+                                       {track.x_dpi(), track.y_dpi()}};
+    webrtc::DesktopVector position{track.position_x(), track.position_y()};
+
+    if (!track.has_screen_id()) {
+      // The client doesn't seem to set the initial DPI, so we set it to 1 if
+      // the calculated scale is 0. This allows the correct scale to be used if
+      // the client later decides to send the initial DPI.
+      DCHECK_EQ(track.x_dpi(), track.y_dpi());
+      double scale = static_cast<double>(track.x_dpi()) / kDefaultDpi;
+      if (scale == 0.0) {
+        scale = 1.0;
+      }
+      stream_manager_->AddStream(
+          screen_resolution,
+          base::BindOnce(&GnomeDesktopResizer::OnAddStreamResult,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         PreferredMonitorConfig{
+                             .expected_resolution = physical_resolution,
+                             .position = position,
+                             .scale = scale,
+                         }));
+    } else if (unseen_screen_ids.erase(track.screen_id()) == 0) {
+      LOG(ERROR) << "Found unexpected screen ID: " << track.screen_id();
+    } else {
+      SetResolutionAndPosition(screen_resolution, position, track.screen_id());
+    }
+    AddMonitorForLayoutCalculation(display_config_for_layout_calculation,
+                                   track);
+  }
+  preferred_layout_ = display_config_for_layout_calculation.GetLayoutInfo();
+  // Remove pipewire streams that are no longer in the video layout.
+  for (const auto& screen_id : unseen_screen_ids) {
+    stream_manager_->RemoveStream(screen_id);
+  }
+}
+
+void GnomeDesktopResizer::SetResolutionAndPosition(
+    const ScreenResolution& resolution,
+    std::optional<webrtc::DesktopVector> position,
+    webrtc::ScreenId screen_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!stream_manager_) {
     return;
   }
@@ -144,16 +238,27 @@ void GnomeDesktopResizer::SetResolution(const ScreenResolution& resolution,
   }
 
   DCHECK_EQ(resolution.dpi().x(), resolution.dpi().y());
-  const auto monitor_it = current_display_config_.FindMonitor(screen_id);
-  if (monitor_it == current_display_config_.monitors.end()) {
-    LOG(ERROR) << "Cannot find monitor with screen ID: " << screen_id;
-    return;
-  }
-  const auto& monitor = monitor_it->second;
   double preferred_scale =
       static_cast<double>(resolution.dpi().x()) / kDefaultDpi;
-  preferred_monitors_config_[monitor_it->first] = {
-      resolution.dimensions(), {monitor.x, monitor.y}, preferred_scale};
+  bool has_preferred_config = preferred_monitors_config_.find(screen_id) !=
+                              preferred_monitors_config_.end();
+  PreferredMonitorConfig& preferred_config =
+      preferred_monitors_config_[screen_id];
+  preferred_config.expected_resolution = resolution.dimensions(),
+  preferred_config.scale = preferred_scale;
+  if (position.has_value()) {
+    preferred_config.position = *position;
+  } else if (!has_preferred_config) {
+    // If this is a new config and no position is specified, then we should keep
+    // the current position reported by the DisplayConfig API.
+    auto monitor_it = current_display_config_.FindMonitor(screen_id);
+    if (monitor_it == current_display_config_.monitors.end()) {
+      LOG(ERROR) << "Cannot find monitor with screen ID: " << screen_id;
+    } else {
+      preferred_config.position = {monitor_it->second.x, monitor_it->second.y};
+    }
+  }
+
   // If the resolution has not changed, then we can immediately apply the
   // preferred monitors config, otherwise we wait for an updated displays config
   // to be received with a matching screen resolution to learn the list of
@@ -163,37 +268,8 @@ void GnomeDesktopResizer::SetResolution(const ScreenResolution& resolution,
   }
 }
 
-void GnomeDesktopResizer::RestoreResolution(const ScreenResolution& original,
-                                            webrtc::ScreenId screen_id) {}
-
-void GnomeDesktopResizer::SetVideoLayout(const protocol::VideoLayout& layout) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!stream_manager_) {
-    return;
-  }
-  // TODO: crbug.com/432217140 - Implement support for change of primary
-  // display, monitor offsets and scales.
-  auto unseen_screen_ids = base::MakeFlatSet<webrtc::ScreenId>(
-      stream_manager_->GetActiveStreams(), std::less<>(),
-      [](const auto& kv) { return kv.first; });
-  for (const auto& track : layout.video_track()) {
-    if (!track.has_screen_id()) {
-      stream_manager_->AddStream(
-          {{track.width(), track.height()}, {track.x_dpi(), track.y_dpi()}},
-          base::BindOnce(&GnomeDesktopResizer::OnAddStreamResult,
-                         weak_ptr_factory_.GetWeakPtr()));
-    } else if (unseen_screen_ids.erase(track.screen_id()) == 0) {
-      LOG(ERROR) << "Found unexpected screen ID: " << track.screen_id();
-    }
-  }
-  // Remove pipewire streams that are no longer in the video layout.
-  for (const auto& screen_id : unseen_screen_ids) {
-    stream_manager_->RemoveStream(screen_id);
-  }
-}
-
 void GnomeDesktopResizer::OnAddStreamResult(
+    const PreferredMonitorConfig& monitor_config,
     PipewireCaptureStreamManager::AddStreamResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -201,8 +277,8 @@ void GnomeDesktopResizer::OnAddStreamResult(
     LOG(ERROR) << "Failed to add stream: " << result.error();
     return;
   }
-  // TODO: crbug.com/432217140 - Configure offset and scale by calling
-  // ApplyMonitorsConfig via D-Bus.
+  preferred_monitors_config_[result.value()->screen_id()] = monitor_config;
+  ScheduleApplyPreferredMonitorsConfig();
 }
 
 void GnomeDesktopResizer::QueryDisplayInfo() {
@@ -265,19 +341,19 @@ void GnomeDesktopResizer::DoApplyPreferredMonitorsConfig() {
   bool config_changed = false;
   for (auto preferred_monitor_config_it = preferred_monitors_config_.begin();
        preferred_monitor_config_it != preferred_monitors_config_.end();) {
-    const auto [monitor_name, preferred_config] = *preferred_monitor_config_it;
-    auto monitor_it = new_config.monitors.find(monitor_name);
+    auto [screen_id, preferred_config] = *preferred_monitor_config_it;
+    auto monitor_it = new_config.FindMonitor(screen_id);
     if (monitor_it == new_config.monitors.end()) {
-      HOST_LOG << "Monitor " << monitor_name << " no longer exists";
-      preferred_monitor_config_it =
-          preferred_monitors_config_.erase(preferred_monitor_config_it);
-      break;
+      // This may happen for newly added monitors that may not be reflected in
+      // `current_display_config_` yet.
+      continue;
     }
 
     GnomeDisplayConfig::MonitorInfo& monitor = monitor_it->second;
     const GnomeDisplayConfig::MonitorMode* mode = monitor.GetCurrentMode();
     if (!mode) {
-      LOG(ERROR) << "Cannot find current mode for monitor " << monitor_name;
+      LOG(ERROR) << "Cannot find current mode for monitor with screen ID: "
+                 << screen_id;
       all_resolution_changes_reflected = false;
     } else if (!preferred_config.expected_resolution.equals(
                    webrtc::DesktopSize{mode->width, mode->height})) {
@@ -314,20 +390,50 @@ void GnomeDesktopResizer::DoApplyPreferredMonitorsConfig() {
     preferred_monitor_config_it++;
   }
 
-  if (all_resolution_changes_reflected && config_changed) {
-    // Setting `method` to `kPersistent` would trigger a confirmation dialog
-    // that would revert the change if the user hasn't clicked "Keep Changes"
-    // within 15 seconds.
-    // See:
-    // https://gitlab.gnome.org/GNOME/mutter/-/blob/1c6532ee18fd72ad324f8f53ccc03bfdf31e90e2/src/backends/meta-monitor-manager.c#L3180
-    // The difference between kTemporary and kPersistent is that the former will
-    // not write the current display config to the disk, such that, e.g. the
-    // display config will get reverted after device reboots. For CRD, all the
-    // virtual displays are ephemeral, and we track the current display config
-    // and make changes whenever necessary, so kTemporary suffices and there is
-    // no benefit using kPersistent.
-    new_config.method = GnomeDisplayConfig::Method::kTemporary;
-    display_config_client_->ApplyMonitorsConfig(new_config);
+  if (all_resolution_changes_reflected) {
+    if (preferred_layout_.has_value()) {
+      new_config.Relayout(*preferred_layout_);
+      for (const auto& [monitor_name, monitor] : new_config.monitors) {
+        if (!config_changed) {
+          // Check if relayout changes the monitor offsets and update
+          // `config_changed`. Relayout never changes monitor sizes so we don't
+          // need to worry about that.
+          auto current_monitor_it =
+              current_display_config_.monitors.find(monitor_name);
+          DCHECK(current_monitor_it != current_display_config_.monitors.end());
+          if (current_monitor_it->second.x != monitor.x ||
+              current_monitor_it->second.y != monitor.y) {
+            config_changed = true;
+          }
+        }
+
+        // Write the new offsets back to the preferred config.
+        auto it = preferred_monitors_config_.find(
+            GnomeDisplayConfig::GetScreenId(monitor_name));
+        if (it == preferred_monitors_config_.end()) {
+          LOG(ERROR) << "Cannot find preferred monitor config for monitor "
+                     << monitor_name;
+          continue;
+        }
+        it->second.position.set(monitor.x, monitor.y);
+      }
+    }
+
+    if (config_changed) {
+      // Setting `method` to `kPersistent` would trigger a confirmation dialog
+      // that would revert the change if the user hasn't clicked "Keep Changes"
+      // within 15 seconds.
+      // See:
+      // https://gitlab.gnome.org/GNOME/mutter/-/blob/1c6532ee18fd72ad324f8f53ccc03bfdf31e90e2/src/backends/meta-monitor-manager.c#L3180
+      // The difference between kTemporary and kPersistent is that the former
+      // will not write the current display config to the disk, such that, e.g.
+      // the display config will get reverted after device reboots. For CRD, all
+      // the virtual displays are ephemeral, and we track the current display
+      // config and make changes whenever necessary, so kTemporary suffices and
+      // there is no benefit using kPersistent.
+      new_config.method = GnomeDisplayConfig::Method::kTemporary;
+      display_config_client_->ApplyMonitorsConfig(new_config);
+    }
   }
 }
 
