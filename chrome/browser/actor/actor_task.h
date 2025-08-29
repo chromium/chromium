@@ -165,6 +165,9 @@ class ActorTask {
   // of a tab in this map signifies that it is part of the task.
   absl::flat_hash_map<tabs::TabHandle, ActingTabState> acting_tabs_;
 
+  // Running number of steps this task has taken.
+  size_t number_of_steps_ = 0;
+
   // The last tab that was acutated on.
   tabs::TabHandle last_actuated_tab_handle_;
 

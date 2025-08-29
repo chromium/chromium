@@ -103,9 +103,13 @@ void ActorTask::SetState(State state) {
 
   // If the state is to be finished/cancelled record a histogram.
   if (state_ == kFinished) {
+    base::UmaHistogramCounts1000("Actor.Task.Count.Completed",
+                                 number_of_steps_);
     base::UmaHistogramLongTimes100("Actor.Task.Duration.Completed",
                                    total_active_time_);
   } else if (state_ == kCancelled) {
+    base::UmaHistogramCounts1000("Actor.Task.Count.Cancelled",
+                                 number_of_steps_);
     base::UmaHistogramLongTimes100("Actor.Task.Duration.Cancelled",
                                    total_active_time_);
   }
@@ -124,6 +128,7 @@ void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
     return;
   }
   SetState(State::kActing);
+  number_of_steps_ += actions.size();
   execution_engine_->Act(
       std::move(actions),
       base::BindOnce(&ActorTask::OnFinishedAct, weak_ptr_factory_.GetWeakPtr(),
