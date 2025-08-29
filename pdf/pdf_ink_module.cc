@@ -1016,6 +1016,10 @@ bool PdfInkModule::FinishTextHighlight(const gfx::PointF& position,
   if (is_multi_click) {
     // Stay in text highlight state to handle any additional events.
     state.finished_multi_click = true;
+
+    // Clear the current state's highlight strokes to avoid drawing in-progress
+    // strokes on top of the strokes added.
+    state.highlight_strokes.clear();
     return true;
   }
 
