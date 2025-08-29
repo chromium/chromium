@@ -224,13 +224,6 @@ source_set("unit_tests") {
     sources += [ "win/windows_software_private_key_factory_unittest.cc" ]
   }
 
-  if (is_android) {
-    sources += [
-      "android_private_key_factory_unittest.cc",
-      "android_private_key_unittest.cc",
-    ]
-  }
-
   deps = [
     ":cloud_management_delegate",
     ":core",
@@ -254,4 +247,16 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (is_android) {
+    sources += [
+      "android_private_key_factory_unittest.cc",
+      "android_private_key_unittest.cc",
+    ]
+
+    deps += [
+      "//components/enterprise/client_certificates/android/browser_binding",
+      "//net",
+    ]
+  }
 }

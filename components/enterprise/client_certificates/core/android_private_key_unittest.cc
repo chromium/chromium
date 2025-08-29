@@ -26,7 +26,7 @@ namespace client_certificates {
 
 TEST(AndroidPrivateKeyTest, SupportedCreateKey) {
   auto bk_key_store = CreateBrowserKeyStoreInstance();
-  if (!bk_store->GetDeviceSupportsHardwareKeys()) {
+  if (!bk_key_store->GetDeviceSupportsHardwareKeys()) {
     // TODO(b/crbug.com/432304139) Support software keys.
     // StrongBox is required for this test.
     GTEST_SKIP();

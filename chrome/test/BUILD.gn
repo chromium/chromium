@@ -10032,6 +10032,8 @@ test("unit_tests") {
   if (is_linux || is_chromeos || is_mac || is_win || is_android) {
     sources +=
         [ "../browser/enterprise/signals/user_delegate_impl_unittest.cc" ]
+
+    deps += [ "../browser/enterprise/connectors/device_trust:test_support" ]
   }
 
   if (is_linux || is_chromeos || is_mac || is_win) {
@@ -10047,7 +10049,6 @@ test("unit_tests") {
 
     deps += [
       "../browser/enterprise/connectors/device_trust:features",
-      "../browser/enterprise/connectors/device_trust:test_support",
       "../browser/enterprise/connectors/device_trust/attestation/common",
       "../browser/enterprise/connectors/device_trust/attestation/common:test_support",
       "../browser/enterprise/connectors/device_trust/common",

@@ -6772,6 +6772,7 @@ static_library("browser") {
       "enterprise/signals/user_permission_service_factory.cc",
       "enterprise/signals/user_permission_service_factory.h",
     ]
+    deps += [ "//chrome/browser/enterprise/connectors/device_trust/common" ]
   }
 
   if (is_linux || is_win || is_mac || is_chromeos) {

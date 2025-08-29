@@ -3,7 +3,8 @@
     "os": [
       "mac",
       "win",
-      "linux"
+      "linux",
+      "android"
     ],
     "policy_pref_mapping_tests": [
       {

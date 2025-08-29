@@ -85,11 +85,11 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kOnFileTransferScopePref, 0);
 #endif
   RegisterDeviceTrustConnectorProfilePrefs(registry);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
   client_certificates::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {

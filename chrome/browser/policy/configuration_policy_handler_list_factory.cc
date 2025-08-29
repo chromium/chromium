@@ -2586,6 +2586,13 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
           enterprise_connectors::kEnterpriseRealTimeUrlCheckScope,
           chrome_schema));
+  handlers->AddHandler(
+      std::make_unique<SimpleJsonStringSchemaValidatingPolicyHandler>(
+          key::kAutoSelectCertificateForUrls,
+          prefs::kManagedAutoSelectCertificateForUrls,
+          chrome_schema.GetValidationSchema(),
+          SimpleSchemaValidatingPolicyHandler::RECOMMENDED_ALLOWED,
+          SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
   handlers->AddHandler(std::make_unique<BrowsingHistoryPolicyHandler>());
 #if BUILDFLAG(IS_ANDROID)
   handlers->AddHandler(
@@ -2622,13 +2629,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   // Handlers for policies with embedded JSON strings. These handlers are very
   // lenient - as long as the root value is of the right type, they only display
   // warnings and never reject the policy value.
-  handlers->AddHandler(
-      std::make_unique<SimpleJsonStringSchemaValidatingPolicyHandler>(
-          key::kAutoSelectCertificateForUrls,
-          prefs::kManagedAutoSelectCertificateForUrls,
-          chrome_schema.GetValidationSchema(),
-          SimpleSchemaValidatingPolicyHandler::RECOMMENDED_ALLOWED,
-          SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
   handlers->AddHandler(
       std::make_unique<SimpleJsonStringSchemaValidatingPolicyHandler>(
           key::kDefaultPrinterSelection,

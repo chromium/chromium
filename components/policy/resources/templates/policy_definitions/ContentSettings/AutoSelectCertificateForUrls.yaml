@@ -26,6 +26,7 @@ features:
   per_profile: true
 future_on:
 - fuchsia
+- android
 owners:
 - chromeos-commercial-networking-team@google.com
 - miersh@google.com
