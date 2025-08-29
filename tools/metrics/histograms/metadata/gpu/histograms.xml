@@ -1281,6 +1281,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.ProcessLifetime" units="seconds"
+    expires_after="2026-08-01">
+  <owner>kylechar@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>GPU process lifetime as measured by GPU process host.</summary>
+</histogram>
+
 <histogram name="GPU.ProcessLifetimeEvents.HardwareAccelerated"
     enum="GPUProcessLifetimeEvent" expires_after="2025-12-28">
   <owner>vmiura@chromium.org</owner>
