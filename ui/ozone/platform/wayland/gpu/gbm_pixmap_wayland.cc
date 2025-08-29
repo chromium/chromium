@@ -24,6 +24,7 @@
 #include "ui/gfx/native_pixmap_handle.h"
 #include "ui/ozone/platform/wayland/gpu/gbm_surfaceless_wayland.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
+#include "ui/ozone/public/native_pixmap_usage_utils.h"
 #include "ui/ozone/public/ozone_platform.h"
 
 namespace ui {
@@ -41,7 +42,7 @@ bool GbmPixmapWayland::InitializeBuffer(
     gfx::AcceleratedWidget widget,
     gfx::Size size,
     gfx::BufferFormat format,
-    gfx::BufferUsage usage,
+    NativePixmapUsageSet usage,
     std::optional<gfx::Size> visible_area_size) {
   DCHECK(!visible_area_size ||
          ((visible_area_size.value().width() <= size.width()) &&
@@ -55,7 +56,7 @@ bool GbmPixmapWayland::InitializeBuffer(
     return false;
 
   const uint32_t fourcc_format = GetFourCCFormatFromBufferFormat(format);
-  const uint32_t gbm_flags = ui::BufferUsageToGbmFlags(usage);
+  const uint32_t gbm_flags = ui::NativePixmapUsageToGbmFlags(usage);
   auto modifiers = buffer_manager_->GetModifiersForBufferFormat(format);
 
   // Create buffer object without format modifiers unless they are explicitly
@@ -81,12 +82,12 @@ bool GbmPixmapWayland::InitializeBuffer(
   if (!gbm_bo_) {
     LOG(ERROR) << "Cannot create bo with format= "
                << gfx::BufferFormatToString(format)
-               << " and usage=" << gfx::BufferUsageToString(usage);
+               << " and usage=" << ui::NativePixmapUsageToString(usage);
     return false;
   }
 
   DVLOG(3) << "Created gbm bo. format= " << gfx::BufferFormatToString(format)
-           << " usage=" << gfx::BufferUsageToString(usage);
+           << " usage=" << ui::NativePixmapUsageToString(usage);
 
   visible_area_size_ = visible_area_size ? visible_area_size.value() : size;
   return true;

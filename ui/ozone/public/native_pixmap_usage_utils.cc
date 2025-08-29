@@ -38,4 +38,37 @@ NativePixmapUsageSet BufferUsageToNativePixmapUsage(gfx::BufferUsage usage) {
   }
 }
 
+std::string NativePixmapUsageToString(NativePixmapUsageSet usage) {
+  if (usage.empty()) {
+    return {};
+  }
+
+  static const std::pair<NativePixmapUsage, const char*> kUsages[] = {
+      {NativePixmapUsage::kScanout, "Scanout"},
+      {NativePixmapUsage::kRendering, "Rendering"},
+      {NativePixmapUsage::kTexturing, "Texturing"},
+      {NativePixmapUsage::kCpuRead, "CpuRead"},
+      {NativePixmapUsage::kCamera, "Camera"},
+      {NativePixmapUsage::kProtected, "Protected"},
+      {NativePixmapUsage::kHWVideoDecoder, "HWVideoDecoder"},
+      {NativePixmapUsage::kHWVideoEncoder, "HWVideoEncoder"},
+      {NativePixmapUsage::kSWReadOften, "SWReadOften"},
+      {NativePixmapUsage::kFrontRendering, "FrontRendering"},
+  };
+
+  std::string label;
+  for (const auto& [value, name] : kUsages) {
+    if (!usage.Has(value)) {
+      continue;
+    }
+    if (!label.empty()) {
+      label.append("|");
+    }
+    label.append(name);
+  }
+
+  DCHECK(!label.empty());
+  return label;
+}
+
 }  // namespace ui

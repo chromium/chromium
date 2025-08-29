@@ -17,6 +17,7 @@
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/ozone/public/native_pixmap_usage.h"
 
 namespace ui {
 
@@ -40,7 +41,7 @@ class GbmPixmapWayland : public gfx::NativePixmap {
       gfx::AcceleratedWidget widget,
       gfx::Size size,
       gfx::BufferFormat format,
-      gfx::BufferUsage usage,
+      NativePixmapUsageSet usage,
       std::optional<gfx::Size> visible_area_size = std::nullopt);
 
   // Creates a buffer object from native pixmap handle and initializes the

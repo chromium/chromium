@@ -24,6 +24,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
+#include "ui/ozone/public/native_pixmap_usage_utils.h"
 
 #if defined(WAYLAND_GBM)
 #include "ui/gfx/buffer_format_util.h"
@@ -32,11 +33,11 @@
 #include "ui/ozone/platform/wayland/gpu/gbm_pixmap_wayland.h"
 #include "ui/ozone/platform/wayland/gpu/gbm_surfaceless_wayland.h"
 #include "ui/ozone/public/ozone_platform.h"
-#endif
+#endif  // WAYLAND_GBM
 
 #if BUILDFLAG(ENABLE_VULKAN)
 #include "ui/ozone/platform/wayland/gpu/vulkan_implementation_wayland.h"
-#endif
+#endif  // ENABLE_VULKAN
 
 namespace ui {
 
@@ -271,7 +272,8 @@ scoped_refptr<gfx::NativePixmap> WaylandSurfaceFactory::CreateNativePixmap(
     scoped_refptr<GbmPixmapWayland> pixmap =
         base::MakeRefCounted<GbmPixmapWayland>(buffer_manager_);
 
-    if (!pixmap->InitializeBuffer(widget, size, format, usage,
+    auto native_usage = BufferUsageToNativePixmapUsage(usage);
+    if (!pixmap->InitializeBuffer(widget, size, format, native_usage,
                                   framebuffer_size)) {
       return nullptr;
     }
