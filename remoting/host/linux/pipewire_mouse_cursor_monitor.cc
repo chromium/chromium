@@ -31,29 +31,37 @@ void PipewireMouseCursorMonitor::Capture() {
     return;
   }
 
-  auto active_stream = stream_manager_->GetActiveStreams();
-  auto first = active_stream.begin();
-  if (first == active_stream.end()) {
-    callback_->OnMouseCursor(nullptr);
-    return;
-  }
-  base::WeakPtr<PipewireCaptureStream> stream = first->second;
-  std::optional<webrtc::DesktopVector> mouse_cursor_position =
-      stream->CaptureCursorPosition();
-  // Invalid cursor or position
-  if (!mouse_cursor_position.has_value()) {
-    callback_->OnMouseCursor(nullptr);
-    return;
-  }
+  auto active_streams = stream_manager_->GetActiveStreams();
+  bool need_position = report_position_;
+  bool need_cursor = true;
+  for (auto [screen_id, stream] : active_streams) {
+    if (!stream) {
+      continue;
+    }
 
-  std::unique_ptr<webrtc::MouseCursor> mouse_cursor = stream->CaptureCursor();
+    if (need_position) {
+      // Any stream can capture the cursor position.
+      std::optional<webrtc::DesktopVector> cursor_position =
+          stream->CaptureCursorPosition();
+      if (cursor_position.has_value()) {
+        callback_->OnMouseCursorPosition(*cursor_position);
+        need_position = false;
+      }
+    }
 
-  if (mouse_cursor && mouse_cursor->image()->data()) {
-    callback_->OnMouseCursor(mouse_cursor.release());
-  }
+    if (need_cursor) {
+      // Only the stream where the cursor is currently located can capture the
+      // cursor.
+      std::unique_ptr<webrtc::MouseCursor> cursor = stream->CaptureCursor();
+      if (cursor && cursor->image()->data()) {
+        callback_->OnMouseCursor(cursor.release());
+        need_cursor = false;
+      }
+    }
 
-  if (report_position_) {
-    callback_->OnMouseCursorPosition(*mouse_cursor_position);
+    if (!need_position && !need_cursor) {
+      break;
+    }
   }
 }
 
