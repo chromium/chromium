@@ -3,5 +3,8 @@ caseq@chromium.org
 dgozman@chromium.org
 dsv@chromium.org
 
-per-file domains/DOM.pdl=pfaffe@chromium.org
+# Keep the list sorted alphabetically
+
+per-file domains/BluetoothEmulation.pdl=alexnj@chromium.org
 per-file domains/CSS.pdl=pfaffe@chromium.org
+per-file domains/DOM.pdl=pfaffe@chromium.org
