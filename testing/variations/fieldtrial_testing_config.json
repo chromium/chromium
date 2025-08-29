@@ -20936,27 +20936,6 @@
             ]
         }
     ],
-    "ReportingServiceAlwaysFlush": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ReportingServiceAlwaysFlush"
-                    ]
-                }
-            ]
-        }
-    ],
     "RequestMainFrameAfterFirstVideoFrame": [
         {
             "platforms": [
@@ -24242,6 +24221,27 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnableStartupImprovements"
+                    ]
+                }
+            ]
+        }
+    ],
+    "StickyActivationTest": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ReportingServiceAlwaysFlush"
                     ]
                 }
             ]
