@@ -24,6 +24,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
+#include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version_info/version_info.h"
@@ -125,6 +126,7 @@
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -929,13 +931,16 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 // on Linux.
 #if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 class ForceSigninProfilePickerCreationFlowBrowserTest
-    : public ProfilePickerCreationFlowBrowserTest {
+    : public ProfilePickerCreationFlowBrowserTest,
+      public base::test::WithFeatureOverride {
  public:
   static constexpr char kConsumerEmail[] = "joe@consumer@gmail.com";
 
   explicit ForceSigninProfilePickerCreationFlowBrowserTest(
       bool force_signin_enabled = true)
-      : force_signin_setter_(force_signin_enabled) {}
+      : base::test::WithFeatureOverride(
+            syncer::kReplaceSyncPromosWithSignInPromos),
+        force_signin_setter_(force_signin_enabled) {}
 
   // ProfilePickerCreationFlowBrowserTest:
   void CreatedBrowserMainParts(content::BrowserMainParts* parts) override {
@@ -1010,7 +1015,7 @@ class ForceSigninProfilePickerCreationFlowBrowserTest
   ProfileManagementCounter profile_management_counter_;
 };
 
-IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
+IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
                        ForceSigninSuccessful) {
   size_t initial_browser_count = BrowserList::GetInstance()->size();
   // Create a new signin flow, sign-in, and wait for the Sync Comfirmation
@@ -1030,9 +1035,13 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
   EXPECT_EQ(entry->IsSigninRequired(), true);
   EXPECT_EQ(entry->IsEphemeral(), true);
 
-  // Simulate the "Yes, I'm in" button clicked.
+  LoginUIService::SyncConfirmationUIClosedResult sync_choice =
+      // If the feature is enabled, Sync can be declined or skipped.
+      IsParamFeatureEnabled()
+          ? LoginUIService::ABORT_SYNC                   // "No Thanks".
+          : LoginUIService::SYNC_WITH_DEFAULT_SETTINGS;  // "Yes, I'm in".
   LoginUIServiceFactory::GetForProfile(force_sign_in_profile)
-      ->SyncConfirmationUIClosed(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
+      ->SyncConfirmationUIClosed(sync_choice);
 
   // A browser should open up and the picker should be closed.
   Browser* new_browser = BrowserAddedWaiter(initial_browser_count + 1u).Wait();
@@ -1045,8 +1054,9 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
   EXPECT_EQ(entry->IsEphemeral(), false);
 }
 
-IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
-                       ForceSigninAbortedBySyncDeclined_ThenSigninAgain) {
+IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
+                       ForceSigninSyncDeclined) {
+  size_t initial_browser_count = BrowserList::GetInstance()->size();
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   // Only the default profile exists at this point.
   size_t initial_profile_count = 1u;
@@ -1078,6 +1088,19 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
   LoginUIServiceFactory::GetForProfile(force_sign_in_profile)
       ->SyncConfirmationUIClosed(LoginUIService::ABORT_SYNC);
 
+  // If the feature is enabled, declining sync would still proceed with
+  // finalizing the profile.
+  if (IsParamFeatureEnabled()) {
+    Browser* new_browser =
+        BrowserAddedWaiter(initial_browser_count + 1u).Wait();
+    EXPECT_EQ(new_browser->profile(), force_sign_in_profile);
+    EXPECT_EQ(entry->IsSigninRequired(), false);
+    EXPECT_EQ(entry->IsEphemeral(), false);
+    return;
+  }
+  // Otherwise the profile should be destroyed, and signing in again should be
+  // possible.
+
   // Expect the profile to be deleted.
   deletion_observer.Wait();
 
@@ -1096,8 +1119,6 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
   // This part of the test is to make sure we can safely instantiate a new sign
   // in flow after declining the first one.
   // ---------------------------------------------------------------------------
-
-  size_t initial_browser_count = BrowserList::GetInstance()->size();
 
   // Create a second signin flow as part of the same session.
   Profile* force_sign_in_profile_2 =
@@ -1122,7 +1143,7 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
 // - Session restart.
 // - Profile should be locked.
 // - Perform reauth through the Picker.
-IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
+IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
                        PRE_PRE_ForceSigninSigninThenReauthSuccessful) {
   ASSERT_TRUE(signin_util::IsForceSigninEnabled());
   ASSERT_EQ(BrowserList::GetInstance()->size(), 0u);
@@ -1151,8 +1172,13 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
   // Sign in an accept enable sync.
   FinishDiceSignIn(profile, kConsumerEmail, "Joe");
   WaitForLoadStop(GetSyncConfirmationURL());
+  LoginUIService::SyncConfirmationUIClosedResult sync_choice =
+      // If the feature is enabled, Sync can be declined or skipped.
+      IsParamFeatureEnabled()
+          ? LoginUIService::ABORT_SYNC                   // "No Thanks".
+          : LoginUIService::SYNC_WITH_DEFAULT_SETTINGS;  // "Yes, I'm in".
   LoginUIServiceFactory::GetForProfile(profile)->SyncConfirmationUIClosed(
-      LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
+      sync_choice);
 
   // Opens a browser and unlocks the profile.
   Browser* initial_browser = BrowserAddedWaiter(1u).Wait();
@@ -1175,7 +1201,7 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
   // Simulate a profile reload/session restart.
 }
 
-IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
+IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
                        PRE_ForceSigninSigninThenReauthSuccessful) {
   //----------------------------------------------------------------------------
   // The setup of the browser test attempts to open a browser for the startup
@@ -1201,7 +1227,7 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
   ASSERT_TRUE(entry->IsSigninRequired());
 }
 
-IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
+IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
                        ForceSigninSigninThenReauthSuccessful) {
   //----------------------------------------------------------------------------
   // In this part, the startup profile load happened but is not destroyed since
@@ -1252,7 +1278,7 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
       kReauthResultHistogramName, ProfilePickerReauthResult::kSuccess, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
+IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
                        ForceSigninReauthInGlicModeShowsErrorDialog) {
   size_t initial_browser_count = BrowserList::GetInstance()->size();
   ASSERT_EQ(initial_browser_count, 0u);
@@ -1274,8 +1300,10 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
   const std::string email("test@managedchrome.com");
   signin::MakePrimaryAccountAvailable(identity_manager, email,
                                       signin::ConsentLevel::kSignin);
-  // Only managed accounts are allowed to reauth.
-  entry->SetUserAcceptedAccountManagement(true);
+  if (!IsParamFeatureEnabled()) {
+    // Only managed accounts are allowed to reauth.
+    entry->SetUserAcceptedAccountManagement(true);
+  }
   // Only glic eligible profiles are shown in the Glic version of the picker.
   entry->SetIsGlicEligible(true);
 
@@ -1318,7 +1346,7 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
   WaitForPickerClosed();
 }
 
-IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
+IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
                        ForceSigninReauthWithAnotherAccount) {
   size_t initial_browser_count = BrowserList::GetInstance()->size();
   ASSERT_EQ(initial_browser_count, 0u);
@@ -1339,15 +1367,19 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
 
-  const std::string email("test@managedchrome.com");
+  const std::string email(IsParamFeatureEnabled() ? "test@gmail.com"
+                                                  : "test@managedchrome.com");
   signin::MakePrimaryAccountAvailable(identity_manager, email,
                                       signin::ConsentLevel::kSignin);
-  // Only managed accounts are allowed to reauth.
-  entry->SetUserAcceptedAccountManagement(true);
+  if (!IsParamFeatureEnabled()) {
+    // Only managed accounts are allowed to reauth.
+    entry->SetUserAcceptedAccountManagement(true);
+  }
 
-  CoreAccountId primary_account =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-  ASSERT_FALSE(primary_account.empty());
+  ASSERT_TRUE(entry->GetSigninState() ==
+              SigninState::kSignedInWithUnconsentedPrimaryAccount);
+  ASSERT_TRUE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   // Simulate an invalid account.
   signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
@@ -1358,7 +1390,8 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
   WaitForLoadStop(GetChromeReauthURL(email));
 
   // Simulate a successful sign in with another email address.
-  const std::string different_email("test2@managedchrome.com");
+  const std::string different_email(
+      IsParamFeatureEnabled() ? "test2@gmail.com" : "test2@managedchrome.com");
   ASSERT_NE(email, different_email);
   SimulateSuccesfulSignin(identity_manager, different_email);
 
@@ -1379,11 +1412,11 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
       1);
 }
 
-IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
-                       ForceSigninReauthNavigateBackShouldAbort) {
-  size_t initial_browser_count = BrowserList::GetInstance()->size();
-  ASSERT_EQ(initial_browser_count, 0u);
-
+// Test in two parts:
+// - Preparing the profile for reauth (Sign in, invalidate token).
+// - Attempt to open the profile from picker (Reauth).
+IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
+                       PRE_ForceSigninReauthNavigateBackShouldAbort) {
   const std::vector<Profile*> profiles =
       g_browser_process->profile_manager()->GetLoadedProfiles();
   ASSERT_GE(profiles.size(), 1u);
@@ -1399,11 +1432,14 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
 
-  const std::string email("test@managedchrome.com");
+  const std::string email(IsParamFeatureEnabled() ? "test@gmail.com"
+                                                  : "test@managedchrome.com");
   signin::MakePrimaryAccountAvailable(identity_manager, email,
                                       signin::ConsentLevel::kSignin);
-  // Only managed accounts are allowed to reauth.
-  entry->SetUserAcceptedAccountManagement(true);
+  if (!IsParamFeatureEnabled()) {
+    // Only managed accounts are allowed to reauth.
+    entry->SetUserAcceptedAccountManagement(true);
+  }
 
   CoreAccountId primary_account =
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
@@ -1411,6 +1447,28 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
 
   // Simulate an invalid account.
   signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
+
+  // Simulate a profile reload/session restart.
+}
+
+IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
+                       ForceSigninReauthNavigateBackShouldAbort) {
+  // Profile is locked and can be reauthed.
+  size_t initial_browser_count = BrowserList::GetInstance()->size();
+  ASSERT_EQ(initial_browser_count, 0u);
+  const std::string email(IsParamFeatureEnabled() ? "test@gmail.com"
+                                                  : "test@managedchrome.com");
+  ASSERT_TRUE(ProfilePicker::IsOpen());
+  ASSERT_EQ(BrowserList::GetInstance()->size(), 0u);
+  std::vector<ProfileAttributesEntry*> entries =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetAllProfilesAttributes();
+  ASSERT_GE(entries.size(), 1u);
+  ProfileAttributesEntry* entry = entries[0];
+  ASSERT_TRUE(entry);
+  ASSERT_EQ(base::UTF16ToUTF8(entry->GetUserName()), email);
+  ASSERT_TRUE(entry->IsSigninRequired());
 
   // Opening the locked profile from the profile picker should trigger the
   // reauth, and the back button toolbar should be visible.
@@ -1444,7 +1502,7 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
   EXPECT_TRUE(entry->IsSigninRequired());
 }
 
-IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
+IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
                        ForceSigninLaunchInactiveDefaultProfile) {
   size_t initial_browser_count = BrowserList::GetInstance()->size();
   ASSERT_EQ(initial_browser_count, 0u);
@@ -1474,9 +1532,13 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
   FinishDiceSignIn(default_profile, "joe.consumer@gmail.com", "Joe");
   WaitForLoadStop(GetSyncConfirmationURL());
 
-  // Accept Sync.
+  LoginUIService::SyncConfirmationUIClosedResult sync_choice =
+      // If the feature is enabled, Sync can be declined or skipped.
+      IsParamFeatureEnabled()
+          ? LoginUIService::ABORT_SYNC                   // "No Thanks".
+          : LoginUIService::SYNC_WITH_DEFAULT_SETTINGS;  // "Yes, I'm in".
   LoginUIServiceFactory::GetForProfile(default_profile)
-      ->SyncConfirmationUIClosed(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
+      ->SyncConfirmationUIClosed(sync_choice);
 
   // A browser should open and the profile should now be unlocked.
   Browser* new_browser = BrowserAddedWaiter(initial_browser_count + 1u).Wait();
@@ -1488,8 +1550,8 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTest,
   EXPECT_NE(default_profile_entry->GetActiveTime(), base::Time());
 }
 
-// Regression tetst for b/360733721.
-IN_PROC_BROWSER_TEST_F(
+// Regression test for crbug.com/360733721.
+IN_PROC_BROWSER_TEST_P(
     ForceSigninProfilePickerCreationFlowBrowserTest,
     ForceSigninWithPatternMatchingShouldFailSigninWithWrongPatternEmail) {
   // Set the username pattern restriction.
@@ -1536,6 +1598,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(GetForceSigninErrorDialogBodyText(), errors.second);
 }
 
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    ForceSigninProfilePickerCreationFlowBrowserTest);
+
 class ForceSigninProfilePickerCreationFlowBrowserTestWithPRE
     : public ForceSigninProfilePickerCreationFlowBrowserTest {
  public:
@@ -1544,8 +1609,8 @@ class ForceSigninProfilePickerCreationFlowBrowserTestWithPRE
             /*force_signin_enabled=*/!content::IsPreTest()) {}
 };
 
-IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTestWithPRE,
-                       PRE_ProfileThatCannotBeManagedCannotBeOpened) {
+IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTestWithPRE,
+                       PRE_SignedOutProfileCannotBeOpened) {
   ASSERT_FALSE(signin_util::IsForceSigninEnabled());
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -1553,11 +1618,15 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTestWithPRE,
   ASSERT_EQ(1u, profile_manager->GetNumberOfProfiles());
 
   // Activate this profile then close the session.
-  CreateBrowser(profile_manager->GetLoadedProfiles()[0]);
+  Profile* profile = profile_manager->GetLoadedProfiles()[0];
+  CreateBrowser(profile);
+  ASSERT_FALSE(
+      IdentityManagerFactory::GetForProfile(profile)->HasPrimaryAccount(
+          signin::ConsentLevel::kSignin));
 }
 
-IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTestWithPRE,
-                       ProfileThatCannotBeManagedCannotBeOpened) {
+IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTestWithPRE,
+                       SignedOutProfileCannotBeOpened) {
   ASSERT_TRUE(signin_util::IsForceSigninEnabled());
 
   size_t initial_browser_count = BrowserList::GetInstance()->size();
@@ -1573,13 +1642,13 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTestWithPRE,
   // Profile has been used and is now locked.
   ASSERT_NE(existing_entry->GetActiveTime(), base::Time());
   ASSERT_TRUE(existing_entry->IsSigninRequired());
-  ASSERT_FALSE(existing_entry->CanBeManaged());
+  ASSERT_EQ(existing_entry->GetSigninState(), SigninState::kNotSignedIn);
 
   ASSERT_TRUE(ProfilePicker::IsOpen());
   ASSERT_FALSE(IsForceSigninErrorDialogShown());
 
   // Attempting to open this profile, profile was previously active and not
-  // syncing/managed.
+  // signed in.
   OpenProfileFromPicker(existing_entry->GetPath(), false);
 
   // Should not succeed.
@@ -1594,6 +1663,9 @@ IN_PROC_BROWSER_TEST_F(ForceSigninProfilePickerCreationFlowBrowserTestWithPRE,
   // Profile is still locked.
   EXPECT_TRUE(existing_entry->IsSigninRequired());
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    ForceSigninProfilePickerCreationFlowBrowserTestWithPRE);
 
 #endif
 

@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/sync/base/features.h"
 
 namespace {
 
@@ -183,16 +184,18 @@ void ProfilePickerTurnSyncOnDelegate::OnSyncConfirmationUIClosed(
       LoginUIServiceFactory::GetForProfile(profile_)));
   scoped_login_ui_service_observation_.Reset();
 
-  // If the user declines enabling sync while browser sign-in is forced, prevent
-  // them from going further by cancelling the creation of this profile.
-  // It does not apply to managed accounts.
-  // TODO(crbug.com/40280466): Align Managed and Consumer accounts.
-  if (signin_util::IsForceSigninEnabled() &&
-      !enterprise_util::ProfileCanBeManaged(profile_) &&
-      result == LoginUIService::SyncConfirmationUIClosedResult::ABORT_SYNC) {
-    HandleCancelSigninChoice(
-        ProfileMetrics::ProfileSignedInFlowOutcome::kForceSigninSyncNotGranted);
-    return;
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    // If the user declines enabling sync while browser sign-in is forced,
+    // prevent them from going further by cancelling the creation of this
+    // profile. It does not apply to managed accounts.
+    if (signin_util::IsForceSigninEnabled() &&
+        !enterprise_util::ProfileCanBeManaged(profile_) &&
+        result == LoginUIService::SyncConfirmationUIClosedResult::ABORT_SYNC) {
+      HandleCancelSigninChoice(ProfileMetrics::ProfileSignedInFlowOutcome::
+                                   kForceSigninSyncNotGranted);
+      return;
+    }
   }
 
   std::optional<ProfileMetrics::ProfileSignedInFlowOutcome> outcome =

@@ -19,6 +19,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/features.h"
 
 namespace {
 
@@ -49,14 +50,16 @@ void FinalizeNewProfileSetup(Profile* profile,
   entry->SetLocalProfileName(profile_name, is_default_name);
 
   if (signin_util::IsForceSigninEnabled()) {
-    // Managed accounts do not need to have Sync consent set.
-    // TODO(crbug.com/40280466): Align Managed and Consumer accounts.
-    if (!entry->CanBeManaged()) {
-      signin::IdentityManager* identity_manager =
-          IdentityManagerFactory::GetForProfile(profile);
-      CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync))
-          << "A non syncing account should not be able to finalize the "
-             "profile.";
+    if (!base::FeatureList::IsEnabled(
+            syncer::kReplaceSyncPromosWithSignInPromos)) {
+      // Managed accounts do not need to have Sync consent set.
+      if (!entry->CanBeManaged()) {
+        signin::IdentityManager* identity_manager =
+            IdentityManagerFactory::GetForProfile(profile);
+        CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync))
+            << "A non syncing account should not be able to finalize the "
+               "profile.";
+      }
     }
     entry->LockForceSigninProfile(/*is_lock=*/false);
   }

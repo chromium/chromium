@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string>
-
 #include "chrome/browser/signin/force_signin_verifier.h"
 
+#include <string>
+
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -26,6 +27,7 @@
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/scope_set.h"
+#include "components/sync/base/features.h"
 #include "content/public/browser/network_service_instance.h"
 #include "google_apis/gaia/gaia_constants.h"
 
@@ -42,8 +44,11 @@ const net::BackoffEntry::Policy kForceSigninVerifierBackoffPolicy = {
 };
 
 signin::ConsentLevel GetProfileConsentLevelToVerify(Profile* profile) {
-  // TODO(crbug.com/40280466): Condition to remove when we decide to
-  // align requirements for Managed vs Consumer accounts.
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    return signin::ConsentLevel::kSignin;
+  }
+
   return enterprise_util::UserAcceptedAccountManagement(profile)
              ? signin::ConsentLevel::kSignin
              : signin::ConsentLevel::kSync;
