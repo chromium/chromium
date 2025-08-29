@@ -626,10 +626,6 @@ void ShellContentBrowserClient::OverrideWebPreferences(
     prefs->in_forced_colors = false;
     prefs->preferred_contrast = blink::mojom::PreferredContrast::kNoPreference;
   }
-
-  if (override_web_preferences_callback_) {
-    override_web_preferences_callback_.Run(prefs);
-  }
 }
 
 std::unique_ptr<content::DevToolsManagerDelegate>
