@@ -20,6 +20,8 @@ import org.chromium.chrome.browser.suggestions.tile.TileDragDelegate.ReorderFlow
 import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.ui.util.RunnableTimer;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +48,7 @@ class TileDragDelegateImpl implements TileDragDelegate, TileDragSession.Delegate
         DragPhase.START,
         DragPhase.DOMINATE,
     })
+    @Retention(RetentionPolicy.SOURCE)
     public @interface DragPhase {
         // NONE: No drag. ACTION_DOWN => :=PREPARE (i.e., enter the PREPARE phase).
         int NONE = 0;

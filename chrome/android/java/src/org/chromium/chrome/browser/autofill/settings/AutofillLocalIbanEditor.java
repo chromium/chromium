@@ -42,6 +42,8 @@ import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -77,6 +79,7 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
         IbanAction.HISTOGRAM_BUCKET_COUNT
     })
     // TODO(b/371041630): Extend IBAN histograms to track nickname usage across all IBAN actions.
+    @Retention(RetentionPolicy.SOURCE)
     @VisibleForTesting
     @interface IbanAction {
         int IBAN_ADDED_WITH_NICKNAME = 0;

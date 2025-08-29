@@ -8,6 +8,7 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 
@@ -16,6 +17,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams.ButtonType;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.CustomTabsButtonState;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * Button visibility checker using the rule set based on priority. The rule checker works only when
  * {@link ChromeFeatureList#sCctToolbarRefactor} is disabled.
@@ -23,6 +27,18 @@ import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.Custom
 @NullMarked
 public class ButtonVisibilityRule {
 
+    @IntDef({
+        ButtonId.CLOSE,
+        ButtonId.MENU,
+        ButtonId.SECURITY,
+        ButtonId.CUSTOM_1,
+        ButtonId.CUSTOM_2,
+        ButtonId.MINIMIZE,
+        ButtonId.EXPAND,
+        ButtonId.MTB,
+        ButtonId.MAX_ID
+    })
+    @Retention(RetentionPolicy.SOURCE)
     /** ID of the buttons from the highest priority (CLOSE) to lowest. */
     public @interface ButtonId {
         int CLOSE = 0;

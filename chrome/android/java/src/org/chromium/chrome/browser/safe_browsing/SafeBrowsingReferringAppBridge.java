@@ -22,6 +22,9 @@ import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** Bridge between Java and native SafeBrowsing code to get referring app information. */
 @NullMarked
 public class SafeBrowsingReferringAppBridge {
@@ -37,6 +40,7 @@ public class SafeBrowsingReferringAppBridge {
             ReferringAppSource.UNKNOWN_APP_ID,
             ReferringAppSource.ACTIVITY_REFERRER
         })
+        @Retention(RetentionPolicy.SOURCE)
         public @interface ReferringAppSource {
             int REFERRING_APP_SOURCE_UNSPECIFIED = 0;
             int KNOWN_APP_ID = 1;

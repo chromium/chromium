@@ -12,6 +12,9 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * Mediator class for the autofill save card UI.
  *
@@ -53,6 +56,7 @@ import org.chromium.ui.modelutil.PropertyModel;
         SaveCardPromptResult.UNKNOWN,
         SaveCardPromptResult.COUNT
     })
+    @Retention(RetentionPolicy.SOURCE)
     @VisibleForTesting
     @interface SaveCardPromptResult {
         int ACCEPTED = 0;

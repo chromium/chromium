@@ -17,6 +17,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.background_task_scheduler.BackgroundTask.TaskFinishedCallback;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,6 +43,7 @@ public class DownloadUserInitiatedTaskManager extends DownloadContinuityManager 
         NotificationAttachEvent.NEVER_ATTACHED_BEFORE_JOB_COMPLETE,
         NotificationAttachEvent.RESUMPTION_JOB_STARTED,
     })
+    @Retention(RetentionPolicy.SOURCE)
     public @interface NotificationAttachEvent {
         int ATTACHED_ON_JOB_START = 0;
         int ATTACHED_AFTER_JOB_START = 1;

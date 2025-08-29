@@ -23,6 +23,9 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** Utilities to support startup metrics - Android version. */
 @JNINamespace("chrome::android")
 @NullMarked
@@ -79,6 +82,7 @@ public class UmaUtils {
         StandbyBucketStatus.OTHER,
         StandbyBucketStatus.COUNT
     })
+    @Retention(RetentionPolicy.SOURCE)
     private @interface StandbyBucketStatus {
         int ACTIVE = 0;
         int WORKING_SET = 1;

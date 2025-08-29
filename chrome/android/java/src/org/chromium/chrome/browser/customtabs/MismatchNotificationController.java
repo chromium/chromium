@@ -40,6 +40,9 @@ import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** A controller for the account mismatched notice message. */
 public class MismatchNotificationController
         implements SigninManager.SignInStateObserver, AccountsChangeObserver {
@@ -56,6 +59,7 @@ public class MismatchNotificationController
         SuppressedReason.CCT_IS_OFF_THE_RECORD,
         SuppressedReason.MAX
     })
+    @Retention(RetentionPolicy.SOURCE)
     public @interface SuppressedReason {
         int ACCOUNT_LIST_NOT_YET_AVAILABLE = 0;
         int NOTICE_DISPLAY_LIMIT_MET = 1;

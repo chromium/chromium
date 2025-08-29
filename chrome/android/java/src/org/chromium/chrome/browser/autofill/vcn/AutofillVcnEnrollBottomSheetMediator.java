@@ -15,6 +15,9 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvi
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** The mediator controller for the virtual card number (VCN) enrollment bottom sheet. */
 @NullMarked
 /*package*/ class AutofillVcnEnrollBottomSheetMediator {
@@ -42,6 +45,7 @@ import org.chromium.ui.modelutil.PropertyModel;
         VirtualCardEnrollmentBubbleResult.CANCELLED,
         VirtualCardEnrollmentBubbleResult.COUNT
     })
+    @Retention(RetentionPolicy.SOURCE)
     @VisibleForTesting
     @interface VirtualCardEnrollmentBubbleResult {
         int UNKNOWN = 0;

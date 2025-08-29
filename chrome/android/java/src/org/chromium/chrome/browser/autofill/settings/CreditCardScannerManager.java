@@ -15,6 +15,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.CreditCardScanner;
 import org.chromium.ui.base.IntentRequestTracker;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -61,6 +63,7 @@ public class CreditCardScannerManager implements CreditCardScanner.Delegate {
         ScanResult.IGNORED,
         ScanResult.COUNT
     })
+    @Retention(RetentionPolicy.SOURCE)
     @VisibleForTesting
     @interface ScanResult {
         int UNKNOWN = 0;

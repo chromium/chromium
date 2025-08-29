@@ -16,6 +16,7 @@ import android.os.PowerManager;
 import android.os.SystemClock;
 import android.util.Rational;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -38,6 +39,8 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -51,6 +54,17 @@ public class FullscreenVideoPictureInPictureController {
 
     // Metrics
 
+    @IntDef({
+        MetricsEndReason.RESUME,
+        MetricsEndReason.CLOSE,
+        MetricsEndReason.CRASH,
+        MetricsEndReason.NEW_TAB,
+        MetricsEndReason.REPARENT,
+        MetricsEndReason.LEFT_FULLSCREEN,
+        MetricsEndReason.WEB_CONTENTS_LEFT_FULLSCREEN,
+        MetricsEndReason.START
+    })
+    @Retention(RetentionPolicy.SOURCE)
     private @interface MetricsEndReason {
         int RESUME = 0;
         // Obsolete: NAVIGATION = 1;

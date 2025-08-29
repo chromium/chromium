@@ -41,6 +41,8 @@ import org.chromium.device.gamepad.GamepadList;
 import org.chromium.ui.KeyboardUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -124,6 +126,7 @@ public class KeyboardShortcuts {
         KeyboardShortcutsSemanticMeaning.CUSTOM_EXTENSION_SHORTCUT,
         KeyboardShortcutsSemanticMeaning.MAX_VALUE
     })
+    @Retention(RetentionPolicy.SOURCE)
     public @interface KeyboardShortcutsSemanticMeaning {
         // TODO(crbug.com/402775002): Implement more of these!
         // Unrecognized key combination.

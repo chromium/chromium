@@ -38,6 +38,8 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -67,6 +69,7 @@ public class TabListEditorShareAction extends TabListEditorAction {
         TabListEditorShareActionState.ALL_TABS_FILTERED,
         TabListEditorShareActionState.NUM_ENTRIES
     })
+    @Retention(RetentionPolicy.SOURCE)
     public @interface TabListEditorShareActionState {
         int UNKNOWN = 0;
         int SUCCESS = 1;

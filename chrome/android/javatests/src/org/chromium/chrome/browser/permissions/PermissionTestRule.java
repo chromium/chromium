@@ -37,6 +37,9 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.test.util.ViewUtils;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * TestRule for permissions UI testing on Android.
  *
@@ -63,6 +66,7 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
         PromptDecision.DENY,
         PromptDecision.NONE
     })
+    @Retention(RetentionPolicy.SOURCE)
     public @interface PromptDecision {
         int ALLOW = 0;
         int ALLOW_ONCE = 1;

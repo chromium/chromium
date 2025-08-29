@@ -122,6 +122,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         MenuGroup.OVERVIEW_MODE_MENU,
         MenuGroup.TABLET_EMPTY_MODE_MENU
     })
+    @Retention(RetentionPolicy.SOURCE)
     public @interface MenuGroup {
         int INVALID = -1;
         int PAGE_MENU = 0;

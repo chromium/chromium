@@ -55,6 +55,8 @@ import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -475,6 +477,7 @@ public class ShareDelegateImpl implements ShareDelegate {
         ShareContentType.FILES,
         ShareContentType.COUNT
     })
+    @Retention(RetentionPolicy.SOURCE)
     @interface ShareContentType {
         int UNKNOWN = 0;
         int TEXT = 1;

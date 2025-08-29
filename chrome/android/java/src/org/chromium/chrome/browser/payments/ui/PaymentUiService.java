@@ -73,6 +73,8 @@ import org.chromium.payments.mojom.PaymentShippingOption;
 import org.chromium.payments.mojom.PaymentValidationErrors;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -106,6 +108,7 @@ public class PaymentUiService
         PaymentRequestAddressEditorMode.EDIT_EXISTING_ADDRESS,
         PaymentRequestAddressEditorMode.COUNT,
     })
+    @Retention(RetentionPolicy.SOURCE)
     private @interface PaymentRequestAddressEditorMode {
         int ADD_NEW_ADDRESS = 0;
         int EDIT_EXISTING_ADDRESS = 1;

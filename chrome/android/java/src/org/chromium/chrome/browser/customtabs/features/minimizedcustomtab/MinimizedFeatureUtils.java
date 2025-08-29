@@ -23,6 +23,8 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
@@ -43,6 +45,7 @@ public class MinimizedFeatureUtils {
         MinimizedFeatureAvailability.UNAVAILABLE_EXCLUDED_MANUFACTURER,
         MinimizedFeatureAvailability.NUM_ENTRIES
     })
+    @Retention(RetentionPolicy.SOURCE)
     @VisibleForTesting
     @interface MinimizedFeatureAvailability {
         int AVAILABLE = 0;

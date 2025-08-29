@@ -19,6 +19,8 @@ import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -51,6 +53,7 @@ public class UrlSimilarityScorer {
         MvtReselectUrlMatchResult.PARTIAL,
         MvtReselectUrlMatchResult.NUM_ENTRIES
     })
+    @Retention(RetentionPolicy.SOURCE)
     @interface MvtReselectUrlMatchResult {
         int NONE = 0;
         int EXACT = 1;

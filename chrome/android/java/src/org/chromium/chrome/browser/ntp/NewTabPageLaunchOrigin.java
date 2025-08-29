@@ -4,13 +4,16 @@
 
 package org.chromium.chrome.browser.ntp;
 
-
 import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** Indicates where a new tab was launched from. */
 @IntDef({NewTabPageLaunchOrigin.UNKNOWN, NewTabPageLaunchOrigin.WEB_FEED})
+@Retention(RetentionPolicy.SOURCE)
 @NullMarked
 public @interface NewTabPageLaunchOrigin {
     /** Unknown launch origin. Used as the default. */

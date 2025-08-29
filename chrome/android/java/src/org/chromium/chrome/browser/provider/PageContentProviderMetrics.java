@@ -11,6 +11,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.ukm.UkmRecorder;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 @NullMarked
 public class PageContentProviderMetrics {
 
@@ -28,6 +31,7 @@ public class PageContentProviderMetrics {
         PageContentProviderEvent.QUERY_FAILED_EXCEPTION,
         PageContentProviderEvent.TIMEOUT,
     })
+    @Retention(RetentionPolicy.SOURCE)
     public @interface PageContentProviderEvent {
 
         int GET_CONTENT_URI_FAILED = 0;
