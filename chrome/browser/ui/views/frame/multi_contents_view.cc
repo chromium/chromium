@@ -79,6 +79,15 @@ MultiContentsView::MultiContentsView(
   drop_target_controller_ =
       std::make_unique<MultiContentsViewDropTargetController>(
           *drop_target_view_, *delegate_);
+  is_drag_drop_pref_enabled_ =
+      browser_view_->GetProfile()->GetPrefs()->GetBoolean(
+          prefs::kSplitViewDragAndDropEnabled);
+
+  pref_change_registrar_.Init(browser_view_->GetProfile()->GetPrefs());
+  pref_change_registrar_.Add(
+      prefs::kSplitViewDragAndDropEnabled,
+      base::BindRepeating(&MultiContentsView::OnDragAndDropPrefStateChange,
+                          base::Unretained(this)));
 }
 
 MultiContentsView::~MultiContentsView() {
@@ -468,9 +477,14 @@ bool MultiContentsView::IsDragAndDropEnabled() const {
 #endif
 
   // Split view drag and drop is only supported on normal browser types.
-  return browser_view_->GetIsNormalType() &&
-         browser_view_->browser()->profile()->GetPrefs()->GetBoolean(
-             prefs::kSplitViewDragAndDropEnabled);
+  return browser_view_->GetIsNormalType() && is_drag_drop_pref_enabled_;
+}
+
+void MultiContentsView::OnDragAndDropPrefStateChange() {
+  is_drag_drop_pref_enabled_ =
+      browser_view_->GetProfile()->GetPrefs()->GetBoolean(
+          prefs::kSplitViewDragAndDropEnabled);
+  InvalidateLayout();
 }
 
 BEGIN_METADATA(MultiContentsView)

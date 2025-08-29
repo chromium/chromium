@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/resize_area_delegate.h"
@@ -148,6 +149,7 @@ class MultiContentsView : public views::View,
   gfx::Insets& end_contents_view_inset() { return end_contents_view_inset_; }
 
   bool IsDragAndDropEnabled() const;
+  void OnDragAndDropPrefStateChange();
 
   void set_min_contents_width_for_testing(int width) {
     min_contents_width_for_testing_ = std::make_optional(width);
@@ -245,6 +247,10 @@ class MultiContentsView : public views::View,
   // Width ratios that a split view will snap to when resize is within a
   // snap distance (kSideBySideSnapDistance).
   std::vector<double> snap_points_ = {0.5};
+
+  // Tracks and handles drag and drop settings change.
+  PrefChangeRegistrar pref_change_registrar_;
+  bool is_drag_drop_pref_enabled_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_MULTI_CONTENTS_VIEW_H_
