@@ -16405,6 +16405,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
           $1<ex>A VR-enabled website</ex>
         </ph> - VR presenting to headset
       </message>
+      <message name="IDS_TAB_AX_LABEL_SPLIT_TAB_LEFT_VIEW_FORMAT" desc="Accessibility label text for a tab, when it is the left tab of a split view. Example: 'Google Search - Left view'">
+        <ph name="WINDOW_TITLE">$1<ex>Google Search</ex></ph> - Left view
+      </message>
+      <message name="IDS_TAB_AX_LABEL_SPLIT_TAB_RIGHT_VIEW_FORMAT" desc="Accessibility label text for a tab, when it is the right tab of a split view. Example: 'Google Search - Right view'">
+        <ph name="WINDOW_TITLE">$1<ex>Google Search</ex></ph> - Right view
+      </message>
       <message name="IDS_TAB_AX_LABEL_UNNAMED_GROUP_FORMAT" desc="Accessibility label text for a tab, when it is in a group that has not been named by the user. Example: 'Google Search - Part of unnamed group'">
         <ph name="WINDOW_TITLE">$1<ex>Google Search</ex></ph> - Part of unnamed group
       </message>

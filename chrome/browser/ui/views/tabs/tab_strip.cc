@@ -1386,6 +1386,10 @@ void TabStrip::OnSplitRemoved(const std::vector<int>& split_indices) {
 }
 
 void TabStrip::OnSplitContentsChanged(const std::vector<int>& split_indices) {
+  for (const int split_index : split_indices) {
+    tab_at(split_index)->UpdateAccessibleName();
+  }
+
   tab_container_->OnSplitContentsChanged(split_indices);
 }
 

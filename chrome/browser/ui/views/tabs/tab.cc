@@ -786,6 +786,11 @@ void Tab::SetGroup(std::optional<tab_groups::TabGroupId> group) {
   UpdateAccessibleName();
 }
 
+void Tab::SetSplit(std::optional<split_tabs::SplitTabId> split) {
+  TabSlotView::SetSplit(split);
+  UpdateAccessibleName();
+}
+
 gfx::Size Tab::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   return gfx::Size(GetTabSizeInfo().standard_width,

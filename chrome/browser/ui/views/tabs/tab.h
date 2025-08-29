@@ -112,6 +112,7 @@ class Tab : public gfx::AnimationDelegate,
   TabSlotView::ViewType GetTabSlotViewType() const override;
   TabSizeInfo GetTabSizeInfo() const override;
   void SetGroup(std::optional<tab_groups::TabGroupId> group) override;
+  void SetSplit(std::optional<split_tabs::SplitTabId> split) override;
   void UpdateAccessibleName();
 
   void OnAXNameChanged(ax::mojom::StringAttribute attribute,

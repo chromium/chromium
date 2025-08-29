@@ -792,6 +792,16 @@ class BrowserView : public BrowserWindow,
   std::u16string GetAccessibleTabLabel(int index,
                                        bool is_for_tab = false) const;
 
+  // Gets the string id to format a tab's accessible label if it is part of a
+  // split.
+  int GetAccessibleTabLabelFormatStringForSplit(
+      split_tabs::SplitTabLayout layout,
+      int tab_index_in_split) const;
+
+  // Gets the string id to format a tab's accessible label based on its tab
+  // alert.
+  int GetAccessibleTabLabelFormatStringForTabAlert(tabs::TabAlert alert) const;
+
   // Testing interface:
   views::View* GetContentsContainerForTest() { return contents_container_; }
   views::View* GetSidePanelRoundedCornerForTesting() {
