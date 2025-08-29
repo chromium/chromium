@@ -10,18 +10,17 @@ FakeContentRuleListManager::FakeContentRuleListManager() = default;
 FakeContentRuleListManager::~FakeContentRuleListManager() = default;
 
 void FakeContentRuleListManager::UpdateRuleList(
-    const RuleListKey& rule_list_name,
+    const std::string& rule_list_name,
     std::string rule_list_json,
-    StoragePolicy policy,
-    OperationCallback callback) {
+    base::OnceCallback<void(NSError*)> callback) {
   last_update_key_ = rule_list_name;
   last_update_json_ = rule_list_json;
   completion_callback_ = std::move(callback);
 }
 
 void FakeContentRuleListManager::RemoveRuleList(
-    const RuleListKey& rule_list_name,
-    OperationCallback callback) {
+    const std::string& rule_list_name,
+    base::OnceCallback<void(NSError*)> callback) {
   last_remove_key_ = rule_list_name;
   completion_callback_ = std::move(callback);
 }

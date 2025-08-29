@@ -19,12 +19,11 @@ class FakeContentRuleListManager : public ContentRuleListManager {
   ~FakeContentRuleListManager() override;
 
   // ContentRuleListManager methods.
-  void UpdateRuleList(const RuleListKey& rule_list_name,
+  void UpdateRuleList(const std::string& rule_list_name,
                       std::string rule_list_json,
-                      StoragePolicy policy,
-                      OperationCallback callback) override;
-  void RemoveRuleList(const RuleListKey& rule_list_name,
-                      OperationCallback callback) override;
+                      base::OnceCallback<void(NSError*)> callback) override;
+  void RemoveRuleList(const std::string& rule_list_name,
+                      base::OnceCallback<void(NSError*)> callback) override;
 
   // Methods for testing.
 
@@ -50,7 +49,7 @@ class FakeContentRuleListManager : public ContentRuleListManager {
   std::string last_update_key_;
   std::string last_update_json_;
   std::string last_remove_key_;
-  OperationCallback completion_callback_;
+  base::OnceCallback<void(NSError*)> completion_callback_;
 };
 
 }  // namespace web

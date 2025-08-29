@@ -130,13 +130,12 @@ void WKWebViewConfigurationProvider::Initialize() {
   content_rule_list_provider_->UpdateRuleList(
       kBlockLocalResourcesRuleListKey,
       base::SysNSStringToUTF8(CreateLocalBlockingJsonRuleList()),
-      WKContentRuleListProvider::StoragePolicy::kPersistent, base::DoNothing());
-
+      base::DoNothing());
   // 2. Create Mixed Content Autoupgrade List
   content_rule_list_provider_->UpdateRuleList(
       kMixedContentUpgradeRuleListKey,
       base::SysNSStringToUTF8(CreateMixedContentAutoUpgradeJsonRuleList()),
-      WKContentRuleListProvider::StoragePolicy::kPersistent, base::DoNothing());
+      base::DoNothing());
 }
 
 void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(

@@ -33,7 +33,6 @@ void WKContentRuleListProvider::SetUserContentController(
 
 void WKContentRuleListProvider::UpdateRuleList(RuleListKey key,
                                                std::string json_rules,
-                                               StoragePolicy policy,
                                                OperationCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -43,7 +42,7 @@ void WKContentRuleListProvider::UpdateRuleList(RuleListKey key,
   void (^completion_handler)(WKContentRuleList*, NSError*) =
       base::CallbackToBlock(
           base::BindOnce(&WKContentRuleListProvider::OnRuleListCompiled,
-                         weak_ptr_factory_.GetWeakPtr(), key, policy,
+                         weak_ptr_factory_.GetWeakPtr(), key,
                          std::move(callback), base::TimeTicks::Now()));
 
   [WKContentRuleListStore.defaultStore
@@ -80,7 +79,6 @@ void WKContentRuleListProvider::RemoveRuleList(RuleListKey key,
 // Private methods
 
 void WKContentRuleListProvider::OnRuleListCompiled(RuleListKey key,
-                                                   StoragePolicy policy,
                                                    OperationCallback callback,
                                                    base::TimeTicks start_time,
                                                    WKContentRuleList* rule_list,
@@ -120,14 +118,6 @@ void WKContentRuleListProvider::OnRuleListCompiled(RuleListKey key,
 
     // Install the newly compiled list into the content controller.
     [user_content_controller_ addContentRuleList:rule_list];
-
-    if (policy == StoragePolicy::kEphemeral) {
-      // The compiled list is now held by the content controller, and can be
-      // removed from the persistent storage.
-      [WKContentRuleListStore.defaultStore
-          removeContentRuleListForIdentifier:rule_list.identifier
-                           completionHandler:nil];
-    }
   }
 
   // Notify the original caller of the result.

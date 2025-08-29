@@ -80,10 +80,7 @@ constexpr char kInvalidTestRuleListJson[] = "this is not valid json";
 class WKContentRuleListProviderTest : public PlatformTest {
  public:
   WKContentRuleListProviderTest()
-      : user_content_controller_([[WKUserContentController alloc] init]),
-        provider_(std::make_unique<WKContentRuleListProvider>()) {
-    provider_->SetUserContentController(user_content_controller_);
-  }
+      : provider_(std::make_unique<WKContentRuleListProvider>()) {}
 
  protected:
   void TearDown() override {
@@ -105,12 +102,10 @@ class WKContentRuleListProviderTest : public PlatformTest {
   // Helper to create or update a rule list and verify the operation's success.
   [[nodiscard]] testing::AssertionResult UpdateRuleListSync(
       const WKContentRuleListProvider::RuleListKey& key,
-      const std::string& rules_list,
-      WKContentRuleListProvider::StoragePolicy policy =
-          WKContentRuleListProvider::StoragePolicy::kPersistent) {
+      const std::string& rules_list) {
     tracked_keys_.insert(key);
     TestFuture<NSError*> future;
-    provider_->UpdateRuleList(key, rules_list, policy, future.GetCallback());
+    provider_->UpdateRuleList(key, rules_list, future.GetCallback());
     NSError* error = future.Get();
     if (error) {
       return testing::AssertionFailure()
@@ -138,7 +133,6 @@ class WKContentRuleListProviderTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
   base::HistogramTester histogram_tester_;
-  WKUserContentController* user_content_controller_;
   std::unique_ptr<WKContentRuleListProvider> provider_;
   std::set<WKContentRuleListProvider::RuleListKey> tracked_keys_;
 };
@@ -174,10 +168,8 @@ TEST_F(WKContentRuleListProviderTest, UMA_CreationAndRemovalSuccess) {
 TEST_F(WKContentRuleListProviderTest, UMA_CreationFailure) {
   const std::string key = "uma_test_key";
   TestFuture<NSError*> future;
-  provider_->UpdateRuleList(
-      key, kInvalidTestRuleListJson,
-      WKContentRuleListProvider::StoragePolicy::kPersistent,
-      future.GetCallback());
+  provider_->UpdateRuleList(key, kInvalidTestRuleListJson,
+                            future.GetCallback());
   ASSERT_NE(nil, future.Get());
 
   histogram_tester_.ExpectUniqueSample(
@@ -202,10 +194,8 @@ TEST_F(WKContentRuleListProviderTest, UpdateExistingList) {
 TEST_F(WKContentRuleListProviderTest, CreationFailure) {
   const std::string key = "test_key";
   TestFuture<NSError*> future;
-  provider_->UpdateRuleList(
-      key, kInvalidTestRuleListJson,
-      WKContentRuleListProvider::StoragePolicy::kPersistent,
-      future.GetCallback());
+  provider_->UpdateRuleList(key, kInvalidTestRuleListJson,
+                            future.GetCallback());
 
   NSError* error = future.Get();
   ASSERT_NE(nil, error);
@@ -224,10 +214,8 @@ TEST_F(WKContentRuleListProviderTest, UpdateFailureDoesNotAffectExistingLists) {
 
   // 2. Attempt to update the valid list with invalid JSON.
   TestFuture<NSError*> future;
-  provider_->UpdateRuleList(
-      key, kInvalidTestRuleListJson,
-      WKContentRuleListProvider::StoragePolicy::kPersistent,
-      future.GetCallback());
+  provider_->UpdateRuleList(key, kInvalidTestRuleListJson,
+                            future.GetCallback());
 
   // 3. Verify the outcome.
   // The update should fail.
@@ -267,10 +255,8 @@ TEST_F(WKContentRuleListProviderTest, MultipleConcurrentUpdatesSucceed) {
     std::string key = "key_" + base::NumberToString(i);
     keys.push_back(key);
     tracked_keys_.insert(key);
-    provider_->UpdateRuleList(
-        key, kValidTestRuleListJson,
-        WKContentRuleListProvider::StoragePolicy::kPersistent,
-        futures[i].GetCallback());
+    provider_->UpdateRuleList(key, kValidTestRuleListJson,
+                              futures[i].GetCallback());
   }
 
   // Verify that all updates completed successfully.

@@ -128,9 +128,8 @@ TEST_F(ContentRuleListManagerImplTest, RegisterValidRules) {
                                         /*expect_found=*/false));
 
   TestFuture<NSError*> future;
-  GetManager().UpdateRuleList(
-      kTestRuleListKey, kValidTestRuleListJson,
-      ContentRuleListManager::StoragePolicy::kPersistent, future.GetCallback());
+  GetManager().UpdateRuleList(kTestRuleListKey, kValidTestRuleListJson,
+                              future.GetCallback());
 
   EXPECT_EQ(nil, future.Get());
   EXPECT_TRUE(CheckStoreForRuleListSync(kTestRuleListKey,
@@ -143,9 +142,8 @@ TEST_F(ContentRuleListManagerImplTest, RegisterInvalidRules) {
                                         /*expect_found=*/false));
 
   TestFuture<NSError*> future;
-  GetManager().UpdateRuleList(
-      kTestRuleListKey, kInvalidTestRuleListJson,
-      ContentRuleListManager::StoragePolicy::kPersistent, future.GetCallback());
+  GetManager().UpdateRuleList(kTestRuleListKey, kInvalidTestRuleListJson,
+                              future.GetCallback());
 
   NSError* result = future.Get();
   ASSERT_NE(nil, result);
@@ -158,10 +156,8 @@ TEST_F(ContentRuleListManagerImplTest, RegisterInvalidRules) {
 // Tests removing a rule list that has been previously added.
 TEST_F(ContentRuleListManagerImplTest, RemoveExistingRules) {
   TestFuture<NSError*> add_future;
-  GetManager().UpdateRuleList(
-      kTestRuleListKey, kValidTestRuleListJson,
-      ContentRuleListManager::StoragePolicy::kPersistent,
-      add_future.GetCallback());
+  GetManager().UpdateRuleList(kTestRuleListKey, kValidTestRuleListJson,
+                              add_future.GetCallback());
   ASSERT_EQ(nil, add_future.Get());
   ASSERT_TRUE(CheckStoreForRuleListSync(kTestRuleListKey,
                                         /*expect_found=*/true));

@@ -22,15 +22,6 @@ class ContentRuleListManager {
   // A unique identifier for a content rule list.
   using RuleListKey = std::string;
 
-  // Defines whether a compiled rule list should be persisted in the WebKit
-  // store or removed immediately after compilation.
-  enum class StoragePolicy {
-    // The compiled list will be stored persistently by WebKit.
-    kPersistent,
-    // The compiled list will be removed from the store immediately after use.
-    kEphemeral,
-  };
-
   // Callback for async operations.
   using OperationCallback = base::OnceCallback<void(NSError* error)>;
 
@@ -46,17 +37,15 @@ class ContentRuleListManager {
   // `list_key`.
   // - `list_key`: The unique, stable identifier for the rule list to update.
   // - `rules_json`: The JSON string containing the rules.
-  // - `policy`: Whether the compiled list should be stored persistently.
   // - `completion_callback`: Invoked when the operation is complete.
   virtual void UpdateRuleList(const RuleListKey& list_key,
                               std::string rules_json,
-                              StoragePolicy policy,
                               OperationCallback completion_callback) = 0;
 
   // Asynchronously removes the content rule list for `list_key`.
   // - `list_key`: The unique, stable identifier for the rule list to remove.
   // - `completion_callback`: Invoked when the operation is complete.
-  virtual void RemoveRuleList(const RuleListKey& list_key,
+  virtual void RemoveRuleList(const std::string& list_key,
                               OperationCallback completion_callback) = 0;
 
  protected:

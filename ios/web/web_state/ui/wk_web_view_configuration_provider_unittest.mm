@@ -132,7 +132,6 @@ class MockWKContentRuleListProvider : public WKContentRuleListProvider {
               UpdateRuleList,
               (RuleListKey key,
                std::string json_rules,
-               StoragePolicy policy,
                OperationCallback callback),
               (override));
   MOCK_METHOD(void,
@@ -147,14 +146,10 @@ TEST_F(WKWebViewConfigurationProviderTest, StaticContentRuleListsAreCreated) {
       std::make_unique<testing::StrictMock<MockWKContentRuleListProvider>>();
   EXPECT_CALL(
       *rule_list_provider,
-      UpdateRuleList(kBlockLocalResourcesRuleListKey, testing::_,
-                     WKContentRuleListProvider::StoragePolicy::kPersistent,
-                     testing::_));
+      UpdateRuleList(kBlockLocalResourcesRuleListKey, testing::_, testing::_));
   EXPECT_CALL(
       *rule_list_provider,
-      UpdateRuleList(kMixedContentUpgradeRuleListKey, testing::_,
-                     WKContentRuleListProvider::StoragePolicy::kPersistent,
-                     testing::_));
+      UpdateRuleList(kMixedContentUpgradeRuleListKey, testing::_, testing::_));
 
   auto provider = CreateProviderWithMockRuleListProvider(
       &browser_state_, std::move(rule_list_provider));

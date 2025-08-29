@@ -31,7 +31,6 @@ class ContentRuleListManagerImpl : public ContentRuleListManager,
   // ContentRuleListManager implementation:
   void UpdateRuleList(const RuleListKey& list_key,
                       std::string rules_json,
-                      StoragePolicy policy,
                       OperationCallback completion_callback) override;
   void RemoveRuleList(const RuleListKey& list_key,
                       OperationCallback completion_callback) override;
