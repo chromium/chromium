@@ -44,8 +44,8 @@ class LoginStateChecker : public content::WebContentsObserver {
 #if defined(UNIT_TEST)
   AnnotatedPageContentCapturer* capturer() { return capturer_.get(); }
   void RespondWithLoginStatus(bool is_logged_in) {
-    result_check_callback_.Run(is_logged_in);
     state_checks_count_++;
+    result_check_callback_.Run(is_logged_in);
   }
 #endif
 

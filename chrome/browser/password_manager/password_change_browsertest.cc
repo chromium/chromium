@@ -1483,17 +1483,8 @@ class PasswordChangeBrowserTestWithLoginCheck
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)) &&               \
-     (defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
-      defined(UNDEFINED_BEHAVIOR_SANITIZER)))
-#define MAYBE_PasswordChangeDoesNotStartUserIsLoggedOut \
-  DISABLED_PasswordChangeDoesNotStartUserIsLoggedOut
-#else
-#define MAYBE_PasswordChangeDoesNotStartUserIsLoggedOut \
-  PasswordChangeDoesNotStartUserIsLoggedOut
-#endif
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
-                       MAYBE_PasswordChangeDoesNotStartUserIsLoggedOut) {
+                       PasswordChangeDoesNotStartUserIsLoggedOut) {
   const GURL main_url = WebContents()->GetLastCommittedURL();
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
       .WillOnce(Return(GURL(kChangePasswordURL)));
@@ -1514,7 +1505,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kLoginFormDetected);
   // Verify that password change fails if the user is not logged in.
-  for (auto i = 0; i < LoginStateChecker::kMaxLoginChecks; i++) {
+  for (auto i = 1; i < LoginStateChecker::kMaxLoginChecks; i++) {
     delegate_impl->login_checker()->RespondWithLoginStatus(false);
   }
   EXPECT_FALSE(delegate_impl->login_checker());
@@ -1522,15 +1513,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
             PasswordChangeDelegate::State::kChangePasswordFormNotFound);
 }
 
-#if ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)) &&               \
-     (defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
-      defined(UNDEFINED_BEHAVIOR_SANITIZER)))
-#define MAYBE_OpenTabWhenLoggedOut DISABLED_OpenTabWhenLoggedOut
-#else
-#define MAYBE_OpenTabWhenLoggedOut OpenTabWhenLoggedOut
-#endif
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
-                       MAYBE_OpenTabWhenLoggedOut) {
+                       OpenTabWhenLoggedOut) {
   const GURL main_url = WebContents()->GetLastCommittedURL();
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
       .WillOnce(Return(GURL(kChangePasswordURL)));
@@ -1551,7 +1535,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
             PasswordChangeDelegate::State::kLoginFormDetected);
   // Verify that password change fails if the user is not logged in after
   // maximum amount of attempts.
-  for (auto i = 0; i < LoginStateChecker::kMaxLoginChecks; i++) {
+  for (auto i = 1; i < LoginStateChecker::kMaxLoginChecks; i++) {
     delegate_impl->login_checker()->RespondWithLoginStatus(false);
   }
   EXPECT_FALSE(delegate_impl->login_checker());
@@ -1569,17 +1553,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
             GURL(kChangePasswordURL));
 }
 
-#if ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)) &&               \
-     (defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
-      defined(UNDEFINED_BEHAVIOR_SANITIZER)))
-#define MAYBE_PasswordChangeStartsUserIsLoggedIn \
-  DISABLED_PasswordChangeStartsUserIsLoggedIn
-#else
-#define MAYBE_PasswordChangeStartsUserIsLoggedIn \
-  PasswordChangeStartsUserIsLoggedIn
-#endif
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
-                       MAYBE_PasswordChangeStartsUserIsLoggedIn) {
+                       PasswordChangeStartsUserIsLoggedIn) {
   const GURL main_url = WebContents()->GetLastCommittedURL();
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
       .WillOnce(Return(GURL(kChangePasswordURL)));
