@@ -178,7 +178,9 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   blink::WebVideoCaptureImplManager* GetVideoCaptureImplManager() override;
   std::unique_ptr<blink::WebGraphicsContext3DProvider>
   CreateWebGLGraphicsContextProvider(
-      const blink::Platform::ContextAttributes& attributes,
+      bool prefer_low_power_gpu,
+      bool fail_if_major_performance_caveat,
+      blink::Platform::ContextType context_type,
       const blink::WebURL& document_url,
       blink::Platform::GraphicsInfo* gl_info) override;
   std::unique_ptr<blink::WebGraphicsContext3DProvider>

@@ -214,12 +214,13 @@ bool TestPlugin::Initialize(blink::WebPluginContainer* container) {
 
   container_ = container;
 
-  blink::Platform::ContextAttributes attrs;
   blink::WebURL url = container->GetDocument().Url();
   blink::Platform::GraphicsInfo gl_info;
   std::unique_ptr<blink::WebGraphicsContext3DProvider> context_provider =
-      blink::Platform::Current()->CreateWebGLGraphicsContextProvider(attrs, url,
-                                                                     &gl_info);
+      blink::Platform::Current()->CreateWebGLGraphicsContextProvider(
+          /*prefer_low_power_gpu=*/true,
+          /*fail_if_major_performance_caveat=*/false,
+          blink::Platform::kWebGL1ContextType, url, &gl_info);
   if (context_provider && !context_provider->BindToCurrentSequence()) {
     context_provider = nullptr;
   }

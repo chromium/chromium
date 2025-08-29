@@ -650,20 +650,21 @@ WebGLRenderingContextBase::CreateContextProviderInternal(
   ExecutionContext* execution_context = host->GetTopExecutionContext();
   DCHECK(execution_context);
 
-  Platform::ContextAttributes context_attributes =
-      ToPlatformContextAttributes(attributes, context_type);
-
+  bool prefer_low_power_gpu =
+      (PowerPreferenceToGpuPreference(attributes.power_preference) ==
+       gl::GpuPreference::kLowPower);
   // To run our tests with Chrome rendering on the low power GPU and WebGL on
   // the high performance GPU, we need to force the power preference attribute.
   if (base::FeatureList::IsEnabled(
           blink::features::kForceHighPerformanceGPUForWebGL)) {
-    context_attributes.prefer_low_power_gpu = false;
+    prefer_low_power_gpu = false;
   }
 
   const auto& url = execution_context->Url();
   std::unique_ptr<WebGraphicsContext3DProvider> context_provider =
-      CreateWebGLGraphicsContextProvider(context_attributes, graphics_info,
-                                         url);
+      CreateWebGLGraphicsContextProvider(
+          prefer_low_power_gpu, attributes.fail_if_major_performance_caveat,
+          context_type, graphics_info, url);
   if (context_provider && !context_provider->BindToCurrentSequence()) {
     context_provider = nullptr;
     graphics_info->error_message = String("BindToCurrentSequence failed: " +
@@ -8896,13 +8897,18 @@ void WebGLRenderingContextBase::MaybeRestoreContext(TimerBase*) {
   // ensure its resources were freed.
   DCHECK(!GetDrawingBuffer());
 
-  Platform::ContextAttributes attributes =
-      ToPlatformContextAttributes(CreationAttributes(), context_type_);
+  const auto& creation_attributes = CreationAttributes();
+  bool prefer_low_power_gpu =
+      (PowerPreferenceToGpuPreference(creation_attributes.power_preference) ==
+       gl::GpuPreference::kLowPower);
   Platform::GraphicsInfo gl_info;
   const auto& url = Host()->GetExecutionContextUrl();
 
   std::unique_ptr<WebGraphicsContext3DProvider> context_provider =
-      CreateWebGLGraphicsContextProvider(attributes, &gl_info, url);
+      CreateWebGLGraphicsContextProvider(
+          prefer_low_power_gpu,
+          creation_attributes.fail_if_major_performance_caveat, context_type_,
+          &gl_info, url);
   scoped_refptr<DrawingBuffer> buffer;
   if (context_provider && context_provider->BindToCurrentSequence()) {
     // Construct a new drawing buffer with the new GL context.

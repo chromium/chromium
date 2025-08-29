@@ -271,9 +271,12 @@ Platform::CompositorThreadTaskRunner() {
 }
 
 std::unique_ptr<WebGraphicsContext3DProvider>
-Platform::CreateWebGLGraphicsContextProvider(const Platform::ContextAttributes&,
-                                             const WebURL& document_url,
-                                             Platform::GraphicsInfo*) {
+Platform::CreateWebGLGraphicsContextProvider(
+    bool prefer_low_power_gpu,
+    bool fail_if_major_performance_caveat,
+    ContextType context_type,
+    const WebURL& document_url,
+    Platform::GraphicsInfo*) {
   return nullptr;
 }
 

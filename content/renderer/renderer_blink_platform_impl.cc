@@ -170,12 +170,6 @@ gpu::ContextType ToGpuContextType(blink::Platform::ContextType type) {
       return gpu::CONTEXT_TYPE_WEBGL1;
     case blink::Platform::kWebGL2ContextType:
       return gpu::CONTEXT_TYPE_WEBGL2;
-    case blink::Platform::kGLES2ContextType:
-      return gpu::CONTEXT_TYPE_OPENGLES2;
-    case blink::Platform::kGLES3ContextType:
-      return gpu::CONTEXT_TYPE_OPENGLES3;
-    case blink::Platform::kWebGPUContextType:
-      return gpu::CONTEXT_TYPE_WEBGPU;
   }
   NOTREACHED();
 }
@@ -717,7 +711,9 @@ void RendererBlinkPlatformImpl::Collect3DContextInformation(
 
 std::unique_ptr<blink::WebGraphicsContext3DProvider>
 RendererBlinkPlatformImpl::CreateWebGLGraphicsContextProvider(
-    const blink::Platform::ContextAttributes& web_attributes,
+    bool prefer_low_power_gpu,
+    bool fail_if_major_performance_caveat,
+    blink::Platform::ContextType context_type,
     const blink::WebURL& document_url,
     blink::Platform::GraphicsInfo* gl_info) {
   DCHECK(gl_info);
@@ -736,28 +732,21 @@ RendererBlinkPlatformImpl::CreateWebGLGraphicsContextProvider(
     return nullptr;
   }
 
-  if (web_attributes.enable_raster_interface &&
-      gpu_channel_host->gpu_info().skia_backend_type ==
-          gpu::SkiaBackendType::kNone) {
-    return nullptr;
-  }
-
   const auto& gpu_info = gpu_channel_host->gpu_info();
   Collect3DContextInformation(gl_info, gpu_info);
 
   gpu::ContextCreationAttribs attributes;
-  attributes.enable_raster_interface = web_attributes.enable_raster_interface;
-  attributes.enable_gpu_rasterization = attributes.enable_raster_interface;
-  attributes.enable_gles2_interface = !attributes.enable_gpu_rasterization;
+  attributes.enable_raster_interface = false;
+  attributes.enable_gpu_rasterization = false;
+  attributes.enable_gles2_interface = true;
 
-  attributes.gpu_preference = web_attributes.prefer_low_power_gpu
+  attributes.gpu_preference = prefer_low_power_gpu
                                   ? gl::GpuPreference::kLowPower
                                   : gl::GpuPreference::kHighPerformance;
 
-  attributes.fail_if_major_perf_caveat =
-      web_attributes.fail_if_major_performance_caveat;
+  attributes.fail_if_major_perf_caveat = fail_if_major_performance_caveat;
 
-  attributes.context_type = ToGpuContextType(web_attributes.context_type);
+  attributes.context_type = ToGpuContextType(context_type);
 
   constexpr bool automatic_flushes = true;
   constexpr bool support_locking = false;

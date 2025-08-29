@@ -20,12 +20,6 @@
 
 namespace blink {
 
-template <>
-struct CrossThreadCopier<Platform::ContextAttributes> {
-  using Type = Platform::ContextAttributes;
-  static Type Copy(const Type& value) { return value; }
-};
-
 // Define a function that is allowed to access MainThreadTaskRunnerRestricted.
 MainThreadTaskRunnerRestricted
 AccessMainThreadForWebGraphicsContext3DProvider() {
@@ -82,13 +76,15 @@ CreateRasterGraphicsContextProvider(const KURL& url) {
 }
 
 std::unique_ptr<WebGraphicsContext3DProvider>
-CreateWebGLGraphicsContextProvider(
-    Platform::ContextAttributes context_attributes,
-    Platform::GraphicsInfo* gl_info,
-    const KURL& url) {
+CreateWebGLGraphicsContextProvider(bool prefer_low_power_gpu,
+                                   bool fail_if_major_performance_caveat,
+                                   Platform::ContextType context_type,
+                                   Platform::GraphicsInfo* gl_info,
+                                   const KURL& url) {
   if (IsMainThread()) {
     return Platform::Current()->CreateWebGLGraphicsContextProvider(
-        context_attributes, url, gl_info);
+        prefer_low_power_gpu, fail_if_major_performance_caveat, context_type,
+        url, gl_info);
   } else {
     base::WaitableEvent waitable_event;
     std::unique_ptr<WebGraphicsContext3DProvider> created_context_provider;
@@ -97,7 +93,8 @@ CreateWebGLGraphicsContextProvider(
             AccessMainThreadForWebGraphicsContext3DProvider()),
         FROM_HERE,
         CrossThreadBindOnce(
-            [](Platform::ContextAttributes context_attributes,
+            [](bool prefer_low_power_gpu, bool fail_if_major_performance_caveat,
+               Platform::ContextType context_type,
                Platform::GraphicsInfo* gl_info, const KURL& url,
                std::unique_ptr<WebGraphicsContext3DProvider>* out_provider,
                base::WaitableEvent* waitable_event) {
@@ -107,10 +104,12 @@ CreateWebGLGraphicsContextProvider(
               // changes.
               *out_provider =
                   Platform::Current()->CreateWebGLGraphicsContextProvider(
-                      context_attributes, url, gl_info);
+                      prefer_low_power_gpu, fail_if_major_performance_caveat,
+                      context_type, url, gl_info);
               waitable_event->Signal();
             },
-            context_attributes, CrossThreadUnretained(gl_info), url,
+            prefer_low_power_gpu, fail_if_major_performance_caveat,
+            context_type, CrossThreadUnretained(gl_info), url,
             CrossThreadUnretained(&created_context_provider),
             CrossThreadUnretained(&waitable_event)));
     waitable_event.Wait();

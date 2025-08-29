@@ -481,19 +481,6 @@ class BLINK_PLATFORM_EXPORT Platform {
   enum ContextType {
     kWebGL1ContextType,  // WebGL 1.0 context, use only for WebGL canvases
     kWebGL2ContextType,  // WebGL 2.0 context, use only for WebGL canvases
-    kGLES2ContextType,   // GLES 2.0 context, default, good for using skia
-    kGLES3ContextType,   // GLES 3.0 context
-    kWebGPUContextType,  // WebGPU context
-  };
-  struct ContextAttributes {
-    bool prefer_low_power_gpu = false;
-    bool fail_if_major_performance_caveat = false;
-    ContextType context_type = kGLES2ContextType;
-
-    // Offscreen contexts created for WebGL should not need the RasterInterface.
-    // If it's set to false, it will not be possible to use the corresponding
-    // interface for the lifetime of the context.
-    bool enable_raster_interface = false;
   };
   struct GraphicsInfo {
     unsigned vendor_id = 0;
@@ -515,7 +502,9 @@ class BLINK_PLATFORM_EXPORT Platform {
   // backed by an independent context. Returns null if the context cannot be
   // created or initialized.
   virtual std::unique_ptr<WebGraphicsContext3DProvider>
-  CreateWebGLGraphicsContextProvider(const ContextAttributes&,
+  CreateWebGLGraphicsContextProvider(bool prefer_low_power_gpu,
+                                     bool fail_if_major_performance_caveat,
+                                     ContextType context_type,
                                      const WebURL& document_url,
                                      GraphicsInfo*);
   virtual std::unique_ptr<WebGraphicsContext3DProvider>

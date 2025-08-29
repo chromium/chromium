@@ -38,19 +38,6 @@ WebGLContextAttributes* ToWebGLContextAttributes(
   return result;
 }
 
-Platform::ContextAttributes ToPlatformContextAttributes(
-    const CanvasContextCreationAttributesCore& attrs,
-    Platform::ContextType context_type) {
-  Platform::ContextAttributes result;
-  result.prefer_low_power_gpu =
-      (PowerPreferenceToGpuPreference(attrs.power_preference) ==
-       gl::GpuPreference::kLowPower);
-  result.fail_if_major_performance_caveat =
-      attrs.fail_if_major_performance_caveat;
-  result.context_type = context_type;
-  return result;
-}
-
 gl::GpuPreference PowerPreferenceToGpuPreference(
     CanvasContextCreationAttributesCore::PowerPreference power_preference) {
   // This code determines the handling of the "default" power preference.

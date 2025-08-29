@@ -19,12 +19,6 @@ namespace blink {
 WebGLContextAttributes* ToWebGLContextAttributes(
     const CanvasContextCreationAttributesCore&);
 
-// Set up the attributes that can be used to create a GL context via the
-// Platform API.
-Platform::ContextAttributes ToPlatformContextAttributes(
-    const CanvasContextCreationAttributesCore&,
-    Platform::ContextType context_type);
-
 // Turns the powerPreference context creation attribute into the
 // gl::GpuPreference enum which is sent along with GPU switching
 // notifications. This must not return the kDefault constant, but

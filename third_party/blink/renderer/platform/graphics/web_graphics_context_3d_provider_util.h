@@ -31,10 +31,11 @@ PLATFORM_EXPORT std::unique_ptr<WebGraphicsContext3DProvider>
 CreateRasterGraphicsContextProvider(const KURL& url);
 
 PLATFORM_EXPORT std::unique_ptr<WebGraphicsContext3DProvider>
-CreateWebGLGraphicsContextProvider(
-    Platform::ContextAttributes context_attributes,
-    Platform::GraphicsInfo* gl_info,
-    const KURL& url);
+CreateWebGLGraphicsContextProvider(bool prefer_low_power_gpu,
+                                   bool fail_if_major_performance_caveat,
+                                   Platform::ContextType context_type,
+                                   Platform::GraphicsInfo* gl_info,
+                                   const KURL& url);
 
 // Synchronously creates a WebGPUGraphicsContext3DProvider on any thread.
 // Note if this method is not called on the main thread it will block waiting
