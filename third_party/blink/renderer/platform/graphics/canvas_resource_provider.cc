@@ -463,6 +463,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
                             copy_rect.width(), copy_rect.height());
     completion_sync_token =
         gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
+    resource()->GetSyncToken();
     return true;
   }
 
