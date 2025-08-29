@@ -745,17 +745,6 @@ public class TabModelImpl extends TabModelJniBridge {
         return ReadOnlyIterator.maybeCreate(mTabs.iterator());
     }
 
-    // TODO(aurimas): Move this method to TabModelSelector when notifications move there.
-    private int getLastId(@TabSelectionType int type) {
-        if (type == TabSelectionType.FROM_CLOSE || type == TabSelectionType.FROM_EXIT) {
-            return Tab.INVALID_TAB_ID;
-        }
-
-        // Get the current tab in the current tab model.
-        Tab currentTab = TabModelUtils.getCurrentTab(mModelDelegate.getCurrentModel());
-        return currentTab != null ? currentTab.getId() : Tab.INVALID_TAB_ID;
-    }
-
     private boolean hasValidTab() {
         if (mTabs.size() <= 0) return false;
         for (int i = 0; i < mTabs.size(); i++) {
@@ -779,7 +768,10 @@ public class TabModelImpl extends TabModelJniBridge {
         if (mIsArchivedTabModel) return;
         try {
             TraceEvent.begin("TabModelImpl.setIndex");
-            int lastId = getLastId(type);
+            int lastId =
+                    mCurrentTabSupplier.get() != null
+                            ? mCurrentTabSupplier.get().getId()
+                            : Tab.INVALID_TAB_ID;
 
             // This can cause recursive entries into setIndex, which causes duplicate notifications
             // and UMA records.

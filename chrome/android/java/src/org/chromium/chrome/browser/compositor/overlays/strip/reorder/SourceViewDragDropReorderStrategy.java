@@ -197,6 +197,9 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
     }
 
     private boolean shouldShowUserPrompt(StripLayoutTab draggedTab) {
+        if (mTabGroupModelFilter.getTabModel().isIncognitoBranded()) {
+            return false;
+        }
         int tabId = draggedTab.getTabId();
         boolean draggingLastTabInGroup =
                 StripLayoutUtils.isLastTabInGroup(mTabGroupModelFilter, tabId);
@@ -204,7 +207,6 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
                 mActionConfirmationManager.willSkipUngroupTabAttempt()
                         && !isTabInCollaboration(tabId);
         return draggingLastTabInGroup
-                && !mTabGroupModelFilter.getTabModel().isIncognitoBranded()
                 && !willSkipDialog;
     }
 
