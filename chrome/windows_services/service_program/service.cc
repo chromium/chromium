@@ -4,6 +4,7 @@
 
 #include "chrome/windows_services/service_program/service.h"
 
+#include <objidl.h>
 #include <sddl.h>
 #include <wrl/module.h>
 
@@ -336,6 +337,18 @@ void Service::SetServiceStatus(DWORD state) {
 HRESULT Service::Run(const base::CommandLine& command_line) {
   if (HRESULT hr = InitializeComSecurity(); FAILED(hr)) {
     return hr;
+  }
+
+  // Enable fast rundown so that COM stubs are run down (i.e., have their
+  // outstanding reference counts released) more quickly upon client
+  // termination. Testing shows that "fast" rundown still takes on the order of
+  // ten seconds, so it is not a substitute for the elevated tracing service's
+  // ProcessWatcher.
+  // https://learn.microsoft.com/nb-no/archive/blogs/distributedservices/com-server-cleanup-now-you-can-opt-for-a-fast-rundown
+  if (Microsoft::WRL::ComPtr<IGlobalOptions> options; SUCCEEDED(
+          ::CoCreateInstance(CLSID_GlobalOptions, nullptr, CLSCTX_INPROC_SERVER,
+                             IID_PPV_ARGS(&options)))) {
+    options->Set(COMGLB_RO_SETTINGS, COMGLB_FAST_RUNDOWN);
   }
 
   // If `PreRun` returned `true`, the delegate's `Run` method is expected to do
