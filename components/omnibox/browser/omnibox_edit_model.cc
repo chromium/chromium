@@ -1794,13 +1794,10 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
   popup_selection_ = new_selection;
   popup_view_->OnSelectionChanged(old_selection, popup_selection_);
 
-  // Special case for removing focus ring from the AIM button.
-  if (old_selection.state == OmniboxPopupSelection::FOCUSED_BUTTON_AIM) {
-    view_->ApplyFocusRingToAimButton(false);
-    return;
-  }
-
   // Special case for applying focus to the AIM button.
+  // TODO(crbug.com/437916158): Do not return early here because we require
+  // some of the logic below to update accessibility labels after moving focus
+  // to the AIM button.
   if (popup_selection_.state == OmniboxPopupSelection::FOCUSED_BUTTON_AIM) {
     view_->ApplyFocusRingToAimButton(true);
     // Without this, focus indicators may appear stale (see crbug.com/1369229).
@@ -1809,6 +1806,14 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
     // around to the AIM button in the zero-input state.
     popup_view_->UpdatePopupAppearance();
     return;
+  }
+
+  // Special case for removing focus ring from the AIM button. Unlike the case
+  // above, do not exit early because we may be entering keyword mode or the
+  // autocomplete match may be changing, so we will need the logic below to
+  // update the popup data accordingly via OnPopupDataChanged().
+  if (old_selection.state == OmniboxPopupSelection::FOCUSED_BUTTON_AIM) {
+    view_->ApplyFocusRingToAimButton(false);
   }
 
   // This occurs when e.g., pressing escape to select the null match in
