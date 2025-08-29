@@ -30,18 +30,6 @@ extern const char kEnableRemoteDebugMode[];
 // Specifies a custom UserAgent product & version to use.
 extern const char kUserAgentProductAndVersion[];
 
-#if BUILDFLAG(ENABLE_CAST_RECEIVER)
-// By default, an HTTPS page cannot run JavaScript, CSS or resources from HTTP
-// URLs. This provides an override to get the old insecure behavior.
-// TODO(crbug.com/40050660): Remove this switch when it is no longer
-// necessary.
-extern const char kAllowRunningInsecureContent[];
-
-// Enables use of the fuchsia.legacymetrics.MetricsRecorder service for
-// telemetry.
-extern const char kUseLegacyMetricsService[];
-#endif
-
 // Specifies a comma-separated list of HTTP headers to exempt from CORS checks.
 extern const char kCorsExemptHeaders[];
 
@@ -70,6 +58,22 @@ extern const char kProxyBypassList[];
 
 // Uses a specified proxy server, overrides system settings.
 extern const char kProxyServer[];
+
+// A list of comma-separated ContentSettingsPattern's to match the scope of
+// ServiceWorkers which are protected and never deleted.
+extern const char kProtectedServiceWorkers[];
+
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
+// By default, an HTTPS page cannot run JavaScript, CSS or resources from HTTP
+// URLs. This provides an override to get the old insecure behavior.
+// TODO(crbug.com/40050660): Remove this switch when it is no longer
+// necessary.
+extern const char kAllowRunningInsecureContent[];
+
+// Enables use of the fuchsia.legacymetrics.MetricsRecorder service for
+// telemetry.
+extern const char kUseLegacyMetricsService[];
+#endif
 
 }  // namespace switches
 

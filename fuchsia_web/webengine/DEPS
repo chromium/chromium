@@ -5,6 +5,7 @@ include_rules = [
   "+build/chromecast_buildflags.h",
 
   "+components/embedder_support",
+  "+components/content_settings/core/common",
   "+components/fuchsia_component_support",
   "+components/media_control",
   "+components/on_load_script_injector",

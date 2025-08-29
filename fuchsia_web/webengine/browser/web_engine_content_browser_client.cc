@@ -6,6 +6,7 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/functional/callback.h"
@@ -13,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "build/chromecast_buildflags.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/policy/content/safe_sites_navigation_throttle.h"
 #include "components/site_isolation/features.h"
@@ -148,10 +150,23 @@ static constexpr char const* kAllProcessSwitchesToCopy[] = {
     switches::kEnableContentDirectories,
 };
 
+std::vector<ContentSettingsPattern> GetProtectedServiceWorkers() {
+  const auto tokens = base::SplitString(
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kProtectedServiceWorkers),
+      ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  std::vector<ContentSettingsPattern> patterns;
+  for (const auto& token : tokens) {
+    patterns.push_back(ContentSettingsPattern::FromString(token));
+  }
+  return patterns;
+}
+
 }  // namespace
 
 WebEngineContentBrowserClient::WebEngineContentBrowserClient()
-    : cors_exempt_headers_(GetCorsExemptHeaders()) {
+    : cors_exempt_headers_(GetCorsExemptHeaders()),
+      protected_service_workers_(GetProtectedServiceWorkers()) {
   // Logging in this class ensures this is logged once per web_instance.
   LogComponentStartWithVersion("WebEngine web_instance");
 }
@@ -293,6 +308,19 @@ std::string WebEngineContentBrowserClient::GetAcceptLangs(
   // This is passed to net::HttpUtil::GenerateAcceptLanguageHeader() to
   // generate a legacy "accept-language" header value.
   return l10n_util::GetStringUTF8(IDS_ACCEPT_LANGUAGES);
+}
+
+// TODO(crbug.com/434764000): May revise if service workers should be allowed
+// in incognito mode at all.
+bool WebEngineContentBrowserClient::MayDeleteServiceWorkerRegistration(
+    const GURL& scope,
+    content::BrowserContext*) {
+  for (const auto& pattern : protected_service_workers_) {
+    if (pattern.Matches(scope)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 base::OnceClosure WebEngineContentBrowserClient::SelectClientCertificate(
