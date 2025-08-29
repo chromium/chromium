@@ -105,8 +105,8 @@ std::unique_ptr<PasswordStoreBackend> CreateProfilePasswordStoreBackendAndroid(
   // or the Android backend.
   if (password_manager_android_util::IsPasswordManagerAvailable(
           prefs, std::make_unique<PasswordManagerUtilBridge>())) {
-    return std::make_unique<password_manager::PasswordStoreAndroidLocalBackend>(
-        prefs);
+    return std::make_unique<
+        password_manager::PasswordStoreAndroidLocalBackend>();
   }
 
   return std::make_unique<password_manager::PasswordStoreEmptyBackend>();
@@ -122,7 +122,7 @@ std::unique_ptr<PasswordStoreBackend> CreateAccountPasswordStoreBackendAndroid(
           prefs, std::make_unique<PasswordManagerUtilBridge>())) {
     return std::make_unique<
         password_manager::PasswordStoreAndroidAccountBackend>(
-        prefs, password_manager::kAccountStore);
+        password_manager::kAccountStore);
   }
   return std::make_unique<password_manager::PasswordStoreEmptyBackend>();
 }

@@ -12,7 +12,6 @@
 
 #include "base/containers/small_map.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -25,8 +24,6 @@
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge_helper.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_dispatcher_bridge.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_metrics_recorder.h"
-
-class PrefService;
 
 namespace password_manager {
 
@@ -84,8 +81,7 @@ class PasswordStoreAndroidBackend
  protected:
   PasswordStoreAndroidBackend(
       std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper> bridge_helper,
-      std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper,
-      PrefService* prefs);
+      std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper);
   ~PasswordStoreAndroidBackend() override;
 
   // Internal methods corresponding to PasswordStoreBackendInterface that take
@@ -145,8 +141,6 @@ class PasswordStoreAndroidBackend
   PasswordStoreAndroidBackendBridgeHelper* bridge_helper() {
     return bridge_helper_.get();
   }
-
-  PrefService* prefs() { return prefs_; }
 
   // Subclasses can override this method
   // to have a special handling for different errors.
@@ -367,8 +361,6 @@ class PasswordStoreAndroidBackend
   // The id of the latest scheduled retry. Incremented when a new retry is
   // scheduled.
   DelayedRetryId::Generator delayed_retry_id_generator_;
-
-  raw_ptr<PrefService> prefs_ = nullptr;
 
   base::Time initialized_at_ = base::Time::Now();
 

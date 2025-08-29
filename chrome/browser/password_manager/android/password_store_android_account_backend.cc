@@ -18,7 +18,6 @@
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
@@ -43,12 +42,10 @@ void ReplyWithEmptyList(CallbackType callback) {
 }  // namespace
 
 PasswordStoreAndroidAccountBackend::PasswordStoreAndroidAccountBackend(
-    PrefService* prefs,
     password_manager::IsAccountStore is_account_store)
     : PasswordStoreAndroidBackend(
           PasswordStoreAndroidBackendBridgeHelper::Create(is_account_store),
-          std::make_unique<PasswordManagerLifecycleHelperImpl>(),
-          prefs) {
+          std::make_unique<PasswordManagerLifecycleHelperImpl>()) {
   sync_controller_delegate_ =
       std::make_unique<PasswordSyncControllerDelegateAndroid>(
           std::make_unique<PasswordSyncControllerDelegateBridgeImpl>());
@@ -65,11 +62,9 @@ PasswordStoreAndroidAccountBackend::PasswordStoreAndroidAccountBackend(
     std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper> bridge_helper,
     std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper,
     std::unique_ptr<PasswordSyncControllerDelegateAndroid>
-        sync_controller_delegate,
-    PrefService* prefs)
+        sync_controller_delegate)
     : PasswordStoreAndroidBackend(std::move(bridge_helper),
-                                  std::move(lifecycle_helper),
-                                  prefs) {
+                                  std::move(lifecycle_helper)) {
   sync_controller_delegate_ = std::move(sync_controller_delegate);
   sync_controller_delegate_->SetSyncObserverCallbacks(
       base::BindRepeating(

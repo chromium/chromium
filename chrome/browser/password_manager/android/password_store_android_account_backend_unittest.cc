@@ -35,9 +35,6 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/android_backend_error.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -167,7 +164,7 @@ class PasswordStoreAndroidAccountBackendTest : public testing::Test {
     backend_ = std::make_unique<PasswordStoreAndroidAccountBackend>(
         base::PassKey<class PasswordStoreAndroidAccountBackendTest>(),
         CreateMockBridgeHelper(), CreateFakeLifecycleHelper(),
-        CreatePasswordSyncControllerDelegate(), &prefs_);
+        CreatePasswordSyncControllerDelegate());
   }
 
   ~PasswordStoreAndroidAccountBackendTest() override {
@@ -190,7 +187,6 @@ class PasswordStoreAndroidAccountBackendTest : public testing::Test {
   PasswordSyncControllerDelegateAndroid* sync_controller_delegate() {
     return sync_controller_delegate_;
   }
-  PrefService* prefs() { return &prefs_; }
   MockAffiliationService* mock_affiliation_service() {
     return mock_affiliation_service_.get();
   }
@@ -248,7 +244,6 @@ class PasswordStoreAndroidAccountBackendTest : public testing::Test {
   raw_ptr<FakePasswordManagerLifecycleHelper> lifecycle_helper_;
   raw_ptr<PasswordSyncControllerDelegateAndroid> sync_controller_delegate_;
   syncer::TestSyncService sync_service_;
-  TestingPrefServiceSimple prefs_;
 };
 
 TEST_F(PasswordStoreAndroidAccountBackendTest,

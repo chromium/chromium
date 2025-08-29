@@ -22,9 +22,6 @@
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/android_backend_error.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -94,7 +91,6 @@ class PasswordStoreAndroidLocalBackendTest : public testing::Test {
   FakePasswordManagerLifecycleHelper* lifecycle_helper() {
     return lifecycle_helper_;
   }
-  PrefService* prefs() { return &prefs_; }
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -104,7 +100,7 @@ class PasswordStoreAndroidLocalBackendTest : public testing::Test {
   // Prefer using the already created `backend()` when possible.
   void ResetBackend() {
     backend_ = std::make_unique<PasswordStoreAndroidLocalBackend>(
-        CreateMockBridgeHelper(), CreateFakeLifecycleHelper(), &prefs_);
+        CreateMockBridgeHelper(), CreateFakeLifecycleHelper());
   }
 
  private:
@@ -126,7 +122,6 @@ class PasswordStoreAndroidLocalBackendTest : public testing::Test {
   std::unique_ptr<PasswordStoreAndroidLocalBackend> backend_;
   raw_ptr<NiceMock<MockPasswordStoreAndroidBackendBridgeHelper>> bridge_helper_;
   raw_ptr<FakePasswordManagerLifecycleHelper> lifecycle_helper_;
-  TestingPrefServiceSimple prefs_;
 };
 
 TEST_F(PasswordStoreAndroidLocalBackendTest, CallsBridgeForGetAllLogins) {
