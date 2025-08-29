@@ -20,6 +20,8 @@ static_library("ntp_tiles") {
     "custom_links_store.cc",
     "custom_links_store.h",
     "custom_links_util.h",
+    "enterprise/enterprise_shortcut.cc",
+    "enterprise/enterprise_shortcut.h",
     "enterprise/enterprise_shortcuts_manager.h",
     "features.cc",
     "features.h",
@@ -98,8 +100,6 @@ static_library("ntp_tiles") {
 
   if (is_linux || is_win || is_mac || is_chromeos) {
     sources += [
-      "enterprise/enterprise_shortcut.cc",
-      "enterprise/enterprise_shortcut.h",
       "enterprise/enterprise_shortcuts_manager_impl.cc",
       "enterprise/enterprise_shortcuts_manager_impl.h",
       "enterprise/enterprise_shortcuts_store.cc",

@@ -43,6 +43,16 @@ struct NTPTile {
   // The score of a Most Visited item. Used for tweaking algorithm.
   double score = -1;
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Whether to allow users to edit the tile in the action menu. Does not apply
+  // to top sites. May be false for enterprise shortcuts.
+  bool allow_user_edit = true;
+
+  // Whether to allow users to delete the tile in the action menu. Does not
+  // apply to top sites. May be false for enterprise shortcuts.
+  bool allow_user_delete = true;
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   NTPTile();
   NTPTile(const NTPTile&);
   ~NTPTile();

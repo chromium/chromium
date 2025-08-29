@@ -23,6 +23,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -145,6 +146,24 @@ MostVisitedURL MakeMostVisitedURL(const std::u16string& title,
   result.url = GURL(url);
   return result;
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_CHROMEOS)
+EnterpriseShortcut MakeEnterpriseShortcut(const std::u16string& title,
+                                          const std::string& url,
+                                          bool allow_user_edit = false,
+                                          bool allow_user_delete = false,
+                                          bool is_hidden_by_user = false) {
+  EnterpriseShortcut shortcut;
+  shortcut.title = title;
+  shortcut.url = GURL(url);
+  shortcut.allow_user_edit = allow_user_edit;
+  shortcut.allow_user_delete = allow_user_delete;
+  shortcut.is_hidden_by_user = is_hidden_by_user;
+  return shortcut;
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 class MockTopSites : public TopSites {
  public:
@@ -1102,12 +1121,6 @@ class MostVisitedSitesWithCustomLinksTest : public MostVisitedSitesTest {
  public:
   MostVisitedSitesWithCustomLinksTest() {
     EnableCustomLinks();
-    // TODO(crbug.com/438304256): Create new text fixture to properly test
-    // enterprise shortcuts once MostVisitedSites implementation is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_CHROMEOS)
-    EnableEnterpriseShortcuts();
-#endif
     RecreateMostVisitedSites();
   }
 
@@ -1329,13 +1342,16 @@ TEST_F(MostVisitedSitesWithCustomLinksTest,
       .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>(
           MostVisitedURLList{MakeMostVisitedURL(kTestTitle, kTestUrl)}));
   EXPECT_CALL(mock_observer_, OnURLsAvailable(_, _)).Times(1);
-  most_visited_sites_->EnableTileTypes(/*enable_custom_links=*/false);
+  most_visited_sites_->EnableTileTypes(
+      MostVisitedSites::EnableTileTypesOptions());
   base::RunLoop().RunUntilIdle();
 
   // Try to disable custom links again. This should not rebuild the tiles.
   EXPECT_CALL(*mock_top_sites_, GetMostVisitedURLs(_)).Times(0);
   EXPECT_CALL(*mock_custom_links_manager_, GetLinks()).Times(0);
-  most_visited_sites_->EnableTileTypes(/*enable_custom_links=*/false);
+  most_visited_sites_->EnableTileTypes(
+      MostVisitedSites::EnableTileTypesOptions().with_enterprise_shortcuts(
+          false));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -1372,7 +1388,8 @@ TEST_F(MostVisitedSitesWithCustomLinksTest, DisableCustomLinksWhenInitialized) {
   EXPECT_CALL(mock_observer_, OnURLsAvailable(_, _))
       .WillOnce(SaveArg<1>(&sections));
 
-  most_visited_sites_->EnableTileTypes(/*enable_custom_links=*/false);
+  most_visited_sites_->EnableTileTypes(
+      MostVisitedSites::EnableTileTypesOptions());
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(
       sections.at(SectionType::PERSONALIZED),
@@ -1382,7 +1399,8 @@ TEST_F(MostVisitedSitesWithCustomLinksTest, DisableCustomLinksWhenInitialized) {
 
   // Re-enable custom links. Tiles should rebuild and return custom links.
   SetUpBuildWithCustomLinks(expected_links, &sections);
-  most_visited_sites_->EnableTileTypes(/*enable_custom_links=*/true);
+  most_visited_sites_->EnableTileTypes(
+      MostVisitedSites::EnableTileTypesOptions().with_custom_links(true));
   base::RunLoop().RunUntilIdle();
   CheckSingleCustomLink(sections.at(SectionType::PERSONALIZED), kTestTitle,
                         kTestUrl);
@@ -1848,6 +1866,268 @@ TEST_F(MostVisitedSitesWithCustomLinksTest, RebuildTilesOnCustomLinksChanged) {
   ASSERT_THAT(tiles[0],
               MatchesTile(kTestTitle1, kTestUrl1, TileSource::TOP_SITES));
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_CHROMEOS)
+class MostVisitedSitesWithEnterpriseShortcutsTest
+    : public MostVisitedSitesTest {
+ public:
+  MostVisitedSitesWithEnterpriseShortcutsTest() {
+    EnableEnterpriseShortcuts();
+    EnableCustomLinks();
+    RecreateMostVisitedSites();
+    SetupInitialState();
+  }
+
+  void SetUpBuildWithEnterpriseShortcuts(
+      const std::vector<EnterpriseShortcut>& expected_links,
+      std::map<SectionType, NTPTilesVector>* sections) {
+    EXPECT_CALL(*mock_enterprise_shortcuts_manager_, GetLinks())
+        .WillOnce(ReturnRef(expected_links));
+    EXPECT_CALL(mock_observer_, OnURLsAvailable(_, _))
+        .WillOnce(SaveArg<1>(sections));
+  }
+
+ private:
+  void SetupInitialState() {
+    const std::vector<EnterpriseShortcut> empty_links;
+    base::RunLoop run_loop;
+    EXPECT_CALL(*mock_enterprise_shortcuts_manager_, GetLinks())
+        .WillOnce(DoAll(testing::InvokeWithoutArgs([&]() { run_loop.Quit(); }),
+                        ReturnRef(empty_links)));
+    most_visited_sites_->EnableTileTypes(
+        MostVisitedSites::EnableTileTypesOptions().with_enterprise_shortcuts(
+            true));
+    run_loop.Run();
+    Mock::VerifyAndClearExpectations(mock_top_sites_.get());
+    Mock::VerifyAndClearExpectations(mock_custom_links_manager_);
+    Mock::VerifyAndClearExpectations(mock_enterprise_shortcuts_manager_);
+  }
+};
+
+TEST_F(MostVisitedSitesWithEnterpriseShortcutsTest,
+       ShouldToggleEnterpriseShortcuts) {
+  const char kTestUrl[] = "http://site1/";
+  const char16_t kTestTitle[] = u"Site 1";
+  const std::vector<EnterpriseShortcut> expected_links = {
+      MakeEnterpriseShortcut(kTestTitle, kTestUrl)};
+  std::map<SectionType, NTPTilesVector> sections;
+
+  // Build tiles when enterprise shortcuts is enabled. Tiles should be
+  // enterprise shortcuts.
+  EXPECT_CALL(*mock_enterprise_shortcuts_manager_,
+              RegisterCallbackForOnChanged(_));
+  EXPECT_CALL(*mock_custom_links_manager_, RegisterCallbackForOnChanged(_));
+  EXPECT_CALL(*mock_top_sites_, SyncWithHistory());
+  EXPECT_CALL(*mock_top_sites_, IsBlocked(_)).WillRepeatedly(Return(false));
+  SetUpBuildWithEnterpriseShortcuts(expected_links, &sections);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/1);
+  ASSERT_TRUE(base::test::RunUntil([&] { return !sections.empty(); }));
+  NTPTilesVector tiles = sections.at(SectionType::PERSONALIZED);
+  ASSERT_THAT(tiles.size(), Ge(1ul));
+  ASSERT_THAT(tiles[0], MatchesTile(kTestTitle, kTestUrl,
+                                    TileSource::ENTERPRISE_SHORTCUTS));
+
+  // Disable enterprise shortcuts and rebuild tiles. Tiles should be Top Sites.
+  EXPECT_CALL(*mock_top_sites_, GetMostVisitedURLs(_))
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>(
+          MostVisitedURLList{MakeMostVisitedURL(kTestTitle, kTestUrl)}));
+  EXPECT_CALL(*mock_custom_links_manager_, IsInitialized())
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(mock_observer_, OnURLsAvailable(_, _))
+      .WillOnce(SaveArg<1>(&sections));
+  most_visited_sites_->EnableTileTypes(
+      MostVisitedSites::EnableTileTypesOptions());
+  ASSERT_TRUE(base::test::RunUntil([&] { return !sections.empty(); }));
+  tiles = sections.at(SectionType::PERSONALIZED);
+  ASSERT_THAT(tiles.size(), Ge(1ul));
+  ASSERT_THAT(tiles[0],
+              MatchesTile(kTestTitle, kTestUrl, TileSource::TOP_SITES));
+
+  // Enable and build custom links.
+  base::RunLoop run_loop;
+  const std::vector<CustomLinksManager::Link> expected_custom_links(
+      {CustomLinksManager::Link{GURL(kTestUrl), kTestTitle,
+                                /*is_most_visited=*/true}});
+  // First, enable custom links mode. This will trigger a rebuild that still
+  // shows top sites, since custom links are not yet initialized.
+  EXPECT_CALL(*mock_top_sites_, GetMostVisitedURLs(_))
+      .WillOnce(base::test::RunOnceCallback<0>(
+          MostVisitedURLList{MakeMostVisitedURL(kTestTitle, kTestUrl)}));
+  EXPECT_CALL(*mock_custom_links_manager_, IsInitialized())
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(mock_observer_, OnURLsAvailable(_, _))
+      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+  most_visited_sites_->EnableTileTypes(
+      MostVisitedSites::EnableTileTypesOptions().with_custom_links(true));
+  run_loop.Run();
+
+  // Then, initialize custom links from the current set of tiles.
+  EXPECT_CALL(*mock_custom_links_manager_, Initialize(_))
+      .WillOnce(Return(true));
+  most_visited_sites_->InitializeCustomLinks();
+
+  // A refresh should now show the custom links.
+  EXPECT_CALL(*mock_custom_links_manager_, IsInitialized())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*mock_custom_links_manager_, GetLinks())
+      .WillOnce(ReturnRef(expected_custom_links));
+  EXPECT_CALL(mock_observer_, OnURLsAvailable(_, _))
+      .WillOnce(SaveArg<1>(&sections));
+  most_visited_sites_->RefreshTiles();
+  ASSERT_TRUE(base::test::RunUntil([&] { return !sections.empty(); }));
+  tiles = sections.at(SectionType::PERSONALIZED);
+  ASSERT_THAT(tiles.size(), Ge(1ul));
+  ASSERT_THAT(tiles[0],
+              MatchesTile(kTestTitle, kTestUrl, TileSource::CUSTOM_LINKS));
+}
+
+TEST_F(MostVisitedSitesWithEnterpriseShortcutsTest, UpdateEnterpriseShortcut) {
+  const char kTestUrl[] = "http://site1/";
+  const char16_t kTestTitle[] = u"Site 1";
+  const std::u16string kNewTitle(u"New Site");
+  const std::vector<EnterpriseShortcut> initial_links = {
+      MakeEnterpriseShortcut(kTestTitle, kTestUrl)};
+  const std::vector<EnterpriseShortcut> updated_links = {
+      MakeEnterpriseShortcut(kNewTitle, kTestUrl)};
+  std::map<SectionType, NTPTilesVector> sections;
+
+  // Initial build.
+  EXPECT_CALL(*mock_enterprise_shortcuts_manager_,
+              RegisterCallbackForOnChanged(_));
+  EXPECT_CALL(*mock_custom_links_manager_, RegisterCallbackForOnChanged(_));
+  EXPECT_CALL(*mock_top_sites_, SyncWithHistory());
+  SetUpBuildWithEnterpriseShortcuts(initial_links, &sections);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/1);
+  ASSERT_TRUE(base::test::RunUntil([&] { return !sections.empty(); }));
+
+  // Update link.
+  EXPECT_CALL(*mock_enterprise_shortcuts_manager_,
+              UpdateLink(GURL(kTestUrl), kNewTitle))
+      .WillOnce(Return(true));
+  SetUpBuildWithEnterpriseShortcuts(updated_links, &sections);
+  most_visited_sites_->UpdateEnterpriseShortcut(GURL(kTestUrl), kNewTitle);
+  ASSERT_TRUE(base::test::RunUntil([&] { return !sections.empty(); }));
+
+  NTPTilesVector tiles = sections.at(SectionType::PERSONALIZED);
+  ASSERT_THAT(tiles.size(), Ge(1ul));
+  ASSERT_THAT(tiles[0], MatchesTile(kNewTitle, kTestUrl,
+                                    TileSource::ENTERPRISE_SHORTCUTS));
+}
+
+TEST_F(MostVisitedSitesWithEnterpriseShortcutsTest, DeleteEnterpriseShortcut) {
+  const char kTestUrl[] = "http://site1/";
+  const char16_t kTestTitle[] = u"Site 1";
+  const std::vector<EnterpriseShortcut> initial_links = {
+      MakeEnterpriseShortcut(kTestTitle, kTestUrl)};
+  const std::vector<EnterpriseShortcut> empty_links;
+  std::map<SectionType, NTPTilesVector> sections;
+
+  // Initial build.
+  EXPECT_CALL(*mock_enterprise_shortcuts_manager_,
+              RegisterCallbackForOnChanged(_));
+  EXPECT_CALL(*mock_custom_links_manager_, RegisterCallbackForOnChanged(_));
+  EXPECT_CALL(*mock_top_sites_, SyncWithHistory());
+  SetUpBuildWithEnterpriseShortcuts(initial_links, &sections);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/1);
+  ASSERT_TRUE(base::test::RunUntil([&] { return !sections.empty(); }));
+
+  // Delete link.
+  EXPECT_CALL(*mock_enterprise_shortcuts_manager_, DeleteLink(GURL(kTestUrl)))
+      .WillOnce(Return(true));
+  SetUpBuildWithEnterpriseShortcuts(empty_links, &sections);
+  most_visited_sites_->DeleteEnterpriseShortcut(GURL(kTestUrl));
+  ASSERT_TRUE(base::test::RunUntil([&] { return !sections.empty(); }));
+
+  NTPTilesVector tiles = sections.at(SectionType::PERSONALIZED);
+  ASSERT_THAT(tiles, IsEmpty());
+}
+
+TEST_F(MostVisitedSitesWithEnterpriseShortcutsTest,
+       UndoEnterpriseShortcutAction) {
+  const char kTestUrl[] = "http://site1/";
+  const char16_t kTestTitle[] = u"Site 1";
+  const std::vector<EnterpriseShortcut> initial_links = {
+      MakeEnterpriseShortcut(kTestTitle, kTestUrl)};
+  const std::vector<EnterpriseShortcut> empty_links;
+  std::map<SectionType, NTPTilesVector> sections;
+
+  // Initial build.
+  EXPECT_CALL(*mock_enterprise_shortcuts_manager_,
+              RegisterCallbackForOnChanged(_));
+  EXPECT_CALL(*mock_custom_links_manager_, RegisterCallbackForOnChanged(_));
+  EXPECT_CALL(*mock_top_sites_, SyncWithHistory());
+  SetUpBuildWithEnterpriseShortcuts(initial_links, &sections);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/1);
+  ASSERT_TRUE(base::test::RunUntil([&] { return !sections.empty(); }));
+
+  // Delete link.
+  EXPECT_CALL(*mock_enterprise_shortcuts_manager_, DeleteLink(GURL(kTestUrl)))
+      .WillOnce(Return(true));
+  SetUpBuildWithEnterpriseShortcuts(empty_links, &sections);
+  most_visited_sites_->DeleteEnterpriseShortcut(GURL(kTestUrl));
+  ASSERT_TRUE(base::test::RunUntil([&] { return !sections.empty(); }));
+  ASSERT_THAT(sections.at(SectionType::PERSONALIZED), IsEmpty());
+
+  // Undo delete.
+  EXPECT_CALL(*mock_enterprise_shortcuts_manager_, UndoAction())
+      .WillOnce(Return(true));
+  SetUpBuildWithEnterpriseShortcuts(initial_links, &sections);
+  most_visited_sites_->UndoEnterpriseShortcutAction();
+  ASSERT_TRUE(base::test::RunUntil([&] { return !sections.empty(); }));
+
+  NTPTilesVector tiles = sections.at(SectionType::PERSONALIZED);
+  ASSERT_THAT(tiles.size(), Ge(1ul));
+  ASSERT_THAT(tiles[0], MatchesTile(kTestTitle, kTestUrl,
+                                    TileSource::ENTERPRISE_SHORTCUTS));
+}
+
+TEST_F(MostVisitedSitesWithEnterpriseShortcutsTest,
+       ShouldNotShowHiddenEnterpriseShortcuts) {
+  const char kVisibleUrl[] = "http://site1/";
+  const char16_t kVisibleTitle[] = u"Site 1";
+  const char kHiddenUrl[] = "http://site2/";
+  const char16_t kHiddenTitle[] = u"Site 2";
+  const std::vector<EnterpriseShortcut> expected_links = {
+      MakeEnterpriseShortcut(kVisibleTitle, kVisibleUrl),
+      MakeEnterpriseShortcut(kHiddenTitle, kHiddenUrl,
+                             /*allow_user_edit=*/false,
+                             /*allow_user_delete=*/false,
+                             /*is_hidden_by_user=*/true)};
+  std::map<SectionType, NTPTilesVector> sections;
+
+  // Build tiles when enterprise shortcuts is enabled.
+  EXPECT_CALL(*mock_enterprise_shortcuts_manager_,
+              RegisterCallbackForOnChanged(_));
+  EXPECT_CALL(*mock_custom_links_manager_, RegisterCallbackForOnChanged(_));
+  EXPECT_CALL(*mock_top_sites_, SyncWithHistory());
+  SetUpBuildWithEnterpriseShortcuts(expected_links, &sections);
+  most_visited_sites_->AddMostVisitedURLsObserver(&mock_observer_,
+                                                  /*max_num_sites=*/2);
+  ASSERT_TRUE(base::test::RunUntil([&] { return !sections.empty(); }));
+  NTPTilesVector tiles = sections.at(SectionType::PERSONALIZED);
+  ASSERT_THAT(tiles, SizeIs(1));
+  EXPECT_THAT(tiles[0], MatchesTile(kVisibleTitle, kVisibleUrl,
+                                    TileSource::ENTERPRISE_SHORTCUTS));
+}
+
+#if DCHECK_IS_ON()
+TEST_F(MostVisitedSitesWithEnterpriseShortcutsTest,
+       ShouldNotMixEnterpriseAndCustomShortcuts) {
+  EXPECT_DEATH(most_visited_sites_->EnableTileTypes(
+                   MostVisitedSites::EnableTileTypesOptions()
+                       .with_custom_links(true)
+                       .with_enterprise_shortcuts(true)),
+               "");
+}
+#endif  // DCHECK_IS_ON()
+
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 // These exclude Android and iOS.
 #endif  // !BUILDFLAG(IS_IOS)

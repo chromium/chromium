@@ -497,10 +497,6 @@ void CustomizeChromePageHandler::SetMostVisitedSettings(
 // tile type to view, admin-set shortcuts should be shown by default.
 void CustomizeChromePageHandler::UpdateMostVisitedSettings() {
   std::vector<ntp_tiles::TileType> disabled_shortcuts;
-  // TODO(crbug.com/438304256): Add feature checks to callers reading the
-  // `ntp_tiles::TileType::kEnterpriseShortcuts` preference to only enable
-  // enterprise shortcuts if the feature flag is enabled.
-  //
   // If feature is not enabled, hide the enterprise shortcuts option, but leave
   // the preference as is.
   if (!base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts)) {

@@ -68,7 +68,7 @@ InstantService::InstantService(Profile* profile)
   most_visited_sites_ = ChromeMostVisitedSitesFactory::NewForProfile(profile_);
   if (most_visited_sites_) {
     most_visited_sites_->EnableTileTypes(
-        /*enable_custom_links=*/false);
+        ntp_tiles::MostVisitedSites::EnableTileTypesOptions());
     most_visited_sites_->AddMostVisitedURLsObserver(
         this, ntp_tiles::kMaxNumMostVisited);
   }

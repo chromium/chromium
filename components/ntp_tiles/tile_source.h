@@ -24,8 +24,10 @@ enum class TileSource {
   ALLOWLIST,
   // Tile containing the user-set home page is replacing the home page button.
   HOMEPAGE,
+  // Tile is a enterprise shortcuts.
+  ENTERPRISE_SHORTCUTS,
 
-  LAST = HOMEPAGE
+  LAST = ENTERPRISE_SHORTCUTS
 };
 
 }  // namespace ntp_tiles

@@ -179,7 +179,9 @@ MostVisitedSitesBridge::MostVisitedSitesBridge(Profile* profile,
     : most_visited_(ChromeMostVisitedSitesFactory::NewForProfile(profile)),
       profile_(profile) {
   DCHECK(!profile->IsOffTheRecord());
-  most_visited_->EnableTileTypes(enable_custom_links);
+  most_visited_->EnableTileTypes(
+      ntp_tiles::MostVisitedSites::EnableTileTypesOptions().with_custom_links(
+          enable_custom_links));
 }
 
 MostVisitedSitesBridge::~MostVisitedSitesBridge() = default;

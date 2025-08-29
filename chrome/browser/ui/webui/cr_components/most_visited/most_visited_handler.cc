@@ -78,8 +78,12 @@ MostVisitedHandler::MostVisitedHandler(
 
 MostVisitedHandler::~MostVisitedHandler() = default;
 
+// TODO(crbug.com/438304256): Update input parameter to take
+// `EnableTileTypesOptions`.
 void MostVisitedHandler::EnableTileTypes(bool enable_custom_links) {
-  most_visited_sites_->EnableTileTypes(enable_custom_links);
+  most_visited_sites_->EnableTileTypes(
+      ntp_tiles::MostVisitedSites::EnableTileTypesOptions().with_custom_links(
+          enable_custom_links));
 }
 
 void MostVisitedHandler::SetShortcutsVisible(bool visible) {
