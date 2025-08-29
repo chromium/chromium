@@ -3157,6 +3157,7 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/chrome/browser/download/DuplicateDownloadDialogBridge.java",
       "java/src/org/chromium/chrome/browser/download/OpenDownloadDialogBridge.java",
       "java/src/org/chromium/chrome/browser/download/service/DownloadBackgroundTask.java",
+      "java/src/org/chromium/chrome/browser/download/service/DownloadBackgroundTaskCallback.java",
       "java/src/org/chromium/chrome/browser/download/service/DownloadTaskScheduler.java",
       "java/src/org/chromium/chrome/browser/feedback/ConnectivityChecker.java",
       "java/src/org/chromium/chrome/browser/feedback/ScreenshotTask.java",

@@ -204,8 +204,10 @@ void AutoResumptionHandler::ResumeDownloadImmediately() {
 
 void AutoResumptionHandler::OnStartScheduledTask(
     DownloadTaskType type,
-    download::TaskFinishedCallback callback) {
-  task_manager_->OnStartScheduledTask(type, std::move(callback));
+    download::TaskFinishedCallback task_finished_callback,
+    TaskNotifyCallback task_notify_callback) {
+  task_manager_->OnStartScheduledTask(type, std::move(task_finished_callback));
+  task_notify_callback_ = std::move(task_notify_callback);
   ResumePendingDownloads();
 }
 
@@ -316,6 +318,12 @@ int AutoResumptionHandler::MaybeResumeDownloads(
 
     if (ShouldResumeNow(download)) {
       download->Resume(false);
+      // Inform Java side to post a notification immediately so the background
+      // task doesn't need to wait for the OnDownloadUpdated() call as it may
+      // trigger ANR if the call comes too late.
+      if (!task_notify_callback_.is_null()) {
+        std::move(task_notify_callback_).Run(download);
+      }
       resumed++;
     }
   }

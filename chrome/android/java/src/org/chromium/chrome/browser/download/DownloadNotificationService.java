@@ -219,7 +219,7 @@ public class DownloadNotificationService {
      * @param shouldPromoteOrigin Whether the origin should be displayed in the notification.
      * @param pendingState Reason download is pending.
      */
-    void notifyDownloadPending(
+    public void notifyDownloadPending(
             ContentId id,
             String fileName,
             @Nullable OtrProfileId otrProfileId,
