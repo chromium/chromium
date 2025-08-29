@@ -353,8 +353,7 @@ void StackTrace::InitTrace(const CONTEXT* context_record) {
   // When walking an exception stack, we need to use StackWalk64().
   count_ = 0;
   // Initialize stack walking.
-  STACKFRAME64 stack_frame;
-  UNSAFE_TODO(memset(&stack_frame, 0, sizeof(stack_frame)));
+  STACKFRAME64 stack_frame = {};
 #if defined(ARCH_CPU_X86_64)
   DWORD machine_type = IMAGE_FILE_MACHINE_AMD64;
   stack_frame.AddrPC.Offset = context_record->Rip;

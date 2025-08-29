@@ -248,9 +248,7 @@ bool StackCopierSignal::CopyStack(StackBuffer* stack_buffer,
     ScopedSetSignalHandlerParams scoped_handler_params(&params);
 
     // Set the signal handler for the thread to the stack copy function.
-    struct sigaction action;
-    struct sigaction original_action;
-    UNSAFE_TODO(memset(&action, 0, sizeof(action)));
+    struct sigaction action = {};
     action.sa_sigaction = CopyStackSignalHandler;
     action.sa_flags = SA_RESTART | SA_SIGINFO;
     sigemptyset(&action.sa_mask);
@@ -258,6 +256,7 @@ bool StackCopierSignal::CopyStack(StackBuffer* stack_buffer,
                        "StackCopierSignal copy stack");
     // SIGURG is chosen here because we observe no crashes with this signal and
     // neither Chrome or the AOSP sets up a special handler for this signal.
+    struct sigaction original_action = {};
     ScopedSigaction scoped_sigaction(SIGURG, &action, &original_action);
     if (!scoped_sigaction.succeeded()) {
       return false;

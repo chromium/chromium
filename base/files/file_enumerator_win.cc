@@ -37,9 +37,7 @@ FilePath BuildSearchFilter(FileEnumerator::FolderSearchPolicy policy,
 
 // FileEnumerator::FileInfo ----------------------------------------------------
 
-FileEnumerator::FileInfo::FileInfo() {
-  UNSAFE_TODO(memset(&find_data_, 0, sizeof(find_data_)));
-}
+FileEnumerator::FileInfo::FileInfo() = default;
 
 bool FileEnumerator::FileInfo::IsDirectory() const {
   return (find_data().dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
@@ -116,7 +114,6 @@ FileEnumerator::FileEnumerator(const FilePath& root_path,
     file_type_ |= (FileType::FILES | FileType::DIRECTORIES);
   }
 
-  UNSAFE_TODO(memset(&find_data_, 0, sizeof(find_data_)));
   pending_paths_.push(root_path);
 }
 
