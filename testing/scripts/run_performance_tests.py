@@ -775,6 +775,7 @@ class CrossbenchTest(object):
         action='store_true',
         default=False,
         help='Connect to test device over TCP (used on Android desktop)')
+    parser.add_argument('--device', help='The device to connect to')
     self.cb_options, self.options.passthrough_args = parser.parse_known_args(
         self.options.passthrough_args)
 
@@ -879,6 +880,8 @@ class CrossbenchTest(object):
     if self.cb_options.connect_to_device_over_network:
       browser_finder_args.append('--connect-to-device-over-network')
       logging.getLogger().setLevel(logging.DEBUG)
+    if self.cb_options.device:
+      browser_finder_args.extend(['--device', self.cb_options.device])
     parser.parse_args(browser_finder_args)
     possible_browser = browser_finder.FindBrowser(options)
     if not possible_browser:
