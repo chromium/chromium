@@ -908,13 +908,14 @@ IN_PROC_BROWSER_TEST_F(SideBySideBrowserViewTest, ScrimForTabModalInSplitView) {
       active_contents_container_view()->contents_scrim_view()->GetVisible());
 
   // Swapping the tab with the tab modal dialog into the inactive spot in the
-  // split should show the scrim on the inactive view.
+  // split should make that view active and show the scrim.
   browser()->tab_strip_model()->UpdateTabInSplit(
       browser()->tab_strip_model()->GetTabAtIndex(1), 2,
       TabStripModel::SplitUpdateType::kSwap);
-  EXPECT_FALSE(
-      active_contents_container_view()->contents_scrim_view()->GetVisible());
+  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
   EXPECT_TRUE(
+      active_contents_container_view()->contents_scrim_view()->GetVisible());
+  EXPECT_FALSE(
       inactive_contents_container_view()->contents_scrim_view()->GetVisible());
 }
 

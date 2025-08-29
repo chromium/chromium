@@ -880,6 +880,11 @@ void TabStripModel::ActivateTabAt(int index,
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
   CHECK(ContainsIndex(index));
+
+  if (!CanActivateTabAt(index)) {
+    return;
+  }
+
   TRACE_EVENT0("ui", "TabStripModel::ActivateTabAt");
 
   scrubbing_metrics_.IncrementPressCount(user_gesture);
@@ -3606,7 +3611,10 @@ void TabStripModel::SelectRelativeTab(TabRelativeDirection direction,
   const int delta = direction == TabRelativeDirection::kNext ? 1 : -1;
   int index = (start_index + count() + delta) % count();
   std::optional<tab_groups::TabGroupId> group = GetTabGroupForTab(index);
-  while (group.has_value() && IsGroupCollapsed(group.value())) {
+  // Skip over tabs in collapsed groups and unblocked tabs in a split that
+  // contains a blocked tab.
+  while ((group.has_value() && IsGroupCollapsed(group.value())) ||
+         !CanActivateTabAt(index)) {
     index = (index + count() + delta) % count();
     group = GetTabGroupForTab(index);
   }
@@ -3885,16 +3893,21 @@ void TabStripModel::UpdateTabInSplitImpl(tabs::TabInterface* split_tab,
   CHECK(std::any_of(tabs_to_split.begin(), tabs_to_split.end(),
                     [](tabs::TabInterface* t) { return t->IsActivated(); }));
 
+  tabs::TabInterface* update_tab = GetTabAtIndex(update_index);
+  const bool is_update_tab_blocked = IsTabBlocked(update_index);
+
   // Remove `split_tab` from `tabs_to_split` as it will be replaced or swapped
-  // out of the split and remove the active tab.
-  std::erase_if(tabs_to_split, [split_tab](tabs::TabInterface* tab) {
-    return tab == split_tab || tab->IsActivated();
+  // out of the split and remove the active tab unless the tab moving into the
+  // split is blocked in which case that tab will become active.
+  std::erase_if(tabs_to_split, [split_tab, is_update_tab_blocked](
+                                   tabs::TabInterface* tab) {
+    return tab == split_tab || (tab->IsActivated() && !is_update_tab_blocked);
   });
 
   // If the initial split isn't active, add the tab at `update_index` since it
   // will be added to the split.
-  if (!initial_split_active) {
-    tabs_to_split.push_back(GetTabAtIndex(update_index));
+  if (!initial_split_active && !is_update_tab_blocked) {
+    tabs_to_split.push_back(update_tab);
   }
 
   // This operation is a bulk operation and is done in multiple steps.
@@ -3910,11 +3923,11 @@ void TabStripModel::UpdateTabInSplitImpl(tabs::TabInterface* split_tab,
   if (update_type == SplitUpdateType::kReplace) {
     const int split_index = GetIndexOfTab(split_tab);
     MoveTabToIndexImpl(update_index, split_index, split_tab->GetGroup(),
-                       split_tab->IsPinned(), initial_split_active);
+                       split_tab->IsPinned(),
+                       initial_split_active || is_update_tab_blocked);
     CloseWebContentsAt(GetIndexOfTab(split_tab),
                        TabCloseTypes::CLOSE_USER_GESTURE);
   } else {
-    tabs::TabInterface* update_tab = GetTabAtIndex(update_index);
     std::optional<tab_groups::TabGroupId> initial_split_group =
         split_tab->GetGroup();
     const bool initial_split_pinned = split_tab->IsPinned();
@@ -3940,7 +3953,7 @@ void TabStripModel::UpdateTabInSplitImpl(tabs::TabInterface* split_tab,
 
     MoveTabToIndexImpl(GetIndexOfTab(update_tab), split_index,
                        initial_split_group, initial_split_pinned,
-                       initial_split_active);
+                       initial_split_active || is_update_tab_blocked);
   }
 
   std::vector<int> split_indices;
@@ -5095,6 +5108,23 @@ gfx::Range TabStripModel::GetIndexRangeOfSplit(
     split_tabs::SplitTabId split_id) const {
   split_tabs::SplitTabData* split_data = GetSplitData(split_id);
   return split_data->GetIndexRange();
+}
+
+bool TabStripModel::CanActivateTabAt(int index) {
+  const std::optional<split_tabs::SplitTabId> split = GetSplitForTab(index);
+  if (!split.has_value() || IsTabBlocked(index)) {
+    return true;
+  }
+
+  gfx::Range split_range = GetIndexRangeOfSplit(split.value());
+  for (size_t other_index = split_range.GetMin();
+       other_index < split_range.GetMax(); other_index++) {
+    if (static_cast<int>(other_index) != index && IsTabBlocked(other_index)) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 TabStripModel::ScopedTabStripModalUIImpl::ScopedTabStripModalUIImpl(

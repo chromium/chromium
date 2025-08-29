@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_desktop.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "chrome/browser/ui/browser.h"
@@ -53,6 +54,15 @@ void JavaScriptTabModalDialogManagerDelegateDesktop::WillRunDialog() {
     observer->OnJavaScriptDialog();
   }
 #endif
+
+  // If the tab triggering the dialog is in a split but not active, activate the
+  // tab triggering the dialog.
+  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents_);
+  BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
+  if (browser && tab->IsSplit() && !tab->IsActivated()) {
+    browser->GetTabStripModel()->ActivateTabAt(
+        browser->GetTabStripModel()->GetIndexOfTab(tab));
+  }
 }
 
 void JavaScriptTabModalDialogManagerDelegateDesktop::DidCloseDialog() {
@@ -84,7 +94,14 @@ bool JavaScriptTabModalDialogManagerDelegateDesktop::IsWebContentsForemost() {
     return false;
   }
 
-  return browser->tab_strip_model()->GetActiveWebContents() == web_contents_;
+  // A dialog can be shown on the inactive tab of a split. In that case the
+  // inactive tab will be made active.
+  std::vector<tabs::TabInterface*> tabs =
+      browser->tab_strip_model()->GetForegroundTabs();
+  return std::any_of(tabs.begin(), tabs.end(),
+                     [this](const tabs::TabInterface* tab) {
+                       return tab->GetContents() == web_contents_;
+                     });
 }
 
 bool JavaScriptTabModalDialogManagerDelegateDesktop::IsApp() {

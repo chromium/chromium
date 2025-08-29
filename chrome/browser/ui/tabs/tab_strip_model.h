@@ -360,7 +360,8 @@ class TabStripModel {
   // Makes the tab at the specified index the active tab. |gesture_detail.type|
   // contains the gesture type that triggers the tab activation.
   // |gesture_detail.time_stamp| contains the timestamp of the user gesture, if
-  // any.
+  // any. If |index| refers to a tab in a split view, it won't be activated if
+  // the other tab is blocked.
   void ActivateTabAt(
       int index,
       TabStripUserGestureDetails gesture_detail = TabStripUserGestureDetails(
@@ -1349,6 +1350,10 @@ class TabStripModel {
       int final_index,
       const std::optional<tab_groups::TabGroupId> group,
       bool pin);
+
+  // Returns whether a tab is eligible for activation. If a tab is in a split
+  // view then it cannot be activated if the other tab is blocked.
+  bool CanActivateTabAt(int index);
 
   // The WebContents data currently hosted within this TabStripModel. This must
   // be kept in sync with |selection_model_|.
