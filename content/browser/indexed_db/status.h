@@ -40,11 +40,11 @@ class CONTENT_EXPORT Status {
 
   // Create a success or error status that didn't originate in the database
   // engine.
-  static Status OK();
-  static Status InvalidArgument(std::string_view msg);
-  static Status NotFound(std::string_view msg);
-  static Status IOError(std::string_view msg = {});
-  static Status Corruption(std::string_view msg);
+  [[nodiscard]] static Status OK();
+  [[nodiscard]] static Status InvalidArgument(std::string_view msg);
+  [[nodiscard]] static Status NotFound(std::string_view msg);
+  [[nodiscard]] static Status IOError(std::string_view msg = {});
+  [[nodiscard]] static Status Corruption(std::string_view msg);
 
   // Returns true iff the status indicates the corresponding success or error.
   bool ok() const;

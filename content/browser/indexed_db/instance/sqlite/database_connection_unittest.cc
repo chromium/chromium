@@ -136,7 +136,7 @@ class DatabaseConnectionCorruptionTest : public DatabaseConnectionTest {
     auto db = OpenDb(kDbName);
 
     // Create an object store with one record in it.
-    {
+    auto set_up_db_with_one_record = [&]() {
       auto vc = db->CreateTransaction(
           blink::mojom::IDBTransactionDurability::Default,
           blink::mojom::IDBTransactionMode::VersionChange);
@@ -152,7 +152,8 @@ class DatabaseConnectionCorruptionTest : public DatabaseConnectionTest {
           vc->CommitPhaseOne(CreateBlobWriteCallback(&succeeded), {}).ok());
       EXPECT_TRUE(succeeded);
       ASSERT_TRUE(vc->CommitPhaseTwo().ok());
-    }
+    };
+    set_up_db_with_one_record();
 
     // Make sure that reading the record works.
     auto read_value = [&]() {
@@ -188,17 +189,34 @@ class DatabaseConnectionCorruptionTest : public DatabaseConnectionTest {
     db.reset();
     db = OpenDb(kDbName);
 
-    value = read_value();
+    auto verify_recovery = [&]() {
+      StatusOr<IndexedDBValue> recovered_value = read_value();
 #if BUILDFLAG(IS_FUCHSIA)
-    // Read "works" in that it doesn't fail, but the record doesn't exist,
-    // since the corrupted DB was deleted and recreated.
-    ASSERT_TRUE(value.has_value());
-    EXPECT_TRUE(value.value().empty());
-#else
-    // Read works because the DB was recovered.
-    ASSERT_TRUE(value.has_value());
-    EXPECT_EQ(value.value().bits, kValue.bits);
+      // Read "works" in that it doesn't fail, but the record doesn't exist,
+      // since the corrupted DB was deleted and recreated.
+      ASSERT_TRUE(recovered_value.has_value());
+      EXPECT_TRUE(recovered_value.value().empty());
+
+      // Reinsert the record. If we don't, the database will be deleted the next
+      // time the connection is destroyed, as the database is empty.
+      set_up_db_with_one_record();
+      recovered_value = read_value();
 #endif
+
+      // Read works because the DB was recovered (or, on Fuchsia, was deleted,
+      // recreated, and the record inserted again).
+      ASSERT_TRUE(recovered_value.has_value());
+      EXPECT_EQ(recovered_value.value().bits, kValue.bits);
+    };
+    verify_recovery();
+
+    // Now try a different style of corruption which is detected when the DB is
+    // first opened. This verifies that such corruptions will be detected and
+    // handled on startup.
+    db.reset();
+    ASSERT_TRUE(sql::test::CorruptSizeInHeader(db_path));
+    db = OpenDb(kDbName);
+    verify_recovery();
   }
 };
 

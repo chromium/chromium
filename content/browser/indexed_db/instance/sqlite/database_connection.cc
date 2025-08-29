@@ -68,6 +68,12 @@
     return Status(*db_);                                \
   }
 
+// Executes the given SQL on `db` and returns a Status if there was an error.
+#define EXECUTE_AND_RETURN_STATUS_ON_ERROR(db, sql) \
+  if (!db->Execute(sql)) {                          \
+    return Status(*db);                             \
+  }
+
 namespace content::indexed_db::sqlite {
 namespace {
 
@@ -119,19 +125,12 @@ blink::IndexedDBKeyPath ColumnKeyPath(sql::Statement& statement,
 // version supplied by the application for the IndexedDB database.
 //
 // The version used to initialize the meta table for the first time.
-constexpr int kEmptySchemaVersion = 1;
-constexpr int kCurrentSchemaVersion = 10;
+constexpr int kCurrentSchemaVersion = 1;
 constexpr int kCompatibleSchemaVersion = kCurrentSchemaVersion;
 
-// Atomically creates the current schema for a new `db`, inserts the initial
-// IndexedDB metadata entry with `name`, and sets the current version in
-// `meta_table`.
-void InitializeNewDatabase(sql::Database* db,
-                           std::u16string_view name,
-                           sql::MetaTable* meta_table) {
-  sql::Transaction transaction(db);
-  TRANSIENT_CHECK(transaction.Begin());
-
+// Creates the current schema for a new `db` and inserts the initial IndexedDB
+// metadata entry with `name`.
+Status CreateSchema(sql::Database* db, std::u16string_view name) {
   // Create the tables.
   //
   // Note on the schema: The IDB spec defines the "name"
@@ -152,40 +151,42 @@ void InitializeNewDatabase(sql::Database* db,
   //
   // Stores a single row containing the properties of
   // `IndexedDBDatabaseMetadata` for this database.
-  TRANSIENT_CHECK(
-      db->Execute("CREATE TABLE indexed_db_metadata "
-                  "(name BLOB NOT NULL,"
-                  " version INTEGER NOT NULL)"));
-  TRANSIENT_CHECK(
-      db->Execute("CREATE TABLE object_stores "
-                  "(id INTEGER PRIMARY KEY,"
-                  " name BLOB NOT NULL,"
-                  " key_path BLOB,"
-                  " auto_increment INTEGER NOT NULL,"
-                  " key_generator_current_number INTEGER NOT NULL)"));
-  TRANSIENT_CHECK(
-      db->Execute("CREATE TABLE indexes "
-                  "(object_store_id INTEGER NOT NULL,"
-                  " id INTEGER NOT NULL,"
-                  " name BLOB NOT NULL,"
-                  " key_path BLOB,"
-                  " is_unique INTEGER NOT NULL,"
-                  " multi_entry INTEGER NOT NULL,"
-                  " PRIMARY KEY (object_store_id, id)"
-                  ") WITHOUT ROWID"));
+  EXECUTE_AND_RETURN_STATUS_ON_ERROR(db,
+                                     "CREATE TABLE indexed_db_metadata "
+                                     "(name BLOB NOT NULL,"
+                                     " version INTEGER NOT NULL)");
+  EXECUTE_AND_RETURN_STATUS_ON_ERROR(
+      db,
+      "CREATE TABLE object_stores "
+      "(id INTEGER PRIMARY KEY,"
+      " name BLOB NOT NULL,"
+      " key_path BLOB,"
+      " auto_increment INTEGER NOT NULL,"
+      " key_generator_current_number INTEGER NOT NULL)");
+  EXECUTE_AND_RETURN_STATUS_ON_ERROR(db,
+                                     "CREATE TABLE indexes "
+                                     "(object_store_id INTEGER NOT NULL,"
+                                     " id INTEGER NOT NULL,"
+                                     " name BLOB NOT NULL,"
+                                     " key_path BLOB,"
+                                     " is_unique INTEGER NOT NULL,"
+                                     " multi_entry INTEGER NOT NULL,"
+                                     " PRIMARY KEY (object_store_id, id)"
+                                     ") WITHOUT ROWID");
   // Stores object store records. The rows are immutable - updating the value
   // for a combination of object_store_id and key is accomplished by deleting
   // the previous row and inserting a new one (see `PutRecord()`).
-  TRANSIENT_CHECK(
-      db->Execute("CREATE TABLE records "
-                  "(row_id INTEGER PRIMARY KEY,"
-                  " object_store_id INTEGER NOT NULL,"
-                  " key BLOB NOT NULL,"
-                  " value BLOB NOT NULL)"));
+  EXECUTE_AND_RETURN_STATUS_ON_ERROR(db,
+                                     "CREATE TABLE records "
+                                     "(row_id INTEGER PRIMARY KEY,"
+                                     " object_store_id INTEGER NOT NULL,"
+                                     " key BLOB NOT NULL,"
+                                     " value BLOB NOT NULL)");
   // Create the index separately so it can be given a name (which is referenced
   // by tests).
-  TRANSIENT_CHECK(db->Execute(
-      "CREATE UNIQUE INDEX records_by_key ON records(object_store_id, key)"));
+  EXECUTE_AND_RETURN_STATUS_ON_ERROR(
+      db,
+      "CREATE UNIQUE INDEX records_by_key ON records(object_store_id, key)");
   // Stores the mapping of object store records to the index keys that reference
   // them: record_row_id -> [index_id, key]. In general, a record may be
   // referenced by multiple keys across multiple indexes (on the same object
@@ -197,18 +198,20 @@ void InitializeNewDatabase(sql::Database* db,
   // them here and creating an index over them expedites cursor iteration
   // because it removes the need to JOIN against the records table. See
   // https://crbug.com/433318798.
-  TRANSIENT_CHECK(
-      db->Execute("CREATE TABLE index_references "
-                  "(record_row_id INTEGER NOT NULL,"
-                  " index_id INTEGER NOT NULL,"
-                  " key BLOB NOT NULL,"
-                  " object_store_id INTEGER NOT NULL,"
-                  " record_key BLOB NOT NULL,"
-                  " PRIMARY KEY (record_row_id, index_id, key)"
-                  ") WITHOUT ROWID"));
-  TRANSIENT_CHECK(db->Execute(
+  EXECUTE_AND_RETURN_STATUS_ON_ERROR(
+      db,
+      "CREATE TABLE index_references "
+      "(record_row_id INTEGER NOT NULL,"
+      " index_id INTEGER NOT NULL,"
+      " key BLOB NOT NULL,"
+      " object_store_id INTEGER NOT NULL,"
+      " record_key BLOB NOT NULL,"
+      " PRIMARY KEY (record_row_id, index_id, key)"
+      ") WITHOUT ROWID");
+  EXECUTE_AND_RETURN_STATUS_ON_ERROR(
+      db,
       "CREATE INDEX index_references_by_key "
-      "ON index_references (object_store_id, index_id, key, record_key)"));
+      "ON index_references (object_store_id, index_id, key, record_key)");
 
   // This table stores blob metadata and its actual bytes. A blob should only
   // appear once, regardless of how many records point to it. The columns in
@@ -219,7 +222,8 @@ void InitializeNewDatabase(sql::Database* db,
   //
   // TODO(crbug.com/419208485): consider taking into account the blob's UUID to
   // further avoid duplication.
-  TRANSIENT_CHECK(db->Execute(
+  EXECUTE_AND_RETURN_STATUS_ON_ERROR(
+      db,
       "CREATE TABLE blobs "
       // This row id will be used as the IndexedDBExternalObject::blob_number_.
       "(row_id INTEGER PRIMARY KEY,"
@@ -234,46 +238,49 @@ void InitializeNewDatabase(sql::Database* db,
       " size_bytes INTEGER,"     // Null for FSA handles.
       " file_name BLOB,"         // only for files
       " last_modified INTEGER)"  // only for files
-      ));
+  );
 
   // Blobs may be referenced by rows in `records` or by active connections to
   // clients.
   // TODO(crbug.com/419208485): Consider making this a WITHOUT ROWID table.
   // Since NULL values are not allowed in the primary key of such a table, a
   // specific value of record_row_id will be needed to represent active blobs.
-  TRANSIENT_CHECK(
-      db->Execute("CREATE TABLE blob_references "
-                  "(row_id INTEGER PRIMARY KEY,"
-                  " blob_row_id INTEGER NOT NULL,"
-                  // record_row_id will be null when the reference corresponds
-                  // to an active blob reference (represented in the browser by
-                  // ActiveBlobStreamer). Otherwise it will be the id of the
-                  // record row that holds the reference.
-                  " record_row_id INTEGER)"));
-  TRANSIENT_CHECK(
-      db->Execute("CREATE INDEX blob_references_by_blob "
-                  "ON blob_references (blob_row_id)"));
-  TRANSIENT_CHECK(
-      db->Execute("CREATE INDEX blob_references_by_record "
-                  "ON blob_references (record_row_id)"));
+  EXECUTE_AND_RETURN_STATUS_ON_ERROR(
+      db,
+      "CREATE TABLE blob_references "
+      "(row_id INTEGER PRIMARY KEY,"
+      " blob_row_id INTEGER NOT NULL,"
+      // record_row_id will be null when the reference corresponds
+      // to an active blob reference (represented in the browser by
+      // ActiveBlobStreamer). Otherwise it will be the id of the
+      // record row that holds the reference.
+      " record_row_id INTEGER)");
+  EXECUTE_AND_RETURN_STATUS_ON_ERROR(db,
+                                     "CREATE INDEX blob_references_by_blob "
+                                     "ON blob_references (blob_row_id)");
+  EXECUTE_AND_RETURN_STATUS_ON_ERROR(db,
+                                     "CREATE INDEX blob_references_by_record "
+                                     "ON blob_references (record_row_id)");
 
   // Create deletion triggers. Deletion triggers are not used for the
   // object_stores and indexes tables since their deletion occurs only through
   // dedicated functions intended specifically for this purpose.
-  TRANSIENT_CHECK(db->Execute(
+  EXECUTE_AND_RETURN_STATUS_ON_ERROR(
+      db,
       "CREATE TRIGGER on_record_deleted AFTER DELETE ON records "
       "BEGIN"
       "  DELETE FROM index_references WHERE record_row_id = OLD.row_id;"
       "  DELETE FROM blob_references WHERE record_row_id = OLD.row_id;"
-      "END"));
-  TRANSIENT_CHECK(db->Execute(
+      "END");
+  EXECUTE_AND_RETURN_STATUS_ON_ERROR(
+      db,
       "CREATE TRIGGER on_blob_reference_deleted"
       "  AFTER DELETE ON blob_references "
       "WHEN NOT EXISTS"
       "  (SELECT 1 FROM blob_references WHERE blob_row_id = OLD.blob_row_id) "
       "BEGIN"
       "  DELETE FROM blobs WHERE row_id = OLD.blob_row_id;"
-      "END"));
+      "END");
 
   // Insert the initial metadata entry.
   sql::Statement statement(
@@ -281,15 +288,15 @@ void InitializeNewDatabase(sql::Database* db,
                              "(name, version) VALUES (?, ?)"));
   statement.BindBlob(0, std::u16string(name));
   statement.BindInt64(1, blink::IndexedDBDatabaseMetadata::NO_VERSION);
-  TRANSIENT_CHECK(statement.Run());
+  if (!statement.Run()) {
+    return Status(*db);
+  }
 
-  // Set the current version in the meta table.
-  TRANSIENT_CHECK(meta_table->SetVersionNumber(kCurrentSchemaVersion));
-
-  TRANSIENT_CHECK(transaction.Commit());
+  return Status::OK();
 }
 
-blink::IndexedDBDatabaseMetadata GenerateIndexedDbMetadata(sql::Database* db) {
+StatusOr<blink::IndexedDBDatabaseMetadata> GenerateIndexedDbMetadata(
+    sql::Database* db) {
   blink::IndexedDBDatabaseMetadata metadata;
 
   // Set the database name and version.
@@ -315,7 +322,9 @@ blink::IndexedDBDatabaseMetadata GenerateIndexedDbMetadata(sql::Database* db) {
       max_object_store_id = std::max(max_object_store_id, store_metadata.id);
       metadata.object_stores[store_metadata.id] = std::move(store_metadata);
     }
-    TRANSIENT_CHECK(statement.Succeeded());
+    if (!statement.Succeeded()) {
+      return base::unexpected(Status(*db));
+    }
     metadata.max_object_store_id = max_object_store_id;
   }
 
@@ -338,7 +347,9 @@ blink::IndexedDBDatabaseMetadata GenerateIndexedDbMetadata(sql::Database* db) {
           std::max(store_metadata.max_index_id, index_metadata.id);
       store_metadata.indexes[index_metadata.id] = std::move(index_metadata);
     }
-    TRANSIENT_CHECK(statement.Succeeded());
+    if (!statement.Succeeded()) {
+      return base::unexpected(Status(*db));
+    }
   }
 
   return metadata;
@@ -764,54 +775,22 @@ StatusOr<std::unique_ptr<DatabaseConnection>> DatabaseConnection::Open(
     std::optional<std::u16string_view> name,
     base::FilePath path,
     BackingStoreImpl& backing_store) {
-  constexpr sql::Database::Tag kSqlTag = "IndexedDB";
-  constexpr sql::Database::Tag kSqlTagInMemory = "IndexedDBEphemeral";
-  auto db =
-      std::make_unique<sql::Database>(sql::DatabaseOptions()
-                                          .set_exclusive_locking(true)
-                                          .set_wal_mode(true)
-                                          .set_enable_triggers(true),
-                                      path.empty() ? kSqlTagInMemory : kSqlTag);
-
-  if (path.empty()) {
-    TRANSIENT_CHECK(db->OpenInMemory());
-  } else {
-    TRANSIENT_CHECK(db->Open(path));
+  auto connection =
+      base::WrapUnique(new DatabaseConnection(path, backing_store));
+  Status s = connection->Init(name);
+  if (!s.ok()) {
+    // If opening fails, recover or destroy the DB and try once more. This is
+    // accomplished by destroying `connection`, since the destructor handles
+    // errors.
+    // TODO(crbug.com/419272070): add logging for success rate of second
+    // attempt.
+    connection = base::WrapUnique(new DatabaseConnection(path, backing_store));
+    s = connection->Init(name);
   }
-
-  // What SQLite calls "recursive" triggers are required for SQLite to execute
-  // a DELETE ON trigger after `INSERT OR REPLACE` replaces a row.
-  TRANSIENT_CHECK(db->Execute("PRAGMA recursive_triggers=ON"));
-
-  auto meta_table = std::make_unique<sql::MetaTable>();
-  TRANSIENT_CHECK(meta_table->Init(db.get(), kEmptySchemaVersion,
-                                   kCompatibleSchemaVersion));
-
-  switch (meta_table->GetVersionNumber()) {
-    case kEmptySchemaVersion:
-      TRANSIENT_CHECK(name.has_value());
-      InitializeNewDatabase(db.get(), *name, meta_table.get());
-      break;
-    // ...
-    // Schema upgrades go here.
-    // ...
-    case kCurrentSchemaVersion:
-      // Already current.
-      break;
-    default:
-      NOTREACHED();
+  if (!s.ok()) {
+    return base::unexpected(s);
   }
-
-  blink::IndexedDBDatabaseMetadata metadata =
-      GenerateIndexedDbMetadata(db.get());
-  // Database corruption can cause a mismatch.
-  if (name) {
-    TRANSIENT_CHECK(metadata.name == *name);
-  }
-
-  return base::WrapUnique(new DatabaseConnection(
-      std::move(path), std::move(db), std::move(meta_table),
-      std::move(metadata), backing_store));
+  return connection;
 }
 
 // static
@@ -829,38 +808,16 @@ void DatabaseConnection::Release(base::WeakPtr<DatabaseConnection> db) {
   }
 }
 
-DatabaseConnection::DatabaseConnection(
-    base::FilePath path,
-    std::unique_ptr<sql::Database> db,
-    std::unique_ptr<sql::MetaTable> meta_table,
-    blink::IndexedDBDatabaseMetadata metadata,
-    BackingStoreImpl& backing_store)
-    : path_(path),
-      db_(std::move(db)),
-      meta_table_(std::move(meta_table)),
-      metadata_(std::move(metadata)),
-      backing_store_(backing_store) {
-  // There should be no active blobs in this database at this point, so we can
-  // remove blob references that were associated with active blobs. These may
-  // have been left behind if Chromium crashed. Deleting the blob references
-  // should also delete the blob if appropriate.
-  sql::Statement statement(db_->GetCachedStatement(
-      SQL_FROM_HERE,
-      "DELETE FROM blob_references WHERE record_row_id IS NULL"));
-  TRANSIENT_CHECK(statement.Run());
-}
+DatabaseConnection::DatabaseConnection(base::FilePath path,
+                                       BackingStoreImpl& backing_store)
+    : path_(path), backing_store_(backing_store) {}
 
 DatabaseConnection::~DatabaseConnection() {
-  if (path_.empty()) {
+  if (!db_ || path_.empty()) {
     return;
   }
 
-  // If in a zygotic state, `DeleteIdbDatabase()` has been called.
-  if (IsZygotic()) {
-    db_.reset();
-    sql::Database::Delete(path_);
-  } else if (db_ && !sql::IsSqliteSuccessCode(
-                        sql::ToSqliteResultCode(db_->GetErrorCode()))) {
+  if (!sql::IsSqliteSuccessCode(sql::ToSqliteResultCode(db_->GetErrorCode()))) {
     // Note that `DatabaseConnection` does not set an error callback on
     // sql::Database. Instead, errors are returned for individual operations,
     // which will trickle up through backing store agnostic code and close all
@@ -870,16 +827,108 @@ DatabaseConnection::~DatabaseConnection() {
 #if BUILDFLAG(IS_FUCHSIA)
     // Recovery is not supported with WAL mode DBs in Fuchsia.
     if (db_->is_open() && sql::IsErrorCatastrophic(db_->GetErrorCode())) {
-      db_->RazeAndPoison();
+      db_.reset();
+      sql::Database::Delete(path_);
     }
 #else
-    // `RecoverIfPossible` will no-op for several reasons including if the error is
-    // thought to be transient.
+    // `RecoverIfPossible` will no-op for several reasons including if the error
+    // is thought to be transient.
     std::ignore = sql::Recovery::RecoverIfPossible(
         db_.get(), db_->GetErrorCode(),
         sql::Recovery::Strategy::kRecoverWithMetaVersionOrRaze);
 #endif
+  } else if (IsZygotic()) {
+    // If in a zygotic state, `DeleteIdbDatabase()` has been called.
+    CHECK(inited_);
+    db_.reset();
+    sql::Database::Delete(path_);
   }
+}
+
+Status DatabaseConnection::Init(std::optional<std::u16string_view> name) {
+  constexpr sql::Database::Tag kSqlTag = "IndexedDB";
+  constexpr sql::Database::Tag kSqlTagInMemory = "IndexedDBEphemeral";
+  db_ = std::make_unique<sql::Database>(
+      sql::DatabaseOptions()
+          .set_exclusive_locking(true)
+          .set_wal_mode(true)
+          .set_enable_triggers(true),
+      path_.empty() ? kSqlTagInMemory : kSqlTag);
+
+  if (path_.empty()) {
+    if (!db_->OpenInMemory()) {
+      return Status(*db_);
+    }
+  } else if (!db_->Open(path_)) {
+    return Status(*db_);
+  }
+
+  // What SQLite calls "recursive" triggers are required for SQLite to execute
+  // a DELETE ON trigger after `INSERT OR REPLACE` replaces a row.
+  if (!db_->Execute("PRAGMA recursive_triggers=ON")) {
+    return Status(*db_);
+  }
+
+  sql::Transaction transaction(db_.get());
+  if (!transaction.Begin()) {
+    return Status(*db_);
+  }
+
+  if (!sql::MetaTable::DoesTableExist(db_.get())) {
+    IDB_RETURN_IF_ERROR(CreateSchema(db_.get(), *name));
+  }
+
+  meta_table_ = std::make_unique<sql::MetaTable>();
+  if (!meta_table_->Init(db_.get(), kCurrentSchemaVersion,
+                         kCompatibleSchemaVersion)) {
+    return Status(*db_);
+  }
+
+  if (meta_table_->GetCompatibleVersionNumber() > kCurrentSchemaVersion) {
+    // TODO(crbug.com/419272070): handle this and other cases where the DB needs
+    // to be deleted even though there is no SQL error.
+    return Status::NotFound("Database too new");
+  }
+
+  switch (meta_table_->GetVersionNumber()) {
+    // ...
+    // Schema upgrades go here.
+    // ...
+    case kCurrentSchemaVersion:
+      // Already current.
+      break;
+    default:
+      return Status::NotFound(
+          "Unknown database schema version (database too new?)");
+  }
+
+  StatusOr<blink::IndexedDBDatabaseMetadata> metadata =
+      GenerateIndexedDbMetadata(db_.get());
+  if (!metadata.has_value()) {
+    return metadata.error();
+  }
+
+  metadata_ = *std::move(metadata);
+  // Database corruption can cause a mismatch.
+  if (name && (metadata_.name != *name)) {
+    return Status::Corruption("Database name mismatch");
+  }
+
+  // There should be no active blobs in this database at this point, so we can
+  // remove blob references that were associated with active blobs. These may
+  // have been left behind if Chromium crashed. Deleting the blob references
+  // should also delete the blob if appropriate.
+  sql::Statement statement(db_->GetCachedStatement(
+      SQL_FROM_HERE,
+      "DELETE FROM blob_references WHERE record_row_id IS NULL"));
+  RUN_STATEMENT_RETURN_STATUS_ON_ERROR(statement);
+
+  if (!transaction.Commit()) {
+    return Status(*db_);
+  }
+
+  inited_ = true;
+  return Status::OK();
 }
 
 base::WeakPtr<DatabaseConnection> DatabaseConnection::GetWeakPtr() {

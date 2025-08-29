@@ -232,11 +232,13 @@ class DatabaseConnection {
       int64_t record_row_id);
 
  private:
-  DatabaseConnection(base::FilePath path,
-                     std::unique_ptr<sql::Database> db,
-                     std::unique_ptr<sql::MetaTable> meta_table,
-                     blink::IndexedDBDatabaseMetadata metadata,
-                     BackingStoreImpl& backing_store);
+  DatabaseConnection(base::FilePath path, BackingStoreImpl& backing_store);
+
+  // All startup/initialization tasks that can error are performed here. Will
+  // return Status::OK() on success. `name` must be provided if the database is
+  // new. If the database is pre-existing, `name` may not be provided, but if it
+  // is, it must match the database's stored name.
+  Status Init(std::optional<std::u16string_view> name);
 
   bool HasActiveVersionChangeTransaction() const {
     return metadata_snapshot_.has_value();
@@ -338,6 +340,10 @@ class DatabaseConnection {
   // table to stay in sync with `active_blobs_` regardless of whether the
   // transaction is ultimately committed or rolled back.
   bool sync_active_blobs_after_transaction_ = false;
+
+  // False until `Init()` completes successfully. This is currently only used
+  // for verifying expectations wrt error handling.
+  bool inited_ = false;
 
   // TODO(crbug.com/419203257): this should invalidate its weak pointers when
   // `db_` is closed.
