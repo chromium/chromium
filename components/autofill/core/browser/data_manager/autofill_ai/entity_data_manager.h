@@ -16,6 +16,8 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 
 namespace history {
@@ -45,6 +47,8 @@ class EntityDataManager : public KeyedService, history::HistoryServiceObserver {
   };
 
   explicit EntityDataManager(
+      const PrefService* pref_service,
+      const signin::IdentityManager* identity_manager,
       scoped_refptr<AutofillWebDataService> profile_database,
       history::HistoryService* history_service,
       StrikeDatabaseBase* strike_database);

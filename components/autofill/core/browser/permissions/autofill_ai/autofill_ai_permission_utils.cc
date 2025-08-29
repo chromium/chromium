@@ -380,7 +380,12 @@ bool MayPerformAutofillAiAction(const AutofillClient& client,
 }
 
 bool GetAutofillAiOptInStatus(const AutofillClient& client) {
-  const PrefService* const prefs = client.GetPrefs();
+  return GetAutofillAiOptInStatus(client.GetPrefs(),
+                                  client.GetIdentityManager());
+}
+
+bool GetAutofillAiOptInStatus(const PrefService* prefs,
+                              const signin::IdentityManager* identity_manager) {
   if (!prefs) {
     return false;
   }
@@ -394,7 +399,7 @@ bool GetAutofillAiOptInStatus(const AutofillClient& client) {
 
   // Check the account-dependent opt-in setting.
   const std::optional<GaiaIdHash> signed_in_hash =
-      GetAccountGaiaIdHash(client.GetIdentityManager());
+      GetAccountGaiaIdHash(identity_manager);
   if (!signed_in_hash) {
     return false;
   }

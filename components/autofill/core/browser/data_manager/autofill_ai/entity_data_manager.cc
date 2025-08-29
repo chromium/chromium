@@ -7,14 +7,18 @@
 #include <memory>
 
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_host.h"
 #include "components/webdata/common/web_data_results.h"
 
 namespace autofill {
 
 EntityDataManager::EntityDataManager(
+    const PrefService* pref_service,
+    const signin::IdentityManager* identity_manager,
     scoped_refptr<AutofillWebDataService> webdata_service,
     history::HistoryService* history_service,
     StrikeDatabaseBase* strike_database)
@@ -28,6 +32,13 @@ EntityDataManager::EntityDataManager(
     save_strike_db_by_host_ =
         std::make_unique<AutofillAiSaveStrikeDatabaseByHost>(strike_database);
   }
+
+  // This assumes that `EntityDataManager` is created once on profile creation.
+  base::UmaHistogramEnumeration(
+      "Autofill.Ai.OptIn.Status.Startup",
+      GetAutofillAiOptInStatus(pref_service, identity_manager)
+          ? AutofillAiOptInStatus::kOptedIn
+          : AutofillAiOptInStatus::kOptedOut);
 }
 
 EntityDataManager::~EntityDataManager() {

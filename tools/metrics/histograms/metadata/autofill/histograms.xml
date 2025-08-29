@@ -1334,7 +1334,27 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     Records whether the user is opted into the Autofill AI feature or not. This
     metric is emitted each time a form that contains information fillable by
     Autofill AI is submitted.
+
+    Deprecated in favor of Autofill.Ai.OptIn.Status.Submission - will be removed
+    after M142.
   </summary>
+</histogram>
+
+<histogram name="Autofill.Ai.OptIn.Status.{EmissionStrategy}"
+    enum="AutofillAiOptInStatus" expires_after="2026-06-30">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records whether the user is opted into the Autofill AI feature or not.
+
+    {EmissionStrategy}.
+  </summary>
+  <token key="EmissionStrategy">
+    <variant name="Startup" summary="Emitted on startup of the profile."/>
+    <variant name="Submission"
+        summary="Emitted each time a form fillable by Autofill AI is
+                 submitted."/>
+  </token>
 </histogram>
 
 <histogram name="Autofill.Ai.OptInFunnel" enum="AutofillAiOptInFunnelEvents"

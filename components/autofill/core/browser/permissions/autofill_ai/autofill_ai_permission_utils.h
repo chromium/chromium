@@ -7,6 +7,12 @@
 
 #include <string>
 
+class PrefService;
+
+namespace signin {
+class IdentityManager;
+}
+
 namespace autofill {
 
 class AutofillClient;
@@ -68,6 +74,9 @@ bool MayPerformAutofillAiAction(const AutofillClient& client,
 // particular, it is always `false` for users without a signed-in primary
 // account.
 [[nodiscard]] bool GetAutofillAiOptInStatus(const AutofillClient& client);
+[[nodiscard]] bool GetAutofillAiOptInStatus(
+    const PrefService* pref_service,
+    const signin::IdentityManager* identity_manager);
 
 // Sets the AutofillAI opt-in status for the profile and account tied to
 // `client`. Returns `false` if the opt-in status may not be changed and `true`

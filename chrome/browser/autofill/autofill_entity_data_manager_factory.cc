@@ -8,6 +8,7 @@
 #include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/strike_database.h"
@@ -40,6 +41,7 @@ AutofillEntityDataManagerFactory::AutofillEntityDataManagerFactory()
   DependsOn(WebDataServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(StrikeDatabaseFactory::GetInstance());
+  DependsOn(IdentityManagerFactory::GetInstance());
 }
 
 AutofillEntityDataManagerFactory::~AutofillEntityDataManagerFactory() = default;
@@ -62,6 +64,7 @@ AutofillEntityDataManagerFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
   return std::make_unique<EntityDataManager>(
+      profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
       std::move(local_storage),
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS),

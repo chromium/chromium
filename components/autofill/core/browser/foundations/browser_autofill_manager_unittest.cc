@@ -7304,6 +7304,7 @@ class BrowserAutofillManagerTest_AutofillAi
   void SetUp() override {
     BrowserAutofillManagerTest::SetUp();
     client().set_entity_data_manager(std::make_unique<EntityDataManager>(
+        client().GetPrefs(), client().GetIdentityManager(),
         webdata_helper_.autofill_webdata_service(), /*history_service=*/nullptr,
         /*strike_database=*/nullptr));
     client().GetEntityDataManager()->AddOrUpdateEntityInstance(

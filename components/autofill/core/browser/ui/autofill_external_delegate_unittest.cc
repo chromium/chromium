@@ -329,6 +329,7 @@ class AutofillExternalDelegateTest : public testing::Test {
  protected:
   void SetUp() override {
     client().set_entity_data_manager(std::make_unique<EntityDataManager>(
+        client().GetPrefs(), client().GetIdentityManager(),
         webdata_helper_.autofill_webdata_service(), /*history_service=*/nullptr,
         /*strike_database=*/nullptr));
     autofill_driver_ =
