@@ -207,6 +207,9 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
         "to global async tracks."),
     perfetto::Category("performance_manager.cpu_metrics").SetDescription(
       "Events reporting cpu metrics computed in performance_manager"),
+    perfetto::Category("performance_manager.graph").SetDescription(
+      "Describes the performance manager graph structure with frames, pages, "
+      "processes, etc. and their properties.").SetTags("toplevel"),
     perfetto::Category("persistent_cache"),
     perfetto::Category("PlatformMalloc"),
     perfetto::Category("ppapi"),

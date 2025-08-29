@@ -193,6 +193,17 @@ class TraceScopedTrackableObject {
   IDType id_;
 };
 
+template <class TrackType>
+TrackType InitializeTrack(const TrackType& track) {
+  if (perfetto::Tracing::IsInitialized()) {
+    // Because the track may not get any events of its own it must manually
+    // emit the track descriptor. SetTrackDescriptor may crash in unit tests
+    // where tracing isn't initialized.
+    base::TrackEvent::SetTrackDescriptor(track, track.Serialize());
+  }
+  return track;
+}
+
 }  // namespace trace_event
 }  // namespace base
 

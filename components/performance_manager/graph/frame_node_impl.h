@@ -15,6 +15,7 @@
 #include "components/performance_manager/graph/node_attached_data_storage.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/graph/node_inline_data.h"
+#include "components/performance_manager/graph/tracing_observer.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/node_attached_data.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
@@ -26,6 +27,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -310,6 +312,9 @@ class FrameNodeImpl
   // RenderFrameHost::GetFrameToken().
   const blink::LocalFrameToken frame_token_;
 
+  // Perfetto track that can record trace events for the page.
+  const perfetto::NamedTrack tracing_track_;
+
   // The unique ID of the BrowsingInstance this frame belongs to. Frames in the
   // same BrowsingInstance are allowed to script each other at least
   // asynchronously (if cross-site), and sometimes synchronously (if same-site,
@@ -381,16 +386,18 @@ class FrameNodeImpl
   // Frame priority information. Set via ExecutionContextPriorityDecorator.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
       PriorityAndReason,
-      &FrameNodeObserver::OnPriorityAndReasonChanged>
-      priority_and_reason_{PriorityAndReason(base::TaskPriority::LOWEST,
-                                             kDefaultPriorityReason)};
+      &FrameNodeObserver::OnPriorityAndReasonChanged,
+      TracedWrapper<PriorityAndReason>>
+      priority_and_reason_;
 
   // Indicates if the frame is audible. This is tracked independently of a
   // document, and if a document swap occurs the audio stream monitor machinery
   // will keep this up to date.
-  ObservedProperty::
-      NotifiesOnlyOnChanges<bool, &FrameNodeObserver::OnIsAudibleChanged>
-          is_audible_{false};
+  ObservedProperty::NotifiesOnlyOnChanges<
+      bool,
+      &FrameNodeObserver::OnIsAudibleChanged,
+      TracedWrapper<bool>>
+      is_audible_;
 
   // Indicates if the frame is capturing at least one media stream.
   ObservedProperty::NotifiesOnlyOnChanges<
@@ -413,8 +420,9 @@ class FrameNodeImpl
   // FrameVisibilityDecorator.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
       Visibility,
-      &FrameNodeObserver::OnFrameVisibilityChanged>
-      visibility_{Visibility::kUnknown};
+      &FrameNodeObserver::OnFrameVisibilityChanged,
+      TracedWrapper<Visibility>>
+      visibility_;
 
   // Indicates if this frame intersects with a large area of the viewport.
   // Defaults to true when its value is unknown.

@@ -11,6 +11,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/trace_event/typed_macros.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -19,8 +20,48 @@
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 
 namespace performance_manager {
+
+namespace {
+
+// Creates a tracing track for the FrameNode identified by `token` under
+// `parent_track`.
+const perfetto::NamedTrack CreateFrameNodeTrack(
+    std::optional<perfetto::Track> parent_track,
+    const base::UnguessableToken& token) {
+  // FrameNode usually appears under the renderer process track, although
+  // it will appear in the browser process if the renderer track isn't
+  // available.
+  auto track =
+      perfetto::NamedTrack(
+          "FrameNode", base::UnguessableTokenHash()(token),
+          parent_track ? *parent_track : perfetto::ProcessTrack::Current())
+          .disable_sibling_merge();
+  return base::trace_event::InitializeTrack(track);
+}
+
+perfetto::StaticString FrameNodeVisibilityToString(
+    const FrameNode::Visibility& visibility) {
+  switch (visibility) {
+    case FrameNode::Visibility::kUnknown:
+      return "Unknown";
+    case FrameNode::Visibility::kVisible:
+      return "Visible";
+    case FrameNode::Visibility::kNotVisible:
+      return "Not Visible";
+  }
+  NOTREACHED();
+}
+
+perfetto::StaticString PriorityAndReasonToString(
+    const execution_context_priority::PriorityAndReason& priority_and_reason) {
+  return perfetto::StaticString(
+      base::TaskPriorityToString(priority_and_reason.priority()));
+}
+
+}  // namespace
 
 // static
 constexpr char FrameNodeImpl::kDefaultPriorityReason[] =
@@ -44,12 +85,25 @@ FrameNodeImpl::FrameNodeImpl(
       process_node_(process_node),
       render_frame_id_(render_frame_id),
       frame_token_(frame_token),
+      tracing_track_(CreateFrameNodeTrack(process_node_->tracing_track(),
+                                          frame_token.value())),
       browsing_instance_id_(browsing_instance_id),
       site_instance_group_id_(site_instance_group_id),
       render_frame_host_proxy_(content::GlobalRenderFrameHostId(
           process_node->GetRenderProcessHostId().value(),
           render_frame_id)),
-      is_current_(is_current) {
+      is_current_(is_current),
+      priority_and_reason_(
+          PriorityAndReason(base::TaskPriority::LOWEST, kDefaultPriorityReason),
+          perfetto::NamedTrack("Priority", 0, tracing_track_),
+          PriorityAndReasonToString),
+      is_audible_(false,
+                  perfetto::NamedTrack("IsAudible", 0, tracing_track_),
+                  YesNoStateToString),
+      // Visibility is emitted to the frame track directly.
+      visibility_(Visibility::kUnknown,
+                  tracing_track_,
+                  FrameNodeVisibilityToString) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(process_node);
   DCHECK(page_node);
