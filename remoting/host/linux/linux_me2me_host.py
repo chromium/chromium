@@ -1216,6 +1216,18 @@ class WaylandDesktop(Desktop):
       return False
     return True
 
+  @staticmethod
+  def _is_dbus_x11_present():
+    try:
+      dbus_x11_info = subprocess.check_output(['dpkg-query', '-s', 'dbus-x11'])
+      if re.search(br'^Status:.*installed', dbus_x11_info, re.MULTILINE):
+        return True
+    except subprocess.CalledProcessError:
+      pass
+    except Exception as e:
+      logging.warning("Couldn't check if dbus-x11 is installed: %s" % str(e))
+    return False
+
   def _launch_server(self, *args, **kwargs):
     if not self._is_gnome_session_present():
       logging.error("Only GNOME based wayland hosts are supported currently. "
@@ -1223,6 +1235,11 @@ class WaylandDesktop(Desktop):
                     "'gnome-shell' is installed on it")
       # Error won't be fixed without user intervention so we quit here without
       # attempting to relaunch.
+      sys.exit(1)
+    if self._is_dbus_x11_present():
+      # TODO(432108529): Remove this check if we can fix the incompatibility.
+      logging.error("The dbus-x11 package is incompatible with Chrome Remote "
+                    "Desktop in Wayland mode. Please remove it and try again.")
       sys.exit(1)
     logging.info("Launching wayland server.")
     self._wayland_socket = self._get_unused_wayland_socket()
