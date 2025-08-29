@@ -366,11 +366,10 @@ bool NameInfo::AreAlternativeNamesMergeable(
 }
 
 bool NameInfo::MergeStructuredName(const NameInfo& newer) {
-  if (name_->MergeWithComponent(newer.GetStructuredName())) {
+  if (name_->MergeWithComponent(*newer.name_)) {
     if (base::FeatureList::IsEnabled(
             features::kAutofillSupportPhoneticNameForJP)) {
-      return alternative_name_->MergeWithComponent(
-          newer.GetStructuredAlternativeName());
+      return alternative_name_->MergeWithComponent(*newer.alternative_name_);
     }
     return true;
   }
@@ -378,11 +377,10 @@ bool NameInfo::MergeStructuredName(const NameInfo& newer) {
 }
 
 void NameInfo::MergeStructuredNameValidationStatuses(const NameInfo& newer) {
-  name_->MergeVerificationStatuses(newer.GetStructuredName());
+  name_->MergeVerificationStatuses(*newer.name_);
   if (base::FeatureList::IsEnabled(
           features::kAutofillSupportPhoneticNameForJP)) {
-    alternative_name_->MergeVerificationStatuses(
-        newer.GetStructuredAlternativeName());
+    alternative_name_->MergeVerificationStatuses(*newer.alternative_name_);
   }
 }
 
@@ -465,11 +463,11 @@ std::u16string NameInfo::GetValueForComparisonForType(
 bool NameInfo::IsStructuredNameMergeable(const NameInfo& newer) const {
   if (base::FeatureList::IsEnabled(
           features::kAutofillSupportPhoneticNameForJP)) {
-    return name_->IsMergeableWithComponent(newer.GetStructuredName()) &&
+    return name_->IsMergeableWithComponent(*newer.name_) &&
            alternative_name_->IsMergeableWithComponent(
-               newer.GetStructuredAlternativeName());
+               *newer.alternative_name_);
   }
-  return name_->IsMergeableWithComponent(newer.GetStructuredName());
+  return name_->IsMergeableWithComponent(*newer.name_);
 }
 
 bool NameInfo::FinalizeAfterImport() {

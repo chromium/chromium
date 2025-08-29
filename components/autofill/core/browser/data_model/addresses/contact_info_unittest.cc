@@ -56,7 +56,7 @@ MATCHER_P(NameIsMigrated, original_profile, "") {
          original_profile.GetRawInfo(NAME_FIRST) ==
              arg.GetRawInfo(ALTERNATIVE_GIVEN_NAME) &&
          arg.GetRawInfo(NAME_FULL).empty() &&
-         arg.GetNameInfo().GetStructuredName().AllDescendantsAreEmpty();
+         arg.GetNameInfo().GetRootForType(NAME_FULL)->AllDescendantsAreEmpty();
 }
 
 class SetFullNameTest : public testing::TestWithParam<FullNameTestCase> {};

@@ -153,17 +153,11 @@ class NameInfo : public FormGroup {
       FieldType field_type,
       const AddressCountryCode& common_country_code) const;
 
-  // Returns a constant reference to the structured name tree.
-  const AddressComponent& GetStructuredName() const { return *name_; }
-
-  // Returns a constant reference to the structured alternative name tree.
-  const AddressComponent& GetStructuredAlternativeName() const {
-    return *alternative_name_;
-  }
-
   // Returns the root node of either `name_` or `alternative_name_`
   // depending on the `type`.
   // This node is unique by definition.
+  // TODO(crbug.com/359768803): Remove this method once merging functions
+  // become non-static.
   const AddressComponent* GetRootForType(FieldType type) const;
 
  private:
