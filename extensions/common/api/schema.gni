@@ -56,7 +56,7 @@ if (enable_extensions) {
     "app_runtime.idl",
     "app_view_guest_internal.json",
     "app_window.idl",
-    "audio.idl",
+    "audio.webidl",
     "automation_internal.idl",
     "automation.idl",
     "bluetooth_low_energy.idl",
