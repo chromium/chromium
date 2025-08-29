@@ -38,7 +38,7 @@ import java.util.function.Supplier;
 public abstract class AutofillCreditCardEditor extends AutofillEditorBase
         implements ProfileDependentSetting {
     private @Nullable Profile mProfile;
-    private @Nullable Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private @Nullable Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
 
     protected CreditCard mCard;
     protected Spinner mBillingAddress;
@@ -139,7 +139,7 @@ public abstract class AutofillCreditCardEditor extends AutofillEditorBase
      * AutofillDeletePaymentMethodConfirmationDialog}.
      */
     public void setModalDialogManagerSupplier(
-            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier) {
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
     }
 

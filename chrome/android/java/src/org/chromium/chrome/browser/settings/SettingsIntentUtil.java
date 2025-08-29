@@ -9,12 +9,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 
+@NullMarked
 public class SettingsIntentUtil {
     private SettingsIntentUtil() {}
 
@@ -28,9 +28,7 @@ public class SettingsIntentUtil {
      * @return An intent ready to launch the settings activity.
      */
     public static Intent createIntent(
-            @NonNull Context context,
-            @Nullable String fragmentName,
-            @Nullable Bundle fragmentArgs) {
+            Context context, @Nullable String fragmentName, @Nullable Bundle fragmentArgs) {
         Intent intent = new Intent();
         intent.setClass(context, SettingsActivity.class);
         if (isStandaloneFragment(context, fragmentName)) {
@@ -62,8 +60,7 @@ public class SettingsIntentUtil {
      * fragments are shown in separate activities and have full control over the whole UI. See
      * {@link SettingsActivity} for details.
      */
-    private static boolean isStandaloneFragment(
-            @NonNull Context context, @Nullable String fragmentName) {
+    private static boolean isStandaloneFragment(Context context, @Nullable String fragmentName) {
         if (fragmentName == null) {
             return false;
         }

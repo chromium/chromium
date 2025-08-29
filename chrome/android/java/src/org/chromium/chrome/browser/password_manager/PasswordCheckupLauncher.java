@@ -5,8 +5,6 @@ package org.chromium.chrome.browser.password_manager;
 
 import org.jni_zero.CalledByNative;
 
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -15,9 +13,8 @@ import org.chromium.chrome.browser.settings.SettingsCustomTabLauncherImpl;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 
-/** A utitily class for launching the password leak check. */
+/** A utility class for launching the password leak check. */
 @NullMarked
 public class PasswordCheckupLauncher {
     @CalledByNative
@@ -38,7 +35,7 @@ public class PasswordCheckupLauncher {
         passwordManagerHelper.showPasswordCheckup(
                 windowAndroid.getContext().get(),
                 passwordCheckReferrer,
-                getModalDialogManagerSupplier(windowAndroid),
+                () -> windowAndroid.getModalDialogManager(),
                 accountEmail,
                 new SettingsCustomTabLauncherImpl());
     }
@@ -58,15 +55,5 @@ public class PasswordCheckupLauncher {
         if (windowAndroid.getContext().get() == null) return; // Window not available yet/anymore.
         SettingsNavigationFactory.createSettingsNavigation()
                 .startSettings(windowAndroid.getContext().get(), SettingsFragment.SAFETY_CHECK);
-    }
-
-    private static ObservableSupplier<ModalDialogManager> getModalDialogManagerSupplier(
-            WindowAndroid windowAndroid) {
-        ObservableSupplierImpl<ModalDialogManager> modalDialogManagerSupplier =
-                new ObservableSupplierImpl<>();
-        ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
-        assert modalDialogManager != null;
-        modalDialogManagerSupplier.set(modalDialogManager);
-        return modalDialogManagerSupplier;
     }
 }

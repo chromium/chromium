@@ -15,6 +15,7 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -58,7 +59,7 @@ public class AutofillOptionsCoordinator {
      */
     public static void createFor(
             AutofillOptionsFragment fragment,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             Runnable restartRunnable) {
         new AutofillOptionsCoordinator(fragment, modalDialogManagerSupplier, restartRunnable)
                 .initializeOnViewCreated();
@@ -67,7 +68,7 @@ public class AutofillOptionsCoordinator {
     @VisibleForTesting
     AutofillOptionsCoordinator(
             AutofillOptionsFragment fragment,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             Runnable restartRunnable) {
 
         mFragment = fragment;

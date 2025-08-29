@@ -36,7 +36,7 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
 
     private PreferenceCategory mTopicsCategory;
 
-    private @Nullable Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private @Nullable Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
 
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
@@ -70,7 +70,7 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
      * AutofillDeleteCreditCardConfirmationDialog}.
      */
     public void setModalDialogManagerSupplier(
-            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier) {
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
     }
 

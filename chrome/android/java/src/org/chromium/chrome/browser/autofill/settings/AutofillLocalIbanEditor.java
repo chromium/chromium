@@ -65,7 +65,7 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
     protected EditText mValue;
     private Iban mIban;
     private @Nullable Profile mProfile;
-    private @Nullable Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private @Nullable Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -259,7 +259,7 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
      * AutofillDeletePaymentMethodConfirmationDialog}.
      */
     public void setModalDialogManagerSupplier(
-            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier) {
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
     }
 

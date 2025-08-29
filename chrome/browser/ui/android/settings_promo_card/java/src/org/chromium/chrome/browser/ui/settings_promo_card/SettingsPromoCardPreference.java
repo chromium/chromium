@@ -21,7 +21,8 @@ public class SettingsPromoCardPreference extends Preference {
     private final @Nullable SettingsPromoCardProvider mProvider;
 
     /** Construct and initialize SettingsPromoCardPreference to be shown in main settings. */
-    public SettingsPromoCardPreference(Context context, AttributeSet attrs, Tracker tracker) {
+    public SettingsPromoCardPreference(
+            Context context, @Nullable AttributeSet attrs, Tracker tracker) {
         super(context, attrs);
         setLayoutResource(R.layout.settings_promo_card);
 

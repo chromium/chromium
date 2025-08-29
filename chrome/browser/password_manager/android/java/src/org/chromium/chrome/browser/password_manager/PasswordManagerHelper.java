@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.password_manager;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.content.Context;
@@ -124,7 +126,7 @@ public class PasswordManagerHelper {
     public void showPasswordSettings(
             Context context,
             @ManagePasswordsReferrer int referrer,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             boolean managePasskeys,
             @Nullable String account,
             SettingsCustomTabLauncher settingsCustomTabLauncher) {
@@ -146,7 +148,8 @@ public class PasswordManagerHelper {
         if (!showPwmUnavailableOrDownloadCsvDialog(
                 context, modalDialogManagerSupplier, settingsCustomTabLauncher)) {
             LoadingModalDialogCoordinator loadingDialogCoordinator =
-                    LoadingModalDialogCoordinator.create(modalDialogManagerSupplier, context);
+                    LoadingModalDialogCoordinator.create(
+                            () -> assertNonNull(modalDialogManagerSupplier.get()), context);
             launchTheCredentialManager(
                     referrer,
                     prefService,
@@ -182,7 +185,7 @@ public class PasswordManagerHelper {
 
     private boolean showPwmUnavailableOrDownloadCsvDialog(
             Context context,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             SettingsCustomTabLauncher settingsCustomTabLauncher) {
         // Automotive doesn't support the export flow.
         if (!DeviceInfo.isAutomotive()
@@ -195,7 +198,7 @@ public class PasswordManagerHelper {
             new PasswordManagerUnavailableDialogCoordinator()
                     .showDialog(
                             context,
-                            modalDialogManagerSupplier.get(),
+                            assertNonNull(modalDialogManagerSupplier.get()),
                             PasswordManagerUtilBridge.isGooglePlayServicesUpdatable()
                                     ? GmsUpdateLauncher::launch
                                     : null);
@@ -230,7 +233,7 @@ public class PasswordManagerHelper {
     public void showPasswordCheckup(
             Context context,
             @PasswordCheckReferrer int referrer,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             @Nullable String accountEmail,
             @Nullable SettingsCustomTabLauncher settingsCustomTabLauncher) {
         assert accountEmail == null || !accountEmail.isEmpty();
@@ -239,7 +242,8 @@ public class PasswordManagerHelper {
                 accountEmail == null ? Optional.empty() : Optional.of(accountEmail);
 
         LoadingModalDialogCoordinator loadingDialogCoordinator =
-                LoadingModalDialogCoordinator.create(modalDialogManagerSupplier, context);
+                LoadingModalDialogCoordinator.create(
+                        () -> assertNonNull(modalDialogManagerSupplier.get()), context);
 
         launchPasswordCheckup(
                 referrer,
@@ -425,7 +429,7 @@ public class PasswordManagerHelper {
             PrefService prefService,
             @Nullable SyncService syncService,
             LoadingModalDialogCoordinator loadingDialogCoordinator,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             Context context,
             @Nullable String account) {
         assert syncService != null;
@@ -466,7 +470,7 @@ public class PasswordManagerHelper {
             @PasswordCheckReferrer int referrer,
             Optional<String> account,
             LoadingModalDialogCoordinator loadingDialogCoordinator,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             Context context,
             @Nullable SettingsCustomTabLauncher settingsCustomTabLauncher) {
         PasswordCheckupClientHelper checkupClient;

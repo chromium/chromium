@@ -12,9 +12,11 @@ import android.provider.Browser;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 
+@NullMarked
 public class SettingsCustomTabLauncherImpl implements SettingsCustomTabLauncher {
     @Override
     public void openUrlInCct(Context context, String url) {

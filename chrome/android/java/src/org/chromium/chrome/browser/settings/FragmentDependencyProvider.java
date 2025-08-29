@@ -7,12 +7,13 @@ package org.chromium.chrome.browser.settings;
 import android.content.Context;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.accessibility.settings.ChromeAccessibilitySettingsDelegate;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsCoordinator;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
@@ -60,6 +61,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** Provides dependencies to fragments in the settings activity. */
+@NullMarked
 public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycleCallbacks {
     private final Context mContext;
     private final Profile mProfile;
@@ -69,14 +71,14 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
     // Therefore we use suppliers to provide them once they become available.
     private final OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
     private final OneshotSupplier<BottomSheetController> mBottomSheetControllerSupplier;
-    private final ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final ObservableSupplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
 
     public FragmentDependencyProvider(
             Context context,
             Profile profile,
             OneshotSupplier<SnackbarManager> snackbarManagerSupplier,
             OneshotSupplier<BottomSheetController> bottomSheetControllerSupplier,
-            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
+            ObservableSupplier<@Nullable ModalDialogManager> modalDialogManagerSupplier) {
         mContext = context;
         mProfile = profile;
         mSnackbarManagerSupplier = snackbarManagerSupplier;
@@ -86,9 +88,7 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
 
     @Override
     public void onFragmentAttached(
-            @NonNull FragmentManager fragmentManager,
-            @NonNull Fragment fragment,
-            @NonNull Context unusedContext) {
+            FragmentManager fragmentManager, Fragment fragment, Context unusedContext) {
         // Common dependencies attachments.
         if (fragment instanceof ProfileDependentSetting) {
             ((ProfileDependentSetting) fragment).setProfile(mProfile);

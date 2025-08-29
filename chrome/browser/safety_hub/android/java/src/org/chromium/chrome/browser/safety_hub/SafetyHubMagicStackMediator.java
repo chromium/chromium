@@ -288,7 +288,7 @@ class SafetyHubMagicStackMediator implements TabModelSelectorObserver, MagicStac
                     SafetyHubUtils.showPasswordCheckUi(
                             mContext,
                             mProfile,
-                            mModalDialogManagerSupplier,
+                            () -> mModalDialogManagerSupplier.get(),
                             /* settingsCustomTabLauncher= */ null);
                     recordExternalInteractions(ExternalInteractions.OPEN_GPM_FROM_MAGIC_STACK);
                     mMagicStackBridge.dismissCompromisedPasswordsModule();
