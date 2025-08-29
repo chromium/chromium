@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/webapps/isolated_web_apps/reading/validator.h"
+
 #include <memory>
 #include <optional>
 #include <string>
@@ -14,11 +16,6 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
-#include "chrome/common/url_constants.h"
-#include "chrome/test/base/testing_profile.h"
-#include "components/prefs/pref_service.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/ed25519_signature.h"
@@ -26,11 +23,16 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/web_package/test_support/signed_web_bundles/signature_verifier_test_utils.h"
 #include "components/webapps/isolated_web_apps/error/unusable_swbn_file_error.h"
-#include "components/webapps/isolated_web_apps/reading/validator.h"
+#include "components/webapps/isolated_web_apps/identity/iwa_identity_validator.h"
 #include "components/webapps/isolated_web_apps/test_support/signed_web_bundle_utils.h"
+#include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
+#include "components/webapps/isolated_web_apps/test_support/test_iwa_client.h"
+#include "components/webapps/isolated_web_apps/types/iwa_origin.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -44,34 +46,9 @@ using testing::AllOf;
 using testing::Eq;
 using testing::HasSubstr;
 using testing::Property;
+using testing::Return;
 
 using Error = UnusableSwbnFileError::Error;
-
-const char kSignedWebBundleId[] =
-    "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
-
-const char kAnotherSignedWebBundleId[] =
-    "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
-
-// NOLINTNEXTLINE(runtime/string)
-const std::string kUrl =
-    base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
-                  kSignedWebBundleId});
-
-// NOLINTNEXTLINE(runtime/string)
-const std::string kUrlFromAnotherIsolatedWebApp =
-    std::string(chrome::kIsolatedAppScheme) + url::kStandardSchemeSeparator +
-    kAnotherSignedWebBundleId;
-
-constexpr std::array<uint8_t, 32> kPublicKeyBytes1 = {
-    0x01, 0x23, 0x43, 0x43, 0x33, 0x42, 0x7A, 0x14, 0x42, 0x14, 0xa2,
-    0xb6, 0xc2, 0xd9, 0xf2, 0x02, 0x03, 0x42, 0x18, 0x10, 0x12, 0x26,
-    0x62, 0x88, 0xf6, 0xa3, 0xa5, 0x47, 0x14, 0x69, 0x00, 0x73};
-
-constexpr std::array<uint8_t, 32> kPublicKeyBytes2 = {
-    0x02, 0x23, 0x43, 0x43, 0x33, 0x42, 0x7A, 0x14, 0x42, 0x14, 0xa2,
-    0xb6, 0xc2, 0xd9, 0xf2, 0x02, 0x03, 0x42, 0x18, 0x10, 0x12, 0x26,
-    0x62, 0x88, 0xf6, 0xa3, 0xa5, 0x47, 0x14, 0x69, 0x00, 0x73};
 
 auto UnusableSwbnErrorIs(Error type, const std::string& error) {
   return ErrorIs(
@@ -83,12 +60,14 @@ auto UnusableSwbnErrorIs(Error type, const std::string& error) {
 
 class IsolatedWebAppValidatorTest : public ::testing::Test {
  protected:
+  IsolatedWebAppValidatorTest() { IwaIdentityValidator::CreateSingleton(); }
+
   using IntegrityBlockFuture =
       base::test::TestFuture<base::expected<void, std::string>>;
 
   web_package::SignedWebBundleIntegrityBlock MakeIntegrityBlock(
       const std::vector<web_package::Ed25519PublicKey>& public_keys = {
-          kPublicKey1}) {
+          test::GetDefaultEd25519KeyPair().public_key}) {
     auto raw_integrity_block = web_package::mojom::BundleIntegrityBlock::New();
     raw_integrity_block->size = 123;
     raw_integrity_block
@@ -114,28 +93,22 @@ class IsolatedWebAppValidatorTest : public ::testing::Test {
     return *integrity_block;
   }
 
-  static inline const web_package::Ed25519PublicKey kPublicKey1 =
-      web_package::Ed25519PublicKey::Create(base::span(kPublicKeyBytes1));
-  static inline const web_package::Ed25519PublicKey kPublicKey2 =
-      web_package::Ed25519PublicKey::Create(base::span(kPublicKeyBytes2));
-
-  static inline const web_package::SignedWebBundleId kWebBundleId1 =
-      web_package::SignedWebBundleId::CreateForPublicKey(kPublicKey1);
-  static inline const web_package::SignedWebBundleId kWebBundleId2 =
-      web_package::SignedWebBundleId::CreateForPublicKey(kPublicKey2);
+  test::MockIwaClient& iwa_client() { return iwa_client_; }
 
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
+  content::TestBrowserContext browser_context_;
+  testing::NiceMock<test::MockIwaClient> iwa_client_;
 };
 
 using IsolatedWebAppValidatorIntegrityBlockTest = IsolatedWebAppValidatorTest;
 
 TEST_F(IsolatedWebAppValidatorIntegrityBlockTest,
        WebBundleIdAndPublicKeyDiffer) {
-  auto integrity_block = MakeIntegrityBlock({kPublicKey2});
+  auto integrity_block = MakeIntegrityBlock();
 
   EXPECT_THAT(IsolatedWebAppValidator::ValidateIntegrityBlock(
-                  &profile_, kWebBundleId1, integrity_block,
+                  &browser_context_, test::GetDefaultEcdsaP256WebBundleId(),
+                  integrity_block,
                   /*dev_mode=*/false),
               UnusableSwbnErrorIs(Error::kIntegrityBlockValidationError,
                                   "does not match the expected Web Bundle ID"));
@@ -143,49 +116,85 @@ TEST_F(IsolatedWebAppValidatorIntegrityBlockTest,
 
 TEST_F(IsolatedWebAppValidatorIntegrityBlockTest, IWAIsTrusted) {
   auto integrity_block = MakeIntegrityBlock();
-  SetTrustedWebBundleIdsForTesting({kWebBundleId1});
+
+  ON_CALL(iwa_client(),
+          ValidateTrust(_, test::GetDefaultEd25519WebBundleId(), _))
+      .WillByDefault(Return(base::ok()));
 
   EXPECT_THAT(IsolatedWebAppValidator::ValidateIntegrityBlock(
-                  &profile_, kWebBundleId1, integrity_block,
+                  &browser_context_, test::GetDefaultEd25519WebBundleId(),
+                  integrity_block,
                   /*dev_mode=*/false),
               HasValue());
 }
 
 TEST_F(IsolatedWebAppValidatorIntegrityBlockTest, IWAIsUntrusted) {
   auto integrity_block = MakeIntegrityBlock();
-  SetTrustedWebBundleIdsForTesting({});
+
+  ON_CALL(iwa_client(), ValidateTrust)
+      .WillByDefault(Return(base::unexpected("public key(s) are not trusted")));
 
   EXPECT_THAT(IsolatedWebAppValidator::ValidateIntegrityBlock(
-                  &profile_, kWebBundleId1, integrity_block,
+                  &browser_context_, test::GetDefaultEd25519WebBundleId(),
+                  integrity_block,
                   /*dev_mode=*/false),
               UnusableSwbnErrorIs(Error::kIntegrityBlockValidationError,
                                   "public key(s) are not trusted"));
 }
 
+struct RelativeURL {
+  web_package::SignedWebBundleId web_bundle_id;
+  std::optional<std::string> relative_url;
+};
+
+struct FullURL {
+  std::string full_url;
+};
+
+using WebBundleEntry = std::variant<RelativeURL, FullURL>;
+
 class IsolatedWebAppValidatorMetadataTest
     : public IsolatedWebAppValidatorTest,
       public ::testing::WithParamInterface<
-          std::tuple<std::optional<std::string>,
-                     std::vector<std::string>,
+          std::tuple<std::optional<web_package::SignedWebBundleId>,
+                     std::vector<WebBundleEntry>,
                      base::expected<void, UnusableSwbnFileError>>> {
  public:
   IsolatedWebAppValidatorMetadataTest()
       : primary_url_(std::get<0>(GetParam())),
         status_(std::get<2>(GetParam())) {
-    for (const std::string& entry : std::get<1>(GetParam())) {
-      entries_.emplace_back(entry);
+    for (const WebBundleEntry& entry : std::get<1>(GetParam())) {
+      entries_.emplace_back(std::visit(
+          absl::Overload{
+              [](const FullURL& entry) { return entry.full_url; },
+              [](const RelativeURL& entry) {
+                auto base_url =
+                    IwaOrigin(entry.web_bundle_id).origin().GetURL();
+                if (entry.relative_url) {
+                  return base_url.Resolve(*entry.relative_url).spec();
+                }
+                return base_url.spec();
+              }},
+          entry));
     }
   }
 
  protected:
-  std::optional<GURL> primary_url_;
+  std::optional<web_package::SignedWebBundleId> primary_url_;
   std::vector<GURL> entries_;
   base::expected<void, UnusableSwbnFileError> status_;
 };
 
 TEST_P(IsolatedWebAppValidatorMetadataTest, Validate) {
-  EXPECT_EQ(IsolatedWebAppValidator::ValidateMetadata(kWebBundleId1,
-                                                      primary_url_, entries_),
+  EXPECT_EQ(IsolatedWebAppValidator::ValidateMetadata(
+                test::GetDefaultEd25519WebBundleId(),
+                [&]() -> std::optional<GURL> {
+                  if (!primary_url_) {
+                    return std::nullopt;
+                  }
+                  return IwaOrigin(*primary_url_).origin().GetURL();
+                }(),
+                entries_),
             status_);
 }
 
@@ -193,44 +202,66 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     IsolatedWebAppValidatorMetadataTest,
     ::testing::Values(
-        std::make_tuple(std::nullopt,
-                        std::vector<std::string>({kUrl}),
-                        base::ok()),
         std::make_tuple(
             std::nullopt,
-            std::vector<std::string>({kUrl, kUrl + "/foo#bar"}),
+            std::vector<WebBundleEntry>({RelativeURL{
+                .web_bundle_id = test::GetDefaultEd25519WebBundleId()}}),
+            base::ok()),
+        std::make_tuple(
+            std::nullopt,
+            std::vector<WebBundleEntry>(
+                {RelativeURL{
+                     .web_bundle_id = test::GetDefaultEd25519WebBundleId()},
+                 RelativeURL{
+                     .web_bundle_id = test::GetDefaultEd25519WebBundleId(),
+                     .relative_url = "/foo#bar"}}),
             base::unexpected(UnusableSwbnFileError(
                 UnusableSwbnFileError::Error::kMetadataValidationError,
                 "The URL of an exchange is invalid: URLs must not have "
                 "a fragment part."))),
         std::make_tuple(
             std::nullopt,
-            std::vector<std::string>({kUrl, kUrl + "/foo?bar"}),
+            std::vector<WebBundleEntry>(
+                {RelativeURL{
+                     .web_bundle_id = test::GetDefaultEd25519WebBundleId()},
+                 RelativeURL{
+                     .web_bundle_id = test::GetDefaultEd25519WebBundleId(),
+                     .relative_url = "/foo?bar"}}),
             base::unexpected(UnusableSwbnFileError(
                 UnusableSwbnFileError::Error::kMetadataValidationError,
                 "The URL of an exchange is invalid: URLs must not have "
                 "a query part."))),
         std::make_tuple(
-            kUrl,
-            std::vector<std::string>({kUrl}),
+            test::GetDefaultEd25519WebBundleId(),
+            std::vector<WebBundleEntry>({RelativeURL{
+                .web_bundle_id = test::GetDefaultEd25519WebBundleId()}}),
             base::unexpected(UnusableSwbnFileError(
                 UnusableSwbnFileError::Error::kMetadataValidationError,
                 "Primary URL must not be present, but was isolated-app://"
-                "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic/"))),
+                "4tkrnsmftl4ggvvdkfth3piainqragus2qbhf7rlz2a3wo3rh4wqaaic/"))),
         std::make_tuple(
             std::nullopt,
-            std::vector<std::string>({kUrl, "https://foo/"}),
+            std::vector<WebBundleEntry>(
+                {RelativeURL{
+                     .web_bundle_id = test::GetDefaultEd25519WebBundleId()},
+                 FullURL{.full_url = "https://foo/"}}),
             base::unexpected(UnusableSwbnFileError(
                 UnusableSwbnFileError::Error::kMetadataValidationError,
-                "The URL of an exchange is invalid: The URL scheme "
-                "must be isolated-app, but was https"))),
+                "The URL of an exchange is invalid: The URL scheme must be "
+                "isolated-app, but was https"))),
         std::make_tuple(
             std::nullopt,
-            std::vector<std::string>({kUrl, kUrlFromAnotherIsolatedWebApp}),
+            std::vector<WebBundleEntry>(
+                {RelativeURL{
+                     .web_bundle_id = test::GetDefaultEd25519WebBundleId()},
+                 RelativeURL{
+                     .web_bundle_id = test::GetDefaultEcdsaP256WebBundleId()}}),
             base::unexpected(UnusableSwbnFileError(
                 UnusableSwbnFileError::Error::kMetadataValidationError,
-                "The URL of an exchange contains the wrong Signed Web Bundle "
+                "The URL of an exchange contains the wrong Signed Web "
+                "Bundle "
                 "ID: "
-                "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic")))));
+                "amfcf7c4bmpbjbmq4h4yptcobves56hfdyr7tm3doxqvfmsk5ss6maaca"
+                "i")))));
 
 }  // namespace web_app

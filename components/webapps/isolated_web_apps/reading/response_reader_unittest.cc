@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/webapps/isolated_web_apps/reading/response_reader.h"
+
 #include <memory>
 
 #include "base/files/file_util.h"
@@ -10,42 +12,44 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/web_package/web_bundle_builder.h"
 #include "components/webapps/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "components/webapps/isolated_web_apps/identity/iwa_identity_validator.h"
-#include "components/webapps/isolated_web_apps/reading/response_reader.h"
 #include "components/webapps/isolated_web_apps/reading/signed_web_bundle_reader.h"
 #include "components/webapps/isolated_web_apps/test_support/signed_web_bundle_utils.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
+#include "components/webapps/isolated_web_apps/test_support/test_iwa_client.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
 #include "net/base/net_errors.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace web_app {
 namespace {
 
 using ::base::test::ErrorIs;
 using ::base::test::HasValue;
+using ::testing::_;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::IsFalse;
 using ::testing::IsTrue;
+using ::testing::Return;
 
 class IsolatedWebAppResponseReaderTest : public ::testing::Test {
  protected:
   void SetUp() override {
     IwaIdentityValidator::CreateSingleton();
-    SetTrustedWebBundleIdsForTesting({web_bundle_id_});
+    ON_CALL(iwa_client(), ValidateTrust(_, web_bundle_id_, _))
+        .WillByDefault(Return(base::ok()));
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   }
 
@@ -77,18 +81,19 @@ class IsolatedWebAppResponseReaderTest : public ::testing::Test {
     return future.Take();
   }
 
+  test::MockIwaClient& iwa_client() { return iwa_client_; }
+
   content::BrowserTaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   base::ScopedTempDir temp_dir_;
 
-  TestingProfile profile_;
+  content::TestBrowserContext browser_context_;
   web_package::SignedWebBundleId web_bundle_id_ =
       test::GetDefaultEd25519WebBundleId();
+  testing::NiceMock<test::MockIwaClient> iwa_client_;
 
-  GURL base_url_ =
-      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_)
-          .origin()
-          .GetURL();
+  GURL base_url_ = GURL(base::StrCat(
+      {"isolated-app", url::kStandardSchemeSeparator, web_bundle_id_.id()}));
 };
 
 TEST_F(IsolatedWebAppResponseReaderTest, ChecksWhetherBundleIsStillTrusted) {
@@ -98,7 +103,7 @@ TEST_F(IsolatedWebAppResponseReaderTest, ChecksWhetherBundleIsStillTrusted) {
                        CreateReaderAndInitialize(web_bundle_path, base_url_));
 
   auto response_reader = std::make_unique<IsolatedWebAppResponseReaderImpl>(
-      std::move(reader), &profile_, web_bundle_id_, /*dev_mode=*/false);
+      std::move(reader), &browser_context_, web_bundle_id_, /*dev_mode=*/false);
 
   {
     network::ResourceRequest request;
@@ -111,7 +116,10 @@ TEST_F(IsolatedWebAppResponseReaderTest, ChecksWhetherBundleIsStillTrusted) {
     EXPECT_THAT(response_future.Get(), HasValue());
   }
 
-  SetTrustedWebBundleIdsForTesting({});
+  testing::Mock::VerifyAndClearExpectations(&iwa_client());
+  ON_CALL(iwa_client(), ValidateTrust)
+      .WillByDefault(Return(base::unexpected("Trust is gone :(")));
+
   {
     network::ResourceRequest request;
     request.url = base_url_;
@@ -137,7 +145,7 @@ TEST_F(IsolatedWebAppResponseReaderTest,
                        CreateReaderAndInitialize(web_bundle_path, base_url_));
 
   auto response_reader = std::make_unique<IsolatedWebAppResponseReaderImpl>(
-      std::move(reader), &profile_, web_bundle_id_, /*dev_mode=*/false);
+      std::move(reader), &browser_context_, web_bundle_id_, /*dev_mode=*/false);
 
   {
     network::ResourceRequest request;
@@ -168,7 +176,7 @@ TEST_F(IsolatedWebAppResponseReaderTest, ReadResponseBody) {
                        CreateReaderAndInitialize(web_bundle_path, base_url_));
 
   auto response_reader = std::make_unique<IsolatedWebAppResponseReaderImpl>(
-      std::move(reader), &profile_, web_bundle_id_, /*dev_mode=*/false);
+      std::move(reader), &browser_context_, web_bundle_id_, /*dev_mode=*/false);
 
   network::ResourceRequest request;
   request.url = base_url_;
@@ -211,7 +219,7 @@ TEST_F(IsolatedWebAppResponseReaderTest, Close) {
   auto* raw_reader = reader.get();
 
   auto response_reader = std::make_unique<IsolatedWebAppResponseReaderImpl>(
-      std::move(reader), &profile_, web_bundle_id_, /*dev_mode=*/false);
+      std::move(reader), &browser_context_, web_bundle_id_, /*dev_mode=*/false);
 
   network::ResourceRequest request;
   request.url = base_url_;

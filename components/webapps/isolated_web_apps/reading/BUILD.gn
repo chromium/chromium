@@ -42,7 +42,9 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "reader_registry_unittest.cc",
+    "response_reader_unittest.cc",
     "signed_web_bundle_reader_unittest.cc",
+    "validator_unittest.cc",
   ]
   deps = [
     ":reading",
@@ -53,9 +55,11 @@ source_set("unit_tests") {
     "//components/webapps/isolated_web_apps/identity",
     "//components/webapps/isolated_web_apps/test_support",
     "//content/test:test_support",
+    "//net",
     "//services/data_decoder/public/cpp:test_support",
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
+    "//url",
   ]
 }
