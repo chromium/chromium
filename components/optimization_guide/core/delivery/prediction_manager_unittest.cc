@@ -381,7 +381,7 @@ class PredictionManagerTestBase : public testing::Test {
 
   void CreateAndInitializePredictionModelStore() {
     prediction_model_store_ =
-        std::make_unique<PredictionModelStore>(local_state_prefs_.get());
+        std::make_unique<PredictionModelStore>(*local_state_prefs_);
     prediction_model_store_->Initialize(temp_dir());
   }
 

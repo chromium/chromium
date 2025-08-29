@@ -152,7 +152,7 @@ void RecordModelStorageMetrics(const base::FilePath& base_store_dir) {
 
 }  // namespace
 
-PredictionModelStore::PredictionModelStore(PrefService* local_state)
+PredictionModelStore::PredictionModelStore(PrefService& local_state)
     : local_state_(local_state),
       background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {}
@@ -189,7 +189,7 @@ void PredictionModelStore::Initialize(const base::FilePath& base_store_dir) {
     background_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&RemoveInvalidModelDirs, base_store_dir_,
                                   ModelStoreMetadataEntry::GetValidModelDirs(
-                                      local_state_)));
+                                      &*local_state_)));
   }
   background_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&RecordModelStorageMetrics, base_store_dir_));
@@ -200,7 +200,7 @@ bool PredictionModelStore::HasModel(
     const proto::ModelCacheKey& model_cache_key) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto metadata = ModelStoreMetadataEntry::GetModelMetadataEntryIfExists(
-      local_state_, optimization_target, model_cache_key);
+      &*local_state_, optimization_target, model_cache_key);
   if (!metadata) {
     return false;
   }
@@ -215,7 +215,7 @@ bool PredictionModelStore::HasModelWithVersion(
     int64_t version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto metadata = ModelStoreMetadataEntry::GetModelMetadataEntryIfExists(
-      local_state_, optimization_target, model_cache_key);
+      &*local_state_, optimization_target, model_cache_key);
   if (!metadata) {
     return false;
   }
@@ -240,7 +240,7 @@ void PredictionModelStore::LoadModel(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto metadata = ModelStoreMetadataEntry::GetModelMetadataEntryIfExists(
-      local_state_, optimization_target, model_cache_key);
+      &*local_state_, optimization_target, model_cache_key);
   if (!metadata) {
     std::move(callback).Run(nullptr);
     return;
@@ -334,7 +334,7 @@ void PredictionModelStore::UpdateMetadataForExistingModel(
     return;
   }
 
-  ModelStoreMetadataEntryUpdater metadata(local_state_, optimization_target,
+  ModelStoreMetadataEntryUpdater metadata(&*local_state_, optimization_target,
                                           model_cache_key);
   DCHECK(!metadata.GetModelBaseDir()->IsAbsolute());
   metadata.SetVersion(model_info.version());
@@ -357,7 +357,7 @@ void PredictionModelStore::UpdateModel(
   DCHECK_EQ(optimization_target, model_info.optimization_target());
   DCHECK(base_store_dir_.IsParent(base_model_dir));
 
-  ModelStoreMetadataEntryUpdater metadata(local_state_, optimization_target,
+  ModelStoreMetadataEntryUpdater metadata(&*local_state_, optimization_target,
                                           model_cache_key);
   metadata.SetVersion(model_info.version());
   metadata.SetExpiryTime(
@@ -420,7 +420,7 @@ void PredictionModelStore::UpdateModelCacheKeyMapping(
     const proto::ModelCacheKey& server_model_cache_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ModelStoreMetadataEntryUpdater::UpdateModelCacheKeyMapping(
-      local_state_, optimization_target, client_model_cache_key,
+      &*local_state_, optimization_target, client_model_cache_key,
       server_model_cache_key);
 }
 
@@ -429,13 +429,10 @@ void PredictionModelStore::RemoveModel(
     const proto::ModelCacheKey& model_cache_key,
     PredictionModelStoreModelRemovalReason model_remove_reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!local_state_) {
-    return;
-  }
 
   RecordPredictionModelStoreModelRemovalVersionHistogram(optimization_target,
                                                          model_remove_reason);
-  ModelStoreMetadataEntryUpdater metadata(local_state_, optimization_target,
+  ModelStoreMetadataEntryUpdater metadata(&*local_state_, optimization_target,
                                           model_cache_key);
   auto base_model_dir = metadata.GetModelBaseDir();
   if (base_model_dir) {
@@ -458,16 +455,15 @@ void PredictionModelStore::ScheduleModelDirRemoval(
       base_model_dir.IsAbsolute()
           ? ConvertToRelativePath(base_store_dir_, base_model_dir)
           : base_model_dir;
-  ScopedDictPrefUpdate pref_update(local_state_,
+  ScopedDictPrefUpdate pref_update(&*local_state_,
                                    prefs::localstate::kStoreFilePathsToDelete);
   pref_update->Set(FilePathToString(relative_model_dir), true);
 }
 
 void PredictionModelStore::PurgeInactiveModels() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(local_state_);
   for (const auto& expired_model_dir :
-       ModelStoreMetadataEntryUpdater::PurgeAllInactiveMetadata(local_state_)) {
+       ModelStoreMetadataEntryUpdater::PurgeAllInactiveMetadata(&*local_state_)) {
     // Backward compatibility: Model dirs were absolute in the earlier versions,
     // and it was only in experiment. The latest versions use relative paths.
     DCHECK(!expired_model_dir.IsAbsolute() ||
@@ -485,7 +481,6 @@ void PredictionModelStore::PurgeInactiveModels() {
 
 void PredictionModelStore::CleanUpOldModelFiles() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(local_state_);
   for (const auto entry :
        local_state_->GetDict(prefs::localstate::kStoreFilePathsToDelete)) {
     // Backward compatibility: Model dirs were absolute in the earlier versions.
@@ -508,13 +503,12 @@ void PredictionModelStore::CleanUpOldModelFiles() {
 void PredictionModelStore::OnFilePathDeleted(const std::string& path_to_delete,
                                              bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(local_state_);
   if (!success) {
     // Try to delete again later.
     return;
   }
 
-  ScopedDictPrefUpdate pref_update(local_state_,
+  ScopedDictPrefUpdate pref_update(&*local_state_,
                                    prefs::localstate::kStoreFilePathsToDelete);
   pref_update->Remove(path_to_delete);
 }

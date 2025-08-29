@@ -23,7 +23,7 @@
 namespace optimization_guide {
 
 OptimizationGuideGlobalState::OptimizationGuideGlobalState()
-    : prediction_model_store_(GetApplicationContext()->GetLocalState()) {}
+    : prediction_model_store_(*GetApplicationContext()->GetLocalState()) {}
 
 OptimizationGuideGlobalState::~OptimizationGuideGlobalState() = default;
 

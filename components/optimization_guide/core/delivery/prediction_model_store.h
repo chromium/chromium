@@ -6,7 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_DELIVERY_PREDICTION_MODEL_STORE_H_
 
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -34,7 +34,7 @@ class PredictionModelStore {
   using PredictionModelLoadedCallback =
       base::OnceCallback<void(std::unique_ptr<proto::PredictionModel>)>;
 
-  explicit PredictionModelStore(PrefService* local_state);
+  explicit PredictionModelStore(PrefService& local_state);
 
   // Initializes the model store with |base_store_dir|. Model store will be
   // usable only after it is initialized.
@@ -149,7 +149,7 @@ class PredictionModelStore {
   // The base dir where the prediction model dirs are saved.
   base::FilePath base_store_dir_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  const raw_ptr<PrefService> local_state_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const raw_ref<PrefService> local_state_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

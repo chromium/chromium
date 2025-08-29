@@ -175,7 +175,7 @@ OptimizationGuideGlobalState::OptimizationGuideGlobalState()
           g_browser_process->local_state(),
           std::make_unique<OnDeviceModelComponentStateManagerDelegate>(),
           base::BindRepeating(&LaunchService)),
-      prediction_model_store_(g_browser_process->local_state()) {
+      prediction_model_store_(*g_browser_process->local_state()) {
   prediction_model_store_.Initialize(GetBaseStoreDir());
   // Register an observer on the component state manager after it is created but
   // before it has start up.
