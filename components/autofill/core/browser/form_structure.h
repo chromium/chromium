@@ -68,9 +68,9 @@ class FormStructure {
 
   // Runs several heuristics against the form fields to determine their possible
   // types.
-  void DetermineHeuristicTypes(
-      const GeoIpCountryCode& client_country,
-      LogManager* log_manager);
+  void DetermineHeuristicTypes(const GeoIpCountryCode& client_country,
+                               const LanguageCode& current_page_language,
+                               LogManager* log_manager);
 
   // Runs rationalization and sectioning. This is to be run after the field
   // types change.
@@ -81,6 +81,7 @@ class FormStructure {
   // happens before sectioning.
   // TODO(crbug.com/408497919): Make the order consistent.
   void RationalizeAndAssignSections(const GeoIpCountryCode& client_country,
+                                    const LanguageCode& current_page_language,
                                     LogManager* log_manager,
                                     bool legacy_order = false);
 
@@ -234,6 +235,7 @@ class FormStructure {
   // Rationalize the form's autocomplete attributes, repeated fields and field
   // type predictions.
   void RationalizeFormStructure(const GeoIpCountryCode& client_country,
+                                const LanguageCode& current_page_language,
                                 LogManager* log_manager);
 
   // Returns the FieldGlobalIds of the |fields_| that are eligible for manual
@@ -336,14 +338,6 @@ class FormStructure {
     return developer_engagement_metrics_;
   }
 
-  const LanguageCode& current_page_language() const {
-    return current_page_language_;
-  }
-
-  void set_current_page_language(LanguageCode language) {
-    current_page_language_ = std::move(language);
-  }
-
   FormGlobalId global_id() const { return {host_frame_, renderer_id_}; }
 
   FormVersion version() const { return version_; }
@@ -404,10 +398,6 @@ class FormStructure {
 
   // Extracts the parseable field name by removing a common affix.
   void ExtractParseableFieldNames();
-
-  // The language detected for this form's page, before any translations
-  // performed by Chrome.
-  LanguageCode current_page_language_;
 
   // The id attribute of the form.
   std::u16string id_attribute_;

@@ -144,7 +144,7 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
-  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""),
+  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
                                          /*log_manager=*/nullptr);
 
   EXPECT_CALL(decider(),
@@ -166,7 +166,7 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
-  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""),
+  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
                                          /*log_manager=*/nullptr);
 
   EXPECT_CALL(decider(), RegisterOptimizationTypes).Times(0);
@@ -187,7 +187,7 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
-  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""),
+  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
                                          /*log_manager=*/nullptr);
 
   EXPECT_CALL(decider(), RegisterOptimizationTypes).Times(0);
@@ -205,7 +205,7 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
-  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""),
+  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
                                          /*log_manager=*/nullptr);
 
   EXPECT_CALL(decider(), RegisterOptimizationTypes).Times(0);

@@ -100,7 +100,8 @@ std::unique_ptr<FormStructure> ConstructFormStructureFromFormData(
     const FormData& form) {
   auto cached_form_structure =
       std::make_unique<FormStructure>(test::WithoutValues(form));
-  cached_form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+  cached_form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
+                                                 LanguageCode(""), nullptr);
 
   auto form_structure = std::make_unique<FormStructure>(form);
   form_structure->RetrieveFromCache(

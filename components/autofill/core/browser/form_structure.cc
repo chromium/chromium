@@ -220,12 +220,13 @@ void FormStructure::DetermineFieldRanks() {
 
 void FormStructure::DetermineHeuristicTypes(
     const GeoIpCountryCode& client_country,
+    const LanguageCode& current_page_language,
     LogManager* log_manager) {
   SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.DetermineHeuristicTypes");
 
   const LanguageCode& page_language =
       base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection)
-          ? current_page_language_
+          ? current_page_language
           : LanguageCode();
   ParsingContext context(base::ToVector(fields_, &to_form_field_data),
                          client_country, page_language,
@@ -237,12 +238,14 @@ void FormStructure::DetermineHeuristicTypes(
                          GetActiveRegexFeatures(), log_manager);
   FieldCandidatesMap regex_predictions = ParseFieldTypesWithPatterns(context);
   AssignBestFieldTypes(regex_predictions, HeuristicSource::kRegexes);
-  RationalizeAndAssignSections(client_country, log_manager);
+  RationalizeAndAssignSections(client_country, current_page_language,
+                               log_manager);
   LogDetermineHeuristicTypesMetrics();
 }
 
 void FormStructure::RationalizeAndAssignSections(
     const GeoIpCountryCode& client_country,
+    const LanguageCode& current_page_language,
     LogManager* log_manager,
     bool legacy_order) {
   if (base::FeatureList::IsEnabled(
@@ -253,15 +256,18 @@ void FormStructure::RationalizeAndAssignSections(
     AssignSections(fields_);
     // TODO(crbug.com/408497919): Merge the two Rationalize*() functions when
     // kAutofillUnifyRationalizationAndSectioningOrder is launched.
-    RationalizeFormStructure(client_country, log_manager);
+    RationalizeFormStructure(client_country, current_page_language,
+                             log_manager);
     RationalizePhoneNumberFieldsForFilling();
     AssignSections(fields_);
   } else if (!legacy_order) {
     AssignSections(fields_);
-    RationalizeFormStructure(client_country, log_manager);
+    RationalizeFormStructure(client_country, current_page_language,
+                             log_manager);
     RationalizePhoneNumberFieldsForFilling();
   } else {
-    RationalizeFormStructure(client_country, log_manager);
+    RationalizeFormStructure(client_country, current_page_language,
+                             log_manager);
     AssignSections(fields_);
     RationalizePhoneNumberFieldsForFilling();
   }
@@ -882,13 +888,13 @@ void FormStructure::RationalizePhoneNumberFieldsForFilling() {
 
 void FormStructure::RationalizeFormStructure(
     const GeoIpCountryCode& client_country,
+    const LanguageCode& current_page_language,
     LogManager* log_manager) {
   FormStructureRationalizer rationalizer(&fields_);
   rationalizer.RationalizeContentEditables(log_manager);
   rationalizer.RationalizeAutocompleteAttributes(log_manager);
   rationalizer.RationalizeFieldTypePredictions(
-      main_frame_origin(), client_country, current_page_language(),
-      log_manager);
+      main_frame_origin(), client_country, current_page_language, log_manager);
 }
 
 std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {

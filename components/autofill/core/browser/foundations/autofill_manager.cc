@@ -654,7 +654,6 @@ void AutofillManager::ParseFormsAsync(
       }
     }
 
-    form_structure->set_current_page_language(GetCurrentPageLanguage());
     form_structures.push_back(std::move(form_structure));
     parsed_forms.push_back(form_data);
   }
@@ -720,7 +719,6 @@ void AutofillManager::ParseFormAsync(
         *cached_form_structure,
         FormStructure::RetrieveFromCacheReason::kFormCacheUpdateAfterParsing);
   }
-  form_structure->set_current_page_language(GetCurrentPageLanguage());
 
   std::vector<std::unique_ptr<FormStructure>> form_structures;
   form_structures.push_back(std::move(form_structure));
@@ -741,14 +739,17 @@ void AutofillManager::ParseFormsAsyncCommon(
   struct AsyncContext {
     AsyncContext(std::vector<std::unique_ptr<FormStructure>> form_structures,
                  GeoIpCountryCode country_code,
+                 LanguageCode current_page_language,
                  LogManager* log_manager)
         : form_structures(std::move(form_structures)),
           country_code(std::move(country_code)),
+          current_page_language(std::move(current_page_language)),
           log_manager(IsLoggingActive(log_manager)
                           ? LogManager::CreateBuffering()
                           : nullptr) {}
     std::vector<std::unique_ptr<FormStructure>> form_structures;
     GeoIpCountryCode country_code;
+    LanguageCode current_page_language;
     std::unique_ptr<BufferingLogManager> log_manager;
   };
 
@@ -758,6 +759,7 @@ void AutofillManager::ParseFormsAsyncCommon(
     SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.ParseFormsAsync.RunHeuristics");
     for (auto& form_structure : context.form_structures) {
       form_structure->DetermineHeuristicTypes(context.country_code,
+                                              context.current_page_language,
                                               context.log_manager.get());
     }
     return context;
@@ -805,6 +807,7 @@ void AutofillManager::ParseFormsAsyncCommon(
                 run_heuristics,
                 AsyncContext(std::move(forms),
                              self->client().GetVariationConfigCountryCode(),
+                             self->GetCurrentPageLanguage(),
                              self->log_manager())),
             std::move(update_cache));
       },
@@ -883,7 +886,8 @@ void AutofillManager::OnLoadedServerPredictions(
 
   for (const raw_ptr<FormStructure, VectorExperimental> form : queried_forms) {
     form->RationalizeAndAssignSections(client().GetVariationConfigCountryCode(),
-                                       log_manager(), /*legacy_order=*/true);
+                                       GetCurrentPageLanguage(), log_manager(),
+                                       /*legacy_order=*/true);
 
     autofill_metrics::LogQualityMetricsBasedOnAutocomplete(
         *form, client().GetFormInteractionsUkmLogger(),

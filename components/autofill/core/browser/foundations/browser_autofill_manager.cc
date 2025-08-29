@@ -2581,6 +2581,7 @@ void BrowserAutofillManager::HandleLoadedServerPredictionsForAutofillAi(
           auto* self_as_bam = static_cast<BrowserAutofillManager*>(self.get());
           form->RationalizeAndAssignSections(
               self->client().GetVariationConfigCountryCode(),
+              self_as_bam->GetCurrentPageLanguage(),
               self_as_bam->log_manager());
           self_as_bam->LogCurrentFieldTypes(*form);
           self->NotifyObservers(&Observer::OnFieldTypesDetermined,

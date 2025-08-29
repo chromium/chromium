@@ -481,7 +481,6 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
       return result;
     }
     auto form_structure = std::make_unique<FormStructure>(form_data);
-    form_structure->set_current_page_language(page_language);
     if (ml_predictions_handler) {
       base::test::TestFuture<ModelPredictions> future;
       ml_predictions_handler->GetModelPredictionsForForm(
@@ -491,7 +490,8 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
     // Similarly to AutofillManager::ParseFormsAsync, the heuristics are
     // executed after the ML model. If ML predictions are enabled, this does
     // not override the heuristic types but performs rationalization.
-    form_structure->DetermineHeuristicTypes(client_country, log_manager);
+    form_structure->DetermineHeuristicTypes(client_country, page_language,
+                                            log_manager);
 
     result_analyzer.AnalyzeClassification(*form_structure, form.GetDict());
   }

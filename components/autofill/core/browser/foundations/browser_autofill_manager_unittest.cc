@@ -63,6 +63,7 @@
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
+#include "components/autofill/core/browser/foundations/mock_autofill_manager_observer.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
@@ -991,6 +992,8 @@ class TestBrowserAutofillManager : public autofill::TestBrowserAutofillManager {
   }
 
   using autofill::TestBrowserAutofillManager::TestBrowserAutofillManager;
+
+  using AutofillManager::GetCurrentPageLanguage;
 };
 
 AutofillProfile FillDataToAutofillProfile(const TestAddressFillData& data) {
@@ -2284,7 +2287,8 @@ TEST_F(BrowserAutofillManagerTestValuables,
       test::GetFormData({.fields = {{.role = EMAIL_OR_LOYALTY_MEMBERSHIP_ID},
                                     {.role = PASSWORD}}});
   auto form_structure = std::make_unique<FormStructure>(form_data);
-  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
+                                          LanguageCode(""), nullptr);
 
   test_api(*form_structure)
       .SetFieldTypes({EMAIL_OR_LOYALTY_MEMBERSHIP_ID, PASSWORD},
@@ -2357,7 +2361,8 @@ TEST_F(BrowserAutofillManagerTestValuables,
       test::GetFormData({.fields = {{.role = EMAIL_OR_LOYALTY_MEMBERSHIP_ID},
                                     {.role = PASSWORD}}});
   auto form_structure = std::make_unique<FormStructure>(form_data);
-  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
+                                          LanguageCode(""), nullptr);
 
   test_api(*form_structure)
       .SetFieldTypes({EMAIL_OR_LOYALTY_MEMBERSHIP_ID, PASSWORD},
@@ -4522,7 +4527,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   // Simulate having seen this form on page load.
   auto form_structure_instance = std::make_unique<FormStructure>(form);
   FormStructure* form_structure = form_structure_instance.get();
-  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
+                                          LanguageCode(""), nullptr);
   manager().AddSeenFormStructure(std::move(form_structure_instance));
 
   // Simulate form submission.
@@ -4572,7 +4578,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   // Simulate having seen this form on page load.
   auto form_structure_instance = std::make_unique<FormStructure>(form);
   FormStructure* form_structure = form_structure_instance.get();
-  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
+                                          LanguageCode(""), nullptr);
   manager().AddSeenFormStructure(std::move(form_structure_instance));
 
   // Make API response with suggestions.
@@ -4680,7 +4687,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   // Simulate having seen this form on page load.
   auto form_structure_instance = std::make_unique<FormStructure>(form);
   FormStructure* form_structure = form_structure_instance.get();
-  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
+                                          LanguageCode(""), nullptr);
   manager().AddSeenFormStructure(std::move(form_structure_instance));
 
   // Make API response with suggestions.
@@ -5026,7 +5034,8 @@ TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictionsFromApi) {
   // Simulate having seen this form on page load.
   auto form_structure_instance = std::make_unique<FormStructure>(form);
   FormStructure* form_structure = form_structure_instance.get();
-  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
+                                          LanguageCode(""), nullptr);
   manager().AddSeenFormStructure(std::move(form_structure_instance));
 
   // Second form on the page.
@@ -5045,7 +5054,8 @@ TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictionsFromApi) {
   auto form_structure_instance2 = std::make_unique<FormStructure>(form2);
   // This pointer is valid as long as autofill manager lives.
   FormStructure* form_structure2 = form_structure_instance2.get();
-  form_structure2->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+  form_structure2->DetermineHeuristicTypes(GeoIpCountryCode(""),
+                                           LanguageCode(""), nullptr);
   manager().AddSeenFormStructure(std::move(form_structure_instance2));
 
   // Make API response with suggestions.
@@ -5113,7 +5123,8 @@ TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictions_ResetManager) {
   // Simulate having seen this form on page load.
   // |form_structure| will be owned by |manager()|.
   auto form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
+                                          LanguageCode(""), nullptr);
   std::vector<FormSignature> signatures =
       test::GetEncodedSignatures(*form_structure);
   manager().AddSeenFormStructure(std::move(form_structure));
@@ -5163,7 +5174,8 @@ TEST_F(BrowserAutofillManagerTest, DetermineHeuristicsWithOverallPrediction) {
   FormStructure* form_structure = [&] {
     auto form_structure = std::make_unique<FormStructure>(form);
     FormStructure* ptr = form_structure.get();
-    form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+    form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
+                                            LanguageCode(""), nullptr);
     manager().AddSeenFormStructure(std::move(form_structure));
     return ptr;
   }();
@@ -5948,7 +5960,8 @@ TEST_F(BrowserAutofillManagerTest,
                                        FormControlType::kInputText)});
 
   auto form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
+                                          LanguageCode(""), nullptr);
   // Make sure the form can not be autofilled now.
   ASSERT_FALSE(std::ranges::any_of(
       form_structure->fields(),
@@ -6786,14 +6799,14 @@ TEST_F(BrowserAutofillManagerTest, PageLanguageGetsCorrectlySet) {
   FormStructure* parsed_form = manager().FindCachedFormById(form.global_id());
 
   ASSERT_TRUE(parsed_form);
-  ASSERT_EQ(LanguageCode(), parsed_form->current_page_language());
+  EXPECT_EQ(manager().GetCurrentPageLanguage(), LanguageCode(""));
 
   client().GetLanguageState()->SetCurrentLanguage("zh");
 
   manager().OnFormsSeen({form}, {});
   parsed_form = manager().FindCachedFormById(form.global_id());
 
-  ASSERT_EQ(LanguageCode("zh"), parsed_form->current_page_language());
+  EXPECT_EQ(manager().GetCurrentPageLanguage(), LanguageCode("zh"));
 }
 
 // Test language detection on frames depending on whether the frame is active or
@@ -6818,25 +6831,19 @@ TEST_P(BrowserAutofillManagerTestPageLanguageDetection, GetsCorrectlyDetected) {
   FormData form = CreateTestAddressFormData();
 
   manager().OnFormsSeen({form}, {});
-  FormStructure* parsed_form = manager().FindCachedFormById(form.global_id());
-
-  ASSERT_TRUE(parsed_form);
-  ASSERT_EQ(LanguageCode(), parsed_form->current_page_language());
 
   translate::LanguageDetectionDetails language_detection_details;
   language_detection_details.adopted_language = "hu";
   client().GetLanguageState()->SetCurrentLanguage("hu");
 
+  MockAutofillManagerObserver observer;
+  base::ScopedObservation<AutofillManager, MockAutofillManagerObserver>
+      observation{&observer};
+  observation.Observe(&manager());
+  EXPECT_CALL(observer, OnBeforeLanguageDetermined).Times(is_active());
+
   driver().SetIsActive(is_active());
   manager().OnLanguageDetermined(language_detection_details);
-
-  parsed_form = manager().FindCachedFormById(form.global_id());
-
-  // Language detection is used only for active frames.
-  auto expected_language_code =
-      is_active() ? LanguageCode("hu") : LanguageCode();
-
-  ASSERT_EQ(*expected_language_code, *parsed_form->current_page_language());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -6916,7 +6923,8 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteMetrics) {
   }
   // Override the types and simulate seeing the form on page load.
   auto form_structure = std::make_unique<FormStructure>(form);
-  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
+                                          LanguageCode(""), nullptr);
   test_api(*form_structure).SetFieldTypes(heuristic_types, server_types);
   manager().AddSeenFormStructure(std::move(form_structure));
 
@@ -7343,7 +7351,8 @@ class BrowserAutofillManagerTest_AutofillAi
     {
       auto fs = std::make_unique<FormStructure>(form);
       form_structure = fs.get();
-      fs->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+      fs->DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                                  nullptr);
       manager().AddSeenFormStructure(std::move(fs));
     }
 

@@ -88,6 +88,10 @@ struct EncodeUploadRequestOptions {
   // If this is nullptr, no randomized metadata is sent.
   std::optional<RandomizedEncoder> encoder;
 
+  // The language detected for this form's page, before any translations
+  // performed by Chrome.
+  LanguageCode current_page_language;
+
   // The type of the event that was taken as an indication that the form has
   // been successfully submitted.
   mojom::SubmissionIndicatorEvent submission_event =

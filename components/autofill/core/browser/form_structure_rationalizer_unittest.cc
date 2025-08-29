@@ -132,7 +132,8 @@ std::unique_ptr<FormStructure> BuildFormStructure(
 
   // Identifies the sections based on the heuristics types.
   if (run_heuristics) {
-    form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+    form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
+                                            LanguageCode(""), nullptr);
   } else {
     for (size_t i = 0; i < fields.size(); ++i) {
       form_structure->field(i)->set_heuristic_type(GetActiveHeuristicSource(),
@@ -142,7 +143,8 @@ std::unique_ptr<FormStructure> BuildFormStructure(
   ParseServerPredictionsQueryResponse(
       response_string, {form_structure.get()},
       test::GetEncodedSignatures({form_structure.get()}), nullptr);
-  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""), nullptr,
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr,
                                                /*legacy_order=*/true);
   return form_structure;
 }

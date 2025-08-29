@@ -1190,6 +1190,7 @@ class AutofillServerCommunicationTest
 
   bool SendUploadRequest(const FormStructure& form,
                          RandomizedEncoder& randomized_encoder,
+                         LanguageCode current_page_language,
                          const FieldTypeSet& available_field_types,
                          std::optional<FormSignature> login_form_signature,
                          bool observed_submission,
@@ -1203,6 +1204,7 @@ class AutofillServerCommunicationTest
 
     EncodeUploadRequestOptions options;
     options.encoder = RandomizedEncoder::Create(client().GetPrefs());
+    options.current_page_language = std::move(current_page_language);
     options.available_field_types = available_field_types;
     options.login_form_signature = login_form_signature;
     options.observed_submission = observed_submission;
@@ -1274,7 +1276,8 @@ TEST_P(AutofillServerCommunicationTest, Upload) {
                                   {.fields = {{.role = NAME_FIRST},
                                               {.role = NAME_LAST},
                                               {.role = EMAIL_ADDRESS}}})),
-                              *randomized_encoder, /*available_field_types=*/{},
+                              *randomized_encoder, LanguageCode(""),
+                              /*available_field_types=*/{},
                               /*login_form_signature=*/std::nullopt,
                               /*observed_submission=*/true,
                               /*is_password_manager_upload=*/false));
@@ -1597,7 +1600,6 @@ TEST_P(AutofillUploadTest, RichMetadata) {
   AutofillCrowdsourcingManager crowdsourcing_manager(
       &client(), version_info::Channel::UNKNOWN);
   FormStructure form_structure(form);
-  form_structure.set_current_page_language(LanguageCode("fr"));
   SetCorrectFieldHostFormSignatures(form_structure);
 
   client().GetPrefs()->SetBoolean(
@@ -1616,6 +1618,7 @@ TEST_P(AutofillUploadTest, RichMetadata) {
 
     // The first attempt should succeed.
     EXPECT_TRUE(SendUploadRequest(form_structure, *randomized_encoder,
+                                  LanguageCode("fr"),
                                   /*available_field_types=*/{},
                                   /*login_form_signature=*/std::nullopt,
                                   /*observed_submission=*/true,
@@ -1623,6 +1626,7 @@ TEST_P(AutofillUploadTest, RichMetadata) {
 
     // The second attempt should always fail.
     EXPECT_FALSE(SendUploadRequest(form_structure, *randomized_encoder,
+                                   LanguageCode(""),
                                    /*available_field_types=*/{},
                                    /*login_form_signature=*/std::nullopt,
                                    /*observed_submission=*/true,
@@ -1639,8 +1643,7 @@ TEST_P(AutofillUploadTest, RichMetadata) {
     ASSERT_TRUE(request.ParseFromString(payloads().front()));
     ASSERT_TRUE(request.has_upload());
     const AutofillUploadContents& upload = request.upload();
-    EXPECT_EQ(upload.language(),
-              form_structure.current_page_language().value());
+    EXPECT_EQ(upload.language(), "fr");
     // Only first upload has metadata.
     const bool expect_metadata = i == 0;
     EXPECT_EQ(upload.has_randomized_form_metadata(), expect_metadata);
@@ -1691,6 +1694,7 @@ TEST_P(AutofillUploadTest, Throttling) {
 
     // The first attempt should succeed.
     EXPECT_TRUE(SendUploadRequest(form_structure, *randomized_encoder,
+                                  LanguageCode(""),
                                   /*available_field_types=*/{},
                                   /*login_form_signature=*/std::nullopt,
                                   /*observed_submission=*/true,
@@ -1698,6 +1702,7 @@ TEST_P(AutofillUploadTest, Throttling) {
 
     // The second attempt should always fail.
     EXPECT_FALSE(SendUploadRequest(form_structure, *randomized_encoder,
+                                   LanguageCode(""),
                                    /*available_field_types=*/{},
                                    /*login_form_signature=*/std::nullopt,
                                    /*observed_submission=*/true,
@@ -1747,7 +1752,7 @@ TEST_P(AutofillUploadTest, ThrottlingStructuralFormSignatures) {
 
   // The first attempt should succeed and include the structural form signature.
   EXPECT_TRUE(SendUploadRequest(form_structure_1, *randomized_encoder,
-                                /*available_field_types=*/{},
+                                LanguageCode(""), /*available_field_types=*/{},
                                 /*login_form_signature=*/std::nullopt,
                                 /*observed_submission=*/true,
                                 /*is_password_manager_upload=*/false));
@@ -1760,7 +1765,7 @@ TEST_P(AutofillUploadTest, ThrottlingStructuralFormSignatures) {
   // The second attempt should succeed but NOT include the structural form
   // signature, because it has been throttled.
   EXPECT_TRUE(SendUploadRequest(form_structure_2, *randomized_encoder,
-                                /*available_field_types=*/{},
+                                LanguageCode(""), /*available_field_types=*/{},
                                 /*login_form_signature=*/std::nullopt,
                                 /*observed_submission=*/true,
                                 /*is_password_manager_upload=*/false));
@@ -1793,14 +1798,14 @@ TEST_P(AutofillUploadTest, SuccessfulSubmissionOnDisabledThrottling) {
   base::HistogramTester histogram_tester;
   // The first upload must be successfully sent to the Autofill server.
   EXPECT_TRUE(SendUploadRequest(form_structure, *randomized_encoder,
-                                /*available_field_types=*/{},
+                                LanguageCode(""), /*available_field_types=*/{},
                                 /*login_form_signature=*/std::nullopt,
                                 /*observed_submission=*/true,
                                 /*is_password_manager_upload=*/false));
 
   // The second upload also must be successfully sent to the Autofill server.
   EXPECT_TRUE(SendUploadRequest(form_structure, *randomized_encoder,
-                                /*available_field_types=*/{},
+                                LanguageCode(""), /*available_field_types=*/{},
                                 /*login_form_signature=*/std::nullopt,
                                 /*observed_submission=*/true,
                                 /*is_password_manager_upload=*/false));
@@ -1871,7 +1876,7 @@ TEST_P(AutofillUploadTest, PeriodicReset) {
 
   // The first attempt should succeed.
   EXPECT_TRUE(SendUploadRequest(form_structure, *randomized_encoder,
-                                /*available_field_types=*/{},
+                                LanguageCode(""), /*available_field_types=*/{},
                                 /*login_form_signature=*/std::nullopt,
                                 /*observed_submission=*/true,
                                 /*is_password_manager_upload=*/false));
@@ -1880,7 +1885,7 @@ TEST_P(AutofillUploadTest, PeriodicReset) {
   // so the upload should not be sent.
   test_clock.Advance(base::Days(15));
   EXPECT_FALSE(SendUploadRequest(form_structure, *randomized_encoder,
-                                 /*available_field_types=*/{},
+                                 LanguageCode(""), /*available_field_types=*/{},
                                  /*login_form_signature=*/std::nullopt,
                                  /*observed_submission=*/true,
                                  /*is_password_manager_upload=*/false));
@@ -1889,7 +1894,7 @@ TEST_P(AutofillUploadTest, PeriodicReset) {
   // the upload should succeed.
   test_clock.Advance(base::Days(2));  // Total = 29
   EXPECT_TRUE(SendUploadRequest(form_structure, *randomized_encoder,
-                                /*available_field_types=*/{},
+                                LanguageCode(""), /*available_field_types=*/{},
                                 /*login_form_signature=*/std::nullopt,
                                 /*observed_submission=*/true,
                                 /*is_password_manager_upload=*/false));
@@ -1930,7 +1935,7 @@ TEST_P(AutofillUploadTest, ResetOnClearUploadHistory) {
 
   // The first attempt should succeed.
   EXPECT_TRUE(SendUploadRequest(form_structure, *randomized_encoder,
-                                /*available_field_types=*/{},
+                                LanguageCode(""), /*available_field_types=*/{},
                                 /*login_form_signature=*/std::nullopt,
                                 /*observed_submission=*/true,
                                 /*is_password_manager_upload=*/false));
@@ -1938,7 +1943,7 @@ TEST_P(AutofillUploadTest, ResetOnClearUploadHistory) {
   // Clear the upload throttling history.
   AutofillCrowdsourcingManager::ClearUploadHistory(client().GetPrefs());
   EXPECT_TRUE(SendUploadRequest(form_structure, *randomized_encoder,
-                                /*available_field_types=*/{},
+                                LanguageCode(""), /*available_field_types=*/{},
                                 /*login_form_signature=*/std::nullopt,
                                 /*observed_submission=*/true,
                                 /*is_password_manager_upload=*/false));
@@ -1965,14 +1970,14 @@ TEST_P(AutofillUploadTest, ThrottleMetadataOnPasswordManagerUploads) {
   base::HistogramTester histogram_tester;
   // The first upload must be successfully sent to the Autofill server.
   EXPECT_TRUE(SendUploadRequest(form_structure, *randomized_encoder,
-                                /*available_field_types=*/{},
+                                LanguageCode(""), /*available_field_types=*/{},
                                 /*login_form_signature=*/std::nullopt,
                                 /*observed_submission=*/true,
                                 /*is_password_manager_upload=*/true));
 
   // The second upload also must be successfully sent to the Autofill server.
   EXPECT_TRUE(SendUploadRequest(form_structure, *randomized_encoder,
-                                /*available_field_types=*/{},
+                                LanguageCode(""), /*available_field_types=*/{},
                                 /*login_form_signature=*/std::nullopt,
                                 /*observed_submission=*/true,
                                 /*is_password_manager_upload=*/true));

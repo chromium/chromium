@@ -224,7 +224,8 @@ void FormStructureTest::CheckFormStructureTestData(
     auto form_structure = std::make_unique<FormStructure>(form);
 
     if (test_case.form_flags.determine_heuristic_type) {
-      form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+      form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
+                                              LanguageCode(""), nullptr);
     }
 
     if (test_case.form_flags.is_autofillable) {

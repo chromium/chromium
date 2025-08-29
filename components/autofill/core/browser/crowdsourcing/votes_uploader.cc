@@ -238,9 +238,6 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
         form->form_signature());
   }
 
-  // Annotate the form with the source language of the page.
-  form->set_current_page_language(current_page_language);
-
   // Determine |ADDRESS_HOME_STATE| as a possible types for the fields in the
   // |form| with the help of |AlternativeStateNameMap|.
   // |AlternativeStateNameMap| can only be accessed on the main UI thread.
@@ -258,6 +255,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
              const std::string& app_locale, bool observed_submission,
              std::unique_ptr<FormStructure> form,
              std::optional<RandomizedEncoder> randomized_encoder,
+             LanguageCode current_page_language,
              FormStructure::FormAssociations form_associations,
              std::set<FieldGlobalId> fields_that_match_state) {
             std::vector<PossibleTypes> possible_types =
@@ -272,6 +270,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
 
             EncodeUploadRequestOptions options;
             options.encoder = std::move(randomized_encoder);
+            options.current_page_language = std::move(current_page_language);
             options.form_associations = std::move(form_associations);
             options.observed_submission = observed_submission;
             options.available_field_types = DetermineAvailableFieldTypes(
@@ -295,7 +294,8 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
           last_unlocked_credit_card_cvc, client_->GetAppLocale(),
           observed_submission, std::move(form),
           RandomizedEncoder::Create(client_->GetPrefs()),
-          std::move(form_associations), std::move(fields_that_match_state)),
+          std::move(current_page_language), std::move(form_associations),
+          std::move(fields_that_match_state)),
       base::BindOnce(&VotesUploader::OnFieldTypesDetermined,
                      weak_ptr_factory_.GetWeakPtr(),
                      initial_interaction_timestamp, base::TimeTicks::Now(),

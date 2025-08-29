@@ -849,8 +849,8 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
   upload.set_autofill_used(false);
   upload.set_data_present(data_present);
   upload.set_has_form_tag(form.is_form_element());
-  if (!form.current_page_language()->empty() && options.encoder) {
-    upload.set_language(form.current_page_language().value());
+  if (!options.current_page_language->empty() && options.encoder) {
+    upload.set_language(options.current_page_language.value());
   }
 
   if (options.form_associations.last_address_form_submitted) {
