@@ -231,7 +231,7 @@ should see "ReAuth succeed" in the command prompt.
 For the first security key touch, there might be a delay before your security
 key starts blinking. This is caused by `luci-auth-fido2-plugin` bootstrapping.
 
-### I’m using a Windows client, I want to SSH into Linux
+#### I’m using a Windows client, I want to SSH into Linux
 
 First, start `luci-auth-ssh-helper` in daemon mode on a TCP port (we use 10899
 in the example). The helper will listen for incoming ReAuth challenges.
@@ -280,7 +280,7 @@ You need to make sure `luci-auth-ssh-helper` is running on your local machine
 when you want to perform ReAuth challenges over a SSH session. For convenience,
 you can register it to start as a service on login.
 
-### I’m using a Windows client, I want to remote desktop into Windows
+#### I’m using a Windows client, I want to remote desktop into Windows
 
 Use the built-in Windows Remote Desktop Connection application (also known as
 `mstsc`), make sure "WebAuthn (Windows Hello or security keys)" is enabled in
@@ -302,7 +302,7 @@ Windows will prompt you to touch the security key. Touch it to complete ReAuth.
 
 If you see "ReAuth succeed", then it works\!
 
-### None of the above
+#### None of the above
 
 SSH / remote desktop workflows not listed above aren’t tested. We’re working on
 adding instructions for more workflows.
