@@ -874,7 +874,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(
                     CLEANUP_LEGACY_TABSTATE,
                     /* defaultValue= */ false,
-                    /* defaultValueInTests= */ false);
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sCollectAndroidFrameTimelineMetrics =
             newCachedFlag(
                     COLLECT_ANDROID_FRAME_TIMELINE_METRICS,
