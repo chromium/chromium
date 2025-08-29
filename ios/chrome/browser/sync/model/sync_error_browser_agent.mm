@@ -258,7 +258,7 @@ void SyncErrorBrowserAgent::AddPasswordFormManagerObserver(
   password_manager::PasswordFormCache* password_form_cache =
       GetPasswordFormCacheFromWebState(web_state);
   if (password_form_cache) {
-    password_form_cache->AddObserver(this);
+    password_form_cache->SetObserver(weak_ptr_factory_.GetWeakPtr());
   }
 }
 
@@ -269,6 +269,6 @@ void SyncErrorBrowserAgent::RemovePasswordFormManagerObserver(
   password_manager::PasswordFormCache* password_form_cache =
       GetPasswordFormCacheFromWebState(web_state);
   if (password_form_cache) {
-    password_form_cache->RemoveObserver(this);
+    password_form_cache->ResetObserver();
   }
 }
