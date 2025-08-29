@@ -83,6 +83,9 @@ class TabStripActionContainer : public views::View,
 
     // Adding boolean since the glic nudge is always opaque.
     bool is_opacity_animated_;
+
+    // track animations to delay posting calls that might delete this class.
+    bool is_executing_show_or_hide_ = false;
   };
   explicit TabStripActionContainer(
       TabStripController* tab_strip_controller,
