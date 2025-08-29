@@ -42,6 +42,10 @@ class SafariDataImportEntryPointMediatorTest : public PlatformTest {
         featureEngagementTracker:tracker_.get()];
   }
 
+  ~SafariDataImportEntryPointMediatorTest() override {
+    [mediator_ disconnect];
+  }
+
   base::RepeatingCallback<void(bool)> BoolArgumentQuitClosure() {
     return base::IgnoreArgs<bool>(run_loop_.QuitClosure());
   }

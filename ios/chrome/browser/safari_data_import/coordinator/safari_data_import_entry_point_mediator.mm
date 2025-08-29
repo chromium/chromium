@@ -21,6 +21,8 @@
   raw_ptr<PromosManager> _promosManager;
   /// Feature engagement tracker used for the reminder.
   raw_ptr<feature_engagement::Tracker> _tracker;
+  /// Whether the mediator has been disconnected.
+  BOOL _disconnected;
 }
 
 - (instancetype)initWithUIBlockerTarget:(id<UIBlockerTarget>)target
@@ -38,6 +40,10 @@
   return self;
 }
 
+- (void)dealloc {
+  CHECK(_disconnected, base::NotFatalUntil::M143);
+}
+
 - (void)registerReminder {
   _promosManager->RegisterPromoForSingleDisplay(
       promos_manager::Promo::SafariImportRemindMeLater);
@@ -52,6 +58,7 @@
 - (void)disconnect {
   _promosManager = nullptr;
   _UIBlocker.reset();
+  _disconnected = YES;
 }
 
 @end

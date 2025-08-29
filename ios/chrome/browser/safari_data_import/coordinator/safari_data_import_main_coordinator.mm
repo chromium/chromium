@@ -8,6 +8,7 @@
 
 #import "base/check.h"
 #import "base/feature_list.h"
+#import "base/ios/block_types.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/passwords/model/features.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
@@ -75,12 +76,17 @@
 - (void)stop {
   id<SafariDataImportUIHandler> UIHandler = self.UIHandler;
   SafariDataImportEntryPointMediator* mediator = _mediator;
-  [_viewController.presentingViewController
-      dismissViewControllerAnimated:YES
-                         completion:^{
-                           [mediator disconnect];
-                           [UIHandler safariDataImportDidDismiss];
-                         }];
+  ProceduralBlock dismissCompletionHandler = ^{
+    [mediator disconnect];
+    [UIHandler safariDataImportDidDismiss];
+  };
+  if (_viewController.presentingViewController) {
+    [_viewController.presentingViewController
+        dismissViewControllerAnimated:YES
+                           completion:dismissCompletionHandler];
+  } else {
+    dismissCompletionHandler();
+  }
   _viewController = nil;
   [_exportCoordinator stop];
   self.delegate = nil;
