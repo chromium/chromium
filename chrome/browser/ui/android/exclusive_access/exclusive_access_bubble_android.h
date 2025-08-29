@@ -48,6 +48,9 @@ class ExclusiveAccessBubbleAndroid : public ExclusiveAccessBubble {
   void UpdateBubbleContent(ExclusiveAccessBubbleType bubble_type);
   void RunHideCallbackIfNeeded(ExclusiveAccessBubbleHideReason reason);
 
+  std::u16string GetBubbleText(ExclusiveAccessBubbleType bubble_type,
+                               bool keyboard_connected) const;
+
   ExclusiveAccessBubbleParams params_;
   bool notify_overridden_;
   ExclusiveAccessBubbleHideCallback first_hide_callback_;

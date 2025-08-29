@@ -101,8 +101,23 @@ void ExclusiveAccessBubbleAndroid::UpdateBubbleContent(
 
   JNIEnv* env = jni_zero::AttachCurrentThread();
 
-  // TODO(https://crbug.com/415732870): This part always assumes that a keyboard
-  // is present, should be updated to support mobile.
+  bool keyboard_connected =
+      Java_ExclusiveAccessBubble_isKeyboardConnected(env, j_bubble_);
+  std::u16string text = GetBubbleText(bubble_type, keyboard_connected);
+
+  Java_ExclusiveAccessBubble_update(
+      env, j_bubble_, base::android::ConvertUTF16ToJavaString(env, text));
+}
+
+std::u16string ExclusiveAccessBubbleAndroid::GetBubbleText(
+    ExclusiveAccessBubbleType bubble_type,
+    bool keyboard_connected) const {
+  if (!keyboard_connected) {
+    return exclusive_access_bubble::GetInstructionTextForTypeTouchBased(
+        bubble_type, GetOriginString(params_.origin), params_.has_download,
+        notify_overridden_);
+  }
+
   std::u16string accelerator;
   bool should_show_browser_acc =
       (params_.has_download &&
@@ -117,12 +132,9 @@ void ExclusiveAccessBubbleAndroid::UpdateBubbleContent(
     accelerator = l10n_util::GetStringUTF16(IDS_APP_ESC_KEY);
   }
 
-  auto text = exclusive_access_bubble::GetInstructionTextForType(
+  return exclusive_access_bubble::GetInstructionTextForType(
       params_.type, accelerator, GetOriginString(params_.origin),
       params_.has_download, notify_overridden_);
-
-  Java_ExclusiveAccessBubble_update(
-      env, j_bubble_, base::android::ConvertUTF16ToJavaString(env, text));
 }
 
 bool ExclusiveAccessBubbleAndroid::IsVisible() const {

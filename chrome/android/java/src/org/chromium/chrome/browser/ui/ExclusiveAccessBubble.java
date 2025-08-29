@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui;
 
 import android.view.Gravity;
 
+import org.chromium.ui.base.DeviceInput;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.build.annotations.NullMarked;
@@ -61,5 +62,10 @@ public class ExclusiveAccessBubble {
     @CalledByNative
     public boolean isVisible() {
         return mNotificationToast != null;
+    }
+
+    @CalledByNative
+    public boolean isKeyboardConnected() {
+        return DeviceInput.supportsAlphabeticKeyboard();
     }
 }
