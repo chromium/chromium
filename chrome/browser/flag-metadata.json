@@ -4465,11 +4465,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "enable-surface-control",
-    "owners": [ "vikassoni@chromium.org", "vasilyt@chromium.org" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "enable-suspend-to-disk",
     "owners": [ "bgeffon@chromium.org", "mka@chromium.org", "chromeos-power@google.com" ],
     "expiry_milestone": 130

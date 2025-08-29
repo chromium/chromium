@@ -4777,12 +4777,6 @@ const char kAndroidSpellcheckFullApiBlinkDescription[] =
     "If enabled, provides API support for custom spell check menus that are "
     "rendered by Android applications.";
 
-const char kAndroidSurfaceControlName[] = "Android SurfaceControl";
-const char kAndroidSurfaceControlDescription[] =
-    " Enables SurfaceControl to manage the buffer queue for the "
-    " DisplayCompositor on Android. This feature is only available on "
-    " android Q+ devices";
-
 const char kAndroidAudioDeviceListenerName[] = "Android Audio Device Listener";
 const char kAndroidAudioDeviceListenerDescription[] =
     "Enables listening to audio device list change events, allowing web apps "

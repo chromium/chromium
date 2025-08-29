@@ -2762,9 +2762,6 @@ extern const char kAndroidTabGroupsColorUpdateGM3Description[];
 extern const char kAndroidTabHighlightingName[];
 extern const char kAndroidTabHighlightingDescription[];
 
-extern const char kAndroidSurfaceControlName[];
-extern const char kAndroidSurfaceControlDescription[];
-
 extern const char kAnimatedImageDragShadowName[];
 extern const char kAnimatedImageDragShadowDescription[];
 
