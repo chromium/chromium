@@ -85,6 +85,7 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view)
   if (base::FeatureList::IsEnabled(ntp_features::kNtpFooter)) {
     new_tab_footer_view_separator_ =
         AddChildView(std::make_unique<ContentsSeparator>());
+    new_tab_footer_view_separator_->SetVisible(false);
     new_tab_footer_view_separator_->SetProperty(
         views::kElementIdentifierKey, kFooterWebViewSeparatorElementId);
 
@@ -462,23 +463,24 @@ views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
       GetMirroredRect(devtools_bounds),
       views::SizeBounds(full_contents_bounds.size()));
 
-  if (new_tab_footer_view_ && new_tab_footer_view_->GetVisible()) {
-    // Shrink the rect for the contents view if the ntp footer is visible.
-    contents_view_bounds.set_height(non_devtools_contents_bounds.height() -
-                                    kNewTabFooterHeight -
-                                    kNewTabFooterSeparatorHeight);
+  if (new_tab_footer_view_) {
+    gfx::Rect footer_separator_rect, footer_rect;
+    if (new_tab_footer_view_->GetVisible()) {
+      // Shrink the rect for the contents view if the ntp footer is visible.
+      contents_view_bounds.set_height(non_devtools_contents_bounds.height() -
+                                      kNewTabFooterHeight -
+                                      kNewTabFooterSeparatorHeight);
+      footer_separator_rect =
+          gfx::Rect(contents_view_bounds.x(), contents_view_bounds.bottom(),
+                    contents_view_bounds.width(), kNewTabFooterSeparatorHeight);
+      footer_rect =
+          gfx::Rect(contents_view_bounds.x(), contents_view_bounds.bottom(),
+                    contents_view_bounds.width(), kNewTabFooterHeight);
+    }
 
-    gfx::Rect footer_separator_rect =
-        gfx::Rect(contents_view_bounds.x(), contents_view_bounds.bottom(),
-                  contents_view_bounds.width(), kNewTabFooterSeparatorHeight);
-    gfx::Rect footer_rect =
-        gfx::Rect(contents_view_bounds.x(), contents_view_bounds.bottom(),
-                  contents_view_bounds.width(), kNewTabFooterHeight);
-
-    layouts.child_layouts.emplace_back(
-        new_tab_footer_view_separator_.get(),
-        new_tab_footer_view_separator_->GetVisible(), footer_separator_rect);
-
+    layouts.child_layouts.emplace_back(new_tab_footer_view_separator_.get(),
+                                       new_tab_footer_view_->GetVisible(),
+                                       footer_separator_rect);
     layouts.child_layouts.emplace_back(new_tab_footer_view_.get(),
                                        new_tab_footer_view_->GetVisible(),
                                        footer_rect);
