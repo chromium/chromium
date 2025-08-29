@@ -22,6 +22,17 @@ class GlicFocusedTabManagerInterface {
   virtual base::CallbackListSubscription AddFocusedTabChangedCallback(
       FocusedTabChangedCallback callback) = 0;
 
+  // Callback for changes to the tab data representation of the focused tab.
+  // This includes any event that changes tab data -- e.g. favicon/title change
+  // events (where the container does not change), as well as container changed
+  // events.
+  using FocusedTabDataChangedCallback =
+      base::RepeatingCallback<void(const glic::mojom::TabData*)>;
+  virtual base::CallbackListSubscription AddFocusedTabDataChangedCallback(
+      FocusedTabDataChangedCallback callback) = 0;
+
+  virtual bool IsTabFocused(tabs::TabHandle tab_handle) const = 0;
+
   // Returns the currently focused tab data or an error reason stating why one
   // was not available. This may also contain a tab candidate along with details
   // as to why it cannot be focused. Virtual for testing.

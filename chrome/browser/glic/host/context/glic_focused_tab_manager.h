@@ -53,6 +53,11 @@ class GlicFocusedTabManager : public GlicFocusedTabManagerInterface,
   base::CallbackListSubscription AddFocusedTabChangedCallback(
       FocusedTabChangedCallback callback) override;
   FocusedTabData GetFocusedTabData() override;
+  using FocusedTabDataChangedCallback =
+      base::RepeatingCallback<void(const glic::mojom::TabData*)>;
+  base::CallbackListSubscription AddFocusedTabDataChangedCallback(
+      FocusedTabDataChangedCallback callback) override;
+  bool IsTabFocused(tabs::TabHandle tab_handle) const override;
 
   // content::WebContentsObserver
   void PrimaryPageChanged(content::Page& page) override;
@@ -77,17 +82,6 @@ class GlicFocusedTabManager : public GlicFocusedTabManagerInterface,
   base::CallbackListSubscription
   AddFocusedTabOrCandidateInstanceChangedCallback(
       FocusedTabOrCandidateInstanceChangedCallback callback);
-
-  // Callback for changes to the tab data representation of the focused tab.
-  // This includes any event that changes tab data -- e.g. favicon/title change
-  // events (where the container does not change), as well as container changed
-  // events.
-  using FocusedTabDataChangedCallback =
-      base::RepeatingCallback<void(const glic::mojom::TabData*)>;
-  base::CallbackListSubscription AddFocusedTabDataChangedCallback(
-      FocusedTabDataChangedCallback callback);
-
-  bool IsTabFocused(tabs::TabHandle tab_handle) const;
 
  private:
   // Data provided when there is no focused tab.
