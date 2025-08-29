@@ -5724,6 +5724,18 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_FALSE(test_api(form_seen_by_ahm).field(0).should_autocomplete());
 }
 
+// Regression test for crbug.com/428900385.
+TEST_F(BrowserAutofillManagerTest, NullAutofillFieldDoesNotCrash) {
+  FormData form = test::GetFormData({.fields = {
+                                         {.role = LOYALTY_MEMBERSHIP_ID},
+                                     }});
+
+  manager().FillOrPreviewField(
+      mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
+      form, form.fields().front(), u"12345678",
+      SuggestionType::kLoyaltyCardEntry, LOYALTY_MEMBERSHIP_ID);
+}
+
 TEST_F(BrowserAutofillManagerTest, DontOfferToSavePaymentsCard) {
   FormData form;
   PrepareForRealPanResponse(&form);
