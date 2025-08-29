@@ -536,8 +536,10 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
     }
   }
 
-  PhysicalRect position_area_modified_containing_block_rect =
-      PositionAreaModifiedContainingBlock(position_area_offsets);
+  const bool has_default_anchor = DefaultAnchor(position_anchor);
+  const PhysicalRect position_area_modified_containing_block_rect =
+      PositionAreaModifiedContainingBlock(position_area_offsets,
+                                          has_default_anchor);
 
   const bool is_y_axis = IsYAxis();
 
@@ -765,8 +767,10 @@ AnchorEvaluatorImpl::ComputePositionAreaOffsetsForLayout(
 }
 
 PhysicalRect AnchorEvaluatorImpl::PositionAreaModifiedContainingBlock(
-    const std::optional<PositionAreaOffsets>& position_area_offsets) const {
-  PhysicalRect rect = container_rect_;
+    const std::optional<PositionAreaOffsets>& position_area_offsets,
+    bool has_default_anchor) const {
+  PhysicalRect rect =
+      has_default_anchor && scroll_rect_ ? *scroll_rect_ : container_rect_;
 
   // If calculated, reduce the containing-block rect based on the position-area.
   if (position_area_offsets) {

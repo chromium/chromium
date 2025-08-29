@@ -751,6 +751,14 @@ crbug.com/40550039 external/wpt/svg/styling/use-element-id-selector-transition.h
 crbug.com/40550039 external/wpt/svg/styling/use-element-transitions-dom-mutation.html [ Failure ]
 
 # CSS Anchor Positioning Update failures.
+# New tests which fail without the flag enabled.
+crbug.com/438515315 external/wpt/css/css-anchor-position/scrollable-containing-block-position-area.html [ Failure ]
+crbug.com/438515315 external/wpt/css/css-anchor-position/scrollable-containing-block-size.html [ Failure ]
+crbug.com/438515315 external/wpt/css/css-anchor-position/scrollable-containing-block-validity.html [ Failure ]
+crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/scrollable-containing-block-position-area.html [ Pass ]
+crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/scrollable-containing-block-size.html [ Pass ]
+crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/scrollable-containing-block-validity.html [ Pass ]
+# Regressions with the flag enabled.
 crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/anchor-scroll-position-try-001.html [ Failure ]
 crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/anchor-scroll-position-try-006.html [ Failure ]
 crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/anchor-scroll-position-try-007.html [ Failure ]
@@ -758,7 +766,6 @@ crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-ancho
 crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/anchor-scroll-position-try-009.html [ Failure ]
 crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/anchor-scroll-position-try-010.html [ Failure ]
 crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/anchor-scroll-position-try-011.html [ Failure ]
-crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/anchor-scroll-position-try-012.html [ Failure ]
 crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/anchor-scroll-position-try-013.html [ Failure ]
 crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/anchor-scroll-position-try-014.html [ Failure ]
 crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/position-area-scrolling-001.tentative.html [ Failure ]
@@ -768,7 +775,6 @@ crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-ancho
 crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/position-area-scrolling-006.html [ Failure ]
 crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/position-area-scrolling-007.html [ Failure ]
 crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/position-try-fallbacks-003.html [ Failure ]
-crbug.com/438515315 virtual/css-anchor-update-enabled/external/wpt/css/css-anchor-position/position-visibility-no-overflow-scroll.html [ Failure ]
 
 # ====== Paint team owned tests to here ======
 

@@ -246,13 +246,15 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
                       const LayoutObject* implicit_anchor,
                       const LayoutObject* css_containing_block,
                       WritingDirectionMode container_writing_direction,
-                      const PhysicalRect& container_rect)
+                      const PhysicalRect& container_rect,
+                      const std::optional<PhysicalRect>& scroll_rect)
       : query_box_(&query_box),
         anchor_query_(&anchor_query),
         implicit_anchor_(implicit_anchor),
         query_box_actual_containing_block_(css_containing_block),
         container_writing_direction_(container_writing_direction),
         container_rect_(container_rect),
+        scroll_rect_(scroll_rect),
         display_locks_affected_by_anchors_(
             MakeGarbageCollected<GCedHeapHashSet<Member<Element>>>()) {
     DCHECK(anchor_query_);
@@ -265,13 +267,15 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
                       const LayoutObject* implicit_anchor,
                       const LayoutObject& containing_block,
                       WritingDirectionMode container_writing_direction,
-                      const PhysicalRect& container_rect)
+                      const PhysicalRect& container_rect,
+                      const std::optional<PhysicalRect>& scroll_rect)
       : query_box_(&query_box),
         anchor_queries_(&anchor_queries),
         implicit_anchor_(implicit_anchor),
         containing_block_(&containing_block),
         container_writing_direction_(container_writing_direction),
         container_rect_(container_rect),
+        scroll_rect_(scroll_rect),
         display_locks_affected_by_anchors_(
             MakeGarbageCollected<GCedHeapHashSet<Member<Element>>>()) {
     DCHECK(anchor_queries_);
@@ -303,6 +307,9 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
       const ComputedStyleBuilder&) override;
 
   const PhysicalAnchorQuery* AnchorQuery() const;
+
+  // Given the computed value of `position-anchor`, returns the default anchor.
+  const LayoutObject* DefaultAnchor(const ScopedCSSName* position_anchor) const;
 
   // Returns the most recent anchor evaluated. If more than one anchor has been
   // evaluated so far, nullptr is returned. This is done to avoid extra noise
@@ -339,7 +346,6 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
 
   void UpdateAccessibilityAnchor(const LayoutObject* anchor) const;
 
-  const LayoutObject* DefaultAnchor(const ScopedCSSName* position_anchor) const;
   const PaintLayer* DefaultAnchorScrollContainerLayer(
       const ScopedCSSName* position_anchor) const;
 
@@ -357,7 +363,8 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   // Returns the containing block, further constrained by the position-area.
   // Not to be confused with the inset-modified containing block.
   PhysicalRect PositionAreaModifiedContainingBlock(
-      const std::optional<PositionAreaOffsets>&) const;
+      const std::optional<PositionAreaOffsets>&,
+      bool has_default_anchor) const;
 
   const LayoutBox* query_box_ = nullptr;
   mutable const PhysicalAnchorQuery* anchor_query_ = nullptr;
@@ -380,6 +387,7 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
 
   // Either width or height will be used, depending on IsYAxis().
   const PhysicalRect container_rect_;
+  const std::optional<PhysicalRect> scroll_rect_;
 
   // A single-value cache. If a call to Get has the same key as the last call,
   // then the cached result it returned. Otherwise, the value is created using

@@ -570,6 +570,10 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     inflow_bounds_ = inflow_bounds;
   }
 
+  const std::optional<LogicalRect>& InflowBounds() const {
+    return inflow_bounds_;
+  }
+
   void SetEarlyBreak(const EarlyBreak* breakpoint) {
     early_break_ = breakpoint;
   }

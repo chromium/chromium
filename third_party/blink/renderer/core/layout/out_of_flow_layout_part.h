@@ -143,6 +143,8 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     bool is_hidden_for_paint;
     // Size and offset of the container.
     LogicalRect rect;
+    // https://drafts.csswg.org/css-position-4/#scrollable-containing-block
+    std::optional<LogicalRect> scroll_rect;
     // The relative positioned offset to be applied after fragmentation is
     // completed.
     LogicalOffset relative_offset;
@@ -330,6 +332,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       const StitchedAnchorQueries* anchor_queries) const;
 
   LogicalRect ApplyPositionAreaOffsets(
+      const LogicalRect& base_rect,
       const PositionAreaOffsets& offsets,
       PhysicalOffset default_anchor_scroll_shift,
       const ContainingBlockInfo& container_info) const;
