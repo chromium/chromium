@@ -29,6 +29,7 @@ python_library("webview_cts_tests") {
   data_deps = [
     "//build/android:test_runner_py",
     "//testing/buildbot/filters:webview_cts_tests_filters",
+    "//third_party/jdk11:java_data",
   ]
   data = [ "//android_webview/tools/cts_config/" ]
 }
@@ -36,7 +37,10 @@ python_library("webview_cts_tests") {
 python_library("webview_trichrome_cts_tests") {
   pydeps_file = "//android_webview/tools/run_cts.pydeps"
   deps = [ "//android_webview:trichrome_webview_apk" ]
-  data_deps = [ "//build/android:test_runner_py" ]
+  data_deps = [
+    "//build/android:test_runner_py",
+    "//third_party/jdk11:java_data",
+  ]
   data = [ "//android_webview/tools/cts_config/" ]
 }
 
@@ -47,6 +51,7 @@ if (android_64bit_target_cpu) {
     data_deps = [
       "//build/android:test_runner_py",
       "//testing/buildbot/filters:webview_cts_tests_filters",
+      "//third_party/jdk11:java_data",
     ]
     data = [ "//android_webview/tools/cts_config/" ]
   }
@@ -54,7 +59,10 @@ if (android_64bit_target_cpu) {
   python_library("webview_trichrome_64_cts_hostside_tests") {
     pydeps_file = "//android_webview/tools/run_cts.pydeps"
     deps = [ "//android_webview:trichrome_webview_64_apk" ]
-    data_deps = [ "//build/android:test_runner_py" ]
+    data_deps = [
+      "//build/android:test_runner_py",
+      "//third_party/jdk11:java_data",
+    ]
     data = [
       "//android_webview/tools/cts_config/",
       "//components/variations/test_data/cipd",
@@ -64,7 +72,10 @@ if (android_64bit_target_cpu) {
   python_library("webview_trichrome_64_cts_tests") {
     pydeps_file = "//android_webview/tools/run_cts.pydeps"
     deps = [ "//android_webview:trichrome_webview_64_apk" ]
-    data_deps = [ "//build/android:test_runner_py" ]
+    data_deps = [
+      "//build/android:test_runner_py",
+      "//third_party/jdk11:java_data",
+    ]
     data = [
       "//android_webview/tools/cts_config/",
       "//components/variations/test_data/cipd",
@@ -75,7 +86,10 @@ if (android_64bit_target_cpu) {
     python_library("webview_trichrome_64_32_cts_tests") {
       pydeps_file = "//android_webview/tools/run_cts.pydeps"
       deps = [ "//android_webview:trichrome_webview_64_32_apk" ]
-      data_deps = [ "//build/android:test_runner_py" ]
+      data_deps = [
+        "//build/android:test_runner_py",
+        "//third_party/jdk11:java_data",
+      ]
       data = [
         "//android_webview/tools/cts_config/",
         "//components/variations/test_data/cipd",
