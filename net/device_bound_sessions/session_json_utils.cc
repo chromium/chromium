@@ -11,7 +11,9 @@ namespace net::device_bound_sessions {
 
 namespace {
 
-std::string FindStringWithDefault(const base::Value::Dict& dict, std::string_view key, std::string_view default_value) {
+std::string FindStringWithDefault(const base::Value::Dict& dict,
+                                  std::string_view key,
+                                  std::string_view default_value) {
   const std::string* value = dict.FindString(key);
   if (value) {
     return *value;
@@ -42,7 +44,8 @@ base::expected<SessionParams::Scope, SessionError> ParseScope(
     }
 
     const std::string* type = specification_dict->FindString("type");
-    std::string domain = FindStringWithDefault(*specification_dict, "domain", "*");
+    std::string domain =
+        FindStringWithDefault(*specification_dict, "domain", "*");
     std::string path = FindStringWithDefault(*specification_dict, "path", "/");
     if (!type || domain.empty() || path.empty()) {
       return base::unexpected(
@@ -59,8 +62,8 @@ base::expected<SessionParams::Scope, SessionError> ParseScope(
           SessionError{SessionError::ErrorType::kInvalidScopeRule});
     }
 
-    scope.specifications.push_back(
-        SessionParams::Scope::Specification{rule_type, std::move(domain), std::move(path)});
+    scope.specifications.push_back(SessionParams::Scope::Specification{
+        rule_type, std::move(domain), std::move(path)});
   }
 
   return scope;

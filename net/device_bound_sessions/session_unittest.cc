@@ -114,7 +114,7 @@ TEST_F(SessionTest, RelativeServiceRefreshUrlEscaped) {
 
 TEST_F(SessionTest, InvalidServiceRefreshUrl) {
   auto params = CreateValidParams();
-  params.refresh_url = "";
+  params.refresh_url = "http://?not-a-valid=url";
   auto session_or_error = Session::CreateIfValid(params);
   ASSERT_FALSE(session_or_error.has_value());
   EXPECT_EQ(session_or_error.error().type,

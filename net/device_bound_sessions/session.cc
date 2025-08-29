@@ -93,9 +93,6 @@ base::expected<std::unique_ptr<Session>, SessionError> Session::CreateIfValid(
   if (!params.fetcher_url.is_valid()) {
     return base::unexpected(
         SessionError{SessionError::ErrorType::kInvalidFetcherUrl});
-  } else if (params.refresh_url.empty()) {
-    return base::unexpected(
-        SessionError{SessionError::ErrorType::kInvalidRefreshUrl});
   } else if (params.session_id.empty()) {
     return base::unexpected(
         SessionError{SessionError::ErrorType::kInvalidSessionId});

@@ -540,10 +540,10 @@ TEST_F(RegistrationTest, MissingPathDefaults) {
   EXPECT_THAT(
       session.session_inclusion_rules().url_rules(),
       ElementsAre(
-          EqualsInclusionRule(proto::RuleType::INCLUDE, "trusted.a.test",
-                              "/"),
-          EqualsInclusionRule(proto::RuleType::EXCLUDE, "new.a.test", "/only_trusted_path"),
-	  EqualsInclusionRule(proto::RuleType::EXCLUDE, "a.test", "/refresh")));
+          EqualsInclusionRule(proto::RuleType::INCLUDE, "trusted.a.test", "/"),
+          EqualsInclusionRule(proto::RuleType::EXCLUDE, "new.a.test",
+                              "/only_trusted_path"),
+          EqualsInclusionRule(proto::RuleType::EXCLUDE, "a.test", "/refresh")));
 }
 
 TEST_F(RegistrationTest, MissingDomainDefaults) {
@@ -595,10 +595,57 @@ TEST_F(RegistrationTest, MissingDomainDefaults) {
   EXPECT_THAT(
       session.session_inclusion_rules().url_rules(),
       ElementsAre(
-          EqualsInclusionRule(proto::RuleType::INCLUDE, "*",
-                              "/included"),
-          EqualsInclusionRule(proto::RuleType::EXCLUDE, "new.a.test", "/only_trusted_path"),
-	  EqualsInclusionRule(proto::RuleType::EXCLUDE, "a.test", "/refresh")));
+          EqualsInclusionRule(proto::RuleType::INCLUDE, "*", "/included"),
+          EqualsInclusionRule(proto::RuleType::EXCLUDE, "new.a.test",
+                              "/only_trusted_path"),
+          EqualsInclusionRule(proto::RuleType::EXCLUDE, "a.test", "/refresh")));
+}
+
+TEST_F(RegistrationTest, MissingRefreshUrlDefault) {
+  constexpr char kTestingJson[] =
+      R"({
+  "session_identifier": "session_id",
+  "scope": {
+    "include_site": true,
+    "scope_specification" : [
+      {
+        "type": "include",
+        "domain": "trusted.a.test"
+      },
+      {
+        "type": "exclude",
+        "domain": "new.a.test",
+        "path": "/only_trusted_path"
+      }
+    ]
+  },
+  "credentials": [{
+    "type": "cookie",
+    "name": "other_cookie",
+    "attributes": "Domain=a.test; Path=/; Secure; SameSite=None"
+  }]
+})";
+
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  auto param = GetBasicParam();
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, unexportable_key_service(), context_.get(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt);
+  fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
+  const base::expected<std::unique_ptr<Session>, SessionError>& out_session =
+      callback.outcome();
+  ASSERT_TRUE(out_session.has_value());
+  EXPECT_EQ((*out_session)->refresh_url(), GetBaseURL());
 }
 
 TEST_F(RegistrationTest, OneSpecTypeInvalid) {
