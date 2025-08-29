@@ -262,6 +262,9 @@
       <message name="IDS_IPH_KEYBOARD_ACCESSORY_ENABLE_LOYALTY_CARDS" desc="Text used for the In-Product-Help bubble suggesting that there is loyalty card info that can be filled.">
         Now you can autofill loyalty cards. You can turn these suggestions off in Google Wallet.
       </message>
+      <message name="IDS_IPH_KEYBOARD_ACCESSORY_ACCOUNT_NAME_EMAIL_SUGGESTION" desc="Text used for the In-Product-Help bubble suggesting that there is account name and email info that can be filled.">
+        Autofill your name and email address from your Google Account
+      </message>
       <message name="IDS_MORE_PASSKEYS" desc="Title of the chip that opens Android Credential Manager UI. The user can select passkeys from other providers there.">
         More passkeys
       </message>

@@ -35,6 +35,10 @@ class KeyboardAccessoryIphUtils {
     static void emitFillingEvent(Tracker tracker, String feature) {
         if (!tracker.isInitialized()) return;
         switch (feature) {
+            case FeatureConstants.KEYBOARD_ACCESSORY_ACCOUNT_NAME_EMAIL_SUGGESTION_FEATURE:
+                tracker.notifyEvent(
+                        EventConstants.KEYBOARD_ACCESSORY_ACCOUNT_NAME_EMAIL_AUTOFILLED);
+                return;
             case FeatureConstants.KEYBOARD_ACCESSORY_ADDRESS_FILL_FEATURE:
                 tracker.notifyEvent(EventConstants.KEYBOARD_ACCESSORY_ADDRESS_AUTOFILLED);
                 return;
@@ -229,6 +233,8 @@ class KeyboardAccessoryIphUtils {
                 return R.string.plus_address_create_suggestion_iph_android;
             case FeatureConstants.KEYBOARD_ACCESSORY_ENABLE_LOYALTY_CARDS_FEATURE:
                 return R.string.iph_keyboard_accessory_enable_loyalty_cards;
+            case FeatureConstants.KEYBOARD_ACCESSORY_ACCOUNT_NAME_EMAIL_SUGGESTION_FEATURE:
+                return R.string.iph_keyboard_accessory_account_name_email_suggestion;
         }
         assert false : "Unknown help text for feature: " + feature;
         return 0;

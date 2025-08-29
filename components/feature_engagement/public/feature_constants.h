@@ -385,6 +385,8 @@ FEATURE_CONSTANTS_DECLARE_FEATURE(
 FEATURE_CONSTANTS_DECLARE_FEATURE(
     kIPHAutofillExternalAccountProfileSuggestionFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHAutofillHomeWorkProfileSuggestionFeature);
+FEATURE_CONSTANTS_DECLARE_FEATURE(
+    kIPHAutofillAccountNameEmailSuggestionFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHAutofillAiOptInFeature);
 COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
 extern const base::FeatureParam<int> kAutofillIphCTAVariationsStringValue;

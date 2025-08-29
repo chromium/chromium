@@ -64,6 +64,9 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_AutoDarkUserEducationMessageOptIn"
       summary="message educating users about enabling auto dark web contents
                feature globally"/>
+  <variant name="IPH_AutofillAccountNameEmailSuggestion"
+      summary="message shown along with the account name and email suggestion
+               option in the Autofill dropdown"/>
   <variant name="IPH_AutofillAiOptIn"
       summary="snooze educating users about the possibility of turning on the
                AutofillAi feature"/>

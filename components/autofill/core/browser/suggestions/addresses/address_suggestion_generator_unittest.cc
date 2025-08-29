@@ -900,6 +900,40 @@ TEST_F(AddressSuggestionGeneratorTest, TestAddressSuggestion_HomeAndWorkIcons) {
                                       HasNoIphFeature())));
 }
 
+// Tests that AccountNameEmail has IPH feature.
+TEST_F(AddressSuggestionGeneratorTest,
+       TestAddressSuggestion_AccountNameEmailIph) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableSupportForNameAndEmail);
+
+  AutofillProfile profile_account_name_email = test::GetFullProfile();
+  profile_account_name_email.SetRawInfo(EMAIL_ADDRESS, u"hoa@gmail.com");
+
+  test_api(profile_account_name_email)
+      .set_record_type(AutofillProfile::RecordType::kAccountNameEmail);
+
+  FormFieldData triggering_field_name;
+  triggering_field_name.set_label(u"Name");
+
+  std::vector<Suggestion> suggestions = CreateSuggestionsFromProfilesForTest(
+      {profile_account_name_email}, {NAME_FIRST, NAME_LAST},
+      SuggestionType::kAddressEntry, NAME_FIRST, triggering_field_name);
+
+  raw_ptr<const base::Feature> kIphFeature =
+      &feature_engagement::kIPHAutofillAccountNameEmailSuggestionFeature;
+  EXPECT_THAT(suggestions,
+              ElementsAre(AllOf(HasIcon(Suggestion::Icon::kAccount),
+                                HasIphFeature(kIphFeature))));
+
+  FormFieldData triggering_field_email;
+  triggering_field_email.set_label(u"Email");
+
+  suggestions = CreateSuggestionsFromProfilesForTest(
+      {profile_account_name_email}, {NAME_FIRST, NAME_LAST},
+      SuggestionType::kAddressEntry, EMAIL_ADDRESS, triggering_field_email);
+  EXPECT_THAT(suggestions, ElementsAre(HasIphFeature(kIphFeature)));
+}
+
 // Tests that Home/Work icons are not used if the H&W feature is disabled.
 TEST_F(AddressSuggestionGeneratorTest,
        TestAddressSuggestion_HomeAndWorkIcons_FeatureDisabled) {

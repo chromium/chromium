@@ -2859,6 +2859,23 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
     return config;
   }
+
+  if (kIPHAutofillAccountNameEmailSuggestionFeature.name == feature->name) {
+    // Allows an IPH for showing the account name and email address suggestion.
+    // This will only be shown once.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(EQUAL, 0);
+    config.trigger =
+        EventConfig("account_name_email_create_suggestion_feature_trigger",
+                    Comparator(LESS_THAN, 1), k10YearsInDays, k10YearsInDays);
+    config.used =
+        EventConfig("account_name_email_create_suggestion_feature_used",
+                    Comparator(EQUAL, 0), k10YearsInDays, k10YearsInDays);
+
+    return config;
+  }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
   if (kIPHDummyFeature.name == feature->name) {

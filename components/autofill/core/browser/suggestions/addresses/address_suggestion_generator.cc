@@ -594,6 +594,14 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
           &feature_engagement::
               kIPHAutofillExternalAccountProfileSuggestionFeature);
     }
+
+    if (profile.record_type() ==
+            AutofillProfile::RecordType::kAccountNameEmail &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillEnableSupportForNameAndEmail)) {
+      suggestion.iph_metadata = Suggestion::IPHMetadata(
+          &feature_engagement::kIPHAutofillAccountNameEmailSuggestionFeature);
+    }
   }
   return suggestions;
 }

@@ -855,6 +855,9 @@ BASE_FEATURE(kIPHAutofillExternalAccountProfileSuggestionFeature,
 BASE_FEATURE(kIPHAutofillHomeWorkProfileSuggestionFeature,
              "IPH_AutofillHomeWorkProfileSuggestion",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHAutofillAccountNameEmailSuggestionFeature,
+             "IPH_AutofillAccountNameEmailSuggestion",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHAutofillAiOptInFeature,
              "IPH_AutofillAiOptIn",
              base::FEATURE_ENABLED_BY_DEFAULT);

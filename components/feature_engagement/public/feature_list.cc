@@ -283,6 +283,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHAutofillEnableLoyaltyCardsFeature,
     &kIPHAutofillExternalAccountProfileSuggestionFeature,
     &kIPHAutofillHomeWorkProfileSuggestionFeature,
+    &kIPHAutofillAccountNameEmailSuggestionFeature,
     &kIPHAutofillVirtualCardCVCSuggestionFeature,
     &kIPHAutofillVirtualCardSuggestionFeature,
     &kIPHCookieControlsFeature,
