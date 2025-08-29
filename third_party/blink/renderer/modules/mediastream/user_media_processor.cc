@@ -81,6 +81,11 @@ void LogCameraCaptureCapability(CameraCaptureCapability capability) {
       "Media.MediaDevices.GetUserMedia.CameraCaptureCapability", capability);
 }
 
+void LogEchoCancellationMode(EchoCancellationMode mode) {
+  base::UmaHistogramEnumeration(
+      "Media.MediaDevices.GetUserMedia.EchoCancellationMode", mode);
+}
+
 const char* MediaStreamRequestResultToString(MediaStreamRequestResult value) {
   switch (value) {
     case MediaStreamRequestResult::OK:
@@ -366,6 +371,15 @@ bool ShouldDeferDeviceSettingsSelection(
   return false;
 }
 #endif
+
+bool IsDeviceAudioCapture(const MediaStreamComponent* audio_component) {
+  if (!audio_component || !audio_component->Source() ||
+      !audio_component->Source()->GetPlatformSource()) {
+    return false;
+  }
+  return audio_component->Source()->GetPlatformSource()->device().type ==
+         MediaStreamType::DEVICE_AUDIO_CAPTURE;
+}
 
 }  // namespace
 
@@ -2069,6 +2083,27 @@ void UserMediaProcessor::OnCreateNativeTracksCompleted(
   if (result == MediaStreamRequestResult::OK) {
     GetUserMediaRequestSucceeded(request_info->descriptors(),
                                  request_info->request());
+
+    for (const MediaStreamDescriptor* descriptor :
+         *request_info->descriptors()) {
+      for (auto audio_component : descriptor->AudioComponents()) {
+        // Only log and add UMA for microphone inputs (<=> getUserMedia).
+        if (!IsDeviceAudioCapture(audio_component)) {
+          continue;
+        }
+        MediaStreamTrackPlatform::Settings settings;
+        audio_component->GetSettings(settings);
+        if (settings.echo_cancellation.has_value()) {
+          EchoCancellationMode ec_mode = *settings.echo_cancellation;
+          LogEchoCancellationMode(ec_mode);
+          SendLogMessage(base::StringPrintf(
+              "OnCreateNativeTracksCompleted({request_id=%d}, {label=%s}) => "
+              "(SUCCESS: echoCancellationMode=[%s])",
+              request_info->request_id(), label.Utf8().c_str(),
+              EchoCancellationModeToString(ec_mode)));
+        }
+      }
+    }
   } else {
     GetUserMediaRequestFailed(result, constraint_name);
 
@@ -2246,7 +2281,7 @@ bool UserMediaProcessor::RemoveLocalSource(MediaStreamSource* source) {
     switch (error.value_or(AudioSourceErrorCode::kUnknown)) {
       case AudioSourceErrorCode::kSystemPermissions:
         result = MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM;
-        message = "System Permssions prevented access to audio capture device";
+        message = "System Permissions prevented access to audio capture device";
         break;
       case AudioSourceErrorCode::kDeviceInUse:
         result = MediaStreamRequestResult::DEVICE_IN_USE;

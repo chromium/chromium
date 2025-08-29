@@ -4533,6 +4533,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.MediaDevices.GetUserMedia.EchoCancellationMode"
+    enum="EchoCancellationMode" expires_after="2026-08-29">
+  <owner>henrika@chromium.org</owner>
+  <owner>guidou@chromium.org</owner>
+  <owner>video-cmi-apis@google.com</owner>
+  <summary>
+    When getUserMedia() is called for audio, the utilized echoCancellationMode
+    is logged. The mode controls how much of the user system playout is removed
+    from the microphone signal.
+  </summary>
+</histogram>
+
 <histogram name="Media.MediaDevices.GetUserMedia.Latency" units="ms"
     expires_after="2026-02-09">
   <owner>toprice@chromium.org</owner>

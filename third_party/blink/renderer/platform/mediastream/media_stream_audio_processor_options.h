@@ -11,17 +11,20 @@
 
 namespace blink {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class EchoCancellationMode {
-  kDisabled,
-  kBrowserDecides,
-  kRemoteOnly,
-  kAll
+  kDisabled = 0,
+  kBrowserDecides = 1,
+  kRemoteOnly = 2,
+  kAll = 3,
+  kMaxValue = kAll,
 };
 
 extern PLATFORM_EXPORT const char kEchoCancellationModeAll[];
 extern PLATFORM_EXPORT const char kEchoCancellationModeRemoteOnly[];
 
-const char* EchoCancellationModeToString(EchoCancellationMode);
+PLATFORM_EXPORT const char* EchoCancellationModeToString(EchoCancellationMode);
 
 // The result of parsing media stream constraints.
 struct PLATFORM_EXPORT AudioProcessingProperties {

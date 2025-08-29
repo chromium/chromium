@@ -599,6 +599,13 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Close"/>
 </enum>
 
+<enum name="EchoCancellationMode">
+  <int value="0" label="Disabled"/>
+  <int value="1" label="BrowserDecides"/>
+  <int value="2" label="RemoteOnly"/>
+  <int value="3" label="All"/>
+</enum>
+
 <enum name="EmeSessionType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Temporary"/>
