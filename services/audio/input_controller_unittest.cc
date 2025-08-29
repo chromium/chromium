@@ -64,6 +64,12 @@ struct DelayUmaTestData {
   const char* expected_uma_name;
 };
 
+std::unique_ptr<LoopbackMixin> DoNotCreateLoopbackMixin(
+    std::string_view device_id,
+    const media::AudioParameters& params,
+    LoopbackMixin::OnDataCallback on_data_callback) {
+  return nullptr;
+}
 }  // namespace
 
 class MockInputControllerEventHandler : public InputController::EventHandler {
@@ -153,7 +159,8 @@ class TimeSourceInputControllerTest : public ::testing::Test {
     controller_ = InputController::Create(
         audio_manager_.get(), &event_handler_, &sync_writer_,
         /*device_output_listener =*/nullptr, &aecdump_recording_manager_,
-        /*processing_config =*/nullptr, params_,
+        /*processing_config =*/nullptr,
+        base::BindOnce(&DoNotCreateLoopbackMixin), params_,
         media::AudioDeviceDescription::kDefaultDeviceId, false);
   }
 
@@ -377,7 +384,8 @@ class TimeSourceInputControllerTestWithReferenceSignalProvider
         this->audio_manager_.get(), &this->event_handler_, &this->sync_writer_,
         std::move(reference_signal_provider_unique_),
         &this->aecdump_recording_manager_, std::move(processing_config_),
-        this->params_, media::AudioDeviceDescription::kDefaultDeviceId, false);
+        base::BindOnce(&DoNotCreateLoopbackMixin), this->params_,
+        media::AudioDeviceDescription::kDefaultDeviceId, false);
 
     helper_ =
         std::make_unique<InputControllerTestHelper>(this->controller_.get());

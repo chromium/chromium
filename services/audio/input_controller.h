@@ -28,6 +28,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/audio/loopback_mixin.h"
 
 namespace media {
 class AecdumpRecordingManager;
@@ -203,6 +204,7 @@ class InputController final {
       std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
       media::AecdumpRecordingManager* aecdump_recording_manager,
       media::mojom::AudioProcessingConfigPtr processing_config,
+      LoopbackMixin::MaybeCreateCallback maybe_create_loopback_mixin_cb,
       const media::AudioParameters& params,
       const std::string& device_id,
       bool agc_is_enabled);
@@ -256,10 +258,12 @@ class InputController final {
       const media::AudioParameters& device_params,
       StreamType type);
 
-  void DoCreate(media::AudioManager* audio_manager,
-                const media::AudioParameters& params,
-                const std::string& device_id,
-                bool enable_agc);
+  void DoCreate(
+      media::AudioManager* audio_manager,
+      const media::AudioParameters& params,
+      const std::string& device_id,
+      bool enable_agc,
+      LoopbackMixin::MaybeCreateCallback maybe_create_loopback_mixin_cb);
   void DoReportError(ErrorCode error_code);
   void DoLogAudioLevels(float level_dbfs, int microphone_volume_percent);
 
@@ -376,6 +380,9 @@ class InputController final {
 
   bool is_muted_ = false;
   base::RepeatingTimer check_muted_state_timer_;
+
+  // If configured, used to add chromium playout to the captured audio signal.
+  std::unique_ptr<LoopbackMixin> loopback_mixin_;
 
   // Holds a pointer to the callback object that receives audio data from
   // the lower audio layer. Valid only while 'recording' (between calls to

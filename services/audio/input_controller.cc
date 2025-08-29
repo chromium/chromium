@@ -427,6 +427,7 @@ std::unique_ptr<InputController> InputController::Create(
     std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
     media::AecdumpRecordingManager* aecdump_recording_manager,
     media::mojom::AudioProcessingConfigPtr processing_config,
+    LoopbackMixin::MaybeCreateCallback maybe_create_loopback_mixin_cb,
     const media::AudioParameters& params,
     const std::string& device_id,
     bool enable_agc) {
@@ -451,7 +452,8 @@ std::unique_ptr<InputController> InputController::Create(
           aecdump_recording_manager, std::move(processing_config), params,
           device_params, ParamsToStreamType(params)));
 
-  controller->DoCreate(audio_manager, params, device_id, enable_agc);
+  controller->DoCreate(audio_manager, params, device_id, enable_agc,
+                       std::move(maybe_create_loopback_mixin_cb));
   return controller;
 }
 
@@ -482,13 +484,20 @@ void InputController::Record() {
 
   stream_create_time_ = base::TimeTicks::Now();
 
-  // Unretained() is safe, since |this| outlives |audio_callback_|.
+  // Unretained() is safe, since |this| and |loopback_mixin_| outlive
+  // |audio_callback_|.
+  AudioCallback::OnDataCallback on_data_callback =
+      loopback_mixin_
+          ? base::BindRepeating(&LoopbackMixin::OnData,
+                                base::Unretained(loopback_mixin_.get()))
+          : base::BindRepeating(&InputController::OnData,
+                                base::Unretained(this));
+
   // |on_first_data_callback| and |on_error_callback| calls are posted on the
   // audio thread, since all AudioCallback callbacks run on the hw callback
   // thread.
   audio_callback_ = std::make_unique<AudioCallback>(
-      /*on_data_callback=*/base::BindRepeating(&InputController::OnData,
-                                               base::Unretained(this)),
+      std::move(on_data_callback),
       /*on_first_data_callback=*/
       base::BindPostTask(
           task_runner_,
@@ -498,6 +507,10 @@ void InputController::Record() {
                          base::BindRepeating(&InputController::DoReportError,
                                              weak_this_, STREAM_ERROR)));
 
+  if (loopback_mixin_) {
+    // Start receiving chromium playout loopback.
+    loopback_mixin_->Start();
+  }
   stream_->Start(audio_callback_.get());
 }
 
@@ -516,8 +529,9 @@ void InputController::Close() {
     stream_->Stop();
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-    if (output_tapper_)
+    if (output_tapper_) {
       output_tapper_->Stop();
+    }
 
     if (processing_fifo_) {
       // Stop the FIFO after |stream_| is stopped, to guarantee there are no
@@ -556,6 +570,7 @@ void InputController::Close() {
     }
 
     audio_callback_.reset();
+    loopback_mixin_.reset();
   } else {
     SendLogMessage("%s => (WARNING: recording never started)", __func__);
   }
@@ -625,10 +640,12 @@ InputController::ErrorCode MapOpenOutcomeToErrorCode(OpenOutcome outcome) {
   }
 }
 
-void InputController::DoCreate(media::AudioManager* audio_manager,
-                               const media::AudioParameters& params,
-                               const std::string& device_id,
-                               bool enable_agc) {
+void InputController::DoCreate(
+    media::AudioManager* audio_manager,
+    const media::AudioParameters& params,
+    const std::string& device_id,
+    bool enable_agc,
+    LoopbackMixin::MaybeCreateCallback maybe_create_loopback_mixin_cb) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(!stream_);
   SCOPED_UMA_HISTOGRAM_TIMER("Media.AudioInputController.CreateTime");
@@ -683,6 +700,11 @@ void InputController::DoCreate(media::AudioManager* audio_manager,
 
   // Finally, keep the stream pointer around, update the state and notify.
   stream_ = stream;
+
+  loopback_mixin_ = std::move(maybe_create_loopback_mixin_cb)
+                        .Run(device_id, audio_input_stream_params,
+                             base::BindRepeating(&InputController::OnData,
+                                                 base::Unretained(this)));
 
   // Send initial muted state along with OnCreated, to avoid races.
   is_muted_ = stream_->IsMuted();

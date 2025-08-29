@@ -55,7 +55,9 @@ base::TimeTicks LoopbackSignalProvider::PullLoopbackData(
     media::AudioBus* destination,
     base::TimeTicks capture_time,
     double volume) {
-  TRACE_EVENT0("audio", "LoopbackSignalProvider::PullLoopbackData");
+  TRACE_EVENT2(
+      "audio", "LoopbackSignalProvider::PullLoopbackData", "capture time (µs)",
+      (capture_time - base::TimeTicks()).InMicroseconds(), "volume", volume);
   base::AutoLock scoped_lock(lock_);
 
   base::TimeTicks delayed_capture_time = capture_time - capture_delay_;

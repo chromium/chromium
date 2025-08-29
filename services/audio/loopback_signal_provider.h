@@ -25,19 +25,34 @@ namespace audio {
 
 class LoopbackSource;
 
-class LoopbackSignalProvider final : public LoopbackGroupObserver::Listener {
+class LoopbackSignalProviderInterface {
+ public:
+  LoopbackSignalProviderInterface(const LoopbackSignalProviderInterface&) =
+      delete;
+  LoopbackSignalProviderInterface& operator=(
+      const LoopbackSignalProviderInterface&) = delete;
+  virtual ~LoopbackSignalProviderInterface() = default;
+
+  virtual void Start() = 0;
+  virtual base::TimeTicks PullLoopbackData(media::AudioBus* destination,
+                                           base::TimeTicks capture_time,
+                                           double volume) = 0;
+
+ protected:
+  LoopbackSignalProviderInterface() = default;
+};
+
+class LoopbackSignalProvider final : public LoopbackSignalProviderInterface,
+                                     public LoopbackGroupObserver::Listener {
  public:
   LoopbackSignalProvider(
       const media::AudioParameters& output_params,
       std::unique_ptr<LoopbackGroupObserver> loopback_group_observer);
 
-  LoopbackSignalProvider(const LoopbackSignalProvider&) = delete;
-  LoopbackSignalProvider& operator=(const LoopbackSignalProvider&) = delete;
-
   ~LoopbackSignalProvider() final;
 
   // Starts observing the sources.
-  void Start();
+  void Start() final;
 
   // Pulls audio from the observed sources that was/will be played at
   // `capture_time`. The LoopbackSignalProvider may add additional delay to
@@ -45,7 +60,7 @@ class LoopbackSignalProvider final : public LoopbackGroupObserver::Listener {
   // on any thread.
   base::TimeTicks PullLoopbackData(media::AudioBus* destination,
                                    base::TimeTicks capture_time,
-                                   double volume);
+                                   double volume) final;
 
   // LoopbackGroupObserver::Listener.
   void OnSourceAdded(LoopbackSource* source) final;

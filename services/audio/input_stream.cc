@@ -84,6 +84,7 @@ InputStream::InputStream(
     media::AecdumpRecordingManager* aecdump_recording_manager,
     std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
     media::mojom::AudioProcessingConfigPtr processing_config,
+    LoopbackMixin::MaybeCreateCallback maybe_create_loopback_mixin_cb,
     const std::string& device_id,
     const media::AudioParameters& params,
     uint32_t shared_memory_count,
@@ -143,8 +144,8 @@ InputStream::InputStream(
 
   controller_ = InputController::Create(
       audio_manager, this, writer_.get(), std::move(reference_signal_provider),
-      aecdump_recording_manager, std::move(processing_config), params,
-      device_id, enable_agc);
+      aecdump_recording_manager, std::move(processing_config),
+      std::move(maybe_create_loopback_mixin_cb), params, device_id, enable_agc);
 }
 
 InputStream::~InputStream() {

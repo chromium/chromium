@@ -17,6 +17,7 @@
 #include "media/base/media_switches.h"
 #include "services/audio/input_stream.h"
 #include "services/audio/local_muter.h"
+#include "services/audio/loopback_mixin.h"
 #include "services/audio/loopback_stream.h"
 #include "services/audio/output_stream.h"
 #include "services/audio/reference_signal_provider.h"
@@ -134,6 +135,8 @@ void StreamFactory::CreateInputStream(
 #else
       nullptr, nullptr,
 #endif
+      base::BindOnce(&LoopbackMixin::MaybeCreateRestrictOwnAudioLoopbackMixin,
+                     &coordinator_, group_id),
       device_id, params, shared_memory_count, enable_agc));
 }
 

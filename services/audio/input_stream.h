@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/audio/input_controller.h"
+#include "services/audio/loopback_mixin.h"
 
 namespace media {
 class AecdumpRecordingManager;
@@ -51,6 +52,7 @@ class InputStream final : public media::mojom::AudioInputStream,
       media::AecdumpRecordingManager* aecdump_recording_manager,
       std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
       media::mojom::AudioProcessingConfigPtr processing_config,
+      LoopbackMixin::MaybeCreateCallback maybe_create_loopback_mixin_cb,
       const std::string& device_id,
       const media::AudioParameters& params,
       uint32_t shared_memory_count,
