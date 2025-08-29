@@ -195,23 +195,6 @@ int BrowserFrameViewWin::GetTopInset(bool restored) const {
              : 0;
 }
 
-bool BrowserFrameViewWin::HasVisibleBackgroundTabShapes(
-    BrowserFrameActiveState active_state) const {
-  DCHECK(GetWidget());
-
-  // Enabling high contrast mode disables the custom-drawn titlebar (so the
-  // system-drawn frame will respect the native frame colors) and enables the
-  // IncreasedContrastThemeSupplier (which does not respect the native frame
-  // colors).
-  // TODO(pkasting): https://crbug.com/831769  Change the architecture of the
-  // high contrast support to respect system colors, then remove this.
-  if (GetNativeTheme()->UserHasContrastPreference()) {
-    return true;
-  }
-
-  return BrowserNonClientFrameView::HasVisibleBackgroundTabShapes(active_state);
-}
-
 SkColor BrowserFrameViewWin::GetCaptionColor(
     BrowserFrameActiveState active_state) const {
   return GetColorProvider()->GetColor(ShouldPaintAsActiveForState(active_state)

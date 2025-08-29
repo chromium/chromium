@@ -104,7 +104,7 @@ class BrowserNonClientFrameView : public views::NonClientFrameView {
   // frame background. This is true if the theme uses a custom tab background
   // image or if the calculated color for background tabs differs from the frame
   // color.
-  virtual bool HasVisibleBackgroundTabShapes(
+  bool HasVisibleBackgroundTabShapes(
       BrowserFrameActiveState active_state) const;
 
   // Returns true if background tabs are ever visibly distinct from the frame,

@@ -37,8 +37,6 @@ class BrowserFrameViewWin : public BrowserNonClientFrameView,
   gfx::Rect GetBoundsForWebAppFrameToolbar(
       const gfx::Size& toolbar_preferred_size) const override;
   int GetTopInset(bool restored) const override;
-  bool HasVisibleBackgroundTabShapes(
-      BrowserFrameActiveState active_state) const override;
   SkColor GetCaptionColor(BrowserFrameActiveState active_state) const override;
   void UpdateThrobber(bool running) override;
   gfx::Size GetMinimumSize() const override;
