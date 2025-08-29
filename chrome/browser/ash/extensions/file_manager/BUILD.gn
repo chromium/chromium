@@ -66,6 +66,7 @@ static_library("file_manager") {
 
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/notifications",
     "//chrome/browser/sharesheet",
     "//third_party/ced",
   ]

@@ -47,6 +47,7 @@ static_library("time_limits") {
     "//ash/public/cpp",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/child_accounts/constants",
+    "//chrome/browser/notifications",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/web_applications",

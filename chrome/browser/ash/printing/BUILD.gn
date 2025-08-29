@@ -123,6 +123,7 @@ static_library("printing") {
     "//chrome/browser/ash/printing/oauth2",
     "//chrome/browser/ash/printing/print_management",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/notifications",
     "//chrome/browser/sync:factories",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",

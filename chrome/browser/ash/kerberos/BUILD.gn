@@ -29,6 +29,7 @@ static_library("kerberos") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/notifications",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/dbus/kerberos",

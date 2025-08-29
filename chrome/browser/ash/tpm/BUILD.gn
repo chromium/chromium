@@ -21,6 +21,7 @@ static_library("tpm") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/notifications",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/install_attributes",

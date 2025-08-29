@@ -69,6 +69,7 @@ static_library("arc") {
     "//chrome/browser/ash/app_list/search/ranking",
     "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/arc/boot_phase_monitor",
+    "//chrome/browser/notifications",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources:component_extension_resources",
     "//chrome/common:chrome_features",

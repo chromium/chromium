@@ -16,7 +16,10 @@ static_library("safe_browsing") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/notifications",
+  ]
 
   allow_circular_includes_from = []
 

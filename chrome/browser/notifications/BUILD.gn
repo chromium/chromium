@@ -11,9 +11,17 @@ source_set("notifications") {
   public_deps = [
     "//chrome/browser/notifications/proto",
     "//chrome/browser/notifications/scheduler",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+    "//url",
   ]
 
-  sources = []
+  sources = [
+    "notification_common.h",
+    "notification_display_service.h",
+    "notification_display_service_factory.h",
+    "notification_handler.h",
+  ]
 
   if (is_android) {
     deps = [

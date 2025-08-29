@@ -20,6 +20,7 @@ static_library("error_notification") {
     "//ash/public/cpp",
     "//ash/resources/vector_icons",
     "//base",
+    "//chrome/browser/notifications",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc/vector_icons",

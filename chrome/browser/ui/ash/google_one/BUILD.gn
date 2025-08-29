@@ -21,6 +21,7 @@ static_library("google_one") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/feature_engagement",
+    "//chrome/browser/notifications",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ui/vector_icons",

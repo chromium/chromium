@@ -27,6 +27,7 @@ static_library("hats") {
     "//chrome/app/vector_icons",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/notifications",
     "//chrome/browser/profiles",
     "//chrome/browser/themes",
     "//chrome/common",

@@ -24,6 +24,7 @@ static_library("eol") {
     "//chrome/browser/ash/extended_updates",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/notifications",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
