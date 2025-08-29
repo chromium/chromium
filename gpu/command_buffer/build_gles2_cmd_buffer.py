@@ -1633,11 +1633,13 @@ _FUNCTION_INFO = {
     'type': 'Bind',
     'decoder_func': 'DoBindBuffer',
     'gen_func': 'GenBuffersARB',
+    'client_test': False,
   },
   'BindBufferBase': {
     'type': 'Bind',
     'decoder_func': 'DoBindBufferBase',
     'gen_func': 'GenBuffersARB',
+    'client_test': False,
     'unit_test': False,
     'es3': True,
   },
@@ -1645,6 +1647,7 @@ _FUNCTION_INFO = {
     'type': 'Bind',
     'decoder_func': 'DoBindBufferRange',
     'gen_func': 'GenBuffersARB',
+    'client_test': False,
     'unit_test': False,
     'valid_args': {
       '3': '4',
@@ -1657,6 +1660,7 @@ _FUNCTION_INFO = {
     'decoder_func': 'DoBindFramebuffer',
     'gl_test_func': 'glBindFramebufferEXT',
     'gen_func': 'GenFramebuffersEXT',
+    'client_test': False,
     'trace_level': 1,
   },
   'BindImageTexture':{
@@ -1671,10 +1675,12 @@ _FUNCTION_INFO = {
     'decoder_func': 'DoBindRenderbuffer',
     'gl_test_func': 'glBindRenderbufferEXT',
     'gen_func': 'GenRenderbuffersEXT',
+    'client_test': False,
   },
   'BindSampler': {
     'type': 'Bind',
     'decoder_func': 'DoBindSampler',
+    'client_test': False,
     'es3': True,
   },
   'BindTexture': {

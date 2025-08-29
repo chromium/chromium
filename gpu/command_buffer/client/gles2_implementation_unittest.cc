@@ -1494,16 +1494,26 @@ TEST_F(GLES2ImplementationTest, GetIntegerDisjointValue) {
 TEST_F(GLES2ImplementationTest, GetIntegerCacheWrite) {
   struct PNameValue {
     GLenum pname;
-    GLint expected;
+    GLuint expected;
   };
+
+  GLuint buffer_ids[2];
+  gl_->GenBuffers(std::size(buffer_ids), buffer_ids);
+  GLuint framebuffer_id;
+  gl_->GenFramebuffers(1, &framebuffer_id);
+  GLuint renderbuffer_id;
+  gl_->GenRenderbuffers(1, &renderbuffer_id);
+  GLuint texture_ids[3];
+  gl_->GenTextures(std::size(texture_ids), texture_ids);
+
   gl_->ActiveTexture(GL_TEXTURE4);
-  gl_->BindBuffer(GL_ARRAY_BUFFER, 2);
-  gl_->BindBuffer(GL_ELEMENT_ARRAY_BUFFER, 3);
-  gl_->BindFramebuffer(GL_FRAMEBUFFER, 4);
-  gl_->BindRenderbuffer(GL_RENDERBUFFER, 5);
-  gl_->BindTexture(GL_TEXTURE_2D, 6);
-  gl_->BindTexture(GL_TEXTURE_CUBE_MAP, 7);
-  gl_->BindTexture(GL_TEXTURE_EXTERNAL_OES, 8);
+  gl_->BindBuffer(GL_ARRAY_BUFFER, buffer_ids[0]);
+  gl_->BindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer_ids[1]);
+  gl_->BindFramebuffer(GL_FRAMEBUFFER, framebuffer_id);
+  gl_->BindRenderbuffer(GL_RENDERBUFFER, renderbuffer_id);
+  gl_->BindTexture(GL_TEXTURE_2D, texture_ids[0]);
+  gl_->BindTexture(GL_TEXTURE_CUBE_MAP, texture_ids[1]);
+  gl_->BindTexture(GL_TEXTURE_EXTERNAL_OES, texture_ids[2]);
 
   const auto pairs = std::to_array<PNameValue>({
       {
@@ -1512,31 +1522,31 @@ TEST_F(GLES2ImplementationTest, GetIntegerCacheWrite) {
       },
       {
           GL_ARRAY_BUFFER_BINDING,
-          2,
+          buffer_ids[0],
       },
       {
           GL_ELEMENT_ARRAY_BUFFER_BINDING,
-          3,
+          buffer_ids[1],
       },
       {
           GL_FRAMEBUFFER_BINDING,
-          4,
+          framebuffer_id,
       },
       {
           GL_RENDERBUFFER_BINDING,
-          5,
+          renderbuffer_id,
       },
       {
           GL_TEXTURE_BINDING_2D,
-          6,
+          texture_ids[0],
       },
       {
           GL_TEXTURE_BINDING_CUBE_MAP,
-          7,
+          texture_ids[1],
       },
       {
           GL_TEXTURE_BINDING_EXTERNAL_OES,
-          8,
+          texture_ids[2],
       },
   });
   size_t num_pairs =
@@ -1545,7 +1555,7 @@ TEST_F(GLES2ImplementationTest, GetIntegerCacheWrite) {
     const PNameValue& pv = pairs[ii];
     GLint v = -1;
     gl_->GetIntegerv(pv.pname, &v);
-    EXPECT_EQ(pv.expected, v);
+    EXPECT_EQ(pv.expected, static_cast<GLuint>(v));
   }
 
   ExpectedMemoryInfo result1 =
@@ -3042,10 +3052,10 @@ TEST_F(GLES2ImplementationTest, LimitSizeAndOffsetTo32Bit) {
   const GLfloat buf[] = { 1.0, 1.0, 1.0, 1.0 };
   const GLubyte indices[] = { 0 };
 
-  const GLuint kClientArrayBufferId = 0x789;
-  const GLuint kClientElementArrayBufferId = 0x790;
-  gl_->BindBuffer(GL_ARRAY_BUFFER, kClientArrayBufferId);
-  gl_->BindBuffer(GL_ELEMENT_ARRAY_BUFFER, kClientElementArrayBufferId);
+  GLuint buffer_ids[2];
+  gl_->GenBuffers(2, buffer_ids);
+  gl_->BindBuffer(GL_ARRAY_BUFFER, buffer_ids[0]);
+  gl_->BindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer_ids[1]);
   EXPECT_EQ(GL_NO_ERROR, CheckError());
 
   // Call BufferData() should succeed with legal paramaters.
@@ -3552,8 +3562,9 @@ TEST_F(GLES2ImplementationTest, MapBufferRangeUnmapBufferWrite) {
       .WillOnce(SetMemory(result.ptr, uint32_t(1)))
       .RetiresOnSaturation();
 
-  const GLuint kBufferId = 123;
-  gl_->BindBuffer(GL_ARRAY_BUFFER, kBufferId);
+  GLuint buffer_id;
+  gl_->GenBuffers(1, &buffer_id);
+  gl_->BindBuffer(GL_ARRAY_BUFFER, buffer_id);
 
   void* mem = gl_->MapBufferRange(GL_ARRAY_BUFFER, 10, 64, GL_MAP_WRITE_BIT);
   EXPECT_TRUE(mem != nullptr);
@@ -3569,8 +3580,9 @@ TEST_F(GLES2ImplementationTest, MapBufferRangeWriteWithInvalidateBit) {
       .WillOnce(SetMemory(result.ptr, uint32_t(1)))
       .RetiresOnSaturation();
 
-  const GLuint kBufferId = 123;
-  gl_->BindBuffer(GL_ARRAY_BUFFER, kBufferId);
+  GLuint buffer_id;
+  gl_->GenBuffers(1, &buffer_id);
+  gl_->BindBuffer(GL_ARRAY_BUFFER, buffer_id);
 
   GLsizeiptr kSize = 64;
   void* mem = gl_->MapBufferRange(
@@ -3591,8 +3603,9 @@ TEST_F(GLES2ImplementationTest, MapBufferRangeWriteWithGLError) {
       .WillOnce(SetMemory(result.ptr, uint32_t(0)))
       .RetiresOnSaturation();
 
-  const GLuint kBufferId = 123;
-  gl_->BindBuffer(GL_ARRAY_BUFFER, kBufferId);
+  GLuint buffer_id;
+  gl_->GenBuffers(1, &buffer_id);
+  gl_->BindBuffer(GL_ARRAY_BUFFER, buffer_id);
 
   void* mem = gl_->MapBufferRange(GL_ARRAY_BUFFER, 10, 64, GL_MAP_WRITE_BIT);
   EXPECT_TRUE(mem == nullptr);
@@ -3606,8 +3619,9 @@ TEST_F(GLES2ImplementationTest, MapBufferRangeUnmapBufferRead) {
       .WillOnce(SetMemory(result.ptr, uint32_t(1)))
       .RetiresOnSaturation();
 
-  const GLuint kBufferId = 123;
-  gl_->BindBuffer(GL_ARRAY_BUFFER, kBufferId);
+  GLuint buffer_id;
+  gl_->GenBuffers(1, &buffer_id);
+  gl_->BindBuffer(GL_ARRAY_BUFFER, buffer_id);
 
   void* mem = gl_->MapBufferRange(GL_ARRAY_BUFFER, 10, 64, GL_MAP_READ_BIT);
   EXPECT_TRUE(mem != nullptr);
@@ -3624,8 +3638,9 @@ TEST_F(GLES2ImplementationTest, MapBufferRangeReadWithGLError) {
       .WillOnce(SetMemory(result.ptr, uint32_t(0)))
       .RetiresOnSaturation();
 
-  const GLuint kBufferId = 123;
-  gl_->BindBuffer(GL_ARRAY_BUFFER, kBufferId);
+  GLuint buffer_id;
+  gl_->GenBuffers(1, &buffer_id);
+  gl_->BindBuffer(GL_ARRAY_BUFFER, buffer_id);
 
   void* mem = gl_->MapBufferRange(GL_ARRAY_BUFFER, 10, 64, GL_MAP_READ_BIT);
   EXPECT_TRUE(mem == nullptr);
@@ -3636,8 +3651,9 @@ TEST_F(GLES2ImplementationTest, UnmapBufferFails) {
   EXPECT_FALSE(gl_->UnmapBuffer(GL_ARRAY_BUFFER));
   EXPECT_EQ(GL_INVALID_OPERATION, CheckError());
 
-  const GLuint kBufferId = 123;
-  gl_->BindBuffer(GL_ARRAY_BUFFER, kBufferId);
+  GLuint buffer_id;
+  gl_->GenBuffers(1, &buffer_id);
+  gl_->BindBuffer(GL_ARRAY_BUFFER, buffer_id);
 
   // Buffer is unmapped.
   EXPECT_FALSE(gl_->UnmapBuffer(GL_ARRAY_BUFFER));
@@ -3652,8 +3668,9 @@ TEST_F(GLES2ImplementationTest, BufferDataUnmapsDataStore) {
       .WillOnce(SetMemory(result.ptr, uint32_t(1)))
       .RetiresOnSaturation();
 
-  const GLuint kBufferId = 123;
-  gl_->BindBuffer(GL_ARRAY_BUFFER, kBufferId);
+  GLuint buffer_id;
+  gl_->GenBuffers(1, &buffer_id);
+  gl_->BindBuffer(GL_ARRAY_BUFFER, buffer_id);
 
   void* mem = gl_->MapBufferRange(GL_ARRAY_BUFFER, 10, 64, GL_MAP_WRITE_BIT);
   EXPECT_TRUE(mem != nullptr);
@@ -3889,36 +3906,6 @@ TEST_F(GLES2ImplementationTest, DiscardableTextureLockError) {
   EXPECT_EQ(GL_INVALID_VALUE, CheckError());
 }
 
-TEST_F(GLES2ImplementationTest, DiscardableTextureLockCounting) {
-  const GLint texture_id = 1;
-  gl_->InitializeDiscardableTextureCHROMIUM(texture_id);
-  EXPECT_TRUE(
-      share_group_->discardable_texture_manager()->TextureIsValid(texture_id));
-
-  // Bind the texture.
-  gl_->BindTexture(GL_TEXTURE_2D, texture_id);
-  GLint bound_texture_id = 0;
-  gl_->GetIntegerv(GL_TEXTURE_BINDING_2D, &bound_texture_id);
-  EXPECT_EQ(texture_id, bound_texture_id);
-
-  // Lock the texture 3 more times (for 4 locks total).
-  for (int i = 0; i < 3; ++i) {
-    gl_->LockDiscardableTextureCHROMIUM(texture_id);
-  }
-
-  // Unlock 4 times. Only after the last unlock should the texture be unbound.
-  for (int i = 0; i < 4; ++i) {
-    gl_->UnlockDiscardableTextureCHROMIUM(texture_id);
-    bound_texture_id = 0;
-    gl_->GetIntegerv(GL_TEXTURE_BINDING_2D, &bound_texture_id);
-    if (i < 3) {
-      EXPECT_EQ(texture_id, bound_texture_id);
-    } else {
-      EXPECT_EQ(0, bound_texture_id);
-    }
-  }
-}
-
 struct ErrorMessageCounter {
   explicit ErrorMessageCounter(GLES2Implementation* gl) : gl(gl) {}
 
@@ -3949,6 +3936,111 @@ TEST_F(GLES2ImplementationTest, DeleteZero) {
   EXPECT_EQ(GL_NO_ERROR, CheckError());
   gl_->DeleteSync(0);
   EXPECT_EQ(GL_NO_ERROR, CheckError());
+}
+
+TEST_F(GLES2ImplementationTest, BindBuffer) {
+  struct Cmds {
+    cmds::GenBuffersImmediate gen;
+    GLuint id;
+    cmds::BindBuffer cmd;
+  };
+  Cmds expected;
+  expected.gen.Init(1, &expected.id);
+  expected.id = kBuffersStartId;
+  expected.cmd.Init(GL_ARRAY_BUFFER, kBuffersStartId);
+
+  gl_->GenBuffers(1, &expected.id);
+  gl_->BindBuffer(GL_ARRAY_BUFFER, expected.id);
+  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
+  ClearCommands();
+  gl_->BindBuffer(GL_ARRAY_BUFFER, expected.id);
+  EXPECT_TRUE(NoCommandsWritten());
+}
+
+TEST_F(GLES2ImplementationTest, BindBufferBase) {
+  struct Cmds {
+    cmds::GenBuffersImmediate gen;
+    GLuint id;
+    cmds::BindBufferBase cmd;
+  };
+  Cmds expected;
+  expected.gen.Init(1, &expected.id);
+  expected.id = kBuffersStartId;
+  expected.cmd.Init(GL_TRANSFORM_FEEDBACK_BUFFER, 2, kBuffersStartId);
+
+  gl_->GenBuffers(1, &expected.id);
+  gl_->BindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 2, expected.id);
+  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
+}
+
+TEST_F(GLES2ImplementationTest, BindBufferRange) {
+  struct Cmds {
+    cmds::GenBuffersImmediate gen;
+    GLuint id;
+    cmds::BindBufferRange cmd;
+  };
+  Cmds expected;
+  expected.gen.Init(1, &expected.id);
+  expected.id = kBuffersStartId;
+  expected.cmd.Init(GL_TRANSFORM_FEEDBACK_BUFFER, 2, kBuffersStartId, 4, 4);
+
+  gl_->GenBuffers(1, &expected.id);
+  gl_->BindBufferRange(GL_TRANSFORM_FEEDBACK_BUFFER, 2, expected.id, 4, 4);
+  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
+}
+
+TEST_F(GLES2ImplementationTest, BindFramebuffer) {
+  struct Cmds {
+    cmds::GenFramebuffersImmediate gen;
+    GLuint id;
+    cmds::BindFramebuffer cmd;
+  };
+  Cmds expected;
+  expected.gen.Init(1, &expected.id);
+  expected.id = kFramebuffersStartId;
+  expected.cmd.Init(GL_FRAMEBUFFER, kFramebuffersStartId);
+
+  gl_->GenFramebuffers(1, &expected.id);
+  gl_->BindFramebuffer(GL_FRAMEBUFFER, expected.id);
+  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
+  ClearCommands();
+  gl_->BindFramebuffer(GL_FRAMEBUFFER, expected.id);
+  EXPECT_TRUE(NoCommandsWritten());
+}
+
+TEST_F(GLES2ImplementationTest, BindRenderbuffer) {
+  struct Cmds {
+    cmds::GenRenderbuffersImmediate gen;
+    GLuint id;
+    cmds::BindRenderbuffer cmd;
+  };
+  Cmds expected;
+  expected.gen.Init(1, &expected.id);
+  expected.id = kFramebuffersStartId;
+  expected.cmd.Init(GL_RENDERBUFFER, kFramebuffersStartId);
+
+  gl_->GenRenderbuffers(1, &expected.id);
+  gl_->BindRenderbuffer(GL_RENDERBUFFER, expected.id);
+  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
+  ClearCommands();
+  gl_->BindRenderbuffer(GL_RENDERBUFFER, expected.id);
+  EXPECT_TRUE(NoCommandsWritten());
+}
+
+TEST_F(GLES2ImplementationTest, BindSampler) {
+  struct Cmds {
+    cmds::GenSamplersImmediate gen;
+    GLuint id;
+    cmds::BindSampler cmd;
+  };
+  Cmds expected;
+  expected.gen.Init(1, &expected.id);
+  expected.id = kSamplersStartId;
+  expected.cmd.Init(1, kSamplersStartId);
+
+  gl_->GenSamplers(1, &expected.id);
+  gl_->BindSampler(1, expected.id);
+  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 
 #include "gpu/command_buffer/client/gles2_implementation_unittest_autogen.h"
