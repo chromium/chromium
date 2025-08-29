@@ -215,12 +215,10 @@ void MostVisitedHandler::PrerenderMostVisitedTile(
     return;
   }
 
-  new_tab_page_preload_manager_ =
-      NewTabPagePreloadPipelineManager::GetOrCreateForWebContents(web_contents_)
-          ->GetWeakPtr();
-  new_tab_page_preload_manager_->StartPrerender(
-      tile->url,
-      chrome_preloading_predictor::kMouseHoverOrMouseDownOnNewTabPage);
+  NewTabPagePreloadPipelineManager::GetOrCreateForWebContents(web_contents_)
+      ->StartPrerender(
+          tile->url,
+          chrome_preloading_predictor::kMouseHoverOrMouseDownOnNewTabPage);
 }
 
 void MostVisitedHandler::PreconnectMostVisitedTile(
@@ -252,9 +250,8 @@ void MostVisitedHandler::CancelPrerender() {
     return;
   }
 
-  if (new_tab_page_preload_manager_) {
-    new_tab_page_preload_manager_->ResetPrerender();
-  }
+  NewTabPagePreloadPipelineManager::GetOrCreateForWebContents(web_contents_)
+      ->ResetPrerender();
 }
 
 void MostVisitedHandler::OnURLsAvailable(
