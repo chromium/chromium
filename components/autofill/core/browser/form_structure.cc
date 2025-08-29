@@ -223,14 +223,12 @@ void FormStructure::DetermineHeuristicTypes(
     LogManager* log_manager) {
   SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.DetermineHeuristicTypes");
 
-  client_country_ = client_country;
-
   const LanguageCode& page_language =
       base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection)
           ? current_page_language_
           : LanguageCode();
   ParsingContext context(base::ToVector(fields_, &to_form_field_data),
-                         client_country_, page_language,
+                         client_country, page_language,
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
                          PatternFile::kDefault,
 #else
@@ -239,12 +237,14 @@ void FormStructure::DetermineHeuristicTypes(
                          GetActiveRegexFeatures(), log_manager);
   FieldCandidatesMap regex_predictions = ParseFieldTypesWithPatterns(context);
   AssignBestFieldTypes(regex_predictions, HeuristicSource::kRegexes);
-  RationalizeAndAssignSections(log_manager);
+  RationalizeAndAssignSections(client_country, log_manager);
   LogDetermineHeuristicTypesMetrics();
 }
 
-void FormStructure::RationalizeAndAssignSections(LogManager* log_manager,
-                                                 bool legacy_order) {
+void FormStructure::RationalizeAndAssignSections(
+    const GeoIpCountryCode& client_country,
+    LogManager* log_manager,
+    bool legacy_order) {
   if (base::FeatureList::IsEnabled(
           features::kAutofillUnifyRationalizationAndSectioningOrder)) {
     // We call AssignSections() before *and* after rationalization because
@@ -253,15 +253,15 @@ void FormStructure::RationalizeAndAssignSections(LogManager* log_manager,
     AssignSections(fields_);
     // TODO(crbug.com/408497919): Merge the two Rationalize*() functions when
     // kAutofillUnifyRationalizationAndSectioningOrder is launched.
-    RationalizeFormStructure(log_manager);
+    RationalizeFormStructure(client_country, log_manager);
     RationalizePhoneNumberFieldsForFilling();
     AssignSections(fields_);
   } else if (!legacy_order) {
     AssignSections(fields_);
-    RationalizeFormStructure(log_manager);
+    RationalizeFormStructure(client_country, log_manager);
     RationalizePhoneNumberFieldsForFilling();
   } else {
-    RationalizeFormStructure(log_manager);
+    RationalizeFormStructure(client_country, log_manager);
     AssignSections(fields_);
     RationalizePhoneNumberFieldsForFilling();
   }
@@ -880,12 +880,14 @@ void FormStructure::RationalizePhoneNumberFieldsForFilling() {
   rationalizer.RationalizePhoneNumbersForFilling();
 }
 
-void FormStructure::RationalizeFormStructure(LogManager* log_manager) {
+void FormStructure::RationalizeFormStructure(
+    const GeoIpCountryCode& client_country,
+    LogManager* log_manager) {
   FormStructureRationalizer rationalizer(&fields_);
   rationalizer.RationalizeContentEditables(log_manager);
   rationalizer.RationalizeAutocompleteAttributes(log_manager);
   rationalizer.RationalizeFieldTypePredictions(
-      main_frame_origin(), client_country(), current_page_language(),
+      main_frame_origin(), client_country, current_page_language(),
       log_manager);
 }
 

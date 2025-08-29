@@ -109,7 +109,7 @@ class FieldClassificationModelHandlerTest : public testing::Test {
   void ApplyModelPredictions(std::unique_ptr<FormStructure>& form_structure) {
     base::test::TestFuture<ModelPredictions> future;
     model_handler().GetModelPredictionsForForm(form_structure->ToFormData(),
-                                               form_structure->client_country(),
+                                               GeoIpCountryCode("US"),
                                                future.GetCallback());
     future.Get().ApplyTo(form_structure->fields());
   }
@@ -122,7 +122,7 @@ class FieldClassificationModelHandlerTest : public testing::Test {
                        [](const auto& form_structure) {
                          return form_structure->ToFormData();
                        }),
-        form_structures.front()->client_country(), future.GetCallback());
+        GeoIpCountryCode("US"), future.GetCallback());
     for (auto [form_structure, predictions] :
          base::zip(form_structures, future.Get())) {
       predictions.ApplyTo(form_structure->fields());

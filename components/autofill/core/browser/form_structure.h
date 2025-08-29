@@ -80,7 +80,8 @@ class FormStructure {
   // predictions (or `legacy_order` is true), parts of the rationalization
   // happens before sectioning.
   // TODO(crbug.com/408497919): Make the order consistent.
-  void RationalizeAndAssignSections(LogManager* log_manager,
+  void RationalizeAndAssignSections(const GeoIpCountryCode& client_country,
+                                    LogManager* log_manager,
                                     bool legacy_order = false);
 
   // Returns predictions that can be sent to the renderer process for debugging.
@@ -232,7 +233,8 @@ class FormStructure {
 
   // Rationalize the form's autocomplete attributes, repeated fields and field
   // type predictions.
-  void RationalizeFormStructure(LogManager* log_manager);
+  void RationalizeFormStructure(const GeoIpCountryCode& client_country,
+                                LogManager* log_manager);
 
   // Returns the FieldGlobalIds of the |fields_| that are eligible for manual
   // filling on form interaction.
@@ -346,8 +348,6 @@ class FormStructure {
 
   FormVersion version() const { return version_; }
 
-  const GeoIpCountryCode& client_country() const { return client_country_; }
-
   // The signatures of forms recently submitted on the same origin within a
   // small period of time.
   struct FormAssociations {
@@ -404,10 +404,6 @@ class FormStructure {
 
   // Extracts the parseable field name by removing a common affix.
   void ExtractParseableFieldNames();
-
-  // The country where the user is currently located. Used to introduce biases
-  // in form parsing and understanding according to the user's location.
-  GeoIpCountryCode client_country_;
 
   // The language detected for this form's page, before any translations
   // performed by Chrome.

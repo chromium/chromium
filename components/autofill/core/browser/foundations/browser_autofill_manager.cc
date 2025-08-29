@@ -2579,7 +2579,9 @@ void BrowserAutofillManager::HandleLoadedServerPredictionsForAutofillAi(
           }
           AddCachedAutofillAiPredictions(*model_cache, *form);
           auto* self_as_bam = static_cast<BrowserAutofillManager*>(self.get());
-          form->RationalizeAndAssignSections(self_as_bam->log_manager());
+          form->RationalizeAndAssignSections(
+              self->client().GetVariationConfigCountryCode(),
+              self_as_bam->log_manager());
           self_as_bam->LogCurrentFieldTypes(*form);
           self->NotifyObservers(&Observer::OnFieldTypesDetermined,
                                 form->global_id(),

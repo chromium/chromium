@@ -882,7 +882,8 @@ void AutofillManager::OnLoadedServerPredictions(
   }
 
   for (const raw_ptr<FormStructure, VectorExperimental> form : queried_forms) {
-    form->RationalizeAndAssignSections(log_manager(), /*legacy_order=*/true);
+    form->RationalizeAndAssignSections(client().GetVariationConfigCountryCode(),
+                                       log_manager(), /*legacy_order=*/true);
 
     autofill_metrics::LogQualityMetricsBasedOnAutocomplete(
         *form, client().GetFormInteractionsUkmLogger(),
