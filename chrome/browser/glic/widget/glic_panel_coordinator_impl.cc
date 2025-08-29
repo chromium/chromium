@@ -48,9 +48,20 @@ GlicPanelCoordinatorImpl::GlicPanelCoordinatorImpl(
     signin::IdentityManager* identity_manager,
     GlicKeyedService* service,
     GlicEnabling* enabling)
-    : profile_(profile) {}
+    : profile_(profile),
+      host_manager_(std::make_unique<HostManager>(profile)) {}
 
 GlicPanelCoordinatorImpl::~GlicPanelCoordinatorImpl() = default;
+
+Host& GlicPanelCoordinatorImpl::host() const {
+  NOTIMPLEMENTED();
+  return host_manager_->primary_host();
+}
+
+HostManager& GlicPanelCoordinatorImpl::host_manager() {
+  NOTIMPLEMENTED();
+  return *host_manager_;
+}
 
 void GlicPanelCoordinatorImpl::Toggle(BrowserWindowInterface* browser,
                                       bool prevent_close,

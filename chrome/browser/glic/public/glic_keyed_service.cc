@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notimplemented.h"
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -117,16 +118,15 @@ GlicKeyedService::GlicKeyedService(
       metrics_(std::make_unique<GlicMetrics>(profile, enabling_.get())),
       fre_controller_(
           std::make_unique<GlicFreController>(profile, identity_manager)),
-      host_manager_(std::make_unique<HostManager>(profile)),
       window_controller_(CreateWindowController(profile,
                                                 identity_manager,
                                                 this,
                                                 enabling_.get())),
-      sharing_manager_(std::make_unique<GlicSharingManagerImpl>(
-          profile,
-          &window_controller(),
-          &host_manager_->primary_host(),
-          metrics_.get())),
+      sharing_manager_(
+          std::make_unique<GlicSharingManagerImpl>(profile,
+                                                   &window_controller(),
+                                                   &host(),
+                                                   metrics_.get())),
       screenshot_capturer_(std::make_unique<GlicScreenshotCapturer>()),
       auth_controller_(std::make_unique<AuthController>(profile,
                                                         identity_manager,
@@ -138,10 +138,9 @@ GlicKeyedService::GlicKeyedService(
               sharing_manager_.get(),
               &window_controller(),
               contextual_cueing_service,
-              &host_manager_->primary_host())),
+              &host())),
       contextual_cueing_service_(contextual_cueing_service) {
   CHECK(GlicEnabling::IsProfileEligible(Profile::FromBrowserContext(profile)));
-  host_manager_->Initialize(&window_controller());
   metrics_->SetControllers(&window_controller(), sharing_manager_.get());
 
   memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
@@ -694,10 +693,6 @@ void GlicKeyedService::Reload() {
   }
 }
 
-Host& GlicKeyedService::host() {
-  return host_manager_->primary_host();
-}
-
 void GlicKeyedService::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel level) {
   if (level == base::MemoryPressureListener::MemoryPressureLevel::
@@ -762,6 +757,18 @@ bool GlicKeyedService::IsProcessHostForGlic(
 
 bool GlicKeyedService::IsGlicWebUi(content::WebContents* web_contents) {
   return host_manager().IsGlicWebUi(web_contents);
+}
+
+Host& GlicKeyedService::host() {
+  return window_controller().host();
+}
+
+HostManager& GlicKeyedService::host_manager() {
+  if (!UseDefaultWindowController()) {
+    // Must be accessed through an instance.
+    NOTIMPLEMENTED();
+  }
+  return window_controller().host_manager();
 }
 
 }  // namespace glic

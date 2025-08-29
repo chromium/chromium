@@ -73,6 +73,10 @@ class GlicWindowController : public Host::Delegate {
   GlicWindowController() = default;
   ~GlicWindowController() override = default;
 
+  // TODO(refactor): Add multi-instance Host getters
+  virtual Host& host() const = 0;
+  virtual HostManager& host_manager() = 0;
+
   // Show, summon, or activate the panel if needed, or close it if it's already
   // active and prevent_close is false.
   virtual void Toggle(BrowserWindowInterface* bwi,

@@ -18,6 +18,9 @@ class MockGlicWindowController
   MockGlicWindowController();
   ~MockGlicWindowController();
 
+  MOCK_METHOD(Host&, host, (), (const, override));
+  MOCK_METHOD(HostManager&, host_manager, (), (override));
+
   MOCK_METHOD(void,
               Toggle,
               (BrowserWindowInterface*, bool, mojom::InvocationSource),

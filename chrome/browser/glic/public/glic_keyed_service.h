@@ -213,7 +213,7 @@ class GlicKeyedService : public KeyedService {
       base::MemoryPressureListener::MemoryPressureLevel level);
 
   Host& host();
-  HostManager& host_manager() { return *host_manager_; }
+  HostManager& host_manager();
   GlicZeroStateSuggestionsManager& zero_state_suggestions_manager() {
     return *zero_state_suggestions_manager_;
   }
@@ -259,7 +259,6 @@ class GlicKeyedService : public KeyedService {
   std::unique_ptr<GlicEnabling> enabling_;
   std::unique_ptr<GlicMetrics> metrics_;
   std::unique_ptr<GlicFreController> fre_controller_;
-  std::unique_ptr<HostManager> host_manager_;
   // Is either a GlicWindowControllerImpl or GlicPanelCoordinatorImpl.
   std::unique_ptr<GlicWindowController> window_controller_;
   std::unique_ptr<GlicSharingManagerImpl> sharing_manager_;

@@ -51,6 +51,9 @@ class GlicPanelCoordinatorImpl : public GlicWindowController,
   void AttachInstance(GlicInstance* instance) override;
   void DetachInstance(GlicInstance* instance) override;
 
+  Host& host() const override;
+  HostManager& host_manager() override;
+
   // GlicWindowController implementation
   void Toggle(BrowserWindowInterface* browser,
               bool prevent_close,
@@ -121,6 +124,7 @@ class GlicPanelCoordinatorImpl : public GlicWindowController,
 
   mojom::PanelState panel_state_;
   const raw_ptr<Profile> profile_;
+  std::unique_ptr<HostManager> host_manager_;
 };
 }  // namespace glic
 
