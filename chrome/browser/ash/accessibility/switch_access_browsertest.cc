@@ -290,8 +290,20 @@ IN_PROC_BROWSER_TEST_P(SwitchAccessTest, MAYBE_NavigateButtonsInTextFieldMenu) {
   utils()->WaitForFocusRing("primary", "button", "Keyboard");
 }
 
-// TODO(crbug.com/40926594): Enable after fixing flakiness.
-IN_PROC_BROWSER_TEST_P(SwitchAccessTest, DISABLED_TypeIntoVirtualKeyboard) {
+// TODO(crbug.com/431933537): Disabled on MSAN due to a renderer crash. The
+// crash is caused by a use-of-uninitialized-value in
+// blink::CSSParserImpl::ParseStyleSheet when parsing default stylesheets,
+// indicating an underlying Blink issue rather than a problem with the test
+// logic.
+//
+// A separate bug (crbug.com/431933537) is filed to specifically track the
+// blink::CSSParserImpl::ParseStyleSheet issue.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_TypeIntoVirtualKeyboard DISABLED_TypeIntoVirtualKeyboard
+#else
+#define MAYBE_TypeIntoVirtualKeyboard TypeIntoVirtualKeyboard
+#endif
+IN_PROC_BROWSER_TEST_P(SwitchAccessTest, MAYBE_TypeIntoVirtualKeyboard) {
   utils()->EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
                               {'3', 'C'} /* previous */);
 
