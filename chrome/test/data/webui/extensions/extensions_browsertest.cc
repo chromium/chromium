@@ -844,6 +844,14 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsErrorPageTest, ReloadItem) {
   RunTestCase("ReloadItem");
 }
 
+IN_PROC_BROWSER_TEST_F(CrExtensionsErrorPageTest, DevToolsButtonContentScript) {
+  RunTestCase("DevToolsButtonContentScript");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsErrorPageTest, DevToolsButtonServiceWorker) {
+  RunTestCase("DevToolsButtonServiceWorker");
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Code Section Tests
 

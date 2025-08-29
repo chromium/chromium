@@ -52,6 +52,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
       'loadUnpacked',
       'loadUnpackedFromDrag',
       'notifyDragInstallInProgress',
+      'openDevToolsForError',
       'openUrl',
       'packExtension',
       'recordUserAction',
@@ -147,6 +148,10 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
 
   inspectItemView(id: string, view: chrome.developerPrivate.ExtensionView) {
     this.methodCalled('inspectItemView', [id, view]);
+  }
+
+  openDevToolsForError(error: chrome.developerPrivate.RuntimeError) {
+    this.methodCalled('openDevToolsForError', [error]);
   }
 
   removeRuntimeHostPermission(id: string, host: string) {

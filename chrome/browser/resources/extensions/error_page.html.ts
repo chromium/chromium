@@ -77,7 +77,14 @@ export function getHtml(this: ExtensionsErrorPageElement) {
                           class="${this.getStackFrameClass_(item)}">
                         ${this.getStackTraceLabel_(item)}
                       </li>`)}
-                  </ul>` : ''}
+                  </ul>
+                  ${(entry as chrome.developerPrivate.RuntimeError)
+                      .canInspect ? html`
+                  <cr-button class="view-devtools-button"
+                      data-error-index="${index}"
+                      @click="${this.onViewInDevToolsClick_}">
+                      $i18n{viewInDevTools}
+                  </cr-button>` : ''}` : ''}
                 <extensions-code-section .code="${this.code_}"
                     ?is-active="${this.isOpened_(index)}"
                     could-not-display-code="$i18n{noErrorsToShow}">

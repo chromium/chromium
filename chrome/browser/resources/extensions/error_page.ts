@@ -33,6 +33,8 @@ export interface ErrorPageDelegate {
 
   requestFileSource(args: chrome.developerPrivate.RequestFileSourceProperties):
       Promise<chrome.developerPrivate.RequestFileSourceResponse>;
+
+  openDevToolsForError(error: chrome.developerPrivate.RuntimeError): void;
 }
 
 /**
@@ -392,6 +394,34 @@ export class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
 
   protected onReloadClick_() {
     this.reloadItem().catch((loadError) => this.fire('load-error', loadError));
+  }
+
+  /**
+   * Handle the 'View in DevTools' button click for a runtime error.
+   * If the error can be inspected (canInspect: true), opens DevTools for the
+   * error context. Otherwise, logs a warning that DevTools cannot be opened.
+   *
+   * @param e The click event containing the error index in the dataset.
+   */
+  protected onViewInDevToolsClick_(e: Event) {
+    if (!this.data || !this.entries_) {
+      return;
+    }
+
+    const target = e.currentTarget as HTMLElement;
+    const errorIndex = Number(target.dataset['errorIndex']);
+    const error =
+        this.entries_[errorIndex] as chrome.developerPrivate.RuntimeError;
+
+    if (error.canInspect) {
+      assert(this.delegate);
+      this.delegate.openDevToolsForError(error);
+      return;
+    }
+
+    // Cannot inspect this error - DevTools cannot be opened for this context.
+    console.warn('Cannot open DevTools for this error context.');
+    return;
   }
 }
 

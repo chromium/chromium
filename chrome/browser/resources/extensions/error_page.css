@@ -126,3 +126,7 @@ extensions-code-section {
 .context-url {
   word-wrap: break-word;
 }
+
+.view-devtools-button {
+  margin-bottom: 10px;
+}

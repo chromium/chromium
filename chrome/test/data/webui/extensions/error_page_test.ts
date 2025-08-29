@@ -31,6 +31,8 @@ class MockErrorPageDelegate extends MockItemDelegate implements
     this.requestFileSourceResolver = new PromiseResolver();
     return this.requestFileSourceResolver.promise;
   }
+
+  openDevToolsForError(_error: chrome.developerPrivate.RuntimeError) {}
 }
 
 suite('ExtensionErrorPageTest', function() {
@@ -299,5 +301,83 @@ suite('ExtensionErrorPageTest', function() {
 
     await microtasksFinished();
     assertFalse(isVisible('#dev-reload-button'));
+  });
+
+  // Tests that clicking the "View in DevTools" button for a content script
+  // runtime error with canInspect: true calls openDevToolsForError with the
+  // correct error.
+  test('DevToolsButtonContentScript', async () => {
+    // Add a content script runtime error with a valid contextUrl
+    // and renderProcessId.
+    const contentScriptError = Object.assign(
+        {
+          contextUrl: 'https://www.youtube.com/',
+          source: 'content.js',
+          message: 'Content script error',
+          renderProcessId: 12345,
+          renderViewId: 0,
+          canInspect: true,
+          id: 99,
+          stackTrace: [],
+          severity: chrome.developerPrivate.ErrorLevel.ERROR,
+          isServiceWorker: false,
+        },
+        runtimeErrorBase);
+    const dataWithContentScriptError = structuredClone(errorPage.data);
+    assertTrue(!!dataWithContentScriptError);
+    dataWithContentScriptError.runtimeErrors = [contentScriptError];
+    errorPage.data = dataWithContentScriptError;
+    await microtasksFinished();
+
+    // Find the "View in DevTools" button.
+    const devtoolsButton = errorPage.shadowRoot.querySelector<HTMLElement>(
+        '.view-devtools-button');
+    assertTrue(!!devtoolsButton);
+
+    // Test that clicking the button calls openDevToolsForError with the correct
+    // error.
+    await mockDelegate.testClickingCalls(
+        devtoolsButton, 'openDevToolsForError', [contentScriptError]);
+  });
+
+  // Tests that clicking the "View in DevTools" button for a service worker
+  // runtime error calls openDevToolsForError with the correct error.
+  test('DevToolsButtonServiceWorker', async () => {
+    // Add a service worker runtime error that can be inspected.
+    const serviceWorkerError = Object.assign(
+        {
+          contextUrl: 'chrome-extension://' + extensionId + '/background.js',
+          source: 'background.js',
+          message: 'Service worker error',
+          renderProcessId: 22222,
+          renderViewId: 0,
+          canInspect: true,
+          id: 100,
+          stackTrace: [{
+            url: 'chrome-extension://' + extensionId + '/background.js',
+            lineNumber: 42,
+            columnNumber: 10,
+            functionName: 'handleError',
+          }],
+          severity: chrome.developerPrivate.ErrorLevel.ERROR,
+          isServiceWorker: true,
+        },
+        runtimeErrorBase);
+
+    const dataWithServiceWorker = structuredClone(errorPage.data);
+    assertTrue(!!dataWithServiceWorker);
+    dataWithServiceWorker.runtimeErrors = [serviceWorkerError];
+    errorPage.data = dataWithServiceWorker;
+    await microtasksFinished();
+
+    // Find the "View in DevTools" button.
+    const devtoolsButton = errorPage.shadowRoot.querySelector<HTMLElement>(
+        '.view-devtools-button');
+    assertTrue(!!devtoolsButton);
+
+    // Test that clicking the button calls openDevToolsForError with the correct
+    // error.
+    await mockDelegate.testClickingCalls(
+        devtoolsButton, 'openDevToolsForError', [serviceWorkerError]);
   });
 });
