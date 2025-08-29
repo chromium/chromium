@@ -76,6 +76,7 @@ using PaymentsRpcResult = payments::PaymentsAutofillClient::PaymentsRpcResult;
 using SaveCardOfferUserDecision =
     payments::PaymentsAutofillClient::SaveCardOfferUserDecision;
 using SaveCardPromptOffer = autofill_metrics::SaveCardPromptOffer;
+using SaveCardPromptResult = autofill_metrics::SaveCardPromptResult;
 
 // If |name| consists of three whitespace-separated parts and the second of the
 // three parts is a single character or a single character followed by a period,
@@ -924,6 +925,8 @@ void CreditCardSaveManager::OnUserDidDecideOnLocalSave(
     SaveCardOfferUserDecision user_decision) {
   switch (user_decision) {
     case SaveCardOfferUserDecision::kAccepted:
+      autofill_metrics::LogSaveCreditCardPromptResultMetric(
+          SaveCardPromptResult::kAccepted, /*is_upload_save=*/false);
       // Log how many CreditCardSave strikes the card had when it was saved.
       LogStrikesPresentWhenCardSaved(
           /*is_local=*/true,
@@ -945,6 +948,8 @@ void CreditCardSaveManager::OnUserDidDecideOnLocalSave(
       break;
     case SaveCardOfferUserDecision::kDeclined:
     case SaveCardOfferUserDecision::kIgnored:
+      autofill_metrics::LogSaveCreditCardPromptResultMetric(
+          SaveCardPromptResult::kClosed, /*is_upload_save=*/false);
       OnUserDidIgnoreOrDeclineSave(card_save_candidate_.LastFourDigits());
       break;
   }
@@ -1225,7 +1230,8 @@ void CreditCardSaveManager::OnUserDidDecideOnUploadSave(
         user_provided_card_details) {
   switch (user_decision) {
     case SaveCardOfferUserDecision::kAccepted:
-
+      autofill_metrics::LogSaveCreditCardPromptResultMetric(
+          SaveCardPromptResult::kAccepted, /*is_upload_save=*/true);
 #if BUILDFLAG(IS_ANDROID)
       // On Android, requesting cardholder name is a two step flow.
       if (should_request_name_from_user_) {
@@ -1249,6 +1255,8 @@ void CreditCardSaveManager::OnUserDidDecideOnUploadSave(
       break;
     case SaveCardOfferUserDecision::kDeclined:
     case SaveCardOfferUserDecision::kIgnored:
+      autofill_metrics::LogSaveCreditCardPromptResultMetric(
+          SaveCardPromptResult::kClosed, /*is_upload_save=*/true);
       OnUserDidIgnoreOrDeclineSave(upload_request_.card.LastFourDigits());
       break;
   }

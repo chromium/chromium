@@ -2673,6 +2673,11 @@ Called by update_autofill_enums.py.-->
   <int value="3" label="Unexpected errors"/>
 </enum>
 
+<enum name="AutofillSaveCardPromptResultEnum">
+  <int value="0" label="Accepted"/>
+  <int value="1" label="Closed"/>
+</enum>
+
 <enum name="AutofillSaveCardRequestExpirationDateReason">
   <int value="0" label="Has empty month only"/>
   <int value="1" label="Has empty year only"/>

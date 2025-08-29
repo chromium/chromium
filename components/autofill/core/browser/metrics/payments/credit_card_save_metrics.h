@@ -121,6 +121,16 @@ enum class SaveCardPromptOffer {
   kMaxValue = kCvcMissingForPotentialUpdate,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SaveCardPromptResult {
+  // The user accepted the save card prompt.
+  kAccepted = 0,
+  // The user closed, denied or ignored the save card prompt.
+  kClosed = 1,
+  kMaxValue = kClosed,
+};
+
 // This is a legacy enum used by card save and cvc save metrics on desktop. The
 // outcomes here are also represented by `enum SaveCardPromptResult` in
 // credit_card_save_metrics_desktop.h to be used for desktop-specific metrics.
@@ -226,8 +236,16 @@ void LogSaveCardPromptOfferMetric(
     payments::PaymentsAutofillClient::SaveCreditCardOptions options,
     AutofillMetrics::PaymentsSigninState sync_state);
 
+// Logs platform-agnostic metric capturing the user's action (accepts or
+// closes/denies) for the save credit card prompt. Should not be called for
+// prompt re-shows (e.g., prompt reshown from the omnibox icon on desktop).
+void LogSaveCreditCardPromptResultMetric(SaveCardPromptResult metric,
+                                         bool is_upload_save);
+
 // `has_saved_cards` indicates that local or server cards existed before the
 // save prompt was accepted/denied.
+// TODO(crbug.com/430588721): Clean up this function once refactored save card
+// metrics have rolled out.
 void LogSaveCardPromptResultMetric(
     LegacySaveCardPromptResult metric,
     bool is_uploading,

@@ -671,16 +671,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="PHONE_HOME_WHOLE_NUMBER"/>
 </variants>
 
-<variants name="AutofillProfileCategory">
-  <variant name="AccountChrome"
-      summary="kAccount profiles originating from Chrome"/>
-  <variant name="AccountHome" summary="kAccountHome profile"/>
-  <variant name="AccountNonChrome"
-      summary="kAccount profiles originating from outside Chrome"/>
-  <variant name="AccountWork" summary="kAccountWork profile"/>
-  <variant name="Legacy" summary="kLegacyOrSyncable profiles"/>
-</variants>
-
 <variants name="AutofillSaveCardDestination">
   <variant name="Local" summary="local"/>
   <variant name="Server" summary="server"/>
@@ -6164,6 +6154,19 @@ Called by update_autofill_enums.py. This is a manual comment.-->
         summary="card holder name and expiry date"/>
     <variant name="RequestingExpiryDate" summary="only expiry date"/>
   </token>
+</histogram>
+
+<histogram name="Autofill.SaveCreditCardPromptResult.{SaveDestination}"
+    enum="AutofillSaveCardPromptResultEnum" expires_after="2026-06-01">
+  <owner>kavitasoni@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs whether the user accepts or closes/denies the save credit card prompt
+    for a card to be saved as a {SaveDestination} card. Not logged for prompt
+    re-shows (e.g., prompt reshown from the omnibox icon on desktop).
+  </summary>
+  <token key="SaveDestination" variants="AutofillSaveCardDestination"/>
 </histogram>
 
 <histogram

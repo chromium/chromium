@@ -119,6 +119,14 @@ void LogSaveCardPromptOfferMetric(
   }
 }
 
+void LogSaveCreditCardPromptResultMetric(SaveCardPromptResult metric,
+                                         bool is_upload_save) {
+  std::string_view destination = is_upload_save ? ".Server" : ".Local";
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Autofill.SaveCreditCardPromptResult", destination}),
+      metric);
+}
+
 void LogSaveCardPromptResultMetric(
     LegacySaveCardPromptResult metric,
     bool is_uploading,

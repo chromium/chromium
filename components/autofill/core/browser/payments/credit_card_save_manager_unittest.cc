@@ -100,6 +100,7 @@ using ::testing::UnorderedElementsAre;
 
 using UkmCardUploadDecisionType = ukm::builders::Autofill_CardUploadDecision;
 using UkmDeveloperEngagementType = ukm::builders::Autofill_DeveloperEngagement;
+using SaveCardPromptResult = autofill_metrics::SaveCardPromptResult;
 using SaveCreditCardOptions =
     payments::PaymentsAutofillClient::SaveCreditCardOptions;
 using SaveCardOfferUserDecision =
@@ -7035,5 +7036,66 @@ INSTANTIATE_TEST_SUITE_P(
             CreditCard::VirtualCardEnrollmentState::kUnenrolled,
             CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible,
             CreditCard::VirtualCardEnrollmentState::kEnrolled)));
+
+class CreditCardSaveManagerWithSaveCardUserDecisionParameterized
+    : public CreditCardSaveManagerTest,
+      public testing::WithParamInterface<
+          std::tuple<SaveCardOfferUserDecision>> {
+ public:
+  SaveCardPromptResult GetExpectedSaveCardPromptResult() const {
+    switch (GetSaveCardOfferUserDecision()) {
+      case SaveCardOfferUserDecision::kAccepted:
+        return SaveCardPromptResult::kAccepted;
+      case SaveCardOfferUserDecision::kDeclined:
+      case SaveCardOfferUserDecision::kIgnored:
+        return SaveCardPromptResult::kClosed;
+    }
+  }
+
+  SaveCardOfferUserDecision GetSaveCardOfferUserDecision() const {
+    return std::get<0>(GetParam());
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    CreditCardSaveManagerTest,
+    CreditCardSaveManagerWithSaveCardUserDecisionParameterized,
+    testing::Combine(
+        /*user_decision*/ testing::Values(
+            SaveCardOfferUserDecision::kAccepted,
+            SaveCardOfferUserDecision::kDeclined,
+            SaveCardOfferUserDecision::kIgnored)));
+
+TEST_P(CreditCardSaveManagerWithSaveCardUserDecisionParameterized,
+       LogUploadSaveUserDecision) {
+  base::HistogramTester histogram_tester;
+  FormData form;
+  FormStructure form_structure(form);
+  CreditCard server_card = test::GetCreditCard();
+
+  payments_client().SetCloudSaveCallbackOfferDecision(
+      GetSaveCardOfferUserDecision());
+  credit_card_save_manager_->AttemptToOfferCardUploadSave(
+      form_structure, server_card, /*uploading_local_card=*/false,
+      autofill_driver_->GetPageUkmSourceId());
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptResult.Server",
+      GetExpectedSaveCardPromptResult(), 1);
+}
+
+TEST_P(CreditCardSaveManagerWithSaveCardUserDecisionParameterized,
+       LogLocalSaveUserDecision) {
+  base::HistogramTester histogram_tester;
+  CreditCard local_card = test::GetCreditCard();
+
+  payments_client().SetLocalSaveCallbackOfferDecision(
+      GetSaveCardOfferUserDecision());
+  credit_card_save_manager_->AttemptToOfferCardLocalSave(local_card);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptResult.Local",
+      GetExpectedSaveCardPromptResult(), 1);
+}
 
 }  // namespace autofill
