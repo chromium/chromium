@@ -106,7 +106,7 @@ void BrowserAccessibilityManagerMac::FireBlinkEvent(ax::mojom::Event event_type,
 }
 
 void PostAnnouncementNotification(NSString* announcement,
-                                  NSWindow* window,
+                                  id element,
                                   NSAccessibilityPriorityLevel priorityLevel) {
   NSDictionary* notification_info = @{
     NSAccessibilityAnnouncementKey : announcement,
@@ -116,7 +116,7 @@ void PostAnnouncementNotification(NSString* announcement,
   // The Braille will only appear for a few seconds, and then will be replaced
   // with the previous announcement.
   NSAccessibilityPostNotificationWithUserInfo(
-      window, NSAccessibilityAnnouncementRequestedNotification,
+      element, NSAccessibilityAnnouncementRequestedNotification,
       notification_info);
 }
 
@@ -448,14 +448,7 @@ void BrowserAccessibilityManagerMac::FireAriaNotificationEvent(
     ax::mojom::AriaNotificationPriority priority_property,
     ax::mojom::AriaNotificationInterrupt interrupt_property,
     const std::string& type) {
-  DCHECK(node);
-
-  auto* root_manager = GetManagerForRootFrame();
-  if (!root_manager) {
-    return;
-  }
-
-  auto* root_manager_mac = root_manager->ToBrowserAccessibilityManagerMac();
+  CHECK(node);
 
   auto MapPropertiesToNSAccessibilityPriorityLevel =
       [&]() -> NSAccessibilityPriorityLevel {
@@ -469,7 +462,7 @@ void BrowserAccessibilityManagerMac::FireAriaNotificationEvent(
   };
 
   PostAnnouncementNotification(base::SysUTF8ToNSString(announcement),
-                               [root_manager_mac->GetParentView() window],
+                               node->GetNativeViewAccessible().Get(),
                                MapPropertiesToNSAccessibilityPriorityLevel());
 }
 
