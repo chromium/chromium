@@ -52,10 +52,16 @@ PasswordFormManager* PasswordFormCacheImpl::GetMatchedManager(
 
 void PasswordFormCacheImpl::AddFormManager(
     std::unique_ptr<PasswordFormManager> manager) {
+#if !BUILDFLAG(IS_IOS)
   for (PasswordFormManagerObserver& form_manager_observer :
        form_manager_observers_) {
     manager->AddObserver(&form_manager_observer);
   }
+#else
+  if (form_manager_observer_) {
+    manager->SetObserver(form_manager_observer_);
+  }
+#endif
   form_managers_.emplace_back(std::move(manager));
 }
 
@@ -86,9 +92,13 @@ PasswordFormCacheImpl::MoveOwnedSubmittedManager() {
 
       // After PasswordFormManager is removed from cache it's impossible to
       // reset observation. Thus, it's safer to stop observing immediately.
+#if !BUILDFLAG(IS_IOS)
       for (PasswordFormManagerObserver& observer : form_manager_observers_) {
         submitted_manager->RemoveObserver(&observer);
       }
+#else
+      submitted_manager->ResetObserver();
+#endif
       return submitted_manager;
     }
   }
@@ -103,6 +113,7 @@ bool PasswordFormCacheImpl::IsEmpty() const {
   return form_managers_.empty();
 }
 
+#if !BUILDFLAG(IS_IOS)
 void PasswordFormCacheImpl::AddObserver(PasswordFormManagerObserver* observer) {
   if (!form_manager_observers_.HasObserver(observer)) {
     form_manager_observers_.AddObserver(observer);
@@ -119,6 +130,19 @@ void PasswordFormCacheImpl::RemoveObserver(
     manager->RemoveObserver(observer);
   }
 }
+#else
+void PasswordFormCacheImpl::SetObserver(
+    base::WeakPtr<PasswordFormManagerObserver> observer) {
+  form_manager_observer_ = observer;
+}
+
+void PasswordFormCacheImpl::ResetObserver() {
+  form_manager_observer_.reset();
+  for (const std::unique_ptr<PasswordFormManager>& manager : form_managers_) {
+    manager->ResetObserver();
+  }
+}
+#endif
 
 base::span<const std::unique_ptr<PasswordFormManager>>
 PasswordFormCacheImpl::GetFormManagers() const {

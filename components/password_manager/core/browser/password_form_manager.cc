@@ -1204,10 +1204,16 @@ void PasswordFormManager::FillNow() {
   if (!parsed_observed_form_) {
     return;
   }
+#if !BUILDFLAG(IS_IOS)
   for (PasswordFormManagerObserver& form_parsed_observer :
        form_parsed_observers_) {
     form_parsed_observer.OnPasswordFormParsed(this);
   }
+#else
+  if (form_parsed_observer_) {
+    form_parsed_observer_->OnPasswordFormParsed(this);
+  }
+#endif
   metrics_recorder_->CacheParsingResultInFillingMode(
       *parsed_observed_form_.get());
 
@@ -1884,6 +1890,7 @@ base::flat_set<std::u16string> PasswordFormManager::GetStoredUsernames() const {
   return stored_usernames;
 }
 
+#if !BUILDFLAG(IS_IOS)
 void PasswordFormManager::AddObserver(PasswordFormManagerObserver* observer) {
   if (!form_parsed_observers_.HasObserver(observer)) {
     form_parsed_observers_.AddObserver(observer);
@@ -1894,5 +1901,15 @@ void PasswordFormManager::RemoveObserver(
     PasswordFormManagerObserver* observer) {
   form_parsed_observers_.RemoveObserver(observer);
 }
+#else
+void PasswordFormManager::SetObserver(
+    base::WeakPtr<PasswordFormManagerObserver> observer) {
+  form_parsed_observer_ = observer;
+}
+
+void PasswordFormManager::ResetObserver() {
+  form_parsed_observer_.reset();
+}
+#endif
 
 }  // namespace password_manager
