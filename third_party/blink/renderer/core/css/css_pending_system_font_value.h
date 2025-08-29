@@ -41,7 +41,7 @@ class CSSPendingSystemFontValue : public CSSValue {
     return system_font_id_ == other.system_font_id_;
   }
 
-  WTF::String CustomCSSText() const;
+  String CustomCSSText() const;
 
   void TraceAfterDispatch(blink::Visitor*) const;
 

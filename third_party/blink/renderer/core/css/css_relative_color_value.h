@@ -24,7 +24,7 @@ class CORE_EXPORT CSSRelativeColorValue : public CSSValue {
                         const CSSValue& channel2,
                         const CSSValue* alpha);
 
-  WTF::String CustomCSSText() const;
+  String CustomCSSText() const;
 
   void TraceAfterDispatch(blink::Visitor* visitor) const;
 

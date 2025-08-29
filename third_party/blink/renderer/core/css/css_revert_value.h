@@ -24,7 +24,7 @@ class CORE_EXPORT CSSRevertValue : public CSSValue {
   explicit CSSRevertValue(base::PassKey<CSSValuePool>)
       : CSSValue(kRevertClass) {}
 
-  WTF::String CustomCSSText() const;
+  String CustomCSSText() const;
 
   bool Equals(const CSSRevertValue&) const { return true; }
 

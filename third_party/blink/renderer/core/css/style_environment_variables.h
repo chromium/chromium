@@ -144,7 +144,7 @@ class CORE_EXPORT StyleEnvironmentVariables
   // Resolve the variable |name| by traversing the tree of
   // |StyleEnvironmentVariables|.
   virtual CSSVariableData* ResolveVariable(const AtomicString& name,
-                                           WTF::Vector<unsigned> indices);
+                                           Vector<unsigned> indices);
 
   // Detach |this| from |parent|.
   void DetachFromParent();

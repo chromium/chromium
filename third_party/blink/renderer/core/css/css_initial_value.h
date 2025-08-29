@@ -34,7 +34,7 @@ class CORE_EXPORT CSSInitialValue : public CSSValue {
 
   CSSInitialValue() : CSSValue(kInitialClass) {}
 
-  WTF::String CustomCSSText() const;
+  String CustomCSSText() const;
 
   bool Equals(const CSSInitialValue&) const { return true; }
 

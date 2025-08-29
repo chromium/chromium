@@ -24,7 +24,7 @@ class CSSRepeatValue : public CSSValue {
                           const CSSValueList& values)
       : CSSValue(kRepeatClass), repetitions_(repetitions), values_(&values) {}
 
-  WTF::String CustomCSSText() const;
+  String CustomCSSText() const;
   bool Equals(const CSSRepeatValue&) const;
 
   const CSSPrimitiveValue* Repetitions() const;

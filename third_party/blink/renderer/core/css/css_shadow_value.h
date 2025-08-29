@@ -41,7 +41,7 @@ class CORE_EXPORT CSSShadowValue : public CSSValue {
                  CSSIdentifierValue* style,
                  const CSSValue* color);
 
-  WTF::String CustomCSSText() const;
+  String CustomCSSText() const;
 
   bool Equals(const CSSShadowValue&) const;
 

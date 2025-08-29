@@ -52,7 +52,7 @@ static void AppendChannel(const CSSPrimitiveValue* value,
   }
 }
 
-WTF::String CSSUnresolvedColorValue::CustomCSSText() const {
+String CSSUnresolvedColorValue::CustomCSSText() const {
   // https://drafts.csswg.org/css-color-4/#serializing-color-values
   //
   // TODO: We do not support the full standard here _at all_.

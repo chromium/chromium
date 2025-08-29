@@ -1761,7 +1761,7 @@ void StyleEngine::ClassChangedForElement(const SpaceSplitString& old_classes,
 
   // Class vectors tend to be very short. This is faster than using a hash
   // table.
-  WTF::Vector<bool> remaining_class_bits(old_classes.size());
+  Vector<bool> remaining_class_bits(old_classes.size());
 
   InvalidationLists invalidation_lists;
   bool affecting_has_state = false;

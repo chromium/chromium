@@ -59,7 +59,7 @@ class CORE_EXPORT CSSQuadValue : public CSSValue {
 
   TypeForSerialization SerializationType() { return serialization_type_; }
 
-  WTF::String CustomCSSText() const;
+  String CustomCSSText() const;
 
   bool Equals(const CSSQuadValue& other) const {
     return base::ValuesEquivalent(top_, other.top_) &&

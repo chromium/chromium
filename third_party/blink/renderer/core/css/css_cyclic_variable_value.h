@@ -25,7 +25,7 @@ class CORE_EXPORT CSSCyclicVariableValue : public CSSInvalidVariableValue {
   explicit CSSCyclicVariableValue(base::PassKey<CSSValuePool>)
       : CSSInvalidVariableValue(kCyclicVariableValueClass) {}
 
-  WTF::String CustomCSSText() const;
+  String CustomCSSText() const;
 
   bool Equals(const CSSCyclicVariableValue&) const { return true; }
 

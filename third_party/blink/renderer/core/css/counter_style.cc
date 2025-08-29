@@ -48,8 +48,8 @@ namespace {
 
 // User agents must support representations at least 60 Unicode codepoints long,
 // but they may choose to instead use the fallback style for representations
-// that would be longer than 60 codepoints. Since WTF::String may use UTF-16, we
-// limit string length at 120.
+// that would be longer than 60 codepoints. Since blink::String may use UTF-16,
+// we limit string length at 120.
 const wtf_size_t kCounterLengthLimit = 120;
 
 const CounterStyle& GetDisc() {

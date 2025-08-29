@@ -436,8 +436,8 @@ CSSMathSum* CSSNumericValue::toSum(const Vector<String>& unit_strings,
 
   if (unit_strings.size() == 0) {
     std::sort(values.begin(), values.end(), [](const auto& a, const auto& b) {
-      return WTF::CodeUnitCompareLessThan(To<CSSUnitValue>(a.Get())->unit(),
-                                          To<CSSUnitValue>(b.Get())->unit());
+      return CodeUnitCompareLessThan(To<CSSUnitValue>(a.Get())->unit(),
+                                     To<CSSUnitValue>(b.Get())->unit());
     });
 
     // We got 'values' from a sum value, so it must be a valid CSSMathSum.

@@ -167,8 +167,8 @@ void LocalFontFaceSource::BeginLoadIfNeeded() {
       FontGlobalContext::Get().GetFontUniqueNameLookup();
   DCHECK(unique_name_lookup);
   unique_name_lookup->PrepareFontUniqueNameLookup(
-      WTF::BindOnce(&LocalFontFaceSource::NotifyFontUniqueNameLookupReady,
-                    WrapWeakPersistent(this)));
+      BindOnce(&LocalFontFaceSource::NotifyFontUniqueNameLookupReady,
+               WrapWeakPersistent(this)));
   face_->DidBeginLoad();
 }
 

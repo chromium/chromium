@@ -51,7 +51,7 @@ class CSSReflectValue : public CSSValue {
   CSSPrimitiveValue* Offset() const { return offset_.Get(); }
   CSSValue* Mask() const { return mask_.Get(); }
 
-  WTF::String CustomCSSText() const;
+  String CustomCSSText() const;
 
   bool Equals(const CSSReflectValue&) const;
 

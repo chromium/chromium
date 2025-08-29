@@ -41,7 +41,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   // TODO(sashab): Remove this method and move logic to the caller.
   static CSSValue* Create(const Length& value, float zoom);
 
-  WTF::String CssText() const;
+  String CssText() const;
   unsigned Hash() const;
 
   bool IsNumericLiteralValue() const {
@@ -247,7 +247,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   bool IsScopedValue() const { return !needs_tree_scope_population_; }
 
 #if DCHECK_IS_ON()
-  WTF::String ClassTypeToString() const;
+  String ClassTypeToString() const;
 #endif
 
   void TraceAfterDispatch(blink::Visitor* visitor) const {}

@@ -17,7 +17,7 @@ namespace blink {
 
 CSSVariableData* DocumentStyleEnvironmentVariables::ResolveVariable(
     const AtomicString& name,
-    WTF::Vector<unsigned> indices,
+    Vector<unsigned> indices,
     bool record_metrics) {
   if (record_metrics) {
     RecordVariableUsage(name);
@@ -35,7 +35,7 @@ const FeatureContext* DocumentStyleEnvironmentVariables::GetFeatureContext()
 
 CSSVariableData* DocumentStyleEnvironmentVariables::ResolveVariable(
     const AtomicString& name,
-    WTF::Vector<unsigned> indices) {
+    Vector<unsigned> indices) {
   return ResolveVariable(name, std::move(indices), true /* record_metrics */);
 }
 

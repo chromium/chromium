@@ -29,7 +29,7 @@ class CSSRayValue : public CSSValue {
   const CSSValue* CenterX() const { return center_x_.Get(); }
   const CSSValue* CenterY() const { return center_y_.Get(); }
 
-  WTF::String CustomCSSText() const;
+  String CustomCSSText() const;
 
   bool Equals(const CSSRayValue&) const;
 

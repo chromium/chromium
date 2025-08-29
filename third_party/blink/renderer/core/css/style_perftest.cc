@@ -47,7 +47,7 @@ namespace blink {
 // (occasionally even things like “display: none !important”) and so on.
 // Thus, as a kludge, we strip all <style> tags from the HTML here before
 // parsing.
-static WTF::String StripStyleTags(const WTF::String& html) {
+static String StripStyleTags(const String& html) {
   StringBuilder stripped_html;
   wtf_size_t pos = 0;
   for (;;) {
@@ -101,8 +101,7 @@ static std::unique_ptr<DummyPageHolder> LoadDumpedPage(
   Document& document = page->GetDocument();
   StyleEngine& engine = document.GetStyleEngine();
   document.documentElement()->SetInnerHTMLWithoutTrustedTypes(
-      StripStyleTags(WTF::String(*dict.FindString("html"))),
-      ASSERT_NO_EXCEPTION);
+      StripStyleTags(String(*dict.FindString("html"))), ASSERT_NO_EXCEPTION);
 
   int num_sheets = 0;
   int num_bytes = 0;
@@ -114,7 +113,7 @@ static std::unique_ptr<DummyPageHolder> LoadDumpedPage(
         MakeGarbageCollected<CSSParserContext>(document));
 
     for (int i = 0; i < parse_iterations; ++i) {
-      sheet->ParseString(WTF::String(*sheet_dict.FindString("text")),
+      sheet->ParseString(String(*sheet_dict.FindString("text")),
                          /*allow_import_rules=*/true, defer_property_parsing);
     }
     if (*sheet_dict.FindString("type") == "user") {

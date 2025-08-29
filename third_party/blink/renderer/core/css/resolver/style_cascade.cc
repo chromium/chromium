@@ -2024,7 +2024,7 @@ bool StyleCascade::ResolveEnvInto(CSSParserTokenStream& stream,
   DCHECK(stream.AtEnd() || (stream.Peek().GetType() == kCommaToken) ||
          (stream.Peek().GetType() == kNumberToken));
 
-  WTF::Vector<unsigned> indices;
+  Vector<unsigned> indices;
   if (!stream.AtEnd() && stream.Peek().GetType() != kCommaToken) {
     do {
       const CSSParserToken& token = stream.ConsumeIncludingWhitespaceRaw();
@@ -2555,7 +2555,7 @@ CSSVariableData* StyleCascade::GetVariableData(
 
 CSSVariableData* StyleCascade::GetEnvironmentVariable(
     const AtomicString& name,
-    WTF::Vector<unsigned> indices) const {
+    Vector<unsigned> indices) const {
   // If we are in a User Agent Shadow DOM then we should not record metrics.
   ContainerNode& scope_root = state_.GetElement().GetTreeScope().RootNode();
   auto* shadow_root = DynamicTo<ShadowRoot>(&scope_root);

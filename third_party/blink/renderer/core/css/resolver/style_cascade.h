@@ -682,7 +682,7 @@ class CORE_EXPORT StyleCascade {
 
   CSSVariableData* GetVariableData(const CustomProperty&) const;
   CSSVariableData* GetEnvironmentVariable(const AtomicString&,
-                                          WTF::Vector<unsigned>) const;
+                                          Vector<unsigned>) const;
   const CSSParserContext* GetParserContext(const CSSUnparsedDeclarationValue&);
 
   // Detects if the given property/data depends on the font-size property

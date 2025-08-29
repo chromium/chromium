@@ -33,7 +33,7 @@ class CORE_EXPORT CSSPaletteMixValue : public CSSValue {
         color_interpolation_space_(color_interpolation_space),
         hue_interpolation_method_(hue_interpolation_method) {}
 
-  WTF::String CustomCSSText() const;
+  String CustomCSSText() const;
 
   void TraceAfterDispatch(blink::Visitor* visitor) const;
 

@@ -235,7 +235,7 @@ void StyleEnvironmentVariables::RemoveVariable(const AtomicString& name) {
 
 CSSVariableData* StyleEnvironmentVariables::ResolveVariable(
     const AtomicString& name,
-    WTF::Vector<unsigned> indices) {
+    Vector<unsigned> indices) {
   if (indices.size() == 0u) {
     auto result = data_.find(name);
     if (result == data_.end() && parent_) {

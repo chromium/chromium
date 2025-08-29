@@ -73,7 +73,7 @@ class CORE_EXPORT CSSValueList : public CSSValue {
   bool HasValue(const CSSValue&) const;
   CSSValueList* Copy() const;
 
-  WTF::String CustomCSSText() const;
+  String CustomCSSText() const;
   bool Equals(const CSSValueList&) const;
   unsigned CustomHash() const;
 

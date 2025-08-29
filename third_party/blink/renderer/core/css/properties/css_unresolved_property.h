@@ -45,7 +45,7 @@ class CORE_EXPORT CSSUnresolvedProperty {
     NOTREACHED();
   }
   virtual const char* GetJSPropertyName() const { NOTREACHED(); }
-  WTF::String GetPropertyNameString() const {
+  String GetPropertyNameString() const {
     // We share the StringImpl with the AtomicStrings.
     return GetPropertyNameAtomicString().GetString();
   }

@@ -16,7 +16,7 @@ namespace blink {
 // Since RuleMap is so performance-critical for us (a large part of style
 // is looking up rules in RuleMaps, especially since we have one RuleSet per
 // stylesheet and one RuleSet has many RuleMaps), we have implemented our own
-// hash table, which gives better lookup performance than WTF::HashMap,
+// hash table, which gives better lookup performance than blink::HashMap,
 // especially on cache-starved CPUs. We pay for this with some extra code
 // and slightly more expensive inserts (and we also don't support deletes,
 // although that could be added). The key features of our implementation are:
@@ -58,7 +58,7 @@ namespace blink {
 //  - Arbitrary keys (currently supports only AtomicString as key).
 //
 //  - Using a HeapVector instead of a regular array, allowing to store Oilpan
-//    objects as values without using Persistent<> (note that WTF::HashMap
+//    objects as values without using Persistent<> (note that blink::HashMap
 //    only supports Oilpan objects using Member<>, not directly).
 //
 //  - Full STL-like or WTF-like interface: Better iterators, removals, etc.

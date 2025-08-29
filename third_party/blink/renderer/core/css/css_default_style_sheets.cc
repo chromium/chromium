@@ -567,7 +567,7 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetForForcedColors() {
 void CSSDefaultStyleSheets::CollectFeaturesTo(const Document& document,
                                               RuleFeatureSet& features) {
   ForEachRuleFeatureSet(document, /*call_for_each_stylesheet=*/false,
-                        WTF::BindRepeating(
+                        BindRepeating(
                             [](RuleFeatureSet& target_features,
                                const RuleFeatureSet& default_style_features,
                                StyleSheetContents* contents) {

@@ -22,7 +22,7 @@ class CSSFunctionValue : public CSSValueList {
       : CSSValueList(kFunctionClass, argument_separator, std::move(values)),
         value_id_(id) {}
 
-  WTF::String CustomCSSText() const;
+  String CustomCSSText() const;
 
   bool Equals(const CSSFunctionValue& other) const {
     return value_id_ == other.value_id_ && CSSValueList::Equals(other);

@@ -42,7 +42,7 @@ DEFINE_BINARY_PROTO_FUZZER(const Input& input) {
 
   auto* style_sheet =
       blink::MakeGarbageCollected<blink::StyleSheetContents>(context);
-  WTF::String style_sheet_string(
+  blink::String style_sheet_string(
       converter.Convert(input.style_sheet()).c_str());
   const blink::CSSDeferPropertyParsing defer_property_parsing =
       input.defer_property_parsing() ? blink::CSSDeferPropertyParsing::kYes

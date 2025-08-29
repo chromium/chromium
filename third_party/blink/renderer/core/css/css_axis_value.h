@@ -25,7 +25,7 @@ class CSSAxisValue : public CSSValueList {
                const CSSPrimitiveValue* y,
                const CSSPrimitiveValue* z);
 
-  WTF::String CustomCSSText() const;
+  String CustomCSSText() const;
 
   Axis ComputeAxis(const CSSLengthResolver&) const;
   CSSValueID AxisName() const { return axis_name_; }

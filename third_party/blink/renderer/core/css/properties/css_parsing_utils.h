@@ -554,7 +554,7 @@ CSSValue* ConsumeGridTrackList(CSSParserTokenStream&,
                                const CSSParserContext&,
                                TrackListType,
                                bool is_masonry_shorthand = false);
-bool ParseGridTemplateAreasRow(const WTF::String& grid_row_names,
+bool ParseGridTemplateAreasRow(const String& grid_row_names,
                                NamedGridAreaMap&,
                                const wtf_size_t row_count,
                                wtf_size_t& column_count);

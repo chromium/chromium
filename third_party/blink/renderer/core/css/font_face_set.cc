@@ -29,8 +29,8 @@ void FontFaceSet::HandlePendingEventsAndPromisesSoon() {
       pending_task_queued_ = true;
       context->GetTaskRunner(TaskType::kFontLoading)
           ->PostTask(FROM_HERE,
-                     WTF::BindOnce(&FontFaceSet::HandlePendingEventsAndPromises,
-                                   WrapPersistent(this)));
+                     BindOnce(&FontFaceSet::HandlePendingEventsAndPromises,
+                              WrapPersistent(this)));
     }
   }
 }

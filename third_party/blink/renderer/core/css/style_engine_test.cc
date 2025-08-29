@@ -4288,13 +4288,13 @@ TEST_F(StyleEngineTest, MediaQueriesChangeDisplayState) {
             GetDocument().body()->GetComputedStyle()->VisitedDependentColor(
                 GetCSSPropertyBackgroundColor()));
 
-  WTF::Vector<std::pair<ui::mojom::blink::WindowShowState, Color>> test_cases =
-      {{ui::mojom::blink::WindowShowState::kMinimized,
-        Color::FromRGB(/*cyan*/ 0, 255, 255)},
-       {ui::mojom::blink::WindowShowState::kMaximized,
-        Color::FromRGB(/*red*/ 255, 0, 0)},
-       {ui::mojom::blink::WindowShowState::kFullscreen,
-        Color::FromRGB(/*blue*/ 0, 0, 255)}};
+  Vector<std::pair<ui::mojom::blink::WindowShowState, Color>> test_cases = {
+      {ui::mojom::blink::WindowShowState::kMinimized,
+       Color::FromRGB(/*cyan*/ 0, 255, 255)},
+      {ui::mojom::blink::WindowShowState::kMaximized,
+       Color::FromRGB(/*red*/ 255, 0, 0)},
+      {ui::mojom::blink::WindowShowState::kFullscreen,
+       Color::FromRGB(/*blue*/ 0, 0, 255)}};
 
   for (const auto& [show_state, color] : test_cases) {
     GetFrame().GetSettings()->SetWindowShowState(show_state);

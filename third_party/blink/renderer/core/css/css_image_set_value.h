@@ -49,7 +49,7 @@ class CORE_EXPORT CSSImageSetValue : public CSSValueList {
   const CSSImageSetOptionValue* GetBestOption(const CSSLengthResolver&,
                                               const float device_scale_factor);
 
-  WTF::String CustomCSSText() const;
+  String CustomCSSText() const;
 
   bool HasFailedOrCanceledSubresources() const;
 
