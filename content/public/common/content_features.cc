@@ -1340,6 +1340,11 @@ BASE_FEATURE(kWebauthnDisabledOnAuto,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// Enables Exclusive Access Manager on Android platform
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(EnableExclusiveAccessManager, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(KeyboardLockApiOnAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)

@@ -23,6 +23,7 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/resource_request_body_android.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -316,11 +317,15 @@ WebContentsDelegateAndroid::PreHandleKeyboardEvent(
       return content::KeyboardEventProcessingResult::HANDLED;
     }
 
-    auto* rwhva = source->GetTopLevelRenderWidgetHostView();
-    if (rwhva && rwhva->IsPointerLocked()) {
-      rwhva->UnlockPointer();
-      pointer_lock_last_user_escape_time_ = base::TimeTicks::Now();
-      return content::KeyboardEventProcessingResult::HANDLED;
+    // ExclusiveAccessManager handles the pointer lock escape.
+    if (!base::FeatureList::IsEnabled(
+            features::kEnableExclusiveAccessManager)) {
+      auto* rwhva = source->GetTopLevelRenderWidgetHostView();
+      if (rwhva && rwhva->IsPointerLocked()) {
+        rwhva->UnlockPointer();
+        pointer_lock_last_user_escape_time_ = base::TimeTicks::Now();
+        return content::KeyboardEventProcessingResult::HANDLED;
+      }
     }
   }
 

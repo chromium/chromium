@@ -216,11 +216,6 @@ BASE_FEATURE(DesktopPWAsTabStripSettings, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(DisplayEdgeToEdgeFullscreen, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Enables Exclusive Access Mnager on Android platform
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(EnableExclusiveAccessManager, base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 // Enables Fullscreen to Screen on Android platform
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(EnableFullscreenToAnyScreenAndroid,

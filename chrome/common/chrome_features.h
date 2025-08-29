@@ -162,11 +162,6 @@ BASE_DECLARE_FEATURE(kEnableAmbientAuthenticationInIncognito);
 
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kEnableExclusiveAccessManager);
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kEnableFullscreenToAnyScreenAndroid);
 #endif
 
