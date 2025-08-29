@@ -118,6 +118,8 @@ namespace remoting {
 
 namespace {
 
+constexpr int kPixelsPerTick = 120;
+
 // This functionality is copied from fractional_input_filter.cc to maintain
 // an equivalent functionality for now.
 // TODO(rkjnsn): Once we are sure the client calculations indeed generate a 1.0
@@ -282,15 +284,45 @@ void EiSenderSession::InjectScrollDelta(double delta_x, double delta_y) {
     return;
   }
 
+  // Don't use ei_device_scroll_delta because Chrome overscrolls by about 16x.
+  // Instead accumulate pixels until there's enough for one "tick", which is
+  // what we do on X11.
+
+  // Discard any accumulated pixels if the scroll direction changes.
+  if (delta_x != 0) {
+    if ((delta_x > 0) != (subtick_pixels_x_ > 0)) {
+      subtick_pixels_x_ = 0;
+    }
+  }
+  if (delta_y != 0) {
+    if ((delta_y > 0) != (subtick_pixels_y_ > 0)) {
+      subtick_pixels_y_ = 0;
+    }
+  }
+
+  subtick_pixels_x_ += delta_x;
+  subtick_pixels_y_ += delta_y;
+  int ticks_x = subtick_pixels_x_ / kPixelsPerTick;
+  int ticks_y = subtick_pixels_y_ / kPixelsPerTick;
+  subtick_pixels_x_ %= kPixelsPerTick;
+  subtick_pixels_y_ %= kPixelsPerTick;
+
+  if (ticks_x == 0 && ticks_y == 0) {
+    return;
+  }
+
   // The scroll capability might appear on multiple pointer devices, or on a
   // separate device altogether. Since each seat only has one logical pointer,
   // it should be fine to inject scroll events on any device that supports them,
   // so just use the most recent one like with other devices.
   auto& scroll_device = button_devices_.back();
 
-  // libei interprets positive values as scrolling down or to the right (the
-  // opposite of the Chromoting protocol), so we need to flip the sign.
-  ei_device_scroll_delta(scroll_device.get(), -delta_x, -delta_y);
+  // This function takes values representing 120ths of a tick, so 120 would be
+  // one wheel tick, 240 would be two ticks, and 60 would be half of a tick.
+  // Additionally, positive value as scroll down or to the right (the opposite
+  // of the Chromoting protocol), so we need to flip the sign.
+  ei_device_scroll_discrete(scroll_device.get(), -ticks_x * 120,
+                            -ticks_y * 120);
   ei_device_frame(scroll_device.get(), ei_now(ei_.get()));
 }
 
@@ -301,6 +333,9 @@ void EiSenderSession::InjectScrollDiscrete(float ticks_x, float ticks_y) {
     LOG(ERROR) << "Received scroll event but there's no scroll device";
     return;
   }
+
+  subtick_pixels_x_ = 0;
+  subtick_pixels_y_ = 0;
 
   // The scroll capability might appear on multiple pointer devices, or on a
   // separate device altogether. Since each seat only has one logical pointer,

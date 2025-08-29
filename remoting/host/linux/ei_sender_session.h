@@ -199,6 +199,9 @@ class EiSenderSession {
   base::WeakPtr<GnomeKeyboardLayoutMonitor> keyboard_layout_monitor_;
   base::WeakPtr<GnomeInputInjector> input_injector_;
 
+  int subtick_pixels_x_ = 0;
+  int subtick_pixels_y_ = 0;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<EiSenderSession> weak_ptr_factory_{this};
