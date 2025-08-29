@@ -568,8 +568,7 @@ class FirstRunParameterizedInteractiveUiTest
     if (WithPrivacySandboxEnabled()) {
       enabled_features_and_params.push_back(
           {privacy_sandbox::kPrivacySandboxSettings4,
-           {{privacy_sandbox::kPrivacySandboxSettings4ForceShowConsentForTesting
-                 .name,
+           {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.name,
              "true"}}});
     }
 
@@ -606,6 +605,8 @@ class FirstRunParameterizedInteractiveUiTest
     if (WithPrivacySandboxEnabled()) {
       host_resolver()->AddRule("*", "127.0.0.1");
       embedded_test_server()->StartAcceptingConnections();
+      PrivacySandboxServiceFactory::GetForProfile(profile())
+          ->ForceChromeBuildForTests(true);
     }
 
     SearchEngineChoiceDialogService::SetDialogDisabledForTests(
