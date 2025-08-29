@@ -2555,7 +2555,7 @@
     },
     {
       name: "GetUserMediaEchoCancellationModes",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "GroupEffect",
