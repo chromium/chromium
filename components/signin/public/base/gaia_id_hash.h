@@ -8,6 +8,7 @@
 #include <compare>
 #include <string>
 #include <string_view>
+#include "base/hash/hash.h"
 
 #include "google_apis/gaia/gaia_id.h"
 
@@ -20,6 +21,11 @@ namespace signin {
 // be treated as a PII.
 class GaiaIdHash {
  public:
+  // For use in absl::flat_hash_set or absl::flat_hash_map.
+  template <typename H>
+  friend H AbslHashValue(H h, const GaiaIdHash& gaia_id_hash) {
+    return H::combine(std::move(h), gaia_id_hash.gaia_id_hash_);
+  }
   static GaiaIdHash FromGaiaId(const GaiaId& gaia_id);
   // |gaia_id_hash| is a string representing the binary hash of the gaia id. If
   // the input isn't of length crypto::kSHA256Length, it returns an invalid

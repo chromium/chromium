@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/gaia_id_hash.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace syncer {
 
@@ -75,12 +76,15 @@ void KeepAccountKeyedPrefValuesOnlyForUsers(
     PrefService* pref_service,
     const char* pref_path,
     const std::vector<signin::GaiaIdHash>& available_gaia_ids) {
+  absl::flat_hash_set<signin::GaiaIdHash> available_gaia_ids_set(
+      available_gaia_ids.begin(), available_gaia_ids.end());
+
   std::vector<std::string> removed_identities;
-  for (std::pair<const std::string&, const base::Value&> account_settings :
+  for (const auto [account_id, unused_value] :
        pref_service->GetDict(pref_path)) {
-    if (!base::Contains(available_gaia_ids, signin::GaiaIdHash::FromBase64(
-                                                account_settings.first))) {
-      removed_identities.push_back(account_settings.first);
+    if (!available_gaia_ids_set.contains(
+            signin::GaiaIdHash::FromBase64(account_id))) {
+      removed_identities.push_back(account_id);
     }
   }
   if (!removed_identities.empty()) {
