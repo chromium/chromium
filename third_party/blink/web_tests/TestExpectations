@@ -9603,12 +9603,13 @@ crbug.com/438933773 [ Win11-arm64 ] external/wpt/bluetooth/bidi/service/getChara
 crbug.com/438933773 [ Win11-arm64 ] external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/exclusion-filters-require-filters.https.window.js [ Failure Pass ]
 crbug.com/439012788 [ Linux ] wpt_internal/html/canvas/drawHTMLElement/allow-readback/html-images-ignored.https.sub.html [ Failure Pass ]
 
-# Temporarily disable to unblock WebRTC roll
-crbug.com/406585888 external/wpt/webrtc/rtp-stats-lifetime.https.html [ Failure Pass Timeout ]
-crbug.com/406585888 external/wpt/webrtc-stats/rtp-stats-creation.html [ Failure Pass Timeout ]
-crbug.com/406585888 fast/peerconnection/RTCPeerconnection-insertable-streams.html [ Failure Pass ]
-crbug.com/406585888 external/wpt/webrtc/RTCPeerConnection-addTransceiver-renegotiation.https.html [ Failure Pass ]
-crbug.com/406585888 external/wpt/webrtc/RTCPeerConnection-mandatory-getStats.https.html [ Failure Pass ]
+# ICE related failures are happening on Mac bots but not locally causing
+# assertion failures where we expect media to flow. Allow failing for now.
+crbug.com/441912460 [ Mac ] external/wpt/webrtc/rtp-stats-lifetime.https.html [ Failure Pass ]
+crbug.com/441912460 [ Mac ] external/wpt/webrtc-stats/rtp-stats-creation.html [ Failure Pass ]
+crbug.com/441912460 [ Mac ] fast/peerconnection/RTCPeerconnection-insertable-streams.html [ Failure Pass ]
+crbug.com/441912460 [ Mac ] external/wpt/webrtc/RTCPeerConnection-addTransceiver-renegotiation.https.html [ Failure Pass ]
+crbug.com/441912460 [ Mac ] external/wpt/webrtc/RTCPeerConnection-mandatory-getStats.https.html [ Failure Pass ]
 
 # Gardener 2025-08-18
 crbug.com/439456643 [ Linux ] external/wpt/content-security-policy/parsing/invalid-bytes.html [ Failure Timeout ]
