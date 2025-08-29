@@ -890,8 +890,12 @@ class TemplateURL {
   std::string GetExtensionId() const;
 
   // Returns the resource ID for the logo (small / favicon style) associated
-  // with this template URL, or an empty string is none is associated with it.
+  // with this template URL, or an empty string if none is associated with it.
   std::string GetBuiltinImageResourceId() const;
+
+  // Returns the resource ID for the search engine description string associated
+  // with this template URL, or an empty string if none is associated with it.
+  std::string GetBuiltinDescriptionResourceId() const;
 
   // Returns the marketing snippet string for the search engine, either the
   // built-in one or a fallback variant.

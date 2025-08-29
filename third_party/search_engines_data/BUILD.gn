@@ -39,10 +39,7 @@ if (enable_builtin_search_provider_assets) {
     public_deps = [ ":search_engines_scaled_resources" ]
 
     if (!is_android) {
-      public_deps += [
-        ":search_engine_descriptions_strings",
-        ":search_engines_marketing_snippets",
-      ]
+      public_deps += [ ":search_engine_descriptions_strings" ]
     }
   }
 
@@ -60,25 +57,13 @@ if (enable_builtin_search_provider_assets) {
   }
 
   if (!is_android) {
-    source_set("search_engines_marketing_snippets") {
-      visibility = [
-        ":*",
-        "//components/search_engines:*",
-      ]
-      sources = [
-        "built_in_marketing_snippets.cc",
-        "built_in_marketing_snippets.h",
-      ]
-      deps = [
-        ":prepopulated_engines",
-        ":search_engine_descriptions_strings",
-        "//base",
-      ]
-    }
-
     grit_strings("search_engine_descriptions_strings") {
       source = "resources_internal/search_engine_descriptions_strings.grd"
-      outputs = [ "grit/search_engine_descriptions_strings.h" ]
+      outputs = [
+        "search_engine_descriptions_strings.h",
+        "search_engine_descriptions_strings_map.cc",
+        "search_engine_descriptions_strings_map.h",
+      ]
     }
   }
 }
