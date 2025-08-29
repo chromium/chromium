@@ -7038,6 +7038,7 @@ data/download/iframe-host.html.mock-http-headers
 data/download/octet-stream.abc
 data/download/octet-stream.abc.mock-http-headers
 data/download/page_with_data_image.html
+data/download/svg_download_test.html
 data/download/test.mht
 data/dynamic1.html
 data/dynamic2.html

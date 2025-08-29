@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg">
+    <a href="data:text/plain,SVG%20download%20test%20content"
+      id="downloadlink"
+      download="svg-suggested-filename">
+      <text x="10" y="20">Click to download</text>
+    </a>
+  </svg>
+
+  <script>
+    function clickSVGDownloadLink() {
+      const link = document.getElementById('downloadlink');
+      if (link) {
+        link.dispatchEvent(new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+          view: window
+        }));
+        return "SVG download link clicked";
+      }
+      return "SVG download link not found";
+    }
+  </script>
+</body>
+</html>

@@ -28,6 +28,7 @@
 [Exposed=Window]
 interface SVGAElement : SVGGraphicsElement {
     [ImplementedAs=svgTarget, Measure] readonly attribute SVGAnimatedString target;
+    [RuntimeEnabled=SvgAnchorElementDownloadAttribute, Reflect] attribute DOMString download;
 
     [RuntimeEnabled=SvgAnchorElementRelAttributes, Reflect] attribute DOMString rel;
     [RuntimeEnabled=SvgAnchorElementRelAttributes, SameObject, PutForwards=value] readonly attribute DOMTokenList relList;

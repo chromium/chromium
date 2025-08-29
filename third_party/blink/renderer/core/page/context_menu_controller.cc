@@ -807,18 +807,29 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
     }
   }
 
-  if (RuntimeEnabledFeatures::SvgAnchorElementRelAttributesEnabled()) {
-    if (auto* anchor = DynamicTo<SVGAElement>(result.URLElement())) {
-      // TODO(dmangal): Add support for `download` attribute
+  // TODO(crbug.com/40589293): Merge with the equivalent block in
+  // HTMLAnchorElement. The logic is nearly identical aside from runtime flag
+  // checks. Consider using a templated helper once the flag is removed.
+  if (auto* anchor = DynamicTo<SVGAElement>(result.URLElement())) {
+    if (RuntimeEnabledFeatures::SvgAnchorElementDownloadAttributeEnabled()) {
+      // Extract suggested filename for same-origin URLS for saving file.
+      const SecurityOrigin* origin =
+          selected_frame->GetSecurityContext()->GetSecurityOrigin();
+      const KURL& complete_url = anchor->LegacyHrefURL(anchor->GetDocument());
+      if (origin->CanReadContent(complete_url)) {
+        data.suggested_filename =
+            anchor->FastGetAttribute(svg_names::kDownloadAttr).Utf8();
+      }
+    }
 
-      // If the anchor wants to suppress the referrer, update the referrerPolicy
-      // accordingly.
+    // If the anchor wants to suppress the referrer, update the referrerPolicy
+    // accordingly.
+    if (RuntimeEnabledFeatures::SvgAnchorElementRelAttributesEnabled()) {
       if (anchor->HasRel(kRelationNoReferrer)) {
         data.referrer_policy = network::mojom::ReferrerPolicy::kNever;
       }
-
-      data.link_text = anchor->innerText().Utf8();
     }
+    data.link_text = anchor->innerText().Utf8();
   }
 
   data.selection_rect = ComputeSelectionRect(selected_frame);

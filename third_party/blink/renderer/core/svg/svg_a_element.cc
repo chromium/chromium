@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/anchor_element_utils.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
@@ -48,6 +49,7 @@
 #include "third_party/blink/renderer/core/xlink_names.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
+#include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
 namespace blink {
 
@@ -131,10 +133,33 @@ void SVGAElement::DefaultEventHandler(Event& event) {
         return;
       }
 
-      FrameLoadRequest frame_request(
-          GetDocument().domWindow(),
-          ResourceRequest(GetDocument().CompleteURL(url)));
+      NavigationPolicy navigation_policy = NavigationPolicyFromEvent(&event);
+      if (navigation_policy == kNavigationPolicyLinkPreview) {
+        // TODO(b:302649777): Support LinkPreview for SVG <a> element.
+        return;
+      }
 
+      const KURL& resolved_url = GetDocument().CompleteURL(url);
+      ResourceRequest request(resolved_url);
+      request.SetHasUserGesture(LocalFrame::HasTransientUserActivation(frame));
+
+      // Respect the download attribute only if we can read the content, and the
+      // event is not an alt-click or similar.
+      if (RuntimeEnabledFeatures::SvgAnchorElementDownloadAttributeEnabled() &&
+          FastHasAttribute(svg_names::kDownloadAttr) &&
+          navigation_policy != kNavigationPolicyDownload &&
+          GetDocument().domWindow()->GetSecurityOrigin()->CanReadContent(
+              resolved_url)) {
+        const String download_attr =
+            FastGetAttribute(svg_names::kDownloadAttr).GetString();
+
+        AnchorElementUtils::HandleDownloadAttribute(
+            this, download_attr, resolved_url, GetDocument().domWindow(),
+            event.isTrusted(), std::move(request));
+        return;
+      }
+
+      FrameLoadRequest frame_request(GetDocument().domWindow(), request);
       AtomicString target = frame_request.CleanNavigationTarget(
           AtomicString(svg_target_->CurrentValue()->Value()));
       if (target.empty() && FastGetAttribute(xlink_names::kShowAttr) == "new") {
@@ -142,11 +167,6 @@ void SVGAElement::DefaultEventHandler(Event& event) {
       }
       event.SetDefaultHandled();
 
-      NavigationPolicy navigation_policy = NavigationPolicyFromEvent(&event);
-      if (navigation_policy == kNavigationPolicyLinkPreview) {
-        // TODO(b:302649777): Support LinkPreview for SVG <a> element.
-        return;
-      }
       frame_request.SetNavigationPolicy(navigation_policy);
       frame_request.SetClientNavigationReason(
           ClientNavigationReason::kAnchorClick);
@@ -178,8 +198,6 @@ void SVGAElement::DefaultEventHandler(Event& event) {
           event.isTrusted()
               ? mojom::blink::TriggeringEventInfo::kFromTrustedEvent
               : mojom::blink::TriggeringEventInfo::kFromUntrustedEvent);
-      frame_request.GetResourceRequest().SetHasUserGesture(
-          LocalFrame::HasTransientUserActivation(GetDocument().GetFrame()));
 
       Frame* target_frame =
           frame->Tree()

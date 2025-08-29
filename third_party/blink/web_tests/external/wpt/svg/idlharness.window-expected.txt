@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 154 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 152 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] SVGElement interface: attribute correspondingElement
   assert_true: The prototype object must have a property "correspondingElement" expected true got false
 [FAIL] SVGElement interface: attribute correspondingUseElement
@@ -186,8 +186,6 @@ Found 154 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_inherits: property "correspondingElement" not found in prototype chain
 [FAIL] SVGElement interface: objects.script must inherit property "correspondingUseElement" with the proper type
   assert_inherits: property "correspondingUseElement" not found in prototype chain
-[FAIL] SVGAElement interface: attribute download
-  assert_true: The prototype object must have a property "download" expected true got false
 [FAIL] SVGAElement interface: attribute ping
   assert_true: The prototype object must have a property "ping" expected true got false
 [FAIL] SVGAElement interface: attribute hreflang
@@ -218,8 +216,6 @@ Found 154 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_true: The prototype object must have a property "search" expected true got false
 [FAIL] SVGAElement interface: attribute hash
   assert_true: The prototype object must have a property "hash" expected true got false
-[FAIL] SVGAElement interface: objects.a must inherit property "download" with the proper type
-  assert_inherits: property "download" not found in prototype chain
 [FAIL] SVGAElement interface: objects.a must inherit property "ping" with the proper type
   assert_inherits: property "ping" not found in prototype chain
 [FAIL] SVGAElement interface: objects.a must inherit property "hreflang" with the proper type
