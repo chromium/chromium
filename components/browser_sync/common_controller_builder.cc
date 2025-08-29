@@ -541,22 +541,6 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
     }
   }
 
-  if (!disabled_types.Has(syncer::PRODUCT_COMPARISON) &&
-      product_specifications_service_.value() &&
-      base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
-    syncer::DataTypeControllerDelegate* delegate =
-        product_specifications_service_.value()
-            ->GetSyncControllerDelegate()
-            .get();
-    controllers.push_back(std::make_unique<DataTypeController>(
-        syncer::PRODUCT_COMPARISON,
-        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
-            delegate),
-        /*delegate_for_transport_mode= */
-        std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
-            delegate)));
-  }
-
   if (!disabled_types.Has(syncer::HISTORY)) {
     controllers.push_back(std::make_unique<history::HistoryDataTypeController>(
         sync_service, identity_manager_.value(), history_service_.value(),

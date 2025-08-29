@@ -20,32 +20,15 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
-#include "components/sync/base/unique_position.h"
-#include "components/sync/model/proxy_data_type_controller_delegate.h"
-#include "components/sync/protocol/product_comparison_specifics.pb.h"
 
 namespace commerce {
 
 const size_t kMaxNameLength = 64;
 const size_t kMaxTableSize = 10;
 
-ProductSpecificationsService::ProductSpecificationsService(
-    syncer::OnceDataTypeStoreFactory create_store_callback,
-    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor)
-    : bridge_(std::make_unique<ProductSpecificationsSyncBridge>(
-          std::move(create_store_callback),
-          std::move(change_processor),
-          base::BindOnce(&ProductSpecificationsService::OnInit,
-                         base::Unretained(this)),
-          this)) {}
+ProductSpecificationsService::ProductSpecificationsService() = default;
 
 ProductSpecificationsService::~ProductSpecificationsService() = default;
-
-base::WeakPtr<syncer::DataTypeControllerDelegate>
-ProductSpecificationsService::GetSyncControllerDelegate() {
-  CHECK(bridge_);
-  return bridge_->change_processor()->GetControllerDelegate();
-}
 
 const std::vector<ProductSpecificationsSet>
 ProductSpecificationsService::GetAllProductSpecifications() {
@@ -102,7 +85,5 @@ void ProductSpecificationsService::AddObserver(
 void ProductSpecificationsService::RemoveObserver(
     commerce::ProductSpecificationsSet::Observer* observer) {
 }
-
-void ProductSpecificationsService::OnInit() {}
 
 }  // namespace commerce

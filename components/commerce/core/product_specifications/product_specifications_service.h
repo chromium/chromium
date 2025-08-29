@@ -11,7 +11,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
-#include "components/commerce/core/product_specifications/product_specifications_sync_bridge.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace commerce {
@@ -21,21 +20,15 @@ extern const size_t kMaxNameLength;
 extern const size_t kMaxTableSize;
 
 // Acquires synced data about product specifications.
-class ProductSpecificationsService
-    : public KeyedService,
-      public ProductSpecificationsSyncBridge::Delegate {
+class ProductSpecificationsService : public KeyedService {
  public:
   using GetAllCallback =
       base::OnceCallback<void(const std::vector<ProductSpecificationsSet>)>;
-  ProductSpecificationsService(
-      syncer::OnceDataTypeStoreFactory create_store_callback,
-      std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor);
+  ProductSpecificationsService();
   ProductSpecificationsService(const ProductSpecificationsService&) = delete;
   ProductSpecificationsService& operator=(const ProductSpecificationsService&) =
       delete;
   ~ProductSpecificationsService() override;
-
-  base::WeakPtr<syncer::DataTypeControllerDelegate> GetSyncControllerDelegate();
 
   virtual const std::vector<ProductSpecificationsSet>
   GetAllProductSpecifications();
@@ -82,11 +75,6 @@ class ProductSpecificationsService
   // Remove observer monitoring add/remove/update of ProductSpecificationSets.
   virtual void RemoveObserver(
       commerce::ProductSpecificationsSet::Observer* observer);
-
- private:
-  std::unique_ptr<ProductSpecificationsSyncBridge> bridge_;
-
-  void OnInit();
 };
 
 }  // namespace commerce

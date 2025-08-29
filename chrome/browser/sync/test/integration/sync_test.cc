@@ -1179,10 +1179,6 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
       }
     }
 
-    if (base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
-      allowed_types.Put(syncer::PRODUCT_COMPARISON);
-    }
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     if (base::FeatureList::IsEnabled(
             switches::kEnableExtensionsExplicitBrowserSignin)) {
