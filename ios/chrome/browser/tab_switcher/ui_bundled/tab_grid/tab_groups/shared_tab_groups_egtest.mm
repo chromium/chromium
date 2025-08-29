@@ -320,6 +320,11 @@ void WaitForFakeJoinFlowView() {
 // Checks opening the Share flow from the Tab Grid and actually sharing. Then
 // checks opening the Manage flow. Using the face pile.
 - (void)testShareGroupAndManageGroupUsingFacePile {
+  // TODO(crbug.com/441923004): Re-enable this test on iOS26.
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+
   // Open the tab grid.
   [ChromeEarlGreyUI openTabGrid];
 

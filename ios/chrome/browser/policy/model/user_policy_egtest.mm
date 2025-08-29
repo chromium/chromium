@@ -431,7 +431,8 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
 
 // Tests that the managed accout confirmation dialog is shown in the sign-in
 // flow with its contextual and specific content.
-- (void)testSigninFlowConfirmationDialogWhenUserPolicyAndSignin {
+// TODO(crbug.com/441924945): Fix this flaky test.
+- (void)FLAKY_testSigninFlowConfirmationDialogWhenUserPolicyAndSignin {
   AppLaunchConfiguration config = [self minimalAppConfigurationForTestCase];
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
@@ -472,7 +473,8 @@ id<GREYMatcher> DeclineManagementButtonMatcher() {
 
 // Tests that when user policies are enabled, in the sign-in flow, sign-in error
 // popup isn't shown after cancelling the managed accout confirmation dialog.
-- (void)testCancelSigninFlowConfirmationDialogWhenUserPolicyAndSignin {
+// TODO(crbug.com/441923304): Fix this flaky test.
+- (void)FLAKY_testCancelSigninFlowConfirmationDialogWhenUserPolicyAndSignin {
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity
       identityWithEmail:base::SysUTF8ToNSString(GetTestEmail())];
 
