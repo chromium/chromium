@@ -1,5 +1,9 @@
 # Gerrit ReAuth
 
+*** promo
+Googlers: See [go/gerrit-reauth](http://go/gerrit-reauth) for more information.
+***
+
 [TOC]
 
 ## Background
