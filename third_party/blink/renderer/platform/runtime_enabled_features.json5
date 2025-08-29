@@ -593,6 +593,11 @@
       status: "experimental",
     },
     {
+      name: "AuthenticatorPasswordsOnlyImmediateRequests",
+      base_feature: "none",
+      public: true,
+    },
+    {
       name: "AutoDarkMode",
       base_feature: "none",
       origin_trial_feature_name: "AutoDarkMode",

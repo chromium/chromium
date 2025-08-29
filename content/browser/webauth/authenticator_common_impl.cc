@@ -46,6 +46,7 @@
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webauth/authenticator_environment.h"
+#include "content/browser/webauth/authenticator_impl.h"
 #include "content/browser/webauth/authenticator_request_outcome_enums.h"
 #include "content/browser/webauth/client_data_json.h"
 #include "content/browser/webauth/common_utils.h"
@@ -715,24 +716,6 @@ void DeleteVirtualAuthenticatorCreds(
       }
     }
   }
-}
-
-auto GetCallbackForAssertion(GetCredentialCallback callback) {
-  return base::BindOnce(
-      [](blink::mojom::Authenticator::GetCredentialCallback callback,
-         blink::mojom::AuthenticatorStatus status,
-         blink::mojom::GetAssertionAuthenticatorResponsePtr credential,
-         blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details) {
-        blink::mojom::GetAssertionResponsePtr assertion_response =
-            blink::mojom::GetAssertionResponse::New(
-                status, std::move(credential),
-                std::move(dom_exception_details));
-        blink::mojom::GetCredentialResponsePtr response =
-            blink::mojom::GetCredentialResponse::NewGetAssertionResponse(
-                std::move(assertion_response));
-        std::move(callback).Run(std::move(response));
-      },
-      std::move(callback));
 }
 
 base::flat_set<device::FidoTransportProtocol> GetTransportsAllowedByRP(
@@ -1437,9 +1420,8 @@ void AuthenticatorCommonImpl::GetCredential(
       weak_factory_.GetWeakPtr(), std::move(callback));
 
   if (req_state_) {
-    GetCallbackForAssertion(std::move(callback))
-        .Run(blink::mojom::AuthenticatorStatus::PENDING_REQUEST, nullptr,
-             nullptr);
+    std::move(callback).Run(AuthenticatorImpl::MakeGetAssertionResponse(
+        blink::mojom::AuthenticatorStatus::PENDING_REQUEST, nullptr, nullptr));
     return;
   }
 
@@ -3015,8 +2997,9 @@ void AuthenticatorCommonImpl::CompleteGetAssertionRequest(
         ->WebAuthnAssertionRequestSucceeded();
   }
 
-  GetCallbackForAssertion(std::move(get_credential_response_callback))
-      .Run(status, std::move(response), std::move(dom_exception_details));
+  std::move(get_credential_response_callback)
+      .Run(AuthenticatorImpl::MakeGetAssertionResponse(
+          status, std::move(response), std::move(dom_exception_details)));
   Cleanup();
 }
 

@@ -36,6 +36,11 @@ class CONTENT_EXPORT AuthenticatorImpl
   AuthenticatorImpl(const AuthenticatorImpl&) = delete;
   AuthenticatorImpl& operator=(const AuthenticatorImpl&) = delete;
 
+  static blink::mojom::GetCredentialResponsePtr MakeGetAssertionResponse(
+      blink::mojom::AuthenticatorStatus status,
+      blink::mojom::GetAssertionAuthenticatorResponsePtr assertion,
+      blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details);
+
  private:
   friend class AuthenticatorImplTest;
   friend class AuthenticatorImplRequestDelegateTest;

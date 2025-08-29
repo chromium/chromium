@@ -141,6 +141,12 @@ BASE_DECLARE_FEATURE(kWebAuthnSendPinGeneration);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnWrapCohortData);
 
+// Enables the Authenticator interface to support
+// 'navigator.credentials.get({password: true, mediation: "immediate"})'
+// requests.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kAuthenticatorPasswordsOnlyImmediateRequests);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

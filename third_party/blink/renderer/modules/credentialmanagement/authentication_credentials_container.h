@@ -59,6 +59,14 @@ class MODULES_EXPORT AuthenticationCredentialsContainer final
                       const CredentialRequestOptions&,
                       const IdentityCredentialRequestOptions&);
 
+  // Forwards a get() request to the authenticator interface.
+  // Currently used for publicKey requests and password requests with immediate
+  // mediation.
+  void ForwardRequestToAuthenticator(
+      ScriptState*,
+      ScriptPromiseResolver<IDLNullable<Credential>>*,
+      const CredentialRequestOptions*);
+
   class OtpRequestAbortAlgorithm;
   class PublicKeyRequestAbortAlgorithm;
 };

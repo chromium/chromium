@@ -6285,6 +6285,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5650" label="NavigationNavigateJavaScriptURL"/>
   <int value="5651" label="V8WasmCustomDescriptors"/>
   <int value="5652" label="SRIIntegrityAttributeOnInlineScript"/>
+  <int value="5653" label="CredentialsGetImmediateMediationWithPasswordsOnly"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

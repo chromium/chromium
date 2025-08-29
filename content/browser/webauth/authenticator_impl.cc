@@ -39,6 +39,18 @@ void AuthenticatorImpl::CreateForTesting(
                         std::move(authenticator_common_impl));
 }
 
+// static
+blink::mojom::GetCredentialResponsePtr AuthenticatorImpl::MakeGetAssertionResponse(
+    blink::mojom::AuthenticatorStatus status,
+    blink::mojom::GetAssertionAuthenticatorResponsePtr assertion,
+    blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details) {
+  blink::mojom::GetAssertionResponsePtr assertion_response =
+      blink::mojom::GetAssertionResponse::New(
+          status, std::move(assertion), std::move(dom_exception_details));
+  return blink::mojom::GetCredentialResponse::NewGetAssertionResponse(
+      std::move(assertion_response));
+}
+
 AuthenticatorImpl::AuthenticatorImpl(
     RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<blink::mojom::Authenticator> receiver,
@@ -63,6 +75,11 @@ void AuthenticatorImpl::MakeCredential(
 void AuthenticatorImpl::GetCredential(
     blink::mojom::GetCredentialOptionsPtr options,
     GetCredentialCallback callback) {
+  if (!options->public_key) {
+    std::move(callback).Run(MakeGetAssertionResponse(
+        blink::mojom::AuthenticatorStatus::NOT_IMPLEMENTED, nullptr, nullptr));
+    return;
+  }
   authenticator_common_impl_->GetCredential(origin(), std::move(options),
                                             /*payment=*/nullptr,
                                             std::move(callback));
