@@ -90,11 +90,10 @@ ScriptPromise<IDLUndefined> Worklet::addModule(
   // loading.
   GetExecutionContext()
       ->GetTaskRunner(TaskType::kInternalLoading)
-      ->PostTask(
-          FROM_HERE,
-          WTF::BindOnce(&Worklet::FetchAndInvokeScript, WrapPersistent(this),
-                        module_url_record, options->credentials().AsEnum(),
-                        WrapPersistent(pending_tasks)));
+      ->PostTask(FROM_HERE,
+                 BindOnce(&Worklet::FetchAndInvokeScript, WrapPersistent(this),
+                          module_url_record, options->credentials().AsEnum(),
+                          WrapPersistent(pending_tasks)));
   return promise;
 }
 

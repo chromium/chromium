@@ -105,9 +105,8 @@ bool AbstractWorker::CheckAllowedByCSPForNoThrow(const KURL& script_url) {
       // have a chance to register an event handler.
       GetExecutionContext()
           ->GetTaskRunner(TaskType::kInternalLoading)
-          ->PostTask(FROM_HERE,
-                     WTF::BindOnce(&AbstractWorker::DispatchErrorEvent,
-                                   WrapWeakPersistent(this)));
+          ->PostTask(FROM_HERE, BindOnce(&AbstractWorker::DispatchErrorEvent,
+                                         WrapWeakPersistent(this)));
       return false;
     }
   }

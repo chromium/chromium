@@ -210,7 +210,7 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
     for (WorkerThread* thread : WorkerThreads()) {
       PostCrossThreadTask(
           *thread->GetTaskRunner(task_type), FROM_HERE,
-          CrossThreadBindOnce(function, WTF::CrossThreadUnretained(thread),
+          CrossThreadBindOnce(function, CrossThreadUnretained(thread),
                               parameters...));
       ++called_worker_count;
     }

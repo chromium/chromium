@@ -59,12 +59,12 @@ class FakeWorkerGlobalScope : public WorkerGlobalScope {
     ReadyToRunWorkerScript();
     GetBrowserInterfaceBroker().SetBinderForTesting(
         ukm::mojom::UkmRecorderFactory::Name_,
-        WTF::BindRepeating(
+        BindRepeating(
             [](ScopedFakeUkmRecorder* interface,
                mojo::ScopedMessagePipeHandle handle) {
               interface->SetHandle(std::move(handle));
             },
-            WTF::Unretained(&scoped_fake_ukm_recorder_)));
+            Unretained(&scoped_fake_ukm_recorder_)));
   }
 
   ~FakeWorkerGlobalScope() override {

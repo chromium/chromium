@@ -465,14 +465,14 @@ void DedicatedWorker::ContinueStart(
         ->GetTaskRunner(TaskType::kInternalDefault)
         ->PostDelayedTask(
             FROM_HERE,
-            WTF::BindOnce(&DedicatedWorker::ContinueStartInternal,
-                          WrapWeakPersistent(this), script_url,
-                          std::move(worker_main_script_load_params),
-                          std::move(referrer_policy),
-                          std::move(response_content_security_policies),
-                          std::move(back_forward_cache_controller_host),
-                          std::move(coep_reporting_observer),
-                          std::move(dip_reporting_observer)),
+            BindOnce(&DedicatedWorker::ContinueStartInternal,
+                     WrapWeakPersistent(this), script_url,
+                     std::move(worker_main_script_load_params),
+                     std::move(referrer_policy),
+                     std::move(response_content_security_policies),
+                     std::move(back_forward_cache_controller_host),
+                     std::move(coep_reporting_observer),
+                     std::move(dip_reporting_observer)),
             base::Milliseconds(features::kDedicatedWorkerStartDelayInMs.Get()));
     return;
   }
