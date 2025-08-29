@@ -144,8 +144,6 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeViewManagerTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   auto* new_browser = chrome::FindBrowserWithTab(
       content::WebContents::FromRenderFrameHost(new_rfh));
-  PrivacySandboxDialog::Show(new_browser,
-                             PrivacySandboxService::PromptType::kM1Consent);
 
   auto* dialog2 = waiter2.WaitIfNeededAndGet();
   auto* view2 = static_cast<PrivacySandboxDialogView*>(
