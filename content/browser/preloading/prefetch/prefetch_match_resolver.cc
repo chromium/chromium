@@ -250,7 +250,7 @@ void PrefetchMatchResolver::UnregisterCandidate(
 
 void PrefetchMatchResolver::OnWillBeDestroyed(
     PrefetchContainer& prefetch_container) {
-  MaybeUnblockForUnmatch(prefetch_container.key(),
+  MaybeUnblockForUnmatch(prefetch_container,
                          PrefetchPotentialCandidateServingResult::
                              kNotServedPrefetchWillBeDestroyed);
 }
@@ -262,7 +262,7 @@ void PrefetchMatchResolver::OnGotInitialEligibility(
 
   if (eligibility != PreloadingEligibility::kEligible) {
     MaybeUnblockForUnmatch(
-        prefetch_container.key(),
+        prefetch_container,
         PrefetchPotentialCandidateServingResult::kNotServedIneligiblePrefetch);
   }
 }
@@ -289,7 +289,7 @@ void PrefetchMatchResolver::OnDeterminedHead(
   if (prefetch_container.service_worker_state() !=
       expected_service_worker_state_) {
     CHECK(base::FeatureList::IsEnabled(features::kPrefetchServiceWorker));
-    MaybeUnblockForUnmatch(prefetch_container.key(),
+    MaybeUnblockForUnmatch(prefetch_container,
                            PrefetchPotentialCandidateServingResult::
                                kNotServedPrefetchServiceWorkerStateMismatch);
     return;
@@ -310,7 +310,7 @@ void PrefetchMatchResolver::OnDeterminedHead(
     // -> here
     case PrefetchServableState::kShouldBlockUntilHeadReceived:
     case PrefetchServableState::kNotServable:
-      MaybeUnblockForUnmatch(prefetch_container.key(),
+      MaybeUnblockForUnmatch(prefetch_container,
                              PrefetchPotentialCandidateServingResult::
                                  kNotServedUnsatisfiedPrefetchServeableState);
       return;
@@ -331,7 +331,7 @@ void PrefetchMatchResolver::OnDeterminedHead(
       prefetch_container.IsExactMatch(navigated_key_.url()) ||
       prefetch_container.IsNoVarySearchHeaderMatch(navigated_key_.url());
   if (!is_match) {
-    MaybeUnblockForUnmatch(prefetch_container.key(),
+    MaybeUnblockForUnmatch(prefetch_container,
                            PrefetchPotentialCandidateServingResult::
                                kNotServedDeterminedNVSHeaderMismatch);
     return;
@@ -353,7 +353,7 @@ void PrefetchMatchResolver::OnTimeout(PrefetchKey prefetch_key) {
   CHECK(candidate_data->prefetch_container);
 
   MaybeUnblockForUnmatch(
-      prefetch_key,
+      *candidate_data->prefetch_container,
       PrefetchPotentialCandidateServingResult::kNotServedBlockUntilHeadTimeout);
 }
 
@@ -418,9 +418,10 @@ void PrefetchMatchResolver::UnblockForNoCandidates() {
 }
 
 void PrefetchMatchResolver::MaybeUnblockForUnmatch(
-    const PrefetchKey& prefetch_key,
+    const PrefetchContainer& prefetch_container,
     PrefetchPotentialCandidateServingResult serving_result) {
-  UnregisterCandidate(prefetch_key, /*is_served=*/false, serving_result);
+  UnregisterCandidate(prefetch_container.key(), /*is_served=*/false,
+                      serving_result);
 
   if (candidates_.size() == 0) {
     UnblockForNoCandidates();

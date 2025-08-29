@@ -184,7 +184,7 @@ class CONTENT_EXPORT PrefetchMatchResolver final
   // Unregisters unmatched prefetch and unblocks if there are no other waiting
   // prefetches.
   void MaybeUnblockForUnmatch(
-      const PrefetchKey& prefetch_key,
+      const PrefetchContainer& prefetch_container,
       PrefetchPotentialCandidateServingResult serving_result);
   void UnblockForCookiesChanged(const PrefetchKey& key);
   void UnblockInternal(PrefetchServingHandle serving_handle);
