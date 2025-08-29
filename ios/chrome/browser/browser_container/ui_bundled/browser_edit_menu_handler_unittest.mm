@@ -6,12 +6,17 @@
 
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/browser_container/ui_bundled/browser_container_view_controller.h"
 #import "ios/chrome/browser/link_to_text/ui_bundled/link_to_text_mediator.h"
 #import "ios/chrome/browser/partial_translate/ui_bundled/partial_translate_mediator.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/search_with/ui_bundled/search_with_mediator.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
+#import "ios/chrome/browser/web_selection/model/web_selection_tab_helper.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/providers/partial_translate/test_partial_translate.h"
 #import "ios/chrome/test/scoped_key_window.h"
@@ -21,9 +26,14 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 #import "ui/base/device_form_factor.h"
 
 namespace {
+
+// The template for Google search engine.
+const char kGoogleSearchTemplate[] = "https://www.google.com/?q={searchTerms}";
 
 // Creates a recursive string description of `menuElement`.
 // Each array element is a string "depth:type:id" with
@@ -279,16 +289,23 @@ void AddOpenInNewCanvas(NSMutableArray* menu) {
   }
 }
 
-// Modify the expected menu for partial translate
-void AddPartialTranslate(NSMutableArray* menu) {
+// Modify the expected menu for chrome menu
+void AddChromeMenu(NSMutableArray* menu) {
   for (unsigned int i = 0; i < menu.count; i++) {
     if ([menu[i] isEqualToString:@"0:m:com.apple.menu.lookup"]) {
       [menu insertObject:@"0:m:chromecommand.menu" atIndex:i];
-      // Deferred action.
-      [menu insertObject:@"1:d" atIndex:i + 1];
+      if (ShouldShowEditMenuItemsSynchronously()) {
+        [menu insertObject:@"1:a:chromeAction.searchWith" atIndex:i + 1];
+        [menu insertObject:@"1:a:chromecommand.partialTranslate" atIndex:i + 2];
+      } else {
+        // Deferred action.
+        [menu insertObject:@"1:d" atIndex:i + 1];
+        [menu insertObject:@"1:d" atIndex:i + 1];
+      }
       break;
     }
   }
+  // Remove the default translate.
   for (unsigned int i = 0; i < menu.count; i++) {
     if ([menu[i] isEqualToString:@"1:c:_translate:"]) {
       [menu removeObjectAtIndex:i];
@@ -368,10 +385,16 @@ class BrowserEditMenuHandlerTest : public PlatformTest {
  public:
   BrowserEditMenuHandlerTest()
       : web_client_(std::make_unique<ChromeWebClient>()) {
-    profile_ = TestProfileIOS::Builder().Build();
+    TestProfileIOS::Builder test_profile_builder;
+    test_profile_builder.AddTestingFactory(
+        ios::TemplateURLServiceFactory::GetInstance(),
+        ios::TemplateURLServiceFactory::GetDefaultFactory());
+    profile_ = std::move(test_profile_builder).Build();
 
     web::WebState::CreateParams params(profile_.get());
     web_state_ = web::WebState::Create(params);
+
+    WebSelectionTabHelper::CreateForWebState(web_state_.get());
   }
 
   void SetUp() override {
@@ -439,7 +462,7 @@ TEST_F(BrowserEditMenuHandlerTest, CheckBaseMenuDescription) {
 TEST_F(BrowserEditMenuHandlerTest, CheckCustomizedMenuDescription) {
   NSMutableArray* expectedMenuDescription = GetExpectedMenu();
   AddOpenInNewCanvas(expectedMenuDescription);
-  AddPartialTranslate(expectedMenuDescription);
+  AddChromeMenu(expectedMenuDescription);
   AddLinkToText(expectedMenuDescription);
   SetupTranslateControllerFactory();
   PartialTranslateMediator* partial_translate_mediator =
@@ -449,10 +472,24 @@ TEST_F(BrowserEditMenuHandlerTest, CheckCustomizedMenuDescription) {
                 fullscreenController:nullptr
                            incognito:NO];
 
+  id application_commands_handler =
+      OCMProtocolMock(@protocol(ApplicationCommands));
+  TemplateURLService* template_url_service =
+      ios::TemplateURLServiceFactory::GetForProfile(profile_.get());
+  TemplateURLData template_url_data;
+  template_url_data.SetURL(kGoogleSearchTemplate);
+  template_url_service->ApplyDefaultSearchChangeForTesting(
+      &template_url_data, DefaultSearchManager::FROM_USER);
+  SearchWithMediator* search_with_mediator = [[SearchWithMediator alloc]
+      initWithTemplateURLService:template_url_service
+                       incognito:NO];
+  search_with_mediator.applicationCommandHandler = application_commands_handler;
+
   LinkToTextMediator* link_to_text_mediator = [[LinkToTextMediator alloc] init];
   BrowserEditMenuHandler* handler = [[BrowserEditMenuHandler alloc] init];
   handler.partialTranslateDelegate = partial_translate_mediator;
   handler.linkToTextDelegate = link_to_text_mediator;
+  handler.searchWithDelegate = search_with_mediator;
   BrowserContainerViewController* container_vc =
       [[BrowserContainerViewController alloc] init];
   [container_vc willMoveToParentViewController:base_view_controller_];
