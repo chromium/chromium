@@ -45,14 +45,18 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(Autofill.Ai.EntityType) -->
 
 <variants name="Autofill.Ai.EntityType">
-  <variant name="DriversLicense"
+  <variant name=""
+      summary="Emitted for any kind of entities. Note that for a given
+               histogram, this variant will just be the accumulation of all
+               histogram records of the other variants."/>
+  <variant name=".DriversLicense"
       summary="Emitted for driver's license forms only."/>
-  <variant name="KnownTravelerNumber"
+  <variant name=".KnownTravelerNumber"
       summary="Emitted for Known Traveler Number forms only."/>
-  <variant name="NationalIdCard"
+  <variant name=".NationalIdCard"
       summary="Emitted for national id card forms only."/>
-  <variant name="Passport" summary="Emitted for passport forms only."/>
-  <variant name="Vehicle"
+  <variant name=".Passport" summary="Emitted for passport forms only."/>
+  <variant name=".Vehicle"
       summary="Emitted for vehicle information forms only."/>
 </variants>
 
@@ -1178,49 +1182,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
-<histogram name="Autofill.Ai.Funnel.{SubmissionState}.{FunnelStage}"
-    enum="Boolean" expires_after="2025-12-12">
-  <owner>jihadghanna@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    (DEPRECATED) Records various stages of the Autofill AI funnel. The same
-    metric is logged for submitted and for abandoned forms, with an additional
-    metric aggregating both. The metric is recorded once per form per
-    submission/abandonment.
-
-    {FunnelStage}
-
-    Deprecated in favor of the Funnel metric split by `EntityType`.
-  </summary>
-  <token key="SubmissionState">
-    <variant name="Abandoned"/>
-    <variant name="Aggregate"/>
-    <variant name="Submitted"/>
-  </token>
-  <token key="FunnelStage">
-    <variant name="CorrectionAfterFill"
-        summary="Given a form where the user filled an Autofill AI
-                 suggestion, records whether the filling was corrected or
-                 not."/>
-    <variant name="Eligibility"
-        summary="This metric records whether a parsed form is eligible for
-                 Autofill AI filling or not."/>
-    <variant name="FillAfterSuggestion"
-        summary="Given a form where the user saw Autofill AI filling
-                 suggestions, records whether the suggestion was filled or
-                 not."/>
-    <variant name="ReadinessAfterEligibility"
-        summary="Given an Autofill-AI-eligible form, this metric records
-                 whether the user has stored data to fill the form."/>
-    <variant name="SuggestionAfterReadiness"
-        summary="Given an Autofill-AI-eligible form where the user has data
-                 stored to fill it, this metric records whether the user saw
-                 an Autofill AI suggestion or not."/>
-  </token>
-</histogram>
-
 <histogram
-    name="Autofill.Ai.Funnel.{SubmissionState}.{FunnelStage}.{EntityGranularity}"
+    name="Autofill.Ai.Funnel.{SubmissionState}.{FunnelStage}{EntityGranularity}"
     enum="Boolean" expires_after="2026-02-22">
   <owner>jihadghanna@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -1228,6 +1191,10 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     Records various stages of the Autofill AI funnel. The same metric is logged
     for submitted and for abandoned forms, with an additional metric aggregating
     both. The metric is recorded once per form per submission/abandonment.
+
+    Note that the variant aggregated over all EntityTypes was emitted
+    differently before M140 and then not emitted at all in M141, so data is most
+    accurate starting from M142.
 
     {FunnelStage}
 
@@ -1258,7 +1225,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="EntityGranularity" variants="Autofill.Ai.EntityType"/>
 </histogram>
 
-<histogram name="Autofill.Ai.KeyMetrics{KeyMetric}.{EntityGranularity}"
+<histogram name="Autofill.Ai.KeyMetrics{KeyMetric}{EntityGranularity}"
     enum="Boolean" expires_after="2025-12-12">
   <owner>jihadghanna@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>

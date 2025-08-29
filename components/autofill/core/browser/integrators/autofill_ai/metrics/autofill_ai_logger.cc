@@ -27,10 +27,6 @@ namespace autofill {
 
 namespace {
 
-constexpr std::string_view funnel_histogram_prefix = "Autofill.Ai.Funnel.";
-constexpr std::string_view key_metric_histogram_prefix =
-    "Autofill.Ai.KeyMetrics.";
-
 // LINT.IfChange(HistogramSuffixForEntityType)
 std::string_view HistogramSuffixForEntityType(EntityType type) {
   switch (type.name()) {
@@ -52,23 +48,41 @@ std::string_view HistogramSuffixForEntityType(EntityType type) {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAiEntityType)
 
 void LogFunnelMetric(std::string_view funnel_metric_name,
+                     std::string_view entity_type_name,
                      bool submission_state,
                      bool metric_value) {
-  const std::string specific_histogram_name = base::StrCat(
-      {funnel_histogram_prefix, submission_state ? "Submitted." : "Abandoned.",
-       funnel_metric_name});
-  const std::string aggregate_histogram_name =
-      base::StrCat({funnel_histogram_prefix, "Aggregate.", funnel_metric_name});
-  base::UmaHistogramBoolean(specific_histogram_name, metric_value);
-  base::UmaHistogramBoolean(aggregate_histogram_name, metric_value);
+  static constexpr std::string_view kFunnelHistogramMask =
+      "Autofill.Ai.Funnel.%s.%s%s";
+  // Emit both the `Aggregate` variant of the metric and the one corresponding
+  // to the `submission_state`.
+  for (std::string_view submission_state_str :
+       {(submission_state ? "Submitted" : "Abandoned"), "Aggregate"}) {
+    // Emit both the variant of the metric that corresponds to
+    // `entity_type_name` and the one that is typeless in that sense.
+    for (std::string entity_type_str :
+         {base::StrCat({".", entity_type_name}), std::string()}) {
+      base::UmaHistogramBoolean(
+          base::StringPrintf(kFunnelHistogramMask, submission_state_str,
+                             funnel_metric_name, entity_type_str),
+          metric_value);
+    }
+  }
 }
 
 void LogKeyMetric(std::string_view key_metric_name,
-                  std::string_view entity_type,
+                  std::string_view entity_type_name,
                   bool metric_value) {
-  const std::string histogram_name = base::StrCat(
-      {key_metric_histogram_prefix, key_metric_name, ".", entity_type});
-  base::UmaHistogramBoolean(histogram_name, metric_value);
+  static constexpr std::string_view kKeyMetricsHistogramMask =
+      "Autofill.Ai.KeyMetrics.%s%s";
+  // Emit both the variant of the metric that corresponds to `entity_type_name`
+  // and the one that is typeless in that sense.
+  for (std::string entity_type_str :
+       {base::StrCat({".", entity_type_name}), std::string()}) {
+    base::UmaHistogramBoolean(
+        base::StringPrintf(kKeyMetricsHistogramMask, key_metric_name,
+                           entity_type_str),
+        metric_value);
+  }
 }
 
 }  // namespace
@@ -198,23 +212,23 @@ void AutofillAiLogger::RecordFunnelMetrics(
       continue;
     }
     const FunnelState& funnel_state = it->second;
-    LogFunnelMetric(base::StrCat({"ReadinessAfterEligibility.", type_str}),
-                    submission_state, funnel_state.has_data_to_fill);
+    LogFunnelMetric("ReadinessAfterEligibility", type_str, submission_state,
+                    funnel_state.has_data_to_fill);
     if (!funnel_state.has_data_to_fill) {
       continue;
     }
-    LogFunnelMetric(base::StrCat({"SuggestionAfterReadiness.", type_str}),
-                    submission_state, funnel_state.suggestions_shown);
+    LogFunnelMetric("SuggestionAfterReadiness", type_str, submission_state,
+                    funnel_state.suggestions_shown);
     if (!funnel_state.suggestions_shown) {
       continue;
     }
-    LogFunnelMetric(base::StrCat({"FillAfterSuggestion.", type_str}),
-                    submission_state, funnel_state.did_fill_suggestions);
+    LogFunnelMetric("FillAfterSuggestion", type_str, submission_state,
+                    funnel_state.did_fill_suggestions);
     if (!funnel_state.did_fill_suggestions) {
       continue;
     }
-    LogFunnelMetric(base::StrCat({"CorrectionAfterFill.", type_str}),
-                    submission_state, funnel_state.edited_autofilled_field);
+    LogFunnelMetric("CorrectionAfterFill", type_str, submission_state,
+                    funnel_state.edited_autofilled_field);
   }
 }
 
