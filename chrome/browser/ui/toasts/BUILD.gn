@@ -82,6 +82,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/location_bar",
+    "//chrome/browser/ui/views/location_bar",
     "//chrome/test:test_support",
     "//components/plus_addresses/core/common:features",
     "//components/safe_browsing/core/common:features",

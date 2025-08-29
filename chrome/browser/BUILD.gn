@@ -4455,6 +4455,8 @@ static_library("browser") {
       "//chrome/browser/ui/views/download",
       "//chrome/browser/ui/views/infobars",
       "//chrome/browser/ui/views/infobars:impl",
+      "//chrome/browser/ui/views/location_bar",
+      "//chrome/browser/ui/views/location_bar:impl",
       "//chrome/browser/ui/views/location_bar/cookie_controls:impl",
       "//chrome/browser/ui/views/new_tab_footer",
       "//chrome/browser/ui/views/page_action:impl",
@@ -4679,6 +4681,15 @@ static_library("browser") {
       # - app_mode/app_mode_utils.h
       # ... get componentized.
       "//chrome/browser/ui/web_applications:impl",
+
+      # TODO(crbug.com/434882143): Remove this circular dependency when the following headers get
+      # componentized:
+      # - c/b/autocomplete/chrome_autocomplete_provider_client.h
+      # - c/b/history_embeddings/history_embeddings_utils.h
+      # - c/b/defaults.h"
+      # - c/b/page_info/merchant_trust_service_factory.h
+      # - c/b/translate/translate_service.h
+      "//chrome/browser/ui/views/location_bar:impl",
 
       # TODO(crbug.com/434882143): Remove this circular dependency when
       # c/b/privacy_sandbox/tracking_protection_settings_factory.h gets componentized.

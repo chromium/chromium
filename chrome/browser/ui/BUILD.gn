@@ -3859,28 +3859,6 @@ static_library("ui") {
       "views/intent_picker_bubble_view.h",
       "views/javascript_tab_modal_dialog_view_views.cc",
       "views/javascript_tab_modal_dialog_view_views.h",
-      "views/location_bar/ai_mode_page_action_icon_view.cc",
-      "views/location_bar/ai_mode_page_action_icon_view.h",
-      "views/location_bar/content_setting_image_view.cc",
-      "views/location_bar/content_setting_image_view.h",
-      "views/location_bar/custom_tab_bar_view.cc",
-      "views/location_bar/custom_tab_bar_view.h",
-      "views/location_bar/find_bar_icon.cc",
-      "views/location_bar/find_bar_icon.h",
-      "views/location_bar/intent_chip_button.cc",
-      "views/location_bar/intent_chip_button.h",
-      "views/location_bar/intent_picker_view.cc",
-      "views/location_bar/intent_picker_view.h",
-      "views/location_bar/lens_overlay_homework_page_action_icon_view.cc",
-      "views/location_bar/lens_overlay_homework_page_action_icon_view.h",
-      "views/location_bar/lens_overlay_page_action_icon_view.cc",
-      "views/location_bar/lens_overlay_page_action_icon_view.h",
-      "views/location_bar/location_bar_view.cc",
-      "views/location_bar/location_bar_view.h",
-      "views/location_bar/selected_keyword_view.cc",
-      "views/location_bar/selected_keyword_view.h",
-      "views/location_bar/star_view.cc",
-      "views/location_bar/star_view.h",
       "views/login_handler_views.cc",
       "views/login_view.cc",
       "views/login_view.h",
@@ -4736,6 +4714,13 @@ static_library("ui") {
       # c/b/ui/views/controls/rich_controls_container_view.h, rich_hover_button.h
       # c/b/ui/views/frame/browser_view.h
       "//chrome/browser/ui/views/location_bar/cookie_controls:impl",
+
+      # TODO(crbug.com/434882143): Remove this circular dependency when the following
+      # headers get componentized:
+      # c/b/ui/browser.h
+      # c/b/ui/views/web_apps/frame_toolbar/web_app_menu_button.h
+      # c/b/ui/views/permissions/chip/permission_dashboard_controller.h
+      "//chrome/browser/ui/views/location_bar",
 
       # TODO(crbug.com/434882143): Remove this circular dependency when the following
       # headers get componentized:

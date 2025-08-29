@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/common/features.gni")
-
 assert(!is_android, "Page actions are for desktop platforms only")
 
 source_set("page_action") {
@@ -53,7 +51,7 @@ source_set("page_action") {
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/toolbar",
     "//chrome/browser/ui/toolbar/pinned_toolbar",
-    "//chrome/browser/ui/views/location_bar",
+    "//chrome/browser/ui/views/location_bar:icon_label_bubble",
     "//components/metrics/structured:structured_events",
     "//components/prefs",
     "//components/saved_tab_groups/public",
@@ -129,10 +127,6 @@ source_set("impl") {
     "//ui/gfx",
     "//ui/views",
   ]
-
-  if (enable_glic) {
-    deps += [ "//chrome/browser/glic" ]
-  }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
