@@ -102,7 +102,9 @@ MultiContentsViewMiniToolbar::MultiContentsViewMiniToolbar(
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferredSnapToZero,
                                views::MaximumFlexSizeRule::kPreferred);
   favicon_->SetProperty(views::kFlexBehaviorKey, icon_flex_spec.WithOrder(3));
-  domain_label_ = AddChildView(std::make_unique<views::Label>());
+  domain_label_ = AddChildView(std::make_unique<views::Label>(
+      u"", views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY,
+      gfx::DirectionalityMode::DIRECTIONALITY_AS_URL));
   domain_label_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(
@@ -303,6 +305,11 @@ void MultiContentsViewMiniToolbar::UpdateContents(TabRendererData tab_data) {
         base::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
   }
   domain_label_->SetText(domain);
+  domain_label_->SetElideBehavior(domain_url.IsStandard() &&
+                                          !domain_url.SchemeIsFile() &&
+                                          !domain_url.SchemeIsFileSystem()
+                                      ? gfx::ELIDE_HEAD
+                                      : gfx::ELIDE_TAIL);
   domain_label_->SetCustomTooltipText(base::ASCIIToUTF16(domain_url.spec()));
 
   UpdateFavicon(tab_data);
