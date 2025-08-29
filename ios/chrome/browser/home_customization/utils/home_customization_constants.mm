@@ -37,8 +37,6 @@ NSString* const kCustomizationToggleSafetyCheckIdentifier =
     @"kCustomizationToggleSafetyCheckIdentifier";
 NSString* const kCustomizationToggleTabResumptionIdentifier =
     @"kCustomizationToggleTabResumptionIdentifier";
-NSString* const kCustomizationToggleParcelTrackingIdentifier =
-    @"kCustomizationToggleParcelTrackingIdentifier";
 NSString* const kCustomizationToggleShopCardPriceTrackingIdentifier =
     @"kCustomizationToggleShopCardPriceTrackingIdentifier";
 NSString* const kCustomizationToggleShopCardReviewsIdentifier =
