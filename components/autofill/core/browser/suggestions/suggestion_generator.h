@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/suggestions/passkeys/hybrid_passkey_availability.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 
@@ -58,7 +59,8 @@ class SuggestionGenerator {
                                       AutofillOfferData,
                                       AutocompleteEntry,
                                       LoyaltyCard,
-                                      IdentityCredential>;
+                                      IdentityCredential,
+                                      HybridPasskeyAvailability>;
 
   // Obtains data that will be used to generate suggestions on a given trigger
   // `field` that belongs to `form` by calling `GenerateSuggestions` later (See

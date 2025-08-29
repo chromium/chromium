@@ -1,0 +1,51 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_PASSKEYS_PASSKEY_AUTOFILL_SUGGESTION_GENERATOR_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_PASSKEYS_PASSKEY_AUTOFILL_SUGGESTION_GENERATOR_H_
+
+#include "base/memory/raw_ref.h"
+#include "components/autofill/core/browser/suggestions/suggestion_generator.h"
+
+namespace autofill {
+
+class PasswordManagerDelegate;
+
+// Responsible for generating password-related suggestions. Currently, it only
+// provides a suggestion to sign in with a passkey from another device.
+class PasskeyAutofillSuggestionGenerator : public SuggestionGenerator {
+ public:
+  explicit PasskeyAutofillSuggestionGenerator(
+      PasswordManagerDelegate& password_manager_delegate);
+  ~PasskeyAutofillSuggestionGenerator() override;
+
+  // SuggestionGenerator:
+  void FetchSuggestionData(
+      const FormData& form_data,
+      const FormFieldData& field_data,
+      const FormStructure* form,
+      const AutofillField* field,
+      const AutofillClient& client,
+      base::OnceCallback<
+          void(std::pair<FillingProduct,
+                         std::vector<SuggestionGenerator::SuggestionData>>)>
+          callback) override;
+  void GenerateSuggestions(
+      const FormData& form_data,
+      const FormFieldData& field_data,
+      const FormStructure* form,
+      const AutofillField* field,
+      const std::vector<
+          std::pair<FillingProduct,
+                    std::vector<SuggestionGenerator::SuggestionData>>>&
+          all_suggestion_data,
+      base::OnceCallback<void(ReturnedSuggestions)> callback) override;
+
+ private:
+  const raw_ref<PasswordManagerDelegate> password_manager_delegate_;
+};
+
+}  // namespace autofill
+
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_PASSKEYS_PASSKEY_AUTOFILL_SUGGESTION_GENERATOR_H_
