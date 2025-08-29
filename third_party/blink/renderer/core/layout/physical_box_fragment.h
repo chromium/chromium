@@ -693,6 +693,22 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
                                    OutlineType include_block_overflows,
                                    bool inline_container_relative,
                                    OutlineRectCollector& collector) const;
+  void AddOutlineRectsForNormalChildren(
+      OutlineRectCollector& collector,
+      PhysicalOffset additional_offset,
+      OutlineType outline_type,
+      const LayoutBoxModelObject* containing_block) const;
+  void AddOutlineRectsForCursor(OutlineRectCollector& collector,
+                                PhysicalOffset additional_offset,
+                                OutlineType outline_type,
+                                const LayoutBoxModelObject* containing_block,
+                                InlineCursor* cursor) const;
+  void AddOutlineRectsForDescendant(
+      const PhysicalFragmentLink& descendant,
+      OutlineRectCollector& collector,
+      PhysicalOffset additional_offset,
+      OutlineType outline_type,
+      const LayoutBoxModelObject* containing_block) const;
 
   PositionWithAffinity PositionForPointByClosestChild(
       PhysicalOffset point_in_contents) const;

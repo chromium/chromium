@@ -749,23 +749,6 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
 
   const ComputedStyle& SlowEffectiveStyle() const;
 
-  void AddOutlineRectsForNormalChildren(
-      OutlineRectCollector& collector,
-      const PhysicalOffset& additional_offset,
-      OutlineType outline_type,
-      const LayoutBoxModelObject* containing_block) const;
-  void AddOutlineRectsForCursor(OutlineRectCollector& collector,
-                                const PhysicalOffset& additional_offset,
-                                OutlineType outline_type,
-                                const LayoutBoxModelObject* containing_block,
-                                InlineCursor* cursor) const;
-  void AddOutlineRectsForDescendant(
-      const PhysicalFragmentLink& descendant,
-      OutlineRectCollector& collector,
-      const PhysicalOffset& additional_offset,
-      OutlineType outline_type,
-      const LayoutBoxModelObject* containing_block) const;
-
   static bool DependsOnPercentageBlockSize(const FragmentBuilder&);
 
   OofData* OofDataFromBuilder(FragmentBuilder*);
