@@ -648,10 +648,6 @@ bool PrivacySandboxServiceImpl::ShouldDisablePrompt() {
 
 PromptType PrivacySandboxServiceImpl::GetRequiredPromptTypeInternal(
     SurfaceType surface_type) {
-  if (auto prompt_override = GetRequiredPromptTypeOverride()) {
-    return *prompt_override;
-  }
-
   if (ShouldDisablePrompt()) {
     return PromptType::kNone;
   }
@@ -703,6 +699,10 @@ PromptType PrivacySandboxServiceImpl::GetRequiredPromptTypeInternal(
 
 PromptType PrivacySandboxServiceImpl::GetRequiredPromptType(
     SurfaceType surface_type) {
+  // TODO(crbug.com/441942835) deprecate the user of force prompt test params.
+  if (auto prompt_override = GetRequiredPromptTypeOverride()) {
+    return *prompt_override;
+  }
   PromptType ps_prompt_type = GetRequiredPromptTypeInternal(surface_type);
   PromptType notice_service_prompt_type = PromptType::kNone;
   if (auto* notice_service =
