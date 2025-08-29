@@ -10,6 +10,9 @@
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/time/default_clock.h"
+#include "base/time/default_tick_clock.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/proto/client_variations.pb.h"
 #include "components/variations/proto/study.pb.h"
@@ -27,7 +30,12 @@ class VariationsIdsProviderTest : public ::testing::Test {
 
   void TearDown() override { testing::ClearAllVariationIDs(); }
 
+  void SetCurrentTime(base::Time t) { current_time_ = t; }
+
+  base::Time MyClockFunc() { return current_time_; }
+
   base::test::SingleThreadTaskEnvironment task_environment_;
+  base::Time current_time_ = base::Time::Min();
 };
 
 TEST_F(VariationsIdsProviderTest, ForceVariationIds_Valid) {
@@ -37,7 +45,6 @@ TEST_F(VariationsIdsProviderTest, ForceVariationIds_Valid) {
   // Valid experiment ids.
   EXPECT_EQ(VariationsIdsProvider::ForceIdsResult::SUCCESS,
             provider.ForceVariationIds({"12", "456", "t789"}, ""));
-  provider.InitVariationIDsCacheIfNeeded();
   variations::mojom::VariationsHeadersPtr headers =
       provider.GetClientDataHeaders(/*is_signed_in=*/false);
   EXPECT_FALSE(headers->headers_map.empty());
@@ -59,7 +66,6 @@ TEST_F(VariationsIdsProviderTest, ForceVariationIds_ValidCommandLine) {
   // Valid experiment ids.
   EXPECT_EQ(VariationsIdsProvider::ForceIdsResult::SUCCESS,
             provider.ForceVariationIds({"12"}, "456,t789"));
-  provider.InitVariationIDsCacheIfNeeded();
   variations::mojom::VariationsHeadersPtr headers =
       provider.GetClientDataHeaders(/*is_signed_in=*/false);
   EXPECT_FALSE(headers->headers_map.empty());
@@ -82,37 +88,31 @@ TEST_F(VariationsIdsProviderTest, ForceVariationIds_Invalid) {
   // Invalid experiment ids.
   EXPECT_EQ(VariationsIdsProvider::ForceIdsResult::INVALID_VECTOR_ENTRY,
             provider.ForceVariationIds({"abcd12", "456"}, ""));
-  provider.InitVariationIDsCacheIfNeeded();
   EXPECT_TRUE(provider.GetClientDataHeaders(/*is_signed_in=*/false).is_null());
 
   // Invalid trigger experiment id
   EXPECT_EQ(VariationsIdsProvider::ForceIdsResult::INVALID_VECTOR_ENTRY,
             provider.ForceVariationIds({"12", "tabc456"}, ""));
-  provider.InitVariationIDsCacheIfNeeded();
   EXPECT_TRUE(provider.GetClientDataHeaders(/*is_signed_in=*/false).is_null());
 
   // Invalid command-line ids.
   EXPECT_EQ(VariationsIdsProvider::ForceIdsResult::INVALID_SWITCH_ENTRY,
             provider.ForceVariationIds({"12", "50"}, "tabc456"));
-  provider.InitVariationIDsCacheIfNeeded();
   EXPECT_TRUE(provider.GetClientDataHeaders(/*is_signed_in=*/false).is_null());
 
   // Duplicate experiment ids.
   EXPECT_EQ(VariationsIdsProvider::ForceIdsResult::INVALID_VECTOR_ENTRY,
             provider.ForceVariationIds({"1", "2", "t1"}, ""));
-  provider.InitVariationIDsCacheIfNeeded();
   EXPECT_TRUE(provider.GetClientDataHeaders(/*is_signed_in=*/false).is_null());
 
   // Duplicate command-line ids.
   EXPECT_EQ(VariationsIdsProvider::ForceIdsResult::INVALID_SWITCH_ENTRY,
             provider.ForceVariationIds({}, "t10,11,10"));
-  provider.InitVariationIDsCacheIfNeeded();
   EXPECT_TRUE(provider.GetClientDataHeaders(/*is_signed_in=*/false).is_null());
 
   // Duplicate experiment and command-line ids.
   EXPECT_EQ(VariationsIdsProvider::ForceIdsResult::INVALID_SWITCH_ENTRY,
             provider.ForceVariationIds({"20", "t21"}, "21"));
-  provider.InitVariationIDsCacheIfNeeded();
   EXPECT_TRUE(provider.GetClientDataHeaders(/*is_signed_in=*/false).is_null());
 }
 
@@ -124,7 +124,6 @@ TEST_F(VariationsIdsProviderTest, ForceDisableVariationIds_ValidCommandLine) {
   EXPECT_EQ(VariationsIdsProvider::ForceIdsResult::SUCCESS,
             provider.ForceVariationIds({"1", "2", "t3", "t4"}, "5,6,t7,t8"));
   EXPECT_TRUE(provider.ForceDisableVariationIds("2,t4,6,t8"));
-  provider.InitVariationIDsCacheIfNeeded();
   variations::mojom::VariationsHeadersPtr headers =
       provider.GetClientDataHeaders(/*is_signed_in=*/false);
   EXPECT_FALSE(headers->headers_map.empty());
@@ -151,7 +150,6 @@ TEST_F(VariationsIdsProviderTest, ForceDisableVariationIds_Invalid) {
   // Invalid command-line ids.
   EXPECT_FALSE(provider.ForceDisableVariationIds("abc"));
   EXPECT_FALSE(provider.ForceDisableVariationIds("tabc456"));
-  provider.InitVariationIDsCacheIfNeeded();
   EXPECT_TRUE(provider.GetClientDataHeaders(/*is_signed_in=*/false).is_null());
 }
 
@@ -161,7 +159,6 @@ TEST_F(VariationsIdsProviderTest, LowEntropySourceValue_Valid) {
 
   std::optional<int> valid_low_entropy_source_value = 5;
   provider.SetLowEntropySourceValue(valid_low_entropy_source_value);
-  provider.InitVariationIDsCacheIfNeeded();
   variations::mojom::VariationsHeadersPtr headers =
       provider.GetClientDataHeaders(/*is_signed_in=*/false);
   EXPECT_FALSE(headers->headers_map.empty());
@@ -197,7 +194,6 @@ TEST_F(VariationsIdsProviderTest, LowEntropySourceValue_Null) {
   // Valid experiment ids.
   CreateTrialAndAssociateId("t1", "g1", GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, 12);
   CreateTrialAndAssociateId("t2", "g2", GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, 456);
-  provider.InitVariationIDsCacheIfNeeded();
   variations::mojom::VariationsHeadersPtr headers =
       provider.GetClientDataHeaders(/*is_signed_in=*/false);
   EXPECT_FALSE(headers->headers_map.empty());
@@ -235,8 +231,6 @@ TEST_F(VariationsIdsProviderTest, LowEntropySourceValue_Null) {
 TEST_F(VariationsIdsProviderTest, OnFieldTrialGroupFinalized) {
   VariationsIdsProvider provider(
       VariationsIdsProvider::Mode::kUseSignedInState);
-  provider.InitVariationIDsCacheIfNeeded();
-
   const std::string default_name = "default";
   scoped_refptr<base::FieldTrial> trial_1(CreateTrialAndAssociateId(
       "t1", default_name, GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, 11));
@@ -266,6 +260,7 @@ TEST_F(VariationsIdsProviderTest, OnFieldTrialGroupFinalized) {
   {
     variations::mojom::VariationsHeadersPtr headers =
         provider.GetClientDataHeaders(/*is_signed_in=*/false);
+    ASSERT_TRUE(headers);
     const std::string variations_header_first_party = headers->headers_map.at(
         variations::mojom::GoogleWebVisibility::FIRST_PARTY);
     const std::string variations_header_any_context =
@@ -303,6 +298,7 @@ TEST_F(VariationsIdsProviderTest, OnFieldTrialGroupFinalized) {
   {
     variations::mojom::VariationsHeadersPtr headers =
         provider.GetClientDataHeaders(/*is_signed_in=*/true);
+    ASSERT_TRUE(headers);
     const std::string variations_header_first_party = headers->headers_map.at(
         variations::mojom::GoogleWebVisibility::FIRST_PARTY);
     const std::string variations_header_any_context =
@@ -391,6 +387,8 @@ TEST_F(VariationsIdsProviderTest, GetVariationsVector) {
   CreateTrialAndAssociateId("t6", "g6", GOOGLE_WEB_PROPERTIES_SIGNED_IN, 125);
   CreateTrialAndAssociateId("t7", "g7", GOOGLE_APP, 126);
 
+  // Note that the order of the IDs is deterministic, so we can assert on the
+  // exact contents of the vector.
   VariationsIdsProvider provider(
       VariationsIdsProvider::Mode::kUseSignedInState);
   provider.ForceVariationIds({"100", "200", "t101"}, "");
@@ -416,6 +414,103 @@ TEST_F(VariationsIdsProviderTest, GetVariationsVector) {
            GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT,
            GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY,
            GOOGLE_WEB_PROPERTIES_SIGNED_IN, GOOGLE_APP}));
+}
+
+TEST_F(VariationsIdsProviderTest, GetTimeboxedVariationsVector) {
+  const base::Time day_0 = base::Time::Now();
+  const base::Time day_1 = day_0 + base::Days(1);
+  const base::Time day_2 = day_0 + base::Days(2);
+  const base::Time day_3 = day_0 + base::Days(3);
+  const base::Time day_4 = day_0 + base::Days(4);
+  const base::Time day_5 = day_0 + base::Days(5);
+  const base::Time day_6 = day_0 + base::Days(6);
+
+  CreateTrialAndAssociateId("Day_0_to_4", "g1",
+                            GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, 333,
+                            TimeWindow(day_0, day_4));
+  CreateTrialAndAssociateId("Day_2_to_5", "g2",
+                            GOOGLE_WEB_PROPERTIES_FIRST_PARTY, 444,
+                            TimeWindow(day_2, day_5));
+  auto trial = CreateInactiveTrialAndAssociateId(
+      "Day_3_to_6", "g3", GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT, 555,
+      TimeWindow(day_3, day_6));
+
+  VariationsIdsProvider provider(
+      VariationsIdsProvider::Mode::kUseSignedInState);
+  provider.SetClockFunc(base::BindRepeating(
+      &VariationsIdsProviderTest::MyClockFunc, base::Unretained(this)));
+  provider.ForceVariationIds({"100", "200", "t101"}, "");
+
+  // Day 1: The Day 0 and forced variations ids are active.
+  // Note that the order of the IDs is deterministic, so we can assert on the
+  // exact contents of the vector.
+  SetCurrentTime(day_1);
+  EXPECT_EQ((std::vector<VariationID>{100, 200, 333}),
+            provider.GetVariationsVector({GOOGLE_WEB_PROPERTIES_ANY_CONTEXT}));
+  EXPECT_EQ((std::vector<VariationID>{}),
+            provider.GetVariationsVector({GOOGLE_WEB_PROPERTIES_FIRST_PARTY}));
+  EXPECT_EQ((std::vector<VariationID>{101}),
+            provider.GetVariationsVector(
+                {GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT}));
+  EXPECT_EQ((std::vector<VariationID>{}),
+            provider.GetVariationsVector(
+                {GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY}));
+
+  // Day 2: The Day 2 study enters its time box, 444 is added to the first-party
+  // context. The Day 0 study is still active, so it's not removed.
+  SetCurrentTime(day_2 + base::Hours(1));
+  EXPECT_EQ((std::vector<VariationID>{100, 200, 333}),
+            provider.GetVariationsVector({GOOGLE_WEB_PROPERTIES_ANY_CONTEXT}));
+  EXPECT_EQ((std::vector<VariationID>{444}),
+            provider.GetVariationsVector({GOOGLE_WEB_PROPERTIES_FIRST_PARTY}));
+  EXPECT_EQ((std::vector<VariationID>{101}),
+            provider.GetVariationsVector(
+                {GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT}));
+  EXPECT_EQ((std::vector<VariationID>{}),
+            provider.GetVariationsVector(
+                {GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY}));
+
+  // Day 3: We still haven't activated the Day 3 study, so nothing changes even
+  // though the time is inside the time box.
+  SetCurrentTime(day_3 + base::Hours(1));
+  EXPECT_EQ((std::vector<VariationID>{100, 200, 333}),
+            provider.GetVariationsVector({GOOGLE_WEB_PROPERTIES_ANY_CONTEXT}));
+  EXPECT_EQ((std::vector<VariationID>{444}),
+            provider.GetVariationsVector({GOOGLE_WEB_PROPERTIES_FIRST_PARTY}));
+  EXPECT_EQ((std::vector<VariationID>{101}),
+            provider.GetVariationsVector(
+                {GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT}));
+  EXPECT_EQ((std::vector<VariationID>{}),
+            provider.GetVariationsVector(
+                {GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY}));
+
+  // If we activate the Day 3 study, 555 should be added to the trigger-any
+  // context. The rest remains the same.
+  trial->Activate();
+  EXPECT_EQ((std::vector<VariationID>{100, 200, 333}),
+            provider.GetVariationsVector({GOOGLE_WEB_PROPERTIES_ANY_CONTEXT}));
+  EXPECT_EQ((std::vector<VariationID>{444}),
+            provider.GetVariationsVector({GOOGLE_WEB_PROPERTIES_FIRST_PARTY}));
+  EXPECT_EQ((std::vector<VariationID>{101, 555}),
+            provider.GetVariationsVector(
+                {GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT}));
+  EXPECT_EQ((std::vector<VariationID>{}),
+            provider.GetVariationsVector(
+                {GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY}));
+
+  // Day 4: The Day 0 study exits its time box, so it's removed from the any
+  // context. The rest remains the same.
+  SetCurrentTime(day_4 + base::Hours(1));
+  EXPECT_EQ((std::vector<VariationID>{100, 200}),
+            provider.GetVariationsVector({GOOGLE_WEB_PROPERTIES_ANY_CONTEXT}));
+  EXPECT_EQ((std::vector<VariationID>{444}),
+            provider.GetVariationsVector({GOOGLE_WEB_PROPERTIES_FIRST_PARTY}));
+  EXPECT_EQ((std::vector<VariationID>{101, 555}),
+            provider.GetVariationsVector(
+                {GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT}));
+  EXPECT_EQ((std::vector<VariationID>{}),
+            provider.GetVariationsVector(
+                {GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY}));
 }
 
 TEST_F(VariationsIdsProviderTest, GetVariationsVectorForWebPropertiesKeys) {

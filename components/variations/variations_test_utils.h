@@ -99,12 +99,25 @@ bool ExtractVariationIds(const std::string& variations,
                          std::set<VariationID>* variation_ids,
                          std::set<VariationID>* trigger_ids);
 
-// Creates FieldTrial from given |key| and |id|.
+// Creates an inactive FieldTrial, `trial_name`, where the client is assigned to
+// `group_name`, and associates a VariationID for the trial using the given
+// `key`, `id` and optional `time_window`.
+scoped_refptr<base::FieldTrial> CreateInactiveTrialAndAssociateId(
+    const std::string& trial_name,
+    const std::string& group_name,
+    IDCollectionKey key,
+    VariationID id,
+    TimeWindow time_window = TimeWindow());
+
+// Creates an active FieldTrial, `trial_name`, where the client is assigned to
+// `group_name`, and associates a VariationID for the trial using the given
+// `key`, `id` and optional `time_window`.
 scoped_refptr<base::FieldTrial> CreateTrialAndAssociateId(
     const std::string& trial_name,
-    const std::string& default_group_name,
+    const std::string& group_name,
     IDCollectionKey key,
-    VariationID id);
+    VariationID id,
+    TimeWindow time_window = TimeWindow());
 
 // Simulates a crash by setting the clean exit pref to false and disabling
 // the steps to update the pref on clean shutdown.
@@ -174,6 +187,17 @@ bool ContainsTrialAndGroupName(
 
 // Sets up the seed file experiment where `group_name` is the active group.
 void SetUpSeedFileTrial(std::string group_name);
+
+// Returns true if there are no adjacent elements (a, b) when iterating over
+// `container` such that a >= b.
+template <typename Container>
+bool IsSortedAndUnique(const Container& container) {
+  return std::adjacent_find(container.begin(), container.end(),
+                            [](const typename Container::value_type& a,
+                               const typename Container::value_type& b) {
+                              return a >= b;
+                            }) == container.end();
+}
 
 }  // namespace variations
 
