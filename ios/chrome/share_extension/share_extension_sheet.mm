@@ -26,14 +26,14 @@ enum SharedItemType {
   kText,
 };
 
-CGFloat const kInnerViewWidthPadding = 32;
+CGFloat const kInnerViewWidthPadding = 40;
 CGFloat const kMainViewHeightPadding = 34;
 CGFloat const kMainViewCornerRadius = 12;
 CGFloat const kSnapshotViewSize = 150;
 CGFloat const kURLStackSpacing = 8;
 CGFloat const kDefaultSnapshotViewSize = 60;
-CGFloat const kLinkIconSize = 34.0;
-CGFloat const kQuoteIconSize = 28.0;
+CGFloat const kLinkIconSize = 26.0;
+CGFloat const kQuoteIconSize = 26.0;
 CGFloat const kTextStackSpacing = 30.0;
 
 // The horizontal spacing between image preview and the URL stack.
@@ -543,6 +543,7 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
     [sharedTextAttributedString appendAttributedString:attributedSpace];
     [sharedTextAttributedString appendAttributedString:maxLimitString];
     sharedTextLabel.attributedText = sharedTextAttributedString;
+    sharedTextLabel.textAlignment = NSTextAlignmentCenter;
   }
 
   UIStackView* stackView = [[UIStackView alloc]
@@ -550,6 +551,7 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
   stackView.axis = UILayoutConstraintAxisVertical;
   stackView.spacing = kTextStackSpacing;
   stackView.alignment = UIStackViewAlignmentCenter;
+  stackView.translatesAutoresizingMaskIntoConstraints = NO;
 
   return stackView;
 }
@@ -582,7 +584,7 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
 
   titleLabel.text = _sharedTitle;
   UIFontDescriptor* fontDescriptor = [UIFontDescriptor
-      preferredFontDescriptorWithTextStyle:UIFontTextStyleSubheadline];
+      preferredFontDescriptorWithTextStyle:UIFontTextStyleHeadline];
   titleLabel.font = [UIFont systemFontOfSize:fontDescriptor.pointSize
                                       weight:UIFontWeightSemibold];
   titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -590,7 +592,10 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
   titleLabel.numberOfLines = 2;
 
   URLLabel.text = [_sharedURL absoluteString];
-  URLLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  UIFontDescriptor* URLfontDescriptor = [UIFontDescriptor
+      preferredFontDescriptorWithTextStyle:UIFontTextStyleCallout];
+  URLLabel.font = [UIFont systemFontOfSize:URLfontDescriptor.pointSize
+                                    weight:UIFontWeightRegular];
   URLLabel.textColor = [UIColor colorNamed:kTextTertiaryColor];
   URLLabel.lineBreakMode = NSLineBreakByTruncatingTail;
   URLLabel.textAlignment = NSTextAlignmentCenter;
