@@ -58,8 +58,6 @@
 // TODO(crbug.com/333925306): Create a CVC input coordinator/mediator out of the
 // legacy CardUnmaskPromptViewBridge and move this function there.
 - (void)continueWithCvcAuth {
-  // TODO(crbug.com/40714201): Some tests install an AutofillClientIOS that
-  // does not sub-class ChromeAutofillClientIOS making this unsafe.
   autofill::ChromeAutofillClientIOS* client =
       autofill::ChromeAutofillClientIOS::FromWebState(
           self.browser->GetWebStateList()->GetActiveWebState());

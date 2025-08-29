@@ -18,7 +18,6 @@
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/fake_autofill_agent.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
-#import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/form_activity_tab_helper.h"
 #import "components/autofill/ios/form_util/test_form_activity_tab_helper.h"

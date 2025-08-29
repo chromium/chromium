@@ -49,8 +49,6 @@
                                    browser:browser];
   if (self) {
     _baseNavigationController = navigationController;
-    // TODO(crbug.com/40714201): Some tests install an AutofillClientIOS that
-    // does not sub-class ChromeAutofillClientIOS making this unsafe.
     autofill::ChromeAutofillClientIOS* client =
         autofill::ChromeAutofillClientIOS::FromWebState(
             browser->GetWebStateList()->GetActiveWebState());
