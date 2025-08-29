@@ -7,6 +7,7 @@
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/hang_watcher.h"
+#include "base/threading/platform_thread_metrics.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/compositor_thread_scheduler_impl.h"
 
@@ -29,6 +30,10 @@ void CompositorThread::InitializeHangWatcherAndThreadName() {
   }
 
   mojo::InterfaceEndpointClient::SetThreadNameSuffixForMetrics("Compositor");
+#if BUILDFLAG(IS_ANDROID)
+  base::PlatformThreadPriorityMonitor::Get().RegisterCurrentThread(
+      "Compositor");
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 std::unique_ptr<NonMainThreadSchedulerBase>

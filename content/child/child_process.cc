@@ -13,6 +13,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/hang_watcher.h"
+#include "base/threading/platform_thread_metrics.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_id_name_manager.h"
 #include "build/build_config.h"
@@ -55,6 +56,10 @@ class ChildIOThread : public base::Thread {
   void Run(base::RunLoop* run_loop) override {
     mojo::InterfaceEndpointClient::SetThreadNameSuffixForMetrics(
         "ChildIOThread");
+#if BUILDFLAG(IS_ANDROID)
+    base::PlatformThreadPriorityMonitor::Get().RegisterCurrentThread(
+        "IOThread");
+#endif  // BUILDFLAG(IS_ANDROID)
     base::ScopedClosureRunner unregister_thread_closure;
     if (base::HangWatcher::IsIOThreadHangWatchingEnabled()) {
       unregister_thread_closure = base::HangWatcher::RegisterThread(

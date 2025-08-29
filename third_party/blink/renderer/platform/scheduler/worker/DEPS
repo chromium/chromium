@@ -1,4 +1,7 @@
 specific_include_rules = {
+  "compositor_thread.cc": [
+    "+base/threading/platform_thread_metrics.h",
+  ],
   "non_main_thread_task_queue.h": [
     "+base/task/sequence_manager/task_queue_impl.h",
   ],
