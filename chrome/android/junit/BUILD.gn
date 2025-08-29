@@ -502,6 +502,17 @@ if (is_android) {
   }
 
   robolectric_library(
+      "chrome_junit_tests_org.chromium.chrome.browser.bookmarks") {
+    sources = [
+      "src/org/chromium/chrome/browser/bookmarks/BookmarkPageUnitTest.java",
+    ]
+    deps = [
+      ":chrome_junit_tests_helper",
+      "//chrome/browser/ui/android/edge_to_edge:factory_java",
+    ]
+  }
+
+  robolectric_library(
       "chrome_junit_tests_org.chromium.chrome.browser.browserservices") {
     sources = [
       "src/org/chromium/chrome/browser/browserservices/InstalledWebappBroadcastReceiverTest.java",

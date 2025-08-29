@@ -76,6 +76,11 @@ public class BookmarkPage extends BasicNativePage {
     }
 
     @Override
+    public boolean supportsEdgeToEdge() {
+        return true;
+    }
+
+    @Override
     public void destroy() {
         super.destroy();
         mBookmarkManagerCoordinator.onDestroyed();
