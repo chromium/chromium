@@ -1,4 +1,5 @@
 Tests "Bypass for network" checkbox shouldn't be served by ServiceWorker-controlled speculation rules prefetches.
 
-From the service worker
+From the server
+
 

@@ -1441,6 +1441,12 @@ void PrefetchContainer::MakeResourceRequest(
   // is never called. `NavPrefetchBrowserTest` has the corresponding test
   // coverage.
 
+  // Prefetches with `skip_service_worker` == `true` shouldn't serve navigation
+  // with `skip_service_worker` == `false`, but right now we don't support such
+  // prefetches.
+  // TODO(https://crbug.com/438478667): Revisit this.
+  CHECK(!resource_request->skip_service_worker);
+
   resource_request_ = std::move(resource_request);
 }
 
