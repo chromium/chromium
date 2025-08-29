@@ -816,6 +816,9 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         }
         break;
       }
+      case ContentSuggestionsModuleType::kAppBundlePromo:
+        // TODO(crbug.com/441721282): Introduce the app bundle promo mediator
+        // and add it to the magic stack order.
       default:
         break;
     }

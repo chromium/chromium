@@ -172,6 +172,7 @@ void LogTopModuleImpressionForType(ContentSuggestionsModuleType module_type,
     case ContentSuggestionsModuleType::kInvalid:
     case ContentSuggestionsModuleType::kTipsWithProductImage:
     case ContentSuggestionsModuleType::kTips:
+    case ContentSuggestionsModuleType::kAppBundlePromo:
       break;
   }
   UMA_HISTOGRAM_ENUMERATION(kMagicStackTopModuleImpressionHistogram,
