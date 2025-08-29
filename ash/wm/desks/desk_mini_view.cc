@@ -816,12 +816,6 @@ void DeskMiniView::OnContextMenuClosed() {
   }
 }
 
-void DeskMiniView::OnSetLacrosProfileId(uint64_t lacros_profile_id) {
-  if (desk_) {
-    desk_->SetLacrosProfileId(lacros_profile_id);
-  }
-}
-
 void DeskMiniView::OnDeskPreviewPressed() {
   // If there is an ongoing desk activation, do nothing.
   DesksController* desks_controller = DesksController::Get();

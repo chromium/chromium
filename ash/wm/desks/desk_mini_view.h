@@ -177,9 +177,6 @@ class ASH_EXPORT DeskMiniView : public views::View,
   // visible.
   void OnContextMenuClosed();
 
-  // Callback for when a user selects a lacros profile from `context_menu_`.
-  void OnSetLacrosProfileId(uint64_t lacros_profile_id);
-
   void OnDeskPreviewPressed();
 
   // Callbacks for when a user selects the save desk options in the context

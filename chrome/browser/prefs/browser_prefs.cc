@@ -1138,7 +1138,8 @@ constexpr char kAutoScreenBrightnessMetricsSupportedAlsUserAdjustmentCount[] =
     "auto_screen_brightness.metrics.supported_als_user_adjustment_count";
 constexpr char kAutoScreenBrightnessMetricsUnsupportedAlsUserAdjustmentCount[] =
     "auto_screen_brightness.metrics.unsupported_als_user_adjustment_count";
-
+constexpr char kDesksLacrosProfileIdList[] =
+    "ash.desks.desks_lacros_profile_id_list";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Register local state used only for migration (clearing or moving to a new
@@ -1641,6 +1642,11 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 08/2025.
   registry->RegisterBooleanPref(ntp_prefs::kNtpUseMostVisitedTiles, false);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Deprecated 08/2025.
+  registry->RegisterListPref(kDesksLacrosProfileIdList);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace
@@ -2973,6 +2979,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 08/2025.
   NewTabPageUI::MigrateDeprecatedUseMostVisitedTilesPref(profile_prefs);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Added 08/2025.
+  profile_prefs->ClearPref(kDesksLacrosProfileIdList);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

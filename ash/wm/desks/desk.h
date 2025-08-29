@@ -56,9 +56,6 @@ class ASH_EXPORT Desk {
 
     // Called when the desk's name changes.
     virtual void OnDeskNameChanged(const std::u16string& new_name) = 0;
-
-    // Called when the desk's associated profile has changed.
-    virtual void OnDeskProfileChanged(uint64_t new_lacros_profile_id) {}
   };
 
   // Suspends notification of content updates within its scope. Note that the
@@ -158,10 +155,6 @@ class ASH_EXPORT Desk {
     return all_desk_window_stacking_;
   }
 
-  // Returns the lacros profile ID that this desk is associated with. A value of
-  // 0 means that the desk is associated with the primary user (the default).
-  uint64_t lacros_profile_id() const { return lacros_profile_id_; }
-
   void set_tab_app_entities(
       std::vector<coral::mojom::EntityPtr> tab_app_entities) {
     tab_app_entities_ = std::move(tab_app_entities);
@@ -191,12 +184,6 @@ class ASH_EXPORT Desk {
   // Sets the desks `uuid_` to the `new_guid` if `new_guid` is valid, used when
   // restoring desks on sign-in. If `new_guid` is invalid no change happens.
   void SetGuid(base::Uuid new_guid);
-
-  // Sets the desk's lacros profile id to `lacros_profile_id`. The value 0
-  // (which is the default value) indicates that the desk is associated with the
-  // primary user. When `skip_prefs_update` is true, prefs are not updated.
-  void SetLacrosProfileId(uint64_t lacros_profile_id,
-                          bool skip_prefs_update = false);
 
   // Prepares for the animation to activate this desk (i.e. this desk is not
   // active yet), by showing its containers on all root windows while setting
@@ -411,10 +398,6 @@ class ASH_EXPORT Desk {
   // A timer for marking |this| as interacted with only if the user remains on
   // |this| for a brief period of time.
   base::OneShotTimer active_desk_timer_;
-
-  // The lacros profile ID that this desk has been associated with. Defaults to
-  // 0 which means the desk is associated with the primary user.
-  uint64_t lacros_profile_id_ = 0;
 
   // The tab and app items associated with the desk if the desk is created or
   // restored by Coral. Entities in this vector are used by Coral service to
