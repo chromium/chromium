@@ -12,7 +12,22 @@
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 #import "components/remote_cocoa/app_shim/browser_native_widget_window_mac.h"
 #include "components/remote_cocoa/app_shim/features.h"
-#include "components/remote_cocoa/app_shim/swizzle_ns_toolbar_view_hit_test.h"
+#include "components/remote_cocoa/app_shim/immersive_mode_controller_cocoa.h"
+#include "components/remote_cocoa/app_shim/override_ns_next_step_frame_hit_test.h"
+
+@interface TabTitlebarView : NSView
+@end
+
+@implementation TabTitlebarView
+- (void)viewDidMoveToWindow {
+  if (remote_cocoa::IsNSToolbarFullScreenWindow(self.window)) {
+    CHECK(self.subviews.count > 0);
+    NSView* tab_content_view =
+        base::apple::ObjCCastStrict<BridgedContentView>(self.subviews[0]);
+    remote_cocoa::SetNSNextStepFrameHitTestTargetView(tab_content_view);
+  }
+}
+@end
 
 namespace {
 void SetAlwaysShowTrafficLights(NSWindow* browser_window, bool always_show) {
@@ -30,7 +45,7 @@ ImmersiveModeTabbedControllerCocoa::ImmersiveModeTabbedControllerCocoa(
     : ImmersiveModeControllerCocoa(browser_window, overlay_window) {
   // MacOS 26 has event routing issues with right-mouse events and needs to be
   // worked around by swizzling internal AppKit methods.
-  SwizzleNSToolbarViewHitTest();
+  OverrideNSNextStepFrameHitTest();
 
   tab_window_ = tab_window;
 #ifndef NDEBUG
@@ -41,7 +56,7 @@ ImmersiveModeTabbedControllerCocoa::ImmersiveModeTabbedControllerCocoa(
 
   tab_titlebar_view_controller_ =
       [[NSTitlebarAccessoryViewController alloc] init];
-  tab_titlebar_view_controller_.view = [[NSView alloc] init];
+  tab_titlebar_view_controller_.view = [[TabTitlebarView alloc] init];
 
   // The view is pinned to the opposite side of the traffic lights. A view long
   // enough is able to paint underneath the traffic lights. This also works with
