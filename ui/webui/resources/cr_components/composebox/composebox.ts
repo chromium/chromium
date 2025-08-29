@@ -12,10 +12,11 @@ import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {stringToMojoString16} from '//resources/js/mojo_type_util.js';
+import {mojoString16ToString, stringToMojoString16} from '//resources/js/mojo_type_util.js';
+import {hasKeyModifiers} from '//resources/js/util.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
@@ -106,6 +107,12 @@ export class ComposeboxElement extends I18nMixinLit
         reflect: true,
         type: Boolean,
       },
+      /**
+       * Index of the currently selected match, if any.
+       * Do not modify this. Use <composebox-dropdown> API to change
+       * selection.
+       */
+      selectedMatchIndex_: {type: Number},
       submitting_: {
         reflect: true,
         type: Boolean,
@@ -126,15 +133,6 @@ export class ComposeboxElement extends I18nMixinLit
         type: Boolean,
       },
       showDropdown_: {type: Boolean},
-
-      /**
-       * Index of the currently selected match, if any.
-       * Do not modify this. Use <composebox-dropdown> API to change
-       * selection.
-       */
-      selectedMatchIndex_: {
-        type: Number,
-      },
     };
   }
 
@@ -157,8 +155,8 @@ export class ComposeboxElement extends I18nMixinLit
   // When enabled, the file input buttons will not be rendered.
   protected accessor hideFileInputs_: boolean = false;
   protected accessor selectedMatchIndex_: number = -1;
-  protected accessor submitEnabled_: boolean = false;
   protected accessor submitting_: boolean = false;
+  protected accessor submitEnabled_: boolean = false;
   protected accessor showErrorScrim_: boolean = false;
   protected accessor errorMessage_: string = '';
   protected accessor result_: AutocompleteResult|null = null;
@@ -183,6 +181,9 @@ export class ComposeboxElement extends I18nMixinLit
   private searchboxListenerIds: number[] = [];
   private composeboxCloseByEscape_: boolean =
       loadTimeData.getBoolean('composeboxCloseByEscape');
+
+  private selectedMatch_: AutocompleteMatch|null;
+  private lastQueriedInput_: string = '';
 
   constructor() {
     super();
@@ -250,7 +251,6 @@ export class ComposeboxElement extends I18nMixinLit
           this.onAutocompleteResultChanged_.bind(this)),
     ];
 
-
     this.eventTracker_.add(this.$.input, 'input', () => {
       this.submitEnabled_ = this.$.input.value.trim().length > 0;
     });
@@ -291,12 +291,16 @@ export class ComposeboxElement extends I18nMixinLit
     }
 
     if (changedPrivateProperties.has('input_')) {
+      // lastQueriedInput_ is used here since the input_ changes based on
+      // the selected match. If typed suggest is not enabled and input_ is used,
+      // the dropdown will hide if the user keys down over zps matches.
       this.showDropdown_ = (this.showTypedSuggest_ && !!this.input_.trim()) ||
-          (this.showZps && !this.input_);
+          (this.showZps && !this.lastQueriedInput_);
     }
   }
 
   override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
     if ((changedProperties as Map<PropertyKey, unknown>)
             .has('showErrorScrim_') &&
         this.showErrorScrim_) {
@@ -306,6 +310,17 @@ export class ComposeboxElement extends I18nMixinLit
           this.shadowRoot.querySelector<HTMLElement>('#dismissErrorButton');
       if (dismissErrorButton) {
         dismissErrorButton.focus();
+      }
+    }
+    if ((changedProperties as Map<PropertyKey, unknown>)
+            .has('selectedMatchIndex_')) {
+      if (this.selectedMatch_) {
+        // Update the input.
+        const text = mojoString16ToString(this.selectedMatch_.fillIntoEdit);
+        assert(text);
+        this.$.input.value = text;
+        this.input_ = text;
+        this.submitEnabled_ = true;
       }
     }
   }
@@ -415,6 +430,7 @@ export class ComposeboxElement extends I18nMixinLit
       this.submitEnabled_ = false;
       this.pageHandler_.clearFiles();
       this.$.input.focus();
+      this.$.matches.unselect();
     } else {
       this.closeComposebox_();
     }
@@ -425,14 +441,61 @@ export class ComposeboxElement extends I18nMixinLit
   protected handleInput_(e: Event) {
     const inputElement = e.target as HTMLInputElement;
     this.input_ = inputElement.value;
+    this.lastQueriedInput_ = this.input_;
     this.searchboxHandler_.queryAutocomplete(
         stringToMojoString16(this.$.input.value), false);
   }
 
-  protected onInputKeydown_(e: KeyboardEvent) {
-    if (e.key === 'Enter' && !e.shiftKey && this.submitEnabled_) {
+  protected onKeydown_(e: KeyboardEvent) {
+    const KEYDOWN_HANDLED_KEYS = [
+      'ArrowDown',
+      'ArrowUp',
+      'Enter',
+      'Escape',
+      'PageDown',
+      'PageUp',
+    ];
+
+    if (!KEYDOWN_HANDLED_KEYS.includes(e.key)) {
+      return;
+    }
+
+    if (e.key === 'Enter' && this.submitEnabled_) {
+      if (this.shadowRoot.activeElement === this.$.matches || !e.shiftKey) {
+        e.preventDefault();
+        this.submitQuery_(e);
+      }
+    }
+
+    if (e.key === 'Escape' && this.composeboxCloseByEscape_) {
+      this.closeComposebox_();
       e.preventDefault();
-      this.onSubmitClick_(e);
+    }
+
+    // Do not handle the following keys if there are no matches available.
+    if (!this.result_ || this.result_.matches.length === 0) {
+      return;
+    }
+
+    // Do not handle the following keys if there are key modifiers.
+    if (hasKeyModifiers(e)) {
+      return;
+    }
+
+    if (e.key === 'ArrowDown') {
+      this.$.matches.selectNext();
+    } else if (e.key === 'ArrowUp') {
+      this.$.matches.selectPrevious();
+    } else if (e.key === 'Escape' || e.key === 'PageUp') {
+      this.$.matches.selectFirst();
+    } else if (e.key === 'PageDown') {
+      this.$.matches.selectLast();
+    }
+    e.preventDefault();
+
+    // Focus the selected match if focus is currently in the matches.
+    if (this.shadowRoot.activeElement === this.$.matches) {
+      this.$.matches.focusSelected();
     }
   }
 
@@ -449,13 +512,6 @@ export class ComposeboxElement extends I18nMixinLit
     this.pageHandler_.focusChanged(false);
   }
 
-  protected onKeydown_(e: KeyboardEvent) {
-    if (e.key === 'Escape' && this.composeboxCloseByEscape_) {
-      this.closeComposebox_();
-      e.preventDefault();
-    }
-  }
-
   private closeComposebox_() {
     this.fire('close-composebox', {composeboxText: this.$.input.value});
 
@@ -465,7 +521,7 @@ export class ComposeboxElement extends I18nMixinLit
     }
   }
 
-  protected onSubmitClick_(e: KeyboardEvent|MouseEvent) {
+  protected submitQuery_(e: KeyboardEvent|MouseEvent) {
     // Users are allowed to submit queries that consist of only files with no
     // input. `selectedMatchIndex_` will be >= 0 when there is non-empty input
     // since the verbatim match is present.
@@ -479,7 +535,6 @@ export class ComposeboxElement extends I18nMixinLit
     if (this.selectedMatchIndex_ >= 0) {
       const match = this.result_!.matches[this.selectedMatchIndex_];
       assert(match);
-
       this.searchboxHandler_.openAutocompleteMatch(
           this.selectedMatchIndex_, match.destinationUrl,
           /* are_matches_showing */ true, (e as MouseEvent).button || 0,
@@ -501,8 +556,35 @@ export class ComposeboxElement extends I18nMixinLit
     }
   }
 
+  /**
+   * @param e Event containing index of the match that received focus.
+   */
+  protected onMatchFocusin_(e: CustomEvent<{index: number}>) {
+    // Select the match that received focus.
+    this.$.matches.selectIndex(e.detail.index);
+  }
+
+  protected onMatchClick_() {
+    this.clearAutocompleteMatches_();
+  }
+
   protected onSelectedMatchIndexChanged_(e: CustomEvent<{value: number}>) {
     this.selectedMatchIndex_ = e.detail.value;
+    this.selectedMatch_ =
+        this.result_?.matches[this.selectedMatchIndex_] || null;
+  }
+
+  /**
+   * Clears the autocomplete result on the page and on the autocomplete backend.
+   */
+  private clearAutocompleteMatches_() {
+    this.showDropdown_ = false;
+    this.result_ = null;
+    this.$.matches.unselect();
+    this.searchboxHandler_.stopAutocomplete(/*clearResult=*/ true);
+    // Autocomplete sends updates once it is stopped. Invalidate those results
+    // by setting the |this.lastQueriedInput_| to its default value.
+    this.lastQueriedInput_ = '';
   }
 
   private recordFileValidationMetric_(
@@ -513,6 +595,11 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   private onAutocompleteResultChanged_(result: AutocompleteResult) {
+    if (this.lastQueriedInput_ === null ||
+        this.lastQueriedInput_.trimStart() !==
+            mojoString16ToString(result.input)) {
+      return;
+    }
     // TODO(crbug.com/434748455): Display suggestions below composebox.
     this.result_ = result;
     const hasMatches = this.result_?.matches?.length > 0;

@@ -24,27 +24,29 @@ export function getHtml(this: ComposeboxElement) {
       </cr-button>
     </div>
   `: ''}
-  <div id="composebox" tabindex="-1" @keydown="${this.onKeydown_}"
+  <div id="composebox" @keydown="${this.onKeydown_}"
       ?inert=${this.showErrorScrim_}
       @focusin=${this.handleComposeboxFocusIn_}
       @focusout=${this.handleComposeboxFocusOut_}>
     <div id="inputContainer">
       <ntp-composebox-file-carousel
-        id="carousel"
-        .files=${Array.from(this.files_.values())}
-        @delete-file=${this.onDeleteFile_}>
+          id="carousel"
+          .files=${Array.from(this.files_.values())}
+          @delete-file=${this.onDeleteFile_}>
       </ntp-composebox-file-carousel>
       <textarea autocomplete="off" id="input"
           type="search" spellcheck="false"
           placeholder="${this.inputPlaceholder_}"
-          @keydown="${this.onInputKeydown_}"
           @input=${this.handleInput_}></textarea>
-      <ntp-composebox-dropdown id="matches"
-        role="listbox"
-        .result="${this.result_}"
-        .selected-match-index="${this.selectedMatchIndex_}"
-        @selected-match-index-changed="${this.onSelectedMatchIndexChanged_}"
-        ?hidden="${!this.showDropdown_}">
+      <ntp-composebox-dropdown
+          id="matches"
+          role="listbox"
+          .result="${this.result_}"
+          .selectedMatchIndex="${this.selectedMatchIndex_}"
+          @selected-match-index-changed="${this.onSelectedMatchIndexChanged_}"
+          @match-focusin="${this.onMatchFocusin_}"
+          @match-click="${this.onMatchClick_}"
+          ?hidden="${!this.showDropdown_}">
       </ntp-composebox-dropdown>
       <div id="uploadContainer" class="icon-fade">
         <cr-icon-button
@@ -56,35 +58,35 @@ export function getHtml(this: ComposeboxElement) {
             @click="${this.openImageUpload_}">
         </cr-icon-button>
         ${this.composeboxShowPdfUpload_ ? html`
-        <cr-icon-button
-            class="upload-icon no-overlap"
-            id="fileUploadButton"
-            iron-icon="composebox:fileUpload"
-            title="$i18n{composeboxPdfUploadButtonTitle}"
-            .disabled="${this.inputsDisabled_}"
-            @click="${this.openFileUpload_}">
-        </cr-icon-button>
+          <cr-icon-button
+              class="upload-icon no-overlap"
+              id="fileUploadButton"
+              iron-icon="composebox:fileUpload"
+              title="$i18n{composeboxPdfUploadButtonTitle}"
+              .disabled="${this.inputsDisabled_}"
+              @click="${this.openFileUpload_}">
+          </cr-icon-button>
         `: ''}
       </div>
-    </div>
-    <!-- A seperate container is needed for the submit button so the
+      <!-- A seperate container is needed for the submit button so the
          expand/collapse animation can be applied without affecting the submit
          button enabled/disabled state. -->
-    <div id="submitContainer" class="icon-fade">
+      <div id="submitContainer" class="icon-fade">
+        <cr-icon-button
+          class="action-icon icon-arrow-upward"
+          id="submitIcon"
+          title="$i18n{composeboxSubmitButtonTitle}"
+          @click="${this.submitQuery_}"
+          ?disabled="${!this.submitEnabled_}">
+        </cr-icon-button>
+      </div>
       <cr-icon-button
-        class="action-icon icon-arrow-upward"
-        id="submitIcon"
-        title="$i18n{composeboxSubmitButtonTitle}"
-        @click="${this.onSubmitClick_}"
-        ?disabled="${!this.submitEnabled_}">
+          class="action-icon icon-fade icon-clear"
+          id="cancelIcon"
+          title="${this.computeCancelButtonTitle_()}"
+          @click="${this.onCancelClick_}">
       </cr-icon-button>
     </div>
-    <cr-icon-button
-        class="action-icon icon-fade icon-clear"
-        id="cancelIcon"
-        title="${this.computeCancelButtonTitle_()}"
-        @click="${this.onCancelClick_}">
-    </cr-icon-button>
   </div>
   <input type="file"
       accept="${this.imageFileTypes_}"

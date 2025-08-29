@@ -11,10 +11,17 @@ import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
 export function getHtml(this: ComposeboxDropdownElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-  ${this.result?.matches.map((item) => html`
-    <ntp-composebox-match tabindex="0" role="option" .match="${item}">
-    </ntp-composebox-match>
-  `)}
+  <div>
+    ${this.result?.matches.map((item) => html`
+      <ntp-composebox-match
+          tabindex="0"
+          role="option"
+          .match="${item}"
+          .matchIndex="${this.matchIndex_(item)}"
+          ?selected="${this.isSelected_(item)}">
+      </ntp-composebox-match>
+    `)}
+  </div>
   <!--_html_template_end_-->`;
   // clang-format on
 }

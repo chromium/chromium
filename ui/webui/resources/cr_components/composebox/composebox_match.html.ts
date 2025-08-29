@@ -12,7 +12,8 @@ export function getHtml(this: ComposeboxMatchElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div class="container" aria-hidden="true">
-  <div id="text-container">
+  <div id="focusIndicator"></div>
+  <div id="textContainer">
     ${this.computeContents_()}
   </div>
 </div>

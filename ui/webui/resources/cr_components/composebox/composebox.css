@@ -13,7 +13,7 @@
   --input-bottom-spacing: 16px;
   --text-input-top-spacing: 16px;
   --text-input-right-spacing: 80px;
-  --input-left-spacing: 24px;
+  --text-input-left-spacing: 24px;
   --brand-gradient: conic-gradient(
     rgba(52, 168, 82, 0) 0deg,
     rgba(52, 168, 82, 1) 38.9738deg,
@@ -195,13 +195,17 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  padding: 0 var(--text-input-right-spacing) var(--input-bottom-spacing) var(--input-left-spacing);
+  padding-bottom: var(--input-bottom-spacing);
   overflow: hidden;
   width: 100%;
 }
 
 :host-context([dir='rtl']) #inputContainer {
-  padding: 0 var(--input-left-spacing) var(--input-bottom-spacing) var(--text-input-right-spacing);
+  padding: 0 var(--text-input-left-spacing) var(--input-bottom-spacing) var(--text-input-right-spacing);
+}
+
+#carousel {
+  padding-inline-start: var(--text-input-left-spacing);
 }
 
 #input {
@@ -220,7 +224,7 @@
   max-height: calc-size(fit-content, min(size - 24px, 190px));
   min-height: 72px;
   outline: none;
-  padding: var(--text-input-top-spacing) 0 0;
+  padding: var(--text-input-top-spacing) var(--text-input-right-spacing) 0 var(--text-input-left-spacing);
   position: relative;
   resize: none;
   scrollbar-width: none;
@@ -246,8 +250,19 @@
   display: none;
 }
 
+ntp-composebox-dropdown {
+  opacity: 0;
+  transition: var(--icon-exit-transition);
+}
+
+:host([expanded_]) ntp-composebox-dropdown {
+  opacity: 1;
+  transition: var(--icon-entry-transition);
+}
+
 #uploadContainer {
   display: flex;
+  padding-inline-start: var(--text-input-left-spacing);
 }
 
 :host([hide-file-inputs_]) #uploadContainer {
@@ -278,7 +293,7 @@
   --cr-icon-button-hover-background-color:
       var(--color-new-tab-page-composebox-hover);
   --cr-icon-button-margin-end: 0;
-  --cr-icon-button-size: 48px;
+  --cr-icon-button-size: 40px;
   position: absolute;
   right: 16px;
 }
@@ -293,6 +308,7 @@
       var(--color-new-tab-page-composebox-cancel-button);
   /* SVG is size 24 with 5px of padding so actual size is 14px */
   --cr-icon-button-icon-size: 24px;
+  position: absolute;
   top: 16px;
 }
 

@@ -19,6 +19,9 @@ import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.
 
 import {assertStyle, installMock} from '../test_support.js';
 
+enum Attributes {
+  SELECTED = 'selected',
+}
 function generateZeroId(): string {
   // Generate 128 bit unique identifier.
   const components = new Uint32Array(4);
@@ -137,6 +140,14 @@ suite('NewTabPageComposeboxTest', () => {
           type: 'search-suggest',
         },
         modifiers);
+  }
+
+  async function areMatchesShowing(): Promise<boolean> {
+    // Force a synchronous render.
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+    return window.getComputedStyle(composeboxElement.$.matches).display !==
+        'none';
   }
 
   async function uploadFileAndVerify(token: Object, file: File) {
@@ -693,6 +704,84 @@ suite('NewTabPageComposeboxTest', () => {
     // Restore.
     loadTimeData.overrideValues(
         {composeboxShowZps: false, composeboxShowTypedSuggest: false});
+  });
+
+  test('arrow up/down moves selection / focus', async () => {
+    loadTimeData.overrideValues({composeboxShowZps: true});
+    createComposeboxElement();
+    await microtasksFinished();
+
+    // Add zps input.
+    composeboxElement.$.input.value = '';
+    composeboxElement.$.input.dispatchEvent(new Event('input'));
+
+    const matches = [
+      createSearchMatch(),
+      createSearchMatch({fillIntoEdit: stringToMojoString16('hello world 2')}),
+    ];
+    searchboxCallbackRouterRemote.autocompleteResultChanged({
+      input: stringToMojoString16(''),
+      matches,
+      suggestionGroupsMap: {},
+    });
+
+    assertTrue(await areMatchesShowing());
+
+    const matchEls = composeboxElement.$.matches.shadowRoot.querySelectorAll(
+        'ntp-composebox-match');
+    assertEquals(2, matchEls.length);
+
+    const arrowDownEvent = new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+      key: 'ArrowDown',
+    });
+    composeboxElement.$.input.dispatchEvent(arrowDownEvent);
+    await microtasksFinished();
+    assertTrue(arrowDownEvent.defaultPrevented);
+
+    // First match remains selected and does not get focus while focus is in the
+    // input.
+    assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
+    assertEquals('hello world', composeboxElement.$.input.value);
+    assertEquals(
+        composeboxElement.$.input, composeboxElement.shadowRoot.activeElement);
+
+    // Move the focus to the second match.
+    matchEls[1]!.focus();
+    matchEls[1]!.dispatchEvent(new Event('focusin', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+    }));
+    await microtasksFinished();
+
+    // Second match is selected and has focus.
+    assertTrue(matchEls[1]!.hasAttribute(Attributes.SELECTED));
+    assertEquals('hello world 2', composeboxElement.$.input.value);
+    assertEquals(
+        matchEls[1], composeboxElement.$.matches.shadowRoot.activeElement);
+
+    const arrowUpEvent = new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+      key: 'ArrowUp',
+    });
+
+    matchEls[1]!.dispatchEvent(arrowUpEvent);
+    await microtasksFinished();
+    assertTrue(arrowUpEvent.defaultPrevented);
+
+    // First match gets selected and gets focus while focus is in the matches.
+    assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
+    assertEquals('hello world', composeboxElement.$.input.value);
+    assertEquals(
+        matchEls[0], composeboxElement.$.matches.shadowRoot.activeElement);
+
+    // Restore.
+    loadTimeData.overrideValues({composeboxShowZps: false});
   });
 
   test('composebox does not open match when only file present', async () => {

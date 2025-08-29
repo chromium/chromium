@@ -5,10 +5,13 @@
 import './composebox_match.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {AutocompleteResult} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteMatch, AutocompleteResult} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
 import {getCss} from './composebox_dropdown.css.js';
 import {getHtml} from './composebox_dropdown.html.js';
+
+// The '%' operator in JS returns negative numbers. This workaround avoids that.
+const remainder = (lhs: number, rhs: number) => ((lhs % rhs) + rhs) % rhs;
 
 // TODO(crbug.com/439616869): Provide an API for the embedder (i.e., <cr-composebox>)
 // to change the selection.
@@ -43,11 +46,76 @@ export class ComposeboxDropdownElement extends CrLitElement {
   }
 
   accessor result: AutocompleteResult|null = null;
-  protected accessor selectedMatchIndex: number = -1;
+  accessor selectedMatchIndex: number;
 
-  // Selects the first match.
+  //============================================================================
+  // Public methods
+  //============================================================================
+
+  /** Unselects the currently selected match, if any. */
+  unselect() {
+    this.selectedMatchIndex = -1;
+  }
+
+  /** Focuses the selected match, if any. */
+  focusSelected() {
+    const selectableMatchElements =
+        this.shadowRoot.querySelectorAll('ntp-composebox-match');
+    selectableMatchElements[this.selectedMatchIndex]?.focus();
+  }
+
+  /** Selects the first match. */
   selectFirst() {
     this.selectedMatchIndex = 0;
+  }
+
+  /** Selects the match at the given index. */
+  selectIndex(index: number) {
+    this.selectedMatchIndex = index;
+  }
+
+  /**
+   * Selects the previous match with respect to the currently selected one.
+   * Selects the last match if the first one or no match is currently selected.
+   */
+  selectPrevious() {
+    const selectableMatchElements =
+        this.shadowRoot.querySelectorAll('ntp-composebox-match');
+    // The value of -1 for |this.selectedMatchIndex| indicates no selection.
+    // Therefore subtract one from the maximum of its value and 0.
+    const previous = Math.max(this.selectedMatchIndex, 0) - 1;
+    this.selectedMatchIndex =
+        remainder(previous, selectableMatchElements.length);
+  }
+
+  /** Selects the last match. */
+  selectLast() {
+    const selectableMatchElements =
+        this.shadowRoot.querySelectorAll('ntp-composebox-match');
+    this.selectedMatchIndex = selectableMatchElements.length - 1;
+  }
+
+  /**
+   * Selects the next match with respect to the currently selected one.
+   * Selects the first match if the last one or no match is currently selected.
+   */
+  selectNext() {
+    const selectableMatchElements =
+        this.shadowRoot.querySelectorAll('ntp-composebox-match');
+    const next = this.selectedMatchIndex + 1;
+    this.selectedMatchIndex = remainder(next, selectableMatchElements.length);
+  }
+
+  /**
+   * @returns Index of the match in the autocomplete result. Passed to the match
+   *     so it knows its position in the list of matches.
+   */
+  protected matchIndex_(match: AutocompleteMatch): number {
+    return this.result?.matches?.indexOf(match) ?? -1;
+  }
+
+  protected isSelected_(match: AutocompleteMatch): boolean {
+    return this.matchIndex_(match) === this.selectedMatchIndex;
   }
 }
 

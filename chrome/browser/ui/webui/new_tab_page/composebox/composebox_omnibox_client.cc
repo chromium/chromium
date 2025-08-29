@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_omnibox_client.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/composebox/composebox_query_controller.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
@@ -41,7 +42,11 @@ void ComposeboxOmniboxClient::OnAutocompleteAccept(
     const std::u16string& text,
     const AutocompleteMatch& match,
     const AutocompleteMatch& alternative_nav_match) {
-  composebox_handler_->SubmitQuery(base::UTF16ToUTF8(text), disposition);
+  // Use text for regular query (verbatim match) or use
+  // matches input text for dropdown matches.
+  composebox_handler_->SubmitQuery(
+      base::UTF16ToUTF8(text.empty() ? match.fill_into_edit : text),
+      disposition);
 }
 
 std::optional<lens::proto::LensOverlaySuggestInputs>
