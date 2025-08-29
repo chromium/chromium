@@ -262,7 +262,8 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
     }
 
     @Override
-    public boolean onActivityResultWithNative(int requestCode, int resultCode, Intent data) {
+    public boolean onActivityResultWithNative(
+            int requestCode, int resultCode, @Nullable Intent data) {
         if (super.onActivityResultWithNative(requestCode, resultCode, data)) {
             return true;
         }
@@ -387,7 +388,7 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
         }
     }
 
-    private void onAddAccountResult(int resultCode, Intent data) {
+    private void onAddAccountResult(int resultCode, @Nullable Intent data) {
         final String accountEmail =
                 data == null
                         ? null

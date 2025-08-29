@@ -69,12 +69,13 @@ public interface ChromeActivityNativeDelegate {
     /**
      * Carry out native code dependent tasks that relate to processing an activity result coming to
      * Activity.onActivityResult().
+     *
      * @param requestCode The request code of the response.
-     * @param resultCode  The result code of the response.
-     * @param data        The intent data of the response.
-     * @return            Whether or not the result was handled
+     * @param resultCode The result code of the response.
+     * @param data The intent data of the response.
+     * @return Whether or not the result was handled
      */
-    boolean onActivityResultWithNative(int requestCode, int resultCode, Intent data);
+    boolean onActivityResultWithNative(int requestCode, int resultCode, @Nullable Intent data);
 
     /**
      * Called when any failure about the initialization occurs.

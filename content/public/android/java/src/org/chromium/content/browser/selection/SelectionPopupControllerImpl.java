@@ -1356,7 +1356,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                     intent,
                     new WindowAndroid.IntentCallback() {
                         @Override
-                        public void onIntentCompleted(int resultCode, Intent data) {
+                        public void onIntentCompleted(int resultCode, @Nullable Intent data) {
                             if (resultCode != Activity.RESULT_OK || data == null) return;
                             CharSequence value =
                                     data.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT);

@@ -51,7 +51,7 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
     private @Nullable OtrProfileId mOtrProfileId;
 
     @Override
-    protected void onCreateInternal(Bundle savedInstanceState) {
+    protected void onCreateInternal(@Nullable Bundle savedInstanceState) {
         super.onCreateInternal(savedInstanceState);
 
         mCurrentUrl =

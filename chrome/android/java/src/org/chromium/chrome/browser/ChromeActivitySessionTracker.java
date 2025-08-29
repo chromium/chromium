@@ -7,8 +7,6 @@ package org.chromium.chrome.browser;
 import android.annotation.SuppressLint;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ApplicationStateListener;
@@ -19,6 +17,9 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
@@ -45,10 +46,11 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 
 /** Tracks the foreground session state for the Chrome activities. */
+@NullMarked
 public class ChromeActivitySessionTracker {
 
     @SuppressLint("StaticFieldLeak")
-    private static ChromeActivitySessionTracker sInstance;
+    private static @MonotonicNonNull ChromeActivitySessionTracker sInstance;
 
     private final OmahaServiceStartDelayer mOmahaServiceStartDelayer =
             new OmahaServiceStartDelayer();

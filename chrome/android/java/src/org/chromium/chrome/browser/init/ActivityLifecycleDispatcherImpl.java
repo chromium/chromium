@@ -278,7 +278,8 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
         }
     }
 
-    void dispatchOnActivityResultWithNative(int requestCode, int resultCode, Intent data) {
+    void dispatchOnActivityResultWithNative(
+            int requestCode, int resultCode, @Nullable Intent data) {
         for (ActivityResultWithNativeObserver observer : mActivityResultWithNativeObservers) {
             observer.onActivityResultWithNative(requestCode, resultCode, data);
         }

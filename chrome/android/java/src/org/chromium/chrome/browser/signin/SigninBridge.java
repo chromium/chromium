@@ -8,7 +8,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-
 import android.content.Context;
 import android.content.Intent;
 
@@ -18,8 +17,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -115,7 +114,7 @@ final class SigninBridge {
                     }
                     windowAndroid.showIntent(
                             intent,
-                            (int resultCode, Intent data) -> {
+                            (int resultCode, @Nullable Intent data) -> {
                                 // TODO(crbug.com/432009825): Wait for the Cookies to be available,
                                 // and navigate to the continue URL.
                             },

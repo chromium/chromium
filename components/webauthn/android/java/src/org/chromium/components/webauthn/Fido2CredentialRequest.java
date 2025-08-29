@@ -72,7 +72,7 @@ import java.util.List;
 @JNINamespace("webauthn")
 @NullMarked
 public class Fido2CredentialRequest
-        implements Callback<Pair<Integer, Intent>>, WebauthnBrowserBridge.Provider {
+        implements Callback<Pair<Integer, @Nullable Intent>>, WebauthnBrowserBridge.Provider {
     private static final String TAG = "Fido2CredentialRequest";
     static final String NON_EMPTY_ALLOWLIST_ERROR_MSG =
             "Authentication request must have non-empty allowList";
@@ -1282,7 +1282,7 @@ public class Fido2CredentialRequest
 
     // Handles the result.
     @Override
-    public void onResult(Pair<Integer, Intent> result) {
+    public void onResult(Pair<Integer, @Nullable Intent> result) {
         log(TAG, "onResult");
         final int resultCode = result.first;
         final Intent data = result.second;

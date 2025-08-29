@@ -97,7 +97,7 @@ import java.util.HashMap;
     }
 
     @Override
-    public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
+    public boolean onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         IntentCallback callback = mOutstandingIntents.get(requestCode);
         mOutstandingIntents.delete(requestCode);
         String errorMessage = mIntentErrors.remove(requestCode);
@@ -124,7 +124,7 @@ import java.util.HashMap;
     }
 
     @Override
-    public void restoreInstanceState(Bundle bundle) {
+    public void restoreInstanceState(@Nullable Bundle bundle) {
         if (bundle == null) return;
 
         Object errors = bundle.getSerializable(WindowAndroid.WINDOW_CALLBACK_ERRORS);

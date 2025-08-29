@@ -165,9 +165,11 @@ public class AccountPickerBottomSheetMediator
         }
 
         final WindowAndroid.IntentCallback onAddAccountCompleted =
-                (int resultCode, Intent data) -> {
+                (int resultCode, @Nullable Intent data) -> {
                     @Nullable String addedAccountEmail =
-                            data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+                            data == null
+                                    ? null
+                                    : data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
                     if (resultCode != Activity.RESULT_OK || addedAccountEmail == null) {
                         return;
                     }

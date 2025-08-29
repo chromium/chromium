@@ -15,6 +15,8 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.task.ChainedTasks;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
@@ -29,12 +31,13 @@ import java.util.List;
  * classes should override the {@link BrowserParts} interface for any additional initialization
  * tasks for the initialization to work as intended.
  */
+@NullMarked
 public class ChromeBrowserInitializer {
     private static final String TAG = "BrowserInitializer";
     private static ChromeBrowserInitializer sChromeBrowserInitializer =
             new ChromeBrowserInitializer();
-    private static BrowserStartupController sBrowserStartupController;
-    private List<Runnable> mTasksToRunWithFullBrowser;
+    private static @Nullable BrowserStartupController sBrowserStartupController;
+    private @Nullable List<Runnable> mTasksToRunWithFullBrowser;
 
     private boolean mPostInflationStartupComplete;
     private boolean mFullBrowserInitializationComplete;

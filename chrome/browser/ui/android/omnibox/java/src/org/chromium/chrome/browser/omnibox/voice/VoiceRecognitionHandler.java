@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.voice;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
@@ -276,7 +278,7 @@ public class VoiceRecognitionHandler {
 
         // WindowAndroid.IntentCallback implementation:
         @Override
-        public void onIntentCompleted(int resultCode, Intent data) {
+        public void onIntentCompleted(int resultCode, @Nullable Intent data) {
             if (mCallbackComplete) {
                 return;
             }
@@ -287,7 +289,7 @@ public class VoiceRecognitionHandler {
                 mDelegate.notifyVoiceRecognitionCanceled();
                 return;
             }
-            if (resultCode != Activity.RESULT_OK || data.getExtras() == null) {
+            if (resultCode != Activity.RESULT_OK || assumeNonNull(data).getExtras() == null) {
                 recordVoiceSearchFailureEvent(mSource);
                 mDelegate.notifyVoiceRecognitionCanceled();
                 return;

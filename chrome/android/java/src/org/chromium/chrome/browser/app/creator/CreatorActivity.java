@@ -84,7 +84,7 @@ public class CreatorActivity extends SnackbarActivity {
 
     @Initializer
     @Override
-    protected void onCreateInternal(Bundle savedInstanceState) {
+    protected void onCreateInternal(@Nullable Bundle savedInstanceState) {
         mActivityTabProvider = new ActivityTabProvider();
         mLifecycleDispatcher = new ActivityLifecycleDispatcherImpl(this);
         mShareDelegateSupplier = new ShareDelegateSupplier();

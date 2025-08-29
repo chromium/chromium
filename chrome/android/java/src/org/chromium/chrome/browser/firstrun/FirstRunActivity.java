@@ -339,7 +339,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     }
 
     @Override
-    protected @Nullable Bundle transformSavedInstanceStateForOnCreate(Bundle savedInstanceState) {
+    protected @Nullable Bundle transformSavedInstanceStateForOnCreate(
+            @Nullable Bundle savedInstanceState) {
         // We pass null to Activity.onCreate() so that it doesn't automatically restore
         // the FragmentManager state - as that may cause fragments to be loaded that have
         // dependencies on native before native has been loaded (and then crash). Instead,

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser;
 import android.content.Intent;
 import android.os.Bundle;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 
@@ -21,6 +22,7 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
  * named activities makes it possible to bring either existing activity to the foreground on the
  * desired side of the screen when firing an intent.
  */
+@NullMarked
 public class ChromeTabbedActivity2 extends ChromeTabbedActivity {
     @Override
     protected boolean isFirstActivity() {

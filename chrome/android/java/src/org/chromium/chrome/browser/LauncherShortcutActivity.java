@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +18,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -28,6 +31,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /** A helper activity for routing launcher shortcut intents. */
+@NullMarked
 public class LauncherShortcutActivity extends Activity {
     public static final String ACTION_OPEN_NEW_TAB = "chromium.shortcut.action.OPEN_NEW_TAB";
     public static final String ACTION_OPEN_NEW_INCOGNITO_TAB =
@@ -38,7 +42,7 @@ public class LauncherShortcutActivity extends Activity {
     @VisibleForTesting
     static final String DYNAMIC_OPEN_NEW_INCOGNITO_TAB_ID = "dynamic-new-incognito-tab-shortcut";
 
-    private static String sLabelForTesting;
+    private static @Nullable String sLabelForTesting;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,6 +50,7 @@ public class LauncherShortcutActivity extends Activity {
 
         Intent intent = getIntent();
         String intentAction = intent.getAction();
+        assumeNonNull(intentAction);
 
         // Exit early if the original intent action isn't for opening a new tab.
         if (!intentAction.equals(ACTION_OPEN_NEW_TAB)

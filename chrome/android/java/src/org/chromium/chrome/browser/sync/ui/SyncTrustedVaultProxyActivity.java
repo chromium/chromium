@@ -184,7 +184,8 @@ public class SyncTrustedVaultProxyActivity extends AsyncInitializationActivity {
     }
 
     @Override
-    public boolean onActivityResultWithNative(int requestCode, int resultCode, Intent intent) {
+    public boolean onActivityResultWithNative(
+            int requestCode, int resultCode, @Nullable Intent intent) {
         boolean result = super.onActivityResultWithNative(requestCode, resultCode, intent);
 
         switch (requestCode) {

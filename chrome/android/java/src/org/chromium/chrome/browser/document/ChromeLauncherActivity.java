@@ -10,6 +10,7 @@ import android.os.Bundle;
 import com.google.android.material.color.DynamicColors;
 
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 
@@ -17,6 +18,7 @@ import org.chromium.chrome.browser.LaunchIntentDispatcher;
  * Dispatches incoming intents to the appropriate activity based on the current configuration and
  * Intent fired.
  */
+@NullMarked
 public class ChromeLauncherActivity extends Activity {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

@@ -554,7 +554,8 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         }
 
         @Override
-        public boolean showIntent(PendingIntent intent, Callback<Pair<Integer, Intent>> callback) {
+        public boolean showIntent(
+                PendingIntent intent, Callback<Pair<Integer, @Nullable Intent>> callback) {
             return mWindow != null
                     && mWindow.getActivity().get() != null
                     && mWindow.showCancelableIntent(intent, new CallbackWrapper(callback), null)
@@ -562,14 +563,14 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         }
 
         private static class CallbackWrapper implements WindowAndroid.IntentCallback {
-            private final Callback<Pair<Integer, Intent>> mCallback;
+            private final Callback<Pair<Integer, @Nullable Intent>> mCallback;
 
-            CallbackWrapper(Callback<Pair<Integer, Intent>> callback) {
+            CallbackWrapper(Callback<Pair<Integer, @Nullable Intent>> callback) {
                 mCallback = callback;
             }
 
             @Override
-            public void onIntentCompleted(int resultCode, Intent data) {
+            public void onIntentCompleted(int resultCode, @Nullable Intent data) {
                 mCallback.onResult(new Pair(resultCode, data));
             }
         }

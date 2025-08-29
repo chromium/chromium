@@ -12,6 +12,7 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.version_info.Channel;
 import org.chromium.base.version_info.VersionConstants;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.accessibility.hierarchysnapshotter.HierarchySnapshotter;
 import org.chromium.chrome.browser.app.notifications.ContextualNotificationPermissionRequesterImpl;
 import org.chromium.chrome.browser.background_task_scheduler.ChromeBackgroundTaskFactory;
@@ -36,6 +37,7 @@ import org.chromium.url.GURL;
  * <p>Note: All application logic should be added to {@link ChromeApplicationImpl}, which will be
  * called from the superclass. See {@link SplitCompatApplication} for more info.
  */
+@NullMarked
 public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
     public ChromeApplicationImpl() {}
 

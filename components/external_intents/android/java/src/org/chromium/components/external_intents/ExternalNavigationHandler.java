@@ -2273,7 +2273,7 @@ public class ExternalNavigationHandler {
                 pickerIntent,
                 new WindowAndroid.IntentCallback() {
                     @Override
-                    public void onIntentCompleted(int resultCode, Intent data) {
+                    public void onIntentCompleted(int resultCode, @Nullable Intent data) {
                         RequiredCallback<AsyncActionTakenParams> callback =
                                 params.getRequiredAsyncActionTakenCallback();
                         assert callback != null;

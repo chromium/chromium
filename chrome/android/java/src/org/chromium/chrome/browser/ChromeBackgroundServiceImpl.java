@@ -14,6 +14,8 @@ import com.google.android.gms.gcm.TaskParams;
 import org.chromium.base.Log;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.background_sync.BackgroundSyncBackgroundTaskScheduler;
 import org.chromium.chrome.browser.base.SplitCompatGcmTaskService;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -24,6 +26,7 @@ import org.chromium.chrome.browser.init.MinimalBrowserStartupUtils;
  * browser needs to be launched for scheduled tasks, or in response to changing network or power
  * conditions.
  */
+@NullMarked
 public class ChromeBackgroundServiceImpl extends SplitCompatGcmTaskService.Impl {
     private static final String TAG = "BackgroundService";
 
@@ -58,12 +61,12 @@ public class ChromeBackgroundServiceImpl extends SplitCompatGcmTaskService.Impl 
         return GcmNetworkManager.RESULT_SUCCESS;
     }
 
-    private void handleServicificationStartupTask(Context context, String tag) {
+    private void handleServicificationStartupTask(@Nullable Context context, @Nullable String tag) {
         launchBrowser(context, tag);
     }
 
     @VisibleForTesting
-    protected void launchBrowser(Context context, String tag) {
+    protected void launchBrowser(@Nullable Context context, @Nullable String tag) {
         Log.i(TAG, "Launching browser");
         ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
     }

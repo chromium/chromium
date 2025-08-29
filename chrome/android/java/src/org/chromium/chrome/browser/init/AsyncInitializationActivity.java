@@ -16,8 +16,6 @@ import android.view.View;
 import android.view.WindowManager;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
@@ -29,6 +27,9 @@ import org.chromium.base.library_loader.LoaderErrors;
 import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.IntentHandler;
@@ -55,6 +56,7 @@ import org.chromium.ui.display.DisplayUtil;
 /**
  * An activity that talks with application and activity level delegates for async initialization.
  */
+@NullMarked
 public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatActivity
         implements ChromeActivityNativeDelegate, BrowserParts, ActivityLifecycleDispatcherProvider {
     @VisibleForTesting
@@ -88,9 +90,9 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
      */
     private long mOnPauseBeforeFoldRecreateTimestampMs;
 
-    private ActivityWindowAndroid mWindowAndroid;
-    private OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
-    private Bundle mSavedInstanceState;
+    private @Nullable ActivityWindowAndroid mWindowAndroid;
+    private @MonotonicNonNull OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
+    private @Nullable Bundle mSavedInstanceState;
     private int mCurrentOrientation;
     private boolean mDestroyed;
     private boolean mIsTablet;
@@ -104,7 +106,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     private boolean mStartupDelayed;
     private boolean mFirstDrawComplete;
 
-    private Runnable mOnInflationCompleteCallback;
+    private @Nullable Runnable mOnInflationCompleteCallback;
     private boolean mInitialLayoutInflationComplete;
 
     // See enableHardwareAcceleration()
@@ -301,7 +303,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
 
     @CallSuper
     @Override
-    public void onStartupFailure(Exception failureCause) {
+    public void onStartupFailure(@Nullable Exception failureCause) {
         throw new ProcessInitException(LoaderErrors.NATIVE_STARTUP_FAILED, failureCause);
     }
 
@@ -319,7 +321,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
      */
     @Override
     @SuppressLint("MissingSuperCall") // Called in onCreateInternal.
-    protected final void onCreate(Bundle savedInstanceState) {
+    protected final void onCreate(@Nullable Bundle savedInstanceState) {
         TraceEvent.begin("AsyncInitializationActivity.onCreate()");
         onPreCreate();
         boolean willCreate = onCreateInternal(savedInstanceState);
@@ -352,21 +354,22 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     protected void onPostCreate() {}
 
     /**
-     * Called from onCreate() to give derived classes a chance to dispatch the intent using
-     * {@link LaunchIntentDispatcher}. If the method returns anything other than Action.CONTINUE,
-     * the activity is aborted. Default implementation returns Action.CONTINUE.
+     * Called from onCreate() to give derived classes a chance to dispatch the intent using {@link
+     * LaunchIntentDispatcher}. If the method returns anything other than Action.CONTINUE, the
+     * activity is aborted. Default implementation returns Action.CONTINUE.
+     *
      * @param intent intent to dispatch
      * @return {@link LaunchIntentDispatcher.Action} to take
      */
     protected @LaunchIntentDispatcher.Action int maybeDispatchLaunchIntent(
-            Intent intent, Bundle savedInstanceState) {
+            Intent intent, @Nullable Bundle savedInstanceState) {
         return LaunchIntentDispatcher.Action.CONTINUE;
     }
 
     /**
      * @return true if will proceed with Activity creation, false if will abort.
      */
-    private boolean onCreateInternal(Bundle savedInstanceState) {
+    private boolean onCreateInternal(@Nullable Bundle savedInstanceState) {
         initializeStartupMetrics();
         setIntent(IntentHandler.rewriteFromHistoryIntent(getIntent()));
 
@@ -459,7 +462,8 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
      * Allows subclasses to override the instance state passed to super.onCreate(). The original
      * instance state will still be available via getSavedInstanceState().
      */
-    protected @Nullable Bundle transformSavedInstanceStateForOnCreate(Bundle savedInstanceState) {
+    protected @Nullable Bundle transformSavedInstanceStateForOnCreate(
+            @Nullable Bundle savedInstanceState) {
         return savedInstanceState;
     }
 
@@ -522,7 +526,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     /**
      * @return The saved bundle for the last recorded state.
      */
-    public Bundle getSavedInstanceState() {
+    public @Nullable Bundle getSavedInstanceState() {
         return mSavedInstanceState;
     }
 
@@ -596,7 +600,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     @CallSuper
     @Override
     @SuppressLint("MissingSuperCall") // Empty method in parent Activity class.
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         mNativeInitializationController.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -709,7 +713,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
      *
      * <p>Implementers should not assume the native library is loaded when this is triggered.
      */
-    protected abstract @NonNull OneshotSupplier<ProfileProvider> createProfileProvider();
+    protected abstract OneshotSupplier<ProfileProvider> createProfileProvider();
 
     /** Return a supplier for the ProfileProvider. */
     public OneshotSupplier<ProfileProvider> getProfileProviderSupplier() {
@@ -719,12 +723,13 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     }
 
     /**
-     * This will handle passing {@link Intent} results back to the {@link WindowAndroid}.  It will
+     * This will handle passing {@link Intent} results back to the {@link WindowAndroid}. It will
      * return whether or not the {@link WindowAndroid} has consumed the event or not.
      */
     @CallSuper
     @Override
-    public boolean onActivityResultWithNative(int requestCode, int resultCode, Intent intent) {
+    public boolean onActivityResultWithNative(
+            int requestCode, int resultCode, @Nullable Intent intent) {
         if (mIntentRequestTracker.onActivityResult(requestCode, resultCode, intent)) {
             return true;
         }

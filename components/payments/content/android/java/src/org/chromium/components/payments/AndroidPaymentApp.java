@@ -451,7 +451,7 @@ public class AndroidPaymentApp extends PaymentApp
 
     // WindowAndroid.IntentCallback:
     @Override
-    public void onIntentCompleted(int resultCode, Intent data) {
+    public void onIntentCompleted(int resultCode, @Nullable Intent data) {
         assert mInstrumentDetailsCallback != null;
         ThreadUtils.assertOnUiThread();
         if (mPaymentDetailsUpdateConnection != null) {
