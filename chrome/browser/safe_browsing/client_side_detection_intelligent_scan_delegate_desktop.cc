@@ -278,6 +278,8 @@ void ClientSideDetectionIntelligentScanDelegateDesktop::
 }
 
 void ClientSideDetectionIntelligentScanDelegateDesktop::Shutdown() {
+  client_side_detection::LogOnDeviceModelSessionAliveOnDelegateShutdown(
+      !!session_);
   StopListeningToOnDeviceModelUpdate();
   pref_change_registrar_.RemoveAll();
 }

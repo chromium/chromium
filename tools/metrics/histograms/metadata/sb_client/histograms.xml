@@ -899,6 +899,16 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.OnDeviceModelSessionAliveOnDelegateShutdown"
+    enum="BooleanExists" expires_after="2026-08-28">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether or not the on-device model session was alive when the
+    delegate is shutting down.
+  </summary>
+</histogram>
+
 <histogram
     name="SBClientPhishing.OnDeviceModelSessionAliveOnNewPreclassification"
     enum="BooleanExists" expires_after="2026-04-14">

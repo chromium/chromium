@@ -26,6 +26,9 @@ void LogOnDeviceModelFetchTime(base::TimeTicks on_device_fetch_time);
 // Logs whether the on-device model was successfully downloaded.
 void LogOnDeviceModelDownloadSuccess(bool success);
 
+// Logs whether the on-device model session was alive on delegate shutdown.
+void LogOnDeviceModelSessionAliveOnDelegateShutdown(bool session_alive);
+
 }  // namespace safe_browsing::client_side_detection
 
 #endif  // CHROME_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_INTELLIGENT_SCAN_DELEGATE_UTIL_H_

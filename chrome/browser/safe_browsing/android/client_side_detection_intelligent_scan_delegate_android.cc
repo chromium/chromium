@@ -260,6 +260,8 @@ bool ClientSideDetectionIntelligentScanDelegateAndroid::ShouldShowScamWarning(
 }
 
 void ClientSideDetectionIntelligentScanDelegateAndroid::Shutdown() {
+  client_side_detection::LogOnDeviceModelSessionAliveOnDelegateShutdown(
+      !!current_inquiry_);
   ResetOnDeviceSession();
   model_broker_client_.reset();
   pref_change_registrar_.RemoveAll();

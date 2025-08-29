@@ -36,4 +36,10 @@ void LogOnDeviceModelDownloadSuccess(bool success) {
                             success);
 }
 
+void LogOnDeviceModelSessionAliveOnDelegateShutdown(bool session_alive) {
+  base::UmaHistogramBoolean(
+      "SBClientPhishing.OnDeviceModelSessionAliveOnDelegateShutdown",
+      session_alive);
+}
+
 }  // namespace safe_browsing::client_side_detection
