@@ -297,7 +297,7 @@ CompositorElementId HitTestResult::GetScrollableContainer() const {
 
 // static
 ScrollableArea* HitTestResult::GetScrollableArea(const Node* node) {
-  if (!node) {
+  if (!node || !node->GetLayoutObject()) {
     return nullptr;
   }
 
