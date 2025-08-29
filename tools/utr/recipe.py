@@ -381,6 +381,7 @@ class LegacyRunner:
       if not rerun_prop_options:
         logging.warning('')
         if exit_code:
+          adapter.EnsureFailurePrinted()
           # Use the markdown printer from "rich" to better format the text in
           # a terminal.
           md = pretty_md if pretty_md else 'Unknown error'

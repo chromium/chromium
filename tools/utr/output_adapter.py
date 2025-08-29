@@ -12,6 +12,29 @@ import os
 import re
 import sys
 
+
+class StoringLogger(logging.Logger):
+  """A logger that stores messages that are not logged."""
+  _storage = []
+
+  @classmethod
+  def clear_step(cls):
+    cls._storage = []
+
+  @classmethod
+  def log_last_step(cls):
+    for logger, line in cls._storage:
+      super().log(logger, logging.INFO, line)
+
+  def log(self, level, msg, *args, **kwargs):
+    if self.isEnabledFor(level):
+      super().log(level, msg, *args, **kwargs)
+    elif self.__class__._storage is not None:
+      self.__class__._storage.append((self, msg % args))
+
+
+logging.setLoggerClass(StoringLogger)
+
 # Create a logger that avoids rich formatting as we can't control recipe
 # formatting from here
 basic_logger = logging.getLogger('basic_logger')
@@ -23,6 +46,10 @@ class PassthroughAdapter:
 
   def ProcessLine(self, line):
     basic_logger.log(logging.DEBUG, line)
+
+  def EnsureFailurePrinted(self):
+    # Nothing is filtered so errors are already printed
+    pass
 
 
 class LegacyOutputAdapter:
@@ -113,9 +140,22 @@ class LegacyOutputAdapter:
     self._current_log_level = logging.DEBUG
     self._current_step_name = ''
     self._dot_count = 0
+    self._last_step_lines = []
+    self._last_log_level = self._current_log_level
+
+    # The root logger is setup before we can set the class
+    # so create a new default_logger for storing step names
+    # and maintain the handlers
+    root_logger = logging.getLogger()
+    self._default_logger = logging.getLogger('default_logger')
+    self._default_logger.setLevel(root_logger.level)
+    for handler in root_logger.handlers:
+      self._default_logger.addHandler(handler)
+    self._default_logger.propagate = False
 
   def _PrintCurrentStepName(self, log_level):
-    logging.log(log_level, '\n[cyan]Running: %s[/]', self._current_step_name)
+    self._default_logger.log(log_level, '\n[cyan]Running: %s[/]',
+                             self._current_step_name)
 
   def _StdoutProcessLine(self, line):
     # Pass through any non-engine or utr-log text.
@@ -126,7 +166,7 @@ class LegacyOutputAdapter:
       return
     is_urlish = re.match(r'^http[s]?://\S+$', line)
     if is_urlish:
-      logging.log(self._current_log_level, line)
+      self._default_logger.log(self._current_log_level, line)
     else:
       basic_logger.log(self._current_log_level, line)
 
@@ -139,7 +179,14 @@ class LegacyOutputAdapter:
 
   def _PrintOnlyStepName(self, line):
     if line.startswith(self.SEED_STEP_TEXT):
-      self._PrintCurrentStepName(logging.INFO)
+      self._PrintCurrentStepName(self._current_log_level)
+
+    # Store unprinted stdout/stderr for if the line fails
+    if line.startswith(f'@@@STEP_LOG_LINE@{self.UTR_LOG_NAME}@'):
+      # '-3' corresponds to the trailing @@@ on every sub-log line.
+      line = line[len(f'@@@STEP_LOG_LINE@{self.UTR_LOG_NAME}@'):-3]
+    if not line.startswith(self.ANNOTATOR_PREFIX_SUFIX):
+      self._last_step_lines.append(line)
 
   def _ProcessTriggerLine(self, line):
     if line.startswith(self.SEED_STEP_TEXT + self.TRIGGER_STEP_PREFIX):
@@ -207,18 +254,30 @@ class LegacyOutputAdapter:
   def ProcessLine(self, line):
     # If we're in a new step see if it needs to be parsed differently
     if line.startswith(self.SEED_STEP_TEXT):
+      # Clear the stored step
+      StoringLogger.clear_step()
       self._current_step_name = line[len(self.SEED_STEP_TEXT
                                          ):-len(self.ANNOTATOR_PREFIX_SUFIX)]
       self._current_proccess_fn = self._get_processor(self._current_step_name)
       self._current_log_level = self._get_log_level(self._current_step_name)
-    self._current_proccess_fn(line)
-    self._last_line = line
-    self._last_line_teriminal_lines = int(
-        (len(line) - 1) / self._terminal_columns) + 1
+      self._last_log_level = self._current_log_level
+      self._last_step_lines = []
+    if self._current_proccess_fn:
+      self._current_proccess_fn(line)
+      self._last_line = line
+      self._last_line_teriminal_lines = int(
+          (len(line) - 1) / self._terminal_columns) + 1
     if line.startswith(self.STEP_CLOSED_TEXT):
       # Text outside of steps will use the last processor otherwise
       self._current_log_level = logging.DEBUG
-      _current_proccess_fn = self._StepNameProcessLine
+      self._current_proccess_fn = None
+
+  def EnsureFailurePrinted(self):
+    # Push lines for step-only steps through the logger
+    if self._last_step_lines:
+      basic_logger.log(self._last_log_level, '\n'.join(self._last_step_lines))
+    # Print the entire step if it was silenced
+    StoringLogger.log_last_step()
 
   def _get_processor(self, step_name):
     if step_name in self._step_to_processors:
