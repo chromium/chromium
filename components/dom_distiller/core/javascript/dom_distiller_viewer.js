@@ -570,8 +570,10 @@ function useFontScaling(scale) {
 }
 
 // Finds a paragraph with `innerText` matching `hash` and `charCount`, then
-// scrolls to that paragraph with the provided `offset`.
-function scrollToParagraphByHash(hash, charCount, offset) {
+// scrolls to that paragraph with the provided `progress` corresponding to the
+// location to scroll to wrt. that paragraph, 0 being the top of that paragraph,
+// 1 being the bottom.
+function scrollToParagraphByHash(hash, charCount, progress) {
   const targetHash = hash;
   const targetCharCount = charCount;
   const paragraphs = document.querySelectorAll('p');
@@ -585,9 +587,8 @@ function scrollToParagraphByHash(hash, charCount, offset) {
       const pHash = hashCode(pText);
       if (pHash === targetHash) {
         const rect = p.getBoundingClientRect();
-        const pMiddle = rect.top + rect.height / 2;
-        const viewportMiddle = window.innerHeight / 2;
-        const scrollOffset = window.scrollY + pMiddle - viewportMiddle + offset;
+        const scrollOffset = (window.scrollY + rect.top) +
+            (rect.height * progress) - (window.innerHeight / 2);
         window.scrollTo(0, scrollOffset);
         break;
       }
