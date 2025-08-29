@@ -378,6 +378,9 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             // REQUEST_DESKTOP_SITE has its own Allowed list header.
             resourceId = R.string.website_settings_allowed_group_heading_request_desktop_site;
         } else if (!toggleValue
+                // 3PC settings uses a radio button and always supports allowing 3PCs for sites as
+                // 3PCs are always blocked in Incognito mode (even if the user's state is "Allow").
+                && mCategory.getType() != SiteSettingsCategory.Type.THIRD_PARTY_COOKIES
                 && !getSiteSettingsDelegate().isPermissionSiteSettingsRadioButtonFeatureEnabled()) {
             // When the toggle is set to Blocked, the Allowed list header should read 'Exceptions',
             // not 'Allowed' (because it shows exceptions from the rule).
