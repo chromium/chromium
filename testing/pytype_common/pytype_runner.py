@@ -47,14 +47,20 @@ def report_results(test_name: str,
     if output_file:
         report_json_results(output_file)
     if sink_client:
+        # Source comes from:
+        # luci/resultdb/sink/proto/v1/test_result.proto
+        struct_test_dict = {
+            'coarseName': None,  # Not used for single tests.
+            'fineName': None,  # Not used for single tests.
+            'caseNameComponents': ['*fixture'],
+        }
         sink_client.Post(test_id=test_name,
                          status=status,
                          duration=(duration * 1000),
                          test_log=log,
                          test_file=test_location,
-                         failure_reason=failure_reason)
-
-
+                         failure_reason=failure_reason,
+                         test_id_structured=struct_test_dict)
 # pylint: enable=too-many-arguments
 
 
