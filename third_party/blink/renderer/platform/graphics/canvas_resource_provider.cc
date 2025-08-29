@@ -527,6 +527,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
       // even though we are not technically writing to the texture, only to its
       // parameters. This issue is Android-WebView specific: crbug.com/585250.
       WillDraw();
+      resource->GetSyncToken();
     }
 
     if (ShouldPropagateHighEntropyCanvasOpTypes(high_entropy_canvas_op_types,
