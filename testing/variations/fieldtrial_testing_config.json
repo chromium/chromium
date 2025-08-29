@@ -983,21 +983,6 @@
             ]
         }
     ],
-    "AndroidSurfaceColorUpdate": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidSurfaceColorUpdate"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidSystemTracing": [
         {
             "platforms": [
@@ -1117,7 +1102,6 @@
                         "AndroidTabGroupsColorUpdateGM3",
                         "AndroidThemeModule",
                         "CpaSpecUpdate",
-                        "GridTabSwitcherSurfaceColorUpdate",
                         "GridTabSwitcherUpdate",
                         "TabletTabStripAnimation"
                     ]
@@ -1137,7 +1121,6 @@
                     "name": "Enabled_GtsOnly",
                     "enable_features": [
                         "AndroidThemeModule",
-                        "GridTabSwitcherSurfaceColorUpdate",
                         "GridTabSwitcherUpdate"
                     ]
                 }

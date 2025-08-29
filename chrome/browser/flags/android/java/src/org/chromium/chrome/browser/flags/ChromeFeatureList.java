@@ -757,7 +757,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(
                     ANDROID_SURFACE_COLOR_UPDATE,
                     /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+                    /* defaultValueInTests= */ false);
     public static final CachedFlag sAndroidTabDeclutterDedupeTabIdsKillSwitch =
             newCachedFlag(ANDROID_TAB_DECLUTTER_DEDUPE_TAB_IDS_KILL_SWITCH, true);
     public static final CachedFlag sAndroidTabGroupsColorUpdateGm3 =
@@ -945,7 +945,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(
                     GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
                     /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+                    /* defaultValueInTests= */ false);
     public static final CachedFlag sGridTabSwitcherUpdate =
             newCachedFlag(GRID_TAB_SWITCHER_UPDATE, false, /* defaultValueInTests= */ true);
     public static final CachedFlag sHistoryPaneAndroid =
