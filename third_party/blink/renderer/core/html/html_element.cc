@@ -2481,7 +2481,10 @@ bool HTMLElement::IsValidBuiltinPopoverCommand(HTMLElement& invoker,
                                                CommandEventType command) {
   return command == CommandEventType::kTogglePopover ||
          command == CommandEventType::kHidePopover ||
-         command == CommandEventType::kShowPopover;
+         command == CommandEventType::kShowPopover ||
+         command == CommandEventType::kToggleMenu ||
+         command == CommandEventType::kHideMenu ||
+         command == CommandEventType::kShowMenu;
 }
 
 bool HTMLElement::IsValidBuiltinCommand(HTMLElement& invoker,

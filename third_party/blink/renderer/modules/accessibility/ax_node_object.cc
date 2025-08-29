@@ -3296,26 +3296,34 @@ AccessibilityExpanded AXNodeObject::IsExpanded() const {
     return is_expanded ? kExpandedExpanded : kExpandedCollapsed;
   }
 
-  // For button elements that act as commandFor triggers, aria-expanded may be
-  // set depending on the command type. This results in the same mapping as
-  // popovertarget, but takes precedence in the case of conflicting markup as
-  // the HTML spec invokers commandfor functionality first, and only
-  // popovertarget after, if commandfor was not executed.
+  HTMLElement* command_for_element = nullptr;
   if (auto* button = DynamicTo<HTMLButtonElement>(element)) {
-    if (HTMLElement* command_for =
-            DynamicTo<HTMLElement>(button->commandForElement())) {
-      const AtomicString& action =
-          button->FastGetAttribute(html_names::kCommandAttr);
-      bool is_valid_popover_command = command_for->IsValidBuiltinPopoverCommand(
-          *button,
-          HTMLButtonElement::GetCommandEventType(
-              action, command_for->GetDocument().GetExecutionContext()));
-      bool is_child = button->IsDescendantOrShadowDescendantOf(command_for);
-      // Buttons for popovers should indicate the expanded/collapsed state.
-      if (is_valid_popover_command && !is_child) {
-        return command_for->popoverOpen() ? kExpandedExpanded
-                                          : kExpandedCollapsed;
-      }
+    command_for_element = DynamicTo<HTMLElement>(button->commandForElement());
+  } else if (auto* menuitem = DynamicTo<HTMLMenuItemElement>(element)) {
+    DCHECK(RuntimeEnabledFeatures::MenuElementsEnabled());
+    command_for_element = DynamicTo<HTMLElement>(menuitem->commandForElement());
+  }
+
+  // For menuitem and button elements that act as commandFor triggers,
+  // aria-expanded may be set depending on the command type. This results in the
+  // same mapping as popovertarget, but takes precedence in the case of
+  // conflicting markup as the HTML spec invokers commandfor functionality
+  // first, and only.
+  if (command_for_element) {
+    const AtomicString& action =
+        element->FastGetAttribute(html_names::kCommandAttr);
+    bool is_valid_popover_command =
+        command_for_element->IsValidBuiltinPopoverCommand(
+            *DynamicTo<HTMLElement>(element),
+            HTMLButtonElement::GetCommandEventType(
+                action,
+                command_for_element->GetDocument().GetExecutionContext()));
+    bool is_child =
+        element->IsDescendantOrShadowDescendantOf(command_for_element);
+    // Popover invokers should indicate the expanded/collapsed state.
+    if (is_valid_popover_command && !is_child) {
+      return command_for_element->popoverOpen() ? kExpandedExpanded
+                                                : kExpandedCollapsed;
     }
   }
 

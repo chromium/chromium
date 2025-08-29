@@ -4264,6 +4264,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, CommandForApiPopover) {
   RunHtmlTest(FILE_PATH_LITERAL("commandfor-api-popover.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, CommandForApiPopoverMenus) {
+  RunHtmlTest(FILE_PATH_LITERAL("commandfor-api-popover-menus.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, CommandForApiDialog) {
   RunHtmlTest(FILE_PATH_LITERAL("commandfor-api-dialog.html"));
 }

@@ -1593,6 +1593,13 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @CommandLineFlags.Add({"enable-experimental-web-platform-features"})
+    public void test_commandforPopoverMenus() {
+        performHtmlTest("commandfor-api-popover-menus.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_contenteditableDescendants() {
         performHtmlTest("contenteditable-descendants.html");
     }

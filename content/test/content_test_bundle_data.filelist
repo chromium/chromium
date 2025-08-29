@@ -3591,6 +3591,14 @@ data/accessibility/html/commandfor-api-popover-expected-blink.txt
 data/accessibility/html/commandfor-api-popover-expected-mac.txt
 data/accessibility/html/commandfor-api-popover-expected-uia-win.txt
 data/accessibility/html/commandfor-api-popover-expected-win.txt
+data/accessibility/html/commandfor-api-popover-menus-expected-android-external.txt
+data/accessibility/html/commandfor-api-popover-menus-expected-android.txt
+data/accessibility/html/commandfor-api-popover-menus-expected-auralinux.txt
+data/accessibility/html/commandfor-api-popover-menus-expected-blink.txt
+data/accessibility/html/commandfor-api-popover-menus-expected-mac.txt
+data/accessibility/html/commandfor-api-popover-menus-expected-uia-win.txt
+data/accessibility/html/commandfor-api-popover-menus-expected-win.txt
+data/accessibility/html/commandfor-api-popover-menus.html
 data/accessibility/html/commandfor-api-popover.html
 data/accessibility/html/content-left-of-view-port-for-on-screen-mode-expected-blink.txt
 data/accessibility/html/content-left-of-view-port-for-on-screen-mode.html
