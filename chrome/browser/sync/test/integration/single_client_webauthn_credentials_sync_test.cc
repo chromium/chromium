@@ -9,6 +9,7 @@
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
@@ -74,11 +75,6 @@ constexpr char kUsername2[] = "yor";
 constexpr char kDisplayName2[] = "Yor Forger";
 constexpr int64_t kLastUsedTime1 = 10;
 constexpr int64_t kLastUsedTime2 = 20;
-
-static const webauthn::PasskeyModel::UserEntity kTestUser(
-    std::vector<uint8_t>{1, 2, 3},
-    "user@example.com",
-    "Example User");
 
 constexpr std::array<uint8_t, 32> kTrustedVaultKey = {
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
@@ -230,9 +226,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest, CreatePasskey) {
   ASSERT_TRUE(SetupSync());
 
+  const webauthn::PasskeyModel::UserEntity test_user(
+      std::vector<uint8_t>{1, 2, 3}, "user@example.com", "Example User");
+
   std::vector<uint8_t> public_key_spki_der;
   const sync_pb::WebauthnCredentialSpecifics passkey =
-      GetModel().CreatePasskey(kTestRpId, kTestUser, kTrustedVaultKey,
+      GetModel().CreatePasskey(kTestRpId, test_user, kTrustedVaultKey,
                                kTrustedVaultKeyVersion, &public_key_spki_der);
 
   EXPECT_TRUE(ServerPasskeysMatchChecker(
@@ -242,9 +241,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest, CreatePasskey) {
   EXPECT_THAT(GetModel().GetAllPasskeys().at(0), PasskeySpecificsEq(passkey));
 
   EXPECT_THAT(passkey, PasskeyHasRpId(kTestRpId));
-  const std::string expected_user_id(
-      reinterpret_cast<const char*>(kTestUser.id.data()), kTestUser.id.size());
-  EXPECT_THAT(passkey, PasskeyHasUserId(expected_user_id));
+  EXPECT_THAT(passkey, PasskeyHasUserId(base::as_string_view(test_user.id)));
   EXPECT_TRUE(PublicKeyForPasskeyEquals(passkey, kTrustedVaultKey,
                                         public_key_spki_der));
 }
