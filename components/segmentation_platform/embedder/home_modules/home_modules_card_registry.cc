@@ -33,6 +33,7 @@
 #include "components/segmentation_platform/embedder/home_modules/address_bar_position_ephemeral_module.h"
 #include "components/segmentation_platform/embedder/home_modules/app_bundle_promo_ephemeral_module.h"
 #include "components/segmentation_platform/embedder/home_modules/autofill_passwords_ephemeral_module.h"
+#include "components/segmentation_platform/embedder/home_modules/default_browser_promo_ephemeral_module.h"
 #include "components/segmentation_platform/embedder/home_modules/enhanced_safe_browsing_ephemeral_module.h"
 #include "components/segmentation_platform/embedder/home_modules/ephemeral_module_utils.h"
 #include "components/segmentation_platform/embedder/home_modules/lens_ephemeral_module.h"
@@ -95,6 +96,9 @@ const char kSendTabPromoImpressionCounterPref[] =
 // Impression counter for the App Bundle promo ephemeral module.
 const char kAppBundlePromoEphemeralModuleImpressionCounterPref[] =
     "ephemeral_pref_counter.app_bundle_promo_ephemeral_module_counter";
+// Impression counter for the Default Browser promo ephemeral module.
+const char kDefaultBrowserPromoEphemeralModuleImpressionCounterPref[] =
+    "ephemeral_pref_counter.default_browser_promo_ephemeral_module_counter";
 
 // Creates a card corresponding to the given ephemeral `tip` module and adds
 // it to the `cards` list if the module is enabled.
@@ -218,6 +222,8 @@ void HomeModulesCardRegistry::RegisterProfilePrefs(
                                 false);
   registry->RegisterBooleanPref(
       kLensEphemeralModuleTranslateVariationInteractedPref, false);
+  registry->RegisterIntegerPref(
+      kDefaultBrowserPromoEphemeralModuleImpressionCounterPref, 0);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -244,7 +250,10 @@ bool HomeModulesCardRegistry::IsEphemeralTipsModuleLabel(
          AutofillPasswordsEphemeralModule::IsModuleLabel(label) ||
          EnhancedSafeBrowsingEphemeralModule::IsModuleLabel(label) ||
          SavePasswordsEphemeralModule::IsModuleLabel(label) ||
-         LensEphemeralModule::IsModuleLabel(label);
+         LensEphemeralModule::IsModuleLabel(label) ||
+         LensEphemeralModule::IsModuleLabel(label) ||
+         AppBundlePromoEphemeralModule::IsModuleLabel(label) ||
+         DefaultBrowserPromoEphemeralModule::IsModuleLabel(label);
 #else
   return false;
 #endif
@@ -300,6 +309,12 @@ void HomeModulesCardRegistry::NotifyCardShown(const char* card_name) {
     local_state_prefs_->SetInteger(
         kAppBundlePromoEphemeralModuleImpressionCounterPref,
         local_impression_count + 1);
+  } else if (strcmp(card_name, kDefaultBrowserPromoEphemeralModule) == 0) {
+    int impression_count = profile_prefs_->GetInteger(
+        kDefaultBrowserPromoEphemeralModuleImpressionCounterPref);
+    profile_prefs_->SetInteger(
+        kDefaultBrowserPromoEphemeralModuleImpressionCounterPref,
+        impression_count + 1);
   }
 #endif
 
@@ -414,6 +429,8 @@ void HomeModulesCardRegistry::CreateAllCards() {
         std::make_unique<PriceTrackingNotificationPromo>(
             price_tracking_promo_count));
   }
+  int default_browser_promo_count = profile_prefs_->GetInteger(
+      kDefaultBrowserPromoEphemeralModuleImpressionCounterPref);
 
   if (base::FeatureList::IsEnabled(
           features::kSegmentationPlatformTipsEphemeralCard)) {
@@ -464,6 +481,12 @@ void HomeModulesCardRegistry::CreateAllCards() {
   if (AppBundlePromoEphemeralModule::IsEnabled(app_bundle_promo_count)) {
     all_cards_by_priority_.push_back(
         std::make_unique<AppBundlePromoEphemeralModule>());
+  }
+
+  if (DefaultBrowserPromoEphemeralModule::IsEnabled(
+          default_browser_promo_count)) {
+    all_cards_by_priority_.push_back(
+        std::make_unique<DefaultBrowserPromoEphemeralModule>());
   }
 #endif
 

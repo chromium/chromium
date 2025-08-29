@@ -196,6 +196,13 @@ extern const base::FeatureParam<int> kMaxAppBundlePromoImpressions;
 // device to have the card be shown.
 extern const base::FeatureParam<int> kMaxAppBundleAppsInstalled;
 
+// Feature flag to enable the ephemeral Default Browser card in the Magic Stack
+// on iOS.
+BASE_DECLARE_FEATURE(kDefaultBrowserMagicStackIos);
+// The maximum number impressions for `kDefaultBrowserMagicStackIos` before the
+// card should be hidden.
+extern const base::FeatureParam<int> kMaxDefaultBrowserMagicStackIosImpressions;
+
 }  // namespace segmentation_platform::features
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_FEATURES_H_

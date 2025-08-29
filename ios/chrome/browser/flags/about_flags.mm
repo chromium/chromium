@@ -840,6 +840,16 @@ const FeatureEntry::FeatureParam kAppBundlePromoForceHideArm[] = {
      segmentation_platform::kAppBundlePromoEphemeralModule},
 };
 
+// Default Browser Promo
+const FeatureEntry::FeatureParam kDefaultBrowserPromoForceShowArm[] = {
+    {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
+     segmentation_platform::kDefaultBrowserPromoEphemeralModule},
+};
+const FeatureEntry::FeatureParam kDefaultBrowserPromoForceHideArm[] = {
+    {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
+     segmentation_platform::kDefaultBrowserPromoEphemeralModule},
+};
+
 // ShopCard experiment arms
 const FeatureEntry::FeatureVariation kShopCardOverrideOptions[] = {
     {"Card 1 Price Drop", kPriceDropForTrackedProductsArm,
@@ -935,6 +945,12 @@ const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
          std::size(kAppBundlePromoForceShowArm), nullptr},
         {"- Force Hide App Bundle Promo", kAppBundlePromoForceHideArm,
          std::size(kAppBundlePromoForceHideArm), nullptr},
+
+        // Default Browser Promo.
+        {"- Force Show Default Browser Promo", kDefaultBrowserPromoForceShowArm,
+         std::size(kDefaultBrowserPromoForceShowArm), nullptr},
+        {"- Force Hide Default Browser Promo", kDefaultBrowserPromoForceHideArm,
+         std::size(kDefaultBrowserPromoForceHideArm), nullptr},
 };
 
 const FeatureEntry::FeatureParam
@@ -1462,17 +1478,6 @@ const FeatureEntry::FeatureVariation kMobilePromoOnDesktopVariations[] = {
      kMobilePromoOnDesktopAutofillNotification,
      std::size(kMobilePromoOnDesktopAutofillNotification), nullptr},
 };
-
-const FeatureEntry::FeatureParam kDefaultBrowserMagicStackDeviceSettings[] = {
-    {kDefaultBrowserMagicStackVariation, "0"}};
-const FeatureEntry::FeatureParam kDefaultBrowserMagicStackInAppSettings[] = {
-    {kDefaultBrowserMagicStackVariation, "1"}};
-
-const FeatureEntry::FeatureVariation kDefaultBrowserMagicStackVariations[] = {
-    {" - Tap to Device Settings", kDefaultBrowserMagicStackDeviceSettings,
-     std::size(kDefaultBrowserMagicStackDeviceSettings), nullptr},
-    {" - Tap to In App Settings", kDefaultBrowserMagicStackInAppSettings,
-     std::size(kDefaultBrowserMagicStackInAppSettings), nullptr}};
 
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
@@ -2904,11 +2909,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kRemoveAutofillBadgesDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kAutofillBadgeRemoval)},
     {"ios-default-browser-magic-stack",
-     flag_descriptions::kDefaultBrowserMagicStackName,
-     flag_descriptions::kDefaultBrowserMagicStackDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kDefaultBrowserMagicStack,
-                                    kDefaultBrowserMagicStackVariations,
-                                    "DefaultBrowserMagicStack")},
+     flag_descriptions::kDefaultBrowserMagicStackIosName,
+     flag_descriptions::kDefaultBrowserMagicStackIosDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         segmentation_platform::features::kDefaultBrowserMagicStackIos)},
     {"lens-search-headers-check-enabled",
      flag_descriptions::kLensSearchHeadersCheckEnabledName,
      flag_descriptions::kLensSearchHeadersCheckEnabledDescription,

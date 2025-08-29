@@ -38,6 +38,8 @@ inline constexpr char kSendTabInfobarReceivedInLastSession[] =
     "send_tab_infobar_received_in_last_session";
 inline constexpr char kAppBundleAppsInstalledCount[] =
     "app_bundle_apps_installed_count";
+inline constexpr char kIsDefaultBrowserChromeIos[] =
+    "is_default_browser_chrome_ios";
 
 // Input Context keys for emphemeral android modules.
 const char kIsUserSignedIn[] = "is_user_signed_in";
@@ -78,6 +80,8 @@ inline constexpr char kLensEphemeralModule[] = "lens_ephemeral_module";
 inline constexpr char kSendTabNotificationPromo[] = "send_tab_promo";
 inline constexpr char kAppBundlePromoEphemeralModule[] =
     "app_bundle_promo_ephemeral_module";
+inline constexpr char kDefaultBrowserPromoEphemeralModule[] =
+    "default_browser_promo_ephemeral_module";
 
 // Variation labels for emphemeral IOS modules.
 // Lens variation labels
