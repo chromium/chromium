@@ -191,7 +191,7 @@ class VisitedLinkCommon {
   int32_t table_length_ = 0;
 
   // salt used for each URL when computing the fingerprint
-  uint8_t salt_[LINK_SALT_LENGTH];
+  uint8_t salt_[LINK_SALT_LENGTH] = {};
 };
 
 }  // namespace visitedlink

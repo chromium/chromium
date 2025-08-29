@@ -37,9 +37,7 @@ crypto::obsolete::Md5 MakeMd5HasherForVisitedLink() {
 const VisitedLinkCommon::Fingerprint VisitedLinkCommon::null_fingerprint_ = 0;
 const VisitedLinkCommon::Hash VisitedLinkCommon::null_hash_ = -1;
 
-VisitedLinkCommon::VisitedLinkCommon() {
-  UNSAFE_TODO(memset(salt_, 0, sizeof(salt_)));
-}
+VisitedLinkCommon::VisitedLinkCommon() = default;
 
 VisitedLinkCommon::~VisitedLinkCommon() = default;
 
