@@ -263,6 +263,7 @@ source_set("unit_tests") {
     "//components/policy/proto",
     "//components/prefs:test_support",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//components/sync_preferences:test_support",
     "//components/user_manager",
     "//content/test:test_support",

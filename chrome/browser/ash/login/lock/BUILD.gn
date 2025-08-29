@@ -199,6 +199,7 @@ source_set("unit_tests") {
     "//components/account_id",
     "//components/keyed_service/core",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//components/user_manager",
     "//content/test:test_support",
     "//device/bluetooth",

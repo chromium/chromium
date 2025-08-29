@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/boot_times_recorder/boot_times_recorder.h"
 #include "chrome/browser/ash/login/saml/in_session_password_change_manager.h"
 #include "chrome/browser/ash/login/session/chrome_session_manager.h"
+#include "chrome/browser/ash/login/session/session_manager_delegate_impl.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
 #include "chrome/browser/ash/login/users/policy_user_manager_controller.h"
 #include "chrome/browser/ash/login/users/profile_user_manager_controller.h"
@@ -222,7 +223,8 @@ void BrowserProcessPlatformPart::ShutdownDeviceDisablingManager() {
 void BrowserProcessPlatformPart::InitializeSessionManager() {
   CHECK(ash::BootTimesRecorder::GetIfCreated());
   CHECK(!session_manager_);
-  session_manager_ = std::make_unique<ash::ChromeSessionManager>();
+  session_manager_ = std::make_unique<ash::ChromeSessionManager>(
+      std::make_unique<ash::SessionManagerDelegateImpl>());
   session_manager_->AddObserver(ash::BootTimesRecorder::Get());
 }
 

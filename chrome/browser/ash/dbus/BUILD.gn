@@ -269,6 +269,8 @@ source_set("unit_tests") {
     "//components/exo",
     "//components/policy/core/common:test_support",
     "//components/reporting/proto:interface_proto",
+    "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//content/test:test_support",
     "//dbus",
     "//mojo/public/cpp/bindings",

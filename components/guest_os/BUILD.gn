@@ -43,6 +43,7 @@ source_set("unit_tests") {
     "//chromeos/dbus/power:power_manager_proto",
     "//components/prefs:test_support",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//content/test:test_support",
     "//testing/gtest",
     "//ui/aura:test_support",

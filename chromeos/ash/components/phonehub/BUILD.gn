@@ -334,6 +334,7 @@ source_set("unit_tests") {
     "//components/metrics/structured:structured_metrics_features",
     "//components/prefs:test_support",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//device/bluetooth:mocks",
     "//skia",
     "//testing/gtest",

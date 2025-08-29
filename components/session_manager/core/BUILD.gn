@@ -8,6 +8,7 @@ component("core") {
     "session.h",
     "session_manager.cc",
     "session_manager.h",
+    "session_manager_delegate.h",
     "session_manager_observer.h",
   ]
   deps = [
@@ -18,4 +19,15 @@ component("core") {
     "//skia",
   ]
   defines = [ "SESSION_IMPLEMENTATION" ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_session_manager_delegate.cc",
+    "fake_session_manager_delegate.h",
+  ]
+
+  deps = [ ":core" ]
 }

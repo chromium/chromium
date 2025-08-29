@@ -49,6 +49,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/cloud_policy.pb.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/test_utils.h"
@@ -206,7 +207,8 @@ class CloudExternalDataPolicyObserverTest : public ash::DeviceSettingsTestBase {
       user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
 
   TestingProfileManager profile_manager_;
-  session_manager::SessionManager session_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
 };
 
 CloudExternalDataPolicyObserverTest::CloudExternalDataPolicyObserverTest()

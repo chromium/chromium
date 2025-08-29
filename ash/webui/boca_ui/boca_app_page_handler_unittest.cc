@@ -57,6 +57,7 @@
 #include "components/content_settings/core/browser/content_settings_policy_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -593,7 +594,8 @@ class BocaAppPageHandlerTest : public testing::Test {
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   TestingPrefServiceSimple local_state_;
   ::boca::Session session = GetCommonActiveSessionProto();
-  session_manager::SessionManager device_session_manager_;
+  session_manager::SessionManager device_session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
 
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
       fake_user_manager_;

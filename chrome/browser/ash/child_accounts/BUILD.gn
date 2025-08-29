@@ -154,6 +154,8 @@ source_set("unit_tests") {
     "//components/account_id:test_support",
     "//components/app_constants",
     "//components/services/app_service/public/cpp:test_support",
+    "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//content/test:test_support",
     "//extensions/common",
     "//testing/gtest",
@@ -161,8 +163,6 @@ source_set("unit_tests") {
     # Tests from subdirs:
     "//chrome/browser/ash/child_accounts/on_device_controls:unit_tests",
     "//chrome/browser/ash/child_accounts/parent_access_code:unit_tests",
-    "//chrome/browser/ash/child_accounts/parent_access_code:unit_tests",
-    "//chrome/browser/ash/child_accounts/time_limits:unit_tests",
     "//chrome/browser/ash/child_accounts/time_limits:unit_tests",
   ]
 

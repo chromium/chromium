@@ -53,6 +53,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/scope_set.h"
@@ -892,7 +893,9 @@ TEST_F(UserCloudPolicyManagerAshTest, TestReportSchedulerDelayedCreation) {
 
   // After UserCloudPolicyManagerAsh is initialized, report scheduler is
   // still not created because the profile of primary user hasn't been created.
-  session_manager::SessionManager session_manager;
+  session_manager::SessionManager session_manager{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
+
   InitAndConnectManager();
   EXPECT_FALSE(manager_->GetReportSchedulerForTesting());
 

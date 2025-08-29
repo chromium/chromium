@@ -5491,6 +5491,7 @@ static_library("test_support") {
     "//components/manta/proto",
     "//components/prefs:test_support",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//components/user_education/common",
     "//components/user_manager",
     "//components/viz/test:test_support",

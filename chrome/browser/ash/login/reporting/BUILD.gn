@@ -134,6 +134,7 @@ source_set("unit_tests") {
     "//components/policy/core/common",
     "//components/reporting/client:test_support",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//components/user_manager",
     "//content/test:test_support",
   ]

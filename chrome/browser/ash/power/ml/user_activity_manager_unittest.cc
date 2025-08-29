@@ -36,6 +36,8 @@
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -284,7 +286,8 @@ class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
 
  private:
   std::unique_ptr<IdleEventNotifier> idle_event_notifier_;
-  session_manager::SessionManager session_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
   std::unique_ptr<UserActivityManager> activity_logger_;
   std::unique_ptr<BrowserControllerImpl> browser_controller_;
 };

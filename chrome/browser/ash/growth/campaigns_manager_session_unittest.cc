@@ -20,6 +20,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "components/component_updater/ash/fake_component_manager_ash.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -53,7 +54,8 @@ class CampaignsManagerSessionTest : public testing::Test {
     ASSERT_TRUE(profile_manager_->SetUp());
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     InitializeComponentManager();
-    session_manager_ = std::make_unique<session_manager::SessionManager>();
+    session_manager_ = std::make_unique<session_manager::SessionManager>(
+        std::make_unique<session_manager::FakeSessionManagerDelegate>());
   }
 
   void TearDown() override {

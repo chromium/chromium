@@ -26,7 +26,8 @@ class SessionLengthLimiter;
 
 class ChromeSessionManager : public session_manager::SessionManager {
  public:
-  ChromeSessionManager();
+  ChromeSessionManager(
+      std::unique_ptr<session_manager::SessionManagerDelegate> delegate);
 
   ChromeSessionManager(const ChromeSessionManager&) = delete;
   ChromeSessionManager& operator=(const ChromeSessionManager&) = delete;

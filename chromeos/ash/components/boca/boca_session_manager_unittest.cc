@@ -35,6 +35,7 @@
 #include "chromeos/ash/components/settings/fake_cros_settings_provider.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -350,7 +351,8 @@ class BocaSessionManagerTest : public BocaSessionManagerTestBase {
   }
 
  protected:
-  session_manager::SessionManager device_session_manger_;
+  session_manager::SessionManager device_session_manger_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
   base::Time session_start_time_ = base::Time::Now();
   bool is_producer_ = true;
 

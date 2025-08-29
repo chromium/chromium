@@ -24,6 +24,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -134,7 +135,8 @@ void OfflineSigninLimiterTest::VerifyLastSignIn(user_manager::User* user,
 }
 
 void OfflineSigninLimiterTest::SetUp() {
-  session_manager_.emplace();
+  session_manager_.emplace(
+      std::make_unique<session_manager::FakeSessionManagerDelegate>());
   fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
   profile_ = std::make_unique<TestingProfile>();
   known_user_ = std::make_unique<user_manager::KnownUser>(

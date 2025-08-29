@@ -12,6 +12,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager_delegate.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
 
@@ -20,7 +21,10 @@ namespace session_manager {
 // static
 SessionManager* SessionManager::instance = nullptr;
 
-SessionManager::SessionManager() {
+SessionManager::SessionManager(
+    std::unique_ptr<session_manager::SessionManagerDelegate> delegate)
+    : delegate_(std::move(delegate)) {
+  CHECK(delegate_);
   DCHECK(!SessionManager::Get());
   SessionManager::SetInstance(this);
 }
@@ -74,6 +78,10 @@ void SessionManager::SwitchActiveSession(const AccountId& account_id) {
   CHECK(user_manager_);
   CHECK(HasSessionForAccountId(account_id));
   user_manager_->SwitchActiveUser(account_id);
+}
+
+void SessionManager::RequestSignOut() {
+  delegate_->RequestSignOut();
 }
 
 void SessionManager::OnUserManagerCreated(

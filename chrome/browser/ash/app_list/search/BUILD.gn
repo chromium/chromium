@@ -217,6 +217,7 @@ source_set("unit_tests") {
     "//components/services/app_service/public/cpp:app_types",
     "//components/services/app_service/public/cpp:test_support",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//components/sync:test_support",
     "//components/sync/model",
     "//components/sync_preferences:test_support",

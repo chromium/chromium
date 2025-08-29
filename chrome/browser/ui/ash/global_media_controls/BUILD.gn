@@ -86,6 +86,8 @@ source_set("unit_tests") {
     "//components/global_media_controls:test_support",
     "//components/media_message_center:test_support",
     "//components/media_router/common",
+    "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//content/test:test_support",
     "//services/media_session/public/cpp",
     "//services/media_session/public/mojom",

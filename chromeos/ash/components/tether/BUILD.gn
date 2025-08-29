@@ -294,6 +294,7 @@ source_set("unit_tests") {
     "//chromeos/dbus/power",
     "//components/prefs:test_support",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//components/sync_preferences:test_support",
     "//device/bluetooth",
     "//device/bluetooth:mocks",

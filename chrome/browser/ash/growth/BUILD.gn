@@ -106,6 +106,8 @@ source_set("unit_tests") {
     "//components/metrics",
     "//components/metrics/structured:structured_events",
     "//components/metrics/structured:test_support",
+    "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//testing/gtest",
   ]
 }

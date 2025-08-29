@@ -41,6 +41,8 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/account_id/account_id.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -416,7 +418,8 @@ TEST_F(
     GetRemoteDevices_InitiallyNoSyncedDevices_MultiDeviceSetupDialogVisible) {
   SetDisplaySize(gfx::Size(1920, 1200));
 
-  ChromeSessionManager manager;
+  ChromeSessionManager manager{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
   manager.OnUserManagerCreated(fake_user_manager_.Get());
 
   auto dialog = std::make_unique<FakeMultiDeviceSetupDialog>();

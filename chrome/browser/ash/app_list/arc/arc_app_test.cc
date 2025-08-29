@@ -40,6 +40,8 @@
 #include "chromeos/ash/experiences/arc/test/fake_compatibility_mode_instance.h"
 #include "chromeos/ash/experiences/arc/test/fake_intent_helper_host.h"
 #include "chromeos/ash/experiences/arc/test/fake_intent_helper_instance.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -110,7 +112,8 @@ void ArcAppTest::SetUp(Profile* profile) {
   profile_ = profile;
 
   if (!session_manager::SessionManager::Get()) {
-    session_manager_ = std::make_unique<session_manager::SessionManager>();
+    session_manager_ = std::make_unique<session_manager::SessionManager>(
+        std::make_unique<session_manager::FakeSessionManagerDelegate>());
   }
 
   arc::ResetArcAllowedCheckForTesting(profile_);

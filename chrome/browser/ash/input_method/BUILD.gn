@@ -376,6 +376,7 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//components/spellcheck/browser",
     "//components/spellcheck/common:spellcheck_result",

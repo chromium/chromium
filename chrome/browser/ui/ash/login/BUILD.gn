@@ -220,6 +220,7 @@ static_library("test_support") {
     "//chrome/browser/ui",
     "//chrome/browser/ui/webui/ash/login",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
   ]
 }
 

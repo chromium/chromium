@@ -9093,6 +9093,7 @@ test("unit_tests") {
       "//components/push_notification:test_support",
       "//components/services/app_service",
       "//components/session_manager/core",
+      "//components/session_manager/core:test_support",
       "//components/soda",
       "//components/webapk:proto",
       "//mojo/public/cpp/test_support:test_utils",

@@ -12,6 +12,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -130,7 +131,8 @@ class DnsLatencyRoutineTest : public ::testing::Test {
   std::unique_ptr<FakeNetworkContext> fake_network_context_;
   raw_ptr<Profile, DanglingUntriaged> test_profile_;
   std::unique_ptr<FakeTickClock> fake_tick_clock_;
-  session_manager::SessionManager session_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
   TestingProfileManager profile_manager_;
   std::unique_ptr<DnsLatencyRoutine> dns_latency_routine_;
   base::WeakPtrFactory<DnsLatencyRoutineTest> weak_factory_{this};

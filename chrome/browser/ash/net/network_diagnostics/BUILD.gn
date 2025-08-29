@@ -132,6 +132,7 @@ source_set("unit_tests") {
     "//chromeos/services/network_health/public/mojom",
     "//components/proxy_config",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//components/sync_preferences:test_support",
     "//components/user_manager:test_support",
     "//content/test:test_support",

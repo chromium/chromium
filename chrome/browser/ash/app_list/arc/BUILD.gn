@@ -233,6 +233,7 @@ static_library("test_support") {
     "//chrome/browser/ui",
     "//chromeos/ash/experiences/arc/mojom",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//components/user_manager",
     "//testing/gmock",
   ]

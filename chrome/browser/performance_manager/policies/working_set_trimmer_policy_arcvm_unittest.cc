@@ -28,6 +28,7 @@
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -125,7 +126,8 @@ class WorkingSetTrimmerPolicyArcVmTest : public testing::Test {
   display::test::TestScreen test_screen_{/*create_display=*/true,
                                          /*register_screen=*/true};
   TestingPrefServiceSimple local_state_;
-  session_manager::SessionManager session_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   std::unique_ptr<arc::FakeAppHost> app_host_;
   std::unique_ptr<arc::FakeAppInstance> app_instance_;

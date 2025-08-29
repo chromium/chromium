@@ -57,6 +57,7 @@
 #include "chromeos/ash/services/hotspot_config/public/cpp/cros_hotspot_config_test_helper.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
@@ -124,9 +125,12 @@ class AshTestHelper::PowerPolicyControllerInitializer {
 AshTestHelper::AshTestHelper(ui::ContextFactory* context_factory)
     : AuraTestHelper(context_factory),
       system_monitor_(std::make_unique<base::SystemMonitor>()),
-      session_manager_(!session_manager::SessionManager::Get()
-                           ? std::make_unique<session_manager::SessionManager>()
-                           : nullptr) {
+      session_manager_(
+          !session_manager::SessionManager::Get()
+              ? std::make_unique<session_manager::SessionManager>(
+                    std::make_unique<
+                        session_manager::FakeSessionManagerDelegate>())
+              : nullptr) {
   views::ViewsTestHelperAura::SetFallbackTestViewsDelegateFactory(
       &MakeTestViewsDelegate);
 

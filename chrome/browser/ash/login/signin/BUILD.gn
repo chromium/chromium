@@ -187,6 +187,8 @@ source_set("unit_tests") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/prefs:test_support",
+    "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//components/supervised_user/core/browser",
     "//components/user_manager",

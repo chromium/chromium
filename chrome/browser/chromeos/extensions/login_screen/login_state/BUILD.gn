@@ -69,6 +69,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/login/login_state",
     "//components/session_manager:base",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//content/test:test_support",
     "//extensions:test_support",
     "//extensions/browser",

@@ -61,6 +61,7 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//components/user_manager",
     "//content/test:test_support",
     "//services/device/public/cpp:test_support",

@@ -16,6 +16,7 @@
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "components/guest_os/guest_os_prefs.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -127,7 +128,8 @@ class GuestOsEngagementMetricsTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  session_manager::SessionManager session_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
 
   base::SimpleTestTickClock test_tick_clock_;
   base::SimpleTestClock test_clock_;

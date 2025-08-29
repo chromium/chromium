@@ -36,6 +36,7 @@
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/fake_user_manager.h"
@@ -226,7 +227,8 @@ class AutomaticRebootManagerBasicTest : public testing::Test {
 
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       user_manager_;
-  session_manager::SessionManager session_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
 
   raw_ptr<FakeUpdateEngineClient, DanglingUntriaged> update_engine_client_ =
       nullptr;  // Not owned.

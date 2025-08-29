@@ -21,6 +21,7 @@
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "chromeos/ash/components/tether/fake_host_scanner.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,7 +62,8 @@ class HostScanSchedulerImplTest : public testing::Test {
         NetworkStateHandler::TECHNOLOGY_ENABLED);
 
     fake_host_scanner_ = std::make_unique<FakeHostScanner>();
-    session_manager_ = std::make_unique<session_manager::SessionManager>();
+    session_manager_ = std::make_unique<session_manager::SessionManager>(
+        std::make_unique<session_manager::FakeSessionManagerDelegate>());
 
     host_scan_scheduler_ = std::make_unique<HostScanSchedulerImpl>(
         helper_->network_state_handler(), fake_host_scanner_.get(),

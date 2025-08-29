@@ -163,6 +163,7 @@ source_set("unit_tests") {
     "//components/services/app_service/public/cpp:app_types",
     "//components/session_manager:base",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//components/sync_preferences:test_support",
     "//components/user_manager",
     "//components/webapps/common",

@@ -29,6 +29,7 @@
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "extensions/browser/extension_registrar.h"
@@ -158,7 +159,8 @@ class FamilyUserChromeActivityMetricsTest
  private:
   std::unique_ptr<FamilyUserChromeActivityMetrics>
       family_user_chrome_activity_metrics_;
-  session_manager::SessionManager session_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
   raw_ptr<extensions::ExtensionService, DanglingUntriaged> extension_service_ =
       nullptr;
 };
