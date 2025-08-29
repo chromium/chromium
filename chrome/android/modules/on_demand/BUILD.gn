@@ -71,7 +71,10 @@ android_library("data_importer_service_impl_java_test") {
   testonly = true
   resources_package = "org.chromium.chrome.test"
 
-  sources = [ "javatests/src/org/chromium/chrome/browser/data_import/TargetServiceTest.java" ]
+  sources = [
+    "javatests/src/org/chromium/chrome/browser/data_import/TargetServiceGrpcTest.java",
+    "javatests/src/org/chromium/chrome/browser/data_import/TargetServiceTest.java",
+  ]
   deps = [
     ":data_importer_service_impl_java",
     ":os_migration_target_service_grpc_java",
@@ -84,7 +87,9 @@ android_library("data_importer_service_impl_java_test") {
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:io_grpc_grpc_api_java",
     "//third_party/android_deps:io_grpc_grpc_binder_java",
+    "//third_party/android_deps:io_grpc_grpc_inprocess_java",
     "//third_party/android_deps:io_grpc_grpc_stub_java",
+    "//third_party/android_deps:io_grpc_grpc_testing_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
