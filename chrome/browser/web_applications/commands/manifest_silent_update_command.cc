@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/image_visual_diff.h"
 #include "content/public/browser/web_contents.h"
 
@@ -441,16 +442,38 @@ void ManifestSilentUpdateCommand::
   GetMutableDebugValue().Set("silent_update_required",
                              base::ToString(silent_update_required_));
   proto::PendingUpdateInfo pending_update_info;
-  bool has_name_changed = false;
-
-  // TODO(crbug.com/428976598): Silently update preinstalled or admin installed
-  // apps.
   std::u16string new_title;
   base::TrimWhitespace(new_install_info_->title, base::TRIM_ALL, &new_title);
-  if (!new_title.empty() &&
-      new_install_info_->title !=
-          base::UTF8ToUTF16(web_app->untranslated_name())) {
-    has_name_changed = true;
+  bool has_name_changed =
+      !new_title.empty() && new_install_info_->title !=
+                                base::UTF8ToUTF16(web_app->untranslated_name());
+
+  // Changes to preinstalled or admin installed web apps are always silently
+  // applied since they are installed by trusted sources. There should be no
+  // pending update info saved for these web apps.
+  if (base::FeatureList::IsEnabled(
+          features::kSilentPolicyAndDefaultAppUpdating) &&
+      (web_app->IsPolicyInstalledApp() || web_app->IsPreinstalledApp())) {
+    if (!has_icon_url_changed_ && !has_name_changed &&
+        !silent_update_required_) {
+      CompleteCommandAndSelfDestruct(
+          ManifestSilentUpdateCheckResult::kAppUpToDate);
+      return;
+    }
+
+    new_install_info_->trusted_icons = new_install_info_->manifest_icons;
+    new_install_info_->trusted_icon_bitmaps = new_install_info_->icon_bitmaps;
+
+    app_lock_->install_finalizer().FinalizeUpdate(
+        *new_install_info_,
+        base::BindOnce(&ManifestSilentUpdateCommand::
+                           UpdateFinalizedWritePendingInfoIfNeeded,
+                       GetWeakPtr(),
+                       std::optional<proto::PendingUpdateInfo>()));
+    return;
+  }
+
+  if (has_name_changed) {
     pending_update_info.set_name(base::UTF16ToUTF8(new_install_info_->title));
     new_install_info_->title = base::UTF8ToUTF16(web_app->untranslated_name());
   }
@@ -518,7 +541,6 @@ void ManifestSilentUpdateCommand::
   bool has_existing_trusted_icon =
       existing_trusted_icon_it != existing_trusted_icon_bitmaps_to_use.end();
 
-  // TODO(crbug.com/434743501): Handle policy installs for updating silently.
   // TODO(crbug.com/437379182): HasMoreThanTenPercentImageDiff() should happen
   // in a different thread.
   // Case: The icons are being set in the PendingUpdateInfo to be updated later.

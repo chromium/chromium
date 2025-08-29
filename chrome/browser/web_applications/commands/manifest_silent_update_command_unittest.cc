@@ -12,6 +12,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/web_applications/external_install_options.h"
+#include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
 #include "chrome/browser/web_applications/test/fake_web_app_origin_association_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -47,6 +49,7 @@ class ManifestSilentUpdateCommandTest : public WebAppTest {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {features::kWebAppUsePrimaryIcon,
+         features::kSilentPolicyAndDefaultAppUpdating,
          blink::features::kWebAppEnableScopeExtensions},
         {});
     WebAppTest::SetUp();
@@ -54,7 +57,7 @@ class ManifestSilentUpdateCommandTest : public WebAppTest {
     provider->SetOriginAssociationManager(
         std::make_unique<FakeWebAppOriginAssociationManager>());
     provider->StartWithSubsystems();
-    test::WaitUntilReady(provider);
+    test::WaitUntilWebAppProviderAndSubsystemsReady(provider);
 
     web_contents_manager().SetUrlLoaded(web_contents(), app_url());
   }
@@ -67,6 +70,7 @@ class ManifestSilentUpdateCommandTest : public WebAppTest {
     page_state.has_service_worker = false;
     page_state.valid_manifest_for_web_app = true;
     page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
+    page_state.url_load_result = webapps::WebAppUrlLoaderResult::kUrlLoaded;
 
     // Set up manifest icon.
     blink::Manifest::ImageResource icon;
@@ -1154,5 +1158,210 @@ TEST_F(ManifestSilentUpdateCommandTest,
                   ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate,
                   /*count=*/1)));
 }
+
+class ManifestSilentUpdateCommandExternalAppsTest
+    : public ManifestSilentUpdateCommandTest,
+      public testing::WithParamInterface<ExternalInstallSource> {
+ public:
+  webapps::AppId InstallExternallyManagedAppFromSource() {
+    ExternalInstallOptions install_options(app_url(),
+                                           /*user_display_mode=*/std::nullopt,
+                                           GetParam());
+
+    base::test::TestFuture<ExternallyManagedAppManager::InstallResult> future;
+    provider().scheduler().InstallExternallyManagedApp(
+        install_options,
+        /*installed_placeholder_app_id=*/std::nullopt, future.GetCallback());
+    const ExternallyManagedAppManager::InstallResult& result =
+        future.Get<ExternallyManagedAppManager::InstallResult>();
+    EXPECT_EQ(result.code, webapps::InstallResultCode::kSuccessNewInstall);
+    EXPECT_TRUE(result.app_id.has_value());
+    return *result.app_id;
+  }
+};
+
+TEST_P(ManifestSilentUpdateCommandExternalAppsTest, AppUpToDate) {
+  SetupBasicInstallablePageState();
+  webapps::AppId app_id = InstallExternallyManagedAppFromSource();
+
+  EXPECT_EQ(RunManifestUpdateAndGetResult(),
+            ManifestSilentUpdateCheckResult::kAppUpToDate);
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(
+          "Webapp.Update.ManifestSilentUpdateCheckResult"),
+      BucketsAre(base::Bucket(ManifestSilentUpdateCheckResult::kAppUpToDate,
+                              /*count=*/1)));
+}
+
+TEST_P(ManifestSilentUpdateCommandExternalAppsTest, StartUrlUpdatedSilently) {
+  SetupBasicInstallablePageState();
+  webapps::AppId app_id = InstallExternallyManagedAppFromSource();
+
+  EXPECT_EQ(provider().registrar_unsafe().GetAppStartUrl(app_id),
+            "https://www.foo.bar/web_apps/basic.html");
+
+  auto& new_manifest = GetPageManifest();
+  const GURL new_start_url("https://www.foo.bar/new_scope/new_basic.html");
+  new_manifest->start_url = new_start_url;
+
+  EXPECT_EQ(RunManifestUpdateAndGetResult(),
+            ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
+  EXPECT_EQ(provider().registrar_unsafe().GetAppStartUrl(app_id),
+            new_start_url);
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Webapp.Update.ManifestSilentUpdateCheckResult"),
+              BucketsAre(base::Bucket(
+                  ManifestSilentUpdateCheckResult::kAppSilentlyUpdated,
+                  /*count=*/1)));
+}
+
+TEST_P(ManifestSilentUpdateCommandExternalAppsTest,
+       AppNameChangedNoPendingUpdateInfoSaved) {
+  SetupBasicInstallablePageState();
+  webapps::AppId app_id = InstallExternallyManagedAppFromSource();
+
+  EXPECT_EQ(
+      provider().registrar_unsafe().GetAppById(app_id)->untranslated_name(),
+      base::UTF16ToUTF8(u"Foo App"));
+
+  auto& new_manifest = GetPageManifest();
+  new_manifest->name = u"New Name";
+
+  EXPECT_EQ(RunManifestUpdateAndGetResult(),
+            ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
+
+  std::optional<proto::PendingUpdateInfo> pending_update_info =
+      provider().registrar_unsafe().GetAppById(app_id)->pending_update_info();
+  ASSERT_FALSE(AppHasPendingUpdateInfo(app_id));
+  EXPECT_EQ(
+      provider().registrar_unsafe().GetAppById(app_id)->untranslated_name(),
+      base::UTF16ToUTF8(u"New Name"));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Webapp.Update.ManifestSilentUpdateCheckResult"),
+              BucketsAre(base::Bucket(
+                  ManifestSilentUpdateCheckResult::kAppSilentlyUpdated,
+                  /*count=*/1)));
+}
+
+TEST_P(ManifestSilentUpdateCommandExternalAppsTest,
+       IconMoreThanTenPercentDiffChangedUpdatedSilently) {
+  SetupBasicInstallablePageState();
+  webapps::AppId app_id = InstallExternallyManagedAppFromSource();
+
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).begin()->url,
+            GURL("https://example.com/path/def_icon.png"));
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).size(), 1u);
+
+  auto& new_manifest = GetPageManifest();
+
+  // Set up manifest icon.
+  blink::Manifest::ImageResource new_icon;
+  new_icon.src = GURL("https://example2.com/path/def_icon.png");
+  new_icon.sizes = {{96, 96}};
+  new_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
+
+  new_manifest->icons = {new_icon};
+
+  // Set icon in content. Setting the icon color to YELLOW to trigger a more
+  // than 10% image diff.
+  SkBitmap updated_bitmap = gfx::test::CreateBitmap(96, SK_ColorYELLOW);
+  web_contents_manager()
+      .GetOrCreateIconState(GURL("https://example2.com/path/def_icon.png"))
+      .bitmaps = {updated_bitmap};
+
+  EXPECT_EQ(RunManifestUpdateAndGetResult(),
+            ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
+
+  std::optional<proto::PendingUpdateInfo> pending_update_info =
+      provider().registrar_unsafe().GetAppById(app_id)->pending_update_info();
+  ASSERT_FALSE(AppHasPendingUpdateInfo(app_id));
+
+  // Verify pending update icon bitmaps are not written to disk.
+  EXPECT_FALSE(
+      file_utils().PathExists(GetAppPendingTrustedIconsDir(profile(), app_id)));
+  EXPECT_FALSE(file_utils().PathExists(
+      GetAppPendingManifestIconsDir(profile(), app_id)));
+
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).begin()->url,
+            GURL("https://example2.com/path/def_icon.png"));
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Webapp.Update.ManifestSilentUpdateCheckResult"),
+              BucketsAre(base::Bucket(
+                  ManifestSilentUpdateCheckResult::kAppSilentlyUpdated,
+                  /*count=*/1)));
+}
+
+TEST_P(ManifestSilentUpdateCommandExternalAppsTest,
+       IconLessThanTenPercentChangedDiffUpdatedSilently) {
+  SetupBasicInstallablePageState();
+  webapps::AppId app_id = InstallExternallyManagedAppFromSource();
+
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).begin()->url,
+            GURL("https://example.com/path/def_icon.png"));
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).size(), 1u);
+
+  auto& new_manifest = GetPageManifest();
+
+  // Set up manifest icon.
+  blink::Manifest::ImageResource new_icon;
+  new_icon.src = GURL("https://example2.com/path/def_icon.png");
+  new_icon.sizes = {{96, 96}};
+  new_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
+
+  new_manifest->icons = {new_icon};
+
+  SkBitmap changed_bitmap = gfx::test::CreateBitmap(96, SK_ColorCYAN);
+  // For a 96x96 image, total pixels = 9216.
+  // 10% of 9216 = 921.6 pixels.
+  // We'll change a small area, for example, the first 9 rows, to a different
+  // color. 9 rows * 96 columns = 864 pixels changed. This is < 10%.
+  changed_bitmap.eraseArea(SkIRect::MakeXYWH(0, 0, 96, 9), SK_ColorRED);
+
+  // Set icon in content.
+  web_contents_manager()
+      .GetOrCreateIconState(GURL("https://example2.com/path/def_icon.png"))
+      .bitmaps = {changed_bitmap};
+
+  EXPECT_EQ(RunManifestUpdateAndGetResult(),
+            ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
+
+  ASSERT_FALSE(AppHasPendingUpdateInfo(app_id));
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).begin()->url,
+            GURL("https://example2.com/path/def_icon.png"));
+
+  // Verify pending update icon bitmaps are not saved to disk.
+  EXPECT_FALSE(
+      file_utils().PathExists(GetAppPendingTrustedIconsDir(profile(), app_id)));
+  EXPECT_FALSE(file_utils().PathExists(
+      GetAppPendingManifestIconsDir(profile(), app_id)));
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Webapp.Update.ManifestSilentUpdateCheckResult"),
+              BucketsAre(base::Bucket(
+                  ManifestSilentUpdateCheckResult::kAppSilentlyUpdated,
+                  /*count=*/1)));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AllExternalInstallSources,
+    ManifestSilentUpdateCommandExternalAppsTest,
+    testing::Values(ExternalInstallSource::kInternalDefault,
+                    ExternalInstallSource::kExternalDefault,
+                    ExternalInstallSource::kExternalPolicy),
+    [](const testing::TestParamInfo<ExternalInstallSource>& info) {
+      switch (info.param) {
+        case ExternalInstallSource::kInternalDefault:
+          return "InternalDefault";
+        case ExternalInstallSource::kExternalDefault:
+          return "ExternalDefault";
+        case ExternalInstallSource::kExternalPolicy:
+          return "ExternalPolicy";
+        default:
+          NOTREACHED();
+      }
+    });
 
 }  // namespace web_app
