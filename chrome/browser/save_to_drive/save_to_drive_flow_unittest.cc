@@ -140,15 +140,22 @@ TEST_F(SaveToDriveFlowTest, CreatesMultipartUploaderForSmallFile) {
   EXPECT_CALL(event_dispatcher(),
               Notify(AllOf(Field(&SaveToDriveProgress::status,
                                  SaveToDriveStatus::kInitiated))));
+  // Since IdentityManager is not set up, the OAuth fetch will fail.
+  EXPECT_CALL(event_dispatcher(),
+              Notify(AllOf(Field(&SaveToDriveProgress::status,
+                                 SaveToDriveStatus::kUploadFailed),
+                           Field(&SaveToDriveProgress::error_type,
+                                 SaveToDriveErrorType::kOauthError))))
+      .WillOnce([&]() {
+        auto* drive_uploader = test_api_->drive_uploader();
+        ASSERT_TRUE(drive_uploader);
+        EXPECT_EQ(drive_uploader->get_drive_uploader_type_for_testing(),
+                  DriveUploaderType::kMultipart);
+      });
   EXPECT_CALL(content_reader(), Open)
       .WillOnce(base::test::RunOnceCallback<0>(/*success=*/true));
   EXPECT_CALL(content_reader(), GetSize).WillOnce(Return(100));
   SaveToDriveFlow::GetForCurrentDocument(rfh())->Run();
-
-  auto* drive_uploader = test_api_->drive_uploader();
-  ASSERT_TRUE(drive_uploader);
-  EXPECT_EQ(drive_uploader->get_drive_uploader_type_for_testing(),
-            DriveUploaderType::kMultipart);
 }
 
 TEST_F(SaveToDriveFlowTest, CreatesResumableUploaderForLargeFile) {
@@ -156,16 +163,23 @@ TEST_F(SaveToDriveFlowTest, CreatesResumableUploaderForLargeFile) {
   EXPECT_CALL(event_dispatcher(),
               Notify(AllOf(Field(&SaveToDriveProgress::status,
                                  SaveToDriveStatus::kInitiated))));
+  // Since IdentityManager is not set up, the OAuth fetch will fail.
+  EXPECT_CALL(event_dispatcher(),
+              Notify(AllOf(Field(&SaveToDriveProgress::status,
+                                 SaveToDriveStatus::kUploadFailed),
+                           Field(&SaveToDriveProgress::error_type,
+                                 SaveToDriveErrorType::kOauthError))))
+      .WillOnce([&]() {
+        auto* drive_uploader = test_api_->drive_uploader();
+        ASSERT_TRUE(drive_uploader);
+        EXPECT_EQ(drive_uploader->get_drive_uploader_type_for_testing(),
+                  DriveUploaderType::kResumable);
+      });
   EXPECT_CALL(content_reader(), Open)
       .WillOnce(base::test::RunOnceCallback<0>(/*success=*/true));
   // 5 MB + 1 byte to ensure it's greater than the threshold.
   EXPECT_CALL(content_reader(), GetSize).WillOnce(Return(5 * 1024 * 1024 + 1));
   SaveToDriveFlow::GetForCurrentDocument(rfh())->Run();
-
-  auto* drive_uploader = test_api_->drive_uploader();
-  ASSERT_TRUE(drive_uploader);
-  EXPECT_EQ(drive_uploader->get_drive_uploader_type_for_testing(),
-            DriveUploaderType::kResumable);
 }
 
 }  // namespace save_to_drive

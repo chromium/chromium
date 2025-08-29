@@ -17,7 +17,8 @@ class MultipartDriveUploader : public DriveUploader {
  public:
   MultipartDriveUploader(std::string title,
                          AccountInfo account_info,
-                         ProgressCallback progress_callback);
+                         ProgressCallback progress_callback,
+                         Profile* profile);
   MultipartDriveUploader(const MultipartDriveUploader&) = delete;
   MultipartDriveUploader& operator=(const MultipartDriveUploader&) = delete;
   ~MultipartDriveUploader() override;

@@ -9,11 +9,13 @@ namespace save_to_drive {
 MultipartDriveUploader::MultipartDriveUploader(
     std::string title,
     AccountInfo account_info,
-    ProgressCallback progress_callback)
+    ProgressCallback progress_callback,
+    Profile* profile)
     : DriveUploader(DriveUploaderType::kMultipart,
                     std::move(title),
                     std::move(account_info),
-                    std::move(progress_callback)) {}
+                    std::move(progress_callback),
+                    profile) {}
 
 MultipartDriveUploader::~MultipartDriveUploader() = default;
 

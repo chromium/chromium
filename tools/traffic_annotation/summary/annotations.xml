@@ -290,7 +290,7 @@ Refer to README.md for content description and update process.
  <item id="fast_pair_device_metadata_fetcher" added_in_milestone="100" content_hash_code="0099c721" os_list="chromeos" file_path="ash/quick_pair/repository/fast_pair/device_metadata_fetcher.cc" />
  <item id="wallpaper_google_photos_photos" added_in_milestone="100" content_hash_code="04839870" os_list="chromeos" file_path="chrome/browser/ash/wallpaper_handlers/google_photos_wallpaper_handlers.cc" />
  <item id="webview_proxy_config" added_in_milestone="100" content_hash_code="009d2396" os_list="android" file_path="android_webview/browser/network_service/aw_proxy_config_monitor.cc" />
- <item id="device_trust_key_rotation" added_in_milestone="100" content_hash_code="05cc1b9b" os_list="linux,windows" file_path="chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mojo_key_network_delegate.cc" />
+ <item id="device_trust_key_rotation" added_in_milestone="100" content_hash_code="05cc1b9b" os_list="linux,windows,android" file_path="chrome/browser/enterprise/connectors/device_trust/key_management/core/network/mojo_key_network_delegate.cc" />
  <item id="sct_auditing_hashdance" added_in_milestone="100" content_hash_code="00ea07d2" os_list="linux,windows,android,chromeos" file_path="chrome/browser/ssl/sct_reporting_service.cc" />
  <item id="wallpaper_google_photos_enabled" added_in_milestone="101" content_hash_code="027ae762" os_list="chromeos" file_path="chrome/browser/ash/wallpaper_handlers/google_photos_wallpaper_handlers.cc" />
  <item id="printing_oauth2_metadata_request" added_in_milestone="101" type="partial" second_id="printing_oauth2_http_exchange" content_hash_code="041eb66d" os_list="chromeos" semantics_fields="2,4" file_path="chrome/browser/ash/printing/oauth2/authorization_server_data.cc" />
@@ -520,4 +520,5 @@ Refer to README.md for content description and update process.
  <item id="aim_eligibility_fetch" added_in_milestone="141" content_hash_code="00755d9b" os_list="linux,windows,android,chromeos" file_path="components/omnibox/browser/aim_eligibility_service.cc" />
  <item id="enterprise_logo_fetcher_for_browser" added_in_milestone="141" content_hash_code="03eb36e5" os_list="linux,windows,chromeos,android" file_path="chrome/browser/enterprise/util/managed_browser_utils.cc" />
  <item id="devtools_gdp_service" added_in_milestone="141" content_hash_code="0240d8d3" os_list="linux,windows,android,chromeos" file_path="chrome/browser/devtools/gdp_service_handler.cc" />
+ <item id="save_to_drive" added_in_milestone="141" content_hash_code="0012bc0c" os_list="linux,windows" file_path="chrome/browser/save_to_drive/drive_uploader.cc" />
 </annotations>

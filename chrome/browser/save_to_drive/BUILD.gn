@@ -38,6 +38,7 @@ source_set("save_to_drive") {
     "//chrome/browser/signin",
     "//chrome/common/extensions",
     "//chrome/common/extensions/api",
+    "//components/endpoint_fetcher",
     "//components/pdf/browser",
     "//content/public/browser",
     "//extensions/browser",
@@ -49,6 +50,7 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
+    "drive_uploader_browsertest.cc",
     "pdf_content_reader_browsertest.cc",
     "save_to_drive_event_dispatcher_browsertest.cc",
   ]

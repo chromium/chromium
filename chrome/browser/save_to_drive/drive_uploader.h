@@ -5,14 +5,39 @@
 #ifndef CHROME_BROWSER_SAVE_TO_DRIVE_DRIVE_UPLOADER_H_
 #define CHROME_BROWSER_SAVE_TO_DRIVE_DRIVE_UPLOADER_H_
 
+#include <memory>
 #include <string>
+#include <string_view>
+#include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "components/signin/public/identity_manager/account_info.h"
+
+class GoogleServiceAuthError;
+class GURL;
+class Profile;
+
+namespace endpoint_fetcher {
+enum class HttpMethod;
+class EndpointFetcher;
+using UploadProgressCallback =
+    base::RepeatingCallback<void(uint64_t, uint64_t)>;
+}  // namespace endpoint_fetcher
 
 namespace extensions::api::pdf_viewer_private {
 struct SaveToDriveProgress;
 }  // namespace extensions::api::pdf_viewer_private
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
+namespace signin {
+class AccessTokenFetcher;
+class IdentityManager;
+struct AccessTokenInfo;
+}  // namespace signin
 
 namespace save_to_drive {
 
@@ -26,7 +51,8 @@ enum class DriveUploaderType {
 // Base class for all Drive uploader implementations. It is responsible for
 // fetching the access token for the user's account, uploading the file to
 // Drive, and notifying the caller about the upload progress. Destroying the
-// DriveUploader will cancel the upload if it is in progress.
+// DriveUploader will cancel the upload if it is in progress. This class should
+// only be used on the UI thread.
 class DriveUploader {
  public:
   // Callback to be invoked periodically when there is progress in the Save to
@@ -37,7 +63,8 @@ class DriveUploader {
   DriveUploader(DriveUploaderType drive_uploader_type,
                 std::string title,
                 AccountInfo account_info,
-                ProgressCallback progress_callback);
+                ProgressCallback progress_callback,
+                Profile* profile);
   DriveUploader(const DriveUploader&) = delete;
   DriveUploader& operator=(const DriveUploader&) = delete;
   virtual ~DriveUploader();
@@ -52,10 +79,29 @@ class DriveUploader {
   DriveUploaderType get_drive_uploader_type_for_testing() const;
 
  protected:
+  // Convenience function to create an `EndpointFetcher` to make HTTP requests
+  // to Drive.
+  std::unique_ptr<endpoint_fetcher::EndpointFetcher> CreateEndpointFetcher(
+      const GURL& fetch_url,
+      endpoint_fetcher::HttpMethod http_method,
+      std::string_view content_type,
+      std::string_view request_string,
+      const std::vector<std::string>& request_headers,
+      endpoint_fetcher::UploadProgressCallback upload_progress_callback);
+
+  void OnFetchAccessToken(GoogleServiceAuthError error,
+                          signin::AccessTokenInfo access_token_info);
+
   const DriveUploaderType drive_uploader_type_;
   const std::string title_;
   const AccountInfo account_info_;
   const ProgressCallback progress_callback_;
+  std::vector<std::string> oauth_headers_;
+  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+  std::unique_ptr<signin::AccessTokenFetcher> access_token_fetcher_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  base::WeakPtrFactory<DriveUploader> weak_ptr_factory_{this};
 };
 
 }  // namespace save_to_drive

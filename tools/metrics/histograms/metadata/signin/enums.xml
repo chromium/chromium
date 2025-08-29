@@ -734,6 +734,7 @@ chromium-metrics-reviews@google.com.
   <int value="43" label="Feed Network"/>
   <int value="44" label="Autofill Payments"/>
   <int value="45" label="Payments Access Token Fetcher"/>
+  <int value="46" label="Save to Drive"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/identity_manager/oauth_consumer_ids.h:OAuthConsumerId) -->

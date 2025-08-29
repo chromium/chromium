@@ -69,6 +69,7 @@ constexpr char kFeedNetworkName[] = "feed_network";
 constexpr char kAutofillPaymentsName[] = "autofill_payments";
 constexpr char kPaymentsAccessTokenFetcherName[] =
     "payments_access_token_fetcher";
+constexpr char kSaveToDriveName[] = "save_to_drive";
 
 }  // namespace
 
@@ -290,6 +291,10 @@ OAuthConsumer GetOAuthConsumerFromId(OAuthConsumerId oauth_consumer_id) {
       return OAuthConsumer(
           /*name=*/kPaymentsAccessTokenFetcherName,
           /*scopes=*/{GaiaConstants::kPaymentsOAuth2Scope});
+    case OAuthConsumerId::kSaveToDrive:
+      return OAuthConsumer(
+          /*name=*/kSaveToDriveName,
+          /*scopes=*/{GaiaConstants::kDriveOAuth2Scope});
   }
   NOTREACHED();
 }

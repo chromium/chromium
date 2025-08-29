@@ -15,7 +15,8 @@ class ResumableDriveUploader : public DriveUploader {
  public:
   ResumableDriveUploader(std::string title,
                          AccountInfo account_info,
-                         ProgressCallback progress_callback);
+                         ProgressCallback progress_callback,
+                         Profile* profile);
   ResumableDriveUploader(const ResumableDriveUploader&) = delete;
   ResumableDriveUploader& operator=(const ResumableDriveUploader&) = delete;
   ~ResumableDriveUploader() override;

@@ -387,6 +387,7 @@ after discussions on the right group.
       <annotation id="aim_eligibility_fetch"/>
       <annotation id="enterprise_logo_fetcher_for_browser"/>
       <annotation id="devtools_gdp_service"/>
+      <annotation id="save_to_drive"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
