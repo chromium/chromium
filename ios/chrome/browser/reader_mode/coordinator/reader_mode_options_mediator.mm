@@ -74,7 +74,9 @@
 #pragma mark - Public
 
 - (void)disconnect {
-  _distilledPagePrefs->RemoveObserver(_prefsObserverBridge.get());
+  if (_distilledPagePrefs) {
+    _distilledPagePrefs->RemoveObserver(_prefsObserverBridge.get());
+  }
   _prefsObserverBridge.reset();
   _distilledPagePrefs = nullptr;
   _webStateList = nullptr;

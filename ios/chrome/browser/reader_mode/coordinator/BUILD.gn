@@ -45,6 +45,7 @@ source_set("chip") {
 source_set("options") {
   visibility = [
     ":coordinator",
+    ":unit_tests",
     "//ios/chrome/browser/intelligence/page_action_menu/coordinator",
   ]
   sources = [
@@ -70,9 +71,13 @@ source_set("options") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "reader_mode_mediator_unittest.mm" ]
+  sources = [
+    "reader_mode_mediator_unittest.mm",
+    "reader_mode_options_mediator_unittest.mm",
+  ]
   deps = [
     ":coordinator",
+    ":options",
     "//base/test:test_support",
     "//components/dom_distiller/core",
     "//components/dom_distiller/core/mojom",
