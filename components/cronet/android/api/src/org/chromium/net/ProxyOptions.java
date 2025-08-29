@@ -16,12 +16,19 @@ import java.util.Objects;
 public final class ProxyOptions {
 
     /**
-     * Constructs a proxy configuration out of a list of {@link Proxy}. Proxies in the list will be
-     * used in order. Proxy in position n+1 will be used only if we failed to use proxy in position
-     * n. A {@code null} list element represents a DIRECT connection, in which case no proxying will
-     * take place. This can be used to define fail-open/fail-closed semantics: if the all of the
-     * proxies specified in the list happen to be unreachable, adding (or not adding) a {@code null}
-     * element at the end of the list will control whether non-proxied connections are allowed.
+     * Constructs a proxy configuration out of a list of {@link Proxy}.
+     *
+     * <p>Proxies in the list will be used in order. Proxy in position N+1 will be used only if we
+     * failed to use proxy in position N. If proxy in position N fails for any reason (including
+     * cancellations triggered via {@link Proxy.Callback}), but proxy in position N+1 succeeds,
+     * proxies in position N will be temporarily deprioritized. While a proxy is deprioritized it
+     * used only as a last resort.
+     *
+     * <p>A {@code null} list element represents a non-proxied connection, in which case requests
+     * will be sent directly to the destination. It is only allowed as the last element in the list.
+     * This can be used to define fail-open/fail-closed semantics: if the all of the proxies
+     * specified in the list happen to fail, adding (or not adding) a {@code null} element at the
+     * end of the list will control whether non-proxied connections are allowed.
      *
      * @param proxyList The list of {@link Proxy} that defines this configuration.
      */
