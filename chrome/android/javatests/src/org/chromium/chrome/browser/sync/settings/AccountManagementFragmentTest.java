@@ -16,7 +16,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -30,7 +29,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -41,8 +39,6 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
-import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -83,15 +79,10 @@ public class AccountManagementFragmentTest {
                     .setBugComponent(ChromeRenderTestRule.Component.SERVICES_SYNC)
                     .build();
 
-    @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
-
     private FakeSyncServiceImpl mFakeSyncService;
 
     @Before
     public void setUp() {
-        // Prevent "GmsCore outdated" error from being exposed in bots with old version.
-        PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeJniMock);
-        when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired()).thenReturn(false);
         mFakeSyncService = overrideSyncService();
     }
 

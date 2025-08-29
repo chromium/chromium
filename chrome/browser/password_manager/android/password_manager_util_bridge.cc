@@ -12,7 +12,6 @@
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/password_manager/core/browser/features/password_features.h"
-#include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "components/prefs/android/pref_service_android.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/android/sync_service_android_bridge.h"
@@ -20,18 +19,12 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/password_manager/android/jni_headers/PasswordManagerUtilBridge_jni.h"
 
-using password_manager::IsGmsCoreUpdateRequired;
-
 jboolean JNI_PasswordManagerUtilBridge_IsPasswordManagerAvailable(
     JNIEnv* env,
     PrefService* pref_service,
     jboolean is_internal_backend_present) {
   return password_manager_android_util::IsPasswordManagerAvailable(
       pref_service, is_internal_backend_present);
-}
-
-jboolean JNI_PasswordManagerUtilBridge_IsGmsCoreUpdateRequired(JNIEnv* env) {
-  return IsGmsCoreUpdateRequired();
 }
 
 namespace password_manager_android_util {

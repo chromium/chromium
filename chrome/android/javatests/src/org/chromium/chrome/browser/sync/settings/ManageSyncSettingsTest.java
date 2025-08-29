@@ -108,6 +108,7 @@ import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.LocalDataDescription;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.TransportState;
+import org.chromium.components.sync.UserActionableError;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.sync.internal.SyncPrefNames;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -130,6 +131,9 @@ import java.util.Set;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "TODO(crbug.com/40743432): SyncTestRule doesn't support batching.")
+// Avoids UserActionableError.NEEDS_UPM_BACKEND_UPGRADE for most tests. Specific tests can still
+// trigger the error by overriding getUserActionableError()
+@Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
 public class ManageSyncSettingsTest {
     private static final int RENDER_TEST_REVISION = 7;
 
@@ -1220,10 +1224,6 @@ public class ManageSyncSettingsTest {
 
     @Test
     @SmallTest
-    // Specifies the test to run only with the GMS Core version greater than or equal to 24w15 which
-    // is the min version that supports split stores UPM backend, to avoid
-    // UserActionableError.NEEDS_UPM_BACKEND_UPGRADE.
-    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
     public void testCentralAccountCardNotReceivingFocus() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         startManageSyncPreferences();
@@ -1345,7 +1345,9 @@ public class ManageSyncSettingsTest {
     @Feature({"Sync"})
     @DisabledTest(message = "crbug.com/386744084")
     public void testSyncErrorCardForUpmBackendOutdatedUpdatedDynamically() {
-        when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired()).thenReturn(true);
+        setupMockSyncService();
+        when(mSyncService.getUserActionableError())
+                .thenReturn(UserActionableError.NEEDS_UPM_BACKEND_UPGRADE);
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
 
@@ -1360,8 +1362,8 @@ public class ManageSyncSettingsTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired())
-                            .thenReturn(false);
+                    when(mSyncService.getUserActionableError())
+                            .thenReturn(UserActionableError.NONE);
                     // TODO(crbug.com/327623232): Observe such changes instead.
                     preference.syncStateChanged();
                 });
@@ -1371,10 +1373,6 @@ public class ManageSyncSettingsTest {
 
     @Test
     @LargeTest
-    // Specifies the test to run only with the GMS Core version greater than or equal to 24w15 which
-    // is the min version that supports split stores UPM backend, to avoid
-    // UserActionableError.NEEDS_UPM_BACKEND_UPGRADE.
-    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
     public void testIdentityErrorCardActionForPassphraseRequired() throws Exception {
         mSyncTestRule.getFakeServerHelper().setCustomPassphraseNigori("passphrase");
 

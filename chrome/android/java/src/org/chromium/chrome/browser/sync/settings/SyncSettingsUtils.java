@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.ChromeStringConstants;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
-import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -44,7 +43,6 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
 import org.chromium.components.sync.UserActionableError;
-import org.chromium.components.sync.UserSelectableType;
 import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 import org.chromium.ui.widget.Toast;
 
@@ -257,8 +255,7 @@ public class SyncSettingsUtils {
             return context.getString(R.string.sync_needs_verification_title);
         }
 
-        if (syncService.getSelectedTypes().contains(UserSelectableType.PASSWORDS)
-                && PasswordManagerUtilBridge.isGmsCoreUpdateRequired()) {
+        if (syncService.getUserActionableError() == UserActionableError.NEEDS_UPM_BACKEND_UPGRADE) {
             return context.getString(R.string.sync_error_outdated_gms);
         }
 

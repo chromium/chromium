@@ -28,16 +28,6 @@ public class PasswordManagerUtilBridge {
                 .isPasswordManagerAvailable(prefService, isInternalBackendPresent());
     }
 
-    /**
-     * Checks if the GMSCore update is required to use the Password Manager functionality.
-     *
-     * @return Whether the user is required to update GMSCore to use the Password Manager
-     *     functionality.
-     */
-    public static boolean isGmsCoreUpdateRequired() {
-        return PasswordManagerUtilBridgeJni.get().isGmsCoreUpdateRequired();
-    }
-
     @CalledByNative
     public static boolean isInternalBackendPresent() {
         return PasswordManagerBackendSupportHelper.getInstance().isBackendPresent();
@@ -59,7 +49,5 @@ public class PasswordManagerUtilBridge {
     public interface Natives {
         boolean isPasswordManagerAvailable(
                 @JniType("PrefService*") PrefService prefService, boolean isInternalBackendPresent);
-
-        boolean isGmsCoreUpdateRequired();
     }
 }
