@@ -20,7 +20,7 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
-#include "chrome/browser/apps/app_service/publishers/app_publisher.h"
+#include "chrome/browser/apps/app_service/publisher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -169,7 +169,7 @@ void AppServiceProxyBase::Initialize() {
                               std::make_unique<apps::AppIconSource>(profile_));
 }
 
-AppPublisher* AppServiceProxyBase::GetPublisher(AppType app_type) {
+Publisher* AppServiceProxyBase::GetPublisher(AppType app_type) {
   auto it = publishers_.find(app_type);
   return it == publishers_.end() ? nullptr : it->second;
 }
@@ -192,7 +192,7 @@ apps::PreferredAppsListHandle& AppServiceProxyBase::PreferredAppsList() {
 }
 
 void AppServiceProxyBase::RegisterPublisher(AppType app_type,
-                                            AppPublisher* publisher) {
+                                            Publisher* publisher) {
   publishers_[app_type] = publisher;
 }
 

@@ -32,6 +32,7 @@ source_set("app_service") {
     "paused_apps.h",
     "policy_util.cc",
     "policy_util.h",
+    "publisher.h",
     "publisher_host.cc",
     "publisher_host.h",
     "publishers/app_publisher.cc",
