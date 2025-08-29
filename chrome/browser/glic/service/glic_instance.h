@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_WIDGET_GLIC_INSTANCE_H_
-#define CHROME_BROWSER_GLIC_WIDGET_GLIC_INSTANCE_H_
+#ifndef CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_H_
+#define CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_H_
 
 #include <memory>
 
@@ -14,7 +14,7 @@
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/glic_ui_embedder.h"
 #include "chrome/browser/glic/host/host.h"
-#include "chrome/browser/glic/widget/panel_delegate.h"
+#include "chrome/browser/glic/service/panel_delegate.h"
 
 class BrowserWindowInterface;
 
@@ -77,4 +77,4 @@ class GlicInstance : public PanelDelegate {
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_WIDGET_GLIC_INSTANCE_H_
+#endif  // CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_H_

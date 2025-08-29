@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/widget/glic_panel_coordinator_impl.h"
+#include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 
 #include <algorithm>
 
@@ -43,7 +43,7 @@
 
 namespace glic {
 
-GlicPanelCoordinatorImpl::GlicPanelCoordinatorImpl(
+GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
     Profile* profile,
     signin::IdentityManager* identity_manager,
     GlicKeyedService* service,
@@ -51,109 +51,111 @@ GlicPanelCoordinatorImpl::GlicPanelCoordinatorImpl(
     : profile_(profile),
       host_manager_(std::make_unique<HostManager>(profile)) {}
 
-GlicPanelCoordinatorImpl::~GlicPanelCoordinatorImpl() = default;
+GlicInstanceCoordinatorImpl::~GlicInstanceCoordinatorImpl() = default;
 
-Host& GlicPanelCoordinatorImpl::host() const {
+Host& GlicInstanceCoordinatorImpl::host() const {
   NOTIMPLEMENTED();
   return host_manager_->primary_host();
 }
 
-HostManager& GlicPanelCoordinatorImpl::host_manager() {
+HostManager& GlicInstanceCoordinatorImpl::host_manager() {
   NOTIMPLEMENTED();
   return *host_manager_;
 }
 
-void GlicPanelCoordinatorImpl::Toggle(BrowserWindowInterface* browser,
-                                      bool prevent_close,
-                                      mojom::InvocationSource source) {
+void GlicInstanceCoordinatorImpl::Toggle(BrowserWindowInterface* browser,
+                                         bool prevent_close,
+                                         mojom::InvocationSource source) {
   NOTIMPLEMENTED();
 }
 
-bool GlicPanelCoordinatorImpl::ActivateBrowser() {
+bool GlicInstanceCoordinatorImpl::ActivateBrowser() {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
   return false;
 }
 
-void GlicPanelCoordinatorImpl::ShowAfterSignIn(base::WeakPtr<Browser> browser) {
+void GlicInstanceCoordinatorImpl::ShowAfterSignIn(
+    base::WeakPtr<Browser> browser) {
   NOTIMPLEMENTED();
 }
 
-void GlicPanelCoordinatorImpl::ToggleWhenNotAlwaysDetached(
+void GlicInstanceCoordinatorImpl::ToggleWhenNotAlwaysDetached(
     Browser* new_attached_browser,
     bool prevent_close,
     mojom::InvocationSource source) {
   NOTIMPLEMENTED();
 }
 
-void GlicPanelCoordinatorImpl::FocusIfOpen() {
+void GlicInstanceCoordinatorImpl::FocusIfOpen() {
   NOTIMPLEMENTED();
 }
 
-void GlicPanelCoordinatorImpl::Attach() {
+void GlicInstanceCoordinatorImpl::Attach() {
   NOTIMPLEMENTED();
 }
 
-void GlicPanelCoordinatorImpl::Detach() {
+void GlicInstanceCoordinatorImpl::Detach() {
   NOTIMPLEMENTED();
 }
 
-void GlicPanelCoordinatorImpl::Shutdown() {
+void GlicInstanceCoordinatorImpl::Shutdown() {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
 }
 
-void GlicPanelCoordinatorImpl::Resize(const gfx::Size& size,
-                                      base::TimeDelta duration,
-                                      base::OnceClosure callback) {
+void GlicInstanceCoordinatorImpl::Resize(const gfx::Size& size,
+                                         base::TimeDelta duration,
+                                         base::OnceClosure callback) {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
 }
 
-void GlicPanelCoordinatorImpl::EnableDragResize(bool enabled) {
+void GlicInstanceCoordinatorImpl::EnableDragResize(bool enabled) {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
 }
 
-void GlicPanelCoordinatorImpl::MaybeSetWidgetCanResize() {
+void GlicInstanceCoordinatorImpl::MaybeSetWidgetCanResize() {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
 }
 
-gfx::Size GlicPanelCoordinatorImpl::GetSize() {
+gfx::Size GlicInstanceCoordinatorImpl::GetSize() {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
   return gfx::Size();
 }
 
-void GlicPanelCoordinatorImpl::SetDraggableAreas(
+void GlicInstanceCoordinatorImpl::SetDraggableAreas(
     const std::vector<gfx::Rect>& draggable_areas) {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
 }
 
-void GlicPanelCoordinatorImpl::SetMinimumWidgetSize(const gfx::Size& size) {
+void GlicInstanceCoordinatorImpl::SetMinimumWidgetSize(const gfx::Size& size) {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
 }
 
-void GlicPanelCoordinatorImpl::Close() {
+void GlicInstanceCoordinatorImpl::Close() {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
 }
 
-void GlicPanelCoordinatorImpl::CloseWithReason(
+void GlicInstanceCoordinatorImpl::CloseWithReason(
     views::Widget::ClosedReason reason) {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
 }
 
-void GlicPanelCoordinatorImpl::ShowTitleBarContextMenuAt(gfx::Point event_loc) {
+void GlicInstanceCoordinatorImpl::ShowTitleBarContextMenuAt(
+    gfx::Point event_loc) {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
 }
 
-bool GlicPanelCoordinatorImpl::ShouldStartDrag(
+bool GlicInstanceCoordinatorImpl::ShouldStartDrag(
     const gfx::Point& initial_press_loc,
     const gfx::Point& mouse_location) {
   // Method should only be called on individual panels not the coordinator.
@@ -161,154 +163,154 @@ bool GlicPanelCoordinatorImpl::ShouldStartDrag(
   return false;
 }
 
-const mojom::PanelState& GlicPanelCoordinatorImpl::GetPanelState() const {
+const mojom::PanelState& GlicInstanceCoordinatorImpl::GetPanelState() const {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
   return panel_state_;
 }
 
-void GlicPanelCoordinatorImpl::AddStateObserver(StateObserver* observer) {
+void GlicInstanceCoordinatorImpl::AddStateObserver(StateObserver* observer) {
   // The StateObserver needs to be split into two: one for if the floating
   // window is showing and one for the state of an individual panel.
   NOTIMPLEMENTED();
 }
 
-void GlicPanelCoordinatorImpl::RemoveStateObserver(StateObserver* observer) {
+void GlicInstanceCoordinatorImpl::RemoveStateObserver(StateObserver* observer) {
   // The StateObserver needs to be split into two: one for if the floating
   // window is showing and one for the state of an individual panel.
   NOTIMPLEMENTED();
 }
 
-bool GlicPanelCoordinatorImpl::IsActive() {
+bool GlicInstanceCoordinatorImpl::IsActive() {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
   return false;
 }
 
-bool GlicPanelCoordinatorImpl::IsShowing() const {
+bool GlicInstanceCoordinatorImpl::IsShowing() const {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
   return false;
 }
 
-bool GlicPanelCoordinatorImpl::IsAttached() const {
+bool GlicInstanceCoordinatorImpl::IsAttached() const {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
   return false;
 }
 
-bool GlicPanelCoordinatorImpl::IsDetached() const {
+bool GlicInstanceCoordinatorImpl::IsDetached() const {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
   return false;
 }
 
 base::CallbackListSubscription
-GlicPanelCoordinatorImpl::AddWindowActivationChangedCallback(
+GlicInstanceCoordinatorImpl::AddWindowActivationChangedCallback(
     WindowActivationChangedCallback callback) {
   return window_activation_callback_list_.Add(std::move(callback));
 }
 
-void GlicPanelCoordinatorImpl::Preload() {
+void GlicInstanceCoordinatorImpl::Preload() {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
 }
 
-void GlicPanelCoordinatorImpl::Reload() {
+void GlicInstanceCoordinatorImpl::Reload() {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
 }
 
-bool GlicPanelCoordinatorImpl::IsWarmed() const {
+bool GlicInstanceCoordinatorImpl::IsWarmed() const {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
   return false;
 }
 
-base::WeakPtr<GlicWindowController> GlicPanelCoordinatorImpl::GetWeakPtr() {
+base::WeakPtr<GlicWindowController> GlicInstanceCoordinatorImpl::GetWeakPtr() {
   // TODO(crbug.com/441542357) - remove from public interface.
   // Method should only be called on individual panels not the coordinator.
   NOTREACHED();
 }
 
-GlicView* GlicPanelCoordinatorImpl::GetGlicView() const {
+GlicView* GlicInstanceCoordinatorImpl::GetGlicView() const {
   // Method should only be called on individual panels not the coordinator.
   NOTREACHED();
 }
 
-base::WeakPtr<views::View> GlicPanelCoordinatorImpl::GetGlicViewAsView() {
+base::WeakPtr<views::View> GlicInstanceCoordinatorImpl::GetGlicViewAsView() {
   // Method should only be called on individual panels not the coordinator.
   NOTREACHED();
 }
 
-GlicWidget* GlicPanelCoordinatorImpl::GetGlicWidget() const {
+GlicWidget* GlicInstanceCoordinatorImpl::GetGlicWidget() const {
   // Method should only be called on individual panels not the coordinator.
   NOTREACHED();
 }
 
-gfx::NativeWindow GlicPanelCoordinatorImpl::GetHostNativeWindow() {
+gfx::NativeWindow GlicInstanceCoordinatorImpl::GetHostNativeWindow() {
   // Method should only be called on individual panels not the coordinator.
   NOTREACHED();
 }
 
-Browser* GlicPanelCoordinatorImpl::attached_browser() {
+Browser* GlicInstanceCoordinatorImpl::attached_browser() {
   // Method should only be called on individual panels not the coordinator.
   NOTREACHED();
 }
 
-GlicWindowController::State GlicPanelCoordinatorImpl::state() const {
+GlicWindowController::State GlicInstanceCoordinatorImpl::state() const {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
   return GlicWindowController::State::kClosed;
 }
 
-GlicWindowAnimator* GlicPanelCoordinatorImpl::window_animator() {
+GlicWindowAnimator* GlicInstanceCoordinatorImpl::window_animator() {
   // TODO(crbug.com/441545112) - Remove from GlicWindowController.
   // Method should only be called on individual panels not the coordinator.
   NOTREACHED();
 }
 
-Profile* GlicPanelCoordinatorImpl::profile() {
+Profile* GlicInstanceCoordinatorImpl::profile() {
   return profile_;
 }
 
-gfx::Rect GlicPanelCoordinatorImpl::GetInitialBounds(Browser* browser) {
+gfx::Rect GlicInstanceCoordinatorImpl::GetInitialBounds(Browser* browser) {
   // TODO(crbug.com/441546104) - Remove from GlicWindowController.
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
   return gfx::Rect();
 }
 
-void GlicPanelCoordinatorImpl::ShowDetachedForTesting() {
+void GlicInstanceCoordinatorImpl::ShowDetachedForTesting() {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
 }
 
-void GlicPanelCoordinatorImpl::SetPreviousPositionForTesting(
+void GlicInstanceCoordinatorImpl::SetPreviousPositionForTesting(
     gfx::Point position) {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
 }
 
 std::unique_ptr<GlicView>
-GlicPanelCoordinatorImpl::CreateGlicViewForSidePanel() {
+GlicInstanceCoordinatorImpl::CreateGlicViewForSidePanel() {
   // Method should only be called on individual panels not the coordinator.
   NOTREACHED();
 }
 
 base::CallbackListSubscription
-GlicPanelCoordinatorImpl::RegisterFloatyStateChange(
+GlicInstanceCoordinatorImpl::RegisterFloatyStateChange(
     FloatyStateChangeCallback callback) {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
   return floaty_state_change_callback_list_.Add(std::move(callback));
 }
 
-void GlicPanelCoordinatorImpl::AttachInstance(GlicInstance* instance) {
+void GlicInstanceCoordinatorImpl::AttachInstance(GlicInstance* instance) {
   NOTIMPLEMENTED();
 }
 
-void GlicPanelCoordinatorImpl::DetachInstance(GlicInstance* instance) {
+void GlicInstanceCoordinatorImpl::DetachInstance(GlicInstance* instance) {
   NOTIMPLEMENTED();
 }
 }  // namespace glic

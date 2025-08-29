@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_WIDGET_GLIC_PANEL_COORDINATOR_IMPL_H_
-#define CHROME_BROWSER_GLIC_WIDGET_GLIC_PANEL_COORDINATOR_IMPL_H_
+#ifndef CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_COORDINATOR_IMPL_H_
+#define CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_COORDINATOR_IMPL_H_
 
 #include <optional>
 #include <vector>
@@ -20,7 +20,7 @@
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/glic/widget/glic_instance.h"
+#include "chrome/browser/glic/service/glic_instance.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -35,17 +35,18 @@ class Size;
 class Point;
 }  // namespace gfx
 namespace glic {
-class GlicPanelCoordinatorImpl : public GlicWindowController,
-                                 public GlicInstance::AttachmentDelegate {
+class GlicInstanceCoordinatorImpl : public GlicWindowController,
+                                    public GlicInstance::AttachmentDelegate {
  public:
-  GlicPanelCoordinatorImpl(const GlicPanelCoordinatorImpl&) = delete;
-  GlicPanelCoordinatorImpl& operator=(const GlicPanelCoordinatorImpl&) = delete;
+  GlicInstanceCoordinatorImpl(const GlicInstanceCoordinatorImpl&) = delete;
+  GlicInstanceCoordinatorImpl& operator=(const GlicInstanceCoordinatorImpl&) =
+      delete;
 
-  GlicPanelCoordinatorImpl(Profile* profile,
-                           signin::IdentityManager* identity_manager,
-                           GlicKeyedService* service,
-                           GlicEnabling* enabling);
-  ~GlicPanelCoordinatorImpl() override;
+  GlicInstanceCoordinatorImpl(Profile* profile,
+                              signin::IdentityManager* identity_manager,
+                              GlicKeyedService* service,
+                              GlicEnabling* enabling);
+  ~GlicInstanceCoordinatorImpl() override;
 
   // GlicInstance::AttachmentDelegate implementation
   void AttachInstance(GlicInstance* instance) override;
@@ -128,4 +129,4 @@ class GlicPanelCoordinatorImpl : public GlicWindowController,
 };
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_WIDGET_GLIC_PANEL_COORDINATOR_IMPL_H_
+#endif  // CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_COORDINATOR_IMPL_H_

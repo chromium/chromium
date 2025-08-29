@@ -41,7 +41,7 @@
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#include "chrome/browser/glic/widget/glic_panel_coordinator_impl.h"
+#include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/glic/widget/glic_window_controller_impl.h"
 #include "chrome/browser/global_features.h"
@@ -99,7 +99,7 @@ std::unique_ptr<GlicWindowController> CreateWindowController(
     return std::make_unique<GlicWindowControllerImpl>(
         profile, identity_manager, glic_service, glic_enabling);
   }
-  return std::make_unique<GlicPanelCoordinatorImpl>(
+  return std::make_unique<GlicInstanceCoordinatorImpl>(
       profile, identity_manager, glic_service, glic_enabling);
 }
 

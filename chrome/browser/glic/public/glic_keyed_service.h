@@ -53,8 +53,6 @@ class GlicWindowController;
 class Host;
 class HostManager;
 
-class GlicPanelCoordinatorImpl;
-
 enum class GlicPrewarmingChecksResult;
 
 // LINT.IfChange(GlicPrewarmingFreSource)

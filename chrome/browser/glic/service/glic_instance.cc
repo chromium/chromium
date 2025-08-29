@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/widget/glic_instance.h"
+#include "chrome/browser/glic/service/glic_instance.h"
 
 #include "base/notimplemented.h"
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
