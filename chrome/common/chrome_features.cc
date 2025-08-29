@@ -633,11 +633,13 @@ extern const base::FeatureParam<std::string>
 BASE_FEATURE(GlicWebClientUnresponsiveMetrics,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(GlicParameterizedShader, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(GlicParameterizedShader, base::FEATURE_ENABLED_BY_DEFAULT);
 extern const base::FeatureParam<std::string> kGlicParameterizedShaderColors{
-    &kGlicParameterizedShader, "glic-parameterized-shader-colors", ""};
+    &kGlicParameterizedShader, "glic-parameterized-shader-colors",
+    "#3186FF#346BF1#4FA0FF#FF4641#FFCC00#0EBC5F"};
 extern const base::FeatureParam<std::string> kGlicParameterizedShaderFloats{
-    &kGlicParameterizedShader, "glic-parameterized-shader-floats", ""};
+    &kGlicParameterizedShader, "glic-parameterized-shader-floats",
+    "5#0.1#0.3#0.7#1.0#0.5#0.5#0.3"};
 
 BASE_FEATURE(GlicTabFocusDataDedupDebounce, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<int> kGlicTabFocusDataDebounceDelayMs{
@@ -646,7 +648,7 @@ const base::FeatureParam<int> kGlicTabFocusDataDebounceDelayMs{
 const base::FeatureParam<int> kGlicTabFocusDataMaxDebounces{
     &kGlicTabFocusDataDedupDebounce, "glic-tab-focus-data-max-debounces", 5};
 
-BASE_FEATURE(GlicAssetsV2, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(GlicAssetsV2, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(GlicFaviconDataUrls, base::FEATURE_DISABLED_BY_DEFAULT);
 
