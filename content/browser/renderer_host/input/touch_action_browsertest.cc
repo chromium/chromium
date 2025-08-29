@@ -1018,8 +1018,9 @@ class ScrollBeginObserver : public RenderWidgetHost::InputEventObserver {
   base::OnceClosure quit_closure_;
 };
 
+// TODO(https://crbug.com/441994116): Disabled due to being flaky.
 IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
-                       CursorControlDetachViewMidScroll) {
+                       DISABLED_CursorControlDetachViewMidScroll) {
   if (!::features::IsSwipeToMoveCursorEnabled()) {
     return;
   }
