@@ -84,6 +84,7 @@ class MockFieldClassificationModelHandler
       void,
       GetModelPredictionsForForms,
       (std::vector<std::unique_ptr<FormStructure>>,
+       const GeoIpCountryCode& client_country,
        base::OnceCallback<void(std::vector<std::unique_ptr<FormStructure>>)>),
       (override));
 };
@@ -507,6 +508,7 @@ class AutofillManagerTestForModelPredictions : public AutofillManagerTest {
     ON_CALL(*handler, GetModelPredictionsForForms)
         .WillByDefault(
             [](std::vector<std::unique_ptr<FormStructure>> forms,
+               const GeoIpCountryCode& client_country,
                base::OnceCallback<void(
                    std::vector<std::unique_ptr<FormStructure>>)> callback) {
               std::move(callback).Run(std::move(forms));

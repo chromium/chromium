@@ -131,6 +131,7 @@ bool FieldClassificationModelHandler::ShouldApplySmallFormRules() const {
 
 void FieldClassificationModelHandler::ApplySmallFormRules(
     const FormStructure& form,
+    const GeoIpCountryCode& client_country,
     std::vector<FieldType>& predicted_types) const {
   FieldCandidatesMap field_candidates_map;
   for (size_t i = 0; i < predicted_types.size(); ++i) {
@@ -148,7 +149,7 @@ void FieldClassificationModelHandler::ApplySmallFormRules(
                      [](const auto& field) -> raw_ptr<const FormFieldData> {
                        return field.get();
                      }),
-      field_candidates_map, form.client_country(), nullptr);
+      field_candidates_map, client_country, nullptr);
 
   for (size_t i = 0; i < predicted_types.size(); ++i) {
     const auto& field_id = form.field(i)->global_id();
@@ -254,6 +255,7 @@ void PopulateMlPredictionLogAfterInference(
 
 void FieldClassificationModelHandler::GetModelPredictionsForForm(
     std::unique_ptr<FormStructure> form_structure,
+    const GeoIpCountryCode& client_country,
     base::OnceCallback<void(std::unique_ptr<FormStructure>)> callback) {
   if (!ModelAvailable() || !state_) {
     // No model, no predictions.
@@ -298,6 +300,7 @@ void FieldClassificationModelHandler::GetModelPredictionsForForm(
              std::optional<autofill_ml_internals::mojom::MlPredictionLogPtr>
                  prediction_log,
              std::unique_ptr<FormStructure> form_structure,
+             const GeoIpCountryCode& client_country,
              std::optional<ModelInputHash> model_input_hash,
              base::OnceCallback<void(std::unique_ptr<FormStructure>)> callback,
              const std::optional<FieldClassificationModelEncoder::ModelOutput>&
@@ -307,7 +310,8 @@ void FieldClassificationModelHandler::GetModelPredictionsForForm(
               std::vector<FieldType> predicted_types =
                   self->GetMostLikelyTypes(*form_structure, *output);
               if (self->ShouldApplySmallFormRules()) {
-                self->ApplySmallFormRules(*form_structure, predicted_types);
+                self->ApplySmallFormRules(*form_structure, client_country,
+                                          predicted_types);
               }
               self->AssignPredictedFieldTypesToForm(predicted_types,
                                                     *form_structure);
@@ -324,19 +328,21 @@ void FieldClassificationModelHandler::GetModelPredictionsForForm(
             std::move(callback).Run(std::move(form_structure));
           },
           weak_ptr_factory_.GetWeakPtr(), std::move(prediction_log),
-          std::move(form_structure), std::move(input_hash),
+          std::move(form_structure), client_country, std::move(input_hash),
           std::move(callback)),
       std::move(encoded_input));
 }
 
 void FieldClassificationModelHandler::GetModelPredictionsForForms(
     std::vector<std::unique_ptr<FormStructure>> forms,
+    const GeoIpCountryCode& client_country,
     base::OnceCallback<void(std::vector<std::unique_ptr<FormStructure>>)>
         callback) {
   auto barrier_callback = base::BarrierCallback<std::unique_ptr<FormStructure>>(
       forms.size(), std::move(callback));
   for (std::unique_ptr<FormStructure>& form : forms) {
-    GetModelPredictionsForForm(std::move(form), barrier_callback);
+    GetModelPredictionsForForm(std::move(form), client_country,
+                               barrier_callback);
   }
 }
 

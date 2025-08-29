@@ -139,6 +139,7 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -482,16 +483,10 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
     auto form_structure = std::make_unique<FormStructure>(form_data);
     form_structure->set_current_page_language(page_language);
     if (ml_predictions_handler) {
-      base::RunLoop run_loop;
+      base::test::TestFuture<std::unique_ptr<FormStructure>> future;
       ml_predictions_handler->GetModelPredictionsForForm(
-          std::move(form_structure),
-          base::BindLambdaForTesting(
-              [&form_structure,
-               &run_loop](std::unique_ptr<FormStructure> result_form) {
-                form_structure = std::move(result_form);
-                run_loop.Quit();
-              }));
-      run_loop.Run();
+          std::move(form_structure), client_country, future.GetCallback());
+      form_structure = std::move(future).Take();
     }
     // Similarly to AutofillManager::ParseFormsAsync, the heuristics are
     // executed after the ML model. If ML predictions are enabled, this does

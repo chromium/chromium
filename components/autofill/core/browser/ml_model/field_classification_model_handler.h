@@ -64,6 +64,7 @@ class FieldClassificationModelHandler
   // that the field is unsupported.
   void GetModelPredictionsForForm(
       std::unique_ptr<FormStructure> form_structure,
+      const GeoIpCountryCode& client_country,
       base::OnceCallback<void(std::unique_ptr<FormStructure>)> callback);
 
   // Same as `GetModelPredictionsForForm()` but executes the model on multiple
@@ -71,6 +72,7 @@ class FieldClassificationModelHandler
   // Virtual for testing.
   virtual void GetModelPredictionsForForms(
       std::vector<std::unique_ptr<FormStructure>> forms,
+      const GeoIpCountryCode& client_country,
       base::OnceCallback<void(std::vector<std::unique_ptr<FormStructure>>)>
           callback);
 
@@ -111,6 +113,7 @@ class FieldClassificationModelHandler
   // The purpose is to have identical post-processing for ML and regex
   // predictions for more accurate comparison.
   void ApplySmallFormRules(const FormStructure& form,
+                           const GeoIpCountryCode& client_country,
                            std::vector<FieldType>& predicted_types) const;
 
   // Assigns field types from `predicted_types` to field in the `form`.

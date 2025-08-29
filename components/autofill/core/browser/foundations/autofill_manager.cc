@@ -163,8 +163,9 @@ void ApplyMlModel(
   }
   if (ml_handler) {
     manager->SubscribeToMlModelChanges(*ml_handler, optimization_target);
-    ml_handler->GetModelPredictionsForForms(std::move(forms),
-                                            std::move(callback));
+    ml_handler->GetModelPredictionsForForms(
+        std::move(forms), manager->client().GetVariationConfigCountryCode(),
+        std::move(callback));
   } else {
     std::move(callback).Run(std::move(forms));
   }

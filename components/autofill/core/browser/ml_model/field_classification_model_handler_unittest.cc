@@ -106,16 +106,18 @@ class FieldClassificationModelHandlerTest : public testing::Test {
 
   void ApplyModelPredictions(std::unique_ptr<FormStructure>& form_structure) {
     base::test::TestFuture<std::unique_ptr<FormStructure>> future;
-    model_handler().GetModelPredictionsForForm(std::move(form_structure),
-                                               future.GetCallback());
+    GeoIpCountryCode client_country = form_structure->client_country();
+    model_handler().GetModelPredictionsForForm(
+        std::move(form_structure), client_country, future.GetCallback());
     form_structure = std::move(future).Take();
   }
 
   void ApplyModelPredictions(
       std::vector<std::unique_ptr<FormStructure>>& form_structures) {
     base::test::TestFuture<std::vector<std::unique_ptr<FormStructure>>> future;
-    model_handler().GetModelPredictionsForForms(std::move(form_structures),
-                                                future.GetCallback());
+    GeoIpCountryCode client_country = form_structures.front()->client_country();
+    model_handler().GetModelPredictionsForForms(
+        std::move(form_structures), client_country, future.GetCallback());
     form_structures = std::move(future).Take();
   }
 
