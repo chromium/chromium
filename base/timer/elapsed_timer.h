@@ -15,12 +15,8 @@ class BASE_EXPORT ElapsedTimer {
  public:
   ElapsedTimer();
 
-  ElapsedTimer(const ElapsedTimer&) = delete;
-  ElapsedTimer& operator=(const ElapsedTimer&) = delete;
-
-  ElapsedTimer(ElapsedTimer&& other);
-
-  void operator=(ElapsedTimer&& other);
+  ElapsedTimer(const ElapsedTimer&) = default;
+  ElapsedTimer& operator=(const ElapsedTimer&) = default;
 
   // Returns the time elapsed since object construction.
   TimeDelta Elapsed() const;
@@ -37,8 +33,8 @@ class BASE_EXPORT ElapsedThreadTimer {
  public:
   ElapsedThreadTimer();
 
-  ElapsedThreadTimer(const ElapsedThreadTimer&) = delete;
-  ElapsedThreadTimer& operator=(const ElapsedThreadTimer&) = delete;
+  ElapsedThreadTimer(const ElapsedThreadTimer&) = default;
+  ElapsedThreadTimer& operator=(const ElapsedThreadTimer&) = default;
 
   // Returns the ThreadTicks time elapsed since object construction.
   // Only valid if |is_supported()| returns true, otherwise returns TimeDelta().
@@ -47,8 +43,8 @@ class BASE_EXPORT ElapsedThreadTimer {
   bool is_supported() const { return is_supported_; }
 
  private:
-  const bool is_supported_;
-  const ThreadTicks begin_;
+  bool is_supported_;
+  ThreadTicks begin_;
 };
 
 // Whenever there's a ScopedMockElapsedTimersForTest in scope,
