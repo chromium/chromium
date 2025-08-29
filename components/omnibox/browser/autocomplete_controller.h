@@ -320,6 +320,7 @@ class AutocompleteController : public AutocompleteProviderListener,
  private:
   friend class FakeAutocompleteController;
   friend class AutocompleteProviderTest;
+  friend class OmniboxRowGroupedViewBrowserTest;
   friend class OmniboxSuggestionButtonRowBrowserTest;
   friend class ZeroSuggestPrefetchTabHelperBrowserTest;
 #if BUILDFLAG(IS_IOS)

@@ -194,6 +194,7 @@ struct ContextualSearch : Config<ContextualSearch> {
   DECLARE_FEATURE(kShowSuggestionsOnNoApc);
   DECLARE_FEATURE(kOpenLensActionUITweaks);
   DECLARE_FEATURE(kSuggestionsFulfilledByLensSupported);
+  DECLARE_FEATURE(kLoadingSuggestionsAnimation);
 
   // Whether to use contextual search features, for example the lens action.
   bool IsContextualSearchEnabled() const;
@@ -276,6 +277,20 @@ struct ContextualSearch : Config<ContextualSearch> {
   // overlay in the selection state. This is in contrast to the default behavior
   // where the suggestion is fulfilled by the contextual searchbox.
   bool suggestions_fulfilled_by_lens_supported;
+
+  // Whether to enable the loading suggestions animation. This adds an
+  // animation when contextual suggestions load into the omnibox popup.
+  bool enable_loading_suggestions_animation;
+
+  // The duration of the position animation when loading suggestions.
+  int loading_suggestions_position_animation_duration;
+
+  // The delay after the position animation begins that the opacity animation
+  // should start after.
+  int loading_suggestions_opacity_animation_delay;
+
+  // The duration of the opacity animation when loading suggestions.
+  int loading_suggestions_opacity_animation_duration;
 };
 
 // If enabled, allows MIA zero-prefix suggestions in NTP omnibox and realbox.

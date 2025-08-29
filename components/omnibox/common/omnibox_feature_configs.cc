@@ -157,6 +157,10 @@ BASE_FEATURE(ContextualSearch::kSuggestionsFulfilledByLensSupported,
              "SuggestionsFulfilledByLensSupported",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(ContextualSearch::kLoadingSuggestionsAnimation,
+             "LoadingSuggestionsAnimation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 ContextualSearch::ContextualSearch() {
   // Meta-feature turns on/off other features, but only if it's overridden by
   // the user. If not then each feature is controlled separately.
@@ -212,6 +216,21 @@ ContextualSearch::ContextualSearch() {
       base::FeatureList::IsEnabled(kOpenLensActionUITweaks);
   suggestions_fulfilled_by_lens_supported =
       base::FeatureList::IsEnabled(kSuggestionsFulfilledByLensSupported);
+
+  enable_loading_suggestions_animation =
+      base::FeatureList::IsEnabled(kLoadingSuggestionsAnimation);
+  loading_suggestions_position_animation_duration =
+      base::FeatureParam<int>(&kLoadingSuggestionsAnimation,
+                              "PositionAnimationDuration", 250)
+          .Get();
+  loading_suggestions_opacity_animation_delay =
+      base::FeatureParam<int>(&kLoadingSuggestionsAnimation,
+                              "OpacityAnimationDelay", 100)
+          .Get();
+  loading_suggestions_opacity_animation_duration =
+      base::FeatureParam<int>(&kLoadingSuggestionsAnimation,
+                              "OpacityAnimationDuration", 150)
+          .Get();
 }
 
 ContextualSearch::ContextualSearch(const ContextualSearch&) = default;

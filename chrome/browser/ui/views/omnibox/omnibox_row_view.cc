@@ -73,7 +73,7 @@ std::optional<OmniboxPopupSelection> ui::metadata::TypeConverter<
 }
 
 OmniboxRowView::OmniboxRowView(size_t line, OmniboxPopupViewViews* popup_view)
-    : popup_view_(popup_view) {
+    : popup_view_(popup_view), line_(line) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   result_view_ =

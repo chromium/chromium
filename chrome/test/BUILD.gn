@@ -5055,6 +5055,7 @@ if (!is_android) {
         "../browser/ui/views/media_router/media_router_ui_browsertest.cc",
         "../browser/ui/views/media_router/presentation_receiver_window_view_browsertest.cc",
         "../browser/ui/views/omnibox/omnibox_popup_view_views_browsertest.cc",
+        "../browser/ui/views/omnibox/omnibox_row_grouped_view_browsertest.cc",
         "../browser/ui/views/omnibox/omnibox_suggestion_button_row_browsertest.cc",
         "../browser/ui/views/page_action/zoom_view_browsertest.cc",
         "../browser/ui/views/page_info/about_this_site_side_panel_coordinator_browsertest.cc",

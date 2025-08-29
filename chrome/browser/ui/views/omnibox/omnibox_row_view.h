@@ -40,6 +40,8 @@ class OmniboxRowView : public views::View {
   // The result view associated with this row.
   OmniboxResultView* result_view() const { return result_view_; }
 
+  size_t line() const { return line_; }
+
   // Invoked when the model's selection state has changed.
   void OnSelectionStateChanged();
 
@@ -53,6 +55,9 @@ class OmniboxRowView : public views::View {
  private:
   // Non-owning pointer to the popup view for this row. This is never nullptr.
   const raw_ptr<OmniboxPopupViewViews> popup_view_;
+
+  // The line number of this row.
+  const size_t line_;
 
   // Non-owning pointer to the header view for this row. This is initially
   // nullptr, and lazily created when a header is first set for this row.

@@ -21,12 +21,14 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_header_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_row_grouped_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_row_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -252,7 +254,6 @@ gfx::Image OmniboxPopupViewViews::GetMatchIcon(
 
 void OmniboxPopupViewViews::SetSelectedIndex(size_t index) {
   DCHECK(HasMatchAt(index));
-
   if (index != model()->GetPopupSelection().line) {
     OmniboxPopupSelection::LineState line_state = OmniboxPopupSelection::NORMAL;
     model()->SetPopupSelection(OmniboxPopupSelection(index, line_state));
@@ -268,6 +269,12 @@ OmniboxPopupSelection OmniboxPopupViewViews::GetSelection() const {
   return model()->GetPopupSelection();
 }
 
+void OmniboxPopupViewViews::UpdatePopupBounds() {
+  if (popup_) {
+    popup_->SetTargetBounds(GetTargetBounds());
+  }
+}
+
 bool OmniboxPopupViewViews::IsOpen() const {
   return popup_ != nullptr;
 }
@@ -275,11 +282,11 @@ bool OmniboxPopupViewViews::IsOpen() const {
 void OmniboxPopupViewViews::InvalidateLine(size_t line) {
   // TODO(tommycli): This is weird, but https://crbug.com/1063071 shows that
   // crashes like this have happened, so we add this to avoid it for now.
-  if (line >= children().size()) {
+  if (line >= row_views_.size()) {
     return;
   }
 
-  static_cast<OmniboxRowView*>(children()[line])->OnSelectionStateChanged();
+  row_views_[line]->OnSelectionStateChanged();
 }
 
 void OmniboxPopupViewViews::OnSelectionChanged(
@@ -313,6 +320,9 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
       popup_->CloseAnimated();  // This will eventually delete the popup.
       popup_->RemoveObserver(this);
       popup_.reset();
+      if (contextual_group_view_) {
+        contextual_group_view_->OnPopupHide();
+      }
       UpdateAccessibleStates();
       UpdateAccessibleControlIds();
       // The active descendant should be cleared when the popup closes.
@@ -352,47 +362,53 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
   // we have enough row views.
   const size_t result_size = autocomplete_controller->result().size();
   std::u16string previous_row_header = u"";
+
+  // Contextual search suggestions will be grouped into a single subview for a
+  // joint animation if the feature is enabled.
+  size_t grouped_matches_start_index = result_size;
+
+  // Clear the row views to ensure that it does not have stale row views from a
+  // previous popup appearance. This does not remove the row views from the view
+  // hierarchy.
+  row_views_.clear();
+
+  const int contextual_group_view_count =
+      contextual_group_view_ != nullptr ? 1 : 0;
   for (size_t i = 0; i < result_size; ++i) {
     // Create child views lazily.  Since especially the first result view may
     // be expensive to create due to loading font data, this saves time and
     // memory during browser startup. https://crbug.com/1021323
-    if (children().size() == i) {
-      AddChildView(std::make_unique<OmniboxRowView>(i, /*popup_view=*/this));
+    // If the row group view is created, it should not be counted in the number
+    // of children.
+    if (children().size() - contextual_group_view_count == i) {
+      AddChildViewAt(std::make_unique<OmniboxRowView>(i, /*popup_view=*/this),
+                     i);
     }
 
-    OmniboxRowView* const row_view =
-        static_cast<OmniboxRowView*>(children()[i]);
-    row_view->SetVisible(true);
-
+    OmniboxRowView* row_view = static_cast<OmniboxRowView*>(children()[i]);
+    row_views_.push_back(row_view);
     const AutocompleteMatch& match = GetMatchAtIndex(i);
-    std::u16string current_row_header =
-        model()->GetSuggestionGroupHeaderText(match.suggestion_group_id);
-    // Show the header if it's distinct from the previous match's header.
-    if (!current_row_header.empty() &&
-        current_row_header != previous_row_header) {
-      row_view->ShowHeader(current_row_header);
-    } else {
-      row_view->HideHeader();
+    // Contextual search suggestions will be grouped into a single subview for a
+    // joint animation if the feature is enabled.
+    if (omnibox_feature_configs::ContextualSearch::Get()
+            .enable_loading_suggestions_animation &&
+        match.IsContextualSearchSuggestion()) {
+      row_view->SetVisible(false);
+      if (grouped_matches_start_index == result_size) {
+        grouped_matches_start_index = i;
+      }
+      continue;
     }
-    previous_row_header = current_row_header;
-
-    OmniboxResultView* const result_view = row_view->result_view();
-    result_view->SetMatch(match);
-    // Set visibility of the result view based on whether the row is hidden.
-    result_view->SetVisible(!controller()->IsSuggestionHidden(match));
-    result_view->UpdateAccessibilityProperties();
-
-    const SkBitmap* bitmap = model()->GetPopupRichSuggestionBitmap(i);
-    if (bitmap) {
-      result_view->SetRichSuggestionImage(
-          gfx::ImageSkia::CreateFrom1xBitmap(*bitmap));
-    }
+    row_view->SetVisible(true);
+    previous_row_header = UpdateRowView(row_view, match, previous_row_header);
   }
+
   // If we have more views than matches, hide the surplus ones.
   for (auto i = children().begin() + result_size; i != children().end(); ++i) {
     (*i)->SetVisible(false);
   }
 
+  UpdateContextualSuggestionsGroup(grouped_matches_start_index);
   popup_->SetTargetBounds(GetTargetBounds());
 
   if (popup_created) {
@@ -416,8 +432,8 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
 void OmniboxPopupViewViews::ProvideButtonFocusHint(size_t line) {
   DCHECK(GetSelection().IsButtonFocused());
 
-  views::View* active_button = static_cast<OmniboxRowView*>(children()[line])
-                                   ->GetActiveAuxiliaryButtonForAccessibility();
+  views::View* active_button =
+      row_views_[line]->GetActiveAuxiliaryButtonForAccessibility();
   // TODO(tommycli): |active_button| can sometimes be nullptr, because the
   // suggestion button row is not completely implemented.
   if (active_button) {
@@ -564,8 +580,13 @@ gfx::Rect OmniboxPopupViewViews::GetTargetBounds() const {
       children().cbegin(),
       children().cbegin() + autocomplete_controller->result().size(), 0,
       [](int height, const views::View* v) {
-        return height + v->GetPreferredSize().height();
+        return v->GetVisible() ? height + v->GetPreferredSize().height()
+                               : height;
       });
+
+  if (contextual_group_view_) {
+    popup_height += contextual_group_view_->GetCurrentHeight();
+  }
 
   // Add space at the bottom for aesthetic reasons. It's expected that this
   // space is dead unclickable/unhighlightable space. This extra padding is not
@@ -618,11 +639,11 @@ gfx::Rect OmniboxPopupViewViews::GetTargetBounds() const {
 }
 
 OmniboxHeaderView* OmniboxPopupViewViews::header_view_at(size_t i) {
-  if (i >= children().size()) {
+  if (i >= row_views_.size()) {
     return nullptr;
   }
 
-  return static_cast<OmniboxRowView*>(children()[i])->header_view();
+  return row_views_[i]->header_view();
 }
 
 OmniboxResultView* OmniboxPopupViewViews::result_view_at(size_t i) {
@@ -630,11 +651,11 @@ OmniboxResultView* OmniboxPopupViewViews::result_view_at(size_t i) {
 }
 
 const OmniboxResultView* OmniboxPopupViewViews::result_view_at(size_t i) const {
-  if (i >= children().size()) {
+  if (i >= row_views_.size()) {
     return nullptr;
   }
 
-  return static_cast<OmniboxRowView*>(children()[i])->result_view();
+  return row_views_[i]->result_view();
 }
 
 bool OmniboxPopupViewViews::HasMatchAt(size_t index) const {
@@ -652,15 +673,22 @@ size_t OmniboxPopupViewViews::GetIndexForPoint(const gfx::Point& point) const {
   }
 
   size_t nb_match = controller()->autocomplete_controller()->result().size();
-  DCHECK_LE(nb_match, children().size());
+  // Iterate through all the row views that correspond to current matches.
+  // `row_views_` contains all the `OmniboxRowView` instances, regardless of
+  // whether they are direct children or hosted in `contextual_group_view_`.
+  DCHECK_LE(nb_match, row_views_.size());
   for (size_t i = 0; i < nb_match; ++i) {
-    views::View* child = children()[i];
-    gfx::Point point_in_child_coords(point);
-    View::ConvertPointToTarget(this, child, &point_in_child_coords);
-    if (child->GetVisible() && child->HitTestPoint(point_in_child_coords)) {
-      return i;
+    OmniboxRowView* row_view = row_views_[i];
+    // Only consider visible rows.
+    if (row_view->GetVisible()) {
+      gfx::Point point_in_child_coords(point);
+      View::ConvertPointToTarget(this, row_view, &point_in_child_coords);
+      if (row_view->HitTestPoint(point_in_child_coords)) {
+        return row_view->line();
+      }
     }
   }
+
   return OmniboxPopupSelection::kNoMatch;
 }
 
@@ -714,6 +742,81 @@ void OmniboxPopupViewViews::UpdateAccessibleActiveDescendantForInvokingView() {
   } else {
     omnibox_view_->GetViewAccessibility().ClearActiveDescendant();
   }
+}
+
+std::u16string OmniboxPopupViewViews::UpdateRowView(
+    OmniboxRowView* row_view,
+    const AutocompleteMatch& match,
+    const std::u16string& previous_row_header) {
+  std::u16string current_row_header =
+      model()->GetSuggestionGroupHeaderText(match.suggestion_group_id);
+  // Show the header if it's distinct from the previous match's header.
+  if (!current_row_header.empty() &&
+      current_row_header != previous_row_header) {
+    row_view->ShowHeader(current_row_header);
+  } else {
+    row_view->HideHeader();
+  }
+
+  OmniboxResultView* const result_view = row_view->result_view();
+  result_view->SetMatch(match);
+  result_view->UpdateAccessibilityProperties();
+  result_view->SetVisible(!controller()->IsSuggestionHidden(match));
+
+  const SkBitmap* bitmap =
+      model()->GetPopupRichSuggestionBitmap(row_view->line());
+  if (bitmap) {
+    result_view->SetRichSuggestionImage(
+        gfx::ImageSkia::CreateFrom1xBitmap(*bitmap));
+  }
+  return current_row_header;
+}
+
+void OmniboxPopupViewViews::UpdateContextualSuggestionsGroup(
+    size_t match_start_index) {
+  const size_t result_size =
+      controller()->autocomplete_controller()->result().size();
+  if (match_start_index >= result_size) {
+    return;
+  }
+
+  if (!contextual_group_view_) {
+    contextual_group_view_ =
+        AddChildView(std::make_unique<OmniboxRowGroupedView>(this));
+  }
+
+  size_t current_row_index = 0;
+  std::u16string previous_row_header = u"";
+  for (size_t match_index = match_start_index; match_index < result_size;
+       match_index++) {
+    // A row view should have been created for each match.
+    CHECK(row_views_[match_index]);
+    row_views_[match_index]->SetVisible(false);
+    // If the group view already created the row view, reuse it. Otherwise,
+    // create a new row view and add it to the group view.
+    if (contextual_group_view_->children().size() == current_row_index) {
+      row_views_[match_index] = contextual_group_view_->AddChildView(
+          std::make_unique<OmniboxRowView>(match_index, /*popup_view=*/this));
+    } else {
+      row_views_[match_index] = static_cast<OmniboxRowView*>(
+          contextual_group_view_->children()[current_row_index]);
+    }
+
+    OmniboxRowView* row_view = row_views_[match_index];
+    row_view->SetVisible(true);
+    previous_row_header = UpdateRowView(row_view, GetMatchAtIndex(match_index),
+                                        previous_row_header);
+    current_row_index++;
+  }
+
+  // Hide surplus row views.
+  for (auto i = contextual_group_view_->children().begin() + current_row_index;
+       i != contextual_group_view_->children().end(); ++i) {
+    (*i)->SetVisible(false);
+  }
+
+  contextual_group_view_->SetVisible(true);
+  contextual_group_view_->MaybeStartAnimation();
 }
 
 BEGIN_METADATA(OmniboxPopupViewViews)
