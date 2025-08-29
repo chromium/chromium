@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.dom_distiller;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.eq;
@@ -28,6 +30,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.ContentPriority;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
 import org.chromium.components.dom_distiller.core.DomDistillerService;
@@ -102,5 +106,16 @@ public class ReaderModeBottomSheetCoordinatorTest {
         Assert.assertEquals(
                 0,
                 mUserActionTester.getActionCount("DomDistiller.Android.DistilledPagePrefsOpened"));
+    }
+
+    @Test
+    public void testBottomSheetContentsAreSwappable() {
+        mCoordinator.show(/* showFullSheet= */ false);
+
+        verify(mBottomSheetController).requestShowContent(any(), eq(true));
+        BottomSheetContent bottomSheetContent = mCoordinator.getBottomSheetContentForTesting();
+
+        assertEquals(ContentPriority.LOW, bottomSheetContent.getPriority());
+        assertTrue(bottomSheetContent.canSuppressInAnyState());
     }
 }

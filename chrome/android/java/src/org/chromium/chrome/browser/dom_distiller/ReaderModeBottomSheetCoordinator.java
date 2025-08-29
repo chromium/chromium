@@ -125,7 +125,12 @@ public class ReaderModeBottomSheetCoordinator {
 
         @Override
         public int getPriority() {
-            return BottomSheetContent.ContentPriority.HIGH;
+            return BottomSheetContent.ContentPriority.LOW;
+        }
+
+        @Override
+        public boolean canSuppressInAnyState() {
+            return true;
         }
 
         @Override
