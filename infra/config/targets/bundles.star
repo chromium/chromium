@@ -444,6 +444,7 @@ targets.bundle(
     name = "android_desktop_gtests",
     targets = [
         "android_browsertests",
+        "chrome_public_test_apk_desktop",
         "chrome_public_unit_test_apk",
         "extensions_unittests",
         "unit_tests",
@@ -456,6 +457,10 @@ targets.bundle(
         "x86-64",
     ],
     per_test_modifications = {
+        "chrome_public_test_apk_desktop": targets.mixin(
+            ci_only = True,
+            experiment_percentage = 100,
+        ),
         "chrome_public_unit_test_apk": targets.mixin(
             swarming = targets.swarming(
                 shards = 2,
