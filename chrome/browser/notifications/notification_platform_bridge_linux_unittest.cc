@@ -38,7 +38,6 @@ using message_center::Notification;
 using message_center::SettingsButtonHandler;
 using testing::_;
 using testing::ByMove;
-using testing::Invoke;
 using testing::Return;
 using testing::StrictMock;
 
@@ -364,14 +363,14 @@ class NotificationPlatformBridgeLinuxTest : public BrowserWithTestWindowTest {
 
     EXPECT_CALL(*mock_dbus_proxy_.get(),
                 DoCallMethod(Calls("NameHasOwner"), _, _))
-        .WillOnce(Invoke([owned = test_params.name_has_owner](
-                             dbus::MethodCall* method_call, int timeout_ms,
-                             dbus::ObjectProxy::ResponseCallback* cb) {
+        .WillOnce([owned = test_params.name_has_owner](
+                      dbus::MethodCall* method_call, int timeout_ms,
+                      dbus::ObjectProxy::ResponseCallback* cb) {
           auto name_has_owner_response = dbus::Response::CreateEmpty();
           dbus::MessageWriter writer(name_has_owner_response.get());
           writer.AppendBool(owned);
           std::move(*cb).Run(name_has_owner_response.get());
-        }));
+        });
 
     auto capabilities_response = dbus::Response::CreateEmpty();
     dbus::MessageWriter writer(capabilities_response.get());

@@ -19,7 +19,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
-using ::testing::Invoke;
 using StoreEntries = std::vector<std::unique_ptr<notifications::ClientState>>;
 
 namespace notifications {
@@ -143,10 +142,9 @@ class ImpressionHistoryTrackerTest : public ::testing::Test {
     StoreEntries entries;
     test::AddImpressionTestData(test_case.input, &entries);
     EXPECT_CALL(*store_, InitAndLoad(_))
-        .WillOnce(
-            Invoke([&entries](base::OnceCallback<void(bool, StoreEntries)> cb) {
-              std::move(cb).Run(true, std::move(entries));
-            }));
+        .WillOnce([&entries](base::OnceCallback<void(bool, StoreEntries)> cb) {
+          std::move(cb).Run(true, std::move(entries));
+        });
     base::RunLoop loop;
     impression_trakcer_->Init(
         delegate_.get(), base::BindOnce(
@@ -321,11 +319,11 @@ TEST_F(ImpressionHistoryTrackerTest, ConsecutiveDismisses) {
   EXPECT_CALL(*store(), Update(_, _, _));
   EXPECT_CALL(*delegate(), GetThrottleConfig(_, _))
       .Times(test_case.input.front().impressions.size())
-      .WillRepeatedly(Invoke(
+      .WillRepeatedly(
           [&](SchedulerClientType type,
               base::OnceCallback<void(std::unique_ptr<ThrottleConfig>)> cb) {
             std::move(cb).Run(nullptr);
-          }));
+          });
   UserActionData action_data(SchedulerClientType::kTest1,
                              UserActionType::kDismiss, "guid2");
   tracker()->OnUserAction(action_data);
@@ -372,11 +370,11 @@ TEST_F(ImpressionHistoryTrackerTest, ConsecutiveDismissesWithIgnoreTimeout) {
   EXPECT_CALL(*store(), Update(_, _, _));
   EXPECT_CALL(*delegate(), GetThrottleConfig(_, _))
       .Times(test_case.input.front().impressions.size())
-      .WillRepeatedly(Invoke(
+      .WillRepeatedly(
           [&](SchedulerClientType type,
               base::OnceCallback<void(std::unique_ptr<ThrottleConfig>)> cb) {
             std::move(cb).Run(nullptr);
-          }));
+          });
   UserActionData action_data(SchedulerClientType::kTest1,
                              UserActionType::kDismiss, "guid2");
   tracker()->OnUserAction(action_data);
@@ -473,11 +471,11 @@ TEST_P(ImpressionHistoryTrackerUserActionTest, UserAction) {
   if (GetParam().impression_result == ImpressionResult::kNegative ||
       GetParam().user_feedback == UserFeedback::kDismiss) {
     EXPECT_CALL(*delegate(), GetThrottleConfig(_, _))
-        .WillOnce(Invoke(
+        .WillOnce(
             [&](SchedulerClientType type,
                 base::OnceCallback<void(std::unique_ptr<ThrottleConfig>)> cb) {
               std::move(cb).Run(nullptr);
-            }));
+            });
   }
   // Trigger user action.
   if (GetParam().user_feedback == UserFeedback::kClick) {

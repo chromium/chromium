@@ -21,7 +21,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
-using ::testing::Invoke;
+
 namespace notifications {
 namespace {
 
@@ -80,12 +80,12 @@ class IconStoreTest : public testing::Test {
 
   void LoadIcons(std::vector<std::string> keys) {
     EXPECT_CALL(*icon_converter(), ConvertStringToIcon(_, _))
-        .WillOnce(Invoke([&](std::vector<std::string> encoded_icons,
-                             IconConverter::DecodeCallback callback) {
+        .WillOnce([&](std::vector<std::string> encoded_icons,
+                      IconConverter::DecodeCallback callback) {
           std::vector<SkBitmap> icons(encoded_icons.size());
           std::move(callback).Run(
               std::make_unique<DecodeResult>(true, std::move(icons)));
-        }));
+        });
     store()->LoadIcons(
         std::move(keys),
         base::BindOnce(&IconStoreTest::OnIconsLoaded, base::Unretained(this)));
@@ -95,12 +95,12 @@ class IconStoreTest : public testing::Test {
     auto add_icons_callback =
         base::BindOnce(&IconStoreTest::OnIconsAdded, base::Unretained(this));
     EXPECT_CALL(*icon_converter(), ConvertIconToString(_, _))
-        .WillOnce(Invoke([&](std::vector<SkBitmap> icons,
-                             IconConverter::EncodeCallback callback) {
+        .WillOnce([&](std::vector<SkBitmap> icons,
+                      IconConverter::EncodeCallback callback) {
           std::vector<std::string> encoded_icons(icons.size());
           std::move(callback).Run(
               std::make_unique<EncodeResult>(true, std::move(encoded_icons)));
-        }));
+        });
     store()->AddIcons(std::move(input), std::move(add_icons_callback));
   }
 
