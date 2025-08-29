@@ -452,7 +452,6 @@
     {
       name: "Payment",
       permissions_policy_name: "payment",
-      depends_on: ["PaymentRequest"],
     },
     {
       name: "PictureInPicture",
