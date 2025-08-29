@@ -237,13 +237,6 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   // Our creator, the audio manager needs to be notified when we close.
   const raw_ptr<AudioManagerWin> manager_;
 
-  // Used to aggregate and report glitch metrics to UMA (periodically) and to
-  // text logs (when a stream ends).
-  SystemGlitchReporter glitch_reporter_;
-
-  // Accumulates glitch info to be passed on to OnData().
-  media::AudioGlitchInfo::Accumulator glitch_accumulator_;
-
   AmplitudePeakDetector peak_detector_;
 
   // Used to track and log data discontinuity warnings from
@@ -385,13 +378,25 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   // Will be set to nullptr during construction if AEC is not supported.
   std::unique_ptr<EchoCancellationConfig> aec_config_;
 
+  // Set to true if the capture stream is a loopback stream. No distinction is
+  // made between application and process loopback. We need to check this every
+  // time a glitch is reported and it is therefore cheaper to cache it.
+  const bool is_loopback_capture_;
+
   // Process loopback captures do not get audio from an endpoint device but
-  // from a specified process IDs instead. It's is possible to check this using
-  // an internal helper method called IsProcessLoopbackDevice. However, we need
-  // to perform this check every time we need to pull data from the audio
-  // engine, which can be expensive. Checking the variable is cheaper than
-  // calling the function.
+  // from a specified process IDs instead. It's is possible to check this
+  // using an internal helper method called IsProcessLoopbackDevice.
+  // However, we need to perform this check every time we need to pull data
+  // from the audio engine, which can be expensive. Checking the variable is
+  // cheaper than calling the function.
   const bool is_process_loopback_capture_;
+
+  // Used to aggregate and report glitch metrics to UMA (periodically) and to
+  // text logs (when a stream ends).
+  SystemGlitchReporter glitch_reporter_;
+
+  // Accumulates glitch info to be passed on to OnData().
+  media::AudioGlitchInfo::Accumulator glitch_accumulator_;
 
   // Timeout period for waiting on the OS to activate the audio interface for
   // application loopback capture.

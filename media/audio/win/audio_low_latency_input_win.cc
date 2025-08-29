@@ -629,7 +629,6 @@ WASAPIAudioInputStream::WASAPIAudioInputStream(
     const std::string& device_id,
     AudioManager::LogCallback log_callback)
     : manager_(manager),
-      glitch_reporter_(SystemGlitchReporter::StreamType::kCapture),
       peak_detector_(base::BindRepeating(&AudioManager::TraceAmplitudePeak,
                                          base::Unretained(manager_),
                                          /*trace_start=*/true)),
@@ -644,7 +643,11 @@ WASAPIAudioInputStream::WASAPIAudioInputStream(
               static_cast<void (WASAPIAudioInputStream::*)(std::string)>(
                   &WASAPIAudioInputStream::SendLogMessage),
               base::Unretained(this)))),
-      is_process_loopback_capture_(IsProcessLoopbackDevice(device_id)) {
+      is_loopback_capture_(AudioDeviceDescription::IsLoopbackDevice(device_id)),
+      is_process_loopback_capture_(IsProcessLoopbackDevice(device_id)),
+      glitch_reporter_(is_loopback_capture_
+                           ? SystemGlitchReporter::StreamType::kLoopback
+                           : SystemGlitchReporter::StreamType::kCapture) {
   DCHECK(manager_);
   DCHECK(!device_id_.empty());
   DCHECK(!log_callback_.is_null());
@@ -1330,7 +1333,9 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
         glitch_reporter_.UpdateStats(glitch_duration);
         if (glitch_duration.is_positive()) {
           glitch_accumulator_.Add(AudioGlitchInfo::SingleBoundedSystemGlitch(
-              glitch_duration, AudioGlitchInfo::Direction::kCapture));
+              glitch_duration, is_loopback_capture_
+                                   ? AudioGlitchInfo::Direction::kLoopback
+                                   : AudioGlitchInfo::Direction::kCapture));
         }
       }
 
