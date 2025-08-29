@@ -1647,6 +1647,7 @@ chromium-metrics-reviews@google.com.
   <token key="Type">
     <variant name="Capture"/>
     <variant name="Loopback"/>
+    <variant name="LoopbackReference"/>
     <variant name="Render"/>
   </token>
 </histogram>
@@ -1667,6 +1668,7 @@ chromium-metrics-reviews@google.com.
   <token key="Type">
     <variant name="Capture"/>
     <variant name="Loopback"/>
+    <variant name="LoopbackReference"/>
     <variant name="Render"/>
   </token>
 </histogram>
@@ -1687,6 +1689,7 @@ chromium-metrics-reviews@google.com.
   <token key="Type">
     <variant name="Capture"/>
     <variant name="Loopback"/>
+    <variant name="LoopbackReference"/>
     <variant name="Render"/>
   </token>
 </histogram>
@@ -1707,6 +1710,7 @@ chromium-metrics-reviews@google.com.
   <token key="Type">
     <variant name="Capture"/>
     <variant name="Loopback"/>
+    <variant name="LoopbackReference"/>
     <variant name="Render"/>
   </token>
 </histogram>

@@ -57,6 +57,17 @@ const char* GetMetricName(SystemGlitchReporter::StreamType stream_type,
         case MetricType::kEarlyDetected:
           return "Media.Audio.Loopback.EarlyGlitchDetected";
       }
+    case SystemGlitchReporter::StreamType::kLoopbackReference:
+      switch (metric_type) {
+        case MetricType::kNumGlitches:
+          return "Media.Audio.LoopbackReference.Glitches2";
+        case MetricType::kTotalDuration:
+          return "Media.Audio.LoopbackReference.LostFramesInMs2";
+        case MetricType::kLargestDuration:
+          return "Media.Audio.LoopbackReference.LargestGlitchMs2";
+        case MetricType::kEarlyDetected:
+          return "Media.Audio.LoopbackReference.EarlyGlitchDetected";
+      }
   }
 }
 }  // namespace
