@@ -1434,7 +1434,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.CredentialRequest.ThirdParty.Get"
+<histogram name="PasswordManager.CredentialRequest.ThirdParty.Get2"
     enum="CredentialManagerAndroidGetResult" expires_after="2026-02-09">
   <owner>izuzic@google.com</owner>
   <owner>anki-team@google.com</owner>
@@ -1445,7 +1445,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.CredentialRequest.ThirdParty.Store"
+<histogram name="PasswordManager.CredentialRequest.ThirdParty.Store2"
     enum="CredentialManagerStoreResult" expires_after="2026-02-09">
   <owner>izuzic@google.com</owner>
   <owner>anki-team@google.com</owner>

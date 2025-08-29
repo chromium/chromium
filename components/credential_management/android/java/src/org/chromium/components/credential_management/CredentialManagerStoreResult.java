@@ -24,6 +24,12 @@ import java.lang.annotation.Target;
     CredentialManagerStoreResult.NO_CREATE_OPTIONS,
     CredentialManagerStoreResult.INTERRUPTED,
     CredentialManagerStoreResult.UNKNOWN,
+    CredentialManagerStoreResult.CUSTOM_ERROR,
+    CredentialManagerStoreResult.PROVIDER_CONFIGURATION_ERROR,
+    CredentialManagerStoreResult.UNSUPPORTED,
+    CredentialManagerStoreResult.PUBLIC_KEY_CREDENTIAL_ERROR,
+    CredentialManagerStoreResult.RESTORE_CREDENTIAL_DOM_ERROR,
+    CredentialManagerStoreResult.E2EE_UNAVAILABLE_ERROR,
     CredentialManagerStoreResult.COUNT
 })
 @Target(ElementType.TYPE_USE)
@@ -48,6 +54,27 @@ public @interface CredentialManagerStoreResult {
     /** A general catch-all for any other errors, given by the Android API. */
     int UNKNOWN = 5;
 
-    int COUNT = 6;
+    /** An error by the third-party sdk with which was used to make the CreateCredentialRequest. */
+    int CUSTOM_ERROR = 6;
+
+    /** Configurations are mismatched for the provider. */
+    int PROVIDER_CONFIGURATION_ERROR = 7;
+
+    /**
+     * Credential manager is unsupported. It could be disabled on the device so a software update or
+     * a restart after enabling may fix this issue. Sometimes hardware may be the limiting factor.
+     */
+    int UNSUPPORTED = 8;
+
+    /** The operation failed due to a public key credential error. */
+    int PUBLIC_KEY_CREDENTIAL_ERROR = 9;
+
+    /** The operation failed due to a restore credential DOM error. */
+    int RESTORE_CREDENTIAL_DOM_ERROR = 10;
+
+    /** The operation failed due to E2EE being unavailable. */
+    int E2EE_UNAVAILABLE_ERROR = 11;
+
+    int COUNT = 12;
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml:CredentialManagerStoreResult)
