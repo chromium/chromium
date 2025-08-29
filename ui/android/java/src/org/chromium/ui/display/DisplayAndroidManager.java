@@ -228,7 +228,7 @@ public class DisplayAndroidManager {
     /* package */ boolean isWindowManagementEnabled() {
         return UiAndroidFeatureList.sAndroidWindowManagementWebApi.isEnabled()
                 && mAconfigFlaggedApiDelegate != null
-                && mAconfigFlaggedApiDelegate.isDisplayTopologyAvailable();
+                && mAconfigFlaggedApiDelegate.isDisplayTopologyAvailable(getDisplayManager());
     }
 
     /* package */ DisplayAndroid getDisplayAndroid(Display display) {

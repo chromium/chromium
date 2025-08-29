@@ -69,7 +69,7 @@ public class DisplayAndroidManagerTest {
 
         ServiceLoaderUtil.setInstanceForTesting(
                 AconfigFlaggedApiDelegate.class, mAconfigFlaggedApiDelegate);
-        doReturn(true).when(mAconfigFlaggedApiDelegate).isDisplayTopologyAvailable();
+        doReturn(true).when(mAconfigFlaggedApiDelegate).isDisplayTopologyAvailable(mDisplayManager);
 
         doReturn(mBounds.clone())
                 .when(mAconfigFlaggedApiDelegate)
