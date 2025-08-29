@@ -58,6 +58,30 @@
 
 namespace autofill {
 
+namespace {
+
+// SaveCardPromptMetricType will be either LegacySaveCardPromptResult or
+// SaveCardPromptResultDesktop.
+template <typename SaveCardPromptMetricType>
+SaveCardPromptMetricType GetMetric(PaymentsUiClosedReason reason) {
+  switch (reason) {
+    case PaymentsUiClosedReason::kAccepted:
+      return SaveCardPromptMetricType::kAccepted;
+    case PaymentsUiClosedReason::kCancelled:
+      return SaveCardPromptMetricType::kCancelled;
+    case PaymentsUiClosedReason::kClosed:
+      return SaveCardPromptMetricType::kClosed;
+    case PaymentsUiClosedReason::kNotInteracted:
+      return SaveCardPromptMetricType::kNotInteracted;
+    case PaymentsUiClosedReason::kLostFocus:
+      return SaveCardPromptMetricType::kLostFocus;
+    case PaymentsUiClosedReason::kUnknown:
+      return SaveCardPromptMetricType::kUnknown;
+  }
+}
+
+}  // namespace
+
 static bool g_ignore_window_activation_for_testing = false;
 
 SaveCardBubbleControllerImpl::SaveCardBubbleControllerImpl(
@@ -427,6 +451,11 @@ void SaveCardBubbleControllerImpl::OnSaveButton(
       // because we don't immediately close the bubble (at which time the other
       // metrics are logged) after OnSaveButton() and logging now aligns the
       // timing of the log with the other cases.
+      autofill_metrics::LogSaveCreditCardPromptResultMetricDesktop(
+          autofill_metrics::SaveCardPromptResultDesktop::kAccepted,
+          is_upload_save_, options_,
+          /*has_saved_cards=*/
+          !payments_data_manager_->GetCreditCards().empty());
       autofill_metrics::LogSaveCardPromptResultMetric(
           autofill_metrics::LegacySaveCardPromptResult::kAccepted,
           is_upload_save_, is_reshow_, options_,
@@ -435,6 +464,7 @@ void SaveCardBubbleControllerImpl::OnSaveButton(
           !payments_data_manager_->GetCreditCards().empty());
       autofill_metrics::LogCreditCardUploadLoadingViewShownMetric(
           /*is_shown=*/true);
+
       current_bubble_type_ = PaymentsBubbleType::kUploadInProgress;
 
       std::move(upload_save_card_prompt_callback_)
@@ -511,45 +541,39 @@ void SaveCardBubbleControllerImpl::OnBubbleClosed(
     return;
   }
 
-  auto get_metric = [](PaymentsUiClosedReason reason) {
-    switch (reason) {
-      case PaymentsUiClosedReason::kAccepted:
-        return autofill_metrics::LegacySaveCardPromptResult::kAccepted;
-      case PaymentsUiClosedReason::kCancelled:
-        return autofill_metrics::LegacySaveCardPromptResult::kCancelled;
-      case PaymentsUiClosedReason::kClosed:
-        return autofill_metrics::LegacySaveCardPromptResult::kClosed;
-      case PaymentsUiClosedReason::kNotInteracted:
-        return autofill_metrics::LegacySaveCardPromptResult::kNotInteracted;
-      case PaymentsUiClosedReason::kLostFocus:
-        return autofill_metrics::LegacySaveCardPromptResult::kLostFocus;
-      case PaymentsUiClosedReason::kUnknown:
-        return autofill_metrics::LegacySaveCardPromptResult::kUnknown;
-    }
-  };
+  autofill_metrics::LegacySaveCardPromptResult legacy_metric =
+      GetMetric<autofill_metrics::LegacySaveCardPromptResult>(closed_reason);
 
   // Log save card prompt result according to the closed reason.
   switch (current_bubble_type_) {
     case PaymentsBubbleType::kLocalCvcSave:
     case PaymentsBubbleType::kUploadCvcSave:
       autofill_metrics::LogSaveCvcPromptResultMetric(
-          get_metric(closed_reason), is_upload_save_, is_reshow_);
+          legacy_metric, is_upload_save_, is_reshow_);
       break;
     case PaymentsBubbleType::kLocalSave:
     case PaymentsBubbleType::kUploadSave:
+      if (!is_reshow_) {
+        autofill_metrics::LogSaveCreditCardPromptResultMetricDesktop(
+            GetMetric<autofill_metrics::SaveCardPromptResultDesktop>(
+                closed_reason),
+            is_upload_save_,
+            /*save_credit_card_options=*/options_, /*has_saved_cards=*/
+            !payments_data_manager_->GetCreditCards().empty());
+      }
       autofill_metrics::LogSaveCardPromptResultMetric(
-          get_metric(closed_reason), is_upload_save_, is_reshow_, options_,
+          legacy_metric, is_upload_save_, is_reshow_, options_,
           payments_data_manager_->GetPaymentsSigninStateForMetrics(),
           /*has_saved_cards=*/
           !payments_data_manager_->GetCreditCards().empty());
       break;
     case PaymentsBubbleType::kUploadInProgress:
       autofill_metrics::LogCreditCardUploadLoadingViewResultMetric(
-          get_metric(closed_reason));
+          legacy_metric);
       break;
     case PaymentsBubbleType::kUploadComplete:
       autofill_metrics::LogCreditCardUploadConfirmationViewResultMetric(
-          get_metric(closed_reason), confirmation_ui_params_->is_success);
+          legacy_metric, confirmation_ui_params_->is_success);
       break;
     case PaymentsBubbleType::kInactive:
     case PaymentsBubbleType::kManageCards:

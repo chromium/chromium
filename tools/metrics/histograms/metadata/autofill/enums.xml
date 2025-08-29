@@ -2673,6 +2673,15 @@ Called by update_autofill_enums.py.-->
   <int value="3" label="Unexpected errors"/>
 </enum>
 
+<enum name="AutofillSaveCardPromptResultDesktopEnum">
+  <int value="0" label="Accepted"/>
+  <int value="1" label="Cancelled"/>
+  <int value="2" label="Closed"/>
+  <int value="3" label="Not interacted"/>
+  <int value="4" label="Lost focus"/>
+  <int value="5" label="Unknown"/>
+</enum>
+
 <enum name="AutofillSaveCardPromptResultEnum">
   <int value="0" label="Accepted"/>
   <int value="1" label="Closed"/>
@@ -2691,6 +2700,8 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Not shown, required delay has not passed"/>
   <int value="3" label="Not shown, CVC missing for possible card update"/>
 </enum>
+
+<!-- TODO(crbug.com/430588721): Clean up use of AutofillSavePaymentMethodPromptResultEnum once refactored save card metrics have rolled out. -->
 
 <enum name="AutofillSavePaymentMethodPromptResultEnum">
   <int value="0" label="Accepted"/>

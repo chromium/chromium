@@ -10,18 +10,20 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace autofill::autofill_metrics {
+namespace {
 
-void LogSaveCreditCardPromptOfferMetricDesktop(
-    SaveCardPromptOffer metric,
+// Helper function to log metrics with sub histograms based on
+// SaveCreditCardOptions. SaveCardPromptMetricType will be either
+// SaveCardPromptOffer or SaveCardPromptResultDesktop.
+// Note: If you add a new sub-histogram here, it must be added to histograms.xml
+// for each SaveCardPromptMetricType supported by this function.
+template <typename SaveCardPromptMetricType>
+void LogSubHistograms(
+    const std::string& base_histogram_name,
+    SaveCardPromptMetricType metric,
     bool is_upload_save,
     const payments::PaymentsAutofillClient::SaveCreditCardOptions&
         save_credit_card_options) {
-  std::string_view destination = is_upload_save ? ".Server" : ".Local";
-  std::string base_histogram_name =
-      base::StrCat({"Autofill.SaveCreditCardPromptOffer.Desktop", destination});
-
-  base::UmaHistogramEnumeration(base_histogram_name, metric);
-
   if (save_credit_card_options.should_request_name_from_user) {
     base::UmaHistogramEnumeration(
         base::StrCat({base_histogram_name, ".RequestingCardholderName"}),
@@ -51,4 +53,41 @@ void LogSaveCreditCardPromptOfferMetricDesktop(
         metric);
   }
 }
+
+}  // namespace
+
+void LogSaveCreditCardPromptOfferMetricDesktop(
+    SaveCardPromptOffer metric,
+    bool is_upload_save,
+    const payments::PaymentsAutofillClient::SaveCreditCardOptions&
+        save_credit_card_options) {
+  std::string_view destination = is_upload_save ? ".Server" : ".Local";
+  std::string base_histogram_name =
+      base::StrCat({"Autofill.SaveCreditCardPromptOffer.Desktop", destination});
+  base::UmaHistogramEnumeration(base_histogram_name, metric);
+
+  LogSubHistograms(base_histogram_name, metric, is_upload_save,
+                   save_credit_card_options);
+}
+
+void LogSaveCreditCardPromptResultMetricDesktop(
+    SaveCardPromptResultDesktop metric,
+    bool is_upload_save,
+    const payments::PaymentsAutofillClient::SaveCreditCardOptions&
+        save_credit_card_options,
+    bool has_saved_cards) {
+  std::string_view destination = is_upload_save ? ".Server" : ".Local";
+  std::string base_histogram_name = base::StrCat(
+      {"Autofill.SaveCreditCardPromptResult.Desktop", destination});
+  base::UmaHistogramEnumeration(base_histogram_name, metric);
+
+  LogSubHistograms(base_histogram_name, metric, is_upload_save,
+                   save_credit_card_options);
+
+  base::UmaHistogramEnumeration(
+      base::StrCat({base_histogram_name, has_saved_cards ? ".UserHasSavedCards"
+                                                         : ".UserHasNoCards"}),
+      metric);
+}
+
 }  // namespace autofill::autofill_metrics

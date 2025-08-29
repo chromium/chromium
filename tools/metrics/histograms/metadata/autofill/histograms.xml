@@ -6121,6 +6121,74 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram
+    name="Autofill.SaveCreditCardPromptResult.Desktop.Server.{ServerSaveSituation}"
+    enum="AutofillSaveCardPromptResultDesktopEnum" expires_after="2026-06-01">
+  <owner>kavitasoni@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs how the user interacts with the save credit card prompt for a card to
+    be saved as a server card, which {ServerSaveSituation}. Is emitted as soon
+    as user accepts or when the prompt closes. Not logged for prompt re-shows
+    (e.g., prompt reshown from the omnibox icon).
+  </summary>
+  <token key="ServerSaveSituation" variants="AutofillServerSaveCardSituation"/>
+</histogram>
+
+<histogram name="Autofill.SaveCreditCardPromptResult.Desktop.{SaveDestination}"
+    enum="AutofillSaveCardPromptResultDesktopEnum" expires_after="2026-06-01">
+  <owner>kavitasoni@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs how the user interacts with the save credit card prompt for a card to
+    be saved as a {SaveDestination} card. Is emitted as soon as user accepts or
+    when the prompt closes. Not logged for prompt re-shows (e.g., prompt reshown
+    from the omnibox icon on desktop).
+  </summary>
+  <token key="SaveDestination" variants="AutofillSaveCardDestination"/>
+</histogram>
+
+<histogram
+    name="Autofill.SaveCreditCardPromptResult.Desktop.{SaveDestination}.{SaveSituation}"
+    enum="AutofillSaveCardPromptResultDesktopEnum" expires_after="2026-06-01">
+  <owner>kavitasoni@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs how the user interacts with the save credit card prompt for a card to
+    be saved as a {SaveDestination} card, when {SaveSituation}. Is emitted as
+    soon as user accepts or when the prompt closes. Not logged for prompt
+    re-shows (e.g., prompt reshown from the omnibox icon on desktop).
+  </summary>
+  <token key="SaveDestination" variants="AutofillSaveCardDestination"/>
+  <token key="SaveSituation" variants="AutofillSaveCardSituation"/>
+</histogram>
+
+<histogram
+    name="Autofill.SaveCreditCardPromptResult.Desktop.{SaveDestination}.{UserGroup}"
+    enum="AutofillSaveCardPromptResultDesktopEnum" expires_after="2026-06-01">
+  <owner>kavitasoni@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs how the user interacts with the save credit card prompt for a card to
+    be saved as a {SaveDestination} card, with {UserGroup}. Is emitted as soon
+    as user accepts or when the prompt closes. Not logged for prompt re-shows
+    (e.g., prompt reshown from the omnibox icon on desktop).
+  </summary>
+  <token key="SaveDestination" variants="AutofillSaveCardDestination"/>
+  <token key="UserGroup">
+    <variant name="UserHasNoCards"
+        summary="data aggregated across users who don't have credit cards
+                 saved"/>
+    <variant name="UserHasSavedCards"
+        summary="data aggregated across users who have credit cards saved
+                 already."/>
+  </token>
+</histogram>
+
+<histogram
     name="Autofill.SaveCreditCardPromptResult.IOS.{SaveDestination}.{OverlayType}.NumStrikes.{Strikes}.{FixFlow}"
     enum="SaveCreditCardPromptResultIOS" expires_after="2026-02-22">
   <owner>kavitasoni@google.com</owner>
