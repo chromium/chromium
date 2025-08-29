@@ -3580,7 +3580,7 @@ enum WebFeature {
   kSendBeaconWithURLSearchParams = 4309,
   kSendBeaconWithUSVString = 4310,
   kReplacedElementPaintedWithOverflow = 4311,
-  kImageAd = 4312,
+  kOBSOLETE_kImageAd = 4312,
   kLinkRelPrefetchAsDocumentSameOrigin = 4313,
   kLinkRelPrefetchAsDocumentCrossOrigin = 4314,
   kPersistentQuotaType = 4315,

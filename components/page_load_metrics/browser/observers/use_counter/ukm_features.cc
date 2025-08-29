@@ -235,7 +235,6 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kCookieDomainNonASCII,
           WebFeature::kClientHintsMetaEquivDelegateCH,
           WebFeature::kAuthorizationCoveredByWildcard,
-          WebFeature::kImageAd,
           WebFeature::kLinkRelPrefetchAsDocumentSameOrigin,
           WebFeature::kLinkRelPrefetchAsDocumentCrossOrigin,
           WebFeature::kChromeLoadTimesCommitLoadTime,

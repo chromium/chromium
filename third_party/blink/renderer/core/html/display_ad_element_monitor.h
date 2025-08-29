@@ -51,8 +51,6 @@ class CORE_EXPORT DisplayAdElementMonitor
 
   base::TimeTicks last_overlay_check_time_;
 
-  bool ad_use_counter_recorded_ = false;
-
   // The last rectangle reported to the `PageTimingMetricsSender`.
   // `last_reported_rect_` is empty if there's no report before, or if the last
   // report was used to signal the removal of this element (i.e. both cases
