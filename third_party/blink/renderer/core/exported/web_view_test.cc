@@ -3835,7 +3835,7 @@ class MiddleClickAutoscrollWebFrameWidget
 class MiddleClickWebViewTest : public WebViewTest {
  public:
   MiddleClickWebViewTest()
-      : WebViewTest(WTF::BindRepeating(
+      : WebViewTest(blink::BindRepeating(
             &frame_test_helpers::WebViewHelper::CreateTestWebFrameWidget<
                 MiddleClickAutoscrollWebFrameWidget>)) {}
 };
@@ -4605,7 +4605,7 @@ class TouchEventConsumersWebFrameWidget
 class TouchEventConsumersWebViewTest : public WebViewTest {
  public:
   TouchEventConsumersWebViewTest()
-      : WebViewTest(WTF::BindRepeating(
+      : WebViewTest(blink::BindRepeating(
             &frame_test_helpers::WebViewHelper::CreateTestWebFrameWidget<
                 TouchEventConsumersWebFrameWidget>)) {}
 };
@@ -5211,10 +5211,9 @@ class ShowUnhandledTapTest : public WebViewTest {
     WebLocalFrameImpl* web_local_frame = web_view_->MainFrameImpl();
     web_local_frame->GetFrame()
         ->GetBrowserInterfaceBroker()
-        .SetBinderForTesting(
-            mojom::blink::UnhandledTapNotifier::Name_,
-            WTF::BindRepeating(&MockUnhandledTapNotifierImpl::Bind,
-                               WTF::Unretained(&mock_notifier_)));
+        .SetBinderForTesting(mojom::blink::UnhandledTapNotifier::Name_,
+                             BindRepeating(&MockUnhandledTapNotifierImpl::Bind,
+                                           Unretained(&mock_notifier_)));
   }
 
   void TearDown() override {

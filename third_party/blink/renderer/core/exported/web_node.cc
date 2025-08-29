@@ -205,9 +205,9 @@ void WebNode::SimulateClick() {
   private_->GetExecutionContext()
       ->GetTaskRunner(TaskType::kUserInteraction)
       ->PostTask(FROM_HERE,
-                 WTF::BindOnce(&Node::DispatchSimulatedClick,
-                               WrapWeakPersistent(private_.Get()), nullptr,
-                               SimulatedClickCreationScope::kFromUserAgent));
+                 BindOnce(&Node::DispatchSimulatedClick,
+                          WrapWeakPersistent(private_.Get()), nullptr,
+                          SimulatedClickCreationScope::kFromUserAgent));
 }
 
 WebElementCollection WebNode::GetElementsByHTMLTagName(
@@ -346,7 +346,7 @@ base::ScopedClosureRunner WebNode::AddEventListener(
   WebPrivatePtrForGC<EventListener> listener =
       MakeGarbageCollected<EventListener>(Unwrap<Node>(), std::move(handler));
   listener->AddListener();
-  return base::ScopedClosureRunner(WTF::BindOnce(
+  return base::ScopedClosureRunner(BindOnce(
       &EventListener::RemoveListener, WrapWeakPersistent(listener.Get())));
 }
 

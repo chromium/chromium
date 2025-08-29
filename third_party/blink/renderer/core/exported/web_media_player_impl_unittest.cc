@@ -432,8 +432,8 @@ class WebMediaPlayerImplTest
         media::MediaMetricsProvider::BrowsingMode::kNormal,
         media::MediaMetricsProvider::FrameStatus::kNotTopFrame,
         ukm::kInvalidSourceId, media::VideoDecodePerfHistory::SaveCallback(),
-        WTF::BindRepeating(&WebMediaPlayerImplTest::IsShuttingDown,
-                           WTF::Unretained(this)),
+        BindRepeating(&WebMediaPlayerImplTest::IsShuttingDown,
+                      Unretained(this)),
         media::PictureInPictureEventsInfo::AutoPipReasonCallback(),
         CrossVariantMojoReceiver<
             media::mojom::MediaMetricsProviderInterfaceBase>(
@@ -463,8 +463,8 @@ class WebMediaPlayerImplTest
         media_thread_.task_runner(), media_thread_.task_runner(), nullptr,
         media::RequestRoutingTokenCallback(), mock_observer_.AsWeakPtr(), false,
         false, provider.Unbind(),
-        WTF::BindOnce(&WebMediaPlayerImplTest::CreateMockSurfaceLayerBridge,
-                      base::Unretained(this)),
+        blink::BindOnce(&WebMediaPlayerImplTest::CreateMockSurfaceLayerBridge,
+                        base::Unretained(this)),
         viz::TestContextProvider::Create(),
         /*use_surface_layer=*/true, is_background_suspend_enabled_,
         is_background_video_playback_enabled_, true,
@@ -923,8 +923,8 @@ class WebMediaPlayerImplTest
     base::RunLoop run_loop;
     WebContentDecryptionModuleImpl::Create(
         &mock_cdm_factory_, key_systems_.get(), test_origin, cdm_config,
-        WTF::BindOnce(&WebMediaPlayerImplTest::OnCdmCreated,
-                      WTF::Unretained(this), run_loop.QuitClosure()));
+        blink::BindOnce(&WebMediaPlayerImplTest::OnCdmCreated, Unretained(this),
+                        run_loop.QuitClosure()));
     run_loop.Run();
     EXPECT_TRUE(web_cdm_);
   }

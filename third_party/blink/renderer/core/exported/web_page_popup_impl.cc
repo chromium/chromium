@@ -347,8 +347,8 @@ WebPagePopupImpl::WebPagePopupImpl(
           /*is_embedded=*/false,
           /*is_for_scalable_page=*/true)) {
   DCHECK(popup_client_);
-  popup_widget_host_.set_disconnect_handler(WTF::BindOnce(
-      &WebPagePopupImpl::WidgetHostDisconnected, WTF::Unretained(this)));
+  popup_widget_host_.set_disconnect_handler(blink::BindOnce(
+      &WebPagePopupImpl::WidgetHostDisconnected, blink::Unretained(this)));
   if (auto* main_frame_widget = opener_web_view->MainFrameViewWidget()) {
     if (auto* device_emulator = main_frame_widget->DeviceEmulator()) {
       opener_widget_screen_origin_ = device_emulator->ViewRectOrigin();
@@ -420,9 +420,9 @@ WebPagePopupImpl::WebPagePopupImpl(
 
   popup_owner_client_rect_ =
       popup_client_->OwnerElement().GetBoundingClientRect();
-  popup_widget_host_->ShowPopup(
-      initial_rect_, GetAnchorRectInScreen(),
-      WTF::BindOnce(&WebPagePopupImpl::DidShowPopup, WTF::Unretained(this)));
+  popup_widget_host_->ShowPopup(initial_rect_, GetAnchorRectInScreen(),
+                                blink::BindOnce(&WebPagePopupImpl::DidShowPopup,
+                                                blink::Unretained(this)));
   should_defer_setting_window_rect_ = false;
   widget_base_->SetPendingWindowRect(initial_rect_);
 
@@ -634,8 +634,8 @@ void WebPagePopupImpl::SetWindowRect(const gfx::Rect& rect_in_screen) {
   if (!should_defer_setting_window_rect_) {
     widget_base_->SetPendingWindowRect(window_rect);
     popup_widget_host_->SetPopupBounds(
-        window_rect,
-        WTF::BindOnce(&WebPagePopupImpl::DidSetBounds, WTF::Unretained(this)));
+        window_rect, blink::BindOnce(&WebPagePopupImpl::DidSetBounds,
+                                     blink::Unretained(this)));
   } else {
     initial_rect_ = window_rect;
   }

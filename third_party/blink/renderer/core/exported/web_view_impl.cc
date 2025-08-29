@@ -477,7 +477,7 @@ void MaybePreloadSystemFonts(Page* page) {
   is_first_run = false;
 
   page->GetAgentGroupScheduler().DefaultTaskRunner()->PostTask(
-      FROM_HERE, WTF::BindOnce([]() { FontCache::MaybePreloadSystemFonts(); }));
+      FROM_HERE, BindOnce([]() { FontCache::MaybePreloadSystemFonts(); }));
 }
 
 }  // namespace
@@ -636,7 +636,7 @@ WebViewImpl::WebViewImpl(
     // corresponding browser-side `RenderViewHostImpl` (e.g. tests or
     // printing), call `Close()` directly instead to delete `this`.
     receiver_.set_disconnect_handler(
-        WTF::BindOnce(&WebViewImpl::MojoDisconnected, WTF::Unretained(this)));
+        BindOnce(&WebViewImpl::MojoDisconnected, Unretained(this)));
   }
   if (!web_view_client_)
     DCHECK(!does_composite_);
@@ -3126,7 +3126,7 @@ void WebViewImpl::Show(const LocalFrameToken& opener_frame_token,
   local_main_frame_host_remote_->ShowCreatedWindow(
       opener_frame_token, NavigationPolicyToDisposition(policy),
       std::move(window_features), opened_by_user_gesture,
-      WTF::BindOnce(&WebViewImpl::DidShowCreatedWindow, WTF::Unretained(this)));
+      BindOnce(&WebViewImpl::DidShowCreatedWindow, Unretained(this)));
 }
 
 void WebViewImpl::DidShowCreatedWindow() {
@@ -3191,18 +3191,18 @@ void WebViewImpl::UpdateTargetURL(const WebURL& url,
 }
 
 void WebViewImpl::SendUpdatedTargetURLToBrowser(const KURL& target_url) {
-  // Note: WTF::Unretained() usage below is safe, since `this` owns both
+  // Note: blink::Unretained() usage below is safe, since `this` owns both
   // `mojo::Remote` objects.
   if (GetPage()->MainFrame()->IsLocalFrame()) {
     DCHECK(local_main_frame_host_remote_);
     local_main_frame_host_remote_->UpdateTargetURL(
-        target_url, WTF::BindOnce(&WebViewImpl::TargetURLUpdatedInBrowser,
-                                  WTF::Unretained(this)));
+        target_url,
+        BindOnce(&WebViewImpl::TargetURLUpdatedInBrowser, Unretained(this)));
   } else {
     DCHECK(remote_main_frame_host_remote_);
     remote_main_frame_host_remote_->UpdateTargetURL(
-        target_url, WTF::BindOnce(&WebViewImpl::TargetURLUpdatedInBrowser,
-                                  WTF::Unretained(this)));
+        target_url,
+        BindOnce(&WebViewImpl::TargetURLUpdatedInBrowser, Unretained(this)));
   }
 }
 
@@ -4154,7 +4154,7 @@ void WebViewImpl::MojoDisconnected() {
   // process, and is used to release ownership of the corresponding
   // RenderViewImpl instance. https://crbug.com/1000035.
   GetPage()->GetAgentGroupScheduler().DefaultTaskRunner()->PostNonNestableTask(
-      FROM_HERE, WTF::BindOnce(&WebViewImpl::Close, WTF::Unretained(this)));
+      FROM_HERE, BindOnce(&WebViewImpl::Close, Unretained(this)));
 }
 
 void WebViewImpl::CreateRemoteMainFrame(

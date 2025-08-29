@@ -138,9 +138,9 @@ void WebFrameSerializer::GenerateMHTMLParts(
   Deque<SerializedResource> resources;
   FrameSerializer::SerializeFrame(
       *web_delegate, *frame,
-      WTF::BindOnce(&ContinueGenerateMHTMLParts, boundary,
-                    web_frame->GetLocalFrameToken(), encoding_policy,
-                    std::move(callback)));
+      blink::BindOnce(&ContinueGenerateMHTMLParts, boundary,
+                      web_frame->GetLocalFrameToken(), encoding_policy,
+                      std::move(callback)));
 }
 
 bool WebFrameSerializer::Serialize(
