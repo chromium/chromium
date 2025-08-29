@@ -166,8 +166,8 @@ _BANNED_JAVA_IMPORTS: Sequence[BanRule] = (
     ),
     BanRule(
         'import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;',
-        ('Do not use VectorDrawableCompat, use getResources().getDrawable() to '
-         'avoid extra indirections. Please also add trace event as the call '
+        ('Do not use VectorDrawableCompat, use getResources().getDrawable() '
+         'to avoid extra indirections. Please also add trace event as the call '
          'might take more than 20 ms to complete.', ),
     ),
 )
@@ -193,8 +193,8 @@ _BANNED_JAVA_FUNCTIONS: Sequence[BanRule] = (
     ),
     BanRule(
         r'/(?<!\bsuper\.)(?<!\bIntent )\bregisterReceiver\(',
-        ('Do not call android.content.Context.registerReceiver (or an override) '
-         'directly. Use one of the wrapper methods defined in '
+        ('Do not call android.content.Context.registerReceiver (or an '
+         'override) directly. Use one of the wrapper methods defined in '
          'org.chromium.base.ContextUtils, such as '
          'registerProtectedBroadcastReceiver, '
          'registerExportedBroadcastReceiver, or '
@@ -236,16 +236,16 @@ _BANNED_JAVA_FUNCTIONS: Sequence[BanRule] = (
     BanRule(
         r'/(ResourcesCompat|getResources\(\))\.getDrawable\(\)',
         ('getDrawable() can be expensive. If you have a lot of calls to '
-         'GetDrawable() or your code may introduce janks, please put your calls '
-         'inside a trace().', ),
+         'GetDrawable() or your code may introduce janks, please put your '
+         'calls inside a trace().', ),
         False,
         excluded_paths=(r'.*Test[A-Z]?.*\.java', ),
     ),
     BanRule(
         r'/RecordHistogram\.getHistogram(ValueCount|TotalCount|Samples)ForTesting\(',
-        ('Raw histogram counts are easy to misuse; for example they don\'t reset '
-         'between batched tests. Use HistogramWatcher to check histogram records '
-         'instead.', ),
+        ('Raw histogram counts are easy to misuse; for example they don\'t '
+         'reset between batched tests. Use HistogramWatcher to check histogram '
+         'records instead.', ),
         False,
         excluded_paths=(
             'base/android/javatests/src/org/chromium/base/metrics/RecordHistogramTest.java',
@@ -266,13 +266,13 @@ _BANNED_JAVA_FUNCTIONS: Sequence[BanRule] = (
         explanation=(
             'Usage of IS_DESKTOP_ANDROID build flag or DeviceInfo.isDesktop() '
             'is discouraged. Use system affordances to determine feature '
-            'availablility. Refer to https://chromium.googlesource.com/chromium/src/+/HEAD/docs/ui/android/device_form_factor.md for guidelines.'
+            'availablility. Refer to https://chromium.googlesource.com/chromium/src/+/HEAD/docs/ui/android/device_form_factor.md for guidelines. '
             'To request an exception, file a bug at '
             'https://b.corp.google.com/issues/new?component=1753515&template=2172655'
             'Once approved, use centralized util DeviceInfo.isDesktop() '
-            'instead of direct build flag or PackageManager.FEATURE_PC checks.'
+            'instead of direct build flag or PackageManager.FEATURE_PC checks. '
             'Allowances may be granted to only the directories below: '
-            '[build/, chrome/, components/, extensions/, infra/, tools/]'
+            '[build/, chrome/, components/, extensions/, infra/, tools/] '
             'Note: in particular we need to avoid components shared with '
             'WebView.',
         ),
@@ -1930,7 +1930,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         ('WIDGET_OWNS_NATIVE_WIDGET and NATIVE_WIDGET_OWNS_WIDGET are in the '
          'process of being deprecated. Consider using the new '
          'CLIENT_OWNS_WIDGET ownership model. Eventually, this will be the only '
-         'available ownership model available and the associated enumeration'
+         'available ownership model available and the associated enumeration '
          'will be removed.', ),
         treat_as_error=False,
     ),
@@ -2035,8 +2035,8 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
       explanation=(
           'Do not use TestBrowserWindow. See '
           'docs/chrome_browser_design_principles.md for details. If you want '
-          'to write a test that has a Browser, create a browser_test. If you'
-          'want to write a unit_test, your code should not reference Browser'
+          'to write a test that has a Browser, create a browser_test. If you '
+          'want to write a unit_test, your code should not reference Browser '
           'or BrowserWindow.',
       ),
       treat_as_error=False,
@@ -2133,13 +2133,13 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         explanation=(
             'Usage of IS_DESKTOP_ANDROID build flag '
             'is discouraged. Use system affordances to determine feature '
-            'availablility. Refer to https://chromium.googlesource.com/chromium/src/+/HEAD/docs/ui/android/device_form_factor.md for guidelines.'
+            'availablility. Refer to https://chromium.googlesource.com/chromium/src/+/HEAD/docs/ui/android/device_form_factor.md for guidelines. '
             'To request an exception, file a bug at '
             'https://b.corp.google.com/issues/new?component=1753515&template=2172655'
             'Once approved, use centralized util DeviceInfo.isDesktop() '
-            'instead of direct build flag or PackageManager.FEATURE_PC checks.'
+            'instead of direct build flag or PackageManager.FEATURE_PC checks. '
             'Allowances may be granted to only the directories below: '
-            '[build/, chrome/, components/, extensions/, infra/, tools/]'
+            '[build/, chrome/, components/, extensions/, infra/, tools/] '
             'Note: in particular we need to avoid components shared with '
             'WebView.',
         ),
