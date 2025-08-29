@@ -34,6 +34,7 @@ NavigationEntryScreenshotManager::NavigationEntryScreenshotManager()
       NavigationTransitionConfig::ComputeCacheSizeInBytes();
   listener_ = std::make_unique<base::MemoryPressureListener>(
       FROM_HERE,
+      base::MemoryPressureListenerTag::kNavigationEntryScreenshotManager,
       base::BindRepeating(&NavigationEntryScreenshotManager::OnMemoryPressure,
                           base::Unretained(this)));
   if (auto* screen = display::Screen::Get()) {

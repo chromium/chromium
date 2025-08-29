@@ -40,6 +40,7 @@ std::optional<memory_pressure::ReclaimTarget> GetReclaimTarget() {
 UrgentPageDiscardingPolicy::UrgentPageDiscardingPolicy()
     : memory_pressure_listener_(
           FROM_HERE,
+          base::MemoryPressureListenerTag::kUrgentPageDiscardingPolicy,
           base::BindRepeating(&UrgentPageDiscardingPolicy::OnMemoryPressure,
                               base::Unretained(this))) {}
 UrgentPageDiscardingPolicy::~UrgentPageDiscardingPolicy() = default;

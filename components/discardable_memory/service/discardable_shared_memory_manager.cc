@@ -235,6 +235,7 @@ DiscardableSharedMemoryManager::DiscardableSharedMemoryManager()
       mojo_thread_message_loop_(base::CurrentThread::GetNull()),
       memory_pressure_listener_(
           FROM_HERE,
+          base::MemoryPressureListenerTag::kDiscardableSharedMemoryManager,
           base::BindRepeating(&DiscardableSharedMemoryManager::OnMemoryPressure,
                               base::Unretained(this))),
       memory_pressure_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(

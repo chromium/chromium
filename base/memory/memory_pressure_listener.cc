@@ -30,15 +30,16 @@ BASE_FEATURE(MakeMemoryPressureListenerSync, base::FEATURE_DISABLED_BY_DEFAULT);
 std::variant<SyncMemoryPressureListener, AsyncMemoryPressureListener>
 CreateMemoryPressureListenerImpl(
     const Location& creation_location,
+    MemoryPressureListenerTag tag,
     MemoryPressureListener::MemoryPressureCallback memory_pressure_callback) {
   using ListenerVariant =
       std::variant<SyncMemoryPressureListener, AsyncMemoryPressureListener>;
   if (FeatureList::IsEnabled(kMakeMemoryPressureListenerSync)) {
-    return ListenerVariant(std::in_place_type<SyncMemoryPressureListener>,
+    return ListenerVariant(std::in_place_type<SyncMemoryPressureListener>, tag,
                            std::move(memory_pressure_callback));
   } else {
     return ListenerVariant(std::in_place_type<AsyncMemoryPressureListener>,
-                           creation_location,
+                           creation_location, tag,
                            std::move(memory_pressure_callback));
   }
 }
@@ -48,8 +49,10 @@ CreateMemoryPressureListenerImpl(
 // SyncMemoryPressureListener --------------------------------------------------
 
 SyncMemoryPressureListener::SyncMemoryPressureListener(
+    MemoryPressureListenerTag tag,
     MemoryPressureCallback memory_pressure_callback)
-    : memory_pressure_callback_(std::move(memory_pressure_callback)) {
+    : memory_pressure_callback_(std::move(memory_pressure_callback)),
+      tag_(tag) {
   MemoryPressureListenerRegistry::Get().AddObserver(this);
 }
 
@@ -70,12 +73,13 @@ class AsyncMemoryPressureListener::MainThread {
   MainThread() { DETACH_FROM_THREAD(thread_checker_); }
 
   void Init(WeakPtr<AsyncMemoryPressureListener> parent,
-            scoped_refptr<SequencedTaskRunner> listener_task_runner) {
+            scoped_refptr<SequencedTaskRunner> listener_task_runner,
+            MemoryPressureListenerTag tag) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     listener_task_runner_ = std::move(listener_task_runner);
     parent_ = std::move(parent);
     listener_.emplace(
-        BindRepeating(&MainThread::OnMemoryPressure, Unretained(this)));
+        tag, BindRepeating(&MainThread::OnMemoryPressure, Unretained(this)));
   }
 
  private:
@@ -105,6 +109,7 @@ class AsyncMemoryPressureListener::MainThread {
 
 AsyncMemoryPressureListener::AsyncMemoryPressureListener(
     const base::Location& creation_location,
+    MemoryPressureListenerTag tag,
     MemoryPressureCallback memory_pressure_callback)
     : memory_pressure_callback_(std::move(memory_pressure_callback)),
       creation_location_(creation_location) {
@@ -118,7 +123,7 @@ AsyncMemoryPressureListener::AsyncMemoryPressureListener(
     main_thread_task_runner_->PostTask(
         FROM_HERE, BindOnce(&MainThread::Init, Unretained(main_thread_.get()),
                             weak_ptr_factory_.GetWeakPtr(),
-                            SequencedTaskRunner::GetCurrentDefault()));
+                            SequencedTaskRunner::GetCurrentDefault(), tag));
   }
 }
 
@@ -156,9 +161,11 @@ void AsyncMemoryPressureListener::Notify(
 
 MemoryPressureListener::MemoryPressureListener(
     const Location& creation_location,
+    MemoryPressureListenerTag tag,
     MemoryPressureCallback memory_pressure_callback)
     : listener_(CreateMemoryPressureListenerImpl(
           creation_location,
+          tag,
           std::move(memory_pressure_callback))) {}
 
 MemoryPressureListener::~MemoryPressureListener() = default;

@@ -613,6 +613,7 @@ HangWatcher::HangWatcher()
       tick_clock_(base::DefaultTickClock::GetInstance()),
       memory_pressure_listener_(
           FROM_HERE,
+          base::MemoryPressureListenerTag::kHangWatcher,
           base::BindRepeating(&HangWatcher::OnMemoryPressure,
                               base::Unretained(this))) {
   // |thread_checker_| should not be bound to the constructing thread.

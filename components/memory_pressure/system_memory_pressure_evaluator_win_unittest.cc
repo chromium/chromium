@@ -192,7 +192,7 @@ TEST_F(WinSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
       monitor.CreateVoter());
 
   base::MemoryPressureListener listener(
-      FROM_HERE,
+      FROM_HERE, base::MemoryPressureListenerTag::kTest,
       base::BindRepeating(&TestSystemMemoryPressureEvaluator::OnMemoryPressure,
                           base::Unretained(&evaluator)));
 

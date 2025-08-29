@@ -117,7 +117,7 @@ class GraphiteVizMemoryAssistant
           this, "GraphiteVizMemoryAssistant", std::move(task_runner));
 
       memory_pressure_listener_.emplace(
-          FROM_HERE,
+          FROM_HERE, base::MemoryPressureListenerTag::kSkiaOutputSurfaceImpl,
           base::BindRepeating(&GraphiteVizMemoryAssistant::HandleMemoryPressure,
                               base::Unretained(this)));
     }

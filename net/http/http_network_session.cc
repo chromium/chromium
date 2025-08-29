@@ -232,7 +232,7 @@ HttpNetworkSession::HttpNetworkSession(const HttpNetworkSessionParams& params,
   if (!params_.disable_idle_sockets_close_on_memory_pressure) {
     memory_pressure_listener_ =
         std::make_unique<base::AsyncMemoryPressureListener>(
-            FROM_HERE,
+            FROM_HERE, base::MemoryPressureListenerTag::kHttpNetworkSession,
             base::BindRepeating(&HttpNetworkSession::OnMemoryPressure,
                                 base::Unretained(this)));
   }
