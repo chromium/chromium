@@ -269,6 +269,7 @@ class GlicMetrics {
   void OnSessionTerminated();
   void OnResponseRated(bool positive);
   void OnTurnCompleted(mojom::WebClientModel model, base::TimeDelta duration);
+  void OnModelChanged(mojom::WebClientModel model);
 
   void OnAttachedToBrowser(AttachChangeReason reason);
   void OnDetachedFromBrowser(AttachChangeReason reason);
@@ -329,6 +330,8 @@ class GlicMetrics {
 
   void set_starting_mode(mojom::WebClientMode mode) { starting_mode_ = mode; }
 
+  mojom::WebClientModel current_model() const { return current_model_; }
+
  private:
   // Called when `impression_timer_` fires.
   void OnImpressionTimerFired();
@@ -375,6 +378,8 @@ class GlicMetrics {
   bool did_request_context_ = false;
   std::set<mojom::WebClientMode> inputs_modes_used_;
   int attach_change_count_ = 0;
+
+  mojom::WebClientModel current_model_ = mojom::WebClientModel::kDefault;
 
   // Session state. `session_start_time_` is a sentinel that is cleared in
   // OnGlicWindowClose() and is used to determine whether OnGlicWindowOpen was

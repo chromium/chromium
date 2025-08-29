@@ -709,7 +709,10 @@ interface WebClientHandler {
   OnSessionTerminated();
 
   // Called when the web client completes a turn.
-  OnTurnCompleted(WebClientModel mode, mojo_base.mojom.TimeDelta duration);
+  OnTurnCompleted(WebClientModel model, mojo_base.mojom.TimeDelta duration);
+
+  // Called when the web client changes the model.
+  OnModelChanged(WebClientModel model);
 
   // Called when the user rates a response.
   OnResponseRated(bool positive);

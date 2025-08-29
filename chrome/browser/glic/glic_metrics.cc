@@ -401,6 +401,10 @@ void GlicMetrics::OnTurnCompleted(mojom::WebClientModel model,
                                 duration);
 }
 
+void GlicMetrics::OnModelChanged(mojom::WebClientModel model) {
+  current_model_ = model;
+}
+
 void GlicMetrics::OnGlicWindowOpen(bool attached,
                                    mojom::InvocationSource source) {
   base::UmaHistogramEnumeration(

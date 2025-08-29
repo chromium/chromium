@@ -785,6 +785,12 @@ export declare interface GlicBrowserHostMetrics {
    * Called when a turn has been completed.
    */
   onTurnCompleted?(model: WebClientModel, duration: number): void;
+
+  /**
+   * Called when the model is changed. Metrics may be recorded with a separate
+   * scope.
+   */
+  onModelChanged?(model: WebClientModel): void;
 }
 
 /** Web client's operation modes */

@@ -1125,6 +1125,10 @@ class GlicWebClientHandler
     glic_service_->metrics()->OnTurnCompleted(model, duration);
   }
 
+  void OnModelChanged(glic::mojom::WebClientModel model) override {
+    glic_service_->metrics()->OnModelChanged(model);
+  }
+
   void OnResponseRated(bool positive) override {
     glic_service_->metrics()->OnResponseRated(positive);
   }

@@ -824,6 +824,10 @@ class HostMessageHandler implements HostMessageHandlerInterface {
         request.model, timeDeltaFromClient(request.duration));
   }
 
+  glicBrowserOnModelChanged(request: {model: number}): void {
+    this.handler.onModelChanged(request.model);
+  }
+
   glicBrowserLogBeginAsyncEvent(request: {
     asyncEventId: number,
     taskId: number,

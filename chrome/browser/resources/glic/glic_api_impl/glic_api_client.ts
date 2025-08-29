@@ -942,6 +942,10 @@ class GlicBrowserHostMetricsImpl implements GlicBrowserHostMetrics {
     this.sender.requestNoResponse(
         'glicBrowserOnTurnCompleted', {model, duration});
   }
+
+  onModelChanged?(model: number): void {
+    this.sender.requestNoResponse('glicBrowserOnModelChanged', {model});
+  }
 }
 
 class IdGenerator {

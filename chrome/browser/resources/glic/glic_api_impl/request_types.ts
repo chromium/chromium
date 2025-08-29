@@ -331,6 +331,12 @@ export declare type HostRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
+  glicBrowserOnModelChanged: {
+    request: {
+      model: number,
+    },
+    backgroundAllowed: true,
+  },
   glicBrowserOnResponseRated: {
     request: {
       positive: boolean,
@@ -643,6 +649,7 @@ type HostRequestEnumNamesType = {
     OnResponseStopped: 0,
     OnSessionTerminated: 0,
     OnTurnCompleted: 0,
+    OnModelChanged: 0,
     ScrollTo: 0,
     SetSyntheticExperimentState: 0,
     OpenOsPermissionSettingsMenu: 0,
