@@ -8939,5 +8939,6 @@ bool ChromeContentBrowserClient::ShouldEnableCanvasNoise(
 }
 
 bool ChromeContentBrowserClient::UsePrefetchPrerenderIntegration() {
-  return base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrefetch);
+  return base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrefetch) ||
+         base::FeatureList::IsEnabled(features::kNewTabPageTriggerForPrefetch);
 }
