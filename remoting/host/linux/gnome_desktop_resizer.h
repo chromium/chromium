@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/timer/timer.h"
 #include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/desktop_resizer.h"
 #include "remoting/host/linux/gnome_display_config.h"
@@ -86,6 +87,12 @@ class GnomeDesktopResizer : public DesktopResizer {
   void ScheduleApplyPreferredMonitorsConfig();
   void DoApplyPreferredMonitorsConfig();
 
+  void ClearPreferredConfig();
+
+  // Delays `clear_preferred_config_timer_` if it's running; otherwise do
+  // nothing.
+  void MaybeDelayClearPreferredConfig();
+
   double GetTextScalingFactor() const;
 
   base::WeakPtr<PipewireCaptureStreamManager> stream_manager_
@@ -129,6 +136,14 @@ class GnomeDesktopResizer : public DesktopResizer {
   // This field allows us to maintain the layout direction and alignment after
   // resizes.
   std::optional<GnomeDisplayConfig::LayoutInfo> preferred_layout_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Timer to clear `preferred_monitors_config_` and `preferred_layout_`. Mutter
+  // tends to have multiple intermediate display config changes after resizes,
+  // so they need to be kept for a while so that the changes won't be reverted.
+  // Once the display config has stabilized, we clear these fields so that the
+  // display config can be changed externally, e.g. via the settings app.
+  base::RetainingOneShotTimer clear_preferred_config_timer_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Used to set the text-scaling-factor.

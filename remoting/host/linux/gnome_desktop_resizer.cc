@@ -16,6 +16,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/logging.h"
@@ -32,6 +33,8 @@
 namespace remoting {
 
 namespace {
+
+constexpr base::TimeDelta kClearPreferredConfigDelay = base::Seconds(5);
 
 inline double InverseIfLessThanOne(double v) {
   return v < 1.0 ? 1.0 / v : v;
@@ -155,12 +158,18 @@ void GnomeDesktopResizer::SetResolution(const ScreenResolution& resolution,
   // hasn't been set.
   if (!preferred_layout_) {
     preferred_layout_ = current_display_config_.GetLayoutInfo();
+    MaybeDelayClearPreferredConfig();
   }
+  // Note: When changing a monitor's resolution via PipeWire, the monitor order
+  // will also be reset. We could try to preserve the monitor order, but that
+  // will cause existing apps to act strangely. See crbug.com/441824091.
   SetResolutionAndPosition(resolution, /*position=*/std::nullopt, screen_id);
 }
 
 void GnomeDesktopResizer::RestoreResolution(const ScreenResolution& original,
-                                            webrtc::ScreenId screen_id) {}
+                                            webrtc::ScreenId screen_id) {
+  SetResolution(original, screen_id);
+}
 
 void GnomeDesktopResizer::SetVideoLayout(const protocol::VideoLayout& layout) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -209,6 +218,7 @@ void GnomeDesktopResizer::SetVideoLayout(const protocol::VideoLayout& layout) {
                                    track);
   }
   preferred_layout_ = display_config_for_layout_calculation.GetLayoutInfo();
+  MaybeDelayClearPreferredConfig();
   // Remove pipewire streams that are no longer in the video layout.
   for (const auto& screen_id : unseen_screen_ids) {
     stream_manager_->RemoveStream(screen_id);
@@ -258,6 +268,7 @@ void GnomeDesktopResizer::SetResolutionAndPosition(
       preferred_config.position = {monitor_it->second.x, monitor_it->second.y};
     }
   }
+  MaybeDelayClearPreferredConfig();
 
   // If the resolution has not changed, then we can immediately apply the
   // preferred monitors config, otherwise we wait for an updated displays config
@@ -278,6 +289,7 @@ void GnomeDesktopResizer::OnAddStreamResult(
     return;
   }
   preferred_monitors_config_[result.value()->screen_id()] = monitor_config;
+  MaybeDelayClearPreferredConfig();
   ScheduleApplyPreferredMonitorsConfig();
 }
 
@@ -433,7 +445,30 @@ void GnomeDesktopResizer::DoApplyPreferredMonitorsConfig() {
       // there is no benefit using kPersistent.
       new_config.method = GnomeDisplayConfig::Method::kTemporary;
       display_config_client_->ApplyMonitorsConfig(new_config);
+      // Only start the timer when it's not running, so that the preferred
+      // config will be cleared if the display config keeps changing/never
+      // stabilizes.
+      if (!clear_preferred_config_timer_.IsRunning()) {
+        clear_preferred_config_timer_.Start(
+            FROM_HERE, kClearPreferredConfigDelay, this,
+            &GnomeDesktopResizer::ClearPreferredConfig);
+      }
     }
+  }
+}
+
+void GnomeDesktopResizer::ClearPreferredConfig() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  preferred_monitors_config_.clear();
+  preferred_layout_.reset();
+}
+
+void GnomeDesktopResizer::MaybeDelayClearPreferredConfig() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (clear_preferred_config_timer_.IsRunning()) {
+    clear_preferred_config_timer_.Reset();
   }
 }
 
