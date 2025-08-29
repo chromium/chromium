@@ -483,10 +483,13 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
     auto form_structure = std::make_unique<FormStructure>(form_data);
     form_structure->set_current_page_language(page_language);
     if (ml_predictions_handler) {
-      base::test::TestFuture<std::unique_ptr<FormStructure>> future;
+      base::test::TestFuture<std::unique_ptr<FormStructure>, ModelPredictions>
+          future;
       ml_predictions_handler->GetModelPredictionsForForm(
           std::move(form_structure), client_country, future.GetCallback());
-      form_structure = std::move(future).Take();
+      auto [new_form_structure, predictions] = std::move(future).Take();
+      predictions.ApplyTo(new_form_structure->fields());
+      form_structure = std::move(new_form_structure);
     }
     // Similarly to AutofillManager::ParseFormsAsync, the heuristics are
     // executed after the ML model. If ML predictions are enabled, this does

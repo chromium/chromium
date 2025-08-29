@@ -15,6 +15,7 @@
 #include "base/hash/hash.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/types/zip.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/field_candidates.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
@@ -24,6 +25,7 @@
 #include "components/autofill/core/browser/ml_model/field_classification_model_encoder.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_executor.h"
 #include "components/autofill/core/browser/ml_model/logging/autofill_ml_internals.mojom.h"
+#include "components/autofill/core/browser/ml_model/model_predictions.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
@@ -256,10 +258,12 @@ void PopulateMlPredictionLogAfterInference(
 void FieldClassificationModelHandler::GetModelPredictionsForForm(
     std::unique_ptr<FormStructure> form_structure,
     const GeoIpCountryCode& client_country,
-    base::OnceCallback<void(std::unique_ptr<FormStructure>)> callback) {
+    base::OnceCallback<void(std::unique_ptr<FormStructure>, ModelPredictions)>
+        callback) {
   if (!ModelAvailable() || !state_) {
     // No model, no predictions.
-    std::move(callback).Run(std::move(form_structure));
+    ModelPredictions predictions = BuildModelPredictions(*form_structure, {});
+    std::move(callback).Run(std::move(form_structure), std::move(predictions));
     return;
   }
 
@@ -287,8 +291,10 @@ void FieldClassificationModelHandler::GetModelPredictionsForForm(
           std::min(form_structure->field_count(),
                    static_cast<size_t>(state_->metadata.encoding_parameters()
                                            .maximum_number_of_fields()))) {
-        AssignPredictedFieldTypesToForm(cached_result->second, *form_structure);
-        std::move(callback).Run(std::move(form_structure));
+        ModelPredictions predictions =
+            BuildModelPredictions(*form_structure, cached_result->second);
+        std::move(callback).Run(std::move(form_structure),
+                                std::move(predictions));
         return;
       }
     }
@@ -302,10 +308,16 @@ void FieldClassificationModelHandler::GetModelPredictionsForForm(
              std::unique_ptr<FormStructure> form_structure,
              const GeoIpCountryCode& client_country,
              std::optional<ModelInputHash> model_input_hash,
-             base::OnceCallback<void(std::unique_ptr<FormStructure>)> callback,
+             base::OnceCallback<void(std::unique_ptr<FormStructure>,
+                                     ModelPredictions)> callback,
              const std::optional<FieldClassificationModelEncoder::ModelOutput>&
                  output) {
-            if (self && output &&
+            if (!self) {
+              return;
+            }
+            ModelPredictions predictions =
+                self->BuildModelPredictions(*form_structure, {});
+            if (output &&
                 self->ShouldEmitPredictions(form_structure.get(), *output)) {
               std::vector<FieldType> predicted_types =
                   self->GetMostLikelyTypes(*form_structure, *output);
@@ -313,19 +325,20 @@ void FieldClassificationModelHandler::GetModelPredictionsForForm(
                 self->ApplySmallFormRules(*form_structure, client_country,
                                           predicted_types);
               }
-              self->AssignPredictedFieldTypesToForm(predicted_types,
-                                                    *form_structure);
+              predictions =
+                  self->BuildModelPredictions(*form_structure, predicted_types);
               if (model_input_hash.has_value()) {
                 self->predictions_cache_.Put(model_input_hash.value(),
                                              predicted_types);
               }
             }
-            if (self && output && prediction_log && self->log_router_) {
+            if (output && prediction_log && self->log_router_) {
               PopulateMlPredictionLogAfterInference(*(prediction_log.value()),
                                                     output.value());
               self->log_router_->ProcessLog(std::move(*prediction_log));
             }
-            std::move(callback).Run(std::move(form_structure));
+            std::move(callback).Run(std::move(form_structure),
+                                    std::move(predictions));
           },
           weak_ptr_factory_.GetWeakPtr(), std::move(prediction_log),
           std::move(form_structure), client_country, std::move(input_hash),
@@ -336,13 +349,24 @@ void FieldClassificationModelHandler::GetModelPredictionsForForm(
 void FieldClassificationModelHandler::GetModelPredictionsForForms(
     std::vector<std::unique_ptr<FormStructure>> forms,
     const GeoIpCountryCode& client_country,
-    base::OnceCallback<void(std::vector<std::unique_ptr<FormStructure>>)>
-        callback) {
-  auto barrier_callback = base::BarrierCallback<std::unique_ptr<FormStructure>>(
+    base::OnceCallback<
+        void(std::vector<std::pair<std::unique_ptr<FormStructure>,
+                                   ModelPredictions>>)> callback) {
+  auto barrier_callback = base::BarrierCallback<
+      std::pair<std::unique_ptr<FormStructure>, ModelPredictions>>(
       forms.size(), std::move(callback));
   for (std::unique_ptr<FormStructure>& form : forms) {
-    GetModelPredictionsForForm(std::move(form), client_country,
-                               barrier_callback);
+    GetModelPredictionsForForm(
+        std::move(form), client_country,
+        base::BindOnce(
+            [](base::OnceCallback<void(std::pair<std::unique_ptr<FormStructure>,
+                                                 ModelPredictions>)> callback,
+               std::unique_ptr<FormStructure> form_structure,
+               ModelPredictions predictions) {
+              std::move(callback).Run(
+                  std::pair(std::move(form_structure), std::move(predictions)));
+            },
+            barrier_callback));
   }
 }
 
@@ -442,17 +466,16 @@ std::pair<FieldType, float> FieldClassificationModelHandler::GetMostLikelyType(
   return {NO_SERVER_DATA, 0.0};
 }
 
-void FieldClassificationModelHandler::AssignPredictedFieldTypesToForm(
-    const std::vector<FieldType>& predicted_types,
-    FormStructure& form) {
-  size_t num_predicted_fields =
-      std::min(form.field_count(), predicted_types.size());
-  HeuristicSource heuristic_source = GetHeuristicSource(optimization_target_);
-
-  for (size_t i = 0; i < num_predicted_fields; i++) {
-    form.field(i)->set_ml_supported_types(supported_types_);
-    form.field(i)->set_heuristic_type(heuristic_source, predicted_types[i]);
+ModelPredictions FieldClassificationModelHandler::BuildModelPredictions(
+    const FormStructure& form,
+    base::span<const FieldType> predicted_types) const {
+  std::vector<std::pair<FieldGlobalId, FieldType>> field_predictions;
+  field_predictions.reserve(predicted_types.size());
+  for (auto [field, type] : base::zip(form.fields(), predicted_types)) {
+    field_predictions.emplace_back(field->global_id(), type);
   }
+  return ModelPredictions(GetHeuristicSource(optimization_target_),
+                          supported_types_, std::move(field_predictions));
 }
 
 bool FieldClassificationModelHandler::ShouldEmitPredictions(

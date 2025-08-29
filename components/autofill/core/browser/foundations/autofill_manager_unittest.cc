@@ -80,13 +80,14 @@ class MockFieldClassificationModelHandler
                 OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION) {}
   ~MockFieldClassificationModelHandler() override = default;
 
-  MOCK_METHOD(
-      void,
-      GetModelPredictionsForForms,
-      (std::vector<std::unique_ptr<FormStructure>>,
-       const GeoIpCountryCode& client_country,
-       base::OnceCallback<void(std::vector<std::unique_ptr<FormStructure>>)>),
-      (override));
+  MOCK_METHOD(void,
+              GetModelPredictionsForForms,
+              (std::vector<std::unique_ptr<FormStructure>>,
+               const GeoIpCountryCode& client_country,
+               base::OnceCallback<
+                   void(std::vector<std::pair<std::unique_ptr<FormStructure>,
+                                              ModelPredictions>>)>),
+              (override));
 };
 #endif
 
@@ -510,8 +511,14 @@ class AutofillManagerTestForModelPredictions : public AutofillManagerTest {
             [](std::vector<std::unique_ptr<FormStructure>> forms,
                const GeoIpCountryCode& client_country,
                base::OnceCallback<void(
-                   std::vector<std::unique_ptr<FormStructure>>)> callback) {
-              std::move(callback).Run(std::move(forms));
+                   std::vector<std::pair<std::unique_ptr<FormStructure>,
+                                         ModelPredictions>>)> callback) {
+              const ModelPredictions kEmptyPredictions = ModelPredictions(
+                  HeuristicSource::kAutofillMachineLearning, {}, {});
+              std::move(callback).Run(base::ToVector(
+                  std::move(forms), [&](std::unique_ptr<FormStructure>& form) {
+                    return std::pair(std::move(form), kEmptyPredictions);
+                  }));
             });
     return handler;
   }

@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/ml_model/field_classification_model_encoder.h"
 #include "components/autofill/core/browser/ml_model/logging/autofill_ml_internals.mojom.h"
 #include "components/autofill/core/browser/ml_model/logging/ml_log_router.h"
+#include "components/autofill/core/browser/ml_model/model_predictions.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/inference/model_handler.h"
@@ -65,7 +66,8 @@ class FieldClassificationModelHandler
   void GetModelPredictionsForForm(
       std::unique_ptr<FormStructure> form_structure,
       const GeoIpCountryCode& client_country,
-      base::OnceCallback<void(std::unique_ptr<FormStructure>)> callback);
+      base::OnceCallback<void(std::unique_ptr<FormStructure>, ModelPredictions)>
+          callback);
 
   // Same as `GetModelPredictionsForForm()` but executes the model on multiple
   // forms.
@@ -73,8 +75,9 @@ class FieldClassificationModelHandler
   virtual void GetModelPredictionsForForms(
       std::vector<std::unique_ptr<FormStructure>> forms,
       const GeoIpCountryCode& client_country,
-      base::OnceCallback<void(std::vector<std::unique_ptr<FormStructure>>)>
-          callback);
+      base::OnceCallback<
+          void(std::vector<std::pair<std::unique_ptr<FormStructure>,
+                                     ModelPredictions>>)> callback);
 
   // optimization_guide::ModelHandler:
   void OnModelUpdated(
@@ -116,10 +119,10 @@ class FieldClassificationModelHandler
                            const GeoIpCountryCode& client_country,
                            std::vector<FieldType>& predicted_types) const;
 
-  // Assigns field types from `predicted_types` to field in the `form`.
-  void AssignPredictedFieldTypesToForm(
-      const std::vector<FieldType>& predicted_types,
-      FormStructure& form);
+  // Builds the predictions for the given `form`.
+  ModelPredictions BuildModelPredictions(
+      const FormStructure& form,
+      base::span<const FieldType> predicted_types) const;
 
   // Returns true if the `output` allows to return predictions for `form`.
   bool ShouldEmitPredictions(

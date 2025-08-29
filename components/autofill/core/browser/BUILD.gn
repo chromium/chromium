@@ -897,6 +897,8 @@ static_library("browser") {
       "ml_model/field_classification_model_handler.h",
       "ml_model/logging/ml_log_router.cc",
       "ml_model/logging/ml_log_router.h",
+      "ml_model/model_predictions.cc",
+      "ml_model/model_predictions.h",
     ]
   }
 

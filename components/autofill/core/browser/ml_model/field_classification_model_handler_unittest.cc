@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/base_paths.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -105,20 +106,31 @@ class FieldClassificationModelHandlerTest : public testing::Test {
   virtual FieldClassificationModelHandler& model_handler() = 0;
 
   void ApplyModelPredictions(std::unique_ptr<FormStructure>& form_structure) {
-    base::test::TestFuture<std::unique_ptr<FormStructure>> future;
+    base::test::TestFuture<std::unique_ptr<FormStructure>, ModelPredictions>
+        future;
     GeoIpCountryCode client_country = form_structure->client_country();
     model_handler().GetModelPredictionsForForm(
         std::move(form_structure), client_country, future.GetCallback());
-    form_structure = std::move(future).Take();
+    std::tuple<std::unique_ptr<FormStructure>, ModelPredictions> args =
+        std::move(future).Take();
+    std::get<1>(args).ApplyTo(std::get<0>(args)->fields());
+    form_structure = std::move(std::get<0>(args));
   }
 
   void ApplyModelPredictions(
       std::vector<std::unique_ptr<FormStructure>>& form_structures) {
-    base::test::TestFuture<std::vector<std::unique_ptr<FormStructure>>> future;
+    base::test::TestFuture<std::vector<
+        std::pair<std::unique_ptr<FormStructure>, ModelPredictions>>>
+        future;
     GeoIpCountryCode client_country = form_structures.front()->client_country();
     model_handler().GetModelPredictionsForForms(
         std::move(form_structures), client_country, future.GetCallback());
-    form_structures = std::move(future).Take();
+    form_structures = base::ToVector(
+        std::move(future).Take(),
+        [](std::pair<std::unique_ptr<FormStructure>, ModelPredictions>& p) {
+          p.second.ApplyTo(p.first->fields());
+          return std::move(p.first);
+        });
   }
 
   // The overfitted model is overtrained on this form. Which is the only form

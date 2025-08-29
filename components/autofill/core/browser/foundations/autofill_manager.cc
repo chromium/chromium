@@ -41,6 +41,7 @@
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
+#include "components/autofill/core/browser/ml_model/model_predictions.h"
 #endif
 
 namespace autofill {
@@ -165,7 +166,16 @@ void ApplyMlModel(
     manager->SubscribeToMlModelChanges(*ml_handler, optimization_target);
     ml_handler->GetModelPredictionsForForms(
         std::move(forms), manager->client().GetVariationConfigCountryCode(),
-        std::move(callback));
+        base::BindOnce([](std::vector<std::pair<std::unique_ptr<FormStructure>,
+                                                ModelPredictions>>
+                              form_structures_and_predictions) {
+          for (const auto& [form_structure, predictions] :
+               form_structures_and_predictions) {
+            predictions.ApplyTo(form_structure->fields());
+          }
+          return base::ToVector(std::move(form_structures_and_predictions),
+                                [](auto& p) { return std::move(p).first; });
+        }).Then(std::move(callback)));
   } else {
     std::move(callback).Run(std::move(forms));
   }
