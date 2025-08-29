@@ -56,9 +56,17 @@ bool AreAutofillLoyaltyCardSpecificsValid(
          HasEmptyOrValidProgramLogo(specifics);
 }
 
-bool IsSyncWalletPublicPassesEnabled() {
+bool IsSyncWalletFlightReservationsEnabled() {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  return base::FeatureList::IsEnabled(syncer::kSyncWalletPublicPasses);
+  return base::FeatureList::IsEnabled(syncer::kSyncWalletFlightReservations);
+#else
+  return false;
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+}
+
+bool IsSyncWalletVehicleRegistrationsEnabled() {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  return base::FeatureList::IsEnabled(syncer::kSyncWalletVehicleRegistrations);
 #else
   return false;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -175,11 +183,14 @@ bool ValuableSyncBridge::IsEntityDataValid(
   switch (autofill_valuable.valuable_data_case()) {
     case sync_pb::AutofillValuableSpecifics::kLoyaltyCard:
       return AreAutofillLoyaltyCardSpecificsValid(autofill_valuable);
-    case sync_pb::AutofillValuableSpecifics::kVehicleRegistration:
     case sync_pb::AutofillValuableSpecifics::kFlightReservation:
+      // TODO(crbug.com/436547381): Add stronger validation for flight
+      // reservation.
+      return IsSyncWalletVehicleRegistrationsEnabled();
+    case sync_pb::AutofillValuableSpecifics::kVehicleRegistration:
       // TODO(crbug.com/436547381): Add stronger validation for vehicle
-      // registration and flight reservation.
-      return IsSyncWalletPublicPassesEnabled();
+      // registration.
+      return IsSyncWalletFlightReservationsEnabled();
     case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
       // Ignore new entry types that the client doesn't know about.
       return false;
@@ -288,14 +299,8 @@ ValuableDatabaseOperationResult ValuableSyncBridge::SetLoyaltyCards(
 
 ValuableDatabaseOperationResult ValuableSyncBridge::SetEntities(
     std::vector<EntityInstance> entities) {
-  if (!IsSyncWalletPublicPassesEnabled()) {
-    // If syncing new entities is not enabled, simulate that nothing has
-    // happened.
-    return ValuableDatabaseOperationResult::kNoChange;
-  }
-
   // TODO(crbug.com/436547381): Set `entities` in the `EntityTable`.
-  return ValuableDatabaseOperationResult::kDataChanged;
+  return ValuableDatabaseOperationResult::kNoChange;
 }
 
 std::optional<syncer::ModelError> ValuableSyncBridge::SetSyncData(

@@ -165,8 +165,12 @@ BASE_FEATURE(kSyncTrustedVaultInfobarMessageImprovements,
 #endif  // BUILDFLAG(IS_IOS)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-BASE_FEATURE(kSyncWalletPublicPasses,
-             "SyncWalletPublicPasses",
+BASE_FEATURE(kSyncWalletFlightReservations,
+             "SyncWalletFlightReservations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSyncWalletVehicleRegistrations,
+             "SyncWalletVehicleRegistrations",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
