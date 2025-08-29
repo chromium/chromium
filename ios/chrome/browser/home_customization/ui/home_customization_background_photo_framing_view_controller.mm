@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_state.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -34,6 +35,8 @@ const CGFloat kBottomHSpacingHeight = 5.0;
 const CGFloat kLogoContainerWidth = 120.0;
 const CGFloat kLogoContainerHeight = 40.0;
 const CGFloat kCenterStackSpacing = 4.0;
+const CGFloat kGradientEndPoint = 0.62;
+const CGFloat kGradientSpacingAboveInstructions = 150;
 }  // namespace
 
 @interface HomeCustomizationImageFramingViewController () <
@@ -46,6 +49,8 @@ const CGFloat kCenterStackSpacing = 4.0;
   UIView* _bottomSection;
   // Scroll view for zooming and panning.
   UIScrollView* _scrollView;
+  // Stack view to hold the pinch instruction views (label and icon).
+  UIStackView* _pinchInstructionsView;
 }
 
 @end
@@ -70,13 +75,14 @@ const CGFloat kCenterStackSpacing = 4.0;
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.view.backgroundColor = [UIColor colorNamed:kTextPrimaryColor];
+  self.view.backgroundColor = UIColor.blackColor;
 
   [self setupScrollView];
   [self setupImageView];
   [self setupTopSection];
   [self setupBottomSection];
-  [self setupCenterContainer];
+  [self setupPinchInstructions];
+  [self setupGradientView];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -120,6 +126,8 @@ const CGFloat kCenterStackSpacing = 4.0;
   _scrollView.delegate = self;
   _scrollView.showsVerticalScrollIndicator = NO;
   _scrollView.showsHorizontalScrollIndicator = NO;
+  _scrollView.alwaysBounceVertical = YES;
+  _scrollView.alwaysBounceHorizontal = YES;
   _scrollView.decelerationRate = UIScrollViewDecelerationRateFast;
   _scrollView.minimumZoomScale = 1.0;
   _scrollView.maximumZoomScale = kMaximumZoomScale;
@@ -159,7 +167,8 @@ const CGFloat kCenterStackSpacing = 4.0;
   logoView.translatesAutoresizingMaskIntoConstraints = NO;
 
   searchEngineLogoMediator.usesMonochromeLogo = YES;
-  logoView.tintColor = [UIColor colorNamed:kSolidWhiteColor];
+  // Real logo is always white, even in dark mode.
+  logoView.tintColor = UIColor.whiteColor;
   [topSection addArrangedSubview:logoView];
 
   [NSLayoutConstraint activateConstraints:@[
@@ -168,8 +177,10 @@ const CGFloat kCenterStackSpacing = 4.0;
   ]];
 
   // Omnibox view.
-  UIView* omniboxView = [[UIView alloc] init];
-  omniboxView.backgroundColor = [UIColor whiteColor];
+  UIVisualEffect* blurEffect =
+      [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThickMaterial];
+  UIView* omniboxView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+  omniboxView.clipsToBounds = YES;
   omniboxView.layer.cornerRadius = kOmniboxRadius;
   omniboxView.translatesAutoresizingMaskIntoConstraints = NO;
   [topSection addArrangedSubview:omniboxView];
@@ -194,8 +205,8 @@ const CGFloat kCenterStackSpacing = 4.0;
 // Creates the bottom section with save and cancel buttons.
 - (void)setupBottomSection {
   // Bottom section container using stack view.
-  _bottomSection = [[UIStackView alloc] init];
-  UIStackView* bottomStack = (UIStackView*)_bottomSection;
+  UIStackView* bottomStack = [[UIStackView alloc] init];
+  _bottomSection = bottomStack;
   bottomStack.axis = UILayoutConstraintAxisVertical;
   bottomStack.alignment = UIStackViewAlignmentFill;
   bottomStack.spacing = kButtonSpacing;
@@ -208,7 +219,7 @@ const CGFloat kCenterStackSpacing = 4.0;
   saveConfig.title = l10n_util::GetNSString(
       IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_FRAMING_VIEW_SAVE_BUTTON_LABEL);
   saveConfig.baseBackgroundColor = [UIColor colorNamed:kBlueColor];
-  saveConfig.baseForegroundColor = [UIColor colorNamed:kSolidWhiteColor];
+  saveConfig.baseForegroundColor = [UIColor colorNamed:kSolidButtonTextColor];
   saveConfig.cornerStyle = UIButtonConfigurationCornerStyleFixed;
   saveConfig.background.cornerRadius = kButtonCornerRadius;
 
@@ -225,7 +236,8 @@ const CGFloat kCenterStackSpacing = 4.0;
       [UIButtonConfiguration filledButtonConfiguration];
   cancelConfig.title = l10n_util::GetNSString(
       IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_FRAMING_VIEW_CANCEL_BUTTON_LABEL);
-  cancelConfig.baseBackgroundColor = [UIColor colorNamed:kSolidWhiteColor];
+  cancelConfig.baseBackgroundColor =
+      [UIColor colorNamed:kPrimaryBackgroundColor];
   cancelConfig.baseForegroundColor = [UIColor colorNamed:kBlueColor];
   cancelConfig.cornerStyle = UIButtonConfigurationCornerStyleFixed;
   cancelConfig.background.cornerRadius = kButtonCornerRadius;
@@ -258,22 +270,22 @@ const CGFloat kCenterStackSpacing = 4.0;
   ]];
 }
 
-// Creates the center container with pinch instruction.
-- (void)setupCenterContainer {
-  // Center container for pinch instruction using horizontal stack view.
-  UIStackView* centerContainer = [[UIStackView alloc] init];
-  centerContainer.alignment = UIStackViewAlignmentCenter;
-  centerContainer.spacing = kCenterStackSpacing;
-  centerContainer.translatesAutoresizingMaskIntoConstraints = NO;
-  [self.view addSubview:centerContainer];
+// Creates the pinch instructions view.
+- (void)setupPinchInstructions {
+  // Pinch instruction container view using horizontal stack view.
+  _pinchInstructionsView = [[UIStackView alloc] init];
+  _pinchInstructionsView.alignment = UIStackViewAlignmentCenter;
+  _pinchInstructionsView.spacing = kCenterStackSpacing;
+  _pinchInstructionsView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:_pinchInstructionsView];
 
   // Pinch icon.
   UIImage* pinchIcon = DefaultSymbolWithPointSize(kCropSymbol, kPinchIconSize);
   UIImageView* pinchIconView = [[UIImageView alloc] initWithImage:pinchIcon];
-  pinchIconView.tintColor = [UIColor colorNamed:kSolidWhiteColor];
+  pinchIconView.tintColor = UIColor.whiteColor;
   pinchIconView.contentMode = UIViewContentModeScaleAspectFit;
   pinchIconView.translatesAutoresizingMaskIntoConstraints = NO;
-  [centerContainer addArrangedSubview:pinchIconView];
+  [_pinchInstructionsView addArrangedSubview:pinchIconView];
 
   // Add size constraints for the icon.
   [NSLayoutConstraint activateConstraints:@[
@@ -285,19 +297,41 @@ const CGFloat kCenterStackSpacing = 4.0;
   UILabel* pinchLabel = [[UILabel alloc] init];
   pinchLabel.text = l10n_util::GetNSString(
       IDS_IOS_HOME_CUSTOMIZATION_BACKGROUND_FRAMING_VIEW_PINCH_TO_RESIZE);
-  pinchLabel.textColor = [UIColor colorNamed:kSolidWhiteColor];
+  pinchLabel.textColor = UIColor.whiteColor;
   pinchLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   pinchLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  [centerContainer addArrangedSubview:pinchLabel];
+  [_pinchInstructionsView addArrangedSubview:pinchLabel];
 
   // Set up constraints for center container.
   [NSLayoutConstraint activateConstraints:@[
-    [centerContainer.centerXAnchor
+    [_pinchInstructionsView.centerXAnchor
         constraintEqualToAnchor:self.view.centerXAnchor],
-    [centerContainer.bottomAnchor
+    [_pinchInstructionsView.bottomAnchor
         constraintEqualToAnchor:_bottomSection.topAnchor
                        constant:-kContentPadding]
   ]];
+}
+
+// Configures the gradient view behind the bottom part of the screen.
+- (void)setupGradientView {
+  UIColor* startColor =
+      [UIColor colorNamed:kHomeCustomizationImageFramingViewGradientStartColor];
+  UIColor* endColor = [UIColor colorNamed:kDarkerScrimBackgroundColor];
+  UIView* gradientView = [[GradientView alloc]
+      initWithStartColor:startColor
+                endColor:endColor
+              startPoint:CGPointMake(0, 0)
+                endPoint:CGPointMake(0, kGradientEndPoint)];
+  gradientView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  [self.view insertSubview:gradientView aboveSubview:_scrollView];
+  AddSameConstraintsToSides(
+      gradientView, self.view,
+      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kBottom);
+  [_pinchInstructionsView.topAnchor
+      constraintEqualToAnchor:gradientView.topAnchor
+                     constant:kGradientSpacingAboveInstructions]
+      .active = YES;
 }
 
 // Updates the minimum zoom scale to fill the screen.

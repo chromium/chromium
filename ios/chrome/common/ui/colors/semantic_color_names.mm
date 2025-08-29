@@ -69,6 +69,8 @@ NSString* const kLensOverlayConsentDialogDescriptionColor =
     @"lens_overlay_consent_dialog_description_color";
 NSString* const kLensOverlayConsentDialogAnimationPlayerButtonColor =
     @"lens_overlay_consent_dialog_animation_player_button_color";
+NSString* const kHomeCustomizationImageFramingViewGradientStartColor =
+    @"home_customization_image_framing_view_gradient_start_color";
 
 #pragma mark - Standard Colors
 NSString* const kSolidBlackColor = @"solid_black_color";
