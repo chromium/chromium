@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "ios/web/public/content_manager/content_rule_list_manager.h"
 
 @class NSError;
 @class WKContentRuleList;
@@ -26,11 +27,15 @@ namespace web {
 class WKContentRuleListProvider {
  public:
   // A unique identifier for a content rule list.
-  using RuleListKey = std::string;
+  using RuleListKey = ContentRuleListManager::RuleListKey;
+
+  // Defines whether a compiled rule list should be persisted in the WebKit
+  // store or removed immediately after compilation.
+  using StoragePolicy = ContentRuleListManager::StoragePolicy;
 
   // Callback invoked after an asynchronous operation completes. `error` will
   // be nil on success, and non-nil if compilation or removal failed.
-  using OperationCallback = base::OnceCallback<void(NSError* error)>;
+  using OperationCallback = ContentRuleListManager::OperationCallback;
 
   WKContentRuleListProvider();
   virtual ~WKContentRuleListProvider();
@@ -48,6 +53,7 @@ class WKContentRuleListProvider {
   // The `callback` is invoked upon completion.
   virtual void UpdateRuleList(RuleListKey key,
                               std::string json_rules,
+                              StoragePolicy policy,
                               OperationCallback callback);
 
   // Asynchronously removes an existing content rule list identified by `key`.
@@ -66,6 +72,7 @@ class WKContentRuleListProvider {
   // Callback invoked when a rule list is compiled by the
   // WKContentRuleListStore.
   void OnRuleListCompiled(RuleListKey key,
+                          StoragePolicy policy,
                           OperationCallback callback,
                           base::TimeTicks start_time,
                           WKContentRuleList* rule_list,

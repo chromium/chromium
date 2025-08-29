@@ -53,10 +53,11 @@ ContentRuleListManagerImpl::~ContentRuleListManagerImpl() {
 void ContentRuleListManagerImpl::UpdateRuleList(
     const RuleListKey& list_key,
     std::string rules_json,
+    StoragePolicy policy,
     OperationCallback completion_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   GetRuleListProvider(browser_state_)
-      .UpdateRuleList(list_key, std::move(rules_json),
+      .UpdateRuleList(list_key, std::move(rules_json), policy,
                       std::move(completion_callback));
 }
 

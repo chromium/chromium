@@ -135,6 +135,7 @@ void ScriptBlockingRuleApplierService::BuildAndApplyRules(
   if (final_rules_json.has_value()) {
     content_rule_list_manager_->UpdateRuleList(
         kScriptBlockingRuleListKey, std::move(*final_rules_json),
+        web::ContentRuleListManager::StoragePolicy::kEphemeral,
         base::BindOnce(&ScriptBlockingRuleApplierService::OnRuleUpdateCompleted,
                        weak_factory_.GetWeakPtr()));
   } else {
