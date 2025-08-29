@@ -5811,6 +5811,27 @@
             ]
         }
     ],
+    "ChromnientAimM3": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "enable-client-side-header": "true"
+                    },
+                    "enable_features": [
+                        "LensSearchAimM3"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromnientEduActionChip": [
         {
             "platforms": [

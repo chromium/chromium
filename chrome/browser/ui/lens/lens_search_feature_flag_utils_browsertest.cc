@@ -162,8 +162,16 @@ IN_PROC_BROWSER_TEST_F(
 class LensSearchFeatureFlagsUtilsAimM3DisabledTest
     : public LensSearchFeatureFlagsUtilsBrowserTestBase {
  public:
-  LensSearchFeatureFlagsUtilsAimM3DisabledTest() = default;
+  LensSearchFeatureFlagsUtilsAimM3DisabledTest() {
+    // Initialize the feature list to disable kLensSearchAimM3.
+    feature_list_.InitWithFeatures(/*enabled_features=*/{},
+                                   /*disabled_features=*/
+                                   {lens::features::kLensSearchAimM3});
+  }
   ~LensSearchFeatureFlagsUtilsAimM3DisabledTest() override = default;
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(LensSearchFeatureFlagsUtilsAimM3DisabledTest,

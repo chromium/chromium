@@ -4,6 +4,7 @@
 
 import 'chrome-untrusted://lens/side_panel/side_panel_app.js';
 
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {LensSidePanelAppElement} from 'chrome-untrusted://lens/side_panel/side_panel_app.js';
 import {SidePanelBrowserProxyImpl} from 'chrome-untrusted://lens/side_panel/side_panel_browser_proxy.js';
 import {assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
@@ -19,6 +20,10 @@ suite('SearchboxBackButton', () => {
   setup(() => {
     testBrowserProxy = new TestLensSidePanelBrowserProxy();
     SidePanelBrowserProxyImpl.setInstance(testBrowserProxy);
+
+    // This test can only be run with the AIM searchbox disabled, since the
+    // back button is removed when the AIM searchbox is enabled.
+    loadTimeData.overrideValues({enableAimSearchbox: false});
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     lensSidePanelElement = document.createElement('lens-side-panel-app');
