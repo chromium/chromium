@@ -207,6 +207,107 @@ suite('FuzzySearchTest', () => {
     assertResults(quoteMatchedRecords, search('\"end', records, options));
   });
 
+  test('Test exact search with special quotation characters.', () => {
+    const options = {
+      keys: [
+        {
+          name: 'tab.title',
+          getter: getTitle,
+          weight: 1,
+        },
+        {
+          name: 'hostname',
+          getter: getHostname,
+          weight: 1,
+        },
+      ],
+    };
+
+    // Search for text with special characters in a record with special
+    // characters.
+    const recordsWithSpecialChar = [
+      new TabData(
+          createTab({title: '‘Chrome’ Browser'}), TabItemType.OPEN_TAB,
+          '“google.com”'),
+    ];
+
+    const singleQuoteMatchedRecords = [{
+      tab: {title: '‘Chrome’ Browser'},
+      hostname: '“google.com”',
+      highlightRanges: {
+        'tab.title': [{start: 0, length: 8}],
+      },
+    }];
+    assertResults(
+        singleQuoteMatchedRecords,
+        search('‘Chrome’', recordsWithSpecialChar, options));
+
+    const doubleQuoteMatchedRecords = [{
+      tab: {title: '‘Chrome’ Browser'},
+      hostname: '“google.com”',
+      highlightRanges: {
+        hostname: [{start: 0, length: 12}],
+      },
+    }];
+    assertResults(
+        doubleQuoteMatchedRecords,
+        search('“google.com”', recordsWithSpecialChar, options));
+
+    // Search for text with regular characters in a record with special
+    // characters.
+    const singleQuoteMatchedRecordsRegular = [{
+      tab: {title: '‘Chrome’ Browser'},
+      hostname: '“google.com”',
+      highlightRanges: {
+        'tab.title': [{start: 0, length: 8}],
+      },
+    }];
+    assertResults(
+        singleQuoteMatchedRecordsRegular,
+        search('\'Chrome\'', recordsWithSpecialChar, options));
+
+    const doubleQuoteMatchedRecordsRegular = [{
+      tab: {title: '‘Chrome’ Browser'},
+      hostname: '“google.com”',
+      highlightRanges: {
+        hostname: [{start: 0, length: 12}],
+      },
+    }];
+    assertResults(
+        doubleQuoteMatchedRecordsRegular,
+        search('"google.com"', recordsWithSpecialChar, options));
+
+    // // Search for text with special characters in a record with regular
+    // // characters.
+    const recordsWithRegularChar = [
+      new TabData(
+          createTab({title: '\'Chrome\' Browser'}), TabItemType.OPEN_TAB,
+          '"google.com"'),
+    ];
+
+    const singleQuoteMatchedRecordsSpecial = [{
+      tab: {title: '\'Chrome\' Browser'},
+      hostname: '"google.com"',
+      highlightRanges: {
+        'tab.title': [{start: 0, length: 8}],
+      },
+    }];
+    assertResults(
+        singleQuoteMatchedRecordsSpecial,
+        search('‘Chrome’', recordsWithRegularChar, options));
+
+    const doubleQuoteMatchedRecordsSpecial = [{
+      tab: {title: '\'Chrome\' Browser'},
+      hostname: '"google.com"',
+      highlightRanges: {
+        hostname: [{start: 0, length: 12}],
+      },
+    }];
+    assertResults(
+        doubleQuoteMatchedRecordsSpecial,
+        search('“google.com”', recordsWithRegularChar, options));
+  });
+
   test('Test exact match result scoring accounts for match position.', () => {
     const options = {
       keys: [
