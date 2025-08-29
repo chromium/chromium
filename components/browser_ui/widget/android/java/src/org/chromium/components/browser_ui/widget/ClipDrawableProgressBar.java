@@ -260,7 +260,7 @@ public class ClipDrawableProgressBar extends ImageView {
      */
     public void getDrawingInfo(DrawingInfo drawingInfoOut) {
         boolean visible = getVisibility() == VISIBLE;
-        if (ChromeFeatureList.sAndroidAnimatedCompositedProgressBar.isEnabled()) {
+        if (ChromeFeatureList.sAndroidAnimatedProgressBarInViz.isEnabled()) {
             visible = mDesiredVisibility == VISIBLE;
             drawingInfoOut.visible = visible;
         }
@@ -285,7 +285,7 @@ public class ClipDrawableProgressBar extends ImageView {
         if (ViewCompat.getLayoutDirection(this) == LAYOUT_DIRECTION_LTR) {
             drawingInfoOut.progressBarStaticBackgroundRect.set(
                     getLeft(), getTop(), getRight(), getBottom());
-            if (ChromeFeatureList.sAndroidAnimatedCompositedProgressBar.isEnabled()) {
+            if (ChromeFeatureList.sAndroidAnimatedProgressBarInViz.isEnabled()) {
                 // Fix the width for the foreground and background Rects so that they are wide
                 // enough to cover the entire progress bar. They will be initially positioned to
                 // show 0 progress, and then horizontally translated in viz as the progress updates.
@@ -339,7 +339,7 @@ public class ClipDrawableProgressBar extends ImageView {
         int newVisibility = mDesiredVisibility;
         if (getAlpha() == 0 && mDesiredVisibility == VISIBLE) newVisibility = INVISIBLE;
         if (oldVisibility != newVisibility) {
-            if (!ChromeFeatureList.sAndroidAnimatedCompositedProgressBar.isEnabled()) {
+            if (!ChromeFeatureList.sAndroidAnimatedProgressBarInViz.isEnabled()) {
                 super.setVisibility(newVisibility);
             }
             if (mProgressBarObserver != null) mProgressBarObserver.onVisibilityChanged();
@@ -418,7 +418,7 @@ public class ClipDrawableProgressBar extends ImageView {
 
     @Override
     protected boolean onSetAlpha(int alpha) {
-        if (ChromeFeatureList.sAndroidAnimatedCompositedProgressBar.isEnabled()) {
+        if (ChromeFeatureList.sAndroidAnimatedProgressBarInViz.isEnabled()) {
             if (alpha == 0) {
                 mDesiredVisibility = INVISIBLE;
             } else {

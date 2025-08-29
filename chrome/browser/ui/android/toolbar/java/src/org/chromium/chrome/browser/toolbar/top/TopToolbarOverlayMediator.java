@@ -272,8 +272,7 @@ public class TopToolbarOverlayMediator {
                         mControlsPosition = controlsPosition;
                         if (ChromeFeatureList.sBcivBottomControls.isEnabled()) {
                             updateOffsetTag();
-                            if (ChromeFeatureList.sAndroidAnimatedCompositedProgressBar
-                                    .isEnabled()) {
+                            if (ChromeFeatureList.sAndroidAnimatedProgressBarInViz.isEnabled()) {
                                 updateProgress();
                             }
                         }
@@ -374,7 +373,7 @@ public class TopToolbarOverlayMediator {
         // property skips the object equality check.
         DrawingInfo drawingInfo = mModel.get(TopToolbarOverlayProperties.PROGRESS_BAR_INFO);
         mProgressInfoCallback.onResult(drawingInfo);
-        if (ChromeFeatureList.sAndroidAnimatedCompositedProgressBar.isEnabled()) {
+        if (ChromeFeatureList.sAndroidAnimatedProgressBarInViz.isEnabled()) {
             if (drawingInfo.visible) {
                 if (mTopProgressBarOffsetTag == null) {
                     mTopProgressBarOffsetTag = OffsetTag.createRandom();

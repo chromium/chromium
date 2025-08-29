@@ -120,7 +120,7 @@ void ToolbarLayer::PushResource(int toolbar_resource_id,
   layer_->SetPosition(
       gfx::PointF(x_offset, content_offset - layer_->bounds().height()));
 
-  if (features::IsAndroidAnimatedCompositedProgressBarEnabled()) {
+  if (features::IsAndroidAnimatedProgressBarInVizEnabled()) {
     toolbar_layers_->SetOffsetTag(offset_tag);
   } else {
     layer_->SetOffsetTag(offset_tag);
@@ -139,7 +139,7 @@ int ToolbarLayer::GetIndexOfLayer(scoped_refptr<cc::slim::Layer> layer) {
 }
 
 scoped_refptr<cc::slim::Layer> ToolbarLayer::ToolbarParentLayer() {
-  if (features::IsAndroidAnimatedCompositedProgressBarEnabled()) {
+  if (features::IsAndroidAnimatedProgressBarInVizEnabled()) {
     return toolbar_layers_;
   } else {
     return layer_;
@@ -164,7 +164,7 @@ void ToolbarLayer::UpdateProgressBar(int progress_bar_x,
                                      bool visible,
                                      const viz::OffsetTag& offset_tag) {
   bool is_progress_bar_visible = SkColorGetA(progress_bar_background_color);
-  if (features::IsAndroidAnimatedCompositedProgressBarEnabled()) {
+  if (features::IsAndroidAnimatedProgressBarInVizEnabled()) {
     is_progress_bar_visible = visible;
     progress_bar_layers_->SetOffsetTag(offset_tag);
   }
@@ -175,7 +175,7 @@ void ToolbarLayer::UpdateProgressBar(int progress_bar_x,
       !(is_progress_bar_visible && progress_bar_visual_update_available));
 
   if (is_progress_bar_visible) {
-    if (features::IsAndroidAnimatedCompositedProgressBarEnabled()) {
+    if (features::IsAndroidAnimatedProgressBarInVizEnabled()) {
       // Use corner_radius for gap between the foreground and background layer.
       progress_bar_background_layer_->SetPosition(
           gfx::PointF(corner_radius * 2, progress_bar_background_y));
@@ -191,7 +191,7 @@ void ToolbarLayer::UpdateProgressBar(int progress_bar_x,
         SkColor4f::FromColor(progress_bar_background_color));
     progress_bar_background_layer_->SetRoundedCorner(gfx::RoundedCornersF(corner_radius));
 
-    if (features::IsAndroidAnimatedCompositedProgressBarEnabled()) {
+    if (features::IsAndroidAnimatedProgressBarInVizEnabled()) {
       // Position the foregound layer to show 0% progress.
       progress_bar_layer_->SetPosition(
           gfx::PointF(-progress_bar_width, progress_bar_y));
@@ -241,7 +241,7 @@ ToolbarLayer::ToolbarLayer(ui::ResourceManager* resource_manager)
       progress_bar_static_background_layer_(
           cc::slim::SolidColorLayer::Create()),
       debug_layer_(cc::slim::SolidColorLayer::Create()) {
-  if (features::IsAndroidAnimatedCompositedProgressBarEnabled()) {
+  if (features::IsAndroidAnimatedProgressBarInVizEnabled()) {
     // Parents are drawn before children. Children added first are drawn first.
     // Layers that are drawn later will cover all layers drawn before it.
     toolbar_background_layer_->SetIsDrawable(true);

@@ -196,7 +196,12 @@
     "expiry_milestone": 150
   },
   {
-    "name": "android-animated-composited-progress-bar",
+    "name": "android-animated-progress-bar-in-browser",
+    "owners": [ "peilinwang@google.com", "clank-performance-team@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
+    "name": "android-animated-progress-bar-in-viz",
     "owners": [ "peilinwang@google.com", "clank-performance-team@google.com" ],
     "expiry_milestone": 150
   },

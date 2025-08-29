@@ -163,7 +163,7 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
         setAlpha(0.0f);
         mAnimationLogic = new ProgressAnimationSmooth();
 
-        if (!ChromeFeatureList.sAndroidAnimatedCompositedProgressBar.isEnabled()) {
+        if (!ChromeFeatureList.sAndroidAnimatedProgressBarInViz.isEnabled()) {
             setVisibility(View.VISIBLE);
         }
 

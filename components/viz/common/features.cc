@@ -38,8 +38,8 @@ namespace features {
 // and load progress updates will be animated instead of directly snapping to
 // the new position. The animation is done in the same manner as BCIV, where
 // OffsetTags and OffstTagValues will enable viz to move the progress bar.
-BASE_FEATURE(kAndroidAnimatedCompositedProgressBar,
-             "AndroidAnimatedCompositedProgressBar",
+BASE_FEATURE(kAndroidAnimatedProgressBarInViz,
+             "AndroidAnimatedProgressBarInViz",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // During a scroll, enable viz to move browser controls according to the
@@ -618,9 +618,9 @@ bool ShouldRemoveRedirectionBitmap() {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-bool IsAndroidAnimatedCompositedProgressBarEnabled() {
+bool IsAndroidAnimatedProgressBarInVizEnabled() {
   return base::FeatureList::IsEnabled(
-      features::kAndroidAnimatedCompositedProgressBar);
+      features::kAndroidAnimatedProgressBarInViz);
 }
 
 bool IsBcivBottomControlsEnabled() {

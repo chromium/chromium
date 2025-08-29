@@ -162,8 +162,10 @@ public abstract class ChromeFeatureList {
             "AdaptiveButtonInTopToolbarPageSummary";
     public static final String ALLOW_TAB_CLOSING_UPON_MINIMIZATION =
             "AllowTabClosingUponMinimization";
-    public static final String ANDROID_ANIMATED_COMPOSITED_PROGRESS_BAR =
-            "AndroidAnimatedCompositedProgressBar";
+    public static final String ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER =
+            "AndroidAnimatedProgressBarInBrowser";
+    public static final String ANDROID_ANIMATED_PROGRESS_BAR_IN_VIZ =
+            "AndroidAnimatedProgressBarInViz";
     public static final String ANDROID_APPEARANCE_SETTINGS = "AndroidAppearanceSettings";
     public static final String ANDROID_APP_INTEGRATION = "AndroidAppIntegration";
     public static final String ANDROID_APP_INTEGRATION_MODULE = "AndroidAppIntegrationModule";
@@ -714,8 +716,10 @@ public abstract class ChromeFeatureList {
                     ALLOW_TAB_CLOSING_UPON_MINIMIZATION,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
-    public static final CachedFlag sAndroidAnimatedCompositedProgressBar =
-            newCachedFlag(ANDROID_ANIMATED_COMPOSITED_PROGRESS_BAR, false);
+    public static final CachedFlag sAndroidAnimatedProgressBarInBrowser =
+            newCachedFlag(ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER, false);
+    public static final CachedFlag sAndroidAnimatedProgressBarInViz =
+            newCachedFlag(ANDROID_ANIMATED_PROGRESS_BAR_IN_VIZ, false);
     public static final CachedFlag sAndroidAppIntegration =
             newCachedFlag(ANDROID_APP_INTEGRATION, true);
     public static final CachedFlag sAndroidAppIntegrationModule =
@@ -1111,7 +1115,8 @@ public abstract class ChromeFeatureList {
                     // keep-sorted start
                     sAccountForSuppressedKeyboardInsets,
                     sAllowTabClosingUponMinimization,
-                    sAndroidAnimatedCompositedProgressBar,
+                    sAndroidAnimatedProgressBarInBrowser,
+                    sAndroidAnimatedProgressBarInViz,
                     sAndroidAppIntegration,
                     sAndroidAppIntegrationModule,
                     sAndroidAppIntegrationMultiDataSource,

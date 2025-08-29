@@ -2744,8 +2744,11 @@ extern const char kCCTAdaptiveButtonTestSwitchDescription[];
 extern const char kAdaptiveButtonInTopToolbarPageSummaryName[];
 extern const char kAdaptiveButtonInTopToolbarPageSummaryDescription[];
 
-extern const char kAndroidAnimatedCompositedProgressBarName[];
-extern const char kAndroidAnimatedCompositedProgressBarDescription[];
+extern const char kAndroidAnimatedProgressBarInBrowserName[];
+extern const char kAndroidAnimatedProgressBarInBrowserDescription[];
+
+extern const char kAndroidAnimatedProgressBarInVizName[];
+extern const char kAndroidAnimatedProgressBarInVizDescription[];
 
 extern const char kAndroidTabGroupsColorUpdateGM3Name[];
 extern const char kAndroidTabGroupsColorUpdateGM3Description[];

@@ -9796,6 +9796,7 @@ from previous Chrome versions.
   <int value="-1605920602" label="AVFoundationCaptureV2:disabled"/>
   <int value="-1605567628" label="disable-overlay-scrollbar"/>
   <int value="-1605385621" label="PrivacySandboxAdsApiUxEnhancements:disabled"/>
+  <int value="-1605294229" label="AndroidAnimatedProgressBarInBrowser:enabled"/>
   <int value="-1604519960" label="SystemKoreanPhysicalTyping:enabled"/>
   <int value="-1604478217" label="QuickAnswersRichCard:disabled"/>
   <int value="-1604051051" label="SpecialLocale:disabled"/>
@@ -11615,7 +11616,6 @@ from previous Chrome versions.
       label="PreinstalledWebAppAlwaysMigrateCalculator:disabled"/>
   <int value="-957200826" label="enable-spdy-proxy-auth"/>
   <int value="-956696029" label="scheduler-configuration"/>
-  <int value="-956597964" label="AndroidAnimatedCompositedProgressBar:enabled"/>
   <int value="-956563847" label="QueryTilesDisableCountryOverride:enabled"/>
   <int value="-955667686"
       label="AutofillSuppressCreditCardSaveForAssistant:enabled"/>
@@ -12019,6 +12019,7 @@ from previous Chrome versions.
   <int value="-800301139" label="VCLightIntensity:enabled"/>
   <int value="-800127303" label="OmniboxPedalsTranslationConsole:disabled"/>
   <int value="-799931058" label="UseMultiloginEndpoint:disabled"/>
+  <int value="-799638577" label="AndroidAnimatedProgressBarInViz:enabled"/>
   <int value="-799444168" label="WebApkInstallFailureNotification:enabled"/>
   <int value="-799395788" label="SearchPrefetchServicePrefetching:disabled"/>
   <int value="-798200573" label="NotificationInteractionHistory:disabled"/>
@@ -13309,8 +13310,6 @@ from previous Chrome versions.
   <int value="-327272022" label="AutofillRejectCompanyBirthyearName:enabled"/>
   <int value="-326535569" label="WebNotesStylize:disabled"/>
   <int value="-326083626" label="AppBanners:disabled"/>
-  <int value="-325709080"
-      label="AndroidAnimatedCompositedProgressBar:disabled"/>
   <int value="-325271559" label="NtpRepeatableQueries:enabled"/>
   <int value="-324786035"
       label="EnableAmbientAuthenticationInGuestSession:enabled"/>
@@ -13341,6 +13340,7 @@ from previous Chrome versions.
   <int value="-315604713" label="WebUSB:enabled"/>
   <int value="-315333837" label="AutofillEnableCardNicknameUpstream:enabled"/>
   <int value="-314910380" label="disable-distance-field-text"/>
+  <int value="-314639315" label="AndroidAnimatedProgressBarInViz:disabled"/>
   <int value="-314605926" label="protect-sync-credential-on-reauth:enabled"/>
   <int value="-314566497"
       label="BrokerFileOperationsOnDiskCacheInNetworkService:enabled"/>
@@ -16217,6 +16217,7 @@ from previous Chrome versions.
       label="ExtensionManifestV2DeprecationWarning:disabled"/>
   <int value="722313909" label="PriceChangeModule:enabled"/>
   <int value="722334179" label="NoncedPartitionedCookies:disabled"/>
+  <int value="722557672" label="AndroidAnimatedProgressBarInBrowser:disabled"/>
   <int value="722614233" label="TrackingProtectionOnboardingRollback:disabled"/>
   <int value="722651450" label="StorageAccessHeaders:enabled"/>
   <int value="723318188" label="EnableUniveralLinks:disabled"/>

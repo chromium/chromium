@@ -237,7 +237,7 @@ void ProgressTracker::CompleteProgress(uint64_t identifier) {
 void ProgressTracker::NotifyLoadProgressChanged() {
   frame_->GetLocalFrameHostRemote().DidChangeLoadProgress(progress_value_);
 #if BUILDFLAG(IS_ANDROID)
-  if (::features::IsAndroidAnimatedCompositedProgressBarEnabled() &&
+  if (::features::IsAndroidAnimatedProgressBarInVizEnabled() &&
       frame_->IsMainFrame() && frame_->GetPage()) {
     frame_->GetPage()->GetChromeClient().DidUpdateLoadProgress(progress_value_);
   }
