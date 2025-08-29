@@ -589,9 +589,6 @@ public class WebViewChromiumAwInit {
                     // Must happen right after Chromium initialization is complete.
                     mInitState.set(INIT_FINISHED);
                     mStartupFinished.countDown();
-                    // This runs all the pending tasks queued for after Chromium init is
-                    // finished, so should run after `mInitState` is `INIT_FINISHED`.
-                    mFactory.getRunQueue().notifyChromiumStarted();
                     if (anyStartupTaskExperimentIsEnabled()) {
                         // Re-enables the taskrunners
                         PostTask.disablePreNativeUiTasks(false);
@@ -662,7 +659,7 @@ public class WebViewChromiumAwInit {
         doNetworkInitializations(ContextUtils.getApplicationContext());
     }
 
-    private void recordStartupMetrics(
+    private void onChromiumStarted(
             @CallSite int startCallSite,
             @CallSite int finishCallSite,
             long startTimeMs,
@@ -670,6 +667,10 @@ public class WebViewChromiumAwInit {
             long longestUiBlockingTaskTimeMs,
             @StartupTasksRunner.StartupMode int startupMode) {
         long wallClockTimeMs = SystemClock.uptimeMillis() - startTimeMs;
+
+        // This runs all the pending tasks queued for after Chromium init is finished.
+        mFactory.getRunQueue().notifyChromiumStarted();
+
         // Record asyncStartup API metrics
         mWebViewStartUpDiagnostics.setTotalTimeUiThreadChromiumInitMillis(totalTimeTakenMs);
         mWebViewStartUpDiagnostics.setMaxTimePerTaskUiThreadChromiumInitMillis(
@@ -1326,8 +1327,7 @@ public class WebViewChromiumAwInit {
                 mLongestUiBlockingTaskTimeMs = Math.max(mLongestUiBlockingTaskTimeMs, durationMs);
                 mTotalTimeTakenMs += durationMs;
                 if (mPostBrowserProcessStartQueue.isEmpty()) {
-                    // We are done running all the tasks, so record the metrics.
-                    recordStartupMetrics(
+                    onChromiumStarted(
                             mStartCallSite,
                             mFinishCallSite,
                             /* startTimeMs= */ mStartupTimeMs,
