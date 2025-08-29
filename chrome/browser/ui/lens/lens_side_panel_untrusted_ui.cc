@@ -116,6 +116,9 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "enableSummarizeSuggestionHint",
       lens::features::ShouldEnableSummarizeHintForContextualSuggest());
+  html_source->AddBoolean(
+      "enableWebviewResults",
+      lens::features::IsLensSidePanelWebviewResultsEnabled());
 
   // Aim M3 flags
   const bool aim_enabled = lens::IsAimM3Enabled(Profile::FromWebUI(web_ui));

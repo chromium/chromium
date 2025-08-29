@@ -285,7 +285,8 @@
         "webui_untrusted"
       ],
       "matches": [
-        "chrome-untrusted://boca-app/*"
+        "chrome-untrusted://boca-app/*",
+        "chrome-untrusted://lens/*"
       ],
       // "desktop_android" is not supported.
       "platforms": ["chromeos", "linux", "mac", "win"]
@@ -910,7 +911,8 @@
       "webui_untrusted"
     ],
     "matches": [
-      "chrome-untrusted://boca-app/*"
+      "chrome-untrusted://boca-app/*",
+      "chrome-untrusted://lens/*"
     ]
   }, {
     // This feature is used by the Controlled Frame API and is specifically
@@ -954,7 +956,8 @@
       "webui_untrusted"
     ],
     "matches": [
-      "chrome-untrusted://boca-app/*"
+      "chrome-untrusted://boca-app/*",
+      "chrome-untrusted://lens/*"
     ]
   }, {
     // This feature is used by the Controlled Frame API and is specifically
@@ -992,7 +995,8 @@
       "webui_untrusted"
     ],
     "matches": [
-      "chrome-untrusted://boca-app/*"
+      "chrome-untrusted://boca-app/*",
+      "chrome-untrusted://lens/*"
     ]
   }]
 }

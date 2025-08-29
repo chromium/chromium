@@ -83,7 +83,7 @@
   }
 
   /* Set z-index to hide results to prevent ghost frames when reshowing. */
-  :host([is-loading-results]) #results {
+  :host([is-loading-results]) .results {
     z-index: 0;
   }
 
@@ -404,12 +404,22 @@
 <iframe
   name="results"
   id="results"
-  class="results-pane"
+  class="results results-pane"
   allow="cross-origin-isolated; display-capture; geolocation; microphone;
            clipboard-read; clipboard-write;"
   frameborder="0"
+  hidden$="[[enableWebviewResults]]"
 >
 </iframe>
+<webview
+  name="resultsWebview"
+  id="resultsWebview"
+  class="results results-pane"
+  partition="persist:lenspart"
+  hidden$="[[!enableWebviewResults]]"
+>
+</webview>
+
 <feedback-toast id="feedbackToast"></feedback-toast>
 
 <cr-toast id="messageToast" duration="4000">

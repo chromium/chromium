@@ -152,6 +152,10 @@ BASE_FEATURE(kLensOverlayForceEmptyCsbQuery,
              "LensOverlayForceEmptyCsbQuery",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensSidePanelEnableWebviewResults,
+             "LensSidePanelEnableWebviewResults",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",
                                                    /*default=value=*/-1};
 const base::FeatureParam<std::string> kActivityUrl{
@@ -1266,6 +1270,10 @@ bool IsLensOverlayTextSelectionContextMenuEntrypointContextualized() {
 
 bool IsLensOverlayForceEmptyCsbQueryEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlayForceEmptyCsbQuery);
+}
+
+bool IsLensSidePanelWebviewResultsEnabled() {
+  return base::FeatureList::IsEnabled(kLensSidePanelEnableWebviewResults);
 }
 
 }  // namespace lens::features
