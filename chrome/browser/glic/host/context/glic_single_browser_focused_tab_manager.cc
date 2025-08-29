@@ -4,7 +4,7 @@
 
 #include "chrome/browser/glic/host/context/glic_single_browser_focused_tab_manager.h"
 
-#include "glic_single_browser_focused_tab_manager.h"
+#include "chrome/browser/glic/host/context/glic_sharing_utils.h"
 
 namespace glic {
 
@@ -67,6 +67,7 @@ void GlicSingleBrowserFocusedTabManager::OnActiveTabChanged(
       base::BindRepeating(
           &GlicSingleBrowserFocusedTabManager::FocusedTabDataChanged,
           base::Unretained(this)));
+
   NotifyFocusedTabChanged(focused_tab_data);
 }
 
@@ -74,10 +75,15 @@ FocusedTabData GlicSingleBrowserFocusedTabManager::GetFocusedTabData() const {
   tabs::TabInterface* focused_tab =
       browser_interface_ ? browser_interface_->GetActiveTabInterface()
                          : nullptr;
-  // TODO(crbug.com/441552043): Handle tab validity checks.
-  return focused_tab
-             ? FocusedTabData(focused_tab)
-             : FocusedTabData(std::string("focused tab disappeared"), nullptr);
+  if (!focused_tab) {
+    return FocusedTabData(std::string("focused tab disappeared"), nullptr);
+  }
+
+  if (!IsTabValidForSharing(focused_tab->GetContents())) {
+    return FocusedTabData(std::string("no focusable tab"), focused_tab);
+  }
+
+  return FocusedTabData(focused_tab);
 }
 
 FocusedTabData GlicSingleBrowserFocusedTabManager::GetFocusedTabData() {
