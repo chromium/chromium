@@ -1561,5 +1561,47 @@ TEST_F(ResolveContextTest, SessionChange_NoDohServers) {
   context.UnregisterDohStatusObserver(&observer);
 }
 
+// Expect that DnsServerIterator correctly handles server index when DNS
+// rotation config changes. Regression test for https://crbug.com/441324507.
+TEST_F(ResolveContextTest, ClassicDnsServerIndexRotation) {
+  ResolveContext context(nullptr /* url_request_context */,
+                         false /* enable_caching */);
+
+  DnsConfig config1 =
+      CreateDnsConfig(4 /* num_servers */, 0 /* num_doh_servers */);
+  config1.rotate = true;
+  scoped_refptr<DnsSession> session1 = CreateDnsSession(config1);
+  context.InvalidateCachesAndPerSessionData(session1.get(),
+                                            /*network_change=*/false);
+
+  // Confirm that when rotation is enabled, each new DnsServerIterator instance
+  // starts at an incremented index.
+  {
+    std::unique_ptr<DnsServerIterator> classic_itr1_0 =
+        context.GetClassicDnsIterator(session1->config(), session1.get());
+    EXPECT_EQ(classic_itr1_0->GetNextAttemptIndex(), 0u);
+
+    std::unique_ptr<DnsServerIterator> classic_itr1_1 =
+        context.GetClassicDnsIterator(session1->config(), session1.get());
+    EXPECT_EQ(classic_itr1_1->GetNextAttemptIndex(), 1u);
+
+    std::unique_ptr<DnsServerIterator> classic_itr1_2 =
+        context.GetClassicDnsIterator(session1->config(), session1.get());
+    EXPECT_EQ(classic_itr1_2->GetNextAttemptIndex(), 2u);
+  }
+
+  DnsConfig config2 =
+      CreateDnsConfig(2 /* num_servers */, 0 /* num_doh_servers */);
+  config2.rotate = false;
+  scoped_refptr<DnsSession> session2 = CreateDnsSession(config2);
+  context.InvalidateCachesAndPerSessionData(session2.get(),
+                                            /*network_change=*/false);
+
+  // Confirm that the index always within the valid server range.
+  std::unique_ptr<DnsServerIterator> classic_itr2 =
+      context.GetClassicDnsIterator(session2->config(), session2.get());
+  EXPECT_LT(classic_itr2->GetNextAttemptIndex(), 2u);
+}
+
 }  // namespace
 }  // namespace net
