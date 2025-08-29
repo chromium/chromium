@@ -12,7 +12,6 @@
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
-#include "chrome/browser/glic/host/glic_actor_controller.h"
 #include "chrome/browser/glic/host/glic_ui_embedder.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/widget/panel_delegate.h"
@@ -60,7 +59,6 @@ class GlicInstance : public PanelDelegate {
   // Objects that currently live in GlicService moved to here.
   std::unique_ptr<glic::Host> host_;
   std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
-  std::unique_ptr<GlicActorController> actor_controller_;
   std::unique_ptr<GlicSharingManagerImpl> sharing_manager_;
   std::unique_ptr<GlicZeroStateSuggestionsManager>
       zero_state_suggestions_manager_;

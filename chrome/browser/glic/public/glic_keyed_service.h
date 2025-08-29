@@ -42,7 +42,6 @@ class IdentityManager;
 namespace glic {
 
 class AuthController;
-class GlicActorController;
 class GlicEnabling;
 class GlicFreController;
 class GlicMetrics;
@@ -266,7 +265,6 @@ class GlicKeyedService : public KeyedService {
   std::unique_ptr<GlicSharingManagerImpl> sharing_manager_;
   std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
   std::unique_ptr<AuthController> auth_controller_;
-  std::unique_ptr<GlicActorController> actor_controller_;
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
   std::unique_ptr<GlicOcclusionNotifier> occlusion_notifier_;
   std::unique_ptr<GlicZeroStateSuggestionsManager>

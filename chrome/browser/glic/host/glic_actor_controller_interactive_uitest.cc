@@ -24,7 +24,6 @@
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
-#include "chrome/browser/glic/host/glic_actor_controller.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -429,11 +428,12 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
   auto StopActorTask() {
     return Steps(InAnyContext(WithElement(
                      kGlicContentsElementId,
-                     [](ui::TrackedElement* el) {
+                     [&task_id = task_id_](ui::TrackedElement* el) {
                        content::WebContents* glic_contents =
                            AsInstrumentedWebContents(el)->web_contents();
-                       constexpr std::string_view script =
-                           "client.browser.stopActorTask(0);";
+                       std::string script = content::JsReplace(
+                           "client.browser.stopActorTask($1);",
+                           task_id.value());
                        ASSERT_TRUE(content::ExecJs(glic_contents, script));
                      })),
                  RoundTrip());
@@ -443,11 +443,12 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
   auto PauseActorTask() {
     return Steps(InAnyContext(WithElement(
                      kGlicContentsElementId,
-                     [](ui::TrackedElement* el) {
+                     [&task_id = task_id_](ui::TrackedElement* el) {
                        content::WebContents* glic_contents =
                            AsInstrumentedWebContents(el)->web_contents();
-                       constexpr std::string_view script =
-                           "client.browser.pauseActorTask(0);";
+                       std::string script = content::JsReplace(
+                           "client.browser.pauseActorTask($1);",
+                           task_id.value());
                        ASSERT_TRUE(content::ExecJs(glic_contents, script));
                      })),
                  RoundTrip());
@@ -457,22 +458,22 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
   auto ResumeActorTask(base::Value::Dict context_options, bool expected) {
     return InAnyContext(CheckElement(
         kGlicContentsElementId,
-        [context_options =
-             std::move(context_options)](ui::TrackedElement* el) mutable {
+        [&task_id = task_id_, context_options = std::move(context_options)](
+            ui::TrackedElement* el) mutable {
           content::WebContents* glic_contents =
               AsInstrumentedWebContents(el)->web_contents();
           std::string script = content::JsReplace(
               R"js(
                               (async () => {
                                 try {
-                                  await client.browser.resumeActorTask(0, $1);
+                                  await client.browser.resumeActorTask($1, $2);
                                   return true;
                                 } catch (err) {
                                   return false;
                                 }
                               })();
                             )js",
-              std::move(context_options));
+              task_id.value(), std::move(context_options));
           return content::EvalJs(glic_contents, script).ExtractBool();
         },
         expected));

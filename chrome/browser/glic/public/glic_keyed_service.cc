@@ -31,11 +31,11 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/auth_controller.h"
+#include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
-#include "chrome/browser/glic/host/glic_actor_controller.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -160,10 +160,6 @@ GlicKeyedService::GlicKeyedService(
     profile_->GetPrefs()->SetInteger(
         prefs::kGlicCompletedFre,
         static_cast<int>(prefs::FreStatus::kCompleted));
-  }
-
-  if (base::FeatureList::IsEnabled(features::kGlicActor)) {
-    actor_controller_ = std::make_unique<GlicActorController>(profile_);
   }
 
   // This is only used by automation for tests.
@@ -476,31 +472,138 @@ void GlicKeyedService::PerformActions(
                      std::move(callback), task_id));
 }
 
-// TODO(crbug.com/411462297): Stop/Pause/Resume task need to be routed to go
-// through the ActorKeyedService, rather than the deprecated ActorController
-// which ignores the task_id.
 void GlicKeyedService::StopActorTask(actor::TaskId task_id,
                                      mojom::ActorTaskStopReason stop_reason) {
-  CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
-  CHECK(actor_controller_);
-  actor_controller_->StopTask(task_id, stop_reason);
+  auto* actor_keyed_service = actor::ActorKeyedService::Get(profile_.get());
+  CHECK(actor_keyed_service);
+
+  actor::ActorTask* task = actor_keyed_service->GetTask(task_id);
+  if (!task || task->IsStopped()) {
+    std::string error_message =
+        task ? absl::StrFormat("Task with id[%d] is already stopped",
+                               task_id.value())
+             : absl::StrFormat("No task with id[%d]", task_id.value());
+    actor_keyed_service->GetJournal().Log(GURL::EmptyGURL(),
+                                          actor::TaskId(task_id),
+                                          actor::mojom::JournalTrack::kActor,
+                                          "Failed to stop task", error_message);
+    return;
+  }
+
+  bool success = false;
+  switch (stop_reason) {
+    case mojom::ActorTaskStopReason::kTaskComplete:
+      success = true;
+      break;
+    case mojom::ActorTaskStopReason::kStoppedByUser:
+      success = false;
+      break;
+  }
+
+  actor_keyed_service->StopTask(task->id(), success);
 }
 
 void GlicKeyedService::PauseActorTask(
     actor::TaskId task_id,
     mojom::ActorTaskPauseReason pause_reason) {
-  CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
-  CHECK(actor_controller_);
-  actor_controller_->PauseTask(task_id, pause_reason);
+  auto* actor_keyed_service = actor::ActorKeyedService::Get(profile_.get());
+  CHECK(actor_keyed_service);
+
+  actor::ActorTask* task = actor_keyed_service->GetTask(task_id);
+  if (!task || task->IsStopped() || task->IsPaused()) {
+    std::string error_message =
+        task ? absl::StrFormat("Task with id[%d] is not in running state",
+                               task_id.value())
+             : absl::StrFormat("No task with id[%d]", task_id.value());
+    actor_keyed_service->GetJournal().Log(
+        GURL::EmptyGURL(), actor::TaskId(task_id),
+        actor::mojom::JournalTrack::kActor, "Failed to pause task",
+        error_message);
+    return;
+  }
+
+  bool from_actor = false;
+  switch (pause_reason) {
+    case mojom::ActorTaskPauseReason::kPausedByModel:
+      from_actor = true;
+      break;
+    case mojom::ActorTaskPauseReason::kPausedByUser:
+      from_actor = false;
+      break;
+  }
+
+  task->Pause(from_actor);
 }
 
 void GlicKeyedService::ResumeActorTask(
     actor::TaskId task_id,
     const mojom::GetTabContextOptions& context_options,
     glic::mojom::WebClientHandler::ResumeActorTaskCallback callback) {
-  CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
-  CHECK(actor_controller_);
-  actor_controller_->ResumeTask(task_id, context_options, std::move(callback));
+  auto* actor_keyed_service = actor::ActorKeyedService::Get(profile_.get());
+  CHECK(actor_keyed_service);
+
+  actor::ActorTask* task = actor_keyed_service->GetTask(task_id);
+  if (!task || !task->IsPaused()) {
+    std::string error_message =
+        task
+            ? absl::StrFormat("Task with id[%d] is not paused", task_id.value())
+            : absl::StrFormat("No task with id[%d]", task_id.value());
+    actor_keyed_service->GetJournal().Log(
+        GURL::EmptyGURL(), actor::TaskId(task_id),
+        actor::mojom::JournalTrack::kActor, "Failed to resume task",
+        error_message);
+    std::move(callback).Run(
+        mojom::GetContextResult::NewErrorReason(error_message));
+    return;
+  }
+
+  task->Resume();
+  tabs::TabInterface* tab_of_resumed_task = task->GetTabForObservation();
+  if (!tab_of_resumed_task) {
+    std::string error_message = "No tab for observation";
+    actor_keyed_service->GetJournal().Log(
+        GURL::EmptyGURL(), actor::TaskId(task_id),
+        actor::mojom::JournalTrack::kActor, "Failed to resume task",
+        error_message);
+    std::move(callback).Run(
+        glic::mojom::GetContextResult::NewErrorReason(error_message));
+    return;
+  }
+
+  auto fetcher_callback = base::BindOnce(
+      [](base::WeakPtr<actor::ActorKeyedService> actor_keyed_service,
+         actor::TaskId task_id,
+         glic::mojom::WebClientHandler::ResumeActorTaskCallback final_callback,
+         base::expected<glic::mojom::GetContextResultPtr,
+                        page_content_annotations::FetchPageContextErrorDetails>
+             result) {
+        if (!result.has_value()) {
+          if (actor_keyed_service) {
+            actor_keyed_service->GetJournal().Log(
+                GURL::EmptyGURL(), task_id, actor::mojom::JournalTrack::kActor,
+                "Failed to resume task",
+                absl::StrFormat("Failed to fetch context: %s",
+                                result.error().message));
+          }
+          std::move(final_callback)
+              .Run(glic::mojom::GetContextResult::NewErrorReason(
+                  result.error().message));
+          return;
+        }
+
+        std::move(final_callback).Run(std::move(result.value()));
+      },
+      actor_keyed_service->GetWeakPtr(), task_id, std::move(callback));
+
+  // TODO(khushalsagar): Ideally this should be set by the web UI instead of
+  // overriding here for actor mode.
+  // TODO(crbug.com/411462297): This should probably use RequestTabObservation
+  auto actionable_context_options = context_options.Clone();
+  actionable_context_options->annotated_page_content_mode = optimization_guide::
+      proto::ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS;
+
+  glic::FetchPageContext(tab_of_resumed_task, *actionable_context_options,
+                         std::move(fetcher_callback));
 }
 
 void GlicKeyedService::OnUserInputSubmitted(glic::mojom::WebClientMode mode) {

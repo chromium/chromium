@@ -88,8 +88,6 @@ ExecutionEngine::ExecutionEngine(Profile* profile)
       ui_event_dispatcher_(ui::NewUiEventDispatcher(
           ActorKeyedService::Get(profile)->GetActorUiStateManager())) {
   CHECK(profile_);
-  // Idempotent. Enables the action blocklist if it isn't already enabled.
-  InitActionBlocklist(profile_.get());
 }
 
 ExecutionEngine::ExecutionEngine(
@@ -99,8 +97,6 @@ ExecutionEngine::ExecutionEngine(
       journal_(ActorKeyedService::Get(profile)->GetJournal().GetSafeRef()),
       ui_event_dispatcher_(std::move(ui_event_dispatcher)) {
   CHECK(profile_);
-  // Idempotent. Enables the action blocklist if it isn't already enabled.
-  InitActionBlocklist(profile_.get());
 }
 
 std::unique_ptr<ExecutionEngine> ExecutionEngine::CreateForTesting(
@@ -181,10 +177,6 @@ bool ExecutionEngine::ShouldGateNavigation(
       navigation_handle.GetInitiatorOrigin();
   return initiator_origin &&
          !initiator_origin->IsSameOriginWith(navigation_url);
-}
-
-void ExecutionEngine::RegisterWithProfile(Profile* profile) {
-  InitActionBlocklist(profile);
 }
 
 void ExecutionEngine::CancelOngoingActions(mojom::ActionResultCode reason) {

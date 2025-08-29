@@ -100,11 +100,6 @@ class ActorKeyedService : public KeyedService {
   // exist.
   ActorTask* GetTask(TaskId task_id);
 
-  // TODO(crbug.com/411462297): This is a temporary shim to allow removing
-  // GlicActorController's notion of "current task". Eventually all actions will
-  // supply a task id.
-  ActorTask* GetMostRecentTask();
-
   // The associated journal for the associated profile.
   AggregatedJournal& GetJournal() LIFETIME_BOUND { return journal_; }
 
@@ -161,6 +156,8 @@ class ActorKeyedService : public KeyedService {
   const ActorTask* GetActingActorTaskForWebContents(
       content::WebContents* web_contents);
 
+  base::WeakPtr<ActorKeyedService> GetWeakPtr();
+
  private:
   // Called when the actor coordinator has finished an action which required
   // task creation.
@@ -210,9 +207,6 @@ class ActorKeyedService : public KeyedService {
   base::RepeatingCallbackList<
       RequestToShowCredentialSelectionDialogSubscriberCallback::RunType>
       request_to_show_credential_selection_dialog_callback_list_;
-
-  // TODO(crbug.com/411462297): Remove
-  TaskId last_created_task_id_;
 
   // Owns this.
   raw_ptr<Profile> profile_;

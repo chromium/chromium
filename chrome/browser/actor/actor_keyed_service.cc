@@ -15,6 +15,7 @@
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/browser_action_util.h"
 #include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/actor/site_policy.h"
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
@@ -40,6 +41,7 @@ using ui::ActorUiStateManagerInterface;
 
 ActorKeyedService::ActorKeyedService(Profile* profile) : profile_(profile) {
   actor_ui_state_manager_ = std::make_unique<ui::ActorUiStateManager>(*this);
+  InitActionBlocklist(profile);
 }
 
 ActorKeyedService::~ActorKeyedService() = default;
@@ -70,9 +72,12 @@ const ActorTask* ActorKeyedService::GetActingActorTaskForWebContents(
   return nullptr;
 }
 
+base::WeakPtr<ActorKeyedService> ActorKeyedService::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 TaskId ActorKeyedService::AddActiveTask(std::unique_ptr<ActorTask> task) {
   TaskId task_id = next_task_id_.GenerateNextId();
-  last_created_task_id_ = task_id;
   task->SetId(base::PassKey<ActorKeyedService>(), task_id);
   task->GetExecutionEngine()->SetOwner(task.get());
   // Notify of task creation now that the task id is set.
@@ -369,10 +374,6 @@ void ActorKeyedService::OnActionsFinished(
 }
 
 void ActorKeyedService::StopTask(TaskId task_id, bool success) {
-  if (task_id == last_created_task_id_) {
-    last_created_task_id_ = TaskId();
-  }
-
   auto task = active_tasks_.extract(task_id);
   if (!task.empty()) {
     auto ret = inactive_tasks_.insert(std::move(task));
@@ -390,10 +391,6 @@ ActorTask* ActorKeyedService::GetTask(TaskId task_id) {
     return task->second.get();
   }
   return nullptr;
-}
-
-ActorTask* ActorKeyedService::GetMostRecentTask() {
-  return GetTask(last_created_task_id_);
 }
 
 ActorUiStateManagerInterface* ActorKeyedService::GetActorUiStateManager() {
