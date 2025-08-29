@@ -141,6 +141,7 @@ enum {
   kFingerprintingProtectionEnabled = 92,
   kAutofillNameAndEmailProfileSignature = 93,
   kAutofillNameAndEmailProfileNotSelectedCounter = 94,
+  kIsOmniboxInBottomPosition = 95,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -212,6 +213,9 @@ constexpr auto kCommonSyncablePrefsAllowlist =
           syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
         {omnibox::kShowGoogleLensShortcut,
          {syncable_prefs_ids::kShowGoogleLensShortcut, syncer::PREFERENCES,
+          PrefSensitivity::kNone, MergeBehavior::kNone}},
+        {omnibox::kIsOmniboxInBottomPosition,
+         {syncable_prefs_ids::kIsOmniboxInBottomPosition, syncer::PREFERENCES,
           PrefSensitivity::kNone, MergeBehavior::kNone}},
         {password_manager::prefs::kCredentialsEnableAutosignin,
          {syncable_prefs_ids::kCredentialsEnableAutosignin,
