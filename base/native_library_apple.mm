@@ -26,9 +26,8 @@ std::string NativeLibraryLoadError::ToString() const {
   return message;
 }
 
-NativeLibrary LoadNativeLibraryWithOptions(const FilePath& library_path,
-                                           const NativeLibraryOptions& options,
-                                           NativeLibraryLoadError* error) {
+NativeLibrary LoadNativeLibrary(const FilePath& library_path,
+                                NativeLibraryLoadError* error) {
   // dlopen() etc. open the file off disk.
   if (library_path.Extension() == "dylib" || !DirectoryExists(library_path)) {
     void* dylib = dlopen(library_path.value().c_str(), RTLD_LAZY);

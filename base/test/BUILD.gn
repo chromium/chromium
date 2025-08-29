@@ -429,16 +429,6 @@ static_library("run_all_unittests") {
   deps = [ ":test_support" ]
 }
 
-# These sources are linked into both the base_unittests binary and the test
-# shared library target below.
-source_set("native_library_test_utils") {
-  testonly = true
-  sources = [
-    "native_library_test_utils.cc",
-    "native_library_test_utils.h",
-  ]
-}
-
 # This shared library is dynamically loaded by ImmediateCrash unittests.
 shared_library("immediate_crash_test_helper") {
   sources = [ "immediate_crash_test_helper.cc" ]
@@ -469,8 +459,6 @@ shared_library("immediate_crash_test_helper") {
 shared_library("test_shared_library") {
   testonly = true
   sources = [ "test_shared_library.cc" ]
-
-  deps = [ ":native_library_test_utils" ]
 }
 
 if (is_ios) {
@@ -480,8 +468,6 @@ if (is_ios) {
     info_plist = "ios/native-library-Info.plist"
 
     sources = [ "test_shared_library.cc" ]
-
-    deps = [ ":native_library_test_utils" ]
   }
 }
 
