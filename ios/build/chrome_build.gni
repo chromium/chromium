@@ -63,6 +63,9 @@ declare_args() {
   # Overridden when using the Google-internal repository to build Chrome on iOS.
   ios_push_notification_service_extension_target = "//ios/chrome/push_notification_service_extension:push_notification_service_extension_implementation"
 
+  # Enable credential exchange capability in the Credential Provider Extension (CPE).
+  ios_cpe_enable_credential_exchange = false
+
   # The API key to query Google services in the Credential Provider Extension.
   ios_credential_provider_extension_api_key = ""
 

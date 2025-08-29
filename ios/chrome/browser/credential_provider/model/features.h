@@ -5,7 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_MODEL_FEATURES_H_
 #define IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_MODEL_FEATURES_H_
 
-#include "base/feature_list.h"
+#import "base/feature_list.h"
+#import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
 
 // Feature flag to enable automatic passkey upgrade for the credential
 // provider.
@@ -26,5 +27,16 @@ BASE_DECLARE_FEATURE(kCredentialProviderSignalAPI);
 
 // Returns whether the CPE Performance Improvement Feature is enabled.
 bool IsCPEPerformanceImprovementsEnabled();
+
+// Credential exchange feature is controlled by a build-time flag, because
+// it is defined in capabilities that are linked to the Credential Provider
+// Extension and it must be declared in its Info.plist (manifest).
+constexpr bool CredentialExchangeEnabled() {
+#if BUILDFLAG(IOS_CREDENTIAL_EXCHANGE_ENABLED)
+  return true;
+#else
+  return false;
+#endif  // BUILDFLAG(IOS_PASSKEYS_ENABLED)
+}
 
 #endif  // IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_MODEL_FEATURES_H_

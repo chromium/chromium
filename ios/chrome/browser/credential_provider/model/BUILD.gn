@@ -9,6 +9,7 @@ import("//ios/build/chrome_build.gni")
 buildflag_header("buildflags") {
   header = "credential_provider_buildflags.h"
   flags = [
+    "IOS_CREDENTIAL_EXCHANGE_ENABLED=$ios_cpe_enable_credential_exchange",
     "IOS_CREDENTIAL_PROVIDER_ENABLED=$ios_enable_credential_provider_extension",
   ]
 }
@@ -135,5 +136,6 @@ source_set("features") {
     "features.h",
     "features.mm",
   ]
+  deps = [ ":buildflags" ]
   public_deps = [ "//base" ]
 }
