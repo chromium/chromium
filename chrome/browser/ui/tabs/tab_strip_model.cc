@@ -1108,6 +1108,16 @@ void TabStripModel::SetTabNeedsAttentionAt(int index, bool attention) {
   }
 }
 
+void TabStripModel::SetTabGroupNeedsAttention(
+    const tab_groups::TabGroupId& group,
+    bool attention) {
+  CHECK(group_model_->ContainsTabGroup(group));
+
+  for (auto& observer : observers_) {
+    observer.SetTabGroupNeedsAttention(group, attention);
+  }
+}
+
 void TabStripModel::CloseAllTabs() {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 

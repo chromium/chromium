@@ -392,6 +392,9 @@ void TabStripModelObserver::WillCloseAllTabs(TabStripModel* tab_strip_model) {}
 void TabStripModelObserver::CloseAllTabsStopped(TabStripModel* tab_strip_model,
                                                 CloseAllStoppedReason reason) {}
 void TabStripModelObserver::SetTabNeedsAttentionAt(int index, bool attention) {}
+void TabStripModelObserver::SetTabGroupNeedsAttention(
+    const tab_groups::TabGroupId& group,
+    bool attention) {}
 void TabStripModelObserver::OnTabStripModelDestroyed(TabStripModel* model) {}
 
 // static

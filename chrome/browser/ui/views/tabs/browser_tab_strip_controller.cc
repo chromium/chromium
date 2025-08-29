@@ -989,6 +989,12 @@ void BrowserTabStripController::SetTabNeedsAttentionAt(int index,
   tabstrip_->SetTabNeedsAttention(index, attention);
 }
 
+void BrowserTabStripController::SetTabGroupNeedsAttention(
+    const tab_groups::TabGroupId& group,
+    bool attention) {
+  tabstrip_->SetTabGroupNeedsAttention(group, attention);
+}
+
 bool BrowserTabStripController::IsFrameButtonsRightAligned() const {
 #if BUILDFLAG(IS_MAC)
   return false;
