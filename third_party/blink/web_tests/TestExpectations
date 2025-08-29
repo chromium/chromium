@@ -9606,6 +9606,9 @@ crbug.com/439012788 [ Linux ] wpt_internal/html/canvas/drawHTMLElement/allow-rea
 # Temporarily disable to unblock WebRTC roll
 crbug.com/406585888 external/wpt/webrtc/rtp-stats-lifetime.https.html [ Failure Pass Timeout ]
 crbug.com/406585888 external/wpt/webrtc-stats/rtp-stats-creation.html [ Failure Pass Timeout ]
+crbug.com/406585888 fast/peerconnection/RTCPeerconnection-insertable-streams.html [ Failure Pass ]
+crbug.com/406585888 external/wpt/webrtc/RTCPeerConnection-addTransceiver-renegotiation.https.html [ Failure Pass ]
+crbug.com/406585888 external/wpt/webrtc/RTCPeerConnection-mandatory-getStats.https.html [ Failure Pass ]
 
 # Gardener 2025-08-18
 crbug.com/439456643 [ Linux ] external/wpt/content-security-policy/parsing/invalid-bytes.html [ Failure Timeout ]

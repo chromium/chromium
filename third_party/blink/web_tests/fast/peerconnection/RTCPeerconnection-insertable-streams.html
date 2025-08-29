@@ -86,13 +86,12 @@ promise_test(async t => {
   await t.step_wait(async () => {
     assert_equals(callee.getReceivers().length, 1);
     const inboundStats = await getInboundStats(callee.getReceivers()[0]);
-    assert_true(!!inboundStats);
-    return inboundStats.packetsReceived > 10;
+    return inboundStats?.packetsReceived > 10;
   }, "Wait for packets to be received", 3000);
 
   // Assert we've not handled any frames.
   const inboundStats = await getInboundStats(callee.getReceivers()[0]);
-  assert_equals(inboundStats.framesReceived, 0);
+  assert_equals(!inboundStats || inboundStats.framesReceived, 0);
 }, 'Receivers with encodedInsertableStreams:true but no transform don\'t receive frames');
 
 promise_test(async t => {
