@@ -53,7 +53,6 @@ import org.chromium.components.sync.SyncService;
 @Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.LEGACY)
 public class FirstRunFlowSequencerTest {
-    private static final String ADULT_ACCOUNT_NAME = "adult.account@gmail.com";
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -230,7 +229,7 @@ public class FirstRunFlowSequencerTest {
     @Test
     @Feature({"FirstRun"})
     public void testFlowShowHistorySyncPageWhenUserIsSignedIn() {
-        mAccountManagerTestRule.addAccount(ADULT_ACCOUNT_NAME);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
         setDelegateFactory(false);
         HistogramWatcher numberOfAccountsHistogram =
@@ -253,7 +252,7 @@ public class FirstRunFlowSequencerTest {
     @Feature({"FirstRun"})
     public void testFlowUserIsSignedIn_historySyncDisabledByPolicy() {
         when(mHistorySyncHelperMock.isHistorySyncDisabledByPolicy()).thenReturn(true);
-        mAccountManagerTestRule.addAccount(ADULT_ACCOUNT_NAME);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
         setDelegateFactory(false);
         HistogramWatcher numberOfAccountsHistogram =
@@ -276,7 +275,7 @@ public class FirstRunFlowSequencerTest {
     @Feature({"FirstRun"})
     public void testFlowUserIsSignedIn_userAlreadySyncsHistory() {
         when(mHistorySyncHelperMock.didAlreadyOptIn()).thenReturn(true);
-        mAccountManagerTestRule.addAccount(ADULT_ACCOUNT_NAME);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
         setDelegateFactory(false);
         HistogramWatcher numberOfAccountsHistogram =

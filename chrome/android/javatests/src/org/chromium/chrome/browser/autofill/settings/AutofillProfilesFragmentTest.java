@@ -84,9 +84,10 @@ import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.RecordType;
 import org.chromium.components.browser_ui.settings.CardWithButtonPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
-import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -544,8 +545,7 @@ public class AutofillProfilesFragmentTest {
     @MediumTest
     @Feature({"Preferences"})
     public void testDeleteAccountProfile() throws Exception {
-        String email = "test@account";
-        setUpMockPrimaryAccount(email);
+        setUpMockPrimaryAccount(TestAccounts.ACCOUNT1);
 
         AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
         Context context = autofillProfileFragment.getContext();
@@ -570,7 +570,7 @@ public class AutofillProfilesFragmentTest {
         TextView messageView = confirmationDialog.findViewById(R.id.confirmation_dialog_message);
         String expectedMessage =
                 context.getString(R.string.autofill_delete_account_address_record_type_notice)
-                        .replace("$1", email);
+                        .replace("$1", TestAccounts.ACCOUNT1.getEmail());
         assertEquals(expectedMessage.toString(), messageView.getText().toString());
 
         rule.clickInConfirmationDialogAndWait(
@@ -633,8 +633,7 @@ public class AutofillProfilesFragmentTest {
     @MediumTest
     @Feature({"Preferences"})
     public void testEditAccountProfile() throws Exception {
-        String email = "test@account";
-        setUpMockPrimaryAccount(email);
+        setUpMockPrimaryAccount(TestAccounts.ACCOUNT1);
 
         mHelper.setProfile(
                 AutofillProfile.builder()
@@ -669,7 +668,7 @@ public class AutofillProfilesFragmentTest {
                 context.getString(
                                 R.string
                                         .autofill_address_already_saved_in_account_record_type_notice)
-                        .replace("$1", email);
+                        .replace("$1", TestAccounts.ACCOUNT1.getEmail());
         onView(withText(expectedMessage))
                 .check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
 
@@ -874,7 +873,7 @@ public class AutofillProfilesFragmentTest {
     @MediumTest
     @Feature({"Preferences"})
     public void testLocalProfiles_NoSync() throws Exception {
-        setUpMockPrimaryAccount("test@account.com");
+        setUpMockPrimaryAccount(TestAccounts.ACCOUNT1);
         setUpMockSyncService(false, new HashSet());
 
         // Trigger address profile list rebuild.
@@ -894,7 +893,7 @@ public class AutofillProfilesFragmentTest {
     @MediumTest
     @Feature({"Preferences"})
     public void testDisplayedProfileIcons__AddressesNotSynced() throws Exception {
-        setUpMockPrimaryAccount("test@account.com");
+        setUpMockPrimaryAccount(TestAccounts.ACCOUNT1);
         setUpMockSyncService(true, new HashSet());
 
         // Trigger address profile list rebuild.
@@ -914,7 +913,7 @@ public class AutofillProfilesFragmentTest {
     @MediumTest
     @Feature({"Preferences"})
     public void testDisplayedProfileIcons_AddressesSynced() throws Exception {
-        setUpMockPrimaryAccount("test@account.com");
+        setUpMockPrimaryAccount(TestAccounts.ACCOUNT1);
         setUpMockSyncService(true, Collections.singleton(UserSelectableType.AUTOFILL));
 
         // Trigger address profile list rebuild.
@@ -934,7 +933,7 @@ public class AutofillProfilesFragmentTest {
         ChromeFeatureList.THIRD_PARTY_DISABLE_CHROME_AUTOFILL_SETTINGS_SCREEN
     })
     public void testSettingsState_thirdPartyMode() throws Exception {
-        setUpMockPrimaryAccount("test@account.com");
+        setUpMockPrimaryAccount(TestAccounts.ACCOUNT1);
         setUpMockSyncService(true, Collections.singleton(UserSelectableType.AUTOFILL));
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -1086,13 +1085,13 @@ public class AutofillProfilesFragmentTest {
         }
     }
 
-    private void setUpMockPrimaryAccount(String email) {
-        CoreAccountInfo coreAccountInfo = rule.addAccount(email);
+    private void setUpMockPrimaryAccount(AccountInfo accountInfo) {
+        rule.addAccount(accountInfo);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.getPrimaryAccountInfo(ConsentLevel.SIGNIN))
-                .thenReturn(coreAccountInfo);
+                .thenReturn(accountInfo);
         when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
     }
 

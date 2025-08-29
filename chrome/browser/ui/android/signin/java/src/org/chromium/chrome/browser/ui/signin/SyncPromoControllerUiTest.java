@@ -149,7 +149,7 @@ public class SyncPromoControllerUiTest {
     @Test
     @MediumTest
     public void testBookmarkSyncPromoContinueButtonLaunchesSigninFlow() throws Throwable {
-        mSigninTestRule.addAccount("test@" + SyncPromoController.GMAIL_DOMAIN);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         ProfileDataCache profileDataCache = createProfileDataCache();
         setUpSyncPromoView(
                 SigninAccessPoint.BOOKMARK_MANAGER,
@@ -181,7 +181,7 @@ public class SyncPromoControllerUiTest {
     // Disabled on Automotive since the choose account button doesn't exist on Automotive.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testBookmarkSyncPromoChooseAccountButtonLaunchesSigninFlow() throws Throwable {
-        mSigninTestRule.addAccount("test@" + SyncPromoController.GMAIL_DOMAIN);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         ProfileDataCache profileDataCache = createProfileDataCache();
         setUpSyncPromoView(
                 SigninAccessPoint.BOOKMARK_MANAGER,

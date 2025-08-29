@@ -99,7 +99,7 @@ public class SigninCheckerTest {
         // must be the first device (this is enforced by the Kids Module).  The behaviour in this
         // test case therefore is not currently hittable on a real device; however it is included
         // here for completeness.
-        mSigninTestRule.addAccount("the.default.account@gmail.com");
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
 
         mActivityTestRule.startOnBlankPage();
@@ -123,7 +123,7 @@ public class SigninCheckerTest {
     private void signinWhenChildAccountIsFirstAccount() {
         mActivityTestRule.startOnBlankPage();
         mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
-        mSigninTestRule.addAccount("the.second.account@gmail.com");
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
 
         CriteriaHelper.pollUiThread(
                 () -> {

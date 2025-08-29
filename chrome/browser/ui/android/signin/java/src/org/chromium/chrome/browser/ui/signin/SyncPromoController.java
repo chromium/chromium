@@ -93,8 +93,6 @@ public class SyncPromoController {
     static final int NTP_SYNC_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS =
             336; // 14 days in hours.
 
-    @VisibleForTesting static final String GMAIL_DOMAIN = "gmail.com";
-
     /** Strings used for promo shown count histograms. */
     @StringDef({UserAction.CONTINUED, UserAction.DISMISSED, UserAction.SHOWN})
     @Retention(RetentionPolicy.SOURCE)

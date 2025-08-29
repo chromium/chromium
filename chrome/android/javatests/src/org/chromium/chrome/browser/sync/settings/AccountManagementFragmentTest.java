@@ -211,7 +211,8 @@ public class AccountManagementFragmentTest {
         final SigninTestRule signinTestRule = mSyncTestRule.getSigninTestRule();
         CoreAccountInfo primarySupervisedAccount =
                 signinTestRule.addChildTestAccountThenWaitForSignin();
-        signinTestRule.addAccount("account@school.com");
+        // Add a secondary EDU account.
+        signinTestRule.addAccount(TestAccounts.ACCOUNT1);
         signinTestRule.waitForSignin(primarySupervisedAccount);
 
         mSettingsActivityTestRule.startSettingsActivity();

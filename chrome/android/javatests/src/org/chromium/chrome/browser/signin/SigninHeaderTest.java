@@ -34,6 +34,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
 
@@ -76,7 +77,7 @@ public class SigninHeaderTest {
         CommandLine.getInstance()
                 .appendSwitchWithValue("gaia-url", mEmbeddedTestServerRule.getServer().getURL("/"));
         mInitialPage = mChromeActivityTestRule.startOnBlankPage();
-        mSigninTestRule.addTestAccountThenSignin();
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
         mGAIAUrl = mEmbeddedTestServerRule.getServer().getURL("/echoheader?X-Chrome-Connected");
     }
