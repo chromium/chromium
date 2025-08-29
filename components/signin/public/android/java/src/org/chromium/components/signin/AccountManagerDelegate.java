@@ -92,25 +92,8 @@ public interface AccountManagerDelegate {
      *     If there is an issue while creating the intent, callback will receive null.
      */
     @AnyThread
-    default void createAddAccountIntent(
-            @Nullable String prefilledEmail, Callback<@Nullable Intent> callback) {
-        createAddAccountIntent(callback);
-    }
-
-    /**
-     * Creates an intent that will ask the user to add a new account to the device. See {@link
-     * AccountManager#addAccount} for details.
-     *
-     * @param callback The callback to get the created intent. Will be invoked on the main thread.
-     *     If there is an issue while creating the intent, callback will receive null.
-     */
-    @AnyThread
-    @Deprecated(since = "Use #createAddAccountIntent(String, Callback) instead.")
-    default void createAddAccountIntent(Callback<@Nullable Intent> callback) {
-        throw new UnsupportedOperationException(
-                "This implementation should not be called, one of the createAddAccountIntent"
-                        + " methods should be overriden");
-    }
+    void createAddAccountIntent(
+            @Nullable String prefilledEmail, Callback<@Nullable Intent> callback);
 
     /**
      * Asks the user to enter a new password for an account, updating the saved credentials for the
