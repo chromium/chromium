@@ -8,6 +8,8 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.view.View;
 import android.view.WindowInsets;
+import android.view.WindowManager;
+import android.view.WindowMetrics;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.WindowInsetsCompat;
@@ -47,9 +49,15 @@ public class AwDisplayCutoutController {
          * to check / throttle as necessary.
          *
          * @param insets A placeholder to store left, top, right, and bottom insets in regards to
-         *               WebView. Note that DIP scale has been applied.
+         *     WebView. Note that DIP scale has been applied.
          */
         void setDisplayCutoutSafeArea(Insets insets);
+
+        /**
+         * Notify the delegate that bottom IME inset has changed. This usually signifies that the
+         * keyboard has either been shown or hidden.
+         */
+        void bottomImeInsetChanged();
     }
 
     /**
@@ -112,6 +120,10 @@ public class AwDisplayCutoutController {
     private final Delegate mDelegate;
     private View mContainerView;
     private final boolean mIncludeSystemBars;
+    // The amount the IME is currently imposing into the parent Window.
+    private int mBottomImeInset;
+    // The last bottom inset we calculated that should be applied to the visual viewport.
+    private int mLastBottomImeInset;
 
     /**
      * Constructor for AwDisplayCutoutController.
@@ -187,6 +199,10 @@ public class AwDisplayCutoutController {
         Insets safeArea =
                 new Insets(WindowInsetsCompat.toWindowInsetsCompat(insets).getInsets(insetTypes));
         onApplyWindowInsetsInternal(safeArea);
+        calculateBottomImeInsetsInternal(
+                new Insets(
+                        WindowInsetsCompat.toWindowInsetsCompat(insets)
+                                .getInsets(WindowInsetsCompat.Type.ime())));
 
         return insets;
     }
@@ -215,6 +231,56 @@ public class AwDisplayCutoutController {
         // Note that internally we apply this logic only when the display is in fullscreen mode.
         // See AwDisplayModeController for more details on how we check the fullscreen mode.
         mDelegate.setDisplayCutoutSafeArea(displayCutoutInsets);
+    }
+
+    public int getBottomImeInset() {
+        if (!AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_REPORT_IME_INSETS)
+                || Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            return 0;
+        }
+        if (!mContainerView.isAttachedToWindow()) {
+            // View is not attached yet, no insets needed.
+            return 0;
+        }
+
+        WindowMetrics wm =
+                mContainerView
+                        .getContext()
+                        .getSystemService(WindowManager.class)
+                        .getCurrentWindowMetrics();
+        // These are the bounds of the current Window on the screen. These are absolute coordinates.
+        Rect windowBounds = wm.getBounds();
+        int[] pos = new int[2];
+        mContainerView.getLocationInWindow(pos);
+        // This represents the size and position of the WebView *relative* to the Window. These are
+        // relative coordinates (to the top left corner of the Window).
+        Rect viewRectInWindow =
+                new Rect(
+                        pos[0],
+                        pos[1],
+                        pos[0] + mContainerView.getWidth(),
+                        pos[1] + mContainerView.getHeight());
+
+        // This is the positive difference between the bottom of the WebView and the top of the IME.
+        // For cases where the bottom of the WebView is higher than the top of the IME, return 0.
+        // Otherwise, calculate the overlap by taking the bottom of the WebView (regardless of
+        // whether this is obscured by the visible portion of the Window) and subtract the height of
+        // the Window after deducting the IME overlap. This gives us the highest point in the
+        // Window's coordinates that the IME reaches. In the case where the IME is not present
+        // (mBottomImeInset is 0), this ensures that the visual viewport shows only the part of the
+        // WebView that is visible in the Window.
+        int result =
+                Math.max(0, (viewRectInWindow.bottom - (windowBounds.height() - mBottomImeInset)));
+        if (result != mLastBottomImeInset) {
+            mLastBottomImeInset = result;
+            mDelegate.bottomImeInsetChanged();
+        }
+        return result;
+    }
+
+    private void calculateBottomImeInsetsInternal(Insets insets) {
+        mBottomImeInset = insets.bottom;
+        mDelegate.bottomImeInsetChanged();
     }
 
     private void onUpdateWindowInsets() {

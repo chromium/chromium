@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
+import org.chromium.android_webview.AwDisplayCutoutController;
 import org.chromium.android_webview.AwViewAndroidDelegate;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -35,7 +36,10 @@ import org.chromium.base.test.util.Features;
 /** Tests for the inset code in AwViewAndroidDelegate. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = Build.VERSION_CODES.R)
-@Features.EnableFeatures(AwFeatures.WEBVIEW_REPORT_IME_INSETS)
+@Features.EnableFeatures({
+    AwFeatures.WEBVIEW_REPORT_IME_INSETS,
+    AwFeatures.WEBVIEW_SAFE_AREA_INCLUDES_SYSTEM_BARS
+})
 public class AwInsetsTest {
     @Test
     @SmallTest
@@ -160,9 +164,24 @@ public class AwInsetsTest {
                 .when(view)
                 .getLocationInWindow(any(int[].class));
         doReturn(true).when(view).isAttachedToWindow();
-        AwViewAndroidDelegate viewAndroidDelegate =
-                new AwViewAndroidDelegate(view, null, null, null);
+        AwDisplayCutoutController awDisplayCutoutController =
+                new AwDisplayCutoutController(
+                        new AwDisplayCutoutController.Delegate() {
+                            @Override
+                            public float getDipScale() {
+                                return 1.0f;
+                            }
 
+                            @Override
+                            public void setDisplayCutoutSafeArea(
+                                    AwDisplayCutoutController.Insets insets) {}
+
+                            @Override
+                            public void bottomImeInsetChanged() {}
+                        },
+                        view);
+        AwViewAndroidDelegate viewAndroidDelegate =
+                new AwViewAndroidDelegate(view, null, null, awDisplayCutoutController);
         Assert.assertNotNull(holder.listener);
         holder.listener.onApplyWindowInsets(view, insets);
         Assert.assertEquals(expected, viewAndroidDelegate.getViewportInsetBottom());

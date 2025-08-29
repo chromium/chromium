@@ -1008,6 +1008,16 @@ public class AwContents implements SmartClipProvider {
                                     mWebContents.setDisplayCutoutSafeArea(
                                             insets.toRect(mCachedSafeAreaRect));
                                 }
+
+                                @Override
+                                public void bottomImeInsetChanged() {
+                                    if (mWebContents != null
+                                            && mWebContents.getRenderWidgetHostView() != null) {
+                                        mWebContents
+                                                .getRenderWidgetHostView()
+                                                .onViewportInsetBottomChanged();
+                                    }
+                                }
                             },
                             containerView);
             mRendererPriority = RendererPriority.HIGH;
@@ -1591,7 +1601,10 @@ public class AwContents implements SmartClipProvider {
         mWindowAndroid = getWindowAndroid(mContext);
         mViewAndroidDelegate =
                 new AwViewAndroidDelegate(
-                        mContainerView, mContentsClient, mScrollOffsetManager, mWebContents);
+                        mContainerView,
+                        mContentsClient,
+                        mScrollOffsetManager,
+                        mDisplayCutoutController);
         mWebContentsInternalsHolder = new WebContentsInternalsHolder(this);
         AutofillSelectionActionMenuDelegate selectionActionMenuDelegate =
                 SelectionActionMenuDelegateProvider.getSelectionActionMenuDelegate();
