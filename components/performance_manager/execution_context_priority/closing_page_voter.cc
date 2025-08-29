@@ -30,40 +30,11 @@ const execution_context::ExecutionContext* GetExecutionContext(
 const char ClosingPageVoter::kPageIsClosingReason[] = "Page is closing.";
 
 ClosingPageVoter::ClosingPageVoter() = default;
-
 ClosingPageVoter::~ClosingPageVoter() = default;
 
-void ClosingPageVoter::InitializeOnGraph(Graph* graph,
-                                         VotingChannel voting_channel) {
-  voting_channel_ = std::move(voting_channel);
-  graph->AddPageNodeObserver(this);
-}
-
-void ClosingPageVoter::TearDownOnGraph(Graph* graph) {
-  // Invalidate all remaining votes before resetting the channel.
-  for (const auto& vote : active_votes_) {
-    voting_channel_.InvalidateVote(vote.second);
-  }
-  active_votes_.clear();
-
-  graph->RemovePageNodeObserver(this);
-  voting_channel_.Reset();
-}
-
-void ClosingPageVoter::OnBeforePageNodeAdded(const PageNode* page_node) {
-  CHECK(!page_node->IsClosing(), base::NotFatalUntil::M145);
-}
-
-void ClosingPageVoter::OnBeforePageNodeRemoved(const PageNode* page_node) {
-  auto it = active_votes_.find(page_node);
-  if (it != active_votes_.end()) {
-    voting_channel_.InvalidateVote(it->second);
-    active_votes_.erase(it);
-  }
-}
-
-void ClosingPageVoter::OnIsClosingChanged(const PageNode* page_node) {
-  if (page_node->IsClosing()) {
+void ClosingPageVoter::SetPageIsClosing(const PageNode* page_node,
+                                        bool is_closing) {
+  if (is_closing) {
     if (const auto* ec = GetExecutionContext(page_node)) {
       voting_channel_.SubmitVote(
           ec, Vote(base::TaskPriority::USER_BLOCKING, kPageIsClosingReason));
@@ -77,6 +48,25 @@ void ClosingPageVoter::OnIsClosingChanged(const PageNode* page_node) {
       voting_channel_.InvalidateVote(it->second);
       active_votes_.erase(it);
     }
+  }
+}
+
+void ClosingPageVoter::InitializeOnGraph(Graph* graph,
+                                         VotingChannel voting_channel) {
+  voting_channel_ = std::move(voting_channel);
+  graph->AddPageNodeObserver(this);
+}
+
+void ClosingPageVoter::TearDownOnGraph(Graph* graph) {
+  graph->RemovePageNodeObserver(this);
+  voting_channel_.Reset();
+}
+
+void ClosingPageVoter::OnBeforePageNodeRemoved(const PageNode* page_node) {
+  auto it = active_votes_.find(page_node);
+  if (it != active_votes_.end()) {
+    voting_channel_.InvalidateVote(it->second);
+    active_votes_.erase(it);
   }
 }
 

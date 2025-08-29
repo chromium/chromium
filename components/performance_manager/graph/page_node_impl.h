@@ -86,7 +86,6 @@ class PageNodeImpl
   PageType GetType() const override;
   bool IsFocused() const override;
   bool IsVisible() const override;
-  bool IsClosing() const override;
   base::TimeTicks GetLastVisibilityChangeTime() const override;
   bool IsAudible() const override;
   std::optional<base::TimeDelta> GetTimeSinceLastAudibleChange() const override;
@@ -125,7 +124,6 @@ class PageNodeImpl
   void SetType(PageType type);
   void SetIsFocused(bool is_focused);
   void SetIsVisible(bool is_visible);
-  void SetIsClosing(bool is_closing);
   void SetIsAudible(bool is_audible);
   void SetHasPictureInPicture(bool has_picture_in_picture);
   void SetLoadingState(LoadingState loading_state);
@@ -350,11 +348,6 @@ class PageNodeImpl
                                           &PageNodeObserver::OnIsVisibleChanged,
                                           TracedWrapper<bool>>
       is_visible_ GUARDED_BY_CONTEXT(sequence_checker_);
-  // Whether or not the page is closing. Driven by browser instrumentation.
-  // Initialized on construction.
-  ObservedProperty::NotifiesOnlyOnChanges<bool,
-                                          &PageNodeObserver::OnIsClosingChanged>
-      is_closing_ GUARDED_BY_CONTEXT(sequence_checker_){false};
   // Whether or not the page is audible. Driven by browser instrumentation.
   // Initialized on construction.
   ObservedProperty::NotifiesOnlyOnChanges<bool,

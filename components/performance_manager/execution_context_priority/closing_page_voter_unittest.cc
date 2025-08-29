@@ -47,12 +47,8 @@ class ClosingPageVoterTest : public GraphTestHarness {
     Super::TearDown();
   }
 
-  // Exposes the DummyVoteObserver to validate expectations.
-  const DummyVoteObserver& observer() const { return observer_; }
-
   VoterId voter_id() const { return closing_page_voter_.voter_id(); }
 
- private:
   DummyVoteObserver observer_;
   ClosingPageVoter closing_page_voter_;
 };
@@ -67,23 +63,23 @@ TEST_F(ClosingPageVoterTest, VoteWhenClosing) {
   auto* main_frame_node = mock_graph.frame.get();
 
   // No vote initially.
-  EXPECT_EQ(observer().GetVoteCount(), 0u);
+  EXPECT_EQ(observer_.GetVoteCount(), 0u);
   EXPECT_FALSE(
-      observer().HasVote(voter_id(), GetExecutionContext(main_frame_node)));
+      observer_.HasVote(voter_id(), GetExecutionContext(main_frame_node)));
 
   // Set to closing, expect a USER_BLOCKING vote.
-  page_node->SetIsClosing(true);
-  EXPECT_EQ(observer().GetVoteCount(), 1u);
-  EXPECT_TRUE(observer().HasVote(voter_id(),
-                                 GetExecutionContext(main_frame_node),
-                                 base::TaskPriority::USER_BLOCKING,
-                                 ClosingPageVoter::kPageIsClosingReason));
+  closing_page_voter_.SetPageIsClosing(page_node, true);
+  EXPECT_EQ(observer_.GetVoteCount(), 1u);
+  EXPECT_TRUE(observer_.HasVote(voter_id(),
+                                GetExecutionContext(main_frame_node),
+                                base::TaskPriority::USER_BLOCKING,
+                                ClosingPageVoter::kPageIsClosingReason));
 
   // Set back to not closing, expect the vote to be invalidated.
-  page_node->SetIsClosing(false);
-  EXPECT_EQ(observer().GetVoteCount(), 0u);
+  closing_page_voter_.SetPageIsClosing(page_node, false);
+  EXPECT_EQ(observer_.GetVoteCount(), 0u);
   EXPECT_FALSE(
-      observer().HasVote(voter_id(), GetExecutionContext(main_frame_node)));
+      observer_.HasVote(voter_id(), GetExecutionContext(main_frame_node)));
 }
 
 // Tests that the vote is invalidated when the page node is removed.
@@ -94,15 +90,15 @@ TEST_F(ClosingPageVoterTest, VoteInvalidatedOnRemoval) {
   auto* main_frame_node = mock_graph->frame.get();
 
   // Set to closing and verify the vote exists.
-  page_node->SetIsClosing(true);
-  EXPECT_EQ(observer().GetVoteCount(), 1u);
+  closing_page_voter_.SetPageIsClosing(page_node, true);
+  EXPECT_EQ(observer_.GetVoteCount(), 1u);
   EXPECT_TRUE(
-      observer().HasVote(voter_id(), GetExecutionContext(main_frame_node)));
+      observer_.HasVote(voter_id(), GetExecutionContext(main_frame_node)));
 
   // Reset the graph, which deletes the nodes. The voter should invalidate its
   // vote in OnBeforePageNodeRemoved.
   mock_graph.reset();
-  EXPECT_EQ(observer().GetVoteCount(), 0u);
+  EXPECT_EQ(observer_.GetVoteCount(), 0u);
 }
 
 }  // namespace performance_manager::execution_context_priority

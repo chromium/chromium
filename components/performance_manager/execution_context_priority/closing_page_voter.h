@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_CLOSING_PAGE_VOTER_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_CLOSING_PAGE_VOTER_H_
 
-#include "base/containers/flat_map.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/execution_context_priority/priority_voting_system.h"
+#include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/voting/voting.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -19,7 +19,9 @@ class ExecutionContext;
 namespace performance_manager::execution_context_priority {
 
 // This voter boosts the priority of a page that is closing.
-class ClosingPageVoter : public PriorityVoter, public PageNodeObserver {
+class ClosingPageVoter : public PriorityVoter,
+                         public PageNodeObserver,
+                         public GraphRegisteredImpl<ClosingPageVoter> {
  public:
   static const char kPageIsClosingReason[];
 
@@ -29,14 +31,15 @@ class ClosingPageVoter : public PriorityVoter, public PageNodeObserver {
   ClosingPageVoter(const ClosingPageVoter&) = delete;
   ClosingPageVoter& operator=(const ClosingPageVoter&) = delete;
 
+  // Sets the page's closing state and adjusts priority votes accordingly.
+  void SetPageIsClosing(const PageNode* page_node, bool is_closing);
+
   // PriorityVoter implementation:
   void InitializeOnGraph(Graph* graph, VotingChannel voting_channel) override;
   void TearDownOnGraph(Graph* graph) override;
 
   // PageNodeObserver implementation:
-  void OnBeforePageNodeAdded(const PageNode* page_node) override;
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;
-  void OnIsClosingChanged(const PageNode* page_node) override;
 
   VoterId voter_id() const { return voting_channel_.voter_id(); }
 
