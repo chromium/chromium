@@ -178,20 +178,14 @@ class FragmentTreeDumper {
       return;
     }
 
-    if (const auto* line_box = DynamicTo<PhysicalLineBoxFragment>(fragment)) {
+    if (fragment->IsLineBox()) {
       if (flags_ & PhysicalFragment::DumpType) {
         builder_->Append("LineBox");
         has_content = true;
       }
       has_content = AppendOffsetAndSize(fragment, fragment_offset, has_content);
       builder_->Append("\n");
-
-      if (flags_ & PhysicalFragment::DumpSubtree) {
-        for (auto& child : line_box->Children()) {
-          Append(child.get(), child.Offset(), indent + 2);
-        }
-        return;
-      }
+      return;
     }
 
     if (flags_ & PhysicalFragment::DumpType) {
