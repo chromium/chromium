@@ -190,8 +190,9 @@ import "chrome/enterprise_companion/mojom/policy_fetch_reason.mojom";
     kAllowed,
   };
 
-  // Update the `UpdateService::Result` `enum` in `update_service.h` when adding
-  // new values.
+  // Values posted by the completion `callback` as a result of the
+  // non-blocking invocation of the service functions. These values are not
+  // present in the telemetry pings.
   // Next version: 2
   [Stable, Extensible]
   enum Result {
