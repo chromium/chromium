@@ -163,7 +163,7 @@ class CONTENT_EXPORT SiteInstance : public base::RefCounted<SiteInstance> {
   //   derived from the origin, it only contains the scheme and the eTLD + 1,
   //   i.e. an origin with the host "deeply.nested.subdomain.example.com"
   //   corresponds to a site URL with the host "example.com".
-  virtual const GURL& GetSiteURL() = 0;
+  virtual const GURL& GetSiteURL() const = 0;
 
   // Get the StoragePartitionConfig used by this SiteInstance.
   virtual const StoragePartitionConfig& GetStoragePartitionConfig() = 0;

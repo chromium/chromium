@@ -779,7 +779,7 @@ SiteInstanceImpl::GetLastProcessAssignmentOutcome() {
   return process_assignment_;
 }
 
-const GURL& SiteInstanceImpl::GetSiteURL() {
+const GURL& SiteInstanceImpl::GetSiteURL() const {
   return site_info_.site_url();
 }
 

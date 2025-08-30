@@ -1423,16 +1423,10 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
   safe_area_insets_host_ = SafeAreaInsetsHost::Create(this);
 #endif
 
-  ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForWeb();
+  auto* const native_theme = ui::NativeTheme::GetInstanceForWeb();
   native_theme_observation_.Observe(native_theme);
   slow_web_preference_cache_observation_.Observe(
       SlowWebPreferenceCache::GetInstance());
-  using_dark_colors_ = native_theme->ShouldUseDarkColors();
-  in_forced_colors_ = native_theme->InForcedColorsMode();
-  preferred_color_scheme_ = native_theme->GetPreferredColorScheme();
-  preferred_contrast_ = native_theme->GetPreferredContrast();
-  prefers_reduced_transparency_ = native_theme->GetPrefersReducedTransparency();
-  inverted_colors_ = native_theme->GetInvertedColors();
   renderer_preferences_.caret_blink_interval =
       native_theme->GetCaretBlinkInterval();
 #if BUILDFLAG(IS_CHROMEOS)
@@ -3700,6 +3694,10 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences(
        gfx::Animation::ScrollAnimationsEnabledBySystem());
 
   prefs.prefers_reduced_motion = gfx::Animation::PrefersReducedMotion();
+
+  const auto* const theme = ui::NativeTheme::GetInstanceForWeb();
+  prefers_reduced_transparency_ = theme->GetPrefersReducedTransparency();
+  inverted_colors_ = theme->GetInvertedColors();
   prefs.prefers_reduced_transparency = prefers_reduced_transparency_;
   prefs.inverted_colors = inverted_colors_;
 
@@ -11597,59 +11595,39 @@ void WebContentsImpl::SetVisibilityForChildViews(bool visible) {
   GetPrimaryMainFrame()->SetVisibilityForChildViews(visible);
 }
 
-void WebContentsImpl::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
-  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::OnNativeThemeUpdated");
-  DCHECK(native_theme_observation_.IsObservingSource(observed_theme));
-
-  const bool using_dark_colors = observed_theme->ShouldUseDarkColors();
-  const bool in_forced_colors = observed_theme->InForcedColorsMode();
-  const ui::NativeTheme::PreferredColorScheme preferred_color_scheme =
-      observed_theme->GetPreferredColorScheme();
-  const ui::NativeTheme::PreferredContrast preferred_contrast =
-      observed_theme->GetPreferredContrast();
-  const bool prefers_reduced_transparency =
-      observed_theme->GetPrefersReducedTransparency();
-  const bool inverted_colors = observed_theme->GetInvertedColors();
-  const base::TimeDelta caret_blink_interval =
-      observed_theme->GetCaretBlinkInterval();
-#if BUILDFLAG(IS_CHROMEOS)
-  const bool use_overlay_scrollbar = observed_theme->use_overlay_scrollbar();
-#endif
-  bool preferences_changed = false;
-
-  if (using_dark_colors_ != using_dark_colors) {
-    using_dark_colors_ = using_dark_colors;
-    preferences_changed = true;
-  }
-  if (in_forced_colors_ != in_forced_colors) {
-    in_forced_colors_ = in_forced_colors;
-    preferences_changed = true;
-  }
-  if (preferred_color_scheme_ != preferred_color_scheme) {
-    preferred_color_scheme_ = preferred_color_scheme;
-    preferences_changed = true;
-  }
-  if (preferred_contrast_ != preferred_contrast) {
-    preferred_contrast_ = preferred_contrast;
-    preferences_changed = true;
-  }
-  if (prefers_reduced_transparency_ != prefers_reduced_transparency) {
-    prefers_reduced_transparency_ = prefers_reduced_transparency;
-    preferences_changed = true;
-  }
-  if (inverted_colors_ != inverted_colors) {
-    inverted_colors_ = inverted_colors;
-    preferences_changed = true;
+void WebContentsImpl::HandleColorRelatedStateChanges() {
+  if (blink::ColorProviderColorMaps color_maps = GetColorProviderColorMaps();
+      color_maps_ != color_maps) {
+    color_maps_.swap(color_maps);
+    ExecutePageBroadcastMethodForAllPages([this](RenderViewHostImpl* rvh) {
+      if (auto& broadcast = rvh->GetAssociatedPageBroadcast()) {
+        broadcast->UpdateColorProviders(color_maps_);
+      }
+    });
   }
 
-  if (preferences_changed) {
+  if (const auto* const theme = ui::NativeTheme::GetInstanceForWeb();
+      prefers_reduced_transparency_ != theme->GetPrefersReducedTransparency() ||
+      inverted_colors_ != theme->GetInvertedColors() ||
+      GetContentClient()
+          ->browser()
+          ->WebPreferencesNeedUpdateForColorRelatedStateChanges(
+              *this, *GetPrimaryMainFrame()->GetSiteInstance())) {
     NotifyPreferencesChanged();
   }
+}
 
+void WebContentsImpl::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
+  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::OnNativeThemeUpdated");
+  DCHECK_EQ(observed_theme, ui::NativeTheme::GetInstanceForWeb());
+
+  HandleColorRelatedStateChanges();
+
+  const auto caret_blink_interval = observed_theme->GetCaretBlinkInterval();
+#if BUILDFLAG(IS_CHROMEOS)
+  const auto use_overlay_scrollbar = observed_theme->use_overlay_scrollbar();
+#endif
   bool renderer_preference_changed = false;
-  // Only caret blink interval from NativeTheme impacts
-  // blink::RendererPreferences, which are not synced in
-  // NotifyPreferencesChanged(). Sync these if the interval has changed.
   if (renderer_preferences_.caret_blink_interval != caret_blink_interval) {
     renderer_preferences_.caret_blink_interval = caret_blink_interval;
     renderer_preference_changed = true;
@@ -11675,32 +11653,14 @@ void WebContentsImpl::OnColorProviderChanged() {
   // observed source being reset. If this is the case fallback to the default
   // source.
   if (!GetColorProviderSource()) {
+    // This will synchronously call `OnColorProviderChanged()` again.
     SetColorProviderSource(DefaultColorProviderSource::GetInstance());
     return;
   }
 
-  blink::ColorProviderColorMaps color_map = GetColorProviderColorMaps();
-  ExecutePageBroadcastMethodForAllPages([&color_map](RenderViewHostImpl* rvh) {
-    if (auto& broadcast = rvh->GetAssociatedPageBroadcast()) {
-      broadcast->UpdateColorProviders(color_map);
-    }
-  });
-
   observers_.NotifyObservers(&WebContentsObserver::OnColorProviderChanged);
 
-  // Web preferences may change in response to events such as
-  // OnNativeThemeUpdated(). However web preferences may also depend on
-  // ColorProvider state and the associated ColorProvider may change
-  // independently of the native theme. Ensure we propagate web preferences here
-  // to cover this case.
-  // OnColorProviderChanged() can be emitted during the WebContentsImpl's
-  // constructor in response to setting the ColorProviderSource. In this case
-  // Init() will not yet have been called and the current frame host will not be
-  // defined, so we must guard against this here.
-  // TODO(tluk): There may be a more appropriate way to identify this condition.
-  if (GetRenderManager()->current_frame_host()) {
-    NotifyPreferencesChanged();
-  }
+  HandleColorRelatedStateChanges();
 }
 
 const ui::ColorProvider& WebContentsImpl::GetColorProvider() const {

@@ -382,32 +382,48 @@ class TestColorProviderSource : public ui::ColorProviderSource {
  public:
   TestColorProviderSource() = default;
 
-  const ui::ColorProvider* GetColorProvider() const override {
-    return &provider_;
-  }
-
+  // ui::ColorProviderSource:
+  const ui::ColorProvider* GetColorProvider() const override;
   ui::RendererColorMap GetRendererColorMap(
       ui::ColorProviderKey::ColorMode color_mode,
-      ui::ColorProviderKey::ForcedColors forced_colors) const override {
-    if (forced_colors == ui::ColorProviderKey::ForcedColors::kActive) {
-      return forced_colors_map;
-    }
-    return color_mode == ui::ColorProviderKey::ColorMode::kLight ? light_colors
-                                                                 : dark_colors;
-  }
+      ui::ColorProviderKey::ForcedColors forced_colors) const override;
+  ui::ColorProviderKey GetColorProviderKey() const override;
 
-  ui::ColorProviderKey GetColorProviderKey() const override { return key_; }
+  // Swaps the light and dark maps.
+  void SwapMaps();
 
  private:
   ui::ColorProvider provider_;
   ui::ColorProviderKey key_;
-  const ui::RendererColorMap light_colors{
+  ui::RendererColorMap light_colors_{
       {color::mojom::RendererColorId::kColorMenuBackground, SK_ColorWHITE}};
-  const ui::RendererColorMap dark_colors{
+  ui::RendererColorMap dark_colors_{
       {color::mojom::RendererColorId::kColorMenuBackground, SK_ColorBLACK}};
-  const ui::RendererColorMap forced_colors_map{
+  const ui::RendererColorMap system_colors_{
       {color::mojom::RendererColorId::kColorMenuBackground, SK_ColorCYAN}};
 };
+
+const ui::ColorProvider* TestColorProviderSource::GetColorProvider() const {
+  return &provider_;
+}
+
+ui::RendererColorMap TestColorProviderSource::GetRendererColorMap(
+    ui::ColorProviderKey::ColorMode color_mode,
+    ui::ColorProviderKey::ForcedColors forced_colors) const {
+  if (forced_colors == ui::ColorProviderKey::ForcedColors::kActive) {
+    return system_colors_;
+  }
+  return color_mode == ui::ColorProviderKey::ColorMode::kLight ? light_colors_
+                                                               : dark_colors_;
+}
+
+ui::ColorProviderKey TestColorProviderSource::GetColorProviderKey() const {
+  return key_;
+}
+
+void TestColorProviderSource::SwapMaps() {
+  light_colors_.swap(dark_colors_);
+}
 
 class MockNetworkContext : public network::TestNetworkContext {
  public:
@@ -3470,15 +3486,28 @@ TEST_F(WebContentsImplTest, OnColorProviderChangedTriggersPageBroadcast) {
   testing::NiceMock<MockPageBroadcast> mock_page_broadcast(
       broadcast_remote.BindNewEndpointAndPassDedicatedReceiver());
   contents()->GetRenderViewHost()->BindPageBroadcast(broadcast_remote.Unbind());
+  blink::ColorProviderColorMaps color_maps =
+      contents()->GetColorProviderColorMaps();
+  mock_page_broadcast.FlushForTesting();
 
+  // Set a new source, which should broadcast a change.
+  color_maps.light_colors_map = color_provider_source.GetRendererColorMap(
+      ui::ColorProviderKey::ColorMode::kLight,
+      ui::ColorProviderKey::ForcedColors::kNone);
+  color_maps.dark_colors_map = color_provider_source.GetRendererColorMap(
+      ui::ColorProviderKey::ColorMode::kDark,
+      ui::ColorProviderKey::ForcedColors::kNone);
+  EXPECT_CALL(mock_page_broadcast, UpdateColorProviders(color_maps));
   contents()->SetColorProviderSource(&color_provider_source);
-  const auto color_provider_colors = contents()->GetColorProviderColorMaps();
-  color_provider_source.NotifyColorProviderChanged();
+  mock_page_broadcast.FlushForTesting();
+  ::testing::Mock::VerifyAndClearExpectations(&mock_page_broadcast);
 
-  // The page broadcast should have been called twice. Once when first set and
-  // again when the source notified of a ColorProvider change.
-  EXPECT_CALL(mock_page_broadcast, UpdateColorProviders(color_provider_colors))
-      .Times(2);
+  // Change something, then notify, which should broadcast another change. (If
+  // nothing has changed, the broadcast won't occur.)
+  color_maps.light_colors_map.swap(color_maps.dark_colors_map);
+  EXPECT_CALL(mock_page_broadcast, UpdateColorProviders(color_maps));
+  color_provider_source.SwapMaps();
+  color_provider_source.NotifyColorProviderChanged();
   mock_page_broadcast.FlushForTesting();
 }
 

@@ -549,6 +549,12 @@ bool ContentBrowserClient::OverrideWebPreferencesAfterNavigation(
   return false;
 }
 
+bool ContentBrowserClient::WebPreferencesNeedUpdateForColorRelatedStateChanges(
+    WebContents& web_contents,
+    const SiteInstance& main_frame_site) const {
+  return false;
+}
+
 bool ContentBrowserClient::IsDataSaverEnabled(BrowserContext* context) {
   DCHECK(context);
   return false;

@@ -72,6 +72,7 @@
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
+#include "third_party/blink/public/common/page/color_provider_color_maps.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom.h"
@@ -95,10 +96,8 @@
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
-#include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_source_observer.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -133,7 +132,8 @@ class InterfaceProvider;
 
 namespace ui {
 struct AXUpdatesAndEvents;
-}
+class NativeTheme;
+}  // namespace ui
 
 namespace content {
 class JavaScriptDialogDismissNotifier;
@@ -2082,6 +2082,11 @@ class CONTENT_EXPORT WebContentsImpl
   // always return a valid ColorProvider instance.
   const ui::ColorProvider& GetColorProvider() const override;
 
+  // Called whenever color-related state may have changed, e.g. the
+  // `NativeTheme` or `ColorProviderSource` are updated. Updates color maps
+  // and/or calls `NotifyPreferencesChanged()` as needed.
+  void HandleColorRelatedStateChanges();
+
   // implements SlowWebPreferenceCacheObserver
   void OnSlowWebPreferenceChanged() override;
 
@@ -2621,14 +2626,9 @@ class CONTENT_EXPORT WebContentsImpl
                           SlowWebPreferenceCacheObserver>
       slow_web_preference_cache_observation_{this};
 
-  bool using_dark_colors_ = false;
-  bool in_forced_colors_ = false;
-  ui::NativeTheme::PreferredColorScheme preferred_color_scheme_ =
-      ui::NativeTheme::PreferredColorScheme::kLight;
-  ui::NativeTheme::PreferredContrast preferred_contrast_ =
-      ui::NativeTheme::PreferredContrast::kNoPreference;
   bool prefers_reduced_transparency_ = false;
   bool inverted_colors_ = false;
+  blink::ColorProviderColorMaps color_maps_;
 
   // Tracks clients who want to be notified when a JavaScript dialog is
   // dismissed.
