@@ -1078,6 +1078,12 @@ org.es
 
 // et : https://www.iana.org/domains/root/db/et.html
 et
+
+// eth : CHROMIUM - Added for Ethereum Name Service (ENS) support
+eth
+
+// dapp : CHROMIUM - Added for decentralized application domain support
+dapp
 biz.et
 com.et
 edu.et
