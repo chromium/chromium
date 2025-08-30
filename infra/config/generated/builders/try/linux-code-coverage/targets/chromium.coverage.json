@@ -1713,6 +1713,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//testing:fuchsia_pytype/",
+        "module_scheme": "single",
         "name": "fuchsia_pytype",
         "resultdb": {
           "enable": true,

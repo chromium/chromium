@@ -1549,6 +1549,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//third_party/blink/tools:blink_pytype/",
+        "module_scheme": "single",
         "name": "blink_pytype",
         "resultdb": {
           "enable": true,
@@ -1861,6 +1862,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//testing:fuchsia_pytype/",
+        "module_scheme": "single",
         "name": "fuchsia_pytype",
         "resultdb": {
           "enable": true,
@@ -1881,6 +1883,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//build:gold_common_pytype/",
+        "module_scheme": "single",
         "name": "gold_common_pytype",
         "resultdb": {
           "enable": true,
@@ -1901,6 +1904,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//content/test:gpu_pytype/",
+        "module_scheme": "single",
         "name": "gpu_pytype",
         "resultdb": {
           "enable": true,
@@ -2276,6 +2280,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//testing:testing_pytype/",
+        "module_scheme": "single",
         "name": "testing_pytype",
         "resultdb": {
           "enable": true,
