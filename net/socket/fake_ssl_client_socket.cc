@@ -16,7 +16,7 @@
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_info.h"
-#include "net/test/test_certificate_data.h"
+#include "net/test/test_certificate_data.h"  // nogncheck
 
 namespace net {
 

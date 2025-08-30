@@ -8500,6 +8500,9 @@ static_library("browser") {
       "//third_party/search_engines_data:search_engines_scaled_resources_grit",
     ]
   }
+
+  # DappNet service integration
+  deps += [ "//chrome/browser/dappnet:dappnet" ]
 }
 
 # These are the dependencies for the "browser" target that are outside of

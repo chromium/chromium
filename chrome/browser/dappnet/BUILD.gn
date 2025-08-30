@@ -1,0 +1,13 @@
+import("//build/config/features.gni")
+
+source_set("dappnet") {
+  sources = [
+    "dappnet_service_launcher.cc",
+    "dappnet_service_launcher.h",
+  ]
+
+  deps = [
+    "//base",
+    "//build:branding_buildflags",
+  ]
+}

@@ -35,6 +35,7 @@
 #include "chrome/browser/browser_process_impl.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/component_updater/registration.h"
+#include "chrome/browser/dappnet/dappnet_service_launcher.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/first_run/first_run_features.h"
 #include "chrome/browser/language/url_language_histogram_factory.h"
@@ -1335,6 +1336,9 @@ void ChromeBrowserMainParts::PreBrowserStart() {
   for (auto& chrome_extra_part : chrome_extra_parts_)
     chrome_extra_part->PreBrowserStart();
 
+  // Start DappNet service early so it's available before user can type domains
+  chrome::GetDappNetServiceLauncher()->Start();
+
 #if !BUILDFLAG(IS_ANDROID)
   // Start the tab manager here so that we give the most amount of time for the
   // other services to start up before we start adjusting the oom priority.
@@ -1759,6 +1763,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   if (result_code_ <= 0)
     RecordBrowserStartupTime();
 
+
   return result_code_;
 }
 
@@ -1818,6 +1823,7 @@ void ChromeBrowserMainParts::PostMainMessageLoopRun() {
   // Android specific MessageLoop
   NOTREACHED();
 #else
+
   // Shutdown the UpgradeDetector here before `ChromeBrowserMainPartsAsh`
   // disconnects DBus services in its PostDestroyThreads.
   UpgradeDetector::GetInstance()->Shutdown();
@@ -1839,6 +1845,9 @@ void ChromeBrowserMainParts::PostMainMessageLoopRun() {
   }
 
   web_usb_detector_.reset();
+
+  // Stop DappNet service during shutdown
+  chrome::GetDappNetServiceLauncher()->Stop();
 
   for (auto& chrome_extra_part : chrome_extra_parts_)
     chrome_extra_part->PostMainMessageLoopRun();
