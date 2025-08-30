@@ -4,6 +4,8 @@
 
 static_library("browser") {
   sources = [
+    "walletable_pass_ingestion_controller.cc",
+    "walletable_pass_ingestion_controller.h",
     "walletable_pass_service.cc",
     "walletable_pass_service.h",
   ]
@@ -11,12 +13,16 @@ static_library("browser") {
     "//base",
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
+    "//url",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "walletable_pass_service_unittest.cc" ]
+  sources = [
+    "walletable_pass_ingestion_controller_unittest.cc",
+    "walletable_pass_service_unittest.cc",
+  ]
   deps = [
     ":browser",
     "//base",

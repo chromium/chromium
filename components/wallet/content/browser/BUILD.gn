@@ -4,8 +4,11 @@
 
 static_library("browser") {
   sources = [
-    "walletable_pass_controller.cc",
-    "walletable_pass_controller.h",
+    "content_walletable_pass_ingestion_controller.cc",
+    "content_walletable_pass_ingestion_controller.h",
   ]
-  deps = [ "//content/public/browser" ]
+  deps = [
+    "//components/wallet/core/browser",
+    "//content/public/browser",
+  ]
 }

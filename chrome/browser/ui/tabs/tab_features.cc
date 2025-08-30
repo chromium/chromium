@@ -22,6 +22,8 @@
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/loader/from_gws_navigation_and_keep_alive_request_observer.h"
 #include "chrome/browser/net/qwac_web_contents_observer.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/privacy_sandbox/incognito/privacy_sandbox_incognito_tab_observer.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_tab_observer.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
@@ -89,6 +91,8 @@
 #include "components/permissions/permission_indicators_tab_data.h"
 #include "components/security_interstitials/core/features.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/wallet/content/browser/content_walletable_pass_ingestion_controller.h"
+#include "components/wallet/core/common/wallet_features.h"
 #include "net/base/features.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 
@@ -365,6 +369,14 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     BUILDFLAG(IS_CHROMEOS)
   inactive_window_mouse_event_controller_ =
       std::make_unique<InactiveWindowMouseEventController>();
+
+  if (base::FeatureList::IsEnabled(wallet::kWalletablePassDetection)) {
+    if (auto* opt_guide =
+            OptimizationGuideKeyedServiceFactory::GetForProfile(profile)) {
+      wallet::ContentWalletablePassIngestionController::CreateForWebContents(
+          tab.GetContents(), opt_guide);
+    }
+  }
 #endif
 
   if (base::FeatureList::IsEnabled(net::features::kVerifyQWACs)) {

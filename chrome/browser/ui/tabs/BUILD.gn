@@ -549,6 +549,8 @@ if (!is_android) {
       "//components/sync_sessions",
       "//components/tab_groups",
       "//components/tabs",
+      "//components/wallet/content/browser",
+      "//components/wallet/core/common:features",
       "//net",
       "//ui/base/unowned_user_data",
       "//ui/webui",
