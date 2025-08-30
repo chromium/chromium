@@ -81,6 +81,10 @@ class EntityTable : public WebDatabaseTable {
   // Returns true if removing the entity and then re-adding it is successful.
   bool AddOrUpdateEntityInstance(const EntityInstance& entity);
 
+  // Deletes all entities with record type `record_type`. Returns true on
+  // success.
+  bool DeleteEntityInstances(EntityInstance::RecordType record_type);
+
   // Returns true if removing the entity succeeded, even if there were zero or
   // multiple matches.
   bool RemoveEntityInstance(const EntityInstance::EntityId& guid);

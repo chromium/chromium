@@ -97,6 +97,31 @@ TEST_F(EntityTableTest, AddOrUpdateEntityInstance) {
   ASSERT_THAT(table().GetEntityInstances(), UnorderedElementsAre(pp, dl));
 }
 
+// Tests deleting entity instances by record_type.
+TEST_F(EntityTableTest, DeleteEntityInstancesByRecordType) {
+  EntityInstance pp = test::GetPassportEntityInstance();
+  EntityInstance dl = test::GetDriversLicenseEntityInstance();
+  EntityInstance wallet_vr = test::GetVehicleEntityInstance({
+      .guid = "00000000-0000-4000-8000-123000000000",
+      .record_type = EntityInstance::RecordType::kServerWallet,
+  });
+  EntityInstance local_vr = test::GetVehicleEntityInstance({
+      .guid = "00000000-0000-4000-8000-456000000000",
+      .record_type = EntityInstance::RecordType::kLocal,
+  });
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(pp));
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(dl));
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(wallet_vr));
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(local_vr));
+  ASSERT_THAT(table().GetEntityInstances(),
+              UnorderedElementsAre(pp, dl, wallet_vr, local_vr));
+  // Delete Wallet entity instances.
+  EXPECT_TRUE(
+      table().DeleteEntityInstances(EntityInstance::RecordType::kServerWallet));
+  EXPECT_THAT(table().GetEntityInstances(),
+              UnorderedElementsAre(pp, dl, local_vr));
+}
+
 // Tests removing individual entity instances.
 TEST_F(EntityTableTest, RemoveEntityInstance) {
   EntityInstance pp = test::GetPassportEntityInstance();

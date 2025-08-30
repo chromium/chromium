@@ -340,6 +340,15 @@ bool EntityTable::AddOrUpdateEntityInstance(const EntityInstance& entity) {
          AddEntityInstance(entity) && transaction.Commit();
 }
 
+bool EntityTable::DeleteEntityInstances(
+    EntityInstance::RecordType record_type) {
+  sql::Transaction transaction(db());
+  return transaction.Begin() &&
+         DeleteWhereColumnEq(db(), entities::kTableName, entities::kRecordType,
+                             static_cast<int>(record_type)) &&
+         transaction.Commit();
+}
+
 bool EntityTable::RemoveEntityInstance(const EntityInstance::EntityId& guid) {
   HandleTestSwitchesIfNeeded(db(), *this);
 
