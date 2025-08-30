@@ -250,7 +250,7 @@ public class ScrollDelegate {
         mReorderStartMargin = newStartMargin;
 
         // Do not update scroll for pinned tabs.
-        if (TabStripDragHandler.isDraggedTabPinned()) return;
+        if (TabStripDragHandler.isDraggedItemPinned()) return;
 
         // Adjusts the scrollOffSetLimit here, since the next update cycle (which accounts for the
         // new reorderStartMargin) will not yet have run.

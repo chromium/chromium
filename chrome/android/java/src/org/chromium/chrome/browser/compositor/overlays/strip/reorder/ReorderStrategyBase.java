@@ -245,7 +245,7 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
         float trailingMargin =
                 shouldHaveTrailingMargin
                         ? StripLayoutUtils.getHalfTabWidth(
-                                mTabWidthSupplier, TabStripDragHandler.isDraggedTabPinned())
+                                mTabWidthSupplier, TabStripDragHandler.isDraggedItemPinned())
                         : 0f;
         if (stripView.getTrailingMargin() == trailingMargin) return;
 

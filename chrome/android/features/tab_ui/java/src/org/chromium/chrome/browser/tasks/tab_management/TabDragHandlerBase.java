@@ -268,7 +268,7 @@ public abstract class TabDragHandlerBase implements View.OnDragListener, Destroy
                 .build();
     }
 
-    protected ChromeDropDataAndroid prepareMultiTabDropData(List<Tab> tabs) {
+    protected ChromeDropDataAndroid prepareMultiTabDropData(List<Tab> tabs, Tab primaryTab) {
         int windowId = TabWindowManagerSingleton.getInstance().getIdForWindow(getActivity());
         boolean allowDragToCreateInstance =
                 shouldAllowMultiTabDragToCreateInstance()
@@ -281,7 +281,7 @@ public abstract class TabDragHandlerBase implements View.OnDragListener, Destroy
         builder.withWindowId(windowId);
         // Reverse the order to preserve the order in the destination strip.
         Collections.reverse(tabs);
-        builder.withTabs(tabs);
+        builder.withTabs(tabs).withPrimaryTab(primaryTab);
         return builder.build();
     }
 

@@ -19,10 +19,12 @@ import java.util.List;
 @NullMarked
 public class ChromeMultiTabDropDataAndroid extends ChromeDropDataAndroid {
     public final @Nullable List<Tab> tabs;
+    public final @Nullable Tab primaryTab;
 
     ChromeMultiTabDropDataAndroid(Builder builder) {
         super(builder);
         tabs = builder.mTabs;
+        primaryTab = builder.mPrimaryTab;
         assert tabs != null;
     }
 
@@ -55,6 +57,7 @@ public class ChromeMultiTabDropDataAndroid extends ChromeDropDataAndroid {
     /** Builder for @{@link ChromeMultiTabDropDataAndroid} instance. */
     public static class Builder extends ChromeDropDataAndroid.Builder {
         private @Nullable List<Tab> mTabs;
+        private @Nullable Tab mPrimaryTab;
 
         /**
          * @param tabs to be set in clip data.
@@ -62,6 +65,15 @@ public class ChromeMultiTabDropDataAndroid extends ChromeDropDataAndroid {
          */
         public Builder withTabs(List<Tab> tabs) {
             mTabs = tabs;
+            return this;
+        }
+
+        /**
+         * @param primaryTab to be set in clip data.
+         * @return {@link ChromeMultiTabDropDataAndroid.Builder} instance.
+         */
+        public Builder withPrimaryTab(Tab primaryTab) {
+            mPrimaryTab = primaryTab;
             return this;
         }
 

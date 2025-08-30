@@ -102,9 +102,9 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
             float deltaX,
             @ReorderType int reorderType) {
         // 1. Adjust by a half tab-width so that we target the nearest tab gap.
-        boolean isDraggedTabPinned = TabStripDragHandler.isDraggedTabPinned();
+        boolean isDraggedItemPinned = TabStripDragHandler.isDraggedItemPinned();
         float adjustedXForDrop =
-                StripLayoutUtils.adjustXForTabDrop(endX, mTabWidthSupplier, isDraggedTabPinned);
+                StripLayoutUtils.adjustXForTabDrop(endX, mTabWidthSupplier, isDraggedItemPinned);
 
         // 2. Clear previous "interacting" view if inserting at the start of the strip.
         final float leftEdge;
@@ -124,10 +124,10 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
 
         if (inStartGap
                 && mInteractingView != null
-                && isDraggedTabPinned == isHoveredViewPinned(stripViews[0])) {
+                && isDraggedItemPinned == isHoveredViewPinned(stripViews[0])) {
             mScrollDelegate.setReorderStartMargin(
                     /* newStartMargin= */ StripLayoutUtils.getHalfTabWidth(
-                            mTabWidthSupplier, isDraggedTabPinned));
+                            mTabWidthSupplier, isDraggedItemPinned));
 
             mAnimationHost.finishAnimations();
             ArrayList<Animator> animationList = new ArrayList<>();
@@ -198,7 +198,7 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
     public boolean shouldAllowAutoScroll() {
         // Do not allow auto-scroll when a pinned tab is dragged over unpinned tabs; pinned tabs can
         // only be dropped into the pinned section.
-        return !TabStripDragHandler.isDraggedTabPinned();
+        return !TabStripDragHandler.isDraggedItemPinned();
     }
 
     /** Merges dropped tabs to interacting view's tab group, if one exists. */
@@ -274,7 +274,7 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
             StripLayoutTab[] stripTabs, StripLayoutView interactingView, boolean isInteracting) {
         if (!isInteracting) return false;
 
-        if (TabStripDragHandler.isDraggedTabPinned() != isHoveredViewPinned(interactingView)) {
+        if (TabStripDragHandler.isDraggedItemPinned() != isHoveredViewPinned(interactingView)) {
             return StripLayoutUtils.isLastPinnedTab(stripTabs, interactingView);
         }
 

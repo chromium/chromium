@@ -1873,7 +1873,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
             assert !url.isEmpty() : "URL is empty";
 
             Tab tab = processTabIntentAndLoadTab(intent, tabId, url, tabOpenType);
-            if (isPinned[i]) {
+            if (isPinned[i] && !tab.getIsPinned()) {
                 tabModel.pinTab(tab.getId());
             }
             tabs.add(tab);

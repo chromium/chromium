@@ -189,7 +189,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
             return false;
         }
 
-        ChromeDropDataAndroid dropData = prepareMultiTabDropData(tabsBeingDragged);
+        ChromeDropDataAndroid dropData = prepareMultiTabDropData(tabsBeingDragged, primaryTab);
 
         // Initialize drag shadow.
         initShadowView(dragSourceView);
@@ -480,7 +480,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         } else {
             // Reparent tabs at drop index.
             int tabIndex =
-                    helper.getTabIndexForTabDrop(dropEvent.getX() * mPxToDp, /* isPinned= */ false);
+                    helper.getTabIndexForTabDrop(dropEvent.getX() * mPxToDp, isDraggedItemPinned());
             mMultiInstanceManager.moveTabsToWindow(getActivity(), tabsBeingDragged, tabIndex);
             List<Integer> tabsBeingDraggedIds = new ArrayList<>();
             for (Tab tab : tabsBeingDragged) {
@@ -598,11 +598,16 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         return tab != null && !tab.getIsPinned();
     }
 
-    public static boolean isDraggedTabPinned() {
+    public static boolean isDraggedItemPinned() {
         @Nullable Tab tab =
                 ChromeDragDropUtils.getTabFromGlobalState(
                         getDragDropGlobalState(/* dragEvent= */ null));
-        return tab != null && tab.getIsPinned();
+        if (tab != null && tab.getIsPinned()) return true;
+
+        @Nullable Tab primaryTab =
+                ChromeDragDropUtils.getPrimaryTabFromGlobalState(
+                        getDragDropGlobalState(/* dragEvent= */ null));
+        return primaryTab != null && primaryTab.getIsPinned();
     }
 
     /**

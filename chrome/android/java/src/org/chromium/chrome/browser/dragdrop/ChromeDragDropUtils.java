@@ -156,6 +156,23 @@ public class ChromeDragDropUtils {
     }
 
     /**
+     * Retrieves the primary {@link Tab} from the global drag-and-drop state.
+     *
+     * @param globalState The {@link DragDropGlobalState} containing drag data.
+     * @return The primary {@link Tab} if available, otherwise {@code null}.
+     */
+    // TODO(crbug.com/441978847) Clean up this method to only allow pass a non-null `globalState`.
+    public static @Nullable Tab getPrimaryTabFromGlobalState(
+            @Nullable DragDropGlobalState globalState) {
+        // We should only attempt to access this while we know there's an active drag.
+        assert globalState != null : "Attempting to access dragged tabs with invalid drag state.";
+        if (globalState.getData() instanceof ChromeMultiTabDropDataAndroid data) {
+            return data.primaryTab;
+        }
+        return null;
+    }
+
+    /**
      * Retrieves a {@link Tab} from the global drag-and-drop state.
      *
      * @param globalState The {@link DragDropGlobalState} containing drag data.
