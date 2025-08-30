@@ -746,7 +746,8 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
 
     ChildProcessIdCountMap& counts_per_process = result->second;
     for (auto iter : counts_per_process) {
-      auto* host = RenderProcessHost::FromID(iter.first);
+      auto* host = static_cast<RenderProcessHostImpl*>(
+          RenderProcessHost::FromID(iter.first));
       if (!host) {
         // TODO(clamy): This shouldn't happen but we are getting reports from
         // the field that this is happening. We need to figure out why some
@@ -766,6 +767,12 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
       // Don't reuse processes that have high resource usage already.
       if (!IsBelowReuseResourceThresholds(host, site_instance,
                                           process_reuse_policy)) {
+        continue;
+      }
+
+      if (process_reuse_policy ==
+              ProcessReusePolicy::REUSE_PRERENDERING_PROCESS_FOR_MAIN_FRAME &&
+          !host->IsOnlyHostingPrerenderedFramesOrEmpty()) {
         continue;
       }
 
@@ -4909,7 +4916,6 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
 
   bool is_unmatched_service_worker = site_instance->is_for_service_worker();
   BrowserContext* browser_context = site_instance->GetBrowserContext();
-
   // First, attempt to reuse an existing RenderProcessHost if necessary.
   switch (process_reuse_policy) {
     case ProcessReusePolicy::PROCESS_PER_SITE: {
@@ -4934,6 +4940,9 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
         REUSE_PENDING_OR_COMMITTED_SITE_WITH_MAIN_FRAME_THRESHOLD: {
       CHECK(base::FeatureList::IsEnabled(
           features::kProcessPerSiteUpToMainFrameThreshold));
+      [[fallthrough]];
+    }
+    case ProcessReusePolicy::REUSE_PRERENDERING_PROCESS_FOR_MAIN_FRAME: {
       render_process_host = FindReusableProcessHostForSiteInstance(
           site_instance, process_reuse_policy);
       if (render_process_host) {

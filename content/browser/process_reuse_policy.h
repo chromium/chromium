@@ -37,6 +37,10 @@ enum class ProcessReusePolicy {
   // can host to a certain threshold.
   REUSE_PENDING_OR_COMMITTED_SITE_WITH_MAIN_FRAME_THRESHOLD,
 
+  // When used, this main frame's site will be rendered in a RenderProcessHost
+  // that is already in use for the site and hosting prerendered frames only.
+  REUSE_PRERENDERING_PROCESS_FOR_MAIN_FRAME,
+
   // In this mode, SiteInstances don't proactively reuse processes. An
   // existing process with an unmatched service worker for the site is reused
   // only for navigations, not for service workers. When the process limit has

@@ -232,8 +232,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kProcessPerSiteUpToMainFrameThreshold);
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kProcessPerSiteMainFrameThreshold;
 CONTENT_EXPORT extern const base::FeatureParam<bool>
-    kProcessPerSiteMainFrameAllowIPAndLocalhost;
-CONTENT_EXPORT extern const base::FeatureParam<bool>
     kProcessPerSiteMainFrameAllowDevToolsAttached;
 CONTENT_EXPORT extern const base::FeatureParam<double>
     kProcessPerSiteMainFrameSiteScalingFactor;

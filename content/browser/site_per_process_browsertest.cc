@@ -14514,12 +14514,22 @@ class SitePerProcessWithMainFrameThresholdLocalhostTest
       public ::testing::WithParamInterface<bool> {
  public:
   SitePerProcessWithMainFrameThresholdLocalhostTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kProcessPerSiteUpToMainFrameThreshold,
-        {{"ProcessPerSiteMainFrameThreshold",
-          base::StringPrintf("%zu", kDefaultThreshold)},
-         {"ProcessPerSiteMainFrameAllowIPAndLocalhost",
-          base::ToString(IsLocalhostAllowed())}});
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kProcessPerSiteUpToMainFrameThreshold,
+         {
+             {"ProcessPerSiteMainFrameThreshold",
+              base::StringPrintf("%zu", kDefaultThreshold)},
+         }}};
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (IsLocalhostAllowed()) {
+      enabled_features.emplace_back(base::test::FeatureRefAndParams(
+          features::kMainFrameProcessReuseAllowIPAndLocalhost, {}));
+    } else {
+      disabled_features.emplace_back(
+          features::kMainFrameProcessReuseAllowIPAndLocalhost);
+    }
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
   }
   ~SitePerProcessWithMainFrameThresholdLocalhostTest() override = default;
 

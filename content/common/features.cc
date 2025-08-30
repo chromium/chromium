@@ -416,6 +416,23 @@ BASE_FEATURE(kLocalNetworkAccessForFencedFrameNavigationsWarningOnly,
              "LocalNetworkAccessForFencedFrameNavigationsWarningOnly",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, allows the ReusePrerenderingProcessForMainFrames feature
+// and the ProcessPerSiteUpToMainFrameThreshold feature to reuse processes
+// even when DevTools was ever attached.
+// This allows developers to test the process sharing mode,
+// since DevTools normally disables it for the field trial participants.
+BASE_FEATURE(kMainFrameProcessReuseAllowDevToolsAttached,
+             "MainFrameProcessReuseAllowDevToolsAttached",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, allows the ReusePrerenderingProcessForMainFrames feature
+// and the ProcessPerSiteUpToMainFrameThreshold feature to reuse processes
+// even for IP and localhost pages.
+// These pages are common targets for devtools.
+BASE_FEATURE(kMainFrameProcessReuseAllowIPAndLocalhost,
+             "MainFrameProcessReuseAllowIPAndLocalhost",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If this feature is enabled, media-device enumerations use a cache that is
 // invalidated upon notifications sent by base::SystemMonitor. If disabled, the
 // cache is considered invalid on every enumeration request.
@@ -580,6 +597,12 @@ BASE_FEATURE(kReloadHiddenTabsWithCrashedSubframes,
 // This will be removed once this is launched.
 BASE_FEATURE(kReloadHiddenTabsWithActiveCrashedSubframes,
              "ReloadHiddenTabsWithActiveCrashedSubframes",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, try to reuse any same-site process that is hosting
+// only prerendered frames for main-frame navigations.
+BASE_FEATURE(kReusePrerenderingProcessForMainFrames,
+             "ReusePrerenderingProcessForMainFrames",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)

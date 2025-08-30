@@ -15666,4 +15666,73 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   EXPECT_TRUE(process1->IsOnlyHostingPrerenderedFramesOrEmpty());
 }
 
+class PrerenderProcessReuseBrowserTest : public PrerenderBrowserTest {
+ public:
+  PrerenderProcessReuseBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {features::kReusePrerenderingProcessForMainFrames},
+        {features::kProcessPerSiteUpToMainFrameThreshold});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrerenderProcessReuseBrowserTest,
+                       ReusePrerenderProcessInNavigation) {
+  // The test assumes site isolation. Otherwise the navigation will reuse the
+  // RFH and the RPH of the current active frame rather than the prerender ones.
+  if (!AreAllSitesIsolatedForTesting()) {
+    return;
+  }
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1. Navigate to an initial page.
+  const GURL initial_url =
+      embedded_test_server()->GetURL("b.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // 2. Prerender a cross-site page.
+  const GURL prerender_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  // The cross-site prerender page must be triggered by the browser.
+  std::unique_ptr<PrerenderHandle> prerender_handle1 =
+      AddEmbedderTriggeredPrerenderAsync(prerender_url);
+  prerender_helper()->WaitForPrerenderLoadCompletion(prerender_url);
+  FrameTreeNodeId prerender_host_id =
+      prerender_helper()->GetHostForUrl(prerender_url);
+  ASSERT_TRUE(prerender_host_id);
+  RenderProcessHostImpl* prerender_process =
+      static_cast<RenderProcessHostImpl*>(
+          GetProcessForPrerenderHost(prerender_host_id));
+  ASSERT_TRUE(prerender_process);
+  ASSERT_TRUE(prerender_process->IsOnlyHostingPrerenderedFramesOrEmpty());
+
+  // 3. Navigate to a page same site as the prerender page.
+  const GURL navigation_url =
+      embedded_test_server()->GetURL("a.test", "/title2.html");
+  EXPECT_TRUE(NavigateToURL(shell(), navigation_url));
+  RenderProcessHost* navigation_process = current_frame_host()->GetProcess();
+  EXPECT_EQ(navigation_process, prerender_process);
+
+  // 4. Create a second tab and navigation to the same site.
+  const GURL new_window_url =
+      embedded_test_server()->GetURL("a.test", "/red.html");
+  Shell* new_window_shell =
+      Shell::CreateNewWindow(shell()->web_contents()->GetBrowserContext(),
+                             initial_url, nullptr, gfx::Size());
+  EXPECT_TRUE(NavigateToURL(new_window_shell, navigation_url));
+  FrameTreeNode* new_window_root =
+      static_cast<WebContentsImpl*>(new_window_shell->web_contents())
+          ->GetPrimaryFrameTree()
+          .root();
+  RenderFrameHostImpl* new_window_rfh = new_window_root->current_frame_host();
+  RenderProcessHost* new_window_process = new_window_rfh->GetProcess();
+  // Since the prerender process is hosting both a prerendered page and the page
+  // for the original tab, we will create a new process for the new tab
+  // navigation.
+  ASSERT_TRUE(new_window_process);
+  EXPECT_NE(new_window_process, prerender_process);
+}
+
 }  // namespace content
