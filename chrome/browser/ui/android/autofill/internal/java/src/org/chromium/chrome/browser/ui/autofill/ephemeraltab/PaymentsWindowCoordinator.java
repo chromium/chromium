@@ -17,20 +17,32 @@ import org.chromium.url.GURL;
 
 /** The coordinator for triggering the Ephemeral Tab. */
 @NullMarked
-class PaymentsWindowCoordinator {
+class PaymentsWindowCoordinator implements EphemeralTabObserver {
     private final WebContents mWebContents;
+    private final PaymentsWindowBridge mPaymentsWindowBridge;
     private @Nullable EphemeralTabCoordinator mEphemeralTabCoordinator;
-    private @Nullable EphemeralTabObserver mEphemeralTabObserver;
 
-    /** Constructs a new {@code PaymentsWindowCoordinator} from the provided {@code WebContents}. */
-    PaymentsWindowCoordinator(WebContents webContents) {
+    /**
+     * Constructs a new {@code PaymentsWindowCoordinator} from the provided {@code WebContents} and
+     * {@code PaymentsWindowBridge}.
+     *
+     * @param webContents The {@code WebContents} of the tab in which the payments window will be
+     *     displayed.
+     * @param paymentsWindowBridge The {@code PaymentsWindowBridge} that facilitates communication
+     *     with the native payments logic.
+     */
+    PaymentsWindowCoordinator(WebContents webContents, PaymentsWindowBridge paymentsWindowBridge) {
         mWebContents = webContents;
+        mPaymentsWindowBridge = paymentsWindowBridge;
     }
 
     /**
      * Attempts to open an ephemeral tab; it involves obtaining the {@code WindowAndroid} from the
      * managed {@code WebContents} and using it to present the UI. It also adds {@code
      * EphemeralTabObserver} to listen URL navigation.
+     *
+     * @param url The URL to load in the new ephemeral tab.
+     * @param title The title to be displayed in the header of the ephemeral tab.
      */
     void openEphemeralTab(GURL url, String title) {
         assert mWebContents != null;
@@ -40,21 +52,7 @@ class PaymentsWindowCoordinator {
                 EphemeralTabCoordinatorSupplier.from(windowAndroid);
         if (supplier == null) return;
         mEphemeralTabCoordinator = supplier.get();
-        mEphemeralTabObserver =
-                new EphemeralTabObserver() {
-                    @Override
-                    public void onNavigationFinished(GURL clickedUrl) {
-                        // TODO(crbug.com/430575808): Notify AndroidPaymentsWindowManager of the URL
-                        // navigation to check for issuer flow completion.
-                    }
-
-                    @Override
-                    public void onWebContentsDestroyed() {
-                        // TODO(crbug.com/430575808): Notify AndroidPaymentsWindowManager when web
-                        // contents are destroyed and remove observer.
-                    }
-                };
-        mEphemeralTabCoordinator.addObserver(mEphemeralTabObserver);
+        mEphemeralTabCoordinator.addObserver(this);
         Profile profile = Profile.fromWebContents(mWebContents);
         assert profile != null;
         mEphemeralTabCoordinator.requestOpenSheet(
@@ -66,6 +64,21 @@ class PaymentsWindowCoordinator {
         if (mEphemeralTabCoordinator != null && mEphemeralTabCoordinator.isOpened()) {
             mEphemeralTabCoordinator.close();
         }
+    }
+
+    // EphemeralTabObserver:
+    @Override
+    public void onNavigationFinished(GURL clickedUrl) {
+        mPaymentsWindowBridge.onNavigationFinished(clickedUrl);
+    }
+
+    // EphemeralTabObserver:
+    @Override
+    public void onWebContentsDestroyed() {
+        if (mEphemeralTabCoordinator != null) {
+            mEphemeralTabCoordinator.removeObserver(this);
+        }
+        mPaymentsWindowBridge.onWebContentsDestroyed();
     }
 
     WebContents getWebContentsForTesting() {

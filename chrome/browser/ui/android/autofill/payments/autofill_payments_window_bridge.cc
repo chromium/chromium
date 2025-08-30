@@ -2,23 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/android/autofill/autofill_payments_window_bridge.h"
+#include "chrome/browser/ui/android/autofill/payments/autofill_payments_window_bridge.h"
+
+#include <string>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/check_deref.h"
 #include "chrome/browser/ui/android/autofill/internal/jni_headers/PaymentsWindowBridge_jni.h"
+#include "chrome/browser/ui/android/autofill/payments/autofill_payments_window_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
-using base::android::ConvertUTF16ToJavaString;
+namespace autofill::payments {
 
-namespace autofill {
+using base::android::ConvertUTF16ToJavaString;
+using base::android::JavaParamRef;
 
 AutofillPaymentsWindowBridge::AutofillPaymentsWindowBridge(
-    content::WebContents& web_contents) {
+    content::WebContents& web_contents,
+    AutofillPaymentsWindowDelegate* autofill_payments_window_delegate)
+    : autofill_payments_window_delegate_(
+          CHECK_DEREF(autofill_payments_window_delegate)) {
   java_autofill_payments_window_bridge_ = Java_PaymentsWindowBridge_Constructor(
-      base::android::AttachCurrentThread(), web_contents.GetJavaWebContents());
+      base::android::AttachCurrentThread(), reinterpret_cast<jlong>(this),
+      web_contents.GetJavaWebContents());
 }
 
 AutofillPaymentsWindowBridge::~AutofillPaymentsWindowBridge() = default;
@@ -38,4 +47,16 @@ void AutofillPaymentsWindowBridge::CloseEphemeralTab() {
       base::android::AttachCurrentThread(),
       java_autofill_payments_window_bridge_);
 }
-}  // namespace autofill
+
+void AutofillPaymentsWindowBridge::OnNavigationFinished(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& clicked_url_object) {
+  autofill_payments_window_delegate_->OnDidFinishNavigationForBnpl(
+      url::GURLAndroid::ToNativeGURL(env, clicked_url_object));
+}
+
+void AutofillPaymentsWindowBridge::OnWebContentsDestroyed(JNIEnv* env) {
+  autofill_payments_window_delegate_->WebContentsDestroyed();
+}
+
+}  // namespace autofill::payments

@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ui/autofill/payments/android_payments_window_manager.h"
 
+#include <memory>
+
 #include "base/check_deref.h"
 #include "base/notimplemented.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/android/autofill/autofill_payments_window_bridge.h"
+#include "chrome/browser/ui/android/autofill/payments/autofill_payments_window_bridge.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/payments/payments_window_manager_util.h"
@@ -18,10 +20,11 @@ namespace autofill::payments {
 
 AndroidPaymentsWindowManager::AndroidPaymentsWindowManager(
     ContentAutofillClient* client)
-    : client_(CHECK_DEREF(client)),
-      autofill_payments_window_bridge_(
-          std::make_unique<AutofillPaymentsWindowBridge>(
-              client->GetWebContents())) {}
+    : client_(CHECK_DEREF(client)) {
+  autofill_payments_window_bridge_ =
+      std::make_unique<AutofillPaymentsWindowBridge>(client->GetWebContents(),
+                                                     this);
+}
 
 AndroidPaymentsWindowManager::~AndroidPaymentsWindowManager() = default;
 

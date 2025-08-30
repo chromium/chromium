@@ -8,7 +8,9 @@
 #include <string_view>
 
 #include "base/test/mock_callback.h"
-#include "chrome/browser/ui/android/autofill/autofill_payments_window_bridge.h"
+#include "chrome/browser/ui/android/autofill/payments/autofill_payments_window_bridge.h"
+#include "chrome/browser/ui/android/autofill/payments/autofill_payments_window_delegate.h"
+#include "chrome/browser/ui/autofill/payments/android_payments_window_manager.h"
 #include "chrome/browser/ui/autofill/payments/android_payments_window_manager_test_api.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
@@ -19,18 +21,6 @@
 #include "url/gurl.h"
 
 namespace autofill {
-
-class MockAutofillPaymentsWindowBridge : public AutofillPaymentsWindowBridge {
- public:
-  explicit MockAutofillPaymentsWindowBridge(content::WebContents& web_contents)
-      : AutofillPaymentsWindowBridge(web_contents) {}
-
-  MOCK_METHOD(void,
-              OpenEphemeralTab,
-              (const GURL&, const std::u16string&),
-              (override));
-  MOCK_METHOD(void, CloseEphemeralTab, (), (override));
-};
 
 class TestContentAutofillClientForWindowManagerTest
     : public TestContentAutofillClient {
@@ -46,6 +36,28 @@ class TestContentAutofillClientForWindowManagerTest
 };
 
 namespace payments {
+
+class MockAutofillPaymentsWindowDelegate
+    : public AutofillPaymentsWindowDelegate {
+ public:
+  MockAutofillPaymentsWindowDelegate() = default;
+
+  MOCK_METHOD(void, OnDidFinishNavigationForBnpl, (const GURL&), (override));
+  MOCK_METHOD(void, WebContentsDestroyed, (), (override));
+};
+
+class MockAutofillPaymentsWindowBridge : public AutofillPaymentsWindowBridge {
+ public:
+  MockAutofillPaymentsWindowBridge(content::WebContents& web_contents,
+                                   AutofillPaymentsWindowDelegate* delegate)
+      : AutofillPaymentsWindowBridge(web_contents, delegate) {}
+
+  MOCK_METHOD(void,
+              OpenEphemeralTab,
+              (const GURL&, const std::u16string&),
+              (override));
+  MOCK_METHOD(void, CloseEphemeralTab, (), (override));
+};
 
 constexpr std::string_view kBnplInitialUrl = "https://www.bnplinitialurl.com/";
 constexpr std::string_view kBnplSuccessUrlPrefix =
@@ -77,10 +89,11 @@ class AndroidPaymentsWindowManagerTest
   }
 
   void SetUpMockAutofillPaymentsWindowBridge() {
-    std::unique_ptr<autofill::MockAutofillPaymentsWindowBridge>
+    MockAutofillPaymentsWindowDelegate mock_delegate;
+    std::unique_ptr<MockAutofillPaymentsWindowBridge>
         autofill_payments_window_bridge_ptr =
-            std::make_unique<autofill::MockAutofillPaymentsWindowBridge>(
-                *web_contents());
+            std::make_unique<MockAutofillPaymentsWindowBridge>(*web_contents(),
+                                                               &mock_delegate);
     test_api(window_manager())
         .SetAutofillPaymentsWindowBridge(
             std::move(autofill_payments_window_bridge_ptr));
@@ -101,7 +114,7 @@ TEST_F(AndroidPaymentsWindowManagerTest, InitBnplFlow) {
   // The flow should not be ongoing initially.
   EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
   SetUpMockAutofillPaymentsWindowBridge();
-  EXPECT_CALL(static_cast<autofill::MockAutofillPaymentsWindowBridge&>(
+  EXPECT_CALL(static_cast<MockAutofillPaymentsWindowBridge&>(
                   test_api(window_manager()).GetAutofillPaymentsWindowBridge()),
               OpenEphemeralTab(
                   GURL(kBnplInitialUrl),
@@ -240,7 +253,7 @@ TEST_F(AndroidPaymentsWindowManagerTest,
        OnDidFinishNavigationForBnpl_WhenSuccessUrl_ClosesTab) {
   SetUpMockAutofillPaymentsWindowBridge();
   InitBnplFlowForTest();
-  EXPECT_CALL(static_cast<autofill::MockAutofillPaymentsWindowBridge&>(
+  EXPECT_CALL(static_cast<MockAutofillPaymentsWindowBridge&>(
                   test_api(window_manager()).GetAutofillPaymentsWindowBridge()),
               CloseEphemeralTab())
       .Times(1);
@@ -253,7 +266,7 @@ TEST_F(AndroidPaymentsWindowManagerTest,
        OnDidFinishNavigationForBnpl_WhenFailureUrl_ClosesTab) {
   SetUpMockAutofillPaymentsWindowBridge();
   InitBnplFlowForTest();
-  EXPECT_CALL(static_cast<autofill::MockAutofillPaymentsWindowBridge&>(
+  EXPECT_CALL(static_cast<MockAutofillPaymentsWindowBridge&>(
                   test_api(window_manager()).GetAutofillPaymentsWindowBridge()),
               CloseEphemeralTab())
       .Times(1);
@@ -266,7 +279,7 @@ TEST_F(AndroidPaymentsWindowManagerTest,
        OnDidFinishNavigationForBnpl_WhenNotFinished_DoesNotCloseTab) {
   SetUpMockAutofillPaymentsWindowBridge();
   InitBnplFlowForTest();
-  EXPECT_CALL(static_cast<autofill::MockAutofillPaymentsWindowBridge&>(
+  EXPECT_CALL(static_cast<MockAutofillPaymentsWindowBridge&>(
                   test_api(window_manager()).GetAutofillPaymentsWindowBridge()),
               CloseEphemeralTab())
       .Times(0);

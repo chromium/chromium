@@ -10,14 +10,16 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -45,12 +47,28 @@ public class PaymentsWindowCoordinatorTest {
     @Mock private Profile mProfile;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private Profile.Natives mProfileNatives;
+    @Mock private PaymentsWindowBridge mPaymentsWindowBridge;
+    @Captor private ArgumentCaptor<EphemeralTabObserver> mEphemeralTabObserverCaptor;
 
     private PaymentsWindowCoordinator mCoordinator;
 
     @Before
     public void setUp() {
-        mCoordinator = new PaymentsWindowCoordinator(mWebContents);
+        mCoordinator = new PaymentsWindowCoordinator(mWebContents, mPaymentsWindowBridge);
+    }
+
+    @After
+    public void tearDown() {
+        EphemeralTabCoordinatorSupplier.setInstanceForTesting(null);
+        ProfileJni.setInstanceForTesting(null);
+    }
+
+    private void setUpForEphemeralTabObserverTest() {
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
+        EphemeralTabCoordinatorSupplier.setInstanceForTesting(mEphemeralTabCoordinator);
+        ProfileJni.setInstanceForTesting(mProfileNatives);
+        when(mProfileNatives.fromWebContents(eq(mWebContents))).thenReturn(mProfile);
+        mCoordinator.openEphemeralTab(ISSUER_URL, TAB_TITLE);
     }
 
     @Test
@@ -75,7 +93,7 @@ public class PaymentsWindowCoordinatorTest {
                         /* title= */ TAB_TITLE,
                         mProfile,
                         /* canPromoteToNewTab= */ false);
-        verify(mEphemeralTabCoordinator, times(1)).addObserver(any(EphemeralTabObserver.class));
+        verify(mEphemeralTabCoordinator).addObserver(any(EphemeralTabObserver.class));
     }
 
     @Test
@@ -118,7 +136,7 @@ public class PaymentsWindowCoordinatorTest {
 
         mCoordinator.closeEphemeralTab();
 
-        verify(mEphemeralTabCoordinator, times(1)).close();
+        verify(mEphemeralTabCoordinator).close();
     }
 
     @Test
@@ -129,5 +147,27 @@ public class PaymentsWindowCoordinatorTest {
         mCoordinator.closeEphemeralTab();
 
         verify(mEphemeralTabCoordinator, never()).close();
+    }
+
+    @Test
+    public void testEphemeralTabObserver_OnNavigationFinished_ForwardsCallToBridge() {
+        setUpForEphemeralTabObserverTest();
+        verify(mEphemeralTabCoordinator).addObserver(mEphemeralTabObserverCaptor.capture());
+
+        mEphemeralTabObserverCaptor.getValue().onNavigationFinished(ISSUER_URL);
+
+        verify(mPaymentsWindowBridge).onNavigationFinished(ISSUER_URL);
+    }
+
+    @Test
+    public void testEphemeralTabObserver_OnWebContentsDestroyed_ForwardsCallToBridge() {
+        setUpForEphemeralTabObserverTest();
+        verify(mEphemeralTabCoordinator).addObserver(mEphemeralTabObserverCaptor.capture());
+        EphemeralTabObserver ephemeralTabObserver = mEphemeralTabObserverCaptor.getValue();
+
+        ephemeralTabObserver.onWebContentsDestroyed();
+
+        verify(mEphemeralTabCoordinator).removeObserver(ephemeralTabObserver);
+        verify(mPaymentsWindowBridge).onWebContentsDestroyed();
     }
 }
