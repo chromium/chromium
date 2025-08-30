@@ -194,6 +194,13 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
         return mInteractingView;
     }
 
+    @Override
+    public boolean shouldAllowAutoScroll() {
+        // Do not allow auto-scroll when a pinned tab is dragged over unpinned tabs; pinned tabs can
+        // only be dropped into the pinned section.
+        return !TabStripDragHandler.isDraggedTabPinned();
+    }
+
     /** Merges dropped tabs to interacting view's tab group, if one exists. */
     boolean handleDrop(StripLayoutGroupTitle[] groupTitles, List<Integer> tabIds, int dropIndex) {
         if (mInteractingViewDuringStop == null) return false;

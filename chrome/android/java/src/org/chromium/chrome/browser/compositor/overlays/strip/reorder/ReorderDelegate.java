@@ -371,26 +371,32 @@ public class ReorderDelegate {
      * @param groupTitles The list of {@link StripLayoutGroupTitle}.
      * @param stripTabs The list of {@link StripLayoutTab}.
      * @param time The time when the update is invoked.
-     * @param stripWidth The width of tab-strip. Used to compute auto-scroll speed.
-     * @param leftMargin The start margin in tab-strip. Used to compute auto-scroll speed.
-     * @param rightMargin The end margin in tab-strip. Used to compute auto-scroll speed.
+     * @param leftBound The left bound in tab-strip. Used to compute auto-scroll speed.
+     * @param rightBound The right bound in tab-strip. Used to compute auto-scroll speed.
      */
     public void updateReorderPositionAutoScroll(
             StripLayoutView[] stripViews,
             StripLayoutGroupTitle[] groupTitles,
             StripLayoutTab[] stripTabs,
             long time,
-            float stripWidth,
-            float leftMargin,
-            float rightMargin) {
+            float leftBound,
+            float rightBound) {
         assert mActiveStrategy != null && getInReorderMode()
                 : "Attempted to update reorder without an active Strategy.";
+
+        // Skip autoscroll here primarily for pinned tab drops. Pinned tabs can only be dropped
+        // within the pinned section, which does not scroll.
+        if (!mActiveStrategy.shouldAllowAutoScroll()) return;
+
         float scrollOffsetDelta =
-                computeScrollOffsetDeltaForAutoScroll(time, stripWidth, leftMargin, rightMargin);
+                computeScrollOffsetDeltaForAutoScroll(time, leftBound, rightBound);
+        float scrollOffset =
+                mScrollDelegate.setScrollOffset(
+                        mScrollDelegate.getScrollOffset() + scrollOffsetDelta);
         if (scrollOffsetDelta != 0f) {
-            float deltaX =
-                    mScrollDelegate.setScrollOffset(
-                            mScrollDelegate.getScrollOffset() + scrollOffsetDelta);
+            // Skip deltaX since pinned tabs don't scroll.
+            float deltaX = isInteractingViewPinnedTab() ? 0f : scrollOffset;
+
             if (mScrollDelegate.isFinished()) {
                 mActiveStrategy.updateReorderPosition(
                         stripViews,
@@ -402,6 +408,12 @@ public class ReorderDelegate {
             }
             mStripUpdateDelegate.refresh();
         }
+    }
+
+    private boolean isInteractingViewPinnedTab() {
+        if (mActiveStrategy == mExternalViewDragDropReorderStrategy) return false;
+        StripLayoutView interactingView = getInteractingView();
+        return (interactingView instanceof StripLayoutTab tab) && tab.getIsPinned();
     }
 
     /** See {@link ReorderStrategy#stopReorderMode} */
@@ -422,9 +434,8 @@ public class ReorderDelegate {
         return mActiveStrategy != null ? mActiveStrategy.getInteractingView() : null;
     }
 
-    // TODO:(crbug.com/441132620) Confirm whether to allow autoscroll when dropping pinned tab.
     private float computeScrollOffsetDeltaForAutoScroll(
-            long time, float stripWidth, float leftMargin, float rightMargin) {
+            long time, float leftBound, float rightBound) {
         // 1. Track the delta time since the last auto scroll.
         final float deltaSec =
                 mLastReorderScrollTimeSupplier.get() == INVALID_TIME
@@ -446,12 +457,10 @@ public class ReorderDelegate {
         // Speed: MAX    MIN                  MIN    MAX
         // |-------|======|--------------------|======|-------|
         final float dragRange = REORDER_EDGE_SCROLL_START_MAX_DP - REORDER_EDGE_SCROLL_START_MIN_DP;
-        final float leftMinX = REORDER_EDGE_SCROLL_START_MIN_DP + leftMargin;
-        final float leftMaxX = REORDER_EDGE_SCROLL_START_MAX_DP + leftMargin;
-        final float rightMinX =
-                stripWidth - leftMargin - rightMargin - REORDER_EDGE_SCROLL_START_MIN_DP;
-        final float rightMaxX =
-                stripWidth - leftMargin - rightMargin - REORDER_EDGE_SCROLL_START_MAX_DP;
+        final float leftMinX = REORDER_EDGE_SCROLL_START_MIN_DP + leftBound;
+        final float leftMaxX = REORDER_EDGE_SCROLL_START_MAX_DP + leftBound;
+        final float rightMinX = rightBound - leftBound - REORDER_EDGE_SCROLL_START_MIN_DP;
+        final float rightMaxX = rightBound - leftBound - REORDER_EDGE_SCROLL_START_MAX_DP;
 
         // 3. See if the current draw position is in one of the gutters and figure out how far in.
         // Note that we only allow scrolling in each direction if the user has already manually

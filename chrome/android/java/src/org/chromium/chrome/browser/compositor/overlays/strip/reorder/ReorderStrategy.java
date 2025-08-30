@@ -80,4 +80,9 @@ public interface ReorderStrategy {
             StripLayoutTab[] stripTabs,
             StripLayoutView reorderingView,
             boolean toLeft);
+
+    /** Returns true if auto-scroll is allowed during reorder. */
+    default boolean shouldAllowAutoScroll() {
+        return true;
+    }
 }
