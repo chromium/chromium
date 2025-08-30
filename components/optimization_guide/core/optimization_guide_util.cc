@@ -110,6 +110,9 @@ std::string_view GetStringNameForModelExecutionFeature(
       return "ZeroStateSuggestions";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_PROOFREADER_API:
       return "ProofreaderApi";
+    case proto::ModelExecutionFeature::
+        MODEL_EXECUTION_FEATURE_WALLETABLE_PASS_EXTRACTION:
+      return "WalletablePassExtraction";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       return "Unknown";
       // Must be in sync with the ModelExecutionFeature variant in

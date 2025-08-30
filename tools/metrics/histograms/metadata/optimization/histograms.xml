@@ -60,6 +60,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ProductSpecifications" summary="Product Specifications"/>
   <variant name="ScamDetection" summary="Scam Detection"/>
   <variant name="TabOrganization" summary="Tab Organization"/>
+  <variant name="WalletablePassExtraction" summary="Extract walletable pass"/>
   <variant name="WallpaperSearch" summary="Wallpaper search"/>
   <variant name="WritingAssistanceApi" summary="Writing Assistance APIs"/>
   <variant name="ZeroStateSuggestions" summary="GLIC Zero State Suggestions"/>
