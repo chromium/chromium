@@ -25,6 +25,10 @@ class PrefRegistrySimple;
 class PrefService;
 class UserUploadedImageManager;
 
+// Type representing any custom background on the NTP.
+typedef std::variant<sync_pb::NtpCustomBackground, HomeUserUploadedBackground>
+    HomeCustomBackground;
+
 // Type of the recently used backgrounds exposed externally.
 typedef std::variant<HomeCustomBackground, sync_pb::UserColorTheme>
     RecentlyUsedBackground;
@@ -99,15 +103,15 @@ struct std::hash<RecentlyUsedBackgroundInternal> {
 
 }  // namespace std
 
-// Equality operators.
-bool operator==(RecentlyUsedBackgroundInternal const& lhs,
-                RecentlyUsedBackgroundInternal const& rhs);
-bool operator==(sync_pb::NtpCustomBackground const& lhs,
-                sync_pb::NtpCustomBackground const& rhs);
-bool operator==(sync_pb::UserColorTheme const& lhs,
-                sync_pb::UserColorTheme const& rhs);
-bool operator==(sync_pb::ThemeSpecificsIos const& lhs,
-                sync_pb::ThemeSpecificsIos const& rhs);
+// Equality operators for theme comparison.
+namespace sync_pb {
+bool operator==(const sync_pb::NtpCustomBackground& lhs,
+                const sync_pb::NtpCustomBackground& rhs);
+bool operator==(const sync_pb::UserColorTheme& lhs,
+                const sync_pb::UserColorTheme& rhs);
+bool operator==(const sync_pb::ThemeSpecificsIos& lhs,
+                const sync_pb::ThemeSpecificsIos& rhs);
+}  // namespace sync_pb
 
 // Service for allowing customization of the Home surface background.
 class HomeBackgroundCustomizationService : public KeyedService {

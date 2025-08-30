@@ -30,31 +30,20 @@ const int kMaxRecentlyUsedBackgrounds = 7;
 
 }  // namespace
 
-bool operator==(RecentlyUsedBackgroundInternal const& lhs,
-                RecentlyUsedBackgroundInternal const& rhs) {
-  if (std::holds_alternative<sync_pb::ThemeSpecificsIos>(lhs) &&
-      std::holds_alternative<sync_pb::ThemeSpecificsIos>(rhs)) {
-    return std::get<sync_pb::ThemeSpecificsIos>(lhs) ==
-           std::get<sync_pb::ThemeSpecificsIos>(rhs);
-  } else {
-    return std::get<HomeUserUploadedBackground>(lhs) ==
-           std::get<HomeUserUploadedBackground>(rhs);
-  }
-}
-
-bool operator==(sync_pb::NtpCustomBackground const& lhs,
-                sync_pb::NtpCustomBackground const& rhs) {
+namespace sync_pb {
+bool operator==(const sync_pb::NtpCustomBackground& lhs,
+                const sync_pb::NtpCustomBackground& rhs) {
   return lhs.url() == rhs.url();
 }
 
-bool operator==(sync_pb::UserColorTheme const& lhs,
-                sync_pb::UserColorTheme const& rhs) {
+bool operator==(const sync_pb::UserColorTheme& lhs,
+                const sync_pb::UserColorTheme& rhs) {
   return lhs.color() == rhs.color() &&
          lhs.browser_color_variant() == rhs.browser_color_variant();
 }
 
-bool operator==(sync_pb::ThemeSpecificsIos const& lhs,
-                sync_pb::ThemeSpecificsIos const& rhs) {
+bool operator==(const sync_pb::ThemeSpecificsIos& lhs,
+                const sync_pb::ThemeSpecificsIos& rhs) {
   // Ntp Background field takes precedence. Only compare colors if neither
   // theme has an ntp background.
   if (lhs.has_ntp_background() != rhs.has_ntp_background()) {
@@ -72,6 +61,7 @@ bool operator==(sync_pb::ThemeSpecificsIos const& lhs,
 
   return lhs.user_color_theme() == rhs.user_color_theme();
 }
+}  // namespace sync_pb
 
 HomeBackgroundCustomizationService::HomeBackgroundCustomizationService(
     PrefService* pref_service,
@@ -247,19 +237,18 @@ void HomeBackgroundCustomizationService::ClearCurrentBackground() {
 void HomeBackgroundCustomizationService::DeleteRecentlyUsedBackground(
     RecentlyUsedBackground recent_background) {
   // Make sure this is not the current background.
+  RecentlyUsedBackground current_background;
   std::optional<HomeCustomBackground> current_custom_background =
       GetCurrentCustomBackground();
-  if (current_custom_background &&
-      std::holds_alternative<HomeCustomBackground>(recent_background) &&
-      current_custom_background.value() ==
-          std::get<HomeCustomBackground>(recent_background)) {
+  if (current_custom_background) {
+    current_background = current_custom_background.value();
   }
   std::optional<sync_pb::UserColorTheme> current_color_theme =
       GetCurrentColorTheme();
-  if (current_color_theme &&
-      std::holds_alternative<sync_pb::UserColorTheme>(recent_background) &&
-      current_color_theme.value() ==
-          std::get<sync_pb::UserColorTheme>(recent_background)) {
+  if (current_color_theme) {
+    current_background = current_color_theme.value();
+  }
+  if (current_background == recent_background) {
     return;
   }
 

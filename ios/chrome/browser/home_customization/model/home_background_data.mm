@@ -15,20 +15,6 @@ const char kFramingCoordinatesKey[] = "framing_data";
 const char kImagePathKey[] = "image_path";
 }  // namespace
 
-bool operator==(HomeCustomBackground const& lhs,
-                HomeCustomBackground const& rhs) {
-  if (std::holds_alternative<sync_pb::NtpCustomBackground>(lhs) &&
-      std::holds_alternative<sync_pb::NtpCustomBackground>(rhs)) {
-    return std::get<sync_pb::NtpCustomBackground>(lhs) ==
-           std::get<sync_pb::NtpCustomBackground>(rhs);
-  } else if (std::holds_alternative<HomeUserUploadedBackground>(lhs) &&
-             std::holds_alternative<HomeUserUploadedBackground>(rhs)) {
-    return std::get<HomeUserUploadedBackground>(lhs) ==
-           std::get<HomeUserUploadedBackground>(rhs);
-  }
-  return false;
-}
-
 FramingCoordinates::FramingCoordinates(double x_val,
                                        double y_val,
                                        double width_val,
@@ -56,15 +42,6 @@ base::Value::Dict FramingCoordinates::ToDict() const {
   dict.Set(kWidthKey, width);
   dict.Set(kHeightKey, height);
   return dict;
-}
-
-bool FramingCoordinates::operator==(const FramingCoordinates& other) const {
-  return x == other.x && y == other.y && width == other.width &&
-         height == other.height;
-}
-
-bool FramingCoordinates::operator!=(const FramingCoordinates& other) const {
-  return !(*this == other);
 }
 
 std::optional<HomeUserUploadedBackground> HomeUserUploadedBackground::FromDict(
