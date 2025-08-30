@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
@@ -21,13 +22,19 @@ class ContentsContainerOutline : public views::View,
  public:
   static constexpr int kCornerRadius = 8;
   static constexpr int kThickness = 1;
+  static constexpr int kHighlightThickness = 3;
 
   explicit ContentsContainerOutline(views::View* mini_toolbar);
   ContentsContainerOutline(ContentsContainerOutline&) = delete;
   ContentsContainerOutline& operator=(const ContentsContainerOutline&) = delete;
   ~ContentsContainerOutline() override;
 
-  void UpdateState(bool is_active);
+  static int GetThickness(bool is_highlighted);
+  static ui::ColorId GetColor(bool is_active, bool is_highlighted);
+
+  bool is_highlighted() const { return is_highlighted_; }
+
+  void UpdateState(bool is_active, bool is_highlighted);
 
  private:
   void SetClipPath();
@@ -41,6 +48,7 @@ class ContentsContainerOutline : public views::View,
 
   raw_ptr<views::View> mini_toolbar_ = nullptr;
   bool is_active_ = false;
+  bool is_highlighted_ = false;
   base::ScopedObservation<views::View, views::ViewObserver>
       view_bounds_observer_{this};
 };

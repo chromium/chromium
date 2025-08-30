@@ -219,9 +219,9 @@ void MultiContentsView::UpdateSplitRatio(double ratio) {
   InvalidateLayout();
 }
 
-void MultiContentsView::SetInactiveScrimVisibility(bool show_inactive_scrim) {
-  if (show_inactive_scrim_ != show_inactive_scrim) {
-    show_inactive_scrim_ = show_inactive_scrim;
+void MultiContentsView::SetHighlightActiveContentsView(bool is_highlighted) {
+  if (active_contents_view_highlighted_ != is_highlighted) {
+    active_contents_view_highlighted_ = is_highlighted;
     UpdateContentsBorderAndOverlay();
   }
 }
@@ -453,8 +453,9 @@ void MultiContentsView::UpdateContentsBorderAndOverlay() {
   for (auto* contents_container_view : contents_container_views_) {
     const bool is_active =
         contents_container_view->contents_view() == GetActiveContentsView();
-    contents_container_view->UpdateBorderAndOverlay(IsInSplitView(), is_active,
-                                                    show_inactive_scrim_);
+    contents_container_view->UpdateBorderAndOverlay(
+        IsInSplitView(), is_active,
+        is_active && active_contents_view_highlighted_);
   }
 }
 

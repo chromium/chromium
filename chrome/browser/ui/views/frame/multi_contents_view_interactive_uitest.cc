@@ -10,12 +10,13 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/tabs/split_tab_scrim_controller.h"
+#include "chrome/browser/ui/tabs/split_tab_highlight_controller.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/contents_container_outline.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_resize_area.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
@@ -703,144 +704,151 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
           u""));
 }
 
-class MultiContentsViewInactiveScrimUiTest : public MultiContentsViewUiTest {
+using ContentsViewOutlineHighlightObserver =
+    views::test::PollingViewObserver<bool, MultiContentsView>;
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ContentsViewOutlineHighlightObserver,
+                                    kContentsViewOutlineHighlightObserver);
+
+class MultiContentsViewOutlineHighlightUiTest : public MultiContentsViewUiTest {
  public:
-  MultiContentsViewInactiveScrimUiTest() = default;
+  MultiContentsViewOutlineHighlightUiTest() = default;
 
   auto SimulateTriggeringPermissionPrompt(bool show_prompt) {
     return Do([this, show_prompt]() {
-      split_tabs::SplitTabScrimController* const split_tab_scrim_controller =
-          browser()->browser_window_features()->split_tab_scrim_controller();
+      split_tabs::SplitTabHighlightController* const
+          split_tab_highlight_controller =
+              browser()
+                  ->browser_window_features()
+                  ->split_tab_highlight_controller();
       if (show_prompt) {
-        split_tab_scrim_controller->OnPermissionPromptShown();
+        split_tab_highlight_controller->OnPermissionPromptShown();
       } else {
-        split_tab_scrim_controller->OnPermissionPromptHidden();
+        split_tab_highlight_controller->OnPermissionPromptHidden();
       }
     });
   }
 
-  auto CheckScrimVisibility(size_t content_container_index,
-                            bool is_inactive_scrim_visible) {
-    return CheckView(kMultiContentsViewElementId,
-                     [content_container_index, is_inactive_scrim_visible](
-                         MultiContentsView* multi_contents_view) -> bool {
-                       auto contents_container_views =
-                           multi_contents_view->contents_container_views();
-                       EXPECT_LT(content_container_index,
-                                 contents_container_views.size());
-                       return contents_container_views[content_container_index]
-                                  ->inactive_split_scrim_view()
-                                  ->GetVisible() == is_inactive_scrim_visible;
-                     });
+  auto CheckOutlineHighlightState(size_t content_container_index,
+                                  bool is_highlighted) {
+    auto result = Steps(
+        PollView(kContentsViewOutlineHighlightObserver,
+                 kMultiContentsViewElementId,
+                 [=](const MultiContentsView* multi_contents_view) -> bool {
+                   auto contents_container_views =
+                       multi_contents_view->contents_container_views();
+                   EXPECT_LT(content_container_index,
+                             contents_container_views.size());
+                   return contents_container_views[content_container_index]
+                       ->contents_outline_view()
+                       ->is_highlighted();
+                 }),
+        WaitForState(kContentsViewOutlineHighlightObserver, is_highlighted),
+        StopObservingState(kContentsViewOutlineHighlightObserver));
+    AddDescriptionPrefix(result, "CheckOutlineHighlightState()");
+    return result;
   }
 };
 
-IN_PROC_BROWSER_TEST_F(MultiContentsViewInactiveScrimUiTest,
-                       ShowScrimOnOmniboxDropDownOpen) {
+IN_PROC_BROWSER_TEST_F(MultiContentsViewOutlineHighlightUiTest,
+                       ShowHighlightOnOmniboxDropDownOpen) {
   RunTestSequence(
       // Create a split view
       InstrumentTab(kNewTab), AddInstrumentedTab(kSecondTab, GetTestUrl()),
       SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
-      FocusElement(kNewTab), CheckScrimVisibility(0, false),
-      CheckScrimVisibility(1, false),
-      // Focus omnibox and verify the inactive scrim is shown for end tab
+      FocusElement(kNewTab), CheckOutlineHighlightState(0, false),
+      CheckOutlineHighlightState(1, false),
+      // Focus omnibox and verify the start tab has an outline
       FocusElement(kOmniboxElementId), EnterText(kOmniboxElementId, u"query"),
-      WaitForShow(kInactiveSplitScrimViewElementId, true),
-      CheckScrimVisibility(0, false), CheckScrimVisibility(1, true),
-      // Move focus to the end tab and verify inactive scrim is hidden
-      FocusInactiveTabInSplit(),
-      WaitForHide(kInactiveSplitScrimViewElementId, true),
-      CheckScrimVisibility(1, false),
-      // Focus omnibox and confirm that inactive scrim is shown for start tab
+      CheckOutlineHighlightState(0, true), CheckOutlineHighlightState(1, false),
+      // Move focus to the end tab and verify start tab outline is hidden
+      FocusInactiveTabInSplit(), CheckOutlineHighlightState(0, false),
+      // Focus omnibox and confirm that highlight is shown in the end tab
       FocusElement(kOmniboxElementId), EnterText(kOmniboxElementId, u"query"),
-      WaitForShow(kInactiveSplitScrimViewElementId, true),
-      CheckScrimVisibility(0, true), CheckScrimVisibility(1, false));
+      CheckOutlineHighlightState(0, false),
+      CheckOutlineHighlightState(1, true));
 }
 
-IN_PROC_BROWSER_TEST_F(MultiContentsViewInactiveScrimUiTest,
-                       ScrimUpdatesForMultipleSplitTabs) {
+IN_PROC_BROWSER_TEST_F(MultiContentsViewOutlineHighlightUiTest,
+                       HighlightUpdatesForMultipleSplitTabs) {
   RunTestSequence(
-      CheckScrimVisibility(0, false), CheckScrimVisibility(1, false),
-      // Create a split tab and verify inactive scrim is shown for end tab
+      CheckOutlineHighlightState(0, false),
+      CheckOutlineHighlightState(1, false),
+      // Create a split tab and verify highlight is shown for start tab
       AddInstrumentedTab(kSecondTab, GetTestUrl()),
       SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
       FocusElement(kOmniboxElementId), EnterText(kOmniboxElementId, u"query"),
-      WaitForShow(kInactiveSplitScrimViewElementId, true),
-      CheckScrimVisibility(0, false), CheckScrimVisibility(1, true),
+      CheckOutlineHighlightState(0, true), CheckOutlineHighlightState(1, false),
       SendKeyPress(kOmniboxElementId, ui::VKEY_ESCAPE),
-      WaitForHide(kInactiveSplitScrimViewElementId, true),
-      // Create a second split tab and verify inactive scrim is shown
+      // Create a second split tab
       AddInstrumentedTab(kThirdTab, GetTestUrl()),
       AddInstrumentedTab(kFourthTab, GetTestUrl()),
       SelectTab(kTabStripElementId, 2), EnterSplitView(2, 3),
-      // Focus on omnibox and verify inactive scrim is shown
+      // Focus on omnibox and verify highlight is shown for start tab
       FocusElement(kOmniboxElementId), EnterText(kOmniboxElementId, u"query"),
-      WaitForShow(kInactiveSplitScrimViewElementId, true),
-      CheckScrimVisibility(0, false), CheckScrimVisibility(1, true),
-      // Remove focus from the omnibox split to ensure the second split
-      // isn't showing a scrim
-      FocusElement(kThirdTab),
-      WaitForHide(kInactiveSplitScrimViewElementId, true),
-      CheckScrimVisibility(0, false), CheckScrimVisibility(1, false));
+      CheckOutlineHighlightState(0, true), CheckOutlineHighlightState(1, false),
+      // Remove focus from the omnibox split
+      FocusElement(kThirdTab), CheckOutlineHighlightState(0, false),
+      CheckOutlineHighlightState(1, false));
 }
 
-IN_PROC_BROWSER_TEST_F(MultiContentsViewInactiveScrimUiTest,
-                       ScrimShowsForPermissionPrompt) {
+IN_PROC_BROWSER_TEST_F(MultiContentsViewOutlineHighlightUiTest,
+                       HighlightShowsForPermissionPrompt) {
   RunTestSequence(
-      CheckScrimVisibility(0, false), CheckScrimVisibility(1, false),
+      CheckOutlineHighlightState(0, false),
+      CheckOutlineHighlightState(1, false),
       // Create a split tab and simulate the permission prompt is shown
       InstrumentTab(kNewTab), AddInstrumentedTab(kSecondTab, GetTestUrl()),
       SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
-      FocusElement(kNewTab), CheckScrimVisibility(0, false),
-      CheckScrimVisibility(1, false), SimulateTriggeringPermissionPrompt(true),
-      WaitForShow(kInactiveSplitScrimViewElementId, true),
-      CheckScrimVisibility(0, false), CheckScrimVisibility(1, true),
+      FocusElement(kNewTab), CheckOutlineHighlightState(0, false),
+      CheckOutlineHighlightState(1, false),
+      SimulateTriggeringPermissionPrompt(true),
+      CheckOutlineHighlightState(0, true), CheckOutlineHighlightState(1, false),
       // Simulate the permission prompt closed
       SimulateTriggeringPermissionPrompt(false),
-      WaitForHide(kInactiveSplitScrimViewElementId, true),
-      CheckScrimVisibility(0, false), CheckScrimVisibility(1, false));
+      CheckOutlineHighlightState(0, false),
+      CheckOutlineHighlightState(1, false));
 }
 
-IN_PROC_BROWSER_TEST_F(MultiContentsViewInactiveScrimUiTest,
-                       CoordinateScrimShowReasons) {
+IN_PROC_BROWSER_TEST_F(MultiContentsViewOutlineHighlightUiTest,
+                       CoordinateHighlightShowReasons) {
   RunTestSequence(
-      CheckScrimVisibility(0, false), CheckScrimVisibility(1, false),
+      CheckOutlineHighlightState(0, false),
+      CheckOutlineHighlightState(1, false),
       // Create a split tab and focus the omnibox
       InstrumentTab(kNewTab), AddInstrumentedTab(kSecondTab, GetTestUrl()),
       SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
       FocusElement(kOmniboxElementId), EnterText(kOmniboxElementId, u"query"),
-      WaitForShow(kInactiveSplitScrimViewElementId, true),
-      CheckScrimVisibility(0, false), CheckScrimVisibility(1, true),
+      CheckOutlineHighlightState(0, true), CheckOutlineHighlightState(1, false),
       // Trigger the permission prompt while focusing the omnibox should
       // continue showing the scrim.
-      SimulateTriggeringPermissionPrompt(true), CheckScrimVisibility(1, true),
+      SimulateTriggeringPermissionPrompt(true),
+      CheckOutlineHighlightState(0, true),
       // Removing focus from the omnibox should still have the scrim continue to
       // show because the permission prompt is still showing.
-      FocusElement(kNewTab), CheckScrimVisibility(1, true),
+      FocusElement(kNewTab), CheckOutlineHighlightState(0, true),
       // The scrim should hide after the prompt is closed because there is no
       // longer any reason to continue showing the scrim.
       SimulateTriggeringPermissionPrompt(false),
-      WaitForHide(kInactiveSplitScrimViewElementId, true),
-      CheckScrimVisibility(0, false), CheckScrimVisibility(1, false));
+      CheckOutlineHighlightState(0, false),
+      CheckOutlineHighlightState(1, false));
 }
 
-IN_PROC_BROWSER_TEST_F(MultiContentsViewInactiveScrimUiTest,
-                       ScrimShowsForPageInfoBubble) {
+IN_PROC_BROWSER_TEST_F(MultiContentsViewOutlineHighlightUiTest,
+                       HighlightShowsForPageInfoBubble) {
   RunTestSequence(
-      CheckScrimVisibility(0, false), CheckScrimVisibility(1, false),
-      InstrumentTab(kNewTab),
+      CheckOutlineHighlightState(0, false),
+      CheckOutlineHighlightState(1, false), InstrumentTab(kNewTab),
       NavigateWebContents(kNewTab, GURL(chrome::kChromeUISettingsURL)),
       AddInstrumentedTab(kSecondTab, GetTestUrl()),
       SelectTab(kTabStripElementId, 0), EnterSplitView(0, 1),
-      FocusElement(kNewTab), CheckScrimVisibility(0, false),
-      CheckScrimVisibility(1, false), PressButton(kLocationIconElementId),
-      WaitForShow(kInactiveSplitScrimViewElementId, true),
-      CheckScrimVisibility(0, false), CheckScrimVisibility(1, true),
+      FocusElement(kNewTab), CheckOutlineHighlightState(0, false),
+      CheckOutlineHighlightState(1, false), PressButton(kLocationIconElementId),
+      CheckOutlineHighlightState(0, true), CheckOutlineHighlightState(1, false),
       // Clicking the location icon again should close the page info bubble and
       // hide the scrim.
       MoveMouseTo(kLocationIconElementId), ClickMouse(),
-      WaitForHide(kInactiveSplitScrimViewElementId, true),
-      CheckScrimVisibility(0, false), CheckScrimVisibility(1, false));
+      CheckOutlineHighlightState(0, false),
+      CheckOutlineHighlightState(1, false));
 }
 
 // TODO(crbug.com/414590951): There's limited support for testing drag and drop

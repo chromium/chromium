@@ -56,7 +56,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/session_service_tab_group_sync_observer.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/shared_tab_group_feedback_controller.h"
-#include "chrome/browser/ui/tabs/split_tab_scrim_controller.h"
+#include "chrome/browser/ui/tabs/split_tab_highlight_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_list_bridge.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_impl.h"
@@ -455,8 +455,9 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
 
     if (base::FeatureList::IsEnabled(features::kSideBySide)) {
       if (browser_view) {
-        split_tab_scrim_controller_ =
-            std::make_unique<split_tabs::SplitTabScrimController>(browser_view);
+        split_tab_highlight_controller_ =
+            std::make_unique<split_tabs::SplitTabHighlightController>(
+                browser_view);
       }
     }
   }
@@ -730,7 +731,7 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   // deterministically constructed.
   find_bar_controller_.reset();
 
-  split_tab_scrim_controller_.reset();
+  split_tab_highlight_controller_.reset();
 
 #if BUILDFLAG(IS_WIN)
   windows_taskbar_icon_updater_.reset();

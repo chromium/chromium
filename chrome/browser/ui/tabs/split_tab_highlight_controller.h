@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TABS_SPLIT_TAB_SCRIM_CONTROLLER_H_
-#define CHROME_BROWSER_UI_TABS_SPLIT_TAB_SCRIM_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_TABS_SPLIT_TAB_HIGHLIGHT_CONTROLLER_H_
+#define CHROME_BROWSER_UI_TABS_SPLIT_TAB_HIGHLIGHT_CONTROLLER_H_
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
@@ -17,17 +17,18 @@ class BrowserWindowInterface;
 class BrowserView;
 
 namespace split_tabs {
-class SplitTabScrimDelegate;
 
-// Coordinates the split tab scrim to show and hide.
-class SplitTabScrimController : public OmniboxTabHelper::Observer,
-                                public ChipController::Observer,
-                                public views::WidgetObserver {
+class SplitTabHighlightDelegate;
+
+// Coordinates when active tab in a split is highlighted.
+class SplitTabHighlightController : public OmniboxTabHelper::Observer,
+                                    public ChipController::Observer,
+                                    public views::WidgetObserver {
  public:
-  explicit SplitTabScrimController(BrowserView* browser_view);
-  ~SplitTabScrimController() override;
+  explicit SplitTabHighlightController(BrowserView* browser_view);
+  ~SplitTabHighlightController() override;
 
-  bool ShouldShowScrim();
+  bool ShouldHighlight();
 
   // OmniboxTabHelper::Observer:
   void OnOmniboxFocusChanged(OmniboxFocusState state,
@@ -50,7 +51,7 @@ class SplitTabScrimController : public OmniboxTabHelper::Observer,
                        tabs::TabInterface::DetachReason reason);
   void OnPageInfoBubbleCreated(content::WebContents* web_contents,
                                views::Widget* bubble_widget);
-  void UpdateScrimVisibility();
+  void UpdateHighlight();
 
   bool is_permission_prompt_showing_ = false;
   bool is_page_info_bubble_showing_ = false;
@@ -64,9 +65,10 @@ class SplitTabScrimController : public OmniboxTabHelper::Observer,
       chip_controller_observation_{this};
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       page_info_bubble_observation_{this};
-  std::unique_ptr<SplitTabScrimDelegate> split_tab_scrim_delegate_;
+  std::unique_ptr<SplitTabHighlightDelegate> split_tab_highlight_delegate_;
   raw_ptr<BrowserWindowInterface> browser_window_interface_;
 };
+
 }  // namespace split_tabs
 
-#endif  // CHROME_BROWSER_UI_TABS_SPLIT_TAB_SCRIM_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_TABS_SPLIT_TAB_HIGHLIGHT_CONTROLLER_H_

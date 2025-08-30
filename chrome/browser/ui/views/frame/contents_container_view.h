@@ -82,14 +82,15 @@ class ContentsContainerView : public views::View,
   new_tab_footer::NewTabFooterWebView* new_tab_footer_view() {
     return new_tab_footer_view_;
   }
-  ScrimView* inactive_split_scrim_view() { return inactive_split_scrim_view_; }
   views::Widget* capture_contents_border_widget() {
     return capture_contents_border_widget_.get();
   }
   enterprise_watermark::WatermarkView* watermark_view() {
     return watermark_view_;
   }
-
+  const ContentsContainerOutline* contents_outline_view() const {
+    return container_outline_;
+  }
   TabModalDialogHost* web_contents_modal_dialog_host() {
     return &web_contents_modal_dialog_host_;
   }
@@ -108,7 +109,7 @@ class ContentsContainerView : public views::View,
 
   void UpdateBorderAndOverlay(bool is_in_split,
                               bool is_active,
-                              bool show_scrim);
+                              bool is_highlighted);
 
   void ShowCaptureContentsBorder(std::optional<gfx::Rect> border_location);
   void HideCaptureContentsBorder();
@@ -163,10 +164,6 @@ class ContentsContainerView : public views::View,
   // The scrim view that covers the content area when a tab-modal dialog is
   // open.
   raw_ptr<ScrimView> contents_scrim_view_ = nullptr;
-
-  // Scrim view shown on the inactive side of a split view when the omnibox is
-  // focused or site permissions dialogs are showing.
-  raw_ptr<ScrimView> inactive_split_scrim_view_ = nullptr;
 
   // The view that contains the Glic Actor Overlay. The Actor Overlay is a UI
   // overlay that is shown on top of the web contents.

@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/frame/contents_container_outline.h"
 
 #include "base/i18n/rtl.h"
-#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -33,8 +32,25 @@ ContentsContainerOutline::ContentsContainerOutline(views::View* mini_toolbar)
 
 ContentsContainerOutline::~ContentsContainerOutline() = default;
 
-void ContentsContainerOutline::UpdateState(bool is_active) {
+// static
+int ContentsContainerOutline::GetThickness(bool is_highlighted) {
+  return is_highlighted ? kHighlightThickness : kThickness;
+}
+
+// static
+ui::ColorId ContentsContainerOutline::GetColor(bool is_active,
+                                               bool is_highlighted) {
+  if (is_active) {
+    return is_highlighted ? kColorMulitContentsViewHighlightContentOutline
+                          : kColorMulitContentsViewActiveContentOutline;
+  }
+  return kColorMulitContentsViewInactiveContentOutline;
+}
+
+void ContentsContainerOutline::UpdateState(bool is_active,
+                                           bool is_highlighted) {
   is_active_ = is_active;
+  is_highlighted_ = is_highlighted;
   SetVisible(true);
   SchedulePaint();
 }
@@ -42,15 +58,14 @@ void ContentsContainerOutline::UpdateState(bool is_active) {
 void ContentsContainerOutline::OnPaint(gfx::Canvas* canvas) {
   // Draw the bordering stroke.
   cc::PaintFlags flags;
-  flags.setStrokeWidth(kThickness);
-  flags.setColor(GetColorProvider()->GetColor(
-      is_active_ ? kColorMulitContentsViewActiveContentOutline
-                 : kColorMulitContentsViewInactiveContentOutline));
+  flags.setStrokeWidth(GetThickness(is_highlighted_));
+  flags.setColor(
+      GetColorProvider()->GetColor(GetColor(is_active_, is_highlighted_)));
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setAntiAlias(true);
 
   gfx::RectF local_bounds(GetLocalBounds());
-  const float half_thickness = kThickness / 2.0f;
+  const float half_thickness = GetThickness(is_highlighted_) / 2.0f;
   local_bounds.Inset(half_thickness);
   const float corner_radius = kCornerRadius - half_thickness;
 
@@ -67,8 +82,10 @@ void ContentsContainerOutline::OnPaint(gfx::Canvas* canvas) {
              SkPathDirection::kCW, local_bounds.right(),
              local_bounds.y() + corner_radius);
 
-  if (is_active_ && features::kSideBySideMiniToolbarActiveConfiguration.Get() ==
-                        features::MiniToolbarActiveConfiguration::Hide) {
+  if (is_active_ &&
+      (is_highlighted_ ||
+       features::kSideBySideMiniToolbarActiveConfiguration.Get() ==
+           features::MiniToolbarActiveConfiguration::Hide)) {
     // If the mini toolbar is hidden on active view, just draw the rounded rect.
     path.lineTo(local_bounds.right(), local_bounds.bottom() - corner_radius);
     path.arcTo(corner_radius, corner_radius, 0.0f, SkPath::kSmall_ArcSize,
@@ -136,7 +153,7 @@ void ContentsContainerOutline::SetClipPath() {
   // Set clip path on the mini toolbar view, it uses half thickness less corner
   // radius than the outline. This path needs to match the outline path.
   gfx::Rect mini_toolbar_rect(mini_toolbar_->GetLocalBounds());
-  const float half_thickness = kThickness / 2.0f;
+  const float half_thickness = GetThickness(is_highlighted_) / 2.0f;
   mini_toolbar_rect.Inset(half_thickness);
   const float corner_radius = kCornerRadius - half_thickness;
 

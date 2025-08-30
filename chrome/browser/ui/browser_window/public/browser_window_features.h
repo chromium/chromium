@@ -162,7 +162,7 @@ class SendTabToSelfToolbarBubbleController;
 }  // namespace send_tab_to_self
 
 namespace split_tabs {
-class SplitTabScrimController;
+class SplitTabHighlightController;
 }  // namespace split_tabs
 
 namespace ui {
@@ -388,8 +388,8 @@ class BrowserWindowFeatures {
     return devtools_ui_controller_.get();
   }
 
-  split_tabs::SplitTabScrimController* split_tab_scrim_controller() {
-    return split_tab_scrim_controller_.get();
+  split_tabs::SplitTabHighlightController* split_tab_highlight_controller() {
+    return split_tab_highlight_controller_.get();
   }
 
   ContentsBorderController* contents_border_controller() {
@@ -674,8 +674,8 @@ class BrowserWindowFeatures {
   // TODO(crbug.com/423956131): Remove this.
   raw_ptr<BrowserWindowInterface> browser_ = nullptr;
 
-  std::unique_ptr<split_tabs::SplitTabScrimController>
-      split_tab_scrim_controller_;
+  std::unique_ptr<split_tabs::SplitTabHighlightController>
+      split_tab_highlight_controller_;
 
   std::unique_ptr<RecentActivityBubbleCoordinator>
       recent_activity_bubble_coordinator_;

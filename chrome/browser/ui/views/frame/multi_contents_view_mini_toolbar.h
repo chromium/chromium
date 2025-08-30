@@ -43,7 +43,7 @@ class MultiContentsViewMiniToolbar : public views::View,
                                ContentsWebView* web_view);
   ~MultiContentsViewMiniToolbar() override;
 
-  void UpdateState(bool is_active);
+  void UpdateState(bool is_active, bool is_highlighted);
 
   views::Label* domain_label_for_testing() { return domain_label_; }
   views::ImageButton* image_button_for_testing() { return image_button_; }

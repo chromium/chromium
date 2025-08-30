@@ -56,12 +56,6 @@ namespace {
 constexpr int kMiniToolbarContentPadding = 4;
 constexpr int kMiniToolbarDomainMaxWidth = 140;
 
-constexpr gfx::Insets kDefaultInteriorMargins = gfx::Insets::TLBR(
-    ContentsContainerOutline::kCornerRadius + kMiniToolbarContentPadding,
-    ContentsContainerOutline::kCornerRadius * 2,
-    kMiniToolbarContentPadding,
-    ContentsContainerOutline::kThickness);
-
 tabs::TabInterface* GetTabInterface(content::WebContents* web_contents) {
   return web_contents ? tabs::TabInterface::GetFromContents(web_contents)
                       : nullptr;
@@ -88,7 +82,6 @@ MultiContentsViewMiniToolbar::MultiContentsViewMiniToolbar(
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-      .SetInteriorMargin(kDefaultInteriorMargins)
       .SetDefault(views::kMarginsKey, gfx::Insets::VH(0, 6))
       .SetIgnoreDefaultMainAxisMargins(true)
       .SetCollapseMargins(true);
@@ -173,28 +166,35 @@ MultiContentsViewMiniToolbar::~MultiContentsViewMiniToolbar() {
   browser_view_->browser()->tab_strip_model()->RemoveObserver(this);
 }
 
-void MultiContentsViewMiniToolbar::UpdateState(bool is_active) {
+void MultiContentsViewMiniToolbar::UpdateState(bool is_active,
+                                               bool is_highlighted) {
+  gfx::Insets kInactiveInteriorMargins = gfx::Insets::TLBR(
+      ContentsContainerOutline::kCornerRadius + kMiniToolbarContentPadding,
+      ContentsContainerOutline::kCornerRadius * 2, kMiniToolbarContentPadding,
+      ContentsContainerOutline::GetThickness(is_highlighted));
+
+  // Reduce the margins in the case of showing only the close or menu button.
+  gfx::Insets kActiveInteriorMargins = gfx::Insets::TLBR(
+      ContentsContainerOutline::kCornerRadius + kMiniToolbarContentPadding,
+      ContentsContainerOutline::kCornerRadius + kMiniToolbarContentPadding,
+      kMiniToolbarContentPadding,
+      ContentsContainerOutline::GetThickness(is_highlighted) * 2);
+
+  static_cast<views::FlexLayout*>(GetLayoutManager())
+      ->SetInteriorMargin(is_active ? kActiveInteriorMargins
+                                    : kInactiveInteriorMargins);
+
   if (features::kSideBySideMiniToolbarActiveConfiguration.Get() ==
       features::MiniToolbarActiveConfiguration::Hide) {
     SetVisible(!is_active);
     return;
   }
 
-  SetVisible(true);
-
-  // Reduce the margins in the case of showing only the close or menu button.
-  static constexpr gfx::Insets kActiveInteriorMargins = gfx::Insets::TLBR(
-      ContentsContainerOutline::kCornerRadius + kMiniToolbarContentPadding,
-      ContentsContainerOutline::kCornerRadius + kMiniToolbarContentPadding,
-      kMiniToolbarContentPadding, ContentsContainerOutline::kThickness * 2);
+  SetVisible(!is_highlighted);
 
   favicon_->SetVisible(!is_active);
   domain_label_->SetVisible(!is_active);
   alert_state_indicator_->SetVisible(!is_active);
-
-  static_cast<views::FlexLayout*>(GetLayoutManager())
-      ->SetInteriorMargin(is_active ? kActiveInteriorMargins
-                                    : kDefaultInteriorMargins);
 }
 
 void MultiContentsViewMiniToolbar::UpdateWebContents(views::WebView* web_view) {

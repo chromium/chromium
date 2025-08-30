@@ -101,14 +101,6 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view)
   contents_scrim_view_ = AddChildView(std::make_unique<ScrimView>());
   contents_scrim_view_->layer()->SetName("ContentsScrimView");
 
-  if (base::FeatureList::IsEnabled(features::kSideBySide)) {
-    inactive_split_scrim_view_ =
-        AddChildView(std::make_unique<ScrimView>(kColorSplitViewScrim));
-    inactive_split_scrim_view_->SetProperty(views::kElementIdentifierKey,
-                                            kInactiveSplitScrimViewElementId);
-    inactive_split_scrim_view_->SetRoundedCorners(kContentRoundedCorners);
-  }
-
   if (features::kGlicActorUiOverlay.Get()) {
     auto actor_overlay_view = std::make_unique<views::View>();
     actor_overlay_view->SetID(VIEW_ID_ACTOR_OVERLAY);
@@ -158,7 +150,7 @@ std::vector<views::View*> ContentsContainerView::GetAccessiblePanes() {
 
 void ContentsContainerView::UpdateBorderAndOverlay(bool is_in_split,
                                                    bool is_active,
-                                                   bool show_scrim) {
+                                                   bool is_highlighted) {
   is_in_split_ = is_in_split;
 
   // The border, mini toolbar, and scrim should not be visible if not in a
@@ -168,7 +160,6 @@ void ContentsContainerView::UpdateBorderAndOverlay(bool is_in_split,
     ClearBorderRoundedCorners();
     mini_toolbar_->SetVisible(false);
     container_outline_->SetVisible(false);
-    inactive_split_scrim_view_->SetVisible(false);
     return;
   }
 
@@ -176,13 +167,10 @@ void ContentsContainerView::UpdateBorderAndOverlay(bool is_in_split,
       kSplitViewContentPadding + ContentsContainerOutline::kThickness)));
   UpdateBorderRoundedCorners();
 
-  container_outline_->UpdateState(is_active);
+  container_outline_->UpdateState(is_active, is_highlighted);
   // Mini toolbar should only be visible for the inactive contents
   // container view or both depending on configuration.
-  mini_toolbar_->UpdateState(is_active);
-  // Scrim should only be allowed to show the scrim for inactive contents
-  // container view.
-  inactive_split_scrim_view_->SetVisible(!is_active && show_scrim);
+  mini_toolbar_->UpdateState(is_active, is_highlighted);
 }
 
 void ContentsContainerView::UpdateBorderRoundedCorners() {
@@ -509,14 +497,6 @@ views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
   layouts.child_layouts.emplace_back(watermark_view_.get(),
                                      watermark_view_->GetVisible(),
                                      full_contents_bounds);
-
-  // The inactive split scrim view should cover the entire contents bounds
-  // including over devtools and other views.
-  if (inactive_split_scrim_view_) {
-    layouts.child_layouts.emplace_back(inactive_split_scrim_view_.get(),
-                                       inactive_split_scrim_view_->GetVisible(),
-                                       full_contents_bounds);
-  }
 
   // Actor Overlay view bounds are the same as the contents view.
   if (actor_overlay_view_) {

@@ -105,8 +105,8 @@ class MultiContentsView : public views::View,
   // Updates the size of the contents views based on |ratio|.
   void UpdateSplitRatio(double ratio);
 
-  // Sets whether a scrim should show over the inactive contents view.
-  void SetInactiveScrimVisibility(bool show_inactive_scrim);
+  // Sets whether the active contents view is highlighted.
+  void SetHighlightActiveContentsView(bool needs_attention);
 
   // Helper method to execute an arbitrary callback on each visible contents
   // view. Will execute the callback on the active contents view first.
@@ -136,7 +136,7 @@ class MultiContentsView : public views::View,
   void OnPaint(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
 
-  std::vector<ContentsContainerView*> contents_container_views() {
+  std::vector<ContentsContainerView*> contents_container_views() const {
     return contents_container_views_;
   }
 
@@ -240,7 +240,7 @@ class MultiContentsView : public views::View,
   gfx::Insets start_contents_view_inset_;
   gfx::Insets end_contents_view_inset_;
 
-  bool show_inactive_scrim_ = false;
+  bool active_contents_view_highlighted_ = false;
 
   std::optional<int> min_contents_width_for_testing_ = std::nullopt;
 
