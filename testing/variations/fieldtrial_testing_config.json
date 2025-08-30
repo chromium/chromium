@@ -16001,21 +16001,6 @@
             ]
         }
     ],
-    "NewTabPageCustomization": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NewTabPageCustomization"
-                    ]
-                }
-            ]
-        }
-    ],
     "NewTabPageCustomizationForMvt": [
         {
             "platforms": [

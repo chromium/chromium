@@ -997,7 +997,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sNavBarColorAnimation =
             newCachedFlag(NAV_BAR_COLOR_ANIMATION, /* defaultValue= */ true);
     public static final CachedFlag sNewTabPageCustomization =
-            newCachedFlag(NEW_TAB_PAGE_CUSTOMIZATION, false, true);
+            newCachedFlag(NEW_TAB_PAGE_CUSTOMIZATION, true);
     public static final CachedFlag sNewTabPageCustomizationForMvt =
             newCachedFlag(NEW_TAB_PAGE_CUSTOMIZATION_FOR_MVT, false, true);
     public static final CachedFlag sNewTabPageCustomizationToolbarButton =
