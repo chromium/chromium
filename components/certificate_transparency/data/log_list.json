@@ -1,6 +1,6 @@
 {
-  "version": "63.33",
-  "log_list_timestamp": "2025-08-29T12:53:33Z",
+  "version": "64.1",
+  "log_list_timestamp": "2025-08-30T12:53:42Z",
   "operators": [
     {
       "name": "Google",
@@ -691,6 +691,22 @@
           "log_id": "LtakTeuPDIZGZ3acTt0EH4QjZ1X6OqymNNCTXfzVmnA=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEj4lCAxWCY6SzIthkqZhwiUVzcK62i6Fc+/YS0WHaN6jjO1ITUFuu8beOiU9PdeNmdalZcC3iWovAfApvXS33Nw==",
           "url": "https://ct.example.com/bogus/",
+          "mmd": 86400,
+          "state": {
+            "retired": {
+              "timestamp": "2025-06-21T07:00:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2020-01-01T08:00:00Z",
+            "end_exclusive": "2020-01-02T08:00:00Z"
+          }
+        },
+        {
+          "description": "Bogus RFC6962 log to avoid breaking misbehaving CT libraries",
+          "log_id": "0vxlL6X5tzi4N1X6XrFfC0UlP06Po7m2T9TeVmLRhwg=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAELzNWh+BsAk0HnEEE7Zk1bAhdH1SM5udo1+CTF6LGcL6AVVIXSuOF95/Wg0qLZV491QbrNRg06mM6KwEzDXXtqg==",
+          "url": "https://ct.example.com/bogus/ipng/",
           "mmd": 86400,
           "state": {
             "retired": {
