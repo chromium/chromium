@@ -249,7 +249,7 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
       static_cast<size_t>(
           storage::mojom::DisallowInactiveClientReason::kMaxValue) +
       1;
-  std::array<mojo::RemoteSet<storage::mojom::IndexedDBClientKeepActive>,
+  std::array<mojo::Remote<storage::mojom::IndexedDBClientKeepActive>,
              kNumKeepActiveReasons>
       client_keep_active_remotes_;
 

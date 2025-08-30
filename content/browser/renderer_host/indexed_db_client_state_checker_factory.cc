@@ -148,7 +148,6 @@ class DocumentIndexedDBClientStateChecker final
         reason ==
         storage::mojom::DisallowInactiveClientReason::kVersionChangeEvent;
 
-    CHECK(keep_active.is_valid());
     bool was_active = CheckIfClientWasActive(reason);
     if (!was_active) {
       std::move(callback).Run(was_active);
@@ -172,6 +171,14 @@ class DocumentIndexedDBClientStateChecker final
     const bool create_bfcache_feature_handle = is_version_change_event;
     if (!create_holding_blocking_idb_lock_handle &&
         !create_bfcache_feature_handle) {
+      std::move(callback).Run(was_active);
+      return;
+    }
+
+    // If the client passed a null receiver, it means they already have an
+    // active remote for this reason and don't need a new one. We still need
+    // to perform the checks above but can skip receiver management.
+    if (!keep_active.is_valid()) {
       std::move(callback).Run(was_active);
       return;
     }

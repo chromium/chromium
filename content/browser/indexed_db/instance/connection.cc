@@ -156,13 +156,22 @@ void Connection::DisallowInactiveClient(
     return;
   }
 
-  mojo::Remote<storage::mojom::IndexedDBClientKeepActive>
-      client_keep_active_remote;
+  size_t reason_index = base::to_underlying(reason);
+
+  if (client_keep_active_remotes_[reason_index].is_bound()) {
+    // Since the keep_active remote is found in client_keep_active_remotes_,
+    // the client must be active (would have been cleared if evicted).
+    // Still call server but pass null receiver.
+    client_state_checker_->DisallowInactiveClient(
+        id_, reason, mojo::NullReceiver(), std::move(callback));
+    return;
+  }
+
+  // Normal path - create new remote and bind it
   client_state_checker_->DisallowInactiveClient(
-      id_, reason, client_keep_active_remote.BindNewPipeAndPassReceiver(),
+      id_, reason,
+      client_keep_active_remotes_[reason_index].BindNewPipeAndPassReceiver(),
       std::move(callback));
-  client_keep_active_remotes_[base::to_underlying(reason)].Add(
-      std::move(client_keep_active_remote));
 
   // TODO(381086791): Remove this histogram when the regression is fixed.
   static constexpr char kClientKeepActiveRemotesCount[] =
@@ -173,8 +182,8 @@ void Connection::DisallowInactiveClient(
         base::JoinString({kClientKeepActiveRemotesCount,
                           DisallowInactiveClientReasonToString(reason)},
                          "."),
-        remote.size());
-    remotes_count += remote.size();
+        remote.is_bound() ? 1u : 0u);
+    remotes_count += remote.is_bound() ? 1u : 0u;
   }
   base::UmaHistogramCounts1M(kClientKeepActiveRemotesCount, remotes_count);
 }
@@ -213,7 +222,7 @@ void Connection::RemoveTransaction(int64_t id) {
   // Safe to make this client inactive.
   if (can_go_inactive) {
     for (auto& remotes : client_keep_active_remotes_) {
-      remotes.Clear();
+      remotes.reset();
     }
   }
 }
@@ -822,7 +831,7 @@ std::unique_ptr<DatabaseCallbacks> Connection::AbortTransactionsAndClose(
   std::unique_ptr<DatabaseCallbacks> callbacks = std::move(callbacks_);
   std::move(on_close_).Run(this);
   for (auto& remotes : client_keep_active_remotes_) {
-    remotes.Clear();
+    remotes.reset();
   }
   bucket_context_handle_->quota_manager()->NotifyBucketAccessed(
       bucket_context_handle_->bucket_locator(), base::Time::Now());
