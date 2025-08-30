@@ -7,6 +7,7 @@
 #include <limits.h>
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
@@ -28,11 +29,11 @@ namespace autofill {
 namespace {
 
 // Returns the region code for this phone number, which is an ISO 3166 2-letter
-// country code.  The returned value is based on the |profile|; if the |profile|
+// country code.  The returned value is based on the `profile`; if the `profile`
 // does not have a country code associated with it, falls back to the country
-// code corresponding to the |app_locale|.
+// code corresponding to the `app_locale`.
 std::string GetRegion(const AutofillProfile& profile,
-                      const std::string& app_locale) {
+                      std::string_view app_locale) {
   std::u16string country_code = profile.GetRawInfo(ADDRESS_HOME_COUNTRY);
   if (!country_code.empty())
     return base::UTF16ToASCII(country_code);
@@ -113,7 +114,7 @@ void PhoneNumber::GetMatchingTypes(const std::u16string& text,
                                    const std::string& app_locale,
                                    FieldTypeSet* matching_types) const {
   // Strip the common phone number non numerical characters before calling the
-  // base matching type function. For example, the |text| "(514) 121-1523"
+  // base matching type function. For example, the `text` "(514) 121-1523"
   // would become the stripped text "5141211523". Since the base matching
   // function only does simple canonicalization to match against the stored
   // data, some domain specific cases will be covered below.
@@ -124,7 +125,7 @@ void PhoneNumber::GetMatchingTypes(const std::u16string& text,
   // TODO(crbug.com/41236729): Investigate the use of PhoneNumberUtil when
   // matching phone numbers for upload.
   // If there is not already a match for PHONE_HOME_WHOLE_NUMBER, normalize the
-  // |text| based on the app_locale before comparing it to the whole number. For
+  // `text` based on the app_locale before comparing it to the whole number. For
   // example, the France number "33 2 49 19 70 70" would be normalized to
   // "+33249197070" whereas the US number "+1 (234) 567-8901" would be
   // normalized to "12345678901".
@@ -168,7 +169,7 @@ void PhoneNumber::GetMatchingTypes(const std::u16string& text,
   }
 }
 
-// Normalize phones if |type| is a whole number:
+// Normalize phones if `type` is a whole number:
 //   (650)2345678 -> 6502345678
 //   1-800-FLOWERS -> 18003569377
 // If the phone cannot be normalized, returns the stored value verbatim.
@@ -314,7 +315,7 @@ VerificationStatus PhoneNumber::GetVerificationStatus(FieldType type) const {
   return VerificationStatus::kNoStatus;
 }
 
-void PhoneNumber::UpdateCacheIfNeeded(const std::string& app_locale) const {
+void PhoneNumber::UpdateCacheIfNeeded(std::string_view app_locale) const {
   std::string region = GetRegion(*profile_, app_locale);
   if (!number_.empty() && cached_parsed_phone_.region() != region) {
     // To enable filling of country calling codes for nationally formatted
