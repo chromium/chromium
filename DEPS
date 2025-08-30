@@ -3055,7 +3055,7 @@ deps = {
       'packages': [
         {
           'package': 'skia/tools/goldctl/linux-amd64',
-          'version': 'Crs4pLO-tMSzA5ldZyYRfd6l8DlBceR6NUDI0K8aI4kC',
+          'version': '9ByI3GXvRWtecAXo0R39pN9Jak7EvEeKnHr7AvwPTusC',
         },
       ],
       'dep_type': 'cipd',
