@@ -62,6 +62,7 @@ fedcm/support/${manifest_filename}`;
       providers: [{
         configURL: manifest_path,
         clientId: '1',
+        // TODO(crbug.com/441895082): Move nonce to params when FedCmNonceInParams is enabled by default
         nonce: '2'
       }]
     },

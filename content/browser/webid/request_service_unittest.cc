@@ -8312,6 +8312,9 @@ TEST_F(RequestServiceTest,
 }
 
 TEST_F(RequestServiceTest, RecordsNoncePresence) {
+  // TODO(crbug.com/441895082): Remove this test when FedCmNonceInParams is
+  // enabled by default. Nonce should be passed via params field, not as a
+  // separate field.
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].nonce = "12345";
   RunAuthTest(parameters, kExpectationSuccess, kConfigurationValid);
@@ -8320,6 +8323,9 @@ TEST_F(RequestServiceTest, RecordsNoncePresence) {
 }
 
 TEST_F(RequestServiceTest, NonceAbsenceNoRecord) {
+  // TODO(crbug.com/441895082): Remove this test when FedCmNonceInParams is
+  // enabled by default. Nonce should be passed via params field, not as a
+  // separate field.
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].nonce = "";
   RunAuthTest(parameters, kExpectationSuccess, kConfigurationValid);

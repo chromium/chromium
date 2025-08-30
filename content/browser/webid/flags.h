@@ -48,6 +48,9 @@ bool IsAutofillEnabled();
 // Whether showing the iframe origin is enabled.
 bool IsIframeOriginEnabled();
 
+// Whether nonce usage in params is enabled.
+bool IsNonceInParamsEnabled();
+
 }  // namespace content::webid
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_

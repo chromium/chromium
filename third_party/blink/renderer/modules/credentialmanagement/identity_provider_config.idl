@@ -24,6 +24,7 @@ dictionary IdentityProviderField {
 };
 
 dictionary IdentityProviderRequestOptions : IdentityProviderConfig {
+  // TODO(crbug.com/441895082): Remove nonce field when FedCmNonceInParams is enabled by default.
   USVString nonce;
   DOMString loginHint;
   DOMString domainHint;

@@ -418,6 +418,9 @@ BASE_FEATURE(FedCmWithoutWellKnownEnforcement,
 // Enables Lightweight FedCM Mode
 BASE_FEATURE(FedCmLightweightMode, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables Nonce usage in Params
+BASE_FEATURE(FedCmNonceInParams, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables browser-side focus verification when crossing fenced boundaries.
 BASE_FEATURE(FencedFramesEnforceFocus, base::FEATURE_DISABLED_BY_DEFAULT);
 

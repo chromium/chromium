@@ -69,4 +69,7 @@ bool IsIframeOriginEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmIframeOrigin);
 }
 
+bool IsNonceInParamsEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmNonceInParams);
+}
 }  // namespace content::webid

@@ -47,7 +47,7 @@ std::string ComputeUrlEncodedTokenPostData(
         "client_id=" + base::EscapeUrlEncodedData(client_id, /*use_plus=*/true);
   }
 
-  if (!nonce.empty()) {
+  if (!webid::IsNonceInParamsEnabled() && !nonce.empty()) {
     if (!query.empty()) {
       query += "&";
     }
