@@ -342,6 +342,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Data used with IsClipboardPasteAllowedByPolicy() method.
   using ClipboardPasteData = content::ClipboardPasteData;
 
+  // Called with the RenderFrameHostId and whether the RenderFrameHost is
+  // in prerender state.
+  using PrerenderStateChangedCallback =
+      base::RepeatingCallback<void(const GlobalRenderFrameHostId&, bool)>;
+
   static RenderFrameHostImpl* From(RenderFrameHost* render_frame_host) {
     // It is assumed that all RenderFrameHosts are RenderFrameHostImpls.
     return static_cast<RenderFrameHostImpl*>(render_frame_host);
@@ -3292,6 +3297,18 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void OnKeepAliveRequestCreated(
       const network::ResourceRequest& resource_request);
 
+  // Callback called when the prerendering state of a RenderFrameHost changes.
+  // Since the lifecycle_state_ is not updated if the navigation in a
+  // PrerenderHost does not create a speculative RFH, this is not exactly the
+  // same as lifecycle_state_ == kPrerendering. Instead, the callback is invoked
+  // based on the prerender state of the frame tree.
+  // The callback is registered from the RenderProcessHostImpl to avoid exposing
+  // a new content/public API on RenderProcessHost. We cannot directly call the
+  // function in RenderProcessHostImpl without a public API because of the
+  // existence of the MockRenderProcessHost.
+  void SetPrerenderStateChangedCallback(
+      PrerenderStateChangedCallback prerender_state_callback);
+
  protected:
   friend class RenderFrameHostFactory;
 
@@ -5528,6 +5545,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // reports will be grouped under `crash-reporting`.
   // See for https://github.com/WICG/crash-reporting/issues/24 more details.
   std::string crash_reporting_group_ = "default";
+
+  PrerenderStateChangedCallback prerender_state_callback_;
 
   base::OnceClosure on_process_before_unload_completed_for_testing_;
 

@@ -879,6 +879,10 @@ class CONTENT_EXPORT RenderProcessHostImpl
   static void SetVideoDecoderEventCBForTesting(VideoDecoderEventCB cb);
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
+  // Returns whether the process is only hosting RFHs in prerendered pages
+  // or no RFHs at all.
+  bool IsOnlyHostingPrerenderedFramesOrEmpty();
+
   void GetBoundInterfacesForTesting(std::vector<std::string>& out);
 
   void SetPrivateMemoryFootprintForTesting(
@@ -1256,6 +1260,13 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void ResetVideoDecoderFactory();
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
+  // The callback for handling the prerender state change of each
+  // RFH in the process. The prerender state of all the RFHs in
+  // the process is tracked to determine IsOnlyHostingPrerenderedFramesOrEmpty.
+  void OnRenderFrameHostPrerenderStateChanged(
+      const GlobalRenderFrameHostId& render_frame_host_id,
+      bool is_prerendering);
+
   mojo::OutgoingInvitation mojo_invitation_;
 
   // These cover mutually-exclusive cases. While keep-alive is time-based,
@@ -1372,6 +1383,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   std::set<mojo::ReceiverId> dom_storage_receiver_ids_;
 
   std::set<GlobalRenderFrameHostId> render_frame_host_id_set_;
+
+  std::set<GlobalRenderFrameHostId> prerendering_frame_host_id_set_;
 
   // The observers watching our lifetime.
   base::ObserverList<RenderProcessHostObserver> observers_;
