@@ -248,6 +248,290 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     private @StyleRes int mAnimationStyleId;
     private boolean mAnimateFromAnchor;
 
+    /** A builder for {@link AnchoredPopupWindow} instances. */
+    public static class Builder {
+        private final Context mContext;
+        private final View mRootView;
+        private final Supplier<View> mContentViewCreator;
+        private final RectProvider mAnchorRectProvider;
+        private final Drawable mBackground;
+
+        private @Nullable RectProvider mViewportRectProvider;
+        private @Nullable OnDismissListener mOnDismissListener;
+        private @Nullable OnTouchListener mTouchListener;
+        private @Nullable LayoutObserver mLayoutObserver;
+        private int mMarginPx;
+        private int mMaxWidthPx;
+        private int mDesiredContentWidthPx;
+        private int mDesiredContentHeightPx;
+
+        @VerticalOrientation
+        private int mPreferredVerticalOrientation = VerticalOrientation.MAX_AVAILABLE_SPACE;
+
+        @HorizontalOrientation
+        private int mPreferredHorizontalOrientation = HorizontalOrientation.MAX_AVAILABLE_SPACE;
+
+        private boolean mDismissOnTouchInteraction;
+        private boolean mVerticalOverlapAnchor;
+        private boolean mHorizontalOverlapAnchor;
+        private boolean mUpdateOrientationOnChange;
+        private boolean mSmartAnchorWithMaxWidth;
+        private boolean mAllowNonTouchableSize;
+        private @StyleRes int mAnimationStyleId;
+        private boolean mAnimateFromAnchor;
+        private boolean mFocusable;
+        private float mElevation;
+        private boolean mTouchModal;
+        private boolean mOutsideTouchable;
+        private boolean mIsOutsideTouchableSet;
+
+        /**
+         * Constructs an {@link AnchoredPopupWindow} instance.
+         *
+         * @param context Context to draw resources from.
+         * @param rootView The {@link View} to use for size calculations and for display.
+         * @param background The background {@link Drawable} to use for the popup.
+         * @param contentViewCreator The supplier for the content view to set on the popup. The view
+         *     is expected to be a {@link ViewGroup}.
+         * @param anchorRectProvider The {@link RectProvider} that will provide the {@link Rect}
+         *     this popup attaches and orients to. The coordinates in the {@link Rect} are expected
+         *     to be screen coordinates.
+         * @deprecated Use the {@link Builder} to create the popup instead.
+         */
+        public Builder(
+                Context context,
+                View rootView,
+                Drawable background,
+                Supplier<View> contentViewCreator,
+                RectProvider anchorRectProvider) {
+            mContext = context;
+            mRootView = rootView;
+            mBackground = background;
+            mContentViewCreator = contentViewCreator;
+            mAnchorRectProvider = anchorRectProvider;
+        }
+
+        /**
+         * @param viewportRectProvider The {@link RectProvider} that provides the {@link Rect} for
+         *     the visible viewpoint. If null, the window coordinates of the root view will be used.
+         */
+        public Builder setViewportRectProvider(RectProvider viewportRectProvider) {
+            mViewportRectProvider = viewportRectProvider;
+            return this;
+        }
+
+        /**
+         * @param onDismissListener A listener to be called when the popup is dismissed.
+         */
+        public Builder addOnDismissListener(OnDismissListener onDismissListener) {
+            mOnDismissListener = onDismissListener;
+            return this;
+        }
+
+        /**
+         * @param onTouchListener A callback for all touch events being dispatched to the popup.
+         */
+        public Builder setTouchInterceptor(OnTouchListener onTouchListener) {
+            mTouchListener = onTouchListener;
+            return this;
+        }
+
+        /**
+         * @param layoutObserver The observer to be notified of layout changes.
+         */
+        public Builder setLayoutObserver(LayoutObserver layoutObserver) {
+            mLayoutObserver = layoutObserver;
+            return this;
+        }
+
+        /**
+         * @param margin The vertical and horizontal margin in pixels.
+         */
+        public Builder setMargin(int margin) {
+            mMarginPx = margin;
+            return this;
+        }
+
+        /**
+         * @param maxWidth The max width for the popup.
+         */
+        public Builder setMaxWidth(int maxWidth) {
+            mMaxWidthPx = maxWidth;
+            return this;
+        }
+
+        /**
+         * @param width The desired width for the content of the popup window in pixel.
+         * @param height The desired height for the content of the popup window in pixel.
+         */
+        public Builder setDesiredContentSize(int width, int height) {
+            mDesiredContentWidthPx = width;
+            mDesiredContentHeightPx = height;
+            return this;
+        }
+
+        /**
+         * @param orientation The vertical orientation preferred.
+         */
+        public Builder setPreferredVerticalOrientation(@VerticalOrientation int orientation) {
+            mPreferredVerticalOrientation = orientation;
+            return this;
+        }
+
+        /**
+         * @param orientation The horizontal orientation preferred.
+         */
+        public Builder setPreferredHorizontalOrientation(@HorizontalOrientation int orientation) {
+            mPreferredHorizontalOrientation = orientation;
+            return this;
+        }
+
+        /**
+         * @param dismiss Whether or not to dismiss this popup when the screen is tapped.
+         */
+        public Builder setDismissOnTouchInteraction(boolean dismiss) {
+            mDismissOnTouchInteraction = dismiss;
+            return this;
+        }
+
+        /**
+         * @param overlap Whether the popup should vertically overlap the anchor.
+         */
+        public Builder setVerticalOverlapAnchor(boolean overlap) {
+            mVerticalOverlapAnchor = overlap;
+            return this;
+        }
+
+        /**
+         * @param overlap Whether the popup should horizontally overlap the anchor.
+         */
+        public Builder setHorizontalOverlapAnchor(boolean overlap) {
+            mHorizontalOverlapAnchor = overlap;
+            return this;
+        }
+
+        /**
+         * @param update If set to true, orientation will be updated every time that the {@link
+         *     OnRectChanged} is called.
+         */
+        public Builder setUpdateOrientationOnChange(boolean update) {
+            mUpdateOrientationOnChange = update;
+            return this;
+        }
+
+        /**
+         * @param smartAnchor Whether the popup should smartAnchor the anchor.
+         */
+        public Builder setSmartAnchorWithMaxWidth(boolean smartAnchor) {
+            mSmartAnchorWithMaxWidth = smartAnchor;
+            return this;
+        }
+
+        /**
+         * @param allow Whether to allow the popup to have a small non-touchable size.
+         */
+        public Builder setAllowNonTouchableSize(boolean allow) {
+            mAllowNonTouchableSize = allow;
+            return this;
+        }
+
+        /**
+         * @param animationStyleId The id of the animation style.
+         */
+        public Builder setAnimationStyle(@StyleRes int animationStyleId) {
+            mAnimationStyleId = animationStyleId;
+            return this;
+        }
+
+        /**
+         * @param animateFromAnchor Whether the popup should animator from anchor point.
+         */
+        public Builder setAnimateFromAnchor(boolean animateFromAnchor) {
+            mAnimateFromAnchor = animateFromAnchor;
+            return this;
+        }
+
+        /**
+         * @param focusable True if the popup is focusable, false otherwise.
+         */
+        public Builder setFocusable(boolean focusable) {
+            mFocusable = focusable;
+            return this;
+        }
+
+        /**
+         * @param elevation The elevation of the popup.
+         */
+        public Builder setElevation(float elevation) {
+            mElevation = elevation;
+            return this;
+        }
+
+        /**
+         * @param touchModal True if the popup is touch modal, false otherwise.
+         */
+        public Builder setTouchModal(boolean touchModal) {
+            mTouchModal = touchModal;
+            return this;
+        }
+
+        /**
+         * @param touchable True if the popup is outside touchable, false otherwise.
+         */
+        public Builder setOutsideTouchable(boolean touchable) {
+            mOutsideTouchable = touchable;
+            mIsOutsideTouchableSet = true;
+            return this;
+        }
+
+        /**
+         * @return A new {@link AnchoredPopupWindow}.
+         */
+        public AnchoredPopupWindow build() {
+            return new AnchoredPopupWindow(this);
+        }
+    }
+
+    private AnchoredPopupWindow(Builder builder) {
+        this(
+                builder.mContext,
+                builder.mRootView,
+                builder.mBackground,
+                builder.mContentViewCreator,
+                builder.mAnchorRectProvider,
+                builder.mViewportRectProvider);
+
+        if (builder.mOnDismissListener != null) {
+            addOnDismissListener(builder.mOnDismissListener);
+        }
+        setTouchInterceptor(builder.mTouchListener);
+        setLayoutObserver(builder.mLayoutObserver);
+        setMargin(builder.mMarginPx);
+        if (builder.mMaxWidthPx > 0) setMaxWidth(builder.mMaxWidthPx);
+        if (builder.mDesiredContentWidthPx != 0 || builder.mDesiredContentHeightPx != 0) {
+            updateDesiredContentSize(
+                    builder.mDesiredContentWidthPx, builder.mDesiredContentHeightPx, false);
+        }
+        setPreferredVerticalOrientation(builder.mPreferredVerticalOrientation);
+        setPreferredHorizontalOrientation(builder.mPreferredHorizontalOrientation);
+        setDismissOnTouchInteraction(builder.mDismissOnTouchInteraction);
+        setVerticalOverlapAnchor(builder.mVerticalOverlapAnchor);
+        setHorizontalOverlapAnchor(builder.mHorizontalOverlapAnchor);
+        setUpdateOrientationOnChange(builder.mUpdateOrientationOnChange);
+        setSmartAnchorWithMaxWidth(builder.mSmartAnchorWithMaxWidth);
+        setAllowNonTouchableSize(builder.mAllowNonTouchableSize);
+        if (builder.mAnimationStyleId != 0) {
+            setAnimationStyle(builder.mAnimationStyleId);
+        }
+        setAnimateFromAnchor(builder.mAnimateFromAnchor);
+        setFocusable(builder.mFocusable);
+        setElevation(builder.mElevation);
+        setTouchModal(builder.mTouchModal);
+        if (builder.mIsOutsideTouchableSet) {
+            setOutsideTouchable(builder.mOutsideTouchable);
+        }
+    }
+
     /**
      * Constructs an {@link AnchoredPopupWindow} instance.
      *
@@ -258,8 +542,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
      * @param anchorRectProvider The {@link RectProvider} that will provide the {@link Rect} this
      *     popup attaches and orients to. The coordinates in the {@link Rect} are expected to be
      *     screen coordinates.
-     * @deprecated Use {@link #AnchoredPopupWindow(Context, View, Drawable, Supplier, RectProvider,
-     *     RectProvider)} instead.
+     * @deprecated Use the {@link Builder} to create the popup instead.
      */
     @Deprecated
     public AnchoredPopupWindow(
@@ -284,15 +567,16 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
      *     screen coordinates.
      * @param viewportRectProvider The {@link RectProvider} that provides the {@link Rect} for the
      *     visible viewpoint. If null, the window coordinates of the root view will be used.
+     * @deprecated Use the {@link Builder} to create the popup instead.
      */
+    @Deprecated
     public AnchoredPopupWindow(
             Context context,
             View rootView,
-            Drawable background,
+            @Nullable Drawable background,
             Supplier<View> contentViewCreator,
             RectProvider anchorRectProvider,
             @Nullable RectProvider viewportRectProvider) {
-
         mContext = context;
         mRootView = rootView.getRootView();
         mContentViewCreator = contentViewCreator;
@@ -353,8 +637,10 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
      * Sets the {@link LayoutObserver} for this AnchoredPopupWindow.
      *
      * @param layoutObserver The observer to be notified of layout changes.
+     * @deprecated Use the {@link Builder} to set this value during construction.
      */
-    public void setLayoutObserver(LayoutObserver layoutObserver) {
+    @Deprecated
+    public void setLayoutObserver(@Nullable LayoutObserver layoutObserver) {
         mLayoutObserver = layoutObserver;
     }
 
@@ -369,6 +655,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     /**
      * @param onDismissListener A listener to be called when the popup is dismissed.
      * @see PopupWindow#setOnDismissListener(OnDismissListener)
+     * @deprecated Use the {@link Builder} to set this value during construction.
      */
     public void addOnDismissListener(OnDismissListener onDismissListener) {
         mDismissListeners.addObserver(onDismissListener);
@@ -386,7 +673,9 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
      * @param dismiss Whether or not to dismiss this popup when the screen is tapped. This will
      *     happen for both taps inside and outside the popup except when a tap is handled by child
      *     views. The default is {@code false}.
+     * @deprecated Use the {@link Builder} to set this value during construction.
      */
+    @Deprecated
     public void setDismissOnTouchInteraction(boolean dismiss) {
         mDismissOnTouchInteraction = dismiss;
         mPopupWindow.setOutsideTouchable(mDismissOnTouchInteraction);
@@ -400,7 +689,9 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
      *
      * @param touchable Whether or not to notify the popup when an outside touch happens. The
      *     default is {@code false}.
+     * @deprecated Use the {@link Builder} to set this value during construction.
      */
+    @Deprecated
     public void setOutsideTouchable(boolean touchable) {
         mPopupWindow.setOutsideTouchable(touchable);
     }
@@ -410,7 +701,9 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
      * above or below the anchor. This should be called before the popup is shown.
      *
      * @param orientation The vertical orientation preferred.
+     * @deprecated Use the {@link Builder} to set this value during construction.
      */
+    @Deprecated
     public void setPreferredVerticalOrientation(@VerticalOrientation int orientation) {
         mPreferredVerticalOrientation = orientation;
     }
@@ -420,7 +713,9 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
      * as centered with respect to the anchor. This should be called before the popup is shown.
      *
      * @param orientation The horizontal orientation preferred.
+     * @deprecated Use the {@link Builder} to set this value during construction.
      */
+    @Deprecated
     public void setPreferredHorizontalOrientation(@HorizontalOrientation int orientation) {
         mPreferredHorizontalOrientation = orientation;
     }
@@ -430,7 +725,9 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
      * Setting this style will take precedence over {@link #setAnimateFromAnchor(boolean)}.
      *
      * @param animationStyleId The id of the animation style.
+     * @deprecated Use the {@link Builder} to set this value during construction.
      */
+    @Deprecated
     public void setAnimationStyle(int animationStyleId) {
         mAnimationStyleId = animationStyleId;
         mPopupWindow.setAnimationStyle(animationStyleId);
@@ -442,7 +739,9 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
      * #setAnimationStyle(int)}, this method will have no effect.
      *
      * @param animateFromAnchor Whether the popup should animator from anchor point.
+     * @deprecated Use the {@link Builder} to set this value during construction.
      */
+    @Deprecated
     public void setAnimateFromAnchor(boolean animateFromAnchor) {
         mAnimateFromAnchor = animateFromAnchor;
     }
@@ -450,7 +749,10 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     /**
      * If set to true, orientation will be updated every time that the {@link OnRectChanged} is
      * called.
+     *
+     * @deprecated Use the {@link Builder} to set this value during construction.
      */
+    @Deprecated
     public void setUpdateOrientationOnChange(boolean updateOrientationOnChange) {
         mUpdateOrientationOnChange = updateOrientationOnChange;
     }
@@ -459,7 +761,9 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
      * Changes the focusability of the popup. See {@link PopupWindow#setFocusable(boolean)}.
      *
      * @param focusable True if the popup is focusable, false otherwise.
+     * @deprecated Use the {@link Builder} to set this value during construction.
      */
+    @Deprecated
     public void setFocusable(boolean focusable) {
         mPopupWindow.setFocusable(focusable);
     }
@@ -470,7 +774,9 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
      *
      * @param touchModal True to sent all outside touches to this window, false to other windows
      *     behind it.
+     * @deprecated Use the {@link Builder} to set this value during construction.
      */
+    @Deprecated
     public void setTouchModal(boolean touchModal) {
         mPopupWindow.setTouchModal(touchModal);
     }
@@ -479,7 +785,9 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
      * Sets the margin for the popup window. This should be called before the popup is shown.
      *
      * @param margin The margin in pixels.
+     * @deprecated Use the {@link Builder} to set this value during construction.
      */
+    @Deprecated
     public void setMargin(int margin) {
         mMarginPx = margin;
     }
@@ -488,7 +796,9 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
      * Sets the max width for the popup. This should be called before the popup is shown.
      *
      * @param maxWidth The max width for the popup.
+     * @deprecated Use the {@link Builder} to set this value during construction.
      */
+    @Deprecated
     public void setMaxWidth(int maxWidth) {
         final float density = mRootView.getResources().getDisplayMetrics().density;
         mMaxWidthPx = Math.max(maxWidth, (int) Math.ceil(density * MIN_TOUCHABLE_WIDTH_DIP));
@@ -499,7 +809,9 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
      * false. This should be called before the popup is shown.
      *
      * @param overlap Whether the popup should overlap the anchor.
+     * @deprecated Use the {@link Builder} to set this value during construction.
      */
+    @Deprecated
     public void setHorizontalOverlapAnchor(boolean overlap) {
         mHorizontalOverlapAnchor = overlap;
     }
@@ -509,7 +821,9 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
      * This should be called before the popup is shown.
      *
      * @param overlap Whether the popup should overlap the anchor.
+     * @deprecated Use the {@link Builder} to set this value during construction.
      */
+    @Deprecated
     public void setVerticalOverlapAnchor(boolean overlap) {
         mVerticalOverlapAnchor = overlap;
     }
@@ -524,12 +838,19 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
      * <p>This should be called before the popup is shown.
      *
      * @param smartAnchor Whether the popup should smartAnchor the anchor.
+     * @deprecated Use the {@link Builder} to set this value during construction.
      */
+    @Deprecated
     public void setSmartAnchorWithMaxWidth(boolean smartAnchor) {
         mSmartAnchorWithMaxWidth = smartAnchor;
     }
 
-    /** Sets the elevation of the popup. */
+    /**
+     * Sets the elevation of the popup.
+     *
+     * @deprecated Use the {@link Builder} to set this value during construction.
+     */
+    @Deprecated
     public void setElevation(float elevation) {
         mPopupWindow.setElevation(elevation);
     }
@@ -540,11 +861,11 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
      * <p>You can call this method only before {@link #show()} as it does not trigger relayout,
      * whereas {@link #setDesiredContentSize(int, int)} triggers it.
      *
-     * @deprecated Use {@link #setDesiredContentSize(int, int)} instead.
+     * @deprecated Use the {@link Builder} to set this value during construction.
      */
     @Deprecated
     public void setDesiredContentWidth(int width) {
-        mDesiredContentWidth = width;
+        updateDesiredContentSize(width, mDesiredContentHeight, false);
     }
 
     /**
@@ -556,14 +877,40 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
      *
      * <p>This method triggers an update of the layout if the popup is already shown. You can call
      * it to resize the popup at any time.
+     *
+     * @deprecated Use the {@link Builder} to set this value during construction.
      */
+    @Deprecated
     public void setDesiredContentSize(int width, int height) {
-        mDesiredContentWidth = width;
-        mDesiredContentHeight = height;
-        updatePopupLayout();
+        updateDesiredContentSize(width, height, true);
     }
 
-    /** Sets whether to allow the popup to have a small non-touchable size. The default is false. */
+    /**
+     * Sets the desired dimensions for the content of the popup window.
+     *
+     * <p>Pass 0 to either dimension to have it determine its own size. The popup window will be
+     * shown in this exact size unless certain constraint presents (e.g. desiredContentWidth >
+     * maxWidthPx).
+     *
+     * <p>This method triggers an update of the layout if the popup is already shown. You can call
+     * it to resize the popup at any time.
+     *
+     * @param height The desired height for the popup.
+     * @param width The desired width for the popup.
+     * @param updateLayout Whether trigger layout update
+     */
+    public void updateDesiredContentSize(int width, int height, boolean updateLayout) {
+        mDesiredContentWidth = width;
+        mDesiredContentHeight = height;
+        if (updateLayout) updatePopupLayout();
+    }
+
+    /**
+     * Sets whether to allow the popup to have a small non-touchable size. The default is false.
+     *
+     * @deprecated Use the {@link Builder} to set this value during construction.
+     */
+    @Deprecated
     public void setAllowNonTouchableSize(boolean allowNonTouchableSize) {
         mAllowNonTouchableSize = allowNonTouchableSize;
     }

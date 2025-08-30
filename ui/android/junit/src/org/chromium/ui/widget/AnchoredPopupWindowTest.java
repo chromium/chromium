@@ -18,7 +18,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -72,6 +74,7 @@ public final class AnchoredPopupWindowTest {
 
     private FrameLayout mContentView;
     private Activity mActivity;
+    private Drawable mDrawable;
 
     @Before
     public void setUp() {
@@ -82,6 +85,7 @@ public final class AnchoredPopupWindowTest {
         mWindowRect = new Rect(0, 0, mRootWidth, mRootHeight);
 
         mActivity = Robolectric.buildActivity(Activity.class).get();
+        mDrawable = new ColorDrawable(Color.RED);
 
         mContentView = new FrameLayout(mActivity);
         mContentView.setMinimumWidth(mPopupWidth);
@@ -922,7 +926,7 @@ public final class AnchoredPopupWindowTest {
                 new AnchoredPopupWindow(
                         mActivity,
                         view,
-                        null,
+                        mDrawable,
                         () -> contentView,
                         anchorRectProvider,
                         visibleWebContentsRectSupplier);
@@ -936,6 +940,56 @@ public final class AnchoredPopupWindowTest {
         visibleWebContentsRectSupplier.setRect(new Rect(0, 100, 1000, 500));
 
         verify(mockPopup, times(1)).update(anyInt(), anyInt(), anyInt(), anyInt());
+    }
+
+    // This is a temporary test that used to ensure the completeness of builder migraiton.
+    @Test
+    public void testBuilder() {
+        // Set up for test case, so we have a mock popup window.
+        UiWidgetFactory mockFactory = mock(UiWidgetFactory.class);
+        UiWidgetFactory.setInstance(mockFactory);
+        PopupWindow mockPopup = mock(PopupWindow.class);
+        doReturn(mockPopup).when(mockFactory).createPopupWindow(any());
+
+        View view = mock(View.class, Answers.RETURNS_DEEP_STUBS);
+        DisplayMetrics fakeMetrics = new DisplayMetrics();
+        fakeMetrics.density = 1;
+        when(view.getRootView().getResources().getDisplayMetrics()).thenReturn(fakeMetrics);
+        when(view.getRootView().isAttachedToWindow()).thenReturn(true);
+        RectProvider anchorRectProvider = new RectProvider(new Rect(0, 0, 1000, 1000));
+        RectProvider viewportRectProvider = new RectProvider(new Rect(0, 100, 1000, 900));
+        PopupWindow.OnDismissListener dismissListener = mock(PopupWindow.OnDismissListener.class);
+        View.OnTouchListener touchListener = mock(View.OnTouchListener.class);
+        AnchoredPopupWindow.LayoutObserver layoutObserver =
+                mock(AnchoredPopupWindow.LayoutObserver.class);
+        when(mockPopup.getContentView()).thenReturn(mContentView);
+        when(mockPopup.isFocusable()).thenReturn(true);
+        when(mockPopup.getElevation()).thenReturn(20f);
+
+        new AnchoredPopupWindow.Builder(
+                        mActivity, view, mDrawable, () -> mContentView, anchorRectProvider)
+                .setViewportRectProvider(viewportRectProvider)
+                .addOnDismissListener(dismissListener)
+                .setTouchInterceptor(touchListener)
+                .setLayoutObserver(layoutObserver)
+                .setMargin(10)
+                .setMaxWidth(200)
+                .setDesiredContentSize(150, 300)
+                .setPreferredVerticalOrientation(VerticalOrientation.ABOVE)
+                .setPreferredHorizontalOrientation(HorizontalOrientation.CENTER)
+                .setDismissOnTouchInteraction(true)
+                .setVerticalOverlapAnchor(true)
+                .setHorizontalOverlapAnchor(true)
+                .setUpdateOrientationOnChange(true)
+                .setSmartAnchorWithMaxWidth(true)
+                .setAllowNonTouchableSize(true)
+                .setAnimationStyle(R.style.DropdownPopupWindow)
+                .setAnimateFromAnchor(true)
+                .setFocusable(true)
+                .setElevation(20f)
+                .build();
+
+        verify(mockFactory).createPopupWindow(mActivity);
     }
 
     private void setDefaultValueForAnchoredPopup() {
@@ -994,6 +1048,6 @@ public final class AnchoredPopupWindowTest {
         when(view.getRootView().getResources().getDisplayMetrics()).thenReturn(fakeMetrics);
         when(view.getRootView().isAttachedToWindow()).thenReturn(true);
         RectProvider provider = new RectProvider(new Rect(0, 0, 0, 0));
-        return new AnchoredPopupWindow(mActivity, view, null, mContentView, provider);
+        return new AnchoredPopupWindow(mActivity, view, mDrawable, mContentView, provider);
     }
 }
