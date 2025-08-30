@@ -224,42 +224,6 @@ public class SurfaceColorUpdateUtilsUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE})
-    public void testTabGridDialogColors_FlagEnabled() {
-        @ColorInt
-        int gtsBackgroundColor =
-                SurfaceColorUpdateUtils.getTabGridDialogBackgroundColor(
-                        mContext, /* isIncognito= */ false);
-        assertEquals(SemanticColorUtils.getColorSurfaceContainer(mContext), gtsBackgroundColor);
-
-        @ColorInt
-        int gtsBackgroundColorIncognito =
-                SurfaceColorUpdateUtils.getTabGridDialogBackgroundColor(
-                        mContext, /* isIncognito= */ true);
-        assertEquals(
-                ContextCompat.getColor(mContext, R.color.gm3_baseline_surface_container_dark),
-                gtsBackgroundColorIncognito);
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE})
-    public void testTabGridDialogColors_FlagDisabled() {
-        @ColorInt
-        int gtsBackgroundColor =
-                SurfaceColorUpdateUtils.getTabGridDialogBackgroundColor(
-                        mContext, /* isIncognito= */ false);
-        assertEquals(SemanticColorUtils.getColorSurface(mContext), gtsBackgroundColor);
-
-        @ColorInt
-        int gtsBackgroundColorIncognito =
-                SurfaceColorUpdateUtils.getTabGridDialogBackgroundColor(
-                        mContext, /* isIncognito= */ true);
-        assertEquals(
-                ContextCompat.getColor(mContext, R.color.gm3_baseline_surface_container_dark),
-                gtsBackgroundColorIncognito);
-    }
-
-    @Test
     @EnableFeatures({ChromeFeatureList.ANDROID_TAB_GROUPS_COLOR_UPDATE_GM3})
     @DisableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE})
     public void testGetCardViewBackgroundColor_NewGm3TabGroupColorsEnabled_WithColorId() {

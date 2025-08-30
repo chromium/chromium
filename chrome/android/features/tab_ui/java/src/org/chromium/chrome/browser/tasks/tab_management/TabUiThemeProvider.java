@@ -149,7 +149,11 @@ public class TabUiThemeProvider {
      */
     public static @ColorInt int getTabGridDialogBackgroundColor(
             Context context, boolean isIncognito) {
-        return SurfaceColorUpdateUtils.getTabGridDialogBackgroundColor(context, isIncognito);
+        if (isIncognito) {
+            return context.getColor(R.color.gm3_baseline_surface_container_dark);
+        } else {
+            return ContextCompat.getColor(context, R.color.tab_grid_dialog_bg_color);
+        }
     }
 
     private static @ColorInt int getTabGridDialogUngroupBarBackgroundColor(
