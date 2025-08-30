@@ -8,6 +8,7 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/to_vector.h"
@@ -352,7 +353,7 @@ std::vector<FieldType> AddressComponent::GetSubcomponentTypes() const {
 
 bool AddressComponent::SetValueForType(
     FieldType field_type,
-    const std::u16string& value,
+    std::u16string_view value,
     const VerificationStatus& verification_status,
     bool invalidate_child_nodes) {
   AddressComponent* node_for_type = GetNodeForType(field_type);
@@ -360,9 +361,9 @@ bool AddressComponent::SetValueForType(
     return false;
   }
   node_for_type->GetStorageType() == field_type
-      ? node_for_type->SetValue(value, verification_status)
-      : node_for_type->SetValueForOtherSupportedType(field_type, value,
-                                                     verification_status);
+      ? node_for_type->SetValue(std::u16string(value), verification_status)
+      : node_for_type->SetValueForOtherSupportedType(
+            field_type, std::u16string(value), verification_status);
   if (invalidate_child_nodes) {
     node_for_type->UnsetSubcomponents();
   }
@@ -1310,7 +1311,7 @@ bool AddressComponent::MergeWithComponent(
                      VerificationStatus::kFormatted, GetVerificationStatus()));
       } else if (formatted_value == newer_component.GetValue()) {
         // Otherwise test if the value is the same as the one of
-        // |newer_component|. If yes, maintain the better verification status.
+        // `newer_component`. If yes, maintain the better verification status.
         SetValue(formatted_value, GetMoreSignificantVerificationStatus(
                                       VerificationStatus::kFormatted,
                                       newer_component.GetVerificationStatus()));
@@ -1392,14 +1393,14 @@ bool AddressComponent::MergeTokenEquivalentComponent(
   // is sufficient to apply a recursive merging strategy.
   //
   // * None of the nodes of the substructure are pairwise mergeable. In this
-  // case, either the complete substructure of |this| or |newer_component|
+  // case, either the complete substructure of `this` or `newer_component`
   // must be used. Which one to use can be decided by the higher validation
   // score.
   //
   // * In a mixed scenario, there is at least one pair of mergeable nodes
   // in the substructure and at least on pair of non-mergeable nodes. Here,
   // the mergeable nodes are merged while all other nodes are taken either
-  // from |this| or the |newer_component| decided by the higher validation
+  // from `this` or the `newer_component` decided by the higher validation
   // score of the unmerged nodes.
   //
   // The following algorithm combines the three cases by first trying to merge
