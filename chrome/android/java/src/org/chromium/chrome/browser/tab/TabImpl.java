@@ -106,6 +106,7 @@ import org.chromium.ui.base.ImmutableWeakReference;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.display.DisplayUtil;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -2570,11 +2571,15 @@ class TabImpl implements Tab {
         boolean alwaysRequestDesktopSite =
                 commandLine.hasSwitch(ChromeSwitches.REQUEST_DESKTOP_SITES);
 
+        boolean shouldRespectContentSetting =
+                TabUtils.readRequestDesktopSiteContentSettings(mProfile, url)
+                        && !RequestDesktopUtils.shouldApplyWindowSetting(
+                                mProfile, url, getContext());
+        boolean isOnExternalDisplay =
+                ChromeFeatureList.sDesktopUAOnConnectedDisplay.isEnabled()
+                        && !DisplayUtil.isContextInDefaultDisplay(getContext());
         boolean shouldRequestDesktopSite =
-                alwaysRequestDesktopSite
-                        || (TabUtils.readRequestDesktopSiteContentSettings(mProfile, url)
-                                && !RequestDesktopUtils.shouldApplyWindowSetting(
-                                        mProfile, url, getContext()));
+                alwaysRequestDesktopSite || isOnExternalDisplay || shouldRespectContentSetting;
 
         if (shouldRequestDesktopSite != currentRequestDesktopSite) {
             // The user is not forcing any mode and we determined that we need to
