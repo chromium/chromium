@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -2070,6 +2071,13 @@ class PdfViewWebPluginWithDocInfoTest
       ASSERT_TRUE(base::Time::FromUTCString("2021-06-04 15:16:17",
                                             &metadata().mod_date));
     }
+
+    // Note: In the metadata message `creation_date` and `mod_date` are
+    // locale-specific strings for display to the user. So this test uses a
+    // specific locale.
+    base::test::ScopedRestoreICUDefaultLocale restore_locale_{"en_US"};
+    base::test::ScopedRestoreDefaultTimezone restore_timezone_{
+        "America/Los_Angeles"};
   };
 
   static base::Value::Dict CreateExpectedAttachmentsResponse() {
