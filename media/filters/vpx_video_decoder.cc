@@ -620,8 +620,8 @@ bool VpxVideoDecoder::CopyVpxImageToVideoFrame(
     libyuv::CopyPlane(planes[plane], strides[plane],
                       (*video_frame)->GetWritableVisibleData(plane),
                       (*video_frame)->stride(plane),
-                      (*video_frame)->row_bytes(plane),
-                      (*video_frame)->rows(plane));
+                      (*video_frame)->GetVisibleRowBytes(plane),
+                      (*video_frame)->GetVisibleRows(plane));
   }
 
   return true;

@@ -1035,14 +1035,15 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     // Set up the copy to be minimally-sized. Note: The parameters to the
     // CopyPlane() method below depend on coded_size == visible_size.
     gfx::Rect crop = src_visible_rect;
-    gfx::Size dest_coded_size = crop.size();
     gfx::Rect dest_visible_rect = gfx::Rect(crop.size());
 
     // The array buffer hasn't been transferred, we need to allocate and
     // copy pixel data.
     auto& frame_pool = CachedVideoFramePool::From(*execution_context);
-    frame = frame_pool.CreateFrame(media_fmt, dest_coded_size,
+    frame = frame_pool.CreateFrame(media_fmt, /*coded_size=*/crop.size(),
                                    dest_visible_rect, display_size, timestamp);
+
+    // Note: CreateFrame() may expand the coded size for odd sized frames.
 
     if (!frame) {
       exception_state.ThrowDOMException(
@@ -1050,7 +1051,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
           String::Format("Failed to create a VideoFrame with format: %s, "
                          "coded size: %s, visibleRect: %s, display size: %s.",
                          VideoPixelFormatToString(media_fmt).c_str(),
-                         dest_coded_size.ToString().c_str(),
+                         crop.size().ToString().c_str(),
                          dest_visible_rect.ToString().c_str(),
                          display_size.ToString().c_str()));
       return nullptr;
@@ -1059,7 +1060,8 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     for (wtf_size_t i = 0; i < media::VideoFrame::NumPlanes(media_fmt); i++) {
       libyuv::CopyPlane(src_frame->visible_data(i), src_frame->stride(i),
                         frame->GetWritableVisibleData(i), frame->stride(i),
-                        frame->row_bytes(i), frame->rows(i));
+                        /*width=*/src_frame->GetVisibleRowBytes(i),
+                        /*height=*/src_frame->GetVisibleRows(i));
     }
   }
 

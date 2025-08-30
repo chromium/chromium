@@ -1270,20 +1270,26 @@ size_t VideoFrame::Columns(size_t plane, VideoPixelFormat format, int width) {
 
 // static
 void VideoFrame::UpdateHashWithFrameForTesting(crypto::hash::Hasher& hasher,
-                                               const VideoFrame& frame) {
+                                               const VideoFrame& frame,
+                                               bool visible_data_only) {
   for (size_t plane = 0; plane < NumPlanes(frame.format()); ++plane) {
-    for (int row = 0; row < frame.rows(plane); ++row) {
-      hasher.Update(frame.data_[plane].subspan(
-          base::checked_cast<size_t>(frame.stride(plane) * row),
-          base::checked_cast<size_t>(frame.row_bytes(plane))));
+    const size_t rows = base::checked_cast<size_t>(
+        visible_data_only ? frame.GetVisibleRows(plane) : frame.rows(plane));
+    const size_t row_bytes = base::checked_cast<size_t>(
+        visible_data_only ? frame.GetVisibleRowBytes(plane)
+                          : frame.row_bytes(plane));
+    const auto& plane_data = frame.data_[plane];
+    for (size_t row = 0; row < rows; ++row) {
+      hasher.Update(plane_data.subspan(frame.stride(plane) * row, row_bytes));
     }
   }
 }
 
 // static
-std::string VideoFrame::HexHashOfFrameForTesting(const VideoFrame& frame) {
+std::string VideoFrame::HexHashOfFrameForTesting(const VideoFrame& frame,
+                                                 bool visible_data_only) {
   crypto::hash::Hasher hasher(crypto::hash::HashKind::kSha256);
-  UpdateHashWithFrameForTesting(hasher, frame);  // IN-TEST
+  UpdateHashWithFrameForTesting(hasher, frame, visible_data_only);  // IN-TEST
   std::array<uint8_t, crypto::hash::kSha256Size> hash;
   hasher.Finish(hash);
   return base::ToLowerASCII(base::HexEncode(hash));
@@ -1462,6 +1468,14 @@ int VideoFrame::rows(size_t plane) const {
   return Rows(plane, format(), coded_size().height());
 }
 
+int VideoFrame::GetVisibleRowBytes(size_t plane) const {
+  return RowBytes(plane, format(), visible_rect().width());
+}
+
+int VideoFrame::GetVisibleRows(size_t plane) const {
+  return Rows(plane, format(), visible_rect().height());
+}
+
 int VideoFrame::columns(size_t plane) const {
   return Columns(plane, format(), coded_size().width());
 }
@@ -1482,7 +1496,6 @@ base::span<T> VideoFrame::GetVisibleDataInternal(base::span<T> data,
                           base::bits::AlignDownDeprecatedDoNotUse(
                               visible_rect_.y(), alignment.height()));
 
-  const int visible_plane_rows = Rows(plane, format(), visible_rect_.height());
   const int plane_stride = stride(plane);
   const gfx::Size subsample = SampleSize(format(), plane);
   DCHECK(offset.x() % subsample.width() == 0);
@@ -1494,8 +1507,8 @@ base::span<T> VideoFrame::GetVisibleDataInternal(base::span<T> data,
       BytesPerElement(format(), plane) * (offset.x() / subsample.width()));
   // In the last row, bytes between visible width and the full stride are not
   // the part of the visible plane.
-  size_t visible_plane_size = plane_stride * (visible_plane_rows - 1) +
-                              RowBytes(plane, format(), visible_rect_.width());
+  size_t visible_plane_size =
+      plane_stride * (GetVisibleRows(plane) - 1) + GetVisibleRowBytes(plane);
   return data.subspan(visible_plane_offset, visible_plane_size);
 }
 

@@ -240,7 +240,9 @@ void ExpectFrameExtents(VideoPixelFormat format, const char* expected_hash) {
            frame->stride(plane) * frame->rows(plane));
   }
 
-  EXPECT_EQ(VideoFrame::HexHashOfFrameForTesting(*frame.get()), expected_hash);
+  EXPECT_EQ(VideoFrame::HexHashOfFrameForTesting(*frame,
+                                                 /*visible_data_only=*/false),
+            expected_hash);
 }
 
 TEST(VideoFrame, CreateFrame) {
@@ -783,6 +785,75 @@ TEST(VideoFrame, CreateFrame_OddWidth) {
   // in the Y plane has a a corresponding pixel in the UV planes at the same
   // index.
   EXPECT_EQ(677, frame->coded_size().width());
+}
+
+TEST(VideoFrame, CreateFrame_OddSize) {
+  constexpr gfx::Size odd_size(677, 287);
+  constexpr auto kTimestamp = base::TimeDelta();
+
+  // I420A frames should have the Y, A planes aligned upward to an even size,
+  // since it's required by the subsampled U,V planes.
+  auto frame = VideoFrame::CreateFrame(
+      PIXEL_FORMAT_I420A, odd_size, gfx::Rect(odd_size), odd_size, kTimestamp);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(gfx::Size(678, 288), frame->coded_size());
+  for (int plane = 0; plane < 4; plane++) {
+    // CreateFrame() will always allocate to an even coded size for non-sampled
+    // planes, so the visible row data should be less than the coded row data.
+    if (plane == VideoFrame::Plane::kY || plane == VideoFrame::Plane::kA) {
+      EXPECT_LT(frame->GetVisibleRowBytes(plane), frame->row_bytes(plane));
+      EXPECT_LT(frame->GetVisibleRows(plane), frame->rows(plane));
+    } else {
+      EXPECT_EQ(frame->GetVisibleRowBytes(plane), frame->row_bytes(plane));
+      EXPECT_EQ(frame->GetVisibleRows(plane), frame->rows(plane));
+    }
+  }
+
+  // I444A frames don't have subsampling, so no adjustment is needed.
+  frame = VideoFrame::CreateFrame(PIXEL_FORMAT_I444A, odd_size,
+                                  gfx::Rect(odd_size), odd_size, kTimestamp);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(odd_size, frame->coded_size());
+  for (int plane = 0; plane < 4; plane++) {
+    EXPECT_EQ(frame->GetVisibleRowBytes(plane), frame->row_bytes(plane));
+    EXPECT_EQ(frame->GetVisibleRows(plane), frame->rows(plane));
+  }
+}
+
+TEST(VideoFrame, RowBytes) {
+  constexpr gfx::Size kCodedSize(16, 14);
+  constexpr gfx::Rect kVisibleRect(4, 4, 8, 8);
+
+  // Just spot test I420A for simplicity.
+  scoped_refptr<VideoFrame> frame =
+      VideoFrame::CreateFrame(PIXEL_FORMAT_I420A, kCodedSize, kVisibleRect,
+                              kVisibleRect.size(), base::TimeDelta());
+  ASSERT_TRUE(frame);
+  ASSERT_EQ(frame->row_bytes(VideoFrame::Plane::kY), kCodedSize.width());
+  ASSERT_EQ(frame->row_bytes(VideoFrame::Plane::kU), kCodedSize.width() / 2);
+  ASSERT_EQ(frame->row_bytes(VideoFrame::Plane::kV), kCodedSize.width() / 2);
+  ASSERT_EQ(frame->row_bytes(VideoFrame::Plane::kA), kCodedSize.width());
+  ASSERT_EQ(frame->rows(VideoFrame::Plane::kY), kCodedSize.height());
+  ASSERT_EQ(frame->rows(VideoFrame::Plane::kU), kCodedSize.height() / 2);
+  ASSERT_EQ(frame->rows(VideoFrame::Plane::kV), kCodedSize.height() / 2);
+  ASSERT_EQ(frame->rows(VideoFrame::Plane::kA), kCodedSize.height());
+
+  ASSERT_EQ(frame->GetVisibleRowBytes(VideoFrame::Plane::kY),
+            kVisibleRect.width());
+  ASSERT_EQ(frame->GetVisibleRowBytes(VideoFrame::Plane::kU),
+            kVisibleRect.width() / 2);
+  ASSERT_EQ(frame->GetVisibleRowBytes(VideoFrame::Plane::kV),
+            kVisibleRect.width() / 2);
+  ASSERT_EQ(frame->GetVisibleRowBytes(VideoFrame::Plane::kA),
+            kVisibleRect.width());
+  ASSERT_EQ(frame->GetVisibleRows(VideoFrame::Plane::kY),
+            kVisibleRect.height());
+  ASSERT_EQ(frame->GetVisibleRows(VideoFrame::Plane::kU),
+            kVisibleRect.height() / 2);
+  ASSERT_EQ(frame->GetVisibleRows(VideoFrame::Plane::kV),
+            kVisibleRect.height() / 2);
+  ASSERT_EQ(frame->GetVisibleRows(VideoFrame::Plane::kA),
+            kVisibleRect.height());
 }
 
 TEST(VideoFrame, AllocationSize_OddSize) {
