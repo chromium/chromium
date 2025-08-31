@@ -13,6 +13,7 @@
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_servable_state.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 
@@ -123,13 +124,21 @@ class CONTENT_EXPORT PrefetchMatchResolver final
   // Matches prefetches only if its final PrefetchServiceWorkerState is
   // `expected_service_worker_state` (either `kControlled` or `kDisallowed`).
   static void FindPrefetch(
+      FrameTreeNodeId frame_tree_node_id,
+      PrefetchService& prefetch_service,
       PrefetchKey navigated_key,
       PrefetchServiceWorkerState expected_service_worker_state,
-      bool is_nav_prerender,
-      PrefetchService& prefetch_service,
       base::WeakPtr<PrefetchServingPageMetricsContainer>
           serving_page_metrics_container,
       Callback callback);
+  static void FindPrefetchForTesting(
+      PrefetchService& prefetch_service,
+      PrefetchKey navigated_key,
+      PrefetchServiceWorkerState expected_service_worker_state,
+      base::WeakPtr<PrefetchServingPageMetricsContainer>
+          serving_page_metrics_container,
+      Callback callback,
+      bool is_nav_prerender);
 
  private:
   struct CandidateData final {
@@ -141,10 +150,11 @@ class CONTENT_EXPORT PrefetchMatchResolver final
   };
 
   explicit PrefetchMatchResolver(
+      base::WeakPtr<NavigationRequest> navigation_request,
+      base::WeakPtr<PrefetchService> prefetch_service,
       PrefetchKey navigated_key,
       PrefetchServiceWorkerState expected_service_worker_state,
       bool is_nav_prerender,
-      base::WeakPtr<PrefetchService> prefetch_service,
       Callback callback);
 
   // Returns blocked duration. Returns null iff it's not blocked yet.
@@ -212,9 +222,14 @@ class CONTENT_EXPORT PrefetchMatchResolver final
   // A would be enough.
   std::unique_ptr<PrefetchMatchResolver> self_;
 
+  // `NavigationRequest` associated to `this`.
+  //
+  // It is used only for metrics purpose.
+  base::WeakPtr<NavigationRequest> navigation_request_for_metrics_;
+  base::WeakPtr<PrefetchService> prefetch_service_;
+
   const PrefetchKey navigated_key_;
   const PrefetchServiceWorkerState expected_service_worker_state_;
-  base::WeakPtr<PrefetchService> prefetch_service_;
   Callback callback_;
   const bool is_nav_prerender_;
   std::map<PrefetchKey, std::unique_ptr<CandidateData>> candidates_;

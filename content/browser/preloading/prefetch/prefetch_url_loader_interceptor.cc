@@ -194,20 +194,10 @@ void PrefetchURLLoaderInterceptor::GetPrefetch(
                                  std::move(get_prefetch_callback));
   auto key =
       PrefetchKey(initiator_document_token_, tentative_resource_request_url);
-
-  const bool is_nav_prerender = [&]() -> bool {
-    auto* frame_tree_node =
-        FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
-    if (!frame_tree_node) {
-      return false;
-    }
-
-    return frame_tree_node->frame_tree().is_prerendering();
-  }();
-
   PrefetchMatchResolver::FindPrefetch(
-      std::move(key), expected_service_worker_state_, is_nav_prerender,
-      *prefetch_service, serving_page_metrics_container_, std::move(callback));
+      frame_tree_node_id_, *prefetch_service, std::move(key),
+      expected_service_worker_state_, serving_page_metrics_container_,
+      std::move(callback));
 }
 
 void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(

@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
@@ -15,6 +16,7 @@
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
+#include "content/browser/renderer_host/frame_tree.h"
 
 namespace content {
 
@@ -40,14 +42,16 @@ PrefetchMatchResolver::CandidateData::CandidateData() = default;
 PrefetchMatchResolver::CandidateData::~CandidateData() = default;
 
 PrefetchMatchResolver::PrefetchMatchResolver(
+    base::WeakPtr<NavigationRequest> navigation_request,
+    base::WeakPtr<PrefetchService> prefetch_service,
     PrefetchKey navigated_key,
     PrefetchServiceWorkerState expected_service_worker_state,
     bool is_nav_prerender,
-    base::WeakPtr<PrefetchService> prefetch_service,
     Callback callback)
-    : navigated_key_(std::move(navigated_key)),
-      expected_service_worker_state_(expected_service_worker_state),
+    : navigation_request_for_metrics_(std::move(navigation_request)),
       prefetch_service_(std::move(prefetch_service)),
+      navigated_key_(std::move(navigated_key)),
+      expected_service_worker_state_(expected_service_worker_state),
       callback_(std::move(callback)),
       is_nav_prerender_(is_nav_prerender) {
   switch (expected_service_worker_state_) {
@@ -74,18 +78,63 @@ std::optional<base::TimeDelta> PrefetchMatchResolver::GetBlockedDuration()
 
 // static
 void PrefetchMatchResolver::FindPrefetch(
+    FrameTreeNodeId frame_tree_node_id,
+    PrefetchService& prefetch_service,
     PrefetchKey navigated_key,
     PrefetchServiceWorkerState expected_service_worker_state,
-    bool is_nav_prerender,
-    PrefetchService& prefetch_service,
     base::WeakPtr<PrefetchServingPageMetricsContainer>
         serving_page_metrics_container,
     Callback callback) {
   TRACE_EVENT0("loading", "PrefetchMatchResolver::FindPrefetch");
+
+  auto* frame_tree_node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+  if (!frame_tree_node) {
+    // TODO(crbug.com/360094997): Use `CHECK()` instead once we check the
+    // safety.
+    DUMP_WILL_BE_NOTREACHED();
+    std::move(callback).Run({});
+    return;
+  }
+
+  auto navigation_request = ([&]() -> base::WeakPtr<NavigationRequest> {
+    if (!frame_tree_node->navigation_request()) {
+      // We except that a navigation invoking `URLLoaderInterceptor` has
+      // `NavigationRequest`, but this path hits in android-x64-rel bots. If it
+      // is not satisfied in the prod, give up to record metrics.
+      //
+      // TODO(crbug.com/360094997): Investigate why.
+      return nullptr;
+    }
+
+    return frame_tree_node->navigation_request()->GetWeakPtr();
+  })();
+
   // See the comment of `self_`.
   auto prefetch_match_resolver = base::WrapUnique(new PrefetchMatchResolver(
+      std::move(navigation_request), prefetch_service.GetWeakPtr(),
+      std::move(navigated_key), expected_service_worker_state,
+      frame_tree_node->frame_tree().is_prerendering(), std::move(callback)));
+  PrefetchMatchResolver& ref = *prefetch_match_resolver.get();
+  ref.self_ = std::move(prefetch_match_resolver);
+
+  ref.FindPrefetchInternal(prefetch_service,
+                           std::move(serving_page_metrics_container));
+}
+
+// static
+void PrefetchMatchResolver::FindPrefetchForTesting(
+    PrefetchService& prefetch_service,
+    PrefetchKey navigated_key,
+    PrefetchServiceWorkerState expected_service_worker_state,
+    base::WeakPtr<PrefetchServingPageMetricsContainer>
+        serving_page_metrics_container,
+    Callback callback,
+    bool is_nav_prerender) {
+  // See the comment of `self_`.
+  auto prefetch_match_resolver = base::WrapUnique(new PrefetchMatchResolver(
+      /*navigation_request=*/nullptr, prefetch_service.GetWeakPtr(),
       std::move(navigated_key), expected_service_worker_state, is_nav_prerender,
-      prefetch_service.GetWeakPtr(), std::move(callback)));
+      std::move(callback)));
   PrefetchMatchResolver& ref = *prefetch_match_resolver.get();
   ref.self_ = std::move(prefetch_match_resolver);
 

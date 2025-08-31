@@ -866,11 +866,12 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
         base::Unretained(&future),
         base::Unretained(&request_handler_keep_alive_));
     auto key = PrefetchKey(initiator_document_token, url);
-    PrefetchMatchResolver::FindPrefetch(
-        std::move(key), PrefetchServiceWorkerState::kDisallowed,
-        /*is_nav_prerender=*/false, prefetch_service(),
+    PrefetchMatchResolver::FindPrefetchForTesting(
+        prefetch_service(), std::move(key),
+        PrefetchServiceWorkerState::kDisallowed,
         GetServingPageMetricsContainerForMostRecentNavigation(),
-        std::move(callback));
+        std::move(callback),
+        /*is_nav_prerender=*/false);
   }
 
   PrefetchServingHandle GetPrefetchToServe(
@@ -951,10 +952,11 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
       return serving_page_metrics_container->GetWeakPtr();
     }();
     auto key = PrefetchKey(initiator_document_token, url);
-    PrefetchMatchResolver::FindPrefetch(
-        std::move(key), PrefetchServiceWorkerState::kDisallowed,
-        is_nav_prerender, prefetch_service(),
-        std::move(serving_page_metrics_container), std::move(callback));
+    PrefetchMatchResolver::FindPrefetchForTesting(
+        prefetch_service(), std::move(key),
+        PrefetchServiceWorkerState::kDisallowed,
+        std::move(serving_page_metrics_container), std::move(callback),
+        is_nav_prerender);
 
     return res;
   }
