@@ -14,7 +14,10 @@ if (enable_js_protobuf) {
 
 config("protobuf_config") {
   include_dirs = [ "src" ]
-  defines = [ "GOOGLE_PROTOBUF_NO_RTTI" ]
+  defines = [
+    "GOOGLE_PROTOBUF_NO_RTTI",
+    "PROTOBUF_INTERNAL_BOUNDS_CHECK_MODE_ABORT",
+  ]
   if (!is_win) {
     defines += [ "HAVE_PTHREAD" ]
   }

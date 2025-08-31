@@ -41,6 +41,7 @@ import("//build/util/process_version.gni")
 import("//build_overrides/build.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 if (is_ios) {
   # Used to access target_environment and target_platform.
@@ -48,11 +49,6 @@ if (is_ios) {
 
   # Used to access ios_is_app_extension variable definition.
   import("//build/config/ios/ios_sdk.gni")
-}
-
-if (is_mac) {
-  # Used to generate fuzzer corpus :base_mach_port_rendezvous_convert_corpus.
-  import("//third_party/protobuf/proto_library.gni")
 }
 
 if (is_win) {
@@ -3740,15 +3736,7 @@ test("base_unittests") {
     "strings/string_piece_rust_unittest.cc",
   ]
 
-  if (use_safe_libcxx || use_safe_libstdcxx) {
-    sources += [ "libcpp_hardening_test.cc" ]
-  }
-
   fuzztests = [ "JSONReaderTest.CanParseAnythingWithoutCrashing" ]
-
-  if (is_clang) {
-    sources += [ "compiler_hardening_test.cc" ]
-  }
 
   defines = []
   frameworks = []
@@ -3758,6 +3746,7 @@ test("base_unittests") {
     ":base_stack_sampling_profiler_test_util",
     ":check_version_internal",
     ":feature_list_buildflags",
+    ":hardening_tests",
     ":i18n",
     ":path_service_unittest",
     ":sanitizer_buildflags",
@@ -4328,6 +4317,33 @@ test("base_unittests") {
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+source_set("hardening_tests") {
+  testonly = true
+
+  sources = [ "protobuf_hardening_test.cc" ]
+
+  if (use_safe_libcxx || use_safe_libstdcxx) {
+    sources += [ "libcpp_hardening_test.cc" ]
+  }
+
+  if (is_clang) {
+    sources += [ "compiler_hardening_test.cc" ]
+  }
+
+  deps = [
+    ":base",
+    ":protobuf_hardening_test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+proto_library("protobuf_hardening_test_support") {
+  testonly = true
+  sources = [ "protobuf_hardening_test_support.proto" ]
+  generate_python = false
 }
 
 # Test that CFG is enabled in Rust code.

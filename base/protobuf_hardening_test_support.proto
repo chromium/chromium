@@ -1,0 +1,16 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package base.test;
+
+option optimize_for = LITE_RUNTIME;
+
+message HardeningTestMessage {
+  message NestedMessage {}
+
+  repeated int32 repeated_field = 1;
+  repeated NestedMessage repeated_ptr_field = 2;
+}
