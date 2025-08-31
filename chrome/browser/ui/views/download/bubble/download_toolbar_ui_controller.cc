@@ -1097,8 +1097,10 @@ bool DownloadToolbarUIController::ShouldShowScanningAnimation() const {
 }
 
 void DownloadToolbarUIController::UpdateIconDormant() {
-  // Ensure no updates are attempted once BrowserView destruction has started.
-  if (!browser_view_) {
+  // Ensure no updates are attempted once BrowserView destruction has started or
+  // if the host Widget has already been closed.
+  if (!browser_view_ || !browser_view_->GetWidget() ||
+      browser_view_->GetWidget()->IsClosed()) {
     return;
   }
 
