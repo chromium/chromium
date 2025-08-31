@@ -104,3 +104,7 @@
   text-align: center;
   width: var(--ntp-promo-icon-size);
 }
+
+#actionIcon:dir(rtl) {
+  transform: scaleX(-1);
+}

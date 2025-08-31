@@ -99,6 +99,10 @@
   width: var(--setup-list-icon-size);
 }
 
+#actionIcon:dir(rtl) {
+  transform: scaleX(-1);
+}
+
 .completed #actionIcon {
   color: var(--setup-list-completed-foreground);
 }
