@@ -14,7 +14,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "components/omnibox/browser/aim_eligibility_service_observer.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -37,16 +36,18 @@ BASE_FEATURE(kAimServerEligibilityEnabled,
              "AimServerEligibilityEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAimServerEligibilityEnabledEn,
+             "AimServerEligibilityEnabledEn",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAimServerEligibilityChangedNotification,
+             "AimServerEligibilityChangedNotification",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 
 // If disabled, AIM is completely turned off (kill switch).
 BASE_FEATURE(kAimEnabled, "AimEnabled", base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, uses the server response for AIM eligibility for English locales.
-// Has no effect if kAimServerEligibilityEnabled is enabled.
-BASE_FEATURE(kAimServerEligibilityEnabledEn,
-             "AimServerEligibilityEnabledEn",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // UMA histograms:
 // Histogram for the eligibility request status.
@@ -197,14 +198,10 @@ bool AimEligibilityService::IsLanguage(const std::string& language) const {
   return base::StartsWith(GetLocale(), language, base::CompareCase::SENSITIVE);
 }
 
-void AimEligibilityService::AddObserver(
-    AimEligibilityServiceObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void AimEligibilityService::RemoveObserver(
-    AimEligibilityServiceObserver* observer) {
-  observers_.RemoveObserver(observer);
+base::CallbackListSubscription
+AimEligibilityService::RegisterEligibilityChangedCallback(
+    base::RepeatingClosure callback) {
+  return eligibility_changed_callbacks_.Add(callback);
 }
 
 bool AimEligibilityService::IsServerEligibilityEnabled() const {
@@ -303,7 +300,9 @@ void AimEligibilityService::OnEligibilityResponseChanged() {
 
   LogEligibilityResponseChange();
 
-  observers_.Notify(&AimEligibilityServiceObserver::OnAimEligibilityChanged);
+  if (base::FeatureList::IsEnabled(kAimServerEligibilityChangedNotification)) {
+    eligibility_changed_callbacks_.Notify();
+  }
 }
 
 void AimEligibilityService::UpdateMostRecentResponse(
