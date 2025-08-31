@@ -1561,7 +1561,7 @@ export class Runner {
     if (soundBuffer) {
       assert(this.audioContext);
       const sourceNode = this.audioContext.createBufferSource();
-      sourceNode.buffer = soundBuffer || null;
+      sourceNode.buffer = soundBuffer;
       sourceNode.connect(this.audioContext.destination);
       sourceNode.start(0);
     }
