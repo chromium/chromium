@@ -11,6 +11,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/embedder/home_modules/app_bundle_promo_ephemeral_module.h"
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
+#include "components/segmentation_platform/embedder/home_modules/default_browser_promo_ephemeral_module.h"
 #include "components/segmentation_platform/embedder/home_modules/test_utils.h"
 #include "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #include "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
@@ -157,6 +158,32 @@ TEST_F(HomeModulesCardRegistryTest, TestAppBundlePromoCard) {
   std::vector<std::string> signalKeys =
       GetSignalKeys(signal_map, kAppBundlePromoEphemeralModule);
   EXPECT_THAT(signalKeys, Contains(kAppBundleAppsInstalledCountSignalKey));
+}
+
+// Tests that the Registry registers the `DefaultBrowserPromoEphemeralModule`
+// card when its feature is enabled.
+TEST_F(HomeModulesCardRegistryTest, TestDefaultBrowserPromoCard) {
+  feature_list_.InitAndEnableFeature(features::kDefaultBrowserMagicStackIos);
+  registry_ = std::make_unique<HomeModulesCardRegistry>(
+      &profile_pref_service_, &local_state_pref_service_);
+  // Check that the `kDefaultBrowserPromoEphemeralModule` label is included in
+  // the registry's card labels.
+  EXPECT_THAT(registry_->all_output_labels(),
+              Contains(kDefaultBrowserPromoEphemeralModule));
+
+  // Check that the `kDefaultBrowserPromoEphemeralModule` card name is included
+  // in the list of registered cards.
+  const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
+      registry_->get_all_cards_by_priority();
+  std::vector<std::string> card_names = ExtractCardNames(all_cards);
+  EXPECT_THAT(card_names, Contains(kDefaultBrowserPromoEphemeralModule));
+
+  // Check that the signal keys for the `DefaultBrowserPromoEphemeralModule` are
+  // correctly mapped to the card.
+  const CardSignalMap& signal_map = registry_->get_card_signal_map();
+  std::vector<std::string> signalKeys =
+      GetSignalKeys(signal_map, kDefaultBrowserPromoEphemeralModule);
+  EXPECT_THAT(signalKeys, Contains(kIsDefaultBrowserSignalKey));
 }
 #endif
 

@@ -17,6 +17,7 @@
 *DatabaseApiClientsTest.*
 *DatabaseClientImplTest.*
 *DatabaseMaintenanceImplTest.*
+*DefaultBrowserPromoEphemeralModuleTest.*
 *DefaultBrowserPromoTest.*
 *DeviceSwitcherModelTest.*
 *DeviceSwitcherResultDispatcherTest.*
