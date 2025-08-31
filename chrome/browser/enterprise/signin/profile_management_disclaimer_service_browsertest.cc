@@ -9,6 +9,9 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/enterprise/signin/profile_management_disclaimer_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#include "chrome/browser/policy/cloud/user_policy_signin_service.h"
+#include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
+#include "chrome/browser/policy/cloud/user_policy_signin_service_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
@@ -206,6 +209,34 @@ class ProfileManagementDisclaimerServiceBrowserFocusBrowserTest
   ProfileManagementDisclaimerServiceBrowserFocusBrowserTest()
       : SigninBrowserTestBase(/*use_main_profile=*/true) {}
 
+  void SetUpInProcessBrowserTestFixture() override {
+    SigninBrowserTestBase::SetUpInProcessBrowserTestFixture();
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &ProfileManagementDisclaimerServiceBrowserFocusBrowserTest::
+                    OnWillCreateBrowserContextServices,
+                base::Unretained(this)));
+  }
+  void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) override {
+    SigninBrowserTestBase::OnWillCreateBrowserContextServices(context);
+
+    policy::UserPolicySigninServiceFactory::GetInstance()->SetTestingFactory(
+        context,
+        base::BindRepeating(
+            GetParam().is_managed
+                ? &policy::FakeUserPolicySigninService::BuildForEnterprise
+                : &policy::FakeUserPolicySigninService::Build));
+
+    // Clear the previous cookie responses (if any) before using it for a new
+    // profile (as test_url_loader_factory() is shared across profiles).
+    test_url_loader_factory()->ClearResponses();
+    ChromeSigninClientFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                                     test_url_loader_factory()));
+  }
+
   AccountInfo MakeValidPrimaryAccountInfoAvailableAndUpdate(
       const std::string& email,
       const std::string& hosted_domain) {
@@ -220,7 +251,6 @@ class ProfileManagementDisclaimerServiceBrowserFocusBrowserTest
 
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
     bool is_managed = hosted_domain != kNoHostedDomainFound;
-    mutator.set_is_subject_to_account_level_enterprise_policies(is_managed);
     mutator.set_is_subject_to_enterprise_features(is_managed);
 
     DCHECK(account_info.IsValid());
@@ -243,6 +273,8 @@ class ProfileManagementDisclaimerServiceBrowserFocusBrowserTest
  private:
   base::test::ScopedFeatureList feature_list_{
       switches::kEnforceManagementDisclaimer};
+
+  base::CallbackListSubscription create_services_subscription_;
 };
 
 IN_PROC_BROWSER_TEST_P(
@@ -268,18 +300,18 @@ IN_PROC_BROWSER_TEST_P(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   ASSERT_EQ(identity_manager()
                 ->FindExtendedAccountInfo(primary_account_info)
-                .CanApplyAccountLevelEnterprisePolicies(),
+                .IsManaged(),
             signin::TriboolFromBool(GetParam().is_managed));
   ASSERT_FALSE(enterprise_util::UserAcceptedAccountManagement(GetProfile()));
 
   // Create a new browser to trigger the profile management disclaimer.
-  ReplaceCurrentBrowserWithNewOne();
+   ReplaceCurrentBrowserWithNewOne();
 
   Profile* new_profile = nullptr;
 
   if (GetParam().user_choice.has_value()) {
     base::test::TestFuture<Profile*, bool> future;
-    disclaimer_service->EnsureManagedProfileForAccount(
+     disclaimer_service->EnsureManagedProfileForAccount(
         primary_account_info.account_id,
         signin_metrics::AccessPoint::kEnterpriseManagementDisclaimerAtStartup,
         future.GetCallback());
@@ -358,6 +390,34 @@ class ProfileManagementDisclaimerServiceSigninBrowserTest
   ProfileManagementDisclaimerServiceSigninBrowserTest()
       : SigninBrowserTestBase(/*use_main_profile=*/true) {}
 
+  void SetUpInProcessBrowserTestFixture() override {
+    SigninBrowserTestBase::SetUpInProcessBrowserTestFixture();
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &ProfileManagementDisclaimerServiceSigninBrowserTest::
+                    OnWillCreateBrowserContextServices,
+                base::Unretained(this)));
+  }
+  void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) override {
+    SigninBrowserTestBase::OnWillCreateBrowserContextServices(context);
+
+    policy::UserPolicySigninServiceFactory::GetInstance()->SetTestingFactory(
+        context,
+        base::BindRepeating(
+            GetParam().is_managed
+                ? &policy::FakeUserPolicySigninService::BuildForEnterprise
+                : &policy::FakeUserPolicySigninService::Build));
+
+    // Clear the previous cookie responses (if any) before using it for a new
+    // profile (as test_url_loader_factory() is shared across profiles).
+    test_url_loader_factory()->ClearResponses();
+    ChromeSigninClientFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                                     test_url_loader_factory()));
+  }
+
   AccountInfo MakeValidPrimaryAccountInfoAvailableAndUpdate(
       const std::string& email,
       const std::string& hosted_domain) {
@@ -379,7 +439,6 @@ class ProfileManagementDisclaimerServiceSigninBrowserTest
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
     bool is_managed = hosted_domain != kNoHostedDomainFound;
     mutator.set_is_subject_to_enterprise_features(is_managed);
-    mutator.set_is_subject_to_account_level_enterprise_policies(is_managed);
 
     DCHECK(account_info.IsValid());
     identity_test_env()->UpdateAccountInfoForAccount(account_info);
@@ -394,6 +453,8 @@ class ProfileManagementDisclaimerServiceSigninBrowserTest
  private:
   base::test::ScopedFeatureList feature_list_{
       switches::kEnforceManagementDisclaimer};
+
+  base::CallbackListSubscription create_services_subscription_;
 };
 
 IN_PROC_BROWSER_TEST_P(ProfileManagementDisclaimerServiceSigninBrowserTest,
@@ -427,7 +488,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagementDisclaimerServiceSigninBrowserTest,
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   ASSERT_EQ(identity_manager()
                 ->FindExtendedAccountInfo(primary_account_info)
-                .CanApplyAccountLevelEnterprisePolicies(),
+                .IsManaged(),
             signin::TriboolFromBool(GetParam().is_managed));
   ASSERT_FALSE(enterprise_util::UserAcceptedAccountManagement(GetProfile()));
 

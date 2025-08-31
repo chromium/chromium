@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
+#include "chrome/browser/ui/webui/signin/turn_sync_on_helper_policy_fetch_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/browser/signin/profile_separation_policies.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -91,6 +92,7 @@ class ProfileManagementDisclaimerService
     base::WeakPtr<Profile> profile_to_continue_in;
     CoreAccountId account_id;
     bool profile_creation_required_by_policy = false;
+    std::unique_ptr<TurnSyncOnHelperPolicyFetchTracker> policy_fetch_tracker;
 
     // Callbacks to be executed the user chooses which profile to be managed and
     // whether management is required by policy. The first parameter is the
@@ -128,6 +130,8 @@ class ProfileManagementDisclaimerService
   void SetEnableManagementDisclaimerOnPrimaryAccountChange(bool enabled) {
     enable_management_disclaimer_ = enabled;
   }
+
+  void OnRegisteredForPolicy(bool is_managed_account);
 
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(

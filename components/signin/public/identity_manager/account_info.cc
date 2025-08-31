@@ -168,11 +168,6 @@ signin::Tribool AccountInfo::IsManaged() const {
 }
 
 signin::Tribool AccountInfo::CanApplyAccountLevelEnterprisePolicies() const {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  if (base::FeatureList::IsEnabled(switches::kEnforceManagementDisclaimer)) {
-    return capabilities.is_subject_to_account_level_enterprise_policies();
-  }
-#endif
   return IsManaged();
 }
 

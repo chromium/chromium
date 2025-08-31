@@ -135,7 +135,7 @@ void ProfileManagementDisclaimerService::
   state_->access_point = access_point;
 
   // Wait for the current disclaimer to be closed.
-  if (state_->profile_creation_controller) {
+  if (state_->profile_creation_controller || state_->policy_fetch_tracker) {
     return;
   }
   // We can only create one managed profile at a time.
@@ -153,8 +153,7 @@ void ProfileManagementDisclaimerService::
   AccountInfo info = GetExtendedAccountInfo(account_id);
 
   // Account info is not yet available, wait for extended account info.
-  if (info.CanApplyAccountLevelEnterprisePolicies() ==
-      signin::Tribool::kUnknown) {
+  if (info.IsManaged() == signin::Tribool::kUnknown) {
     state_->extended_account_info_wait_timeout.Start(
         FROM_HERE, base::Seconds(5),
         base::BindOnce(&ProfileManagementDisclaimerService::Reset,
@@ -163,8 +162,7 @@ void ProfileManagementDisclaimerService::
   }
 
   // Account not managed, nothing to do.
-  if (!signin::TriboolToBoolOrDie(
-          info.CanApplyAccountLevelEnterprisePolicies())) {
+  if (!signin::TriboolToBoolOrDie(info.IsManaged())) {
     Reset();
     return;
   }
@@ -179,25 +177,42 @@ void ProfileManagementDisclaimerService::
     return;
   }
 
+  CHECK(!state_->policy_fetch_tracker && !state_->profile_creation_controller);
+  state_->policy_fetch_tracker =
+      TurnSyncOnHelperPolicyFetchTracker::CreateInstance(&profile_.get(), info);
+  state_->policy_fetch_tracker->RegisterForPolicy(
+      base::BindOnce(&ProfileManagementDisclaimerService::OnRegisteredForPolicy,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ProfileManagementDisclaimerService::OnRegisteredForPolicy(
+    bool is_managed_account) {
+  if (!is_managed_account) {
+    Reset();
+    return;
+  }
+
   if (profile_separation_policies_for_testing_.has_value() ||
       user_choice_for_testing_.has_value()) {
     CHECK_IS_TEST();
     state_->profile_creation_controller =
         ManagedProfileCreationController::CreateManagedProfileForTesting(
-            &profile_.get(), info, state_->access_point,
+            &profile_.get(), GetExtendedAccountInfo(state_->account_id), state_->access_point,
             base::BindOnce(&ProfileManagementDisclaimerService::
                                OnManagedProfileCreationResult,
                            weak_ptr_factory_.GetWeakPtr()),
             std::move(profile_separation_policies_for_testing_),
             std::move(user_choice_for_testing_));
-  } else {
-    state_->profile_creation_controller =
-        ManagedProfileCreationController::CreateManagedProfile(
-            &profile_.get(), info, state_->access_point,
-            base::BindOnce(&ProfileManagementDisclaimerService::
-                               OnManagedProfileCreationResult,
-                           weak_ptr_factory_.GetWeakPtr()));
+    return;
   }
+
+  state_->profile_creation_controller =
+      ManagedProfileCreationController::CreateManagedProfile(
+        &profile_.get(), GetExtendedAccountInfo(state_->account_id),
+        state_->access_point,
+        base::BindOnce(&ProfileManagementDisclaimerService::
+                           OnManagedProfileCreationResult,
+                       weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ProfileManagementDisclaimerService::OnManagedProfileCreationResult(
@@ -208,6 +223,14 @@ void ProfileManagementDisclaimerService::OnManagedProfileCreationResult(
   }
   state_->profile_creation_required_by_policy =
       profile_creation_required_by_policy;
+  if (state_->profile_to_continue_in && state_->policy_fetch_tracker) {
+    state_->policy_fetch_tracker->SwitchToProfile(
+        state_->profile_to_continue_in.get());
+    state_->policy_fetch_tracker->FetchPolicy(
+        base::BindOnce(&ProfileManagementDisclaimerService::Reset,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
   Reset();
 }
 
@@ -241,8 +264,7 @@ void ProfileManagementDisclaimerService::OnExtendedAccountInfoUpdated(
     return;
   }
   // Management status is not yet available, wait for extended account info.
-  if (info.CanApplyAccountLevelEnterprisePolicies() ==
-      signin::Tribool::kUnknown) {
+  if (info.IsManaged() == signin::Tribool::kUnknown) {
     return;
   }
   state_->extended_account_info_wait_timeout.Stop();
