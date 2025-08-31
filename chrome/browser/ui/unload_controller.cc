@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/webapps/common/web_app_id.h"
@@ -115,6 +116,13 @@ bool UnloadController::RunUnloadEventsHelper(content::WebContents* contents) {
   // One case where we hit this is in a tab that has an infinite loop
   // before load.
   if (contents->NeedToFireBeforeUnloadOrUnloadEvents()) {
+    // Inform PerformanceManager that the page is closing, so the priority of
+    // its frames is boosted while beforeunload/unload handlers are running,
+    // making page closing faster. This state may be reset in
+    // BeforeUnloadFired() if page closing is aborted.
+    performance_manager::execution_context_priority::SetPageIsClosing(
+        contents, /*is_closing=*/true);
+
     // If the page has unload listeners, then we tell the renderer to fire
     // them. Once they have fired, we'll get a message back saying whether
     // to proceed closing the page or not, which sends us back to this method
@@ -129,6 +137,12 @@ bool UnloadController::BeforeUnloadFired(content::WebContents* contents,
                                          bool proceed) {
   if (!proceed) {
     DevToolsWindow::OnPageCloseCanceled(contents);
+
+    // Inform PerformanceManager that page close was aborted. Any priority boost
+    // will be removed.
+    performance_manager::execution_context_priority::SetPageIsClosing(
+        contents, /*is_closing=*/false);
+
     std::optional<tab_groups::TabGroupId> group =
         browser_->tab_strip_model()->GetTabGroupForTab(
             browser_->tab_strip_model()->GetIndexOfWebContents(contents));
@@ -402,6 +416,13 @@ void UnloadController::ProcessPendingTabs(bool skip_beforeunload) {
       // and then call beforeunload handlers for |web_contents|.
       // See DevToolsWindow::InterceptPageBeforeUnload for details.
       if (!DevToolsWindow::InterceptPageBeforeUnload(web_contents)) {
+        // Inform PerformanceManager that the page is closing, so the priority
+        // of its frames is boosted while beforeunload/unload handlers are
+        // running, making page closing faster. This state may be reset in
+        // BeforeUnloadFired() if page closing is aborted.
+        performance_manager::execution_context_priority::SetPageIsClosing(
+            web_contents, /*is_closing=*/true);
+
         web_contents->DispatchBeforeUnload(false /* auto_cancel */);
       }
     } else {
