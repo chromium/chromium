@@ -263,6 +263,9 @@ vars = {
   'reapi_instance': Str(''),
   # REAPI address for REAPI backends.
   'reapi_address': Str(''),
+  # REAPI backend config path for Siso.
+  # pathname relative to build/config/siso/backend_config, or absolute path.
+  'reapi_backend_config_path': Str(''),
   # siso CIPD package version.
   'siso_version': 'git_revision:8863265a67843154872be2be1fc0c37339691405',
 
@@ -4808,6 +4811,8 @@ hooks = [
                Var('reapi_instance'),
                '--reapi_address',
                Var('reapi_address'),
+	       '--reapi_backend_config_path',
+	       Var('reapi_backend_config_path'),
                ],
   },
   {
