@@ -5,7 +5,11 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_METRICS_AUTOFILL_AI_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_METRICS_AUTOFILL_AI_METRICS_H_
 
+#include <string_view>
+
 namespace autofill {
+
+class EntityType;
 
 // Logs metrics related to the user seeing an IPH, accepting it and eventually
 // seeing or accepting the FFR dialog.
@@ -18,6 +22,8 @@ enum class AutofillAiOptInFunnelEvents {
 };
 
 void LogOptInFunnelEvent(AutofillAiOptInFunnelEvents event);
+
+std::string_view EntityTypeToMetricsString(EntityType type);
 
 }  // namespace autofill
 

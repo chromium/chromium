@@ -90,6 +90,19 @@ class AutofillAiManager {
   bool IsUpdateBlockedByStrikeDatabase(
       const EntityInstance::EntityId& entity_uuid) const;
 
+  // Given `form` that is observed at submission, returns candidates for showing
+  // either save or update prompts. The returned list of candidates is ordered
+  // by decreasing priority.
+  //
+  // The function returns two possible type of candidates:
+  // - A single EntityInstance (and std::nullopt) if the entity qualifies for a
+  //   save prompt.
+  // - A pair of two entities if the entity qualifies for an update prompt. In
+  //   that case, the first entity in the pair would be the new entity (after
+  //   update) and the second one the old entity (before update).
+  std::vector<std::pair<EntityInstance, std::optional<EntityInstance>>>
+  GetEntitySaveAndUpdatePromptCandidates(const FormStructure& form);
+
   // Attempts to display an import bubble for `form` if Autofill AI is
   // interested in the form. Returns whether an import bubble will be shown.
   bool MaybeImportForm(const FormStructure& form);

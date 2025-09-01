@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
 
 #include <algorithm>
+#include <iterator>
 #include <memory>
 #include <optional>
 #include <ranges>
@@ -13,20 +14,24 @@
 
 #include "base/check_deref.h"
 #include "base/containers/contains.h"
+#include "base/containers/extend.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
+#include "base/types/optional_ref.h"
 #include "base/types/zip.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -47,6 +52,7 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_import_utils.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_logger.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor.h"
@@ -74,71 +80,6 @@
 namespace autofill {
 
 namespace {
-
-// Returns true if `entity` cannot be merged in any of the `current_entities`
-// nor is a subset of any of them. This means that a save prompt should be
-// displayed.
-bool ShouldShowNewEntitySavePrompt(
-    const EntityInstance& entity,
-    base::span<const EntityInstance> current_entities) {
-  return std::ranges::none_of(
-      current_entities, [&](const EntityInstance& existing_entity) {
-        // Entities of different type should not be merged.
-        if (entity.type() != existing_entity.type()) {
-          return false;
-        }
-        EntityInstance::EntityMergeability mergeability =
-            existing_entity.GetEntityMergeability(entity);
-        // If `entity` can be merged into `existing_entity`, a save prompt
-        // should not be shown.
-        if (!mergeability.mergeable_attributes.empty()) {
-          return true;
-        }
-        // If `entity` is a subset of another entity, we should also not show a
-        // save prompt.
-        if (mergeability.is_subset) {
-          return true;
-        }
-        return false;
-      });
-}
-
-// Finds an entity in `current_entities` which `entity` can be merged into.
-// Returns both the updated entity and the original entity.
-// Returns `std::nullopt` if no suitable entity is found.
-std::optional<std::pair<EntityInstance, EntityInstance>> MaybeUpdateEntity(
-    const EntityInstance& entity,
-    base::span<const EntityInstance> current_entities) {
-  for (const EntityInstance& existing_entity : current_entities) {
-    // Entities of different type should not be merged.
-    if (entity.type() != existing_entity.type()) {
-      continue;
-    }
-    if (existing_entity.are_attributes_read_only()) {
-      continue;
-    }
-    EntityInstance::EntityMergeability mergeability =
-        existing_entity.GetEntityMergeability(entity);
-    if (mergeability.mergeable_attributes.empty()) {
-      continue;
-    }
-
-    // Merges attributes into `existing_entity` and returns an updated entity
-    // that contains both existing and new attributes.
-    std::vector<AttributeInstance> new_attributes =
-        base::ToVector(mergeability.mergeable_attributes);
-    for (AttributeInstance curr_attribute : existing_entity.attributes()) {
-      new_attributes.emplace_back(std::move(curr_attribute));
-    }
-    return std::make_pair(
-        EntityInstance(existing_entity.type(), std::move(new_attributes),
-                       existing_entity.guid(), existing_entity.nickname(),
-                       base::Time::Now(), existing_entity.use_count(),
-                       base::Time::Now(), existing_entity.record_type()),
-        existing_entity);
-  }
-  return std::nullopt;
-}
 
 // Given an `entity`, returns the string to use as a strike key for each entry
 // in `entity.type().strike_keys()`.
@@ -265,63 +206,46 @@ bool AutofillAiManager::MaybeImportForm(const FormStructure& form) {
     return false;
   }
 
-  EntityDataManager* entity_manager = client_->GetEntityDataManager();
-  if (!entity_manager) {
-    LOG_AF(GetCurrentLogManager())
-        << LoggingScope::kAutofillAi << LogMessage::kAutofillAi
-        << "Entity data manager is not available";
-    return false;
-  }
-  std::vector<EntityInstance> entity_instances_from_form =
-      GetPossibleEntitiesFromSubmittedForm(
-          form.fields(), client_->GetAppLocale(),
-          client_->GetVariationConfigCountryCode());
-  if (entity_instances_from_form.empty()) {
-    return false;
-  }
+  std::vector<std::pair<EntityInstance, std::optional<EntityInstance>>>
+      save_update_candidates = GetEntitySaveAndUpdatePromptCandidates(form);
+  for (const std::pair<EntityInstance, std::optional<EntityInstance>>&
+           save_update_candidate : save_update_candidates) {
+    const auto& [new_entity, old_entity] = save_update_candidate;
+    const bool show_prompt =
+        save_update_candidate == save_update_candidates.front();
 
-  base::span<const EntityInstance> current_entities =
-      entity_manager->GetEntityInstances();
-  std::ranges::sort(entity_instances_from_form, EntityInstance::ImportOrder);
+    base::UmaHistogramBoolean(
+        base::StringPrintf("Autofill.Ai.PromptSuppression.%s.%s",
+                           old_entity ? "UpdatePrompt" : "SavePrompt",
+                           EntityTypeToMetricsString(new_entity.type())),
+        !show_prompt);
 
-  for (EntityInstance& entity : entity_instances_from_form) {
-    if (ShouldShowNewEntitySavePrompt(entity, current_entities)) {
-      if (IsSaveBlockedByStrikeDatabase(form.source_url(), entity)) {
-        continue;
-      }
-      auto prompt_result_callback = BindOnce(
-          &AutofillAiManager::HandleSavePromptResult, GetWeakPtr(),
-          form.source_url(),
-          autofill_metrics::FormGlobalIdToHash64Bit(form.global_id()),
-          net::registry_controlled_domains::GetDomainAndRegistry(
-              form.main_frame_origin(),
-              net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES),
-          entity);
-      client_->ShowEntitySaveOrUpdateBubble(std::move(entity),
-                                            /*old_entity=*/std::nullopt,
-                                            std::move(prompt_result_callback));
-      return true;
-    }
-    if (std::optional<std::pair<EntityInstance, EntityInstance>>
-            entity_to_update = MaybeUpdateEntity(entity, current_entities)) {
-      auto& [new_entity, old_entity] = *entity_to_update;
-      if (IsUpdateBlockedByStrikeDatabase(old_entity.guid())) {
-        continue;
-      }
-      auto prompt_result_callback = BindOnce(
-          &AutofillAiManager::HandleUpdatePromptResult, GetWeakPtr(),
-          autofill_metrics::FormGlobalIdToHash64Bit(form.global_id()),
-          net::registry_controlled_domains::GetDomainAndRegistry(
-              form.main_frame_origin(),
-              net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES),
-          old_entity.guid());
+    if (show_prompt) {
+      auto prompt_result_callback =
+          old_entity
+              ? BindOnce(
+                    &AutofillAiManager::HandleUpdatePromptResult, GetWeakPtr(),
+                    autofill_metrics::FormGlobalIdToHash64Bit(form.global_id()),
+                    net::registry_controlled_domains::GetDomainAndRegistry(
+                        form.main_frame_origin(),
+                        net::registry_controlled_domains::
+                            EXCLUDE_PRIVATE_REGISTRIES),
+                    old_entity->guid())
+              : BindOnce(
+                    &AutofillAiManager::HandleSavePromptResult, GetWeakPtr(),
+                    form.source_url(),
+                    autofill_metrics::FormGlobalIdToHash64Bit(form.global_id()),
+                    net::registry_controlled_domains::GetDomainAndRegistry(
+                        form.main_frame_origin(),
+                        net::registry_controlled_domains::
+                            EXCLUDE_PRIVATE_REGISTRIES),
+                    new_entity);
       client_->ShowEntitySaveOrUpdateBubble(std::move(new_entity),
                                             std::move(old_entity),
                                             std::move(prompt_result_callback));
-      return true;
     }
   }
-  return false;
+  return !save_update_candidates.empty();
 }
 
 void AutofillAiManager::HandleSavePromptResult(
@@ -533,6 +457,96 @@ bool AutofillAiManager::IsUpdateBlockedByStrikeDatabase(
 
 base::WeakPtr<AutofillAiManager> AutofillAiManager::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+std::vector<std::pair<EntityInstance, std::optional<EntityInstance>>>
+AutofillAiManager::GetEntitySaveAndUpdatePromptCandidates(
+    const FormStructure& form) {
+  const EntityDataManager* entity_manager = client_->GetEntityDataManager();
+  if (!entity_manager) {
+    LOG_AF(GetCurrentLogManager())
+        << LoggingScope::kAutofillAi << LogMessage::kAutofillAi
+        << "Entity data manager is not available";
+    return {};
+  }
+  base::span<const EntityInstance> saved_entities =
+      entity_manager->GetEntityInstances();
+  std::vector<EntityInstance> observed_entities =
+      GetPossibleEntitiesFromSubmittedForm(
+          form.fields(), client_->GetAppLocale(),
+          client_->GetVariationConfigCountryCode());
+  std::ranges::sort(observed_entities, EntityInstance::ImportOrder);
+
+  std::vector<std::pair<EntityInstance, std::optional<EntityInstance>>>
+      save_candidates;
+  std::vector<std::pair<EntityInstance, std::optional<EntityInstance>>>
+      update_candidates;
+  for (const EntityInstance& observed_entity : observed_entities) {
+    std::vector<std::optional<EntityInstance::EntityMergeability>>
+        mergeabilities =
+            base::ToVector(saved_entities, [&](const EntityInstance& entity) {
+              return entity.type() == observed_entity.type()
+                         ? std::optional(
+                               entity.GetEntityMergeability(observed_entity))
+                         : std::nullopt;
+            });
+
+    // If `observed_entity` is a subset of some saved entity, we should not show
+    // any prompt for it.
+    if (std::ranges::any_of(
+            mergeabilities,
+            [](const std::optional<EntityInstance::EntityMergeability>&
+                   mergeability) {
+              return mergeability && mergeability->is_subset;
+            })) {
+      continue;
+    }
+
+    // If `observed_entity` is not mergeable with any saved entity, we should
+    // show a save prompt for it.
+    if (std::ranges::all_of(
+            mergeabilities,
+            [](const std::optional<EntityInstance::EntityMergeability>&
+                   mergeability) {
+              return !mergeability ||
+                     mergeability->mergeable_attributes.empty();
+            }) &&
+        !IsSaveBlockedByStrikeDatabase(form.source_url(), observed_entity)) {
+      save_candidates.emplace_back(observed_entity, std::nullopt);
+      continue;
+    }
+
+    // For each saved entity that is mergeable with `observed_entity`, we should
+    // add an update prompt candidate.
+    for (const auto [mergeability, saved_entity] :
+         base::zip(mergeabilities, saved_entities)) {
+      if (!mergeability || mergeability->mergeable_attributes.empty() ||
+          saved_entity.are_attributes_read_only() ||
+          IsUpdateBlockedByStrikeDatabase(saved_entity.guid())) {
+        continue;
+      }
+      // Merges attributes from the two entities and returns an updated entity
+      // that contains both existing and new attributes.
+      std::vector<AttributeInstance> new_attributes =
+          base::ToVector(mergeability->mergeable_attributes);
+      for (AttributeInstance curr_attribute : saved_entity.attributes()) {
+        new_attributes.emplace_back(std::move(curr_attribute));
+      }
+      update_candidates.emplace_back(
+          EntityInstance(saved_entity.type(), std::move(new_attributes),
+                         saved_entity.guid(), saved_entity.nickname(),
+                         base::Time::Now(), saved_entity.use_count(),
+                         base::Time::Now(), saved_entity.record_type()),
+          saved_entity);
+    }
+  }
+
+  // Return a list containing save candidates before update candidates so that
+  // the first candidate has always the highest priority among all candidates.
+  std::vector<std::pair<EntityInstance, std::optional<EntityInstance>>>
+      candidates = std::move(save_candidates);
+  base::Extend(candidates, std::move(update_candidates));
+  return candidates;
 }
 
 }  // namespace autofill

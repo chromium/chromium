@@ -8,12 +8,14 @@
 #include "base/task/current_thread.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
@@ -909,6 +911,36 @@ TEST_F(AutofillAiManagerImportFormTest,
   // Since the current entity instance is read only, no prompt should be shown.
   EXPECT_CALL(autofill_client(), ShowEntitySaveOrUpdateBubble).Times(0);
   EXPECT_FALSE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+}
+
+TEST_F(AutofillAiManagerImportFormTest, PromptSuppressionMetric) {
+  std::unique_ptr<FormStructure> form =
+      CreateFormStructure({DRIVERS_LICENSE_NUMBER, VEHICLE_VIN, VEHICLE_YEAR});
+
+  EntityInstance vehicle =
+      test::GetVehicleEntityInstance({.number = u"987654", .year = u""});
+  // Clear vehicle year information so that we can simulate an update prompt
+  // later at submission time.
+  AddOrUpdateEntityInstance(vehicle);
+
+  // This should create a save prompt for the driver's license.
+  form->field(0)->set_value(u"123456");
+
+  // this should create an update prompt for the vehicle.
+  form->field(1)->set_value(
+      vehicle.attribute(AttributeType(AttributeTypeName::kVehicleVin))
+          ->GetRawInfo(VEHICLE_VIN));
+  form->field(2)->set_value(u"2025");
+
+  base::HistogramTester histogram_tester;
+  EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+
+  // Expect that the save prompt for the driver's license was shown and
+  // consequently suppressed the update prompt for the vehicle.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.PromptSuppression.SavePrompt.DriversLicense", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.PromptSuppression.UpdatePrompt.Vehicle", 1, 1);
 }
 
 }  // namespace
