@@ -331,7 +331,7 @@ std::optional<base::Time> GetChoiceScreenCompletionTimestamp(
 
 void ClearSearchEngineChoiceInvalidation(PrefService& prefs);
 
-bool IsSearchEngineChoiceInvalid(PrefService& prefs);
+bool IsSearchEngineChoiceInvalid(const PrefService& prefs);
 
 }  // namespace search_engines
 

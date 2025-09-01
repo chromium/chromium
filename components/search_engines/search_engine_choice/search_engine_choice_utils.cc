@@ -272,7 +272,7 @@ void ClearSearchEngineChoiceInvalidation(PrefService& prefs) {
   prefs.ClearPref(prefs::kDefaultSearchProviderChoiceInvalidationTimestamp);
 }
 
-bool IsSearchEngineChoiceInvalid(PrefService& prefs) {
+bool IsSearchEngineChoiceInvalid(const PrefService& prefs) {
   if (!base::FeatureList::IsEnabled(
           switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection)) {
     // Ensure that we never consider a search engine choice invalid when the

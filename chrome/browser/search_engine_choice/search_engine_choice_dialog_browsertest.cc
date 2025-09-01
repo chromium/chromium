@@ -566,15 +566,6 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
   template_url_service->ApplyDefaultSearchChangeForTesting(
       extension.get(), DefaultSearchManager::FROM_EXTENSION);
 
-  // DSE-controlling extensions are enabled only on Mac & Win
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/429600559): Documenting a bug, this is not the right way to
-  // set an extension-provided DSE. It needs to be registered in prefs first.
-  EXPECT_TRUE(!template_url_service->GetDefaultSearchProvider() ||
-              template_url_service->GetDefaultSearchProvider()->keyword() ==
-                  u"extension");
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-
   // Using a dedicated histogram tester for more more granular error reporting
   // in the checks below.
   // TODO(crbug.com/429600559): Revert to the usual one if we can make this
@@ -590,10 +581,26 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
   EXPECT_FALSE(
       search_engine_choice_dialog_service->IsShowingDialog(*browser()));
 
-  scoped_histogram_tester.ExpectUniqueSample(
-      search_engines::kSearchEngineChoiceScreenNavigationConditionsHistogram,
-      search_engines::SearchEngineChoiceScreenConditions::kExtensionControlled,
-      1);
+  // TODO(crbug.com/429600559): Documenting a bug, this is not the right way to
+  // set an extension-provided DSE. It needs to be registered in prefs first.
+  // Also, DSE-controlling extensions are supported only on Mac & Win, which is
+  // another source of no being able to properly test this flow.
+  if (!template_url_service->GetDefaultSearchProvider()) {
+    scoped_histogram_tester.ExpectUniqueSample(
+        search_engines::kSearchEngineChoiceScreenNavigationConditionsHistogram,
+        // Indicating that default search is disabled.
+        search_engines::SearchEngineChoiceScreenConditions::kControlledByPolicy,
+        1);
+  } else {
+    EXPECT_EQ(template_url_service->GetDefaultSearchProvider()->keyword(),
+              u"extension");
+
+    scoped_histogram_tester.ExpectUniqueSample(
+        search_engines::kSearchEngineChoiceScreenNavigationConditionsHistogram,
+        search_engines::SearchEngineChoiceScreenConditions::
+            kExtensionControlled,
+        1);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,

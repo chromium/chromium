@@ -289,7 +289,7 @@ RegionalCapabilitiesService::GetRegionalPrepopulatedEngines() {
 }
 
 bool RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion() {
-  return GetActiveProgramSettings().can_show_search_engine_choice_screen;
+  return GetChoiceScreenEligibilityConfig().has_value();
 }
 
 std::optional<RegionalCapabilitiesService::ChoiceScreenDesign>
@@ -324,6 +324,11 @@ RegionalCapabilitiesService::GetChoiceScreenDesign() {
       };
   }
   NOTREACHED();
+}
+
+const std::optional<ChoiceScreenEligibilityConfig>&
+RegionalCapabilitiesService::GetChoiceScreenEligibilityConfig() {
+  return GetActiveProgramSettings().choice_screen_eligibility_config;
 }
 
 bool RegionalCapabilitiesService::IsInEeaCountry() {

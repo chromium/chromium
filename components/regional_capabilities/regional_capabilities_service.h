@@ -117,6 +117,9 @@ class RegionalCapabilitiesService : public KeyedService {
   // require a search engine choice screen.
   std::optional<ChoiceScreenDesign> GetChoiceScreenDesign();
 
+  const std::optional<ChoiceScreenEligibilityConfig>&
+  GetChoiceScreenEligibilityConfig();
+
   // -- Internal utils & deprecated getters -----------------------------------
 
   // Returns whether the profile country is a EEA member.

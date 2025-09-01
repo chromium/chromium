@@ -23,7 +23,12 @@ constexpr ProgramSettings kWaffleSettings{
         kEeaChoiceCountriesIds.begin(),
         kEeaChoiceCountriesIds.end()),
     .search_engine_list_type = SearchEngineListType::kShuffled,
-    .can_show_search_engine_choice_screen = true,
+    .choice_screen_eligibility_config =
+        ChoiceScreenEligibilityConfig{
+            .should_preserve_non_prepopulated_dse = true,
+            .should_preserve_imported_choice = false,
+            .should_preserve_non_google_dse = true,
+        },
 };
 
 constexpr ProgramSettings kTaiyakiSettings{
@@ -31,14 +36,19 @@ constexpr ProgramSettings kTaiyakiSettings{
     .associated_countries =
         base::raw_span<const country_codes::CountryId>(&kTaiyakiCountry, 1u),
     .search_engine_list_type = SearchEngineListType::kShuffled,
-    .can_show_search_engine_choice_screen = true,
+    .choice_screen_eligibility_config =
+        ChoiceScreenEligibilityConfig{
+            .should_preserve_non_prepopulated_dse = false,
+            .should_preserve_imported_choice = true,
+            .should_preserve_non_google_dse = false,
+        },
 };
 
 constexpr ProgramSettings kDefaultSettings{
     .program = Program::kDefault,
     .associated_countries = base::raw_span<const country_codes::CountryId>(),
     .search_engine_list_type = SearchEngineListType::kTopN,
-    .can_show_search_engine_choice_screen = false,
+    .choice_screen_eligibility_config = std::nullopt,
 };
 
 // "Fake" program used for baseline checks. Announces itself as Taiyaki, but
