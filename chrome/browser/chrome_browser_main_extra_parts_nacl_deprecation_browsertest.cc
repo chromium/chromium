@@ -89,6 +89,13 @@ class ChromeBrowserMainExtraPartsNaclDeprecationTestManagedDeviceDefault
   ash::ScopedStubInstallAttributes install_attributes_;
 };
 
+// NaCl is enabled for the first boot, and disabled afterwards.
+IN_PROC_BROWSER_TEST_F(
+    ChromeBrowserMainExtraPartsNaclDeprecationTestManagedDeviceDefault,
+    PRE_NaClDisabled) {
+  EXPECT_TRUE(IsNaclAllowed());
+}
+
 IN_PROC_BROWSER_TEST_F(
     ChromeBrowserMainExtraPartsNaclDeprecationTestManagedDeviceDefault,
     NaClDisabled) {
