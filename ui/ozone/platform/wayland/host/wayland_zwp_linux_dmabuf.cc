@@ -318,10 +318,10 @@ void WaylandZwpLinuxDmabuf::OnMainDevice(void* data,
   base::ScopedFD drm_fd(open(drm_device_path, O_RDWR));
 
   self->connection_->SetRenderNodePath(drm_fd, drm_device_path);
-#endif  // defined(WAYLAND_GBM)
 
   // Prepare to receive new formats and modifiers
   self->supported_buffer_formats_with_modifiers_.clear();
+#endif  // defined(WAYLAND_GBM)
 }
 
 void WaylandZwpLinuxDmabuf::OnTrancheDone(
