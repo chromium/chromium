@@ -554,12 +554,14 @@ UIColor* GetCheckedTintColor() {
   NSString* actionName = nil;
   switch (_snippetButtonState) {
     case SnippetButtonState::kOneLine:
-      actionName = l10n_util::GetNSString(
-          IDS_IOS_SEARCH_ENGINE_ACCESSIBILITY_EXPAND_SNIPPET);
+      actionName = l10n_util::GetNSStringF(
+          IDS_IOS_SEARCH_ENGINE_ACCESSIBILITY_EXPAND_SNIPPET,
+          base::SysNSStringToUTF16(self.searchEngineName));
       break;
     case SnippetButtonState::kExpanded:
-      actionName = l10n_util::GetNSString(
-          IDS_IOS_SEARCH_ENGINE_ACCESSIBILITY_COLLAPSE_SNIPPET);
+      actionName = l10n_util::GetNSStringF(
+          IDS_IOS_SEARCH_ENGINE_ACCESSIBILITY_COLLAPSE_SNIPPET,
+          base::SysNSStringToUTF16(self.searchEngineName));
       break;
   }
   UIAccessibilityCustomAction* action = [[UIAccessibilityCustomAction alloc]
