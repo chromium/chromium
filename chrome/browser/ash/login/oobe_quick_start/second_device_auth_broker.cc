@@ -530,14 +530,14 @@ void SecondDeviceAuthBroker::FetchChallengeBytes(
 
   endpoint_fetcher_ = std::make_unique<EndpointFetcher>(
       /*url_loader_factory=*/url_loader_factory_,
-      /*url=*/GURL(kDeviceSigninBaseUrl).Resolve(kGetChallengeDataApi),
-      /*content_type=*/kHttpContentType,
-      /*timeout=*/kGetChallengeDataTimeout,
-      /*post_data=*/kGetChallengeDataRequest,
-      /*headers=*/std::vector<std::string>(),
-      /*cors_exempt_headers=*/std::vector<std::string>(), ash::GetChannel(),
+      /*identity_manager=*/nullptr,
       EndpointFetcher::RequestParams::Builder(kHttpPost,
                                               kChallengeDataAnnotation)
+          .SetChannel(ash::GetChannel())
+          .SetContentType(kHttpContentType)
+          .SetPostData(kGetChallengeDataRequest)
+          .SetTimeout(kGetChallengeDataTimeout)
+          .SetUrl(GURL(kDeviceSigninBaseUrl).Resolve(kGetChallengeDataApi))
           .Build());
 
   metrics_.RecordChallengeBytesRequested();
@@ -589,15 +589,15 @@ void SecondDeviceAuthBroker::FetchAuthCode(
 
   endpoint_fetcher_ = std::make_unique<EndpointFetcher>(
       /*url_loader_factory=*/url_loader_factory_,
-      /*url=*/GURL(kDeviceSigninBaseUrl).Resolve(kStartSessionApi),
-      /*content_type=*/kHttpContentType,
-      /*timeout=*/kStartSessionTimeout,
-      /*post_data=*/
-      CreateStartSessionRequestData(fido_assertion_info, certificate),
-      /*headers=*/std::vector<std::string>(),
-      /*cors_exempt_headers=*/std::vector<std::string>(), ash::GetChannel(),
+      /*identity_manager=*/nullptr,
       EndpointFetcher::RequestParams::Builder(kHttpPost,
                                               kStartSessionAnnotation)
+          .SetChannel(ash::GetChannel())
+          .SetContentType(kHttpContentType)
+          .SetPostData(
+              CreateStartSessionRequestData(fido_assertion_info, certificate))
+          .SetTimeout(kStartSessionTimeout)
+          .SetUrl(GURL(kDeviceSigninBaseUrl).Resolve(kStartSessionApi))
           .Build());
 
   metrics_.RecordGaiaAuthenticationStarted();
