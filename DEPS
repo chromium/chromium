@@ -264,7 +264,7 @@ vars = {
   # REAPI address for REAPI backends.
   'reapi_address': Str(''),
   # siso CIPD package version.
-  'siso_version': 'git_revision:15568691576f74b11a3c73c85a3c8dd5efb72f05',
+  'siso_version': 'git_revision:8863265a67843154872be2be1fc0c37339691405',
 
   # reclient options.
   # RBE project to download rewrapper config files for. Only needed if
