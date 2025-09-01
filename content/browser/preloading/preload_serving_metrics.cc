@@ -166,6 +166,13 @@ void PreloadServingMetrics::RecordMetricsForNonPrerenderNavigationCommitted()
   }
 }
 
+void PreloadServingMetrics::RecordMetricsForPrerenderInitialNavigationFailed()
+    const {
+  CHECK(PreloadServingMetrics::IsEnabled());
+
+  // unimplemented
+}
+
 void PreloadServingMetrics::RecordFirstContentfulPaint(
     base::TimeDelta corrected_first_contentful_paint) const {
   const bool is_prerender_used = !!prerender_initial_preload_serving_metrics;

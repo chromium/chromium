@@ -385,6 +385,11 @@ IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
 
   ASSERT_EQ(2u, preload_serving_metrics_list().size());
 
+  auto& prerender_initial_preload_serving_metrics =
+      preload_serving_metrics_list()[0];
+  // Taken and used to record UMAs.
+  ASSERT_FALSE(prerender_initial_preload_serving_metrics);
+
   auto& preload_serving_metrics = preload_serving_metrics_list()[1];
   ASSERT_TRUE(preload_serving_metrics);
   ASSERT_EQ(0u, preload_serving_metrics->prefetch_match_metrics_list.size());
@@ -504,6 +509,11 @@ IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
   ASSERT_EQ(expected, GetObservedRequests());
 
   ASSERT_EQ(2u, preload_serving_metrics_list().size());
+
+  auto& prerender_initial_preload_serving_metrics =
+      preload_serving_metrics_list()[0];
+  // Taken and used to record UMAs.
+  ASSERT_FALSE(prerender_initial_preload_serving_metrics);
 
   auto& preload_serving_metrics = preload_serving_metrics_list()[1];
   ASSERT_TRUE(preload_serving_metrics);
@@ -832,6 +842,11 @@ IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
 
   ASSERT_EQ(2u, preload_serving_metrics_list().size());
 
+  auto& prerender_initial_preload_serving_metrics =
+      preload_serving_metrics_list()[0];
+  // Taken and used to record UMAs.
+  ASSERT_FALSE(prerender_initial_preload_serving_metrics);
+
   auto& preload_serving_metrics = preload_serving_metrics_list()[1];
   ASSERT_TRUE(preload_serving_metrics);
   ASSERT_EQ(1u, preload_serving_metrics->prefetch_match_metrics_list.size());
@@ -912,6 +927,11 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_EQ(expected, GetObservedRequests());
 
   ASSERT_EQ(2u, preload_serving_metrics_list().size());
+
+  auto& prerender_initial_preload_serving_metrics =
+      preload_serving_metrics_list()[0];
+  // Taken and used to record UMAs.
+  ASSERT_FALSE(prerender_initial_preload_serving_metrics);
 
   auto& preload_serving_metrics = preload_serving_metrics_list()[1];
   ASSERT_EQ(1u, preload_serving_metrics->prefetch_match_metrics_list.size());

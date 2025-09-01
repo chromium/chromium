@@ -165,15 +165,9 @@ std::unique_ptr<network::SimpleURLLoader> CreateHttpCacheQueryingResourceLoad(
           semantics {
             sender: "Prerender"
             description:
-              "This is not actually a network request. It is used internally "
-              "by the browser to determine if the HTTP cache would be used if "
-              "the user were to navigate back in session history. It only "
-              "checks the cache and does not hit the network."
+              "This is not actually a network request. It is used internally by the browser to determine if the HTTP cache would be used if the user were to navigate back in session history. It only checks the cache and does not hit the network."
             trigger:
-              "When the user performs an action that would suggest that they "
-              "intend to navigate back soon. Examples include hovering the "
-              "mouse over the back button and the start of a gestural back "
-              "navigation."
+              "When the user performs an action that would suggest that they intend to navigate back soon. Examples include hovering the mouse over the back button and the start of a gestural back navigation."
             user_data {
               type: NONE
             }
@@ -1112,6 +1106,7 @@ bool PrerenderHostRegistry::CancelHostInternal(
   std::unique_ptr<PrerenderHost> prerender_host = std::move(iter->second);
   prerender_host_by_frame_tree_node_id_.erase(iter);
 
+  prerender_host->OnWillBeCancelled(reason);
   reason.ReportMetrics(prerender_host->GetHistogramSuffix());
 
   NotifyCancel(prerender_host->frame_tree_node_id(), reason);

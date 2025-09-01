@@ -431,6 +431,9 @@ class CONTENT_EXPORT PrerenderHost {
 
   void NotifyReused();
 
+  // Called just before cancellation
+  void OnWillBeCancelled(const PrerenderCancellationReason& reason);
+
   const PreloadPipelineInfo& preload_pipeline_info() const {
     return *attributes_.preload_pipeline_info.get();
   }

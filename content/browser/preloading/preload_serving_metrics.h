@@ -132,6 +132,7 @@ struct CONTENT_EXPORT PreloadServingMetrics {
   PreloadServingMetrics& operator=(const PreloadServingMetrics&) = delete;
 
   void RecordMetricsForNonPrerenderNavigationCommitted() const;
+  void RecordMetricsForPrerenderInitialNavigationFailed() const;
   void RecordFirstContentfulPaint(
       base::TimeDelta corrected_first_contentful_paint) const;
 
