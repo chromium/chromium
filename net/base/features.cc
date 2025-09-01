@@ -772,6 +772,13 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "QuicHandshakeTimeout",
                    base::Seconds(quic::kMaxTimeForCryptoHandshakeSecs));
 
+BASE_FEATURE(LowerQuicMaxPacketSize, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(size_t,
+                   kQuicMaxPacketSize,
+                   &kLowerQuicMaxPacketSize,
+                   "mtu",
+                   quic::kDefaultMaxPacketSize);
+
 BASE_FEATURE(kConfigureQuicHints,
              "ConfigureQuicHints",
              base::FEATURE_DISABLED_BY_DEFAULT);

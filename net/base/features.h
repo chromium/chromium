@@ -894,6 +894,10 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kAdditionalDelay);
 NET_EXPORT BASE_DECLARE_FEATURE(kExtendQuicHandshakeTimeout);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kQuicHandshakeTimeout);
 
+// If enabled, we will use QUIC with a smaller MTU.
+NET_EXPORT BASE_DECLARE_FEATURE(kLowerQuicMaxPacketSize);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t, kQuicMaxPacketSize);
+
 // When enabled, races QUIC connection attempts for the specified hostnames
 // even when there is no available ALPN information.
 NET_EXPORT BASE_DECLARE_FEATURE(kConfigureQuicHints);

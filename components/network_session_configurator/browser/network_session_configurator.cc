@@ -509,6 +509,9 @@ void SetQuicFlags(const VariationParameters& quic_trial_params) {
 }
 
 size_t GetQuicMaxPacketLength(const VariationParameters& quic_trial_params) {
+  if (base::FeatureList::IsEnabled(net::features::kLowerQuicMaxPacketSize)) {
+    return net::features::kQuicMaxPacketSize.Get();
+  }
   unsigned value;
   if (base::StringToUint(
           GetVariationParam(quic_trial_params, "max_packet_length"), &value)) {
