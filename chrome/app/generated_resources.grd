@@ -7484,6 +7484,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_IGNORE_TABLE_COLUMN_SOURCE" desc="about:browser-switch/internals description of the column Source in the table of the section Ignore">
           Source
         </message>
+        <message name="IDS_ABOUT_BROWSER_SWITCH_INTERNALS_POLICIES_DOWNLOAD_BUTTON" desc="about:browser-switch/internals download button for used policies in legacy browser support">
+          Export LBS policies
+        </message>
       </if>
 
       <!-- About box strings -->

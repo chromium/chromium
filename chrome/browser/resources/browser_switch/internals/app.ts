@@ -276,6 +276,23 @@ export class AppElement extends AppElementBase {
   protected onUrlCheckerInputInput_(e: Event) {
     this.urlCheckerInput_ = (e.target as CrInputElement).value;
   }
+
+  /**
+   * Handles the click event on the export policies button.
+   * Fetches the internals data as JSON and triggers a download.
+   */
+  protected async onExportToJsonClick_() {
+    const json = await getProxy().getBrowserSwitchInternalsJson();
+    const blob = new Blob([json], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'browser_switch_internals.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
 }
 
 customElements.define(AppElement.is, AppElement);

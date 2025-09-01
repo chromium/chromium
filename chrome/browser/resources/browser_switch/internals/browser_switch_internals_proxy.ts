@@ -59,6 +59,11 @@ export interface BrowserSwitchInternalsProxy {
 
   // TODO(crbug.com/40200942): Add documentation.
   refreshXml(): void;
+
+  /**
+   * Get all the data displayed on the page as a JSON string.
+   */
+  getBrowserSwitchInternalsJson(): Promise<string>;
 }
 
 export class BrowserSwitchInternalsProxyImpl implements
@@ -85,6 +90,10 @@ export class BrowserSwitchInternalsProxyImpl implements
 
   refreshXml() {
     chrome.send('refreshXml');
+  }
+
+  getBrowserSwitchInternalsJson() {
+    return sendWithPromise('getBrowserSwitchInternalsJson');
   }
 
   static getInstance(): BrowserSwitchInternalsProxy {
