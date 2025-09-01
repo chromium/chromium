@@ -9647,3 +9647,6 @@ crbug.com/441011869 [ Linux ] external/wpt/storage-access-api/requestStorageAcce
 
 # Gardener 2025-08-29
 crbug.com/441826647 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/navigate/navigate.py [ Timeout Skip ]
+
+# Gardener 2025-09-01
+crbug.com/442030691 compositing/video/video-poster.html [ Failure Pass ]
