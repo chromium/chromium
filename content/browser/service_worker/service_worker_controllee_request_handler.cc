@@ -168,6 +168,34 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
   }
   ServiceWorkerMetrics::RecordSkipServiceWorkerOnNavigation(false);
 
+  // TODO(crbug.com/352578800): Revisit this to ensure the correct reload
+  // handling. Also, these check should be handled inside
+  // `service_worker_loader_helpers::IsEligibleForSyntheticResponse()` or merge
+  // the code into
+  // `ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader()` to use
+  // `skip_service_worker` flag.
+  if (service_worker_loader_helpers::IsEligibleForSyntheticResponse(
+          browser_context, tentative_resource_request.url)) {
+    const int kReloadFlags = net::LOAD_VALIDATE_CACHE | net::LOAD_BYPASS_CACHE;
+    // If the navigation is from reloading, do not inject the service worker
+    // registration.
+    if (tentative_resource_request.load_flags & kReloadFlags) {
+      CompleteWithoutLoader();
+      return;
+    }
+    // Only accepts GET.
+    if (tentative_resource_request.method !=
+        net::HttpRequestHeaders::kGetMethod) {
+      CompleteWithoutLoader();
+      return;
+    }
+    // Limit the storage key is in the first party context.
+    if (!service_worker_client_->key().IsFirstPartyContext()) {
+      CompleteWithoutLoader();
+      return;
+    }
+  }
+
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
   // Fall back for the subsequent offline page interceptor to load the offline
   // snapshot of the page if required.
