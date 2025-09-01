@@ -266,26 +266,25 @@ std::u16string Expiration4DigitYearAsString(int expiration_year) {
   return FormatDate({.year = expiration_year}, u"YYYY");
 }
 
-std::optional<int> ParseMonthFromString(const std::u16string& text,
-                                        const std::string& app_locale) {
-  std::u16string trimmed;
-  base::TrimWhitespace(text, base::TRIM_ALL, &trimmed);
+std::optional<int> ParseMonthFromString(std::u16string_view text,
+                                        std::string_view app_locale) {
+  std::u16string_view trimmed = base::TrimWhitespace(text, base::TRIM_ALL);
 
   if (trimmed.empty())
     return std::nullopt;
 
   int month = 0;
-  // Try parsing the |trimmed| as a number (this doesn't require |app_locale|).
+  // Try parsing the `trimmed` as a number (this doesn't require `app_locale`).
   if (base::StringToInt(trimmed, &month))
     return GetExpirationMonth(month);
 
   if (app_locale.empty())
     return std::nullopt;
 
-  // Otherwise, try parsing the |trimmed| as a named month, e.g. "January" or
+  // Otherwise, try parsing the `trimmed` as a named month, e.g. "January" or
   // "Jan" in the user's locale.
   UErrorCode status = U_ZERO_ERROR;
-  icu::Locale locale(app_locale.c_str());
+  icu::Locale locale(std::string(app_locale).c_str());
   icu::DateFormatSymbols date_format_symbols(locale, status);
   DCHECK(status == U_ZERO_ERROR || status == U_USING_FALLBACK_WARNING ||
          status == U_USING_DEFAULT_WARNING);
@@ -302,7 +301,7 @@ std::optional<int> ParseMonthFromString(const std::u16string& text,
   for (size_t i = 0; i < months.size(); ++i) {
     const std::u16string icu_month(
         base::i18n::UnicodeStringToString16(months[i]));
-    // We look for the ICU-defined month in |trimmed|.
+    // We look for the ICU-defined month in `trimmed`.
     if (base::i18n::StringSearchIgnoringCaseAndAccents(icu_month, trimmed,
                                                        nullptr, nullptr)) {
       month = i + 1;  // Adjust from 0-indexed to 1-indexed.
@@ -320,12 +319,12 @@ std::optional<int> ParseMonthFromString(const std::u16string& text,
     return UNSAFE_BUFFERS(
         base::span(months, base::checked_cast<size_t>(num_months)));
   }();
-  base::TrimString(trimmed, u".", &trimmed);
+  trimmed = base::TrimString(trimmed, u".", base::TRIM_ALL);
   for (size_t i = 0; i < short_months.size(); ++i) {
     std::u16string icu_month(
         base::i18n::UnicodeStringToString16(short_months[i]));
     base::TrimString(icu_month, u".", &icu_month);
-    // We look for the ICU-defined month in |trimmed_month|.
+    // We look for the ICU-defined month in `trimmed_month`.
     if (base::i18n::StringSearchIgnoringCaseAndAccents(icu_month, trimmed,
                                                        nullptr, nullptr)) {
       month = i + 1;  // Adjust from 0-indexed to 1-indexed.
@@ -355,7 +354,7 @@ std::optional<int> GetExpirationMonth(int value) {
 }
 
 std::optional<int> GetExpirationYear(int value) {
-  // If |value| is beyond this millennium, or more than 2 digits but
+  // If `value` is beyond this millennium, or more than 2 digits but
   // before the current millennium (e.g. "545", "1995"), return. What is left
   // are values like "45" or "2018".
   if (value > 2999 || (value > 99 && value < 2000))

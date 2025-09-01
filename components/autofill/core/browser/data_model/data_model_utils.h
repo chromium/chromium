@@ -128,23 +128,23 @@ inline constexpr size_t kMaxAffixLengthForFormatString = 8;
 bool IsValidAffixFormat(std::u16string_view format,
                         bool exclude_full_value = false);
 
-// Converts the integer |expiration_month| to std::u16string. Returns a value
+// Converts the integer `expiration_month` to std::u16string. Returns a value
 // between ["01"-"12"].
 std::u16string Expiration2DigitMonthAsString(int expiration_month);
 
-// Converts the integer |expiration_year| to std::u16string. Returns a value
+// Converts the integer `expiration_year` to std::u16string. Returns a value
 // between ["00"-"99"].
 std::u16string Expiration2DigitYearAsString(int expiration_year);
 
-// Converts the integer |expiration_year| to std::u16string.
+// Converts the integer `expiration_year` to std::u16string.
 std::u16string Expiration4DigitYearAsString(int expiration_year);
 
 // Converts a string representation of a month (such as "February" or "feb."
 // or "2") into a numeric value in [1, 12]. Returns the corresponding `int`
 // value if parsing was successful or `std::nullopt` if a month was not
 // recognized.
-std::optional<int> ParseMonthFromString(const std::u16string& text,
-                                        const std::string& app_locale);
+std::optional<int> ParseMonthFromString(std::u16string_view text,
+                                        std::string_view app_locale);
 
 // Parses the `text` and returns the corresponding `int` value if parsing was
 // successful . This function accepts two digit years as well as four digit
@@ -160,9 +160,9 @@ std::optional<int> GetExpirationMonth(int value);
 // comments in the function body for the definition of "valid".
 std::optional<int> GetExpirationYear(int value);
 
-// Finds possible country code in |text| by fetching the first sub-group when
-// matched with |kAugmentedPhoneCountryCodeRe| regex. It basically looks for a
-// phone country code in the style of "+49" or "0049" in |text|. Preceding and
+// Finds possible country code in `text` by fetching the first sub-group when
+// matched with `kAugmentedPhoneCountryCodeRe` regex. It basically looks for a
+// phone country code in the style of "+49" or "0049" in `text`. Preceding and
 // following text is allowed unless that text contains digits. It returns the
 // country code in the form of "49" in the example or an empty string.
 std::u16string FindPossiblePhoneCountryCode(std::u16string_view text);
