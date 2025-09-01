@@ -540,6 +540,9 @@ public class LocationBarTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.PHONE)
+    // TODO(crbug.com/423465927): Explore a better approach to make the
+    // existing tests run with the prewarm feature enabled.
+    @DisableFeatures({"Prewarm"})
     public void testFocusLogic_lenButtonVisibilityOnLocationBarOnIncognitoStateChange() {
         startActivityNormally();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();

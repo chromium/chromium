@@ -8022,6 +8022,7 @@
     "DSEPrewarm": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "linux"
             ],
@@ -18860,24 +18861,6 @@
                     },
                     "enable_features": [
                         "Prerender2FallbackPrefetchSpecRules"
-                    ]
-                }
-            ]
-        }
-    ],
-    "Prerender2ReuseSearchResultHostAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "reuse_search_host": "true"
-                    },
-                    "enable_features": [
-                        "Prerender2ReuseHost"
                     ]
                 }
             ]

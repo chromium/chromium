@@ -146,7 +146,9 @@ import java.util.concurrent.atomic.AtomicReference;
 /** Test suite for verifying the behavior of various URL overriding actions. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures(ChromeFeatureList.CCT_DESTROY_TAB_WHEN_MODEL_IS_EMPTY)
+// TODO(crbug.com/423465927): Explore a better approach to make the
+// existing tests run with the prewarm feature enabled.
+@DisableFeatures({ChromeFeatureList.CCT_DESTROY_TAB_WHEN_MODEL_IS_EMPTY, "Prewarm"})
 public class UrlOverridingTest {
     @Rule
     public FreshCtaTransitTestRule mTabbedActivityTestRule =

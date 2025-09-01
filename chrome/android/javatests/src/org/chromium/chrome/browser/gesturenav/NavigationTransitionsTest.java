@@ -38,6 +38,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -99,6 +100,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 // Native fence extension doesn't work properly on Android emulator
 @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/337886037")
 @DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/337886037")
+// TODO(crbug.com/423465927): Explore a better approach to make the
+// existing tests run with the prewarm feature enabled.
+@DisableFeatures({"Prewarm"})
 public class NavigationTransitionsTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
