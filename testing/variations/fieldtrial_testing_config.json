@@ -3175,7 +3175,7 @@
             ]
         }
     ],
-    "AutomatedPasswordChangeStudy": [
+    "AutomatedPasswordChangeStudyV2": [
         {
             "platforms": [
                 "chromeos",
@@ -3187,6 +3187,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "ApplyClientsideModelPredictionsForPasswordTypes",
+                        "CheckLoginStateBeforePasswordChange",
                         "ImprovedPasswordChangeService",
                         "PasswordChangeSubmissionMqlsLogging"
                     ]

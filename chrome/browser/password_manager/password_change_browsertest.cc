@@ -165,8 +165,9 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
   PasswordChangeBrowserTest() {
     // TODO (crbug.com/439496997): Fix the test to work with this feature flag
     // default value.
-    scoped_feature_list_.InitAndEnableFeature(
-        password_manager::features::kSubmitWithEnterDuringPasswordChange);
+    scoped_feature_list_.InitWithFeatures(
+        {password_manager::features::kSubmitWithEnterDuringPasswordChange},
+        {password_manager::features::kCheckLoginStateBeforePasswordChange});
   }
 
   void SetUpInProcessBrowserTestFixture() override {
