@@ -511,6 +511,9 @@ void PasswordChangeUIController::NavigateToPasswordChangeSettings() {
 
 void PasswordChangeUIController::SkipLoginCheck() {
   CHECK(password_change_delegate_);
+  LogToastEvent(
+      PasswordChangeDelegate::State::kLoginFormDetectedUserCanContinue,
+      PasswordChangeToastEvent::kContinue);
   password_change_delegate_->ProceedToChangePassword();
 }
 

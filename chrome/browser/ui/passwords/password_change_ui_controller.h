@@ -38,7 +38,8 @@ enum class PasswordChangeDialogAction {
 enum class PasswordChangeToastEvent {
   kShown = 0,
   kCanceled = 1,
-  kMaxValue = kCanceled,
+  kContinue = 2,
+  kMaxValue = kContinue,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:PasswordChangeToastEvent)
 

@@ -264,4 +264,18 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
                           Bucket(PasswordChangeToastEvent::kCanceled, 1)));
 }
 
+IN_PROC_BROWSER_TEST_F(PasswordChangeUIControllerBrowserTest,
+                       WaitingForSignInToastClickedContinue) {
+  UpdateState(PasswordChangeDelegate::State::kLoginFormDetectedUserCanContinue);
+
+  EXPECT_CALL(delegate_, ProceedToChangePassword);
+  views::test::ButtonTestApi clicker(GetToastActionButton());
+  clicker.NotifyClick(ui::test::TestEvent());
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "PasswordManager.PasswordChange.WaitingForUserSignInToast"),
+              ElementsAre(Bucket(PasswordChangeToastEvent::kShown, 1),
+                          Bucket(PasswordChangeToastEvent::kContinue, 1)));
+}
+
 }  // namespace
