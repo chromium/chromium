@@ -352,6 +352,7 @@ public class StartupLoadingMetricsTest {
      */
     @Test
     @LargeTest
+    @DisabledTest(message = "crbug.com/442398236")
     public void testWebApkStartRecorded() throws Exception {
         HistogramWatcher ntpColdStartWatcher = createNtpColdStartHistogramWatcher(0);
         runAndWaitForPageLoadMetricsRecorded(
