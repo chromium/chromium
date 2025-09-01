@@ -3151,7 +3151,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.EME.CrosCdmType" enum="CrosCdmType"
     expires_after="2024-05-19">
-  <owner>jkardatzke@chromium.org</owner>
+  <owner>hiroh@chromium.org</owner>
   <owner>cros-gfx-video@google.com</owner>
   <summary>
     Whether we used the platform CDM on Chrome OS that includes HW secure
@@ -3161,7 +3161,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.EME.CrosPlatformCdm.SystemCode" enum="CdmSystemCode"
     expires_after="2024-01-15">
-  <owner>jkardatzke@chromium.org</owner>
+  <owner>hiroh@chromium.org</owner>
   <owner>cros-gfx-video@google.com</owner>
   <summary>System code in promise rejection for ChromeOS platform CDM.</summary>
 </histogram>
@@ -3492,7 +3492,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.EME.OutputProtection.PlatformCdm"
     enum="MediaOutputProtectionStatus" expires_after="2022-01-15">
-  <owner>jkardatzke@chromium.org</owner>
+  <owner>hiroh@chromium.org</owner>
   <owner>cros-gfx-video@google.com</owner>
   <summary>
     Output protection query status and result. One query and one positive (no
@@ -4128,7 +4128,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Media.GpuMemoryBufferVideoFramePool.UnsupportedFormat"
     enum="VideoPixelFormatUnion" expires_after="2026-01-18">
   <owner>magchen@chromium.org</owner>
-  <owner>mcasas@chromium.org</owner>
+  <owner>cros-gfx-video@google.com</owner>
   <summary>
     GpuMemoryBufferVideoFramePool is called with an unsupported VideoFrame pixel
     format. Emitted on VideoFrame arrival.
@@ -4749,7 +4749,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Media.MediaRecorder.Codec" enum="MediaRecorderCodec"
     expires_after="2026-02-22">
   <owner>clarissagarvey@chromium.org</owner>
-  <owner>mcasas@chromium.org</owner>
+  <owner>chromeos-gfx-video@chromium.org</owner>
   <summary>
     The codec and hardware/software variant used by MediaRecorder, recorded once
     when the VideoTrackRecorder initializes the encoder.
@@ -5088,7 +5088,7 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: used by ChromeOS test infrastructure -->
 
-  <owner>mcasas@chromium.org</owner>
+  <owner>hiroh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <summary>
     Delay between a DecodeBuffer (and encoded chunk) input and a decoded
@@ -5122,7 +5122,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Media.MojoVideoEncodeAccelerator.InputStorageType"
     enum="VideoFrameStorageType" expires_after="2024-05-26">
   <owner>hiroh@chromium.org</owner>
-  <owner>mcasas@chromium.org</owner>
+  <owner>chromeos-gfx-video@chromium.org</owner>
   <summary>
     The storage type of media::VideoFrame passed to MojoVideoEncodeAccelerator
     for encoding. The histogram is recorded every frame encode request.
@@ -5439,7 +5439,7 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: used by ChromeOS test infrastructure -->
 
-  <owner>mcasas@chromium.org</owner>
+  <owner>hiroh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <summary>
     Time for the platform-specific (set of) video decode acceleration command(s)
@@ -5449,7 +5449,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.PlatformVideoDecoding.VideoCodecProfile"
     enum="VideoCodecProfile" expires_after="2025-11-09">
-  <owner>mcasas@chromium.org</owner>
+  <owner>hiroh@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
     VideoCodecProfile used to Initialize() the platform VideoDecoder
@@ -5913,7 +5913,6 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
 
-  <owner>mcasas@chromium.org</owner>
   <owner>sprang@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <summary>
@@ -5949,7 +5948,6 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: Codec and container support planning metric. -->
 
-  <owner>mcasas@chromium.org</owner>
   <owner>sprang@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <summary>Video codec profile used in RTC video decoder.</summary>
@@ -5979,7 +5977,6 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
 
-  <owner>mcasas@chromium.org</owner>
   <owner>sprang@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <summary>
@@ -5992,7 +5989,6 @@ chromium-metrics-reviews@google.com.
     expires_after="never">
 <!-- expires-never: Codec and container support planning metric. -->
 
-  <owner>mcasas@chromium.org</owner>
   <owner>sprang@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <summary>Video codec profile used in RTC video encoder.</summary>
@@ -6003,7 +5999,6 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: Codec and container support planning metric. -->
 
   <owner>hiroh@chromium.org</owner>
-  <owner>mcasas@chromium.org</owner>
   <owner>sprang@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <summary>
@@ -6433,7 +6428,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.V4l2VideoDecoder.Error" enum="V4l2VideoDecoderFunctions"
     expires_after="2024-05-19">
-  <owner>stevecho@chromium.org</owner>
+  <owner>hiroh@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
     Records errors during normal V4L2VideoDecoder operations. These can happen
@@ -6455,7 +6450,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.VaapiVideoDecoder.DecodeError" enum="BooleanError"
     expires_after="2026-01-18">
-  <owner>mcasas@chromium.org</owner>
+  <owner>hiroh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <summary>
     The codec-specific delegate in VaapiVideoDecoder has returned an error from
@@ -6465,7 +6460,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.VaapiVideoDecoder.VaapiWrapperCreationSuccess"
     enum="BooleanSuccess" expires_after="2025-09-14">
-  <owner>mcasas@chromium.org</owner>
+  <owner>hiroh@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
     Whether the creation of VaapiWrapper succeeded or not inside
@@ -6475,7 +6470,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.VaapiWrapper.VADisplayStateInitializeSuccess"
     enum="BooleanSuccess" expires_after="2025-09-07">
-  <owner>mcasas@chromium.org</owner>
+  <owner>hiroh@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
     Whether the call to VaapiWrapper's VADisplayState::Initialize() succeeded or
@@ -6497,7 +6492,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.VAVDA.VaapiWrapperCreationSuccess" enum="BooleanSuccess"
     expires_after="2023-02-12">
-  <owner>mcasas@chromium.org</owner>
+  <owner>hiroh@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
     Whether the creation of VaapiWrapper succeeded or not inside VaVDA.
@@ -6611,7 +6606,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.VideoCapture.AspectRatio" units="%"
     expires_after="2026-03-25">
-  <owner>mcasas@chromium.org</owner>
+  <owner>hiroh@chromium.org</owner>
+  <owner>chromeos-gfx-video@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <summary>
     Video Capture Device captured aspect ratio, as a rounded integer multiplied
@@ -6750,7 +6746,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.VideoCapture.Error" enum="VideoCaptureError"
     expires_after="2026-02-22">
-  <owner>mcasas@chromium.org</owner>
+  <owner>hiroh@chromium.org</owner>
+  <owner>chromeos-gfx-video@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>armax@chromium.org</owner>
   <summary>
@@ -6764,7 +6761,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.VideoCapture.FrameRate" units="fps"
     expires_after="2026-03-25">
-  <owner>mcasas@chromium.org</owner>
+  <owner>hiroh@chromium.org</owner>
+  <owner>chromeos-gfx-video@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>armax@chromium.org</owner>
   <owner>handellm@google.com</owner>
@@ -6789,7 +6787,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.VideoCapture.Height" units="pixels"
     expires_after="2026-03-25">
-  <owner>mcasas@chromium.org</owner>
+  <owner>hiroh@chromium.org</owner>
+  <owner>chromeos-gfx-video@chromium.org</owner>
   <owner>handellm@google.com</owner>
   <owner>jophba@chromium.org</owner>
   <summary>
@@ -6956,7 +6955,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.VideoCapture.Track.FrameDrop.{StreamType}"
     enum="VideoCaptureFrameDropReason" expires_after="2026-03-25">
-  <owner>mcasas@chromium.org</owner>
+  <owner>hiroh@chromium.org</owner>
+  <owner>chromeos-gfx-video@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>armax@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
@@ -6983,7 +6983,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.VideoCapture.Width" units="pixels"
     expires_after="2026-03-25">
-  <owner>mcasas@chromium.org</owner>
+  <owner>hiroh@chromium.org</owner>
+  <owner>chromeos-gfx-video@chromium.org</owner>
   <owner>handellm@google.com</owner>
   <owner>jophba@chromium.org</owner>
   <summary>
@@ -7620,7 +7621,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.{VaapiClientName}.VAAPIError" enum="VaapiFunctions"
     expires_after="2025-06-01">
-  <owner>mcasas@chromium.org</owner>
+  <owner>hiroh@chromium.org</owner>
   <owner>chromeos-gfx-video@chromium.org</owner>
   <summary>
     Error codes reported by libva (via VaapiWrapper) while being used from the

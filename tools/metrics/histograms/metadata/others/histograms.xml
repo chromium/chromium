@@ -4227,7 +4227,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DrmUtil.CreateDisplaySnapshot.BitsPerChannel" units="bits"
     expires_after="2024-05-16">
-  <owner>mcasas@chromium.org</owner>
+  <owner>hiroh@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
     Number of bits per channel described by a parsed EDID blob. This UMA is
@@ -4239,7 +4239,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DrmUtil.CreateDisplaySnapshot.HasEdidBlob" enum="Boolean"
     expires_after="2024-05-16">
-  <owner>mcasas@chromium.org</owner>
+  <owner>hiroh@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
     Whether an EDID blob was detected. This UMA is recorded whenever we attempt
@@ -4250,7 +4250,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="DrmUtil.CreateDisplaySnapshot.IsHDR" enum="Boolean"
     expires_after="2025-08-24">
-  <owner>mcasas@chromium.org</owner>
+  <owner>hiroh@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
     Whether a EDID blob contained an HDR transfer function (e.g. SMPT SE2084 or
@@ -4263,7 +4263,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="DrmUtil.GetColorSpaceFromEdid.ChecksOutcome"
     enum="EdidColorSpaceChecksOutcome" expires_after="2025-09-07">
   <owner>andrescj@chromium.org</owner>
-  <owner>mcasas@chromium.org</owner>
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@google.com</owner>
   <summary>
