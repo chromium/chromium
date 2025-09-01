@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "ash/app_list/apps_collections_controller.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
@@ -458,9 +457,7 @@ class AppListClientImplBrowserPromiseAppTest
     : public AppListClientImplBrowserTest,
       public AppListModelUpdaterObserver {
  public:
-  AppListClientImplBrowserPromiseAppTest() {
-    feature_list_.InitWithFeatures({ash::features::kPromiseIcons}, {});
-  }
+  AppListClientImplBrowserPromiseAppTest() = default;
 
   // extensions::PlatformAppBrowserTest:
   void SetUpOnMainThread() override {
@@ -505,7 +502,6 @@ class AppListClientImplBrowserPromiseAppTest
  private:
   int updates_ = 0;
   std::unique_ptr<ash::AppListItemMetadata> last_updated_metadata_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that progress updates from promise apps registry are reflected into the

@@ -1785,9 +1785,6 @@ BASE_FEATURE(ProjectorUseUSMForS3, base::FEATURE_ENABLED_BY_DEFAULT);
 // playback urls.
 BASE_FEATURE(ProjectorUseDVSPlaybackEndpoint, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether to show promise icons during app installations.
-BASE_FEATURE(PromiseIcons, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether to show promise icons during web app installations.
 BASE_FEATURE(PromiseIconsForWebApps, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -2377,13 +2374,8 @@ bool AreHelpAppWelcomeTipsEnabled() {
          base::FeatureList::IsEnabled(kScalableIph);
 }
 
-bool ArePromiseIconsEnabled() {
-  return base::FeatureList::IsEnabled(kPromiseIcons);
-}
-
 bool ArePromiseIconsForWebAppsEnabled() {
-  return base::FeatureList::IsEnabled(kPromiseIconsForWebApps) &&
-         ArePromiseIconsEnabled();
+  return base::FeatureList::IsEnabled(kPromiseIconsForWebApps);
 }
 
 bool ForceOnDeviceAppControlsForAllRegions() {

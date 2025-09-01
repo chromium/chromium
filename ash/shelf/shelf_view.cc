@@ -2190,10 +2190,6 @@ void ShelfView::OnGestureEvent(ui::GestureEvent* event) {
 void ShelfView::MaybeDuplicatePromiseAppForRemoval(
     ShelfAppButton* promise_app_view,
     const ShelfItem& item) {
-  if (!ash::features::ArePromiseIconsEnabled()) {
-    return;
-  }
-
   if (!promise_app_view || !promise_app_view->is_promise_app()) {
     return;
   }

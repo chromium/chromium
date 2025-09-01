@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/app_list/app_service/app_service_promise_app_model_builder.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -47,7 +46,6 @@ class AppServicePromiseAppModelBuilderTest : public app_list::AppListTestBase {
   // Creates a new builder, destroying any existing one.
   void CreateBuilder(bool guest_mode) {
     ResetBuilder();  // Destroy any existing builder in the correct order.
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kPromiseIcons);
     SetGuestSessionOnProfile(guest_mode);
     app_service_test_.SetUp(GetAppServiceProfile());
     model_updater_ = std::make_unique<FakeAppListModelUpdater>(
@@ -114,7 +112,6 @@ class AppServicePromiseAppModelBuilderTest : public app_list::AppListTestBase {
   std::unique_ptr<FakeAppListModelUpdater> model_updater_;
   display::test::TestScreen test_screen_;
   std::unique_ptr<Profile> profile_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<apps::PromiseAppRegistryCache> cache_;
   syncer::StringOrdinal last_position_;
   base::WeakPtrFactory<AppServicePromiseAppModelBuilderTest> weak_ptr_factory_{

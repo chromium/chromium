@@ -883,7 +883,7 @@ gfx::Size AppListItemView::GetIconSize() const {
   if (is_folder_) {
     return app_list_config_->folder_icon_size();
   }
-  if (is_promise_app_ && features::ArePromiseIconsEnabled() && item_weak_) {
+  if (is_promise_app_ && item_weak_) {
     // Placeholder icons do not change size between states.
     if (ImageModelHasPlaceholderIcon()) {
       return gfx::Size(kPlaceholderIconDimension, kPlaceholderIconDimension);
@@ -2075,8 +2075,7 @@ bool AppListItemView::ImageModelHasPlaceholderIcon() const {
 }
 
 void AppListItemView::UpdateProgressIndicatorState() {
-  if ((!is_promise_app_ && !forced_progress_indicator_value_) ||
-      !features::ArePromiseIconsEnabled()) {
+  if ((!is_promise_app_ && !forced_progress_indicator_value_)) {
     return;
   }
 

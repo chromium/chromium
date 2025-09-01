@@ -9,7 +9,6 @@
 #include <optional>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
@@ -1652,8 +1651,7 @@ void ArcApps::OnGetAppShortcutItems(
 }
 
 void ArcApps::OnInstallationStarted(const std::string& package_name) {
-  if (ash::features::ArePromiseIconsEnabled() &&
-      ArcVersionEligibleForPromiseIcons()) {
+  if (ArcVersionEligibleForPromiseIcons()) {
     PromiseAppPtr promise_app = AppPublisher::MakePromiseApp(
         PackageId(PackageType::kArc, package_name));
 
@@ -1665,51 +1663,46 @@ void ArcApps::OnInstallationStarted(const std::string& package_name) {
 
 void ArcApps::OnInstallationProgressChanged(const std::string& package_name,
                                             float progress) {
-  if (ash::features::ArePromiseIconsEnabled()) {
-    PackageId package_id = PackageId(PackageType::kArc, package_name);
-    const PromiseApp* existing_promise_app =
-        proxy()->PromiseAppRegistryCache()->GetPromiseApp(package_id);
-    if (!existing_promise_app) {
-      LOG(ERROR) << "Cannot update installation progress value for "
-                 << package_name
-                 << ", as there is no promise app registered for this package.";
-      return;
-    }
-    PromiseAppPtr promise_app = AppPublisher::MakePromiseApp(package_id);
-    promise_app->progress = progress;
-
-    // Update the status to reflect that the app is actively downloading/
-    // installing. We update the status here on the first progress update
-    // instead of in OnInstallationActiveChanged, due to some conflicts with
-    // what the ARC active status indicates and what we need.
-    if (existing_promise_app->status == PromiseStatus::kPending) {
-      promise_app->status = PromiseStatus::kInstalling;
-    }
-    AppPublisher::PublishPromiseApp(std::move(promise_app));
+  PackageId package_id = PackageId(PackageType::kArc, package_name);
+  const PromiseApp* existing_promise_app =
+      proxy()->PromiseAppRegistryCache()->GetPromiseApp(package_id);
+  if (!existing_promise_app) {
+    LOG(ERROR) << "Cannot update installation progress value for "
+               << package_name
+               << ", as there is no promise app registered for this package.";
+    return;
   }
+  PromiseAppPtr promise_app = AppPublisher::MakePromiseApp(package_id);
+  promise_app->progress = progress;
+
+  // Update the status to reflect that the app is actively downloading/
+  // installing. We update the status here on the first progress update
+  // instead of in OnInstallationActiveChanged, due to some conflicts with
+  // what the ARC active status indicates and what we need.
+  if (existing_promise_app->status == PromiseStatus::kPending) {
+    promise_app->status = PromiseStatus::kInstalling;
+  }
+  AppPublisher::PublishPromiseApp(std::move(promise_app));
 }
 
 void ArcApps::OnInstallationActiveChanged(const std::string& package_name,
                                           bool active) {
-  if (ash::features::ArePromiseIconsEnabled()) {
-    PackageId package_id(PackageType::kArc, package_name);
-    if (!proxy()->PromiseAppRegistryCache()->HasPromiseApp(package_id)) {
-      LOG(ERROR) << "Cannot update installation active status for "
-                 << package_name
-                 << ", as there is no promise app registered for this package.";
-      return;
-    }
-    // TODO(b/261907409): Set PromiseStatus to kPending if the installation is
-    // no longer active, i.e. if active=false after there has been at least one
-    // progress change.
+  PackageId package_id(PackageType::kArc, package_name);
+  if (!proxy()->PromiseAppRegistryCache()->HasPromiseApp(package_id)) {
+    LOG(ERROR) << "Cannot update installation active status for "
+               << package_name
+               << ", as there is no promise app registered for this package.";
+    return;
   }
+  // TODO(b/261907409): Set PromiseStatus to kPending if the installation is
+  // no longer active, i.e. if active=false after there has been at least one
+  // progress change.
 }
 
 void ArcApps::OnInstallationFinished(const std::string& package_name,
                                      bool success,
                                      bool is_launchable_app) {
-  if (ash::features::ArePromiseIconsEnabled() &&
-      ArcVersionEligibleForPromiseIcons()) {
+  if (ArcVersionEligibleForPromiseIcons()) {
     if (success && is_launchable_app) {
       return;
     }

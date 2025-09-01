@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -163,11 +162,9 @@ void ArcAppTest::SetUp(Profile* profile) {
     WaitForDefaultApps();
   WaitForRemoveAllApps();
 
-  if (ash::features::ArePromiseIconsEnabled()) {
-    apps::AppServiceProxyFactory::GetForProfile(profile_)
-        ->PromiseAppService()
-        ->SetSkipAlmanacForTesting(true);
-  }
+  apps::AppServiceProxyFactory::GetForProfile(profile_)
+      ->PromiseAppService()
+      ->SetSkipAlmanacForTesting(true);
 
   // Check initial conditions.
   if (activate_arc_on_start_) {

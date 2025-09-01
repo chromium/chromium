@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "ash/constants/ash_features.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/scoped_observation.h"
@@ -50,7 +49,6 @@ class PromiseAppServiceTest : public testing::Test,
                               public PromiseAppRegistryCache::Observer {
  public:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(ash::features::kPromiseIcons);
     url_loader_factory_ = std::make_unique<network::TestURLLoaderFactory>();
     testing::Test::SetUp();
     TestingProfile::Builder profile_builder;
@@ -160,7 +158,6 @@ class PromiseAppServiceTest : public testing::Test,
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   base::HistogramTester histogram_tester_;
-  base::test::ScopedFeatureList feature_list_;
 
   // Tracks how many times we should expect OnPromiseAppUpdate to be called
   // before proceeding with a unit test.

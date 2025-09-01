@@ -16,10 +16,8 @@
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
-#include "ash/constants/ash_features.h"
 #include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/drag_drop/drag_drop_controller_test_api.h"
-#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -31,8 +29,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
@@ -67,9 +63,6 @@ class AppListItemViewPixelTestBase : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{ash::features::kPromiseIcons, enable_promise_icons()}});
-
     AshTestBase::SetUp();
 
     // As per `app_list_config_provider.cc`, dense values are used for screens
@@ -169,7 +162,6 @@ class AppListItemViewPixelTestBase : public AshTestBase {
   const bool enable_system_blur_;
 
   std::unique_ptr<DragDropControllerTestApi> drag_drop_controller_test_api_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class AppListItemViewPixelTest

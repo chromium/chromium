@@ -7,7 +7,6 @@
 #include <optional>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -140,12 +139,9 @@ std::u16string ShelfControllerHelper::GetAppTitle(Profile* profile,
     return base::UTF8ToUTF16(name);
   }
 
-  if (ash::features::ArePromiseIconsEnabled()) {
-    const std::u16string promise_app_title =
-        GetPromiseAppTitle(profile, app_id);
-    if (!promise_app_title.empty()) {
-      return promise_app_title;
-    }
+  const std::u16string promise_app_title = GetPromiseAppTitle(profile, app_id);
+  if (!promise_app_title.empty()) {
+    return promise_app_title;
   }
 
   // Get the title for the extension which is not managed by AppService.
@@ -167,9 +163,6 @@ std::u16string ShelfControllerHelper::GetAppTitle(Profile* profile,
 std::u16string ShelfControllerHelper::GetPromiseAppAccessibleName(
     Profile* profile,
     const std::string& package_id) {
-  if (!ash::features::ArePromiseIconsEnabled()) {
-    return std::u16string();
-  }
   const apps::PromiseApp* promise_app =
       apps::AppServiceProxyFactory::GetForProfile(profile)
           ->PromiseAppRegistryCache()
@@ -188,14 +181,12 @@ std::string ShelfControllerHelper::GetAppPackageId(Profile* profile,
     return std::string();
   }
 
-  if (ash::features::ArePromiseIconsEnabled()) {
-    const apps::PromiseApp* promise_app =
-        apps::AppServiceProxyFactory::GetForProfile(profile)
-            ->PromiseAppRegistryCache()
-            ->GetPromiseAppForStringPackageId(app_id);
-    if (promise_app) {
-      return promise_app->package_id.ToString();
-    }
+  const apps::PromiseApp* promise_app =
+      apps::AppServiceProxyFactory::GetForProfile(profile)
+          ->PromiseAppRegistryCache()
+          ->GetPromiseAppForStringPackageId(app_id);
+  if (promise_app) {
+    return promise_app->package_id.ToString();
   }
 
   std::optional<apps::PackageId> package_id;
@@ -222,14 +213,12 @@ ash::AppStatus ShelfControllerHelper::GetAppStatus(Profile* profile,
     return status;
   }
 
-  if (ash::features::ArePromiseIconsEnabled()) {
-    const apps::PromiseApp* promise_app =
-        apps::AppServiceProxyFactory::GetForProfile(profile)
-            ->PromiseAppRegistryCache()
-            ->GetPromiseAppForStringPackageId(app_id);
-    if (promise_app) {
-      return ConvertPromiseStatusToAppStatus(promise_app->status);
-    }
+  const apps::PromiseApp* promise_app =
+      apps::AppServiceProxyFactory::GetForProfile(profile)
+          ->PromiseAppRegistryCache()
+          ->GetPromiseAppForStringPackageId(app_id);
+  if (promise_app) {
+    return ConvertPromiseStatusToAppStatus(promise_app->status);
   }
 
   apps::AppServiceProxyFactory::GetForProfile(profile)
@@ -309,9 +298,6 @@ float ShelfControllerHelper::GetPromiseAppProgress(
 // static
 bool ShelfControllerHelper::IsPromiseApp(Profile* profile,
                                          const std::string& id) {
-  if (!ash::features::ArePromiseIconsEnabled()) {
-    return false;
-  }
   return apps::AppServiceProxyFactory::GetForProfile(profile)
       ->PromiseAppRegistryCache()
       ->GetPromiseAppForStringPackageId(id);

@@ -13,7 +13,6 @@
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_view.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
@@ -4174,17 +4173,7 @@ TEST_F(ShelfViewDeskButtonTest, VisibilityMetrics) {
   histogram_tester.ExpectTotalCount(kDeskButtonHiddenHistogramName, 1);
 }
 
-class ShelfViewPromiseAppTest : public ShelfViewTest {
- public:
-  ShelfViewPromiseAppTest() = default;
-  ShelfViewPromiseAppTest(const ShelfViewPromiseAppTest&) = delete;
-  ShelfViewPromiseAppTest& operator=(const ShelfViewPromiseAppTest&) = delete;
-  ~ShelfViewPromiseAppTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      ash::features::kPromiseIcons};
-};
+using ShelfViewPromiseAppTest = ShelfViewTest;
 
 TEST_F(ShelfViewPromiseAppTest, UpdateProgressOnPromiseIcon) {
   // Add platform app button.

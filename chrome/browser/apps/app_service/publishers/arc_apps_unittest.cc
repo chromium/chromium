@@ -909,7 +909,6 @@ class ArcAppsPublisherPromiseAppTest : public ArcAppsPublisherTest {
  public:
   void SetUp() override {
     ArcAppsPublisherTest::SetUp();
-    feature_list_.InitAndEnableFeature(ash::features::kPromiseIcons);
     app_service_proxy()->ReinitializeForTesting(profile());
     service()->SetSkipAlmanacForTesting(true);
   }
@@ -921,9 +920,6 @@ class ArcAppsPublisherPromiseAppTest : public ArcAppsPublisherTest {
   apps::PromiseAppRegistryCache* cache() {
     return app_service_proxy()->PromiseAppRegistryCache();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(ArcAppsPublisherPromiseAppTest,

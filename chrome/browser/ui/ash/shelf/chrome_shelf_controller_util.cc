@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
@@ -117,9 +116,6 @@ bool IsAppHiddenFromShelf(Profile* profile, const std::string& app_id) {
 
 bool IsPromiseAppReadyToShowInShelf(Profile* profile,
                                     const std::string& promise_package_id) {
-  if (!ash::features::ArePromiseIconsEnabled()) {
-    return false;
-  }
   CHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
   const apps::PromiseApp* promise_app =
       apps::AppServiceProxyFactory::GetForProfile(profile)
@@ -131,8 +127,7 @@ bool IsPromiseAppReadyToShowInShelf(Profile* profile,
 bool IsAppPinEditable(apps::AppType app_type,
                       const std::string& app_id,
                       Profile* profile) {
-  if (ash::features::ArePromiseIconsEnabled() &&
-      apps::AppServiceProxyFactory::GetForProfile(profile)
+  if (apps::AppServiceProxyFactory::GetForProfile(profile)
           ->PromiseAppRegistryCache()
           ->GetPromiseAppForStringPackageId(app_id)) {
     return true;

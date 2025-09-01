@@ -9,9 +9,7 @@
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
-#include "ash/constants/ash_features.h"
 #include "ash/drag_drop/drag_drop_controller.h"
-#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -20,7 +18,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -70,9 +67,6 @@ class AppListItemViewTest : public AshTestBase {
 
   // testing::Test:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kPromiseIcons, true}});
-
     AshTestBase::SetUp();
 
     ShellTestApi().drag_drop_controller()->SetLoopClosureForTesting(
@@ -125,7 +119,6 @@ class AppListItemViewTest : public AshTestBase {
 
   int drag_started_on_controller_ = 0;
   raw_ptr<AppListItemView, DanglingUntriaged> drag_view_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(AppListItemViewTest, NewInstallDot) {

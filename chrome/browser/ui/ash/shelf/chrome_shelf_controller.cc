@@ -9,7 +9,6 @@
 #include <set>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
@@ -1690,10 +1689,8 @@ void ChromeShelfController::AddAppUpdaterAndIconLoader(Profile* profile) {
         std::make_unique<ShelfExtensionAppUpdater>(this, profile,
                                                    /*extensions_only=*/true));
 
-    if (ash::features::ArePromiseIconsEnabled()) {
-      app_updaters_for_profile.emplace_back(
-          std::make_unique<ShelfPromiseAppUpdater>(this, profile));
-    }
+    app_updaters_for_profile.emplace_back(
+        std::make_unique<ShelfPromiseAppUpdater>(this, profile));
   }
 
   if (!base::Contains(app_icon_loaders_, profile)) {
@@ -1702,12 +1699,9 @@ void ChromeShelfController::AddAppUpdaterAndIconLoader(Profile* profile) {
     app_icon_loaders_for_profile.push_back(
         std::make_unique<AppServiceAppIconLoader>(
             profile, extension_misc::EXTENSION_ICON_MEDIUM, this));
-
-    if (ash::features::ArePromiseIconsEnabled()) {
-      app_icon_loaders_[profile].emplace_back(
-          std::make_unique<AppServicePromiseAppIconLoader>(
-              profile, extension_misc::EXTENSION_ICON_MEDIUM, this));
-    }
+    app_icon_loaders_for_profile.emplace_back(
+        std::make_unique<AppServicePromiseAppIconLoader>(
+            profile, extension_misc::EXTENSION_ICON_MEDIUM, this));
 
     // Some special extensions open new windows, and on Chrome OS, those windows
     // should show the extension icon in the shelf. Extensions are not present
@@ -1799,31 +1793,29 @@ void ChromeShelfController::ShelfItemAdded(int index) {
       item.app_status = app_status;
     }
 
-    if (ash::features::ArePromiseIconsEnabled()) {
-      float progress = ShelfControllerHelper::GetPromiseAppProgress(
-          latest_active_profile_, id.app_id);
-      // If the item is set to the default progress value despite the promise
-      // app having real progress, we need to update this.
-      if (item.progress < 0 && progress >= 0) {
-        needs_update = true;
-        item.progress = progress;
-      }
+    float progress = ShelfControllerHelper::GetPromiseAppProgress(
+        latest_active_profile_, id.app_id);
+    // If the item is set to the default progress value despite the promise
+    // app having real progress, we need to update this.
+    if (item.progress < 0 && progress >= 0) {
+      needs_update = true;
+      item.progress = progress;
+    }
 
-      bool is_promise_app = ShelfControllerHelper::IsPromiseApp(
-          latest_active_profile_, id.app_id);
-      MaybeRecordPromiseAppShelfItemCreated(is_promise_app);
-      if (is_promise_app != item.is_promise_app) {
-        needs_update = true;
-        item.is_promise_app = is_promise_app;
-      }
+    bool is_promise_app =
+        ShelfControllerHelper::IsPromiseApp(latest_active_profile_, id.app_id);
+    MaybeRecordPromiseAppShelfItemCreated(is_promise_app);
+    if (is_promise_app != item.is_promise_app) {
+      needs_update = true;
+      item.is_promise_app = is_promise_app;
+    }
 
-      std::u16string accessible_name =
-          ShelfControllerHelper::GetPromiseAppAccessibleName(
-              latest_active_profile_, id.app_id);
-      if (is_promise_app && accessible_name != item.accessible_name) {
-        needs_update = true;
-        item.accessible_name = accessible_name;
-      }
+    std::u16string accessible_name =
+        ShelfControllerHelper::GetPromiseAppAccessibleName(
+            latest_active_profile_, id.app_id);
+    if (is_promise_app && accessible_name != item.accessible_name) {
+      needs_update = true;
+      item.accessible_name = accessible_name;
     }
 
     if (needs_update) {

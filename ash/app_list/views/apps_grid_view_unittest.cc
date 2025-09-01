@@ -44,13 +44,10 @@
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_menu/app_menu_model_adapter.h"
-#include "ash/constants/ash_features.h"
 #include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/drag_drop/drag_drop_controller_test_api.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
-#include "ash/public/cpp/app_list/app_list_config.h"
-#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
@@ -74,7 +71,6 @@
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -325,8 +321,6 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
     if (is_rtl_)
       base::i18n::SetICUDefaultLocale("he");
 
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kPromiseIcons, true}});
     AshTestBase::SetUp();
 
     // Make the display big enough to hold the app list.
@@ -781,7 +775,6 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
 
   // Used to track haptics events sent during drag.
   std::unique_ptr<HapticsTrackingTestInputController> haptics_tracker_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests suite to test both tablet and clamshell mode behavior.

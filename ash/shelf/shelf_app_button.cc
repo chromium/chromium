@@ -9,7 +9,6 @@
 #include <iterator>
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -922,7 +921,7 @@ bool ShelfAppButton::ImageModelHasPlaceholderIcon() const {
 }
 
 float ShelfAppButton::GetIconDimensionByAppState() const {
-  if (is_promise_app_ && features::ArePromiseIconsEnabled()) {
+  if (is_promise_app_) {
     if (ImageModelHasPlaceholderIcon()) {
       return kPromiseIconDimensionPending;
     }
@@ -1330,8 +1329,7 @@ void ShelfAppButton::MaybeHideInkDropWhenGestureEnds() {
 }
 
 void ShelfAppButton::UpdateProgressRingBounds() {
-  if ((!is_promise_app_ && !forced_progress_indicator_value_) ||
-      !features::ArePromiseIconsEnabled()) {
+  if ((!is_promise_app_ && !forced_progress_indicator_value_)) {
     return;
   }
 

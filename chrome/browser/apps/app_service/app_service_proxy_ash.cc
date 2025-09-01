@@ -152,10 +152,8 @@ void AppServiceProxyAsh::Initialize() {
         FROM_HERE, base::BindOnce(&AppServiceProxyAsh::InitAppPlatformMetrics,
                                   weak_ptr_factory_.GetWeakPtr()));
   }
-  if (ash::features::ArePromiseIconsEnabled()) {
-    promise_app_service_ = std::make_unique<apps::PromiseAppService>(
-        profile_, app_registry_cache_);
-  }
+  promise_app_service_ =
+      std::make_unique<apps::PromiseAppService>(profile_, app_registry_cache_);
   app_install_service_ = AppInstallService::Create(*profile_);
 }
 

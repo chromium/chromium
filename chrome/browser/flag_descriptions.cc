@@ -8329,11 +8329,6 @@ const char kWebrtcPipeWireCameraDescription[] =
 #endif  // #if defined(WEBRTC_USE_PIPEWIRE)
 
 #if BUILDFLAG(IS_CHROMEOS)
-const char kPromiseIconsName[] = "Promise Icons";
-const char kPromiseIconsDescription[] =
-    "Enables promise icons in the Launcher and Shelf (if the app is pinned) "
-    "for app installations.";
-
 const char kEnableAudioFocusEnforcementName[] = "Audio Focus Enforcement";
 const char kEnableAudioFocusEnforcementDescription[] =
     "Enables enforcement of a single media session having audio focus at "
