@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/streams/miscellaneous_operations.h"
 #include "third_party/blink/renderer/core/streams/read_request.h"
@@ -36,6 +37,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "v8/include/v8.h"
 
 // See the design doc at
@@ -1070,6 +1072,8 @@ CORE_EXPORT WritableStream* CreateCrossRealmTransformWritable(
     AllowPerChunkTransferring allow_per_chunk_transferring,
     std::unique_ptr<WritableStreamTransferringOptimizer> optimizer,
     ExceptionState& exception_state) {
+  UseCounter::CountWebDXFeature(ExecutionContext::From(script_state),
+                                WebDXFeature::kTransferableStreams);
   WritableStream* stream = MakeGarbageCollected<CrossRealmTransformWritable>(
                                script_state, port, allow_per_chunk_transferring)
                                ->CreateWritableStream(exception_state);
@@ -1098,6 +1102,8 @@ CORE_EXPORT ReadableStream* CreateCrossRealmTransformReadable(
     MessagePort* port,
     std::unique_ptr<ReadableStreamTransferringOptimizer> optimizer,
     ExceptionState& exception_state) {
+  UseCounter::CountWebDXFeature(ExecutionContext::From(script_state),
+                                WebDXFeature::kTransferableStreams);
   ReadableStream* stream =
       MakeGarbageCollected<CrossRealmTransformReadable>(script_state, port)
           ->CreateReadableStream(exception_state);

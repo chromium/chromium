@@ -458,6 +458,7 @@ enum WebDXFeature {
   kJsonModules = 396,
   kDRAFT_WasmCustomDescriptors = 397,
   kFetchRequestStreams = 398,
+  kTransferableStreams = 399,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
