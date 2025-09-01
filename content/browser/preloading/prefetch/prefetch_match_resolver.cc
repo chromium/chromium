@@ -15,6 +15,7 @@
 #include "content/browser/preloading/prefetch/prefetch_request.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
+#include "content/browser/preloading/preload_serving_metrics_holder.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/renderer_host/frame_tree.h"
 
@@ -53,7 +54,8 @@ PrefetchMatchResolver::PrefetchMatchResolver(
       navigated_key_(std::move(navigated_key)),
       expected_service_worker_state_(expected_service_worker_state),
       callback_(std::move(callback)),
-      is_nav_prerender_(is_nav_prerender) {
+      is_nav_prerender_(is_nav_prerender),
+      prefetch_match_metrics_(std::make_unique<PrefetchMatchMetrics>()) {
   switch (expected_service_worker_state_) {
     case PrefetchServiceWorkerState::kAllowed:
       NOTREACHED();
@@ -458,12 +460,14 @@ void PrefetchMatchResolver::UnblockForMatch(const PrefetchKey& prefetch_key) {
 
 void PrefetchMatchResolver::UnblockForNoCandidates() {
   TRACE_EVENT0("loading", "PrefetchMatchResolver::UnblockForNoCandidates");
-  UnblockInternal({});
+
   if (prefetch_service_ && expected_service_worker_state_ ==
                                PrefetchServiceWorkerState::kDisallowed) {
     prefetch_service_->AddRecentUnmatchedNavigatedKeysForMetrics(
         navigated_key_);
   }
+
+  UnblockInternal({});
 }
 
 void PrefetchMatchResolver::MaybeUnblockForUnmatch(
@@ -506,6 +510,23 @@ void PrefetchMatchResolver::UnblockInternal(
   // Postcondition: This resolver waits for no `PrefetchContainer`s when it has
   // been unblocking.
   CHECK_EQ(candidates_.size(), 0u);
+
+  if (PreloadServingMetrics::IsEnabled()) {
+    PrefetchContainer* prefetch_container =
+        serving_handle.GetPrefetchContainer();
+    prefetch_match_metrics_->prefetch_container_metrics =
+        prefetch_container
+            ? std::make_unique<PrefetchContainerMetrics>(
+                  prefetch_container->GetPrefetchContainerMetrics())
+            : std::unique_ptr<PrefetchContainerMetrics>(nullptr);
+    if (navigation_request_for_metrics_) {
+      auto& preload_serving_metrics_holder =
+          *PreloadServingMetricsHolder::GetOrCreateForNavigationHandle(
+              *navigation_request_for_metrics_.get());
+      preload_serving_metrics_holder.AddPrefetchMatchMetrics(
+          std::move(prefetch_match_metrics_));
+    }
+  }
 
   auto callback = std::move(callback_);
 

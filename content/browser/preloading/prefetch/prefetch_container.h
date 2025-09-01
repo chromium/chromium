@@ -600,6 +600,10 @@ class CONTENT_EXPORT PrefetchContainer {
       base::PassKey<PrefetchServingHandle>,
       PrefetchStatus prefetch_status);
 
+  const PrefetchContainerMetrics& GetPrefetchContainerMetrics() const {
+    return prefetch_container_metrics_;
+  }
+
  protected:
   // Updates metrics based on the result of the prefetch request.
   void UpdatePrefetchRequestMetrics(

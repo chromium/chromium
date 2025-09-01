@@ -57,6 +57,28 @@ struct CONTENT_EXPORT PrefetchContainerMetrics {
   std::optional<base::TimeTicks> time_prefetch_completed_successfully;
 };
 
+// Log of prefetch matching.
+//
+// `PreloadMatchMetrics` is a "Log" object as defined in
+// https://chromium.googlesource.com/chromium/src/+/main/content/browser/preloading/preload_serving_metrics.md#Logs
+//
+// The members are filled by `PrefetchMatchResolver`.
+struct CONTENT_EXPORT PrefetchMatchMetrics {
+  PrefetchMatchMetrics();
+  ~PrefetchMatchMetrics();
+
+  // Not movable nor copyable.
+  PrefetchMatchMetrics(PrefetchMatchMetrics&& other) = delete;
+  PrefetchMatchMetrics& operator=(PrefetchMatchMetrics&& other) = delete;
+  PrefetchMatchMetrics(const PrefetchMatchMetrics&) = delete;
+  PrefetchMatchMetrics& operator=(const PrefetchMatchMetrics&) = delete;
+
+  // Optional, may be null. Non-null iff matched at
+  // `PrefetchMatchResolver::UnblockInternal()`.
+  std::unique_ptr<PrefetchContainerMetrics> prefetch_container_metrics =
+      nullptr;
+};
+
 // Log of preloads related to a navigation
 //
 // `PreloadServingMetrics` is a "Log" object as defined in
@@ -82,6 +104,10 @@ struct CONTENT_EXPORT PreloadServingMetrics {
   PreloadServingMetrics& operator=(PreloadServingMetrics&& other) = delete;
   PreloadServingMetrics(const PreloadServingMetrics&) = delete;
   PreloadServingMetrics& operator=(const PreloadServingMetrics&) = delete;
+
+  // Added per prefetch matching.
+  std::vector<std::unique_ptr<PrefetchMatchMetrics>>
+      prefetch_match_metrics_list;
 };
 
 }  // namespace content

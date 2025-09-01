@@ -13,6 +13,7 @@
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_servable_state.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
+#include "content/browser/preloading/preload_serving_metrics.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
@@ -228,11 +229,22 @@ class CONTENT_EXPORT PrefetchMatchResolver final
   base::WeakPtr<NavigationRequest> navigation_request_for_metrics_;
   base::WeakPtr<PrefetchService> prefetch_service_;
 
+  // The key representing a navigation to try match.
   const PrefetchKey navigated_key_;
   const PrefetchServiceWorkerState expected_service_worker_state_;
+  // Callback that is called at the match end.
   Callback callback_;
+  // Is the `NavigationHandle` for initial navigation of prerender or not.
   const bool is_nav_prerender_;
+  std::unique_ptr<PrefetchMatchMetrics> prefetch_match_metrics_;
+
+  // Potentially matching candidates.
+  //
+  // Removed if it is determined actually matching or not.
+  //
+  // The count is non-increasing, greater than or equal to zero.
   std::map<PrefetchKey, std::unique_ptr<CandidateData>> candidates_;
+
   std::optional<base::TimeTicks> wait_started_at_ = std::nullopt;
 };
 

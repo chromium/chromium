@@ -30,6 +30,9 @@ class CONTENT_EXPORT PreloadServingMetricsHolder final
   PreloadServingMetricsHolder& operator=(const PreloadServingMetricsHolder&) =
       delete;
 
+  // Add `PrefetchMatchMetrics` at the end of prefetch matching.
+  void AddPrefetchMatchMetrics(
+      std::unique_ptr<PrefetchMatchMetrics> prefetch_match_metrics);
   // Take metrics for recording UMAs/UKMs.
   //
   // Precondition: It is allowed to call this once per navigation. Otherwise, it

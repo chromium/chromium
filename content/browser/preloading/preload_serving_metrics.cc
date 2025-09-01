@@ -16,6 +16,10 @@ PrefetchContainerMetrics::PrefetchContainerMetrics() = default;
 
 PrefetchContainerMetrics::~PrefetchContainerMetrics() = default;
 
+PrefetchMatchMetrics::PrefetchMatchMetrics() = default;
+
+PrefetchMatchMetrics::~PrefetchMatchMetrics() = default;
+
 // static
 bool PreloadServingMetrics::IsEnabled() {
   return features::kPrerender2FallbackUsePreloadServingMetrics.Get();
