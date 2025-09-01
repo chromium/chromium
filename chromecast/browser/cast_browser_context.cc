@@ -65,7 +65,7 @@ CastBrowserContext::CreateZoomLevelDelegate(
   return nullptr;
 }
 
-base::FilePath CastBrowserContext::GetPath() {
+base::FilePath CastBrowserContext::GetPath() const {
   return path_;
 }
 
