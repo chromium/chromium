@@ -109,6 +109,15 @@ chromium-metrics-reviews@google.com.
                about the prerender initial navigation that is used."/>
 </variants>
 
+<variants name="WithPreloadSuffix">
+  <variant name="WithoutPreload"
+      summary="Recorded for a navigation without preloads."/>
+  <variant name="WithPrefetch"
+      summary="Recorded for a navigation used prefetch."/>
+  <variant name="WithPrerender"
+      summary="Recorded for a navigation used prerender."/>
+</variants>
+
 <histogram name="Preloading.Experimental.UpdateSpeculationCandidatesReason"
     enum="PreloadingUpdateSpeculationCandidatesReason"
     expires_after="2024-09-29">
@@ -316,6 +325,19 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="PreloadingType" variants="PreloadingType"/>
   <token key="PreloadingPredictor" variants="PreloadingPredictor"/>
+</histogram>
+
+<histogram
+    name="PreloadServingMetrics.PageLoad.Clients.PaintTiming.NavigationToFirstContentfulPaint.{WithPreloadSuffix}"
+    units="ms" expires_after="2026-01-01">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    FirstContentfulPaint.
+
+    Recorded when {WithPreloadSuffix}.
+  </summary>
+  <token key="WithPreloadSuffix" variants="WithPreloadSuffix"/>
 </histogram>
 
 <histogram

@@ -36,6 +36,82 @@ base::TimeTicks Millis(int ms) {
   return base::TimeTicks::UnixEpoch() + base::Milliseconds(ms);
 }
 
+TEST_F(PreloadServingMetricsTest, NavigationWithoutPreload) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {
+          {
+              features::kPrerender2FallbackPrefetchSpecRules,
+              {
+                  {"kPrerender2FallbackUsePreloadServingMetrics", "true"},
+              },
+          },
+      },
+      {});
+  base::HistogramTester histogram_tester;
+
+  auto log = MakeSkeltonPreloadServingMetrics({.n_prefetch_match_metrics = 0});
+  log->prerender_initial_preload_serving_metrics = nullptr;
+
+  log->RecordMetricsForNonPrerenderNavigationCommitted();
+  log->RecordFirstContentfulPaint(base::Milliseconds(334));
+
+  histogram_tester.ExpectUniqueSample(
+      "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics.Count",
+      0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
+      "IsPotentialMatch",
+      0, 1);
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
+      "PotentialMatchThen.NumberOfInitialCandidates",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
+      "PotentialMatchThen.NumberOfInitialCandidatesBlockUntilHead",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
+      "PotentialMatchThen.IsActualMatch",
+      0);
+
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationUsed."
+      "PrefetchMatchMetrics.Count",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationUsed."
+      "PrefetchMatchMetrics.IsPotentialMatch",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationUsed."
+      "PrefetchMatchMetrics.PotentialMatchThen.NumberOfInitialCandidates",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationUsed."
+      "PrefetchMatchMetrics.PotentialMatchThen."
+      "NumberOfInitialCandidatesBlockUntilHead",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationUsed."
+      "PrefetchMatchMetrics.PotentialMatchThen.IsActualMatch",
+      0);
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+      "NavigationToFirstContentfulPaint.WithoutPreload",
+      base::Milliseconds(334), 1);
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+      "NavigationToFirstContentfulPaint.WithPrefetch",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+      "NavigationToFirstContentfulPaint.WithPrernder",
+      0);
+}
+
 TEST_F(PreloadServingMetricsTest, NavigationWithPrefetch) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
@@ -115,6 +191,19 @@ TEST_F(PreloadServingMetricsTest, NavigationWithPrefetch) {
   histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.ForPrerenderInitialNavigationUsed."
       "PrefetchMatchMetrics.PotentialMatchThen.IsActualMatch",
+      0);
+
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+      "NavigationToFirstContentfulPaint.WithoutPreload",
+      0);
+  histogram_tester.ExpectUniqueTimeSample(
+      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+      "NavigationToFirstContentfulPaint.WithPrefetch",
+      base::Milliseconds(334), 1);
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+      "NavigationToFirstContentfulPaint.WithPrernder",
       0);
 }
 

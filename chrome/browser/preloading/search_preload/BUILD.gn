@@ -48,6 +48,7 @@ source_set("browser_tests") {
     "//chrome/browser/search_engines",
     "//chrome/test:platform_browser_tests",
     "//chrome/test:test_support",
+    "//components/page_load_metrics/browser:test_support",
   ]
 
   data = [ "//chrome/test/data/" ]

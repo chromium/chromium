@@ -14,6 +14,11 @@ namespace content {
 
 namespace {
 
+// Copied from components/page_load_metrics/browser/page_load_metrics_util.h
+#define PAGE_LOAD_HISTOGRAM(name, sample)                             \
+  base::UmaHistogramCustomTimes(name, sample, base::Milliseconds(10), \
+                                base::Minutes(10), 100)
+
 #define WITH(prefix, name) base::StrCat({prefix, name})
 
 void RecordMetricsInternal(const PreloadServingMetrics& metrics,
@@ -98,7 +103,28 @@ void PreloadServingMetrics::RecordMetricsForNonPrerenderNavigationCommitted()
 
 void PreloadServingMetrics::RecordFirstContentfulPaint(
     base::TimeDelta corrected_first_contentful_paint) const {
-  // unimplemented
+  const bool is_prerender_used = !!prerender_initial_preload_serving_metrics;
+  const bool is_prefetch_potential_match =
+      prefetch_match_metrics_list.size() > 0 &&
+      prefetch_match_metrics_list[0] &&
+      prefetch_match_metrics_list[0]->n_initial_candidates > 0;
+  const bool is_prefetch_actual_match =
+      is_prefetch_potential_match &&
+      !!prefetch_match_metrics_list[0]->prefetch_container_metrics;
+
+  const char* suffix;
+  if (is_prerender_used) {
+    suffix = ".WithPrerender";
+  } else if (is_prefetch_actual_match) {
+    suffix = ".WithPrefetch";
+  } else {
+    suffix = ".WithoutPreload";
+  }
+  PAGE_LOAD_HISTOGRAM(
+      base::StrCat({"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+                    "NavigationToFirstContentfulPaint",
+                    suffix}),
+      corrected_first_contentful_paint);
 }
 
 PreloadServingMetrics::PreloadServingMetrics() {
