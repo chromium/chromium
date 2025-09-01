@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/core/css/css_ray_value.h"
 #include "third_party/blink/renderer/core/css/css_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_revert_layer_value.h"
+#include "third_party/blink/renderer/core/css/css_revert_rule_value.h"
 #include "third_party/blink/renderer/core/css/css_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_scoped_keyword_value.h"
 #include "third_party/blink/renderer/core/css/css_scroll_value.h"
@@ -4080,7 +4081,9 @@ bool IsContentPositionOrLeftOrRightKeyword(CSSValueID id) {
 bool IsCSSWideKeyword(CSSValueID id) {
   return id == CSSValueID::kInherit || id == CSSValueID::kInitial ||
          id == CSSValueID::kUnset || id == CSSValueID::kRevert ||
-         id == CSSValueID::kRevertLayer;
+         id == CSSValueID::kRevertLayer ||
+         (id == CSSValueID::kRevertRule &&
+          RuntimeEnabledFeatures::CSSRevertRuleEnabled());
   // This function should match the overload after it.
 }
 
@@ -4090,7 +4093,9 @@ bool IsCSSWideKeyword(StringView keyword) {
          EqualIgnoringASCIICase(keyword, "inherit") ||
          EqualIgnoringASCIICase(keyword, "unset") ||
          EqualIgnoringASCIICase(keyword, "revert") ||
-         EqualIgnoringASCIICase(keyword, "revert-layer");
+         EqualIgnoringASCIICase(keyword, "revert-layer") ||
+         (EqualIgnoringASCIICase(keyword, "revert-rule") &&
+          RuntimeEnabledFeatures::CSSRevertRuleEnabled());
   // This function should match the overload before it.
 }
 
@@ -4133,6 +4138,12 @@ CSSValue* ConsumeCSSWideKeyword(CSSParserTokenStream& stream) {
       return cssvalue::CSSRevertValue::Create();
     case CSSValueID::kRevertLayer:
       return cssvalue::CSSRevertLayerValue::Create();
+    case CSSValueID::kRevertRule: {
+      if (!RuntimeEnabledFeatures::CSSRevertRuleEnabled()) {
+        return nullptr;
+      }
+      return cssvalue::CSSRevertRuleValue::Create();
+    }
     default:
       NOTREACHED();
   }

@@ -412,6 +412,11 @@ class CORE_EXPORT StyleCascade {
                                      CascadePriority,
                                      CascadeOrigin&,
                                      CascadeResolver&);
+  const CSSValue* ResolveRevertRule(const CSSProperty&,
+                                    const TreeScope*,
+                                    CascadePriority,
+                                    CascadeOrigin&,
+                                    CascadeResolver&);
   const CSSValue* ResolveFlipRevert(const CSSProperty&,
                                     const CSSFlipRevertValue&,
                                     const TreeScope*,

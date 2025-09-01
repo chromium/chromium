@@ -1507,6 +1507,10 @@
       status: "stable",
     },
     {
+      name: "CSSRevertRule",
+      status: "experimental",
+    },
+    {
       name: "CSSSafePrintableInset",
       status: "experimental",
     },

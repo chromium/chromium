@@ -1118,6 +1118,9 @@ const CSSValue* StyleCascade::Resolve(const CSSProperty& property,
   if (result->IsRevertLayerValue() || TreatAsRevertLayer(priority)) {
     return ResolveRevertLayer(property, tree_scope, priority, origin, resolver);
   }
+  if (result->IsRevertRuleValue()) {
+    return ResolveRevertRule(property, tree_scope, priority, origin, resolver);
+  }
   if (const auto* v = DynamicTo<CSSFlipRevertValue>(result)) {
     return ResolveFlipRevert(property, *v, tree_scope, priority, origin,
                              resolver);
@@ -1350,6 +1353,22 @@ const CSSValue* StyleCascade::ResolveRevertLayer(const CSSProperty& property,
                                                  CascadeResolver& resolver) {
   const CascadePriority* p = map_.FindRevertLayer(
       property.GetCSSPropertyName(), priority.ForLayerComparison());
+  if (!p || !p->HasOrigin()) {
+    origin = CascadeOrigin::kNone;
+    return cssvalue::CSSUnsetValue::Create();
+  }
+  origin = p->GetOrigin();
+  return Resolve(property, *ValueAt(match_result_, p->GetPosition()),
+                 GetTreeScope(*p), *p, origin, resolver);
+}
+
+const CSSValue* StyleCascade::ResolveRevertRule(const CSSProperty& property,
+                                                const TreeScope* tree_scope,
+                                                CascadePriority priority,
+                                                CascadeOrigin& origin,
+                                                CascadeResolver& resolver) {
+  const CascadePriority* p = map_.FindRevertRule(property.GetCSSPropertyName(),
+                                                 priority.GetRuleIndex());
   if (!p || !p->HasOrigin()) {
     origin = CascadeOrigin::kNone;
     return cssvalue::CSSUnsetValue::Create();

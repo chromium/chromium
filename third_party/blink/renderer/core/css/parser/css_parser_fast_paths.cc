@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_revert_layer_value.h"
+#include "third_party/blink/renderer/core/css/css_revert_rule_value.h"
 #include "third_party/blink/renderer/core/css/css_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_unset_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
@@ -1871,6 +1872,14 @@ static inline CSSValue* ParseCSSWideKeywordValue(
       MatchesCaseInsensitiveLiteral4(UNSAFE_TODO(ptr + 8), "ayer")) {
     return cssvalue::CSSRevertLayerValue::Create();
   }
+  if (length == 11 && MatchesCaseInsensitiveLiteral4(ptr, "reve") &&
+      MatchesCaseInsensitiveLiteral4(UNSAFE_BUFFERS(ptr + 4), "rt-r") &&
+      MatchesCaseInsensitiveLiteral2(UNSAFE_BUFFERS(ptr + 8), "ul") &&
+      IsASCIIAlphaCaselessEqual(UNSAFE_BUFFERS(ptr[10]), 'e')) {
+    if (RuntimeEnabledFeatures::CSSRevertRuleEnabled()) {
+      return cssvalue::CSSRevertRuleValue::Create();
+    }
+  }
   return nullptr;
 }
 
@@ -1914,12 +1923,17 @@ static CSSValue* ParseKeywordValue(CSSPropertyID property_id,
   if (!IsValidCSSValueID(value_id)) {
     return nullptr;
   }
+  if (value_id == CSSValueID::kRevertRule &&
+      !RuntimeEnabledFeatures::CSSRevertRuleEnabled()) {
+    return nullptr;
+  }
 
   DCHECK_NE(value_id, CSSValueID::kInherit);
   DCHECK_NE(value_id, CSSValueID::kInitial);
   DCHECK_NE(value_id, CSSValueID::kUnset);
   DCHECK_NE(value_id, CSSValueID::kRevert);
   DCHECK_NE(value_id, CSSValueID::kRevertLayer);
+  DCHECK_NE(value_id, CSSValueID::kRevertRule);
 
   if (CSSParserFastPaths::IsValidKeywordPropertyAndValue(property_id, value_id,
                                                          context->Mode())) {
