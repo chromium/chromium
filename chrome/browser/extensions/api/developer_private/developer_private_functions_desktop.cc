@@ -103,7 +103,6 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/native_widget_types.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
 #include "url/origin.h"

@@ -29,7 +29,6 @@
 #include "chrome/browser/platform_util_internal.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/win/shell.h"
-#include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
 using content::BrowserThread;
