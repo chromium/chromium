@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/form_processing/autofill_ai/determine_attribute_types.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_ukm_logger.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -26,26 +27,6 @@
 namespace autofill {
 
 namespace {
-
-// LINT.IfChange(HistogramSuffixForEntityType)
-std::string_view HistogramSuffixForEntityType(EntityType type) {
-  switch (type.name()) {
-    case EntityTypeName::kDriversLicense:
-      return "DriversLicense";
-    case EntityTypeName::kKnownTravelerNumber:
-      return "KnownTravelerNumber";
-    case EntityTypeName::kNationalIdCard:
-      return "NationalIdCard";
-    case EntityTypeName::kPassport:
-      return "Passport";
-    case EntityTypeName::kRedressNumber:
-      return "RedressNumber";
-    case EntityTypeName::kVehicle:
-      return "Vehicle";
-  }
-  NOTREACHED();
-}
-// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAiEntityType)
 
 void LogFunnelMetric(std::string_view funnel_metric_name,
                      std::string_view entity_type_name,
@@ -202,7 +183,7 @@ void AutofillAiLogger::RecordFunnelMetrics(
     DenseSet<EntityType> relevant_entities,
     bool submission_state) const {
   for (EntityType entity_type : relevant_entities) {
-    const std::string_view type_str = HistogramSuffixForEntityType(entity_type);
+    const std::string_view type_str = EntityTypeToMetricsString(entity_type);
     base::UmaHistogramEnumeration(
         base::StrCat({"Autofill.Ai.Funnel.",
                       submission_state ? "Submitted" : "Abandoned",
@@ -258,7 +239,7 @@ void AutofillAiLogger::RecordKeyMetrics(
       continue;
     }
     const FunnelState& funnel_state = it->second;
-    const std::string_view type_str = HistogramSuffixForEntityType(entity_type);
+    const std::string_view type_str = EntityTypeToMetricsString(entity_type);
     LogKeyMetric("FillingReadiness", type_str, funnel_state.has_data_to_fill);
     LogKeyMetric("FillingAssistance", type_str,
                  funnel_state.did_fill_suggestions);

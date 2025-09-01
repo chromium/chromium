@@ -15,6 +15,7 @@ void LogOptInFunnelEvent(AutofillAiOptInFunnelEvents event) {
   base::UmaHistogramEnumeration("Autofill.Ai.OptInFunnel", event);
 }
 
+// LINT.IfChange(EntityTypeToMetricsString)
 std::string_view EntityTypeToMetricsString(EntityType type) {
   switch (type.name()) {
     case EntityTypeName::kPassport:
@@ -31,5 +32,6 @@ std::string_view EntityTypeToMetricsString(EntityType type) {
       return "RedressNumber";
   }
 }
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAiEntityType)
 
 }  // namespace autofill
