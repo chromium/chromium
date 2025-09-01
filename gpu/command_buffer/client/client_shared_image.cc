@@ -823,8 +823,14 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
     scoped_refptr<SharedImageInterfaceHolder> sii_holder) {
   SharedImageInfo info(metadata, "CSICreateForTesting");
 
-  auto gpu_memory_buffer = GpuMemoryBufferImplSharedMemory::CreateForTesting(
+  gfx::GpuMemoryBufferHandle handle;
+  GpuMemoryBufferImplSharedMemory::AllocateForTesting(
       info.meta.size,
+      viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
+          info.meta.format),
+      buffer_usage, &handle);
+  auto gpu_memory_buffer = GpuMemoryBufferImplSharedMemory::CreateFromHandle(
+      std::move(handle), info.meta.size,
       viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
           info.meta.format),
       buffer_usage);

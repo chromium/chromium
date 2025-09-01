@@ -53,27 +53,6 @@ void GpuMemoryBufferImplSharedMemory::AssertMapped() {
 
 // static
 std::unique_ptr<GpuMemoryBufferImplSharedMemory>
-GpuMemoryBufferImplSharedMemory::CreateForTesting(const gfx::Size& size,
-                                                  gfx::BufferFormat format,
-                                                  gfx::BufferUsage usage) {
-  size_t buffer_size = 0u;
-  if (!gfx::BufferSizeForBufferFormatChecked(size, format, &buffer_size))
-    return nullptr;
-
-  auto shared_memory_region =
-      base::UnsafeSharedMemoryRegion::Create(buffer_size);
-  auto shared_memory_mapping = shared_memory_region.Map();
-  if (!shared_memory_region.IsValid() || !shared_memory_mapping.IsValid())
-    return nullptr;
-
-  return base::WrapUnique(new GpuMemoryBufferImplSharedMemory(
-      size, format, usage, std::move(shared_memory_region),
-      std::move(shared_memory_mapping), 0,
-      gfx::RowSizeForBufferFormat(size.width(), format, 0)));
-}
-
-// static
-std::unique_ptr<GpuMemoryBufferImplSharedMemory>
 GpuMemoryBufferImplSharedMemory::CreateFromHandle(
     gfx::GpuMemoryBufferHandle handle,
     const gfx::Size& size,

@@ -38,11 +38,6 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplSharedMemory
     return CreateFromHandle(std::move(handle), size, format, usage);
   }
 
-  static std::unique_ptr<GpuMemoryBufferImplSharedMemory> CreateForTesting(
-      const gfx::Size& size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage);
-
   static base::OnceClosure AllocateForTesting(
       const gfx::Size& size,
       gfx::BufferFormat format,

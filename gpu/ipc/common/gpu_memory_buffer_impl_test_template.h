@@ -181,21 +181,6 @@ class GpuMemoryBufferImplTest : public testing::Test {
 #endif
 };
 
-// Subclass test case for tests that require a Create() method,
-// not all implementations have that.
-template <typename GpuMemoryBufferImplType>
-class GpuMemoryBufferImplCreateTest : public testing::Test {
- public:
-  GpuMemoryBufferImplCreateTest() = default;
-
-  GpuMemoryBufferSupport* gpu_memory_buffer_support() {
-    return &gpu_memory_buffer_support_;
-  }
-
- private:
-  GpuMemoryBufferSupport gpu_memory_buffer_support_;
-};
-
 TYPED_TEST_SUITE_P(GpuMemoryBufferImplTest);
 
 TYPED_TEST_P(GpuMemoryBufferImplTest, CreateFromHandle) {
@@ -478,29 +463,6 @@ REGISTER_TYPED_TEST_SUITE_P(GpuMemoryBufferImplTest,
                             Map,
                             PersistentMap,
                             SerializeAndDeserialize);
-
-TYPED_TEST_SUITE_P(GpuMemoryBufferImplCreateTest);
-
-TYPED_TEST_P(GpuMemoryBufferImplCreateTest, Create) {
-  const gfx::Size kBufferSize(8, 8);
-  gfx::BufferUsage usage = gfx::BufferUsage::GPU_READ;
-
-  for (auto format : gfx::GetBufferFormatsForTesting()) {
-    if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
-        !TestFixture::gpu_memory_buffer_support()
-             ->IsNativeGpuMemoryBufferConfigurationSupportedForTesting(format,
-                                                                       usage)) {
-      continue;
-    }
-    std::unique_ptr<TypeParam> buffer(
-        TypeParam::CreateForTesting(kBufferSize, format, usage));
-    ASSERT_TRUE(buffer);
-  }
-}
-// The GpuMemoryBufferImplCreateTest test case verifies behavior that is
-// expected from a GpuMemoryBuffer Create() implementation in order to be
-// conformant.
-REGISTER_TYPED_TEST_SUITE_P(GpuMemoryBufferImplCreateTest, Create);
 
 }  // namespace gpu
 
