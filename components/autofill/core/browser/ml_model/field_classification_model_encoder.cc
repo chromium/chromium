@@ -79,17 +79,20 @@ FieldClassificationModelEncoder::TokenToId(std::u16string_view token) const {
 
 std::vector<std::vector<FieldClassificationModelEncoder::TokenId>>
 FieldClassificationModelEncoder::EncodeForm(const FormData& form) const {
+  size_t num_form_fields_to_encode = std::min(
+      form.fields().size(),
+      static_cast<size_t>(encoding_parameters_.maximum_number_of_fields()));
   // Form-level features are encoded in an additional field.
-  std::vector<std::vector<TokenId>> encoded_form(ShouldEncodeFormLevelFeatures()
-                                                     ? form.fields().size() + 1
-                                                     : form.fields().size());
+  std::vector<std::vector<TokenId>> encoded_form(
+      ShouldEncodeFormLevelFeatures() ? num_form_fields_to_encode + 1
+                                      : num_form_fields_to_encode);
 
-  for (size_t i = 0; i < form.fields().size(); ++i) {
+  for (size_t i = 0; i < num_form_fields_to_encode; ++i) {
     encoded_form[i] = EncodeField(form.fields()[i]);
   }
 
   if (ShouldEncodeFormLevelFeatures()) {
-    encoded_form[form.fields().size()] = EncodeFormFeatures(form);
+    encoded_form[num_form_fields_to_encode] = EncodeFormFeatures(form);
   }
   return encoded_form;
 }
