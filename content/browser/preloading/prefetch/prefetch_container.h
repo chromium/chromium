@@ -604,6 +604,8 @@ class CONTENT_EXPORT PrefetchContainer {
     return prefetch_container_metrics_;
   }
 
+  bool HasPreloadPipelineInfoForMetrics(const PreloadPipelineInfo& other) const;
+
  protected:
   // Updates metrics based on the result of the prefetch request.
   void UpdatePrefetchRequestMetrics(

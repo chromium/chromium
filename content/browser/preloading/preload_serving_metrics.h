@@ -84,10 +84,25 @@ struct CONTENT_EXPORT PrefetchMatchMetrics {
   // Number of initial candidates of prefetch matching, blocking ones.
   int n_initial_candidates_block_until_head = -1;
 
-  // Optional, may be null. Non-null iff matched at
-  // `PrefetchMatchResolver::UnblockInternal()`.
+  // The `PrefetchContainerMetrics` of the `PrefetchContainer` candidate that
+  // was successfully matched with the `PrefetchMatchResolver`, if any.
+  // Otherwise null.
   std::unique_ptr<PrefetchContainerMetrics> prefetch_container_metrics =
       nullptr;
+  // The information of the prefetch-ahead-prerender `PrefetchContainer`
+  // candidate, if any. Otherwise null. More precisely, this is non-null iff:
+  //
+  // - `PrefetchMatchResolver::navigation_request_for_metrics_` is for a
+  //   prerender initial navigation; and
+  // - The `PrefetchContainer` of the prefetch-ahead-of-prerender of the
+  // prerendering
+  //   (if any) is potentially matching with the `PrefetchMatchResolver`.
+  std::optional<PrefetchPotentialCandidateServingResult>
+      prefetch_potential_candidate_serving_result_ahead_of_prerender =
+          std::nullopt;
+  // The condition is the same to the above.
+  std::unique_ptr<PrefetchContainerMetrics>
+      prefetch_container_metrics_ahead_of_prerender = nullptr;
 };
 
 // Log of preloads related to a navigation

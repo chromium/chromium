@@ -14,6 +14,7 @@
 #include "content/browser/preloading/prefetch/prefetch_servable_state.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
 #include "content/browser/preloading/preload_serving_metrics.h"
+#include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
@@ -156,6 +157,7 @@ class CONTENT_EXPORT PrefetchMatchResolver final
       PrefetchKey navigated_key,
       PrefetchServiceWorkerState expected_service_worker_state,
       bool is_nav_prerender,
+      base::WeakPtr<PrerenderHost> prerender_host,
       Callback callback);
 
   // Returns blocked duration. Returns null iff it's not blocked yet.
@@ -236,6 +238,13 @@ class CONTENT_EXPORT PrefetchMatchResolver final
   Callback callback_;
   // Is the `NavigationHandle` for initial navigation of prerender or not.
   const bool is_nav_prerender_;
+  // And its `PrerenderHost`.
+  //
+  // When `this` is for a prerender initial navigation, then
+  // `prerender_host_for_metrics_` is the `PrerenderHost` of the prerender
+  // initial navigation. Otherwise, `nullptr`. Also this is nullptr if
+  // `PreloadServingMetrics::IsEnabled()` is false.
+  base::WeakPtr<PrerenderHost> prerender_host_for_metrics_;
   std::unique_ptr<PrefetchMatchMetrics> prefetch_match_metrics_;
 
   // Potentially matching candidates.
@@ -246,6 +255,12 @@ class CONTENT_EXPORT PrefetchMatchResolver final
   std::map<PrefetchKey, std::unique_ptr<CandidateData>> candidates_;
 
   std::optional<base::TimeTicks> wait_started_at_ = std::nullopt;
+
+  // Optional. It is set if the navigation is prerender initial navigation and
+  // the initial candidates contain a prefetch ahead of prerender that shares
+  // `PreloadPipelineInfo`.
+  base::WeakPtr<PrefetchContainer> prefetch_ahead_of_prerender_for_metrics_ =
+      nullptr;
 };
 
 // Abstracts required operations for `PrefetchContainer` that is used to collect

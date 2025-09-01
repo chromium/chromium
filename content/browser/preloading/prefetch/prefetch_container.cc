@@ -465,11 +465,10 @@ void PrefetchContainer::SetTriggeringOutcomeAndFailureReasonFromStatus(
                               static_cast<int>(old_prefetch_status.value()));
       SCOPED_CRASH_KEY_NUMBER("PrefetchContainer", "prefetch_status_to",
                               static_cast<int>(new_prefetch_status));
-      NOTREACHED()
-          << "PrefetchStatus illegal transition: (old_prefetch_status, "
-             "new_prefetch_status) = ("
-          << static_cast<int>(old_prefetch_status.value()) << ", "
-          << static_cast<int>(new_prefetch_status) << ")";
+      NOTREACHED() << "PrefetchStatus illegal transition: "
+                      "(old_prefetch_status, new_prefetch_status) = ("
+                   << static_cast<int>(old_prefetch_status.value()) << ", "
+                   << static_cast<int>(new_prefetch_status) << ")";
     }
   }
 
@@ -1838,6 +1837,21 @@ std::string PrefetchContainer::GetMetricsSuffix() const {
                                                  embedder_histogram_suffix);
 }
 
+bool PrefetchContainer::HasPreloadPipelineInfoForMetrics(
+    const PreloadPipelineInfo& other) const {
+  if (&request().preload_pipeline_info() == &other) {
+    return true;
+  }
+
+  for (const auto& preload_pipeline_info : inherited_preload_pipeline_infos_) {
+    if (preload_pipeline_info.get() == &other) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 void PrefetchContainer::MaybeRecordPrefetchStatusToUMA(
     PrefetchStatus prefetch_status) {
   if (prefetch_status_recorded_to_uma_) {
@@ -1907,8 +1921,7 @@ void PrefetchContainer::RecordPrefetchDurationHistogram() {
 
   base::UmaHistogramTimes(
       base::StrCat({
-          "Prefetch.PrefetchContainer."
-          "AddedToURLRequestStarted.",
+          "Prefetch.PrefetchContainer.AddedToURLRequestStarted.",
           GetMetricsSuffix(),
       }),
       prefetch_container_metrics_.time_url_request_started.value() -
@@ -1929,8 +1942,7 @@ void PrefetchContainer::RecordPrefetchDurationHistogram() {
 
   base::UmaHistogramTimes(
       base::StrCat({
-          "Prefetch.PrefetchContainer."
-          "AddedToHeaderDeterminedSuccessfully.",
+          "Prefetch.PrefetchContainer.AddedToHeaderDeterminedSuccessfully.",
           GetMetricsSuffix(),
       }),
       prefetch_container_metrics_.time_header_determined_successfully.value() -
@@ -1952,8 +1964,7 @@ void PrefetchContainer::RecordPrefetchDurationHistogram() {
 
   base::UmaHistogramTimes(
       base::StrCat({
-          "Prefetch.PrefetchContainer."
-          "AddedToPrefetchCompletedSuccessfully.",
+          "Prefetch.PrefetchContainer.AddedToPrefetchCompletedSuccessfully.",
           GetMetricsSuffix(),
       }),
       prefetch_container_metrics_.time_prefetch_completed_successfully.value() -
@@ -1974,8 +1985,7 @@ void PrefetchContainer::RecordPrefetchMatchMissedToPrefetchStartedHistogram() {
       time_prefetch_match_missed_.has_value()) {
     base::UmaHistogramTimes(
         base::StrCat({
-            "Prefetch.PrefetchContainer."
-            "PrefetchMatchMissedToPrefetchStarted.",
+            "Prefetch.PrefetchContainer.PrefetchMatchMissedToPrefetchStarted.",
             GetMetricsSuffix(),
         }),
         prefetch_container_metrics_.time_prefetch_started.value() -
