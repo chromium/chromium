@@ -252,6 +252,7 @@ static_library("browser") {
       "http_credentials_cleaner.cc",
       "http_credentials_cleaner.h",
     ]
+    deps += [ "//content/public/browser" ]
   }
 
   if (!is_chromeos && !is_android) {

@@ -1,6 +1,7 @@
 include_rules = [
   "+components/affiliations",
   "+components/autofill/core/browser",
+  "+components/credential_management",
   "+components/device_reauth",
   "+components/favicon/core",
   "+components/favicon_base",
@@ -27,6 +28,7 @@ include_rules = [
   "+components/version_info",
   "+components/webauthn",
   "+components/webdata/common",
+  "+content/public/browser",
   "+crypto",
   "+device/fido/features.h",
   "+google_apis",
@@ -39,7 +41,6 @@ include_rules = [
   "+services/network/public/mojom",
   "+services/network/test",
   "+third_party/zxcvbn-cpp",
-  "+components/credential_management"
 ]
 
 specific_include_rules = {

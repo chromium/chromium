@@ -290,6 +290,18 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="FedCM passive mode"/>
   <int value="1" label="FedCM active mode"/>
   <int value="2" label="Non-FedCM OAuth login"/>
+  <int value="3" label="Other"/>
+  <int value="4" label="Password fully assisted"/>
+  <int value="5" label="Password partially assisted"/>
+  <int value="6" label="Password manually entered"/>
+  <int value="7" label="Password neither manually nor GPM assisted"/>
+  <int value="8" label="Passkey stored in GPM"/>
+  <int value="9" label="Passkey stored in Windows Hello"/>
+  <int value="10" label="Passkey stored in iCloud Keychain"/>
+  <int value="11" label="Passkey stored in Chrome profile"/>
+  <int value="12" label="Passkey other source"/>
+  <int value="13" label="Passkey from a security key"/>
+  <int value="14" label="Passkey hybrid flow"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/public/browser/login_metrics.h:BrowserAssistedLoginType) -->

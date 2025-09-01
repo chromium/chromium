@@ -20,8 +20,19 @@ enum class BrowserAssistedLoginType {
   kFedCmPassive = 0,
   kFedCmActive = 1,
   kNonFedCmOAuth = 2,
+  kUnknown = 3,
+  kPasswordFullyAssisted = 4,
+  kPasswordPartiallyAssisted = 5,
+  kPasswordManuallyEntered = 6,
+  kPasswordNeitherManuallyEnteredNorGPMAssisted = 7,
+  kPasskeyStoredInGPM = 8,
+  kPasskeyStoredInWindowsHello = 9,
+  kPasskeyStoredIniCloudKeychain = 10,
+  kPasskeyStoredInChromeProfile = 11,
+  kPasskeyHybrid = 12,
+  kPasskeySecurityKey = 13,
 
-  kMaxValue = kNonFedCmOAuth
+  kMaxValue = kPasskeySecurityKey,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml:BrowserAssistedLoginType)
 

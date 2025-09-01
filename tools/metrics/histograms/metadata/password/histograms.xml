@@ -972,6 +972,7 @@ chromium-metrics-reviews@google.com.
   <owner>yigu@chromium.org</owner>
   <owner>kenrb@chromium.org</owner>
   <owner>markusheintz@google.com</owner>
+  <owner>derinel@google.com</owner>
   <summary>
     Records the type of logins assisted by the browser. e.g. via passwords,
     passkeys or federation. Recorded once per user logging into a website. Note:
