@@ -268,11 +268,33 @@ const AddressSpaceMap& NonPublicAddressSpaceMap() {
       // overridden by a killswitch feature flag in IPAddressToIPAddressSpace()
       // since these addresses were previously treated as public. See
       // https://crbug.com/40058874.
-      //
-      // TODO(https://crbug.com/40058874): decide if we should do the same for
-      // the all-zero IPv6 address.
       Entry(IPAddress(0, 0, 0, 0), 32, IPAddressSpace::kLoopback),
       Entry(IPAddress(0, 0, 0, 0), 8, IPAddressSpace::kLocal),
+      // IPv6 Null IP (RFC 1884): ::/128 is the unspecified address, but many
+      // documentation sources consider it to be treated the same as 0.0.0.0/32,
+      // so we map it to "loopback" out of an abundance of caution. RFC 1884
+      // specifies that the unspecified address "must never be assigned to any
+      // node" and "must not be used as the destination address of IPv6
+      // datagrams".
+      Entry(IPAddress(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 128,
+            IPAddressSpace::kLoopback),
+      // Carrier Grade NAT (RFC 6598): 100.64.0.0/10
+      Entry(IPAddress(100, 64, 0, 0), 10, IPAddressSpace::kLocal),
+      // IPv6 Documentation Address Prefixes (RFC 3849, RFC 9637): 2001:db8::/32
+      // and 3fff::/20 are reserved for documrentation purposes, and they *must
+      // not* be routed to the public (and in general should not be used for
+      // production traffic). We include them for completeness. See
+      // https://github.com/WICG/local-network-access/issues/15.
+      Entry(
+          IPAddress(0x20, 0x01, 0x0d, 0xb8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+          32, IPAddressSpace::kLocal),
+      Entry(IPAddress(0x3f, 0xff, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 20,
+            IPAddressSpace::kLocal),
+      // IPv6 Site Local Unicast (RFC 3513): fec0::/10
+      // These are deprecated by RFC3879 but still allowed to be used.
+      // See https://github.com/WICG/local-network-access/issues/15
+      Entry(IPAddress(0xfe, 0xc0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 10,
+            IPAddressSpace::kLocal),
   }));
   return *kMap;
 }
