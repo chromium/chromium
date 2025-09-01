@@ -170,7 +170,32 @@ void PreloadServingMetrics::RecordMetricsForPrerenderInitialNavigationFailed()
     const {
   CHECK(PreloadServingMetrics::IsEnabled());
 
-  // unimplemented
+  RecordMetricsInternal(
+      *this, "PreloadServingMetrics.ForPrerenderInitialNavigationFailed.",
+      /*is_prerender_initial_navigation=*/true);
+
+  auto& metrics = *this;
+  [&]() {
+    const bool is_potential_match =
+        metrics.prefetch_match_metrics_list.size() > 0 &&
+        metrics.prefetch_match_metrics_list[0] &&
+        metrics.prefetch_match_metrics_list[0]->n_initial_candidates > 0;
+    if (!is_potential_match) {
+      return;
+    }
+    auto& prefetch_match_metrics = *metrics.prefetch_match_metrics_list[0];
+
+    base::TimeDelta prefetch_match_duration =
+        prefetch_match_metrics.time_match_end -
+        prefetch_match_metrics.time_match_start;
+    if (prefetch_match_duration >= base::Milliseconds(10000)) {
+      RecordMetricsInternal(
+          *this,
+          "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+          "WithMatchDurationGe10000.",
+          /*is_prerender_initial_navigation=*/true);
+    }
+  }();
 }
 
 void PreloadServingMetrics::RecordFirstContentfulPaint(

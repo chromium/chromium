@@ -298,6 +298,11 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestNoPrefetchAhead,
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderFinalStatus::kActivated, 1);
 
+  histogram_tester().ExpectTotalCount(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "PrefetchMatchMetrics.Count",
+      0);
+
   std::vector<RequestPathAndSecPurposeHeader> expected{
       {.path = "/empty.html", .sec_purpose_header_value = ""},
       {.path = "/title1.html",
@@ -375,6 +380,11 @@ IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderFinalStatus::kActivated, 1);
+
+  histogram_tester().ExpectTotalCount(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "PrefetchMatchMetrics.Count",
+      0);
 
   std::vector<RequestPathAndSecPurposeHeader> expected{
       {.path = "/empty.html", .sec_purpose_header_value = ""},
@@ -500,6 +510,11 @@ IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderFinalStatus::kMojoBinderPolicy, 1);
 
+  histogram_tester().ExpectUniqueSample(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "PrefetchMatchMetrics.Count",
+      1, 1);
+
   std::vector<RequestPathAndSecPurposeHeader> expected{
       {.path = "/empty.html", .sec_purpose_header_value = ""},
       {.path = "/title1.html",
@@ -580,6 +595,11 @@ IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
       "SpeculationRule",
       PrefetchStatus::kPrefetchIneligibleHostIsNonUnique, 1);
 
+  histogram_tester().ExpectUniqueSample(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "PrefetchMatchMetrics.Count",
+      1, 1);
+
   std::vector<RequestPathAndSecPurposeHeader> expected{
       {.path = "/empty.html", .sec_purpose_header_value = ""},
       {.path = "/title1.html", .sec_purpose_header_value = ""},
@@ -611,6 +631,11 @@ IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderFinalStatus::kActivated, 1);
+
+  histogram_tester().ExpectTotalCount(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "PrefetchMatchMetrics.Count",
+      0);
 
   std::vector<RequestPathAndSecPurposeHeader> expected{
       {.path = "/empty.html", .sec_purpose_header_value = ""},
@@ -657,6 +682,11 @@ IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderFinalStatus::kActivated, 1);
+
+  histogram_tester().ExpectTotalCount(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "PrefetchMatchMetrics.Count",
+      0);
 
   std::vector<RequestPathAndSecPurposeHeader> expected{
       {.path = "/empty.html", .sec_purpose_header_value = ""},
@@ -708,6 +738,11 @@ IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderFinalStatus::kActivated, 1);
+
+  histogram_tester().ExpectTotalCount(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "PrefetchMatchMetrics.Count",
+      0);
 
   std::vector<RequestPathAndSecPurposeHeader> expected{
       {.path = "/prerender/empty.html", .sec_purpose_header_value = ""},
@@ -778,6 +813,11 @@ IN_PROC_BROWSER_TEST_P(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderFinalStatus::kActivated, 1);
 
+  histogram_tester().ExpectTotalCount(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "PrefetchMatchMetrics.Count",
+      0);
+
   std::vector<RequestPathAndSecPurposeHeader> expected{
       {.path = "/prerender/empty.html", .sec_purpose_header_value = ""},
       {.path = "/prerender/sw_fallback.js", .sec_purpose_header_value = ""},
@@ -829,6 +869,11 @@ IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
       "Prerender.Experimental.PrefetchAheadOfPrerenderFailed.PrefetchStatus."
       "SpeculationRule",
       PrefetchStatus::kPrefetchNotFinishedInTime, 1);
+
+  histogram_tester().ExpectUniqueSample(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "PrefetchMatchMetrics.Count",
+      1, 1);
 
   std::vector<RequestPathAndSecPurposeHeader> expected{
       {.path = "/empty.html", .sec_purpose_header_value = ""},
@@ -916,6 +961,38 @@ IN_PROC_BROWSER_TEST_P(
       "SpeculationRule",
       PrefetchStatus::kPrefetchNotFinishedInTime, 1);
 
+  histogram_tester().ExpectUniqueSample(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "PrefetchMatchMetrics.Count",
+      1, 1);
+  histogram_tester().ExpectUniqueSample(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "PrefetchMatchMetrics.IsPotentialMatch",
+      true, 1);
+  histogram_tester().ExpectUniqueSample(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "PrefetchMatchMetrics.PotentialMatchThen.NumberOfInitialCandidates",
+      1, 1);
+  histogram_tester().ExpectUniqueSample(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "PrefetchMatchMetrics.PotentialMatchThen."
+      "NumberOfInitialCandidatesBlockUntilHead",
+      1, 1);
+  histogram_tester().ExpectUniqueSample(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "PrefetchMatchMetrics.PotentialMatchThen.IsActualMatch",
+      false, 1);
+  histogram_tester().ExpectUniqueSample(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "PrefetchMatchMetrics.IsPotentialMatch.WithAheadOfPrerender",
+      true, 1);
+  histogram_tester().ExpectUniqueSample(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "PrefetchMatchMetrics.PotentialMatchThen.WithAheadOfPrerender."
+      "PotentialCandidateServingResult",
+      PrefetchPotentialCandidateServingResult::kNotServedBlockUntilHeadTimeout,
+      1);
+
   std::vector<RequestPathAndSecPurposeHeader> expected{
       {.path = "/empty.html", .sec_purpose_header_value = ""},
       // Prefetch and prerender, timed out and aborted.
@@ -999,6 +1076,11 @@ IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderFinalStatus::kActivated, 1);
 
+  histogram_tester().ExpectTotalCount(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "PrefetchMatchMetrics.Count",
+      0);
+
   std::vector<RequestPathAndSecPurposeHeader> expected{
       {.path = "/empty.html", .sec_purpose_header_value = ""},
       {.path = "/title1.html",
@@ -1048,6 +1130,11 @@ IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderFinalStatus::kActivated, 1);
+
+  histogram_tester().ExpectTotalCount(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "PrefetchMatchMetrics.Count",
+      0);
 
   std::vector<RequestPathAndSecPurposeHeader> expected{
       {.path = "/empty.html", .sec_purpose_header_value = ""},
@@ -1120,6 +1207,11 @@ IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
       "SpeculationRule",
       PrefetchStatus::kPrefetchNotFinishedInTime, 1);
 
+  histogram_tester().ExpectUniqueSample(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "PrefetchMatchMetrics.Count",
+      1, 1);
+
   std::vector<RequestPathAndSecPurposeHeader> expected{
       {.path = "/empty.html", .sec_purpose_header_value = ""},
       {.path = "/title1.html",
@@ -1189,6 +1281,11 @@ IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
       "SpeculationRule",
       PrefetchStatus::kPrefetchIneligibleHostIsNonUnique, 1);
 
+  histogram_tester().ExpectUniqueSample(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "PrefetchMatchMetrics.Count",
+      1, 1);
+
   std::vector<RequestPathAndSecPurposeHeader> expected{
       {.path = "/empty.html", .sec_purpose_header_value = ""},
       {.path = "/title1.html", .sec_purpose_header_value = ""},
@@ -1254,6 +1351,11 @@ IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
       "Prerender.Experimental.PrefetchAheadOfPrerenderFailed.PrefetchStatus."
       "SpeculationRule",
       PrefetchStatus::kPrefetchNotFinishedInTime, 1);
+
+  histogram_tester().ExpectUniqueSample(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "PrefetchMatchMetrics.Count",
+      1, 1);
 
   std::vector<RequestPathAndSecPurposeHeader> expected{
       {.path = "/empty.html", .sec_purpose_header_value = ""},
@@ -1393,6 +1495,11 @@ IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
       testing::ElementsAre(
           base::Bucket(PrerenderFinalStatus::kActivated, 1),
           base::Bucket(PrerenderFinalStatus::kTriggerDestroyed, 1)));
+
+  histogram_tester().ExpectUniqueSample(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "PrefetchMatchMetrics.Count",
+      1, 1);
 
   std::vector<RequestPathAndSecPurposeHeader> expected{
       {.path = "/empty.html", .sec_purpose_header_value = ""},

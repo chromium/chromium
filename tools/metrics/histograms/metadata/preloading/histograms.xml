@@ -113,6 +113,14 @@ chromium-metrics-reviews@google.com.
       summary="Recorded when a navigation is committed. Doesn't include a
                prerender initial navigation. Metrics are about the
                navigation."/>
+  <variant name="PreloadServingMetrics.ForPrerenderInitialNavigationFailed"
+      summary="Recorded when a prerender initial navigation failed. Metrics
+               are about the prerender initial navigation."/>
+  <variant
+      name="PreloadServingMetrics.ForPrerenderInitialNavigationFailed.WithMatchDurationGe10000"
+      summary="Recorded when a prerender initial navigation failed and the
+               first prefetch matching took duration greater than or equal to
+               10000ms. Metrics are about the prerender initial navigation."/>
   <variant name="PreloadServingMetrics.ForPrerenderInitialNavigationUsed"
       summary="Recorded when a prerender activation is committed. Metrics are
                about the prerender initial navigation that is used."/>
