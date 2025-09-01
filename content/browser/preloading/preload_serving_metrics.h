@@ -20,6 +20,43 @@ class NavigationHandle;
 // All the structs in this file are "Logs" as defined in
 // https://chromium.googlesource.com/chromium/src/+/main/content/browser/preloading/preload_serving_metrics.md#Logs
 
+// Log of `PrefetchContainer`.
+//
+// `PreloadContainerMetrics` is a "Log" object as defined in
+// https://chromium.googlesource.com/chromium/src/+/main/content/browser/preloading/preload_serving_metrics.md#Logs
+//
+// `PrefetchContainerMetrics` is owned by a `PrefetchContainer`, filled by the
+// `PrefetchContainer`, and used for the per-`PrefetchContainer` metrics (e.g.
+// `PrefetchContainer::RecordPrefetchDurationHistogram()`).
+//
+// `PrefetchContainerMetrics` is also used for `PreloadServingMetrics`. In this
+// case, the `PrefetchContainerMetrics` at the time of serving is copied
+// (indirectly) into `PreloadServingMetrics`.
+struct CONTENT_EXPORT PrefetchContainerMetrics {
+  PrefetchContainerMetrics();
+  ~PrefetchContainerMetrics();
+
+  // Not movable but copyable.
+  PrefetchContainerMetrics(PrefetchContainerMetrics&& other) = delete;
+  PrefetchContainerMetrics& operator=(PrefetchContainerMetrics&& other) =
+      delete;
+  PrefetchContainerMetrics(const PrefetchContainerMetrics&) = default;
+  PrefetchContainerMetrics& operator=(const PrefetchContainerMetrics&) =
+      default;
+
+  // Timing information for metrics
+  //
+  // Constraint: That earlier one is null implies that later one is null.
+  // E.g. `time_prefetch_start` is null implies
+  // `time_header_determined_successfully` is null.
+  std::optional<base::TimeTicks> time_added_to_prefetch_service;
+  std::optional<base::TimeTicks> time_initial_eligibility_got;
+  std::optional<base::TimeTicks> time_prefetch_started;
+  std::optional<base::TimeTicks> time_url_request_started;
+  std::optional<base::TimeTicks> time_header_determined_successfully;
+  std::optional<base::TimeTicks> time_prefetch_completed_successfully;
+};
+
 // Log of preloads related to a navigation
 //
 // `PreloadServingMetrics` is a "Log" object as defined in

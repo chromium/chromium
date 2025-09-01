@@ -15,6 +15,7 @@
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
 #include "content/browser/preloading/preload_pipeline_info_impl.h"
+#include "content/browser/preloading/preload_serving_metrics.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/prefetch_request_status_listener.h"
 #include "content/public/browser/preloading.h"
@@ -813,22 +814,13 @@ class CONTENT_EXPORT PrefetchContainer {
 
   bool is_likely_ahead_of_prerender_ = false;
 
-  // Timing information for metrics
-  //
-  // Constraint: That earlier one is null implies that later one is null.
-  // E.g. `time_load_start_` is null implies `time_header_complete_` is null.
-  std::optional<base::TimeTicks> time_added_to_prefetch_service_;
-  std::optional<base::TimeTicks> time_initial_eligibility_got_;
-  std::optional<base::TimeTicks> time_prefetch_started_;
-  std::optional<base::TimeTicks> time_url_request_started_;
-  std::optional<base::TimeTicks> time_header_determined_successfully_;
-  std::optional<base::TimeTicks> time_prefetch_completed_successfully_;
-
   // The time that the latest earlier prefetch unmatch happened that this
   // prefetch could've been served to.
   // Set via `SetPrefetchMatchMissedTimeForMetrics()` which can be called during
   // prefetch start (`PrefetchService::StartSinglePrefetch()`).
   std::optional<base::TimeTicks> time_prefetch_match_missed_;
+
+  PrefetchContainerMetrics prefetch_container_metrics_;
 
   base::WeakPtrFactory<PrefetchContainer> weak_method_factory_{this};
 };

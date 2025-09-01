@@ -12,6 +12,10 @@
 
 namespace content {
 
+PrefetchContainerMetrics::PrefetchContainerMetrics() = default;
+
+PrefetchContainerMetrics::~PrefetchContainerMetrics() = default;
+
 // static
 bool PreloadServingMetrics::IsEnabled() {
   return features::kPrerender2FallbackUsePreloadServingMetrics.Get();
