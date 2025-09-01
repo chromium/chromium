@@ -235,16 +235,21 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
   _fingerprint = "";
   [self.containerView setLogoState:_logoState animated:YES];
   self.containerView.isAccessibilityElement = YES;
-  if (search::DefaultSearchProviderIsGoogle(_templateURLService) ||
-      (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV3) &&
-       _defaultSearchProvider &&
-       (_defaultSearchProvider->doodle_url().is_valid() ||
-        _defaultSearchProvider->logo_url().is_valid()))) {
+  if ([self canShowLogoOrDoodle]) {
     [self fetchLogoOrDoodle];
   }
 }
 
 #pragma mark - Private
+
+// Returns whether a logo or doodle can be shown with the current search engine.
+- (BOOL)canShowLogoOrDoodle {
+  return search::DefaultSearchProviderIsGoogle(_templateURLService) ||
+         (base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV3) &&
+          _defaultSearchProvider &&
+          (_defaultSearchProvider->doodle_url().is_valid() ||
+           _defaultSearchProvider->logo_url().is_valid()));
+}
 
 - (void)fetchLogoOrDoodle {
   const search_provider_logos::Logo logo = _logoService->GetCachedLogo();
@@ -316,6 +321,12 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
 
   // Cache a valid, non null, logo for other window/tab uses.
   _logoService->SetCachedLogo(logo);
+
+  if (![self canShowLogoOrDoodle]) {
+    // In case the logo state has been updated between the fetch and the
+    // response.
+    return;
+  }
 
   // If there is a doodle, remove the accessibility of the container view so the
   // doodle alt text can be read with voice over.
