@@ -522,8 +522,8 @@ TEST_F(ArcUtilTest, ConfigureUpstartJobs_StartFail) {
 }
 
 TEST_F(ArcUtilTest, GetArcWindowTaskId) {
-  std::unique_ptr<aura::Window> window(
-      aura::test::CreateTestWindowWithId(100, nullptr));
+  std::unique_ptr<aura::Window> window =
+      aura::test::CreateTestWindow({.window_id = 100});
 
   exo::SetShellApplicationId(window.get(), "org.chromium.arc.100");
 
@@ -546,8 +546,8 @@ TEST_F(ArcUtilTest, GetArcWindowTaskId) {
 }
 
 TEST_F(ArcUtilTest, GetArcWindowSessionId) {
-  std::unique_ptr<aura::Window> window(
-      aura::test::CreateTestWindowWithId(200, nullptr));
+  std::unique_ptr<aura::Window> window =
+      aura::test::CreateTestWindow({.window_id = 200});
 
   exo::SetShellApplicationId(window.get(), "org.chromium.arc.session.200");
 

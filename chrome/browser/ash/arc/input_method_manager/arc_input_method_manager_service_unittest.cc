@@ -271,7 +271,7 @@ class ArcInputMethodManagerServiceTest : public testing::Test {
   }
 
   aura::Window* CreateTestArcWindow() {
-    auto* window = aura::test::CreateTestWindowWithId(1, nullptr);
+    auto* window = aura::test::CreateTestWindow({.window_id = 1}).release();
     window->SetProperty(aura::client::kSkipImeProcessing, true);
     window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
     return window;

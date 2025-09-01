@@ -24,11 +24,12 @@ void SetEnvForTestWindows(Env* env);
 Env* GetEnvForTestWindows();
 
 // Creates a test window. It internally uses TestWindowBuilder.
-std::unique_ptr<Window> CreateTestWindow(WindowBuilderParams params,
-                                         Window* paremt = nullptr);
+std::unique_ptr<Window> CreateTestWindow(WindowBuilderParams params = {},
+                                         Window* parent = nullptr);
 
 // Creates a test window. If parent window is nullptr, then the caller must take
 // ownership of the created window.
+// Deprecated: Use CreateTestWindow above.
 Window* CreateTestWindowWithId(int id, Window* parent);
 Window* CreateTestWindowWithBounds(const gfx::Rect& bounds, Window* parent);
 Window* CreateTestWindow(SkColor color,

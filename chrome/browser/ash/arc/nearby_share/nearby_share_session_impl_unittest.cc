@@ -57,8 +57,7 @@ class NearbyShareSessionImplTest : public testing::Test {
   }
 
   void ShowArcWindow() {
-    window_ =
-        base::WrapUnique(aura::test::CreateTestWindowWithId(kTaskId, nullptr));
+    window_ = aura::test::CreateTestWindow({.window_id = kTaskId});
     exo::SetShellApplicationId(
         window_.get(), "org.chromium.arc." + base::NumberToString(kTaskId));
     window_->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);

@@ -80,8 +80,7 @@ class MahiMediaAppClientTest : public ChromeAshTestBase {
 
 // Tests that requests to media app can be forwarded via mojo::Remote.
 TEST_F(MahiMediaAppClientTest, HideMediaAppContextMenu) {
-  std::unique_ptr<aura::Window> window(
-      aura::test::CreateTestWindowWithId(-1, nullptr));
+  std::unique_ptr<aura::Window> window = aura::test::CreateTestWindow();
 
   auto mahi_media_app_client_ = std::make_unique<MahiMediaAppClient>(
       receiver_.BindNewPipeAndPassRemote(), "test_name", window.get());
@@ -95,8 +94,7 @@ TEST_F(MahiMediaAppClientTest, HideMediaAppContextMenu) {
 // It tries to get text content from PDF file that is no more than 5,000,000
 // bytes, and consider content valid when its word count >= 50.
 TEST_F(MahiMediaAppClientTest, GetPdfContent) {
-  std::unique_ptr<aura::Window> window(
-      aura::test::CreateTestWindowWithId(-1, nullptr));
+  std::unique_ptr<aura::Window> window = aura::test::CreateTestWindow();
 
   auto mahi_media_app_client_ = std::make_unique<MahiMediaAppClient>(
       receiver_.BindNewPipeAndPassRemote(), "test_name", window.get());
@@ -141,8 +139,7 @@ TEST_F(MahiMediaAppClientTest, GetPdfContent) {
 // Tests that MahiMediaAppClient resets its `media_app_window_` when it's
 // destroying.
 TEST_F(MahiMediaAppClientTest, WindowDestroying) {
-  std::unique_ptr<aura::Window> window(
-      aura::test::CreateTestWindowWithId(-1, nullptr));
+  std::unique_ptr<aura::Window> window = aura::test::CreateTestWindow();
 
   auto mahi_media_app_client_ = std::make_unique<MahiMediaAppClient>(
       receiver_.BindNewPipeAndPassRemote(), "test_name", window.get());
@@ -241,8 +238,7 @@ TEST_F(MahiMediaAppClientTest, PdfRename) {
 }
 
 TEST_F(MahiMediaAppClientTest, ShowPdfContextMenuSelectedText) {
-  std::unique_ptr<aura::Window> window(
-      aura::test::CreateTestWindowWithId(-1, nullptr));
+  std::unique_ptr<aura::Window> window = aura::test::CreateTestWindow();
 
   auto mahi_media_app_client_ = std::make_unique<MahiMediaAppClient>(
       receiver_.BindNewPipeAndPassRemote(), "test_name", window.get());
