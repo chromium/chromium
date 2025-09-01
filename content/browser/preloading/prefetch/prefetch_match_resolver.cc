@@ -229,6 +229,8 @@ void PrefetchMatchResolver::FindPrefetchInternal(
 void PrefetchMatchResolver::RegisterCandidate(
     PrefetchContainer& prefetch_container) {
   auto candidate_data = std::make_unique<CandidateData>();
+  TRACE_EVENT("loading", "PrefetchMatchResolver::RegisterCandidate",
+              perfetto::Flow::FromPointer(candidate_data.get()));
   // #prefetch-key-availability
   //
   // Note that `CHECK(candidates_.contains(prefetch_key))` and
@@ -242,6 +244,7 @@ void PrefetchMatchResolver::RegisterCandidate(
 
 void PrefetchMatchResolver::StartWaitFor(const PrefetchKey& prefetch_key,
                                          PrefetchServableState servable_state) {
+  TRACE_EVENT("loading", "PrefetchMatchResolver::StartWaitFor");
   // By #prefetch-key-availability
   CHECK(candidates_.contains(prefetch_key));
   auto& candidate_data = candidates_[prefetch_key];
@@ -289,6 +292,9 @@ void PrefetchMatchResolver::UnregisterCandidate(
   // By #prefetch-key-availability
   CHECK(candidates_.contains(prefetch_key));
   auto& candidate_data = candidates_[prefetch_key];
+  TRACE_EVENT("loading", "PrefetchMatchResolver::UnregisterCandidate",
+              perfetto::TerminatingFlow::FromPointer(candidate_data.get()),
+              "serving_result", static_cast<int>(serving_result));
   CHECK(candidate_data->prefetch_container);
   PrefetchContainer& prefetch_container = *candidate_data->prefetch_container;
 
@@ -473,6 +479,7 @@ void PrefetchMatchResolver::UnblockForNoCandidates() {
 void PrefetchMatchResolver::MaybeUnblockForUnmatch(
     const PrefetchContainer& prefetch_container,
     PrefetchPotentialCandidateServingResult serving_result) {
+  TRACE_EVENT("loading", "PrefetchMatchResolver::MaybeUnblockForUnmatch");
   UnregisterCandidate(prefetch_container.key(), /*is_served=*/false,
                       serving_result);
 
