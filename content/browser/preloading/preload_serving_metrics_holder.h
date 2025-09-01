@@ -20,6 +20,16 @@ namespace content {
 class CONTENT_EXPORT PreloadServingMetricsHolder final
     : public NavigationHandleUserData<PreloadServingMetricsHolder> {
  public:
+  // The callback is called when `PreloadServingMetricsHolder` is destroyed,
+  // with the argument of the underlying `PreloadServingMetrics` at that time
+  // (which can be nullptr).
+  //
+  // For inspection without `PageLoadMetricsObserver` in //content browser
+  // tests, as `PageLoadMetricsObserver` is in //components.
+  static void SetDestructorCallbackForTesting(
+      base::RepeatingCallback<void(std::unique_ptr<PreloadServingMetrics>)>
+          callback);
+
   ~PreloadServingMetricsHolder() override;
 
   // Not movable nor copyable.

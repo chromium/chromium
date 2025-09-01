@@ -6,7 +6,22 @@
 
 namespace content {
 
+base::RepeatingCallback<void(std::unique_ptr<PreloadServingMetrics>)>&
+GetDestructorCallbackForTesting() {
+  static base::NoDestructor<
+      base::RepeatingCallback<void(std::unique_ptr<PreloadServingMetrics>)>>
+      dtor_callback_for_testing;
+  return *dtor_callback_for_testing;
+}
+
 NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(PreloadServingMetricsHolder);
+
+// static
+void PreloadServingMetricsHolder::SetDestructorCallbackForTesting(
+    base::RepeatingCallback<void(std::unique_ptr<PreloadServingMetrics>)>
+        callback) {
+  GetDestructorCallbackForTesting() = std::move(callback);  // IN-TEST
+}
 
 PreloadServingMetricsHolder::PreloadServingMetricsHolder(
     NavigationHandle& handle)
@@ -14,7 +29,12 @@ PreloadServingMetricsHolder::PreloadServingMetricsHolder(
   CHECK(PreloadServingMetrics::IsEnabled());
 }
 
-PreloadServingMetricsHolder::~PreloadServingMetricsHolder() = default;
+PreloadServingMetricsHolder::~PreloadServingMetricsHolder() {
+  if (GetDestructorCallbackForTesting()) {
+    GetDestructorCallbackForTesting().Run(  // IN-TEST
+        std::move(preload_serving_metrics_));
+  }
+}
 
 void PreloadServingMetricsHolder::AddPrefetchMatchMetrics(
     std::unique_ptr<PrefetchMatchMetrics> prefetch_match_metrics) {
