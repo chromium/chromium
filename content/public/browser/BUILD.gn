@@ -330,6 +330,8 @@ source_set("browser_sources") {
     "prefetch_service_delegate.cc",
     "prefetch_service_delegate.h",
     "preload_pipeline_info.h",
+    "preload_serving_metrics_capsule.cc",
+    "preload_serving_metrics_capsule.h",
     "preloading.h",
     "preloading_data.h",
     "preloading_trigger_type.h",

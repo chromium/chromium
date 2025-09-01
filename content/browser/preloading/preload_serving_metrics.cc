@@ -36,10 +36,51 @@ PreloadServingMetrics::TakeFromNavigationHandle(
       ->Take();
 }
 
+void PreloadServingMetrics::RecordMetricsForNonPrerenderNavigationCommitted()
+    const {
+  // unimplemented
+}
+
+void PreloadServingMetrics::RecordFirstContentfulPaint(
+    base::TimeDelta corrected_first_contentful_paint) const {
+  // unimplemented
+}
+
 PreloadServingMetrics::PreloadServingMetrics() {
   CHECK(PreloadServingMetrics::IsEnabled());
 }
 
 PreloadServingMetrics::~PreloadServingMetrics() = default;
+
+// static
+std::unique_ptr<PreloadServingMetricsCapsule>
+PreloadServingMetricsCapsuleImpl::TakeFromNavigationHandle(
+    NavigationHandle& navigation_handle) {
+  CHECK(PreloadServingMetrics::IsEnabled());
+
+  return base::WrapUnique(new PreloadServingMetricsCapsuleImpl(
+      PreloadServingMetricsHolder::GetOrCreateForNavigationHandle(
+          navigation_handle)
+          ->Take()));
+}
+
+PreloadServingMetricsCapsuleImpl::PreloadServingMetricsCapsuleImpl(
+    std::unique_ptr<PreloadServingMetrics> preload_serving_metrics)
+    : preload_serving_metrics_(std::move(preload_serving_metrics)) {
+  CHECK(PreloadServingMetrics::IsEnabled());
+}
+
+PreloadServingMetricsCapsuleImpl::~PreloadServingMetricsCapsuleImpl() = default;
+
+void PreloadServingMetricsCapsuleImpl::
+    RecordMetricsForNonPrerenderNavigationCommitted() const {
+  preload_serving_metrics_->RecordMetricsForNonPrerenderNavigationCommitted();
+}
+
+void PreloadServingMetricsCapsuleImpl::RecordFirstContentfulPaint(
+    base::TimeDelta corrected_first_contentful_paint) const {
+  preload_serving_metrics_->RecordFirstContentfulPaint(
+      std::move(corrected_first_contentful_paint));
+}
 
 }  // namespace content

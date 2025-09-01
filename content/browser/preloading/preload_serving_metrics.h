@@ -11,6 +11,7 @@
 
 #include "base/time/time.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/preload_serving_metrics_capsule.h"
 
 namespace content {
 
@@ -105,6 +106,10 @@ struct CONTENT_EXPORT PreloadServingMetrics {
   PreloadServingMetrics(const PreloadServingMetrics&) = delete;
   PreloadServingMetrics& operator=(const PreloadServingMetrics&) = delete;
 
+  void RecordMetricsForNonPrerenderNavigationCommitted() const;
+  void RecordFirstContentfulPaint(
+      base::TimeDelta corrected_first_contentful_paint) const;
+
   // Added per prefetch matching.
   std::vector<std::unique_ptr<PrefetchMatchMetrics>>
       prefetch_match_metrics_list;
@@ -117,6 +122,29 @@ struct CONTENT_EXPORT PreloadServingMetrics {
   // navigations are discarded.
   std::unique_ptr<PreloadServingMetrics>
       prerender_initial_preload_serving_metrics = nullptr;
+};
+
+// Allows `PageLoadMetricsObserver` to get/hold/record `PreloadServingMetrics`.
+class CONTENT_EXPORT PreloadServingMetricsCapsuleImpl final
+    : public PreloadServingMetricsCapsule {
+ public:
+  static bool IsEnabled();
+  // Take `PreloadServingMetrics` from `PreloadServingMetricsHolder` of
+  // `NavigationHandle`.
+  static std::unique_ptr<PreloadServingMetricsCapsule> TakeFromNavigationHandle(
+      NavigationHandle& navigation_handle);
+
+  void RecordMetricsForNonPrerenderNavigationCommitted() const override;
+  void RecordFirstContentfulPaint(
+      base::TimeDelta corrected_first_contentful_paint) const override;
+
+ private:
+  explicit PreloadServingMetricsCapsuleImpl(
+      std::unique_ptr<PreloadServingMetrics> preload_serving_metrics);
+  ~PreloadServingMetricsCapsuleImpl() override;
+  friend struct std::default_delete<PreloadServingMetricsCapsuleImpl>;
+
+  std::unique_ptr<PreloadServingMetrics> preload_serving_metrics_ = nullptr;
 };
 
 }  // namespace content
