@@ -2425,6 +2425,11 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // Ensures that when users tap on a tab from tab search result and this tab is
 // in another window currently displaying tab grid, the tab is opened.
 - (void)testOpenSearchedTabFromAnotherWindowWhenTabGridIsVisible {
+  // TODO(crbug.com/442326188): Re-enable this flaky test on iOS26.
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
