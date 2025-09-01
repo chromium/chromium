@@ -331,6 +331,21 @@ chromium-metrics-reviews@google.com.
       variants="PreloadServingMetricsPrefix"/>
 </histogram>
 
+<histogram
+    name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.IsPotentialMatch"
+    units="bool" expires_after="2026-01-01">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Whether the first prefetch matching for a navigation started as potential
+    match.
+
+    Recorded when {PreloadServingMetricsPrefix}.
+  </summary>
+  <token key="PreloadServingMetricsPrefix"
+      variants="PreloadServingMetricsPrefix"/>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

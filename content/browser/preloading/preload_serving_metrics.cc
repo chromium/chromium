@@ -21,6 +21,19 @@ void RecordMetricsInternal(const PreloadServingMetrics& metrics,
   // We expect that prefetch match count is zero or one.
   base::UmaHistogramCounts100(WITH(prefix, "PrefetchMatchMetrics.Count"),
                               metrics.prefetch_match_metrics_list.size());
+
+  [&]() {
+    // We only checks the first prefetch matching, as it is most likely to have
+    // meaningful data and checking other ones is costly with UMAs.
+    //
+    // TODO(crbug.com/360094997): Consider to use UKM.
+
+    base::UmaHistogramBoolean(
+        WITH(prefix, "PrefetchMatchMetrics.IsPotentialMatch"),
+        metrics.prefetch_match_metrics_list.size() > 0 &&
+            metrics.prefetch_match_metrics_list[0] &&
+            metrics.prefetch_match_metrics_list[0]->n_initial_candidates > 0);
+  }();
 }
 
 }  // namespace
