@@ -1328,8 +1328,8 @@ void TestResponseProvider::GetLanguageResponse(
   [ChromeEarlGrey waitForWebStateContainingText:"Translated"];
 }
 
-// Tests that translation can be applied while in reader mode and that translate
-// infobars are suppressed when reader mode is activated.
+// Tests that translation applied prior to Reader Mode is displayed and that
+// translate infobars are suppressed when reader mode is activated.
 - (void)testTranslateInReaderMode {
 #if !TARGET_OS_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
@@ -1349,6 +1349,9 @@ void TestResponseProvider::GetLanguageResponse(
   // Check Translate banner is presented.
   GREYAssertTrue([self isBeforeTranslateBannerVisible],
                  @"Before Translate banner was not found");
+  // Tap banner button to translate.
+  GREYAssertTrue([self selectTranslateButton],
+                 @"Could not tap on Translate banner action button");
 
   // Open Reader Mode.
   GREYAssertTrue(
@@ -1364,20 +1367,21 @@ void TestResponseProvider::GetLanguageResponse(
   GREYAssertFalse([self isBeforeTranslateBannerVisible],
                   @"Before Translate banner was found");
 
-  // Manually trigger translation from the tools menu.
+  // Verify translation is not available in the tools menu.
   [ChromeEarlGreyUI openToolsMenu];
 
   id<GREYMatcher> tableViewMatcher =
       [ChromeEarlGrey isNewOverflowMenuEnabled]
           ? grey_accessibilityID(kPopupMenuToolsMenuActionListId)
           : grey_accessibilityID(kPopupMenuToolsMenuTableViewId);
-  [[[[EarlGrey
+  [[[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_accessibilityID(kToolsMenuTranslateId),
                                    grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 150)
-      onElementWithMatcher:tableViewMatcher] assertWithMatcher:grey_notNil()]
-      performAction:grey_tap()];
+      onElementWithMatcher:tableViewMatcher]
+      assertWithMatcher:grey_accessibilityTrait(
+                            UIAccessibilityTraitNotEnabled)];
 
   // Verify page is translated.
   [ChromeEarlGrey waitForWebStateContainingText:"Translated"];
