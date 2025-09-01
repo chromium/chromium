@@ -59,6 +59,7 @@
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/login_metrics.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_authentication_delegate.h"
 #include "content/public/browser/web_authentication_request_proxy.h"
@@ -745,6 +746,50 @@ base::flat_set<device::FidoTransportProtocol> GetTransportsAllowedByRP(
   return transports;
 }
 
+void MaybeRecordBrowserAssistedLogin(
+    AuthenticatorCommonImpl::CredentialRequestResult request_result) {
+  using CredentialRequestResult =
+      AuthenticatorCommonImpl::CredentialRequestResult;
+  using BrowserAssistedLoginType = content::BrowserAssistedLoginType;
+  std::optional<content::BrowserAssistedLoginType> login_type;
+
+  switch (request_result) {
+    case CredentialRequestResult::kWinNativeSuccess:
+      login_type = BrowserAssistedLoginType::kPasskeyStoredInWindowsHello;
+      break;
+    case CredentialRequestResult::kChromeOSSuccess:
+    case CredentialRequestResult::kTouchIDSuccess:
+      login_type = BrowserAssistedLoginType::kPasskeyStoredInChromeProfile;
+      break;
+    case CredentialRequestResult::kPhoneSuccess:
+      login_type = BrowserAssistedLoginType::kPasskeyHybrid;
+      break;
+    case CredentialRequestResult::kICloudKeychainSuccess:
+      login_type = BrowserAssistedLoginType::kPasskeyStoredIniCloudKeychain;
+      break;
+    case CredentialRequestResult::kEnclaveSuccess:
+      login_type = content::BrowserAssistedLoginType::kPasskeyStoredInGPM;
+      break;
+    case CredentialRequestResult::kOtherSuccess:
+      login_type = content::BrowserAssistedLoginType::kPasskeySecurityKey;
+      break;
+    case CredentialRequestResult::kTimeout:
+    case CredentialRequestResult::kUserCancelled:
+    case CredentialRequestResult::kWinNativeError:
+    case CredentialRequestResult::kTouchIDError:
+    case CredentialRequestResult::kChromeOSError:
+    case CredentialRequestResult::kPhoneError:
+    case CredentialRequestResult::kICloudKeychainError:
+    case CredentialRequestResult::kEnclaveError:
+    case CredentialRequestResult::kOtherError:
+          // Ignore error cases.
+      break;
+  }
+  if (login_type.has_value()) {
+    base::UmaHistogramEnumeration(content::kBrowserAssistedLoginTypeHistogram,
+                                  *login_type);
+  }
+}
 }  // namespace
 
 // RequestState contains all state that is specific to a single WebAuthn call.
@@ -2979,6 +3024,7 @@ void AuthenticatorCommonImpl::CompleteGetAssertionRequest(
   if (req_state_->request_result) {
     UMA_HISTOGRAM_ENUMERATION("WebAuthentication.GetAssertion.Result",
                               *req_state_->request_result);
+    MaybeRecordBrowserAssistedLogin(*req_state_->request_result);
   }
 
   if (std::holds_alternative<GetAssertionOutcome>(
