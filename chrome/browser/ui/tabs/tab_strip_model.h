@@ -503,6 +503,9 @@ class TabStripModel {
   // Returns true if the tab at |index| is blocked by a tab modal dialog.
   bool IsTabBlocked(int index) const;
 
+  // Returns true if the tab at |index| is in the foreground.
+  bool IsTabInForeground(int index) const;
+
   // Returns true if the tab at |index| is allowed to be closed.
   bool IsTabClosable(int index) const;
 

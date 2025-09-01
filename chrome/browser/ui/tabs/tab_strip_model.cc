@@ -1299,6 +1299,29 @@ bool TabStripModel::IsTabBlocked(int index) const {
   return GetTabModelAtIndex(index)->blocked();
 }
 
+bool TabStripModel::IsTabInForeground(int index) const {
+  if (!ContainsIndex(index)) {
+    return false;
+  }
+
+  const tabs::TabInterface *active_tab = GetActiveTab();
+  if (!active_tab) {
+    return false;
+  }
+
+  if (active_tab->IsSplit()) {
+    const gfx::Range index_range =
+        GetIndexRangeOfSplit(active_tab->GetSplit().value());
+
+    // If the active tab is a split, check if the index is within the range of
+    // the split since all of these tabs are in the foreground.
+    return (index >= static_cast<int>(index_range.GetMin()) &&
+            index < static_cast<int>(index_range.GetMax()));
+  }
+
+  return active_index() == index;
+}
+
 bool TabStripModel::IsTabClosable(int index) const {
   return PolicyAllowsTabClosing(GetWebContentsAt(index));
 }
