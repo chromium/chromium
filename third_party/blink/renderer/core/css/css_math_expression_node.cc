@@ -1816,9 +1816,6 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateTrigonometricFunction(
 CSSMathExpressionNode* CSSMathExpressionOperation::CreateSteppedValueFunction(
     Operands&& operands,
     CSSMathOperator op) {
-  if (!RuntimeEnabledFeatures::CSSSteppedValueFunctionsEnabled()) {
-    return nullptr;
-  }
   DCHECK_EQ(operands.size(), 2u);
   if (operands[0]->Category() == kCalcOther ||
       operands[1]->Category() == kCalcOther) {
@@ -3992,6 +3989,9 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kAnchor:
       case CSSValueID::kAnchorSize:
       case CSSValueID::kCalcSize:
+      case CSSValueID::kRound:
+      case CSSValueID::kMod:
+      case CSSValueID::kRem:
         return true;
       case CSSValueID::kPow:
       case CSSValueID::kSqrt:
@@ -3999,10 +3999,6 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kLog:
       case CSSValueID::kExp:
         return RuntimeEnabledFeatures::CSSExponentialFunctionsEnabled();
-      case CSSValueID::kRound:
-      case CSSValueID::kMod:
-      case CSSValueID::kRem:
-        return RuntimeEnabledFeatures::CSSSteppedValueFunctionsEnabled();
       case CSSValueID::kAbs:
       case CSSValueID::kSign:
         return RuntimeEnabledFeatures::CSSSignRelatedFunctionsEnabled();
@@ -4352,13 +4348,11 @@ class CSSMathExpressionNodeParser {
         max_argument_count = 2;
         break;
       case CSSValueID::kRound:
-        DCHECK(RuntimeEnabledFeatures::CSSSteppedValueFunctionsEnabled());
         max_argument_count = 3;
         min_argument_count = 1;
         break;
       case CSSValueID::kMod:
       case CSSValueID::kRem:
-        DCHECK(RuntimeEnabledFeatures::CSSSteppedValueFunctionsEnabled());
         max_argument_count = 2;
         min_argument_count = 2;
         break;
@@ -4466,7 +4460,6 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kRound:
       case CSSValueID::kMod:
       case CSSValueID::kRem: {
-        DCHECK(RuntimeEnabledFeatures::CSSSteppedValueFunctionsEnabled());
         CSSMathOperator op;
         if (function_id == CSSValueID::kRound) {
           DCHECK_GE(nodes.size(), 1u);

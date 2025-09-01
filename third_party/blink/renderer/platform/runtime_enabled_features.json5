@@ -1597,11 +1597,6 @@
       status: "stable",
     },
     {
-      // Explainer: https://drafts.csswg.org/css-values/#round-func
-      name: "CSSSteppedValueFunctions",
-      status: "stable",
-    },
-    {
       name: "CSSSupportsAtRuleFunction",
       status: "experimental",
     },
