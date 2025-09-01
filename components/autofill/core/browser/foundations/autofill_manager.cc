@@ -115,14 +115,10 @@ bool CachedFormNeedsUpdate(const FormData& live_form,
 
   for (auto [cached_field, live_field] :
        base::zip(cached_form.fields(), live_form.fields())) {
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillUseDeepEqualInsteadOfSameFieldAs)
-            ? !FormFieldData::DeepEqual(*cached_field, live_field)
-            : !cached_field->SameFieldAs(live_field)) {
+    if (!FormFieldData::DeepEqual(*cached_field, live_field)) {
       return true;
     }
   }
-
   return false;
 }
 

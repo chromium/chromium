@@ -284,17 +284,6 @@ base::optional_ref<const SelectOption> FormFieldData::selected_option() const {
   return std::nullopt;
 }
 
-bool FormFieldData::SameFieldAs(const FormFieldData& field) const {
-  auto equality_tuple = [](const FormFieldData& f) {
-    return std::tie(f.label_, f.name_, f.name_attribute_, f.id_attribute_,
-                    f.form_control_type_, f.autocomplete_attribute_,
-                    f.placeholder_, f.max_length_, f.css_classes_,
-                    f.is_focusable_, f.should_autocomplete_, f.role_,
-                    f.text_direction_, f.options_);
-  };
-  return equality_tuple(*this) == equality_tuple(field);
-}
-
 bool FormFieldData::IsTextInputElement() const {
   return form_control_type() == FormControlType::kInputText ||
          form_control_type() == FormControlType::kInputPassword ||
@@ -315,7 +304,14 @@ bool FormFieldData::IsSelectElement() const {
 
 // static
 bool FormFieldData::DeepEqual(const FormFieldData& a, const FormFieldData& b) {
-  return a.global_id() == b.global_id() && a.SameFieldAs(b);
+  auto equality_tuple = [](const FormFieldData& f) {
+    return std::tie(f.renderer_id_, f.host_frame_, f.label_, f.name_,
+                    f.name_attribute_, f.id_attribute_, f.form_control_type_,
+                    f.autocomplete_attribute_, f.placeholder_, f.max_length_,
+                    f.css_classes_, f.is_focusable_, f.should_autocomplete_,
+                    f.role_, f.text_direction_, f.options_);
+  };
+  return equality_tuple(a) == equality_tuple(b);
 }
 
 FormFieldData::FillData::FillData() = default;

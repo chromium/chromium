@@ -52,10 +52,7 @@ void FormDataAndroid::OnFormFieldDidChange(size_t index,
 
 bool FormDataAndroid::GetFieldIndex(const FormFieldData& field, size_t* index) {
   for (size_t i = 0; i < form_.fields().size(); ++i) {
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillUseDeepEqualInsteadOfSameFieldAs)
-            ? FormFieldData::DeepEqual(form_.fields()[i], field)
-            : form_.fields()[i].SameFieldAs(field)) {
+    if (FormFieldData::DeepEqual(form_.fields()[i], field)) {
       *index = i;
       return true;
     }
