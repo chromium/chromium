@@ -56,11 +56,12 @@ def _maybe_cache(fn):
 
 
 class Os(str, enum.Enum):
+  Android = 'android'
+  Fuchsia = 'fuchsia'
+  Ios = 'ios'
   Linux = 'linux'
   Mac = 'mac'
-  Ios = 'ios'
   Win = 'win'
-  Android = 'android'
 
   @property
   def is_apple(self):
