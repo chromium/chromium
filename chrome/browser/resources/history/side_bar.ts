@@ -13,7 +13,6 @@ import '/strings.m.js';
 
 import type {CrMenuSelector} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -87,6 +86,19 @@ export class HistorySideBarElement extends CrLitElement {
        * When this property is true, `showFooter_` property should also be true.
        */
       showGoogleAccountFooter_: {type: Boolean},
+      /**
+       * Mutually exclusive flags that determine which message to show in the
+       * Google Account footer:
+       *   - message with Google My Activity (GMA) link
+       *   - message with Gemini Apps Activity (GAA) link
+       *   - message with both Google My Activity (GMA) and
+       *     Gemini Apps Activity (GAA) links.
+       *
+       * At most one of these can be true.
+       */
+      showGMAOnly_: {type: Boolean},
+      showGAAOnly_: {type: Boolean},
+      showGMAAndGAA_: {type: Boolean},
 
       showHistoryClusters_: {type: Boolean},
     };
@@ -102,6 +114,9 @@ export class HistorySideBarElement extends CrLitElement {
       loadTimeData.getBoolean('isHistoryClustersVisibleManagedByPolicy');
   protected accessor showFooter_: boolean = false;
   protected accessor showGoogleAccountFooter_: boolean = false;
+  protected accessor showGMAOnly_: boolean = false;
+  protected accessor showGAAOnly_: boolean = false;
+  protected accessor showGMAAndGAA_: boolean = false;
   private accessor showHistoryClusters_: boolean = false;
 
   override connectedCallback() {
@@ -113,10 +128,7 @@ export class HistorySideBarElement extends CrLitElement {
     super.willUpdate(changedProperties);
 
     if (changedProperties.has('footerInfo')) {
-      this.showGoogleAccountFooter_ = this.footerInfo.otherFormsOfHistory ||
-          this.footerInfo.geminiAppsActivity;
-      this.showFooter_ =
-          this.footerInfo.managed || this.showGoogleAccountFooter_;
+      this.updateFooterVisibility();
     }
     if (changedProperties.has('historyClustersEnabled') ||
         changedProperties.has('historyClustersVisible')) {
@@ -125,20 +137,53 @@ export class HistorySideBarElement extends CrLitElement {
     }
   }
 
-  // Returned element should not be visible when property
-  // `showGoogleAccountFooter_` is false, i.e. when both
-  // `footerInfo.otherFormsOfHistory` and `footerInfo.geminiAppsActivity`
-  // are false.
-  protected getGoogleAccountFooterMessage_(): TrustedHTML {
+  private updateFooterVisibility() {
+    // At most one of these values can be true.
+    this.showGMAOnly_ = false;
+    this.showGAAOnly_ = false;
+    this.showGMAAndGAA_ = false;
+
     if (this.footerInfo.otherFormsOfHistory &&
-        !this.footerInfo.geminiAppsActivity) {
-      return sanitizeInnerHtml(loadTimeData.getString('sidebarFooterGMAOnly'));
-    }
-    if (!this.footerInfo.otherFormsOfHistory &&
         this.footerInfo.geminiAppsActivity) {
-      return sanitizeInnerHtml(loadTimeData.getString('sidebarFooterGAAOnly'));
+      this.showGMAAndGAA_ = true;
+    } else if (this.footerInfo.otherFormsOfHistory) {
+      this.showGMAOnly_ = true;
+    } else if (this.footerInfo.geminiAppsActivity) {
+      this.showGAAOnly_ = true;
     }
-    return sanitizeInnerHtml(loadTimeData.getString('sidebarFooterGMAAndGAA'));
+
+    this.showGoogleAccountFooter_ =
+        this.showGMAAndGAA_ || this.showGMAOnly_ || this.showGAAOnly_;
+    this.showFooter_ = this.footerInfo.managed || this.showGoogleAccountFooter_;
+  }
+
+  protected onGoogleAccountFooterClick_(e: Event) {
+    if ((e.target as HTMLElement).tagName !== 'A') {
+      // Do nothing if a link is not clicked.
+      return;
+    }
+
+    e.preventDefault();
+
+    // Proxy URL navigation to fix CI failures in
+    // `js_code_coverage_browser_tests`. The tests fail because Chrome attempts
+    // to open real URLs.
+
+    const browserService = BrowserServiceImpl.getInstance();
+    switch ((e.target as HTMLElement).id) {
+      case 'footerGoogleMyActivityLink':
+        browserService.recordAction('SideBarFooterGoogleMyActivityClick');
+        browserService.navigateToUrl(
+            loadTimeData.getString('sidebarFooterGMALink'), '_blank',
+            e as MouseEvent);
+        break;
+      case 'footerGeminiAppsActivityLink':
+        browserService.recordAction('SideBarFooterGeminiAppsActivityClick');
+        browserService.navigateToUrl(
+            loadTimeData.getString('sidebarFooterGAALink'), '_blank',
+            e as MouseEvent);
+        break;
+    }
   }
 
   private onKeydown_(e: KeyboardEvent) {

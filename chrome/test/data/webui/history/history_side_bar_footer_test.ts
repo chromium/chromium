@@ -56,9 +56,28 @@ suite('GoogleAccountFooter', function() {
 
   function getGoogleAccountFooterMessageHTML() {
     const googleAccountFooter = getGoogleAccountFooter();
-    const divElement = googleAccountFooter.querySelector('div');
+
+    const divElement = googleAccountFooter.querySelector('div:not([hidden])');
     assertTrue(!!divElement);
-    return divElement.innerHTML;
+
+    // Make sure other div elements are hidden.
+    const divHiddenElements =
+        googleAccountFooter.querySelectorAll('div[hidden]');
+    assertEquals(divHiddenElements.length, 2);
+
+    return divElement.textContent;
+  }
+
+  function clickGoogleAccountFooterLinkWithId(id: string) {
+    const googleAccountFooter = getGoogleAccountFooter();
+
+    const divElement = googleAccountFooter.querySelector('div:not([hidden])');
+    assertTrue(!!divElement);
+
+    const linkElement = divElement.querySelector<HTMLAnchorElement>(`a#${id}`);
+    assertTrue(!!linkElement);
+
+    linkElement.click();
   }
 
   test('Neither My Activity nor Gemini Apps Activity visible', async () => {
@@ -71,11 +90,21 @@ suite('GoogleAccountFooter', function() {
     await callOnHasOtherFormsChanged(true);
 
     assertTrue(isGoogleAccountFooterVisible());
+
     const expectedGmaOnlyMessage =
-        'Your Google Account may have other forms of browsing history at ' +
-        '<a target="_blank" href="https://myactivity.google.com/myactivity/' +
-        '?utm_source=chrome_h">myactivity.google.com</a>';
+        'Your Google Account may have other forms of ' +
+        'browsing history at myactivity.google.com';
     assertEquals(getGoogleAccountFooterMessageHTML(), expectedGmaOnlyMessage);
+
+    // Verify that metric is recorded when the link is clicked and the correct
+    // URL is opened.
+    clickGoogleAccountFooterLinkWithId('footerGoogleMyActivityLink');
+    assertEquals(
+        1, testService.actionMap['SideBarFooterGoogleMyActivityClick']);
+
+    const url = await testService.whenCalled('navigateToUrl');
+    assertEquals(
+        'https://myactivity.google.com/myactivity/?utm_source=chrome_h', url);
   });
 
   test('Only Gemini Apps Activity visible', async () => {
@@ -88,10 +117,18 @@ suite('GoogleAccountFooter', function() {
 
     assertTrue(isGoogleAccountFooterVisible());
 
-    const expectedGaaOnlyMessage = 'Your Google Account may have your ' +
-        '<a target="_blank" href="https://myactivity.google.com/product/' +
-        'gemini">Gemini Apps Activity</a>';
+    const expectedGaaOnlyMessage =
+        'Your Google Account may have your Gemini Apps Activity';
     assertEquals(getGoogleAccountFooterMessageHTML(), expectedGaaOnlyMessage);
+
+    // Verify that metric is recorded when the link is clicked and the correct
+    // URL is opened.
+    clickGoogleAccountFooterLinkWithId('footerGeminiAppsActivityLink');
+    assertEquals(
+        1, testService.actionMap['SideBarFooterGeminiAppsActivityClick']);
+
+    const url = await testService.whenCalled('navigateToUrl');
+    assertEquals('https://myactivity.google.com/product/gemini', url);
   });
 
   test('Both My Activity and Gemini Apps Activity visible', async () => {
@@ -107,11 +144,27 @@ suite('GoogleAccountFooter', function() {
 
     const expectedGmaAndGaaMessage =
         'Your Google Account may have other forms of browsing history at ' +
-        '<a target="_blank" href="https://myactivity.google.com/myactivity/' +
-        '?utm_source=chrome_h">myactivity.google.com</a>, such as your ' +
-        '<a target="_blank" href="https://myactivity.google.com/product/' +
-        'gemini">Gemini Apps Activity</a>';
+        'myactivity.google.com, such as your Gemini Apps Activity';
     assertEquals(getGoogleAccountFooterMessageHTML(), expectedGmaAndGaaMessage);
+
+    // Verify that metric is recorded when the link is clicked and the correct
+    // URLs are opened.
+    clickGoogleAccountFooterLinkWithId('footerGoogleMyActivityLink');
+    assertEquals(
+        1, testService.actionMap['SideBarFooterGoogleMyActivityClick']);
+
+    const gma_url = await testService.whenCalled('navigateToUrl');
+    assertEquals(
+        'https://myactivity.google.com/myactivity/?utm_source=chrome_h',
+        gma_url);
+    testService.resetResolver('navigateToUrl');
+
+    clickGoogleAccountFooterLinkWithId('footerGeminiAppsActivityLink');
+    assertEquals(
+        1, testService.actionMap['SideBarFooterGeminiAppsActivityClick']);
+
+    const gaa_url = await testService.whenCalled('navigateToUrl');
+    assertEquals('https://myactivity.google.com/product/gemini', gaa_url);
   });
 
   test('Gemini Apps Activity hidden when glic disabled', async () => {

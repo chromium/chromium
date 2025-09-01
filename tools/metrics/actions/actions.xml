@@ -13518,6 +13518,24 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="HistoryPage_SideBarFooterGeminiAppsActivityClick">
+  <owner>lamzin@google.com</owner>
+  <owner>rainhard@chromium.org</owner>
+  <description>
+    User clicked the &quot;Gemini Apps Activity&quot; link in the footer of the
+    history page sidebar.
+  </description>
+</action>
+
+<action name="HistoryPage_SideBarFooterGoogleMyActivityClick">
+  <owner>lamzin@google.com</owner>
+  <owner>rainhard@chromium.org</owner>
+  <description>
+    User clicked the &quot;My Activity&quot; link in the footer of the history
+    page sidebar.
+  </description>
+</action>
+
 <action name="Home">
   <owner>mpearson@chromium.org</owner>
   <description>User pressed the Home button.</description>

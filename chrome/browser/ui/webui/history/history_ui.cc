@@ -131,6 +131,11 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
                         l10n_util::GetStringUTF16(
                             IDS_SETTINGS_CLEAR_DATA_MYACTIVITY_URL_IN_HISTORY),
                         chrome::kMyActivityGeminiAppsUrl));
+  // Links that are used in the messages above.
+  source->AddString("sidebarFooterGMALink",
+                    l10n_util::GetStringUTF16(
+                        IDS_SETTINGS_CLEAR_DATA_MYACTIVITY_URL_IN_HISTORY));
+  source->AddString("sidebarFooterGAALink", chrome::kMyActivityGeminiAppsUrl);
 
 #if BUILDFLAG(ENABLE_GLIC)
   const bool is_glic_enabled =
