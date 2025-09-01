@@ -57,10 +57,6 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImpl {
   // successfully mapped using a call to Map() before calling this function.
   virtual void* memory(size_t plane) = 0;
 
-  // Returns a span pointing to the plane's memory. The buffer must have been
-  // successfully mapped using a call to Map() before calling this function.
-  virtual base::span<uint8_t> memory_span(size_t plane);
-
   // Unmaps the buffer. It's illegal to use any pointer returned by memory()
   // after this has been called.
   virtual void Unmap() = 0;
