@@ -53,8 +53,8 @@ class CORE_EXPORT AutoSpeculationRulesConfig {
 
   // Because we will eventually be passing the first element of this pair to
   // base::MatchPattern, which takes a std::string, we just store it as
-  // std::string from the beginning, instead of using WTF::String and converting
-  // at test time.
+  // std::string from the beginning, instead of using blink::String and
+  // converting at test time.
   Vector<std::pair<std::string,
                    std::pair<String, BrowserInjectedSpeculationRuleOptOut>>>
       url_match_pattern_to_speculation_rules_;

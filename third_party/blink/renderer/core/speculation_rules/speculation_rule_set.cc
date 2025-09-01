@@ -139,7 +139,7 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
                                       const KURL& base_url,
                                       ExecutionContext* context,
                                       bool is_browser_injected,
-                                      WTF::String ruleset_tag,
+                                      String ruleset_tag,
                                       String* out_error,
                                       Vector<String>& out_warnings) {
   // https://wicg.github.io/nav-speculation/speculation-rules.html#parse-a-speculation-rule
@@ -649,7 +649,7 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
     result->AddWarnings(base::span_from_ref(duplicate_key_warning));
   }
 
-  WTF::String ruleset_tag;
+  String ruleset_tag;
   if (JSONValue* tag_value = parsed->Get("tag")) {
     String tag_str;
     if (!tag_value->AsString(&tag_str)) {
@@ -662,7 +662,7 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
                        "Tag value is invalid: must be ASCII printable.");
       return result;
     }
-    ruleset_tag = WTF::String(tag_str);
+    ruleset_tag = String(tag_str);
   }
 
   const auto parse_for_action =

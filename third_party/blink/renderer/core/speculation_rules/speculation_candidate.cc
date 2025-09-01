@@ -20,7 +20,7 @@ SpeculationCandidate::SpeculationCandidate(
     mojom::blink::SpeculationEagerness eagerness,
     network::mojom::blink::NoVarySearchPtr no_vary_search,
     mojom::blink::SpeculationInjectionType injection_type,
-    Vector<WTF::String> tags,
+    Vector<String> tags,
     SpeculationRuleSet* rule_set,
     HTMLAnchorElementBase* anchor)
     : url_(url),

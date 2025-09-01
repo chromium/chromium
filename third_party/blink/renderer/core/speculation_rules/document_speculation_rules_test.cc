@@ -56,8 +56,8 @@ class DocumentSpeculationRulesTest : public PageTestBase {
     GetDocument().SetBaseURLOverride(KURL("https://example.com/"));
     GetDocument().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
         mojom::blink::SpeculationHost::Name_,
-        WTF::BindRepeating(&MockSpeculationHost::BindNewEndpointAndPassReceiver,
-                           WTF::Unretained(&mock_host_)));
+        BindRepeating(&MockSpeculationHost::BindNewEndpointAndPassReceiver,
+                      Unretained(&mock_host_)));
   }
 
  protected:

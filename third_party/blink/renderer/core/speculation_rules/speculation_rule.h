@@ -40,8 +40,8 @@ class CORE_EXPORT SpeculationRule final
       mojom::blink::SpeculationEagerness,
       network::mojom::blink::NoVarySearchPtr,
       mojom::blink::SpeculationInjectionType,
-      WTF::String ruleset_tag,
-      WTF::String rule_tag);
+      String ruleset_tag,
+      String rule_tag);
   ~SpeculationRule();
 
   const Vector<KURL>& urls() const { return urls_; }
@@ -63,8 +63,8 @@ class CORE_EXPORT SpeculationRule final
   mojom::blink::SpeculationInjectionType injection_type() const {
     return injection_type_;
   }
-  WTF::String ruleset_tag() const { return ruleset_tag_; }
-  WTF::String rule_tag() const { return rule_tag_; }
+  String ruleset_tag() const { return ruleset_tag_; }
+  String rule_tag() const { return rule_tag_; }
 
   void Trace(Visitor*) const;
 
@@ -81,8 +81,8 @@ class CORE_EXPORT SpeculationRule final
       mojom::blink::SpeculationInjectionType::kNone;
   // TODO(crbug.com/381687257): make `ruleset_tag_` owned by
   // `SpeculationRuleSet`.
-  const WTF::String ruleset_tag_;
-  const WTF::String rule_tag_;
+  const String ruleset_tag_;
+  const String rule_tag_;
 };
 
 }  // namespace blink

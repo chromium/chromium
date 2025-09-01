@@ -231,7 +231,7 @@ DocumentSpeculationRules::DocumentSpeculationRules(Document& document)
   if (!lcpp) {
     return;
   }
-  lcpp->AddLCPPredictedCallback(WTF::BindOnce(
+  lcpp->AddLCPPredictedCallback(BindOnce(
       &DocumentSpeculationRules::OnLCPPredicted, WrapPersistent(this)));
 }
 
@@ -598,7 +598,7 @@ void DocumentSpeculationRules::QueueUpdateSpeculationCandidates(
 
   auto* execution_context = GetSupplementable()->GetExecutionContext();
   if (needs_microtask && !microtask_already_queued && execution_context) {
-    execution_context->GetAgent()->event_loop()->EnqueueMicrotask(WTF::BindOnce(
+    execution_context->GetAgent()->event_loop()->EnqueueMicrotask(BindOnce(
         &DocumentSpeculationRules::UpdateSpeculationCandidatesMicrotask,
         WrapWeakPersistent(this)));
   }
@@ -681,7 +681,7 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
         CHECK(!rule->requires_anonymous_client_ip_when_cross_origin() ||
               action == mojom::blink::SpeculationAction::kPrefetch);
 
-        Vector<WTF::String> tags;
+        Vector<String> tags;
         if (rule->rule_tag()) {
           tags.push_back(rule->rule_tag());
         }
@@ -863,7 +863,7 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
               }
             }
 
-            Vector<WTF::String> tags;
+            Vector<String> tags;
             if (rule->rule_tag()) {
               tags.push_back(rule->rule_tag());
             }

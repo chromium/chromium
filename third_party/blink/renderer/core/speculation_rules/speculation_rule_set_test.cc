@@ -914,10 +914,9 @@ void PropagateRulesToStubSpeculationHost(
   frame.GetSettings()->SetScriptEnabled(true);
 
   auto& broker = frame.DomWindow()->GetBrowserInterfaceBroker();
-  broker.SetBinderForTesting(
-      mojom::blink::SpeculationHost::Name_,
-      WTF::BindRepeating(&StubSpeculationHost::BindUnsafe,
-                         WTF::Unretained(&speculation_host)));
+  broker.SetBinderForTesting(mojom::blink::SpeculationHost::Name_,
+                             BindRepeating(&StubSpeculationHost::BindUnsafe,
+                                           Unretained(&speculation_host)));
 
   base::RunLoop run_loop;
   speculation_host.SetDoneClosure(run_loop.QuitClosure());
@@ -952,10 +951,9 @@ testing::AssertionResult NoRulesPropagatedToStubSpeculationHost(
     IncludesStyleUpdate includes_style_update = IncludesStyleUpdate{true}) {
   LocalFrame& frame = page_holder.GetFrame();
   auto& broker = frame.DomWindow()->GetBrowserInterfaceBroker();
-  broker.SetBinderForTesting(
-      mojom::blink::SpeculationHost::Name_,
-      WTF::BindRepeating(&StubSpeculationHost::BindUnsafe,
-                         WTF::Unretained(&speculation_host)));
+  broker.SetBinderForTesting(mojom::blink::SpeculationHost::Name_,
+                             BindRepeating(&StubSpeculationHost::BindUnsafe,
+                                           Unretained(&speculation_host)));
 
   bool done_was_called = false;
 
@@ -1219,10 +1217,9 @@ TEST_F(SpeculationRuleSetTest, RemoveInMicrotask) {
   LocalFrame& frame = page_holder.GetFrame();
   frame.GetSettings()->SetScriptEnabled(true);
   auto& broker = frame.DomWindow()->GetBrowserInterfaceBroker();
-  broker.SetBinderForTesting(
-      mojom::blink::SpeculationHost::Name_,
-      WTF::BindRepeating(&StubSpeculationHost::BindUnsafe,
-                         WTF::Unretained(&speculation_host)));
+  broker.SetBinderForTesting(mojom::blink::SpeculationHost::Name_,
+                             BindRepeating(&StubSpeculationHost::BindUnsafe,
+                                           Unretained(&speculation_host)));
 
   // First simulated task adds the rule sets.
   InsertSpeculationRules(page_holder.GetDocument(),
@@ -3830,10 +3827,9 @@ TEST_F(DocumentRulesTest, RemoveForcesStyleUpdate) {
   Document& doc = page_holder.GetDocument();
   frame.GetSettings()->SetScriptEnabled(true);
   auto& broker = frame.DomWindow()->GetBrowserInterfaceBroker();
-  broker.SetBinderForTesting(
-      mojom::blink::SpeculationHost::Name_,
-      WTF::BindRepeating(&StubSpeculationHost::BindUnsafe,
-                         WTF::Unretained(&speculation_host)));
+  broker.SetBinderForTesting(mojom::blink::SpeculationHost::Name_,
+                             BindRepeating(&StubSpeculationHost::BindUnsafe,
+                                           Unretained(&speculation_host)));
 
   for (StringView path : {"/baz", "/quux"}) {
     AddAnchor(*doc.body(), "https://example.com" + path);
@@ -3893,10 +3889,9 @@ TEST_F(DocumentRulesTest, RemoveWhileWaitingForStyle) {
   Document& doc = page_holder.GetDocument();
   frame.GetSettings()->SetScriptEnabled(true);
   auto& broker = frame.DomWindow()->GetBrowserInterfaceBroker();
-  broker.SetBinderForTesting(
-      mojom::blink::SpeculationHost::Name_,
-      WTF::BindRepeating(&StubSpeculationHost::BindUnsafe,
-                         WTF::Unretained(&speculation_host)));
+  broker.SetBinderForTesting(mojom::blink::SpeculationHost::Name_,
+                             BindRepeating(&StubSpeculationHost::BindUnsafe,
+                                           Unretained(&speculation_host)));
   auto event_loop = frame.DomWindow()->GetAgent()->event_loop();
 
   // First, add the rule set and matching links. Style is not yet clean for the
