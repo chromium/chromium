@@ -2204,8 +2204,8 @@ MinMaxSizesResult InlineNode::ComputeMinMaxSizes(
         LineBreakerMode::kMaxContent, &max_size_cache, nullptr, nullptr);
   }
 
-  // Negative text-indent can make min > max. Ensure min is the minimum size.
-  sizes.min_size = std::min(sizes.min_size, sizes.max_size);
+  // Negative text-indent can make min > max. Ensure max encompasses the min.
+  sizes.max_size = std::max(sizes.min_size, sizes.max_size);
 
   return MinMaxSizesResult(sizes, depends_on_block_constraints);
 }
