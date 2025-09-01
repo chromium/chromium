@@ -419,7 +419,6 @@ function addStandardStats(data) {
       peerConnectionElement.id + '-table-' + remoteCandidate.id,
     ]);
   });
-  console.log('IDS', ids);
   // Mark active local-candidate, remote candidate and candidate pair
   // bold in the table.
   // Disable getElementById restriction here, since |peerConnectionElement|
