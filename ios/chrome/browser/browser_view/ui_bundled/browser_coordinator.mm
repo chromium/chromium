@@ -2230,9 +2230,7 @@ enum class ToolbarKind {
 
 - (void)printTabWithBaseViewController:(UIViewController*)baseViewController {
   DCHECK(self.printCoordinator);
-  web::WebState* webState =
-      self.browser->GetWebStateList()->GetActiveWebState();
-  [self.printCoordinator printWebState:webState
+  [self.printCoordinator printWebState:self.activeWebStateOrReaderMode
                     baseViewController:baseViewController];
 }
 
