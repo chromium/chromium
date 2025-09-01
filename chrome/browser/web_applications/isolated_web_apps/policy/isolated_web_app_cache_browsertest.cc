@@ -519,12 +519,15 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
 
   void CheckCacheManagerDebugOperationResult(const std::string& operation_name,
                                              const std::string& result) {
-    base::Value debug_value = provider().iwa_cache_manager().GetDebugValue();
-    base::Value::List* operations_results =
-        debug_value.GetDict().FindList(kOperationsResults);
-    ASSERT_TRUE(operations_results);
-    EXPECT_TRUE(operations_results->contains(
-        base::Value::Dict().Set(operation_name, result)));
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      base::Value debug_value = provider().iwa_cache_manager().GetDebugValue();
+      base::Value::List* operations_results =
+          debug_value.GetDict().FindList(kOperationsResults);
+      return operations_results &&
+             operations_results->contains(
+                 base::Value::Dict().Set(operation_name, result));
+    }));
   }
 
   void ExpectEmptyCopyBundleAfterUpdateMetric() {
