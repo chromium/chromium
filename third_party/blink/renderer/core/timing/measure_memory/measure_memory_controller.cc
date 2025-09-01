@@ -102,8 +102,8 @@ void StartMemoryMeasurement(LocalDOMWindow* window,
                             WebMemoryMeasurement::Mode mode) {
   if (auto* coordinator = window->document()->GetResourceCoordinator()) {
     coordinator->OnWebMemoryMeasurementRequested(
-        mode, WTF::BindOnce(&MeasureMemoryController::MeasurementComplete,
-                            WrapPersistent(controller)));
+        mode, BindOnce(&MeasureMemoryController::MeasurementComplete,
+                       WrapPersistent(controller)));
   }
 }
 
@@ -267,7 +267,7 @@ MemoryBreakdownEntry* ConvertCanvasBreakdown(
 
 MemoryBreakdownEntry* CreateUnattributedBreakdown(
     std::optional<base::ByteCount> memory,
-    const WTF::String& memory_type) {
+    const String& memory_type) {
   auto* result = MemoryBreakdownEntry::Create();
   result->setBytes(memory->InBytes());
   result->setAttribution({});

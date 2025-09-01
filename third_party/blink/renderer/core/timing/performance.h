@@ -446,7 +446,7 @@ class CORE_EXPORT Performance : public EventTarget {
 
   // A map from entry types to the number of dropped entries of that given entry
   // type. Entries are dropped when the buffer from that entry type is full.
-  WTF::HashMap<PerformanceEntry::EntryType, int> dropped_entries_count_map_;
+  HashMap<PerformanceEntry::EntryType, int> dropped_entries_count_map_;
 
   // See crbug.com/1181774.
   Member<BackgroundTracingHelper> background_tracing_helper_;

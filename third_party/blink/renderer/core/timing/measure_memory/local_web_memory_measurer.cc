@@ -41,7 +41,7 @@ void LocalWebMemoryMeasurer::StartMeasurement(
     WebMemoryMeasurement::Mode mode,
     MeasureMemoryController* controller,
     WebMemoryAttribution::Scope attribution_scope,
-    WTF::String attribution_url) {
+    String attribution_url) {
   // We cannot use std::make_unique here because the constructor is private.
   auto delegate =
       std::unique_ptr<LocalWebMemoryMeasurer>(new LocalWebMemoryMeasurer(
@@ -52,7 +52,7 @@ void LocalWebMemoryMeasurer::StartMeasurement(
 LocalWebMemoryMeasurer::LocalWebMemoryMeasurer(
     MeasureMemoryController* controller,
     WebMemoryAttribution::Scope attribution_scope,
-    WTF::String attribution_url)
+    String attribution_url)
     : controller_(controller),
       attribution_scope_(attribution_scope),
       attribution_url_(attribution_url) {}

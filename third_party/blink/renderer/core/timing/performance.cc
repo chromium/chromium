@@ -943,8 +943,7 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
             CHECK(!parser_yield_task_handle_.IsActive());
             parser_yield_task_handle_ = PostDelayedCancellableTask(
                 *document->GetTaskRunner(TaskType::kInternalLoading), FROM_HERE,
-                WTF::BindOnce(&NotifyParserResume, WrapPersistent(document),
-                              false),
+                BindOnce(&NotifyParserResume, WrapPersistent(document), false),
                 base::Milliseconds(timeout));
           }
         } else if (mark_name == mark_parser_restart) {
@@ -956,9 +955,8 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
           // new task to ensure that the script is not running to resume the
           // parser.
           document->GetTaskRunner(TaskType::kInternalLoading)
-              ->PostTask(FROM_HERE,
-                         WTF::BindOnce(&NotifyParserResume,
-                                       WrapPersistent(document), true));
+              ->PostTask(FROM_HERE, BindOnce(&NotifyParserResume,
+                                             WrapPersistent(document), true));
           parser_yield_task_handle_.Cancel();
         }
       }

@@ -134,7 +134,7 @@ void ThirdPartyScriptDetector::Trace(Visitor* visitor) const {
 }
 
 ThirdPartyScriptDetector::Technology ThirdPartyScriptDetector::Detect(
-    const WTF::String url) {
+    const String url) {
   if (!url) {
     // Early exit if the script is first party.
     return Technology::kNone;

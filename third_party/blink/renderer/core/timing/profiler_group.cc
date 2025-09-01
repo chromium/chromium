@@ -319,8 +319,8 @@ void ProfilerGroup::CancelProfilerAsync(ScriptState* script_state,
   // associated context, dispatch a task to cleanup context-independent isolate
   // resources (rather than use the context's task runner).
   ThreadScheduler::Current()->V8TaskRunner()->PostTask(
-      FROM_HERE, WTF::BindOnce(&ProfilerGroup::StopDetachedProfiler,
-                               WrapPersistent(this), profiler->ProfilerId()));
+      FROM_HERE, BindOnce(&ProfilerGroup::StopDetachedProfiler,
+                          WrapPersistent(this), profiler->ProfilerId()));
 }
 
 void ProfilerGroup::StopDetachedProfiler(String profiler_id) {

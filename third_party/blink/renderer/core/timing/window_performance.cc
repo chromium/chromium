@@ -707,15 +707,14 @@ void WindowPerformance::EventTimingProcessingEnd(
   if (need_new_promise_for_event_presentation_time_) {
     DomWindow()->GetFrame()->GetChromeClient().NotifyPresentationTime(
         *DomWindow()->GetFrame(),
-        WTF::BindOnce(&WindowPerformance::OnPresentationPromiseResolved,
-                      WrapWeakPersistent(this),
-                      ++event_presentation_promise_count_,
-                      // TODO(crbug.com/378647854): Current implementation uses
-                      // source id from previous BeginMainFrame as an
-                      // approximate. And this can be further improved to the
-                      // current BeginMainFrame if we could defer presentation
-                      // promise registering to align with each BeginMainFrame.
-                      begin_main_frame_source_id_));
+        BindOnce(&WindowPerformance::OnPresentationPromiseResolved,
+                 WrapWeakPersistent(this), ++event_presentation_promise_count_,
+                 // TODO(crbug.com/378647854): Current implementation uses
+                 // source id from previous BeginMainFrame as an
+                 // approximate. And this can be further improved to the
+                 // current BeginMainFrame if we could defer presentation
+                 // promise registering to align with each BeginMainFrame.
+                 begin_main_frame_source_id_));
     need_new_promise_for_event_presentation_time_ = false;
   }
 

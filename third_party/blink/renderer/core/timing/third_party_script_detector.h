@@ -57,11 +57,11 @@ class ThirdPartyScriptDetector final
     // Max value allowed: 1 << 63. Limited by UKM bitfield.
   };
 
-  Technology Detect(const WTF::String url);
+  Technology Detect(const String url);
 
  private:
   RE2 precompiled_detection_regex__;
-  HashMap<WTF::String, Technology> url_to_technology_cache_;
+  HashMap<String, Technology> url_to_technology_cache_;
 };
 
 }  // namespace blink

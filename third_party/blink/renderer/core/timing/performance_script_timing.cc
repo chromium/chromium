@@ -163,10 +163,10 @@ V8ScriptInvokerType PerformanceScriptTiming::invokerType() const {
   NOTREACHED();
 }
 
-WTF::String PerformanceScriptTiming::sourceURL() const {
+String PerformanceScriptTiming::sourceURL() const {
   return info_->GetSourceLocation().url;
 }
-WTF::String PerformanceScriptTiming::sourceFunctionName() const {
+String PerformanceScriptTiming::sourceFunctionName() const {
   return info_->GetSourceLocation().function_name;
 }
 int32_t PerformanceScriptTiming::sourceCharPosition() const {

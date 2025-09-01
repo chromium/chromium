@@ -42,8 +42,7 @@ class CORE_EXPORT PerformanceTimingForReporting final
     std::optional<base::TimeDelta> first_input_delay;
   };
 
-  using BackForwardCacheRestoreTimings =
-      WTF::Vector<BackForwardCacheRestoreTiming>;
+  using BackForwardCacheRestoreTimings = Vector<BackForwardCacheRestoreTiming>;
 
   explicit PerformanceTimingForReporting(ExecutionContext*);
 
