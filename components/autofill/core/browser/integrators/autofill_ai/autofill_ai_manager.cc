@@ -518,19 +518,23 @@ AutofillAiManager::GetEntitySaveAndUpdatePromptCandidates(
 
     // For each saved entity that is mergeable with `observed_entity`, we should
     // add an update prompt candidate.
-    for (const auto [mergeability, saved_entity] :
+    for (auto [mergeability, saved_entity] :
          base::zip(mergeabilities, saved_entities)) {
       if (!mergeability || mergeability->mergeable_attributes.empty() ||
           saved_entity.are_attributes_read_only() ||
           IsUpdateBlockedByStrikeDatabase(saved_entity.guid())) {
         continue;
       }
-      // Merges attributes from the two entities and returns an updated entity
-      // that contains both existing and new attributes.
-      std::vector<AttributeInstance> new_attributes =
-          base::ToVector(mergeability->mergeable_attributes);
-      for (AttributeInstance curr_attribute : saved_entity.attributes()) {
-        new_attributes.emplace_back(std::move(curr_attribute));
+      // This will contain the attributes of the new to-be-updated entity.
+      base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
+          new_attributes = std::move(mergeability->mergeable_attributes);
+      for (const AttributeInstance& curr_attribute :
+           saved_entity.attributes()) {
+        // Only add the attributes of the saved entity that weren't mergeable
+        // with the observed entity. The other attributes were added by
+        // `mergeable_attributes`.
+        // Note that `base::flat_set::insert` does exactly that.
+        new_attributes.insert(curr_attribute);
       }
       update_candidates.emplace_back(
           EntityInstance(saved_entity.type(), std::move(new_attributes),
