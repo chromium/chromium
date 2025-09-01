@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_STRIKE_DATABASE_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_STRIKE_DATABASE_H_
+#ifndef COMPONENTS_STRIKE_DATABASE_STRIKE_DATABASE_H_
+#define COMPONENTS_STRIKE_DATABASE_STRIKE_DATABASE_H_
 
 #include <map>
 #include <memory>
@@ -14,10 +14,10 @@
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
-#include "components/autofill/core/browser/strike_databases/strike_database_base.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
+#include "components/strike_database/strike_database_base.h"
 
 namespace autofill {
 
@@ -156,4 +156,4 @@ class StrikeDatabase : public StrikeDatabaseBase {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_STRIKE_DATABASE_H_
+#endif  // COMPONENTS_STRIKE_DATABASE_STRIKE_DATABASE_H_

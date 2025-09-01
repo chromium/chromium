@@ -11,7 +11,7 @@
 #include <utility>
 
 #include "components/autofill/core/browser/proto/strike_data.pb.h"
-#include "components/autofill/core/browser/strike_databases/strike_database.h"
+#include "components/strike_database/strike_database.h"
 
 namespace autofill {
 

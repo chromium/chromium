@@ -115,6 +115,7 @@ include_rules = [
   "+components/signin/public/base",
   "+components/signin/ios/browser",
   "+components/ssl_errors",
+  "+components/strike_database",
   "+components/suggestions",
   "+components/supervised_user",
   "+components/sync",

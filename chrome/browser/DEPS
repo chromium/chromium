@@ -329,6 +329,7 @@ include_rules = [
   "+components/startup_metric_utils/browser",
   "+components/startup_metric_utils/common",
   "+components/storage_monitor",
+  "+components/strike_database",
   "+components/strings/grit",
   "+components/subresource_filter/android",
   "+components/subresource_filter/content/shared/browser",

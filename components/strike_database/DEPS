@@ -1,0 +1,10 @@
+include_rules = [
+  # go/keep-sorted start
+  "+components/history/core/browser",
+  "+components/keyed_service/core",
+  "+components/leveldb_proto",
+  # go/keep-sorted end
+  # TODO(crbug.com/442352155): Remove.
+  "+components/autofill/core/browser/proto/strike_data.pb.h",
+  "+components/autofill/core/common/autofill_payments_features.h"
+]

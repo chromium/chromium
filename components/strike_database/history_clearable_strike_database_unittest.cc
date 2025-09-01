@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/strike_databases/history_clearable_strike_database.h"
+#include "components/strike_database/history_clearable_strike_database.h"
 
 #include <optional>
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/strike_databases/strike_database.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
+#include "components/strike_database/strike_database.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {

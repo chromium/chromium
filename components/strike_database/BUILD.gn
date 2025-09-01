@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("strike_databases") {
+static_library("strike_database") {
   sources = [
     "history_clearable_strike_database.h",
     "simple_autofill_strike_database.h",
@@ -24,7 +24,10 @@ static_library("strike_databases") {
   ]
 
   deps = [
+    # TODO(crbug.com/442352155): Move proto out of Autofill.
     "//components/autofill/core/browser/proto",
+
+    # TODO(crbug.com/442352155): Remove dependency on test feature.
     "//components/autofill/core/common:features",
   ]
 }
@@ -36,7 +39,7 @@ static_library("test_support") {
     "test_inmemory_strike_database.h",
   ]
 
-  public_deps = [ ":strike_databases" ]
+  public_deps = [ ":strike_database" ]
 
   deps = [ "//components/autofill/core/browser/proto" ]
 }
@@ -51,9 +54,13 @@ source_set("unit_tests") {
   ]
 
   deps = [
-    ":strike_databases",
+    ":strike_database",
     "//base/test:test_support",
+
+    # TODO(crbug.com/442352155): Move proto out of Autofill.
     "//components/autofill/core/browser/proto",
+
+    # TODO(crbug.com/442352155): Remove dependency on test feature.
     "//components/autofill/core/common:features",
     "//testing/gtest",
   ]

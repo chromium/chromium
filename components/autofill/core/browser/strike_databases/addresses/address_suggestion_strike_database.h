@@ -9,10 +9,10 @@
 #include <set>
 #include <string>
 
-#include "components/autofill/core/browser/strike_databases/history_clearable_strike_database.h"
-#include "components/autofill/core/browser/strike_databases/strike_database_integrator_base.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/strike_database/history_clearable_strike_database.h"
+#include "components/strike_database/strike_database_integrator_base.h"
 #include "url/gurl.h"
 
 namespace autofill {

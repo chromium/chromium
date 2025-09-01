@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/strike_databases/test_inmemory_strike_database.h"
+#include "components/strike_database/test_inmemory_strike_database.h"
 
 #include <algorithm>
 #include <string>

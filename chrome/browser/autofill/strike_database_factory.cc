@@ -6,7 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/autofill/core/browser/strike_databases/strike_database.h"
+#include "components/strike_database/strike_database.h"
 #include "content/public/browser/storage_partition.h"
 
 namespace autofill {

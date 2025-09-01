@@ -24,6 +24,7 @@ include_rules = [
   "+components/security_interstitials/core/pref_names.h",
   "+components/security_state",
   "+components/signin/public",
+  "+components/strike_database",
   "+components/strings",
   "+components/sync",
   "+components/sync_preferences",

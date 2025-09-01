@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/strike_databases/strike_database_integrator_base.h"
+#include "components/strike_database/strike_database_integrator_base.h"
 
 #include <algorithm>
 #include <string>
@@ -18,9 +18,9 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/proto/strike_data.pb.h"
-#include "components/autofill/core/browser/strike_databases/strike_database_base.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
+#include "components/strike_database/strike_database_base.h"
 
 namespace autofill {
 

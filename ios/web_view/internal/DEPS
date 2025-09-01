@@ -43,6 +43,7 @@ include_rules = [
   "+components/signin/ios",
   "+components/signin/public",
   "+components/ssl_errors",
+  "+components/strike_database",
   "+components/strings/grit",
   "+components/sync",
   "+components/sync_device_info",

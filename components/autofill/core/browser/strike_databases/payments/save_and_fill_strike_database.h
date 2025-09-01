@@ -9,8 +9,8 @@
 #include <string_view>
 
 #include "base/time/time.h"
-#include "components/autofill/core/browser/strike_databases/simple_autofill_strike_database.h"
-#include "components/autofill/core/browser/strike_databases/strike_database.h"
+#include "components/strike_database/simple_autofill_strike_database.h"
+#include "components/strike_database/strike_database.h"
 
 namespace autofill {
 

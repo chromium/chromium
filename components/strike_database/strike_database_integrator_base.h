@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_STRIKE_DATABASE_INTEGRATOR_BASE_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_STRIKE_DATABASE_INTEGRATOR_BASE_H_
+#ifndef COMPONENTS_STRIKE_DATABASE_STRIKE_DATABASE_INTEGRATOR_BASE_H_
+#define COMPONENTS_STRIKE_DATABASE_STRIKE_DATABASE_INTEGRATOR_BASE_H_
 
 #include <stdint.h>
 
@@ -19,7 +19,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/strike_databases/strike_database_base.h"
+#include "components/strike_database/strike_database_base.h"
 
 namespace autofill {
 
@@ -204,4 +204,4 @@ class StrikeDatabaseIntegratorBase {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_STRIKE_DATABASE_INTEGRATOR_BASE_H_
+#endif  // COMPONENTS_STRIKE_DATABASE_STRIKE_DATABASE_INTEGRATOR_BASE_H_

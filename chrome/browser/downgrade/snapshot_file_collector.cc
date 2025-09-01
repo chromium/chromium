@@ -11,11 +11,11 @@
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/affiliations/core/browser/affiliation_constants.h"
-#include "components/autofill/core/browser/strike_databases/strike_database.h"
 #include "components/bookmarks/common/bookmark_constants.h"
 #include "components/history/core/browser/history_constants.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/sessions/core/session_constants.h"
+#include "components/strike_database/strike_database.h"
 #include "components/webdata/common/webdata_constants.h"
 #include "content/public/browser/browsing_data_remover.h"
 

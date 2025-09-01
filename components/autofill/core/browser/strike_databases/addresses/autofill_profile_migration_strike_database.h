@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_ADDRESSES_AUTOFILL_PROFILE_MIGRATION_STRIKE_DATABASE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_ADDRESSES_AUTOFILL_PROFILE_MIGRATION_STRIKE_DATABASE_H_
 
-#include "components/autofill/core/browser/strike_databases/simple_autofill_strike_database.h"
+#include "components/strike_database/simple_autofill_strike_database.h"
 
 namespace autofill {
 

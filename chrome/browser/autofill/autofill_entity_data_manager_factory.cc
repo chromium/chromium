@@ -11,12 +11,12 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
-#include "components/autofill/core/browser/strike_databases/strike_database.h"
-#include "components/autofill/core/browser/strike_databases/strike_database_base.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/strike_database/strike_database.h"
+#include "components/strike_database/strike_database_base.h"
 
 namespace autofill {
 

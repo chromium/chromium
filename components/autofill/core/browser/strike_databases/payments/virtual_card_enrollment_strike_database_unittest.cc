@@ -10,9 +10,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/autofill/core/browser/strike_databases/strike_database_integrator_test_strike_database.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
+#include "components/strike_database/strike_database_integrator_test_strike_database.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {

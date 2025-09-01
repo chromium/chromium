@@ -914,13 +914,13 @@ static_library("browser") {
     "//components/autofill/core/browser/payments:card_unmask_challenge_option",
     "//components/autofill/core/browser/proto",
     "//components/autofill/core/browser/proto:autofill_ai_proto",
-    "//components/autofill/core/browser/strike_databases/",
     "//components/autofill/core/common",
     "//components/autofill/core/common/mojom:mojo_types",
     "//components/leveldb_proto",
     "//components/resources",
     "//components/security_interstitials/core",
     "//components/security_state/core",
+    "//components/strike_database",
     "//components/translate/core/browser",
     "//skia",
     "//third_party/abseil-cpp:absl",
@@ -1256,9 +1256,9 @@ static_library("test_support") {
 
   public_deps = [
     ":browser",
-    "//components/autofill/core/browser/strike_databases:test_support",
     "//components/autofill/core/common:test_support",
     "//components/optimization_guide/core:features",
+    "//components/strike_database:test_support",
   ]
 
   deps = [

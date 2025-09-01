@@ -7,8 +7,8 @@
 #import <utility>
 
 #import "base/no_destructor.h"
-#import "components/autofill/core/browser/strike_databases/strike_database.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/strike_database/strike_database.h"
 #import "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/web_view_browser_state.h"
 
