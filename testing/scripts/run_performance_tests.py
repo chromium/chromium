@@ -1021,7 +1021,7 @@ def _create_network_json(config_type,
   if wpr_go_bin:
     network_dict['wpr_go_bin'] = wpr_go_bin
   if skip_injection:
-    network_dict['skip_injection'] = True
+    network_dict['skip_deterministic_script_injection'] = True
   network_json = json.dumps(network_dict)
   return f'--network={network_json}'
 
