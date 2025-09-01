@@ -13,6 +13,7 @@
 #import "components/segmentation_platform/public/features.h"
 #import "components/sync/base/features.h"
 #import "components/version_info/channel.h"
+#import "crypto/features.h"
 #import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/safety_check_notifications/utils/constants.h"
@@ -749,12 +750,18 @@ BASE_FEATURE(EnableAppBackgroundRefresh, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAppBackgroundRefreshEnabled() {
   version_info::Channel channel = ::GetChannel();
+  // Always off in beta/stable.
   if (channel == version_info::Channel::BETA ||
       channel == version_info::Channel::STABLE) {
     return false;
   }
 
-  return base::FeatureList::IsEnabled(kEnableAppBackgroundRefresh);
+  // To test background refresh in conjuntion with the keychain access
+  // migration, enable app background refresh if *either* its flag or
+  // the keychain access flag is enabled.
+  return base::FeatureList::IsEnabled(kEnableAppBackgroundRefresh) ||
+         base::FeatureList::IsEnabled(
+             crypto::features::kMigrateIOSKeychainAccessibility);
 }
 
 BASE_FEATURE(HomeMemoryImprovements, base::FEATURE_DISABLED_BY_DEFAULT);
