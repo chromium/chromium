@@ -123,6 +123,25 @@ public class ProxyTest {
 
     @Test
     @SmallTest
+    public void testProxyOptions_nullProxyIsNotLastElement_throws() {
+        assertThrows(
+                IllegalArgumentException.class, () -> new ProxyOptions(Arrays.asList(null, null)));
+        Proxy.Callback proxyCallback = Mockito.mock(Proxy.Callback.class);
+        Proxy proxy =
+                new Proxy(
+                        /* scheme= */ Proxy.HTTPS,
+                        /* host= */ "this-hostname-does-not-exist.com",
+                        /* port= */ 8080,
+                        /* callback= */ proxyCallback);
+        assertThrows(
+                IllegalArgumentException.class, () -> new ProxyOptions(Arrays.asList(null, proxy)));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new ProxyOptions(Arrays.asList(proxy, null, proxy)));
+    }
+
+    @Test
+    @SmallTest
     public void testProxyOptions_emptyProxyList_throws() {
         assertThrows(
                 IllegalArgumentException.class, () -> new ProxyOptions(Collections.emptyList()));

@@ -31,10 +31,17 @@ public final class ProxyOptions {
      * end of the list will control whether non-proxied connections are allowed.
      *
      * @param proxyList The list of {@link Proxy} that defines this configuration.
+     * @throws IllegalArgumentException If the proxy list is empty; or, an element, other than the
+     *     last one in the list, is {@code null}.
      */
     public ProxyOptions(@NonNull List<Proxy> proxyList) {
         if (Objects.requireNonNull(proxyList).isEmpty()) {
             throw new IllegalArgumentException("ProxyList cannot be empty");
+        }
+        int nullElemPos = proxyList.indexOf(null);
+        if (nullElemPos != -1 && nullElemPos != proxyList.size() - 1) {
+            throw new IllegalArgumentException(
+                    "Null is allowed only as the last element in the proxy list");
         }
         this.mProxyList = new ArrayList<>(proxyList);
     }

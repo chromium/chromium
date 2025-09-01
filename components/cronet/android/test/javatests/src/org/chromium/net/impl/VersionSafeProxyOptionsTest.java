@@ -180,12 +180,12 @@ public class VersionSafeProxyOptionsTest {
                                         "not-existing-hostname",
                                         8080,
                                         httpsProxyCallback),
-                                (Proxy) null,
                                 new Proxy(
                                         Proxy.HTTP,
                                         "not-existing-hostname",
                                         8080,
-                                        httpProxyCallback)));
+                                        httpProxyCallback),
+                                (Proxy) null));
         VersionSafeProxyOptions safeProxyOptions = new VersionSafeProxyOptions(proxyOptions);
         org.chromium.net.impl.proto.ProxyOptions proxyOptionsProto =
                 safeProxyOptions.createProxyOptionsProto();
@@ -199,8 +199,8 @@ public class VersionSafeProxyOptionsTest {
                                 .collect(Collectors.toList()))
                 .containsExactly(
                         org.chromium.net.impl.proto.ProxyScheme.HTTPS,
-                        org.chromium.net.impl.proto.ProxyScheme.DIRECT,
-                        org.chromium.net.impl.proto.ProxyScheme.HTTP)
+                        org.chromium.net.impl.proto.ProxyScheme.HTTP,
+                        org.chromium.net.impl.proto.ProxyScheme.DIRECT)
                 .inOrder();
         // Confirm that the original order within ProxyOptions#getProxyList is maintained for
         // Callback's proto.
@@ -212,8 +212,8 @@ public class VersionSafeProxyOptionsTest {
         safeProxyCallbacks.get(0).onBeforeTunnelRequest(any());
         Mockito.verify(httpsProxyCallback, times(1)).onBeforeTunnelRequest(any());
         Mockito.verify(httpProxyCallback, never()).onBeforeTunnelRequest(any());
-        assertThat(safeProxyCallbacks.get(1)).isNull();
-        safeProxyCallbacks.get(2).onBeforeTunnelRequest(any());
+        assertThat(safeProxyCallbacks.get(2)).isNull();
+        safeProxyCallbacks.get(1).onBeforeTunnelRequest(any());
         Mockito.verify(httpProxyCallback, times(1)).onBeforeTunnelRequest(any());
     }
 }
