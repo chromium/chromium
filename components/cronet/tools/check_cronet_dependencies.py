@@ -26,7 +26,8 @@ _GN_PATH = os.path.join(REPOSITORY_ROOT, 'buildtools/linux64/gn')
 
 def _get_current_gn_args() -> List[str]:
   """Returns the GN args in the current working directory"""
-  return subprocess.check_output(["cat", "args.gn"]).decode('utf-8').split("\n")
+  args = subprocess.check_output(["cat", "args.gn"]).decode('utf-8').split("\n")
+  return [arg for arg in args if arg and not arg.startswith("#")]
 
 
 def normalize_third_party_dep(dependency: str) -> str:
