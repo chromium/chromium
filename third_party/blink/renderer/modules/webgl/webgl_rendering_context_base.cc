@@ -1634,9 +1634,10 @@ bool WebGLRenderingContextBase::PushFrame() {
   if (isContextLost() || !GetDrawingBuffer())
     return false;
 
-  bool must_clear_now = ClearIfComposited(kClearCallerOther) != kSkipped;
-  if (!must_paint_to_canvas_ && !must_clear_now)
+  bool cleared_content = ClearIfComposited(kClearCallerOther) != kSkipped;
+  if (!must_paint_to_canvas_ && !cleared_content) {
     return false;
+  }
 
   if (GetDrawingBuffer()->IsUsingGpuCompositing()) {
     // Export the DrawingBuffer's SI directly if possible.
@@ -1917,9 +1918,9 @@ WebGLRenderingContextBase::ExportLowLatencyCanvasResource(
     return nullptr;
   }
 
-  bool must_clear_now = ClearIfComposited(kClearCallerOther) != kSkipped;
+  bool cleared_content = ClearIfComposited(kClearCallerOther) != kSkipped;
 
-  if (!must_paint_to_canvas_ && !must_clear_now && export_only_if_update) {
+  if (!must_paint_to_canvas_ && !cleared_content && export_only_if_update) {
     return nullptr;
   }
 
@@ -2078,7 +2079,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
     return nullptr;
   }
 
-  bool must_clear_now = ClearIfComposited(kClearCallerOther) != kSkipped;
+  bool cleared_content = ClearIfComposited(kClearCallerOther) != kSkipped;
 
   if (resource_provider_.get() &&
       resource_provider_.get()->Size() != GetDrawingBuffer()->Size()) {
@@ -2089,7 +2090,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
   // The host's ResourceProvider is purged to save memory when the tab
   // is backgrounded.
 
-  if (!must_paint_to_canvas_ && !must_clear_now && resource_provider_.get()) {
+  if (!must_paint_to_canvas_ && !cleared_content && resource_provider_.get()) {
     // `resource_provider_` already has the current contents, so it can just be
     // returned as-is.
     return resource_provider_.get();
