@@ -35,7 +35,7 @@ TEST(PluginDataTest, UpdatePluginList) {
   mojo::Receiver<mojom::blink::PluginRegistry> registry_receiver(
       &mock_plugin_registry);
   TestingPlatformSupport::ScopedOverrideMojoInterface override_plugin_registry(
-      WTF::BindRepeating(
+      BindRepeating(
           [](mojo::Receiver<mojom::blink::PluginRegistry>* registry_receiver,
              const char* interface, mojo::ScopedMessagePipeHandle pipe) {
             if (!UNSAFE_TODO(
@@ -46,7 +46,7 @@ TEST(PluginDataTest, UpdatePluginList) {
               return;
             }
           },
-          WTF::Unretained(&registry_receiver)));
+          Unretained(&registry_receiver)));
 
   EXPECT_CALL(mock_plugin_registry, DidGetPlugins(false));
 

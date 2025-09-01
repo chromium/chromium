@@ -383,9 +383,8 @@ void Page::CloseSoon() {
   if (!close_task_handler_ && MainFrame()) {
     close_task_handler_ = MakeGarbageCollected<Page::CloseTaskHandler>(this);
     GetPageScheduler()->GetAgentGroupScheduler().DefaultTaskRunner()->PostTask(
-        FROM_HERE,
-        WTF::BindOnce(&Page::CloseTaskHandler::DoDeferredClose,
-                      WrapWeakPersistent(close_task_handler_.Get())));
+        FROM_HERE, BindOnce(&Page::CloseTaskHandler::DoDeferredClose,
+                            WrapWeakPersistent(close_task_handler_.Get())));
   }
 }
 

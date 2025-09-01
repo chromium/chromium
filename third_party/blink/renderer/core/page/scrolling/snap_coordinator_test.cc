@@ -36,7 +36,7 @@ class SnapCoordinatorTest : public testing::Test,
  protected:
   void SetUp() override {
     page_holder_ = std::make_unique<DummyPageHolder>(
-        gfx::Size(), nullptr, nullptr, WTF::BindOnce([](Settings& settings) {
+        gfx::Size(), nullptr, nullptr, BindOnce([](Settings& settings) {
           settings.SetAcceleratedCompositingEnabled(true);
         }));
 

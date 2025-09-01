@@ -169,8 +169,7 @@ class MockAttributionHost
       : provider_(provider), on_data_host_bound_(base::DoNothing()) {
     provider_->OverrideBinderForTesting(
         mojom::blink::AttributionHost::Name_,
-        WTF::BindRepeating(&MockAttributionHost::BindReceiver,
-                           WTF::Unretained(this)));
+        BindRepeating(&MockAttributionHost::BindReceiver, Unretained(this)));
   }
 
   ~MockAttributionHost() override {
@@ -208,7 +207,7 @@ class MockAttributionHost
       mojo::PendingReceiver<attribution_reporting::mojom::blink::DataHost>,
       attribution_reporting::mojom::RegistrationEligibility,
       bool is_for_background_requests,
-      const WTF::Vector<scoped_refptr<const blink::SecurityOrigin>>&
+      const Vector<scoped_refptr<const blink::SecurityOrigin>>&
           reporting_origins) override {}
 
   void RegisterNavigationDataHost(

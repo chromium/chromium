@@ -126,12 +126,12 @@ void PluginData::UpdatePluginList() {
   std::sort(
       plugins_.begin(), plugins_.end(),
       [](const Member<PluginInfo>& lhs, const Member<PluginInfo>& rhs) -> bool {
-        return WTF::CodeUnitCompareLessThan(lhs->Name(), rhs->Name());
+        return CodeUnitCompareLessThan(lhs->Name(), rhs->Name());
       });
   std::sort(mimes_.begin(), mimes_.end(),
             [](const Member<MimeClassInfo>& lhs,
                const Member<MimeClassInfo>& rhs) -> bool {
-              return WTF::CodeUnitCompareLessThan(lhs->Type(), rhs->Type());
+              return CodeUnitCompareLessThan(lhs->Type(), rhs->Type());
             });
 }
 

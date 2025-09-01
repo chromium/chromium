@@ -126,7 +126,7 @@ class CORE_EXPORT PagePopupClient {
                             int resource_id,
                             SegmentedBuffer&);
 
-  virtual void SetMenuListOptionsBoundsInAXTree(WTF::Vector<gfx::Rect>&,
+  virtual void SetMenuListOptionsBoundsInAXTree(Vector<gfx::Rect>&,
                                                 gfx::Point) {}
 
  protected:

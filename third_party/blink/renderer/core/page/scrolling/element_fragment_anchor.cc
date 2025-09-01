@@ -140,7 +140,7 @@ void ElementFragmentAnchor::Installed() {
   if (needs_focus_) {
     // Attempts to focus the anchor if we couldn't focus above. This can cause
     // script to run so we can't do it from Invoke.
-    frame_->GetDocument()->EnqueueAnimationFrameTask(WTF::BindOnce(
+    frame_->GetDocument()->EnqueueAnimationFrameTask(BindOnce(
         &ElementFragmentAnchor::ApplyFocusIfNeeded, WrapPersistent(this)));
   }
 
