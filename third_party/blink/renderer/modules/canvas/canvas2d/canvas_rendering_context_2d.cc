@@ -1427,15 +1427,14 @@ CanvasRenderingContext2D::RecreateCanvasResourceProviderForCanvas2D() {
   }
   if (!resource_provider_) {
     did_fail_to_create_resource_provider_ = true;
-  } else if (resource_provider_->IsValid()) {
-    base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
-                              resource_provider_->IsAccelerated());
-    base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
-                                  resource_provider_->GetType());
-  }
-  if (!resource_provider_ || !resource_provider_->IsValid()) {
     return nullptr;
   }
+
+  CHECK(resource_provider_->IsValid());
+  base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
+                            resource_provider_->IsAccelerated());
+  base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
+                                resource_provider_->GetType());
 
   auto* hibernation_handler = GetHibernationHandler();
   if (!hibernation_handler->IsHibernating()) {
