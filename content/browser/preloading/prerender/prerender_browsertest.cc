@@ -15701,6 +15701,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderUntilScriptBrowserTest, InlineScript) {
   // Verify after stylesheet is loaded, the parser continues.
   GURL before_script_element_url = GetUrl("/image.jpg");
   prerender_helper()->WaitForRequest(before_script_element_url, 1);
+  // Though the parser is paused due to delayed script execution, preloader
+  // should fetch external subresources.
+  GURL image_url = GetUrl("/blank.jpg");
+  prerender_helper()->WaitForRequest(image_url, 1);
 
   // Activate.
   NavigatePrimaryPage(prerender_url);
@@ -15729,6 +15733,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderUntilScriptBrowserTest, ExternalSyncScript) {
   GURL prerender_url = GetUrl("/prerender/external_sync_script.html");
   StartPrerenderUntilScript(prerender_url);
 
+  // Though the parser is paused due to delayed script execution, preloader
+  // should fetch external subresources.
+  GURL image_url = GetUrl("/blank.jpg");
+  prerender_helper()->WaitForRequest(image_url, 1);
   // Activate.
   NavigatePrimaryPage(prerender_url);
 
