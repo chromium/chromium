@@ -3071,6 +3071,12 @@ test("content_unittests") {
     ]
   }
 
+  if (is_ios) {
+    sources += [
+      "../browser/renderer_host/render_widget_host_view_ios_uiview_unittest.mm",
+    ]
+  }
+
   if (is_ios && target_platform == "iphoneos") {
     sources += [
       "../browser/date_time_chooser/ios/date_time_chooser_util_unittest.mm",
@@ -3172,6 +3178,7 @@ test("content_unittests") {
 
   deps = [
     ":content_test_mojo_bindings",
+    ":default_content_test_launcher",
     ":run_all_unittests",
     ":test_interfaces",
     ":test_support",

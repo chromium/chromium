@@ -217,7 +217,6 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void ExtendSelectionAndReplace(uint32_t before,
                                  uint32_t after,
                                  const std::u16string& replacement_text);
-  void DeleteSurroundingText(int before, int after);
   void ExecuteEditCommand(const std::string& command);
   void SendKeyEvent(const input::NativeWebKeyboardEvent& event);
 

@@ -957,16 +957,6 @@ void RenderWidgetHostViewIOS::ExtendSelectionAndReplace(
   input_handler->ExtendSelectionAndReplace(before, after, replacement_text);
 }
 
-void RenderWidgetHostViewIOS::DeleteSurroundingText(int before, int after) {
-  if (auto* widget_host = GetActiveWidget()) {
-    auto* input_handler = widget_host->GetFrameWidgetInputHandler();
-    if (!input_handler) {
-      return;
-    }
-    input_handler->DeleteSurroundingTextInCodePoints(before, after);
-  }
-}
-
 void RenderWidgetHostViewIOS::ExecuteEditCommand(const std::string& command) {
   auto* input_handler = GetFrameWidgetInputHandlerForFocusedWidget();
   if (!input_handler) {
