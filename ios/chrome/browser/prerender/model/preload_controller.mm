@@ -8,7 +8,6 @@
 
 #import "base/check_op.h"
 #import "base/ios/device_util.h"
-#import "base/metrics/field_trial.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
@@ -68,25 +67,12 @@ enum PrerenderFinalStatus {
 // Delay before starting to prerender a URL.
 const NSTimeInterval kPrerenderDelay = 0.5;
 
-// The finch experiment to turn off prerendering as a field trial.
-const char kTabEvictionFieldTrialName[] = "TabEviction";
-// The associated group.
-const char kPrerenderTabEvictionTrialGroup[] = "NoPrerendering";
-// The name of the histogram for recording final status (e.g. used/cancelled)
-// of prerender requests.
 const char kPrerenderFinalStatusHistogramName[] = "Prerender.FinalStatus";
 // The name of the histogram for recording time until a successful prerender.
 const char kPrerenderPrerenderTimeSaved[] = "Prerender.PrerenderTimeSaved";
 // Histogram to record that the load was complete when the prerender was used.
 // Not recorded if the pre-render isn't used.
 const char kPrerenderLoadComplete[] = "Prerender.PrerenderLoadComplete";
-
-// Is this install selected for this particular experiment.
-bool IsPrerenderTabEvictionExperimentalGroup() {
-  base::FieldTrial* trial =
-      base::FieldTrialList::Find(kTabEvictionFieldTrialName);
-  return trial && trial->group_name() == kPrerenderTabEvictionTrialGroup;
-}
 
 // Returns true if the primary account is subject to parental controls and the
 // URL filtering control has been enabled.
@@ -339,8 +325,7 @@ class PreloadPrerenderTabHelperDelegate : public PrerenderTabHelperDelegate {
 - (BOOL)isEnabled {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
 
-  if (IsPrerenderTabEvictionExperimentalGroup() ||
-      ios::device_util::IsSingleCoreDevice() ||
+  if (ios::device_util::IsSingleCoreDevice() ||
       !ios::device_util::RamIsAtLeast512Mb() ||
       net::NetworkChangeNotifier::IsOffline() ||
       IsSubjectToParentalControls(_profile)) {
