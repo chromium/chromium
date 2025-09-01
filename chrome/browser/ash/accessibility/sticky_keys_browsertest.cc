@@ -35,7 +35,6 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
-#include "ui/gfx/native_window_types.h"
 
 namespace ash {
 

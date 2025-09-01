@@ -11,7 +11,6 @@
 
 #include "base/check.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
-#include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"

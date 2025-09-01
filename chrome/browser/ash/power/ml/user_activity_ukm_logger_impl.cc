@@ -11,7 +11,6 @@
 #include "chrome/browser/ash/power/ml/user_activity_ukm_logger_helpers.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "ui/gfx/native_window_types.h"
 
 namespace ash {
 namespace power {

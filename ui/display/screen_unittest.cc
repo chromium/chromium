@@ -8,7 +8,6 @@
 #include "ui/display/display.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "ui/display/test/test_screen.h"
-#include "ui/gfx/native_widget_types.h"
 
 namespace display {
 

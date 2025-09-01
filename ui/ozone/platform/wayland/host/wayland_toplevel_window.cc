@@ -19,7 +19,6 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/host/dump_util.h"
 #include "ui/ozone/platform/wayland/host/org_kde_kwin_appmenu.h"
 #include "ui/ozone/platform/wayland/host/wayland_bubble.h"

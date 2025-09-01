@@ -18,7 +18,6 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/base/test/skia_gold_matching_algorithm.h"
 #include "ui/gfx/image/image.h"
-#include "ui/gfx/native_widget_types.h"
 
 using ::testing::_;
 using ::testing::AllOf;
