@@ -28,11 +28,29 @@ void RecordMetricsInternal(const PreloadServingMetrics& metrics,
     //
     // TODO(crbug.com/360094997): Consider to use UKM.
 
+    const bool is_potential_match =
+        metrics.prefetch_match_metrics_list.size() > 0 &&
+        metrics.prefetch_match_metrics_list[0] &&
+        metrics.prefetch_match_metrics_list[0]->n_initial_candidates > 0;
+
     base::UmaHistogramBoolean(
         WITH(prefix, "PrefetchMatchMetrics.IsPotentialMatch"),
-        metrics.prefetch_match_metrics_list.size() > 0 &&
-            metrics.prefetch_match_metrics_list[0] &&
-            metrics.prefetch_match_metrics_list[0]->n_initial_candidates > 0);
+        is_potential_match);
+
+    if (!is_potential_match) {
+      return;
+    }
+    auto& prefetch_match_metrics = *metrics.prefetch_match_metrics_list[0];
+
+    base::UmaHistogramCounts100(WITH(prefix,
+                                     "PrefetchMatchMetrics.PotentialMatchThen."
+                                     "NumberOfInitialCandidates"),
+                                prefetch_match_metrics.n_initial_candidates);
+    base::UmaHistogramCounts100(
+        WITH(prefix,
+             "PrefetchMatchMetrics.PotentialMatchThen."
+             "NumberOfInitialCandidatesBlockUntilHead"),
+        prefetch_match_metrics.n_initial_candidates_block_until_head);
   }();
 }
 

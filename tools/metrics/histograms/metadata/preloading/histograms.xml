@@ -318,6 +318,38 @@ chromium-metrics-reviews@google.com.
   <token key="PreloadingPredictor" variants="PreloadingPredictor"/>
 </histogram>
 
+<histogram
+    name="{PreloadServingMetricsPrefix}.PotentialMatchThen.NumberOfInitialCandidates"
+    units="count" expires_after="2026-01-01">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    The number of initial candidates of the first prefetch matching for a
+    navigation.
+
+    Recorded when {PreloadServingMetricsPrefix} and the first prefetch matching
+    started as a potential match.
+  </summary>
+  <token key="PreloadServingMetricsPrefix"
+      variants="PreloadServingMetricsPrefix"/>
+</histogram>
+
+<histogram
+    name="{PreloadServingMetricsPrefix}.PotentialMatchThen.NumberOfInitialCandidatesBlockUntilHead"
+    units="count" expires_after="2026-01-01">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    The number of blocking initial candidates of the first prefetch matching for
+    a navigation.
+
+    Recorded when {PreloadServingMetricsPrefix} and the first prefetch matching
+    started as a potential match.
+  </summary>
+  <token key="PreloadServingMetricsPrefix"
+      variants="PreloadServingMetricsPrefix"/>
+</histogram>
+
 <histogram name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.Count"
     units="count" expires_after="2026-01-01">
   <owner>kenoss@chromium.org</owner>
