@@ -65,7 +65,7 @@ BASE_DECLARE_FEATURE(kNetworkAnnotationMonitoring);
 BASE_DECLARE_FEATURE(kNewTabPageTriggerForPrerender2);
 BASE_DECLARE_FEATURE(kNewTabPageTriggerForPrefetch);
 const base::FeatureParam<int>
-    kNewTabPagePreconnectStartDelayOnMouseHoverByMiliSeconds{
+    kNewTabPagePreconnectStartDelayOnMouseHoverByMilliSeconds{
         &features::kNewTabPageTriggerForPrerender2,
         "preconnect_start_delay_on_mouse_hover_ms", 100};
 const base::FeatureParam<int>
