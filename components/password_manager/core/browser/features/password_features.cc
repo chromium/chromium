@@ -211,6 +211,10 @@ BASE_FEATURE(kImprovedPasswordChangeService,
              "ImprovedPasswordChangeService",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSubmitWithEnterDuringPasswordChange,
+             "SubmitWithEnterDuringPasswordChange",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kReloadPasswordsOnTrustedVaultEncryptionChange,
              "ReloadPasswordsOnTrustedVaultEncryptionChange",

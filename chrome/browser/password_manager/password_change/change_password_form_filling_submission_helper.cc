@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -19,6 +20,7 @@
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -155,7 +157,7 @@ void ChangePasswordFormFillingSubmissionHelper::OnPasswordFormSubmission(
   if (!timeout_timer_.IsRunning()) {
     return;
   }
-  timeout_timer_.Reset();
+  timeout_timer_.Stop();
   OnSubmissionDetectedOrTimeout();
 }
 
@@ -259,11 +261,20 @@ void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(
   CHECK_EQ(form_manager_->GetPendingCredentials().password_value,
            generated_password_);
   form_manager_->UpdateBackupPassword(stored_password_);
-  driver->SubmitFormWithEnter(
-      field_id,
-      base::BindOnce(
-          &ChangePasswordFormFillingSubmissionHelper::OnSubmitWithEnterResult,
-          weak_ptr_factory_.GetWeakPtr(), driver));
+
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kSubmitWithEnterDuringPasswordChange)) {
+    driver->SubmitFormWithEnter(
+        field_id,
+        base::BindOnce(
+            &ChangePasswordFormFillingSubmissionHelper::OnSubmitWithEnterResult,
+            weak_ptr_factory_.GetWeakPtr(), driver));
+  } else {
+    std::move(capture_annotated_page_content_)
+        .Run(base::BindOnce(
+            &ChangePasswordFormFillingSubmissionHelper::OnPageContentReceived,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void ChangePasswordFormFillingSubmissionHelper::OnSubmitWithEnterResult(

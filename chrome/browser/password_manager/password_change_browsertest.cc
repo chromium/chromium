@@ -11,6 +11,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -54,6 +55,7 @@
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/one_time_passwords/otp_form_manager.h"
 #include "components/password_manager/core/browser/one_time_passwords/otp_manager.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
@@ -98,6 +100,8 @@ using OpenFormResponseData = ::optimization_guide::proto::OpenFormResponseData;
 using QualityStatus = ::optimization_guide::proto::
     PasswordChangeQuality_StepQuality_SubmissionStatus;
 using SubmissionOutcome = PasswordChangeSubmissionVerifier::SubmissionOutcome;
+using SubmitFormResponseData =
+    ::optimization_guide::proto::SubmitFormResponseData;
 
 constexpr char kPasswordChangeSubmissionOutcomeHistogram[] =
     "PasswordManager.PasswordChangeSubmissionOutcome";
@@ -158,6 +162,13 @@ const ukm::mojom::UkmEntry* GetMetricEntry(
 
 class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
  public:
+  PasswordChangeBrowserTest() {
+    // TODO (crbug.com/439496997): Fix the test to work with this feature flag
+    // default value.
+    scoped_feature_list_.InitAndEnableFeature(
+        password_manager::features::kSubmitWithEnterDuringPasswordChange);
+  }
+
   void SetUpInProcessBrowserTestFixture() override {
     PasswordManagerBrowserTestBase::SetUpInProcessBrowserTestFixture();
     create_services_subscription_ =
@@ -332,6 +343,7 @@ class PasswordChangeBrowserTest : public PasswordManagerBrowserTestBase {
   base::CallbackListSubscription create_services_subscription_;
   autofill::TestAutofillManagerInjector<TestAutofillManager>
       autofill_manager_injector_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::WeakPtrFactory<PasswordChangeBrowserTest> weak_ptr_factory_{this};
 };
 
