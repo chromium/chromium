@@ -387,14 +387,6 @@ class DiceWebSigninInterceptionBubblePixelTest
 
 IN_PROC_BROWSER_TEST_P(DiceWebSigninInterceptionBubblePixelTest,
                        InvokeUi_default) {
-#if BUILDFLAG(IS_WIN)
-  if (GetParam().test_suffix == "ChromeSignin" ||
-      GetParam().test_suffix == "ChromeSignInSupervisedUserIntercepted") {
-    // TODO(crbug.com/442272514): Enable for this variation once pixel tests
-    // are corrected.
-    GTEST_SKIP();
-  }
-#endif
   ShowAndVerifyUi();
 }
 
