@@ -26,7 +26,8 @@ void* AnnotatedAccountIdKey() {
 AnnotatedAccountId::~AnnotatedAccountId() = default;
 
 // static
-const AccountId* AnnotatedAccountId::Get(base::SupportsUserData* context) {
+const AccountId* AnnotatedAccountId::Get(
+    const base::SupportsUserData* context) {
   CHECK(context);
   auto* data = static_cast<AnnotatedAccountId*>(
       context->GetUserData(AnnotatedAccountIdKey()));

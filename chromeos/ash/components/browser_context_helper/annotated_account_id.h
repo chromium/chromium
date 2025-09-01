@@ -26,7 +26,7 @@ class COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER) AnnotatedAccountId
   // Note that some Profiles do not have corresponding AccountId intentionally,
   // such as a Profile for log-in/lock screens.
   // `context` must not be nullptr.
-  static const AccountId* Get(base::SupportsUserData* context);
+  static const AccountId* Get(const base::SupportsUserData* context);
 
   // Sets the corresponding account id to `context`.
   // `context` must not be nullptr, nor a Profile instance where AccountId is
