@@ -13,13 +13,18 @@
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
+#include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_sync_test_utils.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_sync_util.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_table.h"
+#include "components/os_crypt/async/browser/test_utils.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/model/data_batch.h"
@@ -65,16 +70,41 @@ std::unique_ptr<syncer::EntityData> CreateEntityDataFromLoyaltyCardSpecifics(
   return entity_data;
 }
 
+EntityInstance GetLocalVehicleEntityInstance(
+    test::VehicleOptions options = {}) {
+  return test::GetVehicleEntityInstance(
+      {.record_type = EntityInstance::RecordType::kLocal});
+}
+
+EntityInstance GetServerVehicleEntityInstance(
+    test::VehicleOptions options = {}) {
+  options.nickname = "";
+  options.date_modified = {};
+  options.record_type = EntityInstance::RecordType::kServerWallet;
+
+  return test::GetVehicleEntityInstance(options);
+}
+
 }  // namespace
 
 class ValuableSyncBridgeTest : public testing::Test {
  public:
   // Creates the `bridge()` and mocks its `ValuablesTable`.
   void SetUp() override {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        syncer::kSyncMoveValuablesToProfileDb
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+        ,
+        syncer::kSyncWalletVehicleRegistrations
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    };
+    feature_list_.InitWithFeatures(enabled_features, /*disabled_features=*/{});
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    db_.AddTable(&table_);
+    db_.AddTable(&valuables_table_);
     db_.AddTable(&sync_metadata_table_);
-    db_.Init(temp_dir_.GetPath().AppendASCII("SyncTestWebDatabase"));
+    db_.AddTable(&entity_table_);
+    db_.Init(temp_dir_.GetPath().AppendASCII("SyncTestWebDatabase"),
+             &encryptor_);
     ON_CALL(backend_, GetDatabase()).WillByDefault(Return(&db_));
 
     bridge_ = std::make_unique<ValuableSyncBridge>(
@@ -84,29 +114,57 @@ class ValuableSyncBridgeTest : public testing::Test {
   // Tells the processor to starts syncing with pre-existing `loyalty_cards`.
   // Triggers the `bridge()`'s `MergeFullSyncData()`.
   // Returns true if syncing started successfully.
-  bool StartSyncing(const std::vector<LoyaltyCard>& loyalty_cards) {
+  bool SyncLoyaltyCards(const std::vector<LoyaltyCard>& loyalty_cards) {
     ON_CALL(mock_processor(), IsTrackingMetadata).WillByDefault(Return(true));
     syncer::EntityChangeList entity_data;
     for (const LoyaltyCard& card : loyalty_cards) {
       entity_data.push_back(syncer::EntityChange::CreateAdd(
-          card.id().value(), CardToEntity(card)));
+          card.id().value(), CardToEntityData(card)));
     }
     // `MergeFullSyncData()` returns an error if it fails.
     return !bridge().MergeFullSyncData(bridge().CreateMetadataChangeList(),
                                        std::move(entity_data));
   }
 
-  void AddLoyaltyCardsToTheTable(
-      const std::vector<LoyaltyCard>& loyalty_cards) {
-    table_.SetLoyaltyCards(loyalty_cards);
+  // Tells the processor to starts syncing with pre-existing `entities`.
+  // Triggers the `bridge()`'s `MergeFullSyncData()`.
+  // Returns true if syncing started successfully.
+  bool SyncEntityInstances(const std::vector<EntityInstance>& entities) {
+    ON_CALL(mock_processor(), IsTrackingMetadata).WillByDefault(Return(true));
+    syncer::EntityChangeList entity_data;
+    for (const EntityInstance& entity : entities) {
+      entity_data.push_back(syncer::EntityChange::CreateAdd(
+          entity.guid().value(), EntityInstanceToEntityData(entity)));
+    }
+    // `MergeFullSyncData()` returns an error if it fails.
+    return !bridge().MergeFullSyncData(bridge().CreateMetadataChangeList(),
+                                       std::move(entity_data));
   }
 
-  std::vector<LoyaltyCard> GetAllDataFromTable() {
-    return table_.GetLoyaltyCards();
+  void AddLoyaltyCards(const std::vector<LoyaltyCard>& loyalty_cards) {
+    valuables_table_.SetLoyaltyCards(loyalty_cards);
   }
 
-  syncer::EntityData CardToEntity(const LoyaltyCard& card) {
+  void AddEntities(const std::vector<EntityInstance>& entities) {
+    for (const EntityInstance& entitity : entities) {
+      entity_table_.AddOrUpdateEntityInstance(entitity);
+    }
+  }
+
+  std::vector<LoyaltyCard> GetAllLoyaltyCardsFromTable() {
+    return valuables_table_.GetLoyaltyCards();
+  }
+
+  std::vector<EntityInstance> GetAllEntityInstancesFromTable() {
+    return entity_table_.GetEntityInstances();
+  }
+
+  syncer::EntityData CardToEntityData(const LoyaltyCard& card) {
     return std::move(*CreateEntityDataFromLoyaltyCard(card));
+  }
+
+  syncer::EntityData EntityInstanceToEntityData(const EntityInstance& entity) {
+    return std::move(*CreateEntityDataFromEntityInstance(entity));
   }
 
   MockAutofillWebDataBackend& backend() { return backend_; }
@@ -121,10 +179,14 @@ class ValuableSyncBridgeTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   testing::NiceMock<MockAutofillWebDataBackend> backend_;
-  ValuablesTable table_;
+  const os_crypt_async::Encryptor encryptor_ =
+      os_crypt_async::GetTestEncryptorForTesting();
+  ValuablesTable valuables_table_;
   AutofillSyncMetadataTable sync_metadata_table_;
+  EntityTable entity_table_;
   WebDatabase db_;
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ValuableSyncBridge> bridge_;
 };
 
@@ -218,9 +280,10 @@ TEST_F(ValuableSyncBridgeTest, MergeFullSyncData) {
   EXPECT_CALL(backend(),
               NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE));
 
-  EXPECT_TRUE(StartSyncing({remote1, remote2}));
+  EXPECT_TRUE(SyncLoyaltyCards({remote1, remote2}));
 
-  EXPECT_THAT(GetAllDataFromTable(), UnorderedElementsAre(remote1, remote2));
+  EXPECT_THAT(GetAllLoyaltyCardsFromTable(),
+              UnorderedElementsAre(remote1, remote2));
 }
 
 // Tests that loyalty cards with empty logo url are synced and stored.
@@ -235,9 +298,9 @@ TEST_F(ValuableSyncBridgeTest, LoyaltyCardsWithNoProgramLogo) {
   EXPECT_CALL(backend(),
               NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE));
 
-  EXPECT_TRUE(StartSyncing({remote1}));
+  EXPECT_TRUE(SyncLoyaltyCards({remote1}));
 
-  EXPECT_THAT(GetAllDataFromTable(), UnorderedElementsAre(remote1));
+  EXPECT_THAT(GetAllLoyaltyCardsFromTable(), UnorderedElementsAre(remote1));
 }
 
 // Tests that `MergeFullSyncData()` replaces currently stored loyalty cards.
@@ -250,11 +313,11 @@ TEST_F(ValuableSyncBridgeTest, MergeFullSyncData_ReplacePreviousData) {
               NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE))
       .Times(2);
 
-  EXPECT_TRUE(StartSyncing({remote1}));
-  EXPECT_THAT(GetAllDataFromTable(), ElementsAre(remote1));
+  EXPECT_TRUE(SyncLoyaltyCards({remote1}));
+  EXPECT_THAT(GetAllLoyaltyCardsFromTable(), ElementsAre(remote1));
 
-  EXPECT_TRUE(StartSyncing({remote2}));
-  EXPECT_THAT(GetAllDataFromTable(), ElementsAre(remote2));
+  EXPECT_TRUE(SyncLoyaltyCards({remote2}));
+  EXPECT_THAT(GetAllLoyaltyCardsFromTable(), ElementsAre(remote2));
 }
 
 using ValuableSyncBridgeDeathTest = ValuableSyncBridgeTest;
@@ -276,8 +339,8 @@ TEST_F(ValuableSyncBridgeDeathTest, ApplyIncrementalSyncChanges) {
   EXPECT_CALL(backend(),
               NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE));
 
-  ASSERT_TRUE(StartSyncing(/*loyalty_cards=*/{remote1}));
-  EXPECT_THAT(GetAllDataFromTable(), ElementsAre(remote1));
+  ASSERT_TRUE(SyncLoyaltyCards(/*loyalty_cards=*/{remote1}));
+  EXPECT_THAT(GetAllLoyaltyCardsFromTable(), ElementsAre(remote1));
 
   // `ApplyIncrementalSyncChanges()` does not apply the incremental update.
   EXPECT_DEATH_IF_SUPPORTED(
@@ -288,7 +351,7 @@ TEST_F(ValuableSyncBridgeDeathTest, ApplyIncrementalSyncChanges) {
       ".*");
 
   // Expect that the local loyalty cards have NOT changed.
-  EXPECT_THAT(GetAllDataFromTable(), ElementsAre(remote1));
+  EXPECT_THAT(GetAllLoyaltyCardsFromTable(), ElementsAre(remote1));
 }
 
 // Tests that `GetDataForCommit()` returns empty collection.
@@ -300,7 +363,7 @@ TEST_F(ValuableSyncBridgeDeathTest, GetDataForCommit) {
 TEST_F(ValuableSyncBridgeTest, GetAllDataForDebugging) {
   const LoyaltyCard card1 = TestLoyaltyCard(kId1);
   const LoyaltyCard card2 = TestLoyaltyCard(kId2);
-  AddLoyaltyCardsToTheTable({card1, card2});
+  AddLoyaltyCards({card1, card2});
 
   std::vector<LoyaltyCard> loyalty_cards =
       ExtractLoyaltyCardsFromDataBatch(bridge().GetAllDataForDebugging());
@@ -311,8 +374,8 @@ TEST_F(ValuableSyncBridgeTest, GetAllDataForDebugging) {
 // the data type gets disabled.
 TEST_F(ValuableSyncBridgeTest, ApplyDisableSyncChanges) {
   const LoyaltyCard card1 = TestLoyaltyCard(kId1);
-  ASSERT_TRUE(StartSyncing({card1}));
-  ASSERT_THAT(GetAllDataFromTable(), ElementsAre(card1));
+  ASSERT_TRUE(SyncLoyaltyCards({card1}));
+  ASSERT_THAT(GetAllLoyaltyCardsFromTable(), ElementsAre(card1));
 
   EXPECT_CALL(backend(), CommitChanges());
   EXPECT_CALL(backend(),
@@ -320,7 +383,7 @@ TEST_F(ValuableSyncBridgeTest, ApplyDisableSyncChanges) {
 
   bridge().ApplyDisableSyncChanges(bridge().CreateMetadataChangeList());
 
-  EXPECT_TRUE(GetAllDataFromTable().empty());
+  EXPECT_TRUE(GetAllLoyaltyCardsFromTable().empty());
 }
 
 // Tests that trimming `AutofillValuableSpecifics` with only supported values
@@ -375,15 +438,90 @@ TEST_F(ValuableSyncBridgeTest,
 TEST_F(ValuableSyncBridgeTest, MergeFullSyncData_SameValuablesData) {
   const LoyaltyCard card1 = TestLoyaltyCard(kId1);
   const LoyaltyCard card2 = TestLoyaltyCard(kId2);
-  AddLoyaltyCardsToTheTable({card1, card2});
+  AddLoyaltyCards({card1, card2});
 
   EXPECT_CALL(backend(),
               NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE))
       .Times(0);
   // We still need to commit the updated progress marker on the client.
   EXPECT_CALL(backend(), CommitChanges());
-  StartSyncing({card1, card2});
-  EXPECT_THAT(GetAllDataFromTable(), UnorderedElementsAre(card1, card2));
+  SyncLoyaltyCards({card1, card2});
+  EXPECT_THAT(GetAllLoyaltyCardsFromTable(),
+              UnorderedElementsAre(card1, card2));
 }
+
+// Tests that `SetEntities()` does nothing when the profile db migration feature
+// flag is disabled.
+TEST_F(ValuableSyncBridgeTest, SetEntities_ProfileDbMigrationFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(syncer::kSyncMoveValuablesToProfileDb);
+
+  const EntityInstance local_vehicle = GetLocalVehicleEntityInstance(
+      {.guid = "00000000-0000-4000-8000-300000000000"});
+  const EntityInstance wallet_vehicle = GetServerVehicleEntityInstance(
+      {.guid = "00000000-0000-5000-3000-200000000000"});
+
+  AddEntities({local_vehicle});
+
+  EXPECT_TRUE(SyncEntityInstances({wallet_vehicle}));
+  EXPECT_THAT(GetAllEntityInstancesFromTable(),
+              UnorderedElementsAre(local_vehicle));
+}
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Tests that `SetEntities()` does not add vehicle entities when the vehicle
+// sync feature is disabled.
+TEST_F(ValuableSyncBridgeTest, SetEntities_VehicleSyncDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({syncer::kSyncMoveValuablesToProfileDb},
+                                {syncer::kSyncWalletVehicleRegistrations});
+
+  EXPECT_CALL(backend(), CommitChanges);
+  EXPECT_CALL(backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE));
+  EXPECT_TRUE(SyncEntityInstances({GetServerVehicleEntityInstance()}));
+  EXPECT_THAT(GetAllEntityInstancesFromTable(), testing::IsEmpty());
+}
+
+// Tests that `SetEntities()` correctly adds vehicle entities to the table.
+TEST_F(ValuableSyncBridgeTest, SetEntities_AddsVehicles) {
+  const EntityInstance vehicle1 = GetServerVehicleEntityInstance(
+      {.guid = "00000000-0000-4000-8000-300000000000"});
+  const EntityInstance vehicle2 = GetServerVehicleEntityInstance(
+      {.guid = "00000000-0000-5000-3000-200000000000"});
+
+  EXPECT_CALL(backend(), CommitChanges);
+  EXPECT_CALL(backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE));
+  EXPECT_TRUE(SyncEntityInstances({vehicle1, vehicle2}));
+
+  EXPECT_THAT(GetAllEntityInstancesFromTable(),
+              UnorderedElementsAre(vehicle1, vehicle2));
+}
+
+// Tests that `SetEntities()` clears any existing entities before adding new
+// ones.
+TEST_F(ValuableSyncBridgeTest, SetEntities_ClearsExistingEntities) {
+  const EntityInstance local_vehicle = GetLocalVehicleEntityInstance(
+      {.guid = "00000000-0000-4000-8000-300000000000"});
+  const EntityInstance wallet_vehicle = GetServerVehicleEntityInstance(
+      {.guid = "00000000-0000-5000-3000-200000000000"});
+
+  AddEntities({local_vehicle, wallet_vehicle});
+  ASSERT_THAT(GetAllEntityInstancesFromTable(),
+              UnorderedElementsAre(local_vehicle, wallet_vehicle));
+
+  EXPECT_CALL(backend(), CommitChanges);
+  EXPECT_CALL(backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE));
+
+  const EntityInstance new_wallet_vehicle = GetServerVehicleEntityInstance(
+      {.guid = "00000000-0000-1000-1000-100000000000"});
+  EXPECT_TRUE(SyncEntityInstances({new_wallet_vehicle}));
+
+  EXPECT_THAT(GetAllEntityInstancesFromTable(),
+              UnorderedElementsAre(local_vehicle, new_wallet_vehicle));
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace autofill

@@ -391,6 +391,7 @@ struct VehicleOptionsT {
   const char16_t* state = u"California";
   std::string_view guid = "00000000-0000-4000-8000-200000000000";
   std::string_view nickname = "Vehicle";
+  base::Time date_modified = kJune2017;
   std::string_view app_locale = "en-US";
   EntityInstance::RecordType record_type = EntityInstance::RecordType::kLocal;
   EntityInstance::AreAttributesReadOnly are_attributes_read_only =

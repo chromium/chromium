@@ -299,8 +299,28 @@ ValuableDatabaseOperationResult ValuableSyncBridge::SetLoyaltyCards(
 
 ValuableDatabaseOperationResult ValuableSyncBridge::SetEntities(
     std::vector<EntityInstance> entities) {
-  // TODO(crbug.com/436547381): Set `entities` in the `EntityTable`.
-  return ValuableDatabaseOperationResult::kNoChange;
+  if (entities.empty() ||
+      !base::FeatureList::IsEnabled(syncer::kSyncMoveValuablesToProfileDb)) {
+    return ValuableDatabaseOperationResult::kNoChange;
+  }
+
+  EntityTable* entity_table = GetEntityTable();
+  bool success = entity_table->DeleteEntityInstances(
+      EntityInstance::RecordType::kServerWallet);
+
+  const bool is_sync_wallet_vehicle_registrations_enabled =
+      IsSyncWalletVehicleRegistrationsEnabled();
+
+  for (const EntityInstance& entity : entities) {
+    if (entity.type().name() == EntityTypeName::kVehicle &&
+        is_sync_wallet_vehicle_registrations_enabled) {
+      success &= entity_table->AddOrUpdateEntityInstance(entity);
+    }
+    // TODO(crbug.com/436547381): Add flight reservations.
+  }
+
+  return success ? ValuableDatabaseOperationResult::kDataChanged
+                 : ValuableDatabaseOperationResult::kDatabaseError;
 }
 
 std::optional<syncer::ModelError> ValuableSyncBridge::SetSyncData(
