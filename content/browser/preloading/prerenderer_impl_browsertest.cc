@@ -410,6 +410,13 @@ IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
                   ->prefetch_match_metrics_list[0]
                   ->prefetch_container_metrics
                   ->time_header_determined_successfully.has_value());
+  ASSERT_TRUE(preload_serving_metrics->prerender_initial_preload_serving_metrics
+                  ->prefetch_match_metrics_list[0]
+                  ->prefetch_container_metrics_ahead_of_prerender);
+  ASSERT_TRUE(
+      preload_serving_metrics->prerender_initial_preload_serving_metrics
+          ->prefetch_match_metrics_list[0]
+          ->prefetch_potential_candidate_serving_result_ahead_of_prerender);
 }
 
 IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
@@ -510,6 +517,11 @@ IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
   ASSERT_TRUE(preload_serving_metrics->prefetch_match_metrics_list[0]
                   ->prefetch_container_metrics
                   ->time_header_determined_successfully.has_value());
+  ASSERT_FALSE(preload_serving_metrics->prefetch_match_metrics_list[0]
+                   ->prefetch_container_metrics_ahead_of_prerender);
+  ASSERT_FALSE(
+      preload_serving_metrics->prefetch_match_metrics_list[0]
+          ->prefetch_potential_candidate_serving_result_ahead_of_prerender);
   ASSERT_FALSE(
       preload_serving_metrics->prerender_initial_preload_serving_metrics);
 }
@@ -829,6 +841,11 @@ IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
                     ->n_initial_candidates_block_until_head);
   ASSERT_FALSE(preload_serving_metrics->prefetch_match_metrics_list[0]
                    ->prefetch_container_metrics);
+  ASSERT_FALSE(preload_serving_metrics->prefetch_match_metrics_list[0]
+                   ->prefetch_container_metrics_ahead_of_prerender);
+  ASSERT_FALSE(
+      preload_serving_metrics->prefetch_match_metrics_list[0]
+          ->prefetch_potential_candidate_serving_result_ahead_of_prerender);
   ASSERT_FALSE(
       preload_serving_metrics->prerender_initial_preload_serving_metrics);
 }
@@ -904,6 +921,11 @@ IN_PROC_BROWSER_TEST_P(
                     ->n_initial_candidates_block_until_head);
   ASSERT_FALSE(preload_serving_metrics->prefetch_match_metrics_list[0]
                    ->prefetch_container_metrics);
+  ASSERT_FALSE(preload_serving_metrics->prefetch_match_metrics_list[0]
+                   ->prefetch_container_metrics_ahead_of_prerender);
+  ASSERT_FALSE(
+      preload_serving_metrics->prefetch_match_metrics_list[0]
+          ->prefetch_potential_candidate_serving_result_ahead_of_prerender);
   ASSERT_FALSE(
       preload_serving_metrics->prerender_initial_preload_serving_metrics);
 }

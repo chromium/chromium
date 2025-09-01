@@ -22,7 +22,8 @@ namespace {
 #define WITH(prefix, name) base::StrCat({prefix, name})
 
 void RecordMetricsInternal(const PreloadServingMetrics& metrics,
-                           const char* prefix) {
+                           const char* prefix,
+                           bool is_prerender_initial_navigation) {
   // We expect that prefetch match count is zero or one.
   base::UmaHistogramCounts100(WITH(prefix, "PrefetchMatchMetrics.Count"),
                               metrics.prefetch_match_metrics_list.size());
@@ -103,6 +104,26 @@ void RecordMetricsInternal(const PreloadServingMetrics& metrics,
                "TimeFromPrefetchContainerAddedToMatchStart"),
           time_from_prefetch_container_added_to_match_start);
     }
+
+    if (is_prerender_initial_navigation) {
+      base::UmaHistogramBoolean(
+          WITH(prefix,
+               "PrefetchMatchMetrics.IsPotentialMatch.WithAheadOfPrerender"),
+          prefetch_match_metrics
+              .prefetch_potential_candidate_serving_result_ahead_of_prerender
+              .has_value());
+      if (prefetch_match_metrics
+              .prefetch_potential_candidate_serving_result_ahead_of_prerender
+              .has_value()) {
+        base::UmaHistogramEnumeration(
+            WITH(prefix,
+                 "PrefetchMatchMetrics.PotentialMatchThen.WithAheadOfPrerender."
+                 "PotentialCandidateServingResult"),
+            prefetch_match_metrics
+                .prefetch_potential_candidate_serving_result_ahead_of_prerender
+                .value());
+      }
+    }
   }();
 }
 
@@ -135,11 +156,13 @@ PreloadServingMetrics::TakeFromNavigationHandle(
 
 void PreloadServingMetrics::RecordMetricsForNonPrerenderNavigationCommitted()
     const {
-  RecordMetricsInternal(*this, "PreloadServingMetrics.ForNavigationCommitted.");
+  RecordMetricsInternal(*this, "PreloadServingMetrics.ForNavigationCommitted.",
+                        /*is_prerender_initial_navigation=*/false);
   if (prerender_initial_preload_serving_metrics) {
     RecordMetricsInternal(
         *prerender_initial_preload_serving_metrics,
-        "PreloadServingMetrics.ForPrerenderInitialNavigationUsed.");
+        "PreloadServingMetrics.ForPrerenderInitialNavigationUsed.",
+        /*is_prerender_initial_navigation=*/true);
   }
 }
 

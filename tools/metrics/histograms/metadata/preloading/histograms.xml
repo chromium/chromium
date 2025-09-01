@@ -440,6 +440,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.IsPotentialMatch.WithAheadOfPrerender"
+    units="bool" expires_after="2026-01-01">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Whether the first prefetch matching for a navigation started as potential
+    match with prefetch ahead of prerender.
+
+    Recorded when {PreloadServingMetricsPrefix} and the navigation is prerender
+    initial navigation.
+  </summary>
+  <token key="PreloadServingMetricsPrefix"
+      variants="PreloadServingMetricsPrefix"/>
+</histogram>
+
+<histogram
     name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.PotentialMatchThen.MatchDuration{PreloadServingMetricsActualMatchSuffix}"
     units="ms" expires_after="2026-01-01">
   <owner>kenoss@chromium.org</owner>
@@ -454,6 +470,22 @@ chromium-metrics-reviews@google.com.
       variants="PreloadServingMetricsPrefix"/>
   <token key="PreloadServingMetricsActualMatchSuffix"
       variants="PreloadServingMetricsActualMatchSuffix"/>
+</histogram>
+
+<histogram
+    name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.PotentialMatchThen.WithAheadOfPrerender.PotentialCandidateServingResult"
+    enum="PrefetchPotentialCandidateServingResult" expires_after="2026-01-01">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    `PrefetchPotentialCandidateServingResult` of prefetch ahead of prerender in
+    the first prefetch matching.
+
+    Recorded when {PreloadServingMetricsPrefix}, the navigation is prerender
+    initial navigation, and the prefetch ahead of prerender is potential match.
+  </summary>
+  <token key="PreloadServingMetricsPrefix"
+      variants="PreloadServingMetricsPrefix"/>
 </histogram>
 
 </histograms>
