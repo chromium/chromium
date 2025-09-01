@@ -161,6 +161,8 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // factors.
   feature_overrides.EnableFeature(chrome::android::kProcessRankPolicyAndroid);
   feature_overrides.EnableFeature(chrome::android::kProtectedTabsAndroid);
+  feature_overrides.EnableFeature(features::kSubframePriorityContribution);
+  feature_overrides.EnableFeature(features::kSubframeImportance);
   // TODO(crbug.com/422903297): Remove when tablet rollout is complete.
   feature_overrides.EnableFeature(features::kRendererProcessLimitOnAndroid);
   // Enable V8 optimizations for high-end Android Desktop devices.
