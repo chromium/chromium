@@ -5,8 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_IOS_BROWSER_AUTOFILL_CLIENT_IOS_H_
 #define COMPONENTS_AUTOFILL_IOS_BROWSER_AUTOFILL_CLIENT_IOS_H_
 
-#import "base/memory/raw_ptr.h"
-#import "base/supports_user_data.h"
+#import "base/memory/weak_ptr.h"
 #import "components/autofill/core/browser/foundations/autofill_client.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "ios/web/public/web_state.h"
@@ -15,20 +14,32 @@ namespace autofill {
 
 // Common base class for all AutofillClients on iOS.
 //
-// There is at most one instance per web::WebState, and the instance are
-// owned by the web::WebState to which they are attached.
-class AutofillClientIOS : public AutofillClient,
-                          public base::SupportsUserData::Data {
+// There must be at most one instance per web::WebState. Unfortunately, the
+// production-code destruction order is complicated and embedder-specific.
+//
+// Therefore, the contract of AutofillClientIOS is as follows:
+// - web_state() must be non-null throughout the lifetime of AutofillClientIOS
+//   except perhaps during destruction.
+// - AutofillDriverIOSFactory::WebStateDestroyed() must be called at least once
+//   and only while the AutofillClientIOS is fully functional (i.e., before any
+//   of its or a derived class's members have been destroyed and before
+//   web_state() has become null).
+class AutofillClientIOS : public AutofillClient {
  public:
-  // Returns the instance that is associated with `web_state`, if any exists.
+  // Returns the `AutofillClientIOS` that is associated with `web_state`, if any
+  // exists.
   static AutofillClientIOS* FromWebState(web::WebState* web_state);
-  static const AutofillClientIOS* FromWebState(const web::WebState* web_state);
 
-  // The destructor is marked as pure-virtual to prevent instantiation of
-  // this class. Only sub-classes can be instantiated.
-  ~AutofillClientIOS() override = 0;
+  // At most one `AutofillClientIOS` may exist per `web_state` at any point in
+  // time. This is enforced by this constructor.
+  AutofillClientIOS(web::WebState* web_state,
+                    id<AutofillDriverIOSBridge> bridge);
+  AutofillClientIOS(const AutofillClientIOS&) = delete;
+  AutofillClientIOS& operator=(const AutofillClientIOS&) = delete;
+  ~AutofillClientIOS() override;
 
-  // Non-null throughout the lifetime of the AutofillClientIOS.
+  // Non-null throughout the lifetime of the AutofillClientIOS except perhaps
+  // its destructor.
   web::WebState* web_state() const { return web_state_.get(); }
 
   // Intentionally final to allow it to be called during construction (in
@@ -36,18 +47,8 @@ class AutofillClientIOS : public AutofillClient,
   AutofillDriverIOSFactory& GetAutofillDriverFactory() final;
 
  private:
-  template <typename Derived, typename Super>
-  friend class AutofillClientIOSMixin;
+  base::WeakPtr<web::WebState> web_state_;
 
-  // Default constructor.
-  AutofillClientIOS(web::WebState* web_state,
-                    id<AutofillDriverIOSBridge> bridge);
-
-  // Returns the key used to attach an AutofillClientIOS to a web::WebState.
-  static const void* UserDataKey();
-
-  // The owning WebState.
-  const raw_ptr<web::WebState> web_state_;
   AutofillDriverIOSFactory autofill_driver_factory_;
 };
 

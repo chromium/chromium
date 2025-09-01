@@ -41,6 +41,7 @@
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
+#import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/autofill/ios/browser/test_autofill_manager_injector.h"
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/infobars/core/confirm_infobar_delegate.h"
@@ -349,6 +350,8 @@ class AutofillControllerTest : public PlatformTest {
       features::kAutofillLocalSaveCardBottomSheet};
 
  private:
+  std::unique_ptr<autofill::AutofillClient> autofill_client_;
+
   AutofillAgent* autofill_agent_;
 
   std::unique_ptr<TestAutofillManagerInjector<TestAutofillManager>>
@@ -381,12 +384,11 @@ void AutofillControllerTest::SetUp() {
   InfoBarManagerImpl::CreateForWebState(web_state());
   infobars::InfoBarManager* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state());
-  autofill::ChromeAutofillClientIOS::CreateForWebState(
-      web_state_.get(), profile_.get(), infobar_manager, autofill_agent_);
-  autofill::ChromeAutofillClientIOS* autofill_client =
-      autofill::ChromeAutofillClientIOS::FromWebState(web_state_.get());
+  autofill_client_ =
+      std::make_unique<WithFakedFromWebState<ChromeAutofillClientIOS>>(
+          profile_.get(), web_state(), infobar_manager, autofill_agent_);
 
-  autofill_client->GetPersonalDataManager()
+  autofill_client_->GetPersonalDataManager()
       .address_data_manager()
       .get_alternative_state_name_map_updater_for_testing()
       ->set_local_state_for_testing(local_state());

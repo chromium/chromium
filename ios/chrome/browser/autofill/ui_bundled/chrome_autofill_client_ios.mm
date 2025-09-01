@@ -84,11 +84,11 @@
 namespace autofill {
 
 ChromeAutofillClientIOS::ChromeAutofillClientIOS(
-    web::WebState* web_state,
     ProfileIOS* profile,
+    web::WebState* web_state,
     infobars::InfoBarManager* infobar_manager,
     id<AutofillClientIOSBridge, AutofillDriverIOSBridge> bridge)
-    : AutofillClientIOSMixin<ChromeAutofillClientIOS>(web_state, bridge),
+    : AutofillClientIOS(web_state, bridge),
       pref_service_(profile->GetPrefs()),
       sync_service_(SyncServiceFactory::GetForProfile(profile)),
       personal_data_manager_(PersonalDataManagerFactory::GetForProfile(
@@ -125,13 +125,13 @@ version_info::Channel ChromeAutofillClientIOS::GetChannel() const {
 }
 
 bool ChromeAutofillClientIOS::IsOffTheRecord() const {
-  return profile_->IsOffTheRecord();
+  return web_state()->GetBrowserState()->IsOffTheRecord();
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
 ChromeAutofillClientIOS::GetURLLoaderFactory() {
   return base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-      profile_->GetURLLoaderFactory());
+      web_state()->GetBrowserState()->GetURLLoaderFactory());
 }
 
 AutofillCrowdsourcingManager&

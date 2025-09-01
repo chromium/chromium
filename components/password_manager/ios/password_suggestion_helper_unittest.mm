@@ -94,8 +94,8 @@ class PasswordSuggestionHelperTest : public PlatformTest {
         ContentWorldForAutofillJavascriptFeatures();
     web_state_.SetWebFramesManager(content_world, std::move(frames_manager));
 
-    autofill::TestAutofillClientIOS::CreateForWebState(&web_state_,
-                                                       /*bridge=*/nil);
+    autofill_client_ = std::make_unique<autofill::TestAutofillClientIOS>(
+        &web_state_, /*bridge=*/nil);
 
     IOSPasswordManagerDriverFactory::CreateForWebState(&web_state_, nil,
                                                        &password_manager_);
@@ -150,6 +150,7 @@ class PasswordSuggestionHelperTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
+  std::unique_ptr<autofill::TestAutofillClientIOS> autofill_client_;
   web::FakeWebState web_state_;
   id delegate_;
   PasswordSuggestionHelper* helper_;
