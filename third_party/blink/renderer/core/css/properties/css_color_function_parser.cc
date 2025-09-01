@@ -409,11 +409,17 @@ void ColorFunctionParser::MakePerColorSpaceAdjustments(
     for (int i : {1, 2}) {
       // Raw numbers are interpreted as percentages in these color spaces.
       if (channels[i].has_value()) {
-        channels[i] = channels[i].value() / 100.0;
+        double val = channels[i].value() / 100.0;
 
         if (is_legacy_syntax) {
-          channels[i] = ClampTo<double>(channels[i].value(), 0.0, 1.0);
+          val = ClampTo<double>(val, 0.0, 1.0);
+        } else if (!is_relative_color) {
+          // In absolute colors, S/L/W/B are non-negative.
+          val = std::max(0.0, val);
         }
+        // Relative colors preserve out-of-gamut values for use in calculations.
+
+        channels[i] = val;
       }
     }
   }
@@ -527,7 +533,8 @@ bool ColorFunctionParser::IsRelativeColor() const {
   return !!unresolved_origin_color_;
 }
 
-static bool ChannelIsResolvable(const CSSValue* channel) {
+static bool ChannelIsResolvable(const CSSValue* channel,
+                                Color::ColorSpace color_space) {
   if (IsA<CSSIdentifierValue>(channel)) {
     // Channel identifiers for relative colors (e.g. “r”).
     return true;
@@ -537,6 +544,14 @@ static bool ChannelIsResolvable(const CSSValue* channel) {
   if (color && color->IsNumericLiteralValue()) {
     // Numeric literals.
     return true;
+  }
+
+  // Lab/OkLab/Lch/OkLch preserve calc().
+  if (color_space == Color::ColorSpace::kLab ||
+      color_space == Color::ColorSpace::kOklab ||
+      color_space == Color::ColorSpace::kLch ||
+      color_space == Color::ColorSpace::kOklch) {
+    return false;
   }
 
   const CSSMathFunctionValue* calc = DynamicTo<CSSMathFunctionValue>(channel);
@@ -553,13 +568,13 @@ static bool ChannelIsResolvable(const CSSValue* channel) {
 
 bool ColorFunctionParser::AllChannelsAreResolvable() const {
   for (int i = 0; i < 3; i++) {
-    if (!ChannelIsResolvable(unresolved_channels_[i])) {
+    if (!ChannelIsResolvable(unresolved_channels_[i], color_space_)) {
       return false;
     }
   }
 
   if (unresolved_alpha_) {
-    return ChannelIsResolvable(unresolved_alpha_);
+    return ChannelIsResolvable(unresolved_alpha_, color_space_);
   }
 
   return true;
