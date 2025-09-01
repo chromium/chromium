@@ -51,11 +51,16 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplSharedMemory
 
   // Overridden from GpuMemoryBufferImpl:
   bool Map() override;
+  void MapAsync(base::OnceCallback<void(bool)> callback) override;
+  bool AsyncMappingIsNonBlocking() const override;
   void* memory(size_t plane) override;
   void Unmap() override;
   int stride(size_t plane) const override;
   gfx::GpuMemoryBufferType GetType() const override;
   gfx::GpuMemoryBufferHandle CloneHandle() const override;
+#if BUILDFLAG(IS_WIN)
+  void SetUsePreMappedMemory(bool use_premapped_memory) override {}
+#endif
 
  private:
   friend class ClientSharedImage;

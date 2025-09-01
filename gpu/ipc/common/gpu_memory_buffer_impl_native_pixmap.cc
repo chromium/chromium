@@ -147,4 +147,13 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferImplNativePixmap::CloneHandle()
   return handle;
 }
 
+void GpuMemoryBufferImplNativePixmap::MapAsync(
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(Map());
+}
+
+bool GpuMemoryBufferImplNativePixmap::AsyncMappingIsNonBlocking() const {
+  return false;
+}
+
 }  // namespace gpu

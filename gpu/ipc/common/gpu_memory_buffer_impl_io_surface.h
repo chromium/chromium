@@ -47,6 +47,8 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplIOSurface
 
   // Overridden from GpuMemoryBufferImpl:
   bool Map() override;
+  void MapAsync(base::OnceCallback<void(bool)> callback) override;
+  bool AsyncMappingIsNonBlocking() const override;
   void* memory(size_t plane) override;
   void Unmap() override;
   int stride(size_t plane) const override;

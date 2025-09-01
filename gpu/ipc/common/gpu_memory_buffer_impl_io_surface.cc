@@ -219,4 +219,13 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferImplIOSurface::CloneHandle() const {
   return handle_.Clone();
 }
 
+void GpuMemoryBufferImplIOSurface::MapAsync(
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(Map());
+}
+
+bool GpuMemoryBufferImplIOSurface::AsyncMappingIsNonBlocking() const {
+  return false;
+}
+
 }  // namespace gpu

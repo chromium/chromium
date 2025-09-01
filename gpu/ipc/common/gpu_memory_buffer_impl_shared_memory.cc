@@ -199,4 +199,13 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferImplSharedMemory::CloneHandle()
   return handle;
 }
 
+void GpuMemoryBufferImplSharedMemory::MapAsync(
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(Map());
+}
+
+bool GpuMemoryBufferImplSharedMemory::AsyncMappingIsNonBlocking() const {
+  return false;
+}
+
 }  // namespace gpu

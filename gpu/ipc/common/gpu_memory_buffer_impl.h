@@ -29,7 +29,7 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImpl {
   GpuMemoryBufferImpl(const GpuMemoryBufferImpl&) = delete;
   GpuMemoryBufferImpl& operator=(const GpuMemoryBufferImpl&) = delete;
 
-  virtual ~GpuMemoryBufferImpl();
+  virtual ~GpuMemoryBufferImpl() = default;
 
   // Maps each plane of the buffer into the client's address space so it can be
   // written to by the CPU. This call may block, for instance if the GPU needs
@@ -38,8 +38,8 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImpl {
   virtual bool Map() = 0;
 
   // Maps each plane of the buffer into the client's address space so it can be
-  // written to by the CPU. The default implementation is blocking and just
-  // calls Map(). However, on some platforms the implementations are
+  // written to by the CPU. By default, implementations are blocking and just
+  // call Map(). However, on some platforms the implementations are
   // non-blocking. In that case the result callback will be executed on the
   // GpuMemoryThread if some work in the GPU service is required for mapping, or
   // will be executed immediately in the current sequence. Warning: Make sure
@@ -47,11 +47,11 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImpl {
   // might try to write in destroyed shared memory region. Don't attempt to
   // Unmap or get memory before the callback is executed. Otherwise a CHECK will
   // fire.
-  virtual void MapAsync(base::OnceCallback<void(bool)> result_cb);
+  virtual void MapAsync(base::OnceCallback<void(bool)> result_cb) = 0;
 
   // Indicates if the `MapAsync` is non-blocking. Otherwise it's just calling
   // `Map()` directly.
-  virtual bool AsyncMappingIsNonBlocking() const;
+  virtual bool AsyncMappingIsNonBlocking() const = 0;
 
   // Returns a pointer to the memory address of a plane. Buffer must have been
   // successfully mapped using a call to Map() before calling this function.
@@ -77,11 +77,11 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImpl {
   // Used to set the use_premapped_memory flag in the GpuMemoryBufferImplDXGI to
   // indicate whether to use the premapped memory or not. It is only used with
   // MappableSI. See GpuMemoryBufferImplDXGI override for more details.
-  virtual void SetUsePreMappedMemory(bool use_premapped_memory) {}
+  virtual void SetUsePreMappedMemory(bool use_premapped_memory) = 0;
 #endif
 
  protected:
-  GpuMemoryBufferImpl();
+  GpuMemoryBufferImpl() = default;
 };
 
 }  // namespace gpu
