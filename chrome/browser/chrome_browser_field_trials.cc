@@ -205,6 +205,10 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // TODO(crbug.com/413776899): Remove when rollout on other form factors is
   // complete.
   feature_overrides.EnableFeature(chrome::android::kInstanceSwitcherV2);
+  // TODO(crbug.com/442327273): Remove when rollout is complete to all form
+  // factors.
+  feature_overrides.EnableFeature(
+      autofill::features::kAutofillAndroidDesktopKeyboardAccessoryRevamp);
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.
