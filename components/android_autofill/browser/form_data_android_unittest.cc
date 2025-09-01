@@ -357,9 +357,9 @@ TEST_F(FormDataAndroidTest, UpdateFieldVisibilities) {
   EXPECT_TRUE(form.fields()[1].IsFocusable());
   EXPECT_TRUE(form.fields()[2].IsFocusable());
 
-  EXPECT_CALL(*field_bridges()[0], UpdateVisible(true));
-  EXPECT_CALL(*field_bridges()[1], UpdateVisible(true));
-  EXPECT_CALL(*field_bridges()[2], UpdateVisible).Times(0);
+  EXPECT_CALL(*field_bridges()[0], UpdateFocusable(true));
+  EXPECT_CALL(*field_bridges()[1], UpdateFocusable(true));
+  EXPECT_CALL(*field_bridges()[2], UpdateFocusable).Times(0);
   form_android.UpdateFieldVisibilities(form);
 
   EXPECT_TRUE(FormData::DeepEqual(form, form_android.form()));

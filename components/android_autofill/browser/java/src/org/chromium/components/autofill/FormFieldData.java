@@ -26,7 +26,7 @@ public class FormFieldData {
     /**
      * Define the control types supported by android.view.autofill.AutofillValue.
      *
-     * Android doesn't have DATALIST control, it is sent to the Autofill service as
+     * <p>Android doesn't have DATALIST control, it is sent to the Autofill service as
      * View.AUTOFILL_TYPE_TEXT with AutofillOptions.
      */
     @IntDef({ControlType.TEXT, ControlType.TOGGLE, ControlType.LIST, ControlType.DATALIST})
@@ -61,7 +61,7 @@ public class FormFieldData {
 
     private boolean mIsChecked;
     private String mValue;
-    private boolean mVisible;
+    private boolean mFocusable;
     // Indicates whether mValue is autofilled.
     private boolean mAutofilled;
     // Indicates whether this fields was autofilled, but changed by user.
@@ -98,7 +98,7 @@ public class FormFieldData {
             float bottom,
             String[] datalistValues,
             String[] datalistLabels,
-            boolean visible,
+            boolean focusable,
             boolean isAutofilled,
             String origin) {
         mName = name;
@@ -130,7 +130,7 @@ public class FormFieldData {
         mServerPredictions = serverPredictions;
         mOverallType = overallType;
         mBounds = new RectF(left, top, right, bottom);
-        mVisible = visible;
+        mFocusable = focusable;
         mAutofilled = isAutofilled;
     }
 
@@ -155,7 +155,9 @@ public class FormFieldData {
         return mBoundsInContainerViewCoordinates;
     }
 
-    /** @return value of field. */
+    /**
+     * @return value of field.
+     */
     @CalledByNative
     public String getValue() {
         return mValue;
@@ -177,13 +179,13 @@ public class FormFieldData {
         updateAutofillState(false);
     }
 
-    public boolean getVisible() {
-        return mVisible;
+    public boolean getFocusable() {
+        return mFocusable;
     }
 
     @CalledByNative
-    private void updateVisible(boolean visible) {
-        mVisible = visible;
+    private void updateFocusable(boolean focusable) {
+        mFocusable = focusable;
     }
 
     @CalledByNative
@@ -271,7 +273,7 @@ public class FormFieldData {
             float bottom,
             String[] datalistValues,
             String[] datalistLabels,
-            boolean visible,
+            boolean focusable,
             boolean isAutofilled,
             String origin) {
         return new FormFieldData(
@@ -298,7 +300,7 @@ public class FormFieldData {
                 bottom,
                 datalistValues,
                 datalistLabels,
-                visible,
+                focusable,
                 isAutofilled,
                 origin);
     }

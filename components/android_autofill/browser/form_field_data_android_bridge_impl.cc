@@ -99,7 +99,7 @@ FormFieldDataAndroidBridgeImpl::GetOrCreateJavaPeer(
       ProjectOptions(field.datalist_options(), &SelectOption::value),
       /*datalistLabels=*/
       ProjectOptions(field.datalist_options(), &SelectOption::text),
-      /*visible=*/field.IsFocusable(), field.is_autofilled(),
+      /*focusable=*/field.IsFocusable(), field.is_autofilled(),
       ConvertUTF8ToJavaString(env, field.origin().Serialize()));
   java_ref_ = JavaObjectWeakGlobalRef(env, obj);
   return obj;
@@ -153,14 +153,14 @@ void FormFieldDataAndroidBridgeImpl::UpdateValue(std::u16string_view value) {
                                  ConvertUTF16ToJavaString(env, value));
 }
 
-void FormFieldDataAndroidBridgeImpl::UpdateVisible(bool visible) {
+void FormFieldDataAndroidBridgeImpl::UpdateFocusable(bool visible) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
   if (obj.is_null()) {
     return;
   }
 
-  Java_FormFieldData_updateVisible(env, obj, visible);
+  Java_FormFieldData_updateFocusable(env, obj, visible);
 }
 
 }  // namespace autofill

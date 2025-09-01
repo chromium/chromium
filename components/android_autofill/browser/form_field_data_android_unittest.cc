@@ -121,13 +121,13 @@ TEST_F(FormFieldDataAndroidTest, OnFormFieldVisibilityDidChange) {
 
   // A field with `is_focusable=true` and a non-presentation role is focusable
   // in Autofill terms and therefore visible in Android Autofill terms.
-  EXPECT_CALL(bridge(), UpdateVisible(true));
+  EXPECT_CALL(bridge(), UpdateFocusable(true));
   field_copy.set_is_focusable(true);
   field_android.OnFormFieldVisibilityDidChange(field_copy);
   EXPECT_TRUE(FormFieldData::DeepEqual(field, field_copy));
 
   // A field with a presentation role is not focusable in Autofill terms.
-  EXPECT_CALL(bridge(), UpdateVisible(false));
+  EXPECT_CALL(bridge(), UpdateFocusable(false));
   field_copy.set_role(FormFieldData::RoleAttribute::kPresentation);
   field_android.OnFormFieldVisibilityDidChange(field_copy);
   EXPECT_TRUE(FormFieldData::DeepEqual(field, field_copy));

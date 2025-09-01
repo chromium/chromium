@@ -248,7 +248,9 @@ public class AutofillProvider {
         }
     }
 
-    /** @return whether query autofill suggestion. */
+    /**
+     * @return whether query autofill suggestion.
+     */
     public boolean shouldQueryAutofillSuggestion() {
         return mRequest != null
                 && mRequest.getFocusField() != null
@@ -387,7 +389,6 @@ public class AutofillProvider {
      * @param y the boundary of focus field.
      * @param width the boundary of focus field.
      * @param height the boundary of focus field.
-     *
      */
     @CalledByNative
     public void onFormFieldDidChange(int index, float x, float y, float width, float height) {
@@ -416,12 +417,11 @@ public class AutofillProvider {
     }
 
     /**
-     * Invoked by the native counterpart when one or more fields have changed
-     * their visibility. The (Java) fields' visibility state has at that point
-     * already been updated by direct calls from native to the fields.
+     * Invoked by the native counterpart when one or more fields have changed their visibility. The
+     * (Java) fields' visibility state has at that point already been updated by direct calls from
+     * native to the fields.
      *
      * @param indices the indices of the fields with visibility changes.
-     *
      */
     @CalledByNative
     private void onFormFieldVisibilitiesDidChange(int[] indices) {
@@ -431,7 +431,7 @@ public class AutofillProvider {
 
         for (int index : indices) {
             notifyVirtualViewVisibilityChanged(
-                    index, mRequest.getField((short) index).getVisible());
+                    index, mRequest.getField((short) index).getFocusable());
         }
     }
 
@@ -443,7 +443,6 @@ public class AutofillProvider {
      * @param y the boundary of focus field.
      * @param width the boundary of focus field.
      * @param height the boundary of focus field.
-     *
      */
     @CalledByNative
     public void onTextFieldDidScroll(int index, float x, float y, float width, float height) {

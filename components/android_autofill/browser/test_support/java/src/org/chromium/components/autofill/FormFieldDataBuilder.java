@@ -28,7 +28,7 @@ public class FormFieldDataBuilder {
     RectF mBounds = new RectF();
     String[] mDatalistValues;
     String[] mDatalistLabels;
-    boolean mVisible;
+    boolean mFocusable;
     boolean mIsAutofilled;
     RectF mBoundsInContainerViewCoordinates = new RectF();
     String mOrigin = "";
@@ -59,7 +59,7 @@ public class FormFieldDataBuilder {
                         mBounds.bottom,
                         mDatalistValues,
                         mDatalistLabels,
-                        mVisible,
+                        mFocusable,
                         mIsAutofilled,
                         mOrigin);
         result.setBoundsInContainerViewCoordinates(mBoundsInContainerViewCoordinates);

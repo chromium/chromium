@@ -89,7 +89,7 @@ public class FormData {
                     /* scrollY= */ 0,
                     (int) bounds.width(),
                     (int) bounds.height());
-            child.setVisibility(field.getVisible() ? View.VISIBLE : View.INVISIBLE);
+            child.setVisibility(field.getFocusable() ? View.VISIBLE : View.INVISIBLE);
 
             ViewStructure.HtmlInfo.Builder builder =
                     child.newHtmlInfoBuilder("input")
@@ -97,9 +97,9 @@ public class FormData {
                             .addAttribute("type", field.mType)
                             .addAttribute("label", field.mLabel)
                             .addAttribute("ua-autofill-hints", field.mHeuristicType)
-                            .addAttribute("id", field.mId);
-            builder.addAttribute("crowdsourcing-autofill-hints", field.getServerType());
-            builder.addAttribute("computed-autofill-hints", field.getOverallType());
+                            .addAttribute("id", field.mId)
+                            .addAttribute("crowdsourcing-autofill-hints", field.getServerType())
+                            .addAttribute("computed-autofill-hints", field.getOverallType());
             // Compose multiple predictions to a string separated by ','.
             String[] predictions = field.getServerPredictions();
             if (predictions != null && predictions.length > 0) {
