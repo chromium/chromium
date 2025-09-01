@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "net/socket/websocket_transport_client_socket_pool.h"
 
 #include <algorithm>
@@ -19,6 +18,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "net/base/features.h"
 #include "net/base/ip_endpoint.h"
@@ -78,10 +78,12 @@ void RunLoopForTimePeriod(base::TimeDelta period) {
   run_loop.Run();
 }
 
-class WebSocketTransportClientSocketPoolTest : public TestWithTaskEnvironment {
+class WebSocketTransportClientSocketPoolTest : public ::testing::Test,
+                                               public WithTaskEnvironment {
  protected:
   WebSocketTransportClientSocketPoolTest()
-      : group_id_(url::SchemeHostPort(url::kHttpScheme, "www.google.com", 80),
+      : WithTaskEnvironment(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        group_id_(url::SchemeHostPort(url::kHttpScheme, "www.google.com", 80),
                   PrivacyMode::PRIVACY_MODE_DISABLED,
                   NetworkAnonymizationKey(),
                   SecureDnsPolicy::kAllow,
@@ -999,10 +1001,8 @@ TEST_F(WebSocketTransportClientSocketPoolTest, SuspendAsync) {
                                     ERR_NETWORK_IO_SUSPENDED)));
 }
 
-// Global timeout for all connects applies. This test is disabled by default
-// because it takes 4 minutes. Run with --gtest_also_run_disabled_tests if you
-// want to run it.
-TEST_F(WebSocketTransportClientSocketPoolTest, DISABLED_OverallTimeoutApplies) {
+// Global timeout for all connects applies.
+TEST_F(WebSocketTransportClientSocketPoolTest, OverallTimeoutApplies) {
   const base::TimeDelta connect_job_timeout =
       TransportConnectJob::ConnectionTimeout();
 
@@ -1030,6 +1030,15 @@ TEST_F(WebSocketTransportClientSocketPoolTest, DISABLED_OverallTimeoutApplies) {
                   NetLogWithSource());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
+  // Wait until just before the expected timeout, and check that the request
+  // hasn't completed.
+  constexpr base::TimeDelta kTinyTime = base::Milliseconds(1);
+  FastForwardBy(connect_job_timeout - kTinyTime);
+  EXPECT_FALSE(callback.have_result());
+
+  // Check that timeout occurs when expected.
+  FastForwardBy(kTinyTime);
+  EXPECT_TRUE(callback.have_result());
   EXPECT_THAT(callback.WaitForResult(), IsError(ERR_TIMED_OUT));
 }
 
