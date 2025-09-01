@@ -177,6 +177,9 @@ TEST_F(DigitalIdentityCredentialTest, IdentityDigitalCredentialUseCounter) {
       blink::mojom::WebFeature::kIdentityDigitalCredentials));
   EXPECT_TRUE(context.GetWindow().document()->IsUseCounted(
       blink::mojom::WebFeature::kIdentityDigitalCredentialsSuccess));
+
+  context.GetWindow().GetBrowserInterfaceBroker().SetBinderForTesting(
+      mojom::DigitalIdentityRequest::Name_, {});
 }
 
 // Test that navigator.credentials.create() increments the feature use counter
