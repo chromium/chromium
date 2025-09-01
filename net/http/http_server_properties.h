@@ -324,6 +324,16 @@ class NET_EXPORT HttpServerProperties
       const NetworkAnonymizationKey& network_anonymization_key,
       const AlternativeServiceInfoVector& alternative_service_info_vector);
 
+  // Process configured QUIC hints to identify known QUIC alternative services,
+  // if the kConfigureQuicHints feature is enabled.
+  void MaybeProcessQuicHints();
+
+  // Set a single known QUIC alternative service for `canon_host` and `port`,
+  // located at `canon_host` and `alternate_port`.
+  void SetKnownQuicAlternativeService(std::string_view canon_host,
+                                      int port,
+                                      int alternate_port);
+
   // Marks |alternative_service| as broken in the context of
   // |network_anonymization_key|. |alternative_service.host| must not be empty.
   void MarkAlternativeServiceBroken(
@@ -496,6 +506,8 @@ class NET_EXPORT HttpServerProperties
   // friendness is no longer required.
   friend class HttpServerPropertiesPeer;
 
+  typedef base::flat_map<ServerInfoMapKey, AlternativeService>
+      KnownAlternativeServiceMap;
   typedef base::flat_map<ServerInfoMapKey, url::SchemeHostPort> CanonicalMap;
   typedef base::flat_map<QuicServerInfoMapKey, quic::QuicServerId>
       QuicCanonicalMap;
@@ -636,6 +648,12 @@ class NET_EXPORT HttpServerProperties
   BrokenAlternativeServices broken_alternative_services_;
 
   IPAddress last_local_address_when_quic_worked_;
+
+  // Contains a map of servers which use a known alternative service.
+  // Map from a scheme/host/port to the AlternativeService
+  // with the known alternative service info.
+  KnownAlternativeServiceMap known_alternative_service_map_;
+
   // Contains a map of servers which could share the same alternate protocol.
   // Map from a Canonical scheme/host/port/NAK (host is some postfix of host
   // names) to an actual origin, which has a plausible alternate protocol

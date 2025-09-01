@@ -771,4 +771,14 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    &kExtendQuicHandshakeTimeout,
                    "QuicHandshakeTimeout",
                    base::Seconds(quic::kMaxTimeForCryptoHandshakeSecs));
+
+BASE_FEATURE(kConfigureQuicHints,
+             "ConfigureQuicHints",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(std::string,
+                   kQuicHintHostPortPairs,
+                   &kConfigureQuicHints,
+                   /*name=*/"quic_hints",
+                   /*default_value=*/"");
+
 }  // namespace net::features

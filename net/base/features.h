@@ -894,6 +894,11 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kAdditionalDelay);
 NET_EXPORT BASE_DECLARE_FEATURE(kExtendQuicHandshakeTimeout);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kQuicHandshakeTimeout);
 
+// When enabled, races QUIC connection attempts for the specified hostnames
+// even when there is no available ALPN information.
+NET_EXPORT BASE_DECLARE_FEATURE(kConfigureQuicHints);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(std::string, kQuicHintHostPortPairs);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_
