@@ -100,6 +100,10 @@ public class FormData {
                             .addAttribute("id", field.mId)
                             .addAttribute("crowdsourcing-autofill-hints", field.getServerType())
                             .addAttribute("computed-autofill-hints", field.getOverallType());
+            if (AndroidAutofillFeatures.ANDROID_AUTOFILL_IMPROVED_VISIBILITY_DETECTION
+                    .isEnabled()) {
+                builder.addAttribute("visibility", field.getVisible() ? "visible" : "invisible");
+            }
             // Compose multiple predictions to a string separated by ','.
             String[] predictions = field.getServerPredictions();
             if (predictions != null && predictions.length > 0) {

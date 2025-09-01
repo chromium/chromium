@@ -24,7 +24,8 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidAutofillLazyFrameworkWrapper,
     &kAutofillVirtualViewStructureAndroidPasskeyLongPress,
     &kAndroidAutofillForwardIframeOrigin,
-    &kAndroidAutofillUpdateContextForWebContents};
+    &kAndroidAutofillUpdateContextForWebContents,
+    &kAndroidAutofillImprovedVisibilityDetection};
 
 }  // namespace
 
@@ -49,6 +50,12 @@ BASE_FEATURE(kAndroidAutofillLazyFrameworkWrapper,
 BASE_FEATURE(kAndroidAutofillForwardIframeOrigin,
              "AndroidAutofillForwardIframeOrigin",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, an additional custom "visible" attribute in each node's HtmlInfo
+// is set and sent to the framework.
+BASE_FEATURE(kAndroidAutofillImprovedVisibilityDetection,
+             "AndroidAutofillImprovedVisibilityDetection",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the native autofill provider is updated when the web contents
 // change.

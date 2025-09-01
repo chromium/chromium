@@ -62,6 +62,7 @@ public class FormFieldData {
     private boolean mIsChecked;
     private String mValue;
     private boolean mFocusable;
+    private final boolean mVisible;
     // Indicates whether mValue is autofilled.
     private boolean mAutofilled;
     // Indicates whether this fields was autofilled, but changed by user.
@@ -99,6 +100,7 @@ public class FormFieldData {
             String[] datalistValues,
             String[] datalistLabels,
             boolean focusable,
+            boolean visible,
             boolean isAutofilled,
             String origin) {
         mName = name;
@@ -131,6 +133,7 @@ public class FormFieldData {
         mOverallType = overallType;
         mBounds = new RectF(left, top, right, bottom);
         mFocusable = focusable;
+        mVisible = visible;
         mAutofilled = isAutofilled;
     }
 
@@ -186,6 +189,10 @@ public class FormFieldData {
     @CalledByNative
     private void updateFocusable(boolean focusable) {
         mFocusable = focusable;
+    }
+
+    public boolean getVisible() {
+        return mVisible;
     }
 
     @CalledByNative
@@ -274,6 +281,7 @@ public class FormFieldData {
             String[] datalistValues,
             String[] datalistLabels,
             boolean focusable,
+            boolean visible,
             boolean isAutofilled,
             String origin) {
         return new FormFieldData(
@@ -301,6 +309,7 @@ public class FormFieldData {
                 datalistValues,
                 datalistLabels,
                 focusable,
+                visible,
                 isAutofilled,
                 origin);
     }
