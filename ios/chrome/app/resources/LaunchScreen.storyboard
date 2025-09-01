@@ -17,9 +17,9 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="launchscreen_app_logo" translatesAutoresizingMaskIntoConstraints="NO" id="rWR-eH-agn">
-                                <rect key="frame" x="321" y="509" width="192" height="192"/>
+                                <rect key="frame" x="313.5" y="501.5" width="207" height="207"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" priority="999" constant="192" id="2VT-cj-wAc"/>
+                                    <constraint firstAttribute="width" priority="999" constant="207" id="2VT-cj-wAc"/>
                                     <constraint firstAttribute="width" secondItem="rWR-eH-agn" secondAttribute="height" multiplier="1:1" id="D4M-BF-UXC"/>
                                 </constraints>
                             </imageView>
@@ -35,8 +35,8 @@
                         <color key="backgroundColor" name="background_color"/>
                         <constraints>
                             <constraint firstItem="rWR-eH-agn" firstAttribute="centerY" secondItem="5EZ-qb-Rvc" secondAttribute="centerY" id="9Ws-8o-3mX"/>
-                            <constraint firstItem="rWR-eH-agn" firstAttribute="height" relation="lessThanOrEqual" secondItem="5EZ-qb-Rvc" secondAttribute="height" multiplier="0.381966" id="LNE-wR-pws"/>
-                            <constraint firstItem="rWR-eH-agn" firstAttribute="width" relation="lessThanOrEqual" secondItem="5EZ-qb-Rvc" secondAttribute="width" multiplier="0.381966" id="N0s-Jp-t8J"/>
+                            <constraint firstItem="rWR-eH-agn" firstAttribute="height" relation="lessThanOrEqual" secondItem="5EZ-qb-Rvc" secondAttribute="height" multiplier="0.38" id="LNE-wR-pws"/>
+                            <constraint firstItem="rWR-eH-agn" firstAttribute="width" relation="lessThanOrEqual" secondItem="5EZ-qb-Rvc" secondAttribute="width" multiplier="0.41" id="N0s-Jp-t8J"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="bottom" secondItem="oyn-9t-6PW" secondAttribute="bottom" constant="20" id="bmW-Bx-pkF"/>
                             <constraint firstItem="oyn-9t-6PW" firstAttribute="centerX" secondItem="5EZ-qb-Rvc" secondAttribute="centerX" id="dhU-1U-mKZ"/>
                             <constraint firstItem="rWR-eH-agn" firstAttribute="centerX" secondItem="5EZ-qb-Rvc" secondAttribute="centerX" id="jmD-ME-FSI"/>
@@ -49,7 +49,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="launchscreen_app_logo" width="192" height="192"/>
+        <image name="launchscreen_app_logo" width="207" height="207"/>
         <image name="launchscreen_brand_name" width="107" height="35"/>
         <namedColor name="background_color">
             <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>

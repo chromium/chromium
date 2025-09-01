@@ -13,10 +13,14 @@ namespace {
 // and should be in sync so that the transition between app launch screen and
 // the launch screen view is invisible for the users.
 constexpr CGFloat kBottomMargin = 20;
-constexpr CGFloat kLogoMultiplier = 0.381966;
+// The height and width don't have the same multiplier as the height is only
+// constraining on iPhone landscape, where we don't want the logo to take too
+// much space.
+constexpr CGFloat kLogoWidthMultiplier = 0.41;
+constexpr CGFloat kLogoHeightMultiplier = 0.38;
 constexpr CGFloat kBrandWidth = 107;
 constexpr CGFloat kStatusWidth = 195;
-constexpr CGFloat kLogoSize = 192;
+constexpr CGFloat kLogoSize = 207;
 }  // namespace
 
 @interface LaunchScreenViewController ()
@@ -58,9 +62,9 @@ constexpr CGFloat kLogoSize = 192;
 
   [NSLayoutConstraint activateConstraints:@[
     [logo.widthAnchor constraintLessThanOrEqualToAnchor:view.widthAnchor
-                                             multiplier:kLogoMultiplier],
+                                             multiplier:kLogoWidthMultiplier],
     [logo.heightAnchor constraintLessThanOrEqualToAnchor:view.heightAnchor
-                                              multiplier:kLogoMultiplier],
+                                              multiplier:kLogoHeightMultiplier],
     widthConstraint,
     [logo.widthAnchor constraintEqualToAnchor:logo.heightAnchor],
     [logo.centerYAnchor constraintEqualToAnchor:view.centerYAnchor],
