@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_constants.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_format_provider.h"
@@ -309,7 +310,7 @@ std::u16string AlternativeNameAddressComponent::GetValueForComparison(
     const std::u16string& value,
     const AddressCountryCode& common_country_code) const {
   return TransliterateAlternativeName(
-      AddressComponent::GetValueForComparison(GetValue(), common_country_code));
+      normalization::NormalizeForComparison(GetValue()));
 }
 
 AlternativeGivenName::AlternativeGivenName()
