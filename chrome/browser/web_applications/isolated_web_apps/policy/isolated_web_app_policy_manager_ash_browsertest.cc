@@ -20,11 +20,13 @@
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/expected.h"
+#include "base/version.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
@@ -49,6 +51,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_generator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_iwa_installer_factory.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -60,12 +63,15 @@
 #include "chrome/test/base/profile_waiter.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
+#include "components/component_updater/component_updater_paths.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webapps/isolated_web_apps/features.h"
+#include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
@@ -415,11 +421,33 @@ class IsolatedWebAppPolicyManagerAshBrowserTest
       const IsolatedWebAppPolicyManagerAshBrowserTest&) = delete;
   IsolatedWebAppPolicyManagerAshBrowserTest& operator=(
       const IsolatedWebAppPolicyManagerAshBrowserTest&) = delete;
+
+  void SetIwaAllowlist(
+      const std::vector<web_package::SignedWebBundleId>& managed_allowlist) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_THAT(test::UpdateKeyDistributionInfoWithAllowlist(
+                    base::Version("1.0.0"), std::move(managed_allowlist)),
+                base::test::HasValue());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kIsolatedWebAppManagedAllowlist};
+
+  // Override the pre-install component directory and its alternative directory
+  // so that the component update will not find the pre-installed key
+  // distribution component.
+  base::ScopedPathOverride preinstalled_dir_override_{
+      component_updater::DIR_COMPONENT_PREINSTALLED};
+  base::ScopedPathOverride preinstalled_alt_dir_override_{
+      component_updater::DIR_COMPONENT_PREINSTALLED_ALT};
 };
 
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
                        InstallIsolatedWebAppOnLogin) {
+  // The policy set in AddUser involves force installation of kWebBundleId1 app
   AddUser(/*set_iwa_policy_on_login=*/true);
+  SetIwaAllowlist({kWebBundleId1});
 
   // Log in in the managed guest session.
   ASSERT_NO_FATAL_FAILURE(StartLogin({kAppId1}));
@@ -437,8 +465,36 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
+                       AppNotInAllowlistNotInstalled) {
+  // The policy set in AddUser involves force installation of kWebBundleId1 app
+  AddUser(/*set_iwa_policy_on_login=*/true);
+
+  // Empty the allowlist, so the app install is not allowed
+  SetIwaAllowlist(/*managed_allowlist=*/{});
+  EXPECT_FALSE(
+      IwaKeyDistributionInfoProvider::GetInstance().IsManagedInstallPermitted(
+          kWebBundleId1.id()));
+
+  base::test::TestFuture<web_package::SignedWebBundleId, IwaInstallerResult>
+      future;
+  IsolatedWebAppPolicyManager::SetOnInstallTaskCompletedCallbackForTesting(
+      future.GetRepeatingCallback());
+
+  ASSERT_NO_FATAL_FAILURE(StartLogin({}));
+  WaitForSessionStart();
+
+  auto [web_bundle_id, result] = future.Take();
+  EXPECT_EQ(web_bundle_id, kWebBundleId1);
+  EXPECT_EQ(result.type(), IwaInstallerResultType::kErrorAppNotInAllowlist);
+
+  EXPECT_THAT(provider().registrar_unsafe().GetAppById(kAppId1),
+              testing::IsNull());
+}
+
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
                        PolicyUpdate) {
   AddUser();
+  SetIwaAllowlist({kWebBundleId1, kWebBundleId2});
 
   // Log in in the managed guest session.
   // There no IWA policy set at the moment of login.
@@ -475,6 +531,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
                        InstallUpdateChannelVersion) {
   AddUser();
+  SetIwaAllowlist({kWebBundleId1, kWebBundleId2});
 
   ASSERT_NO_FATAL_FAILURE(StartLogin());
   WaitForSessionStart();
@@ -507,6 +564,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
                        InstallIsolatedWebAppAtPinnedVersion) {
   AddUser();
+  SetIwaAllowlist({kWebBundleId1});
 
   ASSERT_NO_FATAL_FAILURE(StartLogin());
   WaitForSessionStart();
@@ -528,6 +586,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
                        PolicyDeleteAndReinstall) {
   AddUser();
+  SetIwaAllowlist({kWebBundleId1, kWebBundleId2});
 
   // Log in to the managed guest session. There is no IWA policy set at the
   // moment of login.
