@@ -4,3 +4,6 @@
 
 const executed_during_prerendering = document.prerendering;
 
+// Let the script send a fetch request, so that the test suite can verify the
+// script resumes executing by checking the server's log.
+navigator.sendBeacon("/activation-beacon", "");

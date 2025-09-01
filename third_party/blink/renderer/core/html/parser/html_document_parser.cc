@@ -1356,6 +1356,27 @@ void HTMLDocumentParser::ExecuteScriptsWaitingForResources() {
     ResumeParsingAfterPause();
 }
 
+void HTMLDocumentParser::ExecuteScriptsWaitingForPrerenderActivation() {
+  CHECK(RuntimeEnabledFeatures::PrerenderUntilScriptEnabled());
+  CHECK(!GetDocument()->IsScriptBlockedUntilPrerenderActivation());
+  if (IsStopped()) {
+    return;
+  }
+
+  if (IsStopping()) {
+    AttemptToRunDeferredScriptsAndEnd();
+    return;
+  }
+
+  if (script_runner_) {
+    script_runner_->UnblockForPrerenderActivation();
+  }
+
+  if (!IsPaused()) {
+    ResumeParsingAfterPause();
+  }
+}
+
 void HTMLDocumentParser::DidAddPendingParserBlockingStylesheet() {
   // In-body CSS doesn't block painting. The parser needs to pause so that
   // the DOM doesn't include any elements that may depend on the CSS for style.

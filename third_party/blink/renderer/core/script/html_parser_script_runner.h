@@ -111,6 +111,10 @@ class HTMLParserScriptRunner final
     return "HTMLParserScriptRunner";
   }
 
+  // Script execution might be blocked during prerendering, and if so, it will
+  // be unblocked upon prerender activation.
+  void UnblockForPrerenderActivation();
+
  private:
   // PendingScriptClient
   void PendingScriptFinished(PendingScript*) override;

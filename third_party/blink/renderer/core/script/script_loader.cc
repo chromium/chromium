@@ -1224,7 +1224,8 @@ ScriptSchedulingType ScriptLoader::GetScriptSchedulingTypePerSpec(
     // that is blocking scripts:</spec>
     if (parser_inserted_ &&
         parser_blocking_inline_option == ParserBlockingInlineOption::kAllow &&
-        !element_document.IsScriptExecutionReady()) {
+        (!element_document.IsScriptExecutionReady() ||
+         element_document.IsScriptBlockedUntilPrerenderActivation())) {
       return ScriptSchedulingType::kParserBlockingInline;
     }
 

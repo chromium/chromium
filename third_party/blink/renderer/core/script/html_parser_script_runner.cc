@@ -26,7 +26,9 @@
 #include "third_party/blink/renderer/core/script/html_parser_script_runner.h"
 
 #include <inttypes.h>
+
 #include <memory>
+
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -160,8 +162,10 @@ void HTMLParserScriptRunner::Detach() {
 
 bool HTMLParserScriptRunner::IsParserBlockingScriptReady() {
   DCHECK(ParserBlockingScript());
-  if (!document_->IsScriptExecutionReady())
+  if (!document_->IsScriptExecutionReady() ||
+      document_->IsScriptBlockedUntilPrerenderActivation()) {
     return false;
+  }
   return ParserBlockingScript()->IsReady();
 }
 
@@ -187,8 +191,10 @@ void HTMLParserScriptRunner::
     document_->GetAgent().event_loop()->PerformMicrotaskCheckpoint();
     // The parser cannot be unblocked as a microtask requested another
     // resource
-    if (!document_->IsScriptExecutionReady())
+    if (!document_->IsScriptExecutionReady() ||
+        document_->IsScriptBlockedUntilPrerenderActivation()) {
       return;
+    }
   }
 
   // <spec step="B.2">Set the pending parsing-blocking script to null.</spec>
@@ -394,6 +400,15 @@ void HTMLParserScriptRunner::ExecuteScriptsWaitingForResources() {
   ExecuteParsingBlockingScripts();
 }
 
+void HTMLParserScriptRunner::UnblockForPrerenderActivation() {
+  // Should be aligned with `ExecuteScriptsWaitingForResources`.
+  CHECK(document_);
+  CHECK(!IsExecutingScript());
+  CHECK(RuntimeEnabledFeatures::PrerenderUntilScriptEnabled());
+  CHECK(!document_->IsScriptBlockedUntilPrerenderActivation());
+  ExecuteParsingBlockingScripts();
+}
+
 // <specdef href="https://html.spec.whatwg.org/C/#stop-parsing">
 PendingScript* HTMLParserScriptRunner::TryTakeReadyScriptWaitingForParsing(
     HeapDeque<Member<PendingScript>>* waiting_scripts) {
@@ -403,8 +418,10 @@ PendingScript* HTMLParserScriptRunner::TryTakeReadyScriptWaitingForParsing(
   // scripts that will execute when the document has finished parsing has its
   // ready to be parser-executed set to true and the parser's Document has no
   // style sheet that is blocking scripts.</spec>
-  if (!document_->IsScriptExecutionReady())
+  if (!document_->IsScriptExecutionReady() ||
+      document_->IsScriptBlockedUntilPrerenderActivation()) {
     return nullptr;
+  }
   PendingScript* script = waiting_scripts->front();
   if (!script->IsReady()) {
     if (!script->IsWatchingForLoad()) {

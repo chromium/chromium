@@ -677,6 +677,15 @@ class CORE_EXPORT Document : public ContainerNode,
     return HaveScriptBlockingStylesheetsLoaded();
   }
 
+  // Returns true if the document is prerendering and its trigger asks it to
+  // block script execution until prerender activation, and turns false upon
+  // activation where we anyway no longer want to block script execution; see
+  // `UnblockScriptExecutionForPrerenderActivation`. Note that it never starts
+  // to block or unblock script execution in the middle of execution, since
+  // the field is set to true when initializing `this` instance and set to false
+  // only once (upon activation).
+  bool IsScriptBlockedUntilPrerenderActivation() const;
+
   bool IsForExternalHandler() const { return is_for_external_handler_; }
 
   StyleEngine& GetStyleEngine() const {
@@ -2542,6 +2551,11 @@ class CORE_EXPORT Document : public ContainerNode,
                                      ExceptionState& exception_state);
 
   bool CanThrottleFrameRate();
+
+  // Called upon prerender activation.
+  // Note that not all prerendering pages block script execution; prerendering
+  // pages' triggers can determine whether or not to block scripts.
+  void UnblockScriptExecutionForPrerenderActivation();
 
   // Mutable because the token is lazily-generated on demand if no token is
   // explicitly set.

@@ -137,6 +137,10 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   void NotifyParserPauseByUserTiming() override;
   void NotifyParserResumeByUserTiming() override;
 
+  // The execution context, i.e., the document, no longer blocks script
+  // execution.
+  void ExecuteScriptsWaitingForPrerenderActivation() override;
+
   void SetPatchScope(ContainerNode* scope);
 
  protected:
