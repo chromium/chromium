@@ -2510,6 +2510,7 @@ public class SiteSettingsTest {
     }
 
     /** Sets Allow Camera Enabled to be true and make sure it is set correctly. */
+    @DisabledTest(message = "https://crbug.com/429083114")
     @Test
     @SmallTest
     @Feature({"Preferences"})
