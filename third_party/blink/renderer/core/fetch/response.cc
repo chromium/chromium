@@ -453,7 +453,7 @@ FetchResponseData* Response::CreateUnfilteredFetchResponseDataWithoutBody(
 FetchResponseData* Response::FilterResponseData(
     network::mojom::FetchResponseType response_type,
     FetchResponseData* response,
-    WTF::Vector<WTF::String>& headers) {
+    Vector<String>& headers) {
   return FilterResponseDataInternal(response_type, response, headers);
 }
 

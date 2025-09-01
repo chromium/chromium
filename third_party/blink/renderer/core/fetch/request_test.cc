@@ -234,12 +234,12 @@ TEST(ServiceWorkerRequestTest, FromAndToFetchAPIRequest) {
 
   Headers* request_headers = request->getHeaders();
 
-  WTF::HashMap<String, String> headers_map;
+  HashMap<String, String> headers_map;
   for (const auto& header : headers) {
     headers_map.insert(header.key, header.value);
   }
   EXPECT_EQ(headers_map.size(), request_headers->HeaderList()->size());
-  for (WTF::HashMap<String, String>::iterator iter = headers_map.begin();
+  for (HashMap<String, String>::iterator iter = headers_map.begin();
        iter != headers_map.end(); ++iter) {
     DummyExceptionStateForTesting exception_state;
     EXPECT_EQ(iter->value, request_headers->get(iter->key, exception_state));

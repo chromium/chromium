@@ -56,8 +56,8 @@ class DataPipeGetterImpl : public network::mojom::blink::DataPipeGetter {
  public:
   explicit DataPipeGetterImpl(
       mojo::PendingReceiver<network::mojom::blink::DataPipeGetter> receiver) {
-    receivers_.set_disconnect_handler(WTF::BindRepeating(
-        &DataPipeGetterImpl::OnMojoDisconnect, WTF::Unretained(this)));
+    receivers_.set_disconnect_handler(
+        BindRepeating(&DataPipeGetterImpl::OnMojoDisconnect, Unretained(this)));
     receivers_.Add(this, std::move(receiver));
   }
   DataPipeGetterImpl(const DataPipeGetterImpl&) = delete;

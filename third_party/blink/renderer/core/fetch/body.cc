@@ -62,9 +62,9 @@ class BodyConsumerBase : public GarbageCollected<BodyConsumerBase>,
   // TODO(yhirano): Fix this problem in a more sophisticated way.
   template <typename IDLType, typename T>
   void ResolveLater(const T& object) {
-    task_runner_->PostTask(
-        FROM_HERE, WTF::BindOnce(&BodyConsumerBase::ResolveNow<IDLType, T>,
-                                 WrapPersistent(this), object));
+    task_runner_->PostTask(FROM_HERE,
+                           BindOnce(&BodyConsumerBase::ResolveNow<IDLType, T>,
+                                    WrapPersistent(this), object));
   }
 
   void Trace(Visitor* visitor) const override {

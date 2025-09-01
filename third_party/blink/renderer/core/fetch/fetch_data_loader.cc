@@ -85,7 +85,7 @@ class FetchDataLoaderAsBlobHandle final : public FetchDataLoader,
         mime_type_ ? mime_type_ : "", /*content_disposition=*/"",
         /*length_hint=*/0, std::move(handle),
         mojo::PendingAssociatedRemote<mojom::blink::ProgressClient>(),
-        WTF::BindOnce(
+        blink::BindOnce(
             &FetchDataLoaderAsBlobHandle::FinishedCreatingFromDataPipe,
             WrapWeakPersistent(this)));
   }
@@ -573,13 +573,13 @@ class FetchDataLoaderAsDataPipe final : public FetchDataLoader,
 
       data_pipe_watcher_.Watch(
           out_data_pipe_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
-          WTF::BindRepeating(&FetchDataLoaderAsDataPipe::OnWritable,
-                             WrapWeakPersistent(this)));
+          BindRepeating(&FetchDataLoaderAsDataPipe::OnWritable,
+                        WrapWeakPersistent(this)));
       data_pipe_close_watcher_.Watch(
           out_data_pipe_.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
           MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
-          WTF::BindRepeating(&FetchDataLoaderAsDataPipe::OnPeerClosed,
-                             WrapWeakPersistent(this)));
+          BindRepeating(&FetchDataLoaderAsDataPipe::OnPeerClosed,
+                        WrapWeakPersistent(this)));
 
       data_pipe_watcher_.ArmOrNotify();
       data_pipe_close_watcher_.ArmOrNotify();

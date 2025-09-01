@@ -68,10 +68,10 @@ class CORE_EXPORT FetchRequestData final
   void SetOrigin(scoped_refptr<const SecurityOrigin> origin) {
     origin_ = std::move(origin);
   }
-  const WTF::Vector<KURL>& NavigationRedirectChain() const {
+  const Vector<KURL>& NavigationRedirectChain() const {
     return navigation_redirect_chain_;
   }
-  void SetNavigationRedirectChain(const WTF::Vector<KURL>& value) {
+  void SetNavigationRedirectChain(const Vector<KURL>& value) {
     navigation_redirect_chain_ = value;
   }
   scoped_refptr<const SecurityOrigin> IsolatedWorldOrigin() const {
@@ -229,7 +229,7 @@ class CORE_EXPORT FetchRequestData final
   network::mojom::RequestDestination destination_ =
       network::mojom::RequestDestination::kEmpty;
   scoped_refptr<const SecurityOrigin> origin_;
-  WTF::Vector<KURL> navigation_redirect_chain_;
+  Vector<KURL> navigation_redirect_chain_;
   scoped_refptr<const SecurityOrigin> isolated_world_origin_;
   // FIXME: Support m_forceOriginHeaderFlag;
   AtomicString referrer_string_;

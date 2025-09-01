@@ -38,8 +38,8 @@ ScriptPromise<IDLLong> WorkerInternalsFetch::getInitialResourcePriority(
   auto promise = resolver->Promise();
   KURL resource_url = url_test_helpers::ToKURL(url.Utf8());
 
-  auto callback = WTF::BindOnce(&WorkerInternalsFetch::ResolveResourcePriority,
-                                WrapPersistent(resolver));
+  auto callback = BindOnce(&WorkerInternalsFetch::ResolveResourcePriority,
+                           WrapPersistent(resolver));
   worker_global->Fetcher()->AddPriorityObserverForTesting(resource_url,
                                                           std::move(callback));
 

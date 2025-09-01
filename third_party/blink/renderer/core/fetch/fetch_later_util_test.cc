@@ -130,7 +130,7 @@ class DeferredFetchPolicyTestBase : public SimTest {
                   const RequestUrlAndDataType& url_and_data = {}) {
     // Queues all upcoming requests first.
     SimRequest root_request(root_url, "text/html");
-    WTF::Vector<std::unique_ptr<SimRequest>> requests;
+    Vector<std::unique_ptr<SimRequest>> requests;
     for (const auto& [url, _] : url_and_data) {
       requests.emplace_back(std::make_unique<SimRequest>(url, "text/html"));
     }

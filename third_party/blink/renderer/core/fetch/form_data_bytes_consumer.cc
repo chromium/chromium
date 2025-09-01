@@ -268,8 +268,8 @@ class DataPipeGetterConsumer : public BytesConsumer {
 
     data_pipe_getter->Read(
         std::move(pipe_producer_handle),
-        WTF::BindOnce(&DataPipeGetterConsumer::DataPipeGetterCallback,
-                      WrapWeakPersistent(consumer)));
+        BindOnce(&DataPipeGetterConsumer::DataPipeGetterCallback,
+                 WrapWeakPersistent(consumer)));
     return consumer;
   }
 

@@ -385,7 +385,7 @@ class FetchLoaderBase : public GarbageCollectedMixin {
         world_(std::move(&script_state->World())),
         signal_(signal),
         abort_handle_(signal->AddAlgorithm(
-            WTF::BindOnce(&FetchLoaderBase::Abort, WrapWeakPersistent(this)))) {
+            BindOnce(&FetchLoaderBase::Abort, WrapWeakPersistent(this)))) {
     CHECK(world_);
   }
 
@@ -1074,7 +1074,7 @@ void FetchLoaderBase::FileIssueAndPerformNetworkError(
       AuditsIssue::ReportCorsIssue(execution_context_, network_error,
                                    fetch_request_data_->Url().GetString(),
                                    fetch_request_data_->Origin()->ToString(),
-                                   WTF::g_empty_string, issue_id);
+                                   g_empty_string, issue_id);
       PerformNetworkError(
           StrCat({"Request mode is \"same-origin\" but the URL\'s origin is "
                   "not same as the request origin ",
@@ -1087,7 +1087,7 @@ void FetchLoaderBase::FileIssueAndPerformNetworkError(
       AuditsIssue::ReportCorsIssue(execution_context_, network_error,
                                    fetch_request_data_->Url().GetString(),
                                    fetch_request_data_->Origin()->ToString(),
-                                   WTF::g_empty_string, issue_id);
+                                   g_empty_string, issue_id);
       PerformNetworkError(
           "Request mode is \"no-cors\" but the redirect mode "
           "is not \"follow\".",
@@ -1534,8 +1534,8 @@ class FetchLaterManager::DeferredLoader final
         net::MutableNetworkTrafficAnnotationTag(
             kFetchLaterTrafficAnnotationTag));
     CHECK(loader_.is_bound());
-    loader_.set_disconnect_handler(WTF::BindOnce(
-        &DeferredLoader::NotifyFinished, WrapWeakPersistent(this)));
+    loader_.set_disconnect_handler(
+        BindOnce(&DeferredLoader::NotifyFinished, WrapWeakPersistent(this)));
 
     // https://whatpr.org/fetch/1647.html#queue-a-deferred-fetch
     // Continued with "queue a deferred fetch"

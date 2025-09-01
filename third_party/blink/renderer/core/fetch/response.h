@@ -67,7 +67,7 @@ class CORE_EXPORT Response final : public ScriptWrappable, public Body {
   static FetchResponseData* FilterResponseData(
       network::mojom::FetchResponseType response_type,
       FetchResponseData* response,
-      WTF::Vector<WTF::String>& headers);
+      Vector<String>& headers);
 
   explicit Response(ExecutionContext*);
   Response(ExecutionContext*, FetchResponseData*);

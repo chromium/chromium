@@ -194,7 +194,7 @@ class FetchLaterTest : public testing::Test {
   }
 
   // FetchLater only supports secure context.
-  static const WTF::String GetSourcePageURL() {
+  static const String GetSourcePageURL() {
     return AtomicString("https://example.com");
   }
 
@@ -209,7 +209,7 @@ class FetchLaterTest : public testing::Test {
   }
 
   Request* CreateFetchLaterRequest(V8TestingScope& scope,
-                                   const WTF::String& url,
+                                   const String& url,
                                    AbortSignal* signal) const {
     auto* request_init = RequestInit::Create();
     request_init->setMethod("GET");
