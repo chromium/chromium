@@ -1352,13 +1352,13 @@ CanvasRenderingContext2D::GetOrCreateCanvas2DResourceProvider() {
     hibernation_handler_ = std::make_unique<CanvasHibernationHandler>(*this);
   }
 
-  resource_provider = RecreateCanvasResourceProviderForCanvas2D();
+  RecreateCanvasResourceProviderForCanvas2D();
 
   canvas()->UpdateMemoryUsage();
 
   canvas()->SetNeedsCompositingUpdate();
 
-  return resource_provider;
+  return resource_provider_.get();
 }
 
 std::unique_ptr<CanvasResourceProvider>
@@ -1400,25 +1400,23 @@ void CanvasRenderingContext2D::
   }
 
   // Bail out if it's not possible to create a new provider.
-  CanvasResourceProvider* new_provider =
-      RecreateCanvasResourceProviderForCanvas2D();
-  if (!new_provider) {
+  RecreateCanvasResourceProviderForCanvas2D();
+  if (!resource_provider_) {
     return;
   }
 
-  new_provider->RestoreBackBuffer(image->PaintImageForCurrentFrame());
-  new_provider->SetRecorder(std::move(recorder));
+  resource_provider_->RestoreBackBuffer(image->PaintImageForCurrentFrame());
+  resource_provider_->SetRecorder(std::move(recorder));
 
   canvas()->UpdateMemoryUsage();
 }
 
-CanvasResourceProvider*
-CanvasRenderingContext2D::RecreateCanvasResourceProviderForCanvas2D() {
+void CanvasRenderingContext2D::RecreateCanvasResourceProviderForCanvas2D() {
   CHECK(GetHibernationHandler());
   CHECK(!resource_provider_);
 
   if (did_fail_to_create_resource_provider_) {
-    return nullptr;
+    return;
   }
 
   if (canvas()->IsValidImageSize()) {
@@ -1427,7 +1425,7 @@ CanvasRenderingContext2D::RecreateCanvasResourceProviderForCanvas2D() {
   }
   if (!resource_provider_) {
     did_fail_to_create_resource_provider_ = true;
-    return nullptr;
+    return;
   }
 
   CHECK(resource_provider_->IsValid());
@@ -1438,7 +1436,7 @@ CanvasRenderingContext2D::RecreateCanvasResourceProviderForCanvas2D() {
 
   auto* hibernation_handler = GetHibernationHandler();
   if (!hibernation_handler->IsHibernating()) {
-    return resource_provider_.get();
+    return;
   }
 
   if (resource_provider_->IsAccelerated()) {
@@ -1468,8 +1466,6 @@ CanvasRenderingContext2D::RecreateCanvasResourceProviderForCanvas2D() {
 
   // shouldBeDirectComposited() may have changed.
   canvas()->SetNeedsCompositingUpdate();
-
-  return resource_provider_.get();
 }
 
 void CanvasRenderingContext2D::SetCanvas2DResourceProviderForTesting(
