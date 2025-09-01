@@ -414,7 +414,7 @@ bool AwBrowserContext::IsDefaultBrowserContext() const {
   return is_default_;
 }
 
-base::FilePath AwBrowserContext::GetPath() const {
+base::FilePath AwBrowserContext::GetPath() {
   return context_storage_path_;
 }
 

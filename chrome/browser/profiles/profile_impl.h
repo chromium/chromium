@@ -105,6 +105,7 @@ class ProfileImpl : public Profile {
   // Note that this implementation returns the Google-services username, if any,
   // not the Chrome user's display name.
   std::string GetProfileUserName() const override;
+  base::FilePath GetPath() override;
   base::Time GetCreationTime() const override;
   base::FilePath GetPath() const override;
   Profile* GetOffTheRecordProfile(const OTRProfileID& otr_profile_id,

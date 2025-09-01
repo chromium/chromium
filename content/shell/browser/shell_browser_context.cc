@@ -88,7 +88,7 @@ std::unique_ptr<ZoomLevelDelegate> ShellBrowserContext::CreateZoomLevelDelegate(
   return nullptr;
 }
 
-base::FilePath ShellBrowserContext::GetPath() const {
+base::FilePath ShellBrowserContext::GetPath() {
   return path_;
 }
 

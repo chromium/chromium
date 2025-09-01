@@ -330,6 +330,10 @@ std::string OffTheRecordProfileImpl::GetProfileUserName() const {
   return std::string();
 }
 
+base::FilePath OffTheRecordProfileImpl::GetPath() {
+  return profile_->GetPath();
+}
+
 base::FilePath OffTheRecordProfileImpl::GetPath() const {
   return profile_->GetPath();
 }

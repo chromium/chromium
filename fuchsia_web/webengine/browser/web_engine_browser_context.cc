@@ -93,7 +93,7 @@ WebEngineBrowserContext::CreateZoomLevelDelegate(
   return nullptr;
 }
 
-base::FilePath WebEngineBrowserContext::GetPath() const {
+base::FilePath WebEngineBrowserContext::GetPath() {
   return data_dir_path_;
 }
 

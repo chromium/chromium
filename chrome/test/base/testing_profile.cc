@@ -580,6 +580,10 @@ void TestingProfile::SetIsNewProfile(bool is_new_profile) {
   is_new_profile_ = is_new_profile;
 }
 
+base::FilePath TestingProfile::GetPath() {
+  return profile_path_;
+}
+
 base::FilePath TestingProfile::GetPath() const {
   return profile_path_;
 }

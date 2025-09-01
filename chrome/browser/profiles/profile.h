@@ -206,7 +206,8 @@ class Profile : public content::BrowserContext {
   // content::BrowserContext implementation ------------------------------------
 
   // Returns the path of the directory where this context's data is stored.
-  base::FilePath GetPath() const override = 0;
+  base::FilePath GetPath() override = 0;
+  virtual base::FilePath GetPath() const = 0;
 
   // Returns the base name of the profile, which is the profile directory name
   // within the user data directory, e.g. "Default", "Profile 1", "Profile 2".
