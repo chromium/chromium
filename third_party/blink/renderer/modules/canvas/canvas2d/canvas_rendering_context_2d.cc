@@ -1417,21 +1417,23 @@ CanvasRenderingContext2D::RecreateCanvasResourceProviderForCanvas2D() {
   CHECK(GetHibernationHandler());
   CHECK(!resource_provider_);
 
+  if (did_fail_to_create_resource_provider_) {
+    return nullptr;
+  }
+
   CanvasResourceProvider* resource_provider = nullptr;
-  if (!did_fail_to_create_resource_provider_) {
-    if (canvas()->IsValidImageSize()) {
-      resource_provider_ = CreateCanvasResourceProvider();
-      canvas()->UpdateMemoryUsage();
-      resource_provider = GetResourceProviderForCanvas2D();
-    }
-    if (!resource_provider) {
-      did_fail_to_create_resource_provider_ = true;
-    } else if (resource_provider->IsValid()) {
-      base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
-                                resource_provider->IsAccelerated());
-      base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
-                                    resource_provider->GetType());
-    }
+  if (canvas()->IsValidImageSize()) {
+    resource_provider_ = CreateCanvasResourceProvider();
+    canvas()->UpdateMemoryUsage();
+    resource_provider = GetResourceProviderForCanvas2D();
+  }
+  if (!resource_provider) {
+    did_fail_to_create_resource_provider_ = true;
+  } else if (resource_provider->IsValid()) {
+    base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
+                              resource_provider->IsAccelerated());
+    base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
+                                  resource_provider->GetType());
   }
   if (!resource_provider || !resource_provider->IsValid()) {
     return nullptr;
