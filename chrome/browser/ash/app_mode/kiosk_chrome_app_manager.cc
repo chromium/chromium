@@ -508,8 +508,9 @@ bool KioskChromeAppManager::IsPlatformCompliantWithApp(
 
 KioskChromeAppManager::KioskChromeAppManager(
     PrefService* local_state,
-    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
-    : KioskAppManagerBase(local_state),
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    KioskCryptohomeRemover* cryptohome_remover)
+    : KioskAppManagerBase(local_state, cryptohome_remover),
       shared_url_loader_factory_(std::move(shared_url_loader_factory)) {
   CHECK(!g_instance);  // Only one instance is allowed.
   external_cache_ = CreateExternalCache(shared_url_loader_factory_, this);
@@ -589,7 +590,7 @@ void KioskChromeAppManager::UpdateAppsFromPolicy() {
           GURL(device_local_account.kiosk_app_update_url), crx_path));
       apps_.back()->Load();
     }
-    KioskCryptohomeRemover::CancelDelayedCryptohomeRemoval(account_id);
+    cryptohome_remover_->CancelDelayedCryptohomeRemoval(account_id);
   }
 
   std::vector<const KioskAppDataBase*> apps_to_remove;

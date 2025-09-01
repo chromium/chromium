@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
+#include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_level_logs_manager_wrapper.h"
@@ -77,6 +78,8 @@ class KioskControllerImpl : public KioskController,
 
   KioskSystemSession* GetKioskSystemSession() override;
 
+  void RemoveObsoleteCryptohomes() override;
+
  private:
   // `user_manager::UserManager::Observer` implementation:
   void OnUserLoggedIn(const user_manager::User& user) override;
@@ -104,6 +107,8 @@ class KioskControllerImpl : public KioskController,
   SEQUENCE_CHECKER(sequence_checker_);
 
   const raw_ref<PrefService> local_state_;
+
+  KioskCryptohomeRemover cryptohome_remover_;
 
   KioskIwaManager GUARDED_BY_CONTEXT(sequence_checker_) iwa_manager_;
   KioskWebAppManager GUARDED_BY_CONTEXT(sequence_checker_) web_app_manager_;

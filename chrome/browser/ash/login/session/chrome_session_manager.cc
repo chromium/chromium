@@ -76,6 +76,10 @@ namespace ash {
 
 namespace {
 
+void RemoveObsoleteKioskCryptohomes() {
+  KioskController::Get().RemoveObsoleteCryptohomes();
+}
+
 // Starts kiosk app launch and shows the splash screen.
 void StartKioskSession(KioskAppId app, bool is_auto_launch = false) {
   // Kiosk app launcher starts with login state.
@@ -438,7 +442,7 @@ void ChromeSessionManager::Initialize(
   const AccountId login_account_id(
       known_user.GetAccountIdByCryptohomeId(cryptohome_id));
 
-  KioskCryptohomeRemover::RemoveObsoleteCryptohomes();
+  RemoveObsoleteKioskCryptohomes();
 
   if (ShouldAutoLaunchKioskApp(parsed_command_line, local_state)) {
     VLOG(1) << "Starting Chrome with kiosk auto launch.";

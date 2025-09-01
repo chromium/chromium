@@ -71,11 +71,6 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  # TODO(crbug.com/404129026): Remove g_browser_process usages.
-  "kiosk_cryptohome_remover\\.cc": [
-    "+chrome/browser/browser_process.h",
-  ],
-
   # Allow ProfileKeyedServiceFactory to depend on browser_process for now.
   "kiosk_app_update_service_factory\\.cc": [
     "+chrome/browser/browser_process.h",

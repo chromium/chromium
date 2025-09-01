@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_data.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
+#include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
@@ -120,8 +121,11 @@ class KioskIwaManagerTest : public testing::Test {
  public:
   KioskIwaManagerTest()
       : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
+        kiosk_cryptohome_remover_(
+            TestingBrowserProcess::GetGlobal()->local_state()),
         iwa_manager_(
-            CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state())) {
+            CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
+            &kiosk_cryptohome_remover_) {
     UserDataAuthClient::InitializeFake();
     iwa_manager().AddObserver(&observer());
   }
@@ -163,6 +167,7 @@ class KioskIwaManagerTest : public testing::Test {
       fake_user_manager_;
 
   MockKioskAppManagerObserver observer_;
+  KioskCryptohomeRemover kiosk_cryptohome_remover_;
   KioskIwaManager iwa_manager_;
 };
 

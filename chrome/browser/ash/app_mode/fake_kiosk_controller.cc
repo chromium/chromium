@@ -57,4 +57,6 @@ KioskSystemSession* FakeKioskController::GetKioskSystemSession() {
   return nullptr;
 }
 
+void FakeKioskController::RemoveObsoleteCryptohomes() {}
+
 }  // namespace ash

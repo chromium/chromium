@@ -26,6 +26,8 @@ class PrefRegistrySimple;
 
 namespace ash {
 
+class KioskCryptohomeRemover;
+
 class KioskIwaManager : public KioskAppManagerBase {
  public:
   static const char kIwaKioskDictionaryName[];
@@ -35,7 +37,10 @@ class KioskIwaManager : public KioskAppManagerBase {
 
   // Returns the manager instance or will crash if it not yet initiazlied.
   static KioskIwaManager* Get();
-  explicit KioskIwaManager(PrefService& local_state);
+
+  // `cryptohome_remover` must be non-null, and must outlive `this`.
+  KioskIwaManager(PrefService& local_state,
+                  KioskCryptohomeRemover* cryptohome_remover);
   KioskIwaManager(const KioskIwaManager&) = delete;
   KioskIwaManager& operator=(const KioskIwaManager&) = delete;
   ~KioskIwaManager() override;

@@ -31,6 +31,7 @@ namespace ash {
 
 class KioskAppDataBase;
 class KioskAppManagerObserver;
+class KioskCryptohomeRemover;
 
 // Common base class for kiosk app managers.
 class KioskAppManagerBase : public KioskAppDataDelegate {
@@ -53,7 +54,9 @@ class KioskAppManagerBase : public KioskAppDataDelegate {
   using AppList = std::vector<App>;
 
   // `local_state` must be non-null, and must outlive `this`.
-  explicit KioskAppManagerBase(PrefService* local_state);
+  // `cryptohome_remover` must be non-null, and must outlive `this`.
+  KioskAppManagerBase(PrefService* local_state,
+                      KioskCryptohomeRemover* cryptohome_remover);
   KioskAppManagerBase(const KioskAppManagerBase&) = delete;
   KioskAppManagerBase& operator=(const KioskAppManagerBase&) = delete;
   ~KioskAppManagerBase() override;
@@ -97,6 +100,8 @@ class KioskAppManagerBase : public KioskAppDataDelegate {
       const std::vector<const KioskAppDataBase*>& old_apps) const;
 
   const raw_ref<PrefService> local_state_;
+
+  const raw_ref<KioskCryptohomeRemover> cryptohome_remover_;
 
   bool auto_launched_with_zero_delay_ = false;
 

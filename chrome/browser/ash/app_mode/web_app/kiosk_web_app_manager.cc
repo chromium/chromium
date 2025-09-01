@@ -67,8 +67,9 @@ KioskAppManagerBase::App KioskWebAppManager::CreateAppByData(
 
 KioskWebAppManager::KioskWebAppManager(
     PrefService* local_state,
-    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
-    : KioskAppManagerBase(local_state),
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    KioskCryptohomeRemover* cryptohome_remover)
+    : KioskAppManagerBase(local_state, cryptohome_remover),
       shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       auto_launch_account_id_(EmptyAccountId()) {
   CHECK(!g_web_kiosk_app_manager);  // Only one instance is allowed.
@@ -201,7 +202,7 @@ void KioskWebAppManager::UpdateAppsFromPolicy() {
       apps_.back()->LoadFromCache();
     }
 
-    KioskCryptohomeRemover::CancelDelayedCryptohomeRemoval(account_id);
+    cryptohome_remover_->CancelDelayedCryptohomeRemoval(account_id);
   }
 
   std::vector<const KioskAppDataBase*> old_apps_to_remove;

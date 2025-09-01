@@ -47,6 +47,7 @@ namespace ash {
 
 class KioskAppData;
 class KioskExternalUpdater;
+class KioskCryptohomeRemover;
 
 extern const char kKioskPrimaryAppInstallErrorHistogram[];
 extern const char kKioskPrimaryAppUpdateResultHistogram[];
@@ -124,9 +125,11 @@ class KioskChromeAppManager : public KioskAppManagerBase,
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // `local_state` must be non-null, and must outlive `this`.
+  // `cryptohome_remover` must be non-null, and must outlive `this`.
   KioskChromeAppManager(
       PrefService* local_state,
-      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      KioskCryptohomeRemover* cryptohome_remover);
   KioskChromeAppManager(const KioskChromeAppManager&) = delete;
   KioskChromeAppManager& operator=(const KioskChromeAppManager&) = delete;
   ~KioskChromeAppManager() override;

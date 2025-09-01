@@ -21,6 +21,7 @@ class PrefService;
 namespace ash {
 
 class KioskArcvmAppData;
+class KioskCryptohomeRemover;
 
 // Keeps track of Android apps that are to be launched in kiosk mode.
 // For removed apps deletes appropriate cryptohome. The information about
@@ -31,7 +32,9 @@ class KioskArcvmAppManager : public KioskAppManagerBase {
   static KioskArcvmAppManager* Get();
   // local_state:  Stores user defined app data such as name, icon, etc.
   // It should outlive KioskArcvmAppManager.
-  explicit KioskArcvmAppManager(PrefService* local_state);
+  // `cryptohome_remover` must be non-null, and must outlive `this`.
+  KioskArcvmAppManager(PrefService* local_state,
+                       KioskCryptohomeRemover* cryptohome_remover);
   KioskArcvmAppManager();
   KioskArcvmAppManager(const KioskArcvmAppManager&) = delete;
   KioskArcvmAppManager& operator=(const KioskArcvmAppManager&) = delete;

@@ -4,16 +4,17 @@
 
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "base/barrier_closure.h"
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/app_mode/pref_names.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chromeos/ash/components/cryptohome/error_util.h"
 #include "chromeos/ash/components/cryptohome/userdataauth_util.h"
@@ -28,74 +29,10 @@
 
 namespace ash {
 
-namespace {
+KioskCryptohomeRemover::KioskCryptohomeRemover(PrefService* local_state)
+    : local_state_(CHECK_DEREF(local_state)) {}
 
-void ScheduleDelayedCryptohomeRemoval(const AccountId& account_id) {
-  PrefService* const local_state = g_browser_process->local_state();
-  {
-    ScopedDictPrefUpdate dict_update(local_state,
-                                     prefs::kAllKioskUsersToRemove);
-    dict_update->Set(cryptohome::Identification(account_id).id(),
-                     account_id.GetUserEmail());
-  }
-  local_state->CommitPendingWrite();
-}
-
-void UnscheduleDelayedCryptohomeRemoval(const cryptohome::Identification& id) {
-  PrefService* const local_state = g_browser_process->local_state();
-  {
-    ScopedDictPrefUpdate dict_update(local_state,
-                                     prefs::kAllKioskUsersToRemove);
-    dict_update->Remove(id.id());
-  }
-  local_state->CommitPendingWrite();
-}
-
-void OnRemoveAppCryptohomeComplete(
-    const cryptohome::Identification& id,
-    base::OnceClosure callback,
-    std::optional<user_data_auth::RemoveReply> reply) {
-  cryptohome::ErrorWrapper error = ReplyToCryptohomeError(reply);
-  if (!cryptohome::HasError(error) ||
-      cryptohome::ErrorMatches(
-          error, user_data_auth::CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND)) {
-    UnscheduleDelayedCryptohomeRemoval(id);
-  }
-  if (callback) {
-    std::move(callback).Run();
-  }
-}
-
-void PerformDelayedCryptohomeRemovals(bool service_is_available) {
-  if (!service_is_available) {
-    LOG(ERROR) << "Cryptohome client is not avaiable.";
-    return;
-  }
-
-  PrefService* local_state = g_browser_process->local_state();
-  const base::Value::Dict& dict =
-      local_state->GetDict(prefs::kAllKioskUsersToRemove);
-  for (const auto it : dict) {
-    std::string app_id;
-    if (it.second.is_string()) {
-      app_id = it.second.GetString();
-    }
-    VLOG(1) << "Removing obsolete cryptohome for " << app_id;
-
-    const cryptohome::Identification cryptohome_id(
-        cryptohome::Identification::FromString(it.first));
-    cryptohome::AccountIdentifier account_id_proto;
-    account_id_proto.set_account_id(cryptohome_id.id());
-
-    user_data_auth::RemoveRequest request;
-    *request.mutable_identifier() = account_id_proto;
-    UserDataAuthClient::Get()->Remove(
-        request, base::BindOnce(&OnRemoveAppCryptohomeComplete, cryptohome_id,
-                                base::OnceClosure()));
-  }
-}
-
-}  // namespace
+KioskCryptohomeRemover::~KioskCryptohomeRemover() = default;
 
 void KioskCryptohomeRemover::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kAllKioskUsersToRemove);
@@ -104,7 +41,8 @@ void KioskCryptohomeRemover::RegisterPrefs(PrefRegistrySimple* registry) {
 void KioskCryptohomeRemover::RemoveObsoleteCryptohomes() {
   auto* client = UserDataAuthClient::Get();
   client->WaitForServiceToBeAvailable(
-      base::BindOnce(&PerformDelayedCryptohomeRemovals));
+      base::BindOnce(&KioskCryptohomeRemover::PerformDelayedCryptohomeRemovals,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void KioskCryptohomeRemover::CancelDelayedCryptohomeRemoval(
@@ -138,10 +76,79 @@ void KioskCryptohomeRemover::RemoveCryptohomesAndExitIfNeeded(
       const cryptohome::Identification cryptohome_id(account_id);
       request.mutable_identifier()->set_account_id(cryptohome_id.id());
       UserDataAuthClient::Get()->Remove(
-          request, base::BindOnce(&OnRemoveAppCryptohomeComplete, cryptohome_id,
-                                  cryptohomes_barrier_closure));
+          request,
+          base::BindOnce(&KioskCryptohomeRemover::OnRemoveAppCryptohomeComplete,
+                         weak_ptr_factory_.GetWeakPtr(), cryptohome_id,
+                         cryptohomes_barrier_closure));
     }
   }
+}
+
+void KioskCryptohomeRemover::PerformDelayedCryptohomeRemovals(
+    bool service_is_available) {
+  if (!service_is_available) {
+    LOG(ERROR) << "Cryptohome client is not avaiable.";
+    return;
+  }
+
+  const base::Value::Dict& dict =
+      local_state_->GetDict(prefs::kAllKioskUsersToRemove);
+  for (const auto it : dict) {
+    std::string app_id;
+    if (it.second.is_string()) {
+      app_id = it.second.GetString();
+    }
+    VLOG(1) << "Removing obsolete cryptohome for " << app_id;
+
+    const cryptohome::Identification cryptohome_id(
+        cryptohome::Identification::FromString(it.first));
+    cryptohome::AccountIdentifier account_id_proto;
+    account_id_proto.set_account_id(cryptohome_id.id());
+
+    user_data_auth::RemoveRequest request;
+    *request.mutable_identifier() = account_id_proto;
+    UserDataAuthClient::Get()->Remove(
+        request,
+        base::BindOnce(&KioskCryptohomeRemover::OnRemoveAppCryptohomeComplete,
+                       weak_ptr_factory_.GetWeakPtr(), cryptohome_id,
+                       base::OnceClosure()));
+  }
+}
+
+void KioskCryptohomeRemover::OnRemoveAppCryptohomeComplete(
+    const cryptohome::Identification& id,
+    base::OnceClosure callback,
+    std::optional<user_data_auth::RemoveReply> reply) {
+  cryptohome::ErrorWrapper error = ReplyToCryptohomeError(reply);
+  if (!cryptohome::HasError(error) ||
+      cryptohome::ErrorMatches(
+          error, user_data_auth::CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND)) {
+    UnscheduleDelayedCryptohomeRemoval(id);
+  }
+  if (callback) {
+    std::move(callback).Run();
+  }
+}
+
+void KioskCryptohomeRemover::ScheduleDelayedCryptohomeRemoval(
+    const AccountId& account_id) {
+  {
+    ScopedDictPrefUpdate dict_update(&local_state_.get(),
+                                     prefs::kAllKioskUsersToRemove);
+    dict_update->Set(cryptohome::Identification(account_id).id(),
+                     account_id.GetUserEmail());
+  }
+  local_state_->CommitPendingWrite();
+}
+
+void KioskCryptohomeRemover::UnscheduleDelayedCryptohomeRemoval(
+    const cryptohome::Identification& id) {
+  {
+    ScopedDictPrefUpdate dict_update(&local_state_.get(),
+                                     prefs::kAllKioskUsersToRemove);
+    dict_update->Remove(id.id());
+  }
+  local_state_->CommitPendingWrite();
 }
 
 }  // namespace ash

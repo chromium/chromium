@@ -13,6 +13,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/app_mode/arcvm_app/kiosk_arcvm_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -101,7 +102,8 @@ class KioskArcvmAppServiceTest : public testing::Test {
     arc_policy_bridge_ =
         arc::ArcPolicyBridge::GetForBrowserContextForTesting(profile_.get());
     app_manager_ = std::make_unique<KioskArcvmAppManager>(
-        TestingBrowserProcess::GetGlobal()->local_state());
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        &kiosk_cryptohome_remover_);
     // Initialize KioskArcvmAppService to listen to KioskArcvmAppManager
     // updates.
     KioskArcvmAppService::Get(profile());
@@ -172,6 +174,9 @@ class KioskArcvmAppServiceTest : public testing::Test {
   ArcAppTest arc_app_test_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   arc::mojom::AppInfoPtr app_info_;
+
+  KioskCryptohomeRemover kiosk_cryptohome_remover_{
+      TestingBrowserProcess::GetGlobal()->local_state()};
 
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<KioskArcvmAppManager> app_manager_;

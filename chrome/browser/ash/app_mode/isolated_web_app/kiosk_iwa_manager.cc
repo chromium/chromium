@@ -70,8 +70,9 @@ KioskIwaManager* KioskIwaManager::Get() {
   return g_kiosk_iwa_manager_instance;
 }
 
-KioskIwaManager::KioskIwaManager(PrefService& local_state)
-    : KioskAppManagerBase(&local_state) {
+KioskIwaManager::KioskIwaManager(PrefService& local_state,
+                                 KioskCryptohomeRemover* cryptohome_remover)
+    : KioskAppManagerBase(&local_state, cryptohome_remover) {
   CHECK(!g_kiosk_iwa_manager_instance);  // Only one instance is allowed.
   g_kiosk_iwa_manager_instance = this;
   UpdateAppsFromPolicy();
@@ -176,7 +177,7 @@ void KioskIwaManager::MaybeSetAutoLaunchInfo(
 
 void KioskIwaManager::CancelCryptohomeRemovalsForCurrentApps() {
   for (const auto& iwa : isolated_web_apps_) {
-    KioskCryptohomeRemover::CancelDelayedCryptohomeRemoval(iwa->account_id());
+    cryptohome_remover_->CancelDelayedCryptohomeRemoval(iwa->account_id());
   }
 }
 

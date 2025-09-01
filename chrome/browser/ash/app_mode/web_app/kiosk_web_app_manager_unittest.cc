@@ -125,7 +125,8 @@ class KioskWebAppManagerTest : public BrowserWithTestWindowTest {
 
     app_manager_ = std::make_unique<KioskWebAppManager>(
         TestingBrowserProcess::GetGlobal()->local_state(),
-        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
+        kiosk_cryptohome_remover());
 
     app_manager()->StartObservingAppUpdate(profile(), account_id());
     app_manager()->AddObserver(&app_manager_observer_);

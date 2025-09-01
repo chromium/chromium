@@ -53,8 +53,10 @@ KioskArcvmAppManager* KioskArcvmAppManager::Get() {
   return g_arcvm_kiosk_app_manager;
 }
 
-KioskArcvmAppManager::KioskArcvmAppManager(PrefService* local_state)
-    : KioskAppManagerBase(local_state),
+KioskArcvmAppManager::KioskArcvmAppManager(
+    PrefService* local_state,
+    KioskCryptohomeRemover* cryptohome_remover)
+    : KioskAppManagerBase(local_state, cryptohome_remover),
       auto_launch_account_id_(EmptyAccountId()) {
   CHECK(!g_arcvm_kiosk_app_manager);  // Only one instance is allowed.
   g_arcvm_kiosk_app_manager = this;
@@ -204,9 +206,10 @@ void KioskArcvmAppManager::UpdateAppsFromPolicy() {
           app_info.class_name(), app_info.action(), account_id, name));
       apps_.back()->LoadFromCache();
     }
+
     // TODO(crbug.com/418847377): Remove direct dependency on
     // KioskCryptohomeRemover.
-    KioskCryptohomeRemover::CancelDelayedCryptohomeRemoval(account_id);
+    cryptohome_remover_->CancelDelayedCryptohomeRemoval(account_id);
   }
 
   std::vector<const KioskAppDataBase*> old_apps_to_remove;

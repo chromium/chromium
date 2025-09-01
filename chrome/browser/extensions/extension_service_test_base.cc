@@ -59,6 +59,7 @@
 #include "extensions/common/extensions_client.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/extensions/install_limiter.h"
 #include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
@@ -421,9 +422,12 @@ void ExtensionServiceTestBase::SetUp() {
   // TODO(b/308107135) own KioskController instead of KioskAppManager.
   // A test might have initialized a `KioskAppManager` already.
   if (!ash::KioskChromeAppManager::IsInitialized()) {
+    kiosk_cryptohome_remover_ = std::make_unique<ash::KioskCryptohomeRemover>(
+        TestingBrowserProcess::GetGlobal()->local_state());
     kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>(
         TestingBrowserProcess::GetGlobal()->local_state(),
-        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
+        kiosk_cryptohome_remover_.get());
   }
 #endif
 

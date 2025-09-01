@@ -39,6 +39,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -114,9 +115,12 @@ void BrowserWithTestWindowTest::SetUp() {
 
 #if BUILDFLAG(IS_CHROMEOS)
   manager_ = std::make_unique<crosapi::CrosapiManager>();
+  kiosk_cryptohome_remover_ = std::make_unique<ash::KioskCryptohomeRemover>(
+      TestingBrowserProcess::GetGlobal()->local_state());
   kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>(
       TestingBrowserProcess::GetGlobal()->local_state(),
-      TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
+      TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
+      kiosk_cryptohome_remover_.get());
 #endif
 
   // Subclasses can provide their own Profile name.
@@ -163,6 +167,7 @@ void BrowserWithTestWindowTest::TearDown() {
 #if BUILDFLAG(IS_CHROMEOS)
   manager_.reset();
   kiosk_chrome_app_manager_.reset();
+  kiosk_cryptohome_remover_.reset();
 #endif
 
   user_performance_tuning_manager_environment_.TearDown();

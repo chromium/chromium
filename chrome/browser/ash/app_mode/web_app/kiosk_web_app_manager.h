@@ -32,6 +32,7 @@ struct WebAppInstallInfo;
 namespace ash {
 
 class KioskWebAppData;
+class KioskCryptohomeRemover;
 
 // Does the management of web kiosk apps.
 class KioskWebAppManager : public KioskAppManagerBase {
@@ -45,9 +46,11 @@ class KioskWebAppManager : public KioskAppManagerBase {
   static KioskWebAppManager* Get();
 
   // `local_state` must be non-null, and must outlive `this`.
+  // `cryptohome_remover` must be non-null, and must outlive `this`.
   KioskWebAppManager(
       PrefService* local_state,
-      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      KioskCryptohomeRemover* cryptohome_remover);
   KioskWebAppManager(const KioskWebAppManager&) = delete;
   KioskWebAppManager& operator=(const KioskWebAppManager&) = delete;
   ~KioskWebAppManager() override;

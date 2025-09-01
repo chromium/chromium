@@ -1122,7 +1122,8 @@ class DeviceStatusCollectorTest : public testing::Test {
     if (!kiosk_chrome_app_manager_) {
       kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>(
           TestingBrowserProcess::GetGlobal()->local_state(),
-          TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
+          TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
+          &kiosk_cryptohome_remover_);
     }
     kiosk_chrome_app_manager_->AddAppForTest(
         auto_launch_app_account.kiosk_app_id,
@@ -1149,7 +1150,8 @@ class DeviceStatusCollectorTest : public testing::Test {
       const DeviceLocalAccount& auto_launch_app_account) {
     kiosk_web_app_manager_ = std::make_unique<ash::KioskWebAppManager>(
         TestingBrowserProcess::GetGlobal()->local_state(),
-        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory());
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
+        &kiosk_cryptohome_remover_);
     kiosk_web_app_manager_->AddAppForTesting(
         AccountId::FromUserEmail(auto_launch_app_account.user_id),
         GURL(auto_launch_app_account.web_kiosk_app_info.url()));
@@ -1167,8 +1169,9 @@ class DeviceStatusCollectorTest : public testing::Test {
 
   void MockAutoLaunchKioskIwa(
       const DeviceLocalAccount& auto_launch_app_account) {
-    kiosk_iwa_manager_ = std::make_unique<ash::KioskIwaManager>(CHECK_DEREF(
-        TestingBrowserProcess::GetGlobal()->GetTestingLocalState()));
+    kiosk_iwa_manager_ = std::make_unique<ash::KioskIwaManager>(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->GetTestingLocalState()),
+        &kiosk_cryptohome_remover_);
     kiosk_iwa_manager_->AddAppForTesting(auto_launch_app_account);
 
     std::vector<DeviceLocalAccount> accounts;
@@ -1213,6 +1216,8 @@ class DeviceStatusCollectorTest : public testing::Test {
       scoped_testing_cros_settings_.device_settings(), nullptr};
   // Only set after MockRunningKioskApp was called.
   std::unique_ptr<TestingProfile> testing_profile_;
+  ash::KioskCryptohomeRemover kiosk_cryptohome_remover_{
+      TestingBrowserProcess::GetGlobal()->local_state()};
   // Only set after MockAutoLaunchWebKioskApp was called.
   std::unique_ptr<ash::KioskWebAppManager> kiosk_web_app_manager_;
   // Only set after MockAutoLaunchKioskIwa was called.

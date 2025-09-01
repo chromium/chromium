@@ -70,6 +70,9 @@ class KioskController {
   // Kiosk session, or before `InitializeSystemSession`.
   virtual KioskSystemSession* GetKioskSystemSession() = 0;
 
+  // Removes the cryptohomes of kiosks that were removed from policy.
+  virtual void RemoveObsoleteCryptohomes() = 0;
+
   // Registers local state prefs relevant for Kiosk.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
