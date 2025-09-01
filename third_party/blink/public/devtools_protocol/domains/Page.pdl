@@ -1600,9 +1600,9 @@ domain Page
       IndexedDBEvent
       Dummy
       JsNetworkRequestReceivedCacheControlNoStoreResource
-      WebRTCSticky
-      WebTransportSticky
-      WebSocketSticky
+      WebRTCUsedWithCCNS
+      WebTransportUsedWithCCNS
+      WebSocketUsedWithCCNS
       SmartCard
       LiveMediaStreamTrack
       UnloadHandler

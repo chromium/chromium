@@ -27,15 +27,18 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
     case WebSchedulerTrackedFeature::kWebSocket:
       return {"websocket", "WebSocket live connection"};
     case WebSchedulerTrackedFeature::kWebSocketSticky:
-      return {"websocket", "WebSocket used"};
+      return {"websocket-used-with-ccns",
+              "WebSocket used in the page with Cache-Control: no store"};
     case WebSchedulerTrackedFeature::kWebTransport:
       return {"webtransport", "WebTransport live connection"};
     case WebSchedulerTrackedFeature::kWebTransportSticky:
-      return {"webtransport", "WebTransport used"};
+      return {"webtransport-used-with-ccns",
+              "WebTransport used in the page with Cache-Control: no store"};
     case WebSchedulerTrackedFeature::kWebRTC:
       return {"rtc", "WebRTC live connection"};
     case WebSchedulerTrackedFeature::kWebRTCSticky:
-      return {"rtc", "WebRTC used"};
+      return {"rtc-used-with-ccns",
+              "WebRTC used in the page with Cache-Control: no store"};
     case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache:
       return {"response-cache-control-no-cache",
               "main resource has Cache-Control: No-Cache"};

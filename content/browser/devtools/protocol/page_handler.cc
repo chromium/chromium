@@ -1898,15 +1898,16 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
     case WebSchedulerTrackedFeature::kWebSocket:
       return Page::BackForwardCacheNotRestoredReasonEnum::WebSocket;
     case WebSchedulerTrackedFeature::kWebSocketSticky:
-      return Page::BackForwardCacheNotRestoredReasonEnum::WebSocketSticky;
+      return Page::BackForwardCacheNotRestoredReasonEnum::WebSocketUsedWithCCNS;
     case WebSchedulerTrackedFeature::kWebTransport:
       return Page::BackForwardCacheNotRestoredReasonEnum::WebTransport;
     case WebSchedulerTrackedFeature::kWebTransportSticky:
-      return Page::BackForwardCacheNotRestoredReasonEnum::WebTransportSticky;
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          WebTransportUsedWithCCNS;
     case WebSchedulerTrackedFeature::kWebRTC:
       return Page::BackForwardCacheNotRestoredReasonEnum::WebRTC;
     case WebSchedulerTrackedFeature::kWebRTCSticky:
-      return Page::BackForwardCacheNotRestoredReasonEnum::WebRTCSticky;
+      return Page::BackForwardCacheNotRestoredReasonEnum::WebRTCUsedWithCCNS;
     case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           MainResourceHasCacheControlNoCache;
