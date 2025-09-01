@@ -135,9 +135,9 @@ void TokenHandleService::MaybeFetchTokenHandle(
     const std::string& access_token,
     const std::string& refresh_token_hash) {
   VLOG(1) << "TokenHandleService::OnGetRefreshTokenHash";
-  token_handle_store_->MaybeFetchTokenHandle(profile_->GetURLLoaderFactory(),
-                                             account_id, access_token,
-                                             refresh_token_hash);
+  token_handle_store_->MaybeFetchTokenHandle(
+      profile_->GetPrefs(), profile_->GetURLLoaderFactory(), account_id,
+      access_token, refresh_token_hash);
 }
 
 void TokenHandleService::Shutdown() {

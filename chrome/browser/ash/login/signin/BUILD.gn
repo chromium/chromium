@@ -183,6 +183,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/login/saml:test_support",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/signin/ash",
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//components/pref_registry",

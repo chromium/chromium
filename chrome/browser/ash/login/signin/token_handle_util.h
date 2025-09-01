@@ -64,11 +64,17 @@ class TokenHandleUtil : public TokenHandleStore {
   void StoreTokenHandle(const AccountId& account_id,
                         const std::string& handle) override;
   void MaybeFetchTokenHandle(
+      PrefService* token_handle_mapping_store,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const AccountId& account_id,
       const std::string& access_token,
       const std::string& refresh_token_hash) override;
   void SetTokenHandleStale(const AccountId& account_id) override;
+  void DiagnoseTokenHandleMapping(
+      PrefService* token_handle_mapping_store,
+      account_manager::AccountManager* account_manager,
+      const AccountId& account_id,
+      const std::string& token) const override;
 
   void SetInvalidTokenForTesting(const char* token) override;
 

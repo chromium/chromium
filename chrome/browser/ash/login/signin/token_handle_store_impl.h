@@ -38,6 +38,8 @@ class TokenHandleStoreImpl : public TokenHandleStore {
       DoesUserHaveGaiaPasswordCallback does_user_have_gaia_password);
   ~TokenHandleStoreImpl() override;
 
+  static void RegisterPrefs(PrefRegistrySimple* registry);
+
   TokenHandleStoreImpl(const TokenHandleStoreImpl&) = delete;
   TokenHandleStoreImpl& operator=(const TokenHandleStoreImpl&) = delete;
 
@@ -56,6 +58,7 @@ class TokenHandleStoreImpl : public TokenHandleStore {
   void SetLastCheckedPrefForTesting(const AccountId& account_id,
                                     base::Time time) override;
   void MaybeFetchTokenHandle(
+      PrefService* token_handle_mapping_store,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const AccountId& account_id,
       const std::string& access_token,
@@ -67,12 +70,15 @@ class TokenHandleStoreImpl : public TokenHandleStore {
                     const TokenHandleChecker::Status& status);
 
   void FetchTokenHandle(
+      PrefService* token_handle_mapping_store,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const AccountId& account_id,
       const std::string& access_token,
       const std::string& refresh_token_hash);
 
-  void OnFetchToken(const AccountId& account_id,
+  void OnFetchToken(PrefService* token_handle_mapping_store,
+                    const std::string& refresh_token_hash,
+                    const AccountId& account_id,
                     bool success,
                     const std::string& token);
 
@@ -95,6 +101,20 @@ class TokenHandleStoreImpl : public TokenHandleStore {
   bool HasTokenStatusInvalid(const AccountId& account_id) const;
 
   bool IsTokenHandleStale(const AccountId& account_id) const;
+
+  void StoreTokenHandleMapping(PrefService* token_handle_mapping_store,
+                               const std::string& token_handle,
+                               const std::string& refresh_token_hash);
+
+  void DiagnoseTokenHandleMapping(
+      PrefService* token_handle_mapping_store,
+      account_manager::AccountManager* account_manager,
+      const AccountId& account_id,
+      const std::string& token) const override;
+
+  void OnGetTokenHash(PrefService* token_handle_mapping_store,
+                      const std::string& token,
+                      const std::string& account_manager_stored_hash) const;
 
   // Associates a request_id with a pending token handle fetch.
   base::flat_map<AccountId, std::unique_ptr<TokenHandleFetcher>>
