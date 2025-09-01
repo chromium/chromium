@@ -22,7 +22,7 @@
                 "try_builder": "android-x64-rel"
             },
             "components_browsertests": {
-                "shards": 181,
+                "shards": 293,
                 "try_builder": "android-x64-rel"
             }
         },
@@ -52,7 +52,7 @@
     "chromium.android.desktop": {
         "android-desktop-x64-rel-15-tests": {
             "android_browsertests": {
-                "shards": 30,
+                "shards": 40,
                 "try_builder": "android-desktop-x64-rel"
             },
             "unit_tests": {
