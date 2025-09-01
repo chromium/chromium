@@ -526,6 +526,15 @@ void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
     // Not safe to do anything after this point
   }
 
+  if (net::HttpResponseHeaders* response_headers = head->headers.get()) {
+    base::UmaHistogramBoolean(
+        base::StrCat({"Omnibox.SearchPrefetch.HasNoVarySearchHeader",
+                      is_in_fallback_ ? ".Fallback" : ".Initial",
+                      navigation_prefetch_ ? ".NavigationPrefetch"
+                                           : ".SuggestionPrefetch"}),
+        response_headers->HasHeader("No-Vary-Search"));
+  }
+
   head->was_in_prefetch_cache = true;
   head->navigation_delivery_type =
       network::mojom::NavigationDeliveryType::kNavigationalPrefetch;

@@ -4189,6 +4189,33 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram
+    name="Omnibox.{SearchPrefetch}.HasNoVarySearchHeader.{FallbackOrInitial}.{NavigationOrSuggestionPrefetch}"
+    enum="Boolean" expires_after="2026-01-18">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    {SearchPrefetch}
+
+    This histogram records whether a prefetch URL loader receives a
+    No-Vary-Search HTTP response header or not. This is only recorded when the
+    response is servable.
+
+    {FallbackOrInitial}
+
+    {NavigationOrSuggestionPrefetch}
+  </summary>
+  <token key="SearchPrefetch" variants="SearchPrefetch"/>
+  <token key="FallbackOrInitial">
+    <variant name="Fallback"
+        summary="Recorded for the fallback request after the prefetch fails."/>
+    <variant name="Initial"
+        summary="Recorded for the initial prefetch request."/>
+  </token>
+  <token key="NavigationOrSuggestionPrefetch"
+      variants="NavigationOrSuggestionPrefetch"/>
+</histogram>
+
+<histogram
     name="Omnibox.{SearchPrefetch}.NavigationInterceptedToForwardingComplete"
     units="ms" expires_after="2026-01-18">
   <owner>spelchat@chromium.org</owner>
