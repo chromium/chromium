@@ -2056,14 +2056,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   content_analysis_run_loop.Run();
 }
 
-// TODO(crbug.com/413427796): Fix flaky test on Windows
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_BlockUntilVerdict DISABLED_BlockUntilVerdict
-#else
-#define MAYBE_BlockUntilVerdict BlockUntilVerdict
-#endif
+// TODO(crbug.com/413427796): Fix flaky test.
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
-                       MAYBE_BlockUntilVerdict) {
+                       DISABLED_BlockUntilVerdict) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   // Set up delegate and upload service.
