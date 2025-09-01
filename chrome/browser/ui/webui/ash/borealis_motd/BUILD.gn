@@ -11,6 +11,7 @@ static_library("borealis_motd") {
   ]
 
   public_deps = [
+    "//ash/strings:strings_grit",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/common",
     "//content/public/browser",
