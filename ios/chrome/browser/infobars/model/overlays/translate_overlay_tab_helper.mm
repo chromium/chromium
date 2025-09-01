@@ -193,8 +193,6 @@ TranslateOverlayTabHelper::TranslateInfobarObserver::TranslateInfobarObserver(
         ProfileIOS::FromBrowserState(web_state->GetBrowserState());
 
     tips_manager_ = TipsManagerIOSFactory::GetForProfile(profile);
-
-    CHECK(tips_manager_);
   }
 }
 
