@@ -2088,17 +2088,19 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
     // substitutions.
     if (!CSSVariableParser::ParseDeclarationValue(attribute_value, false,
                                                   context)) {
-      return false;
-    }
-    if (!ResolveTokensInto(attribute_value_stream, tree_scope, resolver,
-                           context, function_context,
-                           /* stop_type */ kEOFToken,
-                           substituted_attribute_token_sequence)) {
       // Trigger fallback:
       substituted_attribute_value = g_null_atom;
     } else {
-      substituted_attribute_value =
-          substituted_attribute_token_sequence.OriginalText();
+      if (!ResolveTokensInto(attribute_value_stream, tree_scope, resolver,
+                             context, function_context,
+                             /* stop_type */ kEOFToken,
+                             substituted_attribute_token_sequence)) {
+        // Trigger fallback:
+        substituted_attribute_value = g_null_atom;
+      } else {
+        substituted_attribute_value =
+            substituted_attribute_token_sequence.OriginalText();
+      }
     }
   }
   if (resolver.InCycle()) {
