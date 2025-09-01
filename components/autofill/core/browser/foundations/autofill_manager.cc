@@ -775,13 +775,13 @@ void AutofillManager::ParseFormsAsyncCommon(
           context.log_manager->Flush(*self->log_manager());
         }
         for (auto& form_structure : context.form_structures) {
-          FormStructure* raw_form_structure = form_structure.get();
-          self->form_structures_[raw_form_structure->global_id()] =
+          FormStructure& raw_form_structure = *form_structure;
+          self->form_structures_[raw_form_structure.global_id()] =
               std::move(form_structure);
-          self->LogCurrentFieldTypes(*raw_form_structure);
+          raw_form_structure.LogDeveloperEngagementMetric();
+          self->LogCurrentFieldTypes(raw_form_structure);
           self->NotifyObservers(
-              &Observer::OnFieldTypesDetermined,
-              raw_form_structure->global_id(),
+              &Observer::OnFieldTypesDetermined, raw_form_structure.global_id(),
               Observer::FieldTypeSource::kHeuristicsOrAutocomplete);
         }
         std::move(callback).Run(*self);

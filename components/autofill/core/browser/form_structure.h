@@ -334,6 +334,10 @@ class FormStructure {
     submission_source_ = submission_source;
   }
 
+  // Logs the DeveloperEngagementMetric UKM metric and updates
+  // `developer_engagement_metrics_`.
+  void LogDeveloperEngagementMetric();
+
   int developer_engagement_metrics() const {
     return developer_engagement_metrics_;
   }
@@ -373,8 +377,6 @@ class FormStructure {
   // types of the corresponding fields for the `pattern_source`.
   void AssignBestFieldTypes(const FieldCandidatesMap& field_type_map,
                             HeuristicSource heuristic_source);
-
-  void LogDetermineHeuristicTypesMetrics();
 
   // Sets each field's `html_type` and `html_mode` based on the field's
   // `parsed_autocomplete` member.

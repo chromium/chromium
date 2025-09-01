@@ -240,7 +240,6 @@ void FormStructure::DetermineHeuristicTypes(
   AssignBestFieldTypes(regex_predictions, HeuristicSource::kRegexes);
   RationalizeAndAssignSections(client_country, current_page_language,
                                log_manager);
-  LogDetermineHeuristicTypesMetrics();
 }
 
 void FormStructure::RationalizeAndAssignSections(
@@ -691,7 +690,7 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
   may_run_autofill_ai_model_ = cached_form.may_run_autofill_ai_model_;
 }
 
-void FormStructure::LogDetermineHeuristicTypesMetrics() {
+void FormStructure::LogDeveloperEngagementMetric() {
   developer_engagement_metrics_ = 0;
   if (IsAutofillable()) {
     AutofillMetrics::DeveloperEngagementMetric metric =
