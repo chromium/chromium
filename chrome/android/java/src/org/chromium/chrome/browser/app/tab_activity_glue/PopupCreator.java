@@ -374,16 +374,20 @@ public class PopupCreator {
         if (localCoordinatesPx.first != null) {
             activityOptions.setLaunchDisplayId(localCoordinatesPx.first);
             if (localCoordinatesPx.second != null) {
+                Rect idealBounds = localCoordinatesPx.second;
+                Log.v(TAG, "createPopupActivityOptions: ideal bounds = " + idealBounds);
+
                 if (ChromeFeatureList.isEnabled(
                         ChromeFeatureList.ANDROID_WINDOW_POPUP_PREDICT_FINAL_BOUNDS)) {
-                    Log.v(TAG, "createPopupActivityOptions: DO apply insets = " + insets);
-                    final Rect outerBounds =
+                    Log.v(TAG, "createPopupActivityOptions: apply insets = " + insets);
+                    idealBounds =
                             WindowInsetsUtils.insetRectangle(localCoordinatesPx.second, insets);
-                    activityOptions.setLaunchBounds(outerBounds);
-                } else {
-                    Log.v(TAG, "createPopupActivityOptions: DO NOT apply insets = " + insets);
-                    activityOptions.setLaunchBounds(localCoordinatesPx.second);
                 }
+
+                final Rect safeBounds = DisplayUtil.clampWindowToDisplay(idealBounds, display);
+                Log.v(TAG, "createPopupActivityOptions: clamped bounds = " + safeBounds);
+
+                activityOptions.setLaunchBounds(safeBounds);
             }
         }
 

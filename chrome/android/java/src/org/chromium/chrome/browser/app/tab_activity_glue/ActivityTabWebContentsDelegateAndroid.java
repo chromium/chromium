@@ -392,7 +392,10 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         if (window == null) return;
         final Pair<Integer, Rect> localCoordinatesPx =
                 DisplayUtil.getLocalCoordinatesPx(new RectF(bounds), window.getDisplay());
-        delegate.moveTaskTo(appTask, localCoordinatesPx.first, localCoordinatesPx.second);
+        delegate.moveTaskTo(
+                appTask,
+                localCoordinatesPx.first,
+                DisplayUtil.clampWindowToDisplay(localCoordinatesPx.second, window.getDisplay()));
     }
 
     @Override
