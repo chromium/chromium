@@ -13,7 +13,9 @@ import itertools
 import pathlib
 import re
 
-_INCLUDES = re.compile(r'#\s*(?:include|import)(_next)?\s*<([^>]+)>')
+# Almost every sysroot just uses #include <>, but fuchsia uses #include ""
+# sometimes.
+_INCLUDES = re.compile(r'#\s*(?:include|import)(_next)?\s*["<]([^>"]+)[>"]')
 
 
 class CompileStatus(enum.Enum):
