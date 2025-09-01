@@ -36,7 +36,7 @@ import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.components.browser_ui.site_settings.GeolocationSetting;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.SessionModel;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
@@ -72,7 +72,7 @@ public class GeolocationHeaderTest {
     @Feature({"Location"})
     @CommandLineFlags.Add({GOOGLE_BASE_URL_SWITCH})
     public void testConsistentHeader() {
-        setPermission(ContentSettingValues.ALLOW);
+        setPermission(ContentSetting.ALLOW);
         long now = setMockLocationNow();
 
         // X-Geo should be sent for Google search results page URLs.
@@ -132,9 +132,9 @@ public class GeolocationHeaderTest {
 
         // X-Geo should be sent if DSE autogrant is enabled only if the user has explicitly allowed
         // geolocation.
-        checkHeaderWithPermission(ContentSettingValues.ALLOW, now, false);
-        checkHeaderWithPermission(ContentSettingValues.BLOCK, now, true);
-        checkHeaderWithPermission(ContentSettingValues.DEFAULT, now, true);
+        checkHeaderWithPermission(ContentSetting.ALLOW, now, false);
+        checkHeaderWithPermission(ContentSetting.BLOCK, now, true);
+        checkHeaderWithPermission(ContentSetting.DEFAULT, now, true);
     }
 
     @Test
@@ -142,7 +142,7 @@ public class GeolocationHeaderTest {
     @Feature({"Location"})
     @DisabledTest(message = "https://crbug.com/416787235")
     public void testProtoEncoding() {
-        setPermission(ContentSettingValues.ALLOW);
+        setPermission(ContentSetting.ALLOW);
         long now = setMockLocationNow();
 
         // X-Geo should be sent for Google search results page URLs using proto encoding.
@@ -154,7 +154,7 @@ public class GeolocationHeaderTest {
     @Feature({"Location"})
     @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/421965472")
     public void testGpsFallback() {
-        setPermission(ContentSettingValues.ALLOW);
+        setPermission(ContentSetting.ALLOW);
         // Only GPS location, should be sent when flag is on.
         long now = System.currentTimeMillis();
         Location gpsLocation = generateMockLocation(LocationManager.GPS_PROVIDER, now);
@@ -168,7 +168,7 @@ public class GeolocationHeaderTest {
     @Feature({"Location"})
     @DisabledTest(message = "https://crbug.com/414769376")
     public void testGpsFallbackYounger() {
-        setPermission(ContentSettingValues.ALLOW);
+        setPermission(ContentSetting.ALLOW);
         long now = System.currentTimeMillis();
         // GPS location is younger.
         Location gpsLocation = generateMockLocation(LocationManager.GPS_PROVIDER, now + 100);
@@ -184,7 +184,7 @@ public class GeolocationHeaderTest {
     @SmallTest
     @Feature({"Location"})
     public void testGpsFallbackOlder() {
-        setPermission(ContentSettingValues.ALLOW);
+        setPermission(ContentSetting.ALLOW);
         long now = System.currentTimeMillis();
         // GPS location is older.
         Location gpsLocation = generateMockLocation(LocationManager.GPS_PROVIDER, now - 100);
@@ -200,7 +200,7 @@ public class GeolocationHeaderTest {
     @SmallTest
     @Feature({"Location"})
     public void testGeolocationHeaderPrimingEnabledPermissionAllow() {
-        setPermission(ContentSettingValues.ALLOW);
+        setPermission(ContentSetting.ALLOW);
         checkHeaderPriming(/* shouldPrimeHeader= */ true);
     }
 
@@ -208,7 +208,7 @@ public class GeolocationHeaderTest {
     @SmallTest
     @Feature({"Location"})
     public void testGeolocationHeaderPrimingDisabledPermissionBlock() {
-        setPermission(ContentSettingValues.BLOCK);
+        setPermission(ContentSetting.BLOCK);
         checkHeaderPriming(/* shouldPrimeHeader= */ false);
     }
 
@@ -217,7 +217,7 @@ public class GeolocationHeaderTest {
     @Feature({"Location"})
     @DisabledTest(message = "Flaky. See crbug.com/392607758")
     public void testGeolocationHeaderPrimingDisabledPermissionAsk() {
-        setPermission(ContentSettingValues.ASK);
+        setPermission(ContentSetting.ASK);
         checkHeaderPriming(/* shouldPrimeHeader= */ false);
     }
 
@@ -227,13 +227,13 @@ public class GeolocationHeaderTest {
     @RequiresRestart(value = "Needs to reset cached geolocation from previous tests")
     @DisabledTest(message = "Flaky. See crbug.com/392607758")
     public void testGeolocationHeaderPrimingDisabledOsPermissionBlocked() {
-        setPermission(ContentSettingValues.ALLOW);
+        setPermission(ContentSetting.ALLOW);
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(false);
         checkHeaderPriming(/* shouldPrimeHeader= */ false);
     }
 
     private void checkHeaderWithPermission(
-            final @ContentSettingValues int httpsPermission,
+            final @ContentSetting int httpsPermission,
             final long locationTime,
             final boolean shouldBeNull) {
         setPermission(httpsPermission);
@@ -340,16 +340,16 @@ public class GeolocationHeaderTest {
         Assert.assertEquals(expectedHeader, header);
     }
 
-    private void setPermission(final @ContentSettingValues int setting) {
+    private void setPermission(final @ContentSetting int setting) {
         setPermission(setting, SessionModel.DURABLE);
     }
 
     private void setOneTimeGrant() {
-        setPermission(ContentSettingValues.ALLOW, SessionModel.ONE_TIME);
+        setPermission(ContentSetting.ALLOW, SessionModel.ONE_TIME);
     }
 
     private void setPermission(
-            final @ContentSettingValues int setting, @SessionModel.EnumType int sessionModel) {
+            final @ContentSetting int setting, @SessionModel.EnumType int sessionModel) {
         final boolean approximateGelocationEnabled =
                 PermissionsAndroidFeatureMap.isEnabled(
                         PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION);
@@ -377,9 +377,7 @@ public class GeolocationHeaderTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     var expectedSetting =
-                            setting == ContentSettingValues.DEFAULT
-                                    ? ContentSettingValues.ASK
-                                    : setting;
+                            setting == ContentSetting.DEFAULT ? ContentSetting.ASK : setting;
                     if (approximateGelocationEnabled) {
                         GeolocationSetting geolocationSetting =
                                 infoHttps.getGeolocationSetting(

@@ -35,7 +35,7 @@ import org.chromium.components.browser_ui.site_settings.GeolocationSetting;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
@@ -301,11 +301,11 @@ public class GeolocationHeader {
         // TODO(raymes): The call to isDseOrigin is only needed if this could be called for
         // an origin that isn't the default search engine. Otherwise remove this line.
         boolean isDseOrigin = WebsitePreferenceBridge.isDSEOrigin(profile, uri.toString());
-        @ContentSettingValues
+        @ContentSetting
         @Nullable Integer settingValue = locationContentSettingForUrl(profile, uri);
 
         boolean enabled =
-                isDseOrigin && settingValue != null && settingValue == ContentSettingValues.ALLOW;
+                isDseOrigin && settingValue != null && settingValue == ContentSetting.ALLOW;
         return !enabled;
     }
 
@@ -313,7 +313,7 @@ public class GeolocationHeader {
      * Returns the location permission for sharing their location with url (e.g. via the geolocation
      * infobar).
      */
-    private static @ContentSettingValues @Nullable Integer locationContentSettingForUrl(
+    private static @ContentSetting @Nullable Integer locationContentSettingForUrl(
             Profile profile, Uri uri) {
         if (PermissionsAndroidFeatureMap.isEnabled(
                 PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)) {

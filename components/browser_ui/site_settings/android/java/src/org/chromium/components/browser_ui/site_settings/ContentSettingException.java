@@ -8,7 +8,7 @@ import static org.chromium.components.browser_ui.site_settings.WebsitePreference
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.ProviderType;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -26,7 +26,7 @@ public class ContentSettingException implements Serializable {
     private final @ProviderType.EnumType int mSource;
     private final @Nullable Integer mExpirationInDays;
     private final boolean mIsEmbargoed;
-    private @ContentSettingValues int mContentSetting;
+    private @ContentSetting int mContentSetting;
 
     /**
      * Construct a ContentSettingException.
@@ -42,7 +42,7 @@ public class ContentSettingException implements Serializable {
             @ContentSettingsType.EnumType int type,
             String primaryPattern,
             @Nullable String secondaryPattern,
-            @ContentSettingValues int setting,
+            @ContentSetting int setting,
             @ProviderType.EnumType int source,
             final @Nullable Integer expirationInDays,
             boolean isEmbargoed) {
@@ -61,7 +61,7 @@ public class ContentSettingException implements Serializable {
     public ContentSettingException(
             @ContentSettingsType.EnumType int type,
             String primaryPattern,
-            @ContentSettingValues int setting,
+            @ContentSetting int setting,
             @ProviderType.EnumType int source,
             boolean isEmbargoed) {
         this(
@@ -96,7 +96,7 @@ public class ContentSettingException implements Serializable {
         return mSource;
     }
 
-    public @ContentSettingValues int getContentSetting() {
+    public @ContentSetting int getContentSetting() {
         return mContentSetting;
     }
 
@@ -118,7 +118,7 @@ public class ContentSettingException implements Serializable {
 
     /** Sets the content setting value for this exception. */
     public void setContentSetting(
-            BrowserContextHandle browserContextHandle, @ContentSettingValues int value) {
+            BrowserContextHandle browserContextHandle, @ContentSetting int value) {
         mContentSetting = value;
         WebsitePreferenceBridge.setContentSettingCustomScope(
                 browserContextHandle,

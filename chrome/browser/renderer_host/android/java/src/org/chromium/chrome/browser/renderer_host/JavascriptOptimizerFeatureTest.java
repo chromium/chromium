@@ -26,7 +26,7 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.AdvancedProtectionTestRule;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentSwitches;
@@ -113,7 +113,7 @@ public class JavascriptOptimizerFeatureTest {
                             ContentSettingsType.JAVASCRIPT_OPTIMIZER,
                             pageOrigin,
                             pageOrigin,
-                            ContentSettingValues.ALLOW);
+                            ContentSetting.ALLOW);
                 });
 
         mActivityTestRule.loadUrl(pageUrl.getSpec());
@@ -138,13 +138,13 @@ public class JavascriptOptimizerFeatureTest {
                     WebsitePreferenceBridge.setDefaultContentSetting(
                             profile,
                             ContentSettingsType.JAVASCRIPT_OPTIMIZER,
-                            ContentSettingValues.BLOCK);
+                            ContentSetting.BLOCK);
                     WebsitePreferenceBridge.setContentSettingCustomScope(
                             profile,
                             ContentSettingsType.JAVASCRIPT_OPTIMIZER,
                             pageOrigin.getHost(),
                             "*",
-                            ContentSettingValues.ALLOW);
+                            ContentSetting.ALLOW);
                 });
 
         mActivityTestRule.loadUrl(pageUrl.getSpec());
@@ -168,13 +168,13 @@ public class JavascriptOptimizerFeatureTest {
                     WebsitePreferenceBridge.setDefaultContentSetting(
                             profile,
                             ContentSettingsType.JAVASCRIPT_OPTIMIZER,
-                            ContentSettingValues.BLOCK);
+                            ContentSetting.BLOCK);
                     WebsitePreferenceBridge.setContentSettingCustomScope(
                             profile,
                             ContentSettingsType.JAVASCRIPT_OPTIMIZER,
                             "http://[*.]allowed.test",
                             "*",
-                            ContentSettingValues.ALLOW);
+                            ContentSetting.ALLOW);
                 });
 
         mActivityTestRule.loadUrl(pageUrl.getSpec());
@@ -199,13 +199,13 @@ public class JavascriptOptimizerFeatureTest {
                     WebsitePreferenceBridge.setDefaultContentSetting(
                             profile,
                             ContentSettingsType.JAVASCRIPT_OPTIMIZER,
-                            ContentSettingValues.ALLOW);
+                            ContentSetting.ALLOW);
                     WebsitePreferenceBridge.setContentSettingCustomScope(
                             profile,
                             ContentSettingsType.JAVASCRIPT_OPTIMIZER,
                             pageOrigin.getHost(),
                             "*",
-                            ContentSettingValues.BLOCK);
+                            ContentSetting.BLOCK);
                 });
 
         mActivityTestRule.loadUrl(pageUrl.getSpec());

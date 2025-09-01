@@ -32,7 +32,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -97,7 +97,7 @@ public class TrustedWebActivityPermissionsTest {
         runOnUiThreadBlocking(
                 () ->
                         InstalledWebappPermissionManager.updatePermission(
-                                mOrigin, mPackage, NOTIFICATIONS, ContentSettingValues.ALLOW));
+                                mOrigin, mPackage, NOTIFICATIONS, ContentSetting.ALLOW));
         assertEquals("\"granted\"", getNotificationPermission());
     }
 
@@ -107,7 +107,7 @@ public class TrustedWebActivityPermissionsTest {
         runOnUiThreadBlocking(
                 () ->
                         InstalledWebappPermissionManager.updatePermission(
-                                mOrigin, mPackage, NOTIFICATIONS, ContentSettingValues.BLOCK));
+                                mOrigin, mPackage, NOTIFICATIONS, ContentSetting.BLOCK));
         assertEquals("\"denied\"", getNotificationPermission());
     }
 
@@ -117,7 +117,7 @@ public class TrustedWebActivityPermissionsTest {
         runOnUiThreadBlocking(
                 () ->
                         InstalledWebappPermissionManager.updatePermission(
-                                mOrigin, mPackage, NOTIFICATIONS, ContentSettingValues.ALLOW));
+                                mOrigin, mPackage, NOTIFICATIONS, ContentSetting.ALLOW));
         assertEquals("\"granted\"", getNotificationPermission());
 
         runOnUiThreadBlocking(() -> InstalledWebappPermissionManager.unregister(mOrigin));
@@ -130,7 +130,7 @@ public class TrustedWebActivityPermissionsTest {
         runOnUiThreadBlocking(
                 () ->
                         InstalledWebappPermissionManager.updatePermission(
-                                mOrigin, mPackage, NOTIFICATIONS, ContentSettingValues.ALLOW));
+                                mOrigin, mPackage, NOTIFICATIONS, ContentSetting.ALLOW));
         assertTrue(ShortcutHelper.doesOriginContainAnyInstalledTwa(mOrigin.toString()));
 
         runOnUiThreadBlocking(() -> InstalledWebappPermissionManager.unregister(mOrigin));
@@ -143,9 +143,9 @@ public class TrustedWebActivityPermissionsTest {
         runOnUiThreadBlocking(
                 () ->
                         InstalledWebappPermissionManager.updatePermission(
-                                mOrigin, mPackage, GEOLOCATION, ContentSettingValues.ALLOW));
+                                mOrigin, mPackage, GEOLOCATION, ContentSetting.ALLOW));
         assertEquals(
-                Integer.valueOf(ContentSettingValues.ALLOW),
+                Integer.valueOf(ContentSetting.ALLOW),
                 WebappRegistry.getInstance()
                         .getPermissionStore()
                         .getPermission(GEOLOCATION, mOrigin));
@@ -157,9 +157,9 @@ public class TrustedWebActivityPermissionsTest {
         runOnUiThreadBlocking(
                 () ->
                         InstalledWebappPermissionManager.updatePermission(
-                                mOrigin, mPackage, GEOLOCATION, ContentSettingValues.BLOCK));
+                                mOrigin, mPackage, GEOLOCATION, ContentSetting.BLOCK));
         assertEquals(
-                Integer.valueOf(ContentSettingValues.BLOCK),
+                Integer.valueOf(ContentSetting.BLOCK),
                 WebappRegistry.getInstance()
                         .getPermissionStore()
                         .getPermission(GEOLOCATION, mOrigin));

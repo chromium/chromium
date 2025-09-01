@@ -22,7 +22,7 @@ import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory.Type;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -113,8 +113,7 @@ public class SiteSettings extends BaseSiteSettingsFragment
                     WebsitePreferenceBridge.requiresTriStateContentSetting(contentType);
 
             boolean checked = false; // Used for binary settings
-            @ContentSettingValues
-            int setting = ContentSettingValues.DEFAULT; // Used for tri-state settings.
+            @ContentSetting int setting = ContentSetting.DEFAULT; // Used for tri-state settings.
 
             if (prefCategory == Type.DEVICE_LOCATION) {
                 checked =
@@ -145,7 +144,7 @@ public class SiteSettings extends BaseSiteSettingsFragment
                                     prefCategory)
                             .showPermissionBlockedMessage(getContext())) {
                 // Show 'disabled' message when permission is not granted in Android.
-                @ContentSettingValues
+                @ContentSetting
                 Integer defaultDisabledValue =
                         assumeNonNull(
                                 ContentSettingsResources.getDefaultDisabledValue(contentType));
@@ -182,7 +181,7 @@ public class SiteSettings extends BaseSiteSettingsFragment
                         ContentSettingsResources.getCategorySummary(
                                 setting, /* isOneTime= */ false));
             } else {
-                @ContentSettingValues
+                @ContentSetting
                 Integer defaultForToggle =
                         checked
                                 ? ContentSettingsResources.getDefaultEnabledValue(contentType)

@@ -46,7 +46,7 @@ import org.chromium.chrome.browser.browserservices.permissiondelegation.Permissi
 import org.chromium.chrome.browser.notifications.NotificationBuilderBase;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -85,7 +85,7 @@ public class TrustedWebActivityClient {
     /** Interface for callbacks to get a permission setting from a TWA app. */
     public interface PermissionCallback {
         /** Called when the app answered with a permission setting. */
-        void onPermission(ComponentName app, @ContentSettingValues int settingValue);
+        void onPermission(ComponentName app, @ContentSetting int settingValue);
 
         /** Called when no app was found to connect to. */
         default void onNoTwaFound() {}
@@ -171,25 +171,23 @@ public class TrustedWebActivityClient {
                         // that case, fall back to the old flow.
                         if (!commandSuccess) {
                             boolean enabled = service.areNotificationsEnabled(channelName);
-                            @ContentSettingValues
+                            @ContentSetting
                             int settingValue =
-                                    enabled
-                                            ? ContentSettingValues.ALLOW
-                                            : ContentSettingValues.BLOCK;
+                                    enabled ? ContentSetting.ALLOW : ContentSetting.BLOCK;
                             permissionCallback.onPermission(
                                     service.getComponentName(), settingValue);
                             return;
                         }
 
-                        @ContentSettingValues int settingValue = ContentSettingValues.BLOCK;
+                        @ContentSetting int settingValue = ContentSetting.BLOCK;
                         assert commandResult != null;
                         @PermissionStatus
                         int permissionStatus =
                                 commandResult.getInt(KEY_PERMISSION_STATUS, PermissionStatus.BLOCK);
                         if (permissionStatus == PermissionStatus.ALLOW) {
-                            settingValue = ContentSettingValues.ALLOW;
+                            settingValue = ContentSetting.ALLOW;
                         } else if (permissionStatus == PermissionStatus.ASK) {
-                            settingValue = ContentSettingValues.ASK;
+                            settingValue = ContentSetting.ASK;
                         }
                         permissionCallback.onPermission(service.getComponentName(), settingValue);
                     }
@@ -241,7 +239,7 @@ public class TrustedWebActivityClient {
                                 commandSuccess && pendingIntent != null);
                         if (!commandSuccess || pendingIntent == null) {
                             permissionCallback.onPermission(
-                                    service.getComponentName(), ContentSettingValues.BLOCK);
+                                    service.getComponentName(), ContentSetting.BLOCK);
                             return;
                         }
 
@@ -249,8 +247,7 @@ public class TrustedWebActivityClient {
                                 new Handler(
                                         Looper.getMainLooper(),
                                         message -> {
-                                            @ContentSettingValues
-                                            int settingValue = ContentSettingValues.BLOCK;
+                                            @ContentSetting int settingValue = ContentSetting.BLOCK;
                                             @PermissionStatus
                                             int permissionStatus =
                                                     message.getData()
@@ -258,9 +255,9 @@ public class TrustedWebActivityClient {
                                                                     KEY_PERMISSION_STATUS,
                                                                     PermissionStatus.BLOCK);
                                             if (permissionStatus == PermissionStatus.ALLOW) {
-                                                settingValue = ContentSettingValues.ALLOW;
+                                                settingValue = ContentSetting.ALLOW;
                                             } else if (permissionStatus == PermissionStatus.ASK) {
-                                                settingValue = ContentSettingValues.ASK;
+                                                settingValue = ContentSetting.ASK;
                                             }
                                             permissionCallback.onPermission(
                                                     service.getComponentName(), settingValue);
@@ -315,11 +312,11 @@ public class TrustedWebActivityClient {
                                                         && bundle != null
                                                         && bundle.getBoolean(
                                                                 LOCATION_PERMISSION_RESULT);
-                                        @ContentSettingValues
+                                        @ContentSetting
                                         int settingValue =
                                                 granted
-                                                        ? ContentSettingValues.ALLOW
-                                                        : ContentSettingValues.BLOCK;
+                                                        ? ContentSetting.ALLOW
+                                                        : ContentSetting.BLOCK;
                                         permissionCallback.onPermission(
                                                 service.getComponentName(), settingValue);
                                     }
@@ -345,7 +342,7 @@ public class TrustedWebActivityClient {
                         if (executionResult == null
                                 || !executionResult.getBoolean(EXTRA_COMMAND_SUCCESS)) {
                             permissionCallback.onPermission(
-                                    service.getComponentName(), ContentSettingValues.BLOCK);
+                                    service.getComponentName(), ContentSetting.BLOCK);
                         }
                     }
 
@@ -442,7 +439,7 @@ public class TrustedWebActivityClient {
                                     origin,
                                     service.getComponentName().getPackageName(),
                                     ContentSettingsType.NOTIFICATIONS,
-                                    ContentSettingValues.BLOCK);
+                                    ContentSetting.BLOCK);
 
                             // Attempting to notify when notifications are disabled won't have any
                             // effect, but returning here just saves us from doing unnecessary work.

@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ApkInfo;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -226,7 +226,7 @@ public class PermissionDialogMediator
             assert mState == State.REQUEST_ANDROID_PERMISSIONS_FOR_PERSISTENT_GRANT
                     || mState == State.REQUEST_ANDROID_PERMISSIONS_FOR_EPHEMERAL_GRANT;
 
-            onPermissionDialogResult(ContentSettingValues.ALLOW);
+            onPermissionDialogResult(ContentSetting.ALLOW);
             if (mState == State.REQUEST_ANDROID_PERMISSIONS_FOR_PERSISTENT_GRANT) {
                 mDialogDelegate.onAccept();
             } else {
@@ -246,7 +246,7 @@ public class PermissionDialogMediator
         if (mDialogDelegate == null) {
             mState = State.NOT_SHOWING;
         } else {
-            onPermissionDialogResult(ContentSettingValues.DEFAULT);
+            onPermissionDialogResult(ContentSetting.DEFAULT);
             // The user accepted the site-level prompt but denied the app-level prompt.
             // No content setting should be set.
             mDialogDelegate.onDismiss(DismissalType.AUTODISMISS_OS_DENIED);
@@ -287,7 +287,7 @@ public class PermissionDialogMediator
             } else if (dismissalCause == DialogDismissalCause.ACTION_ON_CONTENT) {
                 type = DismissalType.CLOSE_BUTTON_CLICKED;
             }
-            onPermissionDialogResult(ContentSettingValues.DEFAULT);
+            onPermissionDialogResult(ContentSetting.DEFAULT);
             mDialogDelegate.onDismiss(type);
             onPermissionDialogEnded();
         }
@@ -332,7 +332,7 @@ public class PermissionDialogMediator
     /** Handle negative button clicked state, after dialog is dismissed */
     protected void handleDismissNegativeButtonClickedState() {
         // Run the necessary delegate callback immediately and will schedule the next dialog.
-        onPermissionDialogResult(ContentSettingValues.BLOCK);
+        onPermissionDialogResult(ContentSetting.BLOCK);
         assumeNonNull(mDialogDelegate).onDeny();
         onPermissionDialogEnded();
     }
@@ -373,7 +373,7 @@ public class PermissionDialogMediator
     }
 
     /** Notify that user has just completed a permissions prompt flow with a result */
-    protected void onPermissionDialogResult(@ContentSettingValues int result) {
+    protected void onPermissionDialogResult(@ContentSetting int result) {
         if (mCoordinatorDelegate != null) {
             mCoordinatorDelegate.onPermissionDialogResult(result);
         }

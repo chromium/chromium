@@ -12,7 +12,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.SessionModel;
 import org.chromium.content_public.browser.WebContents;
@@ -122,7 +122,7 @@ public class AutoPictureInPictureTabHelperTestUtils {
             Profile profile,
             @ContentSettingsType.EnumType int contentSettingsType,
             String url,
-            @ContentSettingValues int value) {
+            @ContentSetting int value) {
         PermissionInfo info =
                 new PermissionInfo(
                         contentSettingsType,

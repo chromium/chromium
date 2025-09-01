@@ -11,7 +11,7 @@ import android.view.View.OnClickListener;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 
 import java.util.List;
@@ -84,7 +84,7 @@ class StorageAccessWebsitePreference extends WebsitePreference {
                             mSite.setContentSetting(
                                     mSiteSettingsDelegate.getBrowserContextHandle(),
                                     mCategory.getContentSettingsType(),
-                                    ContentSettingValues.DEFAULT);
+                                    ContentSetting.DEFAULT);
                             mOnStorageAccessWebsiteResetListener.onStorageAccessWebsiteReset(this);
                         });
         setImageViewEnabled(true);

@@ -9,7 +9,7 @@ import android.content.ComponentName;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 
@@ -50,7 +50,7 @@ public class LocationPermissionUpdater {
 
                             @Override
                             public void onPermission(
-                                    ComponentName app, @ContentSettingValues int settingValue) {
+                                    ComponentName app, @ContentSetting int settingValue) {
                                 if (mCalled) return;
                                 mCalled = true;
                                 updatePermission(origin, callback, app, settingValue);
@@ -63,17 +63,14 @@ public class LocationPermissionUpdater {
                                 InstalledWebappPermissionManager.resetStoredPermission(
                                         origin, TYPE);
                                 InstalledWebappBridge.runPermissionCallback(
-                                        callback, ContentSettingValues.BLOCK);
+                                        callback, ContentSetting.BLOCK);
                             }
                         });
     }
 
     private static void updatePermission(
-            Origin origin,
-            long callback,
-            ComponentName app,
-            @ContentSettingValues int settingValue) {
-        boolean enabled = settingValue == ContentSettingValues.ALLOW;
+            Origin origin, long callback, ComponentName app, @ContentSetting int settingValue) {
+        boolean enabled = settingValue == ContentSetting.ALLOW;
         InstalledWebappPermissionManager.updatePermission(
                 origin, app.getPackageName(), TYPE, settingValue);
         Log.d(TAG, "Updating origin location permissions to: %b", enabled);

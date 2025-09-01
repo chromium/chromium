@@ -38,7 +38,7 @@ import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.StandardNotificationBuilder;
 import org.chromium.chrome.test.R;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.embedder_support.util.Origin;
 
 import java.util.Collections;
@@ -231,8 +231,7 @@ public class TrustedWebActivityClientTest {
         TrustedWebActivityClient.PermissionCallback callback =
                 new TrustedWebActivityClient.PermissionCallback() {
                     @Override
-                    public void onPermission(
-                            ComponentName app, @ContentSettingValues int settingValue) {}
+                    public void onPermission(ComponentName app, @ContentSetting int settingValue) {}
 
                     @Override
                     public void onNoTwaFound() {

@@ -39,7 +39,7 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -110,7 +110,7 @@ public class AllSiteSettingsTest {
                             ContentSettingsType.COOKIES,
                             "google.com",
                             "*",
-                            ContentSettingValues.ALLOW);
+                            ContentSetting.ALLOW);
                 });
 
         SettingsActivity settingsActivity =
@@ -139,13 +139,13 @@ public class AllSiteSettingsTest {
                             ContentSettingsType.COOKIES,
                             A_GITHUB_IO,
                             "*",
-                            ContentSettingValues.ALLOW);
+                            ContentSetting.ALLOW);
                     WebsitePreferenceBridge.setContentSettingCustomScope(
                             getBrowserContextHandle(),
                             ContentSettingsType.COOKIES,
                             B_GITHUB_IO,
                             "*",
-                            ContentSettingValues.ALLOW);
+                            ContentSetting.ALLOW);
                 });
 
         SettingsActivity settingsActivity =

@@ -73,7 +73,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.ProviderType;
@@ -344,13 +344,13 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             PermissionInfo permissionInfo = website.site().getPermissionInfo(type);
             if (permissionInfo != null) {
                 return permissionInfo.getGeolocationSetting(browserContextHandle).mApproximate
-                        == ContentSettingValues.BLOCK;
+                        == ContentSetting.BLOCK;
             }
         } else {
-            @ContentSettingValues
+            @ContentSetting
             Integer contentSetting = website.site().getContentSetting(browserContextHandle, type);
             if (contentSetting != null) {
-                return ContentSettingValues.BLOCK == contentSetting;
+                return ContentSetting.BLOCK == contentSetting;
             }
         }
         return false;
@@ -699,7 +699,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             }
             getInfoForOrigins();
         } else if (TRI_STATE_TOGGLE_KEY.equals(preference.getKey())) {
-            @ContentSettingValues int setting = (int) newValue;
+            @ContentSetting int setting = (int) newValue;
             WebsitePreferenceBridge.setDefaultContentSetting(
                     browserContextHandle, mCategory.getContentSettingsType(), setting);
             getInfoForOrigins();
@@ -883,13 +883,13 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     @Override
     public void onAddSite(String primaryPattern, String secondaryPattern) {
         BrowserContextHandle browserContextHandle = getBrowserContextHandle();
-        int setting = ContentSettingValues.DEFAULT;
+        int setting = ContentSetting.DEFAULT;
         switch (mGlobalToggleLayout) {
             case GlobalToggleLayout.TRI_STATE_COOKIE_TOGGLE:
                 setting =
                         getCookieControlsMode() == CookieControlsMode.OFF
-                                ? ContentSettingValues.BLOCK
-                                : ContentSettingValues.ALLOW;
+                                ? ContentSetting.BLOCK
+                                : ContentSetting.ALLOW;
                 break;
             case GlobalToggleLayout.TRI_STATE_TOGGLE:
             case GlobalToggleLayout.BINARY_TOGGLE:
@@ -897,8 +897,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 setting =
                         WebsitePreferenceBridge.isCategoryEnabled(
                                         browserContextHandle, mCategory.getContentSettingsType())
-                                ? ContentSettingValues.BLOCK
-                                : ContentSettingValues.ALLOW;
+                                ? ContentSetting.BLOCK
+                                : ContentSetting.ALLOW;
                 break;
             default:
                 assert false;
@@ -921,7 +921,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         getInfoForOrigins();
 
         if (mCategory.getType() == SiteSettingsCategory.Type.SOUND) {
-            if (setting == ContentSettingValues.BLOCK) {
+            if (setting == ContentSetting.BLOCK) {
                 RecordUserAction.record("SoundContentSetting.MuteBy.PatternException");
             } else {
                 RecordUserAction.record("SoundContentSetting.UnmuteBy.PatternException");
@@ -1170,7 +1170,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             case GlobalToggleLayout.TRI_STATE_TOGGLE:
                 TriStateSiteSettingsPreference triStateToggle =
                         getPreferenceScreen().findPreference(TRI_STATE_TOGGLE_KEY);
-                return (triStateToggle.getCheckedSetting() == ContentSettingValues.BLOCK);
+                return (triStateToggle.getCheckedSetting() == ContentSetting.BLOCK);
             case GlobalToggleLayout.TRI_STATE_COOKIE_TOGGLE:
                 TriStateCookieSettingsPreference triStateCookieToggle =
                         getPreferenceScreen().findPreference(TRI_STATE_COOKIE_TOGGLE);
@@ -1555,7 +1555,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     private void configureTriStateToggle(
             TriStateSiteSettingsPreference triStateToggle, int contentType) {
         triStateToggle.setOnPreferenceChangeListener(this);
-        @ContentSettingValues
+        @ContentSetting
         int setting =
                 WebsitePreferenceBridge.getDefaultContentSetting(
                         getBrowserContextHandle(), contentType);
@@ -1610,16 +1610,16 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         binaryRadioButton.setOnPreferenceChangeListener(this);
 
         BrowserContextHandle browserContextHandle = getBrowserContextHandle();
-        @ContentSettingValues
+        @ContentSetting
         int setting =
                 WebsitePreferenceBridge.getDefaultContentSetting(browserContextHandle, contentType);
         int[] descriptionIds =
                 ContentSettingsResources.getBinaryStateSettingResourceIDs(contentType);
         int[] iconIds = ContentSettingsResources.getBinaryStateSettingIconIDs(contentType);
-        @ContentSettingValues
+        @ContentSetting
         @Nullable Integer defaultEnabledValue =
                 ContentSettingsResources.getDefaultEnabledValue(contentType);
-        @ContentSettingValues
+        @ContentSetting
         @Nullable Integer defaultDisabledValue =
                 ContentSettingsResources.getDefaultDisabledValue(contentType);
 
@@ -1629,7 +1629,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         if (contentType == ContentSettingsType.AUTO_PICTURE_IN_PICTURE
                 && WebsitePreferenceBridge.isCategoryEnabled(
                         browserContextHandle, ContentSettingsType.AUTO_PICTURE_IN_PICTURE)) {
-            setting = ContentSettingValues.ALLOW;
+            setting = ContentSetting.ALLOW;
         }
 
         binaryRadioButton.setManagedPreferenceDelegate(
@@ -1639,8 +1639,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 setting,
                 descriptionIds,
                 iconIds,
-                defaultEnabledValue != null ? defaultEnabledValue : ContentSettingValues.ASK,
-                defaultDisabledValue != null ? defaultDisabledValue : ContentSettingValues.BLOCK,
+                defaultEnabledValue != null ? defaultEnabledValue : ContentSetting.ASK,
+                defaultDisabledValue != null ? defaultDisabledValue : ContentSetting.BLOCK,
                 getResources().getDimensionPixelSize(R.dimen.radio_button_compact_icon_margin_end));
     }
 
@@ -1732,7 +1732,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 contentSettingsType == ContentSettingsType.GEOLOCATION_WITH_OPTIONS;
 
         @Nullable
-        @ContentSettingValues
+        @ContentSetting
         Integer value = null;
         @Nullable GeolocationSetting geo_setting = null;
         if (isApproxGeoPermission) {
@@ -1760,7 +1760,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                                         site.setContentSetting(
                                                 browserContextHandle,
                                                 contentSettingsType,
-                                                ContentSettingValues.DEFAULT);
+                                                ContentSetting.DEFAULT);
                                     }
                                     if (mCategory.getType()
                                             == SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT) {
@@ -1801,17 +1801,17 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         allowButton.setPrimaryText(
                 getString(
                         ContentSettingsResources.getSiteSummary(
-                                ContentSettingValues.ALLOW, contentSettingsType)));
+                                ContentSetting.ALLOW, contentSettingsType)));
 
         RadioButtonWithDescription blockButton = radioGroup.findViewById(R.id.block);
         blockButton.setPrimaryText(
                 getString(
                         ContentSettingsResources.getSiteSummary(
-                                ContentSettingValues.BLOCK, contentSettingsType)));
+                                ContentSetting.BLOCK, contentSettingsType)));
 
         if (geo_setting != null
-                ? geo_setting.mApproximate == ContentSettingValues.ALLOW
-                : assumeNonNull(value) == ContentSettingValues.ALLOW) {
+                ? geo_setting.mApproximate == ContentSetting.ALLOW
+                : assumeNonNull(value) == ContentSetting.ALLOW) {
             allowButton.setChecked(true);
         } else {
             blockButton.setChecked(true);
@@ -1819,11 +1819,9 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
 
         radioGroup.setOnCheckedChangeListener(
                 (radioButtonGroup, i) -> {
-                    @ContentSettingValues
+                    @ContentSetting
                     int permission =
-                            allowButton.isChecked()
-                                    ? ContentSettingValues.ALLOW
-                                    : ContentSettingValues.BLOCK;
+                            allowButton.isChecked() ? ContentSetting.ALLOW : ContentSetting.BLOCK;
 
                     if (isApproxGeoPermission) {
                         updateGeolocationSetting(site, contentView);
@@ -1843,8 +1841,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             RadioButtonWithDescriptionLayout location_access =
                     contentView.findViewById(R.id.location_access_group);
             int selectedPrecision = R.id.precise;
-            if (geo_setting.mApproximate == ContentSettingValues.ALLOW
-                    && geo_setting.mPrecise != ContentSettingValues.ALLOW) {
+            if (geo_setting.mApproximate == ContentSetting.ALLOW
+                    && geo_setting.mPrecise != ContentSetting.ALLOW) {
                 selectedPrecision = R.id.approximate;
             }
             RadioButtonWithDescription selectedButton = contentView.findViewById(selectedPrecision);
@@ -1860,9 +1858,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     private void updateGeolocationSetting(Website site, LinearLayout permissionDialog) {
         RadioButtonWithDescription allowButton = permissionDialog.findViewById(R.id.allow);
         RadioButtonWithDescription preciseButton = permissionDialog.findViewById(R.id.precise);
-        int approximate =
-                allowButton.isChecked() ? ContentSettingValues.ALLOW : ContentSettingValues.BLOCK;
-        int precise = preciseButton.isChecked() ? approximate : ContentSettingValues.BLOCK;
+        int approximate = allowButton.isChecked() ? ContentSetting.ALLOW : ContentSetting.BLOCK;
+        int precise = preciseButton.isChecked() ? approximate : ContentSetting.BLOCK;
         assumeNonNull(site.getPermissionInfo(ContentSettingsType.GEOLOCATION_WITH_OPTIONS))
                 .setGeolocationSetting(
                         getBrowserContextHandle(), new GeolocationSetting(approximate, precise));

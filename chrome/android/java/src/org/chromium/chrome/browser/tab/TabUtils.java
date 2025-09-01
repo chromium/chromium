@@ -38,7 +38,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.util.AutomotiveUtils;
 import org.chromium.components.browser_ui.util.DimensionCompat;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -186,7 +186,7 @@ public class TabUtils {
     public static boolean isDesktopSiteEnabled(Profile profile, GURL url) {
         return WebsitePreferenceBridge.getContentSetting(
                         profile, ContentSettingsType.REQUEST_DESKTOP_SITE, url, url)
-                == ContentSettingValues.ALLOW;
+                == ContentSetting.ALLOW;
     }
 
     /**

@@ -32,7 +32,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.GURL;
@@ -83,7 +83,7 @@ public class WebsitePreferenceBridgeTest {
                             ProfileManager.getLastUsedRegularProfile();
                     GURL url = new GURL("https://example.com");
                     assertEquals(
-                            ContentSettingValues.ALLOW,
+                            ContentSetting.ALLOW,
                             WebsitePreferenceBridge.getContentSetting(
                                     browserContext, ContentSettingsType.JAVASCRIPT, url, url));
                     WebsitePreferenceBridge.setContentSettingDefaultScope(
@@ -91,9 +91,9 @@ public class WebsitePreferenceBridgeTest {
                             ContentSettingsType.JAVASCRIPT,
                             url,
                             url,
-                            ContentSettingValues.BLOCK);
+                            ContentSetting.BLOCK);
                     assertEquals(
-                            ContentSettingValues.BLOCK,
+                            ContentSetting.BLOCK,
                             WebsitePreferenceBridge.getContentSetting(
                                     browserContext, ContentSettingsType.JAVASCRIPT, url, url));
                 });
@@ -111,7 +111,7 @@ public class WebsitePreferenceBridgeTest {
                     String primary = "https://primary.com";
                     String secondary = isEmbargoed ? SITE_WILDCARD : "https://secondary.com";
                     assertEquals(
-                            ContentSettingValues.ASK,
+                            ContentSetting.ASK,
                             WebsitePreferenceBridge.getContentSetting(
                                     browserContext,
                                     ContentSettingsType.STORAGE_ACCESS,
@@ -122,9 +122,9 @@ public class WebsitePreferenceBridgeTest {
                             ContentSettingsType.STORAGE_ACCESS,
                             primary,
                             secondary,
-                            ContentSettingValues.ALLOW);
+                            ContentSetting.ALLOW);
                     assertEquals(
-                            ContentSettingValues.ALLOW,
+                            ContentSetting.ALLOW,
                             WebsitePreferenceBridge.getContentSetting(
                                     browserContext,
                                     ContentSettingsType.STORAGE_ACCESS,

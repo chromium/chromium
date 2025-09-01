@@ -9,18 +9,17 @@ import androidx.annotation.NonNull;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 
 import java.util.Objects;
 
 @NullMarked
 public final class GeolocationSetting {
-    public final @ContentSettingValues int mApproximate;
-    public final @ContentSettingValues int mPrecise;
+    public final @ContentSetting int mApproximate;
+    public final @ContentSetting int mPrecise;
 
     @CalledByNative
-    public GeolocationSetting(
-            @ContentSettingValues int approximate, @ContentSettingValues int precise) {
+    public GeolocationSetting(@ContentSetting int approximate, @ContentSetting int precise) {
         mApproximate = approximate;
         mPrecise = precise;
     }

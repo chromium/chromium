@@ -38,7 +38,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.test.MockCertVerifierRuleAndroid;
 import org.chromium.components.browser_ui.site_settings.GeolocationSetting;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.SessionModel;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.components.permissions.PermissionsAndroidFeatureMap;
@@ -145,8 +145,7 @@ public class TrustedWebActivityLocationDelegationTest {
     }
 
     private void setAllowChromeSiteLocation(GURL url, boolean allowed) {
-        @ContentSettingValues
-        int setting = allowed ? ContentSettingValues.ALLOW : ContentSettingValues.BLOCK;
+        @ContentSetting int setting = allowed ? ContentSetting.ALLOW : ContentSetting.BLOCK;
         Profile profile = mCustomTabActivityTestRule.getProfile(false);
         PermissionInfo info =
                 new PermissionInfo(

@@ -36,7 +36,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.components.browser_ui.site_settings.GeolocationSetting;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.SessionModel;
 import org.chromium.content_public.common.ContentSwitches;
@@ -112,9 +112,9 @@ public class PermissionInfoTest {
             @ContentSettingsType.EnumType int type,
             String origin,
             String embedder,
-            @ContentSettingValues int setting,
+            @ContentSetting int setting,
             Profile profile,
-            @ContentSettingValues int expectedSetting) {
+            @ContentSetting int expectedSetting) {
         PermissionInfo info =
                 new PermissionInfo(
                         type, origin, embedder, /* isEmbargoed= */ false, SessionModel.DURABLE);
@@ -158,16 +158,16 @@ public class PermissionInfoTest {
                 getGeolocationType(),
                 DSE_ORIGIN,
                 null,
-                ContentSettingValues.BLOCK,
+                ContentSetting.BLOCK,
                 primaryOtrProfile,
-                ContentSettingValues.BLOCK);
+                ContentSetting.BLOCK);
         setSettingAndExpectValue(
                 getGeolocationType(),
                 DSE_ORIGIN,
                 null,
-                ContentSettingValues.DEFAULT,
+                ContentSetting.DEFAULT,
                 primaryOtrProfile,
-                ContentSettingValues.ASK);
+                ContentSetting.ASK);
     }
 
     @Test
@@ -180,16 +180,16 @@ public class PermissionInfoTest {
                 getGeolocationType(),
                 DSE_ORIGIN,
                 null,
-                ContentSettingValues.BLOCK,
+                ContentSetting.BLOCK,
                 nonPrimaryOtrProfile,
-                ContentSettingValues.BLOCK);
+                ContentSetting.BLOCK);
         setSettingAndExpectValue(
                 getGeolocationType(),
                 DSE_ORIGIN,
                 null,
-                ContentSettingValues.DEFAULT,
+                ContentSetting.DEFAULT,
                 nonPrimaryOtrProfile,
-                ContentSettingValues.ASK);
+                ContentSetting.ASK);
     }
 
     @Test
@@ -201,16 +201,16 @@ public class PermissionInfoTest {
                 getGeolocationType(),
                 DSE_ORIGIN,
                 null,
-                ContentSettingValues.BLOCK,
+                ContentSetting.BLOCK,
                 regularProfile,
-                ContentSettingValues.BLOCK);
+                ContentSetting.BLOCK);
         setSettingAndExpectValue(
                 getGeolocationType(),
                 DSE_ORIGIN,
                 null,
-                ContentSettingValues.DEFAULT,
+                ContentSetting.DEFAULT,
                 regularProfile,
-                ContentSettingValues.ASK);
+                ContentSetting.ASK);
     }
 
     @Test
@@ -226,16 +226,16 @@ public class PermissionInfoTest {
                 ContentSettingsType.NOTIFICATIONS,
                 DSE_ORIGIN,
                 null,
-                ContentSettingValues.BLOCK,
+                ContentSetting.BLOCK,
                 primaryOtrProfile,
-                ContentSettingValues.BLOCK);
+                ContentSetting.BLOCK);
         setSettingAndExpectValue(
                 ContentSettingsType.NOTIFICATIONS,
                 DSE_ORIGIN,
                 null,
-                ContentSettingValues.DEFAULT,
+                ContentSetting.DEFAULT,
                 primaryOtrProfile,
-                ContentSettingValues.ASK);
+                ContentSetting.ASK);
     }
 
     @Test
@@ -251,16 +251,16 @@ public class PermissionInfoTest {
                 ContentSettingsType.NOTIFICATIONS,
                 DSE_ORIGIN,
                 null,
-                ContentSettingValues.BLOCK,
+                ContentSetting.BLOCK,
                 nonPrimaryOtrProfile,
-                ContentSettingValues.BLOCK);
+                ContentSetting.BLOCK);
         setSettingAndExpectValue(
                 ContentSettingsType.NOTIFICATIONS,
                 DSE_ORIGIN,
                 null,
-                ContentSettingValues.DEFAULT,
+                ContentSetting.DEFAULT,
                 nonPrimaryOtrProfile,
-                ContentSettingValues.ASK);
+                ContentSetting.ASK);
     }
 
     @Test
@@ -273,16 +273,16 @@ public class PermissionInfoTest {
                 ContentSettingsType.NOTIFICATIONS,
                 DSE_ORIGIN,
                 null,
-                ContentSettingValues.BLOCK,
+                ContentSetting.BLOCK,
                 regularProfile,
-                ContentSettingValues.BLOCK);
+                ContentSetting.BLOCK);
         setSettingAndExpectValue(
                 ContentSettingsType.NOTIFICATIONS,
                 DSE_ORIGIN,
                 null,
-                ContentSettingValues.DEFAULT,
+                ContentSetting.DEFAULT,
                 regularProfile,
-                ContentSettingValues.ASK);
+                ContentSetting.ASK);
     }
 
     @Test
@@ -299,10 +299,8 @@ public class PermissionInfoTest {
                         false,
                         SessionModel.DURABLE);
 
-        var defaultSetting =
-                new GeolocationSetting(ContentSettingValues.ASK, ContentSettingValues.ASK);
-        var allowApproximate =
-                new GeolocationSetting(ContentSettingValues.ALLOW, ContentSettingValues.BLOCK);
+        var defaultSetting = new GeolocationSetting(ContentSetting.ASK, ContentSetting.ASK);
+        var allowApproximate = new GeolocationSetting(ContentSetting.ALLOW, ContentSetting.BLOCK);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -326,8 +324,7 @@ public class PermissionInfoTest {
                         false,
                         SessionModel.DURABLE);
 
-        var defaultSetting =
-                new GeolocationSetting(ContentSettingValues.ASK, ContentSettingValues.ASK);
+        var defaultSetting = new GeolocationSetting(ContentSetting.ASK, ContentSetting.ASK);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> assertEquals(defaultSetting, info.getGeolocationSetting(regularProfile)));

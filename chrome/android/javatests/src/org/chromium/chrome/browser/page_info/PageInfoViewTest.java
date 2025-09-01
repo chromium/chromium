@@ -107,7 +107,7 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJ
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
 import org.chromium.components.browser_ui.util.date.StringUtils;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.content_settings.CookieControlsMode;
@@ -457,31 +457,31 @@ public class PageInfoViewTest {
                                         ContentSettingsType.GEOLOCATION_WITH_OPTIONS,
                                         urlString,
                                         urlString,
-                                        ContentSettingValues.ALLOW,
-                                        ContentSettingValues.ALLOW);
+                                        ContentSetting.ALLOW,
+                                        ContentSetting.ALLOW);
                     } else {
                         WebsitePreferenceBridge.setContentSettingDefaultScope(
                                 ProfileManager.getLastUsedRegularProfile(),
                                 ContentSettingsType.GEOLOCATION,
                                 url,
                                 url,
-                                ContentSettingValues.ALLOW);
+                                ContentSetting.ALLOW);
                     }
                     WebsitePreferenceBridge.setContentSettingDefaultScope(
                             ProfileManager.getLastUsedRegularProfile(),
                             ContentSettingsType.NOTIFICATIONS,
                             url,
                             url,
-                            ContentSettingValues.BLOCK);
+                            ContentSetting.BLOCK);
                 });
     }
 
     private void expectHasPermissions(String url, boolean hasPermissions) {
         // The default value for these types is ask.
-        @ContentSettingValues
-        int expectAllow = hasPermissions ? ContentSettingValues.ALLOW : ContentSettingValues.ASK;
-        @ContentSettingValues
-        int expectBlock = hasPermissions ? ContentSettingValues.BLOCK : ContentSettingValues.ASK;
+        @ContentSetting
+        int expectAllow = hasPermissions ? ContentSetting.ALLOW : ContentSetting.ASK;
+        @ContentSetting
+        int expectBlock = hasPermissions ? ContentSetting.BLOCK : ContentSetting.ASK;
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(
@@ -524,13 +524,13 @@ public class PageInfoViewTest {
                             ContentSettingsType.MEDIASTREAM_MIC,
                             url,
                             url,
-                            ContentSettingValues.DEFAULT);
+                            ContentSetting.DEFAULT);
                     WebsitePreferenceBridge.setContentSettingDefaultScope(
                             ProfileManager.getLastUsedRegularProfile(),
                             ContentSettingsType.MEDIASTREAM_CAMERA,
                             url,
                             url,
-                            ContentSettingValues.ASK);
+                            ContentSetting.ASK);
                 });
     }
 
@@ -816,7 +816,7 @@ public class PageInfoViewTest {
                             ContentSettingsType.SOUND,
                             url,
                             url,
-                            ContentSettingValues.BLOCK);
+                            ContentSetting.BLOCK);
                 });
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         onView(withId(R.id.page_info_permissions_row)).perform(click());
@@ -843,7 +843,7 @@ public class PageInfoViewTest {
                             ContentSettingsType.MEDIASTREAM_CAMERA,
                             url,
                             url,
-                            ContentSettingValues.ALLOW);
+                            ContentSetting.ALLOW);
                 });
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         onView(withId(R.id.page_info_permissions_row)).perform(click());
@@ -1629,7 +1629,7 @@ public class PageInfoViewTest {
                             ContentSettingsType.FEDERATED_IDENTITY_API);
             assertEquals(1, exceptions.size());
             assertEquals(GURLUtils.getOrigin(rpUrl), exceptions.get(0).getPrimaryPattern() + "/");
-            assertEquals(ContentSettingValues.BLOCK, exceptions.get(0).getContentSetting());
+            assertEquals(ContentSetting.BLOCK, exceptions.get(0).getContentSetting());
         }
 
         // Toggle the federated identity permission.
@@ -1643,7 +1643,7 @@ public class PageInfoViewTest {
                             ContentSettingsType.FEDERATED_IDENTITY_API);
             assertEquals(1, exceptions.size());
             assertEquals(GURLUtils.getOrigin(rpUrl), exceptions.get(0).getPrimaryPattern() + "/");
-            assertEquals(ContentSettingValues.ALLOW, exceptions.get(0).getContentSetting());
+            assertEquals(ContentSetting.ALLOW, exceptions.get(0).getContentSetting());
         }
     }
 

@@ -30,7 +30,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
@@ -171,7 +171,7 @@ public class PermissionUpdateMessageTest {
     public void setNativeContentSetting(
             @ContentSettingsType.EnumType int type,
             final String origin,
-            @ContentSettingValues int value) {
+            @ContentSetting int value) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (type == ContentSettingsType.GEOLOCATION_WITH_OPTIONS) {
@@ -223,7 +223,7 @@ public class PermissionUpdateMessageTest {
                 new TestAndroidPermissionDelegate(null, Arrays.asList(androidPermission), null));
         final String url = mTestServer.getURL(testPage);
         try {
-            setNativeContentSetting(contentSettingsType, url, ContentSettingValues.ALLOW);
+            setNativeContentSetting(contentSettingsType, url, ContentSetting.ALLOW);
             mActivityTestRule.loadUrl(mTestServer.getURL(testPage));
 
             if (javascriptToExecute != null && !javascriptToExecute.isEmpty()) {
@@ -275,7 +275,7 @@ public class PermissionUpdateMessageTest {
                                 Matchers.is(countTabs));
                     });
         } finally {
-            setNativeContentSetting(contentSettingsType, url, ContentSettingValues.DEFAULT);
+            setNativeContentSetting(contentSettingsType, url, ContentSetting.DEFAULT);
         }
     }
 
@@ -364,7 +364,7 @@ public class PermissionUpdateMessageTest {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
 
         try {
-            setNativeContentSetting(getGeolocationType(), locationUrl, ContentSettingValues.ALLOW);
+            setNativeContentSetting(getGeolocationType(), locationUrl, ContentSetting.ALLOW);
             mActivityTestRule.loadUrl(mTestServer.getURL(GEOLOCATION_PAGE));
             CriteriaHelper.pollUiThread(
                     () -> {
@@ -404,8 +404,7 @@ public class PermissionUpdateMessageTest {
                                 Matchers.is(1));
                     });
         } finally {
-            setNativeContentSetting(
-                    getGeolocationType(), locationUrl, ContentSettingValues.DEFAULT);
+            setNativeContentSetting(getGeolocationType(), locationUrl, ContentSetting.DEFAULT);
         }
     }
 }

@@ -36,7 +36,7 @@ import org.robolectric.util.ReflectionHelpers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 
@@ -68,7 +68,7 @@ public class InstalledWebappPermissionManagerTest {
         setNoPermissionRequested();
 
         assertEquals(
-                ContentSettingValues.DEFAULT,
+                ContentSetting.DEFAULT,
                 InstalledWebappPermissionManager.getPermission(
                         ContentSettingsType.GEOLOCATION, ORIGIN));
         verifyPermissionNotUpdated();
@@ -78,26 +78,26 @@ public class InstalledWebappPermissionManagerTest {
     @Feature("TrustedWebActivities")
     public void locationPermissionAllowed_whenClientAllowed() {
         setClientLocationPermission(true);
-        setStoredLocationPermission(ContentSettingValues.BLOCK);
+        setStoredLocationPermission(ContentSetting.BLOCK);
 
         assertEquals(
-                ContentSettingValues.ALLOW,
+                ContentSetting.ALLOW,
                 InstalledWebappPermissionManager.getPermission(
                         ContentSettingsType.GEOLOCATION, ORIGIN));
-        verifyLocationPermissionUpdated(ContentSettingValues.ALLOW);
+        verifyLocationPermissionUpdated(ContentSetting.ALLOW);
     }
 
     @Test
     @Feature("TrustedWebActivities")
     public void locationPermissionBlocked_whenClientBlocked() {
         setClientLocationPermission(false);
-        setStoredLocationPermission(ContentSettingValues.ALLOW);
+        setStoredLocationPermission(ContentSetting.ALLOW);
 
         assertEquals(
-                ContentSettingValues.BLOCK,
+                ContentSetting.BLOCK,
                 InstalledWebappPermissionManager.getPermission(
                         ContentSettingsType.GEOLOCATION, ORIGIN));
-        verifyLocationPermissionUpdated(ContentSettingValues.BLOCK);
+        verifyLocationPermissionUpdated(ContentSetting.BLOCK);
     }
 
     @Test
@@ -107,7 +107,7 @@ public class InstalledWebappPermissionManagerTest {
         setStoredLocationPermission(null);
 
         assertEquals(
-                ContentSettingValues.ASK,
+                ContentSetting.ASK,
                 InstalledWebappPermissionManager.getPermission(
                         ContentSettingsType.GEOLOCATION, ORIGIN));
         verifyPermissionNotUpdated();
@@ -122,23 +122,23 @@ public class InstalledWebappPermissionManagerTest {
         setStoredLocationPermission(null);
         setClientLocationPermission(false);
         assertEquals(
-                ContentSettingValues.ASK,
+                ContentSetting.ASK,
                 InstalledWebappPermissionManager.getPermission(
                         ContentSettingsType.GEOLOCATION, ORIGIN));
         verifyPermissionNotUpdated();
 
-        setStoredLocationPermission(ContentSettingValues.ALLOW);
+        setStoredLocationPermission(ContentSetting.ALLOW);
         setClientLocationPermission(false);
         assertEquals(
-                ContentSettingValues.ASK,
+                ContentSetting.ASK,
                 InstalledWebappPermissionManager.getPermission(
                         ContentSettingsType.GEOLOCATION, ORIGIN));
         verifyPermissionNotUpdated();
 
-        setStoredLocationPermission(ContentSettingValues.BLOCK);
+        setStoredLocationPermission(ContentSetting.BLOCK);
         setClientLocationPermission(false);
         assertEquals(
-                ContentSettingValues.ASK,
+                ContentSetting.ASK,
                 InstalledWebappPermissionManager.getPermission(
                         ContentSettingsType.GEOLOCATION, ORIGIN));
         verifyPermissionNotUpdated();
@@ -155,14 +155,14 @@ public class InstalledWebappPermissionManagerTest {
                 new int[] {PackageInfo.REQUESTED_PERMISSION_GRANTED};
         mShadowPackageManager.installPackage(packageInfo);
         assertEquals(
-                ContentSettingValues.ALLOW,
+                ContentSetting.ALLOW,
                 InstalledWebappPermissionManager.getPermission(
                         ContentSettingsType.GEOLOCATION, ORIGIN));
 
         packageInfo.requestedPermissions = new String[] {ACCESS_FINE_LOCATION};
         mShadowPackageManager.installPackage(packageInfo);
         assertEquals(
-                ContentSettingValues.ALLOW,
+                ContentSetting.ALLOW,
                 InstalledWebappPermissionManager.getPermission(
                         ContentSettingsType.GEOLOCATION, ORIGIN));
 
@@ -173,14 +173,14 @@ public class InstalledWebappPermissionManagerTest {
                 new int[] {0, PackageInfo.REQUESTED_PERMISSION_GRANTED};
         mShadowPackageManager.installPackage(packageInfo);
         assertEquals(
-                ContentSettingValues.ALLOW,
+                ContentSetting.ALLOW,
                 InstalledWebappPermissionManager.getPermission(
                         ContentSettingsType.GEOLOCATION, ORIGIN));
 
         packageInfo.requestedPermissions = new String[] {};
         mShadowPackageManager.installPackage(packageInfo);
         assertEquals(
-                ContentSettingValues.DEFAULT,
+                ContentSetting.DEFAULT,
                 InstalledWebappPermissionManager.getPermission(
                         ContentSettingsType.GEOLOCATION, ORIGIN));
     }
@@ -202,7 +202,7 @@ public class InstalledWebappPermissionManagerTest {
         mShadowPackageManager.installPackage(packageInfo);
     }
 
-    private void setStoredLocationPermission(@ContentSettingValues Integer settingValue) {
+    private void setStoredLocationPermission(@ContentSetting Integer settingValue) {
         when(mStore.getPermission(eq(ContentSettingsType.GEOLOCATION), eq(ORIGIN)))
                 .thenReturn(settingValue);
     }
@@ -212,7 +212,7 @@ public class InstalledWebappPermissionManagerTest {
                 .setStateForOrigin(any(), anyString(), anyString(), anyInt(), anyInt());
     }
 
-    private void verifyLocationPermissionUpdated(@ContentSettingValues int settingValue) {
+    private void verifyLocationPermissionUpdated(@ContentSetting int settingValue) {
         verify(mStore)
                 .setStateForOrigin(
                         eq(ORIGIN),

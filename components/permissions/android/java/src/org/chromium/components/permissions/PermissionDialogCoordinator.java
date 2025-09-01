@@ -21,7 +21,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.DimensionCompat;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.ui.LayoutInflaterUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
@@ -40,9 +40,9 @@ public class PermissionDialogCoordinator {
         /**
          * Called when the user has just completed a permissions prompt flow with a result.
          *
-         * @param result A ContentSettingValues type, indicating the last dialog result.
+         * @param result A ContentSetting type, indicating the last dialog result.
          */
-        void onPermissionDialogResult(@ContentSettingValues int result);
+        void onPermissionDialogResult(@ContentSetting int result);
 
         /**
          * Called when the user completed a permissions prompt. The dialog is dismissed, and if
@@ -176,7 +176,7 @@ public class PermissionDialogCoordinator {
         // For some embedders (e.g. WebEngine) the layout might not be inflated and so the
         // ModalDialogManager is not available.
         if (mModalDialogManager == null) {
-            mCoordinatorDelegate.onPermissionDialogResult(ContentSettingValues.DEFAULT);
+            mCoordinatorDelegate.onPermissionDialogResult(ContentSetting.DEFAULT);
             if (mDialogDelegate != null) {
                 mDialogDelegate.onDismiss(DismissalType.AUTODISMISS_NO_DIALOG_MANAGER);
             }

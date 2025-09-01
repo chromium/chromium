@@ -37,7 +37,7 @@ import org.chromium.chrome.browser.notifications.NotificationBuilderBase;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.webapk.lib.client.WebApkServiceConnectionManager;
@@ -99,15 +99,16 @@ public class WebApkServiceClient {
 
     /**
      * Gets the notification permission setting for the package.
+     *
      * @param permissionCallback To be called on a background thread with a permission setting, one
-     *         of {@link ContentSettingValues}.
+     *     of {@link ContentSetting}.
      */
     public void checkNotificationPermission(
             String webApkPackage, Callback<Integer> permissionCallback) {
         connect(
                 webApkPackage,
                 api -> {
-                    @ContentSettingValues
+                    @ContentSetting
                     int settingValue = toContentSettingValue(api.checkNotificationPermission());
                     permissionCallback.onResult(settingValue);
                 });
@@ -117,7 +118,7 @@ public class WebApkServiceClient {
         return new Handler(
                 Looper.getMainLooper(),
                 message -> {
-                    @ContentSettingValues
+                    @ContentSetting
                     int settingValue =
                             toContentSettingValue(
                                     message.getData()
@@ -129,8 +130,9 @@ public class WebApkServiceClient {
 
     /**
      * Requests the notification permission for the package.
+     *
      * @param permissionCallback To be called on a background thread with a permission setting, one
-     *         of {@link ContentSettingValues}.
+     *     of {@link ContentSetting}.
      */
     public void requestNotificationPermission(
             String webApkPackage, Callback<Integer> permissionCallback) {
@@ -149,7 +151,7 @@ public class WebApkServiceClient {
                             api.requestNotificationPermission(
                                     channelName, ChromeChannelDefinitions.CHANNEL_ID_WEBAPKS);
                     if (permissionRequestIntent == null) {
-                        permissionCallback.onResult(ContentSettingValues.ASK);
+                        permissionCallback.onResult(ContentSetting.ASK);
                         return;
                     }
 
@@ -191,21 +193,21 @@ public class WebApkServiceClient {
                     fallbackToWebApkIconIfNecessary(
                             notificationBuilder, webApkPackage, api.getSmallIconId());
 
-                    @ContentSettingValues
+                    @ContentSetting
                     int settingValue = toContentSettingValue(api.checkNotificationPermission());
 
                     // See http://crbug.com/1340854. Temporary fallback in case the shell has not
                     // yet been updated to support checkNotificationPermission(). Delete this
                     // after shell v154 has been fully launched.
-                    if (settingValue != ContentSettingValues.ALLOW
+                    if (settingValue != ContentSetting.ALLOW
                             && api.notificationPermissionEnabled()) {
                         Log.d(TAG, "Fallback to notificationPermissionEnabled().");
-                        settingValue = ContentSettingValues.ALLOW;
+                        settingValue = ContentSetting.ALLOW;
                     }
 
                     WebApkUmaRecorder.recordNotificationPermissionStatus(settingValue);
 
-                    if (settingValue != ContentSettingValues.ALLOW) {
+                    if (settingValue != ContentSetting.ALLOW) {
                         Origin origin = Origin.create(originString);
                         if (origin == null) {
                             Log.w(TAG, "String (%s) could not be parsed as Origin.", originString);
@@ -302,16 +304,16 @@ public class WebApkServiceClient {
                 ContextUtils.getApplicationContext(), webApkPackage, connectionCallback);
     }
 
-    private static @ContentSettingValues int toContentSettingValue(
+    private static @ContentSetting int toContentSettingValue(
             @PermissionStatus int permissionStatus) {
         if (permissionStatus == PermissionStatus.ALLOW) {
-            return ContentSettingValues.ALLOW;
+            return ContentSetting.ALLOW;
         }
 
         if (permissionStatus == PermissionStatus.ASK) {
-            return ContentSettingValues.ASK;
+            return ContentSetting.ASK;
         }
 
-        return ContentSettingValues.BLOCK;
+        return ContentSetting.BLOCK;
     }
 }

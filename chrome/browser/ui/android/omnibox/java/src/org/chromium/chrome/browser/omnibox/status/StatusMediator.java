@@ -39,7 +39,7 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsUtil;
 import org.chromium.components.browser_ui.util.DrawableUtils;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieBlocking3pcdStatus;
 import org.chromium.components.content_settings.CookieControlsBridge;
@@ -644,7 +644,7 @@ public class StatusMediator
     public void onDialogResult(
             WindowAndroid window,
             @ContentSettingsType.EnumType int[] permissions,
-            @ContentSettingValues int result) {
+            @ContentSetting int result) {
         if (window != mWindowAndroid) {
             return;
         }

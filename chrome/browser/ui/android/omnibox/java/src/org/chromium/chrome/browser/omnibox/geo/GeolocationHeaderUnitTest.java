@@ -43,7 +43,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.site_settings.GeolocationSetting;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
@@ -90,14 +90,12 @@ public class GeolocationHeaderUnitTest {
         when(mWebsitePreferenceBridgeJniMock.getPermissionSettingForOrigin(
                         any(BrowserContextHandle.class), eq(ContentSettingsType.GEOLOCATION),
                         anyString(), anyString()))
-                .thenReturn(ContentSettingValues.ALLOW);
+                .thenReturn(ContentSetting.ALLOW);
         when(mWebsitePreferenceBridgeJniMock.getGeolocationSettingForOrigin(
                         any(BrowserContextHandle.class),
                                 eq(ContentSettingsType.GEOLOCATION_WITH_OPTIONS),
                         anyString(), anyString()))
-                .thenReturn(
-                        new GeolocationSetting(
-                                ContentSettingValues.ALLOW, ContentSettingValues.ALLOW));
+                .thenReturn(new GeolocationSetting(ContentSetting.ALLOW, ContentSetting.ALLOW));
         when(mWebsitePreferenceBridgeJniMock.isDSEOrigin(
                         any(BrowserContextHandle.class), anyString()))
                 .thenReturn(true);
@@ -162,13 +160,12 @@ public class GeolocationHeaderUnitTest {
         when(mWebsitePreferenceBridgeJniMock.getPermissionSettingForOrigin(
                         any(BrowserContextHandle.class), eq(ContentSettingsType.GEOLOCATION),
                         anyString(), anyString()))
-                .thenReturn(ContentSettingValues.ASK);
+                .thenReturn(ContentSetting.ASK);
         when(mWebsitePreferenceBridgeJniMock.getGeolocationSettingForOrigin(
                         any(BrowserContextHandle.class),
                                 eq(ContentSettingsType.GEOLOCATION_WITH_OPTIONS),
                         anyString(), anyString()))
-                .thenReturn(
-                        new GeolocationSetting(ContentSettingValues.ASK, ContentSettingValues.ASK));
+                .thenReturn(new GeolocationSetting(ContentSetting.ASK, ContentSetting.ASK));
         GeolocationHeader.primeLocationForGeoHeaderIfEnabled(mProfileMock, mTemplateUrlServiceMock);
         assertEquals(0, sRefreshLastKnownLocation);
     }

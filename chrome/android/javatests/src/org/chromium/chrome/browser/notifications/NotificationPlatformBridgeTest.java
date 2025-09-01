@@ -57,7 +57,7 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy.NotificationEntry;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.site_engagement.SiteEngagementService;
 import org.chromium.components.url_formatter.SchemeDisplay;
@@ -227,7 +227,7 @@ public class NotificationPlatformBridgeTest {
     @Feature({"Browser", "Notifications"})
     public void testDefaultNotificationProperties() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+                ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
         Context context = ApplicationProvider.getApplicationContext();
 
         Notification notification = showAndGetNotification("MyNotification", "{body: 'Hello'}");
@@ -285,7 +285,7 @@ public class NotificationPlatformBridgeTest {
     @Feature({"Browser", "Notifications"})
     public void testShowNotificationWithTextAction() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+                ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
 
         Notification notification =
                 showAndGetNotification(
@@ -315,7 +315,7 @@ public class NotificationPlatformBridgeTest {
     @Feature({"Browser", "Notifications"})
     public void testReplyToNotification() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+                ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
         Context context = ApplicationProvider.getApplicationContext();
 
         UserActionTester actionTester = new UserActionTester();
@@ -369,7 +369,7 @@ public class NotificationPlatformBridgeTest {
     @Feature({"Browser", "Notifications"})
     public void testReplyToNotificationWithEmptyReply() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+                ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
         Context context = ApplicationProvider.getApplicationContext();
 
         // +0.5 engagement from navigating to the test page.
@@ -430,7 +430,7 @@ public class NotificationPlatformBridgeTest {
     @Feature({"Browser", "Notifications"})
     public void testReplyToNotificationWithNoRemoteInput() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+                ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
 
         // +0.5 engagement from navigating to the test page.
         Assert.assertEquals(0.5, getEngagementScoreBlocking(), 0);
@@ -457,7 +457,7 @@ public class NotificationPlatformBridgeTest {
     @Feature({"Browser", "Notifications"})
     public void testNotificationRenotifyProperty() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+                ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
 
         Notification notification =
                 showAndGetNotification("MyNotification", "{ tag: 'myTag', renotify: true }");
@@ -474,7 +474,7 @@ public class NotificationPlatformBridgeTest {
     @Feature({"Browser", "Notifications"})
     public void testNotificationSilentProperty() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+                ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
 
         Notification notification = showAndGetNotification("MyNotification", "{ silent: true }");
 
@@ -489,7 +489,7 @@ public class NotificationPlatformBridgeTest {
     private void verifyVibrationNotRequestedWhenDisabledInPrefs(String notificationOptions)
             throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+                ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
 
         // Disable notification vibration in preferences.
         ThreadUtils.runOnUiThreadBlocking(
@@ -535,7 +535,7 @@ public class NotificationPlatformBridgeTest {
     @Feature({"Browser", "Notifications"})
     public void testNotificationVibrateCustomPattern() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+                ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
 
         // By default, vibration is enabled in notifications.
         ThreadUtils.runOnUiThreadBlocking(
@@ -562,7 +562,7 @@ public class NotificationPlatformBridgeTest {
     @SuppressWarnings("UseNetworkAnnotations")
     public void testShowNotificationWithBadge() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+                ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
 
         Notification notification =
                 showAndGetNotification("MyNotification", "{badge: 'badge.png'}");
@@ -602,7 +602,7 @@ public class NotificationPlatformBridgeTest {
     @Feature({"Browser", "Notifications"})
     public void testShowNotificationWithIcon() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+                ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
 
         Notification notification = showAndGetNotification("MyNotification", "{icon: 'red.png'}");
 
@@ -624,7 +624,7 @@ public class NotificationPlatformBridgeTest {
     @Feature({"Browser", "Notifications"})
     public void testShowNotificationWithoutIcon() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+                ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
 
         Notification notification = showAndGetNotification("NoIconNotification", "{}");
 
@@ -658,7 +658,7 @@ public class NotificationPlatformBridgeTest {
     @Feature({"Browser", "Notifications"})
     public void testNotificationContentIntentClosesNotification() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+                ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
         // +0.5 engagement from navigating to the test page.
         Assert.assertEquals(0.5, getEngagementScoreBlocking(), 0);
 
@@ -705,7 +705,7 @@ public class NotificationPlatformBridgeTest {
     @Feature({"Browser", "Notifications"})
     public void testNotificationContentIntentCreatesTab() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+                ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
 
         Assert.assertEquals(
                 "Expected the notification test page to be the sole tab in the current model",
@@ -751,7 +751,7 @@ public class NotificationPlatformBridgeTest {
     @Features.EnableFeatures(ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE)
     public void testNotificationProvisionalUnsubscribeAndCommit() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+                ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
         Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
 
         Notification notification1 = showAndGetNotification("Notification1", "{}");
@@ -800,7 +800,7 @@ public class NotificationPlatformBridgeTest {
     @Features.EnableFeatures(ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE)
     public void testNotificationProvisionalUnsubscribeAndUndo() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+                ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
         Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
 
         Notification notification1 = showAndGetNotification("Notification1", "{icon: 'red.png'}");
@@ -875,7 +875,7 @@ public class NotificationPlatformBridgeTest {
             ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE + ":use_service_intent/true")
     public void testNotificationProvisionalUnsubscribeWithServiceIntent() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+                ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
         Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
 
         Notification notification1 = showAndGetNotification("Notification1", "{}");
@@ -902,7 +902,7 @@ public class NotificationPlatformBridgeTest {
     @Feature({"Browser", "Notifications"})
     public void testNotificationTagReplacement() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+                ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
         // +0.5 engagement from navigating to the test page.
         Assert.assertEquals(0.5, getEngagementScoreBlocking(), 0);
 
@@ -941,7 +941,7 @@ public class NotificationPlatformBridgeTest {
     @Feature({"Browser", "Notifications"})
     public void testShowAndCloseMultipleNotifications() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+                ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
         // +0.5 engagement from navigating to the test page.
         Assert.assertEquals(0.5, getEngagementScoreBlocking(), 0);
 
@@ -1013,7 +1013,7 @@ public class NotificationPlatformBridgeTest {
     @RequiresApi(Build.VERSION_CODES.S)
     public void testNotificationProvisionalUnsubscribeIsBroadcast() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+                ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
 
         Notification notification = showAndGetNotification("Notification1", "{}");
 
@@ -1033,7 +1033,7 @@ public class NotificationPlatformBridgeTest {
     @RequiresApi(Build.VERSION_CODES.S)
     public void testNotificationProvisionalUnsubscribeIsService() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+                ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
 
         Notification notification = showAndGetNotification("Notification1", "{}");
 
@@ -1058,7 +1058,7 @@ public class NotificationPlatformBridgeTest {
     })
     public void testShowWarningNotificationsThenDismissAndUnsubscribe() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+                ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
         Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
 
         var histogramWatcher =
@@ -1198,7 +1198,7 @@ public class NotificationPlatformBridgeTest {
     public void testNotificationShowWarningNotificationThenShowNotificationThenAlwaysAllow()
             throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+                ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
         Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
 
         var histogramWatcher =
@@ -1337,7 +1337,7 @@ public class NotificationPlatformBridgeTest {
     })
     public void testShowWarningFeatureDoesNotWarnForUnsuspiciousNotification() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+                ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
         Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -1412,7 +1412,7 @@ public class NotificationPlatformBridgeTest {
                         .SHOW_WARNINGS_FOR_SUSPICIOUS_NOTIFICATIONS_SHOULD_SWAP_BUTTONS_PARAM_NAME,
                 true);
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+                ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
         Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
 
         NotificationPlatformBridge notificationBridge =
@@ -1496,7 +1496,7 @@ public class NotificationPlatformBridgeTest {
                         .build();
 
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+                ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
         Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
 
         NotificationPlatformBridge notificationBridge =
@@ -1584,7 +1584,7 @@ public class NotificationPlatformBridgeTest {
                         .build();
 
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+                ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
         Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
 
         NotificationPlatformBridge notificationBridge =
@@ -1671,7 +1671,7 @@ public class NotificationPlatformBridgeTest {
                         .build();
 
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+                ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
         Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
 
         NotificationPlatformBridge notificationBridge =
@@ -1744,7 +1744,7 @@ public class NotificationPlatformBridgeTest {
                         .build();
 
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+                ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
         Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
 
         NotificationPlatformBridge notificationBridge =
@@ -1841,7 +1841,7 @@ public class NotificationPlatformBridgeTest {
                         .build();
 
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+                ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
         Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
 
         NotificationPlatformBridge notificationBridge =
@@ -1875,7 +1875,7 @@ public class NotificationPlatformBridgeTest {
 
         // Re-subscribe to notifications.
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+                ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
         Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
 
         // Show a new warning, which shows that there is only 1 spam notification.
@@ -1930,7 +1930,7 @@ public class NotificationPlatformBridgeTest {
                         .build();
 
         mNotificationTestRule.setNotificationContentSettingForOrigin(
-                ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
+                ContentSetting.ALLOW, mPermissionTestRule.getOrigin());
         Assert.assertEquals("\"granted\"", runJavaScript("Notification.permission"));
 
         // Display 3 suspicious notifications which are replaced by a single warning.

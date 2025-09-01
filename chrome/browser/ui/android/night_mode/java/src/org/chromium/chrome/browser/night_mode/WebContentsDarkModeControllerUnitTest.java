@@ -30,7 +30,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.browser_ui.site_settings.AutoDarkMetrics.AutoDarkSettingsChangeSource;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.ui.shadows.ShadowColorUtils;
 import org.chromium.url.GURL;
@@ -50,7 +50,7 @@ public class WebContentsDarkModeControllerUnitTest {
     @Mock Context mMockContext;
 
     boolean mIsGlobalSettingsEnabled;
-    @ContentSettingValues int mIsAutoDarkEnabledForUrlContentSettingValue;
+    @ContentSetting int mIsAutoDarkEnabledForUrlContentSettingValue;
 
     @Before
     public void setup() {
@@ -152,7 +152,7 @@ public class WebContentsDarkModeControllerUnitTest {
     }
 
     private void doTestSetAutoDarkForUrl(boolean enableForUrl) {
-        Mockito.doReturn(ContentSettingValues.ALLOW)
+        Mockito.doReturn(ContentSetting.ALLOW)
                 .when(mMockWebsitePreferenceBridgeJni)
                 .getDefaultContentSetting(
                         eq(mMockProfile), eq(ContentSettingsType.AUTO_DARK_WEB_CONTENT));
@@ -181,7 +181,7 @@ public class WebContentsDarkModeControllerUnitTest {
     public void testGetEnableStateForUrl_Enabled() {
         ShadowColorUtils.sInNightMode = true;
         mIsGlobalSettingsEnabled = true;
-        mIsAutoDarkEnabledForUrlContentSettingValue = ContentSettingValues.ALLOW;
+        mIsAutoDarkEnabledForUrlContentSettingValue = ContentSetting.ALLOW;
         assertEnabledState(mMockGurl, true);
     }
 
@@ -189,7 +189,7 @@ public class WebContentsDarkModeControllerUnitTest {
     public void testGetEnableStateForUrl_Disabled() {
         ShadowColorUtils.sInNightMode = true;
         mIsGlobalSettingsEnabled = true;
-        mIsAutoDarkEnabledForUrlContentSettingValue = ContentSettingValues.BLOCK;
+        mIsAutoDarkEnabledForUrlContentSettingValue = ContentSetting.BLOCK;
         assertEnabledState(mMockGurl, false);
     }
 

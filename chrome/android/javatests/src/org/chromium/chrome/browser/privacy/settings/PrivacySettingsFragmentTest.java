@@ -84,7 +84,7 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -580,7 +580,7 @@ public class PrivacySettingsFragmentTest {
                     WebsitePreferenceBridge.setDefaultContentSetting(
                             ProfileManager.getLastUsedRegularProfile(),
                             ContentSettingsType.JAVASCRIPT_OPTIMIZER,
-                            ContentSettingValues.ALLOW);
+                            ContentSetting.ALLOW);
                 });
         mSettingsActivityTestRule.startSettingsActivity();
         int javascriptOptimizerLabel =
@@ -598,7 +598,7 @@ public class PrivacySettingsFragmentTest {
                     WebsitePreferenceBridge.setDefaultContentSetting(
                             ProfileManager.getLastUsedRegularProfile(),
                             ContentSettingsType.JAVASCRIPT_OPTIMIZER,
-                            ContentSettingValues.BLOCK);
+                            ContentSetting.BLOCK);
                 });
         mSettingsActivityTestRule.startSettingsActivity();
         int javascriptOptimizerLabel =

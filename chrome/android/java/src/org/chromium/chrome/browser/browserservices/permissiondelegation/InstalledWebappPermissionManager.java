@@ -25,7 +25,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 
@@ -71,9 +71,9 @@ public class InstalledWebappPermissionManager {
                     : "Found unparsable Origins in the Permission Store : " + originAsString;
             if (origin == null) continue;
 
-            @ContentSettingValues int setting = getPermission(type, origin);
+            @ContentSetting int setting = getPermission(type, origin);
 
-            if (setting != ContentSettingValues.DEFAULT) {
+            if (setting != ContentSetting.DEFAULT) {
                 permissions.add(new InstalledWebappBridge.Permission(origin, setting));
             }
         }
@@ -99,7 +99,7 @@ public class InstalledWebappPermissionManager {
             Origin origin,
             @Nullable String packageName,
             @ContentSettingsType.EnumType int type,
-            @ContentSettingValues int settingValue) {
+            @ContentSetting int settingValue) {
         if (packageName == null) return;
 
         String appName = getAppNameForPackage(packageName);
@@ -177,13 +177,12 @@ public class InstalledWebappPermissionManager {
     }
 
     @VisibleForTesting
-    @ContentSettingValues
+    @ContentSetting
     static int getPermission(@ContentSettingsType.EnumType int type, Origin origin) {
         switch (type) {
             case ContentSettingsType.NOTIFICATIONS:
                 {
-                    @ContentSettingValues
-                    Integer settingValue = getStore().getPermission(type, origin);
+                    @ContentSetting Integer settingValue = getStore().getPermission(type, origin);
                     if (settingValue == null) {
                         Log.w(TAG, "Origin %s is known but has no permission set.", origin);
                         break;
@@ -198,23 +197,22 @@ public class InstalledWebappPermissionManager {
                     // Skip if the delegated app did not enable location delegation.
                     if (enabled == null) break;
 
-                    @ContentSettingValues
+                    @ContentSetting
                     Integer storedPermission = getStore().getPermission(type, origin);
 
                     // Return |ASK| if is the first time (no previous state), and is not enabled.
-                    if (storedPermission == null && !enabled) return ContentSettingValues.ASK;
+                    if (storedPermission == null && !enabled) return ContentSetting.ASK;
 
                     // This is a temperate solution for the new Android one-time permission. Since
                     // we are not able to detect if use is changing the setting to "ask every
                     // time", when there is no permission, return ASK to let the client app decide
                     // whether to show the prompt.
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        if (!enabled) return ContentSettingValues.ASK;
+                        if (!enabled) return ContentSetting.ASK;
                     }
 
-                    @ContentSettingValues
-                    int settingValue =
-                            enabled ? ContentSettingValues.ALLOW : ContentSettingValues.BLOCK;
+                    @ContentSetting
+                    int settingValue = enabled ? ContentSetting.ALLOW : ContentSetting.BLOCK;
 
                     updatePermission(
                             origin, packageName, ContentSettingsType.GEOLOCATION, settingValue);
@@ -222,7 +220,7 @@ public class InstalledWebappPermissionManager {
                     return settingValue;
                 }
         }
-        return ContentSettingValues.DEFAULT;
+        return ContentSetting.DEFAULT;
     }
 
     /**

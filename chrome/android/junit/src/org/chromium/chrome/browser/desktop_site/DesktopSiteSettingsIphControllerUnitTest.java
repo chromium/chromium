@@ -45,7 +45,7 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.site_settings.ContentSettingException;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -301,7 +301,7 @@ public class DesktopSiteSettingsIphControllerUnitTest {
                 .thenReturn(true);
         when(mWebsitePreferenceBridgeJniMock.getContentSetting(
                         mProfile, ContentSettingsType.REQUEST_DESKTOP_SITE, mTabUrl, mTabUrl))
-                .thenReturn(ContentSettingValues.BLOCK);
+                .thenReturn(ContentSetting.BLOCK);
         mController.showWindowSettingIph(mTab, mProfile);
         verify(mMessageDispatcher, never()).enqueueMessage(any(), any(), anyInt(), anyBoolean());
     }
@@ -321,7 +321,7 @@ public class DesktopSiteSettingsIphControllerUnitTest {
         // Assume that the site has no site-level exceptions.
         when(mWebsitePreferenceBridgeJniMock.getContentSetting(
                         mProfile, ContentSettingsType.REQUEST_DESKTOP_SITE, mTabUrl, mTabUrl))
-                .thenReturn(ContentSettingValues.ALLOW);
+                .thenReturn(ContentSetting.ALLOW);
         // Assume that the site is using a mobile UA, this should mean that the window setting is in
         // use.
         when(mNavigationController.getUseDesktopUserAgent()).thenReturn(false);

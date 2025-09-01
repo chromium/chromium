@@ -15,7 +15,7 @@ import android.view.View;
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -108,12 +108,12 @@ public class EmbeddedPermissionDialogMediator extends PermissionDialogMediator
     }
 
     private void acknowledgeDelegate() {
-        onPermissionDialogResult(ContentSettingValues.DEFAULT);
+        onPermissionDialogResult(ContentSetting.DEFAULT);
         assumeNonNull(mDialogDelegate).onAcknowledge();
     }
 
     private void denyDelegate() {
-        onPermissionDialogResult(ContentSettingValues.BLOCK);
+        onPermissionDialogResult(ContentSetting.BLOCK);
         assumeNonNull(mDialogDelegate).onDeny();
     }
 

@@ -54,7 +54,7 @@ import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.ProviderType;
 import org.chromium.components.privacy_sandbox.WebsiteExceptionRowPreference.WebsiteExceptionDeletedCallback;
@@ -130,7 +130,7 @@ public class WebsiteExceptionRowPreferenceTest {
                         ContentSettingsType.COOKIES,
                         /* primaryPattern */ "*",
                         TEST_URL_WITH_WILDCARD,
-                        ContentSettingValues.ALLOW,
+                        ContentSetting.ALLOW,
                         ProviderType.PREF_PROVIDER,
                         /* expirationInDays= */ null,
                         /* isEmbargoed= */ false));
@@ -156,7 +156,7 @@ public class WebsiteExceptionRowPreferenceTest {
                         ContentSettingsType.COOKIES,
                         TEST_URL_WITH_WILDCARD,
                         /* secondaryPattern */ "*",
-                        ContentSettingValues.ALLOW,
+                        ContentSetting.ALLOW,
                         ProviderType.PREF_PROVIDER,
                         /* expirationInDays= */ null,
                         /* isEmbargoed= */ false));
@@ -186,7 +186,7 @@ public class WebsiteExceptionRowPreferenceTest {
                         ContentSettingsType.COOKIES,
                         /* primaryPattern */ "*",
                         TEST_URL_WITH_WILDCARD,
-                        ContentSettingValues.ALLOW,
+                        ContentSetting.ALLOW,
                         ProviderType.PREF_PROVIDER,
                         /* expirationInDays= */ null,
                         /* isEmbargoed= */ false));
@@ -210,7 +210,7 @@ public class WebsiteExceptionRowPreferenceTest {
                         ContentSettingsType.COOKIES,
                         site.getAddress().getOrigin(),
                         /* secondaryPattern= */ "*",
-                        ContentSettingValues.ALLOW,
+                        ContentSetting.ALLOW,
                         ProviderType.PREF_PROVIDER,
                         /* expirationInDays= */ 66,
                         /* isEmbargoed= */ false));
@@ -234,7 +234,7 @@ public class WebsiteExceptionRowPreferenceTest {
                         ContentSettingsType.COOKIES,
                         site.getAddress().getOrigin(),
                         /* secondaryPattern= */ "*",
-                        ContentSettingValues.ALLOW,
+                        ContentSetting.ALLOW,
                         ProviderType.PREF_PROVIDER,
                         /* expirationInDays= */ 0,
                         /* isEmbargoed= */ false));
@@ -257,7 +257,7 @@ public class WebsiteExceptionRowPreferenceTest {
                         ContentSettingsType.COOKIES,
                         site.getAddress().getOrigin(),
                         /* secondaryPattern= */ "*",
-                        ContentSettingValues.ALLOW,
+                        ContentSetting.ALLOW,
                         ProviderType.PREF_PROVIDER,
                         /* expirationInDays= */ null,
                         /* isEmbargoed= */ false);
@@ -272,7 +272,7 @@ public class WebsiteExceptionRowPreferenceTest {
                         Mockito.eq(ContentSettingsType.COOKIES),
                         Mockito.eq(site.getAddress().getOrigin()),
                         /* secondaryPattern= */ Mockito.eq("*"),
-                        Mockito.eq(ContentSettingValues.DEFAULT));
+                        Mockito.eq(ContentSetting.DEFAULT));
         // Check the refresh callback is triggered.
         verify(mCallback).refreshBlockingExceptions();
     }

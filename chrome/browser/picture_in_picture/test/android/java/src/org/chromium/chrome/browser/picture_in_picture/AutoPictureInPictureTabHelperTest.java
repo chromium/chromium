@@ -38,7 +38,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -321,7 +321,7 @@ public class AutoPictureInPictureTabHelperTest {
                 mPage.getTab().getProfile(),
                 ContentSettingsType.AUTO_PICTURE_IN_PICTURE,
                 mActivityTestRule.getTestServer().getURL(AUTO_PIP_VIDEO_PAGE),
-                ContentSettingValues.BLOCK);
+                ContentSetting.BLOCK);
 
         // Create a new tab in the background to switch to later.
         Tab originalTab = mPage.getTab();

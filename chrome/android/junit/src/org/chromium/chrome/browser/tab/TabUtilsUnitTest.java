@@ -54,7 +54,7 @@ import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.browser_ui.util.AutomotiveUtils;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
@@ -123,7 +123,7 @@ public class TabUtilsUnitTest {
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     private boolean mRdsDefault;
-    private @ContentSettingValues int mRdsException;
+    private @ContentSetting int mRdsException;
     private boolean mIsGlobal;
     private boolean mUseDesktopUserAgent;
     private @TabUserAgent int mTabUserAgent;
@@ -228,7 +228,7 @@ public class TabUtilsUnitTest {
         GURL gurl = JUnitTestGURLs.EXAMPLE_URL;
 
         // Site level setting is Mobile.
-        mRdsException = ContentSettingValues.BLOCK;
+        mRdsException = ContentSetting.BLOCK;
         Assert.assertFalse(
                 "The result should be false when there is no url",
                 TabUtils.readRequestDesktopSiteContentSettings(mProfile, null));
@@ -237,7 +237,7 @@ public class TabUtilsUnitTest {
                 TabUtils.readRequestDesktopSiteContentSettings(mProfile, gurl));
 
         // Site level setting is Desktop.
-        mRdsException = ContentSettingValues.ALLOW;
+        mRdsException = ContentSetting.ALLOW;
         Assert.assertFalse(
                 "The result should be false when there is no url",
                 TabUtils.readRequestDesktopSiteContentSettings(mProfile, null));

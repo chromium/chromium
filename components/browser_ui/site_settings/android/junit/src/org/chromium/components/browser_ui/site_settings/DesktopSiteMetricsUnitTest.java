@@ -16,7 +16,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 
 /** Unit tests for {@link DesktopSiteMetrics}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -36,7 +36,7 @@ public class DesktopSiteMetricsUnitTest {
     public void testRecordDesktopSiteSettingsManuallyAdded() {
         DesktopSiteMetrics.recordDesktopSiteSettingsManuallyAdded(
                 SiteSettingsCategory.Type.THIRD_PARTY_COOKIES,
-                ContentSettingValues.BLOCK,
+                ContentSetting.BLOCK,
                 "www.google.com");
         assertEquals(
                 "Only REQUEST_DESKTOP_SITE type should be recorded.",
@@ -51,7 +51,7 @@ public class DesktopSiteMetricsUnitTest {
 
         DesktopSiteMetrics.recordDesktopSiteSettingsManuallyAdded(
                 SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE,
-                ContentSettingValues.BLOCK,
+                ContentSetting.BLOCK,
                 "[*.]google.com");
         assertEquals(
                 "DomainSettingAdded should be recorded with value false.",
@@ -61,7 +61,7 @@ public class DesktopSiteMetricsUnitTest {
 
         DesktopSiteMetrics.recordDesktopSiteSettingsManuallyAdded(
                 SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE,
-                ContentSettingValues.ALLOW,
+                ContentSetting.ALLOW,
                 "[*.]google.com");
         assertEquals(
                 "DomainSettingAdded should be recorded with value true.",
@@ -71,7 +71,7 @@ public class DesktopSiteMetricsUnitTest {
 
         DesktopSiteMetrics.recordDesktopSiteSettingsManuallyAdded(
                 SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE,
-                ContentSettingValues.BLOCK,
+                ContentSetting.BLOCK,
                 "www.google.com");
         assertEquals(
                 "SubDomainSettingAdded should be recorded with value false.",
@@ -81,7 +81,7 @@ public class DesktopSiteMetricsUnitTest {
 
         DesktopSiteMetrics.recordDesktopSiteSettingsManuallyAdded(
                 SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE,
-                ContentSettingValues.ALLOW,
+                ContentSetting.ALLOW,
                 "www.google.com");
         assertEquals(
                 "SubDomainSettingAdded should be recorded with value true.",
@@ -95,7 +95,7 @@ public class DesktopSiteMetricsUnitTest {
         // SubDomain Setting
         when(mOrigin.getIsAnySubdomainPattern()).thenReturn(false);
         DesktopSiteMetrics.recordDesktopSiteSettingsChanged(
-                SiteSettingsCategory.Type.THIRD_PARTY_COOKIES, ContentSettingValues.ALLOW, mSite);
+                SiteSettingsCategory.Type.THIRD_PARTY_COOKIES, ContentSetting.ALLOW, mSite);
         assertEquals(
                 "Only REQUEST_DESKTOP_SITE type should be recorded.",
                 0,
@@ -108,7 +108,7 @@ public class DesktopSiteMetricsUnitTest {
                         "Android.RequestDesktopSite.SubDomainSettingChanged", 1));
 
         DesktopSiteMetrics.recordDesktopSiteSettingsChanged(
-                SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE, ContentSettingValues.BLOCK, mSite);
+                SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE, ContentSetting.BLOCK, mSite);
         assertEquals(
                 "SubDomainSettingChanged should be recorded with value false.",
                 1,
@@ -116,7 +116,7 @@ public class DesktopSiteMetricsUnitTest {
                         "Android.RequestDesktopSite.SubDomainSettingChanged", 0));
 
         DesktopSiteMetrics.recordDesktopSiteSettingsChanged(
-                SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE, ContentSettingValues.ALLOW, mSite);
+                SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE, ContentSetting.ALLOW, mSite);
         assertEquals(
                 "SubDomainSettingChanged should be recorded with value true.",
                 1,
@@ -126,7 +126,7 @@ public class DesktopSiteMetricsUnitTest {
         // Domain Setting
         when(mOrigin.getIsAnySubdomainPattern()).thenReturn(true);
         DesktopSiteMetrics.recordDesktopSiteSettingsChanged(
-                SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE, ContentSettingValues.BLOCK, mSite);
+                SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE, ContentSetting.BLOCK, mSite);
         assertEquals(
                 "DomainSettingChanged should be recorded with value false.",
                 1,
@@ -134,7 +134,7 @@ public class DesktopSiteMetricsUnitTest {
                         "Android.RequestDesktopSite.DomainSettingChanged", 0));
 
         DesktopSiteMetrics.recordDesktopSiteSettingsChanged(
-                SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE, ContentSettingValues.ALLOW, mSite);
+                SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE, ContentSetting.ALLOW, mSite);
         assertEquals(
                 "DomainSettingChanged should be recorded with value true.",
                 1,

@@ -33,7 +33,7 @@ import org.chromium.components.browser_ui.site_settings.SingleCategorySettingsCo
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.util.ConversionUtils;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -141,18 +141,16 @@ public class RequestDesktopUtils {
                 ContentSettingsType.REQUEST_DESKTOP_SITE,
                 url.getHost(),
                 /* secondaryPattern= */ SITE_WILDCARD,
-                ContentSettingValues.DEFAULT);
+                ContentSetting.DEFAULT);
 
-        @ContentSettingValues
+        @ContentSetting
         int defaultValue =
                 WebsitePreferenceBridge.getDefaultContentSetting(
                         profile, ContentSettingsType.REQUEST_DESKTOP_SITE);
-        assert defaultValue == ContentSettingValues.ALLOW
-                || defaultValue == ContentSettingValues.BLOCK;
-        boolean rdsGlobalSetting = defaultValue == ContentSettingValues.ALLOW;
-        @ContentSettingValues
-        int contentSettingValue =
-                useDesktopUserAgent ? ContentSettingValues.ALLOW : ContentSettingValues.BLOCK;
+        assert defaultValue == ContentSetting.ALLOW || defaultValue == ContentSetting.BLOCK;
+        boolean rdsGlobalSetting = defaultValue == ContentSetting.ALLOW;
+        @ContentSetting
+        int contentSettingValue = useDesktopUserAgent ? ContentSetting.ALLOW : ContentSetting.BLOCK;
         // For normal profile, remove domain level setting if it matches the global setting.
         // For incognito profile, keep the domain level setting to override the settings from normal
         // profile.
@@ -160,7 +158,7 @@ public class RequestDesktopUtils {
             // Keep the domain settings when the window setting preference is ON.
             PrefService prefService = UserPrefs.get(profile);
             if (!prefService.getBoolean(DESKTOP_SITE_WINDOW_SETTING_ENABLED)) {
-                contentSettingValue = ContentSettingValues.DEFAULT;
+                contentSettingValue = ContentSetting.DEFAULT;
             }
         }
 

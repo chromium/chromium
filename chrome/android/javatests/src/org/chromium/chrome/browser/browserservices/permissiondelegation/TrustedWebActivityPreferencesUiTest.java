@@ -32,7 +32,7 @@ import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 
@@ -73,7 +73,7 @@ public class TrustedWebActivityPreferencesUiTest {
                                 origin,
                                 mPackage,
                                 ContentSettingsType.NOTIFICATIONS,
-                                ContentSettingValues.ALLOW));
+                                ContentSetting.ALLOW));
 
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(
@@ -135,7 +135,7 @@ public class TrustedWebActivityPreferencesUiTest {
                                 origin,
                                 mPackage,
                                 ContentSettingsType.NOTIFICATIONS,
-                                ContentSettingValues.ALLOW));
+                                ContentSetting.ALLOW));
 
         WebsiteAddress address = WebsiteAddress.create(site);
         Website website = new Website(address, address);

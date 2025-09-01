@@ -139,7 +139,7 @@ import org.chromium.components.browser_ui.site_settings.WebsiteGroup;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.ProviderType;
@@ -276,7 +276,7 @@ public class SiteSettingsTest {
                             WebsitePreferenceBridge.setDefaultContentSetting(
                                     getBrowserContextHandle(),
                                     SiteSettingsCategory.contentSettingsType(t),
-                                    ContentSettingValues.DEFAULT);
+                                    ContentSetting.DEFAULT);
                         }
                     }
                     // Clean up content setting exceptions.
@@ -375,13 +375,13 @@ public class SiteSettingsTest {
                             ContentSettingsType.COOKIES,
                             "*",
                             "secondary.com",
-                            ContentSettingValues.ALLOW);
+                            ContentSetting.ALLOW);
                     WebsitePreferenceBridge.setContentSettingCustomScope(
                             getBrowserContextHandle(),
                             ContentSettingsType.COOKIES,
                             "primary.com",
                             "*",
-                            ContentSettingValues.ALLOW);
+                            ContentSetting.ALLOW);
                 });
     }
 
@@ -393,13 +393,13 @@ public class SiteSettingsTest {
                             ContentSettingsType.COOKIES,
                             "*",
                             SECONDARY_PATTERN_WITH_WILDCARD,
-                            ContentSettingValues.ALLOW);
+                            ContentSetting.ALLOW);
                     WebsitePreferenceBridge.setContentSettingCustomScope(
                             getBrowserContextHandle(),
                             ContentSettingsType.COOKIES,
                             PRIMARY_PATTERN_WITH_WILDCARD,
                             "*",
-                            ContentSettingValues.ALLOW);
+                            ContentSetting.ALLOW);
                 });
     }
 
@@ -411,19 +411,19 @@ public class SiteSettingsTest {
                             ContentSettingsType.STORAGE_ACCESS,
                             "primary.com",
                             "secondary.com",
-                            ContentSettingValues.ALLOW);
+                            ContentSetting.ALLOW);
                     WebsitePreferenceBridge.setContentSettingCustomScope(
                             getBrowserContextHandle(),
                             ContentSettingsType.STORAGE_ACCESS,
                             "primary.com",
                             "secondary3.com",
-                            ContentSettingValues.ALLOW);
+                            ContentSetting.ALLOW);
                     WebsitePreferenceBridge.setContentSettingCustomScope(
                             getBrowserContextHandle(),
                             ContentSettingsType.STORAGE_ACCESS,
                             "primary2.com",
                             "secondary2.com",
-                            ContentSettingValues.ALLOW);
+                            ContentSetting.ALLOW);
                 });
     }
 
@@ -436,7 +436,7 @@ public class SiteSettingsTest {
                         ContentSettingsType.STORAGE_ACCESS,
                         "primary.com",
                         "secondary1.com",
-                        ContentSettingValues.ALLOW,
+                        ContentSetting.ALLOW,
                         ProviderType.PREF_PROVIDER,
                         30,
                         false));
@@ -445,7 +445,7 @@ public class SiteSettingsTest {
                         ContentSettingsType.STORAGE_ACCESS,
                         "primary.com",
                         "secondary3.com",
-                        ContentSettingValues.ALLOW,
+                        ContentSetting.ALLOW,
                         ProviderType.PREF_PROVIDER,
                         30,
                         false));
@@ -1746,21 +1746,21 @@ public class SiteSettingsTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(
-                            ContentSettingValues.ASK,
+                            ContentSetting.ASK,
                             WebsitePreferenceBridge.getContentSetting(
                                     getBrowserContextHandle(),
                                     ContentSettingsType.STORAGE_ACCESS,
                                     new GURL("https://primary.com"),
                                     new GURL("https://secondary.com")));
                     assertEquals(
-                            ContentSettingValues.ASK,
+                            ContentSetting.ASK,
                             WebsitePreferenceBridge.getContentSetting(
                                     getBrowserContextHandle(),
                                     ContentSettingsType.STORAGE_ACCESS,
                                     new GURL("https://primary.com"),
                                     new GURL("https://secondary3.com")));
                     assertEquals(
-                            ContentSettingValues.ALLOW,
+                            ContentSetting.ALLOW,
                             WebsitePreferenceBridge.getContentSetting(
                                     getBrowserContextHandle(),
                                     ContentSettingsType.STORAGE_ACCESS,
@@ -1789,21 +1789,21 @@ public class SiteSettingsTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(
-                            ContentSettingValues.BLOCK,
+                            ContentSetting.BLOCK,
                             WebsitePreferenceBridge.getContentSetting(
                                     getBrowserContextHandle(),
                                     ContentSettingsType.STORAGE_ACCESS,
                                     new GURL("https://primary.com"),
                                     new GURL("https://secondary.com")));
                     assertEquals(
-                            ContentSettingValues.BLOCK,
+                            ContentSetting.BLOCK,
                             WebsitePreferenceBridge.getContentSetting(
                                     getBrowserContextHandle(),
                                     ContentSettingsType.STORAGE_ACCESS,
                                     new GURL("https://primary.com"),
                                     new GURL("https://secondary3.com")));
                     assertEquals(
-                            ContentSettingValues.ALLOW,
+                            ContentSetting.ALLOW,
                             WebsitePreferenceBridge.getContentSetting(
                                     getBrowserContextHandle(),
                                     ContentSettingsType.STORAGE_ACCESS,
@@ -1829,14 +1829,14 @@ public class SiteSettingsTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(
-                            ContentSettingValues.ASK,
+                            ContentSetting.ASK,
                             WebsitePreferenceBridge.getContentSetting(
                                     getBrowserContextHandle(),
                                     ContentSettingsType.STORAGE_ACCESS,
                                     new GURL("https://primary.com"),
                                     new GURL("https://secondary1.com")));
                     assertEquals(
-                            ContentSettingValues.ALLOW,
+                            ContentSetting.ALLOW,
                             WebsitePreferenceBridge.getContentSetting(
                                     getBrowserContextHandle(),
                                     ContentSettingsType.STORAGE_ACCESS,
@@ -1855,7 +1855,7 @@ public class SiteSettingsTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(
-                            ContentSettingValues.ASK,
+                            ContentSetting.ASK,
                             WebsitePreferenceBridge.getContentSetting(
                                     getBrowserContextHandle(),
                                     ContentSettingsType.STORAGE_ACCESS,
@@ -2283,13 +2283,13 @@ public class SiteSettingsTest {
     public void testOnlyExpectedPreferencesProtectedMediaWithToggle() {
         String[] protectedMedia = new String[] {"tri_state_toggle", "protected_content_learn_more"};
         setGlobalTriStateToggleForCategory(
-                SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSettingValues.ALLOW);
+                SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSetting.ALLOW);
         checkPreferencesForCategory(SiteSettingsCategory.Type.PROTECTED_MEDIA, protectedMedia);
         setGlobalTriStateToggleForCategory(
-                SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSettingValues.ASK);
+                SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSetting.ASK);
         checkPreferencesForCategory(SiteSettingsCategory.Type.PROTECTED_MEDIA, protectedMedia);
         setGlobalTriStateToggleForCategory(
-                SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSettingValues.BLOCK);
+                SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSetting.BLOCK);
         checkPreferencesForCategory(SiteSettingsCategory.Type.PROTECTED_MEDIA, protectedMedia);
     }
 
@@ -2300,13 +2300,13 @@ public class SiteSettingsTest {
     public void testOnlyExpectedPreferencesProtectedMedia() {
         String[] protectedMedia = new String[] {"info_text", "tri_state_toggle"};
         setGlobalTriStateToggleForCategory(
-                SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSettingValues.ALLOW);
+                SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSetting.ALLOW);
         checkPreferencesForCategory(SiteSettingsCategory.Type.PROTECTED_MEDIA, protectedMedia);
         setGlobalTriStateToggleForCategory(
-                SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSettingValues.ASK);
+                SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSetting.ASK);
         checkPreferencesForCategory(SiteSettingsCategory.Type.PROTECTED_MEDIA, protectedMedia);
         setGlobalTriStateToggleForCategory(
-                SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSettingValues.BLOCK);
+                SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSetting.BLOCK);
         checkPreferencesForCategory(SiteSettingsCategory.Type.PROTECTED_MEDIA, protectedMedia);
     }
 
@@ -2711,8 +2711,7 @@ public class SiteSettingsTest {
     public void testRemoveGeolocationWithOptions() {
         String url = "https://example.com";
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
-        var allowSetting =
-                new GeolocationSetting(ContentSettingValues.ALLOW, ContentSettingValues.ALLOW);
+        var allowSetting = new GeolocationSetting(ContentSetting.ALLOW, ContentSetting.ALLOW);
         setGeolocationSetting(url, allowSetting);
         SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.DEVICE_LOCATION);
         assertEquals(allowSetting, getGeolocationSetting(url));
@@ -2721,7 +2720,7 @@ public class SiteSettingsTest {
         onView(withText(url)).check(matches(isDisplayed())).perform(click());
         onView(withText("Remove")).perform(click());
         assertEquals(
-                new GeolocationSetting(ContentSettingValues.ASK, ContentSettingValues.ASK),
+                new GeolocationSetting(ContentSetting.ASK, ContentSetting.ASK),
                 getGeolocationSetting(url));
     }
 
@@ -2735,8 +2734,7 @@ public class SiteSettingsTest {
     public void testChangeGeolocationWithOptions() {
         String url = "https://example.com";
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
-        var allowSetting =
-                new GeolocationSetting(ContentSettingValues.ALLOW, ContentSettingValues.ALLOW);
+        var allowSetting = new GeolocationSetting(ContentSetting.ALLOW, ContentSetting.ALLOW);
         setGeolocationSetting(url, allowSetting);
         SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.DEVICE_LOCATION);
         assertEquals(allowSetting, getGeolocationSetting(url));
@@ -2745,12 +2743,12 @@ public class SiteSettingsTest {
         onView(withText(url)).check(matches(isDisplayed())).perform(click());
         onView(withText("Approximate")).perform(click());
         assertEquals(
-                new GeolocationSetting(ContentSettingValues.ALLOW, ContentSettingValues.BLOCK),
+                new GeolocationSetting(ContentSetting.ALLOW, ContentSetting.BLOCK),
                 getGeolocationSetting(url));
 
         onView(withText("Block")).perform(click());
         assertEquals(
-                new GeolocationSetting(ContentSettingValues.BLOCK, ContentSettingValues.BLOCK),
+                new GeolocationSetting(ContentSetting.BLOCK, ContentSetting.BLOCK),
                 getGeolocationSetting(url));
     }
 
@@ -2767,7 +2765,7 @@ public class SiteSettingsTest {
         final String origin = Origin.create(url).toString();
         triggerEmbargoForOrigin(url);
         assertEquals(
-                new GeolocationSetting(ContentSettingValues.BLOCK, ContentSettingValues.BLOCK),
+                new GeolocationSetting(ContentSetting.BLOCK, ContentSetting.BLOCK),
                 getGeolocationSetting(url));
 
         SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.DEVICE_LOCATION);
@@ -2777,7 +2775,7 @@ public class SiteSettingsTest {
         onView(withText(origin)).perform(click());
         onView(withText("Allow")).perform(click());
         assertEquals(
-                new GeolocationSetting(ContentSettingValues.ALLOW, ContentSettingValues.ALLOW),
+                new GeolocationSetting(ContentSetting.ALLOW, ContentSetting.ALLOW),
                 getGeolocationSetting(url));
     }
 
@@ -3433,7 +3431,7 @@ public class SiteSettingsTest {
                             ContentSettingsType.JAVASCRIPT_OPTIMIZER,
                             new GURL(pageOrigin),
                             new GURL(pageOrigin),
-                            ContentSettingValues.ALLOW);
+                            ContentSetting.ALLOW);
                 });
 
         mAdvancedProtectionRule.setIsAdvancedProtectionRequestedByOs(true);
@@ -3489,7 +3487,7 @@ public class SiteSettingsTest {
                             ContentSettingsType.JAVASCRIPT_OPTIMIZER,
                             new GURL(pageOrigin),
                             new GURL(pageOrigin),
-                            ContentSettingValues.ALLOW);
+                            ContentSetting.ALLOW);
                 });
 
         mAdvancedProtectionRule.setIsAdvancedProtectionRequestedByOs(true);
@@ -3700,7 +3698,7 @@ public class SiteSettingsTest {
                             ContentSettingsType.JAVASCRIPT_OPTIMIZER,
                             new GURL(pageOrigin),
                             new GURL(pageOrigin),
-                            ContentSettingValues.ALLOW);
+                            ContentSetting.ALLOW);
                 });
 
         mAdvancedProtectionRule.setIsAdvancedProtectionRequestedByOs(true);
@@ -3804,7 +3802,7 @@ public class SiteSettingsTest {
                                     ContentSettingsType.NOTIFICATIONS,
                                     urlToBlock,
                                     urlToBlock,
-                                    ContentSettingValues.BLOCK);
+                                    ContentSetting.BLOCK);
                 });
 
         final SettingsActivity settingsActivity =
@@ -3913,7 +3911,7 @@ public class SiteSettingsTest {
     @Feature({"Preferences"})
     public void testProtectedContentAskAllow() throws Exception {
         setGlobalTriStateToggleForCategory(
-                SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSettingValues.ASK);
+                SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSetting.ASK);
 
         initializeUpdateWaiter(/* expectGranted= */ true);
         mPermissionRule.runAllowTest(
@@ -3930,7 +3928,7 @@ public class SiteSettingsTest {
     @Feature({"Preferences"})
     public void testProtectedContentAskBlocked() throws Exception {
         setGlobalTriStateToggleForCategory(
-                SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSettingValues.ASK);
+                SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSetting.ASK);
 
         initializeUpdateWaiter(/* expectGranted= */ false);
         mPermissionRule.runDenyTest(
@@ -3947,7 +3945,7 @@ public class SiteSettingsTest {
     @Feature({"Preferences"})
     public void testProtectedContentBlocked() throws Exception {
         setGlobalTriStateToggleForCategory(
-                SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSettingValues.BLOCK);
+                SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSetting.BLOCK);
 
         initializeUpdateWaiter(/* expectGranted= */ false);
         mPermissionRule.runNoPromptTest(
@@ -3974,7 +3972,7 @@ public class SiteSettingsTest {
                 true);
 
         setGlobalTriStateToggleForCategory(
-                SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSettingValues.BLOCK);
+                SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSetting.BLOCK);
 
         initializeUpdateWaiter(/* expectGranted= */ false);
         mPermissionRule.runNoPromptTest(

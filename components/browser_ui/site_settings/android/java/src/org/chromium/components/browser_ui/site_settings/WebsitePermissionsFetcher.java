@@ -15,7 +15,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browsing_data.content.BrowsingDataInfo;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.SessionModel;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
@@ -375,7 +375,7 @@ public class WebsitePermissionsFetcher {
         private Website findOrCreateSite(
                 String origin,
                 @Nullable String embedder,
-                @ContentSettingValues @Nullable Integer contentSetting) {
+                @ContentSetting @Nullable Integer contentSetting) {
             // Ensure that the origin parameter is actually an origin or a wildcard.
             // The purpose of the check is to prevent duplicate entries in the list when getting a
             // mix of origins and hosts. Except, in the case of the Zoom category, where we want to
@@ -421,7 +421,7 @@ public class WebsitePermissionsFetcher {
                             mBrowserContextHandle, contentSettingsType)) {
                 String address = exception.getPrimaryPattern();
                 String embedder = exception.getSecondaryPattern();
-                @ContentSettingValues
+                @ContentSetting
                 @Nullable Integer contentSetting = null;
 
                 if (isEmbeddedPermission
