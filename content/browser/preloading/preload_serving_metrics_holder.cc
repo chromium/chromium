@@ -25,6 +25,16 @@ void PreloadServingMetricsHolder::AddPrefetchMatchMetrics(
       std::move(prefetch_match_metrics));
 }
 
+void PreloadServingMetricsHolder::SetPrerenderInitialPreloadServingMetrics(
+    std::unique_ptr<PreloadServingMetrics>
+        prerender_initial_preload_serving_metrics) {
+  CHECK(prerender_initial_preload_serving_metrics);
+  CHECK(!preload_serving_metrics_->prerender_initial_preload_serving_metrics);
+
+  preload_serving_metrics_->prerender_initial_preload_serving_metrics =
+      std::move(prerender_initial_preload_serving_metrics);
+}
+
 std::unique_ptr<PreloadServingMetrics> PreloadServingMetricsHolder::Take() {
   // Ensures not to take it twice.
   CHECK(preload_serving_metrics_);

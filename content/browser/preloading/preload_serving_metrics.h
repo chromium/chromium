@@ -108,6 +108,15 @@ struct CONTENT_EXPORT PreloadServingMetrics {
   // Added per prefetch matching.
   std::vector<std::unique_ptr<PrefetchMatchMetrics>>
       prefetch_match_metrics_list;
+  // If `this` is for a prerender activation navigation, it's
+  // `PreloadServingMetrics` of the corresponding prerender initial navigation.
+  // Otherwise null.
+  //
+  // If there are multiple navigations in the frame tree for prerender, this is
+  // the first navigation and the `PreloadServingMetrics`s for the other
+  // navigations are discarded.
+  std::unique_ptr<PreloadServingMetrics>
+      prerender_initial_preload_serving_metrics = nullptr;
 };
 
 }  // namespace content
