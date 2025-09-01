@@ -25,6 +25,7 @@
 #include "chrome/test/base/scoped_browser_locale.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
+#include "components/omnibox/browser/aim_eligibility_service_observer.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/search.h"
@@ -86,6 +87,37 @@ class IdentityManagerObserverHelper : public signin::IdentityManager::Observer {
   base::test::TestFuture<void> accounts_updated_future_;
 };
 
+// Helper class to observe AimEligibilityService.
+class AimEligibilityServiceObserverHelper
+    : public AimEligibilityServiceObserver {
+ public:
+  explicit AimEligibilityServiceObserverHelper(AimEligibilityService* service) {
+    aim_eligibility_service_observation_.Observe(service);
+  }
+
+  ~AimEligibilityServiceObserverHelper() override = default;
+
+  // AimEligibilityServiceObserver:
+  void OnAimEligibilityChanged() override {
+    if (!eligibility_changed_future_.IsReady()) {
+      eligibility_changed_future_.SetValue();
+    }
+  }
+
+  bool WaitForEligibilityChanged() {
+    return eligibility_changed_future_.Wait();
+  }
+
+  bool IsReady() const { return eligibility_changed_future_.IsReady(); }
+
+  void Clear() { eligibility_changed_future_.Clear(); }
+
+ private:
+  base::ScopedObservation<AimEligibilityService, AimEligibilityServiceObserver>
+      aim_eligibility_service_observation_{this};
+  base::test::TestFuture<void> eligibility_changed_future_;
+};
+
 // Friend class to access private members of AimEligibilityService for testing.
 class AimEligibilityServiceFriend {
  public:
@@ -111,14 +143,14 @@ class ChromeAimEligibilityServiceBrowserTest
 
  protected:
   void SetUp() override {
-    auto [locale, country, server_eligibility_enabled_all, allowed_by_policy,
+    auto [locale, country, server_eligibility_enabled, allowed_by_policy,
           is_google_dse, is_server_eligible, is_pdf_upload_eligible] =
         GetParam();
 
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
-    if (server_eligibility_enabled_all) {
+    if (server_eligibility_enabled) {
       enabled_features.push_back(kAimServerEligibilityEnabled);
     } else {
       disabled_features.push_back(kAimServerEligibilityEnabled);
@@ -130,7 +162,7 @@ class ChromeAimEligibilityServiceBrowserTest
   }
 
   void SetUpOnMainThread() override {
-    auto [locale, country, server_eligibility_enabled_all, allowed_by_policy,
+    auto [locale, country, server_eligibility_enabled, allowed_by_policy,
           is_google_dse, is_server_eligible, is_pdf_upload_eligible] =
         GetParam();
 
@@ -225,14 +257,8 @@ INSTANTIATE_TEST_SUITE_P(,
 
 IN_PROC_BROWSER_TEST_P(ChromeAimEligibilityServiceBrowserTest,
                        ComprehensiveEligibilityTest) {
-  auto [locale, country, server_eligibility_enabled_all, allowed_by_policy,
+  auto [locale, country, server_eligibility_enabled, allowed_by_policy,
         is_google_dse, is_server_eligible, is_pdf_upload_eligible] = GetParam();
-
-  // fieldtrial testing configs enables `AimServerEligibilityEnabledEn` which
-  // overrides server eligibility for English locales
-  const bool server_eligibility_enabled =
-      server_eligibility_enabled_all ||
-      base::StartsWith(locale, "en", base::CompareCase::SENSITIVE);
 
   // Handle the eligibility request on startup with a custom response.
   omnibox::AimEligibilityResponse response;
@@ -247,9 +273,7 @@ IN_PROC_BROWSER_TEST_P(ChromeAimEligibilityServiceBrowserTest,
 
     auto* service =
         AimEligibilityServiceFactory::GetForProfile(browser()->profile());
-    base::test::TestFuture<void> eligibility_changed_future;
-    auto eligibility_subscription = service->RegisterEligibilityChangedCallback(
-        eligibility_changed_future.GetRepeatingCallback());
+    AimEligibilityServiceObserverHelper service_observer_helper(service);
 
     // Test country and locale detection.
     EXPECT_TRUE(service->IsCountry(country));
@@ -259,11 +283,10 @@ IN_PROC_BROWSER_TEST_P(ChromeAimEligibilityServiceBrowserTest,
     EXPECT_EQ(service->IsServerEligibilityEnabled(),
               server_eligibility_enabled);
 
-    // Wait for the eligibility change callback to be invoked, if applicable.
     if (is_google_dse) {
-      EXPECT_TRUE(eligibility_changed_future.Wait());
+      EXPECT_TRUE(service_observer_helper.WaitForEligibilityChanged());
     } else {
-      EXPECT_FALSE(eligibility_changed_future.IsReady());
+      EXPECT_FALSE(service_observer_helper.IsReady());
     }
 
     // Test IsAimLocallyEligible().
@@ -360,9 +383,7 @@ IN_PROC_BROWSER_TEST_P(ChromeAimEligibilityServiceBrowserTest,
 
     auto* service =
         AimEligibilityServiceFactory::GetForProfile(browser()->profile());
-    base::test::TestFuture<void> eligibility_changed_future;
-    auto eligibility_subscription = service->RegisterEligibilityChangedCallback(
-        eligibility_changed_future.GetRepeatingCallback());
+    AimEligibilityServiceObserverHelper service_observer_helper(service);
 
     // Simulate a change to the account in the cookie jar.
     auto* identity_manager = identity_test_env()->identity_manager();
@@ -375,11 +396,11 @@ IN_PROC_BROWSER_TEST_P(ChromeAimEligibilityServiceBrowserTest,
             .Build("test@email.com"));
     EXPECT_TRUE(identity_observer.WaitForAccountsInCookieUpdated());
 
-    // Wait for the eligibility change callback to be invoked, if applicable.
     if (is_google_dse) {
-      EXPECT_TRUE(eligibility_changed_future.Wait());
+      // Wait for the observer to be notified of potential eligibility changes.
+      EXPECT_TRUE(service_observer_helper.WaitForEligibilityChanged());
     } else {
-      EXPECT_FALSE(eligibility_changed_future.IsReady());
+      EXPECT_FALSE(service_observer_helper.IsReady());
     }
 
     // Test IsAimLocallyEligible().
