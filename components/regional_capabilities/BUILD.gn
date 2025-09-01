@@ -84,6 +84,7 @@ source_set("switches") {
 source_set("data") {
   visibility = [
     ":*",
+    "//chrome/browser/regional_capabilities:metrics_provider_impl",
     "//components/search_engines",
     "//components/search_engines:unit_tests",
     "//ios/chrome/browser/regional_capabilities/model",
