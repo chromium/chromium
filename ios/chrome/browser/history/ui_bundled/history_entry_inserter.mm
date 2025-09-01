@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/history/ui_bundled/history_util.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/util/date_localized_util.h"
 #import "url/gurl.h"
 
 @interface HistoryEntryInserter () {
@@ -129,8 +130,8 @@
 
   TableViewTextHeaderFooterItem* header =
       [[TableViewTextHeaderFooterItem alloc] initWithType:kItemTypeEnumZero];
-  header.text =
-      base::SysUTF16ToNSString(history::GetRelativeDateLocalized(timestamp));
+  header.text = base::SysUTF16ToNSString(
+      date_localized::GetRelativeDateLocalized(timestamp));
   [_listModel setHeader:header forSectionWithIdentifier:sectionIdentifier];
 
   [self.delegate historyEntryInserter:self

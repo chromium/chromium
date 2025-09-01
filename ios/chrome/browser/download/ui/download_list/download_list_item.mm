@@ -39,6 +39,11 @@ NSString* const kStatusTextEmptyString = @"";
 
 #pragma mark - Public
 
+- (base::Time)createdTime {
+  return _downloadRecord.created_time.is_null() ? base::Time::Now()
+                                                : _downloadRecord.created_time;
+}
+
 - (NSString*)detailText {
   switch (_downloadRecord.state) {
     case web::DownloadTask::State::kFailed:

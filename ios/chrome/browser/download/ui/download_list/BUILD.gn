@@ -5,6 +5,10 @@
 source_set("download_list") {
   sources = [
     "download_list_consumer.h",
+    "download_list_group_item.h",
+    "download_list_group_item.mm",
+    "download_list_grouping_util.h",
+    "download_list_grouping_util.mm",
     "download_list_item.h",
     "download_list_item.mm",
     "download_list_mutator.h",

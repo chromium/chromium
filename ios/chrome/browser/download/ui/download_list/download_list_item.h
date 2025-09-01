@@ -5,11 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_DOWNLOAD_UI_DOWNLOAD_LIST_DOWNLOAD_LIST_ITEM_H_
 #define IOS_CHROME_BROWSER_DOWNLOAD_UI_DOWNLOAD_LIST_DOWNLOAD_LIST_ITEM_H_
 
+#import "base/time/time.h"
 #import "ios/chrome/browser/download/model/download_record.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 
 /// Table view item for download list entries.
 @interface DownloadListItem : NSObject
+
+/// Returns the creation time for this download item.
+@property(nonatomic, assign, readonly) base::Time createdTime;
 
 /// Returns the detail text for this download item.
 @property(nonatomic, copy, readonly) NSString* detailText;

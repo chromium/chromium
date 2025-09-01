@@ -5,28 +5,10 @@
 #import "ios/chrome/browser/history/ui_bundled/history_util.h"
 
 #import "base/i18n/rtl.h"
-#import "base/i18n/time_formatting.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/time/time.h"
-#import "components/strings/grit/components_strings.h"
 #import "components/url_formatter/url_formatter.h"
-#import "ui/base/l10n/l10n_util.h"
-#import "ui/base/l10n/time_format.h"
 
 namespace history {
-
-std::u16string GetRelativeDateLocalized(const base::Time& visit_time) {
-  std::u16string date_str = ui::TimeFormat::RelativeDate(
-      visit_time, base::Time::Now().LocalMidnight());
-  if (date_str.empty()) {
-    date_str = base::TimeFormatFriendlyDate(visit_time);
-  } else {
-    date_str = l10n_util::GetStringFUTF16(
-        IDS_HISTORY_DATE_WITH_RELATIVE_TIME, date_str,
-        base::TimeFormatFriendlyDate(visit_time));
-  }
-  return date_str;
-}
 
 NSString* FormattedTitle(const std::u16string& title, const GURL& url) {
   // Use url as title if no title.

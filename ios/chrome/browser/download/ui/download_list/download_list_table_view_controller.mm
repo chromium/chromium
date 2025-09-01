@@ -9,20 +9,22 @@
 
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/download/ui/download_list/download_list_consumer.h"
+#import "ios/chrome/browser/download/ui/download_list/download_list_group_item.h"
+#import "ios/chrome/browser/download/ui/download_list/download_list_grouping_util.h"
 #import "ios/chrome/browser/download/ui/download_list/download_list_item.h"
 #import "ios/chrome/browser/download/ui/download_list/download_list_mutator.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-enum SectionIdentifier { SectionIdentifierDownloads };
-
-// Diffable data source types.
-typedef UITableViewDiffableDataSource<NSNumber*, DownloadListItem*>
+// Diffable data source types using DownloadListGroupItem for section
+// identifiers.
+typedef UITableViewDiffableDataSource<DownloadListGroupItem*, DownloadListItem*>
     DownloadListDiffableDataSource;
-typedef NSDiffableDataSourceSnapshot<NSNumber*, DownloadListItem*>
+typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
     DownloadListSnapshot;
 
 @implementation DownloadListTableViewController {
@@ -55,6 +57,7 @@ typedef NSDiffableDataSourceSnapshot<NSNumber*, DownloadListItem*>
 
   // Configure table view.
   RegisterTableViewCell<TableViewDetailIconCell>(self.tableView);
+  RegisterTableViewHeaderFooter<TableViewTextHeaderFooterView>(self.tableView);
   [self configureDiffableDataSource];
 
   // Load download records.
@@ -112,16 +115,36 @@ typedef NSDiffableDataSourceSnapshot<NSNumber*, DownloadListItem*>
   // TODO(crbug.com/440222083): Implement download primary action handling.
 }
 
+- (UIView*)tableView:(UITableView*)tableView
+    viewForHeaderInSection:(NSInteger)section {
+  // Get the section identifier (DownloadListGroupItem) from the data source
+  // snapshot.
+  DownloadListGroupItem* groupItem =
+      [_diffableDataSource sectionIdentifierForIndex:section];
+
+  TableViewTextHeaderFooterView* headerView =
+      DequeueTableViewHeaderFooter<TableViewTextHeaderFooterView>(tableView);
+  [headerView setTitle:groupItem.title];
+
+  return headerView;
+}
+
 #pragma mark - DownloadListConsumer
 
 - (void)setDownloadListItems:(NSArray<DownloadListItem*>*)items {
-  // Create a new snapshot with download items.
+  // Create a new snapshot with date-grouped sections.
   DownloadListSnapshot* snapshot = [[DownloadListSnapshot alloc] init];
 
-  NSNumber* sectionIdentifier = @(SectionIdentifierDownloads);
-  [snapshot appendSectionsWithIdentifiers:@[ sectionIdentifier ]];
-  [snapshot appendItemsWithIdentifiers:items
-             intoSectionWithIdentifier:sectionIdentifier];
+  // Group items by date.
+  NSArray<DownloadListGroupItem*>* groupItems =
+      download_list_grouping_util::GroupDownloadItemsByDate(items);
+
+  // Add sections and items.
+  for (DownloadListGroupItem* groupItem in groupItems) {
+    [snapshot appendSectionsWithIdentifiers:@[ groupItem ]];
+    [snapshot appendItemsWithIdentifiers:groupItem.items
+               intoSectionWithIdentifier:groupItem];
+  }
 
   // Detect changes between old and new items.
   NSArray<DownloadListItem*>* oldItems =
