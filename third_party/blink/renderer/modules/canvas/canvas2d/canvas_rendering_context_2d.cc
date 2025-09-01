@@ -1421,30 +1421,28 @@ CanvasRenderingContext2D::RecreateCanvasResourceProviderForCanvas2D() {
     return nullptr;
   }
 
-  CanvasResourceProvider* resource_provider = nullptr;
   if (canvas()->IsValidImageSize()) {
     resource_provider_ = CreateCanvasResourceProvider();
     canvas()->UpdateMemoryUsage();
-    resource_provider = GetResourceProviderForCanvas2D();
   }
-  if (!resource_provider) {
+  if (!resource_provider_) {
     did_fail_to_create_resource_provider_ = true;
-  } else if (resource_provider->IsValid()) {
+  } else if (resource_provider_->IsValid()) {
     base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
-                              resource_provider->IsAccelerated());
+                              resource_provider_->IsAccelerated());
     base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
-                                  resource_provider->GetType());
+                                  resource_provider_->GetType());
   }
-  if (!resource_provider || !resource_provider->IsValid()) {
+  if (!resource_provider_ || !resource_provider_->IsValid()) {
     return nullptr;
   }
 
   auto* hibernation_handler = GetHibernationHandler();
   if (!hibernation_handler->IsHibernating()) {
-    return resource_provider;
+    return resource_provider_.get();
   }
 
-  if (resource_provider->IsAccelerated()) {
+  if (resource_provider_->IsAccelerated()) {
     CanvasHibernationHandler::ReportHibernationEvent(
         CanvasHibernationHandler::HibernationEvent::kHibernationEndedNormally);
   } else {
@@ -1463,8 +1461,8 @@ CanvasRenderingContext2D::RecreateCanvasResourceProviderForCanvas2D() {
   builder.set_image(hibernation_handler->GetImage(),
                     PaintImage::GetNextContentId());
   builder.set_id(PaintImage::GetNextId());
-  resource_provider->RestoreBackBuffer(builder.TakePaintImage());
-  resource_provider->SetRecorder(hibernation_handler->ReleaseRecorder());
+  resource_provider_->RestoreBackBuffer(builder.TakePaintImage());
+  resource_provider_->SetRecorder(hibernation_handler->ReleaseRecorder());
   // The hibernation image is no longer valid, clear it.
   hibernation_handler->Clear();
   DCHECK(!hibernation_handler->IsHibernating());
@@ -1472,7 +1470,7 @@ CanvasRenderingContext2D::RecreateCanvasResourceProviderForCanvas2D() {
   // shouldBeDirectComposited() may have changed.
   canvas()->SetNeedsCompositingUpdate();
 
-  return resource_provider;
+  return resource_provider_.get();
 }
 
 void CanvasRenderingContext2D::SetCanvas2DResourceProviderForTesting(
