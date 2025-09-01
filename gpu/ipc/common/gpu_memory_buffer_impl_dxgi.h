@@ -101,6 +101,7 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplDXGI
   std::optional<base::OnceCallback<void(void)>> DoMapAsync(
       base::OnceCallback<void(bool)>);
   void CheckAsyncMapResult(bool result);
+  void AssertMapped();
 
   const gfx::Size size_;
   const gfx::BufferFormat format_;
@@ -121,6 +122,11 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplDXGI
   base::WritableSharedMemoryMapping region_mapping_;
 
   CopyNativeBufferToShMemCallback copy_native_buffer_to_shmem_callback_;
+
+  // Note: This lock must be held throughout the entirety of the Map() and
+  // Unmap() operations to avoid corrupt mutation across multiple threads.
+  base::Lock map_lock_;
+  uint32_t map_count_ GUARDED_BY(map_lock_) = 0u;
 
   std::vector<base::OnceCallback<void(bool)>> map_callbacks_
       GUARDED_BY(map_lock_);

@@ -35,7 +35,21 @@ GpuMemoryBufferImplSharedMemory::GpuMemoryBufferImplSharedMemory(
       offset_(offset),
       stride_(stride) {}
 
-GpuMemoryBufferImplSharedMemory::~GpuMemoryBufferImplSharedMemory() = default;
+GpuMemoryBufferImplSharedMemory::~GpuMemoryBufferImplSharedMemory() {
+#if DCHECK_IS_ON()
+  {
+    base::AutoLock auto_lock(map_lock_);
+    DCHECK_EQ(map_count_, 0u);
+  }
+#endif
+}
+
+void GpuMemoryBufferImplSharedMemory::AssertMapped() {
+#if DCHECK_IS_ON()
+  base::AutoLock auto_lock(map_lock_);
+  DCHECK_GT(map_count_, 0u);
+#endif
+}
 
 // static
 std::unique_ptr<GpuMemoryBufferImplSharedMemory>

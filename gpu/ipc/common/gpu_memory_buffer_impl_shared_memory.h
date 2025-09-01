@@ -75,12 +75,19 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplSharedMemory
       size_t offset,
       uint32_t stride);
 
+  void AssertMapped();
+
   const gfx::Size size_;
   const gfx::BufferFormat format_;
   base::UnsafeSharedMemoryRegion shared_memory_region_;
   base::WritableSharedMemoryMapping shared_memory_mapping_;
   size_t offset_;
   uint32_t stride_;
+
+  // Note: This lock must be held throughout the entirety of the Map() and
+  // Unmap() operations to avoid corrupt mutation across multiple threads.
+  base::Lock map_lock_;
+  uint32_t map_count_ GUARDED_BY(map_lock_) = 0u;
 };
 
 }  // namespace gpu

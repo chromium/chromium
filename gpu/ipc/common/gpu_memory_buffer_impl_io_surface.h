@@ -73,10 +73,17 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplIOSurface
                                gfx::GpuMemoryBufferHandle handle,
                                uint32_t lock_flags);
 
+  void AssertMapped();
+
   const gfx::Size size_;
   const gfx::BufferFormat format_;
   gfx::GpuMemoryBufferHandle handle_;
   [[maybe_unused]] const uint32_t lock_flags_;
+
+  // Note: This lock must be held throughout the entirety of the Map() and
+  // Unmap() operations to avoid corrupt mutation across multiple threads.
+  base::Lock map_lock_;
+  uint32_t map_count_ GUARDED_BY(map_lock_) = 0u;
 
 #if BUILDFLAG(IS_IOS)
   // On iOS, we can't use IOKit to access IOSurfaces in the renderer process, so

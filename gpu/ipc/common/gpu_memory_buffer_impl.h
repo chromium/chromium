@@ -82,13 +82,6 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImpl {
 
  protected:
   GpuMemoryBufferImpl();
-
-  void AssertMapped();
-
-  // Note: This lock must be held throughout the entirety of the Map() and
-  // Unmap() operations to avoid corrupt mutation across multiple threads.
-  base::Lock map_lock_;
-  uint32_t map_count_ GUARDED_BY(map_lock_) = 0u;
 };
 
 }  // namespace gpu

@@ -54,7 +54,21 @@ GpuMemoryBufferImplIOSurface::GpuMemoryBufferImplIOSurface(
       handle_(std::move(handle)),
       lock_flags_(lock_flags) {}
 
-GpuMemoryBufferImplIOSurface::~GpuMemoryBufferImplIOSurface() {}
+GpuMemoryBufferImplIOSurface::~GpuMemoryBufferImplIOSurface() {
+#if DCHECK_IS_ON()
+  {
+    base::AutoLock auto_lock(map_lock_);
+    DCHECK_EQ(map_count_, 0u);
+  }
+#endif
+}
+
+void GpuMemoryBufferImplIOSurface::AssertMapped() {
+#if DCHECK_IS_ON()
+  base::AutoLock auto_lock(map_lock_);
+  DCHECK_GT(map_count_, 0u);
+#endif
+}
 
 // static
 std::unique_ptr<GpuMemoryBufferImplIOSurface>

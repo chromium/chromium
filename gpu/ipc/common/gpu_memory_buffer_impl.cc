@@ -10,21 +10,7 @@ namespace gpu {
 
 GpuMemoryBufferImpl::GpuMemoryBufferImpl() = default;
 
-GpuMemoryBufferImpl::~GpuMemoryBufferImpl() {
-#if DCHECK_IS_ON()
-  {
-    base::AutoLock auto_lock(map_lock_);
-    DCHECK_EQ(map_count_, 0u);
-  }
-#endif
-}
-
-void GpuMemoryBufferImpl::AssertMapped() {
-#if DCHECK_IS_ON()
-  base::AutoLock auto_lock(map_lock_);
-  DCHECK_GT(map_count_, 0u);
-#endif
-}
+GpuMemoryBufferImpl::~GpuMemoryBufferImpl() = default;
 
 void GpuMemoryBufferImpl::MapAsync(base::OnceCallback<void(bool)> result_cb) {
   std::move(result_cb).Run(Map());

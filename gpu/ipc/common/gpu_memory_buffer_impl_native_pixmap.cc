@@ -33,7 +33,21 @@ GpuMemoryBufferImplNativePixmap::GpuMemoryBufferImplNativePixmap(
     std::unique_ptr<gfx::ClientNativePixmap> pixmap)
     : size_(size), format_(format), pixmap_(std::move(pixmap)) {}
 
-GpuMemoryBufferImplNativePixmap::~GpuMemoryBufferImplNativePixmap() = default;
+GpuMemoryBufferImplNativePixmap::~GpuMemoryBufferImplNativePixmap() {
+#if DCHECK_IS_ON()
+  {
+    base::AutoLock auto_lock(map_lock_);
+    DCHECK_EQ(map_count_, 0u);
+  }
+#endif
+}
+
+void GpuMemoryBufferImplNativePixmap::AssertMapped() {
+#if DCHECK_IS_ON()
+  base::AutoLock auto_lock(map_lock_);
+  DCHECK_GT(map_count_, 0u);
+#endif
+}
 
 // static
 std::unique_ptr<GpuMemoryBufferImplNativePixmap>

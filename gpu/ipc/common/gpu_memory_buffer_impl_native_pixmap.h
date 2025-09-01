@@ -76,9 +76,16 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplNativePixmap
       gfx::BufferFormat format,
       std::unique_ptr<gfx::ClientNativePixmap> native_pixmap);
 
+  void AssertMapped();
+
   const gfx::Size size_;
   const gfx::BufferFormat format_;
   const std::unique_ptr<gfx::ClientNativePixmap> pixmap_;
+
+  // Note: This lock must be held throughout the entirety of the Map() and
+  // Unmap() operations to avoid corrupt mutation across multiple threads.
+  base::Lock map_lock_;
+  uint32_t map_count_ GUARDED_BY(map_lock_) = 0u;
 };
 
 }  // namespace gpu

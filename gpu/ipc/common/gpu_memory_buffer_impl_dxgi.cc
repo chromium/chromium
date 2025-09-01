@@ -30,6 +30,7 @@ namespace gpu {
 GpuMemoryBufferImplDXGI::~GpuMemoryBufferImplDXGI() {
   base::AutoLock auto_lock(map_lock_);
   CHECK(!async_mapping_in_progress_);
+  DCHECK_EQ(map_count_, 0u);
 }
 
 std::unique_ptr<GpuMemoryBufferImplDXGI>
@@ -279,6 +280,13 @@ HANDLE GpuMemoryBufferImplDXGI::GetHandle() const {
 
 const gfx::DXGIHandleToken& GpuMemoryBufferImplDXGI::GetToken() const {
   return dxgi_handle_.token();
+}
+
+void GpuMemoryBufferImplDXGI::AssertMapped() {
+#if DCHECK_IS_ON()
+  base::AutoLock auto_lock(map_lock_);
+  DCHECK_GT(map_count_, 0u);
+#endif
 }
 
 GpuMemoryBufferImplDXGI::GpuMemoryBufferImplDXGI(
