@@ -20,6 +20,21 @@ class SaveUpdateAddressProfilePromptView {
                     bool is_migration_to_account) = 0;
 
   virtual ~SaveUpdateAddressProfilePromptView() = default;
+
+  // This describes the different modes for the save/update address profile
+  // prompt. This is used to tailor the UI of the prompt. A java IntDef@ is
+  // generated from this.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.autofill
+  enum class SaveUpdateAddressProfilePromptMode {
+    // The prompt is for creating a new address profile from settings.
+    kCreateNewProfile,
+    // The prompt is for saving a new profile.
+    kSaveNewProfile,
+    // The prompt is for updating an existing profile.
+    kUpdateProfile,
+    // The prompt is for migrating a local profile to the user's Google Account.
+    kMigrateProfile
+  };
 };
 
 }  // namespace autofill
