@@ -87,6 +87,10 @@ TEST_F(PreloadServingMetricsTest, NavigationWithoutPreload) {
       "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
       "PotentialMatchThen.MatchDuration.ForNotActualMatch",
       0);
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
+      "ActualMatchThen.TimeFromPrefetchContainerAddedToMatchStart",
+      0);
 
   histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.ForPrerenderInitialNavigationUsed."
@@ -120,6 +124,11 @@ TEST_F(PreloadServingMetricsTest, NavigationWithoutPreload) {
   histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.ForPrerenderInitialNavigationUsed."
       "PrefetchMatchMetrics.PotentialMatchThen.MatchDuration.ForNotActualMatch",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationUsed."
+      "PrefetchMatchMetrics.ActualMatchThen."
+      "TimeFromPrefetchContainerAddedToMatchStart",
       0);
 
   histogram_tester.ExpectUniqueTimeSample(
@@ -208,6 +217,10 @@ TEST_F(PreloadServingMetricsTest, NavigationWithPrefetch) {
       "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
       "PotentialMatchThen.MatchDuration.ForNotActualMatch",
       0);
+  histogram_tester.ExpectUniqueTimeSample(
+      "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
+      "ActualMatchThen.TimeFromPrefetchContainerAddedToMatchStart",
+      Millis(42) - Millis(10), 1);
 
   histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.ForPrerenderInitialNavigationUsed."
@@ -241,6 +254,11 @@ TEST_F(PreloadServingMetricsTest, NavigationWithPrefetch) {
   histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.ForPrerenderInitialNavigationUsed."
       "PrefetchMatchMetrics.PotentialMatchThen.MatchDuration.ForNotActualMatch",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationUsed."
+      "PrefetchMatchMetrics.ActualMatchThen."
+      "TimeFromPrefetchContainerAddedToMatchStart",
       0);
 
   histogram_tester.ExpectTotalCount(

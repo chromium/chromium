@@ -381,6 +381,22 @@ chromium-metrics-reviews@google.com.
       variants="PreloadServingMetricsPrefix"/>
 </histogram>
 
+<histogram
+    name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.ActualMatchThen.TimeFromPrefetchContainerAddedToMatchStart"
+    units="ms" expires_after="2026-01-01">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    The duration from when the used prefetch container is added to the start of
+    prefetch matching.
+
+    Recorded when {PreloadServingMetricsPrefix} and the prefetch matching ended
+    as actual match.
+  </summary>
+  <token key="PreloadServingMetricsPrefix"
+      variants="PreloadServingMetricsPrefix"/>
+</histogram>
+
 <histogram name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.Count"
     units="count" expires_after="2026-01-01">
   <owner>kenoss@chromium.org</owner>

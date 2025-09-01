@@ -84,6 +84,25 @@ void RecordMetricsInternal(const PreloadServingMetrics& metrics,
                "ForNotActualMatch"),
           prefetch_match_duration);
     }
+
+    if (is_actual_match) {
+      CHECK(prefetch_match_metrics.prefetch_container_metrics
+                ->time_added_to_prefetch_service.has_value());
+      base::TimeDelta time_from_prefetch_container_added_to_match_start =
+          prefetch_match_metrics.time_match_start -
+          prefetch_match_metrics.prefetch_container_metrics
+              ->time_added_to_prefetch_service.value();
+      // Actually matched `PrefetchContainer` was potentially matched at the
+      // timing of match start, and was necessarily added to `PrefetchService`
+      // ahead.
+      CHECK_LE(base::Seconds(0),
+               time_from_prefetch_container_added_to_match_start);
+      base::UmaHistogramMediumTimes(
+          WITH(prefix,
+               "PrefetchMatchMetrics.ActualMatchThen."
+               "TimeFromPrefetchContainerAddedToMatchStart"),
+          time_from_prefetch_container_added_to_match_start);
+    }
   }();
 }
 
