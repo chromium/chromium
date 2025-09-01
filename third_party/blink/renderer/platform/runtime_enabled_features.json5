@@ -5815,6 +5815,10 @@
       name: "WindowDefaultStatus",
     },
     {
+      name: "WordSpacingWhiteSpacePre",
+      status: "stable",
+    },
+    {
       name: "XMLSerializerConsistentDefaultNsDeclMatching",
       status: "test",
     },

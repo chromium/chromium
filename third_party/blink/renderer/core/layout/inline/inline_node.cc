@@ -1451,7 +1451,11 @@ void InlineNode::ShapeText(InlineItemsData* data,
   InlineItem::CheckIndex(*items);
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
-  ShapeResultSpacing<String> spacing(text_content, IsSvgText());
+  ShapeResultSpacing<String> spacing(
+      text_content,
+      /*allow_word_spacing_anywhere=*/IsSvgText() ||
+          (RuntimeEnabledFeatures::WordSpacingWhiteSpacePreEnabled() &&
+           Style().ShouldPreserveWhiteSpaces()));
   TextAutoSpace auto_space(*data);
 
   const bool allow_shape_cache =
