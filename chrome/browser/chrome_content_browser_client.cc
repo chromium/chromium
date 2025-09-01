@@ -52,6 +52,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"  // PLATFORM_CFM
+#include "chrome/browser/preloading/search_preload/search_preload_features.h"
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/actor/actor_keyed_service.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -8958,4 +8959,8 @@ bool ChromeContentBrowserClient::ShouldEnableCanvasNoise(
 bool ChromeContentBrowserClient::UsePrefetchPrerenderIntegration() {
   return base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrefetch) ||
          base::FeatureList::IsEnabled(features::kNewTabPageTriggerForPrefetch);
+}
+
+bool ChromeContentBrowserClient::UsePreloadServingMetrics() {
+  return features::kDsePreload2UsePreloadServingMetrics.Get();
 }

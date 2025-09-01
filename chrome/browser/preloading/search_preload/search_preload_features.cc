@@ -13,6 +13,9 @@ namespace features {
 
 BASE_FEATURE(kDsePreload2, "DsePreload2", base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<bool> kDsePreload2UsePreloadServingMetrics{
+    &kDsePreload2, "kDsePreload2UsePreloadServingMetrics", false};
+
 const base::FeatureParam<size_t> kDsePreload2DeviceMemoryThresholdMiB{
     &kDsePreload2, "kDsePreload2DeviceMemoryThresholdMiB",
     // 3 GiB = 3 * 2**10 * 2**20

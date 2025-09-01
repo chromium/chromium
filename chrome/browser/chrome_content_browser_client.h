@@ -1211,6 +1211,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
                                const GURL& origin) override;
 
   bool UsePrefetchPrerenderIntegration() override;
+  bool UsePreloadServingMetrics() override;
 
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);

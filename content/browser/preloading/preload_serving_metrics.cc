@@ -22,7 +22,8 @@ PrefetchMatchMetrics::~PrefetchMatchMetrics() = default;
 
 // static
 bool PreloadServingMetrics::IsEnabled() {
-  return features::kPrerender2FallbackUsePreloadServingMetrics.Get();
+  return features::kPrerender2FallbackUsePreloadServingMetrics.Get() ||
+         GetContentClient()->browser()->UsePreloadServingMetrics();
 }
 
 // static

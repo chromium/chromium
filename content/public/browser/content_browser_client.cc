@@ -2003,4 +2003,8 @@ bool ContentBrowserClient::UsePrefetchPrerenderIntegration() {
   return false;
 }
 
+bool ContentBrowserClient::UsePreloadServingMetrics() {
+  return false;
+}
+
 }  // namespace content
