@@ -685,6 +685,7 @@ public class FirstRunIntegrationTest {
     @Policies.Add(@Policies.Item(key = "NoncePolicy", string = "true"))
     // TODO(crbug.com/40142602): Change this test case when policy can handle cases when ToS
     // is accepted in Browser App.
+    @DisabledTest(message = "Flaky, see crbug.com/441219391")
     public void testSkipTosPage_WithCctPolicy() throws Exception {
         skipTosDialogViaPolicy();
         FirstRunStatus.setSkipWelcomePage(true);
@@ -1030,6 +1031,7 @@ public class FirstRunIntegrationTest {
     @MediumTest
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "Flaky, see crbug.com/441219391")
     public void testPrefsUpdated_searchEnginePromoDisableAfterPromoShown() throws Exception {
         FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
         initializePreferences(testCase);
