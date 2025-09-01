@@ -167,7 +167,7 @@ void LayoutTableColumn::UpdateFromElement() {
   }
 }
 
-PhysicalSize LayoutTableColumn::Size() const {
+PhysicalSize LayoutTableColumn::StitchedSize() const {
   NOT_DESTROYED();
   auto* table = Table();
   DCHECK(table);

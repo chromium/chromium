@@ -3401,7 +3401,7 @@ TEST_P(ScrollbarsTest, NoNeedsBeginFrameForCustomScrollbarAfterBeginFrame) {
   auto* scrollbar = To<CustomScrollbar>(
       target->GetLayoutBox()->GetScrollableArea()->HorizontalScrollbar());
   LayoutCustomScrollbarPart* thumb = scrollbar->GetPart(kThumbPart);
-  auto thumb_size = thumb->Size();
+  auto thumb_size = thumb->StitchedSize();
   EXPECT_FALSE(thumb->ShouldCheckForPaintInvalidation());
   EXPECT_FALSE(Compositor().NeedsBeginFrame());
 
@@ -3415,7 +3415,7 @@ TEST_P(ScrollbarsTest, NoNeedsBeginFrameForCustomScrollbarAfterBeginFrame) {
   Compositor().BeginFrame();
   EXPECT_FALSE(thumb->ShouldCheckForPaintInvalidation());
   EXPECT_FALSE(Compositor().NeedsBeginFrame());
-  EXPECT_NE(thumb_size, thumb->Size());
+  EXPECT_NE(thumb_size, thumb->StitchedSize());
 }
 
 TEST_P(ScrollbarsTest, CustomScrollbarHypotheticalThickness) {

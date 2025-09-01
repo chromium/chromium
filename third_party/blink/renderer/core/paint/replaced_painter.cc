@@ -122,7 +122,7 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
 
   const auto& local_paint_info = paint_state.GetPaintInfo();
   auto paint_offset = paint_state.PaintOffset();
-  PhysicalRect border_rect(paint_offset, layout_replaced_.Size());
+  PhysicalRect border_rect(paint_offset, layout_replaced_.StitchedSize());
 
   if (ShouldPaintBoxDecorationBackground(local_paint_info)) {
     bool should_paint_background = false;
@@ -281,7 +281,7 @@ void ReplacedPainter::MeasureOverflowMetrics() const {
   auto overflow_size = layout_replaced_.VisualOverflowRect().size;
   auto overflow_area = overflow_size.width * overflow_size.height;
 
-  auto content_size = layout_replaced_.Size();
+  auto content_size = layout_replaced_.StitchedSize();
   auto content_area = content_size.width * content_size.height;
 
   DCHECK_GE(overflow_area, content_area);
@@ -503,7 +503,7 @@ void ReplacedPainter::PaintMask(const PaintInfo& paint_info,
     return;
   }
 
-  PhysicalRect paint_rect(paint_offset, layout_replaced_.Size());
+  PhysicalRect paint_rect(paint_offset, layout_replaced_.StitchedSize());
   BoxDrawingRecorder recorder(paint_info.context, layout_replaced_,
                               paint_info.phase, paint_offset);
   PaintMaskImages(paint_info, paint_rect);

@@ -809,7 +809,8 @@ void CanvasRenderingContext2D::DrawElementInternal(
   CHECK(layout_box->IsStacked());
   PaintLayer* layer = layout_box->EnclosingLayer();
 
-  auto box_rect = gfx::Rect(ToCeiledSize(layer->GetLayoutBox()->Size()));
+  auto box_rect =
+      gfx::Rect(ToCeiledSize(layer->GetLayoutBox()->StitchedSize()));
   // TODO(https://issues.chromium.org/379143301): Figure out the actual painted
   // rect of the element plus its descendants, and use that instead of the
   // box's size.

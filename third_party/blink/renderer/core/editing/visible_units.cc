@@ -623,7 +623,7 @@ bool EndsOfNodeAreVisuallyDistinctPositions(const Node* node) {
   // There is a VisiblePosition inside an empty inline-block container.
   return layout_object->IsAtomicInlineLevel() &&
          CanHaveChildrenForEditing(node) &&
-         !To<LayoutBox>(layout_object)->Size().IsEmpty() &&
+         !To<LayoutBox>(layout_object)->StitchedSize().IsEmpty() &&
          !HasRenderedNonAnonymousDescendantsWithHeight(layout_object);
 }
 

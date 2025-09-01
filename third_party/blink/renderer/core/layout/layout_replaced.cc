@@ -449,7 +449,7 @@ PhysicalRect LayoutReplaced::LocalSelectionVisualRect() const {
   }
 
   // We're a block-level replaced element.  Just return our own dimensions.
-  return PhysicalRect(PhysicalOffset(), Size());
+  return PhysicalRect(PhysicalOffset(), StitchedSize());
 }
 
 bool LayoutReplaced::RespectsCSSOverflow() const {

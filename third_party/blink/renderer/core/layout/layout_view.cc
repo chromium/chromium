@@ -509,7 +509,7 @@ bool LayoutView::ShouldUsePaginatedLayout(const Document& document) {
 PhysicalRect LayoutView::ViewRect() const {
   NOT_DESTROYED();
   if (GetDocument().Printing()) {
-    return PhysicalRect(PhysicalOffset(), Size());
+    return PhysicalRect(PhysicalOffset(), StitchedSize());
   }
 
   if (!frame_view_)

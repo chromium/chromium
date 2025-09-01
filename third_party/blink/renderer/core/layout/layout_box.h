@@ -226,14 +226,14 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // different from container's writing-mode.
   LayoutUnit LogicalWidth() const {
     NOT_DESTROYED();
-    PhysicalSize size = Size();
+    PhysicalSize size = StitchedSize();
     return StyleRef().IsHorizontalWritingMode() ? size.width : size.height;
   }
   // Returns the block-size for this box's writing-mode.  It might be
   // different from container's writing-mode.
   LayoutUnit LogicalHeight() const {
     NOT_DESTROYED();
-    PhysicalSize size = Size();
+    PhysicalSize size = StitchedSize();
     return StyleRef().IsHorizontalWritingMode() ? size.height : size.width;
   }
 
@@ -242,7 +242,21 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return FirstLineHeight();
   }
 
-  virtual PhysicalSize Size() const;
+  // Return the size of all fragments stitched together in the block direction.
+  //
+  // <div style="columns:2; column-fill:auto; height:100px;">
+  //   <div id="box" style="width:80px;">
+  //     <div style="height:70px;"></div>
+  //     <div style="height:70px;"></div>
+  //   </div>
+  // </div>
+  //
+  // #box creates two fragments, one in each column:
+  //   First fragment: PhysicalSize(80, 100)
+  //   Second fragment: PhysicalSize(80, 40)
+  //
+  // This will return PhysicalSize(80, 140).
+  virtual PhysicalSize StitchedSize() const;
 
   void SetLocation(PhysicalOffset location) {
     NOT_DESTROYED();
@@ -260,7 +274,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // As such their location doesn't account for 'top'/'left'.
   PhysicalRect PhysicalBorderBoxRect() const {
     NOT_DESTROYED();
-    return PhysicalRect(PhysicalOffset(), Size());
+    return PhysicalRect(PhysicalOffset(), StitchedSize());
   }
 
   // Client rect and padding box rect are the same concept.
@@ -1006,7 +1020,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   class MutableForPainting : public LayoutObject::MutableForPainting {
    public:
     void SavePreviousSize() {
-      GetLayoutBox().previous_size_ = GetLayoutBox().Size();
+      GetLayoutBox().previous_size_ = GetLayoutBox().StitchedSize();
     }
     void ClearPreviousSize() { GetLayoutBox().previous_size_ = PhysicalSize(); }
     void SavePreviousOverflowData();

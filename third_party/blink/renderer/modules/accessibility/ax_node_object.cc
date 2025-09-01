@@ -1339,11 +1339,14 @@ bool AXNodeObject::ComputeIsIgnored(IgnoredReasons* ignored_reasons) const {
 
     // A 1x1 canvas is too small for the user to see and thus ignored.
     const auto* canvas = DynamicTo<LayoutHTMLCanvas>(GetLayoutObject());
-    if (canvas && (canvas->Size().height <= 1 || canvas->Size().width <= 1)) {
-      if (ignored_reasons) {
-        ignored_reasons->push_back(IgnoredReason(kAXProbablyPresentational));
+    if (canvas) {
+      PhysicalSize size = canvas->StitchedSize();
+      if (size.height <= 1 || size.width <= 1) {
+        if (ignored_reasons) {
+          ignored_reasons->push_back(IgnoredReason(kAXProbablyPresentational));
+        }
+        return true;
       }
-      return true;
     }
 
     // Otherwise fall through; use presence of help text, title, or description
@@ -1989,8 +1992,8 @@ bool AXNodeObject::IsDataTable() const {
 
       const LayoutBlock* cell_layout_block =
           To<LayoutBlock>(cell_layout_object);
-      if (cell_layout_block->Size().width < 1 ||
-          cell_layout_block->Size().height < 1) {
+      PhysicalSize size = cell_layout_block->StitchedSize();
+      if (size.width < 1 || size.height < 1) {
         continue;
       }
 

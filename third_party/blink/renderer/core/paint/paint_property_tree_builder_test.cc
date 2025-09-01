@@ -1362,7 +1362,7 @@ TEST_P(PaintPropertyTreeBuilderTest, SVGRootLocalToBorderBoxSnappingScale) {
             svg_properties->PaintOffsetTranslation()->Get2dTranslation());
   const float snapped_height = 99;
   const PhysicalSize unsnapped_size(LayoutUnit(100), LayoutUnit(99.99f));
-  EXPECT_EQ(To<LayoutSVGRoot>(svg).Size(), unsnapped_size);
+  EXPECT_EQ(To<LayoutSVGRoot>(svg).StitchedSize(), unsnapped_size);
   const float unsnapped_height = unsnapped_size.height.ToFloat();
   ASSERT_NE(svg_properties->ReplacedContentTransform(), nullptr);
   EXPECT_TRANSFORM_EQ(MakeScaleMatrix(snapped_height / unsnapped_height),
@@ -1396,7 +1396,7 @@ TEST_P(PaintPropertyTreeBuilderTest, SVGRootLocalToBorderBoxSnappingScaleWide) {
             svg_properties->PaintOffsetTranslation()->Get2dTranslation());
   const gfx::SizeF snapped_size(211, 2);
   const PhysicalSize unsnapped_size(LayoutUnit(211.419f), LayoutUnit(2.20228f));
-  EXPECT_EQ(To<LayoutSVGRoot>(svg).Size(), unsnapped_size);
+  EXPECT_EQ(To<LayoutSVGRoot>(svg).StitchedSize(), unsnapped_size);
   ASSERT_NE(svg_properties->ReplacedContentTransform(), nullptr);
   EXPECT_TRANSFORM_EQ(
       MakeScaleMatrix(snapped_size.width() / unsnapped_size.width.ToFloat(),
@@ -1432,7 +1432,7 @@ TEST_P(PaintPropertyTreeBuilderTest,
             svg_properties->PaintOffsetTranslation()->Get2dTranslation());
   const gfx::SizeF snapped_size(2, 211);
   const PhysicalSize unsnapped_size(LayoutUnit(2.20228f), LayoutUnit(211.419f));
-  EXPECT_EQ(To<LayoutSVGRoot>(svg).Size(), unsnapped_size);
+  EXPECT_EQ(To<LayoutSVGRoot>(svg).StitchedSize(), unsnapped_size);
   ASSERT_NE(svg_properties->ReplacedContentTransform(), nullptr);
   EXPECT_TRANSFORM_EQ(
       MakeScaleMatrix(snapped_size.width() / unsnapped_size.width.ToFloat(),

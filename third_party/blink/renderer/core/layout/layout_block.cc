@@ -507,7 +507,7 @@ PositionWithAffinity LayoutBlock::PositionForPointIfOutsideAtomicInlineLevel(
   DCHECK(IsAtomicInlineLevel());
   LogicalOffset logical_offset =
       WritingModeConverter({StyleRef().GetWritingMode(), ResolvedDirection()},
-                           Size())
+                           StitchedSize())
           .ToLogical(point, PhysicalSize());
   if (logical_offset.inline_offset < 0)
     return FirstPositionInOrBeforeThis();
@@ -625,7 +625,7 @@ LayoutBlockFlow* LayoutBlock::NearestInnerBlockWithFirstLine() {
 // so the firstChild() is nullptr if the only child is an empty inline-block.
 inline bool LayoutBlock::IsInlineBoxWrapperActuallyChild() const {
   NOT_DESTROYED();
-  return IsInline() && IsAtomicInlineLevel() && !Size().IsEmpty() &&
+  return IsInline() && IsAtomicInlineLevel() && !StitchedSize().IsEmpty() &&
          GetNode() && EditingIgnoresContent(*GetNode());
 }
 
@@ -641,7 +641,9 @@ PhysicalRect LayoutBlock::LocalCaretRect(int caret_offset,
   const ComputedStyle& style = StyleRef();
   const bool is_horizontal = style.IsHorizontalWritingMode();
 
-  LayoutUnit inline_size = is_horizontal ? Size().width : Size().height;
+  PhysicalSize stitched_size = StitchedSize();
+  LayoutUnit inline_size =
+      is_horizontal ? stitched_size.width : stitched_size.height;
   LogicalRect caret_rect = LocalCaretRectForEmptyElement(
       inline_size, TextIndentOffset(), caret_shape);
   return CreateWritingModeConverter().ToPhysical(caret_rect);
@@ -663,7 +665,7 @@ void LayoutBlock::AddOutlineRects(OutlineRectCollector& collector,
 
   // For anonymous blocks, the children add outline rects.
   if (!IsAnonymous()) {
-    collector.AddRect(PhysicalRect(additional_offset, Size()));
+    collector.AddRect(PhysicalRect(additional_offset, StitchedSize()));
   }
 
   if (ShouldIncludeBlockInkOverflow(include_block_overflows) &&

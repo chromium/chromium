@@ -30,7 +30,7 @@ bool ShouldApplySnappingScaleAdjustment(const LayoutSVGRoot& layout_svg_root) {
 gfx::Rect SVGRootPainter::PixelSnappedSize(
     const PhysicalOffset& paint_offset) const {
   return ToPixelSnappedRect(
-      PhysicalRect(paint_offset, layout_svg_root_.Size()));
+      PhysicalRect(paint_offset, layout_svg_root_.StitchedSize()));
 }
 
 AffineTransform SVGRootPainter::TransformToPixelSnappedBorderBox(
@@ -38,7 +38,7 @@ AffineTransform SVGRootPainter::TransformToPixelSnappedBorderBox(
   const gfx::Rect snapped_size = PixelSnappedSize(paint_offset);
   AffineTransform paint_offset_to_border_box =
       AffineTransform::Translation(snapped_size.x(), snapped_size.y());
-  const PhysicalSize size = layout_svg_root_.Size();
+  const PhysicalSize size = layout_svg_root_.StitchedSize();
   if (!size.IsEmpty()) {
     if (ShouldApplySnappingScaleAdjustment(layout_svg_root_)) {
       paint_offset_to_border_box.Scale(

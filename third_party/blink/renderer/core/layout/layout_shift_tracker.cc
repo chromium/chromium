@@ -442,7 +442,7 @@ void LayoutShiftTracker::NotifyBoxPrePaint(
   ObjectShifted(box, property_tree_state, old_rect, new_rect,
                 StartingPoint(old_paint_offset, box, box.PreviousSize()),
                 translation_delta, scroll_delta, scroll_anchor_adjustment,
-                StartingPoint(new_paint_offset, box, box.Size()));
+                StartingPoint(new_paint_offset, box, box.StitchedSize()));
 }
 
 void LayoutShiftTracker::NotifyTextPrePaint(

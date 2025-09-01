@@ -312,7 +312,7 @@ PhysicalRect LayoutTable::OverflowClipRect(
   NOT_DESTROYED();
   PhysicalRect clip_rect;
   if (StyleRef().BorderCollapse() == EBorderCollapse::kCollapse) {
-    clip_rect = PhysicalRect(location, Size());
+    clip_rect = PhysicalRect(location, StitchedSize());
     const auto overflow_clip = GetOverflowClipAxes();
     gfx::Rect infinite_rect = InfiniteIntRect();
     if ((overflow_clip & kOverflowClipX) == kNoOverflowClip) {
@@ -339,7 +339,7 @@ PhysicalRect LayoutTable::OverflowClipRect(
   while (child) {
     if (child->IsTableCaption()) {
       // If there are captions, we cannot clip to content box.
-      clip_rect.Unite(PhysicalRect(location, Size()));
+      clip_rect.Unite(PhysicalRect(location, StitchedSize()));
       break;
     }
     child = child->NextSiblingBox();

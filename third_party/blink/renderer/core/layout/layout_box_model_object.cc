@@ -589,7 +589,8 @@ LayoutBoxModelObject::ComputeStickyPositionConstraints() const {
       sticky_box_rect = To<LayoutInline>(this)->PhysicalLinesBoundingBox();
     } else {
       const LayoutBox& box = To<LayoutBox>(*this);
-      sticky_box_rect = PhysicalRect(box.PhysicalLocation(), box.Size());
+      sticky_box_rect =
+          PhysicalRect(box.PhysicalLocation(), box.StitchedSize());
     }
 
     PhysicalRect scroll_container_relative_sticky_box_rect =

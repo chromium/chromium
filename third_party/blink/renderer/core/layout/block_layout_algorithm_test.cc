@@ -918,7 +918,8 @@ TEST_F(BlockLayoutAlgorithmTest, CollapsingMarginsEmptyBlockWithClearance) {
     LayoutBlockFlow* child;
     // #float
     child = To<LayoutBlockFlow>(GetLayoutObjectByElementId("float"));
-    EXPECT_EQ(PhysicalSize(LayoutUnit(50), LayoutUnit(50)), child->Size());
+    EXPECT_EQ(PhysicalSize(LayoutUnit(50), LayoutUnit(50)),
+              child->StitchedSize());
     EXPECT_EQ(PhysicalOffset(0, 0), child->PhysicalLocation());
 
     // We need to manually test the position of #zero, #abs, #inflow.

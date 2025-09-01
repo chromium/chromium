@@ -123,13 +123,14 @@ bool IsValidRangeAndMarkable(const RangeInFlatTree* range) {
     // FindBuffer does find this text (as typically overflow: hidden can still
     // be programmatically scrolled).
     if (box->HasNonVisibleOverflow()) {
+      PhysicalSize size = box->StitchedSize();
       if (box->StyleRef().OverflowX() != EOverflow::kVisible &&
-          box->Size().width.RawValue() <= 0) {
+          size.width.RawValue() <= 0) {
         return false;
       }
 
       if (box->StyleRef().OverflowY() != EOverflow::kVisible &&
-          box->Size().height.RawValue() <= 0) {
+          size.height.RawValue() <= 0) {
         return false;
       }
     }

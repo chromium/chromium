@@ -1228,7 +1228,7 @@ static bool UpdateBoxSizeAndCheckActiveAnimationAxisAlignment(
   auto* animations = element->GetElementAnimations();
   DCHECK(animations);
   return animations->UpdateBoxSizeAndCheckTransformAxisAlignment(
-      gfx::SizeF(object.Size()));
+      gfx::SizeF(object.StitchedSize()));
 }
 
 static TransformPaintPropertyNode::TransformAndOrigin TransformAndOriginState(
@@ -2539,7 +2539,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowControlsClip() {
   if (NeedsOverflowControlsClip()) {
     // Clip overflow controls to the border box rect.
     const auto& clip_rect = PhysicalRect(context_.current.paint_offset,
-                                         To<LayoutBox>(object_).Size());
+                                         To<LayoutBox>(object_).StitchedSize());
     OnUpdateClip(properties_->UpdateOverflowControlsClip(
         *context_.current.clip,
         ClipPaintPropertyNode::State(*context_.current.transform,
@@ -2637,7 +2637,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateInnerBorderRadiusClip() {
     }
     if (NeedsInnerBorderRadiusClip(object_)) {
       const auto& box = To<LayoutBox>(object_);
-      PhysicalRect box_rect(context_.current.paint_offset, box.Size());
+      PhysicalRect box_rect(context_.current.paint_offset, box.StitchedSize());
       gfx::RectF layout_clip_rect =
           ContouredBorderGeometry::ContouredInnerBorder(box.StyleRef(),
                                                         box_rect)
@@ -2682,7 +2682,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateInnerBorderShapeClip() {
     }
     if (NeedsInnerBorderShapeClip(object_)) {
       const auto& box = To<LayoutBox>(object_);
-      PhysicalRect box_rect(context_.current.paint_offset, box.Size());
+      PhysicalRect box_rect(context_.current.paint_offset, box.StitchedSize());
       const Path inner_path =
           *BorderShapePainter::InnerPath(box_rect, box.StyleRef());
       gfx::RectF layout_clip_rect(box_rect);
@@ -2729,7 +2729,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
         // display_rect and can enable hardware overlays. Adjust the base rect
         // here, before applying padding and corner rounding.
         PhysicalRect content_rect(context_.current.paint_offset,
-                                  replaced.Size());
+                                  replaced.StitchedSize());
         if (IsA<LayoutVideo>(replaced)) {
           content_rect =
               LayoutReplaced::PreSnappedRectForPersistentSizing(content_rect);
@@ -2803,7 +2803,8 @@ static gfx::PointF PerspectiveOrigin(const LayoutBox& box) {
   const ComputedStyle& style = box.StyleRef();
   // Perspective origin has no effect without perspective.
   DCHECK(style.HasPerspective());
-  return PointForLengthPoint(style.PerspectiveOrigin(), gfx::SizeF(box.Size()));
+  return PointForLengthPoint(style.PerspectiveOrigin(),
+                             gfx::SizeF(box.StitchedSize()));
 }
 
 static bool NeedsPerspective(const LayoutObject& object) {
@@ -3369,7 +3370,7 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
   if (object_.GetFrameView()->RemovePendingOpacityUpdate(object_))
     object_.GetMutableForPainting().SetOnlyThisNeedsPaintPropertyUpdate();
 
-  if (box.Size() == box.PreviousSize()) {
+  if (box.StitchedSize() == box.PreviousSize()) {
     return;
   }
 

@@ -39,7 +39,7 @@ class CORE_EXPORT LayoutTableColumn : public LayoutBox {
   // Clears needs-layout for child columns too.
   void ClearNeedsLayoutForChildren() const;
 
-  PhysicalSize Size() const override;
+  PhysicalSize StitchedSize() const override;
 
   PhysicalOffset PhysicalLocation() const override;
   PhysicalRect BoundingBoxRelativeToFirstFragment() const override;

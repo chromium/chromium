@@ -179,7 +179,7 @@ void LayoutCustomScrollbarPart::SetOverriddenSize(const PhysicalSize& size) {
   overridden_size_ = size;
 }
 
-PhysicalSize LayoutCustomScrollbarPart::Size() const {
+PhysicalSize LayoutCustomScrollbarPart::StitchedSize() const {
   NOT_DESTROYED();
   return overridden_size_;
 }

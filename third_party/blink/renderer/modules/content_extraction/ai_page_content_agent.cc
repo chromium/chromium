@@ -438,7 +438,7 @@ void ProcessCanvasNode(const LayoutHTMLCanvas& layout_canvas,
   CHECK(IsVisible(layout_canvas));
 
   auto canvas_data = mojom::blink::AIPageContentCanvasData::New();
-  canvas_data->layout_size = ToRoundedSize(layout_canvas.Size());
+  canvas_data->layout_size = ToRoundedSize(layout_canvas.StitchedSize());
   attributes.canvas_data = std::move(canvas_data);
 }
 

@@ -592,7 +592,7 @@ bool ThemePainterDefault::PaintSliderTrack(const Element& element,
     LayoutBox* input_box = input->GetLayoutBox();
     if (thumb) {
       gfx::Rect thumb_rect = ToPixelSnappedRect(
-          PhysicalRect(thumb->PhysicalLocation(), thumb->Size()));
+          PhysicalRect(thumb->PhysicalLocation(), thumb->StitchedSize()));
       slider.thumb_x = thumb_rect.x() + input_box->PaddingLeft().ToInt() +
                        input_box->BorderLeft().ToInt();
       slider.thumb_y = thumb_rect.y() + input_box->PaddingTop().ToInt() +

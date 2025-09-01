@@ -6871,7 +6871,8 @@ void WebGLRenderingContextBase::texHTMLElement2D(
   LayoutBox* layout_box = element->GetLayoutBox();
   PaintLayer* layer = layout_box->EnclosingLayer();
 
-  auto box_rect = gfx::Rect(ToCeiledSize(layer->GetLayoutBox()->Size()));
+  auto box_rect =
+      gfx::Rect(ToCeiledSize(layer->GetLayoutBox()->StitchedSize()));
   OverriddenCullRectScope cull_rect_scope(*layer, CullRect(box_rect),
                                           /*disable_expansion*/ true);
   PaintRecordBuilder builder;

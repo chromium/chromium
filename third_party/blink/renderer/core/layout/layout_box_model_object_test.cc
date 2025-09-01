@@ -86,15 +86,17 @@ TEST_P(LayoutBoxModelObjectTest, LocalCaretRectForEmptyElementVertical) {
 
   {
     auto* rl = GetLayoutBoxByElementId("target-rl");
-    EXPECT_EQ(PhysicalRect(rl->Size().width - kPaddingRight - kFontHeight,
-                           kPaddingTop, kFontHeight, kCaretWidth),
-              rl->LocalCaretRect(0, CaretShape::kBar));
-    EXPECT_EQ(PhysicalRect(rl->Size().width - kPaddingRight - kFontHeight,
-                           kPaddingTop, kFontHeight, kFontWidth),
-              rl->LocalCaretRect(0, CaretShape::kBlock));
-    EXPECT_EQ(PhysicalRect(
-                  rl->Size().width - kPaddingRight - kFontHeight - kCaretWidth,
-                  kPaddingTop, kCaretWidth, kFontWidth),
+    EXPECT_EQ(
+        PhysicalRect(rl->StitchedSize().width - kPaddingRight - kFontHeight,
+                     kPaddingTop, kFontHeight, kCaretWidth),
+        rl->LocalCaretRect(0, CaretShape::kBar));
+    EXPECT_EQ(
+        PhysicalRect(rl->StitchedSize().width - kPaddingRight - kFontHeight,
+                     kPaddingTop, kFontHeight, kFontWidth),
+        rl->LocalCaretRect(0, CaretShape::kBlock));
+    EXPECT_EQ(PhysicalRect(rl->StitchedSize().width - kPaddingRight -
+                               kFontHeight - kCaretWidth,
+                           kPaddingTop, kCaretWidth, kFontWidth),
               rl->LocalCaretRect(0, CaretShape::kUnderscore));
   }
   {
@@ -1219,7 +1221,7 @@ TEST_P(LayoutBoxModelObjectTest, StickyPositionNestedFixedPos) {
   )HTML");
 
   // The view size is set by the base class. This test depends on it.
-  ASSERT_EQ(PhysicalSize(800, 600), GetLayoutView().Size());
+  ASSERT_EQ(PhysicalSize(800, 600), GetLayoutView().StitchedSize());
 
   auto* outer_sticky = GetLayoutBoxModelObjectByElementId("outerSticky");
   auto* inner_sticky_top = GetLayoutBoxModelObjectByElementId("innerStickyTop");

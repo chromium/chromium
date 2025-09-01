@@ -250,13 +250,13 @@ TEST_P(ViewTransitionTest, LayoutShift) {
       kPseudoIdViewTransitionGroup, AtomicString("shared"));
   ASSERT_TRUE(container_pseudo);
   auto* container_box = To<LayoutBox>(container_pseudo->GetLayoutObject());
-  EXPECT_EQ(PhysicalSize(100, 100), container_box->Size());
+  EXPECT_EQ(PhysicalSize(100, 100), container_box->StitchedSize());
 
   // View transition elements should not cause a layout shift.
   auto* target = To<LayoutBox>(
       GetDocument().getElementById(AtomicString("target"))->GetLayoutObject());
   EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
-  EXPECT_EQ(PhysicalSize(100, 100), target->Size());
+  EXPECT_EQ(PhysicalSize(100, 100), target->StitchedSize());
 
   FinishTransition();
   finished_tester.WaitUntilSettled();

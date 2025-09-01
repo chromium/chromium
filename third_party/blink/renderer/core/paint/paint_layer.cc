@@ -169,7 +169,7 @@ std::optional<gfx::SizeF> ComputeFilterViewport(const PaintLayer& layer) {
   if (box->IsSVGForeignObject()) {
     return std::nullopt;
   }
-  return gfx::SizeF(box->Size());
+  return gfx::SizeF(box->StitchedSize());
 }
 
 }  // namespace

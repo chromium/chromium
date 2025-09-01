@@ -680,7 +680,7 @@ PhysicalRect PhysicalBoxFragment::OverflowClipRect(
   // rectangle like this.
   auto writing_direction = Style().GetWritingDirection();
   const LayoutBox* box = To<LayoutBox>(GetLayoutObject());
-  WritingModeConverter converter(writing_direction, PhysicalSize(box->Size()));
+  WritingModeConverter converter(writing_direction, box->StitchedSize());
   // Make the clip rectangle relative to the layout box.
   clip_rect.offset -= location;
   LogicalOffset stitched_offset;

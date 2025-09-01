@@ -880,7 +880,7 @@ PaintLayer* PaintLayerScrollableArea::Layer() const {
 PhysicalSize PaintLayerScrollableArea::Size() const {
   return layer_->IsRootLayer()
              ? PhysicalSize(GetLayoutBox()->GetFrameView()->Size())
-             : GetLayoutBox()->Size();
+             : GetLayoutBox()->StitchedSize();
 }
 
 LayoutUnit PaintLayerScrollableArea::ScrollWidth() const {
@@ -920,7 +920,7 @@ gfx::Transform PaintLayerScrollableArea::InitializeResizeTransform(
   // that rounding does require rebaselining some tests.)
   gfx::Point drag_start_position = ToRoundedPoint(
       resize_transform.ProjectPoint(gfx::PointF(absolute_drag_start_point)));
-  PhysicalSize current_size = GetLayoutBox()->Size();
+  PhysicalSize current_size = GetLayoutBox()->StitchedSize();
   resize_transform.PostTranslate(current_size.width - drag_start_position.x(),
                                  current_size.height - drag_start_position.y());
   return resize_transform;
@@ -2366,7 +2366,7 @@ void PaintLayerScrollableArea::Resize(
 
   float zoom_factor = GetLayoutBox()->StyleRef().EffectiveZoom();
 
-  PhysicalSize current_size = GetLayoutBox()->Size();
+  PhysicalSize current_size = GetLayoutBox()->StitchedSize();
   current_size.Scale(1 / zoom_factor);
 
   // TODO(dbaron): We should probably be caching the offset to the
@@ -2398,7 +2398,7 @@ void PaintLayerScrollableArea::Resize(
   EResize resize = GetLayoutBox()->StyleRef().UsedResize();
   if (resize != EResize::kVertical && difference.width) {
     LayoutUnit base_width =
-        GetLayoutBox()->Size().width -
+        GetLayoutBox()->StitchedSize().width -
         (is_box_sizing_border ? LayoutUnit()
                               : GetLayoutBox()->BorderAndPaddingWidth());
     base_width = LayoutUnit(base_width / zoom_factor);
@@ -2409,7 +2409,7 @@ void PaintLayerScrollableArea::Resize(
 
   if (resize != EResize::kHorizontal && difference.height) {
     LayoutUnit base_height =
-        GetLayoutBox()->Size().height -
+        GetLayoutBox()->StitchedSize().height -
         (is_box_sizing_border ? LayoutUnit()
                               : GetLayoutBox()->BorderAndPaddingHeight());
     base_height = LayoutUnit(base_height / zoom_factor);
@@ -2515,7 +2515,7 @@ void PaintLayerScrollableArea::UpdateScrollableAreaSet() {
   const bool has_horizontal_overflow = HasHorizontalOverflow();
   const bool has_vertical_overflow = HasVerticalOverflow();
   bool has_overflow =
-      !GetLayoutBox()->Size().IsZero() &&
+      !GetLayoutBox()->StitchedSize().IsZero() &&
       ((has_horizontal_overflow && GetLayoutBox()->ScrollsOverflowX()) ||
        (has_vertical_overflow && GetLayoutBox()->ScrollsOverflowY()));
 
@@ -3165,7 +3165,7 @@ gfx::Size PaintLayerScrollableArea::PixelSnappedBorderBoxSize() const {
   // calling PositionOverflowControls() again when paint offset is updated.
   // TODO(crbug.com/962299): Only correct if the paint offset is correct.
   return PhysicalRect(GetLayoutBox()->FirstFragment().PaintOffset(),
-                      GetLayoutBox()->Size())
+                      GetLayoutBox()->StitchedSize())
       .PixelSnappedSize();
 }
 

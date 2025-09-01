@@ -492,7 +492,7 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
       center_y = page->GetChromeClient().WindowToViewportScalar(
           window->GetFrame(), center_y);
     }
-    if (!PhysicalRect(box->PhysicalLocation(), box->Size())
+    if (!PhysicalRect(box->PhysicalLocation(), box->StitchedSize())
              .Contains(LayoutUnit(center_x), LayoutUnit(center_y))) {
       return false;
     }

@@ -329,9 +329,9 @@ LayoutUnit ListBoxItemBlockSize(const HTMLSelectElement& select,
       element = &optgroup->OptGroupLabelElement();
     LayoutUnit item_block_size;
     if (auto* layout_box = element->GetLayoutBox()) {
-      item_block_size = box.StyleRef().IsHorizontalWritingMode()
-                            ? layout_box->Size().height
-                            : layout_box->Size().width;
+      PhysicalSize size = layout_box->StitchedSize();
+      item_block_size =
+          box.StyleRef().IsHorizontalWritingMode() ? size.height : size.width;
     } else {
       item_block_size = ListBoxDefaultItemHeight(box);
     }
@@ -968,7 +968,7 @@ LayoutUnit LayoutBox::ClientWidth() const {
   // border side values are currently limited to 2^20px (a recent change in the
   // code), if this limit is raised again in the future, we'd have ill effects
   // of saturated arithmetic otherwise.
-  LayoutUnit width = Size().width;
+  LayoutUnit width = StitchedSize().width;
   if (CanSkipComputeScrollbars()) {
     return (width - BorderLeft() - BorderRight()).ClampNegativeToZero();
   } else {
@@ -987,7 +987,7 @@ LayoutUnit LayoutBox::ClientHeight() const {
   // currently limited to 2^20px (a recent change in the code), if this limit is
   // raised again in the future, we'd have ill effects of saturated arithmetic
   // otherwise.
-  LayoutUnit height = Size().height;
+  LayoutUnit height = StitchedSize().height;
   if (CanSkipComputeScrollbars()) {
     return (height - BorderTop() - BorderBottom()).ClampNegativeToZero();
   } else {
@@ -1167,7 +1167,7 @@ void LayoutBox::QuadsInAncestorInternal(Vector<gfx::QuadF>& quads,
 
 gfx::RectF LayoutBox::LocalBoundingBoxRectForAccessibility() const {
   NOT_DESTROYED();
-  PhysicalSize size = Size();
+  PhysicalSize size = StitchedSize();
   return gfx::RectF(0, 0, size.width.ToFloat(), size.height.ToFloat());
 }
 
@@ -1380,7 +1380,7 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentBlockSize(
 LogicalRect LayoutBox::LogicalRectInContainer() const {
   NOT_DESTROYED();
   return LocationContainer()->CreateWritingModeConverter().ToLogical(
-      PhysicalRect(PhysicalLocation(), Size()));
+      PhysicalRect(PhysicalLocation(), StitchedSize()));
 }
 
 gfx::QuadF LayoutBox::AbsoluteContentQuad(MapCoordinatesFlags flags) const {
@@ -1487,7 +1487,7 @@ void LayoutBox::AddOutlineRects(OutlineRectCollector& collector,
                                 const PhysicalOffset& additional_offset,
                                 OutlineType) const {
   NOT_DESTROYED();
-  collector.AddRect(PhysicalRect(additional_offset, Size()));
+  collector.AddRect(PhysicalRect(additional_offset, StitchedSize()));
   if (info)
     *info = OutlineInfo::GetFromStyle(StyleRef());
 }
@@ -1575,7 +1575,7 @@ PhysicalBoxStrut LayoutBox::ComputeScrollbarsInternal(
   // is just to make sure that left-hand scrollbars don't mess up
   // scrollWidth. For the full story, visit http://crbug.com/724255.
   if (scrollbars.left > 0 && clamp_to_content_box == kClampToContentBox) {
-    LayoutUnit max_width = Size().width - BorderAndPaddingWidth();
+    LayoutUnit max_width = StitchedSize().width - BorderAndPaddingWidth();
     scrollbars.left =
         std::min(scrollbars.left, max_width.ClampNegativeToZero());
   }
@@ -1758,7 +1758,7 @@ gfx::PointF LayoutBox::PerspectiveOrigin(const PhysicalSize* size) const {
     return gfx::PointF();
 
   // Use the |size| parameter instead of |Size()| if present.
-  gfx::SizeF float_size = size ? gfx::SizeF(*size) : gfx::SizeF(Size());
+  gfx::SizeF float_size = size ? gfx::SizeF(*size) : gfx::SizeF(StitchedSize());
 
   return PointForLengthPoint(StyleRef().PerspectiveOrigin(), float_size);
 }
@@ -2019,7 +2019,7 @@ bool LayoutBox::NodeAtPoint(HitTestResult& result,
       skip_children = true;
     }
     if (!skip_children && StyleRef().HasBorderRadius()) {
-      PhysicalRect bounds_rect(accumulated_offset, Size());
+      PhysicalRect bounds_rect(accumulated_offset, StitchedSize());
       skip_children = !hit_test_location.Intersects(
           ContouredBorderGeometry::PixelSnappedContouredInnerBorder(
               StyleRef(), bounds_rect));
@@ -2137,8 +2137,9 @@ static bool IsCandidateForOpaquenessTest(const LayoutBox& child_box) {
       child_style.ShapeOutside()) {
     return false;
   }
-  if (child_box.Size().IsZero())
+  if (child_box.StitchedSize().IsZero()) {
     return false;
+  }
   // A replaced element with border-radius always clips the content.
   if (child_box.IsLayoutReplaced() && child_style.HasBorderRadius())
     return false;
@@ -2172,8 +2173,8 @@ bool LayoutBox::ForegroundIsKnownToBeOpaqueInRect(
       // non-horizontal-tb writing mode but is allowed.
       return false;
     }
-    if (child_local_rect.Bottom() > child_box->Size().height ||
-        child_local_rect.Right() > child_box->Size().width) {
+    if (child_local_rect.Bottom() > child_box->StitchedSize().height ||
+        child_local_rect.Right() > child_box->StitchedSize().width) {
       continue;
     }
     if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
@@ -2500,9 +2501,10 @@ void LayoutBox::ExcludeScrollbars(
 
 PhysicalRect LayoutBox::ClipRect(const PhysicalOffset& location) const {
   NOT_DESTROYED();
-  PhysicalRect clip_rect(location, Size());
-  LayoutUnit width = Size().width;
-  LayoutUnit height = Size().height;
+  PhysicalSize stitched_size = StitchedSize();
+  PhysicalRect clip_rect(location, stitched_size);
+  LayoutUnit width = stitched_size.width;
+  LayoutUnit height = stitched_size.height;
 
   if (!StyleRef().ClipLeft().IsAuto()) {
     LayoutUnit c = ValueForLength(StyleRef().ClipLeft(), width);
@@ -3180,7 +3182,8 @@ PhysicalRect LayoutBox::LocalCaretRect(int caret_offset,
   }
 
   LogicalRect rect(offset, LogicalSize(caret_width, caret_block_size));
-  return WritingModeConverter(writing_direction, Size()).ToPhysical(rect);
+  return WritingModeConverter(writing_direction, StitchedSize())
+      .ToPhysical(rect);
 }
 
 PositionWithAffinity LayoutBox::PositionForPointInFragments(
@@ -3268,11 +3271,12 @@ PhysicalBoxStrut LayoutBox::ComputeVisualEffectOverflowOutsets() {
         OutlineRects(&info, PhysicalOffset(),
                      style.OutlineRectsShouldIncludeBlockInkOverflow());
     PhysicalRect rect = UnionRect(outline_rects);
-    bool outline_affected = rect.size != Size();
+    PhysicalSize size = StitchedSize();
+    bool outline_affected = rect.size != size;
     SetOutlineMayBeAffectedByDescendants(outline_affected);
     rect.Inflate(LayoutUnit(OutlinePainter::OutlineOutsetExtent(style, info)));
-    outsets.Unite(PhysicalBoxStrut(-rect.Y(), rect.Right() - Size().width,
-                                   rect.Bottom() - Size().height, -rect.X()));
+    outsets.Unite(PhysicalBoxStrut(-rect.Y(), rect.Right() - size.width,
+                                   rect.Bottom() - size.height, -rect.X()));
   }
 
   return outsets;
@@ -3568,7 +3572,7 @@ void LayoutBox::SetVisualOverflow(const PhysicalRect& self,
 
   const PhysicalRect overflow_rect =
       overflow_->visual_overflow->SelfVisualOverflowRect();
-  const PhysicalSize box_size = Size();
+  const PhysicalSize box_size = StitchedSize();
   const PhysicalBoxStrut outsets(
       -overflow_rect.Y(), overflow_rect.Right() - box_size.width,
       overflow_rect.Bottom() - box_size.height, -overflow_rect.X());
@@ -3727,9 +3731,10 @@ bool LayoutBox::IsMonolithic() const {
 LayoutUnit LayoutBox::FirstLineHeight() const {
   NOT_DESTROYED();
   if (IsAtomicInlineLevel()) {
+    PhysicalSize size = StitchedSize();
     return FirstLineStyle()->IsHorizontalWritingMode()
-               ? MarginHeight() + Size().height
-               : MarginWidth() + Size().width;
+               ? MarginHeight() + size.height
+               : MarginWidth() + size.width;
   }
   return LayoutUnit();
 }
@@ -3836,7 +3841,7 @@ LayoutUnit LayoutBox::OffsetTop(const Element* parent) const {
   return OffsetPoint(parent).top;
 }
 
-PhysicalSize LayoutBox::Size() const {
+PhysicalSize LayoutBox::StitchedSize() const {
   NOT_DESTROYED();
   if (!HasValidCachedGeometry()) {
     // const_cast in order to update the cached value.
@@ -3951,7 +3956,7 @@ void LayoutBox::ClearCustomLayoutChild() {
 
 PhysicalRect LayoutBox::DebugRect() const {
   NOT_DESTROYED();
-  return PhysicalRect(PhysicalLocation(), Size());
+  return PhysicalRect(PhysicalLocation(), StitchedSize());
 }
 
 OverflowClipAxes LayoutBox::ComputeOverflowClipAxes() const {
@@ -4504,7 +4509,7 @@ bool LayoutBox::NeedsAnchorPositionScrollAdjustmentInY() const {
 WritingModeConverter LayoutBox::CreateWritingModeConverter() const {
   NOT_DESTROYED();
   return WritingModeConverter({Style()->GetWritingMode(), TextDirection::kLtr},
-                              Size());
+                              StitchedSize());
 }
 
 PhysicalOffset LayoutBox::PhysicalLocation() const {
