@@ -7269,7 +7269,7 @@
       valid_for_cue: true,
       valid_for_marker: true,
       valid_for_page_context: true,
-      invalidate: ["layout"],
+      invalidate: ["reshape"],
     },
     {
       name: "text-wrap-style",

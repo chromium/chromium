@@ -924,10 +924,6 @@ bool ComputedStyle::DiffNeedsReshape(const ComputedStyle& other,
     return true;
   }
 
-  if (ShouldWrapLine() != other.ShouldWrapLine()) {
-    return true;
-  }
-
   if (field_diff & kBorderWidth) {
     if (Display() == EDisplay::kInline && HasBorder() != other.HasBorder()) {
       return true;
