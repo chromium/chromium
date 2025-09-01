@@ -34,6 +34,10 @@ if(!trailers.contains_key("Change-Id"), format_gerrit_change_id_trailer(self))
 # We want chrome's formatters, not google3's.
 [fix.tools.google3format]
 enabled = false
+# If you're not using the google-internal jj, this will complain that
+# google3format is an invalid fix tool because it has no command/patterns
+command = ["/dev/null"]
+patterns = ["null"]
 
 # The source of truth for the following formatters is depot_tools' git_cl.py
 [fix.tools.gn-format]
