@@ -4,58 +4,6 @@
       {
         "args": [
           "--platform",
-          "iPad Air (5th generation)",
-          "--version",
-          "17.5",
-          "--args-json",
-          "{\"test_args\": [\"--run-with-custom-webkit\"]}",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "17a5305f",
-          "--xctest"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "module_name": "//third_party/abseil-cpp:absl_hardening_tests/",
-        "module_scheme": "gtest",
-        "name": "absl_hardening_tests iPad Air (5th generation) 17.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
-            }
-          ],
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-15"
-          },
-          "named_caches": [
-            {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
-            },
-            {
-              "name": "xcode_ios_17a5305f",
-              "path": "Xcode.app"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "absl_hardening_tests",
-        "test_id_prefix": "ninja://third_party/abseil-cpp:absl_hardening_tests/",
-        "variant_id": "iPad Air (5th generation) 17.5"
-      },
-      {
-        "args": [
-          "--platform",
           "iPad Air 11-inch (M2)",
           "--version",
           "18.2",
@@ -108,9 +56,9 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPad Air 11-inch (M2)",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -124,7 +72,7 @@
         },
         "module_name": "//third_party/abseil-cpp:absl_hardening_tests/",
         "module_scheme": "gtest",
-        "name": "absl_hardening_tests iPhone 14 17.5",
+        "name": "absl_hardening_tests iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -143,8 +91,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -155,7 +103,7 @@
         },
         "test": "absl_hardening_tests",
         "test_id_prefix": "ninja://third_party/abseil-cpp:absl_hardening_tests/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -212,9 +160,9 @@
       {
         "args": [
           "--platform",
-          "iPad Air (5th generation)",
+          "iPhone 16",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -226,9 +174,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//base:base_unittests/",
+        "module_name": "//third_party/abseil-cpp:absl_hardening_tests/",
         "module_scheme": "gtest",
-        "name": "base_unittests iPad Air (5th generation) 17.5",
+        "name": "absl_hardening_tests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -247,8 +195,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -257,9 +205,9 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "base_unittests",
-        "test_id_prefix": "ninja://base:base_unittests/",
-        "variant_id": "iPad Air (5th generation) 17.5"
+        "test": "absl_hardening_tests",
+        "test_id_prefix": "ninja://third_party/abseil-cpp:absl_hardening_tests/",
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -316,9 +264,9 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPad Air 11-inch (M2)",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -332,7 +280,7 @@
         },
         "module_name": "//base:base_unittests/",
         "module_scheme": "gtest",
-        "name": "base_unittests iPhone 14 17.5",
+        "name": "base_unittests iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -351,8 +299,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -363,7 +311,7 @@
         },
         "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -420,9 +368,9 @@
       {
         "args": [
           "--platform",
-          "iPad Air (5th generation)",
+          "iPhone 16",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -434,9 +382,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//third_party/boringssl:boringssl_crypto_tests/",
+        "module_name": "//base:base_unittests/",
         "module_scheme": "gtest",
-        "name": "boringssl_crypto_tests iPad Air (5th generation) 17.5",
+        "name": "base_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -455,8 +403,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -465,9 +413,9 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "boringssl_crypto_tests",
-        "test_id_prefix": "ninja://third_party/boringssl:boringssl_crypto_tests/",
-        "variant_id": "iPad Air (5th generation) 17.5"
+        "test": "base_unittests",
+        "test_id_prefix": "ninja://base:base_unittests/",
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -524,9 +472,9 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPad Air 11-inch (M2)",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -540,7 +488,7 @@
         },
         "module_name": "//third_party/boringssl:boringssl_crypto_tests/",
         "module_scheme": "gtest",
-        "name": "boringssl_crypto_tests iPhone 14 17.5",
+        "name": "boringssl_crypto_tests iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -559,8 +507,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -571,7 +519,7 @@
         },
         "test": "boringssl_crypto_tests",
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_crypto_tests/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -628,9 +576,9 @@
       {
         "args": [
           "--platform",
-          "iPad Air (5th generation)",
+          "iPhone 16",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -642,9 +590,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//third_party/boringssl:boringssl_ssl_tests/",
+        "module_name": "//third_party/boringssl:boringssl_crypto_tests/",
         "module_scheme": "gtest",
-        "name": "boringssl_ssl_tests iPad Air (5th generation) 17.5",
+        "name": "boringssl_crypto_tests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -663,8 +611,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -673,9 +621,9 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "boringssl_ssl_tests",
-        "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/",
-        "variant_id": "iPad Air (5th generation) 17.5"
+        "test": "boringssl_crypto_tests",
+        "test_id_prefix": "ninja://third_party/boringssl:boringssl_crypto_tests/",
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -732,9 +680,9 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPad Air 11-inch (M2)",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -748,7 +696,7 @@
         },
         "module_name": "//third_party/boringssl:boringssl_ssl_tests/",
         "module_scheme": "gtest",
-        "name": "boringssl_ssl_tests iPhone 14 17.5",
+        "name": "boringssl_ssl_tests iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -767,8 +715,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -779,7 +727,7 @@
         },
         "test": "boringssl_ssl_tests",
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -836,9 +784,9 @@
       {
         "args": [
           "--platform",
-          "iPad Air (5th generation)",
+          "iPhone 16",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -850,9 +798,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//components:components_unittests/",
+        "module_name": "//third_party/boringssl:boringssl_ssl_tests/",
         "module_scheme": "gtest",
-        "name": "components_unittests iPad Air (5th generation) 17.5",
+        "name": "boringssl_ssl_tests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -871,8 +819,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -881,9 +829,9 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "components_unittests",
-        "test_id_prefix": "ninja://components:components_unittests/",
-        "variant_id": "iPad Air (5th generation) 17.5"
+        "test": "boringssl_ssl_tests",
+        "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/",
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -940,9 +888,9 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPad Air 11-inch (M2)",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -956,7 +904,7 @@
         },
         "module_name": "//components:components_unittests/",
         "module_scheme": "gtest",
-        "name": "components_unittests iPhone 14 17.5",
+        "name": "components_unittests iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -975,8 +923,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -987,7 +935,7 @@
         },
         "test": "components_unittests",
         "test_id_prefix": "ninja://components:components_unittests/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -1044,9 +992,9 @@
       {
         "args": [
           "--platform",
-          "iPad Air (5th generation)",
+          "iPhone 16",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -1058,9 +1006,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//crypto:crypto_unittests/",
+        "module_name": "//components:components_unittests/",
         "module_scheme": "gtest",
-        "name": "crypto_unittests iPad Air (5th generation) 17.5",
+        "name": "components_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1079,8 +1027,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -1089,9 +1037,9 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "crypto_unittests",
-        "test_id_prefix": "ninja://crypto:crypto_unittests/",
-        "variant_id": "iPad Air (5th generation) 17.5"
+        "test": "components_unittests",
+        "test_id_prefix": "ninja://components:components_unittests/",
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -1148,9 +1096,9 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPad Air 11-inch (M2)",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -1164,7 +1112,7 @@
         },
         "module_name": "//crypto:crypto_unittests/",
         "module_scheme": "gtest",
-        "name": "crypto_unittests iPhone 14 17.5",
+        "name": "crypto_unittests iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1183,8 +1131,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -1195,7 +1143,7 @@
         },
         "test": "crypto_unittests",
         "test_id_prefix": "ninja://crypto:crypto_unittests/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -1252,9 +1200,9 @@
       {
         "args": [
           "--platform",
-          "iPad Air (5th generation)",
+          "iPhone 16",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -1266,9 +1214,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//ui/gfx:gfx_unittests/",
+        "module_name": "//crypto:crypto_unittests/",
         "module_scheme": "gtest",
-        "name": "gfx_unittests iPad Air (5th generation) 17.5",
+        "name": "crypto_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1287,8 +1235,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -1297,9 +1245,9 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "gfx_unittests",
-        "test_id_prefix": "ninja://ui/gfx:gfx_unittests/",
-        "variant_id": "iPad Air (5th generation) 17.5"
+        "test": "crypto_unittests",
+        "test_id_prefix": "ninja://crypto:crypto_unittests/",
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -1356,9 +1304,9 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPad Air 11-inch (M2)",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -1372,7 +1320,7 @@
         },
         "module_name": "//ui/gfx:gfx_unittests/",
         "module_scheme": "gtest",
-        "name": "gfx_unittests iPhone 14 17.5",
+        "name": "gfx_unittests iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1391,8 +1339,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -1403,7 +1351,7 @@
         },
         "test": "gfx_unittests",
         "test_id_prefix": "ninja://ui/gfx:gfx_unittests/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -1460,9 +1408,9 @@
       {
         "args": [
           "--platform",
-          "iPad Air (5th generation)",
+          "iPhone 16",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -1474,9 +1422,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//google_apis:google_apis_unittests/",
+        "module_name": "//ui/gfx:gfx_unittests/",
         "module_scheme": "gtest",
-        "name": "google_apis_unittests iPad Air (5th generation) 17.5",
+        "name": "gfx_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1495,8 +1443,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -1505,9 +1453,9 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "google_apis_unittests",
-        "test_id_prefix": "ninja://google_apis:google_apis_unittests/",
-        "variant_id": "iPad Air (5th generation) 17.5"
+        "test": "gfx_unittests",
+        "test_id_prefix": "ninja://ui/gfx:gfx_unittests/",
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -1564,9 +1512,9 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPad Air 11-inch (M2)",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -1580,7 +1528,7 @@
         },
         "module_name": "//google_apis:google_apis_unittests/",
         "module_scheme": "gtest",
-        "name": "google_apis_unittests iPhone 14 17.5",
+        "name": "google_apis_unittests iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1599,8 +1547,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -1611,7 +1559,7 @@
         },
         "test": "google_apis_unittests",
         "test_id_prefix": "ninja://google_apis:google_apis_unittests/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -1668,9 +1616,9 @@
       {
         "args": [
           "--platform",
-          "iPad Air (5th generation)",
+          "iPhone 16",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -1682,9 +1630,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//components/gwp_asan:gwp_asan_unittests/",
+        "module_name": "//google_apis:google_apis_unittests/",
         "module_scheme": "gtest",
-        "name": "gwp_asan_unittests iPad Air (5th generation) 17.5",
+        "name": "google_apis_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1703,8 +1651,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -1713,9 +1661,9 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "gwp_asan_unittests",
-        "test_id_prefix": "ninja://components/gwp_asan:gwp_asan_unittests/",
-        "variant_id": "iPad Air (5th generation) 17.5"
+        "test": "google_apis_unittests",
+        "test_id_prefix": "ninja://google_apis:google_apis_unittests/",
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -1772,9 +1720,9 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPad Air 11-inch (M2)",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -1788,7 +1736,7 @@
         },
         "module_name": "//components/gwp_asan:gwp_asan_unittests/",
         "module_scheme": "gtest",
-        "name": "gwp_asan_unittests iPhone 14 17.5",
+        "name": "gwp_asan_unittests iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1807,8 +1755,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -1819,7 +1767,7 @@
         },
         "test": "gwp_asan_unittests",
         "test_id_prefix": "ninja://components/gwp_asan:gwp_asan_unittests/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -1876,10 +1824,9 @@
       {
         "args": [
           "--platform",
-          "iPad Air (5th generation)",
+          "iPhone 16",
           "--version",
-          "17.5",
-          "--xcodebuild-sim-runner",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -1891,9 +1838,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
-        "module_scheme": "xctest",
-        "name": "ios_chrome_bookmarks_eg2tests_module iPad Air (5th generation) 17.5",
+        "module_name": "//components/gwp_asan:gwp_asan_unittests/",
+        "module_scheme": "gtest",
+        "name": "gwp_asan_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1912,20 +1859,19 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
               "path": "Xcode.app"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "ios_chrome_bookmarks_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
-        "variant_id": "iPad Air (5th generation) 17.5"
+        "test": "gwp_asan_unittests",
+        "test_id_prefix": "ninja://components/gwp_asan:gwp_asan_unittests/",
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -1984,9 +1930,9 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPad Air 11-inch (M2)",
           "--version",
-          "17.5",
+          "26.0",
           "--xcodebuild-sim-runner",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
@@ -2001,7 +1947,7 @@
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
         "module_scheme": "xctest",
-        "name": "ios_chrome_bookmarks_eg2tests_module iPhone 14 17.5",
+        "name": "ios_chrome_bookmarks_eg2tests_module iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2020,8 +1966,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -2033,7 +1979,7 @@
         },
         "test": "ios_chrome_bookmarks_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -2091,12 +2037,10 @@
       },
       {
         "args": [
-          "--clones",
-          "2",
           "--platform",
-          "iPad Air (5th generation)",
+          "iPhone 16",
           "--version",
-          "17.5",
+          "26.0",
           "--xcodebuild-sim-runner",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
@@ -2109,9 +2053,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
         "module_scheme": "xctest",
-        "name": "ios_chrome_integration_eg2tests_module iPad Air (5th generation) 17.5",
+        "name": "ios_chrome_bookmarks_eg2tests_module iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2130,8 +2074,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -2139,11 +2083,11 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 9
+          "shards": 2
         },
-        "test": "ios_chrome_integration_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
-        "variant_id": "iPad Air (5th generation) 17.5"
+        "test": "ios_chrome_bookmarks_eg2tests_module",
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -2206,9 +2150,9 @@
           "--clones",
           "2",
           "--platform",
-          "iPhone 14",
+          "iPad Air 11-inch (M2)",
           "--version",
-          "17.5",
+          "26.0",
           "--xcodebuild-sim-runner",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
@@ -2223,7 +2167,7 @@
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
         "module_scheme": "xctest",
-        "name": "ios_chrome_integration_eg2tests_module iPhone 14 17.5",
+        "name": "ios_chrome_integration_eg2tests_module iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2242,8 +2186,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -2255,7 +2199,7 @@
         },
         "test": "ios_chrome_integration_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -2318,9 +2262,9 @@
           "--clones",
           "2",
           "--platform",
-          "iPad Air (5th generation)",
+          "iPhone 16",
           "--version",
-          "17.5",
+          "26.0",
           "--xcodebuild-sim-runner",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
@@ -2333,9 +2277,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
         "module_scheme": "xctest",
-        "name": "ios_chrome_settings_eg2tests_module iPad Air (5th generation) 17.5",
+        "name": "ios_chrome_integration_eg2tests_module iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2354,8 +2298,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -2363,11 +2307,11 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
+          "shards": 9
         },
-        "test": "ios_chrome_settings_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
-        "variant_id": "iPad Air (5th generation) 17.5"
+        "test": "ios_chrome_integration_eg2tests_module",
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -2430,9 +2374,9 @@
           "--clones",
           "2",
           "--platform",
-          "iPhone 14",
+          "iPad Air 11-inch (M2)",
           "--version",
-          "17.5",
+          "26.0",
           "--xcodebuild-sim-runner",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
@@ -2447,7 +2391,7 @@
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
         "module_scheme": "xctest",
-        "name": "ios_chrome_settings_eg2tests_module iPhone 14 17.5",
+        "name": "ios_chrome_settings_eg2tests_module iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2466,8 +2410,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -2479,7 +2423,7 @@
         },
         "test": "ios_chrome_settings_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -2539,10 +2483,12 @@
       },
       {
         "args": [
+          "--clones",
+          "2",
           "--platform",
-          "iPad Air (5th generation)",
+          "iPhone 16",
           "--version",
-          "17.5",
+          "26.0",
           "--xcodebuild-sim-runner",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
@@ -2555,9 +2501,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
         "module_scheme": "xctest",
-        "name": "ios_chrome_signin_eg2tests_module iPad Air (5th generation) 17.5",
+        "name": "ios_chrome_settings_eg2tests_module iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2576,8 +2522,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -2585,11 +2531,11 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
+          "shards": 4
         },
-        "test": "ios_chrome_signin_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
-        "variant_id": "iPad Air (5th generation) 17.5"
+        "test": "ios_chrome_settings_eg2tests_module",
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -2648,9 +2594,9 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPad Air 11-inch (M2)",
           "--version",
-          "17.5",
+          "26.0",
           "--xcodebuild-sim-runner",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
@@ -2665,7 +2611,7 @@
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
         "module_scheme": "xctest",
-        "name": "ios_chrome_signin_eg2tests_module iPhone 14 17.5",
+        "name": "ios_chrome_signin_eg2tests_module iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2684,8 +2630,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -2697,7 +2643,7 @@
         },
         "test": "ios_chrome_signin_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -2756,9 +2702,9 @@
       {
         "args": [
           "--platform",
-          "iPad Air (5th generation)",
+          "iPhone 16",
           "--version",
-          "17.5",
+          "26.0",
           "--xcodebuild-sim-runner",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
@@ -2771,9 +2717,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
         "module_scheme": "xctest",
-        "name": "ios_chrome_smoke_eg2tests_module iPad Air (5th generation) 17.5",
+        "name": "ios_chrome_signin_eg2tests_module iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2792,19 +2738,20 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
               "path": "Xcode.app"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 6
         },
-        "test": "ios_chrome_smoke_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
-        "variant_id": "iPad Air (5th generation) 17.5"
+        "test": "ios_chrome_signin_eg2tests_module",
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -2862,9 +2809,9 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPad Air 11-inch (M2)",
           "--version",
-          "17.5",
+          "26.0",
           "--xcodebuild-sim-runner",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
@@ -2879,7 +2826,7 @@
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
         "module_scheme": "xctest",
-        "name": "ios_chrome_smoke_eg2tests_module iPhone 14 17.5",
+        "name": "ios_chrome_smoke_eg2tests_module iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2898,8 +2845,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -2910,7 +2857,7 @@
         },
         "test": "ios_chrome_smoke_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -2967,12 +2914,10 @@
       },
       {
         "args": [
-          "--clones",
-          "2",
           "--platform",
-          "iPad Air (5th generation)",
+          "iPhone 16",
           "--version",
-          "17.5",
+          "26.0",
           "--xcodebuild-sim-runner",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
@@ -2985,9 +2930,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
         "module_scheme": "xctest",
-        "name": "ios_chrome_ui_eg2tests_module iPad Air (5th generation) 17.5",
+        "name": "ios_chrome_smoke_eg2tests_module iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -3006,20 +2951,19 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
               "path": "Xcode.app"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 12
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "ios_chrome_ui_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
-        "variant_id": "iPad Air (5th generation) 17.5"
+        "test": "ios_chrome_smoke_eg2tests_module",
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -3082,9 +3026,9 @@
           "--clones",
           "2",
           "--platform",
-          "iPhone 14",
+          "iPad Air 11-inch (M2)",
           "--version",
-          "17.5",
+          "26.0",
           "--xcodebuild-sim-runner",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
@@ -3099,7 +3043,7 @@
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
         "module_scheme": "xctest",
-        "name": "ios_chrome_ui_eg2tests_module iPhone 14 17.5",
+        "name": "ios_chrome_ui_eg2tests_module iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -3118,8 +3062,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -3131,7 +3075,7 @@
         },
         "test": "ios_chrome_ui_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -3191,10 +3135,13 @@
       },
       {
         "args": [
+          "--clones",
+          "2",
           "--platform",
-          "iPad Air (5th generation)",
+          "iPhone 16",
           "--version",
-          "17.5",
+          "26.0",
+          "--xcodebuild-sim-runner",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -3206,9 +3153,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//ios/chrome/test:ios_chrome_unittests/",
-        "module_scheme": "gtest",
-        "name": "ios_chrome_unittests iPad Air (5th generation) 17.5",
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
+        "module_scheme": "xctest",
+        "name": "ios_chrome_ui_eg2tests_module iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -3227,19 +3174,20 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
               "path": "Xcode.app"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 12
         },
-        "test": "ios_chrome_unittests",
-        "test_id_prefix": "ninja://ios/chrome/test:ios_chrome_unittests/",
-        "variant_id": "iPad Air (5th generation) 17.5"
+        "test": "ios_chrome_ui_eg2tests_module",
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -3296,9 +3244,9 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPad Air 11-inch (M2)",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -3312,7 +3260,7 @@
         },
         "module_name": "//ios/chrome/test:ios_chrome_unittests/",
         "module_scheme": "gtest",
-        "name": "ios_chrome_unittests iPhone 14 17.5",
+        "name": "ios_chrome_unittests iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -3331,8 +3279,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -3343,7 +3291,7 @@
         },
         "test": "ios_chrome_unittests",
         "test_id_prefix": "ninja://ios/chrome/test:ios_chrome_unittests/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -3400,10 +3348,9 @@
       {
         "args": [
           "--platform",
-          "iPad Air (5th generation)",
+          "iPhone 16",
           "--version",
-          "17.5",
-          "--xcodebuild-sim-runner",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -3415,9 +3362,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
-        "module_scheme": "xctest",
-        "name": "ios_chrome_web_eg2tests_module iPad Air (5th generation) 17.5",
+        "module_name": "//ios/chrome/test:ios_chrome_unittests/",
+        "module_scheme": "gtest",
+        "name": "ios_chrome_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -3436,20 +3383,19 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
               "path": "Xcode.app"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "ios_chrome_web_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
-        "variant_id": "iPad Air (5th generation) 17.5"
+        "test": "ios_chrome_unittests",
+        "test_id_prefix": "ninja://ios/chrome/test:ios_chrome_unittests/",
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -3508,9 +3454,9 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPad Air 11-inch (M2)",
           "--version",
-          "17.5",
+          "26.0",
           "--xcodebuild-sim-runner",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
@@ -3525,7 +3471,7 @@
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
         "module_scheme": "xctest",
-        "name": "ios_chrome_web_eg2tests_module iPhone 14 17.5",
+        "name": "ios_chrome_web_eg2tests_module iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -3544,8 +3490,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -3557,7 +3503,7 @@
         },
         "test": "ios_chrome_web_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -3616,9 +3562,10 @@
       {
         "args": [
           "--platform",
-          "iPad Air (5th generation)",
+          "iPhone 16",
           "--version",
-          "17.5",
+          "26.0",
+          "--xcodebuild-sim-runner",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -3630,9 +3577,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//ios/components:ios_components_unittests/",
-        "module_scheme": "gtest",
-        "name": "ios_components_unittests iPad Air (5th generation) 17.5",
+        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
+        "module_scheme": "xctest",
+        "name": "ios_chrome_web_eg2tests_module iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -3651,19 +3598,20 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
               "path": "Xcode.app"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
-        "test": "ios_components_unittests",
-        "test_id_prefix": "ninja://ios/components:ios_components_unittests/",
-        "variant_id": "iPad Air (5th generation) 17.5"
+        "test": "ios_chrome_web_eg2tests_module",
+        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -3720,9 +3668,9 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPad Air 11-inch (M2)",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -3736,7 +3684,7 @@
         },
         "module_name": "//ios/components:ios_components_unittests/",
         "module_scheme": "gtest",
-        "name": "ios_components_unittests iPhone 14 17.5",
+        "name": "ios_components_unittests iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -3755,8 +3703,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -3767,7 +3715,7 @@
         },
         "test": "ios_components_unittests",
         "test_id_prefix": "ninja://ios/components:ios_components_unittests/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -3824,9 +3772,9 @@
       {
         "args": [
           "--platform",
-          "iPad Air (5th generation)",
+          "iPhone 16",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -3838,9 +3786,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//ios/net:ios_net_unittests/",
+        "module_name": "//ios/components:ios_components_unittests/",
         "module_scheme": "gtest",
-        "name": "ios_net_unittests iPad Air (5th generation) 17.5",
+        "name": "ios_components_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -3859,20 +3807,19 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
               "path": "Xcode.app"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 3
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "ios_net_unittests",
-        "test_id_prefix": "ninja://ios/net:ios_net_unittests/",
-        "variant_id": "iPad Air (5th generation) 17.5"
+        "test": "ios_components_unittests",
+        "test_id_prefix": "ninja://ios/components:ios_components_unittests/",
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -3930,9 +3877,9 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPad Air 11-inch (M2)",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -3946,7 +3893,7 @@
         },
         "module_name": "//ios/net:ios_net_unittests/",
         "module_scheme": "gtest",
-        "name": "ios_net_unittests iPhone 14 17.5",
+        "name": "ios_net_unittests iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -3965,8 +3912,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -3978,7 +3925,7 @@
         },
         "test": "ios_net_unittests",
         "test_id_prefix": "ninja://ios/net:ios_net_unittests/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -4036,9 +3983,9 @@
       {
         "args": [
           "--platform",
-          "iPad Air (5th generation)",
+          "iPhone 16",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -4050,9 +3997,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//ios/testing:ios_testing_unittests/",
+        "module_name": "//ios/net:ios_net_unittests/",
         "module_scheme": "gtest",
-        "name": "ios_testing_unittests iPad Air (5th generation) 17.5",
+        "name": "ios_net_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -4071,19 +4018,20 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
               "path": "Xcode.app"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
         },
-        "test": "ios_testing_unittests",
-        "test_id_prefix": "ninja://ios/testing:ios_testing_unittests/",
-        "variant_id": "iPad Air (5th generation) 17.5"
+        "test": "ios_net_unittests",
+        "test_id_prefix": "ninja://ios/net:ios_net_unittests/",
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -4140,9 +4088,9 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPad Air 11-inch (M2)",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -4156,7 +4104,7 @@
         },
         "module_name": "//ios/testing:ios_testing_unittests/",
         "module_scheme": "gtest",
-        "name": "ios_testing_unittests iPhone 14 17.5",
+        "name": "ios_testing_unittests iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -4175,8 +4123,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -4187,7 +4135,7 @@
         },
         "test": "ios_testing_unittests",
         "test_id_prefix": "ninja://ios/testing:ios_testing_unittests/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -4244,9 +4192,9 @@
       {
         "args": [
           "--platform",
-          "iPad Air (5th generation)",
+          "iPhone 16",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -4258,9 +4206,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//ios/web:ios_web_inttests/",
+        "module_name": "//ios/testing:ios_testing_unittests/",
         "module_scheme": "gtest",
-        "name": "ios_web_inttests iPad Air (5th generation) 17.5",
+        "name": "ios_testing_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -4279,8 +4227,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -4289,9 +4237,9 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "ios_web_inttests",
-        "test_id_prefix": "ninja://ios/web:ios_web_inttests/",
-        "variant_id": "iPad Air (5th generation) 17.5"
+        "test": "ios_testing_unittests",
+        "test_id_prefix": "ninja://ios/testing:ios_testing_unittests/",
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -4348,9 +4296,9 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPad Air 11-inch (M2)",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -4364,7 +4312,7 @@
         },
         "module_name": "//ios/web:ios_web_inttests/",
         "module_scheme": "gtest",
-        "name": "ios_web_inttests iPhone 14 17.5",
+        "name": "ios_web_inttests iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -4383,8 +4331,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -4395,7 +4343,7 @@
         },
         "test": "ios_web_inttests",
         "test_id_prefix": "ninja://ios/web:ios_web_inttests/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -4452,10 +4400,9 @@
       {
         "args": [
           "--platform",
-          "iPad Air (5th generation)",
+          "iPhone 16",
           "--version",
-          "17.5",
-          "--xcodebuild-sim-runner",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -4467,9 +4414,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//ios/web/shell/test:ios_web_shell_eg2tests_module/",
-        "module_scheme": "xctest",
-        "name": "ios_web_shell_eg2tests_module iPad Air (5th generation) 17.5",
+        "module_name": "//ios/web:ios_web_inttests/",
+        "module_scheme": "gtest",
+        "name": "ios_web_inttests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -4488,8 +4435,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -4498,9 +4445,9 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "ios_web_shell_eg2tests_module",
-        "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/",
-        "variant_id": "iPad Air (5th generation) 17.5"
+        "test": "ios_web_inttests",
+        "test_id_prefix": "ninja://ios/web:ios_web_inttests/",
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -4558,9 +4505,9 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPad Air 11-inch (M2)",
           "--version",
-          "17.5",
+          "26.0",
           "--xcodebuild-sim-runner",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
@@ -4575,7 +4522,7 @@
         },
         "module_name": "//ios/web/shell/test:ios_web_shell_eg2tests_module/",
         "module_scheme": "xctest",
-        "name": "ios_web_shell_eg2tests_module iPhone 14 17.5",
+        "name": "ios_web_shell_eg2tests_module iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -4594,8 +4541,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -4606,7 +4553,7 @@
         },
         "test": "ios_web_shell_eg2tests_module",
         "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -4664,9 +4611,10 @@
       {
         "args": [
           "--platform",
-          "iPad Air (5th generation)",
+          "iPhone 16",
           "--version",
-          "17.5",
+          "26.0",
+          "--xcodebuild-sim-runner",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -4678,9 +4626,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//ios/web:ios_web_unittests/",
-        "module_scheme": "gtest",
-        "name": "ios_web_unittests iPad Air (5th generation) 17.5",
+        "module_name": "//ios/web/shell/test:ios_web_shell_eg2tests_module/",
+        "module_scheme": "xctest",
+        "name": "ios_web_shell_eg2tests_module iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -4699,8 +4647,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -4709,9 +4657,9 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "ios_web_unittests",
-        "test_id_prefix": "ninja://ios/web:ios_web_unittests/",
-        "variant_id": "iPad Air (5th generation) 17.5"
+        "test": "ios_web_shell_eg2tests_module",
+        "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/",
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -4768,9 +4716,9 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPad Air 11-inch (M2)",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -4784,7 +4732,7 @@
         },
         "module_name": "//ios/web:ios_web_unittests/",
         "module_scheme": "gtest",
-        "name": "ios_web_unittests iPhone 14 17.5",
+        "name": "ios_web_unittests iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -4803,8 +4751,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -4815,7 +4763,7 @@
         },
         "test": "ios_web_unittests",
         "test_id_prefix": "ninja://ios/web:ios_web_unittests/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -4872,9 +4820,9 @@
       {
         "args": [
           "--platform",
-          "iPad Air (5th generation)",
+          "iPhone 16",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -4886,9 +4834,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//ios/web_view:ios_web_view_inttests/",
+        "module_name": "//ios/web:ios_web_unittests/",
         "module_scheme": "gtest",
-        "name": "ios_web_view_inttests iPad Air (5th generation) 17.5",
+        "name": "ios_web_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -4907,8 +4855,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -4917,9 +4865,9 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "ios_web_view_inttests",
-        "test_id_prefix": "ninja://ios/web_view:ios_web_view_inttests/",
-        "variant_id": "iPad Air (5th generation) 17.5"
+        "test": "ios_web_unittests",
+        "test_id_prefix": "ninja://ios/web:ios_web_unittests/",
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -4976,9 +4924,9 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPad Air 11-inch (M2)",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -4992,7 +4940,7 @@
         },
         "module_name": "//ios/web_view:ios_web_view_inttests/",
         "module_scheme": "gtest",
-        "name": "ios_web_view_inttests iPhone 14 17.5",
+        "name": "ios_web_view_inttests iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -5011,8 +4959,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -5023,7 +4971,7 @@
         },
         "test": "ios_web_view_inttests",
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_inttests/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -5080,9 +5028,9 @@
       {
         "args": [
           "--platform",
-          "iPad Air (5th generation)",
+          "iPhone 16",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -5094,9 +5042,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//ios/web_view:ios_web_view_unittests/",
+        "module_name": "//ios/web_view:ios_web_view_inttests/",
         "module_scheme": "gtest",
-        "name": "ios_web_view_unittests iPad Air (5th generation) 17.5",
+        "name": "ios_web_view_inttests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -5115,8 +5063,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -5125,9 +5073,9 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "ios_web_view_unittests",
-        "test_id_prefix": "ninja://ios/web_view:ios_web_view_unittests/",
-        "variant_id": "iPad Air (5th generation) 17.5"
+        "test": "ios_web_view_inttests",
+        "test_id_prefix": "ninja://ios/web_view:ios_web_view_inttests/",
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -5184,9 +5132,9 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPad Air 11-inch (M2)",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -5200,7 +5148,7 @@
         },
         "module_name": "//ios/web_view:ios_web_view_unittests/",
         "module_scheme": "gtest",
-        "name": "ios_web_view_unittests iPhone 14 17.5",
+        "name": "ios_web_view_unittests iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -5219,8 +5167,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -5231,7 +5179,7 @@
         },
         "test": "ios_web_view_unittests",
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_unittests/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -5288,9 +5236,9 @@
       {
         "args": [
           "--platform",
-          "iPad Air (5th generation)",
+          "iPhone 16",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -5302,9 +5250,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//net:net_unittests/",
+        "module_name": "//ios/web_view:ios_web_view_unittests/",
         "module_scheme": "gtest",
-        "name": "net_unittests iPad Air (5th generation) 17.5",
+        "name": "ios_web_view_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -5323,8 +5271,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -5333,9 +5281,9 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "net_unittests",
-        "test_id_prefix": "ninja://net:net_unittests/",
-        "variant_id": "iPad Air (5th generation) 17.5"
+        "test": "ios_web_view_unittests",
+        "test_id_prefix": "ninja://ios/web_view:ios_web_view_unittests/",
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -5392,9 +5340,9 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPad Air 11-inch (M2)",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -5408,7 +5356,7 @@
         },
         "module_name": "//net:net_unittests/",
         "module_scheme": "gtest",
-        "name": "net_unittests iPhone 14 17.5",
+        "name": "net_unittests iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -5427,8 +5375,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -5439,7 +5387,7 @@
         },
         "test": "net_unittests",
         "test_id_prefix": "ninja://net:net_unittests/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -5496,9 +5444,9 @@
       {
         "args": [
           "--platform",
-          "iPad Air (5th generation)",
+          "iPhone 16",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -5510,9 +5458,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//services:services_unittests/",
+        "module_name": "//net:net_unittests/",
         "module_scheme": "gtest",
-        "name": "services_unittests iPad Air (5th generation) 17.5",
+        "name": "net_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -5531,8 +5479,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -5541,9 +5489,9 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "services_unittests",
-        "test_id_prefix": "ninja://services:services_unittests/",
-        "variant_id": "iPad Air (5th generation) 17.5"
+        "test": "net_unittests",
+        "test_id_prefix": "ninja://net:net_unittests/",
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -5600,9 +5548,9 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPad Air 11-inch (M2)",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -5616,7 +5564,7 @@
         },
         "module_name": "//services:services_unittests/",
         "module_scheme": "gtest",
-        "name": "services_unittests iPhone 14 17.5",
+        "name": "services_unittests iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -5635,8 +5583,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -5647,7 +5595,7 @@
         },
         "test": "services_unittests",
         "test_id_prefix": "ninja://services:services_unittests/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -5704,9 +5652,9 @@
       {
         "args": [
           "--platform",
-          "iPad Air (5th generation)",
+          "iPhone 16",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -5718,9 +5666,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//skia:skia_unittests/",
+        "module_name": "//services:services_unittests/",
         "module_scheme": "gtest",
-        "name": "skia_unittests iPad Air (5th generation) 17.5",
+        "name": "services_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -5739,8 +5687,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -5749,9 +5697,9 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "skia_unittests",
-        "test_id_prefix": "ninja://skia:skia_unittests/",
-        "variant_id": "iPad Air (5th generation) 17.5"
+        "test": "services_unittests",
+        "test_id_prefix": "ninja://services:services_unittests/",
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -5808,9 +5756,9 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPad Air 11-inch (M2)",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -5824,7 +5772,7 @@
         },
         "module_name": "//skia:skia_unittests/",
         "module_scheme": "gtest",
-        "name": "skia_unittests iPhone 14 17.5",
+        "name": "skia_unittests iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -5843,8 +5791,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -5855,7 +5803,7 @@
         },
         "test": "skia_unittests",
         "test_id_prefix": "ninja://skia:skia_unittests/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -5912,9 +5860,9 @@
       {
         "args": [
           "--platform",
-          "iPad Air (5th generation)",
+          "iPhone 16",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -5926,9 +5874,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//sql:sql_unittests/",
+        "module_name": "//skia:skia_unittests/",
         "module_scheme": "gtest",
-        "name": "sql_unittests iPad Air (5th generation) 17.5",
+        "name": "skia_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -5947,8 +5895,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -5957,9 +5905,9 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "sql_unittests",
-        "test_id_prefix": "ninja://sql:sql_unittests/",
-        "variant_id": "iPad Air (5th generation) 17.5"
+        "test": "skia_unittests",
+        "test_id_prefix": "ninja://skia:skia_unittests/",
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -6016,9 +5964,9 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPad Air 11-inch (M2)",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -6032,7 +5980,7 @@
         },
         "module_name": "//sql:sql_unittests/",
         "module_scheme": "gtest",
-        "name": "sql_unittests iPhone 14 17.5",
+        "name": "sql_unittests iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -6051,8 +5999,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -6063,7 +6011,7 @@
         },
         "test": "sql_unittests",
         "test_id_prefix": "ninja://sql:sql_unittests/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -6120,9 +6068,9 @@
       {
         "args": [
           "--platform",
-          "iPad Air (5th generation)",
+          "iPhone 16",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -6134,9 +6082,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//ui/base:ui_base_unittests/",
+        "module_name": "//sql:sql_unittests/",
         "module_scheme": "gtest",
-        "name": "ui_base_unittests iPad Air (5th generation) 17.5",
+        "name": "sql_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -6155,8 +6103,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -6165,9 +6113,9 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "ui_base_unittests",
-        "test_id_prefix": "ninja://ui/base:ui_base_unittests/",
-        "variant_id": "iPad Air (5th generation) 17.5"
+        "test": "sql_unittests",
+        "test_id_prefix": "ninja://sql:sql_unittests/",
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -6224,9 +6172,9 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPad Air 11-inch (M2)",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -6240,7 +6188,7 @@
         },
         "module_name": "//ui/base:ui_base_unittests/",
         "module_scheme": "gtest",
-        "name": "ui_base_unittests iPhone 14 17.5",
+        "name": "ui_base_unittests iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -6259,8 +6207,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -6271,7 +6219,7 @@
         },
         "test": "ui_base_unittests",
         "test_id_prefix": "ninja://ui/base:ui_base_unittests/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -6328,9 +6276,9 @@
       {
         "args": [
           "--platform",
-          "iPad Air (5th generation)",
+          "iPhone 16",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -6342,9 +6290,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//url:url_unittests/",
+        "module_name": "//ui/base:ui_base_unittests/",
         "module_scheme": "gtest",
-        "name": "url_unittests iPad Air (5th generation) 17.5",
+        "name": "ui_base_unittests iPhone 16 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -6363,8 +6311,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -6373,9 +6321,9 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "url_unittests",
-        "test_id_prefix": "ninja://url:url_unittests/",
-        "variant_id": "iPad Air (5th generation) 17.5"
+        "test": "ui_base_unittests",
+        "test_id_prefix": "ninja://ui/base:ui_base_unittests/",
+        "variant_id": "iPhone 16 26.0"
       },
       {
         "args": [
@@ -6432,9 +6380,9 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPad Air 11-inch (M2)",
           "--version",
-          "17.5",
+          "26.0",
           "--args-json",
           "{\"test_args\": [\"--run-with-custom-webkit\"]}",
           "--out-dir",
@@ -6448,7 +6396,7 @@
         },
         "module_name": "//url:url_unittests/",
         "module_scheme": "gtest",
-        "name": "url_unittests iPhone 14 17.5",
+        "name": "url_unittests iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -6467,8 +6415,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
             },
             {
               "name": "xcode_ios_17a5305f",
@@ -6479,7 +6427,7 @@
         },
         "test": "url_unittests",
         "test_id_prefix": "ninja://url:url_unittests/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -6532,6 +6480,58 @@
         "test": "url_unittests",
         "test_id_prefix": "ninja://url:url_unittests/",
         "variant_id": "iPhone 15 18.2"
+      },
+      {
+        "args": [
+          "--platform",
+          "iPhone 16",
+          "--version",
+          "26.0",
+          "--args-json",
+          "{\"test_args\": [\"--run-with-custom-webkit\"]}",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "17a5305f",
+          "--xctest"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//url:url_unittests/",
+        "module_scheme": "gtest",
+        "name": "url_unittests iPhone 16 26.0",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
+            }
+          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-15"
+          },
+          "named_caches": [
+            {
+              "name": "runtime_ios_26_0",
+              "path": "Runtime-ios-26.0"
+            },
+            {
+              "name": "xcode_ios_17a5305f",
+              "path": "Xcode.app"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "url_unittests",
+        "test_id_prefix": "ninja://url:url_unittests/",
+        "variant_id": "iPhone 16 26.0"
       }
     ]
   }

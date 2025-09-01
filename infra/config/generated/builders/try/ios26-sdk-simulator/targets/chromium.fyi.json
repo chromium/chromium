@@ -9,7 +9,7 @@
           "--clones",
           "2",
           "--platform",
-          "iPad Air (5th generation)",
+          "iPad Air 11-inch (M2)",
           "--version",
           "26.0",
           "--xcodebuild-sim-runner",
@@ -24,7 +24,7 @@
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
         "module_scheme": "xctest",
-        "name": "ios_chrome_integration_eg2tests_module iPad Air (5th generation) 26.0",
+        "name": "ios_chrome_integration_eg2tests_module iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -56,7 +56,7 @@
         },
         "test": "ios_chrome_integration_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
-        "variant_id": "iPad Air (5th generation) 26.0"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -117,7 +117,7 @@
           "--clones",
           "2",
           "--platform",
-          "iPad Air (5th generation)",
+          "iPad Air 11-inch (M2)",
           "--version",
           "26.0",
           "--xcodebuild-sim-runner",
@@ -132,7 +132,7 @@
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
         "module_scheme": "xctest",
-        "name": "ios_chrome_ui_eg2tests_module iPad Air (5th generation) 26.0",
+        "name": "ios_chrome_ui_eg2tests_module iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -164,7 +164,7 @@
         },
         "test": "ios_chrome_ui_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
-        "variant_id": "iPad Air (5th generation) 26.0"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [
@@ -223,7 +223,7 @@
       {
         "args": [
           "--platform",
-          "iPad Air (5th generation)",
+          "iPad Air 11-inch (M2)",
           "--version",
           "26.0",
           "--out-dir",
@@ -237,7 +237,7 @@
         },
         "module_name": "//ios/web:ios_web_inttests/",
         "module_scheme": "gtest",
-        "name": "ios_web_inttests iPad Air (5th generation) 26.0",
+        "name": "ios_web_inttests iPad Air (6th generation) 26.0",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -268,7 +268,7 @@
         },
         "test": "ios_web_inttests",
         "test_id_prefix": "ninja://ios/web:ios_web_inttests/",
-        "variant_id": "iPad Air (5th generation) 26.0"
+        "variant_id": "iPad Air (6th generation) 26.0"
       },
       {
         "args": [

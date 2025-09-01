@@ -2833,8 +2833,8 @@ targets.bundle(
                 "disable_field_trial_config_for_earl_grey",
             ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_17_5",
-                "SIM_IPHONE_14_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_18_2",
+                "SIM_IPHONE_15_18_2",
             ],
         ),
         targets.bundle(
@@ -2844,8 +2844,8 @@ targets.bundle(
                 "disable_field_trial_config_for_earl_grey",
             ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_17_5",
-                "SIM_IPHONE_14_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_18_2",
+                "SIM_IPHONE_15_18_2",
             ],
         ),
     ],
@@ -4865,7 +4865,7 @@ targets.bundle(
         targets.bundle(
             targets = "ios_common_tests",
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_26_0",
+                "SIM_IPAD_AIR_6TH_GEN_26_0",
                 "SIM_IPHONE_16_26_0",
             ],
         ),
@@ -4875,7 +4875,7 @@ targets.bundle(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_26_0",
+                "SIM_IPAD_AIR_6TH_GEN_26_0",
                 "SIM_IPHONE_16_26_0",
             ],
         ),
@@ -4885,7 +4885,7 @@ targets.bundle(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_26_0",
+                "SIM_IPAD_AIR_6TH_GEN_26_0",
                 "SIM_IPHONE_16_26_0",
             ],
         ),
@@ -4896,14 +4896,14 @@ targets.bundle(
                 "record_failed_tests",
             ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_26_0",
+                "SIM_IPAD_AIR_6TH_GEN_26_0",
                 "SIM_IPHONE_16_26_0",
             ],
         ),
         targets.bundle(
             targets = "ios_passing_screen_size_dependent_tests",
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_26_0",
+                "SIM_IPAD_AIR_6TH_GEN_26_0",
                 "SIM_IPHONE_16_26_0",
                 "SIM_IPHONE_SE_3RD_GEN_26_0",
             ],
@@ -4917,7 +4917,7 @@ targets.bundle(
         targets.bundle(
             targets = "ios_common_tests",
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_26_0",
+                "SIM_IPAD_AIR_6TH_GEN_26_0",
                 "SIM_IPHONE_16_26_0",
             ],
         ),
@@ -4927,7 +4927,7 @@ targets.bundle(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_26_0",
+                "SIM_IPAD_AIR_6TH_GEN_26_0",
                 "SIM_IPHONE_16_26_0",
             ],
         ),
@@ -4938,7 +4938,7 @@ targets.bundle(
                 "record_failed_tests",
             ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_26_0",
+                "SIM_IPAD_AIR_6TH_GEN_26_0",
                 "SIM_IPHONE_16_26_0",
             ],
         ),
@@ -4949,14 +4949,14 @@ targets.bundle(
                 "record_failed_tests",
             ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_26_0",
+                "SIM_IPAD_AIR_6TH_GEN_26_0",
                 "SIM_IPHONE_16_26_0",
             ],
         ),
         targets.bundle(
             targets = "ios_screen_size_dependent_tests",
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_26_0",
+                "SIM_IPAD_AIR_6TH_GEN_26_0",
                 "SIM_IPHONE_16_26_0",
                 "SIM_IPHONE_SE_3RD_GEN_26_0",
             ],
@@ -4974,7 +4974,7 @@ targets.bundle(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_26_0",
+                "SIM_IPAD_AIR_6TH_GEN_26_0",
                 "SIM_IPHONE_16_26_0",
             ],
         ),
@@ -4984,14 +4984,14 @@ targets.bundle(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_26_0",
+                "SIM_IPAD_AIR_6TH_GEN_26_0",
                 "SIM_IPHONE_16_26_0",
             ],
         ),
         targets.bundle(
             targets = "ios_failing_screen_size_dependent_tests",
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_26_0",
+                "SIM_IPAD_AIR_6TH_GEN_26_0",
                 "SIM_IPHONE_16_26_0",
                 "SIM_IPHONE_SE_3RD_GEN_26_0",
             ],
@@ -5245,7 +5245,7 @@ targets.bundle(
         targets.bundle(
             targets = "clang_tot_gtests",
             variants = [
-                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_2",
             ],
         ),
     ],
@@ -5261,6 +5261,7 @@ targets.bundle(
             variants = [
                 "SIM_IPHONE_14_17_5",
                 "SIM_IPHONE_15_18_2",
+                "SIM_IPHONE_16_26_0",
             ],
         ),
         targets.bundle(
@@ -5271,8 +5272,10 @@ targets.bundle(
             variants = [
                 "SIM_IPAD_PRO_6TH_GEN_17_5",
                 "SIM_IPAD_PRO_7TH_GEN_18_2",
+                "SIM_IPAD_PRO_7TH_GEN_26_0",
                 "SIM_IPHONE_14_17_5",
                 "SIM_IPHONE_15_18_2",
+                "SIM_IPHONE_16_26_0",
             ],
         ),
         targets.bundle(
@@ -5283,8 +5286,10 @@ targets.bundle(
             variants = [
                 "SIM_IPAD_PRO_6TH_GEN_17_5",
                 "SIM_IPAD_PRO_7TH_GEN_18_2",
+                "SIM_IPAD_PRO_7TH_GEN_26_0",
                 "SIM_IPHONE_14_17_5",
                 "SIM_IPHONE_15_18_2",
+                "SIM_IPHONE_16_26_0",
             ],
         ),
         targets.bundle(
@@ -5292,8 +5297,10 @@ targets.bundle(
             variants = [
                 "SIM_IPAD_PRO_6TH_GEN_17_5",
                 "SIM_IPAD_PRO_7TH_GEN_18_2",
+                "SIM_IPAD_PRO_7TH_GEN_26_0",
                 "SIM_IPHONE_14_17_5",
                 "SIM_IPHONE_15_18_2",
+                "SIM_IPHONE_16_26_0",
             ],
         ),
     ],
@@ -5515,6 +5522,8 @@ targets.bundle(
 )
 
 # Please also change ios_code_coverage_tests for any change in this suite.
+# TODO(crbug.com/441038354): comebine simulators for the same test target once
+# iOS26 performance issue is resolved on the VMs
 targets.bundle(
     name = "ios_simulator_full_configs_tests",
     targets = [
@@ -5524,8 +5533,13 @@ targets.bundle(
                 "mac_15_vm_optional",
             ],
             variants = [
-                "SIM_IPHONE_14_PLUS_17_5",
                 "SIM_IPHONE_14_PLUS_18_2",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_common_tests",
+            variants = [
+                "SIM_IPHONE_16_PLUS_26_0",
             ],
         ),
         targets.bundle(
@@ -5536,8 +5550,10 @@ targets.bundle(
             variants = [
                 "SIM_IPAD_PRO_6TH_GEN_17_5",
                 "SIM_IPAD_PRO_7TH_GEN_18_2",
+                "SIM_IPAD_PRO_7TH_GEN_26_0",
                 "SIM_IPHONE_14_17_5",
                 "SIM_IPHONE_15_18_2",
+                "SIM_IPHONE_16_26_0",
             ],
         ),
         targets.bundle(
@@ -5546,10 +5562,10 @@ targets.bundle(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPAD_PRO_6TH_GEN_17_5",
                 "SIM_IPAD_PRO_7TH_GEN_18_2",
-                "SIM_IPHONE_14_17_5",
+                "SIM_IPAD_PRO_7TH_GEN_26_0",
                 "SIM_IPHONE_15_18_2",
+                "SIM_IPHONE_16_26_0",
             ],
         ),
         targets.bundle(
@@ -5558,15 +5574,22 @@ targets.bundle(
                 "mac_15_vm_optional",
             ],
             variants = [
-                "SIM_IPAD_PRO_6TH_GEN_17_5",
                 "SIM_IPAD_PRO_7TH_GEN_18_2",
-                "SIM_IPHONE_14_17_5",
                 "SIM_IPHONE_15_18_2",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_screen_size_dependent_tests",
+            variants = [
+                "SIM_IPAD_PRO_7TH_GEN_26_0",
+                "SIM_IPHONE_16_26_0",
             ],
         ),
     ],
 )
 
+# TODO(crbug.com/441038354): comebine simulators into the same test targets once
+# iOS26 performance issue is resolved on the VMs
 targets.bundle(
     name = "ios_simulator_noncq_tests",
     targets = [
@@ -5578,6 +5601,7 @@ targets.bundle(
             variants = [
                 "SIM_IPHONE_SE_3RD_GEN_17_5",
                 "SIM_IPHONE_SE_3RD_GEN_18_2",
+                "SIM_IPHONE_SE_3RD_GEN_26_0",
             ],
         ),
         targets.bundle(
@@ -5590,6 +5614,16 @@ targets.bundle(
             variants = [
                 "SIM_IPAD_AIR_5TH_GEN_17_5",
                 "SIM_IPAD_AIR_6TH_GEN_18_2",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_cq_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+                "record_failed_tests",
+            ],
+            variants = [
+                "SIM_IPAD_AIR_6TH_GEN_26_0",
             ],
         ),
         targets.bundle(
@@ -5601,28 +5635,28 @@ targets.bundle(
             variants = [
                 "SIM_IPAD_PRO_6TH_GEN_17_5",
                 "SIM_IPAD_PRO_7TH_GEN_18_2",
+                "SIM_IPAD_PRO_7TH_GEN_26_0",
             ],
         ),
         targets.bundle(
             targets = "ios_screen_size_dependent_tests",
-            mixins = [
-                "mac_15_vm_optional",
-            ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_17_5",
                 "SIM_IPAD_AIR_6TH_GEN_18_2",
-                "SIM_IPAD_PRO_6TH_GEN_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_26_0",
                 "SIM_IPAD_PRO_7TH_GEN_18_2",
-                "SIM_IPHONE_14_PLUS_17_5",
+                "SIM_IPAD_PRO_7TH_GEN_26_0",
                 "SIM_IPHONE_14_PLUS_18_2",
-                "SIM_IPHONE_SE_3RD_GEN_17_5",
+                "SIM_IPHONE_16_26_0",
                 "SIM_IPHONE_SE_3RD_GEN_18_2",
+                "SIM_IPHONE_SE_3RD_GEN_26_0",
             ],
         ),
     ],
 )
 
 # Please also change ios_code_coverage_tests for any change in this suite.
+# TODO(crbug.com/441038354): comebine simulators for the same test target once
+# iOS26 performance issue is resolved on the VMs
 targets.bundle(
     name = "ios_simulator_tests",
     targets = [
@@ -5632,8 +5666,13 @@ targets.bundle(
                 "mac_15_vm_optional",
             ],
             variants = [
-                "SIM_IPHONE_14_17_5",
                 "SIM_IPHONE_15_18_2",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_common_tests",
+            variants = [
+                "SIM_IPHONE_16_26_0",
             ],
         ),
         targets.bundle(
@@ -5643,17 +5682,32 @@ targets.bundle(
                 "mac_15_vm_optional",
             ],
             variants = [
-                "SIM_IPHONE_14_17_5",
                 "SIM_IPHONE_15_18_2",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_cq_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+            ],
+            variants = [
+                "SIM_IPHONE_16_26_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_screen_size_dependent_tests",
+            mixins = [
+                "mac_15_vm_optional",
+            ],
+            variants = [
+                "SIM_IPHONE_15_18_2",
+                "SIM_IPAD_PRO_7TH_GEN_18_2",
             ],
         ),
         targets.bundle(
             targets = "ios_screen_size_dependent_tests",
             variants = [
-                "SIM_IPHONE_14_17_5",
-                "SIM_IPAD_PRO_6TH_GEN_17_5",
-                "SIM_IPHONE_15_18_2",
-                "SIM_IPAD_PRO_7TH_GEN_18_2",
+                "SIM_IPHONE_16_26_0",
             ],
         ),
     ],
@@ -5713,10 +5767,10 @@ targets.bundle(
         targets.bundle(
             targets = "ios_common_tests",
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_17_5",
                 "SIM_IPAD_AIR_6TH_GEN_18_2",
-                "SIM_IPHONE_14_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_26_0",
                 "SIM_IPHONE_15_18_2",
+                "SIM_IPHONE_16_26_0",
             ],
         ),
         targets.bundle(
@@ -5725,10 +5779,10 @@ targets.bundle(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_17_5",
                 "SIM_IPAD_AIR_6TH_GEN_18_2",
-                "SIM_IPHONE_14_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_26_0",
                 "SIM_IPHONE_15_18_2",
+                "SIM_IPHONE_16_26_0",
             ],
         ),
         targets.bundle(
@@ -5737,19 +5791,19 @@ targets.bundle(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_17_5",
                 "SIM_IPAD_AIR_6TH_GEN_18_2",
-                "SIM_IPHONE_14_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_26_0",
                 "SIM_IPHONE_15_18_2",
+                "SIM_IPHONE_16_26_0",
             ],
         ),
         targets.bundle(
             targets = "ios_screen_size_dependent_tests",
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_17_5",
                 "SIM_IPAD_AIR_6TH_GEN_18_2",
-                "SIM_IPHONE_14_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_26_0",
                 "SIM_IPHONE_15_18_2",
+                "SIM_IPHONE_16_26_0",
             ],
         ),
     ],
