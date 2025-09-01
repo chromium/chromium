@@ -2298,6 +2298,9 @@ TEST_F(DocumentTest, PaymentLinkNotHandled_PaymentRel) {
 
   // Check that the payment link was not handled.
   EXPECT_EQ(test_payment_link_handler.get_payment_link_handled_counter(), 0);
+
+  GetDocument().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
+      payments::facilitated::mojom::blink::PaymentLinkHandler::Name_, {});
 }
 
 TEST_F(DocumentTest, PaymentLinkHandling_SinglePaymentLink) {
@@ -2326,6 +2329,9 @@ TEST_F(DocumentTest, PaymentLinkHandling_SinglePaymentLink) {
   EXPECT_EQ(test_payment_link_handler.get_payment_link_handled_counter(), 1);
   EXPECT_EQ(test_payment_link_handler.get_handled_url(),
             KURL("upi://payment_link_1"));
+
+  GetDocument().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
+      payments::facilitated::mojom::blink::PaymentLinkHandler::Name_, {});
 }
 
 TEST_F(DocumentTest, PaymentLinkHandling_MultiplePaymentLink) {
@@ -2356,6 +2362,9 @@ TEST_F(DocumentTest, PaymentLinkHandling_MultiplePaymentLink) {
   EXPECT_EQ(test_payment_link_handler.get_payment_link_handled_counter(), 1);
   EXPECT_EQ(test_payment_link_handler.get_handled_url(),
             KURL("upi://payment_link_1"));
+
+  GetDocument().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
+      payments::facilitated::mojom::blink::PaymentLinkHandler::Name_, {});
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
