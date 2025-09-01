@@ -584,15 +584,18 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest,
       "DefaultSearchEngine",
       alternative_content::PrerenderFinalStatus::kActivated, 0);
 
-  // Currently, `PreloadServigMetircs` treats the navigation as without preload
-  // because the first prefetch matching is
-  // `PrefetchServiceWorkerState::kControlled` and not potentially matching.
-  //
-  // So, we have not intended
-  // PreloadServingMetrics.PageLoad.Clients.PaintTiming.NavigationToFirstContentfulPaint.*
-  // values.
-  //
-  // TODO(crbug.com/360094997): Change to see only meaningful matchings.
+  uma_tester.ExpectTotalCount(
+      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+      "NavigationToFirstContentfulPaint.WithoutPreload",
+      0);
+  uma_tester.ExpectTotalCount(
+      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+      "NavigationToFirstContentfulPaint.WithPrefetch",
+      1);
+  uma_tester.ExpectTotalCount(
+      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+      "NavigationToFirstContentfulPaint.WithPrerender",
+      0);
 }
 
 // Scenario:
@@ -664,15 +667,18 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest,
       "DefaultSearchEngine",
       alternative_content::PrerenderFinalStatus::kActivated, 0);
 
-  // Currently, `PreloadServigMetircs` treats the navigation as without preload
-  // because the first prefetch matching is
-  // `PrefetchServiceWorkerState::kControlled` and not potentially matching.
-  //
-  // So, we have not intended
-  // PreloadServingMetrics.PageLoad.Clients.PaintTiming.NavigationToFirstContentfulPaint.*
-  // values.
-  //
-  // TODO(crbug.com/360094997): Change to see only meaningful matchings.
+  uma_tester.ExpectTotalCount(
+      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+      "NavigationToFirstContentfulPaint.WithoutPreload",
+      0);
+  uma_tester.ExpectTotalCount(
+      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+      "NavigationToFirstContentfulPaint.WithPrefetch",
+      1);
+  uma_tester.ExpectTotalCount(
+      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+      "NavigationToFirstContentfulPaint.WithPrerender",
+      0);
 }
 
 // Scenario:
@@ -924,15 +930,18 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest,
   uma_tester.ExpectUma("Omnibox.DsePreload.SignalResult.OnPress.Prefetch",
                        {SearchPreloadSignalResult::kPrefetchTriggered});
 
-  // Currently, `PreloadServigMetircs` treats the navigation as without preload
-  // because the first prefetch matching is
-  // `PrefetchServiceWorkerState::kControlled` and not potentially matching.
-  //
-  // So, we have not intended
-  // PreloadServingMetrics.PageLoad.Clients.PaintTiming.NavigationToFirstContentfulPaint.*
-  // values.
-  //
-  // TODO(crbug.com/360094997): Change to see only meaningful matchings.
+  uma_tester.ExpectTotalCount(
+      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+      "NavigationToFirstContentfulPaint.WithoutPreload",
+      0);
+  uma_tester.ExpectTotalCount(
+      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+      "NavigationToFirstContentfulPaint.WithPrefetch",
+      1);
+  uma_tester.ExpectTotalCount(
+      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+      "NavigationToFirstContentfulPaint.WithPrerender",
+      0);
 }
 
 // `OnNavigationLikely()` doesn't trigger prefetch if default search provider
@@ -1027,15 +1036,18 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest,
       "Omnibox.DsePreload.SignalResult.OnPress.Prefetch",
       {SearchPreloadSignalResult::kNotTriggeredAlreadyTriggered});
 
-  // Currently, `PreloadServigMetircs` treats the navigation as without preload
-  // because the first prefetch matching is
-  // `PrefetchServiceWorkerState::kControlled` and not potentially matching.
-  //
-  // So, we have not intended
-  // PreloadServingMetrics.PageLoad.Clients.PaintTiming.NavigationToFirstContentfulPaint.*
-  // values.
-  //
-  // TODO(crbug.com/360094997): Change to see only meaningful matchings.
+  uma_tester.ExpectTotalCount(
+      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+      "NavigationToFirstContentfulPaint.WithoutPreload",
+      0);
+  uma_tester.ExpectTotalCount(
+      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+      "NavigationToFirstContentfulPaint.WithPrefetch",
+      1);
+  uma_tester.ExpectTotalCount(
+      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+      "NavigationToFirstContentfulPaint.WithPrerender",
+      0);
 }
 
 // Scenario:

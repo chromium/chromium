@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/preload_serving_metrics_capsule.h"
 
@@ -74,6 +75,11 @@ struct CONTENT_EXPORT PrefetchMatchMetrics {
   PrefetchMatchMetrics(const PrefetchMatchMetrics&) = delete;
   PrefetchMatchMetrics& operator=(const PrefetchMatchMetrics&) = delete;
 
+  bool IsPotentialMatch() const;
+  bool IsActualMatch() const;
+
+  PrefetchServiceWorkerState expected_service_worker_state;
+
   base::TimeTicks time_match_start;
   base::TimeTicks time_match_end;
 
@@ -130,6 +136,17 @@ struct CONTENT_EXPORT PreloadServingMetrics {
   PreloadServingMetrics& operator=(PreloadServingMetrics&& other) = delete;
   PreloadServingMetrics(const PreloadServingMetrics&) = delete;
   PreloadServingMetrics& operator=(const PreloadServingMetrics&) = delete;
+
+  // Gets "meaningful" `PrefetchMatchMetrics`
+  //
+  // For initial fetch of navigation (i.e. before redirect),
+  // `PrefetchURLLoaderInterceptor` tries to intercept twice, with
+  // `PrefetchServiceWorkerState::kControlled` and
+  // `PrefetchServiceWorkerState::kDisallowed`. This method returns meaningful
+  // one.
+  //
+  // Returns nullptr if there is no `PrefetchMatchMetrics`.
+  const PrefetchMatchMetrics* GetMeaningfulPrefetchMatchMetrics() const;
 
   void RecordMetricsForNonPrerenderNavigationCommitted() const;
   void RecordMetricsForPrerenderInitialNavigationFailed() const;

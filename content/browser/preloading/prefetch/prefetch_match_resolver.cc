@@ -69,6 +69,8 @@ PrefetchMatchResolver::PrefetchMatchResolver(
       break;
   }
 
+  prefetch_match_metrics_->expected_service_worker_state =
+      expected_service_worker_state;
   prefetch_match_metrics_->time_match_start = base::TimeTicks::Now();
 }
 

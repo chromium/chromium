@@ -29,15 +29,16 @@ void RecordMetricsInternal(const PreloadServingMetrics& metrics,
                               metrics.prefetch_match_metrics_list.size());
 
   [&]() {
-    // We only checks the first prefetch matching, as it is most likely to have
-    // meaningful data and checking other ones is costly with UMAs.
+    // We only checks the first two prefetch matching, as they are most likely
+    // to have meaningful data and checking other ones is costly with UMAs.
     //
     // TODO(crbug.com/360094997): Consider to use UKM.
+    const PrefetchMatchMetrics* meaningful_prefetch_match_metrics =
+        metrics.GetMeaningfulPrefetchMatchMetrics();
 
     const bool is_potential_match =
-        metrics.prefetch_match_metrics_list.size() > 0 &&
-        metrics.prefetch_match_metrics_list[0] &&
-        metrics.prefetch_match_metrics_list[0]->n_initial_candidates > 0;
+        meaningful_prefetch_match_metrics &&
+        meaningful_prefetch_match_metrics->IsPotentialMatch();
 
     base::UmaHistogramBoolean(
         WITH(prefix, "PrefetchMatchMetrics.IsPotentialMatch"),
@@ -46,7 +47,7 @@ void RecordMetricsInternal(const PreloadServingMetrics& metrics,
     if (!is_potential_match) {
       return;
     }
-    auto& prefetch_match_metrics = *metrics.prefetch_match_metrics_list[0];
+    auto& prefetch_match_metrics = *meaningful_prefetch_match_metrics;
 
     base::UmaHistogramCounts100(WITH(prefix,
                                      "PrefetchMatchMetrics.PotentialMatchThen."
@@ -57,8 +58,7 @@ void RecordMetricsInternal(const PreloadServingMetrics& metrics,
              "PrefetchMatchMetrics.PotentialMatchThen."
              "NumberOfInitialCandidatesBlockUntilHead"),
         prefetch_match_metrics.n_initial_candidates_block_until_head);
-    const bool is_actual_match =
-        !!prefetch_match_metrics.prefetch_container_metrics;
+    const bool is_actual_match = prefetch_match_metrics.IsActualMatch();
     base::UmaHistogramBoolean(
         WITH(prefix, "PrefetchMatchMetrics.PotentialMatchThen.IsActualMatch"),
         is_actual_match);
@@ -137,6 +137,14 @@ PrefetchMatchMetrics::PrefetchMatchMetrics() = default;
 
 PrefetchMatchMetrics::~PrefetchMatchMetrics() = default;
 
+bool PrefetchMatchMetrics::IsPotentialMatch() const {
+  return n_initial_candidates > 0;
+}
+
+bool PrefetchMatchMetrics::IsActualMatch() const {
+  return !!prefetch_container_metrics;
+}
+
 // static
 bool PreloadServingMetrics::IsEnabled() {
   return features::kPrerender2FallbackUsePreloadServingMetrics.Get() ||
@@ -152,6 +160,42 @@ PreloadServingMetrics::TakeFromNavigationHandle(
   return PreloadServingMetricsHolder::GetOrCreateForNavigationHandle(
              navigation_handle)
       ->Take();
+}
+
+const PrefetchMatchMetrics*
+PreloadServingMetrics::GetMeaningfulPrefetchMatchMetrics() const {
+  // There is no `PrefetchMatchMetrics` if an interceptor ahead of
+  // `PrefetchURLLoaderInterceptor` intercepted.
+  if (prefetch_match_metrics_list.size() == 0) {
+    return nullptr;
+  }
+
+  CHECK(prefetch_match_metrics_list[0]);
+
+  // There is one `PrefetchMatchMetrics` if `PrefetchURLLoaderInterceptor` with
+  // `PrefetchServiceWorkerState::kControlled` intercepted.
+  if (prefetch_match_metrics_list.size() == 1) {
+    return prefetch_match_metrics_list[0].get();
+  }
+
+  CHECK(prefetch_match_metrics_list[1]);
+
+  // If `PrefetchURLLoaderInterceptor` with
+  // `PrefetchServiceWorkerState::kControlled` didn't intercept and one with
+  // `PrefetchServiceWorkerState::kDisallowed` entered prefetch matching, return
+  // the latter. Return the first one otherwise.
+  //
+  // (We are not confident whether `size() >= 2` implies the first two is such
+  // types or not.)
+  if (prefetch_match_metrics_list[0]->expected_service_worker_state ==
+          PrefetchServiceWorkerState::kControlled &&
+      prefetch_match_metrics_list[1]->expected_service_worker_state ==
+          PrefetchServiceWorkerState::kDisallowed &&
+      prefetch_match_metrics_list[1]->IsPotentialMatch()) {
+    return prefetch_match_metrics_list[1].get();
+  } else {
+    return prefetch_match_metrics_list[0].get();
+  }
 }
 
 void PreloadServingMetrics::RecordMetricsForNonPrerenderNavigationCommitted()
@@ -176,14 +220,15 @@ void PreloadServingMetrics::RecordMetricsForPrerenderInitialNavigationFailed()
 
   auto& metrics = *this;
   [&]() {
+    const PrefetchMatchMetrics* meaningful_prefetch_match_metrics =
+        metrics.GetMeaningfulPrefetchMatchMetrics();
     const bool is_potential_match =
-        metrics.prefetch_match_metrics_list.size() > 0 &&
-        metrics.prefetch_match_metrics_list[0] &&
-        metrics.prefetch_match_metrics_list[0]->n_initial_candidates > 0;
+        meaningful_prefetch_match_metrics &&
+        meaningful_prefetch_match_metrics->IsPotentialMatch();
     if (!is_potential_match) {
       return;
     }
-    auto& prefetch_match_metrics = *metrics.prefetch_match_metrics_list[0];
+    auto& prefetch_match_metrics = *meaningful_prefetch_match_metrics;
 
     base::TimeDelta prefetch_match_duration =
         prefetch_match_metrics.time_match_end -
@@ -201,13 +246,11 @@ void PreloadServingMetrics::RecordMetricsForPrerenderInitialNavigationFailed()
 void PreloadServingMetrics::RecordFirstContentfulPaint(
     base::TimeDelta corrected_first_contentful_paint) const {
   const bool is_prerender_used = !!prerender_initial_preload_serving_metrics;
-  const bool is_prefetch_potential_match =
-      prefetch_match_metrics_list.size() > 0 &&
-      prefetch_match_metrics_list[0] &&
-      prefetch_match_metrics_list[0]->n_initial_candidates > 0;
+  const PrefetchMatchMetrics* meaningful_prefetch_match_metrics =
+      GetMeaningfulPrefetchMatchMetrics();
   const bool is_prefetch_actual_match =
-      is_prefetch_potential_match &&
-      !!prefetch_match_metrics_list[0]->prefetch_container_metrics;
+      meaningful_prefetch_match_metrics &&
+      meaningful_prefetch_match_metrics->IsActualMatch();
 
   const char* suffix;
   if (is_prerender_used) {
