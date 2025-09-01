@@ -16,6 +16,7 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
+import org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupCoordinator.SheetOpenerCallbacks;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
@@ -292,6 +293,8 @@ class KeyboardAccessoryProperties {
                     new Action(
                             AccessoryAction.DISMISS,
                             unused -> {
+                                ManualFillingMetricsRecorder.recordActionSelected(
+                                        AccessoryAction.DISMISS);
                                 dismissRunnable.run();
                             }),
                     R.string.keyboard_accessory_dismiss_button);
