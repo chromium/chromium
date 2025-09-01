@@ -26,6 +26,7 @@
 #include "components/ip_protection/common/ip_protection_proxy_config_manager_impl.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/ip_protection_token_manager_impl.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_chain.h"
@@ -253,7 +254,8 @@ IpProtectionProxyDelegate::OnBeforeTunnelRequest(
 net::Error IpProtectionProxyDelegate::OnTunnelHeadersReceived(
     const net::ProxyChain& proxy_chain,
     size_t proxy_index,
-    const net::HttpResponseHeaders& response_headers) {
+    const net::HttpResponseHeaders& response_headers,
+    net::CompletionOnceCallback callback) {
   if (response_headers.response_code() == 200 ||
       !proxy_chain.is_for_ip_protection()) {
     return net::OK;

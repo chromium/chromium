@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/types/expected.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
@@ -74,6 +75,33 @@ void TestProxyDelegate::WaitForOnBeforeTunnelRequestAsyncCompletion() {
   MaybeCreateOnBeforeTunnelRequestRunLoop();
   on_before_tunnel_request_run_loop_->Run();
   on_before_tunnel_request_run_loop_.reset();
+}
+
+void TestProxyDelegate::MaybeCreateOnTunnelHeadersReceivedRunLoop() {
+  if (on_tunnel_headers_received_run_loop_) {
+    return;
+  }
+  on_tunnel_headers_received_run_loop_ = std::make_unique<base::RunLoop>();
+}
+
+void TestProxyDelegate::MakeOnTunnelHeadersReceivedCompleteAsync() {
+  CHECK(!on_tunnel_headers_received_returns_async_);
+  on_tunnel_headers_received_returns_async_ = true;
+}
+void TestProxyDelegate::ResumeOnTunnelHeadersReceived() {
+  CHECK(on_tunnel_headers_received_returns_async_);
+  CHECK(on_tunnel_headers_received_callback_);
+  std::move(on_tunnel_headers_received_callback_)
+      .Run(on_tunnel_headers_received_result_);
+}
+void TestProxyDelegate::WaitForOnTunnelHeadersReceivedAsyncCompletion() {
+  CHECK(on_tunnel_headers_received_returns_async_);
+  // We don't know whether WaitForOnTunnelHeadersReceivedAsyncCompletion or
+  // OnTunnelHeadersReceived will execute first. Allow creating the run loop in
+  // both places to account for that.
+  MaybeCreateOnTunnelHeadersReceivedRunLoop();
+  on_tunnel_headers_received_run_loop_->Run();
+  on_tunnel_headers_received_run_loop_.reset();
 }
 
 void TestProxyDelegate::VerifyOnTunnelHeadersReceived(
@@ -157,13 +185,25 @@ TestProxyDelegate::OnBeforeTunnelRequest(
 Error TestProxyDelegate::OnTunnelHeadersReceived(
     const ProxyChain& proxy_chain,
     size_t proxy_index,
-    const HttpResponseHeaders& response_headers) {
+    const HttpResponseHeaders& response_headers,
+    CompletionOnceCallback callback) {
   on_tunnel_headers_received_headers_.push_back(
       base::MakeRefCounted<HttpResponseHeaders>(
           response_headers.raw_headers()));
 
   on_tunnel_headers_received_proxy_chains_.push_back(proxy_chain);
   on_tunnel_headers_received_chain_indices_.push_back(proxy_index);
+
+  if (on_tunnel_headers_received_returns_async_) {
+    // We don't know whether OnBeforeTunnelRequest or
+    // WaitForOnBeforeTunnelRequestAsyncCompletion will execute first. Allow
+    // creating the run loop in both places to account for that.
+    MaybeCreateOnTunnelHeadersReceivedRunLoop();
+    on_tunnel_headers_received_run_loop_->Quit();
+    on_tunnel_headers_received_callback_ = std::move(callback);
+    return ERR_IO_PENDING;
+  }
+
   return on_tunnel_headers_received_result_;
 }
 

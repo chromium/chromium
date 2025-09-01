@@ -39,6 +39,7 @@
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "net/base/auth.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/connection_endpoint_metadata.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
@@ -356,10 +357,10 @@ class TestProxyDelegateWithProxyInfo : public ProxyDelegate {
     return HttpRequestHeaders();
   }
 
-  Error OnTunnelHeadersReceived(
-      const ProxyChain& proxy_chain,
-      size_t proxy_index,
-      const HttpResponseHeaders& response_headers) override {
+  Error OnTunnelHeadersReceived(const ProxyChain& proxy_chain,
+                                size_t proxy_index,
+                                const HttpResponseHeaders& response_headers,
+                                CompletionOnceCallback callback) override {
     return OK;
   }
 

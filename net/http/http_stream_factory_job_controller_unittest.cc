@@ -231,7 +231,8 @@ class TestProxyDelegateForIpProtection : public TestProxyDelegate {
   net::Error OnTunnelHeadersReceived(
       const net::ProxyChain& proxy_chain,
       size_t chain_index,
-      const net::HttpResponseHeaders& response_headers) override {
+      const net::HttpResponseHeaders& response_headers,
+      net::CompletionOnceCallback callback) override {
     if (response_headers.response_code() == 502) {
       return net::ERR_PROXY_UNABLE_TO_CONNECT_TO_DESTINATION;
     }

@@ -164,7 +164,6 @@ class HttpProxyConnectJobTestBase : public WithTaskEnvironment {
   // have been created.
   void InitProxyDelegate() {
     proxy_delegate_ = std::make_unique<TestProxyDelegate>();
-    proxy_delegate_->set_extra_header_name(kTestHeaderName);
     InitCommonConnectJobParams();
   }
 
@@ -465,6 +464,7 @@ INSTANTIATE_TEST_SUITE_P(HttpProxyType,
 
 TEST_P(HttpProxyConnectJobTest, NoTunnel) {
   InitProxyDelegate();
+  proxy_delegate_->set_extra_header_name(kTestHeaderName);
   for (IoMode io_mode : {SYNCHRONOUS, ASYNC}) {
     SCOPED_TRACE(io_mode);
     session_deps_.host_resolver->set_synchronous_mode(io_mode == SYNCHRONOUS);
@@ -667,6 +667,7 @@ TEST_P(HttpProxyConnectJobTest, HasEstablishedConnectionTunnel) {
 
 TEST_P(HttpProxyConnectJobTest, ProxyDelegateExtraHeaders) {
   InitProxyDelegate();
+  proxy_delegate_->set_extra_header_name(kTestHeaderName);
 
   ProxyServer proxy_server(
       GetParam() == HTTP ? ProxyServer::SCHEME_HTTP : ProxyServer::SCHEME_HTTPS,
@@ -733,6 +734,7 @@ TEST_P(HttpProxyConnectJobTest, ProxyDelegateExtraHeaders) {
 // ProxyDelegate::OnBeforeTunnelRequest.
 TEST_P(HttpProxyConnectJobTest, ProxyDelegateExtraHeadersAsync) {
   InitProxyDelegate();
+  proxy_delegate_->set_extra_header_name(kTestHeaderName);
   proxy_delegate_->MakeOnBeforeTunnelRequestCompleteAsync();
 
   ProxyServer proxy_server(
@@ -815,6 +817,7 @@ TEST_P(HttpProxyConnectJobTest, NestedProxyProxyDelegateExtraHeaders) {
     return;
   }
   InitProxyDelegate();
+  proxy_delegate_->set_extra_header_name(kTestHeaderName);
 
   const ProxyServer& first_hop_proxy_server =
       kHttpsNestedProxyChain.GetProxyServer(/*chain_index=*/0);
@@ -977,6 +980,7 @@ TEST_P(HttpProxyConnectJobTest, NestedProxyProxyDelegateExtraHeadersAsync) {
     return;
   }
   InitProxyDelegate();
+  proxy_delegate_->set_extra_header_name(kTestHeaderName);
   proxy_delegate_->MakeOnBeforeTunnelRequestCompleteAsync();
 
   const ProxyServer& first_hop_proxy_server =
@@ -1140,6 +1144,112 @@ TEST_P(HttpProxyConnectJobTest, NestedProxyProxyDelegateExtraHeadersAsync) {
   proxy_delegate_->VerifyOnTunnelHeadersReceived(
       kHttpsNestedProxyChain, /*chain_index=*/1, kResponseHeaderName,
       second_hop_proxy_server_uri, /*call_index=*/1);
+}
+
+TEST_P(HttpProxyConnectJobTest,
+       ProxyDelegateOnTunnelHeadersReceivedSucceedsAsync) {
+  InitProxyDelegate();
+  proxy_delegate_->MakeOnTunnelHeadersReceivedCompleteAsync();
+
+  MockWrite http1_writes[] = {
+      MockWrite(ASYNC, 0,
+                "CONNECT www.endpoint.test:443 HTTP/1.1\r\n"
+                "Host: www.endpoint.test:443\r\n"
+                "Proxy-Connection: keep-alive\r\n"
+                "User-Agent: test-ua\r\n\r\n"),
+  };
+  MockRead http1_reads[] = {
+      MockRead(ASYNC, 1, "HTTP/1.1 200 Connection Established\r\n\r\n"),
+  };
+
+  spdy::SpdySerializedFrame req(spdy_util_.ConstructSpdyConnect(
+      base::span<const std::string_view>(), 1,
+      HttpProxyConnectJob::kH2QuicTunnelPriority,
+      HostPortPair(kEndpointHost, 443)));
+  MockWrite spdy_writes[] = {CreateMockWrite(req, 0)};
+  spdy::SpdySerializedFrame resp(spdy_util_.ConstructSpdyGetReply(
+      base::span<const std::string_view>(), 1));
+  MockRead spdy_reads[] = {
+      CreateMockRead(resp, 1, ASYNC),
+      MockRead(ASYNC, 0, 2),
+  };
+  Initialize(http1_reads, http1_writes, spdy_reads, spdy_writes, ASYNC);
+
+  TestConnectJobDelegate test_delegate;
+  std::unique_ptr<ConnectJob> connect_job =
+      CreateConnectJobForTunnel(&test_delegate);
+
+  EXPECT_THAT(connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+  EXPECT_FALSE(test_delegate.has_result());
+
+  // This should let `connect_job` run until the ERR_IO_PENDING returned by
+  // OnTunnelHeadersReceived.
+  proxy_delegate_->WaitForOnTunnelHeadersReceivedAsyncCompletion();
+  ASSERT_EQ(proxy_delegate_->on_before_tunnel_request_call_count(), 1u);
+  ASSERT_EQ(proxy_delegate_->on_tunnel_headers_received_call_count(), 1u);
+  EXPECT_FALSE(test_delegate.has_result());
+
+  // Once we resume the tunnel request, `connect_job` should terminate in a
+  // success.
+  proxy_delegate_->ResumeOnTunnelHeadersReceived();
+  EXPECT_THAT(test_delegate.WaitForResult(), test::IsError(OK));
+  ASSERT_EQ(proxy_delegate_->on_before_tunnel_request_call_count(), 1u);
+  ASSERT_EQ(proxy_delegate_->on_tunnel_headers_received_call_count(), 1u);
+  EXPECT_TRUE(test_delegate.has_result());
+}
+
+TEST_P(HttpProxyConnectJobTest,
+       ProxyDelegateOnTunnelHeadersReceivedFailsAsync) {
+  InitProxyDelegate();
+  proxy_delegate_->MakeOnTunnelHeadersReceivedFail(
+      ERR_TUNNEL_CONNECTION_FAILED);
+  proxy_delegate_->MakeOnTunnelHeadersReceivedCompleteAsync();
+
+  MockWrite http1_writes[] = {
+      MockWrite(ASYNC, 0,
+                "CONNECT www.endpoint.test:443 HTTP/1.1\r\n"
+                "Host: www.endpoint.test:443\r\n"
+                "Proxy-Connection: keep-alive\r\n"
+                "User-Agent: test-ua\r\n\r\n"),
+  };
+  MockRead http1_reads[] = {
+      MockRead(ASYNC, 1, "HTTP/1.1 200 Connection Established\r\n\r\n"),
+  };
+
+  spdy::SpdySerializedFrame req(spdy_util_.ConstructSpdyConnect(
+      base::span<const std::string_view>(), 1,
+      HttpProxyConnectJob::kH2QuicTunnelPriority,
+      HostPortPair(kEndpointHost, 443)));
+  MockWrite spdy_writes[] = {CreateMockWrite(req, 0)};
+  spdy::SpdySerializedFrame resp(spdy_util_.ConstructSpdyGetReply(
+      base::span<const std::string_view>(), 1));
+  MockRead spdy_reads[] = {
+      CreateMockRead(resp, 1, ASYNC),
+      MockRead(ASYNC, 0, 2),
+  };
+  Initialize(http1_reads, http1_writes, spdy_reads, spdy_writes, ASYNC);
+
+  TestConnectJobDelegate test_delegate;
+  std::unique_ptr<ConnectJob> connect_job =
+      CreateConnectJobForTunnel(&test_delegate);
+
+  EXPECT_THAT(connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+  EXPECT_FALSE(test_delegate.has_result());
+
+  // This should let `connect_job` run until the ERR_IO_PENDING returned by
+  // OnTunnelHeadersReceived.
+  proxy_delegate_->WaitForOnTunnelHeadersReceivedAsyncCompletion();
+  ASSERT_EQ(proxy_delegate_->on_before_tunnel_request_call_count(), 1u);
+  ASSERT_EQ(proxy_delegate_->on_tunnel_headers_received_call_count(), 1u);
+  EXPECT_FALSE(test_delegate.has_result());
+
+  // Once we resume the tunnel request, `connect_job` should terminate in a
+  // failure with the error passed to MakeOnTunnelHeadersReceivedFail.
+  proxy_delegate_->ResumeOnTunnelHeadersReceived();
+  ASSERT_EQ(ERR_TUNNEL_CONNECTION_FAILED, test_delegate.WaitForResult());
+  ASSERT_EQ(proxy_delegate_->on_before_tunnel_request_call_count(), 1u);
+  ASSERT_EQ(proxy_delegate_->on_tunnel_headers_received_call_count(), 1u);
+  EXPECT_TRUE(test_delegate.has_result());
 }
 
 // Test the case where auth credentials are not cached.

@@ -306,6 +306,92 @@ TEST_P(QuicProxyClientSocketTest, ProxyDelegateExtraHeadersAsync) {
                                                  kResponseHeaderValue);
 }
 
+TEST_P(QuicProxyClientSocketTest,
+       ProxyDelegateOnTunnelHeadersReceivedSucceedsAsync) {
+  proxy_delegate_ = std::make_unique<TestProxyDelegate>();
+  proxy_delegate_->MakeOnTunnelHeadersReceivedCompleteAsync();
+
+  int packet_number = 1;
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructConnectRequestPacket(packet_number++));
+  mock_quic_data_.AddRead(
+      ASYNC, ConstructServerConnectReplyPacket(
+                 /*packet_number=*/1, !kFin, /*header_length=*/nullptr));
+  mock_quic_data_.AddReadPauseForever();
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS, ConstructAckAndRstPacket(packet_number++,
+                                            quic::QUIC_STREAM_CANCELLED, 1, 1));
+
+  InitializeSession();
+  InitializeClientSocket();
+
+  ASSERT_FALSE(sock_->IsConnected());
+
+  TestCompletionCallback callback;
+  ASSERT_THAT(sock_->Connect(callback.callback()),
+              test::IsError(ERR_IO_PENDING));
+
+  // This should let Connect run until the ERR_IO_PENDING returned by
+  // OnTunnelHeadersReceived.
+  proxy_delegate_->WaitForOnTunnelHeadersReceivedAsyncCompletion();
+  ASSERT_EQ(proxy_delegate_->on_before_tunnel_request_call_count(), 1u);
+  ASSERT_EQ(proxy_delegate_->on_tunnel_headers_received_call_count(), 1u);
+  ASSERT_FALSE(callback.have_result());
+
+  // Once we let TestProxyDelegate continue, Connect should be able to terminate
+  // in a success.
+  proxy_delegate_->ResumeOnTunnelHeadersReceived();
+  ASSERT_EQ(callback.WaitForResult(), OK);
+  ASSERT_EQ(proxy_delegate_->on_before_tunnel_request_call_count(), 1u);
+  ASSERT_EQ(proxy_delegate_->on_tunnel_headers_received_call_count(), 1u);
+}
+
+TEST_P(QuicProxyClientSocketTest,
+       ProxyDelegateOnTunnelHeadersReceivedFailsAsync) {
+  proxy_delegate_ = std::make_unique<TestProxyDelegate>();
+  proxy_delegate_->MakeOnTunnelHeadersReceivedFail(
+      ERR_TUNNEL_CONNECTION_FAILED);
+  proxy_delegate_->MakeOnTunnelHeadersReceivedCompleteAsync();
+
+  int packet_number = 1;
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructConnectRequestPacket(packet_number++));
+  mock_quic_data_.AddRead(
+      ASYNC, ConstructServerConnectReplyPacket(
+                 /*packet_number=*/1, !kFin, /*header_length=*/nullptr));
+  mock_quic_data_.AddReadPauseForever();
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS, ConstructAckAndRstPacket(packet_number++,
+                                            quic::QUIC_STREAM_CANCELLED, 1, 1));
+
+  InitializeSession();
+  InitializeClientSocket();
+
+  ASSERT_FALSE(sock_->IsConnected());
+
+  TestCompletionCallback callback;
+  ASSERT_THAT(sock_->Connect(callback.callback()),
+              test::IsError(ERR_IO_PENDING));
+
+  // This should let Connect run until the ERR_IO_PENDING returned by
+  // OnTunnelHeadersReceived.
+  proxy_delegate_->WaitForOnTunnelHeadersReceivedAsyncCompletion();
+  ASSERT_EQ(proxy_delegate_->on_before_tunnel_request_call_count(), 1u);
+  ASSERT_EQ(proxy_delegate_->on_tunnel_headers_received_call_count(), 1u);
+  ASSERT_FALSE(callback.have_result());
+
+  // Once we let TestProxyDelegate continue, Connect should terminate in a
+  // failure with the error passed to MakeOnTunnelHeadersReceivedFail.
+  proxy_delegate_->ResumeOnTunnelHeadersReceived();
+  ASSERT_EQ(ERR_TUNNEL_CONNECTION_FAILED, callback.WaitForResult());
+  ASSERT_EQ(proxy_delegate_->on_before_tunnel_request_call_count(), 1u);
+  ASSERT_EQ(proxy_delegate_->on_tunnel_headers_received_call_count(), 1u);
+}
+
 TEST_P(QuicProxyClientSocketTest, ConnectWithAuthRequested) {
   int packet_number = 1;
   mock_quic_data_.AddWrite(SYNCHRONOUS,

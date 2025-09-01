@@ -10,6 +10,7 @@
 #include <queue>
 #include <string_view>
 
+#include "net/base/completion_once_callback.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "net/log/net_log.h"
@@ -136,6 +137,9 @@ class NET_EXPORT_PRIVATE QuicProxyDatagramClientSocket
     STATE_SEND_REQUEST_COMPLETE,
     STATE_READ_REPLY,
     STATE_READ_REPLY_COMPLETE,
+    STATE_PROCESS_RESPONSE_HEADERS,
+    STATE_PROCESS_RESPONSE_HEADERS_COMPLETE,
+    STATE_PROCESS_RESPONSE_CODE,
     STATE_CONNECT_COMPLETE
   };
 
@@ -157,6 +161,9 @@ class NET_EXPORT_PRIVATE QuicProxyDatagramClientSocket
   int DoSendRequestComplete(int result);
   int DoReadReply();
   int DoReadReplyComplete(int result);
+  int DoProcessResponseHeaders();
+  int DoProcessResponseHeadersComplete(int result);
+  int DoProcessResponseCode();
 
   // ProxyDelegate operates in terms of a full proxy chain and an
   // index into that chain identifying the "current" proxy. Emulate

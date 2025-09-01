@@ -23,6 +23,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
@@ -257,10 +258,10 @@ class TestResolveProxyDelegate : public ProxyDelegate {
     return HttpRequestHeaders();
   }
 
-  Error OnTunnelHeadersReceived(
-      const ProxyChain& proxy_chain,
-      size_t proxy_index,
-      const HttpResponseHeaders& response_headers) override {
+  Error OnTunnelHeadersReceived(const ProxyChain& proxy_chain,
+                                size_t proxy_index,
+                                const HttpResponseHeaders& response_headers,
+                                CompletionOnceCallback callback) override {
     return OK;
   }
 
@@ -311,10 +312,10 @@ class TestProxyFallbackProxyDelegate : public ProxyDelegate {
     return HttpRequestHeaders();
   }
 
-  Error OnTunnelHeadersReceived(
-      const ProxyChain& proxy_chain,
-      size_t proxy_index,
-      const HttpResponseHeaders& response_headers) override {
+  Error OnTunnelHeadersReceived(const ProxyChain& proxy_chain,
+                                size_t proxy_index,
+                                const HttpResponseHeaders& response_headers,
+                                CompletionOnceCallback callback) override {
     return OK;
   }
 

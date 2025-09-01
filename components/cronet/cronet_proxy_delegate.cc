@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
 #include "net/proxy_resolution/proxy_info.h"
 
@@ -104,7 +105,8 @@ CronetProxyDelegate::OnBeforeTunnelRequest(
 net::Error CronetProxyDelegate::OnTunnelHeadersReceived(
     const net::ProxyChain& proxy_chain,
     size_t proxy_index,
-    const net::HttpResponseHeaders& response_headers) {
+    const net::HttpResponseHeaders& response_headers,
+    net::CompletionOnceCallback callback) {
   TRACE_EVENT_BEGIN("cronet", "CronetProxyDelegate::OnTunnelHeadersReceived",
                     "proxy_chain", proxy_chain.ToDebugString(), "proxy_index",
                     proxy_index);

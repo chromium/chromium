@@ -8,6 +8,7 @@
 #include "base/types/expected.h"
 #include "components/cronet/cronet_context.h"
 #include "components/cronet/proto/request_context_config.pb.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_delegate.h"
 
@@ -44,7 +45,8 @@ class CronetProxyDelegate final : public net::ProxyDelegate {
   net::Error OnTunnelHeadersReceived(
       const net::ProxyChain& proxy_chain,
       size_t chain_index,
-      const net::HttpResponseHeaders& response_headers) override;
+      const net::HttpResponseHeaders& response_headers,
+      net::CompletionOnceCallback callback) override;
   void SetProxyResolutionService(
       net::ProxyResolutionService* proxy_resolution_service) override;
   bool AliasRequiresProxyOverride(

@@ -12,6 +12,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/proxy_chain.h"
@@ -64,7 +65,8 @@ class IpProtectionProxyDelegate : public net::ProxyDelegate {
   net::Error OnTunnelHeadersReceived(
       const net::ProxyChain& proxy_chain,
       size_t chain_index,
-      const net::HttpResponseHeaders& response_headers) override;
+      const net::HttpResponseHeaders& response_headers,
+      net::CompletionOnceCallback callback) override;
   void SetProxyResolutionService(
       net::ProxyResolutionService* proxy_resolution_service) override;
   bool AliasRequiresProxyOverride(

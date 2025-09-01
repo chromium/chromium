@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
@@ -499,8 +500,9 @@ TEST_F(NetworkServiceProxyDelegateTest, OnTunnelHeadersReceivedObserved) {
   auto delegate = CreateDelegate(std::move(config));
 
   EXPECT_FALSE(TestObserver()->HeadersReceivedArgs());
-  EXPECT_EQ(net::OK, delegate->OnTunnelHeadersReceived(
-                         proxy_chain, /*chain_index=*/2, *headers));
+  EXPECT_EQ(net::OK,
+            delegate->OnTunnelHeadersReceived(proxy_chain, /*chain_index=*/2,
+                                              *headers, base::DoNothing()));
   RunUntilIdle();
   ASSERT_TRUE(TestObserver()->HeadersReceivedArgs());
   EXPECT_EQ(TestObserver()->HeadersReceivedArgs()->proxy_chain, proxy_chain);

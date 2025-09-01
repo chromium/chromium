@@ -1576,7 +1576,8 @@ TEST_F(IpProtectionProxyDelegateTest,
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
 
   EXPECT_THAT(delegate->OnTunnelHeadersReceived(ip_protection_proxy_chain,
-                                                /*chain_index=*/0, *headers),
+                                                /*chain_index=*/0, *headers,
+                                                base::DoNothing()),
               IsOk());
 }
 
@@ -1596,7 +1597,8 @@ TEST_F(IpProtectionProxyDelegateTest,
   // For non-IPP chains, the delegate should return `net::OK` to allow the
   // default network stack handling to process the response.
   EXPECT_THAT(delegate->OnTunnelHeadersReceived(non_ipp_chain,
-                                                /*chain_index=*/0, *headers),
+                                                /*chain_index=*/0, *headers,
+                                                base::DoNothing()),
               IsOk());
 }
 
@@ -1621,7 +1623,8 @@ TEST_F(IpProtectionProxyDelegateTest,
   // in the presence of a Proxy-Status header that would otherwise result in the
   // request not falling back).
   EXPECT_THAT(delegate->OnTunnelHeadersReceived(ip_protection_proxy_chain,
-                                                /*chain_index=*/0, *headers),
+                                                /*chain_index=*/0, *headers,
+                                                base::DoNothing()),
               IsOk());
 }
 
@@ -1642,7 +1645,8 @@ TEST_F(
   // fallback (by returning OK so that the standard proxy fallback logic is
   // used).
   EXPECT_THAT(delegate->OnTunnelHeadersReceived(ip_protection_proxy_chain,
-                                                /*chain_index=*/0, *headers),
+                                                /*chain_index=*/0, *headers,
+                                                base::DoNothing()),
               IsOk());
 }
 
@@ -1663,7 +1667,8 @@ TEST_F(
   // fallback (by returning OK so that the standard proxy fallback logic is
   // used).
   EXPECT_THAT(delegate->OnTunnelHeadersReceived(ip_protection_proxy_chain,
-                                                /*chain_index=*/0, *headers),
+                                                /*chain_index=*/0, *headers,
+                                                base::DoNothing()),
               IsOk());
 }
 
@@ -1681,7 +1686,8 @@ TEST_F(IpProtectionProxyDelegateTest,
 
   // An NXDOMAIN rcode should not trigger fallback.
   EXPECT_THAT(delegate->OnTunnelHeadersReceived(ip_protection_proxy_chain,
-                                                /*chain_index=*/0, *headers),
+                                                /*chain_index=*/0, *headers,
+                                                base::DoNothing()),
               IsError(net::ERR_PROXY_UNABLE_TO_CONNECT_TO_DESTINATION));
 }
 
@@ -1704,7 +1710,8 @@ TEST_F(
   // instead of a string (by returning OK so that the standard proxy fallback
   // logic is used).
   EXPECT_THAT(delegate->OnTunnelHeadersReceived(ip_protection_proxy_chain,
-                                                /*chain_index=*/0, *headers),
+                                                /*chain_index=*/0, *headers,
+                                                base::DoNothing()),
               IsError(net::ERR_PROXY_UNABLE_TO_CONNECT_TO_DESTINATION));
 }
 
@@ -1722,7 +1729,8 @@ TEST_F(IpProtectionProxyDelegateTest,
 
   // An NODATA rcode should not trigger fallback.
   EXPECT_THAT(delegate->OnTunnelHeadersReceived(ip_protection_proxy_chain,
-                                                /*chain_index=*/0, *headers),
+                                                /*chain_index=*/0, *headers,
+                                                base::DoNothing()),
               IsError(net::ERR_PROXY_UNABLE_TO_CONNECT_TO_DESTINATION));
 }
 
@@ -1741,7 +1749,8 @@ TEST_F(
   // proxy failure, warranting fallback (by returning OK so that the standard
   // proxy fallback logic is used).
   EXPECT_THAT(delegate->OnTunnelHeadersReceived(ip_protection_proxy_chain,
-                                                /*chain_index=*/0, *headers),
+                                                /*chain_index=*/0, *headers,
+                                                base::DoNothing()),
               IsOk());
 }
 
@@ -1759,7 +1768,8 @@ TEST_F(
 
   // A malformed header is ambiguous, so we assume a proxy failure and fallback.
   EXPECT_THAT(delegate->OnTunnelHeadersReceived(ip_protection_proxy_chain,
-                                                /*chain_index=*/0, *headers),
+                                                /*chain_index=*/0, *headers,
+                                                base::DoNothing()),
               IsOk());
 }
 
@@ -1780,7 +1790,8 @@ TEST_F(
   // error is treated as a proxy failure (by returning OK so that the standard
   // proxy fallback logic is used).
   EXPECT_THAT(delegate->OnTunnelHeadersReceived(ip_protection_proxy_chain,
-                                                /*chain_index=*/0, *headers),
+                                                /*chain_index=*/0, *headers,
+                                                base::DoNothing()),
               IsOk());
 }
 
@@ -1801,7 +1812,8 @@ TEST_F(
   // failure, so we should fall back (by returning OK so that the standard proxy
   // fallback logic is used).
   EXPECT_THAT(delegate->OnTunnelHeadersReceived(ip_protection_proxy_chain,
-                                                /*chain_index=*/0, *headers),
+                                                /*chain_index=*/0, *headers,
+                                                base::DoNothing()),
               IsOk());
 }
 
@@ -1826,7 +1838,8 @@ TEST_P(IpProtectionProxyDelegateOnTunnelHeadersReceivedTest,
 
   // Destination-side errors should prevent fallback.
   EXPECT_THAT(delegate->OnTunnelHeadersReceived(ip_protection_proxy_chain,
-                                                /*chain_index=*/0, *headers),
+                                                /*chain_index=*/0, *headers,
+                                                base::DoNothing()),
               IsError(net::ERR_PROXY_UNABLE_TO_CONNECT_TO_DESTINATION));
 }
 
@@ -1860,7 +1873,8 @@ TEST_F(
   // connection, so treat multiple entities in the Proxy-Status line as invalid
   // (and return OK so that the standard proxy fallback logic is used).
   EXPECT_THAT(delegate->OnTunnelHeadersReceived(ip_protection_proxy_chain,
-                                                /*chain_index=*/0, *headers),
+                                                /*chain_index=*/0, *headers,
+                                                base::DoNothing()),
               IsOk());
 }
 

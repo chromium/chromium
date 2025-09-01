@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/types/expected.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
@@ -93,7 +94,8 @@ class NET_EXPORT ProxyDelegate {
   virtual Error OnTunnelHeadersReceived(
       const ProxyChain& proxy_chain,
       size_t proxy_index,
-      const HttpResponseHeaders& response_headers) = 0;
+      const HttpResponseHeaders& response_headers,
+      CompletionOnceCallback callback) = 0;
 
   // Associates a `ProxyResolutionService` with this `ProxyDelegate`.
   // `proxy_resolution_service` must outlive `this`.
