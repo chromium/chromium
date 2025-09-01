@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/fake_desktop_media_list.h"
@@ -26,6 +27,27 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/window/dialog_delegate.h"
+
+namespace {
+
+std::vector<std::unique_ptr<DesktopMediaList>> CreateSourceLists(
+    const std::vector<DesktopMediaList::Type>& types) {
+  std::vector<std::unique_ptr<DesktopMediaList>> sources;
+  for (auto type : types) {
+    sources.push_back(std::make_unique<FakeDesktopMediaList>(type));
+  }
+  return sources;
+}
+
+void AddSources(FakeDesktopMediaList* source_list,
+                const std::vector<std::u16string>& names) {
+  for (size_t i = 0; i < names.size(); ++i) {
+    source_list->AddSource(i);
+    source_list->SetSourceName(i, names[i]);
+  }
+}
+
+}  // namespace
 
 class DesktopMediaPickerViewsBrowserTest : public DialogBrowserTest {
  public:
@@ -46,9 +68,7 @@ class DesktopMediaPickerViewsBrowserTest : public DialogBrowserTest {
     if (override_source_lists_.empty()) {
       sources = CreateDefaultSourceLists();
     } else {
-      for (auto& source : override_source_lists_) {
-        sources.push_back(std::move(source));
-      }
+      sources = std::move(override_source_lists_);
     }
 
     std::vector<FakeDesktopMediaList*> source_lists;
@@ -56,11 +76,10 @@ class DesktopMediaPickerViewsBrowserTest : public DialogBrowserTest {
       source_lists.push_back(static_cast<FakeDesktopMediaList*>(source.get()));
     }
 
-    DesktopMediaPicker::Params picker_params{
-        DesktopMediaPicker::Params::RequestSource::kUnknown};
+    DesktopMediaPicker::Params picker_params{request_source_};
     picker_params.web_contents = web_contents;
     picker_params.context = native_window;
-    picker_params.app_name = u"app_name";
+    picker_params.app_name = app_name_;
     picker_params.target_name = u"target_name";
     picker_params.request_audio = true;
     picker_->Show(picker_params, std::move(sources),
@@ -73,20 +92,20 @@ class DesktopMediaPickerViewsBrowserTest : public DialogBrowserTest {
 
  protected:
   std::vector<std::unique_ptr<DesktopMediaList>> CreateDefaultSourceLists() {
-    std::vector<std::unique_ptr<DesktopMediaList>> sources;
-    for (auto type :
-         {DesktopMediaList::Type::kScreen, DesktopMediaList::Type::kWindow,
-          DesktopMediaList::Type::kWebContents}) {
-      sources.push_back(std::make_unique<FakeDesktopMediaList>(type));
-    }
-    return sources;
+    return CreateSourceLists({DesktopMediaList::Type::kScreen,
+                              DesktopMediaList::Type::kWindow,
+                              DesktopMediaList::Type::kWebContents});
   }
 
   std::unique_ptr<DesktopMediaPickerImpl> picker_;
 
   // If this list isn't filled in, a default list of source lists will be
   // created.
-  std::vector<std::unique_ptr<FakeDesktopMediaList>> override_source_lists_;
+  std::vector<std::unique_ptr<DesktopMediaList>> override_source_lists_;
+
+  DesktopMediaPicker::Params::RequestSource request_source_ =
+      DesktopMediaPicker::Params::RequestSource::kUnknown;
+  std::u16string app_name_ = u"app_name";
 
   // This callback is called in ShowUi after the picker dialog has been shown.
   // This both more closely mirrors how this code behaves in production (where
@@ -102,22 +121,10 @@ class DesktopMediaPickerViewsBrowserTest : public DialogBrowserTest {
 IN_PROC_BROWSER_TEST_F(DesktopMediaPickerViewsBrowserTest, InvokeUi_default) {
   after_show_callback_ =
       base::BindOnce([](const std::vector<FakeDesktopMediaList*>& sources) {
-        sources[0]->AddSource(0);
-
-        // Fill in a bit of test data for nicer UI screenshots :)
-        sources[1]->AddSource(0);
-        sources[1]->SetSourceName(0, u"Warty Warthog");
-        sources[1]->AddSource(1);
-        sources[1]->SetSourceName(1, u"Hoary Hedgehog");
-        sources[1]->AddSource(2);
-        sources[1]->SetSourceName(2, u"Breezy Badger");
-
-        sources[2]->AddSource(0);
-        sources[2]->SetSourceName(0, u"Dapper Drake");
-        sources[2]->AddSource(1);
-        sources[2]->SetSourceName(1, u"Edgy Eft");
-        sources[2]->AddSource(2);
-        sources[2]->SetSourceName(2, u"Feisty Fawn");
+        AddSources(sources[0], {u"0"});
+        AddSources(sources[1],
+                   {u"Warty Warthog", u"Hoary Hedgehog", u"Breezy Badger"});
+        AddSources(sources[2], {u"Dapper Drake", u"Edgy Eft", u"Feisty Fawn"});
       });
   ShowAndVerifyUi();
 }
@@ -127,15 +134,44 @@ IN_PROC_BROWSER_TEST_F(DesktopMediaPickerViewsBrowserTest, InvokeUi_default) {
 IN_PROC_BROWSER_TEST_F(DesktopMediaPickerViewsBrowserTest, InvokeUi_tabs) {
   after_show_callback_ =
       base::BindOnce([](const std::vector<FakeDesktopMediaList*>& sources) {
-        sources[0]->AddSource(0);
-        sources[0]->SetSourceName(0, u"Dapper Drake");
-        sources[0]->AddSource(1);
-        sources[0]->SetSourceName(1, u"Edgy Eft");
-        sources[0]->AddSource(2);
-        sources[0]->SetSourceName(2, u"Feisty Fawn");
+        AddSources(sources[0], {u"Dapper Drake", u"Edgy Eft", u"Feisty Fawn"});
       });
-  override_source_lists_.push_back(std::make_unique<FakeDesktopMediaList>(
-      DesktopMediaList::Type::kWebContents));
+  override_source_lists_ =
+      CreateSourceLists({DesktopMediaList::Type::kWebContents});
+  ShowAndVerifyUi();
+}
+
+class DesktopMediaPickerViewsLongTitleBrowserTest
+    : public DesktopMediaPickerViewsBrowserTest {
+ public:
+  DesktopMediaPickerViewsLongTitleBrowserTest() {
+    feature_list_.InitAndEnableFeature(kDesktopMediaPickerMultiLineTitle);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Show the getDisplayMedia picker UI with a very long title that should wrap.
+IN_PROC_BROWSER_TEST_F(DesktopMediaPickerViewsLongTitleBrowserTest,
+                       InvokeUi_LongTitle) {
+  request_source_ = DesktopMediaPicker::Params::RequestSource::kGetDisplayMedia;
+  app_name_ =
+      u"a.site.with.a.super.long.name.that.needs.to.be.displayed.over.multiple."
+      u"lines.in.the.getdisplaymedia.picker.dialog.this.is.a.very.long.string."
+      u"to.test.the.ui.and.make.sure.it.does.not.break.with.long.inputs.and.we."
+      u"will.add.some.more.text.to.reach.the.limit.";
+  after_show_callback_ =
+      base::BindOnce([](const std::vector<FakeDesktopMediaList*>& sources) {
+        AddSources(sources[0], {u"Dapper Drake", u"Edgy Eft", u"Feisty Fawn"});
+        AddSources(sources[1],
+                   {u"Warty Warthog", u"Hoary Hedgehog", u"Breezy Badger"});
+        AddSources(sources[2], {u""});
+      });
+  override_source_lists_ = CreateSourceLists(
+      {DesktopMediaList::Type::kWebContents, DesktopMediaList::Type::kWindow,
+       DesktopMediaList::Type::kScreen});
+
   ShowAndVerifyUi();
 }
 
@@ -154,8 +190,8 @@ IN_PROC_BROWSER_TEST_F(DesktopMediaPickerViewsBrowserTest,
 // only one source type present.
 IN_PROC_BROWSER_TEST_F(DesktopMediaPickerViewsBrowserTest,
                        SingleSourceTypeChangesTitle) {
-  override_source_lists_.push_back(std::make_unique<FakeDesktopMediaList>(
-      DesktopMediaList::Type::kWebContents));
+  override_source_lists_ =
+      CreateSourceLists({DesktopMediaList::Type::kWebContents});
   ShowUi(std::string());
 
   EXPECT_EQ(picker_->GetDialogViewForTesting()->GetWindowTitle(),
@@ -166,8 +202,7 @@ IN_PROC_BROWSER_TEST_F(DesktopMediaPickerViewsBrowserTest,
 // Validate that the scroll view min height is correct
 IN_PROC_BROWSER_TEST_F(DesktopMediaPickerViewsBrowserTest,
                        CorrectScrollViewMinHeight) {
-  override_source_lists_.push_back(
-      std::make_unique<FakeDesktopMediaList>(DesktopMediaList::Type::kScreen));
+  override_source_lists_ = CreateSourceLists({DesktopMediaList::Type::kScreen});
   ShowUi(std::string());
 
   auto* scroll_view = picker_->GetDialogViewForTesting()->GetViewByID(

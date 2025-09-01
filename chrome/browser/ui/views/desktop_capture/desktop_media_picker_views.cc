@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
@@ -32,6 +33,7 @@
 #include "chrome/browser/ui/views/desktop_capture/share_this_tab_dialog_views.h"
 #include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/media_picker_utils.h"
+#include "chrome/browser/ui/views/title_origin_label.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -59,6 +61,7 @@
 #include "ui/gfx/native_window_types.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/scroll_view.h"
@@ -66,10 +69,13 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
-
 #if defined(USE_AURA)
 #include "ui/aura/window_tree_host.h"
 #endif
+
+BASE_FEATURE(kDesktopMediaPickerMultiLineTitle,
+             "DesktopMediaPickerMultiLineTitle",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 using ::blink::mojom::MediaStreamRequestResult;
 using ::content::DesktopMediaID;
@@ -970,6 +976,22 @@ gfx::Size DesktopMediaPickerDialogView::CalculatePreferredSize(
   return gfx::Size(
       kDialogViewWidth,
       GetLayoutManager()->GetPreferredHeightForWidth(this, kDialogViewWidth));
+}
+
+void DesktopMediaPickerDialogView::AddedToWidget() {
+  // Allow breaking the title over multiple lines if
+  // DesktopMediaPickerDialogView has a BubbleFrameView in order to handle long
+  // domain names. DesktopMediaPickerDialogView is not guaranteed to have a
+  // BubbleFrameView so this check is needed, but in practice it uses one on all
+  // desktop platforms.
+  //
+  // TODO(420734141): Make DesktopMediaPickerDialogView always have a
+  // BubbleFrameView.
+  views::BubbleFrameView* bubble_frame_view = GetBubbleFrameView();
+  if (base::FeatureList::IsEnabled(kDesktopMediaPickerMultiLineTitle) &&
+      bubble_frame_view) {
+    bubble_frame_view->SetTitleView(CreateTitleOriginLabel(GetWindowTitle()));
+  }
 }
 
 std::u16string DesktopMediaPickerDialogView::GetWindowTitle() const {

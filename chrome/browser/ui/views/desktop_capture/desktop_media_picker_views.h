@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
@@ -29,6 +30,8 @@ class MdTextButton;
 }  // namespace views
 
 class DesktopMediaPickerImpl;
+
+BASE_DECLARE_FEATURE(kDesktopMediaPickerMultiLineTitle);
 
 const DesktopMediaSourceViewStyle& GetGenericScreenStyle();
 const DesktopMediaSourceViewStyle& GetSingleScreenStyle();
@@ -70,6 +73,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   // views::DialogDelegateView:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& /*available_size*/) const override;
+  void AddedToWidget() override;
   std::u16string GetWindowTitle() const override;
   bool IsDialogButtonEnabled(ui::mojom::DialogButton button) const override;
   views::View* GetInitiallyFocusedView() override;
