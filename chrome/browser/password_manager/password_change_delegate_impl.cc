@@ -203,6 +203,13 @@ PasswordChangeDelegate::CoarseFinalPasswordChangeState GetCoarseState(
       NOTREACHED();
   }
 }
+
+void OnLeakDialogHidden(base::WeakPtr<PasswordsModelDelegate> model_delegate) {
+  if (model_delegate) {
+    model_delegate->GetPasswordsLeakDialogDelegate()->OnLeakDialogHidden();
+  }
+}
+
 }  // namespace
 
 PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
@@ -563,6 +570,13 @@ void PasswordChangeDelegateImpl::OnPasswordChangeDeclined() {
   password_change_hats_->MaybeLaunchSurvey(
       kHatsSurveyTriggerPasswordChangeCanceled,
       /*password_change_duration=*/base::TimeDelta(), originator_);
+  // Post task as otherwise ManagePasswordsUIController won't show a bubble
+  // until password change has finished.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&OnLeakDialogHidden,
+                     ManagePasswordsUIController::FromWebContents(originator_)
+                         ->GetModelDelegateProxy()));
 }
 
 void PasswordChangeDelegateImpl::UpdateState(State new_state) {
