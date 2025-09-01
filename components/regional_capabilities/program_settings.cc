@@ -53,6 +53,21 @@ constexpr ProgramSettings kNoOpTaiyakiSettings = []() {
 
 }  // namespace
 
+int SerializeProgram(Program program) {
+  return static_cast<int>(program);
+}
+
+bool IsValidSerializedProgram(int serialized_program) {
+  switch (static_cast<Program>(serialized_program)) {
+    case Program::kDefault:
+    case Program::kTaiyaki:
+    case Program::kWaffle:
+      return true;
+  }
+
+  return false;
+}
+
 bool IsInProgramRegion(Program program,
                        const country_codes::CountryId& country_id) {
   return base::Contains(GetSettingsForProgram(program).associated_countries,

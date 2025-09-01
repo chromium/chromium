@@ -41,6 +41,8 @@ class SearchEngineChoiceServiceTestBase : public ::testing::Test {
   search_engines::SearchEngineChoiceService& search_engine_choice_service();
   TestingPrefServiceSimple& local_state();
   TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver();
+  regional_capabilities::RegionalCapabilitiesService&
+  regional_capabilities_service();
 
   policy::MockPolicyService& policy_service() { return policy_service_; }
   policy::PolicyMap& policy_map() { return policy_map_; }

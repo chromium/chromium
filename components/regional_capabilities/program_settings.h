@@ -10,12 +10,14 @@
 
 namespace regional_capabilities {
 
+// These values are persisted to prefs. Entries should not be renumbered and
+// numeric values should never be reused.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.regional_capabilities
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: RegionalProgram
-enum class Program: int {
-  kDefault = 0,
-  kTaiyaki,
-  kWaffle,
+enum class Program : int {
+  kDefault = 1,
+  kTaiyaki = 2,
+  kWaffle = 3,
 };
 
 // Describes how search engines should be listed.
@@ -35,6 +37,12 @@ struct ProgramSettings {
   SearchEngineListType search_engine_list_type;
   bool can_show_search_engine_choice_screen;
 };
+
+// Returns the integer representation of `program`.
+int SerializeProgram(Program program);
+
+// Returns whether `serialized_program` represents a known program.
+bool IsValidSerializedProgram(int serialized_program);
 
 bool IsInProgramRegion(Program program,
                        const country_codes::CountryId& profile_country);

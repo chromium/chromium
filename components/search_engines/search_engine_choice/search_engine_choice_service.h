@@ -13,6 +13,7 @@
 #include "base/observer_list_types.h"
 #include "components/country_codes/country_codes.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/regional_capabilities/program_settings.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 
 namespace policy {
@@ -244,7 +245,10 @@ class SearchEngineChoiceService : public KeyedService {
   base::WeakPtrFactory<SearchEngineChoiceService> weak_ptr_factory_{this};
 };
 
-void MarkSearchEngineChoiceCompletedForTesting(PrefService& prefs);
+void MarkSearchEngineChoiceCompletedForTesting(
+    PrefService& prefs,
+    regional_capabilities::Program program =
+        regional_capabilities::Program::kWaffle);
 
 }  // namespace search_engines
 

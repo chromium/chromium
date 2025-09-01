@@ -449,6 +449,10 @@ ActiveRegionalProgram RegionalCapabilitiesService::GetActiveProgramForMetrics() 
   NOTREACHED();
 }
 
+int RegionalCapabilitiesService::GetSerializedActiveProgram() {
+  return SerializeProgram(GetActiveProgramSettings().program);
+}
+
 void RegionalCapabilitiesService::ClearCacheForTesting() {
   CHECK_IS_TEST();
   country_id_cache_.reset();

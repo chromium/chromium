@@ -22,7 +22,9 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/regional_capabilities/program_settings.h"
 #include "components/regional_capabilities/regional_capabilities_prefs.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url_data_util.h"
@@ -46,6 +48,7 @@ class SearchEngineChoiceUtilsTest : public ::testing::Test {
     TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_.registry());
     regional_capabilities::prefs::RegisterProfilePrefs(
         pref_service_.registry());
+    SearchEngineChoiceService::RegisterProfilePrefs(pref_service_.registry());
   }
 
   ~SearchEngineChoiceUtilsTest() override = default;
@@ -134,6 +137,139 @@ TEST_F(SearchEngineChoiceUtilsTest, ChoiceScreenDisplayState_FromDict_Errors) {
   // Special case: makes the dictionary invalid.
   dict.Set("list_is_modified_by_current_default", true);
   EXPECT_FALSE(ChoiceScreenDisplayState::FromDict(dict).has_value());
+}
+
+TEST_F(SearchEngineChoiceUtilsTest, GetChoiceCompletionMetadata_Success) {
+  const base::Time now = base::Time::Now();
+  const base::Version version = version_info::GetVersion();
+
+  pref_service()->SetInt64(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
+      now.ToDeltaSinceWindowsEpoch().InSeconds());
+  pref_service()->SetString(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion,
+      version.GetString());
+  pref_service()->SetInteger(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionProgram,
+      regional_capabilities::SerializeProgram(
+          regional_capabilities::Program::kTaiyaki));
+
+  base::expected<ChoiceCompletionMetadata, ChoiceCompletionMetadata::ParseError>
+      metadata = GetChoiceCompletionMetadata(*pref_service());
+
+  ASSERT_TRUE(metadata.has_value());
+  EXPECT_EQ(metadata->timestamp.ToDeltaSinceWindowsEpoch().InSeconds(),
+            now.ToDeltaSinceWindowsEpoch().InSeconds());
+  EXPECT_EQ(metadata->version, version);
+  EXPECT_EQ(metadata->serialized_program,
+            regional_capabilities::SerializeProgram(
+                regional_capabilities::Program::kTaiyaki));
+}
+
+TEST_F(SearchEngineChoiceUtilsTest,
+       GetChoiceCompletionMetadata_Success_Legacy) {
+  const base::Time now = base::Time::Now();
+  const base::Version version = version_info::GetVersion();
+
+  pref_service()->SetInt64(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
+      now.ToDeltaSinceWindowsEpoch().InSeconds());
+  pref_service()->SetString(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion,
+      version.GetString());
+
+  base::expected<ChoiceCompletionMetadata, ChoiceCompletionMetadata::ParseError>
+      metadata = GetChoiceCompletionMetadata(*pref_service());
+
+  ASSERT_TRUE(metadata.has_value());
+  EXPECT_EQ(metadata->timestamp.ToDeltaSinceWindowsEpoch().InSeconds(),
+            now.ToDeltaSinceWindowsEpoch().InSeconds());
+  EXPECT_EQ(metadata->version, version);
+  EXPECT_EQ(metadata->serialized_program,
+            regional_capabilities::SerializeProgram(
+                regional_capabilities::Program::kWaffle));
+}
+
+TEST_F(SearchEngineChoiceUtilsTest, GetChoiceCompletionMetadata_Error_Absent) {
+  base::expected<ChoiceCompletionMetadata, ChoiceCompletionMetadata::ParseError>
+      metadata = GetChoiceCompletionMetadata(*pref_service());
+  EXPECT_FALSE(metadata.has_value());
+  EXPECT_EQ(metadata.error(), ChoiceCompletionMetadata::ParseError::kAbsent);
+}
+
+TEST_F(SearchEngineChoiceUtilsTest,
+       GetChoiceCompletionMetadata_Error_MissingVersion) {
+  pref_service()->SetInt64(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds());
+
+  base::expected<ChoiceCompletionMetadata, ChoiceCompletionMetadata::ParseError>
+      metadata = GetChoiceCompletionMetadata(*pref_service());
+  EXPECT_FALSE(metadata.has_value());
+  EXPECT_EQ(metadata.error(),
+            ChoiceCompletionMetadata::ParseError::kMissingVersion);
+}
+
+TEST_F(SearchEngineChoiceUtilsTest,
+       GetChoiceCompletionMetadata_Error_InvalidVersion) {
+  pref_service()->SetInt64(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds());
+  pref_service()->SetString(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion, "invalid");
+
+  base::expected<ChoiceCompletionMetadata, ChoiceCompletionMetadata::ParseError>
+      metadata = GetChoiceCompletionMetadata(*pref_service());
+  EXPECT_FALSE(metadata.has_value());
+  EXPECT_EQ(metadata.error(),
+            ChoiceCompletionMetadata::ParseError::kInvalidVersion);
+}
+
+TEST_F(SearchEngineChoiceUtilsTest,
+       GetChoiceCompletionMetadata_Error_MissingTimestamp) {
+  pref_service()->SetString(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion,
+      version_info::GetVersion().GetString());
+  base::expected<ChoiceCompletionMetadata, ChoiceCompletionMetadata::ParseError>
+      metadata = GetChoiceCompletionMetadata(*pref_service());
+  EXPECT_FALSE(metadata.has_value());
+  EXPECT_EQ(metadata.error(),
+            ChoiceCompletionMetadata::ParseError::kMissingTimestamp);
+}
+
+TEST_F(SearchEngineChoiceUtilsTest,
+       GetChoiceCompletionMetadata_Error_NullTimestamp) {
+  pref_service()->SetInt64(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp, 0);
+  pref_service()->SetString(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion,
+      version_info::GetVersion().GetString());
+  base::expected<ChoiceCompletionMetadata, ChoiceCompletionMetadata::ParseError>
+      metadata = GetChoiceCompletionMetadata(*pref_service());
+  EXPECT_FALSE(metadata.has_value());
+  EXPECT_EQ(metadata.error(),
+            ChoiceCompletionMetadata::ParseError::kNullTimestamp);
+}
+
+TEST_F(SearchEngineChoiceUtilsTest,
+       GetChoiceCompletionMetadata_Error_InvalidProgram) {
+  const base::Time now = base::Time::Now();
+  const base::Version version = version_info::GetVersion();
+
+  pref_service()->SetInt64(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
+      now.ToDeltaSinceWindowsEpoch().InSeconds());
+  pref_service()->SetString(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionVersion,
+      version.GetString());
+  pref_service()->SetInteger(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionProgram, -1);
+
+  base::expected<ChoiceCompletionMetadata, ChoiceCompletionMetadata::ParseError>
+      metadata = GetChoiceCompletionMetadata(*pref_service());
+  EXPECT_FALSE(metadata.has_value());
+  EXPECT_EQ(metadata.error(),
+            ChoiceCompletionMetadata::ParseError::kInvalidProgram);
 }
 
 }  // namespace search_engines

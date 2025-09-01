@@ -86,6 +86,10 @@ TemplateURLPrepopulateData::Resolver&
 SearchEngineChoiceServiceTestBase::prepopulate_data_resolver() {
   return GetOrInitEnvironment().prepopulate_data_resolver();
 }
+regional_capabilities::RegionalCapabilitiesService&
+SearchEngineChoiceServiceTestBase::regional_capabilities_service() {
+  return GetOrInitEnvironment().regional_capabilities_service();
+}
 
 SearchEnginesTestEnvironment&
 SearchEngineChoiceServiceTestBase::GetOrInitEnvironment(InitServiceArgs args) {

@@ -41,6 +41,11 @@ inline constexpr char kDefaultSearchProviderChoiceScreenCompletionTimestamp[] =
 inline constexpr char kDefaultSearchProviderChoiceScreenCompletionVersion[] =
     "default_search_provider.choice_screen_completion_version";
 
+// The regional program for which the user made a search engine choice.
+// See `regional_capabilities::Program` for the format.
+inline constexpr char kDefaultSearchProviderChoiceScreenCompletionProgram[] =
+    "default_search_provider.choice_screen_completion_program";
+
 // Prepopulated id of the search engine chosen in a guest session if the user
 // decides to propagate the default search engine to all guest sessions. The
 // prepopulated id indicates that the search engine choice dialog should not be

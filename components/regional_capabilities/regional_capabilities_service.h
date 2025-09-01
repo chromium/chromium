@@ -141,6 +141,9 @@ class RegionalCapabilitiesService : public KeyedService {
   // logging only.
   ActiveRegionalProgram GetActiveProgramForMetrics();
 
+  // Returns an opaque `int` value representing the program.
+  int GetSerializedActiveProgram();
+
   const ProgramSettings& GetActiveProgramSettingsForTesting();
 
 #if BUILDFLAG(IS_ANDROID)

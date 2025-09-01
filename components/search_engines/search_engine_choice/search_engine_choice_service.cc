@@ -32,6 +32,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/regional_capabilities/access/country_access_reason.h"
+#include "components/regional_capabilities/program_settings.h"
 #include "components/regional_capabilities/regional_capabilities_country_id.h"
 #include "components/regional_capabilities/regional_capabilities_metrics.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
@@ -92,13 +93,6 @@ SearchEngineType GetDefaultSearchEngineType(
   return default_search_engine ? default_search_engine->GetEngineType(
                                      template_url_service.search_terms_data())
                                : SEARCH_ENGINE_OTHER;
-}
-
-void MarkSearchEngineChoiceCompleted(PrefService& prefs) {
-  SetChoiceCompletionMetadata(prefs, ChoiceCompletionMetadata{
-                                         .timestamp = base::Time::Now(),
-                                         .version = version_info::GetVersion(),
-                                     });
 }
 
 // Returns true if the version is valid and can be compared to the current
@@ -534,8 +528,6 @@ void SearchEngineChoiceService::RecordChoiceMade(
         SearchEngineChoiceWipeReason::kChoiceRemadeAfterImport);
   }
 
-  // TODO(crbug.com/435658363): Include the program when updating the choice
-  // records.
   if (!regional_capabilities_service_->IsInSearchEngineChoiceScreenRegion()) {
     return;
   }
@@ -543,7 +535,10 @@ void SearchEngineChoiceService::RecordChoiceMade(
   RecordChoiceScreenDefaultSearchProviderType(
       GetDefaultSearchEngineType(CHECK_DEREF(template_url_service)),
       choice_location);
-  MarkSearchEngineChoiceCompleted(*profile_prefs_);
+  SetChoiceCompletionMetadata(
+      *profile_prefs_,
+      search_engines::CreateChoiceCompletionMetadataForCurrentState(
+          *regional_capabilities_service_));
 }
 
 void SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState(
@@ -620,6 +615,7 @@ SearchEngineChoiceService::CheckPrefsForWipeReason() {
         return SearchEngineChoiceWipeReason::kInvalidMetadataVersion;
       case ChoiceCompletionMetadata::ParseError::kMissingTimestamp:
       case ChoiceCompletionMetadata::ParseError::kNullTimestamp:
+      case ChoiceCompletionMetadata::ParseError::kInvalidProgram:
         return SearchEngineChoiceWipeReason::kInvalidMetadata;
     }
   }
@@ -823,6 +819,8 @@ void SearchEngineChoiceService::RegisterProfilePrefs(
   registry->RegisterStringPref(
       prefs::kDefaultSearchProviderChoiceScreenCompletionVersion,
       std::string());
+  registry->RegisterIntegerPref(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionProgram, 0);
   registry->RegisterDictionaryPref(
       prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState);
   registry->RegisterInt64Pref(
@@ -890,9 +888,13 @@ void SearchEngineChoiceService::SetSavedSearchEngineBetweenGuestSessions(
 }
 
 // static
-void MarkSearchEngineChoiceCompletedForTesting(PrefService& prefs) {
+void MarkSearchEngineChoiceCompletedForTesting(
+    PrefService& prefs,
+    regional_capabilities::Program program) {
   CHECK_IS_TEST();
-  MarkSearchEngineChoiceCompleted(prefs);
+  SetChoiceCompletionMetadata(
+      prefs, CreateChoiceCompletionMetadataWithProgram(
+                 regional_capabilities::SerializeProgram(program)));
 }
 
 }  // namespace search_engines

@@ -29,6 +29,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/regional_capabilities/program_settings.h"
 #include "components/regional_capabilities/regional_capabilities_metrics.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
@@ -1062,7 +1063,9 @@ TEST_P(SearchEngineChoiceServiceDeviceRestoreTest, RepromptOnRestoreDetection) {
             switches::kSearchEngineChoiceTriggerRepromptParams.Get());
 
   SetChoiceCompletionMetadata(*pref_service(),
-                              {base::Time::Now(), base::Version("1.0.0.0")});
+                              {base::Time::Now(), base::Version("1.0.0.0"),
+                               regional_capabilities::SerializeProgram(
+                                   regional_capabilities::Program::kWaffle)});
   ASSERT_TRUE(pref_service()->HasPrefPath(
       prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
 
