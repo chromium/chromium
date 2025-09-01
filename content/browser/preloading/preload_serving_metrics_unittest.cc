@@ -75,6 +75,18 @@ TEST_F(PreloadServingMetricsTest, NavigationWithoutPreload) {
       "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
       "PotentialMatchThen.IsActualMatch",
       0);
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
+      "PotentialMatchThen.MatchDuration",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
+      "PotentialMatchThen.MatchDuration.ForActualMatch",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
+      "PotentialMatchThen.MatchDuration.ForNotActualMatch",
+      0);
 
   histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.ForPrerenderInitialNavigationUsed."
@@ -96,6 +108,18 @@ TEST_F(PreloadServingMetricsTest, NavigationWithoutPreload) {
   histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.ForPrerenderInitialNavigationUsed."
       "PrefetchMatchMetrics.PotentialMatchThen.IsActualMatch",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationUsed."
+      "PrefetchMatchMetrics.PotentialMatchThen.MatchDuration",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationUsed."
+      "PrefetchMatchMetrics.PotentialMatchThen.MatchDuration.ForActualMatch",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationUsed."
+      "PrefetchMatchMetrics.PotentialMatchThen.MatchDuration.ForNotActualMatch",
       0);
 
   histogram_tester.ExpectUniqueTimeSample(
@@ -172,6 +196,18 @@ TEST_F(PreloadServingMetricsTest, NavigationWithPrefetch) {
       "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
       "PotentialMatchThen.IsActualMatch",
       1, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
+      "PotentialMatchThen.MatchDuration",
+      Millis(57) - Millis(42), 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
+      "PotentialMatchThen.MatchDuration.ForActualMatch",
+      Millis(57) - Millis(42), 1);
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
+      "PotentialMatchThen.MatchDuration.ForNotActualMatch",
+      0);
 
   histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.ForPrerenderInitialNavigationUsed."
@@ -193,6 +229,18 @@ TEST_F(PreloadServingMetricsTest, NavigationWithPrefetch) {
   histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.ForPrerenderInitialNavigationUsed."
       "PrefetchMatchMetrics.PotentialMatchThen.IsActualMatch",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationUsed."
+      "PrefetchMatchMetrics.PotentialMatchThen.MatchDuration",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationUsed."
+      "PrefetchMatchMetrics.PotentialMatchThen.MatchDuration.ForActualMatch",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationUsed."
+      "PrefetchMatchMetrics.PotentialMatchThen.MatchDuration.ForNotActualMatch",
       0);
 
   histogram_tester.ExpectTotalCount(

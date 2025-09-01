@@ -99,6 +99,15 @@ chromium-metrics-reviews@google.com.
   <variant name="Unspecified" summary=""/>
 </variants>
 
+<variants name="PreloadServingMetricsActualMatchSuffix">
+  <variant name="" summary="No condition"/>
+  <variant name="ForActualMatch"
+      summary="Recorded if the match ended as actual match."/>
+  <variant name="ForNotActualMatch"
+      summary="Recorded if the match started as potential match but ended as
+               not actual match."/>
+</variants>
+
 <variants name="PreloadServingMetricsPrefix">
   <variant name="PreloadServingMetrics.ForNavigationCommitted"
       summary="Recorded when a navigation is committed. Doesn't include a
@@ -412,6 +421,23 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="PreloadServingMetricsPrefix"
       variants="PreloadServingMetricsPrefix"/>
+</histogram>
+
+<histogram
+    name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.PotentialMatchThen.MatchDuration{PreloadServingMetricsActualMatchSuffix}"
+    units="ms" expires_after="2026-01-01">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Duration for the first prefetch matching for a navigation.
+
+    Recorded when {PreloadServingMetricsPrefix}, the first prefetch matching
+    started as potential match, and {PreloadServingMetricsActualMatchSuffix}.
+  </summary>
+  <token key="PreloadServingMetricsPrefix"
+      variants="PreloadServingMetricsPrefix"/>
+  <token key="PreloadServingMetricsActualMatchSuffix"
+      variants="PreloadServingMetricsActualMatchSuffix"/>
 </histogram>
 
 </histograms>

@@ -61,6 +61,29 @@ void RecordMetricsInternal(const PreloadServingMetrics& metrics,
     base::UmaHistogramBoolean(
         WITH(prefix, "PrefetchMatchMetrics.PotentialMatchThen.IsActualMatch"),
         is_actual_match);
+
+    base::TimeDelta prefetch_match_duration =
+        prefetch_match_metrics.time_match_end -
+        prefetch_match_metrics.time_match_start;
+    // We use `UmaHistogramMediumTimes()` (1ms to 3min) because timeout of
+    // `PrefetchStreamingURLLoader` is 10sec and `UmaHistogramTimes()` (1ms to
+    // 10sec) has too small range.
+    base::UmaHistogramMediumTimes(
+        WITH(prefix, "PrefetchMatchMetrics.PotentialMatchThen.MatchDuration"),
+        prefetch_match_duration);
+    if (is_actual_match) {
+      base::UmaHistogramMediumTimes(
+          WITH(prefix,
+               "PrefetchMatchMetrics.PotentialMatchThen.MatchDuration."
+               "ForActualMatch"),
+          prefetch_match_duration);
+    } else {
+      base::UmaHistogramMediumTimes(
+          WITH(prefix,
+               "PrefetchMatchMetrics.PotentialMatchThen.MatchDuration."
+               "ForNotActualMatch"),
+          prefetch_match_duration);
+    }
   }();
 }
 
