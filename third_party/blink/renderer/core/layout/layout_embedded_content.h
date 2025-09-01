@@ -66,7 +66,7 @@ class CORE_EXPORT LayoutEmbeddedContent : public LayoutReplaced {
   gfx::Rect BorderBoxFromEmbeddedContent(const gfx::Rect&) const;
 
   PhysicalRect ReplacedContentRectFrom(
-      const PhysicalRect& base_content_rect) const final;
+      const PhysicalRect& base_content_rect) const override;
 
   void UpdateOnEmbeddedContentViewChange();
   void UpdateGeometry(EmbeddedContentView&);
