@@ -1098,6 +1098,12 @@ void ServiceWorkerMainResourceLoader::
   // yet. Return the response from the network to the client here.
   CHECK_EQ(synthetic_response_manager_->Status(),
            SyntheticResponseStatus::kNotReady);
+  // TODO(crbug.com/442270046): Make a centerized method to set required fields
+  // in `load_timing`.
+  response_head->load_timing.request_start =
+      response_head_->load_timing.request_start;
+  response_head->load_timing.request_start_time =
+      response_head_->load_timing.request_start_time;
   MaybeSetHeaderReceivedTiming(response_head->load_timing);
   SetCommitResponsibility(FetchResponseFrom::kWithoutServiceWorker);
   CHECK(url_loader_client_.is_bound());
