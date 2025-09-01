@@ -68,6 +68,10 @@ const base::FeatureParam<int>
     kNewTabPagePreconnectStartDelayOnMouseHoverByMiliSeconds{
         &features::kNewTabPageTriggerForPrerender2,
         "preconnect_start_delay_on_mouse_hover_ms", 100};
+const base::FeatureParam<int>
+    kNewTabPagePrefetchStartDelayOnMouseHoverByMilliSeconds{
+        &features::kNewTabPageTriggerForPrefetch,
+        "prefetch_start_delay_on_mouse_hover_ms", 300};
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kNotificationOneTapUnsubscribe);
