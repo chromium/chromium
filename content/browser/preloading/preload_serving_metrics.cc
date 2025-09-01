@@ -12,6 +12,19 @@
 
 namespace content {
 
+namespace {
+
+#define WITH(prefix, name) base::StrCat({prefix, name})
+
+void RecordMetricsInternal(const PreloadServingMetrics& metrics,
+                           const char* prefix) {
+  // We expect that prefetch match count is zero or one.
+  base::UmaHistogramCounts100(WITH(prefix, "PrefetchMatchMetrics.Count"),
+                              metrics.prefetch_match_metrics_list.size());
+}
+
+}  // namespace
+
 PrefetchContainerMetrics::PrefetchContainerMetrics() = default;
 
 PrefetchContainerMetrics::~PrefetchContainerMetrics() = default;
@@ -39,7 +52,12 @@ PreloadServingMetrics::TakeFromNavigationHandle(
 
 void PreloadServingMetrics::RecordMetricsForNonPrerenderNavigationCommitted()
     const {
-  // unimplemented
+  RecordMetricsInternal(*this, "PreloadServingMetrics.ForNavigationCommitted.");
+  if (prerender_initial_preload_serving_metrics) {
+    RecordMetricsInternal(
+        *prerender_initial_preload_serving_metrics,
+        "PreloadServingMetrics.ForPrerenderInitialNavigationUsed.");
+  }
 }
 
 void PreloadServingMetrics::RecordFirstContentfulPaint(

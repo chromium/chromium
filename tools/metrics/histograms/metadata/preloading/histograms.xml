@@ -99,6 +99,16 @@ chromium-metrics-reviews@google.com.
   <variant name="Unspecified" summary=""/>
 </variants>
 
+<variants name="PreloadServingMetricsPrefix">
+  <variant name="PreloadServingMetrics.ForNavigationCommitted"
+      summary="Recorded when a navigation is committed. Doesn't include a
+               prerender initial navigation. Metrics are about the
+               navigation."/>
+  <variant name="PreloadServingMetrics.ForPrerenderInitialNavigationUsed"
+      summary="Recorded when a prerender activation is committed. Metrics are
+               about the prerender initial navigation that is used."/>
+</variants>
+
 <histogram name="Preloading.Experimental.UpdateSpeculationCandidatesReason"
     enum="PreloadingUpdateSpeculationCandidatesReason"
     expires_after="2024-09-29">
@@ -306,6 +316,19 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="PreloadingType" variants="PreloadingType"/>
   <token key="PreloadingPredictor" variants="PreloadingPredictor"/>
+</histogram>
+
+<histogram name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.Count"
+    units="count" expires_after="2026-01-01">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    The number of prefetches that are matched with a navigation.
+
+    Recorded when {PreloadServingMetricsPrefix}.
+  </summary>
+  <token key="PreloadServingMetricsPrefix"
+      variants="PreloadServingMetricsPrefix"/>
 </histogram>
 
 </histograms>
