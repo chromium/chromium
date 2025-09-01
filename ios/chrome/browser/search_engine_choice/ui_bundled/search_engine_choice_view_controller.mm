@@ -265,13 +265,21 @@ CGFloat ConvertVerticalCoordonateWithMainViewReference(UIView* mainView,
   _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
 
   // Add view subtitle.
+  UIFont* subtitleFont = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   NSMutableAttributedString* subtitleText = [[NSMutableAttributedString alloc]
       initWithString:[l10n_util::GetNSString(
                          IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE)
                          stringByAppendingString:@" "]
           attributes:@{
-            NSForegroundColorAttributeName : [UIColor colorNamed:kGrey800Color]
+            NSForegroundColorAttributeName : [UIColor colorNamed:kGrey800Color],
+            NSFontAttributeName : subtitleFont,
           }];
+  UIFontDescriptor* subtitleFontDescriptor = subtitleFont.fontDescriptor;
+  UIFontDescriptor* boldSubtitleFontDescriptor = [subtitleFontDescriptor
+      fontDescriptorWithSymbolicTraits:subtitleFontDescriptor.symbolicTraits |
+                                       UIFontDescriptorTraitBold];
+  UIFont* boldSubtitleFont =
+      [UIFont fontWithDescriptor:boldSubtitleFontDescriptor size:0.0];
   NSAttributedString* learnMoreAttributedString =
       [[NSMutableAttributedString alloc]
           initWithString:l10n_util::GetNSString(
@@ -280,6 +288,7 @@ CGFloat ConvertVerticalCoordonateWithMainViewReference(UIView* mainView,
                 NSForegroundColorAttributeName :
                     [UIColor colorNamed:kBlueColor],
                 NSLinkAttributeName : net::NSURLWithGURL(GURL(kLearnMoreURL)),
+                NSFontAttributeName : boldSubtitleFont,
               }];
   learnMoreAttributedString.accessibilityLabel = l10n_util::GetNSString(
       IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE_INFO_LINK_A11Y_LABEL);
@@ -287,8 +296,6 @@ CGFloat ConvertVerticalCoordonateWithMainViewReference(UIView* mainView,
   UITextView* subtitleTextView = [[UITextView alloc] init];
   [scrollContentView addSubview:subtitleTextView];
   [subtitleTextView setAttributedText:subtitleText];
-  [subtitleTextView
-      setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleBody]];
   subtitleTextView.backgroundColor = nil;
   subtitleTextView.adjustsFontForContentSizeCategory = YES;
   [subtitleTextView setTextAlignment:NSTextAlignmentCenter];
