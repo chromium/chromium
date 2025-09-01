@@ -10,7 +10,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/native_window_util.h"
+#include "ui/gfx/native_ui_util.h"
 #include "ui/webui/tracked_element/tracked_element_handler.h"
 
 namespace ui {

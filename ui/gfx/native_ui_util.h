@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_GFX_NATIVE_WINDOW_UTIL_H_
-#define UI_GFX_NATIVE_WINDOW_UTIL_H_
+#ifndef UI_GFX_NATIVE_UI_UTIL_H_
+#define UI_GFX_NATIVE_UI_UTIL_H_
 
 #include "base/component_export.h"
 #include "ui/gfx/native_window_types.h"
@@ -21,4 +21,4 @@ gfx::NativeView GetViewForWindow(gfx::NativeWindow window);
 
 }  // namespace gfx
 
-#endif  // UI_GFX_NATIVE_WINDOW_UTIL_H_
+#endif  // UI_GFX_NATIVE_UI_UTIL_H_
