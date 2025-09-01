@@ -33,7 +33,6 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "components/sync_device_info/device_info_sync_service.h"
-#include "components/sync_device_info/device_info_tracker.h"
 
 class Profile;
 
@@ -55,8 +54,7 @@ class FloatingWorkspaceService
       public ash::LogoutConfirmationController::Observer,
       public NetworkStateHandlerObserver,
       public ash::SystemTrayObserver,
-      public chromeos::PowerManagerClient::Observer,
-      public syncer::DeviceInfoTracker::Observer {
+      public chromeos::PowerManagerClient::Observer {
  public:
   explicit FloatingWorkspaceService(
       Profile* profile,
@@ -96,10 +94,6 @@ class FloatingWorkspaceService
   // chromeos::PowerManagerClient::Observer overrides.
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
   void SuspendDone(base::TimeDelta sleep_duration) override;
-
-  // syncer::DeviceInfoTracker::Observer:
-  void OnDeviceInfoChange() override;
-  void OnDeviceInfoShutdown() override;
 
   std::vector<const ash::DeskTemplate*> GetFloatingWorkspaceTemplateEntries();
 

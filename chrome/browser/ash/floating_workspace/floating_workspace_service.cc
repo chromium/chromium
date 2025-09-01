@@ -61,6 +61,7 @@
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_service.h"
+#include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_device_info/local_device_info_provider.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 
@@ -118,14 +119,6 @@ void FloatingWorkspaceService::OnShuttingDown() {
       network_handler->network_state_handler()->RemoveObserver(this);
     }
   }
-}
-
-void FloatingWorkspaceService::OnDeviceInfoShutdown() {
-  if (device_info_sync_service_ &&
-      device_info_sync_service_->GetDeviceInfoTracker()) {
-    device_info_sync_service_->GetDeviceInfoTracker()->RemoveObserver(this);
-  }
-  device_info_sync_service_ = nullptr;
 }
 
 void FloatingWorkspaceService::MaybeShowNetworkScreen() {
@@ -372,8 +365,6 @@ void FloatingWorkspaceService::SuspendDone(base::TimeDelta sleep_duration) {
   initialization_time_ = base::Time::Now();
   initialization_timeticks_ = base::TimeTicks::Now();
 }
-
-void FloatingWorkspaceService::OnDeviceInfoChange() {}
 
 void FloatingWorkspaceService::InitImpl(
     syncer::SyncService* sync_service,
@@ -1052,7 +1043,6 @@ void FloatingWorkspaceService::ShutDownServicesAndObservers() {
   // stopped the capture timer below.
   OnSyncShutdown(sync_service_);
   OnShuttingDown();
-  OnDeviceInfoShutdown();
   // If we don't have an apps cache then we observe the wrapper to
   // wait for it to be ready.
   if (app_cache_obs_.IsObserving()) {
@@ -1111,10 +1101,7 @@ void FloatingWorkspaceService::SetUpServiceAndObservers(
   if (chromeos::PowerManagerClient::Get()) {
     chromeos::PowerManagerClient::Get()->AddObserver(this);
   }
-  if (device_info_sync_service_ &&
-      device_info_sync_service_->GetDeviceInfoTracker()) {
-    device_info_sync_service_->GetDeviceInfoTracker()->AddObserver(this);
-  }
+
   if (version_ ==
       floating_workspace_util::FloatingWorkspaceVersion::kAutoSignoutOnly) {
     // No need to observe apps and scheduling the capture task when we are only
