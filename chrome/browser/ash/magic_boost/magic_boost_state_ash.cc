@@ -265,11 +265,16 @@ void MagicBoostStateAsh::RegisterPrefChanges(PrefService* pref_service) {
 
 base::expected<bool, chromeos::MagicBoostState::Error>
 MagicBoostStateAsh::IsUserEligibleForGenAIFeaturesExpected() const {
-  std::optional<bool> availability = mahi_availability::IsMahiAvailable();
-  if (!availability.has_value()) {
-    return base::unexpected(chromeos::MagicBoostState::Error::kUninitialized);
-  }
-  return availability.value();
+  return mahi_availability::IsMahiAvailable().transform_error(
+      [](mahi_availability::Error error) {
+        // Use switch statement to get a compile error if new error types are
+        // added to mahi_availability::Error.
+        switch (error) {
+          case mahi_availability::Error::kMantaFeatureBitNotReady:
+            return chromeos::MagicBoostState::Error::kUninitialized;
+        }
+        CHECK(false) << "Unknown mahi_availability Error enum is passed";
+      });
 }
 
 void MagicBoostStateAsh::OnRefreshTokensReady() {

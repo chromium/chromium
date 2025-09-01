@@ -20,7 +20,7 @@
 
 namespace ash::mahi_availability {
 
-std::optional<bool> CanUseMahiService() {
+base::expected<bool, Error> CanUseMahiService() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           chromeos::switches::kMahiRestrictionsOverride)) {
     return true;
@@ -58,7 +58,7 @@ std::optional<bool> CanUseMahiService() {
         case manta::FeatureSupportStatus::kUnsupported:
           return false;
         case manta::FeatureSupportStatus::kUnknown:
-          return std::nullopt;
+          return base::unexpected(Error::kMantaFeatureBitNotReady);
       }
     }
   }
@@ -72,16 +72,12 @@ std::optional<bool> CanUseMahiService() {
   return IsGenerativeAiAllowedForCountry(country_code);
 }
 
-std::optional<bool> IsMahiAvailable() {
+base::expected<bool, Error> IsMahiAvailable() {
   if (!chromeos::features::IsMahiEnabled()) {
     return false;
   }
 
   return CanUseMahiService();
-}
-
-bool IsPompanoAvailable() {
-  return chromeos::features::IsPompanoEnabled() && IsMahiAvailable();
 }
 
 }  // namespace ash::mahi_availability
