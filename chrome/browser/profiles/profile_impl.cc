@@ -974,10 +974,6 @@ ProfileImpl::CreateZoomLevelDelegate(const base::FilePath& partition_path) {
       zoom::ZoomEventManager::GetForBrowserContext(this)->GetWeakPtr());
 }
 
-base::FilePath ProfileImpl::GetPath() {
-  return path_;
-}
-
 base::FilePath ProfileImpl::GetPath() const {
   return path_;
 }

@@ -91,7 +91,7 @@ void TestBrowserContext::SetClientHintsControllerDelegate(
   client_hints_controller_delegate_ = delegate;
 }
 
-base::FilePath TestBrowserContext::GetPath() {
+base::FilePath TestBrowserContext::GetPath() const {
   return browser_context_dir_.GetPath();
 }
 

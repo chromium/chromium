@@ -128,7 +128,7 @@ class AwBrowserContext : public content::BrowserContext,
   void WarmUpSpareRenderer(JNIEnv* const env);
 
   // content::BrowserContext implementation.
-  base::FilePath GetPath() override;
+  base::FilePath GetPath() const override;
   bool IsOffTheRecord() override;
   content::DownloadManagerDelegate* GetDownloadManagerDelegate() override;
   content::BrowserPluginGuestManager* GetGuestManager() override;

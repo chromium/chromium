@@ -180,7 +180,7 @@ HeadlessBrowserContextImpl::CreateZoomLevelDelegate(
   return nullptr;
 }
 
-base::FilePath HeadlessBrowserContextImpl::GetPath() {
+base::FilePath HeadlessBrowserContextImpl::GetPath() const {
   return path_;
 }
 
