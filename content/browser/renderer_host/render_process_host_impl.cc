@@ -746,8 +746,7 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
 
     ChildProcessIdCountMap& counts_per_process = result->second;
     for (auto iter : counts_per_process) {
-      auto* host = static_cast<RenderProcessHostImpl*>(
-          RenderProcessHost::FromID(iter.first));
+      auto* host = RenderProcessHost::FromID(iter.first);
       if (!host) {
         // TODO(clamy): This shouldn't happen but we are getting reports from
         // the field that this is happening. We need to figure out why some
@@ -771,9 +770,14 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
       }
 
       if (process_reuse_policy ==
-              ProcessReusePolicy::REUSE_PRERENDERING_PROCESS_FOR_MAIN_FRAME &&
-          !host->IsOnlyHostingPrerenderedFramesOrEmpty()) {
-        continue;
+          ProcessReusePolicy::REUSE_PRERENDERING_PROCESS_FOR_MAIN_FRAME) {
+        // TODO(crbug.com/434845948): Avoid downcasting to
+        // RenderProcessHostImpl. This policy should not be used with
+        // MockRenderProcessHost.
+        if (!static_cast<RenderProcessHostImpl*>(host)
+                 ->IsOnlyHostingPrerenderedFramesOrEmpty()) {
+          continue;
+        }
       }
 
       if (host->VisibleClientCount())
