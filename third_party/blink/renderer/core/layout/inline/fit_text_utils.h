@@ -37,7 +37,11 @@ class LineFitter {
 
   // Updates text scaling factor of InlineItemResults in `line_info`.
   // Returns true if LogicalLineBuilder needs to scale line-height.
-  bool FitLine(float scale_factor);
+  //
+  // For the `consistent` target and the `font-size` method, we need to
+  // specify `adjusting_scale` too.  It's a paint-time scaling factor after
+  // the `font-size` scaling.
+  bool FitLine(float scale_factor, std::optional<float> adjusting_scale);
 
   // Measures the scaling factor for the current line, and applies it.
   bool MeasureAndFitLine();

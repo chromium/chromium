@@ -61,20 +61,21 @@ bool ScaleLine(bool is_grow,
   return !is_scaled_inline_only && should_scale_line_height;
 }
 
-ShapeResult* ShapeForFit(const InlineItemResult& item,
+ShapeResult* ShapeForFit(const InlineItem& item,
+                         unsigned start_offset,
+                         unsigned end_offset,
                          const HarfBuzzShaper& shaper,
                          const Font& font,
                          const InlineItemSegments* segments) {
   ShapeOptions options;  // TODO(crbug.com/417306102): Pass correct options.
   if (segments) {
-    return segments->ShapeText(&shaper, &font, item.item->Direction(),
-                               item.StartOffset(), item.EndOffset(),
-                               item.item->Index(), options);
+    return segments->ShapeText(&shaper, &font, item.Direction(), start_offset,
+                               end_offset, item.Index(), options);
   }
-  RunSegmenter::RunSegmenterRange range = item.item->CreateRunSegmenterRange();
-  range.end = item.item->EndOffset();
-  return shaper.Shape(&font, item.item->Direction(), item.item->StartOffset(),
-                      item.item->EndOffset(), range, options);
+  RunSegmenter::RunSegmenterRange range = item.CreateRunSegmenterRange();
+  range.end = end_offset;
+  return shaper.Shape(&font, item.Direction(), start_offset, end_offset, range,
+                      options);
 }
 
 std::optional<float> ComputeSizeLimit(const FitText& fit_text,
@@ -213,16 +214,36 @@ float MeasurePerBlockScale(const InlineNode node,
       continue;
     }
     LayoutUnit flexible_total_size;
+    bool is_font_size_method = fit_text.Method() == FitTextMethod::kFontSize;
+    const InlineItemsData& items_data =
+        node.ItemsData(cursor.CurrentItem()->UsesFirstLineStyle());
+    HarfBuzzShaper shaper(items_data.text_content);
+    ShapeResultSpacing<String> spacing(items_data.text_content);
     for (InlineCursor descendants = cursor.CursorForDescendants(); descendants;
          descendants.MoveToNextInlineLeaf()) {
       const auto& current = descendants.Current();
       if (!current.IsText()) {
         continue;
       }
-      // TODO(crbug.com/417306102): Handle font-size + letter-spacing cases
-      // like LineFitter::FitLine().
-      flexible_total_size +=
-          ToLogicalSize(current.Size(), writing_mode).inline_size;
+      const ComputedStyle& style = current->Style();
+      if (is_font_size_method &&
+          spacing.SetSpacing(style.GetFontDescription())) {
+        unsigned start = current.TextStartOffset();
+        unsigned end = current.TextEndOffset();
+        auto iter = std::ranges::find_if(
+            items_data.items, [&](const Member<InlineItem>& item) {
+              return item->StartOffset() <= start && end <= item->EndOffset();
+            });
+        CHECK_NE(iter, items_data.items.end());
+        ShapeResult* nospacing_shape =
+            ShapeForFit(**iter, start, end, shaper, *style.GetFont(),
+                        items_data.segments.get());
+        flexible_total_size +=
+            nospacing_shape->SnappedWidth().ClampNegativeToZero();
+      } else {
+        flexible_total_size +=
+            ToLogicalSize(current.Size(), writing_mode).inline_size;
+      }
     }
     if (!flexible_total_size ||
         remaining_space + flexible_total_size <= LayoutUnit()) {
@@ -271,9 +292,9 @@ float LineFitter::MeasureScale() {
     if (item.item->Type() == InlineItem::kText) {
       if (fit_text.Method() == FitTextMethod::kFontSize &&
           spacing_.SetSpacing(item.item->Style()->GetFontDescription())) {
-        ShapeResult* nospacing_shape =
-            ShapeForFit(item, shaper_, *item.item->Style()->GetFont(),
-                        items_data_.segments.get());
+        ShapeResult* nospacing_shape = ShapeForFit(
+            *item.item, item.StartOffset(), item.EndOffset(), shaper_,
+            *item.item->Style()->GetFont(), items_data_.segments.get());
         LayoutUnit size = nospacing_shape->SnappedWidth().ClampNegativeToZero();
         flexible_total_size += size;
         static_total_size += item.inline_size - size;
@@ -291,7 +312,8 @@ float LineFitter::MeasureScale() {
   return (container_width - static_total_size) / flexible_total_size;
 }
 
-bool LineFitter::FitLine(float scale_factor) {
+bool LineFitter::FitLine(float scale_factor,
+                         std::optional<float> adjusting_scale) {
   const bool is_grow = scale_factor > 1.0f;
   const FitText& fit_text =
       is_grow ? node_.Style().TextGrow() : node_.Style().TextShrink();
@@ -320,8 +342,9 @@ bool LineFitter::FitLine(float scale_factor) {
             ScaledFontDescription(font, scale_factor, limit, restricted);
         Font* scaled_font =
             MakeGarbageCollected<Font>(scaled_desc, font.GetFontSelector());
-        ShapeResult* shape_result = ShapeForFit(item, shaper_, *scaled_font,
-                                                items_data_.segments.get());
+        ShapeResult* shape_result =
+            ShapeForFit(*item.item, item.StartOffset(), item.EndOffset(),
+                        shaper_, *scaled_font, items_data_.segments.get());
         LayoutUnit size_without_spacing =
             shape_result->SnappedWidth().ClampNegativeToZero();
         if (spacing_.SetSpacing(scaled_desc)) {
@@ -343,13 +366,23 @@ bool LineFitter::FitLine(float scale_factor) {
       // Final adjustment by paint-time scaling. We skip it if font-size
       // scaling for an item was restricted by specifying a minimum or maximum
       // value.
-      LayoutUnit container_width = line_info_.AvailableWidth();
-      if (!restricted &&
-          (container_width - line_info_.ComputeWidth()).Abs() >= epsilon_) {
-        scale_factor =
-            (container_width - static_total_size) / flexible_total_size;
-        ScaleLine(is_grow, scale_factor, /* is_scaled_inline_only */ false,
-                  limit, line_info_);
+      if (!restricted) {
+        if (adjusting_scale) {
+          // FitTextTarget::kConsistent case:
+          if (*adjusting_scale != 1.0f) {
+            ScaleLine(is_grow, *adjusting_scale,
+                      /* is_scaled_inline_only */ false, limit, line_info_);
+          }
+        } else {
+          // FitTextTarget::kPerLine case:
+          LayoutUnit container_width = line_info_.AvailableWidth();
+          if ((container_width - line_info_.ComputeWidth()).Abs() >= epsilon_) {
+            scale_factor =
+                (container_width - static_total_size) / flexible_total_size;
+            ScaleLine(is_grow, scale_factor, /* is_scaled_inline_only */ false,
+                      limit, line_info_);
+          }
+        }
       }
       return true;
     }
@@ -367,7 +400,7 @@ bool LineFitter::FitLine(float scale_factor) {
 bool LineFitter::MeasureAndFitLine() {
   float scale_factor = MeasureScale();
   return std::isfinite(scale_factor) && scale_factor != 1.0f &&
-         FitLine(scale_factor);
+         FitLine(scale_factor, std::nullopt);
 }
 
 }  // namespace blink

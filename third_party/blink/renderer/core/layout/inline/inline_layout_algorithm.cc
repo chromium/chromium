@@ -1318,8 +1318,10 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
       if (context_->IsMeasuringScale()) {
         // No fit-text handling here. We call MeasurePerBlockScale() later.
       } else if (float scale = context_->MeasuredScale(); scale != 1.0f) {
+        // TODO(crbug.com/417306102): MeasurePerBlockScale() should compute
+        // adjusting_scal , and pass it here.
         should_scale_line_height =
-            LineFitter(Node(), &line_info).FitLine(scale);
+            LineFitter(Node(), &line_info).FitLine(scale, 1.0f);
       } else {
         should_scale_line_height =
             LineFitter(Node(), &line_info).MeasureAndFitLine();
