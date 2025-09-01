@@ -8,6 +8,8 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
@@ -190,7 +192,7 @@ FieldTypeSet Address::GetSupportedTypes() const {
 }
 
 std::u16string Address::GetInfo(const AutofillType& type,
-                                const std::string& locale) const {
+                                std::string_view locale) const {
   std::string country_code =
       base::UTF16ToUTF8(GetRoot().GetValueForType(ADDRESS_HOME_COUNTRY));
   FieldType storable_type = type.GetAddressType();

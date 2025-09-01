@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_name.h"
@@ -81,7 +82,7 @@ class NameInfo : public FormGroup {
   // FormGroup:
   using FormGroup::GetInfo;
   std::u16string GetInfo(const AutofillType& type,
-                         const std::string& app_locale) const override;
+                         std::string_view app_locale) const override;
   std::u16string GetRawInfo(FieldType type) const override;
 
   void SetRawInfoWithVerificationStatus(FieldType type,
@@ -187,7 +188,7 @@ class EmailInfo : public FormGroup {
   // FormGroup:
   using FormGroup::GetInfo;
   std::u16string GetInfo(const AutofillType& type,
-                         const std::string& app_locale) const override;
+                         std::string_view app_locale) const override;
   std::u16string GetRawInfo(FieldType type) const override;
   void SetRawInfoWithVerificationStatus(FieldType type,
                                         const std::u16string& value,
@@ -219,7 +220,7 @@ class CompanyInfo : public FormGroup {
   // FormGroup:
   using FormGroup::GetInfo;
   std::u16string GetInfo(const AutofillType& type,
-                         const std::string& app_locale) const override;
+                         std::string_view app_locale) const override;
   std::u16string GetRawInfo(FieldType type) const override;
   void SetRawInfoWithVerificationStatus(FieldType type,
                                         const std::u16string& value,

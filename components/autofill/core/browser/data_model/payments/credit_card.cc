@@ -1231,7 +1231,7 @@ FieldTypeSet CreditCard::GetSupportedTypes() const {
 }
 
 std::u16string CreditCard::GetInfo(const AutofillType& autofill_type,
-                                   const std::string& app_locale) const {
+                                   std::string_view app_locale) const {
   const FieldType type = autofill_type.GetCreditCardType();
   if (type == CREDIT_CARD_NUMBER) {
     // Web pages should never actually be filled by a masked server card,

@@ -4,6 +4,9 @@
 
 #include "components/autofill/core/browser/data_model/form_group.h"
 
+#include <string>
+#include <string_view>
+
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -52,7 +55,7 @@ bool FormGroup::HasRawInfo(FieldType type) const {
 }
 
 std::u16string FormGroup::GetInfo(FieldType type,
-                                  const std::string& app_locale) const {
+                                  std::string_view app_locale) const {
   return GetInfo(AutofillType(type), app_locale);
 }
 

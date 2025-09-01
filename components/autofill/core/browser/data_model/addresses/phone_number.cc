@@ -174,7 +174,7 @@ void PhoneNumber::GetMatchingTypes(const std::u16string& text,
 //   1-800-FLOWERS -> 18003569377
 // If the phone cannot be normalized, returns the stored value verbatim.
 std::u16string PhoneNumber::GetInfo(const AutofillType& autofill_type,
-                                    const std::string& app_locale) const {
+                                    std::string_view app_locale) const {
   FieldType type = autofill_type.GetAddressType();
   UpdateCacheIfNeeded(app_locale);
 

@@ -1070,7 +1070,7 @@ VerificationStatus AutofillProfile::GetVerificationStatus(
 }
 
 std::u16string AutofillProfile::GetInfo(const AutofillType& type,
-                                        const std::string& app_locale) const {
+                                        std::string_view app_locale) const {
   const FormGroup* form_group = FormGroupForType(type.GetAddressType());
   if (!form_group) {
     return std::u16string();

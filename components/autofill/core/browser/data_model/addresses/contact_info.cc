@@ -9,6 +9,7 @@
 #include <memory>
 #include <ostream>
 #include <string>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/i18n/char_iterator.h"
@@ -513,7 +514,7 @@ FieldTypeSet NameInfo::GetSupportedTypes() const {
 }
 
 std::u16string NameInfo::GetInfo(const AutofillType& type,
-                                 const std::string& app_locale) const {
+                                 std::string_view app_locale) const {
   return GetRawInfo(type.GetAddressType());
 }
 
@@ -574,7 +575,7 @@ FieldTypeSet EmailInfo::GetSupportedTypes() const {
 }
 
 std::u16string EmailInfo::GetInfo(const AutofillType& type,
-                                  const std::string& app_locale) const {
+                                  std::string_view app_locale) const {
   return GetRawInfo(type.GetAddressType());
 }
 
@@ -632,7 +633,7 @@ void CompanyInfo::GetMatchingTypes(const std::u16string& text,
 }
 
 std::u16string CompanyInfo::GetInfo(const AutofillType& type,
-                                    const std::string& app_locale) const {
+                                    std::string_view app_locale) const {
   return GetRawInfo(type.GetAddressType());
 }
 
