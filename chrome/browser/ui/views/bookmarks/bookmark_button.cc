@@ -40,10 +40,10 @@ enum class PreloadBookmarkMetricsEvent {
 };
 
 // These are used as control the behavior of kBookmarkTriggerForPrerender2.
-const base::FeatureParam<int> kPreconnectStartDelayOnMouseHoverByMiliseconds{
+const base::FeatureParam<int> kPreconnectStartDelayOnMouseHoverByMilliseconds{
     &features::kBookmarkTriggerForPreconnect,
     "preconnect_start_delay_on_mouse_hover_ms", 100};
-const base::FeatureParam<int> kPrefetchStartDelayOnMouseHoverByMiliseconds{
+const base::FeatureParam<int> kPrefetchStartDelayOnMouseHoverByMilliseconds{
     &features::kBookmarkTriggerForPrefetch,
     "prefetch_start_delay_on_mouse_hover_ms", 300};
 
@@ -172,7 +172,7 @@ void BookmarkButton::OnMouseEntered(const ui::MouseEvent& event) {
     preconnect_timer_.Start(
         FROM_HERE,
         base::Milliseconds(
-            kPreconnectStartDelayOnMouseHoverByMiliseconds.Get()),
+            kPreconnectStartDelayOnMouseHoverByMilliseconds.Get()),
         base::BindRepeating(&BookmarkButton::StartPreconnecting,
                             base::Unretained(this), *url_));
   }
@@ -180,7 +180,7 @@ void BookmarkButton::OnMouseEntered(const ui::MouseEvent& event) {
   if (base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrefetch)) {
     prefetch_timer_.Start(
         FROM_HERE,
-        base::Milliseconds(kPrefetchStartDelayOnMouseHoverByMiliseconds.Get()),
+        base::Milliseconds(kPrefetchStartDelayOnMouseHoverByMilliseconds.Get()),
         base::BindRepeating(&BookmarkButton::StartPreloading,
                             base::Unretained(this), *url_,
                             content::PreloadingType::kPrefetch));
