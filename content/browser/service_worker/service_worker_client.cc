@@ -1257,11 +1257,16 @@ ServiceWorkerClient::CreateNetworkURLLoaderFactory(
 
   switch (type) {
     case CreateNetworkURLLoaderFactoryType::kNavigationPreload:
+    case CreateNetworkURLLoaderFactoryType::kSyntheticNetworkRequest:
       // Allow the embedder to intercept the URLLoader request if necessary.
       // This must be a synchronous decision by the embedder. In the future, we
       // may wish to support asynchronous decisions using
       // |URLLoaderRequestInterceptor| in the same fashion that they are used
       // for navigation requests.
+      //
+      // TODO(crbug.com/352578800): Rename
+      // `CreateURLLoaderHandlerForServiceWorkerNavigationPreload`. This is used
+      // by not only navigation preload, but also synthetic response.
       if (ContentBrowserClient::URLLoaderRequestHandler
               embedder_url_loader_handler =
                   GetContentClient()
@@ -1274,7 +1279,6 @@ ServiceWorkerClient::CreateNetworkURLLoaderFactory(
       }
       break;
     case CreateNetworkURLLoaderFactoryType::kRaceNetworkRequest:
-    case CreateNetworkURLLoaderFactoryType::kSyntheticNetworkRequest:
       break;
   }
 
