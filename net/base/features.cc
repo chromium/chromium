@@ -757,4 +757,11 @@ BASE_FEATURE_PARAM(bool,
                    "url_request_redirect_job",
                    false);
 
+BASE_FEATURE(AdditionalDelayMainJob, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kAdditionalDelay,
+                   &kAdditionalDelayMainJob,
+                   "AdditionalDelay",
+                   base::Milliseconds(0));
+
 }  // namespace net::features
