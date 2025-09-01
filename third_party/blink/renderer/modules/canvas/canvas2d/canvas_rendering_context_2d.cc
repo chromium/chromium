@@ -1415,9 +1415,10 @@ void CanvasRenderingContext2D::
 CanvasResourceProvider*
 CanvasRenderingContext2D::RecreateCanvasResourceProviderForCanvas2D() {
   CHECK(GetHibernationHandler());
+  CHECK(!resource_provider_);
 
-  auto* resource_provider = GetResourceProviderForCanvas2D();
-  if (!resource_provider && !did_fail_to_create_resource_provider_) {
+  CanvasResourceProvider* resource_provider = nullptr;
+  if (!did_fail_to_create_resource_provider_) {
     if (canvas()->IsValidImageSize()) {
       resource_provider_ = CreateCanvasResourceProvider();
       canvas()->UpdateMemoryUsage();
