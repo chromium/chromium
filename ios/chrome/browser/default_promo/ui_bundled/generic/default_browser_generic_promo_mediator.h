@@ -10,13 +10,10 @@
 // The mediator for the generic default browser promo.
 @interface DefaultBrowserGenericPromoMediator : NSObject
 
-// Handles user tap on primary action. Sends the user to the iOS settings.
-- (void)didTapPrimaryActionButton;
-
 // Handles user tap on primary action. Sends the user to the iOS settings. If
-// `useDefaultAppsDestination` is set to YES, the user is sent to the Default
-// Apps settings page. If set to NO, or the device is running iOS 18.2 or older,
-// then the user is sent to the current app's iOS settings page.
+// `useDefaultAppsDestination` is set to YES, and the current device supports
+// it, the user is sent to the Default Apps settings page rather than the
+// Chromium settings.
 - (void)didTapPrimaryActionButton:(BOOL)useDefaultAppsDestination;
 
 @end

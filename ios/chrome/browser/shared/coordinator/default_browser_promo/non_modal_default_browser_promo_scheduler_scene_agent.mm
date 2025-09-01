@@ -275,10 +275,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
   LogNonModalTimeOnScreen(promoShownTime);
   LogUserInteractionWithNonModalPromo(_userInteractionWithNonModalPromoCount);
 
-  NSURL* settingsURL = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
-  [[UIApplication sharedApplication] openURL:settingsURL
-                                     options:@{}
-                           completionHandler:nil];
+  OpenIOSDefaultBrowserSettingsPage();
 }
 
 - (void)logPromoUserDismiss:

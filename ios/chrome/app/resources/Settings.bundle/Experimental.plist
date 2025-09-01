@@ -182,10 +182,13 @@
 				<string></string>
 				<string>promos_manager::Promo::AppStoreRating</string>
 				<string>promos_manager::Promo::DefaultBrowser</string>
+				<string>promos_manager::Promo::DefaultBrowserRemindMeLater</string>
+				<string>promos_manager::Promo::AllTabsDefaultBrowser</string>
+				<string>promos_manager::Promo::MadeForIOSDefaultBrowser</string>
+				<string>promos_manager::Promo::StaySafeDefaultBrowser</string>
+				<string>promos_manager::Promo::DefaultBrowserOffCycle</string>
 				<string>promos_manager::Promo::PostRestoreDefaultBrowserAlert</string>
-				<string>promos_manager::Promo::OmniboxPosition</string>
 				<string>promos_manager::Promo::DockingPromo</string>
-				<string>promos_manager::Promo::PostDefaultAbandonment</string>
 				<string>promos_manager::Promo::BWGPromo</string>
 			</array>
 			<key>Titles</key>
@@ -193,10 +196,13 @@
 				<string>Disabled (No Promos Forced)</string>
 				<string>App Store Rating</string>
 				<string>Default Browser</string>
+				<string>Default Browser Reminder</string>
+				<string>Default Browser "All Tabs" version</string>
+				<string>Default Browser "Made for iOS" version</string>
+				<string>Default Browser "Stay safe" version</string>
+				<string>Default Browser off-cycle version</string>
 				<string>Post Restore Default Browser Alert</string>
-				<string>Omnibox Position</string>
 				<string>Docking Promo</string>
-				<string>Post-Default Browser Abandonment Alert</string>
 				<string>BWG Promo</string>
 			</array>
 		</dict>

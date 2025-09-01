@@ -104,10 +104,9 @@
   base::UmaHistogramEnumeration(
       first_run::kFirstRunStageHistogram,
       first_run::kDefaultBrowserScreenCompletionWithSettings);
-  [[UIApplication sharedApplication]
-                openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
-                options:{}
-      completionHandler:nil];
+
+  OpenIOSDefaultBrowserSettingsPage();
+
   [self finishPresenting];
 }
 
@@ -126,14 +125,28 @@
   if (first_run::AnimatedDefaultBrowserPromoInFREExperimentTypeEnabled() ==
       first_run::AnimatedDefaultBrowserPromoInFREExperimentType::
           kAnimationWithShowMeHow) {
-    NSArray* defaultBrowserSteps = @[
-      l10n_util::GetNSString(
-          IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_FIRST_STEP),
-      l10n_util::GetNSString(
-          IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECOND_STEP),
-      l10n_util::GetNSString(
-          IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_THIRD_STEP)
-    ];
+    NSMutableArray* defaultBrowserSteps = [[NSMutableArray alloc] init];
+    if (IsDefaultAppsDestinationAvailable() &&
+        IsUseDefaultAppsDestinationForPromosEnabled()) {
+      [defaultBrowserSteps
+          addObject:
+              l10n_util::GetNSString(
+                  IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_DEFAULT_APPS_FIRST_STEP)];
+      [defaultBrowserSteps
+          addObject:
+              l10n_util::GetNSString(
+                  IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_DEFAULT_APPS_SECOND_STEP)];
+    } else {
+      [defaultBrowserSteps
+          addObject:l10n_util::GetNSString(
+                        IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_FIRST_STEP)];
+      [defaultBrowserSteps
+          addObject:l10n_util::GetNSString(
+                        IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECOND_STEP)];
+    }
+    [defaultBrowserSteps
+        addObject:l10n_util::GetNSString(
+                      IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_THIRD_STEP)];
 
     _instructionsHalfSheetCoordinator =
         [[InstructionsHalfSheetCoordinator alloc]

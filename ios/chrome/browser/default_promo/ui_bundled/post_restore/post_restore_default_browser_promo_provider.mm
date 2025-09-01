@@ -8,6 +8,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/feature_engagement/public/feature_constants.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/post_restore/metrics.h"
 #import "ios/chrome/browser/promos_manager/model/promo_config.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
@@ -44,10 +45,7 @@
 #pragma mark - StandardPromoAlertHandler
 
 - (void)standardPromoAlertDefaultAction {
-  [[UIApplication sharedApplication]
-                openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
-                options:{}
-      completionHandler:nil];
+  OpenIOSDefaultBrowserSettingsPage();
   base::UmaHistogramEnumeration(
       post_restore_default_browser::kPromptActionHistogramName,
       post_restore_default_browser::PromptActionType::kGoToSettings);

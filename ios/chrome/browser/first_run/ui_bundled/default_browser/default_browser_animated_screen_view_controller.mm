@@ -30,13 +30,29 @@ NSString* const kDefaultBrowserAnimationDarkmode =
     @"default_browser_animation_darkmode";
 NSString* const kDefaultBrowserAnimationRtlDarkmode =
     @"default_browser_animation_rtl_darkmode";
+NSString* const kDefaultBrowserDefaultAppsAnimation =
+    @"default_browser_default_apps_animation";
+NSString* const kDefaultBrowserDefaultAppsAnimationRtl =
+    @"default_browser_default_apps_animation_rtl";
+NSString* const kDefaultBrowserDefaultAppsAnimationDarkmode =
+    @"default_browser_default_apps_animation_darkmode";
+NSString* const kDefaultBrowserDefaultAppsAnimationRtlDarkmode =
+    @"default_browser_default_apps_animation_rtl_darkmode";
+
 // Accessibility IDs.
 NSString* const kDefaultBrowserInstructionsViewAnimationViewId =
     @"DefaultBrowserInstructionsViewAnimationViewId";
 NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
     @"DefaultBrowserInstructionsViewDarkAnimationViewId";
+
+// Keys in the lottie assets.
+NSString* const kBrowserAppKeypath = @"IDS_BROWSER_APP";
+NSString* const kDefaultBrowserAppKeypath = @"IDS_DEFAULT_BROWSER_APP";
+NSString* const kChromeKeypath = @"IDS_CHROME";
+
 // Spacing for the content stack view.
 const CGFloat kStackViewSpacing = 10;
+
 // Spacing above the title.
 const CGFloat kTitleTopMarginWhenNoHeaderImage = 30;
 }  // namespace
@@ -97,7 +113,10 @@ const CGFloat kTitleTopMarginWhenNoHeaderImage = 30;
         l10n_util::GetNSString(IDS_IOS_SHOW_ME_HOW_FIRST_RUN_TITLE);
   }
 
-  UIStackView* contentStack = [self contentStack];
+  BOOL useDefaultAppsDestination =
+      IsDefaultAppsDestinationAvailable() &&
+      IsUseDefaultAppsDestinationForPromosEnabled();
+  UIStackView* contentStack = [self contentStack:useDefaultAppsDestination];
   [self.specificContentView addSubview:contentStack];
   [NSLayoutConstraint activateConstraints:@[
     [contentStack.leadingAnchor
@@ -137,8 +156,8 @@ const CGFloat kTitleTopMarginWhenNoHeaderImage = 30;
 #pragma mark - Private
 
 // Returns a content stack that includes the animation and instructions views.
-- (UIStackView*)contentStack {
-  [self createAnimationViews];
+- (UIStackView*)contentStack:(BOOL)useDefaultAppsDestination {
+  [self createAnimationViews:useDefaultAppsDestination];
   UIStackView* stack = [[UIStackView alloc] initWithArrangedSubviews:@[
     _animationViewWrapper.animationView,
     _animationViewWrapperDarkMode.animationView
@@ -151,7 +170,8 @@ const CGFloat kTitleTopMarginWhenNoHeaderImage = 30;
   ]];
 
   if ([self shouldShowInstructions]) {
-    UIView* instructionsView = [self instructionsView];
+    UIView* instructionsView =
+        [self instructionsView:useDefaultAppsDestination];
     [stack addArrangedSubview:instructionsView];
     [NSLayoutConstraint activateConstraints:@[
       [instructionsView.widthAnchor constraintEqualToAnchor:stack.widthAnchor],
@@ -169,18 +189,27 @@ const CGFloat kTitleTopMarginWhenNoHeaderImage = 30;
 
 // Creates the animation views. Sets `_animationViewWrapper` and
 // `_animationViewWrapperDarkMode`.
-- (void)createAnimationViews {
+- (void)createAnimationViews:(BOOL)useDefaultAppsDestination {
   NSString* animationAssetName = nil;
   NSString* animationAssetNameDarkMode = nil;
 
-  // TODO(crbug.com/40948842): Handle the case when the promo is displayed and
-  // the user switches between LTR and RLT.
-  if (base::i18n::IsRTL()) {
-    animationAssetName = kDefaultBrowserAnimationRtl;
-    animationAssetNameDarkMode = kDefaultBrowserAnimationRtlDarkmode;
+  if (useDefaultAppsDestination) {
+    if (base::i18n::IsRTL()) {
+      animationAssetName = kDefaultBrowserDefaultAppsAnimationRtl;
+      animationAssetNameDarkMode =
+          kDefaultBrowserDefaultAppsAnimationRtlDarkmode;
+    } else {
+      animationAssetName = kDefaultBrowserDefaultAppsAnimation;
+      animationAssetNameDarkMode = kDefaultBrowserDefaultAppsAnimationDarkmode;
+    }
   } else {
-    animationAssetName = kDefaultBrowserAnimation;
-    animationAssetNameDarkMode = kDefaultBrowserAnimationDarkmode;
+    if (base::i18n::IsRTL()) {
+      animationAssetName = kDefaultBrowserAnimationRtl;
+      animationAssetNameDarkMode = kDefaultBrowserAnimationRtlDarkmode;
+    } else {
+      animationAssetName = kDefaultBrowserAnimation;
+      animationAssetNameDarkMode = kDefaultBrowserAnimationDarkmode;
+    }
   }
 
   _animationViewWrapper = [self createAnimation:animationAssetName];
@@ -193,9 +222,11 @@ const CGFloat kTitleTopMarginWhenNoHeaderImage = 30;
 
   // Set the text localization.
   NSDictionary* textProvider = @{
-    @"IDS_IOS_DEFAULT_BROWSER_APP" : l10n_util::GetNSString(
+    kBrowserAppKeypath :
+        l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_BROWSER_APP),
+    kDefaultBrowserAppKeypath : l10n_util::GetNSString(
         IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_DEFAULT_BROWSER_APP),
-    @"IDS_CHROME" : l10n_util::GetNSString(IDS_IOS_SHORT_PRODUCT_NAME)
+    kChromeKeypath : l10n_util::GetNSString(IDS_IOS_SHORT_PRODUCT_NAME)
   };
   [_animationViewWrapper setDictionaryTextProvider:textProvider];
   [_animationViewWrapperDarkMode setDictionaryTextProvider:textProvider];
@@ -218,13 +249,28 @@ const CGFloat kTitleTopMarginWhenNoHeaderImage = 30;
 }
 
 // Returns an InstructionView configured with steps to set default browser.
-- (UIView*)instructionsView {
-  NSArray* defaultBrowserSteps = @[
-    l10n_util::GetNSString(IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_FIRST_STEP),
-    l10n_util::GetNSString(
-        IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECOND_STEP),
-    l10n_util::GetNSString(IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_THIRD_STEP)
-  ];
+- (UIView*)instructionsView:(BOOL)useDefaultAppsDestination {
+  NSMutableArray* defaultBrowserSteps = [[NSMutableArray alloc] init];
+  if (useDefaultAppsDestination) {
+    [defaultBrowserSteps
+        addObject:
+            l10n_util::GetNSString(
+                IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_DEFAULT_APPS_FIRST_STEP)];
+    [defaultBrowserSteps
+        addObject:
+            l10n_util::GetNSString(
+                IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_DEFAULT_APPS_SECOND_STEP)];
+  } else {
+    [defaultBrowserSteps
+        addObject:l10n_util::GetNSString(
+                      IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_FIRST_STEP)];
+    [defaultBrowserSteps
+        addObject:l10n_util::GetNSString(
+                      IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECOND_STEP)];
+  }
+  [defaultBrowserSteps
+      addObject:l10n_util::GetNSString(
+                    IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_THIRD_STEP)];
 
   UIView* instructionView =
       [[InstructionView alloc] initWithList:defaultBrowserSteps];

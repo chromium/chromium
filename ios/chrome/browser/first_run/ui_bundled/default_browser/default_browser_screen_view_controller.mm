@@ -56,12 +56,28 @@
   self.secondaryActionString = l10n_util::GetNSString(
       IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION);
 
-  NSArray* defaultBrowserSteps = @[
-    l10n_util::GetNSString(IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_FIRST_STEP),
-    l10n_util::GetNSString(
-        IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECOND_STEP),
-    l10n_util::GetNSString(IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_THIRD_STEP)
-  ];
+  NSMutableArray* defaultBrowserSteps = [[NSMutableArray alloc] init];
+  if (IsDefaultAppsDestinationAvailable() &&
+      IsUseDefaultAppsDestinationForPromosEnabled()) {
+    [defaultBrowserSteps
+        addObject:
+            l10n_util::GetNSString(
+                IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_DEFAULT_APPS_FIRST_STEP)];
+    [defaultBrowserSteps
+        addObject:
+            l10n_util::GetNSString(
+                IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_DEFAULT_APPS_SECOND_STEP)];
+  } else {
+    [defaultBrowserSteps
+        addObject:l10n_util::GetNSString(
+                      IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_FIRST_STEP)];
+    [defaultBrowserSteps
+        addObject:l10n_util::GetNSString(
+                      IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECOND_STEP)];
+  }
+  [defaultBrowserSteps
+      addObject:l10n_util::GetNSString(
+                    IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_THIRD_STEP)];
 
   [self generateDisclaimer];
 

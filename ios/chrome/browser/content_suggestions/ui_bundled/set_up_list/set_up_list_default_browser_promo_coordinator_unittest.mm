@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -88,10 +89,16 @@ TEST_F(SetUpListDefaultBrowserPromoCoordinatorTest, PrimaryButton) {
   [coordinator_ start];
 
   OCMExpect([delegate_ setUpListDefaultBrowserPromoDidFinish:YES]);
-  OCMExpect([mock_application_
-                openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
-                options:{}
-      completionHandler:nil]);
+
+  NSURL* url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+  if (@available(iOS 18.3, *)) {
+    if (IsDefaultAppsDestinationAvailable() &&
+        IsUseDefaultAppsDestinationForPromosEnabled()) {
+      url = [NSURL
+          URLWithString:UIApplicationOpenDefaultApplicationsSettingsURLString];
+    }
+  }
+  OCMExpect([mock_application_ openURL:url options:{} completionHandler:nil]);
   [coordinator_ didTapPrimaryActionButton];
   [delegate_ verify];
 

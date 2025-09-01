@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/i18n/rtl.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
@@ -76,6 +77,8 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
                             (id<ConfirmationAlertActionHandler>)actionHandler
                             titleText:(NSString*)titleText {
   if ((self = [super init])) {
+    useDefaultAppsDestination |= IsDefaultAppsDestinationAvailable() &&
+                                 IsUseDefaultAppsDestinationForPromosEnabled();
     [self addVideoSection:useDefaultAppsDestination];
     [self addInformationSectionWithDismissButton:hasDismissButton
                                 hasRemindMeLater:hasRemindMeLater

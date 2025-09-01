@@ -429,4 +429,14 @@ NSDate* LastTimeUserInteractedWithNonModalPromo();
 // Promo was presented.
 std::optional<IOSDefaultBrowserPromoAction> DefaultBrowserPromoLastAction();
 
+// Opens the appropriate iOS settings to set Chromium as default browser. If
+// the relevant feature flags are enabled or if
+// `force_default_apps_if_available` is set to true, the new Default Apps page
+// will be used as the destination if the device supports it. Otherwise, the
+// Chromium settings will be used. The second parameter is to facilitate mocking
+// in unit testing.
+void OpenIOSDefaultBrowserSettingsPage(
+    bool force_default_apps_if_available = false,
+    UIApplication* ui_application_to_use = nil);
+
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_MODEL_UTILS_H_

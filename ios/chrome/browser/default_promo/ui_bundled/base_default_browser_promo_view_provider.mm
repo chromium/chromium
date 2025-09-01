@@ -77,7 +77,7 @@ using l10n_util::GetNSString;
       IOSDefaultBrowserPromoAction::kActionButton);
   LogUserInteractionWithTailoredFullscreenPromo();
 
-  [self openSettings];
+  OpenIOSDefaultBrowserSettingsPage();
   [self dissmissPromo];
 }
 
@@ -122,13 +122,6 @@ using l10n_util::GetNSString;
 }
 
 #pragma mark - Private
-// Open settings.
-- (void)openSettings {
-  [[UIApplication sharedApplication]
-                openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
-                options:{}
-      completionHandler:nil];
-}
 
 // Show learn more view.
 - (void)showLearnMoreView {

@@ -45,6 +45,9 @@ enum class DefaultBrowserSettingsPageUsage {
   // Whether the user visited the iOS Default Browser settings page.
   BOOL _defaultBrowserSettingsVisited;
 
+  // Whether to use the new Default Apps destination when going to iOS settings.
+  BOOL _useDefaultAppsDestination;
+
   // The view controller for default browser instructions.
   DefaultBrowserInstructionsViewController* _instructionsViewController;
 }
@@ -62,6 +65,13 @@ enum class DefaultBrowserSettingsPageUsage {
   self.title = l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_DEFAULT_BROWSER);
   self.shouldHideDoneButton = YES;
   self.tableView.accessibilityIdentifier = kDefaultBrowserSettingsTableViewId;
+
+  BOOL isFromOneTimeDefaultBrowserNotification =
+      self.source == DefaultBrowserSettingsPageSource::kTipsNotification &&
+      base::FeatureList::IsEnabled(kIOSOneTimeDefaultBrowserNotification);
+  _useDefaultAppsDestination = IsDefaultAppsDestinationAvailable() &&
+                               (isFromOneTimeDefaultBrowserNotification ||
+                                IsUseDefaultAppsDestinationForPromosEnabled());
 
   [self addDefaultBrowserVideoInstructionsView];
 
@@ -117,28 +127,17 @@ enum class DefaultBrowserSettingsPageUsage {
 
   _defaultBrowserSettingsVisited = YES;
 
-  [[UIApplication sharedApplication]
-                openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
-                options:{}
-      completionHandler:nil];
+  OpenIOSDefaultBrowserSettingsPage(_useDefaultAppsDestination);
 }
 
 // Adds default browser video instructions view as a background view.
 - (void)addDefaultBrowserVideoInstructionsView {
-  BOOL useDefaultAppsDestination = NO;
-#if defined(__IPHONE_18_3) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_3
-  if (@available(iOS 18.3, *)) {
-    useDefaultAppsDestination =
-        self.source == DefaultBrowserSettingsPageSource::kTipsNotification &&
-        base::FeatureList::IsEnabled(kIOSOneTimeDefaultBrowserNotification);
-  }
-#endif
   _instructionsViewController =
       [[DefaultBrowserInstructionsViewController alloc]
               initWithDismissButton:NO
                    hasRemindMeLater:NO
-          useDefaultAppsDestination:useDefaultAppsDestination
-                           hasSteps:!useDefaultAppsDestination
+          useDefaultAppsDestination:_useDefaultAppsDestination
+                           hasSteps:YES
                       actionHandler:self
                           titleText:nil];
   [self addChildViewController:_instructionsViewController];

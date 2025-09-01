@@ -90,9 +90,10 @@ using base::UserMetricsAction;
   RecordAction(UserMetricsAction("IOS.DefaultBrowserPromo.SetUpList.Accepted"));
   [self logDefaultBrowserFullscreenPromoHistogramForAction:
             IOSDefaultBrowserPromoAction::kActionButton];
-  [_application openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
-                options:{}
-      completionHandler:nil];
+
+  OpenIOSDefaultBrowserSettingsPage(/*force_default_apps_if_available=*/false,
+                                    _application);
+
   _markItemComplete = YES;
   [self.delegate setUpListDefaultBrowserPromoDidFinish:YES];
 }

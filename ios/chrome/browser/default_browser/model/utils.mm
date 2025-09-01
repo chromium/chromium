@@ -1028,3 +1028,20 @@ NSDate* LastTimeUserInteractedWithNonModalPromo() {
   return GetObjectFromStorageForKey<NSDate>(
       kLastTimeUserInteractedWithNonModalPromo);
 }
+
+void OpenIOSDefaultBrowserSettingsPage(bool force_default_apps_if_available,
+                                       UIApplication* ui_application_to_use) {
+  NSURL* url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+  if (@available(iOS 18.3, *)) {
+    if (IsDefaultAppsDestinationAvailable() &&
+        (force_default_apps_if_available ||
+         IsUseDefaultAppsDestinationForPromosEnabled())) {
+      url = [NSURL
+          URLWithString:UIApplicationOpenDefaultApplicationsSettingsURLString];
+    }
+  }
+  if (!ui_application_to_use) {
+    ui_application_to_use = [UIApplication sharedApplication];
+  }
+  [ui_application_to_use openURL:url options:{} completionHandler:nil];
+}
