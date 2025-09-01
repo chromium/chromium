@@ -76,6 +76,8 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplNativePixmap
       gfx::BufferFormat format,
       std::unique_ptr<gfx::ClientNativePixmap> native_pixmap);
 
+  const gfx::Size size_;
+  const gfx::BufferFormat format_;
   const std::unique_ptr<gfx::ClientNativePixmap> pixmap_;
 };
 

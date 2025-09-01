@@ -73,6 +73,8 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplIOSurface
                                gfx::GpuMemoryBufferHandle handle,
                                uint32_t lock_flags);
 
+  const gfx::Size size_;
+  const gfx::BufferFormat format_;
   gfx::GpuMemoryBufferHandle handle_;
   [[maybe_unused]] const uint32_t lock_flags_;
 

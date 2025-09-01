@@ -8,9 +8,7 @@
 
 namespace gpu {
 
-GpuMemoryBufferImpl::GpuMemoryBufferImpl(const gfx::Size& size,
-                                         gfx::BufferFormat format)
-    : size_(size), format_(format) {}
+GpuMemoryBufferImpl::GpuMemoryBufferImpl() = default;
 
 GpuMemoryBufferImpl::~GpuMemoryBufferImpl() {
 #if DCHECK_IS_ON()

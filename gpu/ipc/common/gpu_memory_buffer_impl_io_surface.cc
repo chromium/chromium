@@ -49,7 +49,8 @@ GpuMemoryBufferImplIOSurface::GpuMemoryBufferImplIOSurface(
     gfx::BufferFormat format,
     gfx::GpuMemoryBufferHandle handle,
     uint32_t lock_flags)
-    : GpuMemoryBufferImpl(size, format),
+    : size_(size),
+      format_(format),
       handle_(std::move(handle)),
       lock_flags_(lock_flags) {}
 

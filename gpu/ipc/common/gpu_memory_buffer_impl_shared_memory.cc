@@ -28,7 +28,8 @@ GpuMemoryBufferImplSharedMemory::GpuMemoryBufferImplSharedMemory(
     base::WritableSharedMemoryMapping shared_memory_mapping,
     size_t offset,
     uint32_t stride)
-    : GpuMemoryBufferImpl(size, format),
+    : size_(size),
+      format_(format),
       shared_memory_region_(std::move(shared_memory_region)),
       shared_memory_mapping_(std::move(shared_memory_mapping)),
       offset_(offset),

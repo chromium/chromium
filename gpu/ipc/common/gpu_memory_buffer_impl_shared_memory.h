@@ -75,6 +75,8 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplSharedMemory
       size_t offset,
       uint32_t stride);
 
+  const gfx::Size size_;
+  const gfx::BufferFormat format_;
   base::UnsafeSharedMemoryRegion shared_memory_region_;
   base::WritableSharedMemoryMapping shared_memory_mapping_;
   size_t offset_;

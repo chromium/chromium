@@ -102,6 +102,9 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImplDXGI
       base::OnceCallback<void(bool)>);
   void CheckAsyncMapResult(bool result);
 
+  const gfx::Size size_;
+  const gfx::BufferFormat format_;
+
   // This is currently always set to false until media capture code is converted
   // to use MappableSI.
   bool use_premapped_memory_ = false;

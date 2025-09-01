@@ -81,12 +81,9 @@ class GPU_IPC_COMMON_EXPORT GpuMemoryBufferImpl {
 #endif
 
  protected:
-  GpuMemoryBufferImpl(const gfx::Size& size, gfx::BufferFormat format);
+  GpuMemoryBufferImpl();
 
   void AssertMapped();
-
-  const gfx::Size size_;
-  const gfx::BufferFormat format_;
 
   // Note: This lock must be held throughout the entirety of the Map() and
   // Unmap() operations to avoid corrupt mutation across multiple threads.

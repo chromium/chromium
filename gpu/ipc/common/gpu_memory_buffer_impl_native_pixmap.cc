@@ -31,7 +31,7 @@ GpuMemoryBufferImplNativePixmap::GpuMemoryBufferImplNativePixmap(
     const gfx::Size& size,
     gfx::BufferFormat format,
     std::unique_ptr<gfx::ClientNativePixmap> pixmap)
-    : GpuMemoryBufferImpl(size, format), pixmap_(std::move(pixmap)) {}
+    : size_(size), format_(format), pixmap_(std::move(pixmap)) {}
 
 GpuMemoryBufferImplNativePixmap::~GpuMemoryBufferImplNativePixmap() = default;
 
