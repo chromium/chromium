@@ -31,6 +31,7 @@
 #import "components/autofill/core/common/password_form_fill_data.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_util.h"
+#import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
@@ -53,9 +54,7 @@
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_controller.h"
-#import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_mediator.h"
-#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
@@ -266,11 +265,8 @@ class PasswordControllerTest : public PlatformTest {
     // predictions on.
     PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
 
-    InfoBarManagerImpl::CreateForWebState(web_state());
-    autofill::ChromeAutofillClientIOS::CreateForWebState(
-        web_state(), profile_.get(),
-        InfoBarManagerImpl::FromWebState(web_state()),
-        /*bridge=*/nil);
+    autofill::TestAutofillClientIOS::CreateForWebState(web_state(),
+                                                       /*bridge=*/nil);
 
     passwordController_ = CreatePasswordController(
         profile_->GetPrefs(), web_state(), store_.get(), &weak_client_);
@@ -1271,11 +1267,8 @@ class PasswordControllerTestSimple : public PlatformTest {
     web_state_.SetWebFramesManager(content_world,
                                    std::move(web_frames_manager));
 
-    InfoBarManagerImpl::CreateForWebState(&web_state_);
-    autofill::ChromeAutofillClientIOS::CreateForWebState(
-        &web_state_, profile_.get(),
-        InfoBarManagerImpl::FromWebState(&web_state_),
-        /*bridge=*/nil);
+    autofill::TestAutofillClientIOS::CreateForWebState(&web_state_,
+                                                       /*bridge=*/nil);
 
     passwordController_ = CreatePasswordController(&pref_service_, &web_state_,
                                                    store_.get(), &weak_client_);

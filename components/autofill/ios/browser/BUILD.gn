@@ -128,6 +128,7 @@ source_set("test_support") {
     "mock_password_autofill_agent_delegate.mm",
     "new_frame_catcher.h",
     "new_frame_catcher.mm",
+    "test_autofill_client_ios.h",
     "test_autofill_java_script_feature_container.h",
     "test_autofill_java_script_feature_container.mm",
     "test_autofill_manager_injector.h",
@@ -148,29 +149,6 @@ source_set("test_support") {
   ]
 }
 
-source_set("test_support_internal") {
-  testonly = true
-  sources = [ "test_autofill_client_ios.h" ]
-  deps = [
-    ":browser",
-    "//base",
-    "//base/test:test_support",
-    "//components/autofill/core/browser",
-    "//components/autofill/core/browser:test_support",
-    "//components/autofill/ios/form_util:autofill_renderer_id_feature",
-    "//components/autofill/ios/form_util:form_handler_feature",
-    "//components/autofill/ios/form_util:form_util_feature",
-    "//components/autofill/ios/form_util:frame_registration_feature",
-    "//components/leveldb_proto",
-    "//ios/web/public",
-    "//ios/web/public/js_messaging",
-  ]
-  visibility = [
-    "//components/autofill/ios/browser:unit_tests",
-    "//components/password_manager/ios:unit_tests",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -186,7 +164,6 @@ source_set("unit_tests") {
   deps = [
     ":browser",
     ":test_support",
-    ":test_support_internal",
     ":util",
     "//base",
     "//base/test:test_support",

@@ -10,6 +10,7 @@
 
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/ios/browser/autofill_client_ios.h"
+#import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/enterprise/connectors/core/features.h"
 #import "components/enterprise/connectors/core/reporting_event_router.h"
 #import "components/keyed_service/core/keyed_service.h"
