@@ -701,8 +701,7 @@ class TrackRunIteratorTest : public testing::Test {
 
     // We don't care about the actual data in aux.
     std::vector<uint8_t> aux_info(1000);
-    return iter_->Init(*moof) &&
-           iter_->CacheAuxInfo(&aux_info[0], aux_info.size());
+    return iter_->Init(*moof) && iter_->CacheAuxInfo(aux_info);
   }
 
   void SetAscending(std::vector<uint32_t>* vec) {
@@ -994,10 +993,10 @@ TEST_F(TrackRunIteratorTest, DecryptConfigTestWithAuxInfo) {
   EXPECT_EQ(static_cast<uint32_t>(iter_->aux_info_size()), std::size(kAuxInfo));
   EXPECT_EQ(iter_->aux_info_offset(), 50);
   EXPECT_EQ(iter_->GetMaxClearOffset(), 50);
-  EXPECT_FALSE(iter_->CacheAuxInfo(nullptr, 0));
-  EXPECT_FALSE(iter_->CacheAuxInfo(kAuxInfo, 3));
+  EXPECT_FALSE(iter_->CacheAuxInfo({}));
+  EXPECT_FALSE(iter_->CacheAuxInfo(base::span(kAuxInfo).first<3>()));
   EXPECT_TRUE(iter_->AuxInfoNeedsToBeCached());
-  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo, std::size(kAuxInfo)));
+  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo));
   EXPECT_FALSE(iter_->AuxInfoNeedsToBeCached());
   EXPECT_EQ(iter_->sample_offset(), 200);
   EXPECT_EQ(iter_->GetMaxClearOffset(), moof.tracks[0].runs[0].data_offset);
@@ -1122,7 +1121,7 @@ TEST_F(TrackRunIteratorTest, SharedAuxInfoTest) {
   ASSERT_TRUE(iter_->Init(moof));
   EXPECT_EQ(iter_->track_id(), 1u);
   EXPECT_EQ(iter_->aux_info_offset(), 50);
-  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo, std::size(kAuxInfo)));
+  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo));
   std::unique_ptr<DecryptConfig> config = iter_->GetDecryptConfig();
   ASSERT_EQ(std::size(kIv1), config->iv().size());
   EXPECT_EQ(base::span(kIv1), base::span(config->iv()));
@@ -1131,7 +1130,7 @@ TEST_F(TrackRunIteratorTest, SharedAuxInfoTest) {
   iter_->AdvanceRun();
   EXPECT_EQ(iter_->GetMaxClearOffset(), 50);
   EXPECT_EQ(iter_->aux_info_offset(), 50);
-  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo, std::size(kAuxInfo)));
+  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo));
   EXPECT_EQ(iter_->GetMaxClearOffset(), 200);
   ASSERT_EQ(std::size(kIv1), config->iv().size());
   EXPECT_EQ(base::span(kIv1), base::span(config->iv()));
@@ -1168,13 +1167,13 @@ TEST_F(TrackRunIteratorTest, UnexpectedOrderingTest) {
   EXPECT_EQ(iter_->track_id(), 2u);
   EXPECT_EQ(iter_->aux_info_offset(), 50);
   EXPECT_EQ(iter_->sample_offset(), 200);
-  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo, std::size(kAuxInfo)));
+  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo));
   EXPECT_EQ(iter_->GetMaxClearOffset(), 100);
   iter_->AdvanceRun();
   EXPECT_EQ(iter_->track_id(), 1u);
   EXPECT_EQ(iter_->aux_info_offset(), 20000);
   EXPECT_EQ(iter_->sample_offset(), 100);
-  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo, std::size(kAuxInfo)));
+  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo));
   EXPECT_EQ(iter_->GetMaxClearOffset(), 100);
   iter_->AdvanceSample();
   EXPECT_EQ(iter_->GetMaxClearOffset(), 101);
@@ -1183,7 +1182,7 @@ TEST_F(TrackRunIteratorTest, UnexpectedOrderingTest) {
   EXPECT_EQ(iter_->aux_info_offset(), 201);
   EXPECT_EQ(iter_->sample_offset(), 10000);
   EXPECT_EQ(iter_->GetMaxClearOffset(), 201);
-  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo, std::size(kAuxInfo)));
+  EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo));
   EXPECT_EQ(iter_->GetMaxClearOffset(), 10000);
 }
 

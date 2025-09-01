@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/formats/mp4/box_definitions.h"
 
 #include <bitset>
@@ -14,9 +9,11 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/containers/auto_spanification_helper.h"
 #include "base/containers/span.h"
 #include "base/containers/span_writer.h"
 #include "base/logging.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
@@ -306,9 +303,8 @@ bool SampleEncryptionEntry::Parse(BufferReader* reader,
   // the constant IV must be ensured by the caller.
   RCHECK(iv_size == 0 || iv_size == 8 || iv_size == 16);
 
-  memset(initialization_vector, 0, sizeof(initialization_vector));
   for (uint8_t i = 0; i < iv_size; i++)
-    RCHECK(reader->Read1(initialization_vector + i));
+    RCHECK(reader->Read1(&initialization_vector[i]));
 
   if (!has_subsamples) {
     subsamples.clear();
@@ -384,7 +380,8 @@ TrackEncryption::TrackEncryption()
       default_iv_size(0),
       default_crypt_byte_block(0),
       default_skip_byte_block(0),
-      default_constant_iv_size(0) {}
+      default_constant_iv_size(0),
+      default_constant_iv() {}
 TrackEncryption::TrackEncryption(const TrackEncryption& other) = default;
 TrackEncryption::~TrackEncryption() = default;
 FourCC TrackEncryption::BoxType() const { return FOURCC_TENC; }
@@ -406,9 +403,8 @@ bool TrackEncryption::Parse(BoxReader* reader) {
     if (default_iv_size == 0) {
       RCHECK(reader->Read1(&default_constant_iv_size));
       RCHECK(default_constant_iv_size == 8 || default_constant_iv_size == 16);
-      memset(default_constant_iv, 0, sizeof(default_constant_iv));
       for (uint8_t i = 0; i < default_constant_iv_size; i++)
-        RCHECK(reader->Read1(default_constant_iv + i));
+        RCHECK(reader->Read1(&default_constant_iv[i]));
     } else {
       RCHECK(default_iv_size == 8 || default_iv_size == 16);
     }
@@ -1545,11 +1541,13 @@ bool OpusSpecificBox::Parse(BoxReader* reader) {
 #error The code below assumes little-endianness.
 #endif
 
-  memcpy(&extradata[OPUS_EXTRADATA_SKIP_SAMPLES_OFFSET], &codec_delay_in_frames,
-         sizeof(codec_delay_in_frames));
-  memcpy(&extradata[OPUS_EXTRADATA_SAMPLE_RATE_OFFSET], &sample_rate,
-         sizeof(sample_rate));
-  memcpy(&extradata[OPUS_EXTRADATA_GAIN_OFFSET], &gain_db, sizeof(gain_db));
+  auto extradata_span = base::span(extradata);
+  extradata_span.subspan(OPUS_EXTRADATA_SKIP_SAMPLES_OFFSET)
+      .copy_prefix_from(base::U16ToLittleEndian(codec_delay_in_frames));
+  extradata_span.subspan(OPUS_EXTRADATA_SAMPLE_RATE_OFFSET)
+      .copy_prefix_from(base::U32ToLittleEndian(sample_rate));
+  extradata_span.subspan(OPUS_EXTRADATA_GAIN_OFFSET)
+      .copy_prefix_from(base::I16ToLittleEndian(gain_db));
 
   channel_count = extradata[OPUS_EXTRADATA_CHANNELS_OFFSET];
 
@@ -2291,7 +2289,8 @@ CencSampleEncryptionInfoEntry::CencSampleEncryptionInfoEntry()
       iv_size(0),
       crypt_byte_block(0),
       skip_byte_block(0),
-      constant_iv_size(0) {}
+      constant_iv_size(0),
+      constant_iv() {}
 CencSampleEncryptionInfoEntry::CencSampleEncryptionInfoEntry(
     const CencSampleEncryptionInfoEntry& other) = default;
 CencSampleEncryptionInfoEntry::~CencSampleEncryptionInfoEntry() = default;
@@ -2310,9 +2309,8 @@ bool CencSampleEncryptionInfoEntry::Parse(BoxReader* reader) {
     if (iv_size == 0) {
       RCHECK(reader->Read1(&constant_iv_size));
       RCHECK(constant_iv_size == 8 || constant_iv_size == 16);
-      memset(constant_iv, 0, sizeof(constant_iv));
       for (uint8_t i = 0; i < constant_iv_size; i++)
-        RCHECK(reader->Read1(constant_iv + i));
+        RCHECK(reader->Read1(&constant_iv[i]));
     } else {
       RCHECK(iv_size == 8 || iv_size == 16);
     }

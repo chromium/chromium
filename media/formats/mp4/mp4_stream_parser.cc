@@ -965,7 +965,7 @@ ParseResult MP4StreamParser::EnqueueSample(BufferQueueMap* buffers) {
       return ParseResult::kNeedMoreData;
     }
 
-    if (!runs_->CacheAuxInfo(buf.data(), buf.size())) {
+    if (!runs_->CacheAuxInfo(buf)) {
       return ParseResult::kError;
     }
 
