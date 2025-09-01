@@ -81,8 +81,8 @@ BASE_FEATURE(kDebugUiForOtps,
              "DebugUiForOtps",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kFetchChangePasswordUrl,
-             "FetchChangePasswordUrl",
+BASE_FEATURE(kFetchChangePasswordUrlForPasswordChange,
+             "FetchChangePasswordUrlForPasswordChange",
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
              // Desktop only since password change is not available on mobile.
              base::FEATURE_ENABLED_BY_DEFAULT

@@ -112,7 +112,8 @@ void LeakDetectionDelegate::OnLeakDetectionDone(bool is_leaked,
   affiliations::AffiliationService* affiliation_service =
       client_->GetAffiliationService();
   if (affiliation_service &&
-      base::FeatureList::IsEnabled(features::kFetchChangePasswordUrl)) {
+      base::FeatureList::IsEnabled(
+          features::kFetchChangePasswordUrlForPasswordChange)) {
     affiliation_service->PrefetchChangePasswordURL(
         url, base::BindOnce(barrier_callback, std::nullopt));
   } else {

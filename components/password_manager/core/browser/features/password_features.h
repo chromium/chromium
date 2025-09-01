@@ -86,7 +86,7 @@ BASE_DECLARE_FEATURE(kEnablePasswordManagerMojoApi);
 
 // Fetches change password url if the credential has been identified as leaked.
 // Later change password url is used during password change.
-BASE_DECLARE_FEATURE(kFetchChangePasswordUrl);
+BASE_DECLARE_FEATURE(kFetchChangePasswordUrlForPasswordChange);
 
 // Enables the experiment for the password manager to only fill on account
 // selection, rather than autofilling on page load, with highlighting of fields.
