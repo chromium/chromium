@@ -74,6 +74,9 @@ struct CONTENT_EXPORT PrefetchMatchMetrics {
   PrefetchMatchMetrics(const PrefetchMatchMetrics&) = delete;
   PrefetchMatchMetrics& operator=(const PrefetchMatchMetrics&) = delete;
 
+  base::TimeTicks time_match_start;
+  base::TimeTicks time_match_end;
+
   // Number of initial candidates of prefetch matching, including already failed
   // ones.
   int n_initial_candidates = -1;

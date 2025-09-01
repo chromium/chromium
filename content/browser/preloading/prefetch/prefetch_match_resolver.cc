@@ -65,6 +65,8 @@ PrefetchMatchResolver::PrefetchMatchResolver(
     case PrefetchServiceWorkerState::kDisallowed:
       break;
   }
+
+  prefetch_match_metrics_->time_match_start = base::TimeTicks::Now();
 }
 
 PrefetchMatchResolver::~PrefetchMatchResolver() = default;
@@ -533,6 +535,7 @@ void PrefetchMatchResolver::UnblockInternal(
             ? std::make_unique<PrefetchContainerMetrics>(
                   prefetch_container->GetPrefetchContainerMetrics())
             : std::unique_ptr<PrefetchContainerMetrics>(nullptr);
+    prefetch_match_metrics_->time_match_end = base::TimeTicks::Now();
     if (navigation_request_for_metrics_) {
       auto& preload_serving_metrics_holder =
           *PreloadServingMetricsHolder::GetOrCreateForNavigationHandle(

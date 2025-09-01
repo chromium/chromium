@@ -127,6 +127,8 @@ TEST_F(PreloadServingMetricsTest, NavigationWithPrefetch) {
   base::HistogramTester histogram_tester;
 
   auto log = MakeSkeltonPreloadServingMetrics({.n_prefetch_match_metrics = 1});
+  log->prefetch_match_metrics_list[0]->time_match_start = Millis(42);
+  log->prefetch_match_metrics_list[0]->time_match_end = Millis(57);
   log->prefetch_match_metrics_list[0]->n_initial_candidates = 1;
   log->prefetch_match_metrics_list[0]->n_initial_candidates_block_until_head =
       1;
