@@ -340,7 +340,8 @@ id<GREYMatcher> BottomToolbar() {
 }
 
 // Test that the page for editing Autofill credit card details is accessible.
-- (void)testAccessibilityOnCreditCardEditPage {
+// TODO(crbug.com/379736649): Re-enable this test.
+- (void)FLAKY_testAccessibilityOnCreditCardEditPage {
   NSString* lastDigits = [AutofillAppInterface saveLocalCreditCard];
   [AutofillAppInterface mockReauthenticationModuleExpectedResult:
                             ReauthenticationResult::kSuccess];
