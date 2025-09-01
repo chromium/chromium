@@ -12,6 +12,7 @@
 #include "net/base/cronet_buildflags.h"
 #include "net/disk_cache/buildflags.h"
 #include "net/net_buildflags.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_constants.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
@@ -764,4 +765,10 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "AdditionalDelay",
                    base::Milliseconds(0));
 
+BASE_FEATURE(ExtendQuicHandshakeTimeout, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kQuicHandshakeTimeout,
+                   &kExtendQuicHandshakeTimeout,
+                   "QuicHandshakeTimeout",
+                   base::Seconds(quic::kMaxTimeForCryptoHandshakeSecs));
 }  // namespace net::features

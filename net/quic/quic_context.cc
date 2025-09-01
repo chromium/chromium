@@ -5,6 +5,7 @@
 #include "net/quic/quic_context.h"
 
 #include "base/containers/contains.h"
+#include "net/base/features.h"
 #include "net/quic/platform/impl/quic_chromium_clock.h"
 #include "net/quic/quic_chromium_connection_helper.h"
 #include "net/ssl/cert_compression.h"
@@ -23,6 +24,13 @@ const int32_t kQuicStreamMaxRecvWindowSize = 6 * 1024 * 1024;    // 6 MB
 
 // Set the maximum number of undecryptable packets the connection will store.
 const int32_t kMaxUndecryptablePackets = 100;
+
+base::TimeDelta GetQuicHandshakeTimeout(const QuicParams& params) {
+  if (base::FeatureList::IsEnabled(features::kExtendQuicHandshakeTimeout)) {
+    return features::kQuicHandshakeTimeout.Get();
+  }
+  return params.max_time_before_crypto_handshake;
+}
 
 }  // namespace
 
@@ -71,7 +79,7 @@ quic::QuicConfig InitializeQuicConfig(const QuicParams& params) {
           params.idle_connection_timeout.InMicroseconds()));
   config.set_max_time_before_crypto_handshake(
       quic::QuicTime::Delta::FromMicroseconds(
-          params.max_time_before_crypto_handshake.InMicroseconds()));
+          GetQuicHandshakeTimeout(params).InMicroseconds()));
   config.set_max_idle_time_before_crypto_handshake(
       quic::QuicTime::Delta::FromMicroseconds(
           params.max_idle_time_before_crypto_handshake.InMicroseconds()));

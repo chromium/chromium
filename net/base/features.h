@@ -890,6 +890,10 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
 NET_EXPORT BASE_DECLARE_FEATURE(kAdditionalDelayMainJob);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kAdditionalDelay);
 
+// If enabled, we will extend the quic handshake timeout.
+NET_EXPORT BASE_DECLARE_FEATURE(kExtendQuicHandshakeTimeout);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kQuicHandshakeTimeout);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_
