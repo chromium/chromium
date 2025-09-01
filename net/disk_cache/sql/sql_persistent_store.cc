@@ -549,16 +549,19 @@ Error Backend::InitializeInternal(bool& corruption_detected) {
     return Error::kFailedToStartTransaction;
   }
 
+  if (!sql::MetaTable::DoesTableExist(&db_)) {
+    // Initialize the database schema.
+    if (!InitSchema(db_)) {
+      return Error::kFailedToInitializeSchema;
+    }
+  }
+
   // Initialize the meta table, which stores version info and other metadata.
   if (!meta_table_.Init(&db_, kSqlBackendCurrentDatabaseVersion,
                         kSqlBackendCompatibleDatabaseVersion)) {
     return Error::kFailedToInitializeMetaTable;
   }
 
-  // Initialize the database schema.
-  if (!InitSchema(db_)) {
-    return Error::kFailedToInitializeSchema;
-  }
 
   int64_t tmp_entry_count = 0;
   if (!GetOrInitializeMetaValue(meta_table_, kSqlBackendMetaTableKeyEntryCount,

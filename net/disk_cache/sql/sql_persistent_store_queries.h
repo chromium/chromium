@@ -20,7 +20,7 @@ namespace internal {
 // The `resources` table stores the main metadata for each cache entry.
 inline constexpr const char kInitSchema_CreateTableResources[] =
     // clang-format off
-    "CREATE TABLE IF NOT EXISTS resources("
+    "CREATE TABLE resources("
         // Unique ID for the resource
         "res_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"
         // High part of an unguessable token
@@ -44,7 +44,7 @@ inline constexpr const char kInitSchema_CreateTableResources[] =
 // The `blobs` table stores the data chunks of the cached body.
 inline constexpr const char kInitSchema_CreateTableBlobs[] =
     // clang-format off
-    "CREATE TABLE IF NOT EXISTS blobs("
+    "CREATE TABLE blobs("
         // Unique ID for the blob
         "blob_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"
         // Foreign key to resources.token_high
@@ -65,14 +65,14 @@ inline constexpr const char kInitSchema_CreateTableBlobs[] =
 // `WriteEntryData`. The `UNIQUE` constraint ensures data integrity by
 // preventing duplicate tokens.
 inline constexpr const char kIndex_ResourcesToken[] =
-    "CREATE UNIQUE INDEX IF NOT EXISTS index_resources_token ON "
+    "CREATE UNIQUE INDEX index_resources_token ON "
     "resources(token_high, token_low)";
 
 // An index on `(cache_key, doomed)` to speed up lookups for live entries. This
 // is frequently used in operations like `OpenEntry` to quickly find a
 // non-doomed entry for a given cache key.
 inline constexpr const char kIndex_ResourcesCacheKeyDoomed[] =
-    "CREATE INDEX IF NOT EXISTS index_resources_cache_key_doomed ON "
+    "CREATE INDEX index_resources_cache_key_doomed ON "
     "resources(cache_key, doomed)";
 
 // An index on `(doomed, last_used)` to optimize eviction logic. Eviction
@@ -80,7 +80,7 @@ inline constexpr const char kIndex_ResourcesCacheKeyDoomed[] =
 // entries. This index significantly speeds up queries that select entries for
 // eviction.
 inline constexpr const char kIndex_ResourcesDoomedLastUsed[] =
-    "CREATE INDEX IF NOT EXISTS index_resources_doomed_last_used ON "
+    "CREATE INDEX index_resources_doomed_last_used ON "
     "resources(doomed, last_used)";
 
 // An index on `(doomed, res_id)` to optimize iterating through entries while
@@ -88,7 +88,7 @@ inline constexpr const char kIndex_ResourcesDoomedLastUsed[] =
 // increasing primary key, making this index ideal for ordered traversals like
 // in `OpenLatestEntryBeforeResId`.
 inline constexpr const char kIndex_ResourcesDoomedResId[] =
-    "CREATE INDEX IF NOT EXISTS index_resources_doomed_res_id ON "
+    "CREATE INDEX index_resources_doomed_res_id ON "
     "resources(doomed, res_id)";
 
 // A unique index on `(token_high, token_low, start)` in the `blobs` table. This
@@ -97,7 +97,7 @@ inline constexpr const char kIndex_ResourcesDoomedResId[] =
 // ensures that there are no overlapping blobs starting at the same offset for
 // the same entry, which is important for data integrity.
 inline constexpr const char kIndex_BlobsTokenStart[] =
-    "CREATE UNIQUE INDEX IF NOT EXISTS index_blobs_token_start ON "
+    "CREATE UNIQUE INDEX index_blobs_token_start ON "
     "blobs(token_high, token_low, start)";
 
 inline constexpr const char kOpenEntry_SelectLiveResources[] =
