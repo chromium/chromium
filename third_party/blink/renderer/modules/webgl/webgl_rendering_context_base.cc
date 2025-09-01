@@ -2075,7 +2075,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
   }
 
   if (isContextLost() || !GetDrawingBuffer()) {
-    return resource_provider_.get();
+    return nullptr;
   }
 
   bool must_clear_now = ClearIfComposited(kClearCallerOther) != kSkipped;
@@ -2090,6 +2090,8 @@ WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
   // is backgrounded.
 
   if (!must_paint_to_canvas_ && !must_clear_now && resource_provider_.get()) {
+    // `resource_provider_` already has the current contents, so it can just be
+    // returned as-is.
     return resource_provider_.get();
   }
 
@@ -2109,12 +2111,16 @@ WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
   // during the resolve process, specifically during automatic
   // graphics switching. Guard against this.
   if (!GetDrawingBuffer()->ResolveAndBindForReadAndDraw())
-    return resource_provider;
+    return nullptr;
 
   bool copy_succeeded = CopyRenderingResultsFromDrawingBuffer(
       resource_provider_.get(), source_buffer);
+  if (!copy_succeeded) {
+    return nullptr;
+  }
+
   if (resource_provider_was_updated != nullptr) {
-    *resource_provider_was_updated = copy_succeeded;
+    *resource_provider_was_updated = true;
   }
   return resource_provider;
 }

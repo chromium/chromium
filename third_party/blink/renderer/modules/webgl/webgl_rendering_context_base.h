@@ -1980,6 +1980,10 @@ class MODULES_EXPORT WebGLRenderingContextBase
 
   CanvasResourceProvider* GetOrCreateCanvasResourceProvider(
       bool use_bitmap_provider);
+
+  // Attempts to paint the most recent rendering results into a
+  // CanvasResourceProvider. Returns the CanvasResourceProvider if the paint
+  // succeeded; otherwise returns nullptr.
   CanvasResourceProvider* PaintRenderingResultsToResourceProvider(
       SourceDrawingBuffer source_buffer,
       bool use_bitmap_provider,
