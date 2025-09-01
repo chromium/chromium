@@ -51,6 +51,11 @@ void RecordMetricsInternal(const PreloadServingMetrics& metrics,
              "PrefetchMatchMetrics.PotentialMatchThen."
              "NumberOfInitialCandidatesBlockUntilHead"),
         prefetch_match_metrics.n_initial_candidates_block_until_head);
+    const bool is_actual_match =
+        !!prefetch_match_metrics.prefetch_container_metrics;
+    base::UmaHistogramBoolean(
+        WITH(prefix, "PrefetchMatchMetrics.PotentialMatchThen.IsActualMatch"),
+        is_actual_match);
   }();
 }
 

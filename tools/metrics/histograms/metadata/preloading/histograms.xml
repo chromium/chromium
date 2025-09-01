@@ -364,6 +364,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.IsActualMatch"
+    units="bool" expires_after="2026-01-01">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Whether the first prefetch matching for a navigation ended as actual match.
+
+    Recorded when {PreloadServingMetricsPrefix}.
+  </summary>
+  <token key="PreloadServingMetricsPrefix"
+      variants="PreloadServingMetricsPrefix"/>
+</histogram>
+
+<histogram
     name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.IsPotentialMatch"
     units="bool" expires_after="2026-01-01">
   <owner>kenoss@chromium.org</owner>

@@ -90,6 +90,10 @@ TEST_F(PreloadServingMetricsTest, NavigationWithPrefetch) {
       "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
       "PotentialMatchThen.NumberOfInitialCandidatesBlockUntilHead",
       1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PreloadServingMetrics.ForNavigationCommitted.PrefetchMatchMetrics."
+      "PotentialMatchThen.IsActualMatch",
+      1, 1);
 
   histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.ForPrerenderInitialNavigationUsed."
@@ -107,6 +111,10 @@ TEST_F(PreloadServingMetricsTest, NavigationWithPrefetch) {
       "PreloadServingMetrics.ForPrerenderInitialNavigationUsed."
       "PrefetchMatchMetrics.PotentialMatchThen."
       "NumberOfInitialCandidatesBlockUntilHead",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationUsed."
+      "PrefetchMatchMetrics.PotentialMatchThen.IsActualMatch",
       0);
 }
 
