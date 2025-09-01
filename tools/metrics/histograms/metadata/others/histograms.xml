@@ -4226,30 +4226,32 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DrmUtil.CreateDisplaySnapshot.BitsPerChannel" units="bits"
-    expires_after="2024-05-16">
+    expires_after="2026-09-01">
   <owner>hiroh@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
     Number of bits per channel described by a parsed EDID blob. This UMA is
     recorded whenever the color space is extracted from an EDID blob. Warning:
     this histogram was expired from 2022-01-03 to 2023-05-17; data may be
-    missing.
+    missing. Warning: this histogram was expired from 2024-05-16 to 2025-09-01;
+    data may be missing.
   </summary>
 </histogram>
 
 <histogram name="DrmUtil.CreateDisplaySnapshot.HasEdidBlob" enum="Boolean"
-    expires_after="2024-05-16">
+    expires_after="2026-09-01">
   <owner>hiroh@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
     Whether an EDID blob was detected. This UMA is recorded whenever we attempt
     to parse the EDID from a display. Warning: this histogram was expired from
-    2022-01-03 to 2023-05-17; data may be missing.
+    2022-01-03 to 2023-05-17; data may be missing. Warning: this histogram was
+    expired from 2024-05-16 to 2025-09-01; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="DrmUtil.CreateDisplaySnapshot.IsHDR" enum="Boolean"
-    expires_after="2025-08-24">
+    expires_after="2026-09-01">
   <owner>hiroh@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
@@ -4261,7 +4263,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DrmUtil.GetColorSpaceFromEdid.ChecksOutcome"
-    enum="EdidColorSpaceChecksOutcome" expires_after="2025-09-07">
+    enum="EdidColorSpaceChecksOutcome" expires_after="2026-09-01">
   <owner>andrescj@chromium.org</owner>
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@google.com</owner>

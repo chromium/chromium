@@ -3150,20 +3150,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.CrosCdmType" enum="CrosCdmType"
-    expires_after="2024-05-19">
+    expires_after="2026-09-01">
   <owner>hiroh@chromium.org</owner>
   <owner>cros-gfx-video@google.com</owner>
   <summary>
     Whether we used the platform CDM on Chrome OS that includes HW secure
-    Widevine support, or fell back to the Chrome SW CDM.
+    Widevine support, or fell back to the Chrome SW CDM. Warning: this histogram
+    was expired from 2024-05-19 to 2025-09-01; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.EME.CrosPlatformCdm.SystemCode" enum="CdmSystemCode"
-    expires_after="2024-01-15">
+    expires_after="2026-09-01">
   <owner>hiroh@chromium.org</owner>
   <owner>cros-gfx-video@google.com</owner>
-  <summary>System code in promise rejection for ChromeOS platform CDM.</summary>
+  <summary>
+    System code in promise rejection for ChromeOS platform CDM. Warning: this
+    histogram was expired from 2024-01-05 to 2025-09-01; data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="Media.EME.DecoderBypassBlockCount" units="perFrame*100"
@@ -3491,12 +3495,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.OutputProtection.PlatformCdm"
-    enum="MediaOutputProtectionStatus" expires_after="2022-01-15">
+    enum="MediaOutputProtectionStatus" expires_after="2026-09-01">
   <owner>hiroh@chromium.org</owner>
   <owner>cros-gfx-video@google.com</owner>
   <summary>
     Output protection query status and result. One query and one positive (no
     unprotected external links) result (if any) are reported per CDM instance.
+    Warning: this histogram was expired from 2022-01-05 to 2025-09-01; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -4081,38 +4087,41 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.GpuArcVideoDecodeAccelerator.InitializeFailed"
-    enum="VideoCodecProfile" expires_after="2025-01-05">
+    enum="VideoCodecProfile" expires_after="2026-09-01">
   <owner>andrescj@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
     Counts the unsuccessful calls to GpuArcVideoDecodeAccelerator::Initialize()
-    per VideoCodecProfile.
+    per VideoCodecProfile. Warning: this histogram was expired from 2025-01-05
+    to 2025-09-01; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.GpuArcVideoDecodeAccelerator.InitializeSucceeded"
-    enum="VideoCodecProfile" expires_after="2025-01-05">
+    enum="VideoCodecProfile" expires_after="2026-09-01">
   <owner>andrescj@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
     Counts the successful calls to GpuArcVideoDecodeAccelerator::Initialize()
-    per VideoCodecProfile.
+    per VideoCodecProfile. Warning: this histogram was expired from 2025-01-05
+    to 2025-09-01; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.GpuArcVideoDecodeAccelerator.InstanceCount.All"
-    units="instances" expires_after="2024-06-22">
+    units="instances" expires_after="2026-09-01">
   <owner>andrescj@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
     Counts how many GpuArcVideoDecodeAccelerator instances are alive at the time
     a new GpuArcVideoDecodeAccelerator is created. Warning: this histogram was
-    expired from 2023-01-22 to 2023-06-21; data may be missing.
+    expired from 2023-01-22 to 2023-06-21; data may be missing. Warning: this
+    histogram was expired from 2024-06-22 to 2025-09-01; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.GpuArcVideoDecodeAccelerator.InstanceCount.Initialized"
-    units="instances" expires_after="2024-06-22">
+    units="instances" expires_after="2026-09-01">
   <owner>andrescj@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
@@ -4121,7 +4130,8 @@ chromium-metrics-reviews@google.com.
     media::VideoDecodeAccelerator) are alive at the time a
     GpuArcVideoDecodeAccelerator goes through initialization and successfully
     creates its underlying media::VideoDecodeAccelerator. Warning: this
-    histogram was expired from 2023-01-22 to 2023-06-21; data may be missing.
+    histogram was expired from 2023-01-22 to 2023-06-21; 2024-06-22 to
+    2025-09-01; data may be missing.
   </summary>
 </histogram>
 
@@ -5061,14 +5071,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MojoStableVideoDecoder.Decode" units="ms"
-    expires_after="2025-05-24">
+    expires_after="2026-09-01">
   <owner>andrescj@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <summary>
     This histogram is analogous to Media.MojoVideoDecoder.Decode but for the
     MojoStableVideoDecoder. It's the delay between a DecoderBuffer (and encoded
     chunk) input and a decoded frame being produced by the remote
-    StableVideoDecoder. Output once per successful decode.
+    StableVideoDecoder. Output once per successful decode. Warning: this
+    histogram was expired from 2025-05-24 to 2025-09-01; data may be missing.
   </summary>
 </histogram>
 
@@ -5448,14 +5459,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.PlatformVideoDecoding.VideoCodecProfile"
-    enum="VideoCodecProfile" expires_after="2025-11-09">
+    enum="VideoCodecProfile" expires_after="2026-09-01">
   <owner>hiroh@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
     VideoCodecProfile used to Initialize() the platform VideoDecoder
     implementation; this is emitted once per video (or per track, when using
     MSE) initialization and after verifying that the codec profile is thought to
-    be supported.
+    be supported. Warning: this histogram was expired from 2025-11-09 to
+    2025-09-01; data may be missing.
   </summary>
 </histogram>
 
@@ -5964,12 +5976,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RTCVideoEncoder.Initialize" units="ms"
-    expires_after="2024-09-30">
+    expires_after="2026-09-01">
   <owner>hiroh@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
     The duration of initializing a hardware encoder in WebRTC API. It is
-    recorded whenever RTCVideoEncoder::InitEncode() is called.
+    recorded whenever RTCVideoEncoder::InitEncode() is called. Warning: this
+    histogram was expired from 2024-09-30 to 2025-09-01; data may be missing.
   </summary>
 </histogram>
 
@@ -6427,13 +6440,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.V4l2VideoDecoder.Error" enum="V4l2VideoDecoderFunctions"
-    expires_after="2024-05-19">
+    expires_after="2026-09-01">
   <owner>hiroh@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
     Records errors during normal V4L2VideoDecoder operations. These can happen
     during initialization, decode or other internal state changes. Multiple
-    errors can be recorded during the object lifetime.
+    errors can be recorded during the object lifetime. Warning: this histogram
+    was expired from 2024-05-19 to 2025-09-01; data may be missing.
   </summary>
 </histogram>
 
@@ -6449,7 +6463,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VaapiVideoDecoder.DecodeError" enum="BooleanError"
-    expires_after="2026-01-18">
+    expires_after="2026-09-01">
   <owner>hiroh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <summary>
@@ -6459,17 +6473,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VaapiVideoDecoder.VaapiWrapperCreationSuccess"
-    enum="BooleanSuccess" expires_after="2025-09-14">
+    enum="BooleanSuccess" expires_after="2026-09-01">
   <owner>hiroh@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
     Whether the creation of VaapiWrapper succeeded or not inside
-    VaapiVideoDecoder.
+    VaapiVideoDecoder. Warning: this histogram was expired from 2023-02-12 to
+    2025-09-01; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.VaapiWrapper.VADisplayStateInitializeSuccess"
-    enum="BooleanSuccess" expires_after="2025-09-07">
+    enum="BooleanSuccess" expires_after="2026-09-01">
   <owner>hiroh@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
@@ -6491,11 +6506,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VAVDA.VaapiWrapperCreationSuccess" enum="BooleanSuccess"
-    expires_after="2023-02-12">
+    expires_after="2026-09-01">
   <owner>hiroh@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
-    Whether the creation of VaapiWrapper succeeded or not inside VaVDA.
+    Whether the creation of VaapiWrapper succeeded or not inside VaVDA.Warning:
+    this histogram was expired from 2023-02-12 to 2025-09-01; data may be
+    missing.
   </summary>
 </histogram>
 
@@ -7620,12 +7637,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.{VaapiClientName}.VAAPIError" enum="VaapiFunctions"
-    expires_after="2025-06-01">
+    expires_after="2026-09-01">
   <owner>hiroh@chromium.org</owner>
   <owner>chromeos-gfx-video@chromium.org</owner>
   <summary>
     Error codes reported by libva (via VaapiWrapper) while being used from the
-    specified client name. {VaapiClientName}
+    specified client name. {VaapiClientName} Warning: this histogram was expired
+    from 2025-06-01 to 2025-09-01; data may be missing.
   </summary>
   <token key="VaapiClientName">
     <variant name="VaapiImageDecodeAcceleratorWorker" summary=""/>
