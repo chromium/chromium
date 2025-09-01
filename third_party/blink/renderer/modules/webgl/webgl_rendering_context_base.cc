@@ -2090,9 +2090,12 @@ WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
   // The host's ResourceProvider is purged to save memory when the tab
   // is backgrounded.
 
-  if (!must_paint_to_canvas_ && !cleared_content && resource_provider_.get()) {
-    // `resource_provider_` already has the current contents, so it can just be
-    // returned as-is.
+  if (!must_paint_to_canvas_ && !cleared_content && resource_provider_.get() &&
+      (use_bitmap_provider ||
+       resource_provider_->GetType() !=
+           CanvasResourceProvider::ResourceProviderType::kBitmap)) {
+    // `resource_provider_` already has the current contents, so it can can be
+    // used by the caller as-is.
     return resource_provider_.get();
   }
 
