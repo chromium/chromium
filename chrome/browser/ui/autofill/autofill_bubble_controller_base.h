@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/bubble_controller_base.h"
-#include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
