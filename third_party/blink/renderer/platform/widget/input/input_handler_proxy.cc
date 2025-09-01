@@ -1031,6 +1031,11 @@ void InputHandlerProxy::RecordScrollBegin(
 
 InputHandlerProxy::EventDisposition InputHandlerProxy::HandleMouseWheel(
     const WebMouseWheelEvent& wheel_event) {
+  if (wheel_event.phase == WebMouseWheelEvent::kPhaseMayBegin) {
+    mouse_wheel_result_ = DID_NOT_HANDLE;
+    return *mouse_wheel_result_;
+  }
+
   InputHandlerProxy::EventDisposition result = DROP_EVENT;
 
   if (wheel_event.dispatch_type ==
@@ -1059,8 +1064,7 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleMouseWheel(
 
   gfx::PointF position_in_widget = wheel_event.PositionInWidget();
   if (input_handler_->HasBlockingWheelEventHandlerAt(
-          gfx::Point(position_in_widget.x(), position_in_widget.y())) ||
-      wheel_event.phase == WebMouseWheelEvent::kPhaseMayBegin) {
+          gfx::Point(position_in_widget.x(), position_in_widget.y()))) {
     result = DID_NOT_HANDLE;
   } else {
     cc::EventListenerProperties properties =
