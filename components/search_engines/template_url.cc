@@ -57,8 +57,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "third_party/search_engines_data/built_in_marketing_snippets.h"
+#if BUILDFLAG(ENABLE_BUILTIN_SEARCH_PROVIDER_ASSETS) && !BUILDFLAG(IS_ANDROID)
+#include "third_party/search_engines_data/search_engine_descriptions_strings_map.h"
 #endif
 
 namespace {
@@ -1832,15 +1832,25 @@ std::string TemplateURL::GetBuiltinImageResourceId() const {
   return "IDR_DEFAULT_FAVICON";
 }
 
-std::optional<std::u16string> TemplateURL::GetBuiltinMarketingSnippet() const {
-#if !BUILDFLAG(IS_ANDROID)
-  int snippet_resource_id =
-      kEnableBuiltinSearchProviderAssets
-          ? search_engines_data::GetMarketingSnippetResourceId(keyword())
-          : -1;
+std::string TemplateURL::GetBuiltinDescriptionResourceId() const {
+  std::optional<std::string_view> base_resource_id = GetBaseBuiltinResourceId();
+  if (base_resource_id.has_value()) {
+    return base::StrCat({"IDS_", base_resource_id.value(), "_DESCRIPTION"});
+  }
+  return {};
+}
 
-  if (snippet_resource_id != -1) {
-    return l10n_util::GetStringUTF16(snippet_resource_id);
+std::optional<std::u16string> TemplateURL::GetBuiltinMarketingSnippet() const {
+#if BUILDFLAG(ENABLE_BUILTIN_SEARCH_PROVIDER_ASSETS) && !BUILDFLAG(IS_ANDROID)
+  auto resource_id = GetBuiltinDescriptionResourceId();
+  if (!resource_id.empty()) {
+    auto iter = std::ranges::find_if(
+        kSearchEngineDescriptionsStrings,
+        [&](const auto& resource) { return resource.path == resource_id; });
+
+    if (iter != std::end(kSearchEngineDescriptionsStrings)) {
+      return l10n_util::GetStringUTF16(iter->id);
+    }
   }
 #endif
   return std::nullopt;
