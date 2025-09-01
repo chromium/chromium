@@ -8,8 +8,6 @@
 #import <objc/runtime.h>
 
 #include "base/check.h"
-#include "base/debug/stack_trace.h"
-#include "base/logging.h"
 #include "components/remote_cocoa/app_shim/immersive_mode_controller_cocoa.h"
 
 // This file implements a workaround for a behavioral change in macOS 26
@@ -67,8 +65,6 @@ bool ShouldOverrideHitTesting(NSView* target_view, NSEvent* event) {
 
 // Let -[NSNextStepFrame _hitTestForEvent:] return Chrome's NSView for right
 // mouse down event in fullscreen.
-// TODO(crbug.com/429175760): Remove LOGs after debugging. Previous attempt to
-// fix mouse right event does not seem to work on Canary.
 void OverrideNSNextStepFrameHitTestInternal() {
   Class ns_next_step_frame_class = objc_getClass("NSNextStepFrame");
   CHECK(ns_next_step_frame_class);
@@ -96,15 +92,9 @@ void OverrideNSNextStepFrameHitTestInternal() {
 
         NSView* target_view = GetNSNextStepFrameHitTestTargetView(window);
         if (ShouldOverrideHitTesting(target_view, event)) {
-          LOG(WARNING)
-              << "Return target_view for -[NSNextStepFrame _hitTestForEvent:], "
-              << "target_view: " << target_view << ", event: " << event;
           return target_view;
         }
 
-        LOG(WARNING)
-            << "Return original value of -[NSNextStepFrame _hitTestForEvent:], "
-            << "event: " << event;
         return g_old_imp(ns_frame, selector, event);
       });
 
@@ -116,8 +106,6 @@ void OverrideNSNextStepFrameHitTestInternal() {
   CHECK(added);
   g_old_imp =
       reinterpret_cast<ImpFunctionType>(method_getImplementation(method));
-  LOG(WARNING)
-      << "Added -[NSNextStepFrame _hitTestForEvent:] via class_addMethod.";
 
   CHECK(g_old_imp);
 }
@@ -127,7 +115,6 @@ void OverrideNSNextStepFrameHitTest() {
     static dispatch_once_t once_token;
     dispatch_once(&once_token, ^{
       OverrideNSNextStepFrameHitTestInternal();
-      LOG(WARNING) << "Overridden -[NSNextStepFrame _hitTestForEvent:]";
     });
   }
 }
