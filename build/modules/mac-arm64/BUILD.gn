@@ -20,62 +20,6 @@ apple_sysroot_module("AvailabilityMacros") {
   ]
 }
 
-apple_sysroot_modulemap("Darwin_modulemap") {
-  sysroot_path = "Darwin.modulemap"
-}
-apple_sysroot_module("Darwin") {
-  modulemap = ":Darwin_modulemap"
-  modulemap_path = "Darwin.modulemap"
-  public_deps = [
-    ":AvailabilityMacros",
-    ":DarwinFoundation",
-    ":TargetConditionals",
-    ":_Builtin_iso646",
-    ":_Builtin_limits",
-    ":_Builtin_stdarg",
-    ":_Builtin_stdbool",
-    ":_Builtin_stddef",
-    ":_Builtin_stdint",
-    ":_assert",
-    ":_errno",
-    ":_limits",
-    ":_locale",
-    ":_setjmp",
-    ":_signal",
-    ":_stdio",
-    ":_stdlib",
-    ":_strings",
-    ":_sys_select",
-    ":_time",
-    ":_wchar",
-    ":mach",
-    ":netinet_in",
-    ":nl_types",
-    ":os_availability",
-    ":pthread",
-    ":std_complex_h",
-    ":std_core",
-    ":std_ctype_h",
-    ":std_errno_h",
-    ":std_fenv_h",
-    ":std_float_h",
-    ":std_inttypes_h",
-    ":std_math_h",
-    ":std_private_mbstate_t",
-    ":std_string_h",
-    ":std_tgmath_h",
-    ":std_wctype_h",
-    ":sys_resource",
-    ":sys_select",
-    ":sys_time",
-    ":sys_types",
-    ":sys_wait",
-    ":unistd",
-    ":uuid",
-    ":xlocale",
-  ]
-}
-
 apple_sysroot_modulemap("DarwinFoundation_modulemap") {
   sysroot_path = "DarwinFoundation.modulemap"
 }
@@ -96,14 +40,19 @@ apple_sysroot_module("MachO") {
   modulemap = ":DarwinBasic_modulemap"
   modulemap_path = "DarwinBasic.modulemap"
   public_deps = [
-    ":Darwin",
+    ":DarwinFoundation",
     ":TargetConditionals",
+    ":_Builtin_stdarg",
     ":_Builtin_stdbool",
     ":_Builtin_stddef",
     ":_Builtin_stdint",
+    ":_limits",
+    ":mach",
     ":os_availability",
+    ":std_string_h",
     ":sys_types",
     ":unistd",
+    ":uuid",
   ]
 }
 
@@ -182,7 +131,10 @@ apple_sysroot_module("_Darwin_xlocale") {
   modulemap = ":DarwinBasic_modulemap"
   modulemap_path = "DarwinBasic.modulemap"
   public_deps = [
-    ":Darwin",
+    ":DarwinFoundation",
+    ":nl_types",
+    ":os_availability",
+    ":sys_types",
     ":xlocale",
   ]
 }
@@ -918,7 +870,6 @@ apple_sysroot_module("xlocale") {
 group("all_modules") {
   public_deps = [
     ":AvailabilityMacros",
-    ":Darwin",
     ":DarwinFoundation",
     ":MachO",
     ":TargetConditionals",
@@ -1040,7 +991,6 @@ config("all_modulemap_configs") {
     "//buildtools/third_party/libc++:libcxx_modulemap",
     ":DarwinBasic_modulemap",
     ":DarwinFoundation_modulemap",
-    ":Darwin_modulemap",
     ":TargetConditionals_modulemap",
     ":c_standard_library_modulemap",
     ":libunwind_modulemap",

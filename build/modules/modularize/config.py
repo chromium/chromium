@@ -53,6 +53,11 @@ def fix_graph(graph: dict[str, Header], compiler: 'Compiler'):
     if to not in frm.deps:
       frm.deps.append(to)
 
+  def skip_module(name):
+    for hdr in graph.values():
+      if hdr.root_module == name:
+        hdr.textual = True
+
   # We made the assumption that the deps of something we couldn't compile is
   # the intersection of the deps of all users of it.
   # This does not hold true for stddef.h because of __need_size_t
@@ -78,32 +83,35 @@ def fix_graph(graph: dict[str, Header], compiler: 'Compiler'):
     header.direct_deps = header.calculate_direct_deps(graph, sysroot=sysroot)
 
   if compiler.os.is_apple:
-    # From here on out we're modifying which headers are textual.
-    # This isn't relevant to apple since it has a modulemap.
-    return
+    # See https://github.com/llvm/llvm-project/issues/154675
+    # Darwin defines the symbol "echo" in curses.h
+    # Although curses.h is not included, the symbol is part of the module and
+    # thus we get an error when attempting to use the symbol "echo" after
+    # including *any* part of the module Darwin.
+    skip_module("Darwin")
+  else:
+    for header in all_headers(graph):
+      if header.include_dir != IncludeDir.Sysroot:
+        continue
 
-  for header in all_headers(graph):
-    if header.include_dir != IncludeDir.Sysroot:
-      continue
+      parts = set(pathlib.Path(header.rel).parts)
+      # We want non-textual, but we don't need to do so if the header including
+      # you via include_next is non-textual.
+      if header.prev is not None:
+        header.textual = not header.prev.textual
+      # Anything not to be included by the user directly that was only included
+      # once can be marked as textual. Unfortunately since .d files calculate
+      # *transitive* dependencies this is not particularly effective.
+      elif (len(rdeps[header]) < 2
+            and parts.intersection(['asm', 'asm-generic', 'bits'])):
+        header.textual = True
+      elif '#pragma once' in (header.content or ''):
+        header.textual = False
+      elif 'bits' in parts:
+        header.textual = True
 
-    parts = set(pathlib.Path(header.rel).parts)
-    # We want non-textual, but we don't need to do so if the header including
-    # you via include_next is non-textual.
-    if header.prev is not None:
-      header.textual = not header.prev.textual
-    # Anything not to be included by the user directly that was only included
-    # once can be marked as textual. Unfortunately since .d files calculate
-    # *transitive* dependencies this is not particularly effective.
-    elif (len(rdeps[header]) < 2
-          and parts.intersection(['asm', 'asm-generic', 'bits'])):
-      header.textual = True
-    elif '#pragma once' in (header.content or ''):
-      header.textual = False
-    elif 'bits' in parts:
-      header.textual = True
-
-  # Assert is inherently textual.
-  graph['assert.h'].textual = True
+    # Assert is inherently textual.
+    graph['assert.h'].textual = True
 
   if compiler.os == Os.Android:
     graph['android/legacy_stdlib_inlines.h'].textual = True

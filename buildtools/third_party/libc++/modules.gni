@@ -59,9 +59,10 @@ if (use_clang_modules) {
           cflags = []
         }
 
-        # Note that this in addition to, not instead of explicit modulemaps.
-        # This is simply to allow us to catch missing modules we depend on.
-        cflags += [ "-fimplicit-module-maps" ]
+        # While it'd be nice to enable implicit module maps to pick up on errors
+        # for missing modules, unfortunately then it finds modulemap files we've
+        # intentionally disabled because it's broken (eg. Darwin.modulemap).
+        cflags += [ clang_arg_prefix + "-fno-implicit-module-maps" ]
       } else {
         if (!defined(public_configs)) {
           public_configs = []
