@@ -371,7 +371,8 @@ public class ProxyTest {
                             NativeTestServer.HttpRequest httpRequest) {
                         assertThat(mReceivedHttpRequest).isNull();
                         mReceivedHttpRequest = httpRequest;
-                        return new NativeTestServer.RawHttpResponse("", "");
+                        return NativeTestServer.RawHttpResponse.createFromHeaders(
+                                Arrays.asList("HTTP/1.1 502 Bad Gateway"));
                     }
                 };
         mNativeTestServer.registerRequestHandler(requestHandler);
@@ -427,7 +428,8 @@ public class ProxyTest {
                             NativeTestServer.HttpRequest httpRequest) {
                         assertThat(mReceivedHttpRequest).isNull();
                         mReceivedHttpRequest = httpRequest;
-                        return new NativeTestServer.RawHttpResponse("", "");
+                        return NativeTestServer.RawHttpResponse.createFromHeaders(
+                                Arrays.asList("HTTP/1.1 502 Bad Gateway"));
                     }
                 };
         mNativeTestServer.registerRequestHandler(requestHandler);
@@ -490,7 +492,8 @@ public class ProxyTest {
                             NativeTestServer.HttpRequest httpRequest) {
                         assertThat(mReceivedHttpRequest).isNull();
                         mReceivedHttpRequest = httpRequest;
-                        return new NativeTestServer.RawHttpResponse("", "");
+                        return NativeTestServer.RawHttpResponse.createFromHeaders(
+                                Arrays.asList("HTTP/1.1 502 Bad Gateway", ""));
                     }
                 };
         mNativeTestServer.registerRequestHandler(requestHandler);
@@ -536,6 +539,82 @@ public class ProxyTest {
                 .contains("\r\nAuthorization: b3BlbiBzZXNhbWU=\r\n");
         Mockito.verify(proxyCallback, times(1)).onBeforeTunnelRequest(any());
         Mockito.verify(proxyCallback, times(1)).onTunnelHeadersReceived(any(), anyInt());
+    }
+
+    @Test
+    @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM, CronetImplementation.FALLBACK},
+            reason =
+                    "This feature flag has not reached platform Cronet yet. Fallback provides no"
+                            + " ProxyOptions support.")
+    // Mockito#when implementation makes use of java.util.Map#computeIfAbsent, which is available
+    // starting from Nougat/API level 24.
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
+    public void testProxyAuthChallenge_connectRequestIsSentTwice() {
+        var requestHandler =
+                new NativeTestServer.HandleRequestCallback() {
+                    public NativeTestServer.HttpRequest mReceivedHttpRequest;
+
+                    @Override
+                    public NativeTestServer.RawHttpResponse handleRequest(
+                            NativeTestServer.HttpRequest httpRequest) {
+                        assertThat(mReceivedHttpRequest).isNull();
+                        mReceivedHttpRequest = httpRequest;
+                        return NativeTestServer.RawHttpResponse.createFromHeaders(
+                                Arrays.asList(
+                                        "HTTP/1.1 407 Proxy Authentication Required",
+                                        "Proxy-Authenticate: Basic realm=\"MyRealm1\""));
+                    }
+                };
+        mNativeTestServer.registerRequestHandler(requestHandler);
+        mNativeTestServer.start();
+        Proxy.Callback proxyCallback = Mockito.mock(Proxy.Callback.class);
+        doAnswer(
+                        invocation -> {
+                            Proxy.Callback.Request request = invocation.getArgument(0);
+                            request.proceed(Collections.emptyList());
+                            return null;
+                        })
+                .when(proxyCallback)
+                .onBeforeTunnelRequest(any());
+        Mockito.when(proxyCallback.onTunnelHeadersReceived(any(), anyInt())).thenReturn(true);
+        mTestRule
+                .getTestFramework()
+                .applyEngineBuilderPatch(
+                        (builder) ->
+                                builder.setProxyOptions(
+                                        new ProxyOptions(
+                                                Arrays.asList(
+                                                        new Proxy(
+                                                                /* scheme= */ Proxy.HTTP,
+                                                                /* host= */ "localhost",
+                                                                /* port= */ mNativeTestServer
+                                                                        .getPort(),
+                                                                /* callback= */ proxyCallback)))));
+        ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        UrlRequest.Builder urlRequestBuilder =
+                cronetEngine.newUrlRequestBuilder(
+                        "https://test-hostname/test-path", callback, callback.getExecutor());
+        urlRequestBuilder.build().start();
+        callback.blockForDone();
+        assertThat(requestHandler.mReceivedHttpRequest).isNotNull();
+        assertThat(requestHandler.mReceivedHttpRequest.getRelativeUrl())
+                .isEqualTo("test-hostname:443");
+        assertThat(requestHandler.mReceivedHttpRequest.getMethod()).isEqualTo("CONNECT");
+        Mockito.verify(proxyCallback, times(1)).onBeforeTunnelRequest(any());
+        Mockito.verify(proxyCallback, times(1)).onTunnelHeadersReceived(any(), anyInt());
+        // TODO(https://crbug.com/441490632): This request should not fail with
+        // net::ERR_TUNNEL_CONNECTION_FAILED. Instead, we should call Request#onBeforeTunnelRequest
+        // again for the same Proxy, giving the embedder a chance to respond to the authentication
+        // challenge.
+        assertThat(callback.mError).isNotNull();
+        assertThat(callback.mError).isInstanceOf(NetworkException.class);
+        NetworkException networkException = (NetworkException) callback.mError;
+        assertThat(networkException.getErrorCode()).isEqualTo(NetworkException.ERROR_OTHER);
+        assertThat(networkException.getCronetInternalErrorCode())
+                .isEqualTo(NetError.ERR_TUNNEL_CONNECTION_FAILED);
     }
 
     @Test
@@ -1457,7 +1536,8 @@ public class ProxyTest {
                             NativeTestServer.HttpRequest httpRequest) {
                         assertThat(mReceivedHttpRequest).isNull();
                         mReceivedHttpRequest = httpRequest;
-                        return new NativeTestServer.RawHttpResponse("", "");
+                        return NativeTestServer.RawHttpResponse.createFromHeaders(
+                                Arrays.asList("HTTP/1.1 502 Bad Gateway"));
                     }
                 };
         mNativeTestServer.registerRequestHandler(requestHandler);
@@ -1543,7 +1623,8 @@ public class ProxyTest {
                             NativeTestServer.HttpRequest httpRequest) {
                         assertThat(mReceivedHttpRequest).isNull();
                         mReceivedHttpRequest = httpRequest;
-                        return new NativeTestServer.RawHttpResponse("", "");
+                        return NativeTestServer.RawHttpResponse.createFromHeaders(
+                                Arrays.asList("HTTP/1.1 502 Bad Gateway", ""));
                     }
                 };
         mNativeTestServer.registerRequestHandler(requestHandler);
@@ -1621,7 +1702,8 @@ public class ProxyTest {
                             NativeTestServer.HttpRequest httpRequest) {
                         assertThat(mReceivedHttpRequest).isNull();
                         mReceivedHttpRequest = httpRequest;
-                        return new NativeTestServer.RawHttpResponse("", "");
+                        return NativeTestServer.RawHttpResponse.createFromHeaders(
+                                Arrays.asList("HTTP/1.1 502 Bad Gateway", ""));
                     }
                 };
         mNativeTestServer.registerRequestHandler(requestHandler);

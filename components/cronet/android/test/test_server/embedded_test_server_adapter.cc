@@ -130,10 +130,10 @@ namespace cronet {
 std::unique_ptr<net::test_server::HttpResponse>
 NativeTestServerHandleRequestCallback::operator()(
     const net::test_server::HttpRequest& http_request) const {
-  cronet::Java_NativeTestServer_handleRequest(jni_zero::AttachCurrentThread(),
-                                              java_callback_,
-                                              {.http_request = http_request});
-  return nullptr;
+  return cronet::Java_NativeTestServer_handleRequest(
+             jni_zero::AttachCurrentThread(), java_callback_,
+             {.http_request = http_request})
+      .raw_http_response;
 }
 
 }  // namespace cronet

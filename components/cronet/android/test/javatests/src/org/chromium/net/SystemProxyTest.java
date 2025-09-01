@@ -30,6 +30,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 
+import java.util.Collections;
 import java.util.HashMap;
 
 @Batch(Batch.UNIT_TESTS)
@@ -125,7 +126,7 @@ public final class SystemProxyTest {
                 NativeTestServer.HttpRequest httpRequest) {
             assertThat(mReceivedHttpRequest).isNull();
             mReceivedHttpRequest = httpRequest;
-            return new NativeTestServer.RawHttpResponse("", "");
+            return NativeTestServer.RawHttpResponse.createFromHeaders(Collections.emptyList());
         }
     }
 
