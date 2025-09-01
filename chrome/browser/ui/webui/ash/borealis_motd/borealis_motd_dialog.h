@@ -4,9 +4,10 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_BOREALIS_MOTD_BOREALIS_MOTD_DIALOG_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_BOREALIS_MOTD_BOREALIS_MOTD_DIALOG_H_
 
-#include "chrome/common/webui_url_constants.h"
+#include "ash/constants/url_constants.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
 namespace borealis {

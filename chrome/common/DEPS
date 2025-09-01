@@ -92,4 +92,7 @@ specific_include_rules = {
   "pdf_util_unittest\.cc": [
     "+pdf/content_restriction.h",
   ],
+  "webui_url_constants\.cc": [
+    "+ash/constants/url_constants.h",
+  ],
 }

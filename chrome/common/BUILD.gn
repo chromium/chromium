@@ -528,6 +528,10 @@ static_library("url_constants") {
     "//components/safe_browsing/core/common",
     "//device/vr/buildflags",
   ]
+
+  if (is_chromeos) {
+    deps += [ "//ash/constants" ]
+  }
 }
 
 static_library("constants") {

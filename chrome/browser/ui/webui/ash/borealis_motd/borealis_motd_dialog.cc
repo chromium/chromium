@@ -8,7 +8,6 @@
 #include "base/version.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/borealis_motd_resources.h"
 #include "chrome/grit/borealis_motd_resources_map.h"
 #include "chrome/grit/generated_resources.h"

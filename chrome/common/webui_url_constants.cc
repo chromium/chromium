@@ -18,6 +18,10 @@
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/url_constants.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace chrome {
 
 // Note: Add hosts to `ChromeURLHosts()` at the bottom of this file to be listed
