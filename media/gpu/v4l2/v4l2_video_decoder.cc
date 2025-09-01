@@ -554,7 +554,6 @@ void V4L2VideoDecoder::AllocateSecureBufferCB(SecureBufferAllocatedCB callback,
   ctrls.controls = &ctrl;
 
   if (device_->Ioctl(VIDIOC_S_EXT_CTRLS, &ctrls)) {
-    RecordVidiocIoctlErrorUMA(VidiocIoctlRequests::kVidiocSExtCtrls);
     PLOG(ERROR) << "Failed getting secure buffer identifier for FD "
                 << secure_fd.get();
     SetState(State::kError);

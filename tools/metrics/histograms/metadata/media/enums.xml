@@ -1397,13 +1397,6 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Play/Pause"/>
 </enum>
 
-<enum name="MediaIoctlRequests">
-  <int value="0" label="MEDIA_IOC_DEVICE_INFO"/>
-  <int value="1" label="MEDIA_IOC_REQUEST_ALLOC"/>
-  <int value="2" label="MEDIA_REQUEST_IOC_QUEUE"/>
-  <int value="3" label="MEDIA_REQUEST_IOC_REINIT"/>
-</enum>
-
 <enum name="MediaItemUIUpdatedViewAction">
   <int value="0" label="Play"/>
   <int value="1" label="Pause"/>
@@ -2536,20 +2529,6 @@ chromium-metrics-reviews@google.com.
   <int value="40" label="1712x960"/>
   <int value="41" label="1792x1008"/>
   <int value="42" label="2592x1944"/>
-</enum>
-
-<enum name="VidiocIoctlRequests">
-  <int value="0" label="VIDIOC_G_FMT"/>
-  <int value="1" label="VIDIOC_S_FMT"/>
-  <int value="2" label="VIDIOC_G_SELECTION"/>
-  <int value="3" label="VIDIOC_EXPBUF"/>
-  <int value="4" label="VIDIOC_REQBUFS"/>
-  <int value="5" label="VIDIOC_QUERYBUF"/>
-  <int value="6" label="VIDIOC_QBUF"/>
-  <int value="7" label="VIDIOC_DQBUF"/>
-  <int value="8" label="VIDIOC_STREAMON"/>
-  <int value="9" label="VIDIOC_STREAMOFF"/>
-  <int value="10" label="VIDIOC_S_EXT_CTRLS"/>
 </enum>
 
 </enums>

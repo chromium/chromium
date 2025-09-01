@@ -506,7 +506,6 @@ V4L2VideoDecoderDelegateH265::SubmitFrameMetadata(
   ext_ctrls.controls = ctrls.data();
   dec_surface->PrepareSetCtrls(&ext_ctrls);
   if (device_->Ioctl(VIDIOC_S_EXT_CTRLS, &ext_ctrls) != 0) {
-    RecordVidiocIoctlErrorUMA(VidiocIoctlRequests::kVidiocSExtCtrls);
     VPLOGF(1) << "ioctl() failed: VIDIOC_S_EXT_CTRLS";
     return Status::kFail;
   }

@@ -19,7 +19,6 @@
 #include <sstream>
 
 #include "base/containers/contains.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/stringprintf.h"
@@ -65,16 +64,6 @@ std::string GetDriverName(const media::IoctlAsCallback& ioctl_cb) {
 }
 }  // namespace
 namespace media {
-
-void RecordMediaIoctlUMA(MediaIoctlRequests function) {
-  base::UmaHistogramEnumeration("Media.V4l2VideoDecoder.MediaIoctlError",
-                                function);
-}
-
-void RecordVidiocIoctlErrorUMA(VidiocIoctlRequests function) {
-  base::UmaHistogramEnumeration("Media.V4l2VideoDecoder.VidiocIoctlError",
-                                function);
-}
 
 const char* V4L2MemoryToString(const v4l2_memory memory) {
   switch (memory) {
