@@ -8,7 +8,7 @@
   await dp.Debugger.setInstrumentationBreakpoint(
       {instrumentation: 'beforeScriptExecution'});
 
-  const result = session.evaluate('42');
+  const result = dp.Runtime.evaluate({expression: '42'});
 
   const expressionPause = await dp.Debugger.oncePaused();
   testRunner.log(`paused reason: ${expressionPause.params.reason}`);
