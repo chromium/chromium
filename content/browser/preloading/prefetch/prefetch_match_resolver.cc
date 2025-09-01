@@ -168,6 +168,11 @@ void PrefetchMatchResolver::FindPrefetchInternal(
       RegisterCandidate(*prefetch_container);
     }
   }
+  prefetch_match_metrics_->n_initial_candidates = candidates_.size();
+  // `PrefetchMatchMetrics::n_initial_candidates_block_until_head` is `0` when
+  // we early-exit before reaching `StartWaitFor()` calls below, as we anyway
+  // don't wait for anything.
+  prefetch_match_metrics_->n_initial_candidates_block_until_head = 0;
 
   // Backward compatibility to the behavior of `PrefetchMatchResolver`: If it
   // finds a `PrefetchContainer` in which the cookies of the head of redirect
@@ -216,6 +221,8 @@ void PrefetchMatchResolver::FindPrefetchInternal(
 
   CHECK(!wait_started_at_.has_value());
   wait_started_at_ = base::TimeTicks::Now();
+  prefetch_match_metrics_->n_initial_candidates_block_until_head =
+      candidates_.size();
 
   for (auto& candidate : candidates_) {
     StartWaitFor(candidate.first, servable_states.at(candidate.first));

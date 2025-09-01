@@ -74,6 +74,13 @@ struct CONTENT_EXPORT PrefetchMatchMetrics {
   PrefetchMatchMetrics(const PrefetchMatchMetrics&) = delete;
   PrefetchMatchMetrics& operator=(const PrefetchMatchMetrics&) = delete;
 
+  // Number of initial candidates of prefetch matching, including already failed
+  // ones.
+  int n_initial_candidates = -1;
+
+  // Number of initial candidates of prefetch matching, blocking ones.
+  int n_initial_candidates_block_until_head = -1;
+
   // Optional, may be null. Non-null iff matched at
   // `PrefetchMatchResolver::UnblockInternal()`.
   std::unique_ptr<PrefetchContainerMetrics> prefetch_container_metrics =

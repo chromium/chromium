@@ -51,6 +51,9 @@ TEST_F(PreloadServingMetricsTest, NavigationWithPrefetch) {
   base::HistogramTester histogram_tester;
 
   auto log = MakeSkeltonPreloadServingMetrics({.n_prefetch_match_metrics = 1});
+  log->prefetch_match_metrics_list[0]->n_initial_candidates = 1;
+  log->prefetch_match_metrics_list[0]->n_initial_candidates_block_until_head =
+      1;
   log->prefetch_match_metrics_list[0]->prefetch_container_metrics =
       std::make_unique<PrefetchContainerMetrics>();
   log->prefetch_match_metrics_list[0]

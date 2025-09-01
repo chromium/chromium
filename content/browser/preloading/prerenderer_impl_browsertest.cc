@@ -395,6 +395,14 @@ IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
                 ->prefetch_match_metrics_list.size());
   ASSERT_TRUE(preload_serving_metrics->prerender_initial_preload_serving_metrics
                   ->prefetch_match_metrics_list[0]);
+  ASSERT_EQ(1,
+            preload_serving_metrics->prerender_initial_preload_serving_metrics
+                ->prefetch_match_metrics_list[0]
+                ->n_initial_candidates);
+  ASSERT_EQ(1,
+            preload_serving_metrics->prerender_initial_preload_serving_metrics
+                ->prefetch_match_metrics_list[0]
+                ->n_initial_candidates_block_until_head);
   ASSERT_TRUE(preload_serving_metrics->prerender_initial_preload_serving_metrics
                   ->prefetch_match_metrics_list[0]
                   ->prefetch_container_metrics);
@@ -493,6 +501,10 @@ IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
   auto& preload_serving_metrics = preload_serving_metrics_list()[1];
   ASSERT_TRUE(preload_serving_metrics);
   ASSERT_EQ(1u, preload_serving_metrics->prefetch_match_metrics_list.size());
+  ASSERT_EQ(1u, preload_serving_metrics->prefetch_match_metrics_list[0]
+                    ->n_initial_candidates);
+  ASSERT_EQ(0u, preload_serving_metrics->prefetch_match_metrics_list[0]
+                    ->n_initial_candidates_block_until_head);
   ASSERT_TRUE(preload_serving_metrics->prefetch_match_metrics_list[0]
                   ->prefetch_container_metrics);
   ASSERT_TRUE(preload_serving_metrics->prefetch_match_metrics_list[0]
@@ -811,6 +823,10 @@ IN_PROC_BROWSER_TEST_P(PrerendererImplBrowserTestPrefetchAhead,
   auto& preload_serving_metrics = preload_serving_metrics_list()[1];
   ASSERT_TRUE(preload_serving_metrics);
   ASSERT_EQ(1u, preload_serving_metrics->prefetch_match_metrics_list.size());
+  ASSERT_EQ(0u, preload_serving_metrics->prefetch_match_metrics_list[0]
+                    ->n_initial_candidates);
+  ASSERT_EQ(0u, preload_serving_metrics->prefetch_match_metrics_list[0]
+                    ->n_initial_candidates_block_until_head);
   ASSERT_FALSE(preload_serving_metrics->prefetch_match_metrics_list[0]
                    ->prefetch_container_metrics);
   ASSERT_FALSE(
@@ -882,6 +898,10 @@ IN_PROC_BROWSER_TEST_P(
 
   auto& preload_serving_metrics = preload_serving_metrics_list()[1];
   ASSERT_EQ(1u, preload_serving_metrics->prefetch_match_metrics_list.size());
+  ASSERT_EQ(1u, preload_serving_metrics->prefetch_match_metrics_list[0]
+                    ->n_initial_candidates);
+  ASSERT_EQ(1u, preload_serving_metrics->prefetch_match_metrics_list[0]
+                    ->n_initial_candidates_block_until_head);
   ASSERT_FALSE(preload_serving_metrics->prefetch_match_metrics_list[0]
                    ->prefetch_container_metrics);
   ASSERT_FALSE(
