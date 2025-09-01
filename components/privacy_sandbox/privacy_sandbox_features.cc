@@ -140,7 +140,7 @@ BASE_FEATURE(PsDualWritePrefsToNoticeStorage, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(PrivateStateTokensDevUI, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(PrivacySandboxGetPromptFromNoticeService,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(PrivacySandboxActivityTypeStorage,
              base::FEATURE_ENABLED_BY_DEFAULT);

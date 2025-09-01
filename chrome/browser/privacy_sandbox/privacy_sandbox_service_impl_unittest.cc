@@ -2996,15 +2996,21 @@ TEST_F(PrivacySandboxServiceM1NoticePromptTest, M1EEAFlowInterrupted) {
   base::HistogramTester histogram_tester;
   // If a user has migrated from EEA to ROW and has already completed the eea
   // consent but not yet acknowledged the notice, return kM1NoticeROW.
-  RunTestCase(
-      TestState{{kM1PromptPreviouslySuppressedReason,
-                 static_cast<int>(PromptSuppressedReason::kNone)},
-                {kM1ConsentDecisionPreviouslyMade, true},
-                {kM1EEANoticePreviouslyAcknowledged, false}},
-      TestInput{{kForceChromeBuild, true}},
-      TestOutput{{kPromptType, static_cast<int>(PromptType::kM1NoticeEEA)},
-                 {kM1PromptSuppressedReason,
-                  static_cast<int>(PromptSuppressedReason::kNone)}});
+  // If the notice is served from the NoticeService, this will return
+  // kM1NoticeEEA as Topics doesn't need to be re acked.
+  PromptType expected =
+      base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxGetPromptFromNoticeService)
+          ? PromptType::kM1NoticeEEA
+          : PromptType::kM1NoticeROW;
+  RunTestCase(TestState{{kM1PromptPreviouslySuppressedReason,
+                         static_cast<int>(PromptSuppressedReason::kNone)},
+                        {kM1ConsentDecisionPreviouslyMade, true},
+                        {kM1EEANoticePreviouslyAcknowledged, false}},
+              TestInput{{kForceChromeBuild, true}},
+              TestOutput{{kPromptType, static_cast<int>(expected)},
+                         {kM1PromptSuppressedReason,
+                          static_cast<int>(PromptSuppressedReason::kNone)}});
   // The Histogram Mismatch here is known, and is expected. This is because
   // Topics is already addressed in a previous notice, and the Notice Service
   // will not include notices that would present it again.
