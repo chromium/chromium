@@ -55,15 +55,15 @@ public class NfcTagHandler {
      * This interface provides generic methods.
      */
     private interface TagTechnologyHandler {
-        public void write(NdefMessage message)
+        void write(NdefMessage message)
                 throws IOException, TagLostException, FormatException, IllegalStateException;
 
-        public boolean makeReadOnly() throws IOException, TagLostException;
+        boolean makeReadOnly() throws IOException, TagLostException;
 
-        public NdefMessage read()
+        NdefMessage read()
                 throws IOException, TagLostException, FormatException, IllegalStateException;
 
-        public boolean canAlwaysOverwrite()
+        boolean canAlwaysOverwrite()
                 throws IOException, TagLostException, FormatException, IllegalStateException;
     }
 
