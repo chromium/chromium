@@ -120,7 +120,6 @@
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller_delegate.h"
 #include "components/password_manager/content/browser/mock_keyboard_replacing_surface_visibility_controller.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
-#include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "components/webauthn/android/cred_man_support.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #else
@@ -1920,25 +1919,7 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
   GetClient()->RefreshPasswordManagerSettingsIfNeeded();
 }
 
-class ChromePasswordManagerClientWithAccountStoreAndroidTest
-    : public ChromePasswordManagerClientAndroidTest {
-  void SetUp() override {
-    // Override the GMS version to be big enough for split stores UPM support,
-    // so these tests still pass in bots with an outdated version.
-    base::android::device_info::set_gms_version_code_for_test(
-        base::NumberToString(password_manager::GetSplitStoresUpmMinVersion()));
-
-    ChromePasswordManagerClientAndroidTest::SetUp();
-
-    AccountPasswordStoreFactory::GetInstance()->SetTestingFactory(
-        GetBrowserContext(),
-        base::BindRepeating(
-            &password_manager::BuildPasswordStoreInterface<
-                content::BrowserContext, MockPasswordStoreInterface>));
-  }
-};
-
-TEST_F(ChromePasswordManagerClientWithAccountStoreAndroidTest,
+TEST_F(ChromePasswordManagerClientAndroidTest,
        MarkSharedCredentialsAsNotified) {
   GURL kURL = GURL("https://example.com");
   auto origin = url::Origin::Create(kURL);
