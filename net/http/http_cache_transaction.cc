@@ -1155,6 +1155,12 @@ int HttpCache::Transaction::DoInitEntry() {
           "HttpCache.NoVarySearch.NotUsableLostTime2.NotSuitable", elapsed,
           base::Microseconds(1), base::Seconds(1), 50);
     }
+    if ((effective_load_flags_ & LOAD_MAIN_FRAME_DEPRECATED) &&
+        IsGoogleHostWithAlpnH3(request_->url.host_piece())) {
+      base::UmaHistogramTimes(
+          "HttpCache.NoVarySearch.NotUsableLostTime2.GoogleHost.MainFrame",
+          elapsed);
+    }
     first_nvs_cache_lookup_end_time_ = base::TimeTicks();
   }
 
@@ -3818,12 +3824,13 @@ void HttpCache::Transaction::RecordHistograms() {
   const bool is_no_store = response_headers && response_headers->HasHeaderValue(
                                                    "cache-control", "no-store");
   bool is_html = false;
+  const bool is_main_frame = effective_load_flags_ & LOAD_MAIN_FRAME_DEPRECATED;
   if (response_headers && response_headers->GetMimeType(&mime_type)) {
     // Record the cache pattern by resource type. The type is inferred by
     // response header mime type, which could be incorrect, so this is just an
     // estimate.
     is_html = (mime_type == "text/html");
-    if (is_html && (effective_load_flags_ & LOAD_MAIN_FRAME_DEPRECATED)) {
+    if (is_html && is_main_frame) {
       CACHE_STATUS_HISTOGRAMS(".MainFrameHTML");
       IS_NO_STORE_HISTOGRAMS(".MainFrameHTML", is_no_store);
     } else if (is_html) {
@@ -3865,11 +3872,30 @@ void HttpCache::Transaction::RecordHistograms() {
   CACHE_STATUS_HISTOGRAMS("");
   IS_NO_STORE_HISTOGRAMS("", is_no_store);
 
+  const bool did_send_request = !send_request_since_.is_null();
+
+  if (no_vary_search_use_result_ == NoVarySearchUseResult::kUsed &&
+      did_send_request) {
+    no_vary_search_use_result_ =
+        cache_entry_status_ == CacheEntryStatus::ENTRY_VALIDATED
+            ? NoVarySearchUseResult::kValidated
+            : NoVarySearchUseResult::kUpdated;
+  }
+
+  UMA_HISTOGRAM_ENUMERATION("HttpCache.NoVarySearch.UseResult2",
+                            no_vary_search_use_result_);
+  if (is_html && is_main_frame &&
+      IsGoogleHostWithAlpnH3(request_->url.host_piece())) {
+    base::UmaHistogramEnumeration(
+        "HttpCache.NoVarySearch.UseResult2.GoogleHost.MainFrameHTML",
+        no_vary_search_use_result_);
+  }
+
   if (cache_entry_status_ == CacheEntryStatus::ENTRY_OTHER) {
     CHECK_NE(other_status_reason_, OtherStatusReason::kNoReason);
     UMA_HISTOGRAM_ENUMERATION("HttpCache.Pattern.NotCoveredReason",
                               other_status_reason_);
-    if (is_html && (effective_load_flags_ & LOAD_MAIN_FRAME_DEPRECATED)) {
+    if (is_html && is_main_frame) {
       base::UmaHistogramEnumeration(
           "HttpCache.Pattern.NotCoveredReason.MainFrameHTML",
           other_status_reason_);
@@ -3887,8 +3913,6 @@ void HttpCache::Transaction::RecordHistograms() {
   UMA_HISTOGRAM_CUSTOM_TIMES("HttpCache.AccessToDone2", total_time,
                              base::Milliseconds(1), base::Seconds(30), 100);
 
-  bool did_send_request = !send_request_since_.is_null();
-
   // It's not clear why `did_send_request` can be true when status is
   // ENTRY_USED. See https://crbug.com/1409150.
   // TODO(ricea): Maybe remove ENTRY_USED from the `did_send_request` true
@@ -3904,16 +3928,6 @@ void HttpCache::Transaction::RecordHistograms() {
        (cache_entry_status_ == CacheEntryStatus::ENTRY_USED ||
         cache_entry_status_ == CacheEntryStatus::ENTRY_CANT_CONDITIONALIZE)));
 
-  if (no_vary_search_use_result_ == NoVarySearchUseResult::kUsed &&
-      did_send_request) {
-    no_vary_search_use_result_ =
-        cache_entry_status_ == CacheEntryStatus::ENTRY_VALIDATED
-            ? NoVarySearchUseResult::kValidated
-            : NoVarySearchUseResult::kUpdated;
-  }
-
-  UMA_HISTOGRAM_ENUMERATION("HttpCache.NoVarySearch.UseResult",
-                            no_vary_search_use_result_);
 
   if (!did_send_request) {
     if (cache_entry_status_ == CacheEntryStatus::ENTRY_USED) {
