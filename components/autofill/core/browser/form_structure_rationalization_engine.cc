@@ -178,7 +178,7 @@ bool IsFieldConditionFulfilledIgnoringLocation(ParsingContext& context,
 
 std::optional<size_t> FindFieldMeetingCondition(
     ParsingContext& context,
-    const std::vector<std::unique_ptr<AutofillField>>& fields,
+    base::span<const std::unique_ptr<AutofillField>> fields,
     size_t start_index,
     const FieldCondition& condition) {
   // This function is called with `start_index` pointing to the trigger field.
@@ -226,7 +226,7 @@ std::optional<size_t> FindFieldMeetingCondition(
 void ApplyRuleIfApplicable(
     ParsingContext& context,
     const RationalizationRule& rule,
-    const std::vector<std::unique_ptr<AutofillField>>& fields,
+    base::span<const std::unique_ptr<AutofillField>> fields,
     LogManager* log_manager) {
   if (rule.environment_condition.has_value() &&
       !IsEnvironmentConditionFulfilled(context,
@@ -302,7 +302,7 @@ void ApplyRuleIfApplicable(
 
 void ApplyRationalizationEngineRules(
     ParsingContext& context,
-    const std::vector<std::unique_ptr<AutofillField>>& fields,
+    base::span<const std::unique_ptr<AutofillField>> fields,
     LogManager* log_manager) {
   auto create_rules = [] {
     return std::to_array({

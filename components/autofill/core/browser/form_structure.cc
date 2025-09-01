@@ -882,7 +882,7 @@ DenseSet<FormType> FormStructure::GetFormTypes() const {
 }
 
 void FormStructure::RationalizePhoneNumberFieldsForFilling() {
-  FormStructureRationalizer rationalizer(&fields_);
+  FormStructureRationalizer rationalizer(fields_);
   rationalizer.RationalizePhoneNumbersForFilling();
 }
 
@@ -890,7 +890,7 @@ void FormStructure::RationalizeFormStructure(
     const GeoIpCountryCode& client_country,
     const LanguageCode& current_page_language,
     LogManager* log_manager) {
-  FormStructureRationalizer rationalizer(&fields_);
+  FormStructureRationalizer rationalizer(fields_);
   rationalizer.RationalizeContentEditables(log_manager);
   rationalizer.RationalizeAutocompleteAttributes(log_manager);
   rationalizer.RationalizeFieldTypePredictions(

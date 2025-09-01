@@ -203,13 +203,13 @@ void RationalizePhoneNumbersForFilling(std::vector<AutofillField*>& fields) {
 }  // namespace
 
 FormStructureRationalizer::FormStructureRationalizer(
-    std::vector<std::unique_ptr<AutofillField>>* fields)
-    : fields_(*fields) {}
+    base::span<const std::unique_ptr<AutofillField>> fields)
+    : fields_(fields) {}
 FormStructureRationalizer::~FormStructureRationalizer() = default;
 
 void FormStructureRationalizer::RationalizeAutocompleteAttributes(
     LogManager* log_manager) {
-  for (const auto& field : *fields_) {
+  for (const auto& field : fields_) {
     auto set_html_type = [&field](HtmlFieldType type) {
       field->SetHtmlType(type, field->html_mode());
     };
@@ -302,7 +302,7 @@ void FormStructureRationalizer::RationalizeAutocompleteAttributes(
 
 void FormStructureRationalizer::RationalizeContentEditables(
     LogManager* log_manager) {
-  for (const auto& field : *fields_) {
+  for (const auto& field : fields_) {
     if (field->form_control_type() == FormControlType::kContentEditable) {
       field->SetTypeTo(AutofillType(UNKNOWN_TYPE),
                        AutofillPredictionSource::kRationalization);
@@ -322,7 +322,7 @@ void FormStructureRationalizer::RationalizeCreditCardFieldPredictions(
   bool email_address_found = false;
   size_t num_months_found = 0;
   size_t num_other_fields_found = 0;
-  for (const auto& field : *fields_) {
+  for (const auto& field : fields_) {
     bool is_other_field = false;
     for (FieldType current_field_type : field->ComputedType().GetTypes()) {
       switch (current_field_type) {
@@ -416,7 +416,7 @@ void FormStructureRationalizer::RationalizeCreditCardFieldPredictions(
   // fields are not to be retained. Some special handling is given to expiry
   // dates if the full date is not found or multiple expiry date fields are
   // found. See comments inline below.
-  for (auto it = fields_->begin(); it != fields_->end(); ++it) {
+  for (auto it = fields_.begin(); it != fields_.end(); ++it) {
     auto& field = *it;
     FieldType current_field_type = field->ComputedType().GetCreditCardType();
     switch (current_field_type) {
@@ -469,7 +469,7 @@ void FormStructureRationalizer::RationalizeCreditCardFieldPredictions(
                            AutofillPredictionSource::kRationalization);
         } else if (num_months_found > 1) {
           auto it2 = it + 1;
-          if (it2 == fields_->end()) {
+          if (it2 == fields_.end()) {
             LOG_AF(log_manager)
                 << LoggingScope::kRationalization
                 << LogMessage::kRationalization
@@ -540,7 +540,7 @@ void FormStructureRationalizer::RationalizeCreditCardFieldPredictions(
   // expiration year based on server information.
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableExpirationDateImprovements)) {
-    for (const auto& field : *fields_) {
+    for (const auto& field : fields_) {
       // Here we look at the type after rationalization.
       FieldType current_field_type = field->Type().GetCreditCardType();
       if (current_field_type == CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR ||
@@ -586,8 +586,8 @@ void FormStructureRationalizer::RationalizeMultiOriginCreditCardFields(
     // If a relevant field exists in a sub-frame, we can ignore the
     // corresponding field in the main frame as it is probably a
     // misclassification.
-    if (std::ranges::any_of(*fields_, is_relevant_in_subframe)) {
-      for (auto& field : *fields_) {
+    if (std::ranges::any_of(fields_, is_relevant_in_subframe)) {
+      for (auto& field : fields_) {
         if (is_relevant(*field) && !is_in_subframe(*field)) {
           field->SetTypeTo(AutofillType(UNKNOWN_TYPE),
                            AutofillPredictionSource::kRationalization);
@@ -669,16 +669,16 @@ void FormStructureRationalizer::RationalizeCreditCardNumberOffsets(
   // with `begin`.
   auto find_end_of_group = [&](auto begin) {
     auto end = begin;
-    while (end != fields_->end() && may_be_group({begin, end + 1})) {
+    while (end != fields_.end() && may_be_group({begin, end + 1})) {
       ++end;
     }
     return end;
   };
 
-  for (const auto& field : *fields_) {
+  for (const auto& field : fields_) {
     field->set_credit_card_number_offset(0);
   }
-  for (auto begin = fields_->begin(); begin != fields_->end();) {
+  for (auto begin = fields_.begin(); begin != fields_.end();) {
     auto end = find_end_of_group(begin);
     if (begin == end) {
       begin = end + 1;
@@ -724,7 +724,7 @@ void FormStructureRationalizer::RationalizeDateFormatStrings(
     return field_types;
   };
 
-  for (auto it = fields_->begin(); it != fields_->end(); ++it) {
+  for (auto it = fields_.begin(); it != fields_.end(); ++it) {
     AutofillField& field = **it;
     const FieldTypeSet autofill_ai_date_types =
         get_autofill_ai_date_types(field);
@@ -787,7 +787,7 @@ void FormStructureRationalizer::RationalizeDateFormatStrings(
         data_util::IsValidDateFormat(match.full())) {
       // Returns the n-th next field if it has the same FieldType.
       auto successor = [&](int n) -> AutofillField* {
-        if (n >= std::distance(it, fields_->end())) {
+        if (n >= std::distance(it, fields_.end())) {
           return nullptr;
         }
         AutofillField& successor = **std::next(it, n);
@@ -824,10 +824,10 @@ void FormStructureRationalizer::RationalizeDateFormatStrings(
 
 void FormStructureRationalizer::RationalizeStreetAddressAndAddressLine(
     LogManager* log_manager) {
-  if (fields_->size() < 2) {
+  if (fields_.size() < 2) {
     return;
   }
-  for (auto field = fields_->begin() + 1; field != fields_->end(); ++field) {
+  for (auto field = fields_.begin() + 1; field != fields_.end(); ++field) {
     if ((*field)->ComputedType().GetAddressType() != ADDRESS_HOME_LINE2) {
       continue;
     }
@@ -851,10 +851,10 @@ void FormStructureRationalizer::RationalizeStreetAddressAndAddressLine(
 
 void FormStructureRationalizer::RationalizeBetweenStreetFields(
     LogManager* log_manager) {
-  if (fields_->size() < 2) {
+  if (fields_.size() < 2) {
     return;
   }
-  for (auto field = fields_->begin(); field != fields_->end() - 1; ++field) {
+  for (auto field = fields_.begin(); field != fields_.end() - 1; ++field) {
     const bool first_is_between_streets =
         (*field)->ComputedType().GetAddressType() ==
         ADDRESS_HOME_BETWEEN_STREETS;
@@ -909,7 +909,7 @@ void FormStructureRationalizer::RationalizePhoneNumberTrunkTypes(
 
   // Indicates whether the previous field was a phone country code.
   bool preceding_phone_country_code = false;
-  for (const std::unique_ptr<AutofillField>& field : *fields_) {
+  for (const std::unique_ptr<AutofillField>& field : fields_) {
     FieldType type = field->ComputedType().GetAddressType();
     if (type == PHONE_HOME_CITY_AND_NUMBER ||
         type == PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX) {
@@ -929,7 +929,7 @@ void FormStructureRationalizer::RationalizePhoneNumberTrunkTypes(
 
 void FormStructureRationalizer::RationalizePhoneNumbersForFilling() {
   std::map<Section, std::vector<AutofillField*>> section_fields;
-  for (const std::unique_ptr<AutofillField>& field : *fields_) {
+  for (const std::unique_ptr<AutofillField>& field : fields_) {
     section_fields[field->section()].push_back(field.get());
   }
   for (auto& [section, fields] : section_fields) {
@@ -941,7 +941,7 @@ void FormStructureRationalizer::RationalizeRepeatedStreetAddressFields(
     LogManager* log_manager) {
   // Group ADDRESS_HOME_STREET_ADDRESS `fields_` by section.
   std::map<Section, std::vector<AutofillField*>> street_address_fields;
-  for (const std::unique_ptr<AutofillField>& field : *fields_) {
+  for (const std::unique_ptr<AutofillField>& field : fields_) {
     if (field->IsFocusable() &&
         field->ComputedType().GetAddressType() == ADDRESS_HOME_STREET_ADDRESS) {
       street_address_fields[field->section()].push_back(field.get());
@@ -982,11 +982,11 @@ void FormStructureRationalizer::RationalizeRepeatedZipCodeFields(
   };
   // Invariant: All fields in [begin, end[ are ADDRESS_HOME_ZIP or
   // ADDRESS_HOME_ZIP_SUFFIX.
-  auto begin = fields_->begin();
+  auto begin = fields_.begin();
   auto end = begin;
-  while ((begin = std::find_if(end, fields_->end(), has_zip_type)) !=
-         fields_->end()) {
-    end = std::find_if_not(begin + 1, fields_->end(), has_zip_type);
+  while ((begin = std::find_if(end, fields_.end(), has_zip_type)) !=
+         fields_.end()) {
+    end = std::find_if_not(begin + 1, fields_.end(), has_zip_type);
     if (end - begin != 2) {
       continue;
     }
@@ -1018,7 +1018,7 @@ void FormStructureRationalizer::RationalizeRepeatedZipCodeFields(
 void FormStructureRationalizer::RationalizeZipCodeSuffixFields(
     LogManager* log_manager) {
   FieldType prev_type = UNKNOWN_TYPE;
-  for (const std::unique_ptr<AutofillField>& field : *fields_) {
+  for (const std::unique_ptr<AutofillField>& field : fields_) {
     FieldType type = field->Type().GetAddressType();
     if (type == ADDRESS_HOME_ZIP_SUFFIX &&
         prev_type != ADDRESS_HOME_ZIP_PREFIX) {
@@ -1060,13 +1060,13 @@ void FormStructureRationalizer::RationalizePhoneCountryCode(
   constexpr static FieldTypeSet kRelevantPhoneTypes{
       PHONE_HOME_NUMBER, PHONE_HOME_NUMBER_PREFIX, PHONE_HOME_CITY_AND_NUMBER,
       PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX};
-  if (std::ranges::any_of(*fields_, [&](const auto& field) {
+  if (std::ranges::any_of(fields_, [&](const auto& field) {
         return kRelevantPhoneTypes.contains(
             field->ComputedType().GetAddressType());
       })) {
     return;
   }
-  for (const std::unique_ptr<AutofillField>& field : *fields_) {
+  for (const std::unique_ptr<AutofillField>& field : fields_) {
     if (field->ComputedType().GetAddressType() == PHONE_HOME_COUNTRY_CODE) {
       field->SetTypeTo(AutofillType(UNKNOWN_TYPE),
                        AutofillPredictionSource::kRationalization);
@@ -1084,7 +1084,7 @@ void FormStructureRationalizer::RationalizeByRationalizationEngine(
     LogManager* log_manager) {
   auto to_form_field_data = [](const std::unique_ptr<AutofillField>& field)
       -> raw_ptr<const FormFieldData> { return field.get(); };
-  ParsingContext context(base::ToVector(*fields_, to_form_field_data),
+  ParsingContext context(base::ToVector(fields_, to_form_field_data),
                          client_country, language_code,
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
                          PatternFile::kDefault,
@@ -1093,7 +1093,7 @@ void FormStructureRationalizer::RationalizeByRationalizationEngine(
 #endif
                          GetActiveRegexFeatures());
 
-  rationalization::ApplyRationalizationEngineRules(context, *fields_,
+  rationalization::ApplyRationalizationEngineRules(context, fields_,
                                                    log_manager);
 }
 
