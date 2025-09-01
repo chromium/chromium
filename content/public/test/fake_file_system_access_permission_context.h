@@ -84,6 +84,10 @@ class FakeFileSystemAccessPermissionContext
                         const PathInfo& new_path) override;
 
   // No-op. This class does not manage any permission grants.
+  void NotifyEntryModified(const url::Origin& origin,
+                           const PathInfo& path) override;
+
+  // No-op. This class does not manage any permission grants.
   void NotifyEntryRemoved(const url::Origin& origin,
                           const PathInfo& path) override;
 

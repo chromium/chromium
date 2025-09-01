@@ -188,6 +188,10 @@ void AwFileSystemAccessPermissionContext::NotifyEntryMoved(
     const content::PathInfo& old_path,
     const content::PathInfo& new_path) {}
 
+void AwFileSystemAccessPermissionContext::NotifyEntryModified(
+    const url::Origin& origin,
+    const content::PathInfo& path) {}
+
 void AwFileSystemAccessPermissionContext::NotifyEntryRemoved(
     const url::Origin& origin,
     const content::PathInfo& path) {}

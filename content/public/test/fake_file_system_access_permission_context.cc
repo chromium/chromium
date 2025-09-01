@@ -111,6 +111,10 @@ void FakeFileSystemAccessPermissionContext::NotifyEntryMoved(
     const PathInfo& old_path,
     const PathInfo& new_path) {}
 
+void FakeFileSystemAccessPermissionContext::NotifyEntryModified(
+    const url::Origin& origin,
+    const PathInfo& path) {}
+
 void FakeFileSystemAccessPermissionContext::NotifyEntryRemoved(
     const url::Origin& origin,
     const PathInfo& path) {}

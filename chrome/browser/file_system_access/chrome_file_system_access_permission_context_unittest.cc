@@ -3208,7 +3208,8 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 }
 
 // Tests that removing a file revokes the read permission grant for that file.
-TEST_F(ChromeFileSystemAccessPermissionContextTest, NotifyEntryRemoved_File) {
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       NotifyEntryRemoved_NotifyEntryModified_File) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       blink::features::kFileSystemAccessRevokeReadOnRemove);
@@ -3236,7 +3237,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest, NotifyEntryRemoved_File) {
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, file_path_info, HandleType::kFile, GrantType::kWrite));
 
-  // Calls the method under test.
+  // 1. Revoke the read permission for the file path.
   permission_context()->NotifyEntryRemoved(kTestOrigin, file_path_info);
 
   // Verify the read permission to the file path is revoked; while the write
@@ -3257,12 +3258,26 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest, NotifyEntryRemoved_File) {
   // Verify the path is added to downgraded_read_paths.
   EXPECT_TRUE(permission_context()->IsPathInDowngradedReadPathsForTesting(
       kTestOrigin, file_path_info.path));
+
+  // 2. Restore the read permission for the file.
+  permission_context()->NotifyEntryModified(kTestOrigin, file_path_info);
+
+  // Verify the read permission to the file path is restored.
+  EXPECT_EQ(permission_context()
+                ->GetReadPermissionGrant(kTestOrigin, file_path_info,
+                                         HandleType::kFile, UserAction::kNone)
+                ->GetStatus(),
+            PermissionStatus::GRANTED);
+
+  // Verify the path is removed from downgraded_read_paths.
+  EXPECT_FALSE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      kTestOrigin, file_path_info.path));
 }
 
 // Tests that removing a file within a directory that has a read-write
 // permission grant does not revoke the grants for the directory.
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
-       NotifyEntryRemoved_FileInReadWriteDirectory) {
+       NotifyEntryRemoved_NotifyEntryModified_FileInReadWriteDirectory) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       blink::features::kFileSystemAccessRevokeReadOnRemove);
@@ -3310,7 +3325,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, file_path_info, HandleType::kFile, GrantType::kWrite));
 
-  // Removing a file within a directory with read-write access should be a
+  // 1. Removing a file within a directory with read-write access should be a
   // no-op in terms of permissions.
   permission_context()->NotifyEntryRemoved(kTestOrigin, file_path_info);
 
@@ -3335,6 +3350,24 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
       kTestOrigin, file_path_info, HandleType::kFile, GrantType::kRead));
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, file_path_info, HandleType::kFile, GrantType::kWrite));
+
+  // Verify the path is NOT in the downgraded paths set.
+  EXPECT_FALSE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      kTestOrigin, file_path_info.path));
+
+  // 2. Restore the read permission for the child file.
+  permission_context()->NotifyEntryModified(kTestOrigin, file_path_info);
+
+  // Verify the read permission is still granted.
+  EXPECT_EQ(permission_context()
+                ->GetReadPermissionGrant(kTestOrigin, file_path_info,
+                                         HandleType::kFile, UserAction::kNone)
+                ->GetStatus(),
+            PermissionStatus::GRANTED);
+
+  // Verify the path is still NOT in the downgraded paths set.
+  EXPECT_FALSE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      kTestOrigin, file_path_info.path));
 }
 
 // Tests that moving a file to a destination with a pre-existing permission

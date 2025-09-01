@@ -267,6 +267,8 @@ class ChromeFileSystemAccessPermissionContext
   void NotifyEntryMoved(const url::Origin& origin,
                         const content::PathInfo& old_path,
                         const content::PathInfo& new_path) override;
+  void NotifyEntryModified(const url::Origin& origin,
+                           const content::PathInfo& path) override;
   void NotifyEntryRemoved(const url::Origin& origin,
                           const content::PathInfo& path) override;
   void OnFileCreatedFromShowSaveFilePicker(
@@ -435,6 +437,11 @@ class ChromeFileSystemAccessPermissionContext
   };
 
   void PermissionGrantDestroyed(PermissionGrantImpl* grant);
+
+  // Restores the read permission for `path` if it was previously downgraded,
+  // e.g. by a `remove()` call.
+  void MaybeRestoreReadPermission(const url::Origin& origin,
+                                  const base::FilePath& path);
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   void OnContentAnalysisComplete(

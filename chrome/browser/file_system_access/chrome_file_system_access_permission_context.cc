@@ -2455,6 +2455,11 @@ void ChromeFileSystemAccessPermissionContext::NotifyEntryMoved(
   if (updated) {
     ScheduleUsageIconUpdate();
   }
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFileSystemAccessRevokeReadOnRemove)) {
+    MaybeRestoreReadPermission(origin, new_path.path);
+  }
 }
 
 void ChromeFileSystemAccessPermissionContext::NotifyEntryRemoved(
@@ -2497,6 +2502,45 @@ void ChromeFileSystemAccessPermissionContext::NotifyEntryRemoved(
 
   if (updated) {
     ScheduleUsageIconUpdate();
+  }
+}
+
+void ChromeFileSystemAccessPermissionContext::NotifyEntryModified(
+    const url::Origin& origin,
+    const content::PathInfo& path) {
+  CHECK(base::FeatureList::IsEnabled(
+      blink::features::kFileSystemAccessRevokeReadOnRemove));
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  MaybeRestoreReadPermission(origin, path.path);
+}
+
+void ChromeFileSystemAccessPermissionContext::MaybeRestoreReadPermission(
+    const url::Origin& origin,
+    const base::FilePath& path) {
+  auto it = active_permissions_map_.find(origin);
+  if (it == active_permissions_map_.end()) {
+    return;
+  }
+  OriginState& origin_state = it->second;
+
+  // Return early if the path was not previously downgraded.
+  if (origin_state.downgraded_read_paths.find(path) ==
+      origin_state.downgraded_read_paths.end()) {
+    return;
+  }
+
+  origin_state.downgraded_read_paths.erase(path);
+
+  // Set the grant's status back to GRANTED if it was previously downgraded.
+  auto grant_it = origin_state.read_grants.find(path);
+  // Exclude the case where the path does not exist in the read_grants map.
+  if (grant_it != origin_state.read_grants.end()) {
+    // Since `NotifyEntryRemoved()` revokes both the active and persistent read
+    // permissions, this call must restore both to ensure consistency.
+    grant_it->second->SetStatus(
+        PermissionStatus::GRANTED,
+        PersistedPermissionOptions::kUpdatePersistedPermission);
   }
 }
 

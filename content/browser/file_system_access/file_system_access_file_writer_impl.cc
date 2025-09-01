@@ -301,6 +301,9 @@ void FileSystemAccessFileWriterImpl::DidReplaceSwapFile(
     return;
   }
 
+  // Restore permission grants for the target path when necessary.
+  MaybeNotifyEntryModified(url());
+
   CallCloseCallbackAndDeleteThis(file_system_access_error::Ok());
 }
 

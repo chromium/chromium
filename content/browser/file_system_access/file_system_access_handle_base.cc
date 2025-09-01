@@ -612,6 +612,7 @@ void FileSystemAccessHandleBase::DidMove(
           context_.storage_key.origin(), content::PathInfo(url_.path()),
           content::PathInfo(destination_url.path()));
     }
+
     url_ = std::move(destination_url);
   }
 
@@ -724,6 +725,18 @@ storage::FileSystemURL FileSystemAccessHandleBase::GetParentURL() {
     parent.SetBucket(child.bucket().value());
   }
   return parent;
+}
+
+void FileSystemAccessHandleBase::MaybeNotifyEntryModified(
+    const storage::FileSystemURL& url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFileSystemAccessRevokeReadOnRemove) &&
+      manager()->permission_context() && ShouldTrackUsage(url)) {
+    manager()->permission_context()->NotifyEntryModified(
+        context().storage_key.origin(), PathInfo(url.path()));
+  }
 }
 
 FileSystemAccessHandleBase::PermissionStatus

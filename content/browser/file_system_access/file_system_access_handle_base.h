@@ -146,6 +146,11 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
   // rolled out.
   PermissionStatus GetEffectiveWritePermissionStatus();
 
+  // Calls NotifyEntryModified on the permission context for a given file, if
+  // the kFileSystemAccessRevokeReadOnRemove feature is enabled.
+  // See crbug.com/421690393.
+  void MaybeNotifyEntryModified(const storage::FileSystemURL& url);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
  private:
