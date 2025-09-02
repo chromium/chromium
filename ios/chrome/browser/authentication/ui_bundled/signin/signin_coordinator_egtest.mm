@@ -1020,10 +1020,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                       GoogleServicesSettingsButton()];
 
-  // Dismiss the sign in snackbar.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SnackbarViewMatcher()]
-      performAction:grey_tap()];
-
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 
   // Checks the user is invited to enter the passphrase.
