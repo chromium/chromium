@@ -1531,13 +1531,15 @@ static void CheckMulticolumnPositionedObjects(const LayoutBox* multicol,
        multicol->PhysicalFragments()) {
     EXPECT_TRUE(fragmentation_root.IsFragmentationContextRoot());
     EXPECT_FALSE(fragmentation_root.HasOutOfFlowFragmentChild());
-    for (const PhysicalFragmentLink& fragmentainer :
-         fragmentation_root.Children()) {
+    for (const PhysicalFragmentLink& child : fragmentation_root.Children()) {
+      const auto* fragmentainer = DynamicTo<PhysicalBoxFragment>(child.get());
+      ASSERT_TRUE(fragmentainer);
       EXPECT_TRUE(fragmentainer->IsFragmentainerBox());
       EXPECT_TRUE(fragmentainer->HasOutOfFlowFragmentChild());
-      for (const PhysicalFragmentLink& child : fragmentainer->Children()) {
-        if (child->GetLayoutObject() == abspos)
+      for (const PhysicalFragmentLink& grandchild : fragmentainer->Children()) {
+        if (grandchild->GetLayoutObject() == abspos) {
           return;
+        }
       }
     }
   }

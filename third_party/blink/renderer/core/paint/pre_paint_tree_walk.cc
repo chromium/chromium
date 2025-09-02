@@ -952,7 +952,8 @@ void PrePaintTreeWalk::WalkPageContainer(
     }
 
     // A page border box fragment should only have one child: the page area.
-    const PhysicalFragmentLink& page_area = grandchild->Children()[0];
+    const PhysicalFragmentLink& page_area =
+        To<PhysicalBoxFragment>(grandchild.get())->Children()[0];
     DCHECK_EQ(page_area->GetBoxType(), PhysicalFragment::kPageArea);
 
     PrePaintTreeWalkContext page_area_context(

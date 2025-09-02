@@ -594,6 +594,17 @@ const PhysicalBoxFragment* PhysicalBoxFragment::PostLayout() const {
   return post_layout;
 }
 
+void PhysicalBoxFragment::SetChildrenInvalid() const {
+  if (!children_valid_) {
+    return;
+  }
+
+  for (const PhysicalFragmentLink& child : Children()) {
+    const_cast<PhysicalFragmentLink&>(child).fragment = nullptr;
+  }
+  children_valid_ = false;
+}
+
 PhysicalRect PhysicalBoxFragment::SelfInkOverflowRect() const {
   if (!CanUseFragmentsForInkOverflow()) [[unlikely]] {
     const auto* owner_box = DynamicTo<LayoutBox>(GetLayoutObject());

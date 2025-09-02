@@ -444,16 +444,17 @@ int HypotheticalScrollbarThickness(const LayoutBox& box,
 }
 
 void RecalcFragmentScrollableOverflow(RecalcScrollableOverflowResult& result,
-                                      const PhysicalFragment& fragment) {
+                                      const PhysicalBoxFragment& fragment) {
   for (const auto& child : fragment.PostLayoutChildren()) {
     if (child->GetLayoutObject()) {
       if (const auto* box = DynamicTo<PhysicalBoxFragment>(child.get())) {
         if (LayoutBox* owner_box = box->MutableOwnerLayoutBox())
           result.Unite(owner_box->RecalcScrollableOverflow());
       }
-    } else {
+    } else if (const auto* child_box_fragment =
+                   DynamicTo<PhysicalBoxFragment>(child.get())) {
       // We enter this branch when the |child| is a fragmentainer.
-      RecalcFragmentScrollableOverflow(result, *child.get());
+      RecalcFragmentScrollableOverflow(result, *child_box_fragment);
     }
   }
 }

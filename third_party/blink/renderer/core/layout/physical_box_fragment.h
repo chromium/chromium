@@ -112,6 +112,9 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
     return PostLayoutChildLinkList(base::span(children_));
   }
 
+  void SetChildrenInvalid() const;
+  bool ChildrenValid() const { return children_valid_; }
+
   // This exposes a mutable part of the fragment for |OutOfFlowLayoutPart|.
   class MutableChildrenForOutOfFlow final {
     STACK_ALLOCATED();

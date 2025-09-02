@@ -345,6 +345,14 @@ void LayoutResult::MutableForOutOfFlow::SetDisplayLocksAffectedByAnchors(
   }
 }
 
+void LayoutResult::MutableForLayoutBoxCachedResults::
+    SetFragmentChildrenInvalid() {
+  if (const auto* box_fragment = DynamicTo<PhysicalBoxFragment>(
+          layout_result_->physical_fragment_.Get())) {
+    box_fragment->SetChildrenInvalid();
+  }
+}
+
 #if DCHECK_IS_ON()
 void LayoutResult::CheckSameForSimplifiedLayout(
     const LayoutResult& other,

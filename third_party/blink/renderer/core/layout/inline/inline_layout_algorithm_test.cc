@@ -467,13 +467,13 @@ TEST_F(InlineLayoutAlgorithmTest, TextFloatsAroundFloatsBefore) {
     </div>
   )HTML");
 
-  const auto& html_fragment =
-      To<LayoutBox>(GetDocument()
-                        .getElementsByTagName(AtomicString("html"))
-                        ->item(0)
-                        ->GetLayoutObject())
-          ->GetSingleCachedLayoutResult()
-          ->GetPhysicalFragment();
+  const LayoutBox& html_object =
+      *To<LayoutBox>(GetDocument()
+                         .getElementsByTagName(AtomicString("html"))
+                         ->item(0)
+                         ->GetLayoutObject());
+  const auto& html_fragment = To<PhysicalBoxFragment>(
+      html_object.GetSingleCachedLayoutResult()->GetPhysicalFragment());
 
   auto* body_fragment =
       To<PhysicalBoxFragment>(html_fragment.Children()[0].get());
