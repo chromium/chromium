@@ -47,6 +47,7 @@ struct SyncCompositorCommonRendererParams {
 // java UI is drawn in lock step with content renderer by the webview.
 // The SynchronousCompositor is an associated interface with WidgetInputHandler
 // because input must be delivered in order with the compositing events.
+[DirectReceiver]
 interface SynchronousCompositor {
   // Hardware draw asynchronously, ReturnFrame will return the result on
   // the associated SynchronousCompositorControlHost.

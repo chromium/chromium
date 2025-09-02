@@ -10,6 +10,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 // Note: These mojo definitions are intended for exclusive use in testing.
 
 // FrameSinkManager's test api.
+[DirectReceiver]
 interface FrameSinkManagerTestApi {
   // Returns true if there are any unclaimed ViewTransition resources.
   [Sync]

@@ -35,6 +35,7 @@ _ENUMVAL_ATTRIBUTES = _COMMON_ATTRIBUTES | {
 
 _INTERFACE_ATTRIBUTES = _COMMON_ATTRIBUTES | {
     'DispatchDebugAlias',
+    'DirectReceiver',
     'RenamedFrom',
     'RequireContext',
     'RuntimeFeature',

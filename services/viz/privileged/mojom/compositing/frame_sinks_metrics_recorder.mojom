@@ -37,6 +37,7 @@ struct OverdrawData {
 };
 
 // The interface allows clients to collect metrics related to frame sinks.
+[DirectReceiver]
 interface FrameSinksMetricsRecorder {
   // Starts frame counting per frame sink on the viz.
   StartFrameCounting(mojo_base.mojom.TimeTicks start_time,

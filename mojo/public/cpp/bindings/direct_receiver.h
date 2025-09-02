@@ -155,6 +155,10 @@ class DirectReceiverKey {
 // DirectReceiver, passing pipes to your DirectReceiver is likely a BAD IDEA.
 template <typename T>
 class DirectReceiver {
+  static_assert(
+      T::kSupportsDirectReceiver,
+      "This interface must be marked with the [DirectReceiver] attribute.");
+
  public:
   DirectReceiver(DirectReceiverKey, T* impl) : receiver_(impl) {}
   ~DirectReceiver() = default;

@@ -205,6 +205,7 @@ struct LayerTreeUpdate {
 
 // Drives updates to a GPU-side LayerTreeHostImpl from its corresponding
 // client-side (e.g. renderer- or browser-side) LayerTreeHost.
+[DirectReceiver]
 interface LayerContext {
   // Globally controls whether the tree contents are visible.
   SetVisible(bool visible);
