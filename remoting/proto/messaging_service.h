@@ -65,7 +65,7 @@ struct SimpleMessageStruct {
 // Request sent to `SendHostMessage`.
 struct SendHostMessageRequestStruct {
   // The endpoint to send the message to.
-  EndpointIdStruct endpoint_id;
+  EndpointIdStruct destination_id;
 
   // The message to send.
   SimpleMessageStruct simple_message;
