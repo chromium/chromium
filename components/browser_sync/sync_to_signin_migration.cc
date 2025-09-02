@@ -342,9 +342,9 @@ void MaybeMigrateSyncingUserToSignedInInternal(
       bookmarks_decision);
 
 #if !BUILDFLAG(IS_ANDROID)
-  // On Android no password migration is required here, because other layers are
-  // responsible for migrating the user to the local+account model, e.g.
-  // SetUsesSplitStoresAndUPMForLocal(), PasswordStoreBackendMigrationDecorator.
+  // On Android no password migration is required here, because other layers
+  // were responsible for migrating the user to the local+account model in the
+  // past.
   const SyncToSigninMigrationDataTypeDecision passwords_decision =
       GetSyncToSigninMigrationDataTypeDecision(
           pref_service, syncer::PASSWORDS,
