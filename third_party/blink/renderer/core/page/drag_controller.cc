@@ -251,7 +251,7 @@ void DragController::DragExited(DragData* drag_data, LocalFrame& local_root) {
   file_input_element_under_mouse_ = nullptr;
 }
 
-void DragController::PerformDrag(DragData* drag_data,
+void DragController::PerformDrop(DragData* drag_data,
                                  LocalFrame& local_root,
                                  const Operation& browser_drag_operation) {
   DCHECK(drag_data);

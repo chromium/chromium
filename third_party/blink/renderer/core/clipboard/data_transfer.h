@@ -132,6 +132,7 @@ class CORE_EXPORT DataTransfer final : public ScriptWrappable,
   DragOperationsMask SourceOperation() const;
   ui::mojom::blink::DragOperation DestinationOperation() const;
   void SetSourceOperation(DragOperationsMask);
+  void SetDestinationOperationFromEffectAllowed();
   void SetDestinationOperation(ui::mojom::blink::DragOperation);
 
   DataTransferItemList* items();
