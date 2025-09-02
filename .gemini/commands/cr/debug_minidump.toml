@@ -4,8 +4,9 @@ prompt = """
 
 ### Inspecting Minidump Annotations
 
-To inspect annotations in a minidump file, you can use the
-`/google/bin/releases/crash/minidump_dump` tool with `grep` to filter the
+When debugging a minidump, begin by inspecting annotations to determine product
+and version information. To inspect annotations in a minidump file, you can use
+the `/google/bin/releases/crash/minidump_dump` tool with `grep` to filter the
 output. This is useful for quickly extracting information like the product,
 version, and channel.
 
@@ -48,8 +49,8 @@ To download debug symbols for a Chrome for Android minidump, follow these steps:
     Digit | Architecture
     :---- | :------------------
     0     | arm
-    1     | arm64
-    2     | arm64
+    1     | arm_64
+    2     | arm_64
     3     | high-arm_64
     4     | desktop-high-arm_64
     6     | x86
@@ -109,97 +110,27 @@ minidump file, follow this procedure strictly:
     **Crucially, do not infer the channel from the `chromeos-builder-path`.**
     The `-release` suffix in the path is not a channel.
 
-### Setting up LLDB with ChromeOS Debug Symbols
+### Setting up LLDB with Debug Information
 
-This guide outlines the process for preparing a directory with the necessary
-debug symbols for an LLDB debugging session, using a minidump and a ChromeOS
-debug symbol archive (`.tgz` file).
+This guide explains how to prepare debug information for loading into LLDB in
+two steps:
 
-The process involves three main steps: 1. Extracting the debug symbol archive.
-2. Identifying the required modules from the minidump. 3. Creating a dedicated
-directory with symlinks to the required debug files, which LLDB can then use.
-
-**Step 1: Unpack the Debug Symbol Archive**
-
-First, unpack the provided `.tgz` archive which contains the debug information.
-This will create a directory structure (like `opt/`, `usr/`, `lib/`) that
-mirrors the layout on a ChromeOS device.
+1. Unpack the debug information into a directory using a command like:
 
 ```bash
-tar -xvf debug-puff.tgz
+tar -xvf debug-puff.tgz --one-top-level=debug-information
 ```
 
-### **Step 2: Identify Modules and Create Symlinks**
+2. Create a directory with symlinks to the debug files needed to debug the
+minidump by executing a script:
 
-This combined step identifies the required modules from the minidump and creates
-the necessary symbolic links. The following commands achieve this by piping data
-between processes and using a temporary file, avoiding the use of command
-substitution.
+```bash
+.gemini/commands/crash/link_symbols.sh <debug_information_dir> <minidump_file>.
+```
 
-1.  **Create and enter a directory for the symbols.** This ensures the symlinks
-    are neatly contained.
-
-    ```bash
-    mkdir -p lldb-symbols && cd lldb-symbols
-    ```
-
-2.  **Run the script to find modules and create symlinks.** The script below
-    pipes the module list from `minidump_dump` directly into a `while` loop.
-    Inside the loop, it uses shell parameter expansion to get filenames and a
-    temporary file to capture the output of the `find` command.
-
-    Remember to replace `<minidump_file>` with the path to your minidump.
-
-    ```bash
-    # A temporary file to hold the result from 'find'
-    FIND_RESULT_FILE="/tmp/find_result.$$"
-
-    # Use a pipeline to read module paths directly from minidump_dump
-    /google/bin/releases/crash/minidump_dump <minidump_file> | grep '(code_file)' | awk -F'"' '{print $2}' | while read -r mod; do
-      # Use shell parameter expansion to get the basename (replaces 'basename')
-      symlink_name=${mod##*/}
-      debug_file_path=""
-
-      # Check if mod is an absolute path
-      if [[ "$mod" == /* ]]; then
-        potential_debug_file="../.${mod}.debug"
-        if [ -f "$potential_debug_file" ]; then
-          debug_file_path=$potential_debug_file
-        fi
-      else
-        # It's a basename, search common directories for the .debug file
-        search_dirs=("../lib" "../lib64" "../opt" "../usr")
-
-        # Redirect find's output to a temp file to avoid command substitution
-        find "${search_dirs[@]}" -name "${symlink_name}.debug" -print -quit > "$FIND_RESULT_FILE"
-
-        # If the temp file is not empty, read the path from it
-        if [ -s "$FIND_RESULT_FILE" ]; then
-          read -r debug_file_path < "$FIND_RESULT_FILE"
-        fi
-      fi
-
-      # If a .debug file was found, create symlinks for it and the .dwp file
-      if [ -n "$debug_file_path" ]; then
-        ln -s "$debug_file_path" "$symlink_name"
-
-        # Construct the .dwp file path and create a symlink if it exists
-        dwp_file_path="${debug_file_path%.debug}.dwp"
-        if [ -f "$dwp_file_path" ]; then
-          ln -s "$dwp_file_path" "${symlink_name}.dwp"
-        fi
-      else
-        echo "Warning: Could not find debug symbols for $symlink_name"
-      fi
-    done
-
-    # Clean up the temporary file
-    rm -f "$FIND_RESULT_FILE"
-    ```
-
-After running these commands, the `lldb-symbols` directory will be populated
-with symlinks (e.g., `chrome`, `chrome.dwp`, `libbase.so`, etc.) pointing to
-their corresponding debug files in the unpacked archive.
+The command creates a directory `lldb-symbols`, and creates symlinks within this
+directory pointing to the corresponding debug files mentioned in the minidump
+and found in the unpacked archive.
 
 You can then point LLDB to this directory to load the symbols for your debugging
 session.
@@ -214,31 +145,30 @@ analyzing crashes when you have the symbols available locally.
 
 ## Command Structure
 
-The basic command to launch LLDB with a minidump and local symbols is: lldb
-<path_to_main_binary> --core <path_to_minidump> -o "settings set
-target.exec-search-paths <path_to_symbols_dir>"
+The basic command to launch LLDB with a minidump and local symbols is: lldb \
+-o "settings set target.exec-search-paths <path_to_symbols_dir>" \
+-o "target create -c <path_to_minidump>"
 
 ### Breakdown of the command:
 
-*   `lldb <path_to_main_binary>`: Starts LLDB and loads the main executable
-    associated with the crash. The symbols directory should contain a symlink to
-    this binary.
-*   `--core <path_to_minidump>`: Specifies the minidump file to be analyzed.
+*   `lldb`: Starts LLDB
 *   `-o "settings set target.exec-search-paths <path_to_symbols_dir>"`: This is
     a crucial one-time command (`-o`) that tells LLDB where to find the debug
     symbols for the executable and its loaded libraries. LLDB will search in
-    `<path_to_symbols_dir>` for the necessary `.debug` and `.dwp` files. ##
-    Example Workflow Here is an example based on a real debugging session.
+    `<path_to_symbols_dir>` for the necessary `.debug` and `.dwp` files.
+*   `-o "target create -c <path_to_minidump>"`: Specifies the minidump file to
+    be analyzed.
+
+## Example Workflow Here is an example based on a real debugging session.
 
 1.  **Symbols Directory:** First, ensure you have a directory (e.g.,
     `lldb-symbols`) populated with symlinks to the debug symbols (`.debug`
     files) and the main binary (`chrome` in this case).
 
 2.  **Launch LLDB and Load Data:** Use the following command to start LLDB, load
-    the `chrome` binary, the minidump, and set the symbol search path all at
-    once. lldb lldb-symbols/chrome \
-    --core upload_file_minidump-faf8c85c5b360699.dmp \
-    -o "settings set target.exec-search-paths lldb-symbols"
+    the minidump, and set the symbol search path all at once. lldb \
+    -o "settings set target.exec-search-paths lldb-symbols" \
+    -o "target create -c upload_file_minidump-faf8c85c5b360699.dmp"
 
 3.  **Analyze the Crash:** Once LLDB has loaded, you can immediately use
     commands to investigate the crash state:
@@ -247,10 +177,9 @@ target.exec-search-paths <path_to_symbols_dir>"
     *   **`disassemble -p`:** To see the assembly code around the program
         counter where the crash occurred.
 
-    You can also combine these into a single command for quick analysis: lldb
-    lldb-symbols/chrome \
-    --core upload_file_minidump-faf8c85c5b360699.dmp \
+    You can also combine these into a single command for quick analysis: lldb \
     -o "settings set target.exec-search-paths lldb-symbols" \
+    -o "target create -c upload_file_minidump-faf8c85c5b360699.dmp" \
     -o "bt" \
     -o "disassemble -p"
 """
