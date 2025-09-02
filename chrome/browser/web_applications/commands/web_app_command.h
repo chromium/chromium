@@ -13,10 +13,12 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/i18n/time_formatting.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/to_string.h"
+#include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/command_result.h"
@@ -191,6 +193,8 @@ class WebAppCommand : public internal::CommandWithLock<LockType> {
         "result",
         base::ToString(std::tie<CallbackArgs&...>(args_for_callback...)));
     metadata->Set("completion_location", base::ToString(location));
+    metadata->Set("completed_at",
+                  base::TimeFormatTimeOfDayWithMilliseconds(base::Time::Now()));
 
     // Note: `BindOnce` should correctly handle copying any ref or move
     // arguments internally. This allows the callback arguments to contain ref

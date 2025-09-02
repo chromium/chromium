@@ -11,6 +11,7 @@
 #include "base/atomic_sequence_num.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/i18n/time_formatting.h"
 #include "base/location.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
@@ -71,6 +72,14 @@ void CommandBase::SetScheduledLocation(base::PassKey<WebAppCommandManager>,
       ->Set("scheduled_location", location.ToString());
 }
 
+void CommandBase::SetScheduledAt(base::PassKey<WebAppCommandManager>) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(command_sequence_checker_);
+  GetMutableDebugValue()
+      .EnsureDict("!metadata")
+      ->Set("scheduled_at",
+            base::TimeFormatTimeOfDayWithMilliseconds(base::Time::Now()));
+}
+
 void CommandBase::SetCommandManager(base::PassKey<WebAppCommandManager>,
                                     WebAppCommandManager* command_manager) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(command_sequence_checker_);
@@ -93,7 +102,10 @@ base::Value::Dict& CommandBase::GetMutableDebugValue() {
 void CommandBase::SetStarted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(command_sequence_checker_);
   started_ = true;
-  GetMutableDebugValue().EnsureDict("!metadata")->Set("started", true);
+  auto* metadata = GetMutableDebugValue().EnsureDict("!metadata");
+  metadata->Set("started", true);
+  metadata->Set("started_at",
+                base::TimeFormatTimeOfDayWithMilliseconds(base::Time::Now()));
 }
 
 void CommandBase::CompleteAndSelfDestructInternal(

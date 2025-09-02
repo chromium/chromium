@@ -71,6 +71,7 @@ void WebAppCommandManager::ScheduleCommand(
 
   command->SetScheduledLocation(base::PassKey<WebAppCommandManager>(),
                                 location);
+  command->SetScheduledAt(base::PassKey<WebAppCommandManager>());
   command->SetCommandManager(base::PassKey<WebAppCommandManager>(), this);
   internal::CommandBase::Id command_id = command->id();
   CHECK(!base::Contains(commands_, command_id));
