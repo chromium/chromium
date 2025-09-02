@@ -655,6 +655,9 @@ void AutofillExternalDelegate::DidSelectSuggestion(
           mojom::FieldActionType::kReplaceAll, query_form_, query_field_,
           suggestion.main_text.value, suggestion.type, LOYALTY_MEMBERSHIP_ID);
       break;
+    case SuggestionType::kWebauthnSignInWithAnotherDevice:
+      manager_->DelegateSelectToPasswordManager(suggestion, query_field_);
+      break;
     case SuggestionType::kAllLoyaltyCardsEntry:
     case SuggestionType::kComposeDisable:
     case SuggestionType::kComposeGoToSettings:
@@ -694,7 +697,6 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kAllSavedPasswordsEntry:
     case SuggestionType::kGeneratePasswordEntry:
     case SuggestionType::kWebauthnCredential:
-    case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kFillPassword:
     case SuggestionType::kViewPasswordDetails:
@@ -917,6 +919,10 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           TriggerSourceFromSuggestionTriggerSource(trigger_source_));
       break;
     }
+    case SuggestionType::kWebauthnSignInWithAnotherDevice:
+      manager_->DelegateAcceptToPasswordManager(suggestion, metadata,
+                                                query_field_);
+      break;
     case SuggestionType::kTitle:
     case SuggestionType::kSeparator:
     case SuggestionType::kPasswordEntry:
@@ -930,7 +936,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kDevtoolsTestAddresses:
     case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kWebauthnCredential:
-    case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kFillPassword:
     case SuggestionType::kViewPasswordDetails:

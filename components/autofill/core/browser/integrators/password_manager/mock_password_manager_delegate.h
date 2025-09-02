@@ -36,6 +36,16 @@ class MockPasswordManagerDelegate : public PasswordManagerDelegate {
               GetWebauthnSignInWithAnotherDeviceSuggestion,
               (),
               (const, override));
+
+  MOCK_METHOD(void,
+              SelectSuggestion,
+              (const Suggestion& suggestion),
+              (override));
+  MOCK_METHOD(void,
+              AcceptSuggestion,
+              (const Suggestion&,
+               const AutofillSuggestionDelegate::SuggestionMetadata&),
+              (override));
 };
 
 }  // namespace autofill

@@ -170,6 +170,17 @@ class BrowserAutofillManager : public AutofillManager {
   virtual void UndoAutofill(mojom::ActionPersistence action_persistence,
                             const FormData& form,
                             const FormFieldData& trigger_field);
+
+  // Defers the suggestion selection to the password manager.
+  void DelegateSelectToPasswordManager(const Suggestion& suggestion,
+                                       const FormFieldData& trigger_field);
+
+  // Defers the suggestion selection to the password manager.
+  void DelegateAcceptToPasswordManager(
+      const Suggestion& suggestion,
+      const AutofillSuggestionDelegate::SuggestionMetadata& metadata,
+      const FormFieldData& trigger_field);
+
   // Virtual for testing
   virtual void DidShowSuggestions(
       base::span<const Suggestion> suggestions,

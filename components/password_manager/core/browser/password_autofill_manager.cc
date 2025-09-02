@@ -45,6 +45,7 @@
 #include "components/device_reauth/device_authenticator.h"
 #include "components/favicon/core/favicon_util.h"
 #include "components/favicon_base/favicon_types.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -72,8 +73,73 @@ namespace password_manager {
 namespace {
 
 using autofill::Suggestion;
+using autofill::SuggestionType;
 using autofill::password_generation::PasswordGenerationType;
+using SuggestionMetadata =
+    autofill::AutofillSuggestionDelegate::SuggestionMetadata;
 using IsLoading = autofill::Suggestion::IsLoading;
+
+bool IsSuggestionHandledInPasswordManager(SuggestionType type) {
+  switch (type) {
+    case SuggestionType::kWebauthnSignInWithAnotherDevice:
+      return true;
+    case SuggestionType::kAddressEntry:
+    case SuggestionType::kAddressFieldByFieldFilling:
+    case SuggestionType::kDevtoolsTestAddressEntry:
+    case SuggestionType::kCreditCardEntry:
+    case SuggestionType::kVirtualCreditCardEntry:
+    case SuggestionType::kIbanEntry:
+    case SuggestionType::kMerchantPromoCodeEntry:
+    case SuggestionType::kSaveAndFillCreditCardEntry:
+    case SuggestionType::kSeePromoCodeDetails:
+    case SuggestionType::kScanCreditCard:
+    case SuggestionType::kBnplEntry:
+    case SuggestionType::kManageAddress:
+    case SuggestionType::kManageAutofillAi:
+    case SuggestionType::kManageCreditCard:
+    case SuggestionType::kManageIban:
+    case SuggestionType::kManageLoyaltyCard:
+    case SuggestionType::kManagePlusAddress:
+    case SuggestionType::kUndoOrClear:
+    case SuggestionType::kDatalistEntry:
+    case SuggestionType::kAutocompleteEntry:
+    case SuggestionType::kFillExistingPlusAddress:
+    case SuggestionType::kCreateNewPlusAddress:
+    case SuggestionType::kCreateNewPlusAddressInline:
+    case SuggestionType::kPlusAddressError:
+    case SuggestionType::kComposeResumeNudge:
+    case SuggestionType::kComposeProactiveNudge:
+    case SuggestionType::kComposeSavedStateNotification:
+    case SuggestionType::kComposeDisable:
+    case SuggestionType::kComposeGoToSettings:
+    case SuggestionType::kComposeNeverShowOnThisSiteAgain:
+    case SuggestionType::kFillAutofillAi:
+    case SuggestionType::kInsecureContextPaymentDisabledMessage:
+    case SuggestionType::kMixedFormMessage:
+    case SuggestionType::kAddressEntryOnTyping:
+    case SuggestionType::kIdentityCredential:
+    case SuggestionType::kLoyaltyCardEntry:
+    case SuggestionType::kOneTimePasswordEntry:
+    case SuggestionType::kTitle:
+    case SuggestionType::kSeparator:
+    case SuggestionType::kPasswordEntry:
+    case SuggestionType::kBackupPasswordEntry:
+    case SuggestionType::kTroubleSigningInEntry:
+    case SuggestionType::kFreeformFooter:
+    case SuggestionType::kAccountStoragePasswordEntry:
+    case SuggestionType::kAllLoyaltyCardsEntry:
+    case SuggestionType::kAllSavedPasswordsEntry:
+    case SuggestionType::kGeneratePasswordEntry:
+    case SuggestionType::kDevtoolsTestAddresses:
+    case SuggestionType::kDevtoolsTestAddressByCountry:
+    case SuggestionType::kWebauthnCredential:
+    case SuggestionType::kPasswordFieldByFieldFilling:
+    case SuggestionType::kFillPassword:
+    case SuggestionType::kViewPasswordDetails:
+    case SuggestionType::kPendingStateSignin:
+      return false;
+  }
+}
 
 // If `suggestion` was made for an empty username, then return the empty
 // string, otherwise return `suggestion`.
@@ -437,6 +503,18 @@ void PasswordAutofillManager::ShowSuggestions(
     wait_for_passkeys_timer_.Stop();
     ContinueShowingSuggestions(field);
   }
+}
+
+void PasswordAutofillManager::SelectSuggestion(const Suggestion& suggestion) {
+  CHECK(IsSuggestionHandledInPasswordManager(suggestion.type));
+  DidSelectSuggestion(suggestion);
+}
+
+void PasswordAutofillManager::AcceptSuggestion(
+    const Suggestion& suggestion,
+    const SuggestionMetadata& metadata) {
+  CHECK(IsSuggestionHandledInPasswordManager(suggestion.type));
+  DidAcceptSuggestion(suggestion, metadata);
 }
 
 bool PasswordAutofillManager::ShouldWaitForPasskeys(

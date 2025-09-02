@@ -1986,6 +1986,25 @@ void BrowserAutofillManager::UndoAutofill(
   }
 }
 
+void BrowserAutofillManager::DelegateSelectToPasswordManager(
+    const Suggestion& suggestion,
+    const FormFieldData& trigger_field) {
+  if (PasswordManagerDelegate* password_delegate =
+          client().GetPasswordManagerDelegate(trigger_field.global_id())) {
+    password_delegate->SelectSuggestion(suggestion);
+  }
+}
+
+void BrowserAutofillManager::DelegateAcceptToPasswordManager(
+    const Suggestion& suggestion,
+    const AutofillSuggestionDelegate::SuggestionMetadata& metadata,
+    const FormFieldData& trigger_field) {
+  if (PasswordManagerDelegate* password_delegate =
+          client().GetPasswordManagerDelegate(trigger_field.global_id())) {
+    password_delegate->AcceptSuggestion(suggestion, metadata);
+  }
+}
+
 void BrowserAutofillManager::FillOrPreviewCreditCardForm(
     mojom::ActionPersistence action_persistence,
     const FormData& form,

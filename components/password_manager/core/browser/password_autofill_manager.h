@@ -66,6 +66,10 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
 #endif  // BUILDFLAG(IS_ANDROID)
   void ShowSuggestions(
       const autofill::TriggeringField& triggering_field) override;
+  void SelectSuggestion(const autofill::Suggestion& suggestion) override;
+  void AcceptSuggestion(
+      const autofill::Suggestion& suggestion,
+      const AutofillSuggestionDelegate::SuggestionMetadata& metadata) override;
   std::optional<autofill::Suggestion>
   GetWebauthnSignInWithAnotherDeviceSuggestion() const override;
 

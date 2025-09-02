@@ -790,6 +790,8 @@ class MockAutofillClient : public TestAutofillClient {
                 ->GetMerchantPromoCodeManager()));
     client->set_crowdsourcing_manager(
         std::make_unique<NiceMock<MockAutofillCrowdsourcingManager>>(&*client));
+    client->set_password_manager_delegate(
+        std::make_unique<NiceMock<MockPasswordManagerDelegate>>());
     test_api(client->GetPersonalDataManager().address_data_manager())
         .set_auto_accept_address_imports(true);
     test_api(*client->GetFormDataImporter())
@@ -1473,6 +1475,11 @@ class BrowserAutofillManagerTest : public testing::Test {
         client().GetAutocompleteHistoryManager());
   }
 
+  MockPasswordManagerDelegate& password_delegate() {
+    return *static_cast<MockPasswordManagerDelegate*>(
+        client().GetPasswordManagerDelegate(FieldGlobalId()));
+  }
+
  private:
   void CreateTestAutofillProfiles() {
     AutofillProfile profile1 =
@@ -1867,13 +1874,9 @@ TEST_F(BrowserAutofillManagerTest, WebauthnSignInWithAnotherDeviceSuggestion) {
   FormData form = CreateTestHybridSignUpFormData();
   FormsSeen({form});
 
-  auto password_manager_delegate =
-      std::make_unique<NiceMock<MockPasswordManagerDelegate>>();
-  ON_CALL(*password_manager_delegate,
-          GetWebauthnSignInWithAnotherDeviceSuggestion)
+  ON_CALL(password_delegate(), GetWebauthnSignInWithAnotherDeviceSuggestion)
       .WillByDefault(
           Return(Suggestion(SuggestionType::kWebauthnSignInWithAnotherDevice)));
-  client().set_password_manager_delegate(std::move(password_manager_delegate));
 
   OnAskForValuesToFill(form, form.fields()[0]);
 
@@ -1894,14 +1897,9 @@ TEST_F(BrowserAutofillManagerTest,
   FormData form = CreateTestHybridSignUpFormData();
   FormsSeen({form});
 
-  auto password_manager_delegate =
-      std::make_unique<NiceMock<MockPasswordManagerDelegate>>();
-  // This ON_CALL should not be decisive since the flag is off.
-  ON_CALL(*password_manager_delegate,
-          GetWebauthnSignInWithAnotherDeviceSuggestion)
+  ON_CALL(password_delegate(), GetWebauthnSignInWithAnotherDeviceSuggestion)
       .WillByDefault(
           Return(Suggestion(SuggestionType::kWebauthnSignInWithAnotherDevice)));
-  client().set_password_manager_delegate(std::move(password_manager_delegate));
 
   OnAskForValuesToFill(form, form.fields()[0]);
 
@@ -1926,13 +1924,9 @@ TEST_F(BrowserAutofillManagerTest,
       "Email", "email", "", FormControlType::kInputEmail, "username")});
   FormsSeen({form});
 
-  auto password_manager_delegate =
-      std::make_unique<NiceMock<MockPasswordManagerDelegate>>();
-  ON_CALL(*password_manager_delegate,
-          GetWebauthnSignInWithAnotherDeviceSuggestion)
+  ON_CALL(password_delegate(), GetWebauthnSignInWithAnotherDeviceSuggestion)
       .WillByDefault(
           Return(Suggestion(SuggestionType::kWebauthnSignInWithAnotherDevice)));
-  client().set_password_manager_delegate(std::move(password_manager_delegate));
 
   OnAskForValuesToFill(form, form.fields()[0]);
 
@@ -1955,18 +1949,62 @@ TEST_F(BrowserAutofillManagerTest,
   FormData form = CreateTestHybridSignUpFormData();
   FormsSeen({form});
 
-  auto password_manager_delegate =
-      std::make_unique<NiceMock<MockPasswordManagerDelegate>>();
-  ON_CALL(*password_manager_delegate,
-          GetWebauthnSignInWithAnotherDeviceSuggestion)
+  ON_CALL(password_delegate(), GetWebauthnSignInWithAnotherDeviceSuggestion)
       .WillByDefault(Return(std::nullopt));  // Explicitly return nullopt
-  client().set_password_manager_delegate(std::move(password_manager_delegate));
 
   OnAskForValuesToFill(form, form.fields()[0]);
 
   EXPECT_THAT(external_delegate()->suggestions(),
               Not(Contains(Suggestion(
                   SuggestionType::kWebauthnSignInWithAnotherDevice))));
+}
+
+TEST_F(BrowserAutofillManagerTest,
+       WebauthnSignInWithAnotherDeviceSuggestion_Select) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {
+          autofill::features::kAutofillAndPasswordsInSameSurface,
+          password_manager::features::
+              kAutofillReintroduceHybridPasskeyDropdownItem,
+      },
+      /*disabled_features=*/{});
+  FormData form = CreateTestHybridSignUpFormData();
+  FormsSeen({form});
+  Suggestion suggestion(SuggestionType::kWebauthnSignInWithAnotherDevice);
+
+  ON_CALL(password_delegate(), GetWebauthnSignInWithAnotherDeviceSuggestion)
+      .WillByDefault(Return(suggestion));
+  EXPECT_CALL(password_delegate(), SelectSuggestion(suggestion));
+
+  OnAskForValuesToFill(form, form.fields()[0]);
+
+  external_delegate()->DidSelectSuggestion(suggestion);
+}
+
+TEST_F(BrowserAutofillManagerTest,
+       WebauthnSignInWithAnotherDeviceSuggestion_Accept) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {
+          autofill::features::kAutofillAndPasswordsInSameSurface,
+          password_manager::features::
+              kAutofillReintroduceHybridPasskeyDropdownItem,
+      },
+      /*disabled_features=*/{});
+  FormData form = CreateTestHybridSignUpFormData();
+  FormsSeen({form});
+  Suggestion suggestion(SuggestionType::kWebauthnSignInWithAnotherDevice);
+
+  ON_CALL(password_delegate(), GetWebauthnSignInWithAnotherDeviceSuggestion)
+      .WillByDefault(Return(suggestion));
+  EXPECT_CALL(password_delegate(), AcceptSuggestion(suggestion, _));
+
+  OnAskForValuesToFill(form, form.fields()[0]);
+
+  external_delegate()->DidAcceptSuggestion(suggestion, {});
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -9233,36 +9271,8 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
       external_delegate()->suggestions().front(), {});
 }
 
-// Fixture setting the BAM's `PasswordManagerDelegate` to a mock instead
-// of the default `nullptr`. Enables any features if necessary.
-class BrowserAutofillManagerUsingPasswordDelegateTest
-    : public BrowserAutofillManagerTest {
- protected:
-  void SetUp() override {
-    BrowserAutofillManagerTest::SetUp();
-    client().set_password_manager_delegate(CreatePasswordDelegate());
-  }
-
-  void TearDown() override {
-    delegate_ = nullptr;
-    BrowserAutofillManagerTest::TearDown();
-  }
-
-  MockPasswordManagerDelegate& password_delegate() { return *delegate_; }
-
- private:
-  std::unique_ptr<PasswordManagerDelegate> CreatePasswordDelegate() {
-    auto password_delegate = std::make_unique<MockPasswordManagerDelegate>();
-    delegate_ = password_delegate.get();
-    return password_delegate;
-  }
-
-  raw_ptr<MockPasswordManagerDelegate> delegate_ = nullptr;
-};
-
 // Test that the BAM queries the password delegate as soon as it's present.
-TEST_F(BrowserAutofillManagerUsingPasswordDelegateTest,
-       QueriesDelegateWhenGeneratingSuggestions) {
+TEST_F(BrowserAutofillManagerTest, QueriesDelegateWhenGeneratingSuggestions) {
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
 
