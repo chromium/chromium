@@ -126,7 +126,7 @@ TEST_F(PaintPreviewTabServiceTest, CaptureTab) {
   const int kTabId = 1U;
 
   LaxMockPaintPreviewRecorder recorder;
-  recorder.SetResponse(mojom::PaintPreviewStatus::kOk);
+  recorder.SetResponse();
   OverrideInterface(&recorder);
 
   auto* service = GetService();
@@ -160,7 +160,7 @@ TEST_F(PaintPreviewTabServiceTest, CaptureTabFailed) {
   const int kTabId = 1U;
 
   LaxMockPaintPreviewRecorder recorder;
-  recorder.SetResponse(mojom::PaintPreviewStatus::kFailed);
+  recorder.SetResponse(base::unexpected(mojom::PaintPreviewStatus::kFailed));
   OverrideInterface(&recorder);
 
   auto* service = GetService();
@@ -194,7 +194,7 @@ TEST_F(PaintPreviewTabServiceTest, CaptureTabTwice) {
   const int kTabId = 1U;
 
   LaxMockPaintPreviewRecorder recorder;
-  recorder.SetResponse(mojom::PaintPreviewStatus::kOk);
+  recorder.SetResponse();
   OverrideInterface(&recorder);
 
   auto* service = GetService();
@@ -225,6 +225,7 @@ TEST_F(PaintPreviewTabServiceTest, CaptureTabTwice) {
   auto files_1 = ListDir(path_1);
   ASSERT_EQ(1U, files_1.size());
 
+  recorder.SetResponse();
   service->CaptureTab(kTabId, web_contents(), false, 1.0, 10, 20,
                       base::BindOnce([](PaintPreviewTabService::Status status) {
                         EXPECT_EQ(status, PaintPreviewTabService::Status::kOk);
@@ -380,7 +381,7 @@ TEST_F(PaintPreviewTabServiceTest, EarlyCapture) {
   const int kTabId = 1U;
 
   LaxMockPaintPreviewRecorder recorder;
-  recorder.SetResponse(mojom::PaintPreviewStatus::kOk);
+  recorder.SetResponse();
   OverrideInterface(&recorder);
 
   auto service = BuildServiceWithCache({});
@@ -414,7 +415,7 @@ TEST_F(PaintPreviewTabServiceTest, CaptureTabAndCleanup) {
   const int kTabId = 1U;
 
   LaxMockPaintPreviewRecorder recorder;
-  recorder.SetResponse(mojom::PaintPreviewStatus::kOk);
+  recorder.SetResponse();
   OverrideInterface(&recorder);
 
   auto service = BuildServiceWithCache({kTabId + 1});

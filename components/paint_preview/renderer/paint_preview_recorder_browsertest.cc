@@ -5,6 +5,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -111,15 +112,14 @@ class PaintPreviewRecorderRenderViewTest
     params->file = std::move(skp_file);
 
     PaintPreviewRecorderImpl paint_preview_recorder(frame);
-    base::test::TestFuture<mojom::PaintPreviewStatus,
-                           mojom::PaintPreviewCaptureResponsePtr>
+    base::test::TestFuture<base::expected<mojom::PaintPreviewCaptureResponsePtr,
+                                          mojom::PaintPreviewStatus>>
         future;
     paint_preview_recorder.CapturePaintPreview(std::move(params),
                                                future.GetCallback());
-    auto [status, response] = future.Take();
 
-    EXPECT_EQ(status, mojom::PaintPreviewStatus::kOk);
-    return {skp_path, std::move(response)};
+    EXPECT_THAT(future.Get(), base::test::HasValue());
+    return {skp_path, future.Take().value()};
   }
 
   mojom::GeometryMetadataResponsePtr GetGeometryMetadata(
@@ -739,14 +739,14 @@ TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureInvalidFile) {
   params->file = std::move(skp_file);
 
   content::RenderFrame* frame = GetMainRenderFrame();
-  base::test::TestFuture<mojom::PaintPreviewStatus,
-                         mojom::PaintPreviewCaptureResponsePtr>
+  base::test::TestFuture<base::expected<mojom::PaintPreviewCaptureResponsePtr,
+                                        mojom::PaintPreviewStatus>>
       future;
   PaintPreviewRecorderImpl paint_preview_recorder(frame);
   paint_preview_recorder.CapturePaintPreview(std::move(params),
                                              future.GetCallback());
-  auto [status, response] = future.Take();
-  EXPECT_EQ(mojom::PaintPreviewStatus::kCaptureFailed, status);
+  EXPECT_THAT(future.Take(),
+              base::test::ErrorIs(mojom::PaintPreviewStatus::kCaptureFailed));
 }
 
 TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureInvalidXYClip) {
@@ -768,14 +768,14 @@ TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureInvalidXYClip) {
   params->file = std::move(skp_file);
 
   content::RenderFrame* frame = GetMainRenderFrame();
-  base::test::TestFuture<mojom::PaintPreviewStatus,
-                         mojom::PaintPreviewCaptureResponsePtr>
+  base::test::TestFuture<base::expected<mojom::PaintPreviewCaptureResponsePtr,
+                                        mojom::PaintPreviewStatus>>
       future;
   PaintPreviewRecorderImpl paint_preview_recorder(frame);
   paint_preview_recorder.CapturePaintPreview(std::move(params),
                                              future.GetCallback());
-  auto [status, response] = future.Take();
-  EXPECT_EQ(mojom::PaintPreviewStatus::kCaptureFailed, status);
+  EXPECT_THAT(future.Take(),
+              base::test::ErrorIs(mojom::PaintPreviewStatus::kCaptureFailed));
 }
 
 TEST_P(PaintPreviewRecorderRenderViewTest, TestCaptureMainFrameAndLocalFrame) {

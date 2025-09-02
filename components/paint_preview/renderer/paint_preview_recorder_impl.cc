@@ -81,18 +81,19 @@ struct FinishedRecording {
 };
 
 using CapturePaintPreviewCallback =
-    base::OnceCallback<void(mojom::PaintPreviewStatus,
-                            mojom::PaintPreviewCaptureResponsePtr)>;
+    mojom::PaintPreviewRecorder::CapturePaintPreviewCallback;
 
 // Finishes building the PaintPreviewCaptureResponse mojo message and sends it
 // or sends an error if the status is not `PaintPreviewStatus::kOK`
 void BuildAndSendResponse(std::unique_ptr<PaintPreviewTracker> tracker,
                           FinishedRecording out,
                           CapturePaintPreviewCallback callback) {
-  if (out.status == mojom::PaintPreviewStatus::kOk) {
-    BuildResponse(tracker.get(), out.response.get());
+  if (out.status != mojom::PaintPreviewStatus::kOk) {
+    std::move(callback).Run(base::unexpected(out.status));
+    return;
   }
-  std::move(callback).Run(out.status, std::move(out.response));
+  BuildResponse(tracker.get(), out.response.get());
+  std::move(callback).Run(std::move(out.response));
 }
 
 // Records `skp` to `skp_file` on the threadpool to avoid blocking the main
@@ -165,8 +166,8 @@ void FinishRecordingOnUIThread(cc::PaintRecord recording,
   TRACE_EVENT0("paint_preview", "FinishRecordingOnUIThread");
   DCHECK(tracker);
   if (!tracker) {
-    std::move(callback).Run(mojom::PaintPreviewStatus::kCaptureFailed,
-                            std::move(response));
+    std::move(callback).Run(
+        base::unexpected(mojom::PaintPreviewStatus::kCaptureFailed));
     return;
   }
 
@@ -176,8 +177,8 @@ void FinishRecordingOnUIThread(cc::PaintRecord recording,
   auto skp =
       PaintRecordToSkPicture(std::move(recording), tracker.get(), bounds);
   if (!skp) {
-    std::move(callback).Run(mojom::PaintPreviewStatus::kCaptureFailed,
-                            std::move(response));
+    std::move(callback).Run(
+        base::unexpected(mojom::PaintPreviewStatus::kCaptureFailed));
     return;
   }
   TRACE_EVENT_BEGIN0("paint_preview", "ConvertToSkPicture");
@@ -329,8 +330,8 @@ void PaintPreviewRecorderImpl::CapturePaintPreview(
   // recoverable.
   auto response = mojom::PaintPreviewCaptureResponse::New();
   if (is_painting_preview_) {
-    std::move(callback).Run(mojom::PaintPreviewStatus::kAlreadyCapturing,
-                            std::move(response));
+    std::move(callback).Run(
+        base::unexpected(mojom::PaintPreviewStatus::kAlreadyCapturing));
     return;
   }
   const base::AutoReset<bool> resetter(&is_painting_preview_, true);
@@ -359,26 +360,25 @@ void PaintPreviewRecorderImpl::CapturePaintPreviewInternal(
   // Ensure the a frame actually exists to avoid a possible crash.
   if (!frame) {
     DVLOG(1) << "Error: renderer has no frame yet!";
-    std::move(callback).Run(mojom::PaintPreviewStatus::kFailed,
-                            std::move(response));
+    std::move(callback).Run(
+        base::unexpected(mojom::PaintPreviewStatus::kFailed));
     return;
   }
 
   DCHECK_EQ(is_main_frame_, params->is_main_frame);
 
-  ASSIGN_OR_RETURN(
-      const CaptureGeometry geometry,
-      ComputeCaptureGeometry(
-          frame->GetScrollOffset(), frame->DocumentSize(),
-          params->geometry_metadata_params->clip_rect,
-          params->geometry_metadata_params->clip_x_coord_override,
-          params->geometry_metadata_params->clip_y_coord_override,
-          params->geometry_metadata_params->clip_rect_is_hint),
-      [&] {
-        std::move(callback).Run(mojom::PaintPreviewStatus::kCaptureFailed,
-                                std::move(response));
-        return;
-      });
+  ASSIGN_OR_RETURN(const CaptureGeometry geometry,
+                   ComputeCaptureGeometry(
+                       frame->GetScrollOffset(), frame->DocumentSize(),
+                       params->geometry_metadata_params->clip_rect,
+                       params->geometry_metadata_params->clip_x_coord_override,
+                       params->geometry_metadata_params->clip_y_coord_override,
+                       params->geometry_metadata_params->clip_rect_is_hint),
+                   [&] {
+                     std::move(callback).Run(base::unexpected(
+                         mojom::PaintPreviewStatus::kCaptureFailed));
+                     return;
+                   });
 
   response->geometry_metadata = mojom::GeometryMetadataResponse::New();
   response->geometry_metadata->scroll_offsets = geometry.scroll_offsets;
@@ -432,8 +432,8 @@ void PaintPreviewRecorderImpl::CapturePaintPreviewInternal(
 
   // Restore to before out-of-lifecycle paint phase.
   if (!success) {
-    std::move(callback).Run(mojom::PaintPreviewStatus::kCaptureFailed,
-                            std::move(response));
+    std::move(callback).Run(
+        base::unexpected(mojom::PaintPreviewStatus::kCaptureFailed));
     return;
   }
 

@@ -22,14 +22,11 @@ void MockPaintPreviewRecorder::CapturePaintPreview(
     mojom::PaintPreviewRecorder::CapturePaintPreviewCallback callback) {
   CheckParams(params);
 
+  send_response_callback_ = std::move(callback);
   if (received_request_closure_) {
-    send_response_callback_ = std::move(callback);
     std::move(received_request_closure_).Run();
   } else {
-    if (!response_) {
-      response_ = NewResponse();
-    }
-    std::move(callback).Run(status_, std::move(response_));
+    SendResponse();
   }
 }
 
@@ -38,14 +35,11 @@ void MockPaintPreviewRecorder::GetGeometryMetadata(
     mojom::PaintPreviewRecorder::GetGeometryMetadataCallback callback) {
   CheckGeometryParams(params);
 
+  send_geometry_response_callback_ = std::move(callback);
   if (received_request_closure_) {
-    send_geometry_response_callback_ = std::move(callback);
     std::move(received_request_closure_).Run();
   } else {
-    if (!geometry_response_) {
-      geometry_response_ = mojom::GeometryMetadataResponse::New();
-    }
-    std::move(callback).Run(std::move(geometry_response_));
+    SendGeometryResponse();
   }
 }
 
@@ -60,9 +54,8 @@ void MockPaintPreviewRecorder::SetExpectedGeometryParams(
 }
 
 void MockPaintPreviewRecorder::SetResponse(
-    mojom::PaintPreviewStatus status,
-    mojom::PaintPreviewCaptureResponsePtr response) {
-  status_ = status;
+    base::expected<mojom::PaintPreviewCaptureResponsePtr,
+                   mojom::PaintPreviewStatus> response) {
   response_ = std::move(response);
 }
 
@@ -79,14 +72,22 @@ void MockPaintPreviewRecorder::SetReceivedRequestClosure(
 
 void MockPaintPreviewRecorder::SendResponse() {
   ASSERT_TRUE(send_response_callback_);
-  if (!response_) {
+  ASSERT_TRUE(response_) << "SetResponse() not called";
+  if (response_.value().has_value() && response_.value().value().is_null()) {
     response_ = NewResponse();
   }
-  std::move(send_response_callback_).Run(status_, std::move(response_));
+  std::optional<base::expected<mojom::PaintPreviewCaptureResponsePtr,
+                               mojom::PaintPreviewStatus>>
+      resp = std::nullopt;
+  resp.swap(response_);
+  std::move(send_response_callback_).Run(std::move(resp).value());
 }
 
 void MockPaintPreviewRecorder::SendGeometryResponse() {
   ASSERT_TRUE(send_geometry_response_callback_);
+  if (!geometry_response_) {
+    geometry_response_ = mojom::GeometryMetadataResponse::New();
+  }
   std::move(send_geometry_response_callback_)
       .Run(std::move(geometry_response_));
 }

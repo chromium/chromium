@@ -153,11 +153,10 @@ interface PaintPreviewRecorder {
   // via the RenderFrameProxy. The browser handles dispatching these requests to
   // the correct RenderFrame and aggregating all the outputs.
   //
-  // Returns a status, and if |status| == kOK a valid instance of
-  // PaintPreviewCaptureResponse.
+  // Returns a valid instance of PaintPreviewCaptureResponse, or a status code
+  // on error.
   CapturePaintPreview(PaintPreviewCaptureParams params) =>
-    (PaintPreviewStatus status,
-     PaintPreviewCaptureResponse response);
+    result<PaintPreviewCaptureResponse, PaintPreviewStatus>;
 
   // Computes the geometry that would be used for a capture with the given
   // geometry params. Returns null if the geometry couldn't be calculated.

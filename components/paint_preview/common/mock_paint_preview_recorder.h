@@ -32,10 +32,14 @@ class MockPaintPreviewRecorder : public mojom::PaintPreviewRecorder {
   void SetExpectedParams(mojom::PaintPreviewCaptureParamsPtr params);
   void SetExpectedGeometryParams(mojom::GeometryMetadataParamsPtr params);
 
-  // Sets the status and response that will be sent. If `response` is nullptr, a
-  // new response will be conructed on demand when needed.
-  void SetResponse(mojom::PaintPreviewStatus status,
-                   mojom::PaintPreviewCaptureResponsePtr response = nullptr);
+  // Sets the status or response that will be sent. If `response` is
+  // `base::ok(nullptr)`, a new response will be conructed on demand when
+  // needed. Each response is consumed when it is sent.
+  void SetResponse(
+      base::expected<mojom::PaintPreviewCaptureResponsePtr,
+                     mojom::PaintPreviewStatus> response = base::ok(nullptr));
+  // Sets the response that will be sent. If `response` is `nullptr`, a new
+  // response will be conructed on demand when needed.
   void SetGeometryResponse(
       mojom::GeometryMetadataResponsePtr response = nullptr);
 
@@ -72,9 +76,9 @@ class MockPaintPreviewRecorder : public mojom::PaintPreviewRecorder {
   mojom::PaintPreviewCaptureParamsPtr expected_params_;
   mojom::GeometryMetadataParamsPtr expected_geometry_params_;
 
-  mojom::PaintPreviewStatus status_;
-
-  mojom::PaintPreviewCaptureResponsePtr response_;
+  std::optional<base::expected<mojom::PaintPreviewCaptureResponsePtr,
+                               mojom::PaintPreviewStatus>>
+      response_ = std::nullopt;
   mojom::GeometryMetadataResponsePtr geometry_response_;
 
   mojo::AssociatedReceiver<mojom::PaintPreviewRecorder> binding_{this};

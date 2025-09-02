@@ -42,10 +42,10 @@ class PaintPreviewClient
                               mojom::PaintPreviewStatus,
                               std::unique_ptr<CaptureResult>)>;
 
-  using RecordingRequestParamsReadyCallback =
-      base::OnceCallback<void(RecordingParams,
-                              mojom::PaintPreviewStatus,
-                              mojom::PaintPreviewCaptureParamsPtr)>;
+  using RecordingRequestParamsReadyCallback = base::OnceCallback<void(
+      RecordingParams,
+      base::expected<mojom::PaintPreviewCaptureParamsPtr,
+                     mojom::PaintPreviewStatus>)>;
 
   // Augmented version of mojom::PaintPreviewServiceParams.
   struct PaintPreviewParams {
@@ -236,8 +236,8 @@ class PaintPreviewClient
       const base::UnguessableToken& frame_guid,
       const content::GlobalRenderFrameHostId& render_frame_id,
       RecordingParams params,
-      mojom::PaintPreviewStatus status,
-      mojom::PaintPreviewCaptureParamsPtr capture_params);
+      base::expected<mojom::PaintPreviewCaptureParamsPtr,
+                     mojom::PaintPreviewStatus> capture_params);
 
   // Handles recording the frame and updating client state when capture is
   // complete.
@@ -245,8 +245,8 @@ class PaintPreviewClient
       const base::UnguessableToken& frame_guid,
       const content::GlobalRenderFrameHostId& render_frame_id,
       RecordingParams params,
-      mojom::PaintPreviewStatus status,
-      mojom::PaintPreviewCaptureResponsePtr response);
+      base::expected<mojom::PaintPreviewCaptureResponsePtr,
+                     mojom::PaintPreviewStatus> response);
 
   // Marks a frame as having been processed, this should occur regardless of
   // whether the processed frame is valid as there is no retry.
@@ -267,14 +267,14 @@ class PaintPreviewClient
 
   // Synthesizes a redacted subframe and persists it appropriately, then resumes
   // the capture.
-  void RedactSubframe(
-      const base::UnguessableToken& frame_guid,
-      const content::GlobalRenderFrameHostId& render_frame_id,
-      RecordingParams params,
-      base::OnceCallback<void(RecordingParams,
-                              mojom::PaintPreviewStatus,
-                              mojom::PaintPreviewCaptureResponsePtr)> callback,
-      mojom::GeometryMetadataResponsePtr response);
+  void RedactSubframe(const base::UnguessableToken& frame_guid,
+                      const content::GlobalRenderFrameHostId& render_frame_id,
+                      RecordingParams params,
+                      base::OnceCallback<void(
+                          RecordingParams,
+                          base::expected<mojom::PaintPreviewCaptureResponsePtr,
+                                         mojom::PaintPreviewStatus>)> callback,
+                      mojom::GeometryMetadataResponsePtr response);
 
   // Performs bookkeeping to keep track of the fact that this frame's capture is
   // still pending.

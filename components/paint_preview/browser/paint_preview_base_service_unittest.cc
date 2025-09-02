@@ -198,7 +198,7 @@ TEST_P(PaintPreviewBaseServiceTest, CaptureMainFrame) {
   if (GetParam() == RecordingPersistence::kMemoryBuffer) {
     response->skp.emplace(mojo_base::BigBuffer());
   }
-  recorder.SetResponse(mojom::PaintPreviewStatus::kOk, std::move(response));
+  recorder.SetResponse(std::move(response));
   OverrideInterface(&recorder);
 
   auto* service = GetService();
@@ -265,10 +265,7 @@ TEST_P(PaintPreviewBaseServiceTest, CaptureFailed) {
   params->is_main_frame = true;
   params->max_capture_size = 0;
   recorder.SetExpectedParams(std::move(params));
-  auto response = mojom::PaintPreviewCaptureResponse::New();
-  response->geometry_metadata = mojom::GeometryMetadataResponse::New();
-  response->embedding_token = std::nullopt;
-  recorder.SetResponse(mojom::PaintPreviewStatus::kFailed, std::move(response));
+  recorder.SetResponse(base::unexpected(mojom::PaintPreviewStatus::kFailed));
   OverrideInterface(&recorder);
 
   auto* service = GetService();

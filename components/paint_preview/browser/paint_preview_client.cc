@@ -175,8 +175,9 @@ void OnSerializedRecordingFileCreated(
     base::File file) {
   if (!file.IsValid()) {
     DLOG(ERROR) << "File create failed: " << file.error_details();
-    std::move(callback).Run(std::move(capture_params),
-                            mojom::PaintPreviewStatus::kFileCreationError, {});
+    std::move(callback).Run(
+        std::move(capture_params),
+        base::unexpected(mojom::PaintPreviewStatus::kFileCreationError));
   } else if (callback.IsCancelled()) {
     // The weak pointer is invalid, we should close the file on a background
     // thread to avoid it being closed implicitly via the default dtor on the UI
@@ -187,8 +188,7 @@ void OnSerializedRecordingFileCreated(
   } else {
     mojom::PaintPreviewCaptureParamsPtr params = CreateRecordingRequestParams(
         RecordingPersistence::kFileSystem, capture_params, std::move(file));
-    std::move(callback).Run(std::move(capture_params),
-                            mojom::PaintPreviewStatus::kOk, std::move(params));
+    std::move(callback).Run(std::move(capture_params), std::move(params));
   }
 }
 
@@ -215,7 +215,7 @@ sk_sp<SkData> SerializeToBytes(sk_sp<SkPicture> skp) {
   return memory_stream.detachAsData();
 }
 
-std::pair<mojom::PaintPreviewStatus, mojom::PaintPreviewCaptureResponsePtr>
+base::expected<mojom::PaintPreviewCaptureResponsePtr, mojom::PaintPreviewStatus>
 SerializeRedactedFrameToFile(const gfx::Size& size,
                              std::optional<size_t> max_capture_size,
                              const base::FilePath& file_path,
@@ -225,16 +225,16 @@ SerializeRedactedFrameToFile(const gfx::Size& size,
 
   base::span<const uint8_t> bytes = skia::as_byte_span(*data);
   if (max_capture_size && data->size() > max_capture_size) {
-    return {mojom::PaintPreviewStatus::kFileCreationError, std::move(response)};
+    return base::unexpected(mojom::PaintPreviewStatus::kFileCreationError);
   }
 
   base::File file = CreateOrOverwriteFileForWriting(file_path);
 
   if (!file.IsValid() || !file.WriteAndCheck(/*offset=*/0, bytes)) {
-    return {mojom::PaintPreviewStatus::kFileCreationError, std::move(response)};
+    return base::unexpected(mojom::PaintPreviewStatus::kFileCreationError);
   }
 
-  return {mojom::PaintPreviewStatus::kOk, std::move(response)};
+  return std::move(response);
 }
 
 struct BufferAndMetadata {
@@ -264,18 +264,6 @@ content::GlobalRenderFrameHostId GetGlobalRenderFrameHostId(
   // TODO(https://crbug.com/441908441): use `rfh->GetGlobalId()` here.
   return content::GlobalRenderFrameHostId(rfh->GetProcess()->GetDeprecatedID(),
                                           rfh->GetRoutingID());
-}
-
-// Converts a callback that accepts two args into a callback that accepts a
-// single std::pair arg.
-template <typename T, typename U>
-base::OnceCallback<void(std::pair<T, U>)> ConvertToPairArgCallback(
-    base::OnceCallback<void(T, U)> callback) {
-  return base::BindOnce(
-      [](base::OnceCallback<void(T, U)> callback, std::pair<T, U> pair) {
-        std::move(callback).Run(std::move(pair.first), std::move(pair.second));
-      },
-      std::move(callback));
 }
 
 }  // namespace
@@ -380,9 +368,7 @@ void PaintPreviewClient::InProgressDocumentCaptureState::
   } else {
     mojom::PaintPreviewCaptureParamsPtr params =
         CreateRecordingRequestParams(persistence, capture_params, {});
-    std::move(ready_callback)
-        .Run(std::move(capture_params), mojom::PaintPreviewStatus::kOk,
-             std::move(params));
+    std::move(ready_callback).Run(std::move(capture_params), std::move(params));
   }
 }
 
@@ -609,9 +595,10 @@ void PaintPreviewClient::RedactSubframe(
     const base::UnguessableToken& frame_guid,
     const content::GlobalRenderFrameHostId& render_frame_id,
     RecordingParams params,
-    base::OnceCallback<void(RecordingParams,
-                            mojom::PaintPreviewStatus,
-                            mojom::PaintPreviewCaptureResponsePtr)> callback,
+    base::OnceCallback<
+        void(RecordingParams,
+             base::expected<mojom::PaintPreviewCaptureResponsePtr,
+                            mojom::PaintPreviewStatus>)> callback,
     mojom::GeometryMetadataResponsePtr response) {
   auto* document_data =
       base::FindOrNull(all_document_data_, params.get_document_guid());
@@ -625,8 +612,9 @@ void PaintPreviewClient::RedactSubframe(
       render_frame_host->GetEmbeddingToken().value_or(
           base::UnguessableToken::Null()) != frame_guid ||
       !response) {
-    std::move(callback).Run(std::move(params),
-                            mojom::PaintPreviewStatus::kCaptureFailed, {});
+    std::move(callback).Run(
+        std::move(params),
+        base::unexpected(mojom::PaintPreviewStatus::kCaptureFailed));
     return;
   }
 
@@ -647,30 +635,31 @@ void PaintPreviewClient::RedactSubframe(
                          max_capture_size,
                          document_data->FilePathForFrame(frame_guid),
                          std::move(capture_response)),
-          ConvertToPairArgCallback(
-              base::BindOnce(std::move(callback), std::move(params))));
+          base::BindOnce(std::move(callback), std::move(params)));
       return;
     }
     case RecordingPersistence::kMemoryBuffer: {
-      mojom::PaintPreviewStatus capture_status =
-          mojom::PaintPreviewStatus::kCaptureFailed;
       std::optional<BufferAndMetadata> serialized =
           SerializeRedactedFrameToBuffer(
               params.clip_rect.size(),
               document_data->max_per_capture_size == 0
                   ? std::nullopt
                   : std::make_optional(document_data->max_per_capture_size));
-      if (serialized) {
-        capture_status = mojom::PaintPreviewStatus::kOk;
-        capture_response->skp.emplace(std::move(serialized->buffer));
-        capture_response->serialized_size = serialized->buffer_size;
+      if (!serialized) {
+        std::move(callback).Run(
+            std::move(params),
+            base::unexpected(mojom::PaintPreviewStatus::kCaptureFailed));
+        return;
       }
 
-      std::move(callback).Run(std::move(params), capture_status,
-                              std::move(capture_response));
+      capture_response->skp.emplace(std::move(serialized->buffer));
+      capture_response->serialized_size = serialized->buffer_size;
+
+      std::move(callback).Run(std::move(params), std::move(capture_response));
       return;
     }
   }
+  NOTREACHED();
 }
 
 void PaintPreviewClient::AwaitSubframeCapture(
@@ -765,8 +754,8 @@ void PaintPreviewClient::RequestCaptureOnUIThread(
     const base::UnguessableToken& frame_guid,
     const content::GlobalRenderFrameHostId& render_frame_id,
     RecordingParams params,
-    mojom::PaintPreviewStatus status,
-    mojom::PaintPreviewCaptureParamsPtr capture_params) {
+    base::expected<mojom::PaintPreviewCaptureParamsPtr,
+                   mojom::PaintPreviewStatus> capture_params) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto* document_data =
@@ -776,9 +765,9 @@ void PaintPreviewClient::RequestCaptureOnUIThread(
   }
   CHECK(document_data->callback);
 
-  if (status != mojom::PaintPreviewStatus::kOk) {
+  if (!capture_params.has_value()) {
     std::move(document_data->callback)
-        .Run(params.get_document_guid(), status, {});
+        .Run(params.get_document_guid(), capture_params.error(), {});
     return;
   }
 
@@ -789,7 +778,7 @@ void PaintPreviewClient::RequestCaptureOnUIThread(
   if (!render_frame_host ||
       render_frame_host->GetEmbeddingToken().value_or(
           base::UnguessableToken::Null()) != frame_guid ||
-      !capture_params) {
+      !capture_params.value()) {
     std::move(document_data->callback)
         .Run(params.get_document_guid(),
              mojom::PaintPreviewStatus::kCaptureFailed, {});
@@ -800,12 +789,12 @@ void PaintPreviewClient::RequestCaptureOnUIThread(
 
   // For the main frame, apply a clip rect if one is provided.
   if (params.is_main_frame) {
-    capture_params->geometry_metadata_params->clip_rect_is_hint = false;
+    capture_params.value()->geometry_metadata_params->clip_rect_is_hint = false;
   }
 
   GetOrInsertRecorder(frame_guid, *render_frame_host)
       ->CapturePaintPreview(
-          std::move(capture_params),
+          std::move(capture_params).value(),
           base::BindOnce(&PaintPreviewClient::OnPaintPreviewCapturedCallback,
                          weak_ptr_factory_.GetWeakPtr(), frame_guid,
                          render_frame_id, std::move(params)));
@@ -834,8 +823,8 @@ void PaintPreviewClient::OnPaintPreviewCapturedCallback(
     const base::UnguessableToken& frame_guid,
     const content::GlobalRenderFrameHostId& render_frame_id,
     RecordingParams params,
-    mojom::PaintPreviewStatus status,
-    mojom::PaintPreviewCaptureResponsePtr response) {
+    base::expected<mojom::PaintPreviewCaptureResponsePtr,
+                   mojom::PaintPreviewStatus> response) {
   auto* document_data =
       base::FindOrNull(all_document_data_, params.get_document_guid());
 
@@ -848,16 +837,16 @@ void PaintPreviewClient::OnPaintPreviewCapturedCallback(
   auto* render_frame_host = content::RenderFrameHost::FromID(render_frame_id);
   if (!render_frame_host || render_frame_host->GetEmbeddingToken().value_or(
                                 base::UnguessableToken::Null()) != frame_guid) {
-    status = mojom::PaintPreviewStatus::kCaptureFailed;
+    response = base::unexpected(mojom::PaintPreviewStatus::kCaptureFailed);
   }
 
   if (!document_data) {
     return;
   }
 
-  if (status == mojom::PaintPreviewStatus::kOk) {
+  if (response.has_value()) {
     document_data->RecordSuccessfulFrame(frame_guid, params.is_main_frame,
-                                         std::move(response));
+                                         std::move(response).value());
   } else {
     document_data->had_error = true;
 

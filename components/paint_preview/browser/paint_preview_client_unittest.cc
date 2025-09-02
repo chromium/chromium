@@ -241,7 +241,7 @@ TEST_P(PaintPreviewClientRenderViewHostTest, CaptureMainFrameMock) {
 
   MockPaintPreviewRecorder service;
   service.SetExpectedParams(ToMojoParams(params));
-  service.SetResponse(mojom::PaintPreviewStatus::kOk, std::move(response));
+  service.SetResponse(std::move(response));
   OverrideInterface(rfh, &service);
   PaintPreviewClient::CreateForWebContents(web_contents());
   auto* client = PaintPreviewClient::FromWebContents(web_contents());
@@ -290,13 +290,10 @@ TEST_P(PaintPreviewClientRenderViewHostTest, CaptureFailureMock) {
   params.root_dir = temp_dir_.GetPath();
   params.inner.is_main_frame = true;
 
-  auto response = NewMockPaintPreviewCaptureResponse();
-  response->skp = {mojo_base::BigBuffer()};
-
   MockPaintPreviewRecorder recorder;
   recorder.SetExpectedParams(ToMojoParams(params));
-  recorder.SetResponse(mojom::PaintPreviewStatus::kCaptureFailed,
-                       std::move(response));
+  recorder.SetResponse(
+      base::unexpected(mojom::PaintPreviewStatus::kCaptureFailed));
   OverrideInterface(main_rfh(), &recorder);
   PaintPreviewClient::CreateForWebContents(web_contents());
   auto* client = PaintPreviewClient::FromWebContents(web_contents());
@@ -323,13 +320,10 @@ TEST_F(PaintPreviewClientRenderViewHostTestBase, SubframeFileCreationFails) {
   params.root_dir = temp_dir_.GetPath();
   params.inner.is_main_frame = true;
 
-  auto response = mojom::PaintPreviewCaptureResponse::New();
-  response->geometry_metadata = mojom::GeometryMetadataResponse::New();
-
   MockPaintPreviewRecorder recorder;
   recorder.SetExpectedParams(ToMojoParams(params));
-  recorder.SetResponse(mojom::PaintPreviewStatus::kCaptureFailed,
-                       std::move(response));
+  recorder.SetResponse(
+      base::unexpected(mojom::PaintPreviewStatus::kCaptureFailed));
   OverrideInterface(main_rfh(), &recorder);
 
   PaintPreviewClient::CreateForWebContents(web_contents());
@@ -389,7 +383,7 @@ TEST_P(PaintPreviewClientRenderViewHostTest, RenderFrameDeletedDuringCapture) {
 
   MockPaintPreviewRecorder service;
   service.SetExpectedParams(ToMojoParams(params));
-  service.SetResponse(mojom::PaintPreviewStatus::kOk, std::move(response));
+  service.SetResponse(std::move(response));
   OverrideInterface(rfh, &service);
   PaintPreviewClient::CreateForWebContents(web_contents());
   auto* client = PaintPreviewClient::FromWebContents(web_contents());
@@ -479,8 +473,7 @@ TEST_P(PaintPreviewClientRenderViewHostResponseOrderingTest,
 
   MockPaintPreviewRecorder main_frame_recorder;
   main_frame_recorder.SetExpectedParams(ToMojoParams(main_frame_params));
-  main_frame_recorder.SetResponse(mojom::PaintPreviewStatus::kOk,
-                                  std::move(main_frame_response));
+  main_frame_recorder.SetResponse(std::move(main_frame_response));
   base::test::TestFuture<void> main_frame_req;
   main_frame_recorder.SetReceivedRequestClosure(main_frame_req.GetCallback());
   OverrideInterface(rfh, &main_frame_recorder);
@@ -494,8 +487,7 @@ TEST_P(PaintPreviewClientRenderViewHostResponseOrderingTest,
   expected_subframe_params.inner.clip_rect = subframe_rect;
   MockPaintPreviewRecorder subframe_recorder;
   subframe_recorder.SetExpectedParams(ToMojoParams(expected_subframe_params));
-  subframe_recorder.SetResponse(mojom::PaintPreviewStatus::kOk,
-                                std::move(subframe_response));
+  subframe_recorder.SetResponse(std::move(subframe_response));
   base::test::TestFuture<void> subframe_req;
   subframe_recorder.SetReceivedRequestClosure(subframe_req.GetCallback());
   OverrideInterface(subframe, &subframe_recorder);
@@ -572,8 +564,7 @@ TEST_P(PaintPreviewClientRenderViewHostResponseOrderingTest,
 
   MockPaintPreviewRecorder main_frame_recorder;
   main_frame_recorder.SetExpectedParams(ToMojoParams(main_frame_params));
-  main_frame_recorder.SetResponse(mojom::PaintPreviewStatus::kOk,
-                                  std::move(main_frame_response));
+  main_frame_recorder.SetResponse(std::move(main_frame_response));
   base::test::TestFuture<void> main_frame_req;
   main_frame_recorder.SetReceivedRequestClosure(main_frame_req.GetCallback());
   OverrideInterface(rfh, &main_frame_recorder);
