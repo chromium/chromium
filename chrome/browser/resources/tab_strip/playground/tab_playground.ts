@@ -29,14 +29,12 @@ export class TabElement extends CustomElement {
 
   private alertIndicatorsEl_: AlertIndicatorsElement;
   private closeButtonEl_: HTMLElement;
-  private dragImageEl_: HTMLElement;
   private tabEl_: HTMLElement;
   private faviconEl_: HTMLElement;
   private thumbnail_: HTMLImageElement;
   private tab_: Tab|null = null;
   private titleTextEl_: HTMLElement;
   private onTabActivating_: (tabId: NodeId) => void;
-  private isValidDragOverTarget_: boolean;
   private dragHandler_: any;
 
   // Temp public
@@ -60,7 +58,6 @@ export class TabElement extends CustomElement {
     this.closeButtonEl_.setAttribute(
         'aria-label', loadTimeData.getString('closeTab'));
 
-    this.dragImageEl_ = this.getRequiredElement('#dragImage');
     this.tabEl_ = this.getRequiredElement('#tab');
     this.faviconEl_ = this.getRequiredElement('#favicon');
     this.thumbnail_ =
@@ -68,14 +65,6 @@ export class TabElement extends CustomElement {
 
     this.titleTextEl_ = this.getRequiredElement('#titleText');
     this.dragHandler_ = () => 0;
-
-    /**
-     * Flag indicating if this TabElement can accept dragover events. This
-     * is used to pause dragover events while animating as animating causes
-     * the elements below the pointer to shift.
-     */
-    this.isValidDragOverTarget_ = true;
-
 
     this.tabEl_.addEventListener('click', () => this.onClick_());
     this.addEventListener(
@@ -86,10 +75,6 @@ export class TabElement extends CustomElement {
     this.closeButtonEl_.addEventListener('click', e => this.onClose_(e));
     this.onTabActivating_ = (tabId: NodeId) =>
         TabStripService.getRemote().activateTab(tabId);
-  }
-
-  hasTabModel(): boolean {
-    return this.tab_ !== null;
   }
 
   get tab(): Tab {
@@ -111,7 +96,7 @@ export class TabElement extends CustomElement {
         'loading_', tab.networkState === TabNetworkState.kLoading);
     this.toggleAttribute('pinned', this.isPinned);
     this.toggleAttribute('blocked_', this.blocked);
-    this.setAttribute('draggable', String(true));
+    this.setAttribute('draggable', 'true');
     this.toggleAttribute('crashed_', this.crashed);
 
     if (tab.title) {
@@ -143,26 +128,8 @@ export class TabElement extends CustomElement {
     this.tab_ = Object.freeze(tab);
   }
 
-  get isValidDragOverTarget(): boolean {
-    return !this.hasAttribute('dragging_') && this.isValidDragOverTarget_;
-  }
-
-  set isValidDragOverTarget(isValid: boolean) {
-    this.isValidDragOverTarget_ = isValid;
-  }
-
   override focus() {
     this.tabEl_.focus();
-  }
-
-  getDragImage(): HTMLElement {
-    return this.dragImageEl_;
-  }
-
-  getDragImageCenter(): HTMLElement {
-    // dragImageEl_ has padding, so the drag image should be centered relative
-    // to tabEl_, the element within the padding.
-    return this.tabEl_;
   }
 
   updateThumbnail(imgData: string) {

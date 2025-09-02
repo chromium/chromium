@@ -106,4 +106,19 @@ void ToyTabStripModelAdapter::SetTabSelection(
   tab_strip_->SetActiveTab(to_activate);
 }
 
+std::optional<tab_groups::TabGroupId>
+ToyTabStripModelAdapter::GetTabGroupForTab(int index) const {
+  // TODO(crbug.com/412709271): Integrate with the toy tabstrip
+  NOTIMPLEMENTED();
+  return std::nullopt;
+}
+
+tabs::TabCollectionHandle
+ToyTabStripModelAdapter::GetCollectionHandleForTabGroupId(
+    tab_groups::TabGroupId group_id) const {
+  // TODO(crbug.com/412709271): Integrate with the toy tabstrip
+  NOTIMPLEMENTED();
+  return tabs::TabCollectionHandle::Null();
+}
+
 }  // namespace tabs_api::testing

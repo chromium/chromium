@@ -14,11 +14,11 @@ import type {NodeId, Position} from '/tab_strip_api/tab_strip_api_types.mojom-we
 import {TabStripObservation} from '/tab_strip_api/tab_strip_observation.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
-import {TabGroupElement} from '../tab_group.js';
 import {Color as TabGroupColor} from '../tab_group_types.mojom-webui.js';
 import {getTemplate} from '../tab_list.html.js';
 import type {TabGroupVisualData} from '../tab_strip.mojom-webui.js';
 
+import {TabGroupElement} from './tab_group_playground.js';
 import {TabElement} from './tab_playground.js';
 
 export class TabListPlaygroundElement extends CustomElement {
@@ -43,34 +43,6 @@ export class TabListPlaygroundElement extends CustomElement {
 
   getIndexOfTab(tabElement: TabElement): number {
     return Array.prototype.indexOf.call(this.$all('tabstrip-tab'), tabElement);
-  }
-
-  placeElement(
-      element: HTMLElement, index: number, pinned: boolean,
-      groupId: string|null|undefined) {
-    console.info(`Placing element at index: ${index}, Pinned: ${
-        pinned}, GroupId: ${groupId}`);
-    element.remove();
-
-    let targetParent: HTMLElement;
-    if (element instanceof TabElement) {
-      if (pinned) {
-        targetParent = this.pinnedTabsElement_;
-      } else if (groupId) {
-        targetParent = this.findOrCreateTabGroupElement_(groupId);
-      } else {
-        targetParent = this.unpinnedTabsElement_;
-      }
-    } else {
-      // TabGroupElements can only be in the unpinned container.
-      targetParent = this.unpinnedTabsElement_;
-    }
-    const childAtIndex = targetParent.childNodes[index];
-    if (childAtIndex) {
-      targetParent.insertBefore(element, childAtIndex);
-    } else {
-      targetParent.appendChild(element);
-    }
   }
 
   shouldPreventDrag(isDraggingTab: boolean): boolean {
@@ -107,13 +79,63 @@ export class TabListPlaygroundElement extends CustomElement {
 
   disconnectedCallback() {}
 
+  private placeElement_(
+      element: HTMLElement, index: number, pinned: boolean,
+      parentId: string|null|undefined) {
+    element.remove();
+
+    if (pinned) {
+      this.pinnedTabsElement_.insertBefore(
+          element, this.pinnedTabsElement_.childNodes[index]!);
+      return;
+    }
+
+    let elementToInsert: HTMLElement = element;
+    let parentElement = this.unpinnedTabsElement_;
+
+    if (element instanceof TabElement && parentId) {
+      let tabGroupElement = this.findNodeElement_(parentId);
+      if (tabGroupElement) {
+        parentElement = tabGroupElement as TabGroupElement;
+      } else {
+        // Create the tab group if it doesn't exist.
+        tabGroupElement = this.createTabGroupElement_(parentId);
+        tabGroupElement.appendChild(element);
+        elementToInsert = tabGroupElement;
+      }
+    }
+
+    let elementAtIndex: HTMLElement|null = null;
+    if (parentElement === this.unpinnedTabsElement_) {
+      const topLevelChildren =
+          Array.from(this.unpinnedTabsElement_.children)
+              .filter(
+                  e => e instanceof TabElement || e instanceof TabGroupElement);
+      elementAtIndex = topLevelChildren[index] || null;
+    } else {
+      elementAtIndex = parentElement.children[index] as HTMLElement || null;
+    }
+
+    if (elementAtIndex) {
+      if (elementAtIndex.parentElement instanceof TabGroupElement &&
+          elementAtIndex.previousElementSibling === null &&
+          elementAtIndex.parentElement !== parentElement) {
+        elementAtIndex = elementAtIndex.parentElement;
+      }
+      elementAtIndex.parentElement!.insertBefore(
+          elementToInsert, elementAtIndex);
+    } else {
+      parentElement.appendChild(elementToInsert);
+    }
+  }
+
   private onTabsCreated_(tabsCreatedEvent: OnTabsCreatedEvent) {
     const tabsCreated: TabCreatedContainer[] = tabsCreatedEvent.tabs;
     tabsCreated.forEach((container) => {
       const tab = container.tab;
       const tabElement = this.createTabElement_(tab, false);
       const position: Position = container.position;
-      this.placeElement(
+      this.placeElement_(
           tabElement, position.index, false, null /* parent id */);
     });
   }
@@ -146,15 +168,18 @@ export class TabListPlaygroundElement extends CustomElement {
   }
 
   private onTabMoved_(event: OnTabMovedEvent) {
-    console.info('onTabMoved_', event);
     const element = this.findNodeElement_(event.id);
     if (!element) {
       console.error('Moved element not found:', event.id);
       return;
     }
 
+    let parentId = event.to.parentId;
+    if (element instanceof TabGroupElement) {
+      parentId = null;
+    }
     // For now, assume a tab cannot be moved into the pinned area.
-    this.placeElement(element, event.to.index, false, event.to.parentId);
+    this.placeElement_(element, event.to.index, false, parentId);
   }
 
   private onTabGroupCreated_(event: OnTabGroupCreatedEvent) {
@@ -164,52 +189,72 @@ export class TabListPlaygroundElement extends CustomElement {
     // is fired after this event.
   }
 
+  private onDragEnd_(draggedElement: HTMLElement, x: number, y: number) {
+    draggedElement.style.display = 'none';
+    const dropTarget = this.shadowRoot!.elementFromPoint(x, y) as HTMLElement;
+    draggedElement.style.display = '';
+
+    if (!dropTarget) {
+      return;
+    }
+
+    let targetParent = dropTarget;
+    while (
+        targetParent &&
+        !targetParent.matches('tabstrip-tab-group-playground, #unpinnedTabs')) {
+      targetParent = targetParent.parentElement!;
+    }
+
+    if (!targetParent) {
+      return;
+    }
+
+    let dropTargetElement = dropTarget;
+    while (dropTargetElement &&
+           dropTargetElement.parentElement !== targetParent) {
+      dropTargetElement = dropTargetElement.parentElement!;
+    }
+
+    const sourceParent = draggedElement.parentElement!;
+    const originalIndex =
+        Array.from(sourceParent.children).indexOf(draggedElement);
+
+    let parentId: string|null = null;
+    if (draggedElement instanceof TabGroupElement) {
+      targetParent = this.unpinnedTabsElement_;
+      parentId = null;
+    } else if (targetParent.matches('tabstrip-tab-group-playground')) {
+      parentId = targetParent.getAttribute('data-node-id');
+      targetParent =
+          targetParent.shadowRoot!.querySelector<HTMLElement>('#tabs')!;
+    }
+
+    let targetIdx =
+        Array.from(targetParent.children).indexOf(dropTargetElement);
+    if (targetIdx === -1) {
+      targetIdx = targetParent.children.length;
+    } else {
+      const targetRect = dropTargetElement.getBoundingClientRect();
+      const isAfterMiddle = x > targetRect.left + targetRect.width / 2;
+      if (isAfterMiddle) {
+        targetIdx++;
+      }
+    }
+
+    if (sourceParent === targetParent && originalIndex < targetIdx) {
+      targetIdx--;
+    }
+    this.tabStripService_.moveTab(
+        draggedElement.dataset['nodeId']!,
+        {parentId: parentId, index: targetIdx});
+  }
+
   private createTabElement_(tab: Tab, isPinned: boolean): TabElement {
     const tabElement = new TabElement();
     tabElement.tab = tab;
     tabElement.isPinned = isPinned;
     tabElement.setAttribute('data-node-id', tab.id);
-    tabElement.dragEndHandler =
-        (draggedElement: TabElement, x: number, y: number) => {
-          if (!Number.isFinite(x) || !Number.isFinite(y)) {
-            console.warn('Drag ended with non-finite coordinates. Cancelling.');
-            // TODO: Restore the tab to its original position visually.
-            return;
-          }
-          draggedElement.style.display = 'none';
-          const dropTarget =
-              this.shadowRoot!.elementFromPoint(x, y) as HTMLElement;
-          draggedElement.style.display = '';
-
-          if (!dropTarget) {
-            console.info('Failed to find a drop target');
-            return;
-          }
-
-          let targetParent = dropTarget;
-          if (dropTarget.matches('tabstrip-tab-playground')) {
-            targetParent = dropTarget.parentElement!;
-          }
-
-          let parentId: string|null = null;
-          if (targetParent.matches('tabstrip-tab-group')) {
-            parentId = targetParent.getAttribute('data-node-id');
-          }
-
-          let targetIdx = 0;
-          for (const child of targetParent.children) {
-            if (x < child.getBoundingClientRect().x) {
-              break;
-            }
-            if (child !== draggedElement) {
-              targetIdx++;
-            }
-          }
-
-          // TODO(crbug.com/412709271): Set the correct parent id.
-          this.tabStripService_.moveTab(
-              tab.id, {parentId: parentId, index: targetIdx});
-        };
+    tabElement.dragEndHandler = this.onDragEnd_.bind(this);
     return tabElement;
   }
 
@@ -240,54 +285,41 @@ export class TabListPlaygroundElement extends CustomElement {
       this.clearChildren_(this.pinnedTabsElement_);
       this.clearChildren_(this.unpinnedTabsElement_);
 
-      const processContainer =
-          (container: Container, parentIsPinned: boolean) => {
-            if (!container || !container.data) {
-              return;
-            }
-            const data: Data = container.data;
-            let isPinned = parentIsPinned;
-            let groupId: string|null = null;
-
-            // Determine the current node's type and update state accordingly.
-            if (data.pinnedTabs) {
-              isPinned = true;
-            } else if (data.tabGroup) {
-              groupId = data.tabGroup.id;
-            } else if (data.tab) {
-              const newTab = data.tab;
-              let element = this.findNodeElement_(newTab.id);
-              if (element instanceof TabElement) {
-                element.tab = newTab;
-                element.isPinned = isPinned;
-              } else if (!element) {
-                element = this.createTabElement_(newTab, isPinned);
-              }
-              // The index is determined by its position in the parent's
-              // children array. This part of the logic needs to be handled by
-              // the parent loop.
-            }
-
-            // Recursively process all children of the current node.
-            if (container.children) {
-              container.children.forEach(
-                  (childNode: Container, index: number) => {
-                    if (childNode.data.tab) {
-                      // If the child is a tab, place it.
-                      const tabElement =
-                          this.createTabElement_(childNode.data.tab, isPinned);
-                      this.placeElement(tabElement, index, isPinned, groupId);
-                    } else {
-                      // If the child is another collection, recurse.
-                      processContainer(childNode, isPinned);
-                    }
-                  });
-            }
-          };
       if (tabsSnapshot.tabStrip) {
-        processContainer(tabsSnapshot.tabStrip, false);
+        this.processContainer_(tabsSnapshot.tabStrip, false);
+      }
+    });
+  }
+
+  private processContainer_(container: Container, parentIsPinned: boolean) {
+    if (!container || !container.data) {
+      return;
+    }
+    const data: Data = container.data;
+    let isPinned = parentIsPinned;
+    let groupId: string|null = null;
+
+    if (data.pinnedTabs) {
+      isPinned = true;
+    } else if (data.tabGroup) {
+      groupId = data.tabGroup.id;
+    } else if (data.tab) {
+      const newTab = data.tab;
+      let element = this.findNodeElement_(newTab.id);
+      if (element instanceof TabElement) {
+        element.tab = newTab;
+        element.isPinned = isPinned;
+      } else if (!element) {
+        element = this.createTabElement_(newTab, isPinned);
+      }
+    }
+
+    container.children.forEach((childNode: Container, index: number) => {
+      if (childNode.data.tab) {
+        const tabElement = this.createTabElement_(childNode.data.tab, isPinned);
+        this.placeElement_(tabElement, index, isPinned, groupId);
       } else {
-        console.info('invalid tab_strip');
+        this.processContainer_(childNode, isPinned);
       }
     });
   }
@@ -295,6 +327,7 @@ export class TabListPlaygroundElement extends CustomElement {
   private createTabGroupElement_(nodeId: string): TabGroupElement {
     const tabGroupElement = new TabGroupElement();
     tabGroupElement.setAttribute('data-node-id', nodeId);
+    tabGroupElement.dragEndHandler = this.onDragEnd_.bind(this);
     this.unpinnedTabsElement_.appendChild(tabGroupElement);
     return tabGroupElement;
   }
@@ -318,7 +351,7 @@ export class TabListPlaygroundElement extends CustomElement {
       [TabGroupColor.kPurple, '128, 0, 128'],
       [TabGroupColor.kCyan, '0, 255, 255'],
       [TabGroupColor.kOrange, '255, 165, 0'],
-   ]);
+    ]);
 
     return {
       title: group.data.title,

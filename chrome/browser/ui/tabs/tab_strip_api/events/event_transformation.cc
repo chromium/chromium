@@ -48,13 +48,21 @@ mojom::OnTabsClosedEventPtr ToEvent(const TabStripModelChange::Remove& remove) {
   return event;
 }
 
-mojom::OnTabMovedEventPtr ToEvent(const TabStripModelChange::Move& move) {
+mojom::OnTabMovedEventPtr ToEvent(
+    const TabStripModelChange::Move& move,
+    const tabs_api::TabStripModelAdapter* adapter) {
   NodeId id(NodeId::Type::kContent,
             base::NumberToString(move.tab->GetHandle().raw_value()));
 
   auto from = tabs_api::Position(move.from_index);
 
-  auto to = tabs_api::Position(move.to_index);
+  std::optional<tabs_api::NodeId> to_parent_id;
+  auto tab_group_id = adapter->GetTabGroupForTab(move.to_index);
+  if (tab_group_id.has_value()) {
+    to_parent_id = NodeId::FromTabCollectionHandle(
+        adapter->GetCollectionHandleForTabGroupId(tab_group_id.value()));
+  }
+  auto to = tabs_api::Position(move.to_index, to_parent_id);
 
   auto event = mojom::OnTabMovedEvent::New();
   event->id = id;

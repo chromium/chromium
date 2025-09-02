@@ -22,7 +22,9 @@ mojom::OnTabsCreatedEventPtr ToEvent(
     const TabStripModelChange::Insert& insert,
     const tabs_api::TabStripModelAdapter* adapter);
 mojom::OnTabsClosedEventPtr ToEvent(const TabStripModelChange::Remove& remove);
-mojom::OnTabMovedEventPtr ToEvent(const TabStripModelChange::Move& move);
+mojom::OnTabMovedEventPtr ToEvent(
+    const TabStripModelChange::Move& move,
+    const tabs_api::TabStripModelAdapter* adapter);
 mojom::OnDataChangedEventPtr ToEvent(
     const tabs_api::TabStripModelAdapter* adapter,
     size_t index,

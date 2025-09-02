@@ -448,6 +448,8 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveTabIntoGroup) {
   mojo::Remote<TabStripService> remote;
   tab_strip_service_mojo_handler_->Accept(remote.BindNewPipeAndPassReceiver());
 
+  auto observation = SetUpObservation();
+
   TabStripModel* model = GetTabStripModel();
   for (int i = 0; i < 3; i++) {
     base::RunLoop create_loop;
@@ -480,6 +482,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveTabIntoGroup) {
         move_loop.Quit();
       }));
   move_loop.Run();
+  observation->receiver.FlushForTesting();
 
   // Previously tab was at index 2. Now should be at index 1 of the TabGroup.
   EXPECT_EQ(model->GetTabAtIndex(1), tab_to_move);
@@ -488,6 +491,18 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveTabIntoGroup) {
   ASSERT_TRUE(moved_tab_group.has_value());
   EXPECT_EQ(moved_tab_group.value(), group_id);
   EXPECT_EQ(model->group_model()->GetTabGroup(group_id)->tab_count(), 3);
+
+  ASSERT_FALSE(observation->client.move_events.empty());
+  tabs_api::mojom::OnTabMovedEventPtr move_event;
+  for (auto& event : observation->client.move_events) {
+    if (event->id == to_move_id && event->to.parent_id().has_value() &&
+        event->to.parent_id().value() == to_group_collection_id) {
+      move_event = std::move(event);
+      break;
+    }
+  }
+  EXPECT_EQ(to_move_id, move_event->id);
+  EXPECT_EQ(to_group_collection_id, move_event->to.parent_id().value());
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, MoveCollection) {

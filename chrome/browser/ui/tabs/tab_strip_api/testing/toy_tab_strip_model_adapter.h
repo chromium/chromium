@@ -40,6 +40,10 @@ class ToyTabStripModelAdapter : public TabStripModelAdapter {
       const tab_groups::TabGroupVisualData& visual_data) override;
   void SetTabSelection(const std::vector<tabs::TabHandle>& handles_to_select,
                        tabs::TabHandle to_activate) override;
+  std::optional<tab_groups::TabGroupId> GetTabGroupForTab(
+      int index) const override;
+  tabs::TabCollectionHandle GetCollectionHandleForTabGroupId(
+      tab_groups::TabGroupId group_id) const override;
 
  private:
   raw_ptr<ToyTabStrip> tab_strip_;

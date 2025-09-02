@@ -46,6 +46,10 @@ class TabStripModelAdapter {
   virtual void SetTabSelection(
       const std::vector<tabs::TabHandle>& handles_to_select,
       tabs::TabHandle to_activate) = 0;
+  virtual std::optional<tab_groups::TabGroupId> GetTabGroupForTab(
+      int index) const = 0;
+  virtual tabs::TabCollectionHandle GetCollectionHandleForTabGroupId(
+      tab_groups::TabGroupId group_id) const = 0;
 };
 
 }  // namespace tabs_api

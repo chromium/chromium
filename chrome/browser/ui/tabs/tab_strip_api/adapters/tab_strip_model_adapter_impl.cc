@@ -200,4 +200,17 @@ void TabStripModelAdapterImpl::SetTabSelection(
   tab_strip_model_->SetSelectionFromModel(selection);
 }
 
+std::optional<tab_groups::TabGroupId>
+TabStripModelAdapterImpl::GetTabGroupForTab(int index) const {
+  return tab_strip_model_->GetTabGroupForTab(index);
+}
+
+tabs::TabCollectionHandle
+TabStripModelAdapterImpl::GetCollectionHandleForTabGroupId(
+    tab_groups::TabGroupId group_id) const {
+  const TabGroup* tab_group =
+      tab_strip_model_->group_model()->GetTabGroup(group_id);
+  return tab_group->GetCollectionHandle();
+}
+
 }  // namespace tabs_api

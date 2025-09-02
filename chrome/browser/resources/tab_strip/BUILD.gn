@@ -41,6 +41,7 @@ build_webui("build") {
     "tabs_api_proxy.ts",
     "playground/tab_list_playground.ts",
     "playground/tab_playground.ts",
+    "playground/tab_group_playground.ts",
   ]
 
   mojo_files_deps = [
