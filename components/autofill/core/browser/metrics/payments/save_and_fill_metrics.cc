@@ -63,4 +63,14 @@ void LogSaveAndFillDialogShown(bool is_upload) {
                             /*sample=*/true);
 }
 
+void LogSaveAndFillFunnelMetrics(bool succeeded,
+                                 bool is_for_upload,
+                                 SaveAndFillFormEvent event) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Autofill.SaveAndFill.Funnel",
+                    is_for_upload ? ".Upload" : ".Local",
+                    succeeded ? ".Success" : ".Failure"}),
+      event);
+}
+
 }  // namespace autofill::autofill_metrics

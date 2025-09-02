@@ -3998,15 +3998,31 @@ TEST_F(BrowserAutofillManagerTest,
   FormSubmitted(response_data);
 }
 
-TEST_F(BrowserAutofillManagerTest, FormSubmission_NotifiesSaveAndFillManager) {
+TEST_F(BrowserAutofillManagerTest, FormEvents_NotifiesSaveAndFillManager) {
   EXPECT_CALL(*client().GetPaymentsAutofillClient()->GetSaveAndFillManager(),
-              OnCreditCardFormSubmitted());
+              LogCreditCardFormFilled());
+  EXPECT_CALL(*client().GetPaymentsAutofillClient()->GetSaveAndFillManager(),
+              LogCreditCardFormSubmitted());
+  EXPECT_CALL(*client().GetPaymentsAutofillClient()->GetSaveAndFillManager(),
+              MaybeAddStrikeForSaveAndFill());
 
+  client().SetAutofillPaymentMethodsEnabled(true);
   FormData form =
       CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
-
   FormsSeen({form});
-  FormSubmitted(form);
+
+  // Create a card and add it to the PDM.
+  personal_data().test_payments_data_manager().ClearCreditCards();
+  CreditCard card = test::GetCreditCard();
+  personal_data().payments_data_manager().AddCreditCard(card);
+  const CreditCard* pdm_card =
+      personal_data().payments_data_manager().GetCreditCardByGUID(card.guid());
+  ASSERT_TRUE(pdm_card);
+
+  FormData filled_form = FillAutofillFormDataAndGetResults(
+      form, form.fields()[0], pdm_card->guid(),
+      AutofillTriggerSource::kCreditCardSaveAndFill);
+  FormSubmitted(filled_form);
 }
 
 TEST_F(BrowserAutofillManagerTest,

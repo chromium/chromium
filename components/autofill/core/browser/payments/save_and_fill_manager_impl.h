@@ -19,6 +19,25 @@ class PaymentsAutofillClient;
 // Contents. This class manages the flow for the Save and Fill dialog.
 class SaveAndFillManagerImpl : public SaveAndFillManager {
  public:
+  // A struct containing a few logging related info. This is not reset when flow
+  // ends as metrics loggings are once per page load.
+  struct LoggingContext {
+    // Set to true after the first time the Save and Fill suggestion not being
+    // shown is logged. Ensures that logging occurs only once per page load.
+    bool has_logged_save_and_fill_suggestion_not_shown_reason = false;
+
+    // Set when the Save and Fill dialog was accepted by the user. Records
+    // whether the attempt was for upload / local save and whether the attempt
+    // succeeded.
+    std::optional<bool> last_attempt_succeeded;
+    std::optional<bool> last_attempt_was_for_upload;
+
+    // Whether credit card form filling / submission event has been logged.
+    // Ensures that logging occurs only once per page load.
+    bool has_logged_form_filled = false;
+    bool has_logged_form_submitted = false;
+  };
+
   explicit SaveAndFillManagerImpl(AutofillClient* autofill_client);
   SaveAndFillManagerImpl(const SaveAndFillManagerImpl& other) = delete;
   SaveAndFillManagerImpl& operator=(const SaveAndFillManagerImpl& other) =
@@ -29,10 +48,12 @@ class SaveAndFillManagerImpl : public SaveAndFillManager {
   void OnDidAcceptCreditCardSaveAndFillSuggestion(
       FillCardCallback fill_card_callback) override;
   void OnSuggestionOffered() override;
-  void OnCreditCardFormSubmitted() override;
+  void MaybeAddStrikeForSaveAndFill() override;
   bool ShouldBlockFeature() override;
   void MaybeLogSaveAndFillSuggestionNotShownReason(
       autofill_metrics::SaveAndFillSuggestionNotShownReason reason) override;
+  void LogCreditCardFormFilled() override;
+  void LogCreditCardFormSubmitted() override;
 
   // Called when the user makes a decision on the local Save and Fill dialog.
   // The `user_provided_card_save_and_fill_details` holds the  data entered by
@@ -48,9 +69,13 @@ class SaveAndFillManagerImpl : public SaveAndFillManager {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SaveAndFillManagerImplTest,
+                           OnUserDidDecideOnUploadSave_Accepted);
+  FRIEND_TEST_ALL_PREFIXES(SaveAndFillManagerImplTest,
                            ResetOnFlowEnds_ServerSave);
   FRIEND_TEST_ALL_PREFIXES(SaveAndFillManagerImplTest,
                            ResetOnFlowEnds_LocalSave);
+  FRIEND_TEST_ALL_PREFIXES(SaveAndFillManagerImplTest,
+                           LogFunnelMetrics_ServerSave);
 
   // Begins the process to show the local Save and Fill dialog.
   void OfferLocalSaveAndFill();
@@ -127,9 +152,8 @@ class SaveAndFillManagerImpl : public SaveAndFillManager {
   bool save_and_fill_suggestion_offered_ = false;
   // True if the user accepted the Save and Fill suggestion.
   bool save_and_fill_suggestion_selected_ = false;
-  // Set to true after the first time the Save and Fill suggestion not being
-  // shown is logged. Ensures that logging occurs only once per page load.
-  bool has_logged_save_and_fill_suggestion_not_shown_reason_ = false;
+
+  LoggingContext logging_context_;
 
   // StrikeDatabase used to check whether to show the Save and Fill suggestion.
   std::unique_ptr<SaveAndFillStrikeDatabase> save_and_fill_strike_database_;

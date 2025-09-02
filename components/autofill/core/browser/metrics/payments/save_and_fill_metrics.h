@@ -19,7 +19,11 @@ enum class SaveAndFillFormEvent {
   kSuggestionShown = 0,
   // The Save and Fill suggestion was accepted by the user.
   kSuggestionAccepted = 1,
-  kMaxValue = kSuggestionAccepted,
+  // The form was filled after Save and Fill finished.
+  kFormFilled = 2,
+  // The form was submitted after Save and Fill finished.
+  kFormSubmitted = 3,
+  kMaxValue = kFormSubmitted,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SaveAndFillFormEvent)
 
@@ -81,6 +85,13 @@ void LogSaveAndFillDialogResult(SaveAndFillDialogResult result);
 
 // Logs that the Save and Fill dialog was shown.
 void LogSaveAndFillDialogShown(bool is_upload);
+
+// Logs the form being filled and form being submitted event. Broken down by
+// whether the Save and Fill attempt succeeded and whether it was for upload
+// Save and Fill.
+void LogSaveAndFillFunnelMetrics(bool succeeded,
+                                 bool is_for_upload,
+                                 SaveAndFillFormEvent event);
 
 }  // namespace autofill::autofill_metrics
 
