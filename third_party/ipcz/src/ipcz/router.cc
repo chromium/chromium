@@ -83,13 +83,16 @@ bool ValidateAndAcquireObjectsForTransitFrom(
 
 }  // namespace
 
-Router::Router() = default;
+Router::Router() {
+  DVLOG(5) << "Creating Router " << std::hex << this;
+}
 
 Router::~Router() {
   // A Router MUST be serialized or closed before it can be destroyed. Both
   // operations clear `traps_` and imply that no further traps should be added.
   absl::MutexLock lock(&mutex_);
   ABSL_ASSERT(traps_.empty());
+  DVLOG(5) << "Deleting Router " << std::hex << this;
 }
 
 // static
@@ -1460,7 +1463,7 @@ void Router::Flush(FlushBehavior behavior) {
       DVLOG(4) << "Outward " << decaying_outward_link->Describe()
                << " fully decayed at " << outbound_sequence_length_sent
                << " sent and " << inbound_sequence_length_received
-               << " recived";
+               << " received";
       outward_link_decayed = true;
     }
 

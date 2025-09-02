@@ -129,6 +129,7 @@ Ref<RemoteRouterLink> NodeLink::AddRemoteRouterLink(
     return nullptr;
   }
 
+  DVLOG(4) << "Adding sublink " << sublink;
   auto [it, added] = sublinks_.try_emplace(
       sublink, Sublink(std::move(link), std::move(router)));
   if (!added) {
@@ -141,6 +142,7 @@ Ref<RemoteRouterLink> NodeLink::AddRemoteRouterLink(
 
 void NodeLink::RemoveRemoteRouterLink(SublinkId sublink) {
   absl::MutexLock lock(&mutex_);
+  DVLOG(4) << "Removing RemoteRouterLink for sublink " << sublink;
   sublinks_.erase(sublink);
   deleted_sublinks_.Insert(sublink);
 }
