@@ -23,12 +23,14 @@ class InterestEvent final : public Event {
     return MakeGarbageCollected<InterestEvent>(type, initializer);
   }
 
-  static InterestEvent* Create(const AtomicString& type, Element* source) {
-    return MakeGarbageCollected<InterestEvent>(type, source);
+  static InterestEvent* Create(const AtomicString& type,
+                               Element* source,
+                               Event::Cancelable cancelable) {
+    return MakeGarbageCollected<InterestEvent>(type, source, cancelable);
   }
 
-  InterestEvent(const AtomicString& type, const InterestEventInit* initializer);
-  InterestEvent(const AtomicString& type, Element* source);
+  InterestEvent(const AtomicString&, const InterestEventInit*);
+  InterestEvent(const AtomicString&, Element*, Event::Cancelable);
 
   const AtomicString& InterfaceName() const override {
     return event_interface_names::kInterestEvent;

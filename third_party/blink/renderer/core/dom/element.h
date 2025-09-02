@@ -1189,8 +1189,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // These are called when interest is actually gained or lost on the element,
   // e.g. after any hover-delays. They return true if the event was *not*
   // cancelled, and the action was performed.
-  bool InterestGained(Element& target, InterestState new_state);
-  bool InterestLost(Element& target);
+  bool InterestGained(Element* target);
+  bool InterestLost(Element* target);
+
   // Returns the target of the `interestfor` attribute, if any, and only if
   // the element supports this attribute. For example, `interestfor` is not
   // allowed on a `<div>`.
@@ -2283,11 +2284,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool IsStyleAttributeChangeAllowed(const AtomicString& style_string);
 
   // These schedule interest gained/lost events, for `interestfor` invokers.
-  void ScheduleInterestGainedTask(InterestState);
+  void ScheduleInterestGainedTask();
   void ScheduleInterestLostTask();
-  static bool GainOrLoseInterest(Element* invoker,
-                                 Element* target,
-                                 InterestState new_state);
   enum class InterestSource {
     kHover,
     kDeHover,

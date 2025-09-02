@@ -22,8 +22,10 @@ InterestEvent::InterestEvent(const AtomicString& type,
   }
 }
 
-InterestEvent::InterestEvent(const AtomicString& type, Element* source)
-    : Event(type, Bubbles::kNo, Cancelable::kYes, ComposedMode::kComposed),
+InterestEvent::InterestEvent(const AtomicString& type,
+                             Element* source,
+                             Event::Cancelable cancelable)
+    : Event(type, Bubbles::kNo, cancelable, ComposedMode::kComposed),
       source_(source) {
   DCHECK(
       RuntimeEnabledFeatures::HTMLInterestForAttributeEnabledByRuntimeFlag());

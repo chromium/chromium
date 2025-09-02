@@ -2008,7 +2008,6 @@ PopoverHideResult HTMLElement::HidePopoverInternal(
 
     // Queue the "closing" toggle event.
     String old_state = "open";
-    ToggleEvent* after_event;
     if (GetPopoverData()->hasPendingToggleEventTask()) {
       // There's already a queued 'toggle' event. Cancel it and fire a new one
       // keeping the original value for old_state.
@@ -2018,9 +2017,9 @@ PopoverHideResult HTMLElement::HidePopoverInternal(
     } else {
       GetPopoverData()->setPendingToggleEventStartedClosed(false);
     }
-    after_event = ToggleEvent::Create(event_type_names::kToggle,
-                                      Event::Cancelable::kNo, old_state,
-                                      /*new_state*/ "closed", invoker);
+    ToggleEvent* after_event = ToggleEvent::Create(
+        event_type_names::kToggle, Event::Cancelable::kNo, old_state,
+        /*new_state*/ "closed", invoker);
     CHECK_EQ(after_event->newState(), "closed");
     CHECK_EQ(after_event->oldState(), old_state);
     CHECK(!after_event->bubbles());
@@ -2512,10 +2511,10 @@ bool HTMLElement::HandleCommandInternal(HTMLElement& invoker,
                               command == CommandEventType::kRequestFullscreen ||
                               command == CommandEventType::kExitFullscreen;
 
-  bool is_show_interest = command == CommandEventType::kToggleInterest;
+  bool is_toggle_interest = command == CommandEventType::kToggleInterest;
 
   if (PopoverType() == PopoverValueType::kNone && !is_fullscreen_action &&
-      (!is_show_interest || !InterestForElement())) {
+      (!is_toggle_interest || !InterestForElement())) {
     return false;
   }
 
@@ -2572,7 +2571,7 @@ bool HTMLElement::HandleCommandInternal(HTMLElement& invoker,
 
   LocalFrame* frame = document.GetFrame();
 
-  if (is_show_interest && InterestForElement()) {
+  if (is_toggle_interest && InterestForElement()) {
     if (GetInterestState() == InterestState::kNoInterest) {
       ShowInterestNow();
     } else {
