@@ -5,7 +5,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import {AxReadAloudNode, currentReadHighlightClass, MovementGranularity, NodeStore, PhraseHighlight, previousReadHighlightClass, SentenceHighlight, WordHighlight} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertStringContains, assertStringExcludes, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertGT, assertLT, assertStringContains, assertStringExcludes, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {FakeReadingMode} from './fake_reading_mode.js';
 
@@ -120,6 +120,108 @@ suite('Movement', () => {
       assertHtmlExcludes(currentReadHighlightClass, id2);
       assertHtmlExcludes(previousReadHighlightClass, id1);
       assertHtmlExcludes(previousReadHighlightClass, id2);
+    });
+
+    test('scroll into view', () => {
+      // Create a scrollable container to act as our "viewport".
+      const container = document.createElement('div');
+      container.style.height = window.innerHeight + 'px';
+      container.style.overflow = 'scroll';
+      document.body.appendChild(container);
+      // Add enough content to cause scrolling.
+      const spacer = document.createElement('div');
+      spacer.style.height = window.innerHeight + 1 + 'px';
+      container.appendChild(spacer);
+      // This is the target element, initially not visible.
+      const targetP = document.createElement('p');
+      targetP.innerText = 'This text is off-screen.';
+      container.appendChild(targetP);
+      const TARGET_NODE_ID = 99;
+      nodeStore.setDomNode(targetP, TARGET_NODE_ID);
+      // Highlight the off-screen element
+      const segments = [{
+        node: new AxReadAloudNode(TARGET_NODE_ID),
+        start: 0,
+        length: targetP.innerText.length,
+      }];
+      const granularity = new MovementGranularity();
+      const highlight = new SentenceHighlight(segments);
+      granularity.addHighlight(highlight);
+      const element = highlight.getElements().at(0);
+      assertTrue(!!element);
+      // The highlight should start offscreen
+      assertEquals(0, container.scrollTop);
+      assertFalse(granularity.isVisible());
+      let bounds = element.getBoundingClientRect();
+      assertGT(bounds.top, window.innerHeight);
+      assertGT(bounds.bottom, window.innerHeight);
+
+      granularity.scrollIntoView();
+
+      // The highlight should now be fully onscreen
+      assertGT(container.scrollTop, 0);
+      assertTrue(granularity.isVisible());
+      bounds = element.getBoundingClientRect();
+      assertGT(bounds.top, 0);
+      assertLT(bounds.bottom, container.scrollTop + window.innerHeight);
+    });
+
+    test('scroll into view with large highlight', () => {
+      // Create a scrollable container to act as our "viewport".
+      const container = document.createElement('div');
+      container.style.height = window.innerHeight + 'px';
+      container.style.overflow = 'scroll';
+      document.body.appendChild(container);
+      // Add enough content to cause scrolling.
+      const spacer = document.createElement('div');
+      spacer.style.height = (window.innerHeight * 2) + 'px';
+      container.appendChild(spacer);
+      // This is the target element, initially not visible.
+      const targetP = document.createElement('p');
+      const longText =
+          'Well, now they know, let it go, let it go, can\'t hold it back ' +
+          'anymore, let it go, let it go, turn away and slam the ' +
+          'door- I don\'t care what they\'re going to say let the storm rage ' +
+          'on the cold never bothered me anyway its funny how some distance ' +
+          'makes everything seem small and the fears that once controlled me ' +
+          'cant get to me at all- its time to see what I can do to test the ' +
+          'limits and break through no right no wrong no rules for me- I\'m ' +
+          'free let it go let it go I am one with the wind and sky let it go ' +
+          'let it go you\'ll never see me cry- here I stand and here I stay- ' +
+          'let the storm rage on';
+      targetP.innerText = longText;
+      container.appendChild(targetP);
+      const TARGET_NODE_ID = 99;
+      nodeStore.setDomNode(targetP, TARGET_NODE_ID);
+      // Highlight the off-screen element
+      const segments = [{
+        node: new AxReadAloudNode(TARGET_NODE_ID),
+        start: 0,
+        length: targetP.innerText.length,
+      }];
+      const granularity = new MovementGranularity();
+      const highlight = new SentenceHighlight(segments);
+      granularity.addHighlight(highlight);
+      const element = highlight.getElements().at(0);
+      assertTrue(!!element);
+      // The highlight should start offscreen
+      assertEquals(0, container.scrollTop);
+      assertFalse(granularity.isVisible());
+      let bounds = element.getBoundingClientRect();
+      window.innerHeight = bounds.height * 1.2;
+      assertGT(bounds.top, window.innerHeight);
+      assertGT(bounds.bottom, window.innerHeight);
+      assertGT(bounds.height, window.innerHeight / 2);
+      assertLT(bounds.height, window.innerHeight);
+
+      granularity.scrollIntoView();
+
+      // The highlight should now be fully onscreen
+      assertGT(container.scrollTop, 0);
+      assertTrue(granularity.isVisible());
+      bounds = element.getBoundingClientRect();
+      assertGT(bounds.top, 0);
+      assertLT(bounds.bottom, container.scrollTop + window.innerHeight);
     });
   });
 

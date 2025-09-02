@@ -4,7 +4,6 @@
 
 import {assert} from '//resources/js/assert.js';
 
-import {isRectVisible} from '../common.js';
 import {NodeStore} from '../node_store.js';
 
 import {MovementGranularity, PARENT_OF_HIGHLIGHT_CLASS, PhraseHighlight, SentenceHighlight, WordHighlight} from './movement.js';
@@ -37,15 +36,9 @@ export class ReadAloudHighlighter {
     return !!this.currentGranularity_;
   }
 
-  private getCurrentHighlights_(): HTMLElement[] {
-    if (!this.currentGranularity_) {
-      return [];
-    }
-    return this.currentGranularity_.getHighlightElements();
-  }
-
   updateAutoScroll(): void {
-    this.allowAutoScroll_ = isRectVisible(this.getCurrentHighlightBounds_());
+    this.allowAutoScroll_ =
+        !!this.currentGranularity_ && this.currentGranularity_.isVisible();
   }
 
   getOffsetInAncestor(node: Node): number {
@@ -141,26 +134,6 @@ export class ReadAloudHighlighter {
   reset() {
     this.clearHighlightFormatting();
     this.previousGranularities_ = [];
-  }
-
-  private getCurrentHighlightBounds_(): DOMRect {
-    const bounds = new DOMRect();
-    const currentHighlights = this.getCurrentHighlights_();
-    if (!currentHighlights || !currentHighlights.length) {
-      return bounds;
-    }
-    const firstHighlight = currentHighlights.at(0);
-    const lastHighlight = currentHighlights.at(-1);
-    if (!firstHighlight || !lastHighlight) {
-      return bounds;
-    }
-    const firstRect = firstHighlight.getBoundingClientRect();
-    const lastRect = lastHighlight.getBoundingClientRect();
-    bounds.x = Math.min(firstRect.x, lastRect.x);
-    bounds.y = firstRect.y;
-    bounds.width = Math.max(firstRect.right, lastRect.right) - bounds.x;
-    bounds.height = lastRect.bottom - firstRect.y;
-    return bounds;
   }
 
   private getAncestor_(node: Node): Node|null {
@@ -298,28 +271,7 @@ export class ReadAloudHighlighter {
     }
 
 
-    // Ensure all the current highlights are in view.
-    // TODO: crbug.com/40927698 - Handle if the highlight is longer than the
-    // full height of the window (e.g. when font size is very large). Possibly
-    // using word boundaries to know when we've reached the bottom of the
-    // window and need to scroll so the rest of the current highlight is
-    // showing.
-    const firstHighlight = this.getCurrentHighlights_().at(0);
-    if (!firstHighlight) {
-      return;
-    }
-    const highlightBounds = this.getCurrentHighlightBounds_();
-    if (highlightBounds.height > (window.innerHeight / 2)) {
-      // If the bottom of the highlight would be offscreen if we center it,
-      // scroll the first highlight to the top instead of centering it.
-      firstHighlight.scrollIntoView({block: 'start'});
-    } else if (
-        (highlightBounds.bottom > window.innerHeight) ||
-        (highlightBounds.top < 0)) {
-      // Otherwise center the current highlight if part of it would be cut
-      // off.
-      firstHighlight.scrollIntoView({block: 'center'});
-    }
+    this.currentGranularity_?.scrollIntoView();
   }
 
   static getInstance(): ReadAloudHighlighter {
