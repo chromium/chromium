@@ -251,8 +251,7 @@ void PopulateMlPredictionLogAfterInference(
   for (size_t i = 0;
        i < model_output.size() && i < prediction_log.field_predictions.size();
        ++i) {
-    prediction_log.field_predictions[i]->probabilities = std::vector(
-        model_output[i].begin(), model_output[i].end());
+    prediction_log.field_predictions[i]->probabilities = model_output[i];
   }
 }
 
@@ -272,9 +271,19 @@ void FieldClassificationModelHandler::GetModelPredictionsForForm(
     prediction_log = CreateMlPredictionLog(form);
   }
 
-  // TODO(crbug.com/428686605) Set tokenized representation in `prediction_log`.
   FieldClassificationModelEncoder::ModelInput encoded_input =
       state_->encoder.EncodeForm(form);
+
+  if (prediction_log) {
+    for (auto [encoded_field, field_prediction] :
+         base::zip(encoded_input, prediction_log.value()->field_predictions)) {
+      field_prediction->tokenized_field_representation = base::ToVector(
+          encoded_field,
+          [this](FieldClassificationModelEncoder::TokenId token_id) {
+            return TokenIdToString(token_id);
+          });
+    }
+  }
 
   std::optional<ModelInputHash> input_hash;
   if (base::FeatureList::IsEnabled(
@@ -487,6 +496,28 @@ FieldClassificationModelHandler::CalculateModelInputHash(
   }
 
   return ModelInputHash(base::FastHash(base::as_byte_span(flattened_data)));
+}
+
+std::string FieldClassificationModelHandler::TokenIdToString(
+    FieldClassificationModelEncoder::TokenId token_id) const {
+  const int token = static_cast<int>(token_id.value());
+  if (token == 0) {
+    // Padding token, always encoded as 0.
+    return "";
+  } else if (token == 1) {
+    // Unknown, out-of-vocabulary token, always encoded as 1.
+    return "[UNK]";
+  } else if (token == state_->metadata.input_token_size() + 2) {
+    // Special "classification" token used by the model, encoded as
+    // `vocabulary_size` (where the vocab size includes the two special tokens,
+    // hence the +2).
+    return "[CLS]";
+  } else if (token < 2 || token >= state_->metadata.input_token_size() + 2) {
+    return "[INVALID]";
+  } else {
+    // Indexing starts at 2 because of the special tokens.
+    return state_->metadata.input_token(token_id.value() - 2);
+  }
 }
 
 }  // namespace autofill

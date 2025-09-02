@@ -26,12 +26,17 @@
   border-radius: 4px;
   padding: 8px;
   margin-bottom: 16px;
-  display: flex;
   gap: 8px;
 }
 
 .field-properties {
   width: 300px;
+}
+
+.field-details-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 .histogram {

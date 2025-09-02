@@ -68,6 +68,10 @@ export class LogDetailsElement extends CrLitElement {
         .sort((a, b) => b.probability - a.probability)
         .slice(0, LogDetailsElement.TOP_PREDICTIONS_COUNT);
   }
+
+  protected formatFieldTokens_(tokens: string[]): string {
+    return tokens.join(' / ');
+  }
 }
 
 declare global {

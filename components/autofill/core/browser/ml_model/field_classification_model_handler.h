@@ -135,6 +135,10 @@ class FieldClassificationModelHandler
   autofill_ml_internals::mojom::MlPredictionLogPtr CreateMlPredictionLog(
       const FormData& form_structure) const;
 
+  // Converts a `TokenId` to the string representation.
+  std::string TokenIdToString(
+      FieldClassificationModelEncoder::TokenId token_id) const;
+
   struct ModelState {
     optimization_guide::proto::AutofillFieldClassificationModelMetadata
         metadata;

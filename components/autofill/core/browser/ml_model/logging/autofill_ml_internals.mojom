@@ -29,6 +29,7 @@ struct MlFieldPredictionLog {
   array<SelectOption> select_options;
 
   array<float>? probabilities;
+  array<string> tokenized_field_representation;
 };
 
 // Represents a single ML prediction log entry.
