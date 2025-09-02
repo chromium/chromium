@@ -97,12 +97,21 @@ class BackingStore {
    public:
     virtual ~Transaction() = default;
 
-    // For now, refer to comments in level_db::BackingStore::Transaction for
-    // documentation.
-    virtual void Begin(std::vector<PartitionedLock> locks) = 0;
+    virtual Status Begin(std::vector<PartitionedLock> locks) = 0;
+    // CommitPhaseOne determines what blobs (if any) need to be written to disk
+    // and updates the primary blob journal, and kicks off the async writing
+    // of the blob files. In case of crash/rollback, the journal indicates what
+    // files should be cleaned up.
+    // The blob write callback will be called eventually on success or failure,
+    // or immediately if phase one is complete due to lack of any blobs to
+    // write.
     virtual Status CommitPhaseOne(
         BlobWriteCallback blob_write_callback,
         SerializeFsaCallback serialize_fsa_handle) = 0;
+    // CommitPhaseTwo is called once the blob files (if any) have been written
+    // to disk, and commits the actual transaction to the backing store,
+    // including blob journal updates, then deletes any blob files deleted
+    // by the transaction and not referenced by running scripts.
     virtual Status CommitPhaseTwo() = 0;
     virtual void Rollback() = 0;
 

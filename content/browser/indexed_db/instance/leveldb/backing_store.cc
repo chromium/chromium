@@ -4037,7 +4037,7 @@ BackingStore::Transaction::~Transaction() {
   backing_store_->OnTransactionComplete(tombstone_threshold_exceeded_);
 }
 
-void BackingStore::Transaction::Begin(std::vector<PartitionedLock> locks) {
+Status BackingStore::Transaction::Begin(std::vector<PartitionedLock> locks) {
   DCHECK(backing_store_);
   DCHECK(!transaction_.get());
   TRACE_EVENT0("IndexedDB", "BackingStore::Transaction::Begin");
@@ -4060,6 +4060,8 @@ void BackingStore::Transaction::Begin(std::vector<PartitionedLock> locks) {
   for (const auto& iter : backing_store_->in_memory_external_object_map_) {
     in_memory_external_object_map_[iter.first] = iter.second->Clone();
   }
+
+  return Status::OK();
 }
 
 Status BackingStore::MigrateToV4(LevelDBWriteBatch* write_batch) {

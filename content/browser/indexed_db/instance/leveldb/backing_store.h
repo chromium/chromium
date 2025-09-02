@@ -135,21 +135,10 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
 
     ~Transaction() override;
 
-    // indexed_db::BackingStore::Transaction:
-    void Begin(std::vector<PartitionedLock> locks) override;
-    // CommitPhaseOne determines what blobs (if any) need to be written to disk
-    // and updates the primary blob journal, and kicks off the async writing
-    // of the blob files. In case of crash/rollback, the journal indicates what
-    // files should be cleaned up.
-    // The blob write callback will be called eventually on success or failure,
-    // or immediately if phase one is complete due to lack of any blobs to
-    // write. The `serialize_fsa_handle` callback is not used.
+    Status Begin(std::vector<PartitionedLock> locks) override;
+    // The `serialize_fsa_handle` callback is not used.
     Status CommitPhaseOne(BlobWriteCallback callback,
                           SerializeFsaCallback serialize_fsa_handle) override;
-    // CommitPhaseTwo is called once the blob files (if any) have been written
-    // to disk, and commits the actual transaction to the backing store,
-    // including blob journal updates, then deletes any blob files deleted
-    // by the transaction and not referenced by running scripts.
     Status CommitPhaseTwo() override;
     void Rollback() override;
     Status SetDatabaseVersion(int64_t version) override;

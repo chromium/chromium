@@ -22,10 +22,10 @@ class FakeTransaction : public BackingStore::Transaction {
   FakeTransaction(const FakeTransaction&) = delete;
   FakeTransaction& operator=(const FakeTransaction&) = delete;
 
+  Status Begin(std::vector<PartitionedLock> locks) override;
   Status CommitPhaseOne(BlobWriteCallback, SerializeFsaCallback) override;
   Status CommitPhaseTwo() override;
   void Rollback() override;
-  void Begin(std::vector<PartitionedLock> locks) override;
   Status SetDatabaseVersion(int64_t version) override;
   Status CreateObjectStore(int64_t object_store_id,
                            const std::u16string& name,

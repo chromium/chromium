@@ -1006,12 +1006,16 @@ StatusOr<Transaction::RunTasksResult> Transaction::RunTasks() {
     return RunTasksResult::kNotFinished;
   }
 
-  processing_event_queue_ = true;
-
   if (!backing_store_transaction_begun_) {
-    backing_store_transaction_->Begin(std::move(locks_receiver_.locks));
+    Status s =
+        backing_store_transaction_->Begin(std::move(locks_receiver_.locks));
+    if (!s.ok()) {
+      return base::unexpected(s);
+    }
     backing_store_transaction_begun_ = true;
   }
+
+  processing_event_queue_ = true;
 
   bool run_preemptive_queue =
       !preemptive_task_queue_.empty() || pending_preemptive_events_ != 0;

@@ -93,8 +93,8 @@ class DatabaseConnection {
       blink::mojom::IDBTransactionDurability durability,
       blink::mojom::IDBTransactionMode mode);
 
-  void BeginTransaction(base::PassKey<BackingStoreTransactionImpl>,
-                        const BackingStoreTransactionImpl& transaction);
+  Status BeginTransaction(base::PassKey<BackingStoreTransactionImpl>,
+                          const BackingStoreTransactionImpl& transaction);
   // In this phase, blobs, if any, are asynchronously written.
   Status CommitTransactionPhaseOne(
       base::PassKey<BackingStoreTransactionImpl>,

@@ -61,11 +61,10 @@
     return base::unexpected(Status(*db_));       \
   }
 
-// Runs the statement and returns if there was an error. For use with functions
-// that return Status.
-#define RUN_STATEMENT_RETURN_STATUS_ON_ERROR(statement) \
-  if (!statement.Run()) {                               \
-    return Status(*db_);                                \
+// Returns a `Status` if the passed expression evaluates to false.
+#define RETURN_STATUS_ON_ERROR(expr) \
+  if (!expr) {                       \
+    return Status(*db_);             \
   }
 
 // Executes the given SQL on `db` and returns a Status if there was an error.
@@ -856,33 +855,25 @@ Status DatabaseConnection::Init(std::optional<std::u16string_view> name) {
       path_.empty() ? kSqlTagInMemory : kSqlTag);
 
   if (path_.empty()) {
-    if (!db_->OpenInMemory()) {
-      return Status(*db_);
-    }
-  } else if (!db_->Open(path_)) {
-    return Status(*db_);
+    RETURN_STATUS_ON_ERROR(db_->OpenInMemory());
+  } else {
+    RETURN_STATUS_ON_ERROR(db_->Open(path_));
   }
 
   // What SQLite calls "recursive" triggers are required for SQLite to execute
   // a DELETE ON trigger after `INSERT OR REPLACE` replaces a row.
-  if (!db_->Execute("PRAGMA recursive_triggers=ON")) {
-    return Status(*db_);
-  }
+  RETURN_STATUS_ON_ERROR(db_->Execute("PRAGMA recursive_triggers=ON"));
 
   sql::Transaction transaction(db_.get());
-  if (!transaction.Begin()) {
-    return Status(*db_);
-  }
+  RETURN_STATUS_ON_ERROR(transaction.Begin());
 
   if (!sql::MetaTable::DoesTableExist(db_.get())) {
     IDB_RETURN_IF_ERROR(CreateSchema(db_.get(), *name));
   }
 
   meta_table_ = std::make_unique<sql::MetaTable>();
-  if (!meta_table_->Init(db_.get(), kCurrentSchemaVersion,
-                         kCompatibleSchemaVersion)) {
-    return Status(*db_);
-  }
+  RETURN_STATUS_ON_ERROR(meta_table_->Init(db_.get(), kCurrentSchemaVersion,
+                                           kCompatibleSchemaVersion));
 
   if (meta_table_->GetCompatibleVersionNumber() > kCurrentSchemaVersion) {
     // TODO(crbug.com/419272070): handle this and other cases where the DB needs
@@ -921,12 +912,9 @@ Status DatabaseConnection::Init(std::optional<std::u16string_view> name) {
   sql::Statement statement(db_->GetCachedStatement(
       SQL_FROM_HERE,
       "DELETE FROM blob_references WHERE record_row_id IS NULL"));
-  RUN_STATEMENT_RETURN_STATUS_ON_ERROR(statement);
+  RETURN_STATUS_ON_ERROR(statement.Run());
 
-  if (!transaction.Commit()) {
-    return Status(*db_);
-  }
-
+  RETURN_STATUS_ON_ERROR(transaction.Commit());
   inited_ = true;
   return Status::OK();
 }
@@ -974,7 +962,7 @@ DatabaseConnection::CreateTransaction(
                                                        mode);
 }
 
-void DatabaseConnection::BeginTransaction(
+Status DatabaseConnection::BeginTransaction(
     base::PassKey<BackingStoreTransactionImpl>,
     const BackingStoreTransactionImpl& transaction) {
   // No other transaction can begin while a version change transaction is
@@ -982,23 +970,23 @@ void DatabaseConnection::BeginTransaction(
   CHECK(!HasActiveVersionChangeTransaction());
   if (transaction.mode() == blink::mojom::IDBTransactionMode::ReadOnly) {
     // Nothing to do.
-    return;
+    return Status::OK();
   }
   CHECK(!active_rw_transaction_);
   active_rw_transaction_ = std::make_unique<sql::Transaction>(db_.get());
   if (transaction.durability() ==
       blink::mojom::IDBTransactionDurability::Strict) {
-    TRANSIENT_CHECK(db_->Execute("PRAGMA synchronous=FULL"));
+    RETURN_STATUS_ON_ERROR(db_->Execute("PRAGMA synchronous=FULL"));
   } else {
     // WAL mode is guaranteed to be consistent only with synchronous=NORMAL or
     // higher: https://www.sqlite.org/pragma.html#pragma_synchronous.
-    TRANSIENT_CHECK(db_->Execute("PRAGMA synchronous=NORMAL"));
+    RETURN_STATUS_ON_ERROR(db_->Execute("PRAGMA synchronous=NORMAL"));
   }
-  // TODO(crbug.com/40253999): How do we surface the error if this call fails?
-  TRANSIENT_CHECK(active_rw_transaction_->Begin());
+  RETURN_STATUS_ON_ERROR(active_rw_transaction_->Begin());
   if (transaction.mode() == blink::mojom::IDBTransactionMode::VersionChange) {
     metadata_snapshot_.emplace(metadata_);
   }
+  return Status::OK();
 }
 
 Status DatabaseConnection::CommitTransactionPhaseOne(
@@ -1033,12 +1021,13 @@ Status DatabaseConnection::CommitTransactionPhaseOne(
     std::optional<sql::StreamingBlobHandle> blob_for_writing =
         db_->GetStreamingBlob("blobs", "bytes", blob_row_id,
                               /*readonly=*/false);
-    TRANSIENT_CHECK(blob_for_writing);
-    std::unique_ptr<BlobWriter> writer = BlobWriter::WriteBlobIntoDatabase(
-        external_object, *std::move(blob_for_writing),
-        base::BindOnce(&DatabaseConnection::OnBlobWriteComplete,
-                       blob_writers_weak_factory_.GetWeakPtr(), blob_row_id));
-
+    std::unique_ptr<BlobWriter> writer;
+    if (blob_for_writing) {
+      writer = BlobWriter::WriteBlobIntoDatabase(
+          external_object, *std::move(blob_for_writing),
+          base::BindOnce(&DatabaseConnection::OnBlobWriteComplete,
+                         blob_writers_weak_factory_.GetWeakPtr(), blob_row_id));
+    }
     if (!writer) {
       CancelBlobWriting();
       // This is currently ignored as the error is already surfaced through
@@ -1104,7 +1093,7 @@ Status DatabaseConnection::CommitTransactionPhaseTwo(
   }
   // No need to sync active blobs when the transaction successfully commits.
   sync_active_blobs_after_transaction_ = false;
-  TRANSIENT_CHECK(active_rw_transaction_->Commit());
+  RETURN_STATUS_ON_ERROR(active_rw_transaction_->Commit());
   if (transaction.mode() == blink::mojom::IDBTransactionMode::VersionChange) {
     CHECK(metadata_snapshot_.has_value());
     metadata_snapshot_.reset();
@@ -1187,7 +1176,7 @@ Status DatabaseConnection::SetDatabaseVersion(
   sql::Statement statement(
       db_->GetUniqueStatement("UPDATE indexed_db_metadata SET version = ?"));
   statement.BindInt64(0, version);
-  RUN_STATEMENT_RETURN_STATUS_ON_ERROR(statement);
+  RETURN_STATUS_ON_ERROR(statement.Run());
   metadata_.version = version;
   return Status::OK();
 }
@@ -1216,7 +1205,7 @@ Status DatabaseConnection::CreateObjectStore(
   BindKeyPath(statement, 2, metadata.key_path);
   statement.BindBool(3, metadata.auto_increment);
   statement.BindInt64(4, ObjectStoreMetaDataKey::kKeyGeneratorInitialNumber);
-  RUN_STATEMENT_RETURN_STATUS_ON_ERROR(statement);
+  RETURN_STATUS_ON_ERROR(statement.Run());
 
   metadata_.object_stores[object_store_id] = std::move(metadata);
   metadata_.max_object_store_id = object_store_id;
@@ -1235,25 +1224,25 @@ Status DatabaseConnection::DeleteObjectStore(
         SQL_FROM_HERE,
         "DELETE FROM index_references WHERE object_store_id = ?"));
     statement.BindInt64(0, object_store_id);
-    RUN_STATEMENT_RETURN_STATUS_ON_ERROR(statement);
+    RETURN_STATUS_ON_ERROR(statement.Run());
   }
   {
     sql::Statement statement(db_->GetCachedStatement(
         SQL_FROM_HERE, "DELETE FROM indexes WHERE object_store_id = ?"));
     statement.BindInt64(0, object_store_id);
-    RUN_STATEMENT_RETURN_STATUS_ON_ERROR(statement);
+    RETURN_STATUS_ON_ERROR(statement.Run());
   }
   {
     sql::Statement statement(db_->GetCachedStatement(
         SQL_FROM_HERE, "DELETE FROM records WHERE object_store_id = ?"));
     statement.BindInt64(0, object_store_id);
-    RUN_STATEMENT_RETURN_STATUS_ON_ERROR(statement);
+    RETURN_STATUS_ON_ERROR(statement.Run());
   }
   {
     sql::Statement statement(db_->GetCachedStatement(
         SQL_FROM_HERE, "DELETE FROM object_stores WHERE id = ?"));
     statement.BindInt64(0, object_store_id);
-    RUN_STATEMENT_RETURN_STATUS_ON_ERROR(statement);
+    RETURN_STATUS_ON_ERROR(statement.Run());
   }
   CHECK(metadata_.object_stores.erase(object_store_id) == 1);
   return Status::OK();
@@ -1271,7 +1260,7 @@ Status DatabaseConnection::RenameObjectStore(
       SQL_FROM_HERE, "UPDATE object_stores SET name = ? WHERE id = ?"));
   statement.BindBlob(0, new_name);
   statement.BindInt64(1, object_store_id);
-  RUN_STATEMENT_RETURN_STATUS_ON_ERROR(statement);
+  RETURN_STATUS_ON_ERROR(statement.Run());
   metadata_.object_stores.at(object_store_id).name = new_name;
   return Status::OK();
 }
@@ -1303,7 +1292,7 @@ Status DatabaseConnection::CreateIndex(
   BindKeyPath(statement, 3, index.key_path);
   statement.BindBool(4, index.unique);
   statement.BindBool(5, index.multi_entry);
-  RUN_STATEMENT_RETURN_STATUS_ON_ERROR(statement);
+  RETURN_STATUS_ON_ERROR(statement.Run());
 
   object_store.indexes[index_id] = std::move(index);
   object_store.max_index_id = index_id;
@@ -1328,7 +1317,7 @@ Status DatabaseConnection::DeleteIndex(
                                 "WHERE object_store_id = ? AND index_id = ?"));
     statement.BindInt64(0, object_store_id);
     statement.BindInt64(1, index_id);
-    RUN_STATEMENT_RETURN_STATUS_ON_ERROR(statement);
+    RETURN_STATUS_ON_ERROR(statement.Run());
   }
   {
     sql::Statement statement(db_->GetCachedStatement(
@@ -1336,7 +1325,7 @@ Status DatabaseConnection::DeleteIndex(
         "DELETE FROM indexes WHERE object_store_id = ? AND id = ?"));
     statement.BindInt64(0, object_store_id);
     statement.BindInt64(1, index_id);
-    RUN_STATEMENT_RETURN_STATUS_ON_ERROR(statement);
+    RETURN_STATUS_ON_ERROR(statement.Run());
   }
   CHECK(metadata_.object_stores.at(object_store_id).indexes.erase(index_id) ==
         1);
@@ -1361,7 +1350,7 @@ Status DatabaseConnection::RenameIndex(
   statement.BindBlob(0, new_name);
   statement.BindInt64(1, object_store_id);
   statement.BindInt64(2, index_id);
-  RUN_STATEMENT_RETURN_STATUS_ON_ERROR(statement);
+  RETURN_STATUS_ON_ERROR(statement.Run());
   metadata_.object_stores.at(object_store_id).indexes.at(index_id).name =
       new_name;
   return Status::OK();
@@ -1391,7 +1380,7 @@ Status DatabaseConnection::MaybeUpdateKeyGeneratorCurrentNumber(
   statement.BindInt64(0, new_number);
   statement.BindInt64(1, object_store_id);
   statement.BindInt64(2, new_number);
-  RUN_STATEMENT_RETURN_STATUS_ON_ERROR(statement);
+  RETURN_STATUS_ON_ERROR(statement.Run());
   return Status::OK();
 }
 
@@ -1616,7 +1605,7 @@ Status DatabaseConnection::DeleteRange(
       StartRecordRangeQuery("DELETE", key_range);
   sql::Statement statement(db_->GetUniqueStatement(base::StrCat(query_pieces)));
   BindRecordRangeQueryParams(statement, object_store_id, key_range);
-  RUN_STATEMENT_RETURN_STATUS_ON_ERROR(statement);
+  RETURN_STATUS_ON_ERROR(statement.Run());
   return Status::OK();
 }
 
@@ -1626,7 +1615,7 @@ Status DatabaseConnection::ClearObjectStore(
   sql::Statement statement(db_->GetCachedStatement(
       SQL_FROM_HERE, "DELETE FROM records WHERE object_store_id = ?"));
   statement.BindInt64(0, object_store_id);
-  RUN_STATEMENT_RETURN_STATUS_ON_ERROR(statement);
+  RETURN_STATUS_ON_ERROR(statement.Run());
   return Status::OK();
 }
 
@@ -1667,7 +1656,7 @@ Status DatabaseConnection::PutIndexDataForRecord(
   statement.BindBlob(2, EncodeSortableIDBKey(key));
   statement.BindInt64(3, object_store_id);
   statement.BindBlob(4, record.data);
-  RUN_STATEMENT_RETURN_STATUS_ON_ERROR(statement);
+  RETURN_STATUS_ON_ERROR(statement.Run());
   return Status::OK();
 }
 
