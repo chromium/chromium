@@ -30,7 +30,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
 
 using testing::_;
 using testing::ByRef;

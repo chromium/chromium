@@ -105,7 +105,6 @@
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/native_widget_types.h"
 #include "ui/native_theme/features/native_theme_features.h"
 #include "url/url_constants.h"
 
