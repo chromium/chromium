@@ -901,7 +901,7 @@ void Compositor::DidPresentCompositorFrame(
       "cc,benchmark", "FramePresented",
       frame_timing_details.presentation_feedback.timestamp, "environment",
       "browser");
-  observer_list_.Notify(&CompositorObserver::OnDidPresentCompositorFrame,
+  observer_list_.Notify(&CompositorObserver::OnDidPresentCompositorFrame, this,
                         frame_token,
                         frame_timing_details.presentation_feedback);
 }

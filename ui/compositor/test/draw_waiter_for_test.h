@@ -49,6 +49,7 @@ class DrawWaiterForTest : public CompositorObserver {
   void OnCompositingStarted(Compositor* compositor,
                             base::TimeTicks start_time) override;
   void OnDidPresentCompositorFrame(
+      Compositor* compositor,
       uint32_t frame_token,
       const gfx::PresentationFeedback& feedback) override;
 

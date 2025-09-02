@@ -118,6 +118,7 @@ void FPSGraphPageView::OnPaint(gfx::Canvas* canvas) {
 }
 
 void FPSGraphPageView::OnDidPresentCompositorFrame(
+    ui::Compositor* compositor,
     uint32_t frame_token,
     const gfx::PresentationFeedback& feedback) {
   UpdateStats(feedback);

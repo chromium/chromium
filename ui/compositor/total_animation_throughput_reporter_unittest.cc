@@ -70,6 +70,7 @@ class TestCompositorMonitor : public ui::CompositorObserver {
   }
 
   void OnDidPresentCompositorFrame(
+      ui::Compositor* compositor,
       uint32_t frame_token,
       const gfx::PresentationFeedback& feedback) override {
     if (waiting_for_did_present_compositor_frame_) {

@@ -2247,6 +2247,7 @@ void OmniboxViewViews::OnCompositingStarted(ui::Compositor* compositor,
 }
 
 void OmniboxViewViews::OnDidPresentCompositorFrame(
+    ui::Compositor* compositor,
     uint32_t frame_token,
     const gfx::PresentationFeedback& feedback) {
   if (latency_histogram_state_ == COMPOSITING_STARTED) {

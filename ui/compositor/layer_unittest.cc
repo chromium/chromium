@@ -431,6 +431,7 @@ class TestCompositorObserver : public CompositorObserver {
   }
 
   void OnDidPresentCompositorFrame(
+      ui::Compositor* compositor,
       uint32_t frame_token,
       const gfx::PresentationFeedback& feedback) override {
     ended_ = true;

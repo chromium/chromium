@@ -47,6 +47,7 @@ class FPSGraphPageView : public GraphPageViewBase,
 
   // ui::CompositorObserver:
   void OnDidPresentCompositorFrame(
+      ui::Compositor* compositor,
       uint32_t frame_token,
       const gfx::PresentationFeedback& feedback) override;
 
