@@ -167,10 +167,10 @@ class PasswordReuseManagerImplTest : public testing::Test {
         prefs::kLocalPasswordHashDataList, PrefRegistry::NO_REGISTRATION_FLAGS);
     profile_store_ =
         base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
-    profile_store_->Init(&prefs_, /*affiliated_match_helper=*/nullptr);
+    profile_store_->Init(/*affiliated_match_helper=*/nullptr);
     account_store_ =
         base::MakeRefCounted<TestPasswordStore>(IsAccountStore(true));
-    account_store_->Init(&prefs_, /*affiliated_match_helper=*/nullptr);
+    account_store_->Init(/*affiliated_match_helper=*/nullptr);
   }
 
   void Initialize(bool should_mock_password_reuse_detector = false) {

@@ -45,8 +45,8 @@ class WebViewPasswordManagerClientTest : public PlatformTest {
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kCredentialsEnableService, true);
 
-    profile_store_->Init(&pref_service_, /*affiliated_match_helper=*/nullptr);
-    account_store_->Init(&pref_service_, /*affiliated_match_helper=*/nullptr);
+    profile_store_->Init(/*affiliated_match_helper=*/nullptr);
+    account_store_->Init(/*affiliated_match_helper=*/nullptr);
 
     password_manager_client_ = std::make_unique<WebViewPasswordManagerClient>(
         &web_state_, &sync_service_, &pref_service_,

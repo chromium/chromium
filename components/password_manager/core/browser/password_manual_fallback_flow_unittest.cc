@@ -198,8 +198,7 @@ class PasswordManualFallbackFlowTest : public Test {
         std::make_unique<NiceMock<MockAffiliatedMatchHelper>>(
             affiliation_service_.get());
     mock_affiliated_match_helper_ = profile_store_match_helper.get();
-    profile_password_store().Init(/*prefs=*/nullptr,
-                                  std::move(profile_store_match_helper));
+    profile_password_store().Init(std::move(profile_store_match_helper));
   }
 
   ~PasswordManualFallbackFlowTest() override {

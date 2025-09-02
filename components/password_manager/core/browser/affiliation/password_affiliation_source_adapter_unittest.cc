@@ -82,8 +82,7 @@ class PasswordAffiliationSourceAdapterTest : public testing::Test {
   void SetUp() override {
     mock_source_observer_ =
         std::make_unique<testing::StrictMock<MockAffiliationSourceObserver>>();
-    password_store()->Init(/*prefs=*/nullptr,
-                           /*affiliated_match_helper=*/nullptr);
+    password_store()->Init(/*affiliated_match_helper=*/nullptr);
     adapter_ = std::make_unique<PasswordAffiliationSourceAdapter>();
     adapter_->RegisterPasswordStore(password_store());
     RunUntilIdle();

@@ -106,10 +106,8 @@ class ActorLoginDelegateImplTest : public ::testing::Test {
                     -> PasswordManagerDriver* { return driver; },
                 base::Unretained(&mock_driver_))));
 
-    client_.profile_store()->Init(profile_->GetPrefs(),
-                                  /* affiliated_match_helper=*/nullptr);
-    client_.account_store()->Init(profile_->GetPrefs(),
-                                  /* affiliated_match_helper=*/nullptr);
+    client_.profile_store()->Init(/*affiliated_match_helper=*/nullptr);
+    client_.account_store()->Init(/*affiliated_match_helper=*/nullptr);
   }
 
   void TearDown() override {

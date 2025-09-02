@@ -92,10 +92,8 @@ class CredentialProviderServiceTest : public PlatformTest {
     PlatformTest::SetUp();
     // Make sure there are no favicons left from some other tests.
     EXPECT_TRUE(DeleteFaviconsFolder());
-    password_store_->Init(&testing_pref_service_,
-                          /*affiliated_match_helper=*/nullptr);
-    account_password_store_->Init(&testing_pref_service_,
-                                  /*affiliated_match_helper=*/nullptr);
+    password_store_->Init(/*affiliated_match_helper=*/nullptr);
+    account_password_store_->Init(/*affiliated_match_helper=*/nullptr);
     testing_pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kCredentialsEnableService, true);
     testing_pref_service_.registry()->RegisterBooleanPref(

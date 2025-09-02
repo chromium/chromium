@@ -241,12 +241,11 @@ class CredentialManagerImplTest : public testing::Test,
         std::make_unique<NiceMock<MockAffiliatedMatchHelper>>(
             fake_affiliation_service_.get());
     mock_match_helper_ = owning_mock_match_helper.get();
-    store_->Init(/*prefs=*/nullptr, std::move(owning_mock_match_helper));
+    store_->Init(std::move(owning_mock_match_helper));
 
     if (GetParam()) {
       account_store_ = new TestPasswordStore(IsAccountStore(true));
-      account_store_->Init(/*prefs=*/nullptr,
-                           /*affiliated_match_helper=*/nullptr);
+      account_store_->Init(/*affiliated_match_helper=*/nullptr);
     }
     client_ = std::make_unique<testing::NiceMock<MockPasswordManagerClient>>(
         store_.get(), account_store_.get());

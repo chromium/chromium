@@ -84,12 +84,10 @@ class CredentialManagerPendingRequestTaskTest : public ::testing::Test {
  public:
   CredentialManagerPendingRequestTaskTest() {
     profile_store_ = new TestPasswordStore(IsAccountStore(false));
-    profile_store_->Init(/*prefs=*/nullptr,
-                         /*affiliated_match_helper=*/nullptr);
+    profile_store_->Init(/*affiliated_match_helper=*/nullptr);
 
     account_store_ = new TestPasswordStore(IsAccountStore(true));
-    account_store_->Init(/*prefs=*/nullptr,
-                         /*affiliated_match_helper=*/nullptr);
+    account_store_->Init(/*affiliated_match_helper=*/nullptr);
 
     prefs_.registry()->RegisterBooleanPref(
         prefs::kWasAutoSignInFirstRunExperienceShown, true);

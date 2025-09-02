@@ -56,10 +56,8 @@ class ActorLoginGetCredentialsHelperTest : public ::testing::Test {
   ActorLoginGetCredentialsHelperTest() = default;
 
   void SetUp() override {
-    client_.profile_store()->Init(/*prefs=*/nullptr,
-                                  /*affiliated_match_helper=*/nullptr);
-    client_.account_store()->Init(/*prefs=*/nullptr,
-                                  /*affiliated_match_helper=*/nullptr);
+    client_.profile_store()->Init(/*affiliated_match_helper=*/nullptr);
+    client_.account_store()->Init(/*affiliated_match_helper=*/nullptr);
   }
 
   void TearDown() override {

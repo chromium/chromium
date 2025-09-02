@@ -95,7 +95,7 @@ WebViewProfilePasswordStoreFactory::BuildServiceInstanceFor(
       password_affiliation_adapter = std::make_unique<
           password_manager::PasswordAffiliationSourceAdapter>();
 
-  store->Init(/*prefs=*/nullptr, std::move(affiliated_match_helper));
+  store->Init(std::move(affiliated_match_helper));
 
   password_affiliation_adapter->RegisterPasswordStore(store.get());
   affiliation_service->RegisterSource(std::move(password_affiliation_adapter));

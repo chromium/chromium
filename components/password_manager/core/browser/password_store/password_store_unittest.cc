@@ -251,7 +251,7 @@ TEST_F(PasswordStoreTest, UpdateLoginPrimaryKeyFields) {
   /* clang-format on */
 
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
 
   std::unique_ptr<PasswordForm> old_form(FillPasswordFormWithData(
       kTestCredentials[0], /*is_account_store=*/false));
@@ -306,7 +306,7 @@ TEST_F(PasswordStoreTest, AddLogins) {
       /*is_account_store=*/false));
 
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
 
   MockPasswordStoreObserver mock_observer;
   store->AddObserver(&mock_observer);
@@ -341,7 +341,7 @@ TEST_F(PasswordStoreTest, UpdateLogins) {
       *FillPasswordFormWithData(form_data_2, /*is_account_store=*/false)};
 
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
 
   store->AddLogins(all_credentials);
   WaitForPasswordStore();
@@ -395,7 +395,7 @@ TEST_F(PasswordStoreTest, RemoveLoginsCreatedBetweenCallbackIsCalled) {
   /* clang-format on */
 
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
 
   std::unique_ptr<PasswordForm> test_form(
       FillPasswordFormWithData(kTestCredential, /*is_account_store=*/false));
@@ -439,7 +439,7 @@ TEST_F(PasswordStoreTest,
   /* clang-format on */
 
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
 
   std::unique_ptr<PasswordForm> test_form(
       FillPasswordFormWithData(kTestCredential, /*is_account_store=*/false));
@@ -473,7 +473,7 @@ TEST_F(PasswordStoreTest,
       .WillOnce(WithArg<3>([](base::OnceCallback<void(bool)> completion) {
         std::move(completion).Run(true);
       }));
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
 
   base::test::TestFuture<bool> completion_future;
   EXPECT_CALL(*mock_backend, RemoveLoginsCreatedBetweenAsync)
@@ -496,7 +496,7 @@ TEST_F(PasswordStoreTest,
       .WillOnce(WithArg<3>([](base::OnceCallback<void(bool)> completion) {
         std::move(completion).Run(true);
       }));
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
 
   base::test::TestFuture<bool> completion_future;
   EXPECT_CALL(*mock_backend, RemoveLoginsCreatedBetweenAsync)
@@ -516,7 +516,7 @@ TEST_F(PasswordStoreTest,
 // removed from the insecure credentials table.
 TEST_F(PasswordStoreTest, InsecureCredentialsObserverOnLoginUpdated) {
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
 
   /* clang-format off */
   PasswordFormData kTestCredential =
@@ -558,7 +558,7 @@ TEST_F(PasswordStoreTest, InsecureCredentialsObserverOnLoginUpdated) {
 // the insecure credentials associated with it are cleared.
 TEST_F(PasswordStoreTest, InsecureCredentialsObserverOnLoginAdded) {
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
 
   /* clang-format off */
   PasswordFormData kTestCredential =
@@ -609,7 +609,7 @@ TEST_F(PasswordStoreTest, InsecurePasswordObserverOnInsecureCredentialAdded) {
                                                  kTestLastUsageTime,
                                                  1};
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
   std::unique_ptr<PasswordForm> test_form(
       FillPasswordFormWithData(kTestCredentials, /*is_account_store=*/false));
   store->AddLogin(*test_form);
@@ -645,7 +645,7 @@ TEST_F(PasswordStoreTest, InsecurePasswordObserverOnInsecureCredentialRemoved) {
                                                  kTestLastUsageTime,
                                                  1};
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
   std::unique_ptr<PasswordForm> test_form(
       FillPasswordFormWithData(kTestCredentials, /*is_account_store=*/false));
   test_form->password_issues = {
@@ -704,7 +704,7 @@ TEST_F(PasswordStoreTest, GetLoginsWithPSL) {
       }};
 
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
 
   std::vector<std::unique_ptr<PasswordForm>> all_credentials;
   for (const auto& i : kTestCredentials) {
@@ -749,7 +749,7 @@ TEST_F(PasswordStoreTest, GetLoginsPSLDisabled) {
        u"123456"}};
 
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
 
   std::vector<std::unique_ptr<PasswordForm>> all_credentials;
   for (const auto& i : kTestCredentials) {
@@ -809,7 +809,7 @@ TEST_F(PasswordStoreTest, GetLoginsWithoutAffiliations) {
       std::make_unique<MockAffiliatedMatchHelper>(&fake_affiliation_service);
   MockAffiliatedMatchHelper* mock_affiliated_match_helper =
       owning_mock_match_helper.get();
-  store->Init(/*prefs=*/nullptr, std::move(owning_mock_match_helper));
+  store->Init(std::move(owning_mock_match_helper));
 
   std::vector<std::unique_ptr<PasswordForm>> all_credentials;
   for (const auto& credential : kTestCredentials) {
@@ -915,7 +915,7 @@ TEST_F(PasswordStoreTest, GetLoginsWithAffiliations) {
       std::make_unique<MockAffiliatedMatchHelper>(&fake_affiliation_service);
   MockAffiliatedMatchHelper* mock_affiliated_match_helper =
       owning_mock_match_helper.get();
-  store->Init(/*prefs=*/nullptr, std::move(owning_mock_match_helper));
+  store->Init(std::move(owning_mock_match_helper));
 
   std::vector<std::unique_ptr<PasswordForm>> all_credentials;
   for (const auto& i : kTestCredentials) {
@@ -974,7 +974,7 @@ TEST_F(PasswordStoreTest, GetLoginsWithBrandingInformationForExactMatch) {
       std::make_unique<MockAffiliatedMatchHelper>(&fake_affiliation_service);
   MockAffiliatedMatchHelper* mock_affiliated_match_helper =
       owning_mock_match_helper.get();
-  store->Init(/*prefs=*/nullptr, std::move(owning_mock_match_helper));
+  store->Init(std::move(owning_mock_match_helper));
 
   PasswordFormData form_data = {PasswordForm::Scheme::kHtml,
                                 kTestWebRealm1,
@@ -1025,7 +1025,7 @@ TEST_F(PasswordStoreTest, GetLoginsWithBrandingInformationForAffiliatedLogins) {
       std::make_unique<MockAffiliatedMatchHelper>(&fake_affiliation_service);
   MockAffiliatedMatchHelper* mock_affiliated_match_helper =
       owning_mock_match_helper.get();
-  store->Init(/*prefs=*/nullptr, std::move(owning_mock_match_helper));
+  store->Init(std::move(owning_mock_match_helper));
 
   PasswordFormData form_data = {PasswordForm::Scheme::kHtml,
                                 kTestAndroidRealm1,
@@ -1074,7 +1074,7 @@ TEST_F(PasswordStoreTest, GetLoginsWithBrandingInformationForAffiliatedLogins) {
 TEST_F(PasswordStoreTest, PasswordManagerTimeSinceInitMetric) {
   base::HistogramTester histogram_tester;
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
 
   task_environment_.FastForwardBy(base::Seconds(1));
 
@@ -1142,7 +1142,7 @@ TEST_P(PasswordStoreFederationTest, GetLoginsWithWebAffiliations) {
       std::make_unique<MockAffiliatedMatchHelper>(&fake_affiliation_service);
   MockAffiliatedMatchHelper* mock_affiliated_match_helper =
       owning_mock_match_helper.get();
-  store->Init(/*prefs=*/nullptr, std::move(owning_mock_match_helper));
+  store->Init(std::move(owning_mock_match_helper));
 
   std::vector<std::unique_ptr<PasswordForm>> all_credentials;
   for (const PasswordFormData& i : kTestCredentials) {
@@ -1197,7 +1197,7 @@ class PasswordStoreGroupsTest : public PasswordStoreTest {
     auto owning_mock_match_helper =
         std::make_unique<MockAffiliatedMatchHelper>(&affiliation_service_);
     mock_affiliated_match_helper_ = owning_mock_match_helper.get();
-    store_->Init(/*prefs=*/nullptr, std::move(owning_mock_match_helper));
+    store_->Init(std::move(owning_mock_match_helper));
   }
 
   void TearDown() override {
@@ -1299,7 +1299,7 @@ TEST_F(PasswordStoreTest, DelegatesGetAllLoginsToBackend) {
       .WillOnce(WithArg<3>([](base::OnceCallback<void(bool)> completion) {
         std::move(completion).Run(true);
       }));
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
 
   MockPasswordStoreConsumer mock_consumer;
   EXPECT_CALL(*mock_backend, GetAllLoginsAsync(_));
@@ -1314,7 +1314,7 @@ TEST_F(PasswordStoreTest, DelegatesGetAutofillableLoginsToBackend) {
       .WillOnce(WithArg<3>([](base::OnceCallback<void(bool)> completion) {
         std::move(completion).Run(true);
       }));
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
 
   MockPasswordStoreConsumer mock_consumer;
   EXPECT_CALL(*mock_backend, GetAutofillableLoginsAsync(_));
@@ -1331,7 +1331,7 @@ TEST_F(PasswordStoreTest, CallOnLoginsChangedIfRemovalProvidesChanges) {
       .WillOnce(WithArg<3>([](base::OnceCallback<void(bool)> completion) {
         std::move(completion).Run(true);
       }));
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
   store->AddObserver(&mock_observer);
 
   // Expect that observers receive the removal when the backend invokes the
@@ -1359,7 +1359,7 @@ TEST_F(PasswordStoreTest, CallOnLoginsChangedIfAdditionProvidesChanges) {
       .WillOnce(WithArg<3>([](base::OnceCallback<void(bool)> completion) {
         std::move(completion).Run(true);
       }));
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
   store->AddObserver(&mock_observer);
 
   // Expect that observers receive the addition when the backend invokes the
@@ -1387,7 +1387,7 @@ TEST_F(PasswordStoreTest, CallOnLoginsChangedIfUpdateProvidesChanges) {
       .WillOnce(WithArg<3>([](base::OnceCallback<void(bool)> completion) {
         std::move(completion).Run(true);
       }));
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
   store->AddObserver(&mock_observer);
 
   // Expect that observers receive the update when the backend invokes the
@@ -1415,7 +1415,7 @@ TEST_F(PasswordStoreTest, DoNotCallOnLoginsChangedIfAdditionReturnsError) {
       .WillOnce(WithArg<3>([](base::OnceCallback<void(bool)> completion) {
         std::move(completion).Run(true);
       }));
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
   store->AddObserver(&mock_observer);
 
   // Expect that observers does not receive the change when backend fails.
@@ -1440,7 +1440,7 @@ TEST_F(PasswordStoreTest, DoNotCallOnLoginsChangedIfUpdateReturnsError) {
       .WillOnce(WithArg<3>([](base::OnceCallback<void(bool)> completion) {
         std::move(completion).Run(true);
       }));
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
   store->AddObserver(&mock_observer);
 
   // Expect that observers does not receive the update when backend fails.
@@ -1477,7 +1477,7 @@ TEST_F(PasswordStoreTest, CallOnLoginsRetainedIfUpdateProvidesNoChanges) {
       .WillOnce(WithArg<3>([](base::OnceCallback<void(bool)> completion) {
         std::move(completion).Run(true);
       }));
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
   store->AddObserver(&mock_observer);
 
   // Expect that observers receive the full list if the backend invokes the
@@ -1515,7 +1515,7 @@ TEST_F(PasswordStoreTest, RecordsPotentialOnLoginsRetainedInvokations) {
       .WillOnce(WithArg<3>([](base::OnceCallback<void(bool)> completion) {
         std::move(completion).Run(true);
       }));
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
   store->AddObserver(&mock_observer);
 
   // A changelist will be returned, so `OnLoginsRetained` call is not issued.
@@ -1547,7 +1547,7 @@ TEST_F(PasswordStoreTest, AbleToSavePasswords) {
       .WillOnce(WithArg<3>([](base::OnceCallback<void(bool)> completion) {
         std::move(completion).Run(true);
       }));
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
   EXPECT_CALL(*mock_backend, IsAbleToSavePasswords)
       .WillOnce(testing::Return(true));
 
@@ -1561,7 +1561,7 @@ TEST_F(PasswordStoreTest, NotAbleToSavePasswords) {
       .WillOnce(WithArg<3>([](base::OnceCallback<void(bool)> completion) {
         std::move(completion).Run(true);
       }));
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
   EXPECT_CALL(*mock_backend, IsAbleToSavePasswords)
       .WillOnce(testing::Return(false));
 
@@ -1587,7 +1587,7 @@ TEST_F(PasswordStoreTest, GetAllLogins) {
        u"", u"", nullptr, u"", kTestLastUsageTime, 1}};
 
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
 
   std::vector<std::unique_ptr<PasswordForm>> all_credentials;
   for (const auto& test_credential : kTestCredentials) {
@@ -1619,7 +1619,7 @@ TEST_F(PasswordStoreTest, GetAllLoginsWithAffiliationAndBrandingInformation) {
   auto mock_match_helper =
       std::make_unique<MockAffiliatedMatchHelper>(&fake_affiliation_service);
   MockAffiliatedMatchHelper* match_helper = mock_match_helper.get();
-  store->Init(/*prefs=*/nullptr, std::move(mock_match_helper));
+  store->Init(std::move(mock_match_helper));
 
   static constexpr PasswordFormData kTestCredentials[] = {
       {PasswordForm::Scheme::kHtml, kTestAndroidRealm1, "", "", u"", u"", u"",
@@ -1719,7 +1719,7 @@ TEST_F(PasswordStoreTest, Unblocklisting) {
        kTestLastUsageTime, 1}};
 
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
 
   std::vector<PasswordForm> all_credentials;
   for (const auto& test_credential : kTestCredentials) {
@@ -1763,7 +1763,7 @@ TEST_F(PasswordStoreTest, Unblocklisting) {
 // insecure credential synchronously.
 TEST_F(PasswordStoreTest, RemoveInsecureCredentialsSyncOnUpdate) {
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
 
   constexpr PasswordFormData kTestCredential = {PasswordForm::Scheme::kHtml,
                                                 kTestWebRealm1,
@@ -1812,7 +1812,7 @@ TEST_F(PasswordStoreTest, TestGetLoginRequestCancelable) {
       std::make_unique<MockAffiliatedMatchHelper>(&fake_affiliation_service);
   MockAffiliatedMatchHelper* mock_affiliated_match_helper =
       owning_mock_match_helper.get();
-  store->Init(/*prefs=*/nullptr, std::move(owning_mock_match_helper));
+  store->Init(std::move(owning_mock_match_helper));
   WaitForPasswordStore();
 
   store->AddLogin(MakePasswordForm(kTestAndroidRealm1));
@@ -1836,7 +1836,7 @@ TEST_F(PasswordStoreTest, TestGetLoginRequestCancelable) {
 
 TEST_F(PasswordStoreTest, TestUnblockListEmptyStore) {
   scoped_refptr<PasswordStore> store = CreatePasswordStore();
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
   WaitForPasswordStore();
 
   MockPasswordStoreObserver observer;
@@ -1861,7 +1861,7 @@ class PasswordStoreOriginTest : public PasswordStoreTest {
   void SetUp() override {
     PasswordStoreTest::SetUp();
     store_ = CreatePasswordStore();
-    store_->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+    store_->Init(/*affiliated_match_helper=*/nullptr);
   }
 
   void TearDown() override {
@@ -1911,7 +1911,7 @@ TEST_F(PasswordStoreDelayedInitTest, AddLogin) {
 
   base::OnceCallback<void(bool)> init_callback;
   EXPECT_CALL(*backend(), InitBackend).WillOnce(MoveArg<3>(&init_callback));
-  store()->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store()->Init(/*affiliated_match_helper=*/nullptr);
 
   base::MockOnceClosure mock_callback;
   store()->AddLogin(*form, mock_callback.Get());
@@ -1932,7 +1932,7 @@ TEST_F(PasswordStoreDelayedInitTest, UpdateLogin) {
 
   base::OnceCallback<void(bool)> init_callback;
   EXPECT_CALL(*backend(), InitBackend).WillOnce(MoveArg<3>(&init_callback));
-  store()->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store()->Init(/*affiliated_match_helper=*/nullptr);
 
   base::MockOnceClosure mock_callback;
   store()->UpdateLogin(*form, mock_callback.Get());
@@ -1953,7 +1953,7 @@ TEST_F(PasswordStoreDelayedInitTest, GetAutofillableLogins) {
 
   base::OnceCallback<void(bool)> init_callback;
   EXPECT_CALL(*backend(), InitBackend).WillOnce(MoveArg<3>(&init_callback));
-  store()->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store()->Init(/*affiliated_match_helper=*/nullptr);
 
   MockPasswordStoreConsumer mock_consumer;
   store()->GetAutofillableLogins(mock_consumer.GetWeakPtr());

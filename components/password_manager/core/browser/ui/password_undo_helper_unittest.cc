@@ -39,10 +39,8 @@ PasswordForm CreatePasswordForm() {
 class PasswordUndoHelperTest : public testing::Test {
  protected:
   PasswordUndoHelperTest() {
-    profile_store_->Init(/*prefs=*/nullptr,
-                         /*affiliated_match_helper=*/nullptr);
-    account_store_->Init(/*prefs=*/nullptr,
-                         /*affiliated_match_helper=*/nullptr);
+    profile_store_->Init(/*affiliated_match_helper=*/nullptr);
+    account_store_->Init(/*affiliated_match_helper=*/nullptr);
   }
 
   ~PasswordUndoHelperTest() override {

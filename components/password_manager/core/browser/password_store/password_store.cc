@@ -35,9 +35,6 @@
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
 #include "components/password_manager/core/common/password_manager_features.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/prefs/pref_service.h"
-#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync/model/proxy_data_type_controller_delegate.h"
 
 namespace password_manager {
@@ -67,11 +64,9 @@ PasswordStore::PasswordStore(std::unique_ptr<PasswordStoreBackend> backend)
     : backend_(std::move(backend)), construction_time_(base::Time::Now()) {}
 
 void PasswordStore::Init(
-    PrefService* prefs,
     std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper) {
   main_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
   DCHECK(main_task_runner_);
-  prefs_ = prefs;
   affiliated_match_helper_ = std::move(affiliated_match_helper);
 
   DCHECK(backend_);
@@ -428,10 +423,6 @@ void PasswordStore::ShutdownOnUIThread() {
 
   // The AffiliationService must be destroyed from the main sequence.
   affiliated_match_helper_.reset();
-
-  // PrefService is destroyed together with BrowserContext, and cannot be used
-  // anymore.
-  prefs_ = nullptr;
 }
 
 std::unique_ptr<syncer::DataTypeControllerDelegate>

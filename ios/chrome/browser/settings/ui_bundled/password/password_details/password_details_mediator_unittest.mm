@@ -61,7 +61,7 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
     web::BrowserState* context) {
   auto store = base::MakeRefCounted<password_manager::TestPasswordStore>(
       is_account_store);
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
   return store;
 }
 

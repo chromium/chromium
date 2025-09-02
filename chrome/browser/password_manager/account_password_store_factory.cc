@@ -87,7 +87,7 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
   std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper =
       std::make_unique<AffiliatedMatchHelper>(affiliation_service);
 
-  ps->Init(profile->GetPrefs(), std::move(affiliated_match_helper));
+  ps->Init(std::move(affiliated_match_helper));
 
   auto network_context_getter = base::BindRepeating(
       [](Profile* profile) -> network::mojom::NetworkContext* {

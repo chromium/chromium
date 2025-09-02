@@ -108,7 +108,7 @@ scoped_refptr<TestPasswordStore> CreateStoreAndInit(
     std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper) {
   scoped_refptr<TestPasswordStore> store =
       base::MakeRefCounted<TestPasswordStore>();
-  store->Init(/*prefs=*/nullptr, std::move(affiliated_match_helper));
+  store->Init(std::move(affiliated_match_helper));
   return store;
 }
 

@@ -15,7 +15,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -30,8 +29,6 @@
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/smart_bubble_stats_store.h"
-
-class PrefService;
 
 namespace syncer {
 class DataTypeControllerDelegate;
@@ -59,8 +56,7 @@ class PasswordStore : public PasswordStoreInterface {
 
   // Always call this too on the UI thread.
   // TODO(crbug.com/40185648): Move initialization into the core interface, too.
-  void Init(PrefService* prefs,
-            std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper);
+  void Init(std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper);
 
   // RefcountedKeyedService:
   void ShutdownOnUIThread() override;
@@ -175,8 +171,6 @@ class PasswordStore : public PasswordStoreInterface {
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
 
   std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper_;
-
-  raw_ptr<PrefService> prefs_ = nullptr;
 
   base::Time construction_time_;
 

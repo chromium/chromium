@@ -99,7 +99,7 @@ CredentialUIEntry AsCredentialUIEntry(
 class SavedPasswordsPresenterTest : public testing::Test {
  protected:
   void SetUp() override {
-    store_->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+    store_->Init(/*affiliated_match_helper=*/nullptr);
     presenter_.Init();
     task_env_.RunUntilIdle();
   }
@@ -1162,10 +1162,8 @@ namespace {
 class SavedPasswordsPresenterWithTwoStoresTest : public testing::Test {
  protected:
   void SetUp() override {
-    profile_store_->Init(/*prefs=*/nullptr,
-                         /*affiliated_match_helper=*/nullptr);
-    account_store_->Init(/*prefs=*/nullptr,
-                         /*affiliated_match_helper=*/nullptr);
+    profile_store_->Init(/*affiliated_match_helper=*/nullptr);
+    account_store_->Init(/*affiliated_match_helper=*/nullptr);
     presenter_.Init();
     RunUntilIdle();
   }
@@ -2033,14 +2031,12 @@ class SavedPasswordsPresenterInitializationTest : public ::testing::Test {
     profile_store_ = base::MakeRefCounted<PasswordStore>(
         std::make_unique<FakePasswordStoreBackend>(
             IsAccountStore(false), profile_store_backend_runner()));
-    profile_store_->Init(/*prefs=*/nullptr,
-                         /*affiliated_match_helper=*/nullptr);
+    profile_store_->Init(/*affiliated_match_helper=*/nullptr);
 
     account_store_ = base::MakeRefCounted<PasswordStore>(
         std::make_unique<FakePasswordStoreBackend>(
             IsAccountStore(true), account_store_backend_runner()));
-    account_store_->Init(/*prefs=*/nullptr,
-                         /*affiliated_match_helper=*/nullptr);
+    account_store_->Init(/*affiliated_match_helper=*/nullptr);
   }
 
   ~SavedPasswordsPresenterInitializationTest() override {

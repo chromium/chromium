@@ -118,7 +118,7 @@ TEST_F(BrowsingDataUtilsTest, AutofillCounterResult) {
 // Tests the output of the Passwords counter.
 TEST_F(BrowsingDataUtilsTest, PasswordsCounterResult) {
   auto store = base::MakeRefCounted<password_manager::TestPasswordStore>();
-  store->Init(prefs(), /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
   PasswordsCounter counter(
       /*profile_store=*/scoped_refptr<password_manager::PasswordStoreInterface>(
           store),

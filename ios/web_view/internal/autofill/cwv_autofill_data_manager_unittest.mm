@@ -64,8 +64,7 @@ class CWVAutofillDataManagerTest : public PlatformTest {
 
     password_store_ = new password_manager::TestPasswordStore(
         password_manager::IsAccountStore(true));
-    password_store_->Init(/*prefs=*/nullptr,
-                          /*affiliated_match_helper=*/nullptr);
+    password_store_->Init(/*affiliated_match_helper=*/nullptr);
 
     affiliations::MockAffiliationService affiliationsService;
 
