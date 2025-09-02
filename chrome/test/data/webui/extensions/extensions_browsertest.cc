@@ -563,8 +563,6 @@ class CrExtensionsManagerTestWithMultipleExtensionTypesInstalled
   }
 };
 
-// TODO(crbug.com/439447730): Enable on desktop android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(
     CrExtensionsManagerTestWithMultipleExtensionTypesInstalled,
     ItemListVisibility) {
@@ -572,6 +570,8 @@ IN_PROC_BROWSER_TEST_F(
   RunTestCase("ItemListVisibility");
 }
 
+// TODO(crbug.com/439447730): Enable on desktop android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(
     CrExtensionsManagerTestWithMultipleExtensionTypesInstalled,
     SplitItems) {

@@ -170,6 +170,7 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
      * {@code null} is returned.
      */
     private static @Nullable DisplayCutoutController from(Tab tab) {
+        if (tab.isDestroyed()) return null;
         UserDataHost host = tab.getUserDataHost();
         return host.getUserData(USER_DATA_KEY);
     }
