@@ -27,34 +27,6 @@ class WebContents;
 // any request (like filling a suggestion) back to the controller.
 class ManualFillingViewInterface {
  public:
-  // Defines which item types exist.
-  // TODO(crbug.com/40601211): Remove this once AccessorySheetData is used on
-  // the
-  //                         frontend to represent data to present.
-  // GENERATED_JAVA_ENUM_PACKAGE: (
-  //   org.chromium.chrome.browser.autofill.keyboard_accessory)
-  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: ItemType
-  enum class Type {
-    // An item in title style to purely to display text. Non-interactive.
-    LABEL = 1,  // e.g. the "Passwords for this site" section header.
-
-    // An item in list style to displaying an interactive suggestion.
-    SUGGESTION = 2,  // e.g. a user's email address used for sign-up.
-
-    // An item in list style to displaying a non-interactive suggestion.
-    NON_INTERACTIVE_SUGGESTION = 3,  // e.g. the "(No username)" suggestion.
-
-    // A horizontal, non-interactive divider used to visually divide sections.
-    DIVIDER = 4,
-
-    // A single, usually static and interactive suggestion.
-    OPTION = 5,  // e.g. the "Manage passwords..." link.
-
-    // A horizontal, non-interactive divider used to visually divide the
-    // accessory sheet from the accessory bar.
-    TOP_DIVIDER = 6,
-  };
-
   using WaitForKeyboard = base::StrongAlias<struct WaitForKeyboardTag, bool>;
   using IsCredentialFieldOrHasAutofillSuggestions =
       base::StrongAlias<struct IsCredentialFieldOrHasAutofillSuggestionsTag,
