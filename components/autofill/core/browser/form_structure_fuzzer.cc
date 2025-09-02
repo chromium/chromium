@@ -73,6 +73,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   form_structure.DetermineHeuristicTypes(
       GenerateGeoIpCountryCode(data_provider), LanguageCode(""),
       /*log_manager=*/nullptr);
+  form_structure.RationalizeAndAssignSections(
+      GenerateGeoIpCountryCode(data_provider), LanguageCode(""),
+      /*log_manager=*/nullptr);
   std::ignore = form_structure.IsAutofillable();
   std::ignore = form_structure.IsCompleteCreditCardForm(
       FormStructure::CreditCardFormCompleteness::kCompleteCreditCardForm);

@@ -541,6 +541,8 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsFieldType) {
   FormStructure* form_structure_ptr = form_structure.get();
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
                                           LanguageCode(""), nullptr);
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
   ASSERT_TRUE(
       test_api(autofill_manager())
           .mutable_form_structures()

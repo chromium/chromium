@@ -38,6 +38,8 @@ TEST_F(CWVAutofillFormTest, Initialization) {
       std::make_unique<autofill::FormStructure>(form_data);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
                                           autofill::LanguageCode(""), nullptr);
+  form_structure->RationalizeAndAssignSections(
+      GeoIpCountryCode(""), autofill::LanguageCode(""), nullptr);
   CWVAutofillForm* form =
       [[CWVAutofillForm alloc] initWithFormStructure:*form_structure];
   EXPECT_NSEQ(base::SysUTF16ToNSString(form_data.name()), form.name);

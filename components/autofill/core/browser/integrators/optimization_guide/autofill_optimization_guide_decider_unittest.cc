@@ -146,6 +146,8 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
                                    /*use_month_type=*/true)};
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
                                          /*log_manager=*/nullptr);
+  form_structure.RationalizeAndAssignSections(
+      GeoIpCountryCode(""), LanguageCode(""), /*log_manager=*/nullptr);
 
   EXPECT_CALL(decider(),
               RegisterOptimizationTypes(testing::ElementsAre(
@@ -168,6 +170,8 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
                                    /*use_month_type=*/true)};
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
                                          /*log_manager=*/nullptr);
+  form_structure.RationalizeAndAssignSections(
+      GeoIpCountryCode(""), LanguageCode(""), /*log_manager=*/nullptr);
 
   EXPECT_CALL(decider(), RegisterOptimizationTypes).Times(0);
 
@@ -189,6 +193,8 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
                                    /*use_month_type=*/true)};
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
                                          /*log_manager=*/nullptr);
+  form_structure.RationalizeAndAssignSections(
+      GeoIpCountryCode(""), LanguageCode(""), /*log_manager=*/nullptr);
 
   EXPECT_CALL(decider(), RegisterOptimizationTypes).Times(0);
 
@@ -207,6 +213,8 @@ TEST_F(AutofillOptimizationGuideDeciderTest,
                                    /*use_month_type=*/true)};
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
                                          /*log_manager=*/nullptr);
+  form_structure.RationalizeAndAssignSections(
+      GeoIpCountryCode(""), LanguageCode(""), /*log_manager=*/nullptr);
 
   EXPECT_CALL(decider(), RegisterOptimizationTypes).Times(0);
 

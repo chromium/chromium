@@ -238,8 +238,6 @@ void FormStructure::DetermineHeuristicTypes(
                          GetActiveRegexFeatures(), log_manager);
   FieldCandidatesMap regex_predictions = ParseFieldTypesWithPatterns(context);
   AssignBestFieldTypes(regex_predictions, HeuristicSource::kRegexes);
-  RationalizeAndAssignSections(client_country, current_page_language,
-                               log_manager);
 }
 
 void FormStructure::RationalizeAndAssignSections(

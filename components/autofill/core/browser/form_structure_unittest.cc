@@ -83,6 +83,8 @@ class FormStructureTestImpl : public test::FormStructureTest {
     FormStructure form_structure(form);
     form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""),
                                            LanguageCode(""), nullptr);
+    form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                                LanguageCode(""), nullptr);
     return form_structure.IsAutofillable();
   }
 
@@ -888,6 +890,8 @@ TEST_F(FormStructureTestImpl,
     FormStructure form_structure(form);
     form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""),
                                            LanguageCode(""), nullptr);
+    form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                                LanguageCode(""), nullptr);
     ASSERT_EQ(2U, form_structure.field_count());
     ASSERT_EQ(0U, AutofillCount(form_structure));
     EXPECT_EQ(UNKNOWN_TYPE, form_structure.field(0)->heuristic_type());
@@ -923,6 +927,8 @@ TEST_F(FormStructureTestImpl,
     FormStructure form_structure(form_copy);
     form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""),
                                            LanguageCode(""), nullptr);
+    form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                                LanguageCode(""), nullptr);
     ASSERT_EQ(1U, form_structure.field_count());
     ASSERT_EQ(1U, AutofillCount(form_structure));
     EXPECT_EQ(UNKNOWN_TYPE, form_structure.field(0)->heuristic_type());
@@ -954,6 +960,8 @@ TEST_F(FormStructureTestImpl, PromoCodeHeuristics_SmallForm) {
     FormStructure form_structure(form);
     form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""),
                                            LanguageCode(""), nullptr);
+    form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                                LanguageCode(""), nullptr);
     ASSERT_EQ(1U, form_structure.field_count());
     ASSERT_EQ(1U, AutofillCount(form_structure));
     EXPECT_EQ(MERCHANT_PROMO_CODE, form_structure.field(0)->heuristic_type());
@@ -980,6 +988,8 @@ TEST_F(FormStructureTestImpl, PasswordFormShouldBeQueried) {
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
                                          nullptr);
+  form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                              LanguageCode(""), nullptr);
   EXPECT_TRUE(
       std::ranges::any_of(form_structure.fields(), [](const auto& field) {
         return field->form_control_type() == FormControlType::kInputPassword;
@@ -1013,6 +1023,8 @@ TEST_F(FormStructureTestImpl,
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
                                          nullptr);
+  form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                              LanguageCode(""), nullptr);
 
   // Expect the correct number of fields.
   ASSERT_EQ(6U, form_structure.field_count());
@@ -1040,6 +1052,8 @@ TEST_F(FormStructureTestImpl,
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
                                          nullptr);
+  form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                              LanguageCode(""), nullptr);
 
   // Expect the correct number of fields.
   ASSERT_EQ(2U, form_structure.field_count());
@@ -1116,6 +1130,8 @@ TEST_F(FormStructureTestImpl, HeuristicsSample8) {
   form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
                                           LanguageCode(""), nullptr);
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
   EXPECT_TRUE(form_structure->IsAutofillable());
   ASSERT_EQ(10U, form_structure->field_count());
   ASSERT_EQ(9U, AutofillCount(*form_structure));
@@ -1191,6 +1207,8 @@ TEST_F(FormStructureTestImpl, HeuristicsSample6) {
   form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
                                           LanguageCode(""), nullptr);
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
   EXPECT_TRUE(form_structure->IsAutofillable());
   ASSERT_EQ(7U, form_structure->field_count());
   ASSERT_EQ(6U, AutofillCount(*form_structure));
@@ -1266,6 +1284,8 @@ TEST_F(FormStructureTestImpl, HeuristicsLabelsOnly) {
   form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
                                           LanguageCode(""), nullptr);
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
   EXPECT_TRUE(form_structure->IsAutofillable());
   ASSERT_EQ(8U, form_structure->field_count());
   ASSERT_EQ(7U, AutofillCount(*form_structure));
@@ -1331,6 +1351,8 @@ TEST_F(FormStructureTestImpl, HeuristicsCreditCardInfo) {
   form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
                                           LanguageCode(""), nullptr);
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
   EXPECT_TRUE(form_structure->IsAutofillable());
   ASSERT_EQ(6U, form_structure->field_count());
   ASSERT_EQ(5U, AutofillCount(*form_structure));
@@ -1400,6 +1422,8 @@ TEST_F(FormStructureTestImpl, HeuristicsCreditCardInfoWithUnknownCardField) {
   form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
                                           LanguageCode(""), nullptr);
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
   EXPECT_TRUE(form_structure->IsAutofillable());
   ASSERT_EQ(7U, form_structure->field_count());
   ASSERT_EQ(5U, AutofillCount(*form_structure));
@@ -1453,6 +1477,8 @@ TEST_F(FormStructureTestImpl, ThreeAddressLines) {
   form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
                                           LanguageCode(""), nullptr);
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
   EXPECT_TRUE(form_structure->IsAutofillable());
   ASSERT_EQ(4U, form_structure->field_count());
   ASSERT_EQ(4U, AutofillCount(*form_structure));
@@ -1499,6 +1525,8 @@ TEST_F(FormStructureTestImpl, SurplusAddressLinesIgnored) {
   form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
                                           LanguageCode(""), nullptr);
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
   ASSERT_EQ(4U, form_structure->field_count());
   ASSERT_EQ(3U, AutofillCount(*form_structure));
 
@@ -1548,6 +1576,8 @@ TEST_F(FormStructureTestImpl, ThreeAddressLinesExpedia) {
   form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
                                           LanguageCode(""), nullptr);
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
   EXPECT_TRUE(form_structure->IsAutofillable());
   ASSERT_EQ(4U, form_structure->field_count());
   EXPECT_EQ(4U, AutofillCount(*form_structure));
@@ -1591,6 +1621,8 @@ TEST_F(FormStructureTestImpl, TwoAddressLinesEbay) {
   form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
                                           LanguageCode(""), nullptr);
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
   EXPECT_TRUE(form_structure->IsAutofillable());
   ASSERT_EQ(3U, form_structure->field_count());
   ASSERT_EQ(3U, AutofillCount(*form_structure));
@@ -1629,6 +1661,8 @@ TEST_F(FormStructureTestImpl, HeuristicsStateWithProvince) {
   form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
                                           LanguageCode(""), nullptr);
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
   EXPECT_TRUE(form_structure->IsAutofillable());
   ASSERT_EQ(3U, form_structure->field_count());
   ASSERT_EQ(3U, AutofillCount(*form_structure));
@@ -1708,6 +1742,8 @@ TEST_F(FormStructureTestImpl, HeuristicsWithBilling) {
   form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
                                           LanguageCode(""), nullptr);
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
   EXPECT_TRUE(form_structure->IsAutofillable());
   ASSERT_EQ(11U, form_structure->field_count());
   ASSERT_EQ(11U, AutofillCount(*form_structure));
@@ -1763,6 +1799,8 @@ TEST_F(FormStructureTestImpl, ThreePartPhoneNumber) {
   form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
                                           LanguageCode(""), nullptr);
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
   EXPECT_TRUE(form_structure->IsAutofillable());
   ASSERT_EQ(4U, form_structure->field_count());
   ASSERT_EQ(4U, AutofillCount(*form_structure));
@@ -1811,6 +1849,8 @@ TEST_F(FormStructureTestImpl, HeuristicsInfernoCC) {
   form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
                                           LanguageCode(""), nullptr);
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
   EXPECT_TRUE(form_structure->IsAutofillable());
 
   // Expect the correct number of fields.
@@ -1873,6 +1913,8 @@ TEST_F(FormStructureTestImpl, HeuristicsInferCCNames_NamesNotFirst) {
   form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
                                           LanguageCode(""), nullptr);
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
   EXPECT_TRUE(form_structure->IsAutofillable());
 
   // Expect the correct number of fields.
@@ -1939,6 +1981,8 @@ TEST_F(FormStructureTestImpl, HeuristicsInferCCNames_NamesFirst) {
   form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
                                           LanguageCode(""), nullptr);
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
   EXPECT_TRUE(form_structure->IsAutofillable());
 
   // Expect the correct number of fields.
@@ -2426,6 +2470,8 @@ TEST_F(FormStructureTestImpl, SingleFieldEmailHeuristicsBehavior) {
     FormStructure form_structure(form);
     form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""),
                                            LanguageCode(""), nullptr);
+    form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                                LanguageCode(""), nullptr);
     ASSERT_EQ(1U, form_structure.field_count());
     ASSERT_EQ(1U, AutofillCount(form_structure));
     EXPECT_EQ(EMAIL_ADDRESS, form_structure.field(0)->heuristic_type());
@@ -2448,6 +2494,8 @@ TEST_F(FormStructureTestImpl, TwoFieldFormEmailHeuristicsBehavior) {
     FormStructure form_structure(form);
     form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""),
                                            LanguageCode(""), nullptr);
+    form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                                LanguageCode(""), nullptr);
     ASSERT_EQ(2U, form_structure.field_count());
     ASSERT_EQ(1U, AutofillCount(form_structure));
     EXPECT_EQ(UNKNOWN_TYPE, form_structure.field(0)->heuristic_type());
@@ -2472,6 +2520,8 @@ TEST_F(FormStructureTestImpl,
     FormStructure form_structure(form);
     form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""),
                                            LanguageCode(""), nullptr);
+    form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                                LanguageCode(""), nullptr);
     ASSERT_EQ(2U, form_structure.field_count());
     ASSERT_EQ(1U, AutofillCount(form_structure));
     EXPECT_EQ(UNKNOWN_TYPE, form_structure.field(0)->heuristic_type());
@@ -2495,6 +2545,8 @@ TEST_F(FormStructureTestImpl,
     FormStructure form_structure(form);
     form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""),
                                            LanguageCode(""), nullptr);
+    form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                                LanguageCode(""), nullptr);
     ASSERT_EQ(1U, form_structure.field_count());
     // However, because the email field is in a form and matches the heuristics,
     // it should be autofillable when the feature is enabled.
@@ -2551,6 +2603,8 @@ TEST_F(FormStructureTestImpl, LoyaltyCardsHeuristics_BigForms) {
   form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
                                           LanguageCode(""), nullptr);
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
   EXPECT_TRUE(form_structure->IsAutofillable());
   ASSERT_EQ(5U, form_structure->field_count());
   ASSERT_EQ(5U, AutofillCount(*form_structure));

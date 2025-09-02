@@ -226,6 +226,8 @@ void FormStructureTest::CheckFormStructureTestData(
     if (test_case.form_flags.determine_heuristic_type) {
       form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
                                               LanguageCode(""), nullptr);
+      form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                                   LanguageCode(""), nullptr);
     }
 
     if (test_case.form_flags.is_autofillable) {

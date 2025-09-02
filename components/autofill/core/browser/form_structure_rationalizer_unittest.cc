@@ -134,6 +134,8 @@ std::unique_ptr<FormStructure> BuildFormStructure(
   if (run_heuristics) {
     form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
                                             LanguageCode(""), nullptr);
+    form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                                 LanguageCode(""), nullptr);
   } else {
     for (size_t i = 0; i < fields.size(); ++i) {
       form_structure->field(i)->set_heuristic_type(GetActiveHeuristicSource(),

@@ -1989,6 +1989,8 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   cached_form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""),
                                                 LanguageCode(""), nullptr);
+  cached_form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                                     LanguageCode(""), nullptr);
 
   // Simulate user changed non-pre-filled field value.
   form_structure.field(0)->set_value(u"John");
@@ -2444,6 +2446,8 @@ TEST_F(AutofillCrowdsourcingEncoding,
   // Parse the response and update the field type predictions.
   FormStructure form(form_data);
   form.DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""), nullptr);
+  form.RationalizeAndAssignSections(GeoIpCountryCode(""), LanguageCode(""),
+                                    nullptr);
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{&form};
   ParseServerPredictionsQueryResponse(
       response_string, forms, test::GetEncodedSignatures(forms), nullptr);
@@ -2494,6 +2498,8 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   FormStructure form(form_data);
   form.DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""), nullptr);
+  form.RationalizeAndAssignSections(GeoIpCountryCode(""), LanguageCode(""),
+                                    nullptr);
 
   // Setup the query response.
   AutofillQueryResponse response;
@@ -2541,6 +2547,8 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   FormStructure form(form_data);
   form.DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""), nullptr);
+  form.RationalizeAndAssignSections(GeoIpCountryCode(""), LanguageCode(""),
+                                    nullptr);
 
   // Setup the query response.
   AutofillQueryResponse response;
@@ -2590,6 +2598,8 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_JoinedTypes) {
        .url = "http://foo.com"});
   FormStructure form(form_data);
   form.DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""), nullptr);
+  form.RationalizeAndAssignSections(GeoIpCountryCode(""), LanguageCode(""),
+                                    nullptr);
 
   // Setup the query response.
   AutofillQueryResponse response;
@@ -2633,6 +2643,8 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_NoJoinedTypes) {
        .url = "http://foo.com"});
   FormStructure form(form_data);
   form.DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""), nullptr);
+  form.RationalizeAndAssignSections(GeoIpCountryCode(""), LanguageCode(""),
+                                    nullptr);
 
   // Setup the query response.
   AutofillQueryResponse response;
@@ -2673,6 +2685,8 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_TooManyTypes) {
                            "address-level2")});
   FormStructure form(form_data);
   form.DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""), nullptr);
+  form.RationalizeAndAssignSections(GeoIpCountryCode(""), LanguageCode(""),
+                                    nullptr);
 
   // Setup the query response.
   AutofillQueryResponse response;
@@ -2736,6 +2750,8 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_UnknownType) {
                            "address-level2")});
   FormStructure form(form_data);
   form.DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""), nullptr);
+  form.RationalizeAndAssignSections(GeoIpCountryCode(""), LanguageCode(""),
+                                    nullptr);
 
   // Setup the query response.
   AutofillQueryResponse response;
@@ -2912,6 +2928,8 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   FormStructure form(form_data);
   form.DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""), nullptr);
+  form.RationalizeAndAssignSections(GeoIpCountryCode(""), LanguageCode(""),
+                                    nullptr);
 
   // Setup the query response.
   AutofillQueryResponse response;
@@ -3636,6 +3654,8 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_AuthorDefinedTypes) {
   forms.push_back(&form_structure);
   forms.front()->DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
                                          nullptr);
+  forms.front()->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                              LanguageCode(""), nullptr);
 
   AutofillQueryResponse response;
   auto* form_suggestion = response.add_form_suggestions();
@@ -3689,6 +3709,8 @@ TEST_F(AutofillCrowdsourcingEncoding,
   // Will identify the sections based on the heuristics types.
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
                                          nullptr);
+  form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                              LanguageCode(""), nullptr);
 
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms;
   forms.push_back(&form_structure);
@@ -3741,6 +3763,8 @@ TEST_F(AutofillCrowdsourcingEncoding, NoServerDataCCFields_CVC_NoOverwrite) {
   // Will identify the sections based on the heuristics types.
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
                                          nullptr);
+  form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                              LanguageCode(""), nullptr);
 
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms;
   forms.push_back(&form_structure);
@@ -3797,6 +3821,8 @@ TEST_F(AutofillCrowdsourcingEncoding, WithServerDataCCFields_CVC_NoOverwrite) {
   // Will identify the sections based on the heuristics types.
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
                                          nullptr);
+  form_structure.RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                              LanguageCode(""), nullptr);
 
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms;
   forms.push_back(&form_structure);
@@ -3840,6 +3866,8 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_RankEqualSignatures) {
 
   FormStructure form(form_data);
   form.DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""), nullptr);
+  form.RationalizeAndAssignSections(GeoIpCountryCode(""), LanguageCode(""),
+                                    nullptr);
 
   // Setup the query response.
   AutofillQueryResponse response;
@@ -3881,6 +3909,8 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   FormStructure form(form_data);
   form.DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""), nullptr);
+  form.RationalizeAndAssignSections(GeoIpCountryCode(""), LanguageCode(""),
+                                    nullptr);
 
   // Setup the query response.
   AutofillQueryResponse response;
@@ -3922,6 +3952,8 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   FormStructure form(form_data);
   form.DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""), nullptr);
+  form.RationalizeAndAssignSections(GeoIpCountryCode(""), LanguageCode(""),
+                                    nullptr);
 
   const auto default_autofill_prediction = CreateFieldPrediction(
       NAME_FIRST, FieldPrediction::SOURCE_AUTOFILL_DEFAULT);

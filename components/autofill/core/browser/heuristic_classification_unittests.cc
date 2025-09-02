@@ -492,6 +492,8 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
     // not override the heuristic types but performs rationalization.
     form_structure->DetermineHeuristicTypes(client_country, page_language,
                                             log_manager);
+    form_structure->RationalizeAndAssignSections(client_country, page_language,
+                                                 log_manager);
 
     result_analyzer.AnalyzeClassification(*form_structure, form.GetDict());
   }

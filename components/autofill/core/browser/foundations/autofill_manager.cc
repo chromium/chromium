@@ -758,6 +758,9 @@ void AutofillManager::ParseFormsAsyncCommon(
       form_structure->DetermineHeuristicTypes(context.country_code,
                                               context.current_page_language,
                                               context.log_manager.get());
+      form_structure->RationalizeAndAssignSections(
+          context.country_code, context.current_page_language,
+          context.log_manager.get());
     }
     return context;
   };

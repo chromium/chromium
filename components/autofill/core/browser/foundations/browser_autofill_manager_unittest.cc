@@ -2327,6 +2327,8 @@ TEST_F(BrowserAutofillManagerTestValuables,
   auto form_structure = std::make_unique<FormStructure>(form_data);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
                                           LanguageCode(""), nullptr);
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
 
   test_api(*form_structure)
       .SetFieldTypes({EMAIL_OR_LOYALTY_MEMBERSHIP_ID, PASSWORD},
@@ -2401,6 +2403,8 @@ TEST_F(BrowserAutofillManagerTestValuables,
   auto form_structure = std::make_unique<FormStructure>(form_data);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
                                           LanguageCode(""), nullptr);
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
 
   test_api(*form_structure)
       .SetFieldTypes({EMAIL_OR_LOYALTY_MEMBERSHIP_ID, PASSWORD},
@@ -4567,6 +4571,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   FormStructure* form_structure = form_structure_instance.get();
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
                                           LanguageCode(""), nullptr);
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
   manager().AddSeenFormStructure(std::move(form_structure_instance));
 
   // Simulate form submission.
@@ -4618,6 +4624,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   FormStructure* form_structure = form_structure_instance.get();
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
                                           LanguageCode(""), nullptr);
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
   manager().AddSeenFormStructure(std::move(form_structure_instance));
 
   // Make API response with suggestions.
@@ -4727,6 +4735,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   FormStructure* form_structure = form_structure_instance.get();
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
                                           LanguageCode(""), nullptr);
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
   manager().AddSeenFormStructure(std::move(form_structure_instance));
 
   // Make API response with suggestions.
@@ -5074,6 +5084,8 @@ TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictionsFromApi) {
   FormStructure* form_structure = form_structure_instance.get();
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
                                           LanguageCode(""), nullptr);
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
   manager().AddSeenFormStructure(std::move(form_structure_instance));
 
   // Second form on the page.
@@ -5094,6 +5106,8 @@ TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictionsFromApi) {
   FormStructure* form_structure2 = form_structure_instance2.get();
   form_structure2->DetermineHeuristicTypes(GeoIpCountryCode(""),
                                            LanguageCode(""), nullptr);
+  form_structure2->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                                LanguageCode(""), nullptr);
   manager().AddSeenFormStructure(std::move(form_structure_instance2));
 
   // Make API response with suggestions.
@@ -5163,6 +5177,8 @@ TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictions_ResetManager) {
   auto form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
                                           LanguageCode(""), nullptr);
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
   std::vector<FormSignature> signatures =
       test::GetEncodedSignatures(*form_structure);
   manager().AddSeenFormStructure(std::move(form_structure));
@@ -5214,6 +5230,8 @@ TEST_F(BrowserAutofillManagerTest, DetermineHeuristicsWithOverallPrediction) {
     FormStructure* ptr = form_structure.get();
     form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
                                             LanguageCode(""), nullptr);
+    form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                                 LanguageCode(""), nullptr);
     manager().AddSeenFormStructure(std::move(form_structure));
     return ptr;
   }();
@@ -6000,6 +6018,8 @@ TEST_F(BrowserAutofillManagerTest,
   auto form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
                                           LanguageCode(""), nullptr);
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
   // Make sure the form can not be autofilled now.
   ASSERT_FALSE(std::ranges::any_of(
       form_structure->fields(),
@@ -6963,6 +6983,8 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteMetrics) {
   auto form_structure = std::make_unique<FormStructure>(form);
   form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
                                           LanguageCode(""), nullptr);
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
   test_api(*form_structure).SetFieldTypes(heuristic_types, server_types);
   manager().AddSeenFormStructure(std::move(form_structure));
 
@@ -7391,6 +7413,8 @@ class BrowserAutofillManagerTest_AutofillAi
       form_structure = fs.get();
       fs->DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
                                   nullptr);
+      fs->RationalizeAndAssignSections(GeoIpCountryCode(""), LanguageCode(""),
+                                       nullptr);
       manager().AddSeenFormStructure(std::move(fs));
     }
 
