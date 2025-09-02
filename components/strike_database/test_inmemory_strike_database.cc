@@ -11,7 +11,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/proto/strike_data.pb.h"
+#include "components/strike_database/strike_data.pb.h"
 
 namespace autofill {
 

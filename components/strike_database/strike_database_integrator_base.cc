@@ -17,9 +17,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/proto/strike_data.pb.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
+#include "components/strike_database/strike_data.pb.h"
 #include "components/strike_database/strike_database_base.h"
 
 namespace autofill {

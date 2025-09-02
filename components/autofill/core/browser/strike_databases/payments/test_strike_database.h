@@ -10,7 +10,7 @@
 #include <unordered_map>
 #include <utility>
 
-#include "components/autofill/core/browser/proto/strike_data.pb.h"
+#include "components/strike_database/strike_data.pb.h"
 #include "components/strike_database/strike_database.h"
 
 namespace autofill {

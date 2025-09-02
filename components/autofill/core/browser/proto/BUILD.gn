@@ -13,7 +13,6 @@ fuzzable_proto_library("proto") {
     "password_requirements_shard.proto",
     "server.proto",
     "states.proto",
-    "strike_data.proto",
   ]
 }
 
