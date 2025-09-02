@@ -329,14 +329,6 @@ void ProfilePickerHandler::OnJavascriptDisallowed() {
 
 void ProfilePickerHandler::HandleMainViewInitialize(
     const base::Value::List& args) {
-  if (!creation_time_on_startup_.is_null() && !main_view_initialized_) {
-    // This function can be called multiple times if the page is reloaded. The
-    // histogram is only recorded once.
-    main_view_initialized_ = true;
-    base::UmaHistogramTimes("ProfilePicker.StartupTime.MainViewInitialized",
-                            base::TimeTicks::Now() - creation_time_on_startup_);
-  }
-
   AllowJavascript();
   PushProfilesList();
 }

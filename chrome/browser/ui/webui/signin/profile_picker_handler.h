@@ -184,8 +184,6 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   // when the picker is shown on startup.
   base::TimeTicks creation_time_on_startup_;
 
-  bool main_view_initialized_ = false;
-
   // Keep alive used when displaying the profile statistics in the profile
   // deletion dialog. Released when the dialog or the Picker is closed, which
   // will unload the respective profile if this was the only keep alive. Since

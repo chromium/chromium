@@ -945,7 +945,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.StartupTime.BeforeCreation" units="ms"
-    expires_after="2025-07-13">
+    expires_after="2026-01-18">
   <owner>alexilin@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -953,6 +953,9 @@ chromium-metrics-reviews@google.com.
     Records the time between Chrome startup and the call to
     ProfilePickerView::Display(). Only recorded when the profile picker is shown
     at startup.
+
+    Warning: this histogram was expired from 2025-07-13 to 2025-09-02; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -968,7 +971,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.StartupTime.FirstPaint.FromApplicationStart"
-    units="ms" expires_after="2025-07-13">
+    units="ms" expires_after="2026-01-18">
   <owner>alexilin@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -979,28 +982,9 @@ chromium-metrics-reviews@google.com.
 
     See Startup.FirstWebContents.NonEmptyPaint3 for a definition of application
     start.
-  </summary>
-</histogram>
 
-<histogram name="ProfilePicker.StartupTime.MainViewInitialized" units="ms"
-    expires_after="2025-07-13">
-  <owner>alexilin@chromium.org</owner>
-  <owner>dgn@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Records the time between web view creation and main view being initialized
-    in javascript. Only recorded when the profile picker is shown at startup.
-  </summary>
-</histogram>
-
-<histogram name="ProfilePicker.StartupTime.WebViewCreated" units="ms"
-    expires_after="2025-07-13">
-  <owner>alexilin@chromium.org</owner>
-  <owner>dgn@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Records the time between ProfilePickerView::Display() is called and the web
-    view creation. Only recorded when the profile picker is shown at startup.
+    Warning: this histogram was expired from 2025-07-13 to 2025-09-02; data may
+    be missing.
   </summary>
 </histogram>
 
