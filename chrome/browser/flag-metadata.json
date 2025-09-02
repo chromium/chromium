@@ -3426,6 +3426,14 @@
     "expiry_milestone": 116
   },
   {
+    "name": "enable-escape-handling-for-secondary-activities",
+    "owners": [
+      "adelm@google.com",
+      "lazzzis@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-exclusive-access-manager-on-android",
     "owners": [ "abdoeed@google.org", "wzwonarz@chromium.org", "lt-web-apps-team@google.com" ],
     "expiry_milestone": 145

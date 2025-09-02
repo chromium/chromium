@@ -10415,6 +10415,8 @@ from previous Chrome versions.
   <int value="-1388233453"
       label="UseFrameIntervalDeciderAdaptiveFrameRate:enabled"/>
   <int value="-1388044691" label="ContentLanguagesInLanguagePicker:enabled"/>
+  <int value="-1387970814"
+      label="EnableEscapeHandlingForSecondaryActivities:disabled"/>
   <int value="-1387498034"
       label="SafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid:enabled"/>
   <int value="-1387339670" label="AssistMultiWordExpanded:disabled"/>
@@ -16450,6 +16452,8 @@ from previous Chrome versions.
   <int value="794100639" label="CameraAppAutoQRDetection:enabled"/>
   <int value="797344274" label="OmniboxTriggerForPrerender2:disabled"/>
   <int value="797924041" label="DeferredShaping:enabled"/>
+  <int value="798093827"
+      label="EnableEscapeHandlingForSecondaryActivities:enabled"/>
   <int value="798414711" label="BorealisForceDoubleScale:enabled"/>
   <int value="798456441" label="ConchGenAi:disabled"/>
   <int value="798696013" label="ImeInputLogicMozc:enabled"/>

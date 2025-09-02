@@ -325,6 +325,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kEducationalTipDefaultBrowserPromoCard,
     &kEmptyTabListAnimationKillSwitch,
     &kEnableXAxisActivityTransition,
+    &kEnableEscapeHandlingForSecondaryActivities,
     &kExperimentsForAgsa,
     &kFloatingSnackbar,
     &kForceTranslucentNotificationTrampoline,
@@ -1064,6 +1065,10 @@ BASE_FEATURE(kEmptyTabListAnimationKillSwitch,
 
 BASE_FEATURE(kEnableXAxisActivityTransition,
              "EnableXAxisActivityTransition",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableEscapeHandlingForSecondaryActivities,
+             "EnableEscapeHandlingForSecondaryActivities",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExperimentsForAgsa,

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
@@ -158,5 +159,12 @@ public class BookmarkManagerCoordinatorTest {
         assertNotNull(BookmarkManagerCoordinator.buildCompactImprovedBookmarkRow(parent));
         assertNotNull(BookmarkManagerCoordinator.buildVisualImprovedBookmarkRow(parent));
         assertNotNull(mCoordinator.buildSearchBoxRow(parent));
+    }
+
+    @Test
+    public void testInvokeBackActionOnEscapeIsTrue() {
+        assertTrue(
+                "Back action should be invoked on escape.",
+                mCoordinator.invokeBackActionOnEscape());
     }
 }

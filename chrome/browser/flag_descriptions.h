@@ -2958,6 +2958,9 @@ extern const char kEducationalTipModuleDescription[];
 extern const char kEnableCommandLineOnNonRootedName[];
 extern const char kEnableCommandLineOnNoRootedDescription[];
 
+extern const char kEnableEscapeHandlingForSecondaryActivitiesName[];
+extern const char kEnableEscapeHandlingForSecondaryActivitiesDescription[];
+
 extern const char kTabClosureMethodRefactorName[];
 extern const char kTabClosureMethodRefactorDescription[];
 

@@ -5126,6 +5126,11 @@ const char kEnableCommandLineOnNonRootedName[] =
 const char kEnableCommandLineOnNoRootedDescription[] =
     "Enable reading command line file on non-rooted devices (DANGEROUS).";
 
+const char kEnableEscapeHandlingForSecondaryActivitiesName[] =
+    "Enable escape handling for secondary activities and native pages.";
+const char kEnableEscapeHandlingForSecondaryActivitiesDescription[] =
+    "Enables handling escape events on secondary activities and native pages.";
+
 const char kEnableClipboardDataControlsAndroidName[] =
     "Enable enterprise data controls.";
 const char kEnableClipboardDataControlsAndroidDescription[] =

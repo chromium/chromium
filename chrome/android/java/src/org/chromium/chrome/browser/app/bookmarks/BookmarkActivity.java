@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -16,6 +17,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
+import org.chromium.chrome.browser.back_press.BackPressHelper.OnKeyDownHandler;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerCoordinator;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -45,6 +47,7 @@ public class BookmarkActivity extends SnackbarActivity {
 
     private @Nullable BookmarkManagerCoordinator mBookmarkManagerCoordinator;
     private @Nullable BookmarkOpener mBookmarkOpener;
+    private @Nullable OnKeyDownHandler mOnKeyDownHandler;
 
     @Override
     protected void onProfileAvailable(Profile profile) {
@@ -72,7 +75,18 @@ public class BookmarkActivity extends SnackbarActivity {
         if (TextUtils.isEmpty(url)) url = UrlConstants.BOOKMARKS_URL;
         mBookmarkManagerCoordinator.updateForUrl(url);
         setContentView(mBookmarkManagerCoordinator.getView());
-        BackPressHelper.create(this, getOnBackPressedDispatcher(), mBookmarkManagerCoordinator);
+        mOnKeyDownHandler =
+                BackPressHelper.create(
+                        this, getOnBackPressedDispatcher(), mBookmarkManagerCoordinator);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (mOnKeyDownHandler != null && mOnKeyDownHandler.onKeyDown(keyCode, event)) {
+            return true;
+        }
+
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
