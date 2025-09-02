@@ -96,6 +96,7 @@ public class HistoryPaneTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/442651404")
     public void testOpenedHistoryItem_SearchMatch() {
         String urlOne =
                 mCtaTestRule.getTestServer().getURL("/chrome/test/data/android/navigate/one.html");
