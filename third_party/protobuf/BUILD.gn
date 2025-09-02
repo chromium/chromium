@@ -34,6 +34,10 @@ config("protobuf_config_internal") {
   }
 }
 
+proto_library("struct_proto") {
+  sources = [ "src/google/protobuf/struct.proto" ]
+}
+
 if (is_component_build) {
   config("protobuf_use_dlls") {
     defines = [ "PROTOBUF_USE_DLLS" ]
@@ -161,6 +165,9 @@ static_library("protobuf_full") {
       # Sync requires descriptors for testing.
       "//components/sync:sync_full_proto_unittests",
       "//components/sync/protocol:full_proto",
+
+      # third_party/federated_compute requires it for testing.
+      "//third_party/federated_compute:federated_compute_tests",
     ]
   }
 

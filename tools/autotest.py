@@ -126,6 +126,7 @@ _TEST_TARGET_ALLOWLIST = [
     '//third_party/crc32c:crc32c_benchmark',
     '//third_party/crc32c:crc32c_tests',
     '//third_party/dawn/src/dawn/tests/benchmarks:dawn_benchmarks',
+    '//third_party/federated_compute:federated_compute_tests',
     '//third_party/highway:highway_tests',
     '//third_party/ipcz/src:ipcz_tests',
     '//third_party/libaom:av1_encoder_fuzz_test',

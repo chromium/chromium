@@ -2,10 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 config("confidential_compute_include") {
-  include_dirs = [ "src" ]
+  include_dirs = [
+    "chromium",
+    "src",
+  ]
 }
 
 proto_library("confidential_compute_proto") {
@@ -34,10 +38,10 @@ source_set("confidential_compute") {
   ]
 
   sources = [
+    "chromium/fcp/confidentialcompute/cose.cc",
     "src/fcp/base/base_name.cc",
     "src/fcp/base/digest.cc",
     "src/fcp/base/monitoring.cc",
-    "src/fcp/confidentialcompute/cose.cc",
     "src/fcp/confidentialcompute/crypto.cc",
   ]
 
@@ -52,7 +56,33 @@ source_set("confidential_compute") {
   ]
 
   deps = [
+    "//base",
+    "//components/cbor",
     "//third_party/abseil-cpp:absl",
     "//third_party/boringssl",
   ]
+}
+
+if (!is_win && !is_android && !is_ios && !is_fuchsia) {
+  test("federated_compute_tests") {
+    testonly = true
+    public = [ "chromium/fcp/testing/testing.h" ]
+
+    sources = [
+      "chromium/fcp/confidentialcompute/cose_test.cc",
+      "chromium/fcp/testing/testing.cc",
+    ]
+
+    deps = [
+      ":confidential_compute",
+      "//base",
+      "//components/cbor",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//testing/gtest:gtest_main",
+      "//third_party/abseil-cpp:absl",
+      "//third_party/protobuf:protobuf_full",
+      "//third_party/protobuf:struct_proto",
+    ]
+  }
 }
