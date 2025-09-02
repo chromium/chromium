@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_register.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui_browser/bookmark_bar_page_handler.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/webui_browser/webui_browser_page_handler.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_side_panel_ui.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/tab_strip_api_resources_map.h"
 #include "chrome/grit/webui_browser_resources.h"
 #include "chrome/grit/webui_browser_resources_map.h"
@@ -26,9 +28,37 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/webui/tracked_element/tracked_element_handler.h"
 #include "ui/webui/webui_util.h"
+
+namespace {
+
+std::string SidePanelEntryIdToTitle(SidePanelEntryId id) {
+  // TODO(webium): Ideally, the titles should be added to SIDE_PANEL_ENTRY_IDS
+  // macros in chrome/browser/ui/views/side_panel/side_panel_entry_id.h, and
+  // then this conversion function would be written in that same file,
+  // analogously to the other functions it contains. But it appears that some
+  // of the entry  ids there are stale and no longer have a matching generated
+  // IDS_*_TITLE string that we can include.
+  //
+  // Since we are currently only explicitly supporting three side panel types,
+  // we do the id to title conversion here manually to minimize modification to
+  // existing code.
+  switch (id) {
+    case SidePanelEntryId::kCustomizeChrome:
+      return l10n_util::GetStringUTF8(IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE);
+    case SidePanelEntryId::kReadingList:
+      return l10n_util::GetStringUTF8(IDS_READ_LATER_TITLE);
+    case SidePanelEntryId::kBookmarks:
+      return l10n_util::GetStringUTF8(IDS_BOOKMARK_MANAGER_TITLE);
+    default:
+      NOTREACHED();
+  }
+}
+
+}  // namespace
 
 WebUIBrowserUIConfig::WebUIBrowserUIConfig()
     : DefaultWebUIConfig(content::kChromeUIScheme,
@@ -165,7 +195,8 @@ void WebUIBrowserUI::ShowSidePanel(SidePanelEntryKey side_panel_entry_key) {
       guest_contents::GuestContentsHandle::CreateForWebContents(web_contents);
 
   // Notify JS.
-  page_->ShowSidePanel(guest_handle->id());
+  page_->ShowSidePanel(guest_handle->id(),
+                       SidePanelEntryIdToTitle(side_panel_entry_key.id()));
 }
 
 void WebUIBrowserUI::CloseSidePanel() {

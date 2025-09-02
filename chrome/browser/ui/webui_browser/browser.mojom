@@ -29,7 +29,7 @@ interface Page {
 
   // Shows the side panel UI. The side panel contents is hosted by a guest
   // contents.
-  ShowSidePanel(int32 guest_contents_id);
+  ShowSidePanel(int32 guest_contents_id, string title);
 };
 
 // Browser-side handler for requests from WebUI page.

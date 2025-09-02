@@ -247,8 +247,9 @@ export class WebuiBrowserAppElement extends CrLitElement implements
     this.reloadOrStopIcon_ = isLoading ? 'icon-clear' : 'icon-refresh';
   }
 
-  protected showSidePanel_(guestContentsId: number) {
-    this.$.sidePanel.show(guestContentsId);
+
+  protected showSidePanel_(guestContentsId: number, title: string) {
+    this.$.sidePanel.show(guestContentsId, title);
   }
 }
 
