@@ -64,6 +64,7 @@ source_set("flags") {
     "//components/strings:components_strings",
     "//components/supervised_user/core/common:features",
     "//components/sync/service",
+    "//components/sync_preferences:features",
     "//components/translate/core/browser",
     "//components/translate/core/common",
     "//components/unified_consent",
