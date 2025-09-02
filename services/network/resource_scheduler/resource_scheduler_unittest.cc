@@ -861,7 +861,7 @@ TEST_F(ResourceSchedulerTest,
     net::NetworkTrafficAnnotationTag tag = net::DefineNetworkTrafficAnnotation(
         "metrics_report_uma",
         "Traffic annotation for unit, browser and other tests");
-    // (COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH(""));
+    // (ComputeAnnotationHash(""));
     std::unique_ptr<TestRequest> lows = (NewTrustedRequest(
         url.c_str(), net::LOWEST, tag));  //"metrics_report_uma"));
     EXPECT_EQ(test.expected_browser_initiated_traffic_started, lows->started())
@@ -905,7 +905,7 @@ TEST_F(ResourceSchedulerTest, P2PConnectionWentAway) {
     net::NetworkTrafficAnnotationTag tag = net::DefineNetworkTrafficAnnotation(
         "metrics_report_uma",
         "Traffic annotation for unit, browser and other tests");
-    // (COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH(""));
+    // (ComputeAnnotationHash(""));
     std::unique_ptr<TestRequest> lows = (NewTrustedRequest(
         url.c_str(), net::LOWEST, tag));  //"metrics_report_uma"));
     EXPECT_FALSE(lows->started());
@@ -945,7 +945,7 @@ TEST_F(ResourceSchedulerTest,
   net::NetworkTrafficAnnotationTag tag = net::DefineNetworkTrafficAnnotation(
       "metrics_report_uma",
       "Traffic annotation for unit, browser and other tests");
-  // (COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH(""));
+  // (ComputeAnnotationHash(""));
   std::unique_ptr<TestRequest> lows = (NewTrustedRequest(
       url.c_str(), net::LOWEST, tag));  //"metrics_report_uma"));
   EXPECT_FALSE(lows->started());

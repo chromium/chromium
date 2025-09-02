@@ -20,33 +20,35 @@
 #include "base/android/scoped_java_ref.h"
 #endif
 
-namespace {
+namespace net::internal {
 
-// Recursively compute hash code of the given string as a constant expression.
-template <int N>
-constexpr uint32_t recursive_hash(const char* str) {
-  return (recursive_hash<N - 1>(str) * 31u +
-          static_cast<uint32_t>(str[N - 1])) %
-         138003713u;
+template <size_t N>
+consteval int32_t ComputeAnnotationHash(const char (&str)[N]) {
+  uint32_t ret = 0;
+  // - 1 to not include NUL
+  for (size_t i = 0; i < N - 1; ++i) {
+    ret = (ret * 31u + static_cast<uint32_t>(str[i])) % 138003713u;
+  }
+  return static_cast<int32_t>(ret);
 }
 
-// Recursion stopper for the above function. Note that string of size 0 will
-// result in compile error.
-template <>
-constexpr uint32_t recursive_hash<1>(const char* str) {
-  return static_cast<uint32_t>(*str);
-}
+// NOLINTBEGIN(google-explicit-constructor)
+struct StringLiteralToHash {
+  int32_t hash_value;
 
-// Entry point to function that computes hash as constant expression.
-#define COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH(S) \
-  static_cast<int32_t>(recursive_hash<sizeof(S) - 1>(S))
+  template <size_t N>
+  consteval StringLiteralToHash(const char (&str)[N]) {
+    hash_value = ComputeAnnotationHash(str);
+  }
+};
+// NOLINTEND(google-explicit-constructor)
 
 constexpr int TRAFFIC_ANNOTATION_UNINITIALIZED = -1;
-
-}  // namespace
+constexpr int32_t TEST_PARTIAL_HASH = ComputeAnnotationHash("test_partial");
+constexpr int32_t UNDEFINED_HASH = ComputeAnnotationHash("undefined");
+}  // namespace net::internal
 
 namespace net {
-
 struct PartialNetworkTrafficAnnotationTag;
 
 // Defined types for network traffic annotation tags.
@@ -61,23 +63,21 @@ struct NetworkTrafficAnnotationTag {
 
   // These functions are wrappers around the (private) constructor, so we can
   // easily find the constructor's call-sites with a script.
-  template <size_t N1, size_t N2>
   friend constexpr NetworkTrafficAnnotationTag DefineNetworkTrafficAnnotation(
-      const char (&unique_id)[N1],
-      const char (&proto)[N2]);
+      internal::StringLiteralToHash unique_id,
+      const char* proto);
 
-  template <size_t N1, size_t N2>
   friend NetworkTrafficAnnotationTag CompleteNetworkTrafficAnnotation(
-      const char (&unique_id)[N1],
+      internal::StringLiteralToHash unique_id,
       const PartialNetworkTrafficAnnotationTag& partial_annotation,
-      const char (&proto)[N2]);
+      const char* proto);
 
-  template <size_t N1, size_t N2, size_t N3>
-  friend NetworkTrafficAnnotationTag BranchedCompleteNetworkTrafficAnnotation(
-      const char (&unique_id)[N1],
-      const char (&group_id)[N2],
+  friend constexpr NetworkTrafficAnnotationTag
+  BranchedCompleteNetworkTrafficAnnotation(
+      internal::StringLiteralToHash unique_id,
+      internal::StringLiteralToHash group_id,
       const PartialNetworkTrafficAnnotationTag& partial_annotation,
-      const char (&proto)[N3]);
+      const char* proto);
 
 #if BUILDFLAG(IS_ANDROID)
   // Allows C++ methods to receive a Java NetworkTrafficAnnotationTag via JNI,
@@ -110,11 +110,11 @@ struct PartialNetworkTrafficAnnotationTag {
 
   // This function is a wrapper around the (private) constructor, so we can
   // easily find the constructor's call-sites with a script.
-  template <size_t N1, size_t N2, size_t N3>
   friend constexpr PartialNetworkTrafficAnnotationTag
-  DefinePartialNetworkTrafficAnnotation(const char (&unique_id)[N1],
-                                        const char (&completing_id)[N2],
-                                        const char (&proto)[N3]);
+  DefinePartialNetworkTrafficAnnotation(
+      internal::StringLiteralToHash unique_id,
+      internal::StringLiteralToHash completing_id,
+      const char* proto);
 
   friend struct MutablePartialNetworkTrafficAnnotationTag;
 
@@ -150,12 +150,10 @@ struct PartialNetworkTrafficAnnotationTag {
 // tools/traffic_annotation/sample_traffic_annotation.cc.
 // TODO(crbug.com/40505662): Add tools to check annotation text's format during
 // presubmit checks.
-template <size_t N1, size_t N2>
-constexpr NetworkTrafficAnnotationTag DefineNetworkTrafficAnnotation(
-    const char (&unique_id)[N1],
-    const char (&proto)[N2]) {
-  return NetworkTrafficAnnotationTag(
-      COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH(unique_id));
+inline constexpr NetworkTrafficAnnotationTag DefineNetworkTrafficAnnotation(
+    internal::StringLiteralToHash unique_id,
+    const char* proto) {
+  return NetworkTrafficAnnotationTag(unique_id.hash_value);
 }
 
 // There are cases where the network traffic annotation cannot be fully
@@ -174,18 +172,16 @@ constexpr NetworkTrafficAnnotationTag DefineNetworkTrafficAnnotation(
 // annotation that will complete it. In the case of
 // BranchedCompleteNetworkTrafficAnnotation, |completing_id| is the group id
 // of the completing annotations.
-template <size_t N1, size_t N2, size_t N3>
 constexpr PartialNetworkTrafficAnnotationTag
-DefinePartialNetworkTrafficAnnotation(const char (&unique_id)[N1],
-                                      const char (&completing_id)[N2],
-                                      const char (&proto)[N3]) {
+DefinePartialNetworkTrafficAnnotation(
+    internal::StringLiteralToHash unique_id,
+    internal::StringLiteralToHash completing_id,
+    const char* proto) {
 #if !defined(NDEBUG) || defined(DCHECK_ALWAYS_ON)
-  return PartialNetworkTrafficAnnotationTag(
-      COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH(unique_id),
-      COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH(completing_id));
+  return PartialNetworkTrafficAnnotationTag(unique_id.hash_value,
+                                            completing_id.hash_value);
 #else
-  return PartialNetworkTrafficAnnotationTag(
-      COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH(unique_id));
+  return PartialNetworkTrafficAnnotationTag(unique_id.hash_value);
 #endif
 }
 
@@ -193,18 +189,15 @@ DefinePartialNetworkTrafficAnnotation(const char (&unique_id)[N1],
 // annotation adds details to another annotation that is defined before.
 // |partial_annotation| is the PartialNetworkTrafficAnnotationTag returned
 // by a call to DefinePartialNetworkTrafficAnnotation().
-template <size_t N1, size_t N2>
-NetworkTrafficAnnotationTag CompleteNetworkTrafficAnnotation(
-    const char (&unique_id)[N1],
+inline NetworkTrafficAnnotationTag CompleteNetworkTrafficAnnotation(
+    internal::StringLiteralToHash unique_id,
     const PartialNetworkTrafficAnnotationTag& partial_annotation,
-    const char (&proto)[N2]) {
+    const char* proto) {
 #if !defined(NDEBUG) || defined(DCHECK_ALWAYS_ON)
-  DCHECK(partial_annotation.completing_id_hash_code ==
-             COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH(unique_id) ||
+  DCHECK(partial_annotation.completing_id_hash_code == unique_id.hash_value ||
          partial_annotation.unique_id_hash_code ==
-             COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH("test_partial") ||
-         partial_annotation.unique_id_hash_code ==
-             COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH("undefined"));
+             internal::TEST_PARTIAL_HASH ||
+         partial_annotation.unique_id_hash_code == internal::UNDEFINED_HASH);
 #endif
   return NetworkTrafficAnnotationTag(partial_annotation.unique_id_hash_code);
 }
@@ -213,22 +206,19 @@ NetworkTrafficAnnotationTag CompleteNetworkTrafficAnnotation(
 // branched into several annotations. In this case, |group_id| is a common id
 // that is used by all members of the branch and referenced by partial
 // annotation that is completed by them.
-template <size_t N1, size_t N2, size_t N3>
-NetworkTrafficAnnotationTag BranchedCompleteNetworkTrafficAnnotation(
-    const char (&unique_id)[N1],
-    const char (&group_id)[N2],
+constexpr inline NetworkTrafficAnnotationTag
+BranchedCompleteNetworkTrafficAnnotation(
+    internal::StringLiteralToHash unique_id,
+    internal::StringLiteralToHash group_id,
     const PartialNetworkTrafficAnnotationTag& partial_annotation,
-    const char (&proto)[N3]) {
+    const char* proto) {
 #if !defined(NDEBUG) || defined(DCHECK_ALWAYS_ON)
-  DCHECK(partial_annotation.completing_id_hash_code ==
-             COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH(group_id) ||
+  DCHECK(partial_annotation.completing_id_hash_code == group_id.hash_value ||
          partial_annotation.unique_id_hash_code ==
-             COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH("test_partial") ||
-         partial_annotation.unique_id_hash_code ==
-             COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH("undefined"));
+             internal::TEST_PARTIAL_HASH ||
+         partial_annotation.unique_id_hash_code == internal::UNDEFINED_HASH);
 #endif
-  return NetworkTrafficAnnotationTag(
-      COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH(unique_id));
+  return NetworkTrafficAnnotationTag(unique_id.hash_value);
 }
 
 // Example for joining N x 1 partial annotations:
@@ -284,7 +274,7 @@ NetworkTrafficAnnotationTag BranchedCompleteNetworkTrafficAnnotation(
 // '/services/network/public/mojom'.
 struct MutableNetworkTrafficAnnotationTag {
   MutableNetworkTrafficAnnotationTag()
-      : unique_id_hash_code(TRAFFIC_ANNOTATION_UNINITIALIZED) {}
+      : unique_id_hash_code(internal::TRAFFIC_ANNOTATION_UNINITIALIZED) {}
   explicit MutableNetworkTrafficAnnotationTag(
       const NetworkTrafficAnnotationTag& traffic_annotation)
       : unique_id_hash_code(traffic_annotation.unique_id_hash_code) {}
@@ -301,10 +291,12 @@ struct MutableNetworkTrafficAnnotationTag {
   }
 
   bool is_valid() const {
-    return unique_id_hash_code != TRAFFIC_ANNOTATION_UNINITIALIZED;
+    return unique_id_hash_code != internal::TRAFFIC_ANNOTATION_UNINITIALIZED;
   }
 
-  void reset() { unique_id_hash_code = TRAFFIC_ANNOTATION_UNINITIALIZED; }
+  void reset() {
+    unique_id_hash_code = internal::TRAFFIC_ANNOTATION_UNINITIALIZED;
+  }
 
   // This function is a wrapper around the private constructor, so we can easily
   // find the constructor's call-sites with a script.
@@ -324,8 +316,8 @@ CreateMutableNetworkTrafficAnnotationTag(int32_t unique_id_hash_code) {
 struct MutablePartialNetworkTrafficAnnotationTag {
 #if !defined(NDEBUG) || defined(DCHECK_ALWAYS_ON)
   MutablePartialNetworkTrafficAnnotationTag()
-      : unique_id_hash_code(TRAFFIC_ANNOTATION_UNINITIALIZED),
-        completing_id_hash_code(TRAFFIC_ANNOTATION_UNINITIALIZED) {}
+      : unique_id_hash_code(internal::TRAFFIC_ANNOTATION_UNINITIALIZED),
+        completing_id_hash_code(internal::TRAFFIC_ANNOTATION_UNINITIALIZED) {}
   explicit MutablePartialNetworkTrafficAnnotationTag(
       const PartialNetworkTrafficAnnotationTag& partial_traffic_annotation)
       : unique_id_hash_code(partial_traffic_annotation.unique_id_hash_code),
@@ -342,17 +334,18 @@ struct MutablePartialNetworkTrafficAnnotationTag {
   }
 
   bool is_valid() const {
-    return unique_id_hash_code != TRAFFIC_ANNOTATION_UNINITIALIZED &&
-           completing_id_hash_code != TRAFFIC_ANNOTATION_UNINITIALIZED;
+    return unique_id_hash_code != internal::TRAFFIC_ANNOTATION_UNINITIALIZED &&
+           completing_id_hash_code !=
+               internal::TRAFFIC_ANNOTATION_UNINITIALIZED;
   }
 
   void reset() {
-    unique_id_hash_code = TRAFFIC_ANNOTATION_UNINITIALIZED;
-    completing_id_hash_code = TRAFFIC_ANNOTATION_UNINITIALIZED;
+    unique_id_hash_code = internal::TRAFFIC_ANNOTATION_UNINITIALIZED;
+    completing_id_hash_code = internal::TRAFFIC_ANNOTATION_UNINITIALIZED;
   }
 #else
   MutablePartialNetworkTrafficAnnotationTag()
-      : unique_id_hash_code(TRAFFIC_ANNOTATION_UNINITIALIZED) {}
+      : unique_id_hash_code(internal::TRAFFIC_ANNOTATION_UNINITIALIZED) {}
   explicit MutablePartialNetworkTrafficAnnotationTag(
       const PartialNetworkTrafficAnnotationTag& partial_traffic_annotation)
       : unique_id_hash_code(partial_traffic_annotation.unique_id_hash_code) {}
@@ -364,10 +357,12 @@ struct MutablePartialNetworkTrafficAnnotationTag {
   }
 
   bool is_valid() const {
-    return unique_id_hash_code != TRAFFIC_ANNOTATION_UNINITIALIZED;
+    return unique_id_hash_code != internal::TRAFFIC_ANNOTATION_UNINITIALIZED;
   }
 
-  void reset() { unique_id_hash_code = TRAFFIC_ANNOTATION_UNINITIALIZED; }
+  void reset() {
+    unique_id_hash_code = internal::TRAFFIC_ANNOTATION_UNINITIALIZED;
+  }
 #endif  // !defined(NDEBUG) || defined(DCHECK_ALWAYS_ON)
 };
 

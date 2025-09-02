@@ -76,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(GlicNetLogBrowserTest, LogGlicFreRequestOnOpenUI) {
         entry.params.FindInt("traffic_annotation");
     return traffic_annotation.has_value() &&
            traffic_annotation.value() ==
-               COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH("glic_fre_web_ui");
+               net::internal::ComputeAnnotationHash("glic_fre_web_ui");
   });
 
   ASSERT_NE(it, entries.end())
@@ -112,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(GlicNetLogBrowserTest, LogGlicRequestOnOpenUI) {
         entry.params.FindInt("traffic_annotation");
     return traffic_annotation.has_value() &&
            traffic_annotation.value() ==
-               COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH("glic_web_ui");
+               net::internal::ComputeAnnotationHash("glic_web_ui");
   });
 
   ASSERT_NE(it, entries.end())
