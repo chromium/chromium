@@ -65,6 +65,7 @@ specific_include_rules = {
     "web_ax_object.cc": [
         "+ui/accessibility/ax_action_data.h",
     ],
+
     "tcp_writable_stream_wrapper.h": [
         "+partition_alloc/partition_root.h",
     ],
@@ -76,12 +77,8 @@ specific_include_rules = {
     ],
     ".*socket.cc": [
         "+base/functional/identity.h",
-        "+net/base/ip_endpoint.h",
     ],
     "web_printing_manager.cc": [
       "+printing/buildflags/buildflags.h",
-    ],
-    "multicast_controller.*": [
-        "+net/base/ip_address.h",
-    ],
+    ]
 }

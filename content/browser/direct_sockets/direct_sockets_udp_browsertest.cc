@@ -125,8 +125,6 @@ class DirectSocketsUdpBrowserTest : public ContentBrowserTest {
 
   std::unique_ptr<test::IsolatedWebAppContentBrowserClient> client_;
   std::unique_ptr<content::test::AsyncJsRunner> runner_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kMulticastInDirectSockets};
 };
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, CloseUdp) {
@@ -134,31 +132,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, CloseUdp) {
       "closeUdp({ remoteAddress: '::1', remotePort: 993 })";
 
   EXPECT_EQ("closeUdp succeeded", EvalJs(shell(), script));
-}
-
-IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, MulticastTimeToLiveParam) {
-  EXPECT_EQ(
-      "closeUdp succeeded",
-      EvalJs(
-          shell(),
-          "closeUdp({ localAddress: '127.0.0.1', multicastTimeToLive: 0 })"));
-  EXPECT_EQ(
-      "closeUdp succeeded",
-      EvalJs(
-          shell(),
-          "closeUdp({ localAddress: '127.0.0.1', multicastTimeToLive: 255 })"));
-
-  EXPECT_THAT(
-      EvalJs(shell(),
-             "closeUdp({ localAddress: '127.0.0.1', multicastTimeToLive: -1 })")
-          .ExtractString(),
-      ::testing::StartsWith("closeUdp failed"));
-  EXPECT_THAT(
-      EvalJs(
-          shell(),
-          "closeUdp({ localAddress: '127.0.0.1', multicastTimeToLive: 256 })")
-          .ExtractString(),
-      ::testing::StartsWith("closeUdp failed"));
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, SendUdpAfterClose) {

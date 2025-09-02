@@ -44,7 +44,6 @@
 #include "services/network/public/mojom/udp_socket.mojom.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/features_generated.h"
-#include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_read_context.h"
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -156,30 +155,6 @@ bool ShouldOpenFirewallHole(const net::IPAddress& address) {
   return !address.IsLoopback();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-bool IsMulticastAllowed(const Context& context) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kMulticastInDirectSockets)) {
-    return false;
-  }
-
-  return std::visit(
-      absl::Overload{[&](content::RenderFrameHost* rfh) {
-                       // TODO(crbug.com/398934282): check the necessary
-                       // permission policy
-                       return true;
-                     },
-                     [&](base::WeakPtr<SharedWorkerHost> shared_worker) {
-                       // TODO(crbug.com/398934282): add shared worker support.
-                       return false;
-                     },
-                     [&](base::WeakPtr<ServiceWorkerVersion> service_worker) {
-                       // TODO(crbug.com/398934282): add dedicated worker
-                       // support.
-                       return false;
-                     }},
-      context);
-}
 
 bool RequiresPrivateNetworkAccess(const net::AddressList& addresses) {
   return std::ranges::any_of(
@@ -591,18 +566,6 @@ void DirectSocketsServiceImpl::OpenBoundUDPSocket(
   if (options->receive_buffer_size.has_value()) {
     socket_options->receive_buffer_size = *options->receive_buffer_size;
   }
-  if (IsMulticastAllowed(context_)) {
-    if (options->multicast_allow_address_sharing.has_value()) {
-      socket_options->allow_address_sharing_for_multicast =
-          *options->multicast_allow_address_sharing;
-    }
-    if (options->multicast_time_to_live.has_value()) {
-      socket_options->multicast_time_to_live = *options->multicast_time_to_live;
-    }
-    if (options->multicast_loopback.has_value()) {
-      socket_options->multicast_loopback_mode = *options->multicast_loopback;
-    }
-  }
 
   auto params = network::mojom::RestrictedUDPSocketParams::New();
   params->socket_options = std::move(socket_options);
@@ -809,15 +772,6 @@ void DirectSocketsServiceImpl::OnResolveCompleteForUDPSocket(
   }
   if (options->receive_buffer_size.has_value()) {
     socket_options->receive_buffer_size = *options->receive_buffer_size;
-  }
-
-  if (IsMulticastAllowed(context_)) {
-    if (options->multicast_time_to_live.has_value()) {
-      socket_options->multicast_time_to_live = *options->multicast_time_to_live;
-    }
-    if (options->multicast_loopback.has_value()) {
-      socket_options->multicast_loopback_mode = *options->multicast_loopback;
-    }
   }
 
   auto params = network::mojom::RestrictedUDPSocketParams::New();

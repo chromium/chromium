@@ -11,9 +11,7 @@ dictionary SocketOpenInfo {
 
 dictionary TCPSocketOpenInfo : SocketOpenInfo {};
 
-dictionary UDPSocketOpenInfo : SocketOpenInfo {
-  [RuntimeEnabled=MulticastInDirectSockets] MulticastController multicastController;
-};
+dictionary UDPSocketOpenInfo : SocketOpenInfo {};
 
 dictionary TCPServerSocketOpenInfo {
   ReadableStream readable;

@@ -3393,8 +3393,6 @@ if (!target_os_is_android) {
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_tcp_socket.h",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_udp_socket.cc",
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_udp_socket.h",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_multicast_controller.cc",
-    "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_multicast_controller.h",
   ]
   generated_enumeration_sources_in_modules += [
     "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_socket_dns_query_type.cc",
