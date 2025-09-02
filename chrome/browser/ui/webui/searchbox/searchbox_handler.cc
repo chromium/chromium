@@ -480,6 +480,8 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       // Composebox.
       {"addContext", IDS_NTP_COMPOSE_ADD_CONTEXT},
       {"addContextTitle", IDS_NTP_COMPOSE_ADD_CONTEXT_TITLE},
+      {"addImage", IDS_NTP_COMPOSE_ADD_IMAGE},
+      {"addTab", IDS_NTP_COMPOSE_ADD_TAB},
       {"searchboxComposeButtonText", IDS_NTP_COMPOSE_ENTRYPOINT},
       {"searchboxComposeButtonTitle", IDS_NTP_COMPOSE_ENTRYPOINT_A11Y_LABEL},
       {"composeboxCancelButtonTitle", IDS_NTP_COMPOSE_CANCEL_BUTTON_A11Y_LABEL},
@@ -506,6 +508,8 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
        IDS_NTP_COMPOSE_FILE_UPLOAD_VALIDATION_FAILED},
       {"composeboxFileUploadFailed", IDS_NTP_COMPOSE_FILE_UPLOAD_FAILED},
       {"composeboxFileUploadExpired", IDS_NTP_COMPOSE_FILE_UPLOAD_EXPIRED},
+      {"menu", IDS_MENU},
+      {"uploadFile", IDS_NTP_COMPOSE_UPLOAD_FILE},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddString("searchboxComposePlaceholder",

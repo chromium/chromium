@@ -9,18 +9,58 @@
  * #include=cr-icons-lit
  * #css_wrapper_metadata_end */
 
-#contextButton {
+:host {
   --cr-focus-outline-color: var(--color-searchbox-results-icon-focused-outline);
+}
+
+#entrypoint,
+#tabHeader,
+.dropdown-item {
+  color: var(--color-searchbox-results-foreground);
+}
+
+#entrypoint {
   border: initial;
-  color: var(--color-new-tab-page-composebox-cancel-button);
   gap: 2px;
 }
 
-cr-icon {
+#entrypoint cr-icon {
   padding: 2px;
 }
 
 #description {
   display: block;
   font-size: 13px;
+}
+
+#menu {
+  --cr-menu-border-radius: 16px;
+}
+
+#menu cr-button {
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
+  font-size: 13px;
+  height: 32px;
+  justify-content: flex-start;
+  max-width: 190px;
+}
+
+#tabHeader {
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 16px;
+  margin: 0;
+  padding: 8px 14px 4px 14px;
+}
+
+.dropdown-item {
+  padding: 6px 14px;
+}
+
+#menu hr {
+  background: var(--color-sys-divider);
+  border: none;
+  height: 1px;
+  margin: 8px 0;
 }
