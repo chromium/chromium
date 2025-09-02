@@ -12,15 +12,13 @@ import android.view.MotionEvent;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
-import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link MotionEventUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class MotionEventUtilsTest {
+
     @Test
     public void testIsPointerEvent() {
         assertTrue(
@@ -57,10 +55,6 @@ public class MotionEventUtilsTest {
     }
 
     private MotionEvent createEventWithSourceAndToolType(int source, int toolType) {
-        ActivityController<TestActivity> activityController =
-                Robolectric.buildActivity(TestActivity.class);
-        activityController.setup();
-        TestActivity activity = activityController.get();
         MotionEvent.PointerProperties[] properties = new MotionEvent.PointerProperties[1];
         properties[0] = new MotionEvent.PointerProperties();
         properties[0].id = 0;
