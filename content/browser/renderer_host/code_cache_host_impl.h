@@ -106,6 +106,10 @@ class CONTENT_EXPORT CodeCacheHostImpl : public blink::mojom::CodeCacheHost {
   };
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(CodeCacheHostImplTest, PersistentCacheWriteAndRead);
+
+  bool IsPersistentCacheForCodeCacheEnabled();
+
   // blink::mojom::CodeCacheHost implementation.
   void DidGenerateCacheableMetadata(blink::mojom::CodeCacheType cache_type,
                                     const GURL& url,

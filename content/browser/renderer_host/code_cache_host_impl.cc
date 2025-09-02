@@ -4,14 +4,17 @@
 
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 
+#include <string_view>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "components/persistent_cache/entry.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -23,10 +26,14 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/io_buffer.h"
+#include "net/http/http_cache.h"
 #include "third_party/blink/public/common/cache_storage/cache_storage_utils.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/scheme_registry.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom-data-view.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -35,6 +42,18 @@ using blink::mojom::CacheStorageError;
 namespace content {
 
 namespace {
+
+GeneratedCodeCache::CodeCacheType MojoCacheTypeToCodeCacheType(
+    blink::mojom::CodeCacheType type) {
+  switch (type) {
+    case blink::mojom::CodeCacheType::kJavascript:
+      return GeneratedCodeCache::CodeCacheType::kJavaScript;
+    case blink::mojom::CodeCacheType::kWebAssembly:
+      return GeneratedCodeCache::CodeCacheType::kWebAssembly;
+    default:
+      NOTREACHED();
+  }
+}
 
 bool CheckSecurityForAccessingCodeCacheData(
     const GURL& resource_url,
@@ -240,6 +259,25 @@ void CodeCacheHostImpl::SetCacheStorageControlForTesting(
   cache_storage_control_for_testing_ = cache_storage_control;
 }
 
+bool CodeCacheHostImpl::IsPersistentCacheForCodeCacheEnabled() {
+  ProcessLock process_lock =
+      ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
+          render_process_id_);
+
+  // Serve ChromeUI from existing cache implementation.
+  // TODO(crbug.com/377475540): Use another PersistentCacheCollection for
+  // ChromeUI.
+  if (process_lock.MatchesScheme(content::kChromeUIScheme) ||
+      process_lock.MatchesScheme(content::kChromeUIUntrustedScheme)) {
+    return false;
+  }
+
+  // The feature is only compatible with split caches.
+  return base::FeatureList::IsEnabled(
+             blink::features::kUsePersistentCacheForCodeCache) &&
+         net::HttpCache::IsSplitCacheEnabled();
+}
+
 void CodeCacheHostImpl::DidGenerateCacheableMetadata(
     blink::mojom::CodeCacheType cache_type,
     const GURL& url,
@@ -247,29 +285,44 @@ void CodeCacheHostImpl::DidGenerateCacheableMetadata(
     mojo_base::BigBuffer data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  GeneratedCodeCache* code_cache = GetCodeCache(cache_type);
-  if (!code_cache)
-    return;
-
   std::optional<GURL> secondary_key =
       GetSecondaryKeyForCodeCache(url, render_process_id_, Operation::kWrite);
   if (!secondary_key) {
     return;
   }
 
-  code_cache->WriteEntry(url, *secondary_key, network_isolation_key_,
-                         expected_response_time, std::move(data));
+  if (IsPersistentCacheForCodeCacheEnabled()) {
+    std::string resource_key = GeneratedCodeCache::GetResourceKey(
+        url, MojoCacheTypeToCodeCacheType(cache_type));
+    std::string context_key = GeneratedCodeCache::GetContextKey(
+        secondary_key.value(), network_isolation_key_,
+        MojoCacheTypeToCodeCacheType(cache_type));
+
+    // No context key means no way to isolate per context which is not supported
+    // under PersistentCacheForCodeCache.
+    if (!context_key.empty()) {
+      generated_code_cache_context_->InsertIntoPersistentCacheCollection(
+          context_key, resource_key, std::move(data),
+          persistent_cache::EntryMetadata{
+              .input_signature =
+                  expected_response_time.ToDeltaSinceWindowsEpoch()
+                      .InMicroseconds()});
+    }
+  } else {
+    GeneratedCodeCache* code_cache = GetCodeCache(cache_type);
+    if (!code_cache) {
+      return;
+    }
+
+    code_cache->WriteEntry(url, *secondary_key, network_isolation_key_,
+                           expected_response_time, std::move(data));
+  }
 }
 
 void CodeCacheHostImpl::FetchCachedCode(blink::mojom::CodeCacheType cache_type,
                                         const GURL& url,
                                         FetchCachedCodeCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  GeneratedCodeCache* code_cache = GetCodeCache(cache_type);
-  if (!code_cache) {
-    std::move(callback).Run(base::Time(), {});
-    return;
-  }
 
   std::optional<GURL> secondary_key =
       GetSecondaryKeyForCodeCache(url, render_process_id_, Operation::kRead);
@@ -278,11 +331,46 @@ void CodeCacheHostImpl::FetchCachedCode(blink::mojom::CodeCacheType cache_type,
     return;
   }
 
-  auto read_callback = base::BindOnce(
-      &CodeCacheHostImpl::OnReceiveCachedCode, weak_ptr_factory_.GetWeakPtr(),
-      cache_type, base::TimeTicks::Now(), std::move(callback));
-  code_cache->FetchEntry(url, *secondary_key, network_isolation_key_,
-                         std::move(read_callback));
+  if (IsPersistentCacheForCodeCacheEnabled()) {
+    std::string resource_key = GeneratedCodeCache::GetResourceKey(
+        url, MojoCacheTypeToCodeCacheType(cache_type));
+    std::string context_key = GeneratedCodeCache::GetContextKey(
+        secondary_key.value(), network_isolation_key_,
+        MojoCacheTypeToCodeCacheType(cache_type));
+
+    // No context key means no way to isolate per context which is not supported
+    // under PersistentCacheForCodeCache.
+    if (context_key.empty()) {
+      std::move(callback).Run(base::Time(), mojo_base::BigBuffer());
+      return;
+    }
+
+    std::unique_ptr<persistent_cache::Entry> entry =
+        generated_code_cache_context_->FindInPersistentCacheCollection(
+            context_key, resource_key);
+
+    if (entry && entry->GetContentSize() > 0) {
+      std::move(callback).Run(
+          base::Time::FromDeltaSinceWindowsEpoch(
+              base::Microseconds(entry->GetMetadata().input_signature)),
+          mojo_base::BigBuffer(entry->GetContentSpan()));
+    } else {
+      std::move(callback).Run(base::Time(), mojo_base::BigBuffer());
+    }
+
+  } else {
+    GeneratedCodeCache* code_cache = GetCodeCache(cache_type);
+    if (!code_cache) {
+      std::move(callback).Run(base::Time(), {});
+      return;
+    }
+
+    auto read_callback = base::BindOnce(
+        &CodeCacheHostImpl::OnReceiveCachedCode, weak_ptr_factory_.GetWeakPtr(),
+        cache_type, base::TimeTicks::Now(), std::move(callback));
+    code_cache->FetchEntry(url, *secondary_key, network_isolation_key_,
+                           std::move(read_callback));
+  }
 }
 
 void CodeCacheHostImpl::ClearCodeCacheEntry(

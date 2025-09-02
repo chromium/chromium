@@ -9,6 +9,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
+#include "components/persistent_cache/persistent_cache_collection.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -53,6 +54,25 @@ class CONTENT_EXPORT GeneratedCodeCacheContext
   GeneratedCodeCache* generated_wasm_code_cache() const;
   GeneratedCodeCache* generated_webui_js_code_cache() const;
 
+  // Use to get rid of code cached in the PersistentCache collection both in
+  // memory and persisted.
+  void ClearAndDeletePersistentCacheCollection();
+
+  // Using a persistent cache collection with `context_key` as the cache_id
+  // makes sure that there are seperate files for separate process locks. This
+  // will eventually allow the sharing of the files with the renderers.
+  void InsertIntoPersistentCacheCollection(
+      const std::string& context_key,
+      std::string_view url,
+      base::span<const uint8_t> content,
+      persistent_cache::EntryMetadata metadata);
+
+  // TODO(crbug.com/377475540): Use types that are not interchangeable for
+  // `context_key` and `url` so that they cannot be mixed up by mistake.
+  std::unique_ptr<persistent_cache::Entry> FindInPersistentCacheCollection(
+      const std::string& context_key,
+      std::string_view url);
+
  private:
   friend class base::RefCountedThreadSafe<GeneratedCodeCacheContext>;
   ~GeneratedCodeCacheContext();
@@ -71,6 +91,16 @@ class CONTENT_EXPORT GeneratedCodeCacheContext
       generated_webui_js_code_cache_ GUARDED_BY_CONTEXT(sequence_checker_) = {
           nullptr, base::OnTaskRunnerDeleter(nullptr)};
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  // When used instead of `generated_js_code_cache_` this stores the code
+  // following the same isolation principles but using two keys instead of one.
+  // The first key is used to get a `PersistentCache` associated with an
+  // isolation context from the collection. This insures that each isolation
+  // context uses a seperate database file. The second key is the resource
+  // url used on that cache.
+  std::unique_ptr<persistent_cache::PersistentCacheCollection,
+                  base::OnTaskRunnerDeleter>
+      persistent_cache_collection_{nullptr, base::OnTaskRunnerDeleter(nullptr)};
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

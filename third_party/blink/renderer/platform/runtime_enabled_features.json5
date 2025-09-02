@@ -5216,6 +5216,10 @@
       status: "test",
     },
     {
+      name: "UsePersistentCacheForCodeCache",
+      status: "test",
+    },
+    {
       name: "UsePositionForPointInFlexibleBoxWithSingleChildElement",
       status: "stable",
     },

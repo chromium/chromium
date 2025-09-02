@@ -41,16 +41,16 @@ namespace {
 constexpr char kPrefix[] = "_key";
 constexpr char kSeparator[] = " \n";
 
-// We always expect to receive valid URLs that can be used as keys to the code
-// cache. The relevant checks (for ex: resource_url is valid, origin_lock is
-// not opque etc.,) must be done prior to requesting the code cache.
+// In this and `CheckValidContext` it's expected to receive valid URLs that can
+// be used as keys to the code cache. The relevant checks (for ex: resource_url
+// is valid, origin_lock is not opaque etc.,) must be done prior to requesting
+// the code cache.
 //
-// This function doesn't enforce anything in the production code. It is here
+// These functions don't enforce anything in the production code. They are here
 // to make the assumptions explicit and to catch any errors when DCHECKs are
 // enabled.
-void CheckValidKeys(const GURL& resource_url,
-                    const GURL& origin_lock,
-                    GeneratedCodeCache::CodeCacheType cache_type) {
+void CheckValidResource(const GURL& resource_url,
+                        GeneratedCodeCache::CodeCacheType cache_type) {
   // If the resource url is invalid don't cache the code.
   DCHECK(resource_url.is_valid());
   bool resource_url_is_chrome_or_chrome_untrusted =
@@ -60,6 +60,14 @@ void CheckValidKeys(const GURL& resource_url,
          resource_url_is_chrome_or_chrome_untrusted ||
          blink::CommonSchemeRegistry::IsExtensionScheme(resource_url.scheme()));
 
+  // The chrome and chrome-untrusted schemes are only used with the WebUI
+  // code cache type.
+  DCHECK_EQ(resource_url_is_chrome_or_chrome_untrusted,
+            cache_type == GeneratedCodeCache::kWebUIJavaScript);
+}
+
+void CheckValidContext(const GURL& origin_lock,
+                       GeneratedCodeCache::CodeCacheType cache_type) {
   // |origin_lock| should be either empty or should have
   // Http/Https/chrome/chrome-untrusted schemes and it should not be a URL with
   // opaque origin. Empty origin_locks are allowed when the renderer is not
@@ -77,8 +85,6 @@ void CheckValidKeys(const GURL& resource_url,
   // The chrome and chrome-untrusted schemes are only used with the WebUI
   // code cache type.
   DCHECK_EQ(origin_lock_is_chrome_or_chrome_untrusted,
-            cache_type == GeneratedCodeCache::kWebUIJavaScript);
-  DCHECK_EQ(resource_url_is_chrome_or_chrome_untrusted,
             cache_type == GeneratedCodeCache::kWebUIJavaScript);
 }
 
@@ -103,33 +109,16 @@ std::string GetCacheKey(const GURL& resource_url,
                         const GURL& origin_lock,
                         const net::NetworkIsolationKey& nik,
                         GeneratedCodeCache::CodeCacheType cache_type) {
-  CheckValidKeys(resource_url, origin_lock, cache_type);
+  return base::StrCat(
+      {GeneratedCodeCache::GetResourceKey(resource_url, cache_type),
 
-  // Add a prefix _ so it can't be parsed as a valid URL.
-  std::string key(kPrefix);
-  // Remove reference, username and password sections of the URL.
-  key.append(net::SimplifyUrlForRequest(resource_url).spec());
-  // Add a separator between URL and origin to avoid any possibility of
-  // attacks by crafting the URL. URLs do not contain any control ASCII
-  // characters, and also space is encoded. So use ' \n' as a seperator.
-  key.append(kSeparator);
+       // Add a separator between URL and origin to avoid any possibility of
+       // attacks by crafting the URL. URLs do not contain any control ASCII
+       // characters, and also space is encoded. So use ' \n' as a
+       // separator.
+       kSeparator,
 
-  if (origin_lock.is_valid())
-    key.append(net::SimplifyUrlForRequest(origin_lock).spec());
-
-  if (net::HttpCache::IsSplitCacheEnabled() &&
-      base::FeatureList::IsEnabled(
-          net::features::kSplitCodeCacheByNetworkIsolationKey)) {
-    // TODO(crbug.com/40232395):  Transient NIKs return nullopt when
-    // their ToCacheKeyString() method is invoked, as they generally shouldn't
-    // be written to disk. This code is currently reached for transient NIKs,
-    // which needs to be fixed.
-    if (!nik.IsTransient()) {
-      key.append(kSeparator);
-      key.append(*nik.ToCacheKeyString());
-    }
-  }
-  return key;
+       GeneratedCodeCache::GetContextKey(origin_lock, nik, cache_type)});
 }
 
 constexpr size_t kResponseTimeSizeInBytes = sizeof(int64_t);
@@ -223,6 +212,48 @@ void CollectStatisticsForEmbedderWebUIPages(
 }
 
 }  // namespace
+
+// static
+std::string GeneratedCodeCache::GetResourceKey(
+    const GURL& resource_url,
+    GeneratedCodeCache::CodeCacheType cache_type) {
+  CheckValidResource(resource_url, cache_type);
+
+  return base::StrCat(
+      {// Add a prefix _ so it can't be parsed as a valid URL.
+       kPrefix,
+       // Remove reference, username and password sections of the URL.
+       net::SimplifyUrlForRequest(resource_url).spec()});
+}
+
+// static
+std::string GeneratedCodeCache::GetContextKey(
+    const GURL& origin_lock,
+    const net::NetworkIsolationKey& nik,
+    GeneratedCodeCache::CodeCacheType cache_type) {
+  CheckValidContext(origin_lock, cache_type);
+
+  std::string key;
+
+  if (origin_lock.is_valid()) {
+    key.append(net::SimplifyUrlForRequest(origin_lock).spec());
+  }
+
+  if (net::HttpCache::IsSplitCacheEnabled() &&
+      base::FeatureList::IsEnabled(
+          net::features::kSplitCodeCacheByNetworkIsolationKey)) {
+    // TODO(crbug.com/40232395):  Transient NIKs return nullopt when
+    // their ToCacheKeyString() method is invoked, as they generally shouldn't
+    // be written to disk. This code is currently reached for transient NIKs,
+    // which needs to be fixed.
+    if (!nik.IsTransient()) {
+      key.append(kSeparator);
+      key.append(*nik.ToCacheKeyString());
+    }
+  }
+
+  return key;
+}
 
 bool GeneratedCodeCache::IsValidHeader(
     scoped_refptr<net::IOBufferWithSize> small_buffer) const {

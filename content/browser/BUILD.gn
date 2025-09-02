@@ -136,6 +136,7 @@ source_set("browser") {
     "//components/payments/content/icon",
     "//components/payments/mojom",
     "//components/performance_manager/scenario_api",
+    "//components/persistent_cache",
     "//components/power_monitor",
     "//components/services/filesystem:lib",
     "//components/services/quarantine",

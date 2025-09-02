@@ -8,12 +8,20 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner_thread_mode.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "components/persistent_cache/entry.h"
+#include "components/persistent_cache/persistent_cache_collection.h"
 #include "content/browser/code_cache/generated_code_cache.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
+#include "net/disk_cache/cache_util.h"
+#include "net/http/http_cache.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 namespace content {
 
@@ -42,8 +50,21 @@ GeneratedCodeCacheContext::GetTaskRunner(
 GeneratedCodeCacheContext::GeneratedCodeCacheContext() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DETACH_FROM_SEQUENCE(sequence_checker_);
-  task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
-      {base::TaskPriority::USER_BLOCKING});
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kUsePersistentCacheForCodeCache)) {
+    // MayBlock() because disk operations are happening on-thread under the
+    // experiment for now.
+    // Dedicated because there doesn't seem to be a reason to not be
+    // dedicated and it should provide some isolation which is especially
+    // important if there is blocking involved.
+    task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
+        {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
+        base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+  } else {
+    task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
+        {base::TaskPriority::USER_BLOCKING});
+  }
 }
 
 void GeneratedCodeCacheContext::Initialize(const base::FilePath& path,
@@ -101,6 +122,23 @@ void GeneratedCodeCacheContext::InitializeOnThread(const base::FilePath& path,
       new GeneratedCodeCache(path.AppendASCII("wasm"), max_bytes,
                              GeneratedCodeCache::CodeCacheType::kWebAssembly),
       base::OnTaskRunnerDeleter(task_runner_)};
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kUsePersistentCacheForCodeCache)) {
+    // Target the same amount of disk space used for persistent_cache as is used
+    // for disk_cache.
+    int64_t disk_cache_max_size = disk_cache::PreferredCacheSize(
+        base::SysInfo::AmountOfFreeDiskSpace(path),
+        net::GENERATED_BYTE_CODE_CACHE);
+
+    persistent_cache_collection_ = {
+        new persistent_cache::PersistentCacheCollection(
+            std::make_unique<persistent_cache::BackendParamsManager>(
+                path.AppendASCII("pc")),  // Name as short as possible to avoid
+                                          // maximum path problems.
+            disk_cache_max_size),
+        base::OnTaskRunnerDeleter(task_runner_)};
+  }
 }
 
 void GeneratedCodeCacheContext::Shutdown() {
@@ -108,6 +146,34 @@ void GeneratedCodeCacheContext::Shutdown() {
   RunOrPostTask(
       this, FROM_HERE,
       base::BindOnce(&GeneratedCodeCacheContext::ShutdownOnThread, this));
+}
+
+void GeneratedCodeCacheContext::ClearAndDeletePersistentCacheCollection() {
+  if (persistent_cache_collection_) {
+    persistent_cache_collection_->DeleteAllFiles();
+  }
+}
+
+void GeneratedCodeCacheContext::InsertIntoPersistentCacheCollection(
+    const std::string& context_key,
+    std::string_view url,
+    base::span<const uint8_t> content,
+    persistent_cache::EntryMetadata metadata) {
+  // Since `content` is coming in through mojo it's important to make sure that
+  // it's copied so it cannot be modified racily. This happens implicitly
+  // because of the way the SQLite backend (the only backend available
+  // currently) of PersistentCache stores data through the BLOB type.
+  //
+  // TODO(crbug.com/377475540): Make an explicit copy here once PersistentCache
+  // handles taking ownership of the memory passed in.
+  persistent_cache_collection_->Insert(context_key, url, content, metadata);
+}
+
+std::unique_ptr<persistent_cache::Entry>
+GeneratedCodeCacheContext::FindInPersistentCacheCollection(
+    const std::string& context_key,
+    std::string_view url) {
+  return persistent_cache_collection_->Find(context_key, url);
 }
 
 void GeneratedCodeCacheContext::ShutdownOnThread() {
