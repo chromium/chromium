@@ -73,7 +73,7 @@ ContentBrowserContext::CreateZoomLevelDelegate(const base::FilePath&) {
   return nullptr;
 }
 
-base::FilePath ContentBrowserContext::GetPath() {
+base::FilePath ContentBrowserContext::GetPath() const {
   return browser_path_;
 }
 
