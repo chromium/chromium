@@ -13,6 +13,14 @@ import("//build_overrides/build.gni")
 
 default_clang_base_path = "//third_party/llvm-build/Release+Asserts"
 
+# These platforms have been well-tested with clang modules.
+# Platforms not in this list *may* work with clang modules, but we don't
+# guarantee it, and we don't test them on CI/CQ with modules, so breakages may
+# occur.
+clang_modules_platform_supported = (is_linux && current_cpu == "x64") ||
+                                   (is_android && current_cpu == "x64") ||
+                                   (is_android && current_cpu == "arm64")
+
 declare_args() {
   # Indicates if the build should use the Chrome-specific plugins for enforcing
   # coding guidelines, etc. Only used when compiling with Chromium's Clang.
@@ -61,8 +69,8 @@ declare_args() {
   use_clang_modules =
       # Clang modules doesn't work with translation_unit used in codesearch
       # pipeline http://b/436082487.
-      !enable_kythe_annotations && is_clang && is_linux &&
-      current_cpu == "x64" &&
+      !enable_kythe_annotations && is_clang &&
+      clang_modules_platform_supported &&
       # reclient doesn't handle headers in modulemap config.
       !use_reclient && !is_cronet_for_aosp_build
 }
