@@ -108,6 +108,14 @@ def normalize_and_dedup_deps(deps: Set[str]) -> Set[str]:
       # Ignore empty lines.
       continue
 
+    if dep.startswith("//build/modules/android-"):
+      # There is one dependencies.txt shared between all cpu architectures.
+      # On arm64, this would output //build/modules/android-arm64
+      # On x64, this would output //build/modules/android-x64
+      # It's impossible to normalize this because you can have platforms without
+      # modules enabled at all, which don't output anything. So we skip it.
+      continue
+
     if dep.startswith("//third_party/androidx:") and dep.endswith("_java"):
       # We treat androidx dependency differently because
       # Cronet MUST NOT depend on any androidx dependency except
