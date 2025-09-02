@@ -61,8 +61,15 @@ class SafariDataImportEntryPointMediatorTest : public PlatformTest {
 };
 
 // Tests that the Safari import reminder is registered on request.
+// TODO(crbug.com/442365426): Test is flaky on device.
+#if !TARGET_OS_SIMULATOR
+#define MAYBE_TestRegisterSafariImportReminder \
+  DISABLED_TestRegisterSafariImportReminder
+#else
+#define MAYBE_TestRegisterSafariImportReminder TestRegisterSafariImportReminder
+#endif
 TEST_F(SafariDataImportEntryPointMediatorTest,
-       TestRegisterSafariImportReminder) {
+       MAYBE_TestRegisterSafariImportReminder) {
   EXPECT_CALL(*promos_manager_.get(),
               RegisterPromoForSingleDisplay(
                   promos_manager::Promo::SafariImportRemindMeLater));
