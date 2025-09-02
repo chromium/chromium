@@ -86,6 +86,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace blink {
 
@@ -787,8 +788,9 @@ bool Animation::PreCommit(
 
       DCHECK_EQ(V8AnimationPlayState::Enum::kRunning,
                 CalculateAnimationPlayState());
-      TRACE_EVENT_NESTABLE_ASYNC_INSTANT1(
-          AnimationTraceCategories(), "Animation", this, "data",
+      TRACE_EVENT_INSTANT(
+          AnimationTraceCategories(), "Animation",
+          perfetto::Track::FromPointer(this), "data",
           [&](perfetto::TracedValue context) {
             inspector_animation_compositor_event::Data(
                 std::move(context), failure_reasons,
@@ -3384,23 +3386,25 @@ void Animation::NotifyProbe() {
                      new_play_state == V8AnimationPlayState::Enum::kRunning;
 
     if (!was_active && is_active) {
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-          AnimationTraceCategories(), "Animation", this, "data",
-          [&](perfetto::TracedValue context) {
-            inspector_animation_event::Data(std::move(context), *this);
-          });
+      TRACE_EVENT_BEGIN(AnimationTraceCategories(), "Animation",
+                        perfetto::Track::FromPointer(this), "data",
+                        [&](perfetto::TracedValue context) {
+                          inspector_animation_event::Data(std::move(context),
+                                                          *this);
+                        });
     } else if (was_active && !is_active) {
-      TRACE_EVENT_NESTABLE_ASYNC_END1(
-          AnimationTraceCategories(), "Animation", this, "endData",
-          [&](perfetto::TracedValue context) {
+      TRACE_EVENT_END(
+          AnimationTraceCategories(), perfetto::Track::FromPointer(this),
+          "endData", [&](perfetto::TracedValue context) {
             inspector_animation_state_event::Data(std::move(context), *this);
           });
     } else {
-      TRACE_EVENT_NESTABLE_ASYNC_INSTANT1(
-          AnimationTraceCategories(), "Animation", this, "data",
-          [&](perfetto::TracedValue context) {
-            inspector_animation_state_event::Data(std::move(context), *this);
-          });
+      TRACE_EVENT_INSTANT(AnimationTraceCategories(), "Animation",
+                          perfetto::Track::FromPointer(this), "data",
+                          [&](perfetto::TracedValue context) {
+                            inspector_animation_state_event::Data(
+                                std::move(context), *this);
+                          });
     }
   }
 }

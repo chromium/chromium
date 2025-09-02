@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace blink {
 
@@ -174,9 +175,9 @@ void ServiceWorkerGlobalScopeProxy::DidFailToFetchModuleScript() {
 
 void ServiceWorkerGlobalScopeProxy::WillEvaluateScript() {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "ServiceWorker", "ServiceWorkerGlobalScopeProxy::EvaluateTopLevelScript",
-      TRACE_ID_LOCAL(this));
+  TRACE_EVENT_BEGIN("ServiceWorker",
+                    "ServiceWorkerGlobalScopeProxy::EvaluateTopLevelScript",
+                    perfetto::Track::FromPointer(this));
   ScriptState::Scope scope(
       WorkerGlobalScope()->ScriptController()->GetScriptState());
   Client().WillEvaluateScript(
@@ -192,9 +193,8 @@ void ServiceWorkerGlobalScopeProxy::DidEvaluateTopLevelScript(bool success) {
       base::TimeTicks::Now() - top_level_script_evaluation_start_time_);
   WorkerGlobalScope()->DidEvaluateScript();
   Client().DidEvaluateScript(success);
-  TRACE_EVENT_NESTABLE_ASYNC_END1(
-      "ServiceWorker", "ServiceWorkerGlobalScopeProxy::EvaluateTopLevelScript",
-      TRACE_ID_LOCAL(this), "success", success);
+  TRACE_EVENT_END("ServiceWorker", perfetto::Track::FromPointer(this),
+                  "success", success);
 }
 
 void ServiceWorkerGlobalScopeProxy::DidCloseWorkerGlobalScope() {

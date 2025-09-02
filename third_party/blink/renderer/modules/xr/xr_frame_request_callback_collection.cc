@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_frame.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace blink {
 
@@ -22,8 +23,7 @@ XRFrameRequestCallbackCollection::CallbackId
 XRFrameRequestCallbackCollection::RegisterCallback(
     V8XRFrameRequestCallback* callback) {
   CallbackId id = ++next_callback_id_;
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("xr", "frameRequest",
-                                    TRACE_ID_LOCAL(trace_id_base_ + id));
+  TRACE_EVENT_BEGIN("xr", "frameRequest", perfetto::Track(trace_id_base_ + id));
   auto add_result_frame_request = callback_frame_requests_.Set(id, callback);
   auto add_result_async_task = callback_async_tasks_.Set(
       id, std::make_unique<probe::AsyncTaskContext>());
@@ -39,9 +39,8 @@ XRFrameRequestCallbackCollection::RegisterCallback(
 
 void XRFrameRequestCallbackCollection::CancelCallback(CallbackId id) {
   if (IsValidCallbackId(id)) {
-    TRACE_EVENT_NESTABLE_ASYNC_END1("xr", "frameRequest",
-                                    TRACE_ID_LOCAL(trace_id_base_ + id),
-                                    "Cancelled", true);
+    TRACE_EVENT_END("xr", perfetto::Track(trace_id_base_ + id), "Cancelled",
+                    true);
     callback_frame_requests_.erase(id);
     callback_async_tasks_.erase(id);
     current_callback_frame_requests_.erase(id);
@@ -86,8 +85,7 @@ void XRFrameRequestCallbackCollection::ExecuteCallbacks(XRSession* session,
     }
     CHECK_NE(current_callback_async_tasks_.end(), it_async_task);
 
-    TRACE_EVENT_NESTABLE_ASYNC_END0("xr", "frameRequest",
-                                    TRACE_ID_LOCAL(trace_id_base_ + id));
+    TRACE_EVENT_END("xr", perfetto::Track(trace_id_base_ + id));
     probe::AsyncTask async_task(context_, it_async_task->value.get());
     it_frame_request->value->InvokeAndReportException(session, timestamp,
                                                       frame);

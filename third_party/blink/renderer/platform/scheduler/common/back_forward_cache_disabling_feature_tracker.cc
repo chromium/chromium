@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/scheduler/common/back_forward_cache_disabling_feature_tracker.h"
 
 #include "third_party/blink/renderer/platform/scheduler/common/thread_scheduler_base.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace blink {
 namespace scheduler {
@@ -35,10 +36,9 @@ void BackForwardCacheDisablingFeatureTracker::SetDelegate(
 
 void BackForwardCacheDisablingFeatureTracker::Reset() {
   for (const auto& it : back_forward_cache_disabling_feature_counts_) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0(
-        "renderer.scheduler", "ActiveSchedulerTrackedFeature",
-        TRACE_ID_LOCAL(reinterpret_cast<intptr_t>(this) ^
-                       static_cast<int>(it.first)));
+    TRACE_EVENT_END("renderer.scheduler",
+                    perfetto::Track(reinterpret_cast<intptr_t>(this) ^
+                                    static_cast<int>(it.first)));
   }
 
   back_forward_cache_disabling_feature_counts_.clear();
@@ -142,17 +142,16 @@ void BackForwardCacheDisablingFeatureTracker::
   }
   switch (tracing_type) {
     case TracingType::kBegin:
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-          "renderer.scheduler", "ActiveSchedulerTrackedFeature",
-          TRACE_ID_LOCAL(reinterpret_cast<intptr_t>(this) ^
-                         static_cast<int>(traced_feature)),
-          "feature", FeatureToHumanReadableString(traced_feature));
+      TRACE_EVENT_BEGIN("renderer.scheduler", "ActiveSchedulerTrackedFeature",
+                        perfetto::Track(reinterpret_cast<intptr_t>(this) ^
+                                        static_cast<int>(traced_feature)),
+                        "feature",
+                        FeatureToHumanReadableString(traced_feature));
       break;
     case TracingType::kEnd:
-      TRACE_EVENT_NESTABLE_ASYNC_END0(
-          "renderer.scheduler", "ActiveSchedulerTrackedFeature",
-          TRACE_ID_LOCAL(reinterpret_cast<intptr_t>(this) ^
-                         static_cast<int>(traced_feature)));
+      TRACE_EVENT_END("renderer.scheduler",
+                      perfetto::Track(reinterpret_cast<intptr_t>(this) ^
+                                      static_cast<int>(traced_feature)));
       break;
   }
 }

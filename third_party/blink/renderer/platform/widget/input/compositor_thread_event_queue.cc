@@ -7,6 +7,7 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/metrics/event_metrics.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace blink {
 
@@ -66,9 +67,9 @@ void CompositorThreadEventQueue::Queue(
     if (new_event->first_original_event()) {
       // Trace could be nested as there might be multiple events in queue.
       // e.g. |ScrollUpdate|, |ScrollEnd|, and another scroll sequence.
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("input",
-                                        "CompositorThreadEventQueue::Queue",
-                                        new_event->first_original_event());
+      TRACE_EVENT_BEGIN(
+          "input", "CompositorThreadEventQueue::Queue",
+          perfetto::Track::FromPointer(new_event->first_original_event()));
     }
     queue_.push_back(std::move(new_event));
     return;
@@ -187,10 +188,10 @@ std::unique_ptr<EventWithCallback> CompositorThreadEventQueue::Pop() {
   queue_.pop_front();
 
   if (result->first_original_event()) {
-    TRACE_EVENT_NESTABLE_ASYNC_END2(
-        "input", "CompositorThreadEventQueue::Queue",
-        result->first_original_event(), "type", result->event().GetType(),
-        "coalesced_count", result->coalesced_count());
+    TRACE_EVENT_END(
+        "input", perfetto::Track::FromPointer(result->first_original_event()),
+        "type", result->event().GetType(), "coalesced_count",
+        result->coalesced_count());
   }
   return result;
 }

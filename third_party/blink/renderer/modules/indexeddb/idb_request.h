@@ -123,7 +123,7 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
   // to generating unique IDs in a threadsafe manner. The atomic machinery is
   // used when tracing is enabled. The recording problem is solved by having
   // instances of this class store the information needed to record async trace
-  // end events (via TRACE_EVENT_NESTABLE_ASYNC_END).
+  // end events.
   //
   // From a mechanical perspective, creating an AsyncTraceState instance records
   // the beginning event of an async trace. The instance is then moved into an

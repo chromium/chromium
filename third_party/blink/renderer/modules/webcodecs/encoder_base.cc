@@ -480,9 +480,9 @@ void EncoderBase<Traits>::Request::StartTracingVideoEncode(
   DCHECK(!is_tracing);
   is_tracing = true;
 #endif
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(kCategory, TraceNameFromType(), this,
-                                    "key_frame", is_keyframe, "timestamp",
-                                    timestamp);
+  TRACE_EVENT_BEGIN(kCategory, perfetto::DynamicString(TraceNameFromType()),
+                    perfetto::Track::FromPointer(this), "key_frame",
+                    is_keyframe, "timestamp", timestamp);
 }
 
 template <typename Traits>
@@ -491,7 +491,8 @@ void EncoderBase<Traits>::Request::StartTracing() {
   DCHECK(!is_tracing);
   is_tracing = true;
 #endif
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(kCategory, TraceNameFromType(), this);
+  TRACE_EVENT_BEGIN(kCategory, perfetto::DynamicString(TraceNameFromType()),
+                    perfetto::Track::FromPointer(this));
 }
 
 template <typename Traits>
@@ -500,8 +501,8 @@ void EncoderBase<Traits>::Request::EndTracing(bool aborted) {
   DCHECK(is_tracing);
   is_tracing = false;
 #endif
-  TRACE_EVENT_NESTABLE_ASYNC_END1(kCategory, TraceNameFromType(), this,
-                                  "aborted", aborted);
+  TRACE_EVENT_END(kCategory, perfetto::Track::FromPointer(this), "aborted",
+                  aborted);
 }
 
 template class EncoderBase<VideoEncoderTraits>;

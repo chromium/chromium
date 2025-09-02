@@ -104,6 +104,7 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 static constexpr base::TimeDelta kLongTaskObserverThreshold =
     base::Milliseconds(50);
@@ -1266,12 +1267,12 @@ void WindowPerformance::NotifyAndAddEventTimingBuffer(
     // perfetto events.
     unsigned hash = GetHash(entry->name());
     AddFloatToHash(hash, entry->startTime());
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-        "devtools.timeline", "EventTiming", hash, entryInfo->creation_time,
-        "data", entry->ToTracedValue(DomWindow()->GetFrame()));
+    TRACE_EVENT_BEGIN("devtools.timeline", "EventTiming",
+                      perfetto::Track::Global(hash), entryInfo->creation_time,
+                      "data", entry->ToTracedValue(DomWindow()->GetFrame()));
 
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-        "devtools.timeline", "EventTiming", hash, entry->GetEndTime());
+    TRACE_EVENT_END("devtools.timeline", perfetto::Track::Global(hash),
+                    entry->GetEndTime());
   }
 }
 

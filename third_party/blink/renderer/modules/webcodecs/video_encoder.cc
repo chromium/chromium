@@ -978,8 +978,9 @@ bool VideoEncoder::StartReadback(scoped_refptr<media::VideoFrame> frame,
                               CrossThreadBindOnce(metadata_fix_lambda, frame))
                               .Then(std::move(pool_result_cb));
 
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("media", "CopyRGBATextureToVideoFrame",
-                                      this, "timestamp", frame->timestamp());
+    TRACE_EVENT_BEGIN("media", "CopyRGBATextureToVideoFrame",
+                      perfetto::Track::FromPointer(this), "timestamp",
+                      frame->timestamp());
     if (accelerated_frame_pool_->CopyRGBATextureToVideoFrame(
             frame->coded_size(), frame->shared_image(),
             frame->acquire_sync_token(), gfx::ColorSpace::CreateREC709(),
@@ -987,8 +988,8 @@ bool VideoEncoder::StartReadback(scoped_refptr<media::VideoFrame> frame,
       return true;
     }
 
-    TRACE_EVENT_NESTABLE_ASYNC_END0("media", "CopyRGBATextureToVideoFrame",
-                                    this);
+    TRACE_EVENT_END("media", /*CopyRGBATextureToVideoFrame*/
+                    perfetto::Track::FromPointer(this));
 
     // Error occurred, fall through to normal readback path below.
     disable_accelerated_frame_pool_ = true;
@@ -1225,7 +1226,8 @@ void VideoEncoder::OnReadbackDone(
     scoped_refptr<media::VideoFrame> txt_frame,
     media::VideoEncoder::EncoderStatusCB done_callback,
     scoped_refptr<media::VideoFrame> result_frame) {
-  TRACE_EVENT_NESTABLE_ASYNC_END0("media", "CopyRGBATextureToVideoFrame", this);
+  TRACE_EVENT_END("media", /*CopyRGBATextureToVideoFrame*/
+                  perfetto::Track::FromPointer(this));
   if (reset_count_ != request->reset_count) {
     return;
   }

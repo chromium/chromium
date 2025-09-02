@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace blink {
 
@@ -211,8 +212,9 @@ IDBRequest::AsyncTraceState::AsyncTraceState(TypeForMetrics type)
     : type_(type), start_time_(base::TimeTicks::Now()) {
   static std::atomic<size_t> counter(0);
   id_ = counter.fetch_add(1, std::memory_order_relaxed);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("IndexedDB", RequestTypeToName(type),
-                                    TRACE_ID_LOCAL(id_));
+  TRACE_EVENT_BEGIN("IndexedDB",
+                    perfetto::DynamicString(RequestTypeToName(type)),
+                    perfetto::Track(id_));
 }
 
 void IDBRequest::AsyncTraceState::WillDispatchResult(bool success) {
@@ -225,8 +227,7 @@ void IDBRequest::AsyncTraceState::WillDispatchResult(bool success) {
 
 void IDBRequest::AsyncTraceState::RecordAndReset() {
   if (type_) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0("IndexedDB", RequestTypeToName(*type_),
-                                    TRACE_ID_LOCAL(id_));
+    TRACE_EVENT_END("IndexedDB", perfetto::Track(id_));
     type_.reset();
   }
 }

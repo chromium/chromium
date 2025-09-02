@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread_cpu_throttler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/virtual_time_controller.h"
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace {
 enum DataSaverOverride {
@@ -587,9 +588,9 @@ protocol::Response InspectorEmulationAgent::setVirtualTimePolicy(
       virtual_time_controller_.EnableVirtualTime(initial_time);
   virtual_time_controller_.SetVirtualTimePolicy(scheduler_policy);
   if (virtual_time_budget_ms.value_or(0) > 0) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("renderer.scheduler", "VirtualTimeBudget",
-                                      TRACE_ID_LOCAL(this), "budget",
-                                      virtual_time_budget_ms.value());
+    TRACE_EVENT_BEGIN("renderer.scheduler", "VirtualTimeBudget",
+                      perfetto::Track::FromPointer(this), "budget",
+                      virtual_time_budget_ms.value());
     const base::TimeDelta budget_amount =
         base::Milliseconds(virtual_time_budget_ms.value());
     virtual_time_controller_.GrantVirtualTimeBudget(
@@ -671,8 +672,7 @@ protocol::Response InspectorEmulationAgent::setNavigatorOverrides(
 }
 
 void InspectorEmulationAgent::VirtualTimeBudgetExpired() {
-  TRACE_EVENT_NESTABLE_ASYNC_END0("renderer.scheduler", "VirtualTimeBudget",
-                                  TRACE_ID_LOCAL(this));
+  TRACE_EVENT_END("renderer.scheduler", perfetto::Track::FromPointer(this));
   // Disregard the event if the agent is disabled. Another agent may take care
   // of pausing the time in case of an in-process frame swap.
   if (!enabled_) {

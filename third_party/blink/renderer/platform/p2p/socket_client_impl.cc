@@ -9,11 +9,13 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
+#include "base/trace_event/trace_event.h"
 #include "crypto/random.h"
 #include "services/network/public/cpp/p2p_param_traits.h"
 #include "third_party/blink/renderer/platform/p2p/socket_client_delegate.h"
 #include "third_party/blink/renderer/platform/p2p/socket_dispatcher.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace {
 
@@ -96,7 +98,7 @@ void P2PSocketClientImpl::SendWithPacketId(
     base::span<const uint8_t> data,
     const webrtc::AsyncSocketPacketOptions& options,
     uint64_t packet_id) {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("p2p", "Send", packet_id);
+  TRACE_EVENT_BEGIN("p2p", "Send", perfetto::Track(packet_id));
 
   // Conditionally start or continue temporarily storing the packets of a batch.
   // We can't allow sending individual packets mid batch since we would receive
