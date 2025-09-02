@@ -327,8 +327,7 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
   _browserViewVisibilityNotifierBrowserAgent->AddObserver(
       _browserViewVisibilityObserverBridge.get());
   _discoverFeedVisibilityBrowserAgent->AddObserver(self.feedVisibilityObserver);
-  if (IsNTPBackgroundCustomizationEnabled() &&
-      _prefService->GetBoolean(prefs::kNTPCustomBackgroundEnabledByPolicy)) {
+  if (IsNTPBackgroundCustomizationEnabled()) {
     _backgroundCustomizationServiceObserverBridge =
         std::make_unique<HomeBackgroundCustomizationServiceObserverBridge>(
             _backgroundCustomizationService, self);

@@ -34,8 +34,8 @@
 @property(nonatomic, weak) id<HomeCustomizationSearchEngineLogoMediatorProvider>
     searchEngineLogoMediatorProvider;
 
-// Whether the NTP custom background is enabled by enterprise policy.
-@property(nonatomic, assign) BOOL isNTPCustomBackgroundEnabledByPolicy;
+// Whether the NTP custom background is disabled by enterprise policy.
+@property(nonatomic, assign) BOOL customizationDisabledByPolicy;
 
 // Whether interaction with the background customization section is enabled.
 // Prevents the background from changing when it should not change.

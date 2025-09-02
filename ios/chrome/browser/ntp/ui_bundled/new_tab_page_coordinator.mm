@@ -381,9 +381,7 @@
   [self configureNTPViewController];
   [self configureTabGroupIndicator];
 
-  if (IsNTPBackgroundCustomizationEnabled() &&
-      self.prefService->GetBoolean(
-          prefs::kNTPCustomBackgroundEnabledByPolicy)) {
+  if (IsNTPBackgroundCustomizationEnabled()) {
     // Ensure the initial background is applied after all components have been
     // set up.
     [self.NTPMediator updateBackground];

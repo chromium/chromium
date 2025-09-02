@@ -13,6 +13,7 @@
 #import "base/task/sequenced_task_runner.h"
 #import "base/values.h"
 #import "components/keyed_service/core/keyed_service.h"
+#import "components/prefs/pref_change_registrar.h"
 #import "components/sync/protocol/theme_specifics_ios.pb.h"
 #import "components/sync/protocol/theme_types.pb.h"
 #import "ios/chrome/browser/home_customization/model/home_background_data.h"
@@ -200,6 +201,9 @@ class HomeBackgroundCustomizationService : public KeyedService {
   // to disk.
   void ClearCurrentUserUploadedBackground();
 
+  // Return whether the NTP custom background is disabled by enterprise policy.
+  bool IsCustomizationDisabledByPolicy();
+
  private:
   // Alerts observers when the background changes.
   void NotifyObserversOfBackgroundChange();
@@ -250,6 +254,11 @@ class HomeBackgroundCustomizationService : public KeyedService {
   void DeleteUserBackgroundImage(
       HomeUserUploadedBackground user_background_image);
 
+  // Observes changes to enterprise policy prefs for theme color
+  // (kPolicyThemeColor) and custom backgrounds
+  // (kNTPCustomBackgroundEnabledByPolicy).
+  void OnPolicyPrefsChanged(const std::string& name);
+
   // Handles the loaded images.
   void DefaultRecentlyUsedBackgroundsLoaded(
       const HomeBackgroundImageService::CollectionImageMap& collection_map);
@@ -270,6 +279,9 @@ class HomeBackgroundCustomizationService : public KeyedService {
 
   // Service used to load lists of recently used images.
   raw_ptr<HomeBackgroundImageService> home_background_image_service_;
+
+  // Registrar for prefs change.
+  PrefChangeRegistrar pref_change_registrar_;
 
   base::ObserverList<HomeBackgroundCustomizationServiceObserver> observers_;
 

@@ -111,8 +111,11 @@
 
   // TODO(crbug.com/439549295): Update the UI to show a message when NTP
   // customization is blocked by enterprise policy.
-  if (IsNTPBackgroundCustomizationEnabled() &&
-      self.isNTPCustomBackgroundEnabledByPolicy) {
+  if (IsNTPBackgroundCustomizationEnabled()) {
+    if (self.customizationDisabledByPolicy) {
+      return;
+    }
+
     _backgroundCellRegistration = [UICollectionViewCellRegistration
         registrationWithCellClass:[HomeCustomizationBackgroundCell class]
              configurationHandler:^(HomeCustomizationBackgroundCell* cell,
@@ -141,7 +144,7 @@
       [[NSDiffableDataSourceSnapshot alloc] init];
 
   if (IsNTPBackgroundCustomizationEnabled() &&
-      self.isNTPCustomBackgroundEnabledByPolicy) {
+      !self.customizationDisabledByPolicy) {
     // Create background customization section and add items to it.
     [snapshot
         appendSectionsWithIdentifiers:@[ kCustomizationSectionBackground ]];

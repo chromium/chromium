@@ -14,6 +14,7 @@
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "components/sync/protocol/theme_types.pb.h"
+#import "components/themes/pref_names.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_observer.h"
 #import "ios/chrome/browser/home_customization/model/home_background_data.h"
 #import "ios/chrome/browser/home_customization/model/home_background_image_service.h"
@@ -74,9 +75,14 @@ HomeBackgroundCustomizationService::HomeBackgroundCustomizationService(
       user_image_manager_(user_image_manager),
       home_background_image_service_(home_background_image_service),
       weak_ptr_factory_{this} {
-  if (!IsNTPBackgroundCustomizationEnabled()) {
-    return;
-  }
+  pref_change_registrar_.Init(pref_service_);
+  PrefChangeRegistrar::NamedChangeCallback callback = base::BindRepeating(
+      &HomeBackgroundCustomizationService::OnPolicyPrefsChanged,
+      weak_ptr_factory_.GetWeakPtr());
+  pref_change_registrar_.Add(themes::prefs::kPolicyThemeColor, callback);
+  pref_change_registrar_.Add(prefs::kNTPCustomBackgroundEnabledByPolicy,
+                             callback);
+
   LoadCurrentTheme();
 
   const base::Value::List& recently_used_backgrounds_list =
@@ -143,6 +149,10 @@ void HomeBackgroundCustomizationService::RegisterProfilePrefs(
 
 std::optional<HomeCustomBackground>
 HomeBackgroundCustomizationService::GetCurrentCustomBackground() {
+  if (IsCustomizationDisabledByPolicy()) {
+    return std::nullopt;
+  }
+
   std::optional<HomeUserUploadedBackground> user_uploaded_background =
       GetCurrentUserUploadedBackground();
   if (user_uploaded_background) {
@@ -153,6 +163,10 @@ HomeBackgroundCustomizationService::GetCurrentCustomBackground() {
 
 std::optional<sync_pb::NtpCustomBackground>
 HomeBackgroundCustomizationService::GetCurrentNtpCustomBackground() {
+  if (IsCustomizationDisabledByPolicy()) {
+    return std::nullopt;
+  }
+
   if (!current_theme_.has_ntp_background()) {
     return std::nullopt;
   }
@@ -161,6 +175,10 @@ HomeBackgroundCustomizationService::GetCurrentNtpCustomBackground() {
 
 std::optional<sync_pb::UserColorTheme>
 HomeBackgroundCustomizationService::GetCurrentColorTheme() {
+  if (IsCustomizationDisabledByPolicy()) {
+    return std::nullopt;
+  }
+
   if (!current_theme_.has_user_color_theme()) {
     return std::nullopt;
   }
@@ -346,6 +364,11 @@ void HomeBackgroundCustomizationService::LoadCurrentTheme() {
   if (!IsNTPBackgroundCustomizationEnabled()) {
     return;
   }
+
+  if (IsCustomizationDisabledByPolicy()) {
+    return;
+  }
+
   current_theme_ = DecodeThemeSpecificsIos(
       pref_service_->GetString(prefs::kIosSavedThemeSpecificsIos));
 
@@ -399,6 +422,12 @@ void HomeBackgroundCustomizationService::ClearCurrentUserUploadedBackground() {
     return;
   }
   current_user_uploaded_background_ = std::nullopt;
+}
+
+bool HomeBackgroundCustomizationService::IsCustomizationDisabledByPolicy() {
+  return !pref_service_->GetBoolean(
+             prefs::kNTPCustomBackgroundEnabledByPolicy) ||
+         pref_service_->IsManagedPreference(themes::prefs::kPolicyThemeColor);
 }
 
 RecentlyUsedBackground
@@ -519,4 +548,17 @@ void HomeBackgroundCustomizationService::DefaultRecentlyUsedBackgroundsLoaded(
   }
 
   StoreRecentlyUsedBackgroundsList();
+}
+
+void HomeBackgroundCustomizationService::OnPolicyPrefsChanged(
+    const std::string& name) {
+  CHECK(themes::prefs::kPolicyThemeColor == name ||
+        prefs::kNTPCustomBackgroundEnabledByPolicy == name);
+  if (IsCustomizationDisabledByPolicy()) {
+    ClearCurrentBackground();
+    return;
+  }
+
+  RestoreCurrentTheme();
+  NotifyObserversOfBackgroundChange();
 }

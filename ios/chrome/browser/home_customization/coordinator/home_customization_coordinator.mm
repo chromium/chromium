@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_picker_action_sheet_coordinator.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_delegate.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_mediator.h"
+#import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
 #import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager_factory.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_color_picker_view_controller.h"
@@ -65,6 +66,10 @@ CGFloat const kSheetCornerRadius = 30;
   // before their configuration requests return.
   NSMutableDictionary<NSString*, SearchEngineLogoMediator*>*
       _activeSearchEngineLogoMediator;
+
+  // The Background customization service for getting current and recently used
+  // backgrounds.
+  raw_ptr<HomeBackgroundCustomizationService> _backgroundService;
 }
 
 // The main page of the customization menu.
@@ -102,14 +107,14 @@ CGFloat const kSheetCornerRadius = 30;
   _activeSearchEngineLogoMediator = [NSMutableDictionary dictionary];
   UserUploadedImageManager* userUploadedImageManager =
       UserUploadedImageManagerFactory::GetForProfile(self.profile);
+  _backgroundService =
+      HomeBackgroundCustomizationServiceFactory::GetForProfile(self.profile);
 
   _mediator = [[HomeCustomizationMediator alloc]
                      initWithPrefService:self.profile->GetPrefs()
       discoverFeedVisibilityBrowserAgent:DiscoverFeedVisibilityBrowserAgent::
                                              FromBrowser(self.browser)
-                       backgroundService:
-                           HomeBackgroundCustomizationServiceFactory::
-                               GetForProfile(self.profile)
+                       backgroundService:_backgroundService
                      imageFetcherService:imageFetcherService
                 userUploadedImageManager:userUploadedImageManager];
   _mediator.navigationDelegate = self;
@@ -207,9 +212,8 @@ CGFloat const kSheetCornerRadius = 30;
       self.mainViewController.backgroundPickerPresentationDelegate = self;
       self.mainViewController.mutator = _mediator;
       self.mainViewController.searchEngineLogoMediatorProvider = self;
-      self.mainViewController.isNTPCustomBackgroundEnabledByPolicy =
-          self.profile->GetPrefs()->GetBoolean(
-              prefs::kNTPCustomBackgroundEnabledByPolicy);
+      self.mainViewController.customizationDisabledByPolicy =
+          _backgroundService->IsCustomizationDisabledByPolicy();
       self.mediator.mainPageConsumer = self.mainViewController;
       [self.mediator configureMainPageData];
       menuPage = self.mainViewController;
