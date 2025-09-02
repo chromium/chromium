@@ -8,6 +8,8 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.util.function.Supplier;
+
 /**
  * SyncOneshotSupplier wraps an asynchronously provided, non-null object {@code T}, synchronously
  * notifying observers a single time when the dependency becomes available. Note that null is the

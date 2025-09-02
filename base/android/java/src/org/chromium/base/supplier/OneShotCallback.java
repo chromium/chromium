@@ -8,20 +8,20 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 
 import java.lang.ref.WeakReference;
+import java.util.function.Supplier;
 
 /**
- * Helper class to handle safely querying a single instance of an object from an
- * {@link ObservableSupplier}.
+ * Helper class to handle safely querying a single instance of an object from an {@link
+ * ObservableSupplier}.
  *
- * Assuming the underlying {@link Supplier} gets set with a
- * value, this class will guarantee only a single call makes it back to the passed in
- * {@link Callback}.
+ * <p>Assuming the underlying {@link Supplier} gets set with a value, this class will guarantee only
+ * a single call makes it back to the passed in {@link Callback}.
  *
- * For {@link ObservableSupplier}s that already have a valid value set, this will have the same
+ * <p>For {@link ObservableSupplier}s that already have a valid value set, this will have the same
  * underlying behavior as {@link ObservableSupplierImpl}, which asynchronously triggers the callback
  * when {@link ObservableSupplier#addObserver(Callback)} is called.
  *
- * This class does not hold a strong reference to the {@link ObservableSupplier}, but does hold a
+ * <p>This class does not hold a strong reference to the {@link ObservableSupplier}, but does hold a
  * strong reference to the {@link Callback}.
  *
  * @param <E> The type of the wrapped object.

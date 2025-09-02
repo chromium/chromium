@@ -4,11 +4,12 @@
 
 package org.chromium.chrome.browser.ui.browser_window;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.base.ActivityWindowAndroid;
+
+import java.util.function.Supplier;
 
 /**
  * Tracks {@link ChromeAndroidTask}s.

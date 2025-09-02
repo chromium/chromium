@@ -1406,19 +1406,7 @@ public class CustomTabsConnection {
     void showSignInToastIfNecessary(
             SessionHolder<?> session,
             Intent intent,
-            Supplier<ProfileProvider> profileProviderSupplier) {
-        showSignInToastIfNecessary(
-                session,
-                intent,
-                (org.chromium.base.supplier.Supplier<ProfileProvider>)
-                        profileProviderSupplier::get);
-    }
-
-    // TODO(crbug.com/440309602) Delete.
-    void showSignInToastIfNecessary(
-            SessionHolder<?> session,
-            Intent intent,
-            org.chromium.base.supplier.Supplier<ProfileProvider> profileProviderSupplier) {}
+            Supplier<ProfileProvider> profileProviderSupplier) {}
 
     /**
      * Returns whether the app launching the CCT may display account mismatch notification UI.

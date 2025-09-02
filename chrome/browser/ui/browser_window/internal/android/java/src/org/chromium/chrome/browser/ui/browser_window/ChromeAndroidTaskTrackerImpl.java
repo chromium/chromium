@@ -9,7 +9,6 @@ import android.util.ArrayMap;
 
 import androidx.annotation.GuardedBy;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -20,6 +19,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /** Implements {@link ChromeAndroidTaskTracker} as a singleton. */
 @NullMarked

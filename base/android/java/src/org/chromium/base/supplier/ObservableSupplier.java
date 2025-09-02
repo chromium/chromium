@@ -11,6 +11,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.util.function.Supplier;
+
 /**
  * ObservableSupplier wraps an asynchronously provided object E, notifying observers when the
  * dependency is available. This allows classes dependent on E to be provided with a

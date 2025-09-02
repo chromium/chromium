@@ -40,21 +40,7 @@ public interface TinkerTankDelegate {
             Activity activity,
             Profile profile,
             BottomSheetController bottomSheetController,
-            Supplier<TabModelSelector> tabModelSelectorSupplier) {
-        maybeShowBottomSheet(
-                activity,
-                profile,
-                bottomSheetController,
-                (org.chromium.base.supplier.Supplier<TabModelSelector>)
-                        tabModelSelectorSupplier::get);
-    }
-
-    // TODO(crbug.com/440309602) Delete.
-    default void maybeShowBottomSheet(
-            Activity activity,
-            Profile profile,
-            BottomSheetController bottomSheetController,
-            org.chromium.base.supplier.Supplier<TabModelSelector> tabModelSelectorSupplier) {}
+            Supplier<TabModelSelector> tabModelSelectorSupplier) {}
 
     void maybeShowForSelectedTabs(
             Activity activity, BottomSheetController bottomSheetController, List<Tab> tabs);
