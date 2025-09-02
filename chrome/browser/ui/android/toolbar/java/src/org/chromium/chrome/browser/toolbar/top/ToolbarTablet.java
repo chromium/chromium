@@ -403,6 +403,7 @@ public class ToolbarTablet extends ToolbarLayout {
         mToolbarWidthConsumers[ToolbarComponentId.ADAPTIVE_BUTTON] =
                 mOptionalButtonToolbarWidthConsumer;
         mToolbarWidthConsumers[ToolbarComponentId.TAB_SWITCHER] = tabSwitcherButtonCoordinator;
+        mToolbarWidthConsumers[ToolbarComponentId.MENU] = menuButtonCoordinator;
     }
 
     @Override
@@ -450,11 +451,6 @@ public class ToolbarTablet extends ToolbarLayout {
     @VisibleForTesting
     int getWidthForStaticComponents() {
         int width = 0;
-        int buttonWidth =
-                getContext().getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
-        if (getMenuButtonCoordinator().isVisible()) {
-            width += buttonWidth;
-        }
         // Account for the minimum width of the location bar.
         width +=
                 (int)
@@ -756,5 +752,11 @@ public class ToolbarTablet extends ToolbarLayout {
 
     void setTabStackButtonCoordinatorForTesting(ToggleTabStackButtonCoordinator coordinator) {
         mToolbarWidthConsumers[ToolbarComponentId.TAB_SWITCHER] = coordinator;
+    }
+
+    @Override
+    void setMenuButtonCoordinatorForTesting(MenuButtonCoordinator coordinator) {
+        mMenuButtonCoordinator = coordinator;
+        mToolbarWidthConsumers[ToolbarComponentId.MENU] = coordinator;
     }
 }

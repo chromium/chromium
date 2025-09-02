@@ -25,6 +25,7 @@ import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarCompon
 import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId.BACK;
 import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId.FORWARD;
 import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId.HOME;
+import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId.MENU;
 import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId.RELOAD;
 import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId.TAB_SWITCHER;
 
@@ -214,6 +215,7 @@ public final class ToolbarTabletUnitTest {
         doReturn(buttonWidth).when(mReloadButtonCoordinator).updateVisibility(anyInt());
         doReturn(buttonWidth).when(mBackButtonCoordinator).updateVisibility(anyInt());
         doReturn(buttonWidth).when(mTabSwitcherButtonCoordinator).updateVisibility(anyInt());
+        doReturn(buttonWidth).when(mMenuButtonCoordinator).updateVisibility(anyInt());
 
         mForwardButtonCoordinator =
                 new ForwardButtonCoordinator(
@@ -842,40 +844,46 @@ public final class ToolbarTabletUnitTest {
         mToolbarTablet.onMeasure(
                 MeasureSpec.makeMeasureSpec(buttonWidth + widthForStaticComponents, EXACTLY),
                 UNSPECIFIED);
-        assertToolbarComponentsReceivedWidth(Set.of(BACK));
+        assertToolbarComponentsReceivedWidth(Set.of(MENU));
 
         mToolbarTablet.onMeasure(
                 MeasureSpec.makeMeasureSpec(2 * buttonWidth + widthForStaticComponents, EXACTLY),
                 UNSPECIFIED);
-        assertToolbarComponentsReceivedWidth(Set.of(BACK, TAB_SWITCHER));
+        assertToolbarComponentsReceivedWidth(Set.of(MENU, BACK));
 
         mToolbarTablet.onMeasure(
                 MeasureSpec.makeMeasureSpec(3 * buttonWidth + widthForStaticComponents, EXACTLY),
                 UNSPECIFIED);
-        assertToolbarComponentsReceivedWidth(Set.of(BACK, RELOAD, TAB_SWITCHER));
+        assertToolbarComponentsReceivedWidth(Set.of(MENU, BACK, TAB_SWITCHER));
 
         mToolbarTablet.onMeasure(
                 MeasureSpec.makeMeasureSpec(4 * buttonWidth + widthForStaticComponents, EXACTLY),
                 UNSPECIFIED);
-
-        assertToolbarComponentsReceivedWidth(Set.of(BACK, FORWARD, RELOAD, TAB_SWITCHER));
+        assertToolbarComponentsReceivedWidth(Set.of(MENU, BACK, RELOAD, TAB_SWITCHER));
 
         mToolbarTablet.onMeasure(
                 MeasureSpec.makeMeasureSpec(5 * buttonWidth + widthForStaticComponents, EXACTLY),
                 UNSPECIFIED);
-        assertToolbarComponentsReceivedWidth(Set.of(HOME, BACK, FORWARD, RELOAD, TAB_SWITCHER));
+
+        assertToolbarComponentsReceivedWidth(Set.of(MENU, BACK, FORWARD, RELOAD, TAB_SWITCHER));
 
         mToolbarTablet.onMeasure(
                 MeasureSpec.makeMeasureSpec(6 * buttonWidth + widthForStaticComponents, EXACTLY),
                 UNSPECIFIED);
         assertToolbarComponentsReceivedWidth(
-                Set.of(HOME, BACK, FORWARD, RELOAD, ADAPTIVE_BUTTON, TAB_SWITCHER));
+                Set.of(MENU, HOME, BACK, FORWARD, RELOAD, TAB_SWITCHER));
 
         mToolbarTablet.onMeasure(
                 MeasureSpec.makeMeasureSpec(7 * buttonWidth + widthForStaticComponents, EXACTLY),
                 UNSPECIFIED);
         assertToolbarComponentsReceivedWidth(
-                Set.of(HOME, BACK, FORWARD, RELOAD, ADAPTIVE_BUTTON, TAB_SWITCHER));
+                Set.of(MENU, HOME, BACK, FORWARD, RELOAD, ADAPTIVE_BUTTON, TAB_SWITCHER));
+
+        mToolbarTablet.onMeasure(
+                MeasureSpec.makeMeasureSpec(8 * buttonWidth + widthForStaticComponents, EXACTLY),
+                UNSPECIFIED);
+        assertToolbarComponentsReceivedWidth(
+                Set.of(MENU, HOME, BACK, FORWARD, RELOAD, ADAPTIVE_BUTTON, TAB_SWITCHER));
     }
 
     @SuppressLint("WrongCall")
@@ -890,41 +898,47 @@ public final class ToolbarTabletUnitTest {
                         .getDimensionPixelSize(R.dimen.toolbar_button_width);
 
         mToolbarTablet.onMeasure(
+                MeasureSpec.makeMeasureSpec(8 * buttonWidth + widthForStaticComponents, EXACTLY),
+                UNSPECIFIED);
+        assertToolbarComponentsReceivedWidth(
+                Set.of(MENU, HOME, BACK, FORWARD, RELOAD, ADAPTIVE_BUTTON, TAB_SWITCHER));
+
+        mToolbarTablet.onMeasure(
                 MeasureSpec.makeMeasureSpec(7 * buttonWidth + widthForStaticComponents, EXACTLY),
                 UNSPECIFIED);
         assertToolbarComponentsReceivedWidth(
-                Set.of(HOME, BACK, FORWARD, RELOAD, ADAPTIVE_BUTTON, TAB_SWITCHER));
+                Set.of(MENU, HOME, BACK, FORWARD, RELOAD, ADAPTIVE_BUTTON, TAB_SWITCHER));
 
         mToolbarTablet.onMeasure(
                 MeasureSpec.makeMeasureSpec(6 * buttonWidth + widthForStaticComponents, EXACTLY),
                 UNSPECIFIED);
         assertToolbarComponentsReceivedWidth(
-                Set.of(HOME, BACK, FORWARD, RELOAD, ADAPTIVE_BUTTON, TAB_SWITCHER));
+                Set.of(MENU, HOME, BACK, FORWARD, RELOAD, TAB_SWITCHER));
 
         mToolbarTablet.onMeasure(
                 MeasureSpec.makeMeasureSpec(5 * buttonWidth + widthForStaticComponents, EXACTLY),
                 UNSPECIFIED);
-        assertToolbarComponentsReceivedWidth(Set.of(HOME, BACK, FORWARD, RELOAD, TAB_SWITCHER));
+        assertToolbarComponentsReceivedWidth(Set.of(MENU, BACK, FORWARD, RELOAD, TAB_SWITCHER));
 
         mToolbarTablet.onMeasure(
                 MeasureSpec.makeMeasureSpec(4 * buttonWidth + widthForStaticComponents, EXACTLY),
                 UNSPECIFIED);
-        assertToolbarComponentsReceivedWidth(Set.of(BACK, FORWARD, RELOAD, TAB_SWITCHER));
+        assertToolbarComponentsReceivedWidth(Set.of(MENU, BACK, RELOAD, TAB_SWITCHER));
 
         mToolbarTablet.onMeasure(
                 MeasureSpec.makeMeasureSpec(3 * buttonWidth + widthForStaticComponents, EXACTLY),
                 UNSPECIFIED);
-        assertToolbarComponentsReceivedWidth(Set.of(BACK, RELOAD, TAB_SWITCHER));
+        assertToolbarComponentsReceivedWidth(Set.of(MENU, BACK, TAB_SWITCHER));
 
         mToolbarTablet.onMeasure(
                 MeasureSpec.makeMeasureSpec(2 * buttonWidth + widthForStaticComponents, EXACTLY),
                 UNSPECIFIED);
-        assertToolbarComponentsReceivedWidth(Set.of(BACK, TAB_SWITCHER));
+        assertToolbarComponentsReceivedWidth(Set.of(MENU, BACK));
 
         mToolbarTablet.onMeasure(
                 MeasureSpec.makeMeasureSpec(buttonWidth + widthForStaticComponents, EXACTLY),
                 UNSPECIFIED);
-        assertToolbarComponentsReceivedWidth(Set.of(BACK));
+        assertToolbarComponentsReceivedWidth(Set.of(MENU));
 
         mToolbarTablet.onMeasure(
                 MeasureSpec.makeMeasureSpec(widthForStaticComponents, EXACTLY), UNSPECIFIED);
@@ -964,11 +978,18 @@ public final class ToolbarTabletUnitTest {
             verify(mTabSwitcherButtonCoordinator, never()).updateVisibility(geq(buttonWidth));
         }
 
+        if (visibleComponents.contains(MENU)) {
+            verify(mMenuButtonCoordinator).updateVisibility(geq(buttonWidth));
+        } else {
+            verify(mMenuButtonCoordinator, never()).updateVisibility(geq(buttonWidth));
+        }
+
         Mockito.clearInvocations(
                 mHomeButtonCoordinator,
                 mBackButtonCoordinator,
                 mReloadButtonCoordinator,
-                mTabSwitcherButtonCoordinator);
+                mTabSwitcherButtonCoordinator,
+                mMenuButtonCoordinator);
 
         // Replace with a mock when the ForwardButtonCoordinator has its own unit tests.
         assertEquals(

@@ -92,7 +92,7 @@ public abstract class ToolbarLayout extends FrameLayout
 
     protected ThemeColorProvider mThemeColorProvider;
     protected IncognitoStateProvider mIncognitoStateProvider;
-    private MenuButtonCoordinator mMenuButtonCoordinator;
+    protected MenuButtonCoordinator mMenuButtonCoordinator;
     private @Nullable AppMenuButtonHelper mAppMenuButtonHelper;
 
     private ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;

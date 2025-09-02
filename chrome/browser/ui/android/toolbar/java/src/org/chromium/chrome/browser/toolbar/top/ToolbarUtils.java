@@ -69,6 +69,7 @@ public class ToolbarUtils {
 
     public static final @ToolbarComponentId int[] RANKED_TOOLBAR_COMPONENTS =
             new int[] {
+                ToolbarComponentId.MENU,
                 ToolbarComponentId.BACK,
                 ToolbarComponentId.TAB_SWITCHER,
                 ToolbarComponentId.ADAPTIVE_BUTTON,
@@ -84,6 +85,7 @@ public class ToolbarUtils {
         ToolbarComponentId.RELOAD,
         ToolbarComponentId.ADAPTIVE_BUTTON,
         ToolbarComponentId.TAB_SWITCHER,
+        ToolbarComponentId.MENU,
         ToolbarComponentId.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -94,7 +96,8 @@ public class ToolbarUtils {
         int RELOAD = 3;
         int ADAPTIVE_BUTTON = 4;
         int TAB_SWITCHER = 5;
-        int COUNT = 6;
+        int MENU = 6;
+        int COUNT = 7;
     }
 
     /**
