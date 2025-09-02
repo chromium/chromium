@@ -33,11 +33,13 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.ThemeType;
@@ -47,6 +49,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment;
+import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.prefs.PrefChangeRegistrar;
@@ -67,6 +70,10 @@ public class AppearanceSettingsFragmentTest {
     @Rule
     public final BlankUiTestActivitySettingsTestRule mSettingsTestRule =
             new BlankUiTestActivitySettingsTestRule();
+
+    @Rule
+    public OverrideContextWrapperTestRule mOverrideContextRule =
+            new OverrideContextWrapperTestRule();
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -107,6 +114,12 @@ public class AppearanceSettingsFragmentTest {
         doAnswer(runCallbackWithValueAtIndex(mBookmarkBarSettingSupplier::set, 1))
                 .when(mPrefService)
                 .setBoolean(eq(Pref.SHOW_BOOKMARK_BAR), anyBoolean());
+
+        // Explicitly override FeatureParam for consistency.
+        FeatureOverrides.Builder overrides = FeatureOverrides.newBuilder();
+        overrides =
+                overrides.param(ChromeFeatureList.ANDROID_BOOKMARK_BAR, "show_bookmark_bar", true);
+        overrides.apply();
     }
 
     @AfterClass
@@ -133,7 +146,9 @@ public class AppearanceSettingsFragmentTest {
 
     @Test
     @SmallTest
-    public void testBookmarkBarPreferenceUpdatesSettingWhenChanged() {
+    public void testBookmarkBarPreferenceUpdatesSettingWhenChanged_Desktop() {
+        mOverrideContextRule.setIsDesktop(true);
+
         ThreadUtils.runOnUiThreadBlocking(() -> mBookmarkBarSettingSupplier.set(true));
         BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
         launchSettings();
@@ -152,7 +167,9 @@ public class AppearanceSettingsFragmentTest {
 
     @Test
     @SmallTest
-    public void testBookmarkBarPreferenceIsUpdatedWhenSettingChanges() {
+    public void testBookmarkBarPreferenceIsUpdatedWhenSettingChanges_Desktop() {
+        mOverrideContextRule.setIsDesktop(true);
+
         ThreadUtils.runOnUiThreadBlocking(() -> mBookmarkBarSettingSupplier.set(true));
         BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
         launchSettings();
@@ -164,6 +181,48 @@ public class AppearanceSettingsFragmentTest {
         Assert.assertFalse(bookmarkBarPref.isChecked());
 
         ThreadUtils.runOnUiThreadBlocking(() -> mBookmarkBarSettingSupplier.set(true));
+        Assert.assertTrue(bookmarkBarPref.isChecked());
+    }
+
+    @Test
+    @SmallTest
+    public void testBookmarkBarPreferenceUpdatesSettingWhenChanged_Tablet() {
+        mOverrideContextRule.setIsDesktop(false);
+
+        BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
+        launchSettings();
+
+        final var bookmarkBarPref = assertSwitchExists(PREF_BOOKMARK_BAR);
+        Assert.assertTrue(bookmarkBarPref.isChecked());
+
+        ThreadUtils.runOnUiThreadBlocking(bookmarkBarPref::performClick);
+        Assert.assertFalse(bookmarkBarPref.isChecked());
+        Assert.assertFalse(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled());
+        Assert.assertTrue(BookmarkBarUtils.hasUserSetDevicePrefShowBookmarksBar());
+
+        ThreadUtils.runOnUiThreadBlocking(bookmarkBarPref::performClick);
+        Assert.assertTrue(bookmarkBarPref.isChecked());
+        Assert.assertTrue(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled());
+        Assert.assertTrue(BookmarkBarUtils.hasUserSetDevicePrefShowBookmarksBar());
+    }
+
+    @Test
+    @SmallTest
+    public void testBookmarkBarPreferenceIsUpdatedWhenSettingChanges_Tablet() {
+        mOverrideContextRule.setIsDesktop(false);
+
+        BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
+        launchSettings();
+
+        final var bookmarkBarPref = assertSwitchExists(PREF_BOOKMARK_BAR);
+        Assert.assertTrue(bookmarkBarPref.isChecked());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> BookmarkBarUtils.setDevicePrefShowBookmarksBar(false));
+        Assert.assertFalse(bookmarkBarPref.isChecked());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> BookmarkBarUtils.setDevicePrefShowBookmarksBar(true));
         Assert.assertTrue(bookmarkBarPref.isChecked());
     }
 

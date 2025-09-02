@@ -17,6 +17,7 @@ import android.view.View;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -25,19 +26,23 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.ReusedCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
@@ -55,11 +60,16 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
 public class KeyboardFocusRowManagerTest {
 
     @Rule
     public ReusedCtaTransitTestRule<WebPageStation> mActivityTestRule =
             ChromeTransitTestRules.blankPageStartReusedActivityRule();
+
+    @Rule
+    public OverrideContextWrapperTestRule mOverrideContextRule =
+            new OverrideContextWrapperTestRule();
 
     @Rule public MockitoRule mockito = MockitoJUnit.rule(); // todo delete if not needed
 
@@ -71,6 +81,12 @@ public class KeyboardFocusRowManagerTest {
     @BeforeClass
     public static void setUpClass() {
         TabbedRootUiCoordinator.setDisableTopControlsAnimationsForTesting(true);
+
+        // Explicitly override FeatureParam for consistency.
+        FeatureOverrides.Builder overrides = FeatureOverrides.newBuilder();
+        overrides =
+                overrides.param(ChromeFeatureList.ANDROID_BOOKMARK_BAR, "show_bookmark_bar", true);
+        overrides.apply();
     }
 
     @Before
@@ -80,6 +96,13 @@ public class KeyboardFocusRowManagerTest {
         mTabbedRootUiCoordinator =
                 (TabbedRootUiCoordinator) mActivity.getRootUiCoordinatorForTesting();
         mKeyboardFocusRowManager = mTabbedRootUiCoordinator.getKeyboardFocusRowManagerForTesting();
+        mOverrideContextRule.setIsDesktop(true);
+    }
+
+    @After
+    public void tearDown() {
+        setUserPrefsShowBookmarksBar(false);
+        setBookmarkBarFeatureParam(false);
     }
 
     @Test
@@ -128,6 +151,9 @@ public class KeyboardFocusRowManagerTest {
     @Feature("KeyboardShortcuts")
     @EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
     public void testSwitchKeyboardFocusRow_withBookmarksBar() {
+        setBookmarkBarFeatureParam(true);
+        setUserPrefsShowBookmarksBar(true);
+
         // Put something in the content view so we can focus on it.
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivity, false, true);
@@ -155,6 +181,9 @@ public class KeyboardFocusRowManagerTest {
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
     public void testSwitchKeyboardFocusRow_withBookmarkBarFocus() {
+        setBookmarkBarFeatureParam(true);
+        setUserPrefsShowBookmarksBar(true);
+
         ThreadUtils.runOnUiThreadBlocking(
                 mTabbedRootUiCoordinator::initializeBookmarkBarCoordinatorForTesting);
 
@@ -305,5 +334,20 @@ public class KeyboardFocusRowManagerTest {
                 "Expected focus to be on none after invocation of keyboard focus row switch",
                 KeyboardFocusRow.NONE,
                 mKeyboardFocusRowManager.getKeyboardFocusRowForTesting());
+    }
+
+    private void setUserPrefsShowBookmarksBar(boolean showBookmarksBar) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        BookmarkBarUtils.setUserPrefsShowBookmarksBar(
+                                mActivity.getProfileProviderSupplier().get().getOriginalProfile(),
+                                showBookmarksBar));
+    }
+
+    private void setBookmarkBarFeatureParam(boolean param) {
+        FeatureOverrides.Builder overrides = FeatureOverrides.newBuilder();
+        overrides =
+                overrides.param(ChromeFeatureList.ANDROID_BOOKMARK_BAR, "show_bookmark_bar", param);
+        overrides.apply();
     }
 }

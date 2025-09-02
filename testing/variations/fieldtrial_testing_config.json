@@ -630,7 +630,20 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_DefaultDevicePref_True",
+                    "params": {
+                        "show_bookmark_bar": "true"
+                    },
+                    "enable_features": [
+                        "AndroidAppearanceSettings",
+                        "AndroidBookmarkBar"
+                    ]
+                },
+                {
+                    "name": "Enabled_DefaultDevicePref_False",
+                    "params": {
+                        "show_bookmark_bar": "false"
+                    },
                     "enable_features": [
                         "AndroidAppearanceSettings",
                         "AndroidBookmarkBar"

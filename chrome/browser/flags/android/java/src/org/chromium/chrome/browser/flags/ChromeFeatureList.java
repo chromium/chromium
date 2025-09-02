@@ -1455,6 +1455,9 @@ public abstract class ChromeFeatureList {
                             "multi_data_source_skip_device_check",
                             false);
 
+    public static final BooleanCachedFeatureParam sAndroidBookmarkBarShowBookmarkBar =
+            newBooleanCachedFeatureParam(ANDROID_BOOKMARK_BAR, "show_bookmark_bar", false);
+
     public static final BooleanCachedFeatureParam sAndroidComposeplateSkipLocaleCheck =
             newBooleanCachedFeatureParam(ANDROID_COMPOSEPLATE, "skip_locale_check", false);
 
@@ -1795,6 +1798,7 @@ public abstract class ChromeFeatureList {
                     sAndroidAppIntegrationWithFaviconSkipSchemaCheck,
                     sAndroidAppIntegrationWithFaviconUseLargeFavicon,
                     sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber,
+                    sAndroidBookmarkBarShowBookmarkBar,
                     sAndroidBottomToolbarDefaultToTop,
                     sAndroidComposeplateHideIncognitoButton,
                     sAndroidComposeplateSkipLocaleCheck,

@@ -5,13 +5,17 @@
 package org.chromium.chrome.browser.appearance.settings;
 
 import android.content.Context;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarConstants;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
@@ -36,15 +40,20 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
     public static final String PREF_UI_THEME = "ui_theme";
 
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private boolean mUseProfileUserPrefs;
 
     private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
     private @Nullable PrefObserver mPrefObserver;
+    private @Nullable OnSharedPreferenceChangeListener mDevicePrefsListener;
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         mPageTitle.set(getTitle(getContext()));
         SettingsUtils.addPreferencesFromResource(this, R.xml.appearance_preferences);
 
+        // This fragment may be used on Desktop or tablets. For Desktop we use the current Profile's
+        // UserPrefs. For tablets, we use the local device preference.
+        mUseProfileUserPrefs = DeviceInfo.isDesktop();
         initBookmarkBarPref();
         initToolbarShortcutPref();
         initUiThemePref();
@@ -58,6 +67,11 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
             mPrefChangeRegistrar.removeObserver(Pref.SHOW_BOOKMARK_BAR);
             mPrefChangeRegistrar.destroy();
             mPrefChangeRegistrar = null;
+        }
+        if (mDevicePrefsListener != null) {
+            ContextUtils.getAppSharedPreferences()
+                    .unregisterOnSharedPreferenceChangeListener(mDevicePrefsListener);
+            mDevicePrefsListener = null;
         }
     }
 
@@ -92,6 +106,14 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
             return;
         }
 
+        if (mUseProfileUserPrefs) {
+            initBookmarkBarPrefForUserPrefs();
+        } else {
+            initBookmarkBarPrefForDevicePreference();
+        }
+    }
+
+    private void initBookmarkBarPrefForUserPrefs() {
         mPrefChangeRegistrar = PrefServiceUtil.createFor(getProfile());
         mPrefObserver =
                 new PrefObserver() {
@@ -109,6 +131,28 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
                         (pref, newValue) -> {
                             BookmarkBarUtils.setUserPrefsShowBookmarksBar(
                                     getProfile(), (boolean) newValue);
+                            return true;
+                        });
+    }
+
+    private void initBookmarkBarPrefForDevicePreference() {
+        // Similar to UserPrefs above, we must have both an observer of changes to the device prefs,
+        // as well as the ability to set the device prefs via the toggle, since the value can be
+        // toggled by another window.
+        mDevicePrefsListener =
+                (sharedPreferences, key) -> {
+                    if (key != null
+                            && key.equals(BookmarkBarConstants.BOOKMARK_BAR_SHOW_BOOKMARK_BAR)) {
+                        updateBookmarkBarPref();
+                    }
+                };
+        ContextUtils.getAppSharedPreferences()
+                .registerOnSharedPreferenceChangeListener(mDevicePrefsListener);
+
+        ((ChromeSwitchPreference) findPreference(PREF_BOOKMARK_BAR))
+                .setOnPreferenceChangeListener(
+                        (pref, newValue) -> {
+                            BookmarkBarUtils.setDevicePrefShowBookmarksBar((boolean) newValue);
                             return true;
                         });
     }
@@ -143,9 +187,16 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
     }
 
     private void updateBookmarkBarPref() {
-        if (BookmarkBarUtils.isDeviceBookmarkBarCompatible(getContext())) {
+        if (!BookmarkBarUtils.isDeviceBookmarkBarCompatible(getContext())) {
+            return;
+        }
+
+        if (mUseProfileUserPrefs) {
             ((ChromeSwitchPreference) findPreference(PREF_BOOKMARK_BAR))
                     .setChecked(BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(getProfile()));
+        } else {
+            ((ChromeSwitchPreference) findPreference(PREF_BOOKMARK_BAR))
+                    .setChecked(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled());
         }
     }
 

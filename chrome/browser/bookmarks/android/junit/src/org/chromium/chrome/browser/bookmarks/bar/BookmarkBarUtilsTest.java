@@ -43,6 +43,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowDrawable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -53,6 +54,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefsJni;
@@ -67,6 +69,7 @@ import java.util.function.BiConsumer;
 
 /** Unit tests for {@link BookmarkBarUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
 public class BookmarkBarUtilsTest {
 
     private static final String PHONE_QUALIFIER =
@@ -77,6 +80,10 @@ public class BookmarkBarUtilsTest {
     @Rule
     public final ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
+
+    @Rule
+    public OverrideContextWrapperTestRule mOverrideContextRule =
+            new OverrideContextWrapperTestRule();
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -107,11 +114,18 @@ public class BookmarkBarUtilsTest {
         UserPrefsJni.setInstanceForTesting(mUserPrefsJni);
 
         mProfileProviderSupplier = new ObservableSupplierImpl<>(mProfileProvider);
+
+        // Explicitly override FeatureParam for consistency.
+        FeatureOverrides.Builder overrides = FeatureOverrides.newBuilder();
+        overrides =
+                overrides.param(ChromeFeatureList.ANDROID_BOOKMARK_BAR, "show_bookmark_bar", true);
+        overrides.apply();
     }
 
     @After
     public void tearDown() {
         UserPrefsJni.setInstanceForTesting(null);
+        mOverrideContextRule.setIsDesktop(false);
     }
 
     @Test
@@ -165,7 +179,6 @@ public class BookmarkBarUtilsTest {
     @Test
     @SmallTest
     @Config(qualifiers = PHONE_QUALIFIER)
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
     public void testIsFeatureEnabledWhenFlagIsEnabledOnPhone() {
         mActivityScenarioRule
                 .getScenario()
@@ -191,7 +204,6 @@ public class BookmarkBarUtilsTest {
     @Test
     @SmallTest
     @Config(qualifiers = TABLET_QUALIFIER)
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
     public void testIsFeatureEnabledWhenFlagIsEnabledOnTablet() {
         mActivityScenarioRule
                 .getScenario()
@@ -203,7 +215,8 @@ public class BookmarkBarUtilsTest {
 
     @Test
     @SmallTest
-    public void testIsBookmarkBarVisible() {
+    public void testIsBookmarkBarVisible_Desktop() {
+        mOverrideContextRule.setIsDesktop(true);
         mActivityScenarioRule
                 .getScenario()
                 .onActivity(
@@ -230,7 +243,45 @@ public class BookmarkBarUtilsTest {
 
     @Test
     @SmallTest
+    public void testIsBookmarkBarVisible_Tablet() {
+        mOverrideContextRule.setIsDesktop(false);
+        mActivityScenarioRule
+                .getScenario()
+                .onActivity(
+                        activity -> {
+                            // Case: feature disallowed.
+                            BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(false);
+                            assertFalse(BookmarkBarUtils.isBookmarkBarVisible(activity, mProfile));
+
+                            // Case: feature allowed no device pref (FeatureParam = true).
+                            BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
+                            assertTrue(BookmarkBarUtils.isBookmarkBarVisible(activity, mProfile));
+
+                            // Apply new FeatureParam override.
+                            FeatureOverrides.Builder overrides = FeatureOverrides.newBuilder();
+                            overrides =
+                                    overrides.param(
+                                            ChromeFeatureList.ANDROID_BOOKMARK_BAR,
+                                            "show_bookmark_bar",
+                                            false);
+                            overrides.apply();
+
+                            // Case: feature allowed no device pref (FeatureParam = false).
+                            assertFalse(BookmarkBarUtils.isBookmarkBarVisible(activity, mProfile));
+
+                            // Case: feature allowed explicit device pref
+                            BookmarkBarUtils.setDevicePrefShowBookmarksBar(true);
+                            assertTrue(BookmarkBarUtils.isBookmarkBarVisible(activity, mProfile));
+                        });
+    }
+
+    // Test UserPrefs - only on Desktop
+
+    @Test
+    @SmallTest
     public void testIsUserPrefsShowBookmarksBarEnabled() {
+        mOverrideContextRule.setIsDesktop(true);
+
         mSetting.set(false);
         assertFalse(BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(mProfile));
         assertFalse(BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(null));
@@ -243,6 +294,8 @@ public class BookmarkBarUtilsTest {
     @Test
     @SmallTest
     public void testSetUserPrefsShowBookmarksBar() {
+        mOverrideContextRule.setIsDesktop(true);
+
         mSetting.set(false);
         assertFalse(BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(mProfile));
 
@@ -256,6 +309,8 @@ public class BookmarkBarUtilsTest {
     @Test
     @SmallTest
     public void testToggleUserPrefsShowBookmarksBar() {
+        mOverrideContextRule.setIsDesktop(true);
+
         mSetting.set(false);
         assertFalse(BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(mProfile));
 
@@ -264,6 +319,68 @@ public class BookmarkBarUtilsTest {
 
         BookmarkBarUtils.toggleUserPrefsShowBookmarksBar(mProfile);
         assertFalse(BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(mProfile));
+    }
+
+    // Test device prefs - only on Tablet
+
+    @Test
+    @SmallTest
+    public void testIsDevicePrefShowBookmarksBarEnabled() {
+        mOverrideContextRule.setIsDesktop(false);
+
+        // User should not have set any preference yet.
+        assertFalse(BookmarkBarUtils.hasUserSetDevicePrefShowBookmarksBar());
+
+        // Even though user has not set a device preference, the FeatureParam will make it true.
+        assertTrue(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled());
+
+        // Apply new FeatureParam override.
+        FeatureOverrides.Builder overrides = FeatureOverrides.newBuilder();
+        overrides =
+                overrides.param(ChromeFeatureList.ANDROID_BOOKMARK_BAR, "show_bookmark_bar", false);
+        overrides.apply();
+
+        assertFalse(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled());
+    }
+
+    @Test
+    @SmallTest
+    public void testSetDevicePrefShowBookmarksBar() {
+        mOverrideContextRule.setIsDesktop(false);
+
+        // User should not have set any preference yet.
+        assertFalse(BookmarkBarUtils.hasUserSetDevicePrefShowBookmarksBar());
+
+        // Even though user has not set a device preference, the FeatureParam will make it true.
+        assertTrue(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled());
+
+        BookmarkBarUtils.setDevicePrefShowBookmarksBar(true);
+        assertTrue(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled());
+        assertTrue(BookmarkBarUtils.hasUserSetDevicePrefShowBookmarksBar());
+
+        BookmarkBarUtils.setDevicePrefShowBookmarksBar(false);
+        assertFalse(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled());
+        assertTrue(BookmarkBarUtils.hasUserSetDevicePrefShowBookmarksBar());
+    }
+
+    @Test
+    @SmallTest
+    public void testToggleDevicePrefShowBookmarksBar() {
+        mOverrideContextRule.setIsDesktop(false);
+
+        // User should not have set any preference yet.
+        assertFalse(BookmarkBarUtils.hasUserSetDevicePrefShowBookmarksBar());
+
+        // Even though user has not set a device preference, the FeatureParam will make it true.
+        assertTrue(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled());
+
+        BookmarkBarUtils.toggleDevicePrefShowBookmarksBar();
+        assertFalse(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled());
+        assertTrue(BookmarkBarUtils.hasUserSetDevicePrefShowBookmarksBar());
+
+        BookmarkBarUtils.toggleDevicePrefShowBookmarksBar();
+        assertTrue(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled());
+        assertTrue(BookmarkBarUtils.hasUserSetDevicePrefShowBookmarksBar());
     }
 
     @Test

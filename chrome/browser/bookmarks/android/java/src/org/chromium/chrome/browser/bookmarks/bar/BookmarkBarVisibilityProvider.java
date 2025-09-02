@@ -5,11 +5,14 @@
 package org.chromium.chrome.browser.bookmarks.bar;
 
 import android.app.Activity;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Configuration;
 
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -62,7 +65,7 @@ public class BookmarkBarVisibilityProvider {
     private final ObserverList<BookmarkBarVisibilityObserver> mObservers;
 
     private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
-    private final @Nullable PrefObserver mPrefObserver;
+    private @Nullable OnSharedPreferenceChangeListener mDevicePrefsListener;
 
     /**
      * Constructor.
@@ -87,13 +90,19 @@ public class BookmarkBarVisibilityProvider {
         mProfileSupplierObserver = this::processProfileChange;
         mProfileSupplier.addObserver(mProfileSupplierObserver);
 
-        mPrefObserver =
-                new PrefObserver() {
-                    @Override
-                    public void onPreferenceChange() {
-                        processPrefChange();
-                    }
-                };
+        // On tablets we use local device prefs.
+        if (!DeviceInfo.isDesktop()) {
+            mDevicePrefsListener =
+                    (sharedPreferences, key) -> {
+                        if (key != null
+                                && key.equals(
+                                        BookmarkBarConstants.BOOKMARK_BAR_SHOW_BOOKMARK_BAR)) {
+                            processPrefChange();
+                        }
+                    };
+            ContextUtils.getAppSharedPreferences()
+                    .registerOnSharedPreferenceChangeListener(mDevicePrefsListener);
+        }
     }
 
     /**
@@ -120,6 +129,7 @@ public class BookmarkBarVisibilityProvider {
         mActivityLifecycleDispatcher.unregister(mConfigurationChangedListener);
         mProfileSupplier.removeObserver(mProfileSupplierObserver);
         destroyPrefChangeRegistrar();
+        destroySharedPrefListener();
         mObservers.clear();
     }
 
@@ -170,7 +180,20 @@ public class BookmarkBarVisibilityProvider {
         }
     }
 
+    private void destroySharedPrefListener() {
+        if (mDevicePrefsListener != null) {
+            ContextUtils.getAppSharedPreferences()
+                    .unregisterOnSharedPreferenceChangeListener(mDevicePrefsListener);
+            mDevicePrefsListener = null;
+        }
+    }
+
     @Nullable PrefObserver getPrefObserverForTesting() {
-        return mPrefObserver;
+        return new PrefObserver() {
+            @Override
+            public void onPreferenceChange() {
+                processPrefChange();
+            }
+        };
     }
 }

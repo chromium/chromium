@@ -25,6 +25,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.Token;
@@ -1896,7 +1897,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             return true;
         } else if (id == R.id.toggle_bookmark_bar) {
             if (BookmarkBarUtils.isActivityStateBookmarkBarCompatible(mActivity)) {
-                BookmarkBarUtils.toggleUserPrefsShowBookmarksBar(mProfileSupplier.get());
+                if (DeviceInfo.isDesktop()) {
+                    BookmarkBarUtils.toggleUserPrefsShowBookmarksBar(mProfileSupplier.get());
+                } else {
+                    BookmarkBarUtils.toggleDevicePrefShowBookmarksBar();
+                }
                 return true;
             }
         }

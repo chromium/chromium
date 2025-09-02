@@ -48,10 +48,12 @@ import androidx.test.filters.MediumTest;
 import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -65,6 +67,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
@@ -93,19 +96,32 @@ public class BookmarkBarTest {
     public AutoResetCtaTransitTestRule mCtaTestRule =
             ChromeTransitTestRules.autoResetCtaActivityRule();
 
+    @Rule
+    public OverrideContextWrapperTestRule mOverrideContextRule =
+            new OverrideContextWrapperTestRule();
+
     private BookmarkModel mModel;
     private BookmarkId mDesktopFolderId;
     private @Nullable List<BookmarkId> mItemIds;
 
+    @BeforeClass
+    public static void classSetUp() {
+        // Explicitly override FeatureParam for consistency.
+        FeatureOverrides.Builder overrides = FeatureOverrides.newBuilder();
+        overrides =
+                overrides.param(ChromeFeatureList.ANDROID_BOOKMARK_BAR, "show_bookmark_bar", true);
+        overrides.apply();
+    }
+
     @Before
     public void setUp() {
-        mCtaTestRule.startOnBlankPage();
+        mOverrideContextRule.setIsDesktop(true);
 
+        mCtaTestRule.startOnBlankPage();
         BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
         ThreadUtils.runOnUiThreadBlocking(() -> setBookmarkBarSetting(/* enabled= */ true));
         waitForBookmarkBarVisibility(/* visible= */ true);
         BookmarkTestUtil.waitForBookmarkModelLoaded();
-
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel = mCtaTestRule.getActivity().getBookmarkModelForTesting();

@@ -92,6 +92,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarButton.java",
     "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarButtonProperties.java",
     "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarButtonViewBinder.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarConstants.java",
     "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarItemsLayoutManager.java",
     "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarItemsProvider.java",
     "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarProperties.java",

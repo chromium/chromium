@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarVisibilityProvider.B
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefChangeRegistrar.PrefObserver;
 import org.chromium.components.prefs.PrefChangeRegistrarJni;
@@ -53,6 +54,10 @@ import java.util.Set;
 public class BookmarkBarVisibilityProviderTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule
+    public OverrideContextWrapperTestRule mOverrideContextRule =
+            new OverrideContextWrapperTestRule();
 
     @Mock private Activity mActivity;
     @Mock private Resources mResources;
@@ -71,6 +76,7 @@ public class BookmarkBarVisibilityProviderTest {
     @Before
     public void setUp() {
         mProfileSupplier.set(mProfile);
+        mOverrideContextRule.setIsDesktop(true);
 
         // Set up mocks.
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);

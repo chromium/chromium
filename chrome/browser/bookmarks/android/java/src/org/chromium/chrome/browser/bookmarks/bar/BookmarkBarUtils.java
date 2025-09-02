@@ -13,6 +13,8 @@ import android.view.View;
 import androidx.annotation.IntDef;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.LazyOneshotSupplierImpl;
@@ -131,6 +133,7 @@ public class BookmarkBarUtils {
     /**
      * Returns true if the Bookmark Bar currently visible. The feature is visible when it is allowed
      * in the given context, and the show bookmark bar UserPref is enabled for the current user.
+     * When on tablets, we do not use the UserPref and instead use the device preference.
      *
      * @param context The context in which compatibility should be assessed.
      * @param profile The profile for which the user UserPref should be assessed.
@@ -145,8 +148,13 @@ public class BookmarkBarUtils {
             return false;
         }
 
-        return isUserPrefsShowBookmarksBarEnabled(profile);
+        // On Desktop, we sync with the UserPrefs, but on tablets we use a local device preference.
+        return DeviceInfo.isDesktop()
+                ? isUserPrefsShowBookmarksBarEnabled(profile)
+                : isDevicePrefShowBookmarksBarEnabled();
     }
+
+    // UserPrefs methods - used on Desktop.
 
     /**
      * Returns whether the bookmark bar should be shown based on the current user's UserPrefs. Note:
@@ -182,6 +190,64 @@ public class BookmarkBarUtils {
         prefService.setBoolean(
                 Pref.SHOW_BOOKMARK_BAR, !prefService.getBoolean(Pref.SHOW_BOOKMARK_BAR));
     }
+
+    // Device preferences methods - used on tablets.
+
+    /**
+     * Returns whether or not the bookmark bar should be shown based on the local device
+     * preferences. This is only used on tablets, where bookmarks bar does not sync with the user's
+     * desktop preference, but is instead stored locally on device.
+     *
+     * <p>Note: When a user has not previously set the device preference, the default return value
+     * is currently controlled by a FeatureParam for testing.
+     *
+     * @return Whether or not the bookmarks bar should be shown based on device preference.
+     */
+    public static boolean isDevicePrefShowBookmarksBarEnabled() {
+        // If a user has set the show bookmarks bar setting explicitly, then we will use that value.
+        // If the user has never set the preference, then we will return a default, which is
+        // currently controlled with a FeatureParam.
+        return hasUserSetDevicePrefShowBookmarksBar()
+                ? ContextUtils.getAppSharedPreferences()
+                        .getBoolean(BookmarkBarConstants.BOOKMARK_BAR_SHOW_BOOKMARK_BAR, false)
+                : ChromeFeatureList.sAndroidBookmarkBarShowBookmarkBar.getValue();
+    }
+
+    /**
+     * Set whether the bookmark bar should be shown at a device preferences level. This is only used
+     * on tablets, where bookmarks bar does not sync with the user's desktop preference, but is
+     * instead stored locally on the device.
+     *
+     * @param enabled The new device preference for enabling the bookmark bar.
+     */
+    public static void setDevicePrefShowBookmarksBar(boolean enabled) {
+        ContextUtils.getAppSharedPreferences()
+                .edit()
+                .putBoolean(BookmarkBarConstants.BOOKMARK_BAR_SHOW_BOOKMARK_BAR, enabled)
+                .apply();
+    }
+
+    /**
+     * Returns true when the user has previously set the visibility of the bookmarks bar explicitly
+     * at the device preference level. This is only used on tablets, where bookmarks bar does not
+     * sync with the user's desktop preference, but is instead stored locally on the device.
+     *
+     * @return Whether the user has set show bookmarks bar device preference manually.
+     */
+    public static boolean hasUserSetDevicePrefShowBookmarksBar() {
+        return ContextUtils.getAppSharedPreferences()
+                .contains(BookmarkBarConstants.BOOKMARK_BAR_SHOW_BOOKMARK_BAR);
+    }
+
+    /**
+     * Toggles the value of the show bookmarks bar device preference, this is stored locally and
+     * only used on tablets.
+     */
+    public static void toggleDevicePrefShowBookmarksBar() {
+        setDevicePrefShowBookmarksBar(!isDevicePrefShowBookmarksBarEnabled());
+    }
+
+    // Helper methods.
 
     /**
      * Creates a list item to render in the bookmark bar for the specified bookmark item.
@@ -253,6 +319,8 @@ public class BookmarkBarUtils {
     private static PrefService getPrefService(Profile profile) {
         return UserPrefs.get(profile.getOriginalProfile());
     }
+
+    // ForTesting methods.
 
     /**
      * Sets whether the bookmark bar feature is forcibly allowed/disallowed for testing.
