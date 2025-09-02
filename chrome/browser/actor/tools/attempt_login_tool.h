@@ -48,10 +48,10 @@ class AttemptLoginTool : public Tool {
  private:
   void OnGetCredentials(actor_login::CredentialsOrError credentials);
   void FetchFavicons();
-  void OnFaviconFetched(base::RepeatingClosure barrier,
-                        GURL origin,
-                        const favicon_base::FaviconImageResult& result);
-  void OnAllFaviconsFetched();
+  void OnIconFetched(base::RepeatingClosure barrier,
+                     GURL origin,
+                     const favicon_base::FaviconImageResult& result);
+  void OnAllIconsFetched();
   void OnCredentialSelected(
       webui::mojom::SelectCredentialDialogResponsePtr response);
   void OnAttemptLogin(actor_login::LoginStatusResultOrError login_status);
@@ -62,9 +62,9 @@ class AttemptLoginTool : public Tool {
   // credentials are cleared after the login attempt is made.
   std::vector<actor_login::Credential> credentials_;
 
-  // Stores the favicons for each unique `source_site_or_app` in `credentials_`.
-  // Populated by `OnFaviconFetched()`.
-  base::flat_map<GURL, gfx::Image> fetched_favicons_;
+  // Stores the icons for each unique `source_site_or_app` in `credentials_`.
+  // Populated by `OnIconFetched()`.
+  base::flat_map<std::string, gfx::Image> fetched_icons_;
 
   std::vector<base::CancelableTaskTracker> favicon_requests_tracker_;
 

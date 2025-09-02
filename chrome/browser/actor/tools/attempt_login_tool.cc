@@ -137,7 +137,7 @@ void AttemptLoginTool::FetchFavicons() {
     // If there is no favicon service, just proceed without favicons.
     tool_delegate().PromptToSelectCredential(
         credentials_,
-        /*favicons=*/{},
+        /*icons=*/{},
         base::BindOnce(&AttemptLoginTool::OnCredentialSelected,
                        weak_ptr_factory_.GetWeakPtr()));
     return;
@@ -150,11 +150,10 @@ void AttemptLoginTool::FetchFavicons() {
     }
   }
 
-  // OnAllFaviconsFetched is called immediately if unique_sites is empty.
+  // OnAllIconsFetched is called immediately if unique_sites is empty.
   base::RepeatingClosure barrier = base::BarrierClosure(
-      unique_sites.size(),
-      base::BindOnce(&AttemptLoginTool::OnAllFaviconsFetched,
-                     weak_ptr_factory_.GetWeakPtr()));
+      unique_sites.size(), base::BindOnce(&AttemptLoginTool::OnAllIconsFetched,
+                                          weak_ptr_factory_.GetWeakPtr()));
   favicon_requests_tracker_ =
       std::vector<base::CancelableTaskTracker>(unique_sites.size());
 
@@ -162,26 +161,26 @@ void AttemptLoginTool::FetchFavicons() {
   for (const GURL& site : unique_sites) {
     favicon_service->GetFaviconImageForPageURL(
         site,
-        base::BindOnce(&AttemptLoginTool::OnFaviconFetched,
+        base::BindOnce(&AttemptLoginTool::OnIconFetched,
                        weak_ptr_factory_.GetWeakPtr(), barrier, site),
         &favicon_requests_tracker_[i]);
     ++i;
   }
 }
 
-void AttemptLoginTool::OnFaviconFetched(
+void AttemptLoginTool::OnIconFetched(
     base::RepeatingClosure barrier,
     GURL site,
     const favicon_base::FaviconImageResult& result) {
   if (!result.image.IsEmpty()) {
-    fetched_favicons_[site] = result.image;
+    fetched_icons_[site.GetWithEmptyPath().spec()] = result.image;
   }
   barrier.Run();
 }
 
-void AttemptLoginTool::OnAllFaviconsFetched() {
+void AttemptLoginTool::OnAllIconsFetched() {
   tool_delegate().PromptToSelectCredential(
-      credentials_, fetched_favicons_,
+      credentials_, fetched_icons_,
       base::BindOnce(&AttemptLoginTool::OnCredentialSelected,
                      weak_ptr_factory_.GetWeakPtr()));
 }

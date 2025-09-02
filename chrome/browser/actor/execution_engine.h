@@ -107,7 +107,7 @@ class ExecutionEngine : public ToolDelegate {
   actor_login::ActorLoginService& GetActorLoginService() override;
   void PromptToSelectCredential(
       const std::vector<actor_login::Credential>& credentials,
-      const base::flat_map<GURL, gfx::Image>& favicons,
+      const base::flat_map<std::string, gfx::Image>& icons,
       ToolDelegate::CredentialSelectedCallback callback) override;
 
   // Callback for when a credential is selected, in response to

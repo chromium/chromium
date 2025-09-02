@@ -46,7 +46,7 @@ class ToolDelegate {
   virtual favicon::FaviconService* GetFaviconService() = 0;
 
   // Prompts the user to select a credential from the list of credentials, and
-  // with optional favicons for each site or app that is associated with the
+  // with optional icons for each site or app that is associated with the
   // credential.
   // The callback is called with the selected credential or with an empty
   // credential if the user closed the prompt without making a selection.
@@ -54,7 +54,7 @@ class ToolDelegate {
       webui::mojom::SelectCredentialDialogResponsePtr response)>;
   virtual void PromptToSelectCredential(
       const std::vector<actor_login::Credential>& credentials,
-      const base::flat_map<GURL, gfx::Image>& favicons,
+      const base::flat_map<std::string, gfx::Image>& icons,
       CredentialSelectedCallback callback) = 0;
 };
 

@@ -453,7 +453,7 @@ actor_login::ActorLoginService& ExecutionEngine::GetActorLoginService() {
 
 void ExecutionEngine::PromptToSelectCredential(
     const std::vector<actor_login::Credential>& credentials,
-    const base::flat_map<GURL, gfx::Image>& favicons,
+    const base::flat_map<std::string, gfx::Image>& icons,
     ToolDelegate::CredentialSelectedCallback callback) {
   CHECK(!credentials.empty());
 
@@ -467,7 +467,7 @@ void ExecutionEngine::PromptToSelectCredential(
   }
   credential_selected_callback_ = std::move(callback);
 
-  // TODO(crbug.com/438710031): Surface the favicons to the WebClient.
+  // TODO(crbug.com/438710031): Surface the icons to the WebClient.
 
   ActorKeyedService::Get(profile_)
       ->NotifyRequestToShowCredentialSelectionDialog(task_->id(), credentials);
