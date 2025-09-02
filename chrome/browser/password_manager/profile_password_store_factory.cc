@@ -59,16 +59,9 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
 
   DCHECK(!profile->IsOffTheRecord());
 
-  scoped_refptr<PasswordStore> ps;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_OZONE)
-  ps = new password_manager::PasswordStore(
+  scoped_refptr<PasswordStore> ps = new password_manager::PasswordStore(
       CreateProfilePasswordStoreBackend(profile->GetPath(), profile->GetPrefs(),
                                         g_browser_process->os_crypt_async()));
-#else
-  NOTIMPLEMENTED();
-#endif
-  DCHECK(ps);
 
   affiliations::AffiliationService* affiliation_service =
       AffiliationServiceFactory::GetForProfile(profile);
