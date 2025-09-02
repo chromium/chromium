@@ -9,21 +9,17 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.VISI
 
 import android.app.Activity;
 
-import androidx.annotation.IntDef;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AutofillAddress;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.autofill.SaveUpdateAddressProfilePromptMode;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /** An address editor. Can be used for either shipping or billing address editing. */
 @NullMarked
@@ -58,27 +54,6 @@ public class AddressEditorCoordinator {
         default void onExternalEdit(AutofillProfile profile) {}
     }
 
-    /** Different types of user flows this editor supports. */
-    // TODO(cbug.com/441265846): Replace it with SaveUpdateAddressProfilePromptMode enum.
-    @IntDef({
-        UserFlow.CREATE_NEW_ADDRESS_PROFILE,
-        UserFlow.SAVE_NEW_ADDRESS_PROFILE,
-        UserFlow.UPDATE_EXISTING_ADDRESS_PROFILE,
-        UserFlow.MIGRATE_EXISTING_ADDRESS_PROFILE
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface UserFlow {
-        // The user creates a new address from Chrome settings.
-        int CREATE_NEW_ADDRESS_PROFILE = 1;
-        // The user edits and potentially saves an address parsed from a submitted form.
-        int SAVE_NEW_ADDRESS_PROFILE = 2;
-        // The user edits an existing address either from Chrome settings or upon form submission.
-        int UPDATE_EXISTING_ADDRESS_PROFILE = 3;
-        // The user edits an existing address which is going to be migrated to the Google Address
-        // Store.
-        int MIGRATE_EXISTING_ADDRESS_PROFILE = 4;
-    }
-
     /**
      * Builds an address editor for a new address profile.
      *
@@ -97,7 +72,7 @@ public class AddressEditorCoordinator {
                         activity,
                         AutofillProfile.builder().build(),
                         PersonalDataManagerFactory.getForProfile(profile)),
-                UserFlow.CREATE_NEW_ADDRESS_PROFILE,
+                SaveUpdateAddressProfilePromptMode.CREATE_NEW_PROFILE,
                 saveToDisk);
     }
 
@@ -108,7 +83,7 @@ public class AddressEditorCoordinator {
      * @param delegate Delegate to react to users interactions with the editor.
      * @param profile Current user's profile.
      * @param addressToEdit Address the user wants to modify.
-     * @param userFlow the current user flow this editor is used for.
+     * @param promptMode The save/update address profile prompt mode.
      * @param saveToDisk Whether to save changes to disk after editing.
      */
     public AddressEditorCoordinator(
@@ -116,7 +91,7 @@ public class AddressEditorCoordinator {
             Delegate delegate,
             Profile profile,
             AutofillAddress addressToEdit,
-            @UserFlow int userFlow,
+            @SaveUpdateAddressProfilePromptMode int promptMode,
             boolean saveToDisk) {
         mMediator =
                 new AddressEditorMediator(
@@ -126,7 +101,7 @@ public class AddressEditorCoordinator {
                         SyncServiceFactory.getForProfile(profile),
                         PersonalDataManagerFactory.getForProfile(profile),
                         addressToEdit,
-                        userFlow,
+                        promptMode,
                         saveToDisk);
         mEditorDialog = new EditorDialogView(activity, profile);
     }

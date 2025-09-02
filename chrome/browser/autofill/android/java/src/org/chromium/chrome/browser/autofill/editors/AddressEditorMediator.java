@@ -5,10 +5,6 @@
 package org.chromium.chrome.browser.autofill.editors;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow.CREATE_NEW_ADDRESS_PROFILE;
-import static org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow.MIGRATE_EXISTING_ADDRESS_PROFILE;
-import static org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow.SAVE_NEW_ADDRESS_PROFILE;
-import static org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow.UPDATE_EXISTING_ADDRESS_PROFILE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ALLOW_DELETE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CANCEL_RUNNABLE;
@@ -62,8 +58,8 @@ import org.chromium.chrome.browser.autofill.AutofillProfileBridge;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.R;
+import org.chromium.chrome.browser.autofill.SaveUpdateAddressProfilePromptMode;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.Delegate;
-import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.EditorItem;
 import org.chromium.components.autofill.AutofillAddressEditorUiInfo;
 import org.chromium.components.autofill.AutofillAddressUiComponent;
@@ -101,7 +97,7 @@ class AddressEditorMediator {
     private final PersonalDataManager mPersonalDataManager;
     private final AutofillProfile mProfileToEdit;
     private final AutofillAddress mAddressToEdit;
-    private final @UserFlow int mUserFlow;
+    private final @SaveUpdateAddressProfilePromptMode int mPromptMode;
     private final boolean mSaveToDisk;
     private final Map<Integer, PropertyModel> mAddressFields = new HashMap<>();
     private final PropertyModel mCountryField;
@@ -134,7 +130,7 @@ class AddressEditorMediator {
             @Nullable SyncService syncService,
             PersonalDataManager personalDataManager,
             AutofillAddress addressToEdit,
-            @UserFlow int userFlow,
+            @SaveUpdateAddressProfilePromptMode int promptMode,
             boolean saveToDisk) {
         mContext = context;
         mDelegate = delegate;
@@ -143,7 +139,7 @@ class AddressEditorMediator {
         mPersonalDataManager = personalDataManager;
         mProfileToEdit = addressToEdit.getProfile();
         mAddressToEdit = addressToEdit;
-        mUserFlow = userFlow;
+        mPromptMode = promptMode;
         mSaveToDisk = saveToDisk;
 
         // The country dropdown is always present on the editor.
@@ -228,7 +224,10 @@ class AddressEditorMediator {
                         .with(CANCEL_RUNNABLE, this::onCancelEditing)
                         .with(ALLOW_DELETE, mAllowDelete)
                         .with(DELETE_RUNNABLE, () -> mDelegate.onDelete(mAddressToEdit))
-                        .with(VALIDATE_ON_SHOW, mUserFlow != CREATE_NEW_ADDRESS_PROFILE)
+                        .with(
+                                VALIDATE_ON_SHOW,
+                                mPromptMode
+                                        != SaveUpdateAddressProfilePromptMode.CREATE_NEW_PROFILE)
                         .with(SHOW_BUTTONS, !isNonEditableProfile())
                         .build();
 
@@ -276,7 +275,8 @@ class AddressEditorMediator {
         // Already empty fields in existing address profiles are made optional even if they
         // are required by account storage rules. This allows users to save address profiles
         // as is without making them more complete during the process.
-        return mUserFlow == CREATE_NEW_ADDRESS_PROFILE || !isContentEmpty;
+        return mPromptMode == SaveUpdateAddressProfilePromptMode.CREATE_NEW_PROFILE
+                || !isContentEmpty;
     }
 
     /**
@@ -432,7 +432,8 @@ class AddressEditorMediator {
     /** Saves the edited profile on disk. */
     private void commitChanges(AutofillProfile profile) {
         String country = mCountryField.get(VALUE);
-        if (willBeSavedInAccount() && mUserFlow == CREATE_NEW_ADDRESS_PROFILE) {
+        if (willBeSavedInAccount()
+                && mPromptMode == SaveUpdateAddressProfilePromptMode.CREATE_NEW_PROFILE) {
             profile.setRecordType(RecordType.ACCOUNT);
         }
         // Country code and phone number are always required and are always collected from the
@@ -472,17 +473,17 @@ class AddressEditorMediator {
     }
 
     private boolean willBeSavedInAccount() {
-        switch (mUserFlow) {
-            case MIGRATE_EXISTING_ADDRESS_PROFILE:
+        switch (mPromptMode) {
+            case SaveUpdateAddressProfilePromptMode.MIGRATE_PROFILE:
                 return true;
-            case UPDATE_EXISTING_ADDRESS_PROFILE:
+            case SaveUpdateAddressProfilePromptMode.UPDATE_PROFILE:
                 return false;
-            case SAVE_NEW_ADDRESS_PROFILE:
+            case SaveUpdateAddressProfilePromptMode.SAVE_NEW_PROFILE:
                 return mProfileToEdit.getRecordType() == RecordType.ACCOUNT;
-            case CREATE_NEW_ADDRESS_PROFILE:
+            case SaveUpdateAddressProfilePromptMode.CREATE_NEW_PROFILE:
                 return mPersonalDataManager.isEligibleForAddressAccountStorage();
         }
-        assert false : String.format(Locale.US, "Missing account target for flow %d", mUserFlow);
+        assert false : String.format(Locale.US, "Missing account target for flow %d", mPromptMode);
         return false;
     }
 
@@ -491,7 +492,7 @@ class AddressEditorMediator {
     }
 
     private String getEditorTitle() {
-        return mUserFlow == CREATE_NEW_ADDRESS_PROFILE
+        return mPromptMode == SaveUpdateAddressProfilePromptMode.CREATE_NEW_PROFILE
                 ? mContext.getString(R.string.autofill_create_profile)
                 : mContext.getString(R.string.autofill_edit_address_dialog_title);
     }
@@ -594,7 +595,7 @@ class AddressEditorMediator {
     private boolean isAlreadySavedInAccount() {
         // User edits an account address profile either from Chrome settings or upon form
         // submission.
-        return (mUserFlow == UPDATE_EXISTING_ADDRESS_PROFILE
+        return (mPromptMode == SaveUpdateAddressProfilePromptMode.UPDATE_PROFILE
                         && mProfileToEdit.getRecordType() == RecordType.ACCOUNT)
                 || isNonEditableProfile();
     }

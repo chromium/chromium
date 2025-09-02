@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.autofill.settings;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow.UPDATE_EXISTING_ADDRESS_PROFILE;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -33,6 +32,7 @@ import org.chromium.chrome.browser.autofill.AutofillEditorBase;
 import org.chromium.chrome.browser.autofill.AutofillFallbackSurfaceLauncher;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.autofill.SaveUpdateAddressProfilePromptMode;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.Delegate;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
@@ -391,7 +391,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                             mAddressEditorDelegate,
                             getProfile(),
                             autofillAddress,
-                            UPDATE_EXISTING_ADDRESS_PROFILE,
+                            SaveUpdateAddressProfilePromptMode.UPDATE_PROFILE,
                             /* saveToDisk= */ true);
             mAddressEditor.setAllowDelete(true);
             mAddressEditor.showEditorDialog();

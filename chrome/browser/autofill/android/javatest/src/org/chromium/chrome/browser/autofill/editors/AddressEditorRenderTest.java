@@ -11,9 +11,6 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
-import static org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow.MIGRATE_EXISTING_ADDRESS_PROFILE;
-import static org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow.SAVE_NEW_ADDRESS_PROFILE;
-import static org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.UserFlow.UPDATE_EXISTING_ADDRESS_PROFILE;
 
 import android.view.View;
 
@@ -43,6 +40,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtilJni;
+import org.chromium.chrome.browser.autofill.SaveUpdateAddressProfilePromptMode;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator.Delegate;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
@@ -290,7 +288,7 @@ public class AddressEditorRenderTest {
                                                     mActivityTestRule.getActivity(),
                                                     sLocalProfile,
                                                     mPersonalDataManager),
-                                            UPDATE_EXISTING_ADDRESS_PROFILE,
+                                            SaveUpdateAddressProfilePromptMode.UPDATE_PROFILE,
                                             /* saveToDisk= */ false);
                             mAddressEditor.showEditorDialog();
                             return mAddressEditor
@@ -318,7 +316,7 @@ public class AddressEditorRenderTest {
                                                     mActivityTestRule.getActivity(),
                                                     sAccountProfile,
                                                     mPersonalDataManager),
-                                            SAVE_NEW_ADDRESS_PROFILE,
+                                            SaveUpdateAddressProfilePromptMode.SAVE_NEW_PROFILE,
                                             /* saveToDisk= */ false);
                             mAddressEditor.showEditorDialog();
                             return mAddressEditor
@@ -346,7 +344,7 @@ public class AddressEditorRenderTest {
                                                     mActivityTestRule.getActivity(),
                                                     sHomeProfile,
                                                     mPersonalDataManager),
-                                            UPDATE_EXISTING_ADDRESS_PROFILE,
+                                            SaveUpdateAddressProfilePromptMode.UPDATE_PROFILE,
                                             /* saveToDisk= */ false);
                             mAddressEditor.showEditorDialog();
                             return mAddressEditor
@@ -374,7 +372,7 @@ public class AddressEditorRenderTest {
                                                     mActivityTestRule.getActivity(),
                                                     sLocalProfile,
                                                     mPersonalDataManager),
-                                            MIGRATE_EXISTING_ADDRESS_PROFILE,
+                                            SaveUpdateAddressProfilePromptMode.MIGRATE_PROFILE,
                                             /* saveToDisk= */ false);
                             mAddressEditor.showEditorDialog();
                             return mAddressEditor
