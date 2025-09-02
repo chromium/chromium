@@ -39,7 +39,6 @@ namespace actor::ui {
 namespace {
 using ::tabs::MockTabInterface;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::MockFunction;
 using ::testing::Return;
 using ::testing::ReturnRef;

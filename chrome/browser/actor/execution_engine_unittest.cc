@@ -43,7 +43,6 @@ using ::optimization_guide::proto::Actions;
 using testing::_;
 using testing::Eq;
 using testing::Field;
-using testing::Invoke;
 using testing::Property;
 using testing::VariantWith;
 using ChangeTaskState = ui::UiEventDispatcher::ChangeTaskState;
@@ -152,15 +151,15 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
     for (auto& mock :
          {mock_ui_event_dispatcher_, task_mock_ui_event_dispatcher_}) {
       ON_CALL(*mock, OnPreTool(_, _))
-          .WillByDefault(Invoke(UiEventDispatcherCallback<ToolRequest>(
-              base::BindRepeating(MakeOkResult))));
+          .WillByDefault(UiEventDispatcherCallback<ToolRequest>(
+              base::BindRepeating(MakeOkResult)));
       ON_CALL(*mock, OnPostTool(_, _))
-          .WillByDefault(Invoke(UiEventDispatcherCallback<ToolRequest>(
-              base::BindRepeating(MakeOkResult))));
+          .WillByDefault(UiEventDispatcherCallback<ToolRequest>(
+              base::BindRepeating(MakeOkResult)));
       ON_CALL(*mock, OnActorTaskAsyncChange(_, _))
-          .WillByDefault(Invoke(UiEventDispatcherCallback<
-                                ui::UiEventDispatcher::ActorTaskAsyncChange>(
-              base::BindRepeating(MakeOkResult))));
+          .WillByDefault(UiEventDispatcherCallback<
+                         ui::UiEventDispatcher::ActorTaskAsyncChange>(
+              base::BindRepeating(MakeOkResult)));
     }
   }
 
@@ -289,8 +288,8 @@ TEST_F(ExecutionEngineTest, ActFailsOnUnsupportedUrl) {
 
 TEST_F(ExecutionEngineTest, UiOnPreToolFails) {
   EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreTool(_, _))
-      .WillOnce(Invoke(UiEventDispatcherCallback<ToolRequest>(
-          base::BindRepeating(MakeErrorResult))));
+      .WillOnce(UiEventDispatcherCallback<ToolRequest>(
+          base::BindRepeating(MakeErrorResult)));
   EXPECT_CALL(*mock_ui_event_dispatcher_, OnPostTool(_, _)).Times(0);
   EXPECT_FALSE(
       Act(GURL("http://localhost/"), MakeClickCallback(kFakeContentNodeId)));
@@ -301,8 +300,8 @@ TEST_F(ExecutionEngineTest, UiOnPreToolFails) {
 TEST_F(ExecutionEngineTest, UiOnPostToolFails) {
   EXPECT_CALL(*mock_ui_event_dispatcher_, OnPreTool(_, _)).Times(1);
   EXPECT_CALL(*mock_ui_event_dispatcher_, OnPostTool(_, _))
-      .WillOnce(Invoke(UiEventDispatcherCallback<ToolRequest>(
-          base::BindRepeating(MakeErrorResult))));
+      .WillOnce(UiEventDispatcherCallback<ToolRequest>(
+          base::BindRepeating(MakeErrorResult)));
   EXPECT_FALSE(
       Act(GURL("http://localhost/"), MakeClickCallback(kFakeContentNodeId)));
   histograms_.ExpectUniqueSample(kActionResultHistogram,
@@ -312,9 +311,9 @@ TEST_F(ExecutionEngineTest, UiOnPostToolFails) {
 TEST_F(ExecutionEngineTest, ActFailsWhenAddTabFails) {
   EXPECT_CALL(*task_mock_ui_event_dispatcher_,
               OnActorTaskAsyncChange(VariantWith<AddTab>(_), _))
-      .WillOnce(Invoke(UiEventDispatcherCallback<
-                       ui::UiEventDispatcher::ActorTaskAsyncChange>(
-          base::BindRepeating(MakeErrorResult))));
+      .WillOnce(UiEventDispatcherCallback<
+                ui::UiEventDispatcher::ActorTaskAsyncChange>(
+          base::BindRepeating(MakeErrorResult)));
   EXPECT_FALSE(
       Act(GURL("http://localhost/"), MakeClickCallback(kFakeContentNodeId)));
   histograms_.ExpectUniqueSample(kActionResultHistogram,

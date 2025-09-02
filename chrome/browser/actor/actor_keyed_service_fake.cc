@@ -13,7 +13,6 @@
 
 namespace actor {
 using ::testing::_;
-using ::testing::Invoke;
 
 ActorKeyedServiceFake::ActorKeyedServiceFake(Profile* profile)
     : ActorKeyedService(profile) {}
@@ -33,15 +32,15 @@ TaskId ActorKeyedServiceFake::CreateTaskForTesting() {
 
   for (auto& mock : {mock_ui_dispatcher, mock_task_ui_dispatcher}) {
     ON_CALL(*mock, OnPreTool(_, _))
-        .WillByDefault(Invoke(UiEventDispatcherCallback<ToolRequest>(
-            base::BindRepeating(MakeOkResult))));
+        .WillByDefault(UiEventDispatcherCallback<ToolRequest>(
+            base::BindRepeating(MakeOkResult)));
     ON_CALL(*mock, OnPostTool(_, _))
-        .WillByDefault(Invoke(UiEventDispatcherCallback<ToolRequest>(
-            base::BindRepeating(MakeOkResult))));
+        .WillByDefault(UiEventDispatcherCallback<ToolRequest>(
+            base::BindRepeating(MakeOkResult)));
     ON_CALL(*mock, OnActorTaskAsyncChange(_, _))
-        .WillByDefault(Invoke(UiEventDispatcherCallback<
-                              ui::UiEventDispatcher::ActorTaskAsyncChange>(
-            base::BindRepeating(MakeOkResult))));
+        .WillByDefault(UiEventDispatcherCallback<
+                       ui::UiEventDispatcher::ActorTaskAsyncChange>(
+            base::BindRepeating(MakeOkResult)));
   }
   auto execution_engine = ExecutionEngine::CreateForTesting(
       GetProfile(), std::move(ui_event_dispatcher));

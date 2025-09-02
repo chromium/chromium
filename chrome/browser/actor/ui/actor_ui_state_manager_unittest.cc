@@ -34,7 +34,6 @@ using ::tabs::MockTabInterface;
 using ::tabs::TabFeatures;
 using ::tabs::TabInterface;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::ValuesIn;
@@ -98,11 +97,11 @@ class ActorUiStateManagerTest : public testing::Test {
 
   void ExpectUiTabStateChange(const UiTabState& expected_state) {
     ON_CALL(*mock_actor_ui_tab_controller(), OnUiTabStateChange(_, _))
-        .WillByDefault(Invoke(
+        .WillByDefault(
             [&](UiTabState state, base::OnceCallback<void(bool)> callback) {
               EXPECT_EQ(state, expected_state);
               std::move(callback).Run(true);
-            }));
+            });
   }
 
   ActorUiStateManager* actor_ui_state_manager() {
