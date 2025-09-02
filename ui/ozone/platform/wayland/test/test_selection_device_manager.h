@@ -76,7 +76,7 @@ class TestSelectionDeviceManager : public GlobalObject {
  private:
   const std::unique_ptr<Delegate> delegate_;
   raw_ptr<TestSelectionDevice> device_ = nullptr;
-  raw_ptr<TestSelectionSource, DanglingUntriaged> source_ = nullptr;
+  raw_ptr<TestSelectionSource> source_ = nullptr;
 };
 
 class TestSelectionOffer : public ServerObject {
@@ -132,6 +132,8 @@ class TestSelectionSource : public ServerObject {
   void OnDndAction(uint32_t action);
   void OnDndDropPerformed();
 
+  void set_manager(TestSelectionDeviceManager* manager) { manager_ = manager; }
+
   const std::vector<std::string>& mime_types() const { return mime_types_; }
 
   // Protocol object requests:
@@ -144,6 +146,7 @@ class TestSelectionSource : public ServerObject {
 
   std::vector<std::string> mime_types_;
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  raw_ptr<TestSelectionDeviceManager> manager_ = nullptr;
 };
 
 class TestSelectionDevice : public ServerObject {

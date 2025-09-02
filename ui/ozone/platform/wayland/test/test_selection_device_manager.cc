@@ -90,7 +90,11 @@ TestSelectionSource::TestSelectionSource(wl_resource* resource,
       task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})) {}
 
-TestSelectionSource::~TestSelectionSource() = default;
+TestSelectionSource::~TestSelectionSource() {
+  if (manager_) {
+    manager_->set_source(nullptr);
+  }
+}
 
 void TestSelectionSource::ReadData(const std::string& mime_type,
                                    ReadDataCallback callback) {
@@ -163,8 +167,10 @@ void TestSelectionDevice::SetSelection(struct wl_client* client,
   auto* src = source ? GetUserDataAs<TestSelectionSource>(source) : nullptr;
   self->selection_serial_ = serial;
   self->delegate_->HandleSetSelection(src, serial);
-  if (self->manager_)
+  if (self->manager_) {
     self->manager_->set_source(src);
+    src->set_manager(self->manager_);
+  }
 }
 
 TestSelectionDeviceManager::TestSelectionDeviceManager(
