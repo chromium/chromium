@@ -18,4 +18,5 @@ include_rules = [
   "+ios/chrome/browser/omnibox/model/chrome_omnibox_client_ios.h",
   "+ios/chrome/browser/overlays/model",
   "+ios/chrome/browser/overlays/model/public",
+  "+ios/chrome/browser/snackbar/public",
 ]
