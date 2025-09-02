@@ -152,24 +152,27 @@ const LayoutResult* MasonryLayoutAlgorithm::Layout() {
                       running_positions, SizingConstraint::kLayout);
   }
 
+  // Create track layout data to support masonry overlay in DevTools.
+  std::unique_ptr<GridLayoutData> layout_data(
+      std::make_unique<GridLayoutData>());
+  layout_data->SetTrackCollection(
+      std::make_unique<GridLayoutTrackCollection>(track_collection));
+
+  // Account for border, scrollbar, and padding in the intrinsic block size.
+  intrinsic_block_size_ += BorderScrollbarPadding().BlockSum();
+  const auto block_size = ComputeBlockSizeForFragment(
+      GetConstraintSpace(), Node(), BorderPadding(), intrinsic_block_size_,
+      container_builder_.InlineSize());
+  container_builder_.SetFragmentsTotalBlockSize(block_size);
+  container_builder_.SetIntrinsicBlockSize(intrinsic_block_size_);
+
+  // Place out-of-flow items after setting the intrinsic block size, since
+  // out-of-flow items don't contribute to the intrinsic size of the container.
   if (!oof_children.empty()) {
     PlaceOutOfFlowItems(oof_children);
   }
 
-  // Transfer track layout data to support masonry overlay in DevTools.
-  GridLayoutData layout_data;
-  layout_data.SetTrackCollection(
-      std::make_unique<GridLayoutTrackCollection>(track_collection));
-  container_builder_.TransferGridLayoutData(
-      std::make_unique<GridLayoutData>(layout_data));
-
-  // Account for border, scrollbar, and padding in the intrinsic block size.
-  intrinsic_block_size_ += BorderScrollbarPadding().BlockSum();
-
-  container_builder_.SetFragmentsTotalBlockSize(ComputeBlockSizeForFragment(
-      GetConstraintSpace(), Node(), BorderPadding(), intrinsic_block_size_,
-      container_builder_.InlineSize()));
-  container_builder_.SetIntrinsicBlockSize(intrinsic_block_size_);
+  container_builder_.TransferGridLayoutData(std::move(layout_data));
   container_builder_.HandleOofsAndSpecialDescendants();
   return container_builder_.ToBoxFragment();
 }
