@@ -187,6 +187,7 @@ source_set("scene") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/prototypes/diamond",
+    "//ios/chrome/browser/shared/ui/chrome_overlay_window",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:snackbar_util",
     "//ios/chrome/browser/signin/model",

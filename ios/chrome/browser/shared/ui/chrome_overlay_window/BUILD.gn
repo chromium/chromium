@@ -1,0 +1,32 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("chrome_overlay_window") {
+  sources = [
+    "chrome_overlay_container_view.h",
+    "chrome_overlay_container_view.mm",
+    "chrome_overlay_window.h",
+    "chrome_overlay_window.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/crash_report/model",
+    "//ios/chrome/browser/metrics/model",
+    "//ios/chrome/browser/metrics/model:metrics_internal",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "chrome_overlay_window_unittest.mm" ]
+  deps = [
+    ":chrome_overlay_window",
+    "//base",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

@@ -11,11 +11,11 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/app/chrome_overlay_window.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_in_progress.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_util.h"
+#import "ios/chrome/browser/shared/ui/chrome_overlay_window/chrome_overlay_window.h"
 
 namespace {
 

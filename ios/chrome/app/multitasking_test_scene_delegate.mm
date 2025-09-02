@@ -8,7 +8,7 @@
 
 #import "base/notreached.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/app/chrome_overlay_window.h"
+#import "ios/chrome/browser/shared/ui/chrome_overlay_window/chrome_overlay_window.h"
 
 namespace {
 

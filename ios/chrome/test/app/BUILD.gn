@@ -98,6 +98,7 @@ source_set("test_support") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/shared/ui/chrome_overlay_window",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",

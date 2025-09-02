@@ -6,8 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/app/chrome_overlay_window.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/ui/chrome_overlay_window/chrome_overlay_window.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"

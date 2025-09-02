@@ -374,8 +374,6 @@ source_set("enterprise_app_agent_ui") {
 
 source_set("app_internal") {
   sources = [
-    "chrome_overlay_window.h",
-    "chrome_overlay_window.mm",
     "main_application_delegate.h",
     "main_application_delegate.mm",
     "main_application_delegate_testing.h",
@@ -516,6 +514,7 @@ source_set("app_internal") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/shared/ui/chrome_overlay_window",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin/model",
@@ -617,7 +616,7 @@ source_set("change_profile_animator") {
     "//base",
     "//ios/chrome/app/profile",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
-    "//ios/third_party/material_components_ios",
+    "//ios/chrome/browser/shared/ui/chrome_overlay_window",
   ]
 }
 
@@ -695,7 +694,7 @@ source_set("multitasking_test_app_delegate") {
     "//base",
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/browser/shared/coordinator/scene",
-    "//ios/third_party/material_components_ios",
+    "//ios/chrome/browser/shared/ui/chrome_overlay_window",
   ]
 }
 

@@ -4,7 +4,6 @@
 
 #import "ios/chrome/app/change_profile_animator.h"
 
-#import <MaterialComponents/MaterialOverlayWindow.h>
 #import <objc/runtime.h>
 
 #import "base/functional/bind.h"
@@ -14,11 +13,12 @@
 #import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
+#import "ios/chrome/browser/shared/ui/chrome_overlay_window/chrome_overlay_window.h"
 
 @interface ChangeProfileAnimation : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithWindow:(MDCOverlayWindow*)window
+- (instancetype)initWithWindow:(ChromeOverlayWindow*)window
     NS_DESIGNATED_INITIALIZER;
 
 // Captures a snapshot of the view presented by the window, install it as
@@ -62,7 +62,7 @@ void InvokeChangeProfileContinuation(ChangeProfileContinuation continuation,
 
 @implementation ChangeProfileAnimation {
   // The window on which the animations should be played.
-  __weak MDCOverlayWindow* _window;
+  __weak ChromeOverlayWindow* _window;
 
   // Visual effect view used to animate the blur and unblur animations.
   UIVisualEffectView* _effectView;
@@ -82,7 +82,7 @@ void InvokeChangeProfileContinuation(ChangeProfileContinuation continuation,
   std::optional<base::TimeDelta> _unblurDuration;
 }
 
-- (instancetype)initWithWindow:(MDCOverlayWindow*)window {
+- (instancetype)initWithWindow:(ChromeOverlayWindow*)window {
   if ((self = [super init])) {
     _window = window;
   }
@@ -195,7 +195,7 @@ void InvokeChangeProfileContinuation(ChangeProfileContinuation continuation,
   BOOL _cancelledAnimation;
 }
 
-- (instancetype)initWithWindow:(MDCOverlayWindow*)window {
+- (instancetype)initWithWindow:(ChromeOverlayWindow*)window {
   if ((self = [super init])) {
     if (window) {
       _animation = [[ChangeProfileAnimation alloc] initWithWindow:window];
