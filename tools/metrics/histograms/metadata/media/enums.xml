@@ -227,13 +227,6 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Overlay Insecure Non-player-element Fullscreen"/>
 </enum>
 
-<enum name="BlacklistedVideoCaptureDeviceNames">
-  <int value="0" label="Google GTalk Camera Adapter"/>
-  <int value="1" label="IP Camera"/>
-  <int value="2" label="Cyberlink YouCam Webcam Splitter"/>
-  <int value="3" label="EpocCam Smartphone Wireless Camera"/>
-</enum>
-
 <enum name="BooleanAfterPowerOrDisplayChange">
   <int value="0" label="Not After Power or Display Change"/>
   <int value="1" label="After Power or Display Change"/>

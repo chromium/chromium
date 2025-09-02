@@ -6633,16 +6633,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.VideoCapture.BlacklistedDevice"
-    enum="BlacklistedVideoCaptureDeviceNames" expires_after="M82">
-  <owner>mcasas@chromium.org</owner>
-  <summary>
-    Counts appearances of Blacklisted Video Capture devices during enumeration.
-    This collection happens during first enumeration in the appropriate
-    platforms' VideoCaptureDeviceFactory.
-  </summary>
-</histogram>
-
 <histogram name="Media.VideoCapture.CreateDeviceSuccessLatency" units="ms"
     expires_after="2026-02-15">
   <owner>herre@google.com</owner>
