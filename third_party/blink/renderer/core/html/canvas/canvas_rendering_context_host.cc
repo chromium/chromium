@@ -48,7 +48,7 @@ bool CanUseGPU() {
 
 CanvasRenderingContextHost::CanvasRenderingContextHost(HostType host_type,
                                                        const gfx::Size& size)
-    : host_type_(host_type), size_(size) {}
+    : size_(size), host_type_(host_type) {}
 
 void CanvasRenderingContextHost::Trace(Visitor* visitor) const {
   visitor->Trace(plain_text_painter_);

@@ -118,7 +118,7 @@ class CORE_EXPORT HTMLCanvasElement final
   void setLayoutSubtree(bool);
   bool layoutSubtree() const;
 
-  void SetSize(gfx::Size new_size) final;
+  void SetSize(gfx::Size new_size);
 
   // Called by Document::getCSSCanvasContext as well as above getContext().
   CanvasRenderingContext* GetCanvasRenderingContext(

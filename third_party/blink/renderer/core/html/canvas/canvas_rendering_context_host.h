@@ -143,7 +143,6 @@ class CORE_EXPORT CanvasRenderingContextHost
   ImageBitmapSourceStatus CheckUsability() const override;
 
   gfx::Size Size() const { return size_; }
-  virtual void SetSize(gfx::Size size) { size_ = size; }
 
   bool ShouldTryToUseGpuRaster() const;
   void SetPreferred2DRasterMode(RasterModeHint);
@@ -165,12 +164,12 @@ class CORE_EXPORT CanvasRenderingContextHost
 
   Member<PlainTextPainter> plain_text_painter_;
   Member<UniqueFontSelector> unique_font_selector_;
+  gfx::Size size_;
 
  private:
 
   bool did_record_canvas_size_to_uma_ = false;
   HostType host_type_ = HostType::kNone;
-  gfx::Size size_;
   RasterModeHint preferred_2d_raster_mode_ = RasterModeHint::kPreferCPU;
 };
 

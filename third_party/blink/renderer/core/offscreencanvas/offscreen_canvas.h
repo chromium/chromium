@@ -70,7 +70,7 @@ class CORE_EXPORT OffscreenCanvas final
                                     const ImageEncodeOptions* options,
                                     ExceptionState& exception_state);
 
-  void SetSize(gfx::Size) override;
+  void SetSize(gfx::Size);
   void RecordTransfer();
 
   void SetPlaceholderCanvasId(DOMNodeId canvas_id);
