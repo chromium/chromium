@@ -81,6 +81,18 @@ void RecordFunnelStage(FunnelStage stage) {
                                 stage);
 }
 
+void RecordEligibilityFunnelStageDetails(
+    SearchEngineChoiceScreenConditions conditions) {
+  base::UmaHistogramEnumeration("RegionalCapabilities.FunnelStage.Eligibility",
+                                conditions);
+}
+
+void RecordTriggeringFunnelStageDetails(
+    SearchEngineChoiceScreenConditions conditions) {
+  base::UmaHistogramEnumeration("RegionalCapabilities.FunnelStage.Triggering",
+                                conditions);
+}
+
 void RecordActiveRegionalProgram(
     const absl::flat_hash_set<ActiveRegionalProgram> programs) {
   ActiveRegionalProgram merged_program;

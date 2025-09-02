@@ -119,10 +119,19 @@ class SearchEngineChoiceService : public KeyedService {
       const TemplateURLService& template_url_service) const;
 
   // Records the specified choice screen condition at profile initialization.
-  void RecordStaticEligibility(SearchEngineChoiceScreenConditions condition);
+  void RecordProfileLoadEligibility(
+      SearchEngineChoiceScreenConditions condition);
+
+#if BUILDFLAG(IS_IOS)
+  // Records only the legacy static eligibility histograms. Note that on iOS,
+  // the legacy histograms are not recorded by `RecordProfileLoadEligibility()`
+  void RecordLegacyStaticEligibility(
+      SearchEngineChoiceScreenConditions condition);
+#endif  // BUILDFLAG(IS_IOS)
 
   // Records the specified choice screen condition for relevant navigations.
-  void RecordDynamicEligibility(SearchEngineChoiceScreenConditions condition);
+  void RecordTriggeringEligibility(
+      SearchEngineChoiceScreenConditions condition);
 
   // Records the specified choice screen event.
   void RecordChoiceScreenEvent(SearchEngineChoiceScreenEvents event);

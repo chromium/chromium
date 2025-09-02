@@ -10,6 +10,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/policy/core/common/mock_policy_service.h"
+#import "components/regional_capabilities/regional_capabilities_metrics.h"
 #import "components/regional_capabilities/regional_capabilities_switches.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #import "components/search_engines/search_engines_pref_names.h"
@@ -24,6 +25,8 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+
+using search_engines::SearchEngineChoiceScreenConditions;
 
 class SearchEngineChoiceUtilTest : public PlatformTest {
  public:
@@ -76,7 +79,19 @@ TEST_F(SearchEngineChoiceUtilTest, ShowChoiceScreenIfPoliciesAreNotSet) {
       /*app_started_via_external_intent=*/false));
   histogram_tester_.ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
-      search_engines::SearchEngineChoiceScreenConditions::kEligible, 1);
+      SearchEngineChoiceScreenConditions::kEligible, 1);
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::kSearchEngineChoiceScreenNavigationConditionsHistogram,
+      SearchEngineChoiceScreenConditions::kEligible, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "RegionalCapabilities.FunnelStage.Eligibility",
+      SearchEngineChoiceScreenConditions::kEligible, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "RegionalCapabilities.FunnelStage.Triggering",
+      SearchEngineChoiceScreenConditions::kEligible, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "RegionalCapabilities.FunnelStage.Reported",
+      regional_capabilities::FunnelStage::kEligible, 1);
 }
 
 TEST_F(SearchEngineChoiceUtilTest,
@@ -86,9 +101,19 @@ TEST_F(SearchEngineChoiceUtilTest,
       /*app_started_via_external_intent=*/true));
   histogram_tester_.ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
-      search_engines::SearchEngineChoiceScreenConditions::
-          kAppStartedByExternalIntent,
-      1);
+      SearchEngineChoiceScreenConditions::kAppStartedByExternalIntent, 1);
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::kSearchEngineChoiceScreenNavigationConditionsHistogram,
+      SearchEngineChoiceScreenConditions::kAppStartedByExternalIntent, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "RegionalCapabilities.FunnelStage.Eligibility",
+      SearchEngineChoiceScreenConditions::kEligible, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "RegionalCapabilities.FunnelStage.Triggering",
+      SearchEngineChoiceScreenConditions::kAppStartedByExternalIntent, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "RegionalCapabilities.FunnelStage.Reported",
+      regional_capabilities::FunnelStage::kNotEligible, 1);
 }
 
 TEST_F(
@@ -105,9 +130,19 @@ TEST_F(
       /*app_started_via_external_intent=*/true));
   histogram_tester_.ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
-      search_engines::SearchEngineChoiceScreenConditions::
-          kAppStartedByExternalIntent,
-      1);
+      SearchEngineChoiceScreenConditions::kAppStartedByExternalIntent, 1);
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::kSearchEngineChoiceScreenNavigationConditionsHistogram,
+      SearchEngineChoiceScreenConditions::kAppStartedByExternalIntent, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "RegionalCapabilities.FunnelStage.Eligibility",
+      SearchEngineChoiceScreenConditions::kEligible, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "RegionalCapabilities.FunnelStage.Triggering",
+      SearchEngineChoiceScreenConditions::kAppStartedByExternalIntent, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "RegionalCapabilities.FunnelStage.Reported",
+      regional_capabilities::FunnelStage::kNotEligible, 1);
 }
 
 TEST_F(
@@ -123,7 +158,19 @@ TEST_F(
       /*app_started_via_external_intent=*/true));
   histogram_tester_.ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
-      search_engines::SearchEngineChoiceScreenConditions::kEligible, 1);
+      SearchEngineChoiceScreenConditions::kEligible, 1);
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::kSearchEngineChoiceScreenNavigationConditionsHistogram,
+      SearchEngineChoiceScreenConditions::kEligible, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "RegionalCapabilities.FunnelStage.Eligibility",
+      SearchEngineChoiceScreenConditions::kEligible, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "RegionalCapabilities.FunnelStage.Triggering",
+      SearchEngineChoiceScreenConditions::kEligible, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "RegionalCapabilities.FunnelStage.Reported",
+      regional_capabilities::FunnelStage::kEligible, 1);
 }
 
 TEST_F(SearchEngineChoiceUtilTest,
@@ -142,7 +189,17 @@ TEST_F(SearchEngineChoiceUtilTest,
       /*app_started_via_external_intent=*/false));
   histogram_tester_.ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
-      search_engines::SearchEngineChoiceScreenConditions::
-          kHasCustomSearchEngine,
-      1);
+      SearchEngineChoiceScreenConditions::kHasCustomSearchEngine, 1);
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::kSearchEngineChoiceScreenNavigationConditionsHistogram,
+      SearchEngineChoiceScreenConditions::kHasCustomSearchEngine, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "RegionalCapabilities.FunnelStage.Eligibility",
+      SearchEngineChoiceScreenConditions::kEligible, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "RegionalCapabilities.FunnelStage.Triggering",
+      SearchEngineChoiceScreenConditions::kHasCustomSearchEngine, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "RegionalCapabilities.FunnelStage.Reported",
+      regional_capabilities::FunnelStage::kNotEligible, 1);
 }

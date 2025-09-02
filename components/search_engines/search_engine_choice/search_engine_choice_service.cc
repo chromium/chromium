@@ -267,6 +267,20 @@ regional_capabilities::FunnelStage ToFunnelStage(
   NOTREACHED();
 }
 
+void RecordLegacyStaticEligibilityInternal(
+    search_engines::SearchEngineChoiceService::Client& client,
+    SearchEngineChoiceScreenConditions condition) {
+  if (base::FeatureList::IsEnabled(
+          switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection) &&
+      client.IsDeviceRestoreDetectedInCurrentSession()) {
+    base::UmaHistogramEnumeration(
+        kChoiceScreenProfileInitConditionsPostRestoreHistogram, condition);
+  }
+
+  base::UmaHistogramEnumeration(
+      kSearchEngineChoiceScreenProfileInitConditionsHistogram, condition);
+}
+
 bool IsChoiceImported(const ChoiceCompletionMetadata& completion_metadata,
                       SearchEngineChoiceService::Client& client,
                       const PrefService& profile_prefs,
@@ -444,26 +458,30 @@ SearchEngineChoiceService::GetDynamicChoiceScreenConditions(
 #endif
 }
 
-void SearchEngineChoiceService::RecordStaticEligibility(
+void SearchEngineChoiceService::RecordProfileLoadEligibility(
     SearchEngineChoiceScreenConditions condition) {
-  if (base::FeatureList::IsEnabled(
-          switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection) &&
-      client_->IsDeviceRestoreDetectedInCurrentSession()) {
-    base::UmaHistogramEnumeration(
-        kChoiceScreenProfileInitConditionsPostRestoreHistogram, condition);
-  }
+#if !BUILDFLAG(IS_IOS)
+  // On iOS, this function is called directly.
+  RecordLegacyStaticEligibilityInternal(*client_.get(), condition);
+#endif  // !BUILDFLAG(IS_IOS)
 
-  base::UmaHistogramEnumeration(
-      kSearchEngineChoiceScreenProfileInitConditionsHistogram, condition);
+  regional_capabilities::RecordEligibilityFunnelStageDetails(condition);
   if (condition != SearchEngineChoiceScreenConditions::kEligible) {
-    // Static eligibility is not a conclusive funnel state. We don't record it
-    // here, we instead rely on dynamic eligibility, which is expected to be
-    // recorded shortly after, to record a funnel stage.
+    // Being eligible at profile load is not a conclusive funnel state. We don't
+    // record it here, we instead rely on trigger-time eligibility, which is
+    // expected to be recorded shortly after, to record a funnel stage.
     regional_capabilities::RecordFunnelStage(ToFunnelStage(condition));
   }
 }
 
-void SearchEngineChoiceService::RecordDynamicEligibility(
+#if BUILDFLAG(IS_IOS)
+void SearchEngineChoiceService::RecordLegacyStaticEligibility(
+    SearchEngineChoiceScreenConditions condition) {
+  RecordLegacyStaticEligibilityInternal(*client_.get(), condition);
+}
+#endif  // BUILDFLAG(IS_IOS)
+
+void SearchEngineChoiceService::RecordTriggeringEligibility(
     SearchEngineChoiceScreenConditions condition) {
   if (base::FeatureList::IsEnabled(
           switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection) &&
@@ -475,6 +493,7 @@ void SearchEngineChoiceService::RecordDynamicEligibility(
   base::UmaHistogramEnumeration(
       kSearchEngineChoiceScreenNavigationConditionsHistogram, condition);
 
+  regional_capabilities::RecordTriggeringFunnelStageDetails(condition);
   regional_capabilities::RecordFunnelStage(ToFunnelStage(condition));
 }
 
