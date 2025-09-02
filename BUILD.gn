@@ -1166,11 +1166,11 @@ if (use_blink && !is_cronet_build) {
         ]
       }
       data_deps = [
-        ":blink_web_tests_expectations",
         ":blink_web_tests_support_data",
         "//chrome",
         "//chrome/test/chromedriver:chromedriver_server",
         "//third_party/blink/tools:wpt_tests_isolate",
+        "//third_party/blink/web_tests:wpt_tests",
       ]
     }
 
@@ -1182,11 +1182,11 @@ if (use_blink && !is_cronet_build) {
                "--verbose",
              ]
       data_deps = [
-        ":blink_web_tests_expectations",
         ":blink_web_tests_support_data",
         "//chrome/test/chromedriver:chromedriver_server",
         "//headless:headless_shell",
         "//third_party/blink/tools:wpt_tests_isolate",
+        "//third_party/blink/web_tests:wpt_tests",
       ]
       if (is_mac || is_linux) {
         data_deps += [ "//third_party/hyphenation-patterns:bundle_hyphen_data" ]
@@ -1372,165 +1372,19 @@ if (use_blink && !is_cronet_build) {
     args = _common_web_test_args
 
     data_deps = [
-      ":blink_web_tests_expectations",
       ":blink_web_tests_support_data",
+      "//third_party/blink/web_tests",
     ]
-    data = [
-      "//third_party/blink/perf_tests/",
-      "//third_party/blink/web_tests/VirtualTestSuites",
-
-      # === List Test Cases folders here ===
-      "//third_party/blink/web_tests/accessibility/",
-      "//third_party/blink/web_tests/animations/",
-      "//third_party/blink/web_tests/app_banner/",
-      "//third_party/blink/web_tests/bindings/",
-      "//third_party/blink/web_tests/clipboard/",
-      "//third_party/blink/web_tests/compositing/",
-      "//third_party/blink/web_tests/content_extraction/",
-      "//third_party/blink/web_tests/crypto/",
-      "//third_party/blink/web_tests/css-parser/",
-      "//third_party/blink/web_tests/css1/",
-      "//third_party/blink/web_tests/css2.1/",
-      "//third_party/blink/web_tests/css3/",
-      "//third_party/blink/web_tests/cssom/",
-      "//third_party/blink/web_tests/custom-elements/",
-      "//third_party/blink/web_tests/custom-properties/",
-      "//third_party/blink/web_tests/dark-mode/",
-      "//third_party/blink/web_tests/dom/",
-      "//third_party/blink/web_tests/editing/",
-      "//third_party/blink/web_tests/fast/",
-      "//third_party/blink/web_tests/fonts/",
-      "//third_party/blink/web_tests/fragmentation/",
-      "//third_party/blink/web_tests/fullscreen/",
-      "//third_party/blink/web_tests/gamepad/",
-      "//third_party/blink/web_tests/harness-tests/",
-      "//third_party/blink/web_tests/hittesting/",
-      "//third_party/blink/web_tests/html/",
-      "//third_party/blink/web_tests/html5lib/",
-      "//third_party/blink/web_tests/http/",
-      "//third_party/blink/web_tests/idle-callback/",
-      "//third_party/blink/web_tests/ietestcenter/",
-      "//third_party/blink/web_tests/images/",
-      "//third_party/blink/web_tests/inspector-protocol/",
-      "//third_party/blink/web_tests/intersection-observer/",
-      "//third_party/blink/web_tests/jquery/",
-      "//third_party/blink/web_tests/js/",
-      "//third_party/blink/web_tests/loader/",
-      "//third_party/blink/web_tests/media/",
-      "//third_party/blink/web_tests/media_capabilities/",
-      "//third_party/blink/web_tests/mhtml/",
-      "//third_party/blink/web_tests/navigator_language/",
-      "//third_party/blink/web_tests/navigator_webdriver/",
-      "//third_party/blink/web_tests/netinfo/",
-      "//third_party/blink/web_tests/overflow/",
-      "//third_party/blink/web_tests/paint/",
-      "//third_party/blink/web_tests/payments/",
-      "//third_party/blink/web_tests/performance_timeline/",
-      "//third_party/blink/web_tests/permissionclient/",
-      "//third_party/blink/web_tests/plugins/",
-      "//third_party/blink/web_tests/pointer-lock/",
-      "//third_party/blink/web_tests/ppapi/",
-      "//third_party/blink/web_tests/printing/",
-      "//third_party/blink/web_tests/register-protocol-handler/",
-      "//third_party/blink/web_tests/regress/",
-      "//third_party/blink/web_tests/resize-observer/",
-      "//third_party/blink/web_tests/resources/",
-      "//third_party/blink/web_tests/rootscroller/",
-      "//third_party/blink/web_tests/screen_orientation/",
-      "//third_party/blink/web_tests/scrollbars/",
-      "//third_party/blink/web_tests/security/",
-      "//third_party/blink/web_tests/handwriting/",
-      "//third_party/blink/web_tests/shadow-dom/",
-      "//third_party/blink/web_tests/storage/",
-      "//third_party/blink/web_tests/svg/",
-      "//third_party/blink/web_tests/synthetic_gestures/",
-      "//third_party/blink/web_tests/tables/",
-      "//third_party/blink/web_tests/test_runner/",
-      "//third_party/blink/web_tests/third_party/",
-      "//third_party/blink/web_tests/timezonechange/",
-      "//third_party/blink/web_tests/touchadjustment/",
-      "//third_party/blink/web_tests/transforms/",
-      "//third_party/blink/web_tests/transitions/",
-      "//third_party/blink/web_tests/traversal/",
-      "//third_party/blink/web_tests/typedcssom/",
-      "//third_party/blink/web_tests/vibration/",
-      "//third_party/blink/web_tests/view-transition/",
-      "//third_party/blink/web_tests/virtual/",
-      "//third_party/blink/web_tests/virtualkeyboard/",
-      "//third_party/blink/web_tests/wasm/",
-      "//third_party/blink/web_tests/webaudio/",
-      "//third_party/blink/web_tests/webexposed/",
-      "//third_party/blink/web_tests/webgpu/",
-      "//third_party/blink/web_tests/xmlviewer/",
-
-      # === Test Case Folders Ends ===
-    ]
+    data = [ "//third_party/blink/perf_tests/" ]
   }
 
+  # TODO(crbug.com/40655511): Remove this target once
+  # `//components/optimization_guide/internal/testing:chrome_ai_wpt_tests` is
+  # updated to depend on `web_tests/` directly. Do not add new dependencies on
+  # this target.
   group("blink_web_tests_expectations") {
     testonly = true
-
-    data = [
-      # Include virtual baselines.
-      "//third_party/blink/web_tests/virtual/",
-
-      # List all test expectations here
-      "//third_party/blink/web_tests/LeakExpectations",
-      "//third_party/blink/web_tests/NeverFixTests",
-      "//third_party/blink/web_tests/SlowTests",
-      "//third_party/blink/web_tests/StaleTestExpectations",
-      "//third_party/blink/web_tests/TestExpectations",
-    ]
-
-    if (is_asan) {
-      data += [ "//third_party/blink/web_tests/ASANExpectations" ]
-    }
-    if (is_chrome_for_testing) {
-      data += [ "//third_party/blink/web_tests/CfTTestExpectations" ]
-    }
-    if (is_msan) {
-      data += [ "//third_party/blink/web_tests/MSANExpectations" ]
-    }
-    if (enable_ml_internal) {
-      data += [ "//third_party/blink/web_tests/OptimizationGuideExpectations" ]
-    }
-
-    if (is_win || is_linux || is_fuchsia) {
-      data += [
-        "//third_party/blink/web_tests/platform/win/",
-        "//third_party/blink/web_tests/platform/win10/",
-        "//third_party/blink/web_tests/platform/win11-arm64/",
-      ]
-      if (is_linux || is_fuchsia) {
-        data += [ "//third_party/blink/web_tests/platform/linux/" ]
-      }
-      if (is_fuchsia) {
-        data += [
-          "//third_party/blink/web_tests/platform/fuchsia/",
-          "$root_gen_dir/package_metadata/content_shell.meta",
-        ]
-      }
-    } else if (is_mac) {
-      data += [
-        "//third_party/blink/web_tests/platform/mac/",
-        "//third_party/blink/web_tests/platform/mac-mac12/",
-        "//third_party/blink/web_tests/platform/mac-mac12-arm64/",
-        "//third_party/blink/web_tests/platform/mac-mac13/",
-        "//third_party/blink/web_tests/platform/mac-mac13-arm64/",
-        "//third_party/blink/web_tests/platform/mac-mac14/",
-        "//third_party/blink/web_tests/platform/mac-mac14-arm64/",
-        "//third_party/blink/web_tests/platform/mac-mac15-arm64/",
-      ]
-    }
-
-    # flag-specific tests only runs on linux & mac as of now
-    if (is_linux || is_mac) {
-      data += [
-        "//third_party/blink/web_tests/FlagSpecificConfig",
-        "//third_party/blink/web_tests/FlagExpectations/",
-        "//third_party/blink/web_tests/flag-specific/",
-      ]
-    }
+    data_deps = [ "//third_party/blink/web_tests:expectations" ]
   }
 
   # https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_tests.md
@@ -1553,19 +1407,10 @@ if (use_blink && !is_cronet_build) {
     ]
 
     data_deps = [
-      ":blink_web_tests_expectations",
       ":blink_web_tests_support_data",
+      "//third_party/blink/web_tests:wpt_tests",
     ]
-    data = [
-      "//third_party/blink/perf_tests/",
-      "//third_party/blink/web_tests/VirtualTestSuites",
-
-      # === List Test Cases folders here ===
-      "//third_party/blink/web_tests/external/",
-      "//third_party/blink/web_tests/wpt_internal/",
-
-      # === Test Case Folders Ends ===
-    ]
+    data = [ "//third_party/blink/perf_tests/" ]
   }
 
   script_test("webgpu_blink_web_tests") {
@@ -1588,18 +1433,10 @@ if (use_blink && !is_cronet_build) {
 
     data_deps = [
       ":blink_web_tests_support_data",
+      "//third_party/blink/web_tests:webgpu_web_tests",
       "//third_party/webgpu-cts",
     ]
-    data = [
-      "//third_party/blink/web_tests/external/wpt/common/",
-      "//third_party/blink/web_tests/external/wpt/html/canvas/resources/",
-      "//third_party/blink/web_tests/external/wpt/resources/",
-      "//third_party/blink/web_tests/FlagSpecificConfig",
-      "//third_party/blink/web_tests/VirtualTestSuites",
-      "//third_party/blink/web_tests/WebGPUExpectations",
-      "//third_party/blink/web_tests/wpt_internal/",
-      "//third_party/webgpu-cts/scripts/",
-    ]
+    data = [ "//third_party/webgpu-cts/scripts/" ]
   }
 
   copy("layout_test_data_mojo_bindings") {
