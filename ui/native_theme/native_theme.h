@@ -440,6 +440,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   enum class SystemThemeColor {
     kNotSupported,
     kButtonFace,
+    kButtonHighlight,
     kButtonText,
     kGrayText,
     kHighlight,

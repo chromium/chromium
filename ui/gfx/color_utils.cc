@@ -23,12 +23,6 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/color_palette.h"
 
-#if BUILDFLAG(IS_WIN)
-#include <windows.h>
-
-#include "skia/ext/skia_utils_win.h"
-#endif
-
 namespace color_utils {
 
 namespace {
@@ -673,15 +667,6 @@ BlendResult BlendForMinContrast(SkColor default_foreground,
 SkColor InvertColor(SkColor color) {
   return SkColorSetARGB(SkColorGetA(color), 255 - SkColorGetR(color),
                         255 - SkColorGetG(color), 255 - SkColorGetB(color));
-}
-
-SkColor GetSysSkColor(int which) {
-#if BUILDFLAG(IS_WIN)
-  return skia::COLORREFToSkColor(GetSysColor(which));
-#else
-  NOTIMPLEMENTED();
-  return SK_ColorLTGRAY;
-#endif
 }
 
 SkColor DeriveDefaultIconColor(SkColor text_color) {

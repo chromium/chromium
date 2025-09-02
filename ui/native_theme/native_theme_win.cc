@@ -61,12 +61,18 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/native_theme/native_theme.h"
 
+namespace ui {
+
 namespace {
 
 void SetCheckerboardShader(SkPaint* paint, const RECT& align_rect) {
   // Create a 2x2 checkerboard pattern using the 3D face and highlight colors.
-  const SkColor face = color_utils::GetSysSkColor(COLOR_3DFACE);
-  const SkColor highlight = color_utils::GetSysSkColor(COLOR_3DHILIGHT);
+  const auto* const native_theme = NativeTheme::GetInstanceForNativeUi();
+  using enum NativeTheme::SystemThemeColor;
+  const SkColor face = native_theme->GetSystemThemeColor(kButtonFace)
+                           .value_or(SkColorSetRGB(0xC0, 0xC0, 0xC0));
+  const SkColor highlight = native_theme->GetSystemThemeColor(kButtonHighlight)
+                                .value_or(SK_ColorWHITE);
   SkColor buffer[] = {face, highlight, highlight, face};
   // Confusing bit: we first create a temporary bitmap with our desired pattern,
   // then copy it to another bitmap.  The temporary bitmap doesn't take
@@ -166,8 +172,6 @@ base::win::RegKey OpenColorFilteringRegKey(REGSAM access) {
 }
 
 }  // namespace
-
-namespace ui {
 
 NativeTheme* NativeTheme::GetInstanceForNativeUi() {
   static base::NoDestructor<NativeThemeWin> s_native_theme(true, false);
@@ -394,6 +398,7 @@ void NativeThemeWin::UpdateSystemColors() {
   static constexpr auto kColors =
       std::to_array<std::pair<SystemThemeColor, ui::ColorId>>(
           {{SystemThemeColor::kButtonFace, kColorNativeBtnFace},
+           {SystemThemeColor::kButtonHighlight, kColorNativeBtnHighlight},
            {SystemThemeColor::kButtonText, kColorNativeBtnText},
            {SystemThemeColor::kGrayText, kColorNativeGrayText},
            {SystemThemeColor::kHighlight, kColorNativeHighlight},
