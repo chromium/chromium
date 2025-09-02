@@ -1161,9 +1161,6 @@ crbug.com/1473373 wpt_internal/scheduler/task-signal-any-memory-abort-2.any.work
 
 crbug.com/1493194 external/wpt/css/cssom/insert-dir-rule-in-iframe-crash.html [ Slow ]
 
-# Slow Private Network Access tests
-crbug.com/626703 [ Mac12 ] external/wpt/fetch/private-network-access/mixed-content-fetch.tentative.https.window.html [ Slow ]
-
 # Gardener 2023-10-26
 crbug.com/1496281 [ Debug Linux ] external/wpt/html/semantics/embedded-content/bfcache/embedded-js.html [ Slow ]
 crbug.com/1496281 [ Debug Mac13 ] external/wpt/html/semantics/embedded-content/bfcache/embedded-js.html [ Slow ]

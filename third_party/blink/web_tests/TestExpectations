@@ -3105,7 +3105,6 @@ crbug.com/427778335 [ Linux ] external/wpt/html/semantics/forms/the-select-eleme
 crbug.com/427778335 [ Mac14 ] external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-custom-button.tentative.html [ Failure Timeout ]
 crbug.com/437806804 [ Mac14 ] external/wpt/wasm/core/simd/simd_f32x4_arith.wast.js.html [ Timeout ]
 crbug.com/437806804 [ Mac14 ] external/wpt/wasm/core/simd/simd_f64x2_arith.wast.js.html [ Timeout ]
-crbug.com/437877028 [ Mac14 ] virtual/pna-navigations-warning/external/wpt/fetch/private-network-access/redirect.tentative.https.window.html [ Timeout ]
 crbug.com/437877028 [ Mac14 ] virtual/renderer-side-content-decoding/external/wpt/fetch/content-encoding/br/big-br-body.https.any.html [ Timeout ]
 crbug.com/437877028 [ Mac14 ] virtual/renderer-side-content-decoding/external/wpt/fetch/content-encoding/br/big-br-body.https.any.serviceworker.html [ Timeout ]
 crbug.com/437877028 [ Mac14 ] virtual/renderer-side-content-decoding/external/wpt/fetch/content-encoding/zstd/big-zstd-body.https.any.html [ Timeout ]
@@ -4262,7 +4261,6 @@ crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/background-po
 crbug.com/626703 [ Mac14 ] external/wpt/webtransport/echo-large-bidirectional-streams.https.any.sharedworker.html [ Timeout ]
 crbug.com/626703 [ Win11-arm64 ] external/wpt/webtransport/echo-large-bidirectional-streams.https.any.sharedworker.html [ Timeout ]
 crbug.com/626703 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/frame-navigation.https.html [ Timeout ]
-crbug.com/626703 [ Win11-arm64 ] virtual/pna-workers-disabled/external/wpt/fetch/private-network-access/redirect.tentative.https.window.html [ Timeout ]
 crbug.com/626703 external/wpt/mathml/relations/html5-tree/href-click-001.tentative.html [ Failure ]
 crbug.com/626703 external/wpt/mathml/relations/html5-tree/href-click-002.tentative.html [ Failure ]
 crbug.com/626703 external/wpt/mathml/relations/html5-tree/link-color-001.tentative.html [ Failure ]
@@ -6788,22 +6786,6 @@ crbug.com/362922565 html/select/select-typeahead-with-spacekey.html [ Failure ]
 crbug.com/382679385 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-bottom-left.tentative.html [ Failure ]
 crbug.com/382679385 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-fallback-bottom-right.tentative.html [ Failure ]
 
-# Sheriff 2022-04-21
-crbug.com/1318318 external/wpt/fetch/private-network-access/service-worker-background-fetch.tentative.https.window.html [ Failure Pass Timeout ]
-
-crbug.com/1507761 external/wpt/fetch/private-network-access/anchor.tentative.https.window.html?include=from-private [ Failure Pass Timeout ]
-crbug.com/1507761 external/wpt/fetch/private-network-access/anchor.tentative.https.window.html?include=from-public [ Failure Pass Timeout ]
-crbug.com/1507761 external/wpt/fetch/private-network-access/anchor.tentative.https.window.html?include=from-treat-as-public [ Failure Pass Timeout ]
-crbug.com/1507761 external/wpt/fetch/private-network-access/anchor.tentative.window.html [ Failure Pass Timeout ]
-crbug.com/1507761 external/wpt/fetch/private-network-access/window-open.tentative.https.window.html?include=from-private [ Failure Pass Timeout ]
-crbug.com/1507761 external/wpt/fetch/private-network-access/window-open.tentative.https.window.html?include=from-public [ Failure Pass Timeout ]
-crbug.com/1507761 external/wpt/fetch/private-network-access/window-open.tentative.https.window.html?include=from-treat-as-public [ Failure Pass Timeout ]
-crbug.com/1507761 external/wpt/fetch/private-network-access/window-open.tentative.window.html [ Failure Pass Timeout ]
-crbug.com/1507761 external/wpt/fetch/private-network-access/window-open-existing.tentative.window.html [ Failure Pass Timeout ]
-crbug.com/1507761 external/wpt/fetch/private-network-access/iframe.tentative.https.window.html?include=grandparent [ Failure Pass Timeout ]
-crbug.com/1507761 external/wpt/fetch/private-network-access/window-open-existing.tentative.https.window.html?include=from-treat-as-public [ Failure Pass Timeout ]
-crbug.com/1507761 external/wpt/fetch/private-network-access/window-open-existing.tentative.https.window.html?include=from-public [ Failure Pass Timeout ]
-
 # Temp disable MST transfer tests until Browser feature can be enabled in tests
 crbug.com/1288839 external/wpt/mediacapture-streams/MediaStreamTrack-iframe-transfer.https.html [ Failure Skip ]
 crbug.com/1288839 external/wpt/mediacapture-streams/MediaStreamTrack-iframe-audio-transfer.https.html [ Failure Skip ]
@@ -7924,7 +7906,6 @@ crbug.com/1464614 [ Win11-arm64 ] external/wpt/fedcm/fedcm-disconnect-errors.htt
 crbug.com/1464614 [ Win11-arm64 ] external/wpt/fedcm/fedcm-login-status/cross-origin-status.https.html [ Failure Pass Timeout ] # Flaky
 crbug.com/1464614 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/deep-copy-config.https.html [ Failure Pass Timeout ] # Flaky
 crbug.com/1464614 [ Win11-arm64 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-yes-child1-yes-subdomain-child2-yes-subdomain2.sub.https.html [ Failure Pass Timeout ] # Flaky
-crbug.com/1464614 [ Win11-arm64 ] virtual/pna-workers-enabled/external/wpt/fetch/private-network-access/redirect.tentative.https.window.html [ Failure Pass Timeout ] # Flaky
 crbug.com/1464614 [ Win11-arm64 ] http/tests/media/video-play-stall-before-meta-data.html [ Failure Pass Timeout ] # Flaky
 
 # Gardener 2023-07-31
@@ -8638,7 +8619,6 @@ crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webrtc/simplecall.https.html [ 
 [ Mac14 ] storage/indexeddb/objectstore-cursor.html [ Failure Timeout ]
 [ Mac14 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/background-sync.https.html [ Timeout ]
 [ Mac14 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/sandbox-attribute.https.html [ Failure Pass ]
-[ Mac14 ] virtual/pna-workers-disabled/external/wpt/fetch/private-network-access/redirect.tentative.https.window.html [ Timeout ]
 [ Mac14 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/pseudo-with-classes-exit.html [ Failure Pass ]
 [ Mac14 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/pseudo-with-classes-match-ident.html [ Failure Pass ]
 [ Mac14 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/pseudo-with-classes-match-multiple-wildcard.html [ Failure Pass ]
