@@ -416,17 +416,15 @@ void CustomElementRegistry::AssociatedWith(Document& document) {
 void CustomElementRegistry::initialize(Node* root,
                                        ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
-  // 1. If this's is scoped is false and either root is a Document node or
+  // 1. If this's "is scoped" is false and either root is a Document node or
   // root's node document's custom element registry is not this, then throw a
   // "NotSupportedError" DOMException.
   if (IsGlobalRegistry() &&
-      (root->IsDocumentTypeNode() ||
-       root->GetDocument().customElementRegistry() != this)) {
+      (root->GetDocument().customElementRegistry() != this)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        "Global custom element registry can't be initialized on a document or "
-        "a node with a document that's not associated with the global"
-        " registry.");
+        "The registry provided is a global registry from another document");
+    return;
   }
 
   // 2. If root is a Document node whose custom element registry is null, then
@@ -451,7 +449,7 @@ void CustomElementRegistry::initialize(Node* root,
     }
     // 4-1. Set inclusiveDescendant's custom element registry to this.
     descendant_element->SetCustomElementRegistry(this);
-    // 4-2. If this's is scoped is true, then append inclusiveDescendant's
+    // 4-2. If this's "is scoped" is true, then append inclusiveDescendant's
     // node document to this's scoped document set.
     if (!this->IsGlobalRegistry()) {
       this->AssociatedWith(descendant_element->GetDocument());

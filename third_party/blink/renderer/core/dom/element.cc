@@ -6757,7 +6757,8 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
           : g_null_atom;
 
   // 1. Let registry be this's custom element registry.
-  // 2. If init["customElementRegistry"] is not null, then set registry to it.
+  // 2. If init["customElementRegistry"] is not null
+  // 2-1. Set registry to init["customElementRegistry"].
   bool scoped_registry =
       RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
       shadow_root_init_dict->hasCustomElementRegistry() &&
@@ -6765,6 +6766,16 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
   auto* registry = scoped_registry
                        ? shadow_root_init_dict->customElementRegistry()
                        : customElementRegistry();
+  // 2-2. If registry's "is scoped" is false and registry is not this's node
+  // document's custom element registry, then throw a "NotSupportedError"
+  // DOMException.
+  if (registry && registry->IsGlobalRegistry() &&
+      registry != GetDocument().customElementRegistry()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "The registry provided is a global registry from another document");
+    return nullptr;
+  }
 
   ShadowRootMode mode;
   if (const char* error_message = ErrorMessageForAttachShadow(

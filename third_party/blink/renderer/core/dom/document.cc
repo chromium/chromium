@@ -1429,7 +1429,16 @@ std::pair<CustomElementRegistry*, AtomicString> FlattenCreateElementOptions(
           options->hasCustomElementRegistry()) {
         registry = options->customElementRegistry();
       }
-      // 3-2. If options["is"] exists, then set is to it.
+      // 3-2. If registry's "is scoped" is false and registry is not document's
+      // custom element registry, then throw a "NotSupportedError" DOMException.
+      if (registry && registry->IsGlobalRegistry() &&
+          registry != document->customElementRegistry()) {
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kNotSupportedError,
+            "The registry provided is a global registry from another document");
+        return std::pair(registry, is);
+      }
+      // 3-3. If options["is"] exists, then set is to it.
       if (options->hasIs())
         is = AtomicString(options->is());
       // 3-3. If registry is non-null and is is non-null, then throw a
@@ -1439,6 +1448,7 @@ std::pair<CustomElementRegistry*, AtomicString> FlattenCreateElementOptions(
             DOMExceptionCode::kNotSupportedError,
             "The custom element registry and is option can't be set at the "
             "same time.");
+        return std::pair(registry, is);
       }
       // 4. If registry is null then set registry to the result of looking up a
       // custom element registry given document.
@@ -1487,6 +1497,9 @@ Element* Document::CreateElementForBinding(
   // given options.
   auto [registry, is] =
       FlattenCreateElementOptions(this, string_or_options, exception_state);
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
 
   // 5. Let element be the result of creating an element given ...
   Element* element = CreateElement(
@@ -1553,6 +1566,9 @@ Element* Document::createElementNS(
   // Let registry and is be the result of flattening element creation options.
   auto [registry, is] =
       FlattenCreateElementOptions(this, string_or_options, exception_state);
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
 
   if (!IsValidElementName(this, qualified_name)) {
     exception_state.ThrowDOMException(
@@ -1693,7 +1709,7 @@ Node* Document::importNode(Node* imported_node,
   if (options->hasCustomElementRegistry()) {
     CHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
     registry = options->customElementRegistry();
-    // 5-3. If registry's is scoped is false and registry is not this's custom
+    // 5-3. If registry's "is scoped" is false and registry is not this's custom
     // element registry, then throw a "notSupportedError" DOMException.
     if (registry->IsGlobalRegistry() && registry != customElementRegistry()) {
       exception_state.ThrowDOMException(
@@ -5524,7 +5540,7 @@ Node* Document::Clone(Document& factory,
     PartRoot::CloneParts(*this, *clone, data);
   }
   if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
-    // 2. If node's custom element registry's is scoped is true, then
+    // 2. If node's custom element registry's "is scoped" is true, then
     // set copy's custom element registry to node's custom element registry.
     if (fallback_registry && !fallback_registry->IsGlobalRegistry()) {
       clone->SetCustomElementRegistry(fallback_registry);
