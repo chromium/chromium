@@ -7,6 +7,8 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/vulkan/vulkan_instance.h"
 #include "gpu/vulkan/vulkan_util.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -20,9 +22,17 @@ DrmModifiersFilterVulkan::DrmModifiersFilterVulkan(
 DrmModifiersFilterVulkan::~DrmModifiersFilterVulkan() = default;
 
 std::vector<uint64_t> DrmModifiersFilterVulkan::Filter(
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     const std::vector<uint64_t>& modifiers) {
-  VkFormat vulkan_format = ToVkFormat(format);
+  CHECK(viz::HasEquivalentBufferFormat(format));
+  VkFormat vulkan_format;
+  if (format.is_single_plane()) {
+    vulkan_format = gpu::ToVkFormatSinglePlanar(format);
+  } else {
+    // Format prefers external sampler.
+    format.SetPrefersExternalSampler();
+    vulkan_format = gpu::ToVkFormatExternalSampler(format);
+  }
   gpu::VulkanInstance* instance = vulkan_implementation_->GetVulkanInstance();
   CHECK(instance->vulkan_info().physical_devices.size() > 0);
   VkPhysicalDevice phys_dev =

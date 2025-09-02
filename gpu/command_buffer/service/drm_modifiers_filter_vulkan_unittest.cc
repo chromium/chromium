@@ -13,7 +13,6 @@
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/buffer_types.h"
 
 namespace gpu {
 
@@ -97,7 +96,7 @@ TEST_F(DrmModifiersFilterVulkanTest, FilterUnsupported) {
                                          kUnsupportedModifier};
 
   std::vector<uint64_t> filtered_modifiers =
-      filter_->Filter(gfx::BufferFormat::BGRX_8888, all_modifiers);
+      filter_->Filter(viz::SinglePlaneFormat::kBGRX_8888, all_modifiers);
 
   EXPECT_EQ(1u, filtered_modifiers.size());
   EXPECT_EQ(kSupportedModifier1, filtered_modifiers[0]);

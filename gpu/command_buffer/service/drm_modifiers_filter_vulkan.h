@@ -8,9 +8,9 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/vulkan/vulkan_implementation.h"
-#include "ui/gfx/buffer_types.h"
 #include "ui/ozone/public/drm_modifiers_filter.h"
 
 namespace gpu {
@@ -28,7 +28,7 @@ class GPU_GLES2_EXPORT DrmModifiersFilterVulkan
 
   ~DrmModifiersFilterVulkan() override;
 
-  std::vector<uint64_t> Filter(gfx::BufferFormat format,
+  std::vector<uint64_t> Filter(viz::SharedImageFormat format,
                                const std::vector<uint64_t>& modifiers) override;
 
  private:
