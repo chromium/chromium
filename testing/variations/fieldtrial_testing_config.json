@@ -14382,20 +14382,28 @@
                     "name": "EnabledDSEKeepAlive",
                     "enable_features": [
                         "KeepDefaultSearchEngineRendererAlive",
+                        "ProcessPerSiteSkipDevtoolsUsers",
                         "TrackEmptyRendererProcessesForReuse"
                     ],
                     "disable_features": [
-                        "ProcessPerSiteForDSE"
+                        "ProcessPerSiteForDSE",
+                        "ProcessPerSiteUpToMainFrameThreshold"
                     ]
                 },
                 {
                     "name": "EnabledDSEKeepAliveWithProcessSharing",
+                    "params": {
+                        "ProcessPerSiteMainFrameThreshold": "15"
+                    },
                     "enable_features": [
                         "KeepDefaultSearchEngineRendererAlive",
                         "ProcessPerSiteForDSE",
+                        "ProcessPerSiteUpToMainFrameThreshold",
                         "TrackEmptyRendererProcessesForReuse"
                     ],
-                    "disable_features": []
+                    "disable_features": [
+                        "ProcessPerSiteSkipDevtoolsUsers"
+                    ]
                 }
             ]
         }
@@ -19460,28 +19468,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "IsolateFencedFrames"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ProcessPerSiteUpToMainFrameThreshold": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "ProcessPerSiteMainFrameThreshold": "15"
-                    },
-                    "enable_features": [
-                        "DevToolsSharedProcessInfobar",
-                        "ProcessPerSiteUpToMainFrameThreshold"
                     ]
                 }
             ]
