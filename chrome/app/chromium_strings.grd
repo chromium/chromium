@@ -2197,7 +2197,7 @@ Chromium is unable to recover your settings.
       </if>
 
       <!-- Chrome parent extension/app install blocking dialog. -->
-      <if expr="enable_extensions">
+      <if expr="enable_extensions_core">
         <message name="IDS_EXTENSION_PERMISSIONS_BLOCKED_BY_PARENT_PROMPT_MESSAGE" desc="Text for the dialog indicating that a parent has blocked extensions and apps.">
          Your parent has turned off "Permissions for sites, apps and extensions" for Chromium
         </message>

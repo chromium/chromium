@@ -15,10 +15,12 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 
-class ExtensionInstallBlockedByParentDialogViewTest : public DialogBrowserTest {
+// TODO(crbug.com/437238062): Remove browser dependency and enable test for
+// Desktop Android
+class ExtensionInstallBlockedByParentDialogTest : public DialogBrowserTest {
  public:
-  ExtensionInstallBlockedByParentDialogViewTest() = default;
-  ~ExtensionInstallBlockedByParentDialogViewTest() override = default;
+  ExtensionInstallBlockedByParentDialogTest() = default;
+  ~ExtensionInstallBlockedByParentDialogTest() override = default;
 
   void ShowUi(const std::string& name) override {
     extensions::ExtensionBuilder::Type type =
@@ -41,12 +43,12 @@ class ExtensionInstallBlockedByParentDialogViewTest : public DialogBrowserTest {
   scoped_refptr<const extensions::Extension> extension_;
 };
 
-IN_PROC_BROWSER_TEST_F(ExtensionInstallBlockedByParentDialogViewTest,
+IN_PROC_BROWSER_TEST_F(ExtensionInstallBlockedByParentDialogTest,
                        InvokeUi_extension) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionInstallBlockedByParentDialogViewTest,
+IN_PROC_BROWSER_TEST_F(ExtensionInstallBlockedByParentDialogTest,
                        InvokeUi_app) {
   ShowAndVerifyUi();
 }

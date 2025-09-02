@@ -5914,7 +5914,8 @@ if (!is_android) {
 
       # Extension approvals tests for Windows/Linux/Mac platforms only.
       # ChromeOS has a different platform-specific approval flow.
-      sources += [ "../browser/ui/views/supervised_user/extension_install_blocked_by_parent_dialog_browsertest.cc" ]
+      # TODOO(crbug.com/437238062): Move this test to c/b/ui/extensions once tests are enabled on Android.
+      sources += [ "../browser/ui/supervised_user/extension_install_blocked_by_parent_dialog_browsertest.cc" ]
 
       deps += [
         "../browser/enterprise/connectors/test:test_support",

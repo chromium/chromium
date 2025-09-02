@@ -5,19 +5,19 @@
 #include <string>
 #include <utility>
 
+#include "chrome/browser/ui/extensions/extension_dialog_utils.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/ui/vector_icons/vector_icons.h"
-#include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/image_model.h"
-#include "ui/gfx/native_window_types.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/paint_vector_icon.h"
 
 namespace {
@@ -55,8 +55,8 @@ void ShowExtensionInstallBlockedByParentDialog(
   auto dialog_model =
       ui::DialogModel::Builder()
           .SetTitle(GetTitle(action, extension_type))
-          .SetIcon(ui::ImageModel::FromVectorIcon(
-              chromeos::kNotificationSupervisedUserIcon, ui::kColorIcon))
+          .SetIcon(ui::ImageModel::FromVectorIcon(vector_icons::kFamilyLinkIcon,
+                                                  ui::kColorIcon))
           .AddParagraph(
               ui::DialogModelLabel(l10n_util::GetStringUTF16(
                   IDS_EXTENSION_PERMISSIONS_BLOCKED_BY_PARENT_PROMPT_MESSAGE)),
@@ -69,7 +69,7 @@ void ShowExtensionInstallBlockedByParentDialog(
   gfx::NativeWindow parent_window =
       web_contents ? web_contents->GetTopLevelNativeWindow()
                    : gfx::NativeWindow();
-  constrained_window::ShowBrowserModal(std::move(dialog_model), parent_window);
+  ShowModalDialog(parent_window, std::move(dialog_model));
 }
 
 }  // namespace extensions
