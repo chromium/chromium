@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/password_change/login_state_checker.h"
 
+#include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
@@ -19,6 +20,7 @@
 
 namespace {
 
+using ::base::test::RunOnceCallback;
 using testing::InSequence;
 using testing::Invoke;
 using testing::WithArg;
@@ -139,4 +141,75 @@ TEST_F(LoginStateCheckerTest, ExceedsMaxLoginChecksAndFails) {
   static_cast<content::WebContentsObserver*>(checker.get())
       ->DidFinishNavigation(nullptr);
   EXPECT_FALSE(future.Take());
+}
+
+TEST_F(LoginStateCheckerTest, CachesPageContentIfRequestInFlight) {
+  base::test::TestFuture<bool> future;
+
+  auto checker = CreateChecker(future.GetRepeatingCallback());
+  ASSERT_TRUE(checker->capturer());
+
+  // Trigger first request.
+  optimization_guide::OptimizationGuideModelExecutionResultCallback
+      optimization_guide_callback;
+  EXPECT_CALL(*optimization_service(), ExecuteModel)
+      .WillOnce(MoveArg<3>(&optimization_guide_callback));
+  checker->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
+  ASSERT_TRUE(optimization_guide_callback);
+
+  // Trigger second request while first is in flight. This should be cached.
+  testing::Mock::VerifyAndClearExpectations(optimization_service());
+  EXPECT_CALL(*optimization_service(), ExecuteModel).Times(0);
+  static_cast<content::WebContentsObserver*>(checker.get())
+      ->DidFinishNavigation(nullptr);
+  checker->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
+
+  // First request finishes with a failure.
+  EXPECT_CALL(*optimization_service(), ExecuteModel)
+      .WillOnce(MoveArg<3>(&optimization_guide_callback));
+  PostResponse<false>(std::move(optimization_guide_callback));
+  EXPECT_FALSE(future.Take());
+  ASSERT_TRUE(optimization_guide_callback);
+
+  // Second request should be processed now and succeed.
+  PostResponse<true>(std::move(optimization_guide_callback));
+  EXPECT_TRUE(future.Take());
+}
+
+TEST_F(LoginStateCheckerTest, CachesOnlyLastPageContent) {
+  base::test::TestFuture<bool> future;
+  optimization_guide::OptimizationGuideModelExecutionResultCallback
+      optimization_guide_callback;
+
+  auto checker = CreateChecker(future.GetRepeatingCallback());
+  EXPECT_CALL(*optimization_service(), ExecuteModel)
+      .WillOnce(MoveArg<3>(&optimization_guide_callback));
+  checker->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
+  ASSERT_TRUE(optimization_guide_callback);
+
+  // These two replies should come while the first request is in flight.
+  // Only the second one should be processed.
+  static_cast<content::WebContentsObserver*>(checker.get())
+      ->DidFinishNavigation(nullptr);
+  checker->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
+  static_cast<content::WebContentsObserver*>(checker.get())
+      ->DidFinishNavigation(nullptr);
+  checker->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
+
+  // Only the last cache is used, resulting into a single call to
+  // `ExecuteModel`.
+  EXPECT_CALL(*optimization_service(), ExecuteModel)
+      .Times(1)
+      .WillOnce(MoveArg<3>(&optimization_guide_callback));
+  PostResponse<false>(std::move(optimization_guide_callback));
+  EXPECT_FALSE(future.Take());
+  ASSERT_TRUE(optimization_guide_callback);
+
+  PostResponse<true>(std::move(optimization_guide_callback));
+  EXPECT_TRUE(future.Take());
 }

@@ -86,6 +86,9 @@ void LoginStateChecker::CheckLoginState() {
     return;
   }
 
+  // Clear previously captured page content.
+  cached_page_content_ = std::nullopt;
+
   capturer_ = std::make_unique<AnnotatedPageContentCapturer>(
       web_contents(), GetAIPageContentOptions(),
       base::BindRepeating(&LoginStateChecker::OnPageContentReceived,
@@ -100,8 +103,11 @@ OptimizationGuideKeyedService* LoginStateChecker::GetOptimizationService() {
 
 void LoginStateChecker::OnPageContentReceived(
     std::optional<optimization_guide::AIPageContentResult> content) {
-  // Increase the count of login checks.
-  state_checks_count_++;
+  if (is_request_in_flight_) {
+    cached_page_content_ = std::move(content);
+    return;
+  }
+
   if (!content) {
     LogMessage(client_,
                SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_NO_CONTENT);
@@ -109,6 +115,7 @@ void LoginStateChecker::OnPageContentReceived(
     return;
   }
 
+  is_request_in_flight_ = true;
   optimization_guide::proto::PasswordChangeRequest request;
   request.set_step(optimization_guide::proto::PasswordChangeRequest::FlowStep::
                        PasswordChangeRequest_FlowStep_IS_LOGGED_IN_STEP);
@@ -130,6 +137,10 @@ void LoginStateChecker::OnExecutionResponseCallback(
     std::unique_ptr<
         optimization_guide::proto::PasswordChangeSubmissionLoggingData>
         logging_data) {
+  is_request_in_flight_ = false;
+  // Increase the count of login checks.
+  state_checks_count_++;
+
   LogMessage(
       client_,
       SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_RESPONSE_RECEIVED);
@@ -155,5 +166,11 @@ void LoginStateChecker::OnExecutionResponseCallback(
   LogBoolean(client_,
              SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_RESULT,
              is_logged_in);
+
+  if (cached_page_content_.has_value() && !is_logged_in &&
+      !ReachedAttemptsLimit()) {
+    OnPageContentReceived(std::move(cached_page_content_));
+  }
+
   result_check_callback_.Run(is_logged_in);
 }
