@@ -17,8 +17,11 @@
 #include "url/gurl.h"
 
 class Browser;
-class BrowserWindowInterface;
 class Profile;
+
+namespace ash {
+class BrowserDelegate;
+}
 
 namespace ash::boca {
 
@@ -26,7 +29,7 @@ namespace ash::boca {
 class ASH_EXPORT LockedQuizSessionManager : public KeyedService {
  public:
   using CreateWindowCompletionCallback =
-      base::OnceCallback<void(BrowserWindowInterface*)>;
+      base::OnceCallback<void(ash::BrowserDelegate*)>;
 
   explicit LockedQuizSessionManager(content::BrowserContext* context);
   LockedQuizSessionManager(const LockedQuizSessionManager&) = delete;

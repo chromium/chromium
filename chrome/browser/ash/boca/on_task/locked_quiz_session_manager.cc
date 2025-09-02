@@ -16,9 +16,6 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "content/public/browser/browser_context.h"
@@ -32,16 +29,16 @@ using ::boca::LockedNavigationOptions;
 
 // Returns a pointer to the browser window with the specified id. Returns
 // nullptr if there is no match.
-Browser* GetBrowserWindowWithID(SessionID window_id) {
+ash::BrowserDelegate* GetBrowserWindowWithID(SessionID window_id) {
   if (!window_id.is_valid()) {
     return nullptr;
   }
-  Browser* result = nullptr;
+  ash::BrowserDelegate* result = nullptr;
   ash::BrowserController::GetInstance()->ForEachBrowser(
       ash::BrowserController::BrowserOrder::kAscendingCreationTime,
       [&](ash::BrowserDelegate& browser) {
         if (browser.GetSessionID() == window_id) {
-          result = &browser.GetBrowser();
+          result = &browser;
           return ash::BrowserController::kBreakIteration;
         }
         return ash::BrowserController::kContinueIteration;
@@ -114,7 +111,7 @@ void LockedQuizSessionManager::OnBocaSWALaunched(
 
   // Activate SWA window to ensure it remains the active/focused window.
   if (browser) {
-    browser->window()->Activate();
+    browser->Activate();
   }
   std::move(callback).Run(browser);
 }

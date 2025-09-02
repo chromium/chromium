@@ -12,12 +12,12 @@
 #include "chrome/browser/ash/boca/on_task/locked_quiz_session_manager_factory.h"
 #include "chrome/browser/ash/boca/on_task/locked_session_window_tracker_factory.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_session_window_tracker.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -98,11 +98,11 @@ IN_PROC_BROWSER_TEST_F(LockedQuizSessionManagerBrowserTest,
                        ShouldOpenLockedQuizWhenNoExistingWindow) {
   content::TestNavigationObserver navigation_observer_1((GURL(kQuizUrl1)));
   navigation_observer_1.StartWatchingNewWebContents();
-  base::test::TestFuture<BrowserWindowInterface*> future;
+  base::test::TestFuture<ash::BrowserDelegate*> future;
   GetLockedQuizSessionManager()->OpenLockedQuiz(GURL(kQuizUrl1),
                                                 future.GetCallback());
 
-  Browser* const boca_app_browser = static_cast<Browser*>(future.Get());
+  Browser* const boca_app_browser = &future.Get()->GetBrowser();
   navigation_observer_1.Wait();
   ASSERT_THAT(boca_app_browser, NotNull());
   ASSERT_EQ(boca_app_browser, FindBocaSystemWebAppBrowser());
@@ -130,19 +130,19 @@ IN_PROC_BROWSER_TEST_F(LockedQuizSessionManagerBrowserTest,
   content::TestNavigationObserver navigation_observer_2((GURL(kQuizUrl2)));
   navigation_observer_2.StartWatchingNewWebContents();
 
-  base::test::TestFuture<BrowserWindowInterface*> future_1;
+  base::test::TestFuture<ash::BrowserDelegate*> future_1;
   GetLockedQuizSessionManager()->OpenLockedQuiz(GURL(kQuizUrl1),
                                                 future_1.GetCallback());
-  Browser* const boca_app_browser_1 = static_cast<Browser*>(future_1.Get());
+  Browser* const boca_app_browser_1 = &(future_1.Get()->GetBrowser());
   navigation_observer_1.Wait();
   ASSERT_THAT(boca_app_browser_1, NotNull());
   ASSERT_EQ(boca_app_browser_1, FindBocaSystemWebAppBrowser());
   ASSERT_TRUE(boca_app_browser_1->IsLockedForOnTask());
 
-  base::test::TestFuture<BrowserWindowInterface*> future_2;
+  base::test::TestFuture<ash::BrowserDelegate*> future_2;
   GetLockedQuizSessionManager()->OpenLockedQuiz(GURL(kQuizUrl2),
                                                 future_2.GetCallback());
-  Browser* const boca_app_browser_2 = static_cast<Browser*>(future_2.Get());
+  Browser* const boca_app_browser_2 = &(future_2.Get()->GetBrowser());
   navigation_observer_2.Wait();
   ASSERT_THAT(boca_app_browser_2, NotNull());
   ASSERT_EQ(boca_app_browser_2, FindBocaSystemWebAppBrowser());
