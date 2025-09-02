@@ -94,6 +94,12 @@ source_set("side_panel") {
     "side_panel_web_ui_view.cc",
     "side_panel_web_ui_view.h",
   ]
+  if (enable_glic) {
+    sources += [
+      "glic/glic_side_panel_coordinator.cc",
+      "glic/glic_side_panel_coordinator.h",
+    ]
+  }
   public_deps = [
     "//base",
     "//chrome/browser:browser_public_dependencies",

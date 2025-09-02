@@ -33,7 +33,7 @@
 
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/glic/widget/glic_side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator.h"
 #endif
 
 // static
