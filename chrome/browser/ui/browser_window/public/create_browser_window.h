@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
+#include "ui/gfx/geometry/rect.h"
 
 // Parameters used when creating a new browser window.
 struct BrowserWindowCreateParams {

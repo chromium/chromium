@@ -33,6 +33,7 @@
 #include "content/public/browser/prefetch_priority.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_trigger_type.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/save_page_type.h"
 #include "content/public/browser/session_storage_namespace.h"
 #include "content/public/browser/visibility.h"
@@ -51,6 +52,7 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/platform/inspect/ax_api_type.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/gfx/geometry/rect.h"
@@ -135,6 +137,7 @@ class UnownedInnerWebContentsClient;
 class WebContentsDelegate;
 class WebUI;
 struct DropData;
+struct GlobalRenderFrameHostId;
 struct MHTMLGenerationParams;
 class PreloadingAttempt;
 #if BUILDFLAG(IS_ANDROID)
