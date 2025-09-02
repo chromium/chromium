@@ -2820,6 +2820,9 @@ extern const char kAndroidThemeResourceProviderDescription[];
 extern const char kAndroidTipsNotificationsName[];
 extern const char kAndroidTipsNotificationsDescription[];
 
+extern const char kAndroidZoomIndicatorName[];
+extern const char kAndroidZoomIndicatorDescription[];
+
 extern const char kAppSpecificHistoryName[];
 extern const char kAppSpecificHistoryDescription[];
 

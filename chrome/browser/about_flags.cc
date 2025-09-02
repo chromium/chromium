@@ -11019,6 +11019,10 @@ const FeatureEntry kFeatureEntries[] = {
                                     kAndroidTabHighlightingVariations,
                                     "AndroidTabHighlightingVariations")},
 
+    {"android-zoom-indicator", flag_descriptions::kAndroidZoomIndicatorName,
+     flag_descriptions::kAndroidZoomIndicatorDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidZoomIndicator)},
+
     {"android-tips-notifications",
      flag_descriptions::kAndroidTipsNotificationsName,
      flag_descriptions::kAndroidTipsNotificationsDescription, kOsAndroid,

@@ -243,6 +243,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidWindowPopupPredictFinalBounds,
     &kAndroidWindowPopupResizeAfterSpawn,
     &kAndroidXRUsesSurfaceControl,
+    &kAndroidZoomIndicator,
     &kAnimatedGifRefactor,
     &kAnimatedImageDragShadow,
     &kAnnotatedPageContentsVirtualStructure,
@@ -727,6 +728,10 @@ BASE_FEATURE(kAndroidWindowPopupResizeAfterSpawn,
 BASE_FEATURE(kAndroidXRUsesSurfaceControl,
              "AndroidWindowPopupResizeAfterSpawn",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidZoomIndicator,
+             "AndroidZoomIndicator",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAnimatedGifRefactor,
              "AnimatedGifRefactor",

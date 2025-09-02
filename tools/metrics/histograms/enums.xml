@@ -10811,6 +10811,7 @@ from previous Chrome versions.
   <int value="-1241220708" label="QuickShareV2:enabled"/>
   <int value="-1241002324" label="FocusMode:enabled"/>
   <int value="-1240498859" label="ReparentAuxiliaryNavigationFromPWA:disabled"/>
+  <int value="-1239962224" label="AndroidZoomIndicator:disabled"/>
   <int value="-1239605812" label="MlUrlSearchBlending:disabled"/>
   <int value="-1239515260" label="OmniboxDisableCGIParamMatching:disabled"/>
   <int value="-1239262870" label="TextFragmentAnchor:enabled"/>
@@ -11683,6 +11684,7 @@ from previous Chrome versions.
       label="AutofillRationalizeRepeatedServerPredictions:disabled"/>
   <int value="-929290033" label="CrosSodaConchLanguages:disabled"/>
   <int value="-928138978" label="IPH_DemoMode:disabled"/>
+  <int value="-926780551" label="AndroidZoomIndicator:enabled"/>
   <int value="-926422468" label="disable-embedded-shared-worker"/>
   <int value="-926236394" label="SendTabToSelfHistory:enabled"/>
   <int value="-926039080" label="VaapiVp9kSVCHWEncoding:disabled"/>

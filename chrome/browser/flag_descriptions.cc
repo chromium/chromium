@@ -4867,6 +4867,10 @@ const char kAndroidTipsNotificationsName[] = "Android Tips Notifications";
 const char kAndroidTipsNotificationsDescription[] =
     "Enable tips notifications for supported features on Android.";
 
+const char kAndroidZoomIndicatorName[] = "Android Zoom Indicator";
+const char kAndroidZoomIndicatorDescription[] =
+    "Enable zoom indicator on Android.";
+
 const char kAnimatedImageDragShadowName[] =
     "Enable animated image drag shadow on Android.";
 const char kAnimatedImageDragShadowDescription[] =

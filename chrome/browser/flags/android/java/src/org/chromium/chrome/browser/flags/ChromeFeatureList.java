@@ -230,6 +230,7 @@ public abstract class ChromeFeatureList {
             "AndroidWindowPopupResizeAfterSpawn";
     public static final String ANDROID_XR_USES_SURFACE_CONTROL =
             "AndroidWindowPopupResizeAfterSpawn";
+    public static final String ANDROID_ZOOM_INDICATOR = "AndroidZoomIndicator";
     public static final String ANIMATED_GIF_REFACTOR = "AnimatedGifRefactor";
     public static final String ANIMATED_IMAGE_DRAG_SHADOW = "AnimatedImageDragShadow";
     public static final String ANNOTATED_PAGE_CONTENTS_VIRTUAL_STRUCTURE =
@@ -1313,6 +1314,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ANDROID_TAB_HIGHLIGHTING, false);
     public static final MutableFlagWithSafeDefault sAndroidTipsNotifications =
             newMutableFlagWithSafeDefault(ANDROID_TIPS_NOTIFICATIONS, false);
+    public static final MutableFlagWithSafeDefault sAndroidZoomIndicator =
+            newMutableFlagWithSafeDefault(ANDROID_ZOOM_INDICATOR, false);
     public static final MutableFlagWithSafeDefault sBcivBottomControls =
             newMutableFlagWithSafeDefault(BCIV_BOTTOM_CONTROLS, true);
     public static final MutableFlagWithSafeDefault sBrowserControlsEarlyResize =
