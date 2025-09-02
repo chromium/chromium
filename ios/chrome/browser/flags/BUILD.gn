@@ -60,6 +60,7 @@ source_set("flags") {
     "//components/sharing_message",
     "//components/signin/core/browser",
     "//components/signin/ios/browser",
+    "//components/strike_database:features",
     "//components/strings:components_strings",
     "//components/supervised_user/core/common:features",
     "//components/sync/service",

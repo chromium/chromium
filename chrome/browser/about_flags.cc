@@ -177,6 +177,7 @@
 #include "components/soda/soda_features.h"
 #include "components/spellcheck/common/spellcheck_features.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
+#include "components/strike_database/strike_database_features.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync/base/command_line_switches.h"
@@ -12765,7 +12766,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"disable-autofill-strike-system",
      flag_descriptions::kDisableAutofillStrikeSystemName,
      flag_descriptions::kDisableAutofillStrikeSystemDescription, kOsAll,
-     FEATURE_VALUE_TYPE(autofill::features::kDisableAutofillStrikeSystem)},
+     FEATURE_VALUE_TYPE(strike_database::features::kDisableStrikeSystem)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"allow-non-family-link-url-filter-mode",

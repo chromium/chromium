@@ -79,6 +79,7 @@
 #import "components/signin/core/browser/account_reconcilor.h"
 #import "components/signin/ios/browser/features.h"
 #import "components/signin/public/base/signin_switches.h"
+#import "components/strike_database/strike_database_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/sync/base/command_line_switches.h"
@@ -2728,7 +2729,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDisableAutofillStrikeSystemName,
      flag_descriptions::kDisableAutofillStrikeSystemDescription,
      flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(autofill::features::kDisableAutofillStrikeSystem)},
+     FEATURE_VALUE_TYPE(strike_database::features::kDisableStrikeSystem)},
     {"ios-default-browser-promo-propensity-model",
      flag_descriptions::kDefaultBrowserPromoPropensityModelName,
      flag_descriptions::kDefaultBrowserPromoPropensityModelDescription,

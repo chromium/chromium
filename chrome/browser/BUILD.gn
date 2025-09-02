@@ -2453,6 +2453,7 @@ static_library("browser") {
     "//components/sqlite_proto",
     "//components/startup_metric_utils",
     "//components/storage_monitor",
+    "//components/strike_database:features",
     "//components/strings",
     "//components/subresource_filter/content/browser",
     "//components/subresource_filter/content/shared/browser",

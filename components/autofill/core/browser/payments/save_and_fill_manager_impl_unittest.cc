@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/strike_database/strike_database_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -236,7 +237,7 @@ TEST_F(SaveAndFillManagerImplTest,
 TEST_F(SaveAndFillManagerImplTest, OnUserDidDecideOnLocalSave_Accepted) {
   // Disable StrikeDB check so it will not block feature prompt.
   base::test::ScopedFeatureList feature_list(
-      features::kDisableAutofillStrikeSystem);
+      strike_database::features::kDisableStrikeSystem);
   SaveAndFillStrikeDatabase save_and_fill_strike_database(strike_database_);
   // Add an existing strike.
   save_and_fill_strike_database.AddStrike();
@@ -621,7 +622,7 @@ TEST_F(SaveAndFillManagerImplTest,
 TEST_F(SaveAndFillManagerImplTest, OnUserDidDecideOnUploadSave_Accepted) {
   // Disable StrikeDB check so it will not block feature prompt.
   base::test::ScopedFeatureList feature_list(
-      features::kDisableAutofillStrikeSystem);
+      strike_database::features::kDisableStrikeSystem);
   SaveAndFillStrikeDatabase save_and_fill_strike_database(strike_database_);
   // Add an existing strike.
   save_and_fill_strike_database.AddStrike();

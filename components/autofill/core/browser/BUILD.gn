@@ -1716,6 +1716,7 @@ source_set("unit_tests") {
     "//components/security_state/core",
     "//components/signin/public/base:test_support",
     "//components/signin/public/identity_manager:test_support",
+    "//components/strike_database:features",
     "//components/strings",
     "//components/sync",
     "//components/sync:test_support",
