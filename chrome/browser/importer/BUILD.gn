@@ -54,6 +54,7 @@ source_set("impl") {
     "//chrome/browser/password_manager/factories:password_factory_headers",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
+    "//chrome/browser/webdata_services",
     "//chrome/common/importer:interfaces",
     "//components/bookmarks/browser",
     "//components/bookmarks/common",

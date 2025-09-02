@@ -533,6 +533,7 @@ static_library("test_support") {
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/webui:configs",
     "//chrome/browser/ui/zoom",
+    "//chrome/browser/webdata_services",
     "//chrome/common/search:mojo_bindings",
     "//components/application_locale_storage",
     "//components/autofill/content/renderer:test_support",
@@ -4000,6 +4001,7 @@ if (!is_android) {
       "//chrome/browser/ui/window_name_prompt:browser_tests",
       "//chrome/browser/web_applications:app_service_browser_tests",
       "//chrome/browser/webauthn",
+      "//chrome/browser/webdata_services",
       "//components/live_caption:live_translate",
       "//components/plus_addresses/core/browser:blocklist_data",
       "//components/policy/core/common:common_constants",
@@ -7387,6 +7389,7 @@ test("unit_tests") {
     "//chrome/browser/history",
     "//chrome/browser/serial",
     "//chrome/browser/ui/toolbar:test_support",
+    "//chrome/browser/webdata_services",
   ]
 
   if (enable_glic) {

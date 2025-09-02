@@ -1670,7 +1670,6 @@ static_library("browser") {
     "webauthn/webauthn_pref_names.h",
     "webauthn/webauthn_switches.cc",
     "webdata_services/web_data_service_factory.cc",
-    "webdata_services/web_data_service_factory.h",
     "webid/federated_identity_account_keyed_permission_context.cc",
     "webid/federated_identity_account_keyed_permission_context.h",
     "webid/federated_identity_api_permission_context.cc",
@@ -2075,6 +2074,7 @@ static_library("browser") {
     "//chrome/browser/ui/translate",
     "//chrome/browser/ui/webid",
     "//chrome/browser/webauthn",
+    "//chrome/browser/webdata_services",
     "//chrome/browser/webid",
 
     # TODO(crbug.com/369436587): Remove this dependency when

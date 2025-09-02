@@ -116,6 +116,7 @@ source_set("unit_tests") {
       "content_setting_bubble_model_unittest.cc",
       "content_setting_image_model_unittest.cc",
     ]
+
     deps += [ "//chrome/browser/history" ]
   }
 
