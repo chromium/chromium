@@ -456,10 +456,10 @@ void QuicEventLogger::OnFrameAddedToPacket(const quic::QuicFrame& frame) {
             return NetLogQuicStopSendingFrameParams(frame.stop_sending_frame);
           });
       break;
-    case quic::MESSAGE_FRAME:
+    case quic::DATAGRAM_FRAME:
       net_log_.AddEventWithIntParams(
           NetLogEventType::QUIC_SESSION_MESSAGE_FRAME_SENT, "message_length",
-          frame.message_frame->message_length);
+          frame.datagram_frame->datagram_length);
       break;
     case quic::CRYPTO_FRAME:
       net_log_.AddEvent(NetLogEventType::QUIC_SESSION_CRYPTO_FRAME_SENT, [&] {
@@ -693,10 +693,10 @@ void QuicEventLogger::OnRetireConnectionIdFrame(
       [&] { return NetLogQuicRetireConnectionIdFrameParams(&frame); });
 }
 
-void QuicEventLogger::OnMessageFrame(const quic::QuicMessageFrame& frame) {
+void QuicEventLogger::OnDatagramFrame(const quic::QuicDatagramFrame& frame) {
   net_log_.AddEventWithIntParams(
       NetLogEventType::QUIC_SESSION_MESSAGE_FRAME_RECEIVED, "message_length",
-      frame.message_length);
+      frame.datagram_length);
 }
 
 void QuicEventLogger::OnHandshakeDoneFrame(

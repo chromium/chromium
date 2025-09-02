@@ -835,8 +835,8 @@ TEST_P(QuicChromiumClientStreamTest, WriteConnectUdpPayload) {
       &session_, quic::HttpDatagramSupport::kRfc);
   EXPECT_CALL(
       *static_cast<quic::test::MockQuicConnection*>(session_.connection()),
-      SendMessage(1, _, false))
-      .WillOnce(Return(quic::MESSAGE_STATUS_SUCCESS));
+      SendDatagram(1, _, false))
+      .WillOnce(Return(quic::DATAGRAM_STATUS_SUCCESS));
   EXPECT_EQ(OK, handle_->WriteConnectUdpPayload(packet));
   histogram_tester_.ExpectBucketCount(
       QuicChromiumClientStream::kHttp3DatagramDroppedHistogram, false, 1);

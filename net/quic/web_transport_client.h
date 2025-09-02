@@ -93,7 +93,7 @@ class NET_EXPORT WebTransportClientVisitor {
   virtual void OnCanCreateNewOutgoingBidirectionalStream() = 0;
   virtual void OnCanCreateNewOutgoingUnidirectionalStream() = 0;
   virtual void OnDatagramProcessed(
-      std::optional<quic::MessageStatus> status) = 0;
+      std::optional<quic::DatagramStatus> status) = 0;
 };
 
 // Parameters that determine the way WebTransport session is established.

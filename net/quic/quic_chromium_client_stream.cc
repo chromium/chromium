@@ -313,12 +313,13 @@ int QuicChromiumClientStream::Handle::WriteConnectUdpPayload(
   std::string http_payload = base::StrCat({std::string(1, '\0'), packet});
 
   // Attempt to send the HTTP payload as a datagram over the stream.
-  quic::MessageStatus message_status = stream_->SendHttp3Datagram(http_payload);
+  quic::DatagramStatus message_status =
+      stream_->SendHttp3Datagram(http_payload);
 
   // If the attempt was successful or blocked (e.g., due to buffer
   // constraints), proceed to handle the I/O completion with an OK status.
-  if (message_status == quic::MessageStatus::MESSAGE_STATUS_SUCCESS ||
-      message_status == quic::MessageStatus::MESSAGE_STATUS_BLOCKED) {
+  if (message_status == quic::DatagramStatus::DATAGRAM_STATUS_SUCCESS ||
+      message_status == quic::DatagramStatus::DATAGRAM_STATUS_BLOCKED) {
     return HandleIOComplete(OK);
   }
   // If the attempt failed due to a unsupported feature, internal error, or
@@ -327,8 +328,8 @@ int QuicChromiumClientStream::Handle::WriteConnectUdpPayload(
   else {
     // These two errors should not be possible here.
     DCHECK(message_status !=
-           quic::MessageStatus::MESSAGE_STATUS_ENCRYPTION_NOT_ESTABLISHED);
-    DCHECK(message_status != quic::MessageStatus::MESSAGE_STATUS_TOO_LARGE);
+           quic::DatagramStatus::DATAGRAM_STATUS_ENCRYPTION_NOT_ESTABLISHED);
+    DCHECK(message_status != quic::DatagramStatus::DATAGRAM_STATUS_TOO_LARGE);
     DLOG(ERROR) << "Failed to send Http3 Datagram on " << stream_->id();
     stream_->Reset(quic::QUIC_STREAM_CANCELLED);
     return ERR_CONNECTION_CLOSED;
@@ -919,7 +920,7 @@ QuicChromiumClientStream::GetGuaranteedLargestMessagePayload() const {
   if (!session()) {
     return 0;
   }
-  return session()->GetGuaranteedLargestMessagePayload();
+  return session()->GetGuaranteedLargestDatagramPayload();
 }
 
 bool QuicChromiumClientStream::IsFirstStream() {

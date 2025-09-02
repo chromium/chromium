@@ -4172,7 +4172,7 @@ QuicChromiumClientSession::Handle::GetGuaranteedLargestMessagePayload() const {
   if (!session_) {
     return 0;
   }
-  return session_->GetGuaranteedLargestMessagePayload();
+  return session_->GetGuaranteedLargestDatagramPayload();
 }
 
 const ConnectionMigrationInformation

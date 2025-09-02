@@ -292,7 +292,7 @@ const auto kQuicErrorMap = std::to_array<QuicErrorMapping>({
     {quic::QUIC_INVALID_PATH_CHALLENGE_DATA,
      "quic.invalid.path_challenge_data"},
     {quic::QUIC_INVALID_PATH_RESPONSE_DATA, "quic.invalid.path_response_data"},
-    {quic::QUIC_INVALID_MESSAGE_DATA, "quic.invalid.message_data"},
+    {quic::QUIC_INVALID_DATAGRAM_DATA, "quic.invalid.datagram_data"},
     {quic::IETF_QUIC_PROTOCOL_VIOLATION, "quic.ietf.protocol_violation"},
     {quic::QUIC_INVALID_NEW_TOKEN, "quic.invalid_new_token"},
     {quic::QUIC_DATA_RECEIVED_ON_WRITE_UNIDIRECTIONAL_STREAM,

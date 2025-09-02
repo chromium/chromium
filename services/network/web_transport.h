@@ -85,7 +85,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
   void OnDatagramReceived(std::string_view datagram) override;
   void OnCanCreateNewOutgoingBidirectionalStream() override;
   void OnCanCreateNewOutgoingUnidirectionalStream() override;
-  void OnDatagramProcessed(std::optional<quic::MessageStatus> status) override;
+  void OnDatagramProcessed(std::optional<quic::DatagramStatus> status) override;
 
   bool torn_down() const { return torn_down_; }
 

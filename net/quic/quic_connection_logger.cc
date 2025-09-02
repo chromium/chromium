@@ -137,7 +137,7 @@ void QuicConnectionLogger::OnFrameAddedToPacket(const quic::QuicFrame& frame) {
       base::UmaHistogramSparse("Net.QuicSession.StopSendingErrorCodeClient",
                                frame.stop_sending_frame.error_code);
       break;
-    case quic::MESSAGE_FRAME:
+    case quic::DATAGRAM_FRAME:
       break;
     case quic::CRYPTO_FRAME:
       break;
@@ -437,8 +437,9 @@ void QuicConnectionLogger::OnRetireConnectionIdFrame(
   event_logger_.OnRetireConnectionIdFrame(frame);
 }
 
-void QuicConnectionLogger::OnMessageFrame(const quic::QuicMessageFrame& frame) {
-  event_logger_.OnMessageFrame(frame);
+void QuicConnectionLogger::OnDatagramFrame(
+    const quic::QuicDatagramFrame& frame) {
+  event_logger_.OnDatagramFrame(frame);
 }
 
 void QuicConnectionLogger::OnHandshakeDoneFrame(

@@ -73,7 +73,7 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   void OnConnectStreamAborted();
   void OnConnectStreamDeleted();
   void OnCloseTimeout();
-  void OnDatagramProcessed(std::optional<quic::MessageStatus> status);
+  void OnDatagramProcessed(std::optional<quic::DatagramStatus> status);
 
   // QuicTransportClientSession::ClientVisitor methods.
   void OnSessionReady() override;

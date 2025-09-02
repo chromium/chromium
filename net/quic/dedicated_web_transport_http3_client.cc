@@ -240,10 +240,11 @@ class DedicatedWebTransportHttp3ClientSession
     return stream_ptr;
   }
 
-  void OnDatagramProcessed(std::optional<quic::MessageStatus> status) override {
+  void OnDatagramProcessed(
+      std::optional<quic::DatagramStatus> status) override {
     client_->OnDatagramProcessed(
-        status.has_value() ? std::optional<quic::MessageStatus>(*status)
-                           : std::optional<quic::MessageStatus>());
+        status.has_value() ? std::optional<quic::DatagramStatus>(*status)
+                           : std::optional<quic::DatagramStatus>());
   }
 
  private:
@@ -990,7 +991,7 @@ void DedicatedWebTransportHttp3Client::OnConnectionClosed(
 }
 
 void DedicatedWebTransportHttp3Client::OnDatagramProcessed(
-    std::optional<quic::MessageStatus> status) {
+    std::optional<quic::DatagramStatus> status) {
   visitor_->OnDatagramProcessed(status);
 }
 

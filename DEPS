@@ -425,7 +425,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'quiche_revision': '62826931e84c49c94192065c896931576d8273c8',
+  'quiche_revision': '4f1f0fcea045cd71410c2c318773fc24c3523ed7',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ink
   # and whatever else without interference from each other.
@@ -4811,8 +4811,8 @@ hooks = [
                Var('reapi_instance'),
                '--reapi_address',
                Var('reapi_address'),
-	       '--reapi_backend_config_path',
-	       Var('reapi_backend_config_path'),
+        '--reapi_backend_config_path',
+        Var('reapi_backend_config_path'),
                ],
   },
   {
