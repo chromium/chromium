@@ -139,9 +139,9 @@ class AutofillProfileEditMediatorTest : public PlatformTest {
     const variations::VariationsService* variations_service =
         GetApplicationContext()->GetVariationsService();
     country_model_.SetCountries(
-        GeoIpCountryCode(variations_service
-                             ? variations_service->GetLatestCountry()
-                             : std::string()),
+        autofill::GeoIpCountryCode(variations_service
+                                       ? variations_service->GetLatestCountry()
+                                       : std::string()),
         GetApplicationContext()->GetApplicationLocaleStorage()->Get());
     return country_model_.countries();
   }

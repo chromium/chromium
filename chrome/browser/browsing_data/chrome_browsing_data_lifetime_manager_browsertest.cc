@@ -530,7 +530,7 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
   autofill::AutofillProfile profile(
       "01234567-89ab-cdef-fedc-ba9876543210",
       autofill::AutofillProfile::RecordType::kLocalOrSyncable,
-      AddressCountryCode("US"));
+      autofill::AddressCountryCode("US"));
   autofill::test::SetProfileInfo(
       &profile, "Marion", "Mitchell", "Morrison", "johnwayne@me.xyz", "Fox",
       "123 Zoo St.", "unit 5", "Hollywood", "CA", "91601", "US", "12345678910");

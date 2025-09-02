@@ -515,8 +515,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestShippingAddressEditorTest,
                        SelectingIncompleteAddress) {
   NavigateTo("/payment_request_dynamic_shipping_test.html");
   // Add incomplete address.
-  autofill::AutofillProfile profile(
-      AddressCountryCode(base::UTF16ToUTF8(kCountryWithoutStatesCode)));
+  autofill::AutofillProfile profile(autofill::AddressCountryCode(
+      base::UTF16ToUTF8(kCountryWithoutStatesCode)));
   profile.SetInfo(autofill::NAME_FULL, kNameFull, kLocale);
   AddAutofillProfile(profile);
 
