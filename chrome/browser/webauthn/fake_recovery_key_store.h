@@ -49,6 +49,10 @@ class FakeRecoveryKeyStore {
   // Return the set of uploaded vaults.
   virtual base::span<const trusted_vault_pb::Vault> vaults() const = 0;
 
+  // Override the URL for the specified files.
+  virtual void set_cert_xml_url(std::string url) = 0;
+  virtual void set_sig_xml_url(std::string url) = 0;
+
   // Cause the specified file to return an HTTP error.
   virtual void break_cert_xml_file() = 0;
   virtual void break_sig_xml_file() = 0;

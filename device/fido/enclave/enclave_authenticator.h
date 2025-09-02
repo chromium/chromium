@@ -17,6 +17,7 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/types/expected.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "device/fido/authenticator_get_assertion_response.h"
@@ -37,6 +38,15 @@
 namespace device::enclave {
 
 struct CredentialRequest;
+
+// This feature holds parameters that control the cert.xml & cert.sig.xml file
+// locations, allowing us to roll out a new Vault cohort progressively.
+// If URL parsing fails, the default is used instead.
+COMPONENT_EXPORT(DEVICE_FIDO) BASE_DECLARE_FEATURE(kEnclaveTrustedVaultCohort);
+COMPONENT_EXPORT(DEVICE_FIDO)
+const extern base::FeatureParam<std::string> kCertXmlUrlFeature;
+COMPONENT_EXPORT(DEVICE_FIDO)
+const extern base::FeatureParam<std::string> kSigXmlUrlFeature;
 
 class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
     : public FidoAuthenticator {

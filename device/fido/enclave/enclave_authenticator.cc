@@ -158,6 +158,22 @@ MakeCredentialStatus EnclaveErrorToMakeCredentialStatus(int enclave_code) {
 
 }  // namespace
 
+BASE_FEATURE(kEnclaveTrustedVaultCohort,
+             "WebAuthenticationEnclaveTrustedVaultCohort",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<std::string> kCertXmlUrlFeature{
+    &kEnclaveTrustedVaultCohort,
+    "cert_xml",
+    device::enclave::kRecoveryKeyStoreCertFileURL,
+};
+
+const base::FeatureParam<std::string> kSigXmlUrlFeature{
+    &kEnclaveTrustedVaultCohort,
+    "sig_xml",
+    device::enclave::kRecoveryKeyStoreSigFileURL,
+};
+
 EnclaveAuthenticator::PendingGetAssertionRequest::PendingGetAssertionRequest(
     CtapGetAssertionRequest in_request,
     CtapGetAssertionOptions in_options,

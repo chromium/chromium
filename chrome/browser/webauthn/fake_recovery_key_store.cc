@@ -373,6 +373,14 @@ class FakeRecoveryKeyStoreImpl : public FakeRecoveryKeyStore {
     return vaults_;
   }
 
+  void set_cert_xml_url(std::string url) override {
+    cert_xml_url_ = std::move(url);
+  }
+
+  void set_sig_xml_url(std::string url) override {
+    sig_xml_url_ = std::move(url);
+  }
+
   void break_cert_xml_file() override { break_cert_xml_file_ = true; }
 
   void break_sig_xml_file() override { break_sig_xml_file_ = true; }
@@ -404,14 +412,14 @@ class FakeRecoveryKeyStoreImpl : public FakeRecoveryKeyStore {
   MaybeResponse OnRequest(const network::ResourceRequest& request) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    if (request.url == device::enclave::kRecoveryKeyStoreCertFileURL) {
+    if (request.url == cert_xml_url_) {
       if (break_cert_xml_file_) {
         return std::make_pair(net::HTTP_NOT_FOUND, "");
       }
       return std::make_pair(net::HTTP_OK, certs_xml_);
     }
 
-    if (request.url == device::enclave::kRecoveryKeyStoreSigFileURL) {
+    if (request.url == sig_xml_url_) {
       if (break_sig_xml_file_) {
         return std::make_pair(net::HTTP_NOT_FOUND, "");
       }
@@ -468,6 +476,8 @@ class FakeRecoveryKeyStoreImpl : public FakeRecoveryKeyStore {
   std::string certs_xml_;
   std::string sig_xml_;
   std::vector<trusted_vault_pb::Vault> vaults_;
+  std::string cert_xml_url_ = device::enclave::kRecoveryKeyStoreCertFileURL;
+  std::string sig_xml_url_ = device::enclave::kRecoveryKeyStoreSigFileURL;
   bool break_cert_xml_file_ = false;
   bool break_sig_xml_file_ = false;
   SEQUENCE_CHECKER(sequence_checker_);

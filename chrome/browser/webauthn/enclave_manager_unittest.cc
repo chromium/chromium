@@ -864,6 +864,48 @@ TEST_F(EnclaveManagerTest, SetupWithPIN_SigXMLFailure) {
   ASSERT_FALSE(manager_.is_ready());
 }
 
+TEST_F(EnclaveManagerTest, SetupWithPIN_CustomCohortFromFinch) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  const char kCustomCertXmlUrl[] = "https://valid.example.com/cert.xml";
+  const char kCustomSigXmlUrl[] = "https://valid.example.com/sig.xml";
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      device::enclave::kEnclaveTrustedVaultCohort,
+      {{"cert_xml", kCustomCertXmlUrl}, {"sig_xml", kCustomSigXmlUrl}});
+
+  recovery_key_store_->set_cert_xml_url(kCustomCertXmlUrl);
+  recovery_key_store_->set_sig_xml_url(kCustomSigXmlUrl);
+
+  BoolFuture setup_future;
+  manager_.SetupWithPIN("123456", setup_future.GetCallback());
+  EXPECT_TRUE(setup_future.Wait());
+  EXPECT_TRUE(setup_future.Get());
+  EXPECT_TRUE(manager_.is_ready());
+}
+
+TEST_F(EnclaveManagerTest, SetupWithPIN_InvalidSigXmlIsIgnored) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      device::enclave::kEnclaveTrustedVaultCohort, {{"sig_xml", "invalid"}});
+
+  BoolFuture setup_future;
+  manager_.SetupWithPIN("123456", setup_future.GetCallback());
+  EXPECT_TRUE(setup_future.Wait());
+  EXPECT_TRUE(setup_future.Get());
+  EXPECT_TRUE(manager_.is_ready());
+}
+
+TEST_F(EnclaveManagerTest, SetupWithPIN_InvalidCertXmlIsIgnored) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      device::enclave::kEnclaveTrustedVaultCohort, {{"sig_xml", "invalid"}});
+
+  BoolFuture setup_future;
+  manager_.SetupWithPIN("123456", setup_future.GetCallback());
+  EXPECT_TRUE(setup_future.Wait());
+  EXPECT_TRUE(setup_future.Get());
+  EXPECT_TRUE(manager_.is_ready());
+}
+
 TEST_F(EnclaveManagerTest, AddDeviceAndPINToAccount) {
   security_domain_service_->pretend_there_are_members();
   const std::string pin = "pin";

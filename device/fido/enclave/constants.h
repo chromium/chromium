@@ -136,6 +136,9 @@ extern const char kRecoveryKeyStoreSigXml[];
 // with the enclave.
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const char kRecoveryKeyStoreURL[];
+
+// These URLs can be overridden via Finch for experimentation. See
+// WebAuthenticationEnclaveTrustedVaultCohort.
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const char kRecoveryKeyStoreCertFileURL[];
 COMPONENT_EXPORT(DEVICE_FIDO)

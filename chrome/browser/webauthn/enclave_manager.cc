@@ -88,6 +88,7 @@
 #include "crypto/unexportable_key.h"
 #include "crypto/user_verifying_key.h"
 #include "device/fido/enclave/constants.h"
+#include "device/fido/enclave/enclave_authenticator.h"
 #include "device/fido/enclave/transact.h"
 #include "device/fido/enclave/types.h"
 #include "device/fido/features.h"
@@ -767,15 +768,28 @@ std::optional<crypto::UserVerifyingKeyLabel> UserVerifyingKeyLabelFromString(
 #endif
 }
 
+// Returns a GURL from a feature param. If the feature does not result in a
+// valid URL, the default is returned instead.
+GURL GetUrl(const base::FeatureParam<std::string>& feature_param) {
+  GURL url(feature_param.Get());
+  if (url.is_valid()) {
+    return url;
+  }
+  FIDO_LOG(ERROR) << "Finch provided " << feature_param.name
+                  << " URL not valid: " << feature_param.Get();
+  GURL default_url(feature_param.default_value);
+  CHECK(default_url.is_valid());
+  return default_url;
+}
+
 // Fetch the contents of the given URL.
 std::unique_ptr<network::SimpleURLLoader> FetchURL(
     network::mojom::URLLoaderFactory* url_loader_factory,
-    std::string_view url,
+    const GURL& url,
     base::OnceCallback<void(std::optional<std::string>)> callback) {
   auto network_request = std::make_unique<network::ResourceRequest>();
-  GURL gurl(url);
-  CHECK(gurl.is_valid());
-  network_request->url = std::move(gurl);
+  CHECK(url.is_valid());
+  network_request->url = std::move(url);
 
   auto loader = network::SimpleURLLoader::Create(std::move(network_request),
                                                  kTrafficAnnotation);
@@ -2739,12 +2753,12 @@ class EnclaveManager::StateMachine {
     state_ = State::kDownloadingRecoveryKeyStoreKeys;
     cert_xml_loader_ = FetchURL(
         manager_->url_loader_factory_.get(),
-        device::enclave::kRecoveryKeyStoreCertFileURL,
+        GetUrl(device::enclave::kCertXmlUrlFeature),
         base::BindOnce(&StateMachine::FetchComplete,
                        weak_ptr_factory_.GetWeakPtr(), FetchedFile::kCertFile));
     sig_xml_loader_ = FetchURL(
         manager_->url_loader_factory_.get(),
-        device::enclave::kRecoveryKeyStoreSigFileURL,
+        GetUrl(device::enclave::kSigXmlUrlFeature),
         base::BindOnce(&StateMachine::FetchComplete,
                        weak_ptr_factory_.GetWeakPtr(), FetchedFile::kSigFile));
   }
