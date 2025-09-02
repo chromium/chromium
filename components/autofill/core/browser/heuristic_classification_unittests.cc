@@ -143,6 +143,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/form_parsing/determine_heuristic_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -490,8 +491,8 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
     // Similarly to AutofillManager::ParseFormsAsync, the heuristics are
     // executed after the ML model. If ML predictions are enabled, this does
     // not override the heuristic types but performs rationalization.
-    form_structure->DetermineHeuristicTypes(client_country, page_language,
-                                            log_manager);
+    DetermineHeuristicTypes(client_country, page_language, *form_structure,
+                            log_manager);
     form_structure->RationalizeAndAssignSections(client_country, page_language,
                                                  log_manager);
 

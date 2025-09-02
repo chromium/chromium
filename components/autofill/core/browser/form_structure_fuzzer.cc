@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <stddef.h>
-#include <stdint.h>
+#include "components/autofill/core/browser/form_structure.h"
 
 #include <fuzzer/FuzzedDataProvider.h>
+#include <stddef.h>
+#include <stdint.h>
 
 #include <string>
 #include <tuple>
@@ -16,7 +17,7 @@
 #include "base/command_line.h"
 #include "base/path_service.h"
 #include "components/autofill/core/browser/country_type.h"
-#include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/form_parsing/determine_heuristic_types.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_fuzzed_producer.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -70,7 +71,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FormData form_data = GenerateFormData(data_provider);
 
   FormStructure form_structure(form_data);
-  form_structure.DetermineHeuristicTypes(
+  DetermineHeuristicTypes(GenerateGeoIpCountryCode(data_provider),
+                          LanguageCode(""), form_structure,
+                          /*log_manager=*/nullptr);
+  form_structure.RationalizeAndAssignSections(
       GenerateGeoIpCountryCode(data_provider), LanguageCode(""),
       /*log_manager=*/nullptr);
   form_structure.RationalizeAndAssignSections(

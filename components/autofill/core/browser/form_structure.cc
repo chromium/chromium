@@ -218,28 +218,6 @@ void FormStructure::DetermineFieldRanks() {
   }
 }
 
-void FormStructure::DetermineHeuristicTypes(
-    const GeoIpCountryCode& client_country,
-    const LanguageCode& current_page_language,
-    LogManager* log_manager) {
-  SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.DetermineHeuristicTypes");
-
-  const LanguageCode& page_language =
-      base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection)
-          ? current_page_language
-          : LanguageCode();
-  ParsingContext context(base::ToVector(fields_, &to_form_field_data),
-                         client_country, page_language,
-#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-                         PatternFile::kDefault,
-#else
-                         PatternFile::kLegacy,
-#endif
-                         GetActiveRegexFeatures(), log_manager);
-  FieldCandidatesMap regex_predictions = ParseFieldTypesWithPatterns(context);
-  AssignBestFieldTypes(regex_predictions, HeuristicSource::kRegexes);
-}
-
 void FormStructure::RationalizeAndAssignSections(
     const GeoIpCountryCode& client_country,
     const LanguageCode& current_page_language,
@@ -726,76 +704,6 @@ void FormStructure::SetFieldTypesFromAutocompleteAttribute() {
         .html_mode = field->parsed_autocomplete()->mode,
         .rank_in_field_signature_group =
             field_rank_map[field->GetFieldSignature()],
-    });
-  }
-}
-
-// TODO(crbug.com/427787155): Move this function out of `FormStructure`.
-FieldCandidatesMap FormStructure::ParseFieldTypesWithPatterns(
-    ParsingContext& context) const {
-  FieldCandidatesMap field_type_map;
-
-  auto form_field_data_vector = base::ToVector(
-      fields_,
-      [](const auto& f) -> raw_ptr<const FormFieldData> { return f.get(); });
-  if (ShouldRunHeuristics()) {
-    FormFieldParser::ParseFormFields(context, form_field_data_vector,
-                                     field_type_map);
-  } else if (ShouldRunHeuristicsForSingleFields()) {
-    FormFieldParser::ParseSingleFields(context, form_field_data_vector,
-                                       field_type_map);
-    FormFieldParser::ParseStandaloneCVCFields(context, form_field_data_vector,
-                                              field_type_map);
-
-    // For standalone email fields, allow heuristics even when the minimum
-    // number of fields is not met. See similar comments in
-    // `FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields`.
-    FormFieldParser::ParseStandaloneEmailFields(context, form_field_data_vector,
-                                                field_type_map);
-
-    // Try parsing standalone loyalty card fields after an attempt has been
-    // made to parse multi-purpose input fields e.g. email or loyalty number
-    // fields.
-    FormFieldParser::ParseStandaloneLoyaltyCardFields(
-        context, form_field_data_vector, field_type_map);
-  }
-  return field_type_map;
-}
-
-void FormStructure::AssignBestFieldTypes(
-    const FieldCandidatesMap& field_type_map,
-    HeuristicSource heuristic_source) {
-  if (field_type_map.empty()) {
-    return;
-  }
-
-  // Fields can share the same field signature. This map records for each
-  // signature how many fields with the same signature have been observed.
-  auto field_rank_map = base::MakeFlatMap<FieldSignature, size_t>(
-      fields_, std::less<>(), [](const std::unique_ptr<AutofillField>& field) {
-        return std::make_pair(field->GetFieldSignature(), 0);
-      });
-  for (const auto& field : fields_) {
-    auto iter = field_type_map.find(field->global_id());
-    if (iter == field_type_map.end()) {
-      continue;
-    }
-
-    const FieldCandidates& candidates = iter->second;
-    field->set_heuristic_type(heuristic_source, candidates.BestHeuristicType());
-    if (heuristic_source == GetActiveHeuristicSource()) {
-      autofill_metrics::LogLocalHeuristicMatchedAttribute(
-          candidates.BestHeuristicTypeReason());
-    }
-
-    const size_t field_rank = ++field_rank_map.at(field->GetFieldSignature());
-    // Log the field type predicted from local heuristics.
-    field->AppendLogEventIfNotRepeated(HeuristicPredictionFieldLogEvent{
-        .field_type = field->heuristic_type(heuristic_source),
-        .heuristic_source = heuristic_source,
-        .is_active_heuristic_source =
-            GetActiveHeuristicSource() == heuristic_source,
-        .rank_in_field_signature_group = field_rank,
     });
   }
 }

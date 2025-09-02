@@ -44,7 +44,6 @@ namespace autofill {
 
 class LogBuffer;
 class LogManager;
-struct ParsingContext;
 
 // The structure of forms and fields, represented by their signatures, on a
 // page. These are sequence containers to reflect their order in the DOM.
@@ -65,12 +64,6 @@ class FormStructure {
   FormStructure& operator=(const FormStructure&) = delete;
 
   virtual ~FormStructure();
-
-  // Runs several heuristics against the form fields to determine their possible
-  // types.
-  void DetermineHeuristicTypes(const GeoIpCountryCode& client_country,
-                               const LanguageCode& current_page_language,
-                               LogManager* log_manager);
 
   // Runs rationalization and sectioning. This is to be run after the field
   // types change.
@@ -366,17 +359,6 @@ class FormStructure {
 
   // Sets the rank of each field in the form.
   void DetermineFieldRanks();
-
-  // Classifies each field using the regular expressions. The classifications
-  // are returned, but not assigned to the `fields_` yet. Use
-  // `AssignBestFieldTypes()` to do so.
-  [[nodiscard]] FieldCandidatesMap ParseFieldTypesWithPatterns(
-      ParsingContext& context) const;
-
-  // Assigns the best heuristic types from the `field_type_map` to the heuristic
-  // types of the corresponding fields for the `pattern_source`.
-  void AssignBestFieldTypes(const FieldCandidatesMap& field_type_map,
-                            HeuristicSource heuristic_source);
 
   // Sets each field's `html_type` and `html_mode` based on the field's
   // `parsed_autocomplete` member.

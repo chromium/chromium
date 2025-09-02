@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
 #include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
+#include "components/autofill/core/browser/form_parsing/determine_heuristic_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -100,11 +101,10 @@ std::unique_ptr<FormStructure> ConstructFormStructureFromFormData(
     const FormData& form) {
   auto cached_form_structure =
       std::make_unique<FormStructure>(test::WithoutValues(form));
-  cached_form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
-                                                 LanguageCode(""), nullptr);
+  DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                          *cached_form_structure, nullptr);
   cached_form_structure->RationalizeAndAssignSections(
       GeoIpCountryCode(""), LanguageCode(""), nullptr);
-
   auto form_structure = std::make_unique<FormStructure>(form);
   form_structure->RetrieveFromCache(
       *cached_form_structure,

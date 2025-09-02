@@ -68,16 +68,6 @@ class FormStructureTestApi {
 
   void AssignSections() { autofill::AssignSections(form_structure_->fields_); }
 
-  FieldCandidatesMap ParseFieldTypesWithPatterns(
-      ParsingContext& context) const {
-    return form_structure_->ParseFieldTypesWithPatterns(context);
-  }
-
-  void AssignBestFieldTypes(const FieldCandidatesMap& field_type_map,
-                            HeuristicSource heuristic_source) {
-    form_structure_->AssignBestFieldTypes(field_type_map, heuristic_source);
-  }
-
  private:
   const raw_ref<FormStructure> form_structure_;
 };

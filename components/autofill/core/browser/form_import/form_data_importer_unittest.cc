@@ -46,6 +46,7 @@
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
+#include "components/autofill/core/browser/form_parsing/determine_heuristic_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -211,8 +212,8 @@ std::unique_ptr<FormStructure> ConstructFormStructureFromFormData(
     GeoIpCountryCode geo_country = GeoIpCountryCode("")) {
   auto cached_form_structure =
       std::make_unique<FormStructure>(test::WithoutValues(form));
-  cached_form_structure->DetermineHeuristicTypes(geo_country, LanguageCode(""),
-                                                 nullptr);
+  DetermineHeuristicTypes(geo_country, LanguageCode(""), *cached_form_structure,
+                          nullptr);
   cached_form_structure->RationalizeAndAssignSections(
       geo_country, LanguageCode(""), nullptr);
 

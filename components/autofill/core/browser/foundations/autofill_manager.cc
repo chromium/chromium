@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/form_parsing/determine_heuristic_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_sectioning_util.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -755,9 +756,9 @@ void AutofillManager::ParseFormsAsyncCommon(
   auto run_heuristics = [](AsyncContext context) {
     SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.ParseFormsAsync.RunHeuristics");
     for (auto& form_structure : context.form_structures) {
-      form_structure->DetermineHeuristicTypes(context.country_code,
-                                              context.current_page_language,
-                                              context.log_manager.get());
+      DetermineHeuristicTypes(context.country_code,
+                              context.current_page_language, *form_structure,
+                              context.log_manager.get());
       form_structure->RationalizeAndAssignSections(
           context.country_code, context.current_page_language,
           context.log_manager.get());

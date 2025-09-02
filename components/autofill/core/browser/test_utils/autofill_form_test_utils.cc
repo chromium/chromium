@@ -6,6 +6,7 @@
 
 #include "base/containers/to_vector.h"
 #include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/form_parsing/determine_heuristic_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
@@ -224,8 +225,8 @@ void FormStructureTest::CheckFormStructureTestData(
     auto form_structure = std::make_unique<FormStructure>(form);
 
     if (test_case.form_flags.determine_heuristic_type) {
-      form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""),
-                                              LanguageCode(""), nullptr);
+      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                              *form_structure, nullptr);
       form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                    LanguageCode(""), nullptr);
     }
