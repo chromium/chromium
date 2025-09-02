@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -332,6 +333,48 @@ TEST_F(DisplayMediaAccessHandlerTest, PermissionDenied) {
                  &result, devices, true /* request_audio */);
   EXPECT_EQ(blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED, result);
   EXPECT_EQ(0u, blink::CountDevices(devices));
+}
+
+TEST_F(DisplayMediaAccessHandlerTest, MaxLengthDomainAccepted) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kDisplayMediaRejectLongDomains);
+
+  std::unique_ptr<content::NavigationSimulator> navigation =
+      content::NavigationSimulator::CreateBrowserInitiated(
+          GURL("https://" + std::string(255, 'a')), web_contents());
+  navigation->Commit();
+
+  blink::mojom::MediaStreamRequestResult result;
+  blink::mojom::StreamDevices devices;
+  ProcessRequest(content::DesktopMediaID(content::DesktopMediaID::TYPE_WINDOW,
+                                         content::DesktopMediaID::kFakeId),
+                 &result, devices, false /* request_audio */);
+
+  EXPECT_THAT(
+      result,
+      testing::AnyOf(
+#if BUILDFLAG(IS_MAC)
+          // TODO(crbug.com/40802122): Fix screen-capture permissions on mac.
+          blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED_BY_SYSTEM,
+#endif
+          blink::mojom::MediaStreamRequestResult::OK));
+}
+
+TEST_F(DisplayMediaAccessHandlerTest, OverMaxLengthDomainRejected) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kDisplayMediaRejectLongDomains);
+
+  std::unique_ptr<content::NavigationSimulator> navigation =
+      content::NavigationSimulator::CreateBrowserInitiated(
+          GURL("https://" + std::string(256, 'a')), web_contents());
+  navigation->Commit();
+
+  blink::mojom::MediaStreamRequestResult result;
+  blink::mojom::StreamDevices devices;
+  ProcessRequest(content::DesktopMediaID(content::DesktopMediaID::TYPE_WINDOW,
+                                         content::DesktopMediaID::kFakeId),
+                 &result, devices, false /* request_audio */);
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::INVALID_STATE, result);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
