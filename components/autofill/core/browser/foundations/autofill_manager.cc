@@ -746,6 +746,7 @@ void AutofillManager::ParseFormsAsyncCommon(
                           ? LogManager::CreateBuffering()
                           : nullptr) {}
     std::vector<std::unique_ptr<FormStructure>> form_structures;
+    std::vector<HeuristicPredictions> heuristic_predictions;
     GeoIpCountryCode country_code;
     LanguageCode current_page_language;
     std::unique_ptr<BufferingLogManager> log_manager;
@@ -755,11 +756,11 @@ void AutofillManager::ParseFormsAsyncCommon(
   // variables).
   auto run_heuristics = [](AsyncContext context) {
     SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.ParseFormsAsync.RunHeuristics");
+    context.heuristic_predictions.reserve(context.form_structures.size());
     for (auto& form_structure : context.form_structures) {
-      HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
+      context.heuristic_predictions.push_back(DetermineHeuristicTypes(
           context.country_code, context.current_page_language, *form_structure,
-          context.log_manager.get());
-      heuristic_predictions.ApplyTo(form_structure->fields());
+          context.log_manager.get()));
     }
     return context;
   };
@@ -777,10 +778,14 @@ void AutofillManager::ParseFormsAsyncCommon(
         if (context.log_manager && self->log_manager()) {
           context.log_manager->Flush(*self->log_manager());
         }
-        for (auto& form_structure : context.form_structures) {
+        CHECK_EQ(context.heuristic_predictions.size(),
+                 context.form_structures.size());
+        for (auto [form_structure, heuristic_predictions] : base::zip(
+                 context.form_structures, context.heuristic_predictions)) {
           FormStructure& raw_form_structure = *form_structure;
           self->form_structures_[raw_form_structure.global_id()] =
               std::move(form_structure);
+          heuristic_predictions.ApplyTo(raw_form_structure.fields());
           raw_form_structure.RationalizeAndAssignSections(
               context.country_code, context.current_page_language,
               context.log_manager.get());
