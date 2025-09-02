@@ -123,6 +123,11 @@ BASE_DECLARE_FEATURE(kTrackingProtection3pcd);
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 BASE_DECLARE_FEATURE(kNativeUnpartitionedStoragePermittedWhen3PCOff);
 
+// Shows the option to disable the v8 optimizer for unfamiliar sites on the
+// site settings page.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+BASE_DECLARE_FEATURE(kBlockV8OptimizerOnUnfamiliarSitesSetting);
+
 ////////////////////////////////////////////////////////////
 // Start of third-party cookie access heuristics features //
 ////////////////////////////////////////////////////////////

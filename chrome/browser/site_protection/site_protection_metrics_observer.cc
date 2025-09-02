@@ -13,6 +13,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/site_protection/site_familiarity_heuristic_name.h"
+#include "chrome/browser/site_protection/site_familiarity_utils.h"
 #include "chrome/browser/site_protection/site_protection_metrics.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
@@ -139,8 +140,7 @@ void SiteProtectionMetricsObserver::PrimaryPageChanged(content::Page& page) {
 
 void SiteProtectionMetricsObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!base::FeatureList::IsEnabled(
-          features::kProcessSelectionDeferringConditions)) {
+  if (!AreV8OptimizationsDisabledOnUnfamiliarSites(*profile_->GetPrefs())) {
     return;
   }
 

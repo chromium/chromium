@@ -205,6 +205,8 @@ void RecordExtendedReportingMetrics(const PrefService& prefs) {
 }
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(
+      prefs::kJavascriptOptimizerBlockedForUnfamiliarSites, false);
   // TODO(crbug.com/422747384): Implement correct logic to set bundle level
   // based on user's safe browsing status.
   registry->RegisterIntegerPref(prefs::kSecuritySettingsBundle,

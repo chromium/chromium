@@ -105,6 +105,10 @@ BASE_FEATURE(kNativeUnpartitionedStoragePermittedWhen3PCOff,
              "NativeUnpartitionedStoragePermittedWhen3PCOff",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kBlockV8OptimizerOnUnfamiliarSitesSetting,
+             "BlockV8OptimizerOnUnfamiliarSitesSetting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kTpcdReadHeuristicsGrantsName[] = "TpcdReadHeuristicsGrants";
 
 const char kTpcdWriteRedirectHeuristicGrantsName[] =

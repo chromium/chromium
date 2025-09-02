@@ -1462,6 +1462,8 @@ static_library("browser") {
     "site_isolation/site_details.cc",
     "site_isolation/site_details.h",
     "site_protection/site_familiarity_heuristic_name.h",
+    "site_protection/site_familiarity_utils.cc",
+    "site_protection/site_familiarity_utils.h",
     "site_protection/site_protection_metrics.h",
     "site_protection/site_protection_metrics_observer.cc",
     "site_protection/site_protection_metrics_observer.h",

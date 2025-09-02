@@ -20,10 +20,14 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/site_engagement/content/site_engagement_helper.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/spare_render_process_host_manager.h"
@@ -657,6 +661,8 @@ class SiteProtectionMetricsObserverV8OptTest
   SiteProtectionMetricsObserverV8OptTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kProcessSelectionDeferringConditions,
+                              content_settings::features::
+                                  kBlockV8OptimizerOnUnfamiliarSitesSetting,
                               features::kOriginKeyedProcessesByDefault},
         /*disabled_features=*/{});
   }
@@ -664,6 +670,9 @@ class SiteProtectionMetricsObserverV8OptTest
   void SetUp() override {
     old_browser_client_ = SetBrowserClientForTesting(&browser_client_);
     SiteProtectionMetricsObserverTest::SetUp();
+
+    profile()->GetTestingPrefService()->SetBoolean(
+        prefs::kJavascriptOptimizerBlockedForUnfamiliarSites, true);
 
     content::SpareRenderProcessHostManager::Get().CleanupSparesForTesting();
 
