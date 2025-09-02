@@ -100,8 +100,6 @@ android_library("internal_java") {
     "java/src/org/chromium/chrome/browser/keyboard_accessory/button_group_component/KeyboardAccessoryButtonGroupProperties.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/button_group_component/KeyboardAccessoryButtonGroupView.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/button_group_component/KeyboardAccessoryButtonGroupViewBinder.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/data/CachedProviderAdapter.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/data/ConditionalProviderAdapter.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_component/AccessoryPagerAdapter.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_component/AccessorySheetCoordinator.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_component/AccessorySheetMediator.java",

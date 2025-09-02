@@ -4,23 +4,26 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.data;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
- * Provides a cache for a given provider. New sets of data will only be cached and not
- * propagated to observers immediately. Instead, a callback is called to when data arrives and
- * the decision to make the new data available happens there.
+ * Provides a cache for a given provider. New sets of data will only be cached and not propagated to
+ * observers immediately. Instead, a callback is called to when data arrives and the decision to
+ * make the new data available happens there.
+ *
  * @param <T> The type of data the provider collects and provides.
  */
+@NullMarked
 public class CachedProviderAdapter<T> extends PropertyProvider<T> implements Provider.Observer<T> {
     private final @Nullable Callback<CachedProviderAdapter> mNewCachedDataAvailable;
     private T mLastItems;
 
     /**
-     * Creates an adapter that listens to the given |provider| and stores items provided by
-     * it. It will not immediately notify observers but instead call a callback when data arrives.
+     * Creates an adapter that listens to the given |provider| and stores items provided by it. It
+     * will not immediately notify observers but instead call a callback when data arrives.
+     *
      * @param provider The {@link Provider} to observe and whose data to cache.
      * @param defaultItems The items to be notified about if the Provider hasn't provided any.
      * @param newCachedDataAvailable Optional callback to be called if new data arrives.
@@ -36,9 +39,8 @@ public class CachedProviderAdapter<T> extends PropertyProvider<T> implements Pro
     }
 
     /**
-     * Calls {@link #onItemAvailable} with the last used items again. If there haven't been
-     * any calls, call it with an empty list to avoid putting observers in an undefined
-     * state.
+     * Calls {@link #onItemAvailable} with the last used items again. If there haven't been any
+     * calls, call it with an empty list to avoid putting observers in an undefined state.
      */
     public void notifyAboutCachedItems() {
         notifyObservers(mLastItems);

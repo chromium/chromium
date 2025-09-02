@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.data;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.function.Supplier;
 
 /**
@@ -15,6 +17,7 @@ import java.util.function.Supplier;
  * @see CachedProviderAdapter for a conditional provider adapter that can postpone the notification
  *     about provided data by caching it and trigger it later.
  */
+@NullMarked
 public class ConditionalProviderAdapter<T> extends PropertyProvider<T>
         implements Provider.Observer<T> {
     private final Supplier<Boolean> mPropagationCondition;
