@@ -7724,7 +7724,6 @@ crbug.com/432218257 [ Debug Mac13 ] jquery/event.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded/http/tests/worklet/import-on-detached-iframe.html [ Skip Timeout ]
 [ Debug Mac13 ] fast/events/autoscroll-should-not-stop-on-keypress.html [ Failure ]
 [ Debug Mac13 ] http/tests/devtools/indexeddb/delete-entry.js [ Skip Timeout ]
-[ Debug Mac13 ] http/tests/devtools/components/geometry.js [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded/http/tests/worklet/animation-worklet-csp-eval.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded/printing/css2.1/page-break-after-000.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded/transitions/transition-shape-outside-crash.html [ Skip Timeout ]
@@ -9647,6 +9646,11 @@ crbug.com/441011869 [ Linux ] external/wpt/storage-access-api/requestStorageAcce
 
 # Gardener 2025-08-29
 crbug.com/441826647 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/navigate/navigate.py [ Timeout Skip ]
+
+# Disabled to unblock crrev.com/c/6903230
+crbug.com/442509324 http/tests/devtools/device-mode/device-mode-responsive.js [ Failure Pass ]
+crbug.com/442509324 http/tests/devtools/device-mode/device-mode-switching-devices.js [ Failure Pass ]
+crbug.com/442509324 http/tests/devtools/device-mode/device-mode-toolbar.js [ Failure Pass ]
 
 # Gardener 2025-09-01
 crbug.com/442030691 compositing/video/video-poster.html [ Failure Pass ]
