@@ -66,7 +66,7 @@ class BrowserViewLayout : public views::LayoutManager {
                     views::View* unified_side_panel,
                     views::View* right_aligned_side_panel_separator,
                     views::View* side_panel_rounded_corner,
-                    views::View* contents_separator);
+                    views::View* top_container_separator);
 
   BrowserViewLayout(const BrowserViewLayout&) = delete;
   BrowserViewLayout& operator=(const BrowserViewLayout&) = delete;
@@ -164,11 +164,20 @@ class BrowserViewLayout : public views::LayoutManager {
   const raw_ptr<InfoBarContainerView> infobar_container_;
   const raw_ptr<views::View> contents_container_;
   const raw_ptr<MultiContentsView> multi_contents_view_;
-  const raw_ptr<views::View> left_aligned_side_panel_separator_;
   const raw_ptr<views::View> unified_side_panel_;
+
+  // TODO(crbug.com/424236535): These can be removed once `SideBySide` is
+  // launched.
+  const raw_ptr<views::View> left_aligned_side_panel_separator_;
   const raw_ptr<views::View> right_aligned_side_panel_separator_;
   const raw_ptr<views::View> side_panel_rounded_corner_;
-  const raw_ptr<views::View> contents_separator_;
+
+  // The contents separator used for when the top container is overlaid.
+  // Note: when `SideBySide` feature is disabled, this separator is also
+  // used when not overlaid. Once the feature is fully rolled out, we can
+  // rely on `MultiContentsView` to manage the contents separator when not
+  // overlaid (i.e. no immersive fullscreen).
+  const raw_ptr<views::View> top_container_separator_ = nullptr;
 
   // These views are dynamically set.
   raw_ptr<views::View> webui_tab_strip_ = nullptr;
