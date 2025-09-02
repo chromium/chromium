@@ -29,7 +29,6 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/download/public/common/in_progress_download_manager.h"
-#include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/browser_context_impl.h"
@@ -465,11 +464,6 @@ KAnonymityServiceDelegate* BrowserContext::GetKAnonymityServiceDelegate() {
 
 OriginTrialsControllerDelegate*
 BrowserContext::GetOriginTrialsControllerDelegate() {
-  return nullptr;
-}
-
-std::unique_ptr<leveldb_proto::ProtoDatabaseProvider>
-BrowserContext::TakeDefaultProtoDatabaseProvider() {
   return nullptr;
 }
 

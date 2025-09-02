@@ -23,7 +23,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
-#include "components/leveldb_proto/public/proto_database_provider.h"
 #include "content/browser/background_fetch/background_fetch_context.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
@@ -348,12 +347,6 @@ StoragePartitionImpl* StoragePartitionImplMap::Get(
       StoragePartitionImpl::Create(browser_context_, partition_config,
                                    relative_partition_path));
   StoragePartitionImpl* partition = partition_ptr.get();
-
-  if (partition_config.is_default()) {
-    partition->SetProtoDatabaseProvider(
-        browser_context_->TakeDefaultProtoDatabaseProvider());
-  }
-
   partitions_[partition_config] = std::move(partition_ptr);
   partition->Initialize(fallback_for_blob_urls);
 
