@@ -735,6 +735,10 @@ chromium-metrics-reviews@google.com.
   <int value="44" label="Autofill Payments"/>
   <int value="45" label="Payments Access Token Fetcher"/>
   <int value="46" label="Save to Drive"/>
+  <int value="47" label="Fast Pair"/>
+  <int value="48" label="Edu Coexistence Login Handler"/>
+  <int value="49" label="Edu Account Login Handler"/>
+  <int value="50" label="Chromeos Family Link User Metrics provider"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/identity_manager/oauth_consumer_ids.h:OAuthConsumerId) -->

@@ -60,8 +60,8 @@ const net::PartialNetworkTrafficAnnotationTag kTrafficAnnotation =
         })");
 
 std::unique_ptr<HttpFetcher> CreateHttpFetcher() {
-  return std::make_unique<OAuthHttpFetcher>(
-      kTrafficAnnotation, GaiaConstants::kNearbyDevicesOAuth2Scope);
+  return std::make_unique<OAuthHttpFetcher>(kTrafficAnnotation,
+                                            signin::OAuthConsumerId::kFastPair);
 }
 
 GURL GetUserDevicesUrl() {

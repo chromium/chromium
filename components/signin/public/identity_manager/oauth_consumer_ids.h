@@ -59,7 +59,11 @@ enum class OAuthConsumerId {
   kAutofillPayments = 44,
   kPaymentsAccessTokenFetcher = 45,
   kSaveToDrive = 46,
-  kMaxValue = kSaveToDrive,
+  kFastPair = 47,
+  kEduCoexistenceLoginHandler = 48,
+  kEduAccountLoginHandler = 49,
+  kChromeosFamilyLinkUserMetricsProvider = 50,
+  kMaxValue = kChromeosFamilyLinkUserMetricsProvider,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:OAuthConsumerId)
 

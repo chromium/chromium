@@ -10,6 +10,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/oauth_consumer_ids.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
@@ -28,7 +29,7 @@ class OAuthHttpFetcher : public HttpFetcher, public OAuth2ApiCallFlow {
  public:
   explicit OAuthHttpFetcher(
       const net::PartialNetworkTrafficAnnotationTag& traffic_annotation,
-      const std::string& oauth_scope);
+      signin::OAuthConsumerId oauth_consumer_id);
   OAuthHttpFetcher(const OAuthHttpFetcher&) = delete;
   OAuthHttpFetcher& operator=(const OAuthHttpFetcher&) = delete;
   ~OAuthHttpFetcher() override;
@@ -69,7 +70,7 @@ class OAuthHttpFetcher : public HttpFetcher, public OAuth2ApiCallFlow {
                             signin::AccessTokenInfo access_token_info);
 
   net::PartialNetworkTrafficAnnotationTag traffic_annotation_;
-  OAuth2AccessTokenManager::ScopeSet oauth_scopes_;
+  signin::OAuthConsumerId oauth_consumer_id_;
 
   bool has_call_started_ = false;
   GURL url_;

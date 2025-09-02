@@ -70,6 +70,12 @@ constexpr char kAutofillPaymentsName[] = "autofill_payments";
 constexpr char kPaymentsAccessTokenFetcherName[] =
     "payments_access_token_fetcher";
 constexpr char kSaveToDriveName[] = "save_to_drive";
+constexpr char kFastPairName[] = "fast_pair";
+constexpr char kEduCoexistenceLoginHandlerName[] =
+    "edu_coexistence_login_handler";
+constexpr char kEduAccountLoginHandlerName[] = "edu_account_login_handler";
+constexpr char kChromeosFamilyLinkUserMetricsProviderName[] =
+    "chromeos_family_link_user_metrics_provider";
 
 }  // namespace
 
@@ -78,7 +84,6 @@ namespace signin {
 OAuthConsumer::OAuthConsumer(const std::string& name, const ScopeSet& scopes)
     : name_(name), scopes_(scopes) {
   CHECK(!name.empty());
-  CHECK(!scopes.empty());
 }
 
 OAuthConsumer::~OAuthConsumer() = default;
@@ -295,6 +300,26 @@ OAuthConsumer GetOAuthConsumerFromId(OAuthConsumerId oauth_consumer_id) {
       return OAuthConsumer(
           /*name=*/kSaveToDriveName,
           /*scopes=*/{GaiaConstants::kDriveOAuth2Scope});
+    case OAuthConsumerId::kFastPair:
+      return OAuthConsumer(
+          /*name=*/kFastPairName,
+          /*scopes=*/{GaiaConstants::kNearbyDevicesOAuth2Scope});
+    case OAuthConsumerId::kEduCoexistenceLoginHandler:
+      return OAuthConsumer(
+          /*name=*/kEduCoexistenceLoginHandlerName,
+          /*scopes=*/{GaiaConstants::kKidsSupervisionSetupChildOAuth2Scope,
+                      GaiaConstants::kAccountsReauthOAuth2Scope,
+                      GaiaConstants::kAuditRecordingOAuth2Scope,
+                      GaiaConstants::kClearCutOAuth2Scope,
+                      GaiaConstants::kKidManagementPrivilegedOAuth2Scope});
+    case OAuthConsumerId::kEduAccountLoginHandler:
+      return OAuthConsumer(
+          /*name=*/kEduAccountLoginHandlerName,
+          /*scopes=*/{GaiaConstants::kAccountsReauthOAuth2Scope});
+    case OAuthConsumerId::kChromeosFamilyLinkUserMetricsProvider:
+      return OAuthConsumer(
+          /*name=*/kChromeosFamilyLinkUserMetricsProviderName,
+          /*scopes=*/{});
   }
   NOTREACHED();
 }
