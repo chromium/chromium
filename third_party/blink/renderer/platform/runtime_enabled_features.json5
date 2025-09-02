@@ -3186,6 +3186,13 @@
       name: "ModifyParagraphCrossEditingoundary",
       status: "stable",
     },
+    // ModulePreloadReferrer enables modulepreload to send proper referrer
+    // headers as specified in the HTML spec. Behind a flag for safer rollout.
+    // https://crbug.com/441933555
+    {
+      name: "ModulePreloadReferrer",
+      status: "experimental",
+    },
     {
       name: "MojoJS",
       status: "test",
