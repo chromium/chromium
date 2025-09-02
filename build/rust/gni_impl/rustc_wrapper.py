@@ -190,6 +190,11 @@ def main():
   fixed_env_vars = []
   for item in rustenv:
     (k, v) = item.split("=", 1)
+    # TODO(https://crbug.com/442128549): remove once SDKROOT is no longer
+    # required to be absolute, or if we can pass an -isysroot equivalent flag
+    # instead.
+    if k == 'SDKROOT':
+      v = os.path.abspath(v)
     env[k] = v
     fixed_env_vars.append(k)
 
