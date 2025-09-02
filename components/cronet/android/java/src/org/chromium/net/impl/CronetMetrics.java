@@ -54,6 +54,16 @@ public final class CronetMetrics extends RequestFinishedInfo.Metrics {
         return (end >= start && start != -1) || end == -1;
     }
 
+    /**
+     * Returns a metrics object populated with empty values.
+     *
+     * <p>Ideally we should just provide Cronet users with a null Metrics object instead, but sadly,
+     * for historical reasons not all users handle a null object properly.
+     */
+    public static CronetMetrics empty() {
+        return new CronetMetrics(-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, false, 0, 0);
+    }
+
     /** New-style constructor */
     @CalledByNative
     public CronetMetrics(
