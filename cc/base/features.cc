@@ -212,7 +212,7 @@ BASE_FEATURE(kUseLayerListsByDefault,
 
 BASE_FEATURE(kProgrammaticScrollAnimationOverride,
              "ProgrammaticScrollAnimationOverride",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Default to `gfx::CubicBezierTimingFunction::EaseType::EASE_IN_OUT`.
 BASE_FEATURE_PARAM(double,
