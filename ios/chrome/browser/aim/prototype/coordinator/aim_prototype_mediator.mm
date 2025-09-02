@@ -72,6 +72,7 @@
   AIMInputItem* item = [[AIMInputItem alloc] init];
   [_items addObject:item];
   [self.consumer setItems:_items];
+  const base::UnguessableToken& token = item.fileToken;
 
   __weak __typeof(self) weakSelf = self;
   // Load the preview image.
@@ -79,7 +80,8 @@
       loadPreviewImageWithOptions:nil
                 completionHandler:^(UIImage* previewImage, NSError* error) {
                   dispatch_async(dispatch_get_main_queue(), ^{
-                    [weakSelf didLoadPreviewImage:previewImage forItem:item];
+                    [weakSelf didLoadPreviewImage:previewImage
+                                 forItemWithToken:token];
                   });
                 }];
 
@@ -88,7 +90,8 @@
                 completionHandler:^(__kindof id<NSItemProviderReading> object,
                                     NSError* error) {
                   dispatch_async(dispatch_get_main_queue(), ^{
-                    [weakSelf didLoadFullImage:(UIImage*)object forItem:item];
+                    [weakSelf didLoadFullImage:(UIImage*)object
+                              forItemWithToken:token];
                   });
                 }];
 }
@@ -151,8 +154,13 @@
 
 #pragma mark - Private
 
-// Handles the loaded preview `image` for the given `item`.
-- (void)didLoadPreviewImage:(UIImage*)previewImage forItem:(AIMInputItem*)item {
+// Handles the loaded preview `image` for the item with the given `token`.
+- (void)didLoadPreviewImage:(UIImage*)previewImage
+           forItemWithToken:(const base::UnguessableToken&)token {
+  AIMInputItem* item = [self itemForToken:token];
+  if (!item) {
+    return;
+  }
   // Only set the preview if a preview doesn't already exist. This prevents
   // overwriting the full-res image if it arrives first.
   if (previewImage && !item.previewImage) {
@@ -161,8 +169,14 @@
   }
 }
 
-// Handles the loaded full `image` for the given `item`.
-- (void)didLoadFullImage:(UIImage*)image forItem:(AIMInputItem*)item {
+// Handles the loaded full `image` for the item with the given `token`.
+- (void)didLoadFullImage:(UIImage*)image
+        forItemWithToken:(const base::UnguessableToken&)token {
+  AIMInputItem* item = [self itemForToken:token];
+  if (!item) {
+    return;
+  }
+
   if (!image) {
     item.state = AIMInputItemState::kError;
     [self.consumer updateState:item.state forItemWithToken:item.fileToken];
@@ -172,14 +186,20 @@
   __weak __typeof(self) weakSelf = self;
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(^{
-        [weakSelf didFinishSimulatedLoadForImage:image item:item];
+        [weakSelf didFinishSimulatedLoadForImage:image itemToken:token];
       }),
       GetImageLoadDelay());
 }
 
-// Called after the simulated image load delay.
+// Called after the simulated image load delay for the item with the given
+// `token`. This simulates a network delay for development purposes.
 - (void)didFinishSimulatedLoadForImage:(UIImage*)image
-                                  item:(AIMInputItem*)item {
+                             itemToken:(const base::UnguessableToken&)token {
+  AIMInputItem* item = [self itemForToken:token];
+  if (!item) {
+    return;
+  }
+
   item.state = AIMInputItemState::kUploading;
   [self.consumer updateState:item.state forItemWithToken:item.fileToken];
 
@@ -192,14 +212,14 @@
   __weak __typeof(self) weakSelf = self;
   if (ShouldForceUploadFailure()) {
     task = base::BindOnce(^{
-      [weakSelf onFileUploadStatusChanged:item.fileToken
+      [weakSelf onFileUploadStatusChanged:token
                                  mimeType:lens::MimeType::kImage
                          fileUploadStatus:FileUploadStatus::kUploadFailed
                                 errorType:std::nullopt];
     });
   } else {
     task = base::BindOnce(^{
-      [weakSelf uploadImage:image forItem:item];
+      [weakSelf uploadImage:image itemToken:token];
     });
   }
 
@@ -207,8 +227,13 @@
       FROM_HERE, std::move(task), GetUploadDelay());
 }
 
-// Uploads the `image` for the given `item`.
-- (void)uploadImage:(UIImage*)image forItem:(AIMInputItem*)item {
+// Uploads the `image` for the item with the given `token`.
+- (void)uploadImage:(UIImage*)image
+          itemToken:(const base::UnguessableToken&)token {
+  AIMInputItem* item = [self itemForToken:token];
+  if (!item) {
+    return;
+  }
   std::unique_ptr<lens::ContextualInputData> input_data =
       std::make_unique<lens::ContextualInputData>();
   input_data->context_input = std::vector<lens::ContextualInput>();
