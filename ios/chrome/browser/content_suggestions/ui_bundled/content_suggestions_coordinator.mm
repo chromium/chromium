@@ -41,6 +41,7 @@
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/app_bundle_promo/coordinator/app_bundle_promo_mediator.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_mediator.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/shortcuts_mediator.h"
@@ -242,6 +243,7 @@ using segmentation_platform::TipIdentifier;
   ShortcutsMediator* _shortcutsMediator;
   SafetyCheckMagicStackMediator* _safetyCheckMediator;
   TipsMagicStackMediator* _tipsMediator;
+  AppBundlePromoMediator* _appBundlePromoMediator;
   MostVisitedTilesMediator* _mostVisitedTilesMediator;
   TabResumptionMediator* _tabResumptionMediator;
   PriceTrackingPromoMediator* _priceTrackingPromoMediator;
@@ -464,6 +466,15 @@ using segmentation_platform::TipIdentifier;
     [moduleMediators addObject:_tipsMediator];
   }
 
+  if (base::FeatureList::IsEnabled(
+          segmentation_platform::features::kAppBundlePromoEphemeralCard)) {
+    _appBundlePromoMediator = [[AppBundlePromoMediator alloc]
+        initWithAppStoreBundleService:AppStoreBundleServiceFactory::
+                                          GetForProfile(self.profile)];
+    _appBundlePromoMediator.presentationAudience = self;
+    [moduleMediators addObject:_appBundlePromoMediator];
+  }
+
   ContentSuggestionsViewController* viewController =
       [[ContentSuggestionsViewController alloc] init];
   viewController.audience = self;
@@ -547,6 +558,8 @@ using segmentation_platform::TipIdentifier;
   _tabResumptionMediator = nil;
   [_magicStackRankingModel disconnect];
   _magicStackRankingModel = nil;
+  [_appBundlePromoMediator disconnect];
+  _appBundlePromoMediator = nil;
   [self.contentSuggestionsMediator disconnect];
   self.contentSuggestionsMediator = nil;
   [self.contentSuggestionsMetricsRecorder disconnect];
@@ -641,14 +654,34 @@ using segmentation_platform::TipIdentifier;
   [_tipsMediator removeModuleWithCompletion:completion];
 }
 
+// Removes the App Bundle promo from the Magic Stack and opens the App Store
+// page to install the Best of Google bundle.
 - (void)didSelectAppBundlePromo {
   // Note: The promo modal only works when the `kAppBundlePromoEphemeralCard`
   // feature is enabled. If this card is forced in the
   // #ios-segmentation-ephemeral-card-ranker, tapping the card does NOT do
   // anything. This is because the creation of the AppStorePromoService is gated
   // behind the feature flag.
-  // TODO(crbug.com/441731330): Link user interaction handling and implement
-  // once App Bundle promo module is integrated with Magic Stack ranking.
+  CHECK(_appBundlePromoMediator);
+
+  __weak __typeof(self) weakSelf = self;
+
+  ProceduralBlock completion = ^{
+    [weakSelf presentAppStoreBundlePage];
+  };
+
+  [_appBundlePromoMediator removeModuleWithCompletion:completion];
+}
+
+// Presents the Best of Google bundle install page in the App Store.
+- (void)presentAppStoreBundlePage {
+  // TODO(crbug.com/442590744): Fix crash when passing `nil` completion. This
+  // method call is intentionally passed an empty completion block. Passing a
+  // `nil` completion results in a crash from the `AppStoreBundleService` API.
+  [_appBundlePromoMediator
+      presentAppStoreBundlePage:self.magicStackCollectionView
+                 withCompletion:^{
+                 }];
 }
 
 - (void)openTipDestination:(segmentation_platform::TipIdentifier)tip {
@@ -784,6 +817,11 @@ using segmentation_platform::TipIdentifier;
         break;
       }
       [[fallthrough]];
+    }
+    case ContentSuggestionsModuleType::kAppBundlePromo: {
+      registry->NotifyCardShown(
+          segmentation_platform::kAppBundlePromoEphemeralModule);
+      break;
     }
     default:
       NOTREACHED();
