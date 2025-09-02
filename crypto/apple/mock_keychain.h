@@ -19,8 +19,7 @@
 
 namespace crypto::apple {
 
-// Mock Keychain wrapper for testing code that interacts with the OS X
-// Keychain.
+// Mock Keychain wrapper for testing code that interacts with the Keychain.
 //
 // Note that "const" is pretty much meaningless for this class; the const-ness
 // of Keychain doesn't apply to the actual keychain data, so all of the Mock

@@ -95,8 +95,6 @@ component("crypto") {
 
     if (is_mac) {
       sources += [
-        "apple/keychain_seckeychain.cc",
-        "apple/keychain_seckeychain.h",
         "apple/scoped_lacontext.h",
         "apple/scoped_lacontext.mm",
         "apple/security_framework_lock.cc",

@@ -18,7 +18,6 @@
 
 namespace crypto::apple {
 
-// DEPRECATED: use `KeychainV2` instead.
 // Wraps the KeychainServices API in a very thin layer, to allow it to be
 // mocked out for testing.
 
@@ -26,7 +25,7 @@ namespace crypto::apple {
 // through directly to their Keychain Services equivalents (Foo ->
 // SecKeychainFoo).
 //
-// New code should use KeychainV2.
+// TODO(https://crbug.com/441317288): Unify with KeychainV2.
 class CRYPTO_EXPORT Keychain {
  public:
   // Returns an object suitable for accessing the platform's default type of

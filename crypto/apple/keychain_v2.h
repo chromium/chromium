@@ -22,6 +22,8 @@ namespace crypto::apple {
 // KeychainV2 wraps iOS-style operations from the macOS Security framework
 // to work with keys and keychain items. These functions are grouped here so
 // they can be mocked out in testing.
+//
+// TODO(https://crbug.com/441317288): Unify with Keychain.
 class CRYPTO_EXPORT KeychainV2 {
  public:
   static KeychainV2& GetInstance();

@@ -11,29 +11,11 @@
 #include "crypto/apple/keychain_secitem.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "crypto/apple/keychain_seckeychain.h"
-#endif
-
 namespace crypto::apple {
-
-#if BUILDFLAG(IS_MAC)
-BASE_FEATURE(kAppleKeychainUseSecItem,
-             "AppleKeychainUseSecItem",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
 // static
 std::unique_ptr<Keychain> Keychain::DefaultKeychain() {
-#if BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(kAppleKeychainUseSecItem)) {
-    return std::make_unique<KeychainSecItem>();
-  }
-
-  return std::make_unique<KeychainSecKeychain>();
-#else
   return std::make_unique<KeychainSecItem>();
-#endif
 }
 
 Keychain::Keychain() = default;
@@ -43,14 +25,10 @@ Keychain::~Keychain() = default;
 
 // ---------- ScopedKeychainUserInteractionAllowed ----------
 
-// Much of the Keychain API was marked deprecated as of the macOS 13 SDK.
-// Removal of its use is tracked in https://crbug.com/40233280 but deprecation
-// warnings are disabled in the meanwhile.
-//
-// This specific usage is unfortunate. While the new SecItem keychain API has
-// ways to suppress user interaction, none of those ways work when using the new
-// API to access file-based keychains. This was filed as FB16959400, but until
-// that is addressed, this usage of deprecated API cannot be removed.
+// On the Mac, the SecItem keychain API has ways to suppress user interaction,
+// but none of those ways work when using it to access file-based keychains.
+// This was filed as FB16959400, but until that is addressed, this usage of
+// deprecated API cannot be removed.
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
