@@ -99,10 +99,6 @@ void PasswordSharingRecipientsDownloader::AccessTokenFetched(
   DVLOG(1) << "Access token fetch complete, error state: "
            << static_cast<int>(error.state());
 
-  base::UmaHistogramEnumeration(
-      "PasswordManager.PasswordSharingRecipients.FetchAccessTokenResult",
-      error.state(), GoogleServiceAuthError::NUM_STATES);
-
   CHECK(ongoing_access_token_fetch_);
   ongoing_access_token_fetch_.reset();
 
