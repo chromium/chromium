@@ -1,7 +1,7 @@
 This test should trigger a CSP violation by attempting to evaluate a string with setInterval.
 
-Message[0]: csp-setInterval-warning-contains-stacktrace.js:18 Refused to evaluate a string as JavaScript because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: "script-src 'self' 'unsafe-inline'".
-
+Message[0]: csp-setInterval-warning-contains-stacktrace.js:18 Evaluating a string as JavaScript violates the following Content Security Policy directive because 'unsafe-eval' is not an allowed source of script: "script-src 'self' 'unsafe-inline'".
+ The action has been blocked.
 Stack Trace:
 
   url: test://evaluations/0/csp-setInterval-warning-contains-stacktrace.js

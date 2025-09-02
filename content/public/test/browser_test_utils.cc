@@ -2014,7 +2014,7 @@ EvalJsResult EvalJsAfterLifecycleUpdate(
 
   if (!result.is_ok() &&
       base::StartsWith(result.ExtractError(),
-                       "a JavaScript error: \"EvalError: Refused",
+                       "a JavaScript error: \"EvalError: Evaluating",
                        base::CompareCase::SENSITIVE)) {
     return EvalJsResult(base::Value(),
                         base::StrCat({"EvalJsAfterLifecycleUpdate encountered "

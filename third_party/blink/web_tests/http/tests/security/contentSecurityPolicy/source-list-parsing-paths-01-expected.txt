@@ -1,11 +1,7 @@
-CONSOLE ERROR: Refused to load the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' because it violates the following Content Security Policy directive: "script-src 127.0.0.1:*/sec". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
-
-CONSOLE ERROR: Refused to load the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' because it violates the following Content Security Policy directive: "script-src 127.0.0.1:*/sec/". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
-
-CONSOLE ERROR: Refused to load the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' because it violates the following Content Security Policy directive: "script-src 127.0.0.1:8000/not-security". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
-
-CONSOLE ERROR: Refused to load the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' because it violates the following Content Security Policy directive: "script-src 127.0.0.1:8000/security%3bnot-contentSecurityPolicy". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
-
+CONSOLE ERROR: Loading the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' violates the following Content Security Policy directive: "script-src 127.0.0.1:*/sec". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked.
+CONSOLE ERROR: Loading the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' violates the following Content Security Policy directive: "script-src 127.0.0.1:*/sec/". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked.
+CONSOLE ERROR: Loading the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' violates the following Content Security Policy directive: "script-src 127.0.0.1:8000/not-security". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked.
+CONSOLE ERROR: Loading the script 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/script.js' violates the following Content Security Policy directive: "script-src 127.0.0.1:8000/security%3bnot-contentSecurityPolicy". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback. The action has been blocked.
 Resources should be rejected unless they match a whitelisted path.
 
 --------
