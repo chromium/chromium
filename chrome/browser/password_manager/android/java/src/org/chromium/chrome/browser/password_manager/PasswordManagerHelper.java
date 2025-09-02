@@ -40,9 +40,7 @@ import org.chromium.chrome.browser.pwm_disabled.PasswordCsvDownloadFlowControlle
 import org.chromium.chrome.browser.pwm_disabled.PasswordManagerUnavailableDialogCoordinator;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
-import org.chromium.components.prefs.PrefService;
 import org.chromium.components.sync.SyncService;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.lang.annotation.Retention;
@@ -135,8 +133,6 @@ public class PasswordManagerHelper {
                 ManagePasswordsReferrer.MAX_VALUE);
         SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
 
-        PrefService prefService = UserPrefs.get(mProfile);
-
         if (!showPwmUnavailableOrDownloadCsvDialog(
                 context, modalDialogManagerSupplier, settingsCustomTabLauncher)) {
             LoadingModalDialogCoordinator loadingDialogCoordinator =
@@ -144,7 +140,6 @@ public class PasswordManagerHelper {
                             () -> assertNonNull(modalDialogManagerSupplier.get()), context);
             launchTheCredentialManager(
                     referrer,
-                    prefService,
                     syncService,
                     loadingDialogCoordinator,
                     modalDialogManagerSupplier,
@@ -170,8 +165,7 @@ public class PasswordManagerHelper {
                         activity,
                         mProfile,
                         PasswordManagerUtilBridge.isGooglePlayServicesUpdatable(),
-                        PasswordManagerUtilBridge.isPasswordManagerAvailable(
-                                UserPrefs.get(mProfile)),
+                        PasswordManagerUtilBridge.isPasswordManagerAvailable(),
                         settingsCustomTabLauncher);
     }
 
@@ -186,7 +180,7 @@ public class PasswordManagerHelper {
             return true;
         }
 
-        if (!PasswordManagerUtilBridge.isPasswordManagerAvailable(UserPrefs.get(mProfile))) {
+        if (!PasswordManagerUtilBridge.isPasswordManagerAvailable()) {
             new PasswordManagerUnavailableDialogCoordinator()
                     .showDialog(
                             context,
@@ -418,14 +412,13 @@ public class PasswordManagerHelper {
     @VisibleForTesting
     void launchTheCredentialManager(
             @ManagePasswordsReferrer int referrer,
-            PrefService prefService,
             @Nullable SyncService syncService,
             LoadingModalDialogCoordinator loadingDialogCoordinator,
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             Context context,
             @Nullable String account) {
         assert syncService != null;
-        assert PasswordManagerUtilBridge.isPasswordManagerAvailable(prefService);
+        assert PasswordManagerUtilBridge.isPasswordManagerAvailable();
         CredentialManagerLauncher credentialManagerLauncher =
                 CredentialManagerLauncherFactory.getInstance().createLauncher();
         assert credentialManagerLauncher != null;
@@ -655,7 +648,7 @@ public class PasswordManagerHelper {
         // Callers shouldn't need to distinguish between the errors anymore, since there will be no
         // more partial support, so PASSWORD_MANGER_NOT_AVAILABLE will replace and include all the
         // errors.
-        if (!PasswordManagerUtilBridge.isPasswordManagerAvailable(UserPrefs.get(mProfile))) {
+        if (!PasswordManagerUtilBridge.isPasswordManagerAvailable()) {
             throw new PasswordManagerUnavailableException();
         }
 

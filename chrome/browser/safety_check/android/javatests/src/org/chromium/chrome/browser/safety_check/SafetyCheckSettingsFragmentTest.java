@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.safety_check;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -44,7 +42,6 @@ import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesSta
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
@@ -186,8 +183,7 @@ public class SafetyCheckSettingsFragmentTest {
     }
 
     private void configurePasswordManagerUtilBridge() {
-        when(mPasswordManagerUtilBridgeNativeMock.isPasswordManagerAvailable(
-                        any(PrefService.class), eq(true)))
+        when(mPasswordManagerUtilBridgeNativeMock.isPasswordManagerAvailable(true))
                 .thenReturn(true);
     }
 

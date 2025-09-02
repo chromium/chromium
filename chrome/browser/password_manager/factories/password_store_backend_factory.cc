@@ -83,7 +83,7 @@ std::unique_ptr<PasswordStoreBackend> CreateProfilePasswordStoreBackendAndroid(
   // the backend: an empty one if the Android backend isn't supported,
   // or the Android backend.
   if (password_manager_android_util::IsPasswordManagerAvailable(
-          prefs, std::make_unique<PasswordManagerUtilBridge>())) {
+          std::make_unique<PasswordManagerUtilBridge>())) {
     return std::make_unique<
         password_manager::PasswordStoreAndroidLocalBackend>();
   }
@@ -98,7 +98,7 @@ std::unique_ptr<PasswordStoreBackend> CreateAccountPasswordStoreBackendAndroid(
   // The account store shouldn't have an associated login DB with existing
   // passwords, so no pre-export step is required.
   if (password_manager_android_util::IsPasswordManagerAvailable(
-          prefs, std::make_unique<PasswordManagerUtilBridge>())) {
+          std::make_unique<PasswordManagerUtilBridge>())) {
     return std::make_unique<
         password_manager::PasswordStoreAndroidAccountBackend>(
         password_manager::kAccountStore);

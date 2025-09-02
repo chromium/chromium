@@ -60,12 +60,9 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.test.BrowserUiTestFragmentActivity;
-import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
-import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.google_apis.gaia.GaiaId;
 import org.chromium.google_apis.gaia.GoogleServiceAuthError;
 import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
@@ -97,10 +94,6 @@ public class PasswordManagerHelperTest {
 
     @Mock private Profile mProfile;
 
-    @Mock private PrefService mPrefService;
-
-    @Mock private UserPrefs.Natives mUserPrefsJniMock;
-
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
 
     @Mock private SyncService mSyncServiceMock;
@@ -126,13 +119,10 @@ public class PasswordManagerHelperTest {
     @Before
     public void setUp() throws CredentialManagerBackendException {
         // TODO(crbug.com/40940922): Parametrise the tests for local and account.
-        UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeJniMock);
-        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(
-                        eq(mPrefService), anyBoolean()))
+        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(anyBoolean()))
                 .thenReturn(true);
         mPasswordManagerHelper = new PasswordManagerHelper(mProfile);
-        when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
         SyncServiceFactory.setInstanceForTesting(mSyncServiceMock);
         when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
         when(mSyncServiceMock.getAuthError())
@@ -278,7 +268,6 @@ public class PasswordManagerHelperTest {
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mPrefService,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
@@ -296,7 +285,6 @@ public class PasswordManagerHelperTest {
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mPrefService,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
@@ -315,7 +303,6 @@ public class PasswordManagerHelperTest {
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mPrefService,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
@@ -333,7 +320,6 @@ public class PasswordManagerHelperTest {
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mPrefService,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
@@ -353,7 +339,6 @@ public class PasswordManagerHelperTest {
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mPrefService,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
@@ -373,7 +358,6 @@ public class PasswordManagerHelperTest {
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mPrefService,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
@@ -392,7 +376,6 @@ public class PasswordManagerHelperTest {
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mPrefService,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
@@ -414,7 +397,6 @@ public class PasswordManagerHelperTest {
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mPrefService,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
@@ -435,7 +417,6 @@ public class PasswordManagerHelperTest {
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mPrefService,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
@@ -457,7 +438,6 @@ public class PasswordManagerHelperTest {
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mPrefService,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
@@ -480,7 +460,6 @@ public class PasswordManagerHelperTest {
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mPrefService,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
@@ -498,7 +477,6 @@ public class PasswordManagerHelperTest {
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mPrefService,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
@@ -520,7 +498,6 @@ public class PasswordManagerHelperTest {
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mPrefService,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
@@ -538,7 +515,6 @@ public class PasswordManagerHelperTest {
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mPrefService,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
@@ -561,7 +537,6 @@ public class PasswordManagerHelperTest {
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mPrefService,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
@@ -582,7 +557,6 @@ public class PasswordManagerHelperTest {
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
-                mPrefService,
                 mSyncServiceMock,
                 mLoadingModalDialogCoordinator,
                 mModalDialogManagerSupplier,
@@ -696,9 +670,7 @@ public class PasswordManagerHelperTest {
     @Test
     public void testShowDownloadCsvDialogIfCsvIsPresentAndPwmNotAvailable() {
         when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
-        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(
-                        eq(mPrefService), eq(true)))
-                .thenReturn(false);
+        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(false);
         LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(true);
 
         FragmentActivity testActivity =
@@ -728,9 +700,7 @@ public class PasswordManagerHelperTest {
     @Test
     public void testShowDownloadCsvDialogIfCsvIsPresentAndPwmAvailable() {
         when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
-        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(
-                        eq(mPrefService), eq(true)))
-                .thenReturn(true);
+        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(true);
         LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(true);
 
         FragmentActivity testActivity =
@@ -760,9 +730,7 @@ public class PasswordManagerHelperTest {
     @Test
     public void testShowDownloadCsvDialogIfCsvIsPresentAndNoGms() {
         when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
-        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(
-                        eq(mPrefService), eq(true)))
-                .thenReturn(false);
+        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(false);
         LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(true);
 
         FragmentActivity testActivity =
@@ -791,9 +759,7 @@ public class PasswordManagerHelperTest {
     @Test
     public void testShowPwmUnavailableDialogNoCsvNoGms() {
         when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
-        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(
-                        eq(mPrefService), eq(true)))
-                .thenReturn(false);
+        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(false);
         LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(false);
 
         FragmentActivity testActivity =
@@ -816,9 +782,7 @@ public class PasswordManagerHelperTest {
     @Test
     public void testShowPwmUnavailableDialogNoCsvUpdatableGms() {
         when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
-        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(
-                        eq(mPrefService), eq(true)))
-                .thenReturn(false);
+        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(false);
         LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(false);
 
         FragmentActivity testActivity =
@@ -840,9 +804,7 @@ public class PasswordManagerHelperTest {
 
     private void setUpPwmAvailableWithoutUnmigratedPasswords() {
         when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
-        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(
-                        eq(mPrefService), eq(true)))
-                .thenReturn(true);
+        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(true);
         LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(false);
     }
 

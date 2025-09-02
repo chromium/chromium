@@ -68,7 +68,7 @@ public class PasswordsPreference extends ChromeBasePreference implements Profile
         }
 
         // This warning should override the managed text if any is present.
-        setUpPostDeprecationWarning(holder, prefService);
+        setUpPostDeprecationWarning(holder);
     }
 
     private void setUpManagedDisclaimerView(PreferenceViewHolder holder, PrefService prefService) {
@@ -86,11 +86,10 @@ public class PasswordsPreference extends ChromeBasePreference implements Profile
                                 .password_saving_off_by_administrator);
     }
 
-    private void setUpPostDeprecationWarning(PreferenceViewHolder holder, PrefService prefService) {
+    private void setUpPostDeprecationWarning(PreferenceViewHolder holder) {
         assert mProfile != null : "Profile is not set!";
 
-        boolean isPasswordManagerAvailable =
-                PasswordManagerUtilBridge.isPasswordManagerAvailable(prefService);
+        boolean isPasswordManagerAvailable = PasswordManagerUtilBridge.isPasswordManagerAvailable();
         boolean hasPasswordsInCsv = LoginDbDeprecationUtilBridge.hasPasswordsInCsv(mProfile);
 
         // If there are no unmigrated passwords left in Chrome and the password manager is available

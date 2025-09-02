@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.SafeBrowsi
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesState;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
-import org.chromium.components.prefs.PrefService;
 import org.chromium.components.sync.SyncService;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -190,7 +189,6 @@ class SafetyCheckMediator {
             SafetyCheckUpdatesDelegate client,
             SafetyCheckBridge bridge,
             @Nullable SyncService syncService,
-            PrefService prefService,
             Handler handler,
             PasswordStoreBridge passwordStoreBridge,
             PasswordCheckControllerFactory passwordCheckControllerFactory,
@@ -207,7 +205,7 @@ class SafetyCheckMediator {
         mPreferenceManager = ChromeSharedPreferences.getInstance();
         mPasswordCheckController =
                 passwordCheckControllerFactory.create(
-                        syncService, prefService, passwordStoreBridge, passwordManagerHelper);
+                        syncService, passwordStoreBridge, passwordManagerHelper);
         mPasswordManagerHelper = passwordManagerHelper;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mSettingsCustomTabLauncher = settingsCustomTabLauncher;

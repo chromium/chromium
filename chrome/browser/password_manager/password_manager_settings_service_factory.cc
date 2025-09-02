@@ -85,7 +85,6 @@ std::unique_ptr<password_manager::PasswordManagerSettingsService>
 PasswordManagerSettingsServiceFactory::CreateService(Profile* profile) const {
 #if BUILDFLAG(IS_ANDROID)
   if (password_manager_android_util::IsPasswordManagerAvailable(
-          profile->GetPrefs(),
           std::make_unique<
               password_manager_android_util::PasswordManagerUtilBridge>())) {
     return std::make_unique<PasswordManagerSettingsServiceAndroidImpl>(

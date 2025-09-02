@@ -9,20 +9,18 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
-import org.chromium.components.prefs.PrefService;
 import org.chromium.components.sync.SyncService;
 
 @NullMarked
 public class PasswordCheckControllerFactory {
     public PasswordCheckController create(
             @Nullable SyncService syncService,
-            PrefService prefService,
             PasswordStoreBridge passwordStoreBridge,
             PasswordManagerHelper passwordManagerHelper) {
         // This is only used by the old Safety Check, which is only opened from the PhishGuard
         // dialog and only if the phished credential is saved in both local and account stores.
         // This means that UPM is completely available.
-        assert PasswordManagerUtilBridge.isPasswordManagerAvailable(prefService);
+        assert PasswordManagerUtilBridge.isPasswordManagerAvailable();
         return new GmsCorePasswordCheckController(
                 syncService, passwordStoreBridge, passwordManagerHelper);
     }

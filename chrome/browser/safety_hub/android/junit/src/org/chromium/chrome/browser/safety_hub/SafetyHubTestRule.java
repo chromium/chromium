@@ -109,7 +109,7 @@ public class SafetyHubTestRule implements TestRule {
     }
 
     public void setPasswordManagerAvailable(boolean isPasswordManagerAvailable) {
-        when(mPasswordManagerUtilBridgeNatives.isPasswordManagerAvailable(mPrefService, true))
+        when(mPasswordManagerUtilBridgeNatives.isPasswordManagerAvailable(true))
                 .thenReturn(isPasswordManagerAvailable);
     }
 

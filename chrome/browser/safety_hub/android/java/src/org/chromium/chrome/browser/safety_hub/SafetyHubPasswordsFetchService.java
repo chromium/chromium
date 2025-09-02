@@ -143,7 +143,7 @@ public class SafetyHubPasswordsFetchService {
 
     /** Returns true if a password fetch can be performed, namely if GMSCore can be called. */
     public boolean canPerformFetch() {
-        return PasswordManagerUtilBridge.isPasswordManagerAvailable(mPrefService);
+        return PasswordManagerUtilBridge.isPasswordManagerAvailable();
     }
 
     public void clearPrefs() {

@@ -74,8 +74,7 @@ TEST_F(PasswordManagerAndroidUtilTest,
       std::make_unique<MockPasswordManagerUtilBridge>();
   EXPECT_CALL(*mock_util_bridge, IsInternalBackendPresent)
       .WillOnce(Return(false));
-  EXPECT_FALSE(
-      IsPasswordManagerAvailable(pref_service(), std::move(mock_util_bridge)));
+  EXPECT_FALSE(IsPasswordManagerAvailable(std::move(mock_util_bridge)));
 }
 
 TEST_F(PasswordManagerAndroidUtilTest,
@@ -89,8 +88,7 @@ TEST_F(PasswordManagerAndroidUtilTest,
   base::android::device_info::set_gms_version_code_for_test(
       base::NumberToString(GetSplitStoresUpmMinVersion() - 1));
 
-  EXPECT_FALSE(
-      IsPasswordManagerAvailable(pref_service(), std::move(mock_util_bridge)));
+  EXPECT_FALSE(IsPasswordManagerAvailable(std::move(mock_util_bridge)));
 }
 
 TEST_F(PasswordManagerAndroidUtilTest, PasswordManagerAvailable) {
@@ -102,8 +100,7 @@ TEST_F(PasswordManagerAndroidUtilTest, PasswordManagerAvailable) {
   base::android::device_info::set_gms_version_code_for_test(
       base::NumberToString(GetSplitStoresUpmMinVersion()));
 
-  EXPECT_TRUE(
-      IsPasswordManagerAvailable(pref_service(), std::move(mock_util_bridge)));
+  EXPECT_TRUE(IsPasswordManagerAvailable(std::move(mock_util_bridge)));
 }
 
 TEST_F(PasswordManagerAndroidUtilTest, TestRecordsUpmNotActiveWhenNoGms) {

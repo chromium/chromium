@@ -81,7 +81,6 @@ void DeleteAutoExportedCsv(PrefService* prefs,
 }  // namespace
 
 PasswordManagerNotAvailableReason GetPasswordManagerNotActiveReason(
-    PrefService* pref_service,
     PasswordManagerUtilBridgeInterface* util_bridge,
     bool is_internal_backend_present) {
   if (!is_internal_backend_present) {
@@ -99,30 +98,26 @@ PasswordManagerNotAvailableReason GetPasswordManagerNotActiveReason(
 }
 
 void RecordLocalUpmActivationMetrics(
-    PrefService* pref_service,
     PasswordManagerUtilBridgeInterface* util_bridge) {
   bool is_internal_backend_present = util_bridge->IsInternalBackendPresent();
   bool is_pwm_available =
-      IsPasswordManagerAvailable(pref_service, is_internal_backend_present);
+      IsPasswordManagerAvailable(is_internal_backend_present);
   base::UmaHistogramBoolean("PasswordManager.LocalUpmActivated",
                             is_pwm_available);
   if (!is_pwm_available) {
     base::UmaHistogramEnumeration(
         "PasswordManager.Android.NotAvailableReason",
-        GetPasswordManagerNotActiveReason(pref_service, util_bridge,
+        GetPasswordManagerNotActiveReason(util_bridge,
                                           is_internal_backend_present));
   }
 }
 
 bool IsPasswordManagerAvailable(
-    const PrefService* prefs,
     std::unique_ptr<PasswordManagerUtilBridgeInterface> util_bridge) {
-  return IsPasswordManagerAvailable(prefs,
-                                    util_bridge->IsInternalBackendPresent());
+  return IsPasswordManagerAvailable(util_bridge->IsInternalBackendPresent());
 }
 
-bool IsPasswordManagerAvailable(const PrefService* prefs,
-                                bool is_internal_backend_present) {
+bool IsPasswordManagerAvailable(bool is_internal_backend_present) {
   if (!is_internal_backend_present) {
     return false;
   }
@@ -138,7 +133,7 @@ void MaybeDeleteLoginDatabases(
     PrefService* pref_service,
     const base::FilePath& login_db_directory,
     std::unique_ptr<PasswordManagerUtilBridgeInterface> util_bridge) {
-  RecordLocalUpmActivationMetrics(pref_service, util_bridge.get());
+  RecordLocalUpmActivationMetrics(util_bridge.get());
 #if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
   DeleteLoginDataFiles(login_db_directory);
   if (pref_service->GetBoolean(

@@ -21,10 +21,9 @@
 
 jboolean JNI_PasswordManagerUtilBridge_IsPasswordManagerAvailable(
     JNIEnv* env,
-    PrefService* pref_service,
     jboolean is_internal_backend_present) {
   return password_manager_android_util::IsPasswordManagerAvailable(
-      pref_service, is_internal_backend_present);
+      is_internal_backend_present);
 }
 
 namespace password_manager_android_util {

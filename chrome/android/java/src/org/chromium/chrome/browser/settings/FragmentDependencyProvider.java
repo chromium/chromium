@@ -57,7 +57,6 @@ import org.chromium.components.privacy_sandbox.FingerprintingProtectionSettingsF
 import org.chromium.components.privacy_sandbox.IncognitoTrackingProtectionsFragment;
 import org.chromium.components.privacy_sandbox.IpProtectionSettingsFragment;
 import org.chromium.components.privacy_sandbox.TrackingProtectionSettings;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** Provides dependencies to fragments in the settings activity. */
@@ -123,7 +122,6 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
                     new SafetyCheckBridge(mProfile),
                     mModalDialogManagerSupplier,
                     SyncServiceFactory.getForProfile(mProfile),
-                    UserPrefs.get(mProfile),
                     new PasswordStoreBridge(mProfile),
                     PasswordManagerHelper.getForProfile(mProfile),
                     new SettingsCustomTabLauncherImpl());

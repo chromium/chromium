@@ -72,12 +72,9 @@ import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
-import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
-import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.google_apis.gaia.GaiaId;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -122,8 +119,6 @@ public class SafetyCheckMediatorTest {
     @Mock private PasswordCheckupClientHelper mPasswordCheckupHelper;
     @Mock private CredentialManagerLauncher mCredentialManagerLauncher;
     @Mock private PasswordStoreBridge mPasswordStoreBridge;
-    @Mock private PrefService mPrefService;
-    @Mock private UserPrefs.Natives mUserPrefsJniMock;
 
     // TODO(crbug.com/40854050): Use fake instead of mocking
     @Mock private PasswordManagerBackendSupportHelper mBackendSupportHelperMock;
@@ -210,7 +205,6 @@ public class SafetyCheckMediatorTest {
                 mUpdatesDelegate,
                 new SafetyCheckBridge(mProfile),
                 mSyncService,
-                mPrefService,
                 mHandler,
                 mPasswordStoreBridge,
                 mPasswordCheckControllerFactory,
@@ -243,14 +237,11 @@ public class SafetyCheckMediatorTest {
 
         SafetyCheckBridgeJni.setInstanceForTesting(mSafetyCheckBridge);
 
-        UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
-        when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
-
         mSafetyCheckModel = SafetyCheckProperties.createSafetyCheckModel();
         mPasswordCheckModel =
                 PasswordsCheckPreferenceProperties.createPasswordSafetyCheckModel("Passwords");
         mPasswordCheckControllerFactory = new FakePasswordCheckControllerFactory();
-        when(mPasswordManagerUtilBridgeNativeMock.isPasswordManagerAvailable(mPrefService, true))
+        when(mPasswordManagerUtilBridgeNativeMock.isPasswordManagerAvailable(true))
                 .thenReturn(mUseGmsApi);
         // TODO(crbug.com/40854050): Use existing fake instead of mocking
         PasswordCheckupClientHelperFactory mockPasswordCheckFactory =

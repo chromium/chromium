@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
 import androidx.test.filters.MediumTest;
@@ -81,8 +80,7 @@ public class PasswordsPreferenceTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testPwmStoppedWorkingSubtitle() throws IOException {
-        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(any(), eq(true)))
-                .thenReturn(false);
+        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(false);
         when(mLoginDbDeprecationUtilBridgeJniMock.getAutoExportCsvFilePath(any()))
                 .thenReturn("random/file/path");
 
@@ -99,8 +97,7 @@ public class PasswordsPreferenceTest {
     @Feature({"RenderTest"})
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testSomePasswordsNotAccessibleSubtitle() throws IOException {
-        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(any(), eq(true)))
-                .thenReturn(true);
+        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(true);
         File fakeCsv = File.createTempFile("passwords", null, null);
         fakeCsv.deleteOnExit();
         when(mLoginDbDeprecationUtilBridgeJniMock.getAutoExportCsvFilePath(any()))
@@ -119,8 +116,7 @@ public class PasswordsPreferenceTest {
     @Feature({"RenderTest"})
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_AUTO})
     public void testSomePasswordsNotAccessibleSubtitleNotDisplayedOnAuto() throws IOException {
-        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(any(), eq(true)))
-                .thenReturn(true);
+        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(true);
         File fakeCsv = File.createTempFile("passwords", null, null);
         fakeCsv.deleteOnExit();
         when(mLoginDbDeprecationUtilBridgeJniMock.getAutoExportCsvFilePath(any()))

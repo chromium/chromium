@@ -5,12 +5,10 @@
 package org.chromium.chrome.browser.password_manager;
 
 import org.jni_zero.CalledByNative;
-import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.PackageUtils;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.prefs.PrefService;
 
 /** Wrapper for utilities in password_manager_util. */
 @NullMarked
@@ -23,9 +21,9 @@ public class PasswordManagerUtilBridge {
      *
      * @return whether password manager functionality is available.
      */
-    public static boolean isPasswordManagerAvailable(PrefService prefService) {
+    public static boolean isPasswordManagerAvailable() {
         return PasswordManagerUtilBridgeJni.get()
-                .isPasswordManagerAvailable(prefService, isInternalBackendPresent());
+                .isPasswordManagerAvailable(isInternalBackendPresent());
     }
 
     @CalledByNative
@@ -47,7 +45,6 @@ public class PasswordManagerUtilBridge {
 
     @NativeMethods
     public interface Natives {
-        boolean isPasswordManagerAvailable(
-                @JniType("PrefService*") PrefService prefService, boolean isInternalBackendPresent);
+        boolean isPasswordManagerAvailable(boolean isInternalBackendPresent);
     }
 }

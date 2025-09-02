@@ -46,15 +46,12 @@ enum class PasswordManagerNotAvailableReason {
 // The criteria are:
 // - access to the internal backend
 // - GMS Core version with full UPM support
-// TODO(crbug.com/378652343): Remove unused `prefs` arg.
 bool IsPasswordManagerAvailable(
-    const PrefService* prefs,
     std::unique_ptr<PasswordManagerUtilBridgeInterface> util_bridge);
 
 // As above, except the caller already knows whether the internal backend
 // is present, probably because the call originates in Java.
-bool IsPasswordManagerAvailable(const PrefService* prefs,
-                                bool is_internal_backend_present);
+bool IsPasswordManagerAvailable(bool is_internal_backend_present);
 
 // The login database is deprecated on Android. This function deletes the data.
 void MaybeDeleteLoginDatabases(

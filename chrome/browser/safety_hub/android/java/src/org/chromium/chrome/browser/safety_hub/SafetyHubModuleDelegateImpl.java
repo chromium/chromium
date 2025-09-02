@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -94,7 +93,7 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
             return INVALID_PASSWORD_COUNT;
         }
 
-        if (PasswordManagerUtilBridge.isPasswordManagerAvailable(UserPrefs.get(mProfile))) {
+        if (PasswordManagerUtilBridge.isPasswordManagerAvailable()) {
             return passwordStoreBridge.getPasswordStoreCredentialsCountForAccountStore();
         }
         return INVALID_PASSWORD_COUNT;
@@ -106,7 +105,7 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
             return INVALID_PASSWORD_COUNT;
         }
 
-        if (PasswordManagerUtilBridge.isPasswordManagerAvailable(UserPrefs.get(mProfile))) {
+        if (PasswordManagerUtilBridge.isPasswordManagerAvailable()) {
             return passwordStoreBridge.getPasswordStoreCredentialsCountForProfileStore();
         }
         return INVALID_PASSWORD_COUNT;
