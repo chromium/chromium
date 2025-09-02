@@ -627,7 +627,7 @@ void BrowserPolicyConnectorAsh::OnDeviceCloudPolicyManagerConnected() {
 
     device_cert_provisioning_scheduler_ = ash::cert_provisioning::
         CertProvisioningSchedulerImpl::CreateDeviceCertProvisioningScheduler(
-            cloud_policy_client,
+            local_state_.get(), cloud_policy_client,
             invalidation_listener_per_project_
                 [ash::cert_provisioning::
                      kCertProvisioningInvalidationProjectNumber]

@@ -120,8 +120,11 @@ class CertProvisioningSchedulerImpl
  public:
   static std::unique_ptr<CertProvisioningScheduler>
   CreateUserCertProvisioningScheduler(Profile* profile);
+
+  // `local_state` must be non-null, and must outlive the returned object.
   static std::unique_ptr<CertProvisioningScheduler>
   CreateDeviceCertProvisioningScheduler(
+      PrefService* local_state,
       policy::CloudPolicyClient* cloud_policy_client,
       invalidation::InvalidationListener* invalidation_listener);
 

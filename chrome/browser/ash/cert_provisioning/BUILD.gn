@@ -43,7 +43,6 @@ static_library("cert_provisioning") {
   ]
 
   deps = [
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/platform_keys",
     "//chrome/browser/ash/platform_keys/key_permissions",
     "//chrome/browser/ash/policy/core",

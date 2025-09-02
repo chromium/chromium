@@ -19,8 +19,6 @@ include_rules = [
   "+chrome/browser/ash/platform_keys",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/browser_process.h",
-  "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/invalidation",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
