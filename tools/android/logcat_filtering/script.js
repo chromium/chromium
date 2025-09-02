@@ -35,16 +35,6 @@ const fileUploadButton = document.getElementById('file-upload-button');
 const pasteLogcatButton = document.getElementById('paste-logcat-button');
 const pasteLogcatButtonLabel = document.querySelector(
   'label[for="paste-logcat-button"]');
-const nextExceptionButton = document.getElementById('next-exception-button');
-const nextExceptionFeedback = document.getElementById(
-  'next-exception-feedback');
-const prevExceptionButton = document.getElementById('prev-exception-button');
-const prevExceptionFeedback = document.getElementById(
-  'prev-exception-feedback');
-const nextTestButton = document.getElementById('next-test-button');
-const nextTestFeedback = document.getElementById('next-test-feedback');
-const prevTestButton = document.getElementById('prev-test-button');
-const prevTestFeedback = document.getElementById('prev-test-feedback');
 const dropdownHeaderProcess = document.getElementById(
   'dropdown-header-process');
 const dropdownSearchProcess = document.getElementById(
@@ -56,14 +46,24 @@ const dropdownListTag = document.getElementById('dropdown-list-tag');
 const dropdownHeaderPriority = document.getElementById(
   'dropdown-header-priority');
 const dropdownListPriority = document.getElementById('dropdown-list-priority');
+const nextExceptionButton = document.getElementById('next-exception-button');
+const nextExceptionFeedback = document.getElementById(
+  'next-exception-feedback');
+const prevExceptionButton = document.getElementById('prev-exception-button');
+const prevExceptionFeedback = document.getElementById(
+  'prev-exception-feedback');
+const nextTestButton = document.getElementById('next-test-button');
+const nextTestFeedback = document.getElementById('next-test-feedback');
+const prevTestButton = document.getElementById('prev-test-button');
+const prevTestFeedback = document.getElementById('prev-test-feedback');
 const hideDateTimeCheckbox = document.getElementById('hide-date-time-checkbox');
 const wrapTextCheckbox = document.getElementById('wrap-text-checkbox');
 const displayNonLogcatCheckbox = document.getElementById(
   'display-non-logcat-checkbox');
-const toggleDarkModeCheckbox = document.getElementById(
-  'toggle-dark-mode-checkbox');
 const alwaysShowActivityManagerCheckbox = document.getElementById(
   'always-show-activity-manager-checkbox');
+const toggleDarkModeCheckbox = document.getElementById(
+  'toggle-dark-mode-checkbox');
 const textDisplayArea = document.getElementById('text-display-area');
 
 // Event listeners:
@@ -71,14 +71,6 @@ const textDisplayArea = document.getElementById('text-display-area');
 fileUploadButton.addEventListener('change', handleFileUpload);
 
 pasteLogcatButton.addEventListener('click', handlePasteLogcatButtonClick);
-
-nextExceptionButton.addEventListener('click', jumpToNextException);
-
-prevExceptionButton.addEventListener('click', jumpToPreviousException);
-
-nextTestButton.addEventListener('click', jumpToNextTest);
-
-prevTestButton.addEventListener('click', jumpToPreviousTest);
 
 dropdownHeaderProcess.addEventListener('click', (event) => {
   // Prevent this click from propagating to the document
@@ -114,6 +106,14 @@ dropdownHeaderPriority.addEventListener('click', (event) => {
 
 dropdownListPriority.addEventListener('click', handlePriorityFilterOptionClick);
 
+nextExceptionButton.addEventListener('click', jumpToNextException);
+
+prevExceptionButton.addEventListener('click', jumpToPreviousException);
+
+nextTestButton.addEventListener('click', jumpToNextTest);
+
+prevTestButton.addEventListener('click', jumpToPreviousTest);
+
 hideDateTimeCheckbox.addEventListener('change', updateTextDisplayArea);
 
 wrapTextCheckbox.addEventListener('change', () => {
@@ -129,6 +129,9 @@ wrapTextCheckbox.addEventListener('change', () => {
 
 displayNonLogcatCheckbox.addEventListener('change', updateTextDisplayArea);
 
+alwaysShowActivityManagerCheckbox.addEventListener('change',
+  updateTextDisplayArea);
+
 toggleDarkModeCheckbox.addEventListener('change', () => {
   const isDarkMode = toggleDarkModeCheckbox.checked;
   if (isDarkMode) {
@@ -139,9 +142,6 @@ toggleDarkModeCheckbox.addEventListener('change', () => {
     document.body.classList.remove('dark-mode');
   }
 });
-
-alwaysShowActivityManagerCheckbox.addEventListener('change',
-  updateTextDisplayArea);
 
 // Global click listener to close dropdowns when clicking outside
 document.addEventListener('click', (event) => {

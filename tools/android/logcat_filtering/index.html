@@ -32,40 +32,6 @@ found in the LICENSE file.
       <input type="button" id="paste-logcat-button" class="hidden-element">
     </div>
 
-    <div class="button-with-feedback">
-      <label for="next-exception-button" class="google-button">
-        <i class="material-icons">error</i> Jump to Next Exception
-      </label>
-      <input type="button" id="next-exception-button" class="hidden-element">
-      <span id="next-exception-feedback"
-            class="feedback-text hidden-element"></span>
-    </div>
-
-    <div class="button-with-feedback">
-      <label for="prev-exception-button" class="google-button">
-        <i class="material-icons">error</i> Jump to Previous Exception
-      </label>
-      <input type="button" id="prev-exception-button" class="hidden-element">
-      <span id="prev-exception-feedback"
-            class="feedback-text hidden-element"></span>
-    </div>
-
-    <div class="button-with-feedback">
-      <label for="next-test-button" class="google-button">
-        <i class="material-icons">rule</i> Jump to Next Test
-      </label>
-      <input type="button" id="next-test-button" class="hidden-element">
-      <span id="next-test-feedback" class="feedback-text hidden-element"></span>
-    </div>
-
-    <div class="button-with-feedback">
-      <label for="prev-test-button" class="google-button">
-        <i class="material-icons">rule</i> Jump to Previous Test
-      </label>
-      <input type="button" id="prev-test-button" class="hidden-element">
-      <span id="prev-test-feedback" class="feedback-text hidden-element"></span>
-    </div>
-
     <div class="dropdown">
       <div id="dropdown-header-process" class="dropdown-header">
         <i class="material-icons">memory</i> Filter Logcat By Process
@@ -142,6 +108,40 @@ found in the LICENSE file.
       </ol>
     </div>
 
+    <div class="button-with-feedback">
+      <label for="next-exception-button" class="google-button">
+        <i class="material-icons">error</i> Jump to Next Exception
+      </label>
+      <input type="button" id="next-exception-button" class="hidden-element">
+      <span id="next-exception-feedback"
+            class="feedback-text hidden-element"></span>
+    </div>
+
+    <div class="button-with-feedback">
+      <label for="prev-exception-button" class="google-button">
+        <i class="material-icons">error</i> Jump to Previous Exception
+      </label>
+      <input type="button" id="prev-exception-button" class="hidden-element">
+      <span id="prev-exception-feedback"
+            class="feedback-text hidden-element"></span>
+    </div>
+
+    <div class="button-with-feedback">
+      <label for="next-test-button" class="google-button">
+        <i class="material-icons">rule</i> Jump to Next Test
+      </label>
+      <input type="button" id="next-test-button" class="hidden-element">
+      <span id="next-test-feedback" class="feedback-text hidden-element"></span>
+    </div>
+
+    <div class="button-with-feedback">
+      <label for="prev-test-button" class="google-button">
+        <i class="material-icons">rule</i> Jump to Previous Test
+      </label>
+      <input type="button" id="prev-test-button" class="hidden-element">
+      <span id="prev-test-feedback" class="feedback-text hidden-element"></span>
+    </div>
+
     <div id="checkbox-controls">
       <div class="checkbox-column">
         <label>
@@ -159,15 +159,15 @@ found in the LICENSE file.
           <span>Display Non Logcat Lines</span>
         </label>
         <label>
-          <input type="checkbox" id="toggle-dark-mode-checkbox">
-          <span>Toggle Dark Mode</span>
+          <input type="checkbox"
+                 id="always-show-activity-manager-checkbox" checked>
+          <span>Always Show ActivityManager</span>
         </label>
       </div>
       <div class="checkbox-column">
         <label>
-          <input type="checkbox"
-                 id="always-show-activity-manager-checkbox" checked>
-          <span>Always Show ActivityManager</span>
+          <input type="checkbox" id="toggle-dark-mode-checkbox">
+          <span>Toggle Dark Mode</span>
         </label>
       </div>
     </div>
