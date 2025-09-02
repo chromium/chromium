@@ -1626,6 +1626,12 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
   EXPECT_EQ(delegate->GetCurrentState(),
             PasswordChangeDelegate::State::kLoginFormDetectedUserCanContinue);
 
+  // User stays in `kLoginFormDetectedUserCanContinue` after subsequent
+  // failures.
+  delegate_impl->login_checker()->RespondWithLoginStatus(false);
+  EXPECT_EQ(delegate->GetCurrentState(),
+            PasswordChangeDelegate::State::kLoginFormDetectedUserCanContinue);
+
   // Now the user clicks "Continue" which skips login check.
   delegate->ProceedToChangePassword();
   EXPECT_FALSE(delegate_impl->login_checker());

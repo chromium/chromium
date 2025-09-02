@@ -329,6 +329,10 @@ void PasswordChangeDelegateImpl::OnLoginStateCheckResult(bool is_logged_in) {
   }
 
   if (!login_state_checker_->ReachedAttemptsLimit()) {
+    if (current_state_ == State::kLoginFormDetectedUserCanContinue) {
+      return;
+    }
+
     // Update the UI to encourage user to complete sign in.
     UpdateState(current_state_ == State::kLoginFormDetected
                     ? State::kLoginFormDetectedUserCanContinue
