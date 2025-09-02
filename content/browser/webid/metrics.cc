@@ -285,6 +285,13 @@ void Metrics::RecordHasNonce(const std::set<GURL>& idps_with_nonce) {
   }
 }
 
+void Metrics::RecordHasNonceOutsideParamsOnly(
+    const std::set<GURL>& idps_with_nonce_outside_params_only) {
+  if (!idps_with_nonce_outside_params_only.empty()) {
+    base::UmaHistogramBoolean("Blink.FedCm.HasNonceOutsideParamsOnly", true);
+  }
+}
+
 void Metrics::RecordRequestTokenStatus(
     RequestIdTokenStatus status,
     MediationRequirement requirement,
