@@ -1,0 +1,98 @@
+This is a testharness.js-based test.
+Found 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Property color value 'color(display-p3-linear 0% 0% 0%)'
+  assert_true: 'color(display-p3-linear 0% 0% 0%)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear 10% 10% 10%)'
+  assert_true: 'color(display-p3-linear 10% 10% 10%)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear .2 .2 25%)'
+  assert_true: 'color(display-p3-linear .2 .2 25%)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear 0 0 0 / 1)'
+  assert_true: 'color(display-p3-linear 0 0 0 / 1)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear 0% 0 0 / 0.5)'
+  assert_true: 'color(display-p3-linear 0% 0 0 / 0.5)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear 20% 0 10/0.5)'
+  assert_true: 'color(display-p3-linear 20% 0 10/0.5)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear 20% 0 10/50%)'
+  assert_true: 'color(display-p3-linear 20% 0 10/50%)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear 400% 0 10/50%)'
+  assert_true: 'color(display-p3-linear 400% 0 10/50%)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear 50% -160 160)'
+  assert_true: 'color(display-p3-linear 50% -160 160)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear 50% -200 200)'
+  assert_true: 'color(display-p3-linear 50% -200 200)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear 0 0 0 / -10%)'
+  assert_true: 'color(display-p3-linear 0 0 0 / -10%)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear 0 0 0 / 110%)'
+  assert_true: 'color(display-p3-linear 0 0 0 / 110%)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear 0 0 0 / 300%)'
+  assert_true: 'color(display-p3-linear 0 0 0 / 300%)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear 200 200 200)'
+  assert_true: 'color(display-p3-linear 200 200 200)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear 200 200 200 / 200)'
+  assert_true: 'color(display-p3-linear 200 200 200 / 200)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear -200 -200 -200)'
+  assert_true: 'color(display-p3-linear -200 -200 -200)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear -200 -200 -200 / -200)'
+  assert_true: 'color(display-p3-linear -200 -200 -200 / -200)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear 200% 200% 200%)'
+  assert_true: 'color(display-p3-linear 200% 200% 200%)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear 200% 200% 200% / 200%)'
+  assert_true: 'color(display-p3-linear 200% 200% 200% / 200%)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear -200% -200% -200% / -200%)'
+  assert_true: 'color(display-p3-linear -200% -200% -200% / -200%)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))'
+  assert_true: 'color(display-p3-linear calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear calc(50% * 3) calc(-150% / 3) calc(50%) / calc(-50% * 3))'
+  assert_true: 'color(display-p3-linear calc(50% * 3) calc(-150% / 3) calc(50%) / calc(-50% * 3))' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear none none none / none)'
+  assert_true: 'color(display-p3-linear none none none / none)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear none none none)'
+  assert_true: 'color(display-p3-linear none none none)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear 10% none none / none)'
+  assert_true: 'color(display-p3-linear 10% none none / none)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear none none none / 0.5)'
+  assert_true: 'color(display-p3-linear none none none / 0.5)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear 0 0 0 / none)'
+  assert_true: 'color(display-p3-linear 0 0 0 / none)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear calc(NaN) 0 0)'
+  assert_true: 'color(display-p3-linear calc(NaN) 0 0)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear calc(0 / 0) 0 0)'
+  assert_true: 'color(display-p3-linear calc(0 / 0) 0 0)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear calc(50% + (sign(1em - 10px) * 10%)) 0 0 / 0.5)'
+  assert_true: 'color(display-p3-linear calc(50% + (sign(1em - 10px) * 10%)) 0 0 / 0.5)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear 0.5 0 0 / calc(50% + (sign(1em - 10px) * 10%)))'
+  assert_true: 'color(display-p3-linear 0.5 0 0 / calc(50% + (sign(1em - 10px) * 10%)))' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear 1.00 0.50 0.200)' [Display P3 Linear all numbers]
+  assert_true: 'color(display-p3-linear 1.00 0.50 0.200)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear 100% 50% 20%)' [Display P3 Linear all percent]
+  assert_true: 'color(display-p3-linear 100% 50% 20%)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear 100% 0.5 20%)' [Display P3 Linear mixed number and percent]
+  assert_true: 'color(display-p3-linear 100% 0.5 20%)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear 1.00 50% 0.2)' [Display P3 Linear mixed number and percent 2]
+  assert_true: 'color(display-p3-linear 1.00 50% 0.2)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear none none none)' [Display P3 Linear all none]
+  assert_true: 'color(display-p3-linear none none none)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear 1.00 none 0.2)' [Display P3 Linear number and none]
+  assert_true: 'color(display-p3-linear 1.00 none 0.2)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear 100% none 20%)' [Display P3 Linear percent and none]
+  assert_true: 'color(display-p3-linear 100% none 20%)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear 100% none 0.2)' [Display P3 Linear number, percent and none]
+  assert_true: 'color(display-p3-linear 100% none 0.2)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear 1.00 0.50 0.200 / 0.6)' [Display P3 Linear with alpha, all numbers]
+  assert_true: 'color(display-p3-linear 1.00 0.50 0.200 / 0.6)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear 100% 50% 20% / 60%)' [Display P3 Linear with alpha, all percent]
+  assert_true: 'color(display-p3-linear 100% 50% 20% / 60%)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear 100% 0.5 20% / 0.6)' [Display P3 Linear with alpha, mixed number and percent]
+  assert_true: 'color(display-p3-linear 100% 0.5 20% / 0.6)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear 1.00 50% 0.2 / 60%)' [Display P3 Linear with alpha, mixed number and percent 2]
+  assert_true: 'color(display-p3-linear 1.00 50% 0.2 / 60%)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear none none none / none)' [Display P3 Linear with alpha, all none]
+  assert_true: 'color(display-p3-linear none none none / none)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear 1.00 none 0.2 / none)' [Display P3 Linear with alpha, number and none]
+  assert_true: 'color(display-p3-linear 1.00 none 0.2 / none)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear 100% none 20% / 30%)' [Display P3 Linear with alpha, percent and none]
+  assert_true: 'color(display-p3-linear 100% none 20% / 30%)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color(display-p3-linear 100% none 0.2 / 23.7%)' [Display P3 Linear with alpha, number, percent and none]
+  assert_true: 'color(display-p3-linear 100% none 0.2 / 23.7%)' is a supported value for color. expected true got false
+Harness: the test ran to completion.
+

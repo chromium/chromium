@@ -2959,6 +2959,15 @@ crbug.com/441715182 virtual/threaded/external/wpt/css/css-view-transitions/remov
 crbug.com/441715182 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/remove-root-element-firefox-bug-1982469-crash.html [ Crash Timeout ]
 crbug.com/441715182 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/remove-root-element-firefox-bug-1982469-crash.html [ Crash Timeout ]
 
+external/wpt/css/css-color/display-p3-linear-001.html [ Failure ]
+external/wpt/css/css-color/display-p3-linear-002.html [ Failure ]
+external/wpt/css/css-color/display-p3-linear-003.html [ Failure ]
+external/wpt/css/css-color/display-p3-linear-004.html [ Failure ]
+external/wpt/css/css-color/display-p3-linear-005.html [ Failure ]
+external/wpt/css/css-color/display-p3-linear-006.html [ Failure ]
+external/wpt/html/rendering/replaced-elements/attributes-for-embedded-content-and-images/video-default-object-height-constrained-by-max-width.html [ Failure ]
+external/wpt/html/rendering/replaced-elements/attributes-for-embedded-content-and-images/video-default-object-width-constrained-by-max-height.html [ Failure ]
+
 # ====== New tests from wpt-importer added here ======
 crbug.com/441356800 external/wpt/html/semantics/embedded-content/the-video-element/video_timeupdate_on_seek.html [ Timeout ]
 crbug.com/441360066 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/fragment_navigated/fragment_navigated.py [ Timeout ]
@@ -9640,7 +9649,7 @@ crbug.com/441519564 [ Mac ] external/wpt/webrtc/RTCRtpParameters-codec.html [ Fa
 crbug.com/441011869 [ Linux ] external/wpt/storage-access-api/requestStorageAccess-sandboxed-iframe-allow-storage-access.sub.https.window.html [ Pass Timeout ]
 
 # Gardener 2025-08-29
-crbug.com/441826647 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/navigate/navigate.py [ Timeout Skip ]
+crbug.com/441826647 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/navigate/navigate.py [ Skip Timeout ]
 
 # Disabled to unblock crrev.com/c/6903230
 crbug.com/442509324 http/tests/devtools/device-mode/device-mode-responsive.js [ Failure Pass ]
