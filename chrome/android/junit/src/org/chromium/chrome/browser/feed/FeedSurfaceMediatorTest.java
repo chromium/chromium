@@ -85,7 +85,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Tests for {@link FeedSurfaceMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({ChromeFeatureList.WEB_FEED_SORT, ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP})
+@EnableFeatures({
+    ChromeFeatureList.WEB_FEED_SORT,
+    ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP,
+    ChromeFeatureList.FEED_HEADER_REMOVAL
+})
 public class FeedSurfaceMediatorTest {
     static final @Px int TOOLBAR_HEIGHT = 10;
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

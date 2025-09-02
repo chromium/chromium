@@ -10791,24 +10791,6 @@
             ]
         }
     ],
-    "FeedHeaderRemoval": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithNoHeader",
-                    "params": {
-                        "treatment": "none"
-                    },
-                    "enable_features": [
-                        "FeedHeaderRemoval"
-                    ]
-                }
-            ]
-        }
-    ],
     "FeedLoadingPlaceholder": [
         {
             "platforms": [
@@ -26851,21 +26833,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "WebContentsDiscard"
-                    ]
-                }
-            ]
-        }
-    ],
-    "WebFeedDeprecation": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebFeedKillSwitch"
                     ]
                 }
             ]

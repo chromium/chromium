@@ -99,7 +99,7 @@ BASE_FEATURE(kFeedContainment,
 
 BASE_FEATURE(kWebFeedKillSwitch,
              "WebFeedKillSwitch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFeedRecyclerBinderUnmountOnDetach,
              "FeedRecyclerBinderUnmountOnDetach",
@@ -111,7 +111,7 @@ BASE_FEATURE(kFeedStreaming,
 
 BASE_FEATURE(kFeedHeaderRemoval,
              "FeedHeaderRemoval",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFeedAudioOverviews,
              "FeedAudioOverviews",
