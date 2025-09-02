@@ -24,7 +24,6 @@ namespace enterprise_connectors {
 
 using ::safe_browsing::BinaryUploadService;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::NotNull;
 using ::testing::Return;
@@ -69,7 +68,7 @@ class FakeLocalBinaryUploadService : public LocalBinaryUploadService {
   void SetFileSystemSignals(bool is_os_verified,
                             const char* subject_name = nullptr) {
     EXPECT_CALL(mock_system_signals_service_, GetFileSystemSignals(_, _))
-        .WillRepeatedly(Invoke(
+        .WillRepeatedly(
             [is_os_verified, subject_name](
                 const std::vector<device_signals::GetFileSystemInfoOptions>&
                     options,
@@ -93,7 +92,7 @@ class FakeLocalBinaryUploadService : public LocalBinaryUploadService {
                         std::move(callback).Run({item});
                       },
                       is_os_verified, subject_name, std::move(callback)));
-            }));
+            });
   }
 
  private:
@@ -152,14 +151,13 @@ class LocalBinaryUploadServiceTest : public testing::Test {
         settings);
     request->set_tab_title("tab_title");
     ON_CALL(*request, GetRequestData(_))
-        .WillByDefault(
-            Invoke([](BinaryUploadService::Request::DataCallback callback) {
-              BinaryUploadService::Request::Data data;
-              data.contents = "contents";
-              data.size = data.contents.size();
-              std::move(callback).Run(BinaryUploadService::Result::SUCCESS,
-                                      std::move(data));
-            }));
+        .WillByDefault([](BinaryUploadService::Request::DataCallback callback) {
+          BinaryUploadService::Request::Data data;
+          data.contents = "contents";
+          data.size = data.contents.size();
+          std::move(callback).Run(BinaryUploadService::Result::SUCCESS,
+                                  std::move(data));
+        });
     return request;
   }
 

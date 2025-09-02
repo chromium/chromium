@@ -19,7 +19,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::StrictMock;
 
 namespace enterprise_connectors {
@@ -146,21 +145,21 @@ class BrowserAttestationServiceTest : public testing::Test {
 
   void MockDecorateKeyInfo() {
     EXPECT_CALL(*mock_device_attester_, DecorateKeyInfo(_, _, _))
-        .WillOnce(Invoke([](const std::set<DTCPolicyLevel>& levels,
-                            KeyInfo& key_info, base::OnceClosure done_closure) {
+        .WillOnce([](const std::set<DTCPolicyLevel>& levels, KeyInfo& key_info,
+                     base::OnceClosure done_closure) {
           std::move(done_closure).Run();
-        }));
+        });
 
     EXPECT_CALL(*mock_profile_attester_, DecorateKeyInfo(_, _, _))
-        .WillOnce(Invoke([](const std::set<DTCPolicyLevel>& levels,
-                            KeyInfo& key_info, base::OnceClosure done_closure) {
+        .WillOnce([](const std::set<DTCPolicyLevel>& levels, KeyInfo& key_info,
+                     base::OnceClosure done_closure) {
           std::move(done_closure).Run();
-        }));
+        });
   }
 
   void MockSignResponse(bool add_browser_signature = true) {
     EXPECT_CALL(*mock_device_attester_, SignResponse(_, _, _, _))
-        .WillOnce(Invoke(
+        .WillOnce(
             [add_browser_signature](const std::set<DTCPolicyLevel>& levels,
                                     const std::string& challenge_response,
                                     SignedData& signed_data,
@@ -171,16 +170,15 @@ class BrowserAttestationServiceTest : public testing::Test {
                 signed_data.set_signature(kFakeSignature);
               }
               std::move(done_closure).Run();
-            }));
+            });
 
     EXPECT_CALL(*mock_profile_attester_, SignResponse(_, _, _, _))
-        .WillOnce(
-            Invoke([](const std::set<DTCPolicyLevel>& levels,
-                      const std::string& challenge_response,
-                      SignedData& signed_data, base::OnceClosure done_closure) {
-              ASSERT_FALSE(challenge_response.empty());
-              std::move(done_closure).Run();
-            }));
+        .WillOnce([](const std::set<DTCPolicyLevel>& levels,
+                     const std::string& challenge_response,
+                     SignedData& signed_data, base::OnceClosure done_closure) {
+          ASSERT_FALSE(challenge_response.empty());
+          std::move(done_closure).Run();
+        });
   }
 
   void VerifyAttestationResponse(

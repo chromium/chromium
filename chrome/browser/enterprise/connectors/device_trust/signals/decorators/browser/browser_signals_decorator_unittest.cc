@@ -35,7 +35,6 @@
 #endif
 
 using testing::_;
-using testing::Invoke;
 using testing::Return;
 using testing::StrictMock;
 
@@ -202,12 +201,12 @@ class BrowserSignalsDecoratorTest : public testing::Test {
 
   void SetUpAggregatorExpectations() {
     EXPECT_CALL(mock_aggregator_, GetSignals(CreateExpectedRequest(), _))
-        .WillOnce(Invoke(
+        .WillOnce(
             [this](const device_signals::SignalsAggregationRequest& request,
                    base::OnceCallback<void(
                        device_signals::SignalsAggregationResponse)> callback) {
               std::move(callback).Run(CreateFilledResponse());
-            }));
+            });
   }
 
   virtual device_signals::SignalsAggregationResponse CreateFilledResponse() {
@@ -362,13 +361,12 @@ TEST_F(BrowserSignalsDecoratorTest, Decorate_NoAgentSignals) {
   SetFakeUserPolicyData();
 
   EXPECT_CALL(mock_aggregator_, GetSignals(CreateExpectedRequest(), _))
-      .WillOnce(
-          Invoke([](const device_signals::SignalsAggregationRequest& request,
-                    base::OnceCallback<void(
-                        device_signals::SignalsAggregationResponse)> callback) {
-            device_signals::SignalsAggregationResponse empty_response;
-            std::move(callback).Run(std::move(empty_response));
-          }));
+      .WillOnce([](const device_signals::SignalsAggregationRequest& request,
+                   base::OnceCallback<void(
+                       device_signals::SignalsAggregationResponse)> callback) {
+        device_signals::SignalsAggregationResponse empty_response;
+        std::move(callback).Run(std::move(empty_response));
+      });
 
   auto decorator = CreateDecorator();
   base::RunLoop run_loop;

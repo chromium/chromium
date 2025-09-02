@@ -38,7 +38,6 @@ using HttpResponseCode = KeyNetworkDelegate::HttpResponseCode;
 
 using test::MockKeyPersistenceDelegate;
 using testing::_;
-using testing::Invoke;
 using testing::Return;
 using testing::StrictMock;
 
@@ -86,15 +85,15 @@ class KeyLoaderTest : public testing::Test {
         std::make_unique<StrictMock<MockKeyPersistenceDelegate>>();
     EXPECT_CALL(*mock_persistence_delegate,
                 LoadKeyPair(KeyStorageType::kPermanent, _))
-        .WillOnce(Invoke([this, has_key](KeyStorageType key_type,
-                                         LoadPersistedKeyResult* result) {
+        .WillOnce([this, has_key](KeyStorageType key_type,
+                                  LoadPersistedKeyResult* result) {
           if (has_key) {
             *result = LoadPersistedKeyResult::kSuccess;
             return test_key_pair_;
           }
           *result = LoadPersistedKeyResult::kNotFound;
           return scoped_refptr<SigningKeyPair>(nullptr);
-        }));
+        });
     persistence_delegate_factory_.set_next_instance(
         std::move(mock_persistence_delegate));
   }
@@ -103,12 +102,12 @@ class KeyLoaderTest : public testing::Test {
     policy::DMServerJobResult result;
     result.response_code = response_code;
     EXPECT_CALL(*mock_management_delegate_, UploadBrowserPublicKey(_, _))
-        .WillOnce(Invoke(
+        .WillOnce(
             [&, result](
                 const enterprise_management::DeviceManagementRequest& request,
                 base::OnceCallback<void(policy::DMServerJobResult)> callback) {
               std::move(callback).Run(result);
-            }));
+            });
   }
 
   void RunAndValidateLoadKey(DTCLoadKeyResult expected_result) {

@@ -63,7 +63,7 @@ ScopedKeyPersistenceDelegateFactory::
 
   auto mocked_delegate = std::make_unique<MockKeyPersistenceDelegate>();
   ON_CALL(*mocked_delegate.get(), LoadKeyPair)
-      .WillByDefault(testing::Invoke(
+      .WillByDefault(
           [&side_effect](KeyStorageType type, LoadPersistedKeyResult* result) {
             side_effect.Run();
             if (result) {
@@ -71,12 +71,11 @@ ScopedKeyPersistenceDelegateFactory::
             }
             return base::MakeRefCounted<SigningKeyPair>(
                 GenerateHardwareSigningKey(), BPKUR::CHROME_BROWSER_HW_KEY);
-          }));
-  ON_CALL(*mocked_delegate.get(), CreateKeyPair)
-      .WillByDefault(testing::Invoke([]() {
-        return base::MakeRefCounted<SigningKeyPair>(
-            GenerateHardwareSigningKey(), BPKUR::CHROME_BROWSER_HW_KEY);
-      }));
+          });
+  ON_CALL(*mocked_delegate.get(), CreateKeyPair).WillByDefault([]() {
+    return base::MakeRefCounted<SigningKeyPair>(GenerateHardwareSigningKey(),
+                                                BPKUR::CHROME_BROWSER_HW_KEY);
+  });
   return mocked_delegate;
 }
 
@@ -88,19 +87,17 @@ ScopedKeyPersistenceDelegateFactory::CreateMockedECDelegate() {
 
   auto mocked_delegate = std::make_unique<MockKeyPersistenceDelegate>();
   ON_CALL(*mocked_delegate.get(), LoadKeyPair)
-      .WillByDefault(testing::Invoke([](KeyStorageType type,
-                                        LoadPersistedKeyResult* result) {
+      .WillByDefault([](KeyStorageType type, LoadPersistedKeyResult* result) {
         if (result) {
           *result = LoadPersistedKeyResult::kSuccess;
         }
         return base::MakeRefCounted<SigningKeyPair>(
             GenerateECSigningKey(), BPKUR::CHROME_BROWSER_OS_KEY);
-      }));
-  ON_CALL(*mocked_delegate.get(), CreateKeyPair)
-      .WillByDefault(testing::Invoke([]() {
-        return base::MakeRefCounted<SigningKeyPair>(
-            GenerateECSigningKey(), BPKUR::CHROME_BROWSER_OS_KEY);
-      }));
+      });
+  ON_CALL(*mocked_delegate.get(), CreateKeyPair).WillByDefault([]() {
+    return base::MakeRefCounted<SigningKeyPair>(GenerateECSigningKey(),
+                                                BPKUR::CHROME_BROWSER_OS_KEY);
+  });
   return mocked_delegate;
 }
 

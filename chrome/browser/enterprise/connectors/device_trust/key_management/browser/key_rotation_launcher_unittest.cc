@@ -85,12 +85,11 @@ TEST_F(KeyRotationLauncherTest, LaunchKeyRotation) {
 
   std::optional<KeyRotationCommand::Params> params;
   EXPECT_CALL(*mock_command_, Trigger(testing::_, testing::_))
-      .WillOnce(testing::Invoke(
-          [&params](const KeyRotationCommand::Params given_params,
-                    KeyRotationCommand::Callback callback) {
-            params = given_params;
-            std::move(callback).Run(KeyRotationCommand::Status::SUCCEEDED);
-          }));
+      .WillOnce([&params](const KeyRotationCommand::Params given_params,
+                          KeyRotationCommand::Callback callback) {
+        params = given_params;
+        std::move(callback).Run(KeyRotationCommand::Status::SUCCEEDED);
+      });
 
   launcher_->LaunchKeyRotation(kNonce, base::DoNothing());
 

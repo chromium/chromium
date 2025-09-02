@@ -37,7 +37,6 @@
 using testing::_;
 using testing::ElementsAre;
 using testing::InSequence;
-using testing::Invoke;
 using testing::Pair;
 using testing::Return;
 
@@ -181,26 +180,25 @@ class MacKeyRotationCommandTest : public testing::Test,
       result.response_code = response_code;
 
       EXPECT_CALL(*mock_cloud_delegate_, UploadBrowserPublicKey(_, _))
-          .WillOnce(Invoke(
+          .WillOnce(
               [response_code, result, this](
                   const enterprise_management::DeviceManagementRequest& request,
                   base::OnceCallback<void(policy::DMServerJobResult)>
                       callback) {
                 this->PostUploadSetup(response_code);
                 std::move(callback).Run(result);
-              }));
+              });
     } else {
       EXPECT_CALL(
           *mock_network_delegate_,
           SendPublicKeyToDmServer(GURL(kFakeDmServerUrl), kFakeDMToken, _, _))
-          .WillOnce(
-              Invoke([response_code, this](
-                         const GURL& url, const std::string& dm_token,
-                         const std::string& body,
-                         base::OnceCallback<void(HttpResponseCode)> callback) {
-                this->PostUploadSetup(response_code);
-                std::move(callback).Run(response_code);
-              }));
+          .WillOnce([response_code, this](
+                        const GURL& url, const std::string& dm_token,
+                        const std::string& body,
+                        base::OnceCallback<void(HttpResponseCode)> callback) {
+            this->PostUploadSetup(response_code);
+            std::move(callback).Run(response_code);
+          });
     }
   }
 
@@ -258,8 +256,9 @@ TEST_P(MacKeyRotationCommandTest, RotateFailure_CreateKeyFailure) {
   EXPECT_CALL(*mock_secure_enclave_client_, VerifySecureEnclaveSupported())
       .WillOnce(Return(true));
   CheckForPermission();
-  EXPECT_CALL(*mock_persistence_delegate_, CreateKeyPair())
-      .WillOnce(Invoke([]() { return nullptr; }));
+  EXPECT_CALL(*mock_persistence_delegate_, CreateKeyPair()).WillOnce([]() {
+    return nullptr;
+  });
   SetUpDmToken();
 
   base::test::TestFuture<KeyRotationCommand::Status> future;
@@ -430,12 +429,12 @@ TEST_P(MacKeyRotationCommandTest, Rotate_Timeout_ReturnBeforeDestruction) {
   if (is_key_uploaded_by_shared_api()) {
     base::OnceCallback<void(policy::DMServerJobResult)> captured_callback;
     EXPECT_CALL(*mock_cloud_delegate_, UploadBrowserPublicKey(_, _))
-        .WillOnce(Invoke(
+        .WillOnce(
             [&captured_callback](
                 const enterprise_management::DeviceManagementRequest& request,
                 base::OnceCallback<void(policy::DMServerJobResult)> callback) {
               captured_callback = std::move(callback);
-            }));
+            });
 
     base::test::TestFuture<KeyRotationCommand::Status> future;
     rotation_command_->Trigger(params_, future.GetCallback());
@@ -452,12 +451,12 @@ TEST_P(MacKeyRotationCommandTest, Rotate_Timeout_ReturnBeforeDestruction) {
     EXPECT_CALL(
         *mock_network_delegate_,
         SendPublicKeyToDmServer(GURL(kFakeDmServerUrl), kFakeDMToken, _, _))
-        .WillOnce(Invoke(
-            [&captured_callback](const GURL& url, const std::string& dm_token,
-                                 const std::string& body,
-                                 base::OnceCallback<void(int)> callback) {
-              captured_callback = std::move(callback);
-            }));
+        .WillOnce([&captured_callback](const GURL& url,
+                                       const std::string& dm_token,
+                                       const std::string& body,
+                                       base::OnceCallback<void(int)> callback) {
+          captured_callback = std::move(callback);
+        });
 
     base::test::TestFuture<KeyRotationCommand::Status> future;
     rotation_command_->Trigger(params_, future.GetCallback());
@@ -489,12 +488,12 @@ TEST_P(MacKeyRotationCommandTest, Rotate_Timeout_ReturnAfterDestruction) {
   if (is_key_uploaded_by_shared_api()) {
     base::OnceCallback<void(policy::DMServerJobResult)> captured_callback;
     EXPECT_CALL(*mock_cloud_delegate_, UploadBrowserPublicKey(_, _))
-        .WillOnce(Invoke(
+        .WillOnce(
             [&captured_callback](
                 const enterprise_management::DeviceManagementRequest& request,
                 base::OnceCallback<void(policy::DMServerJobResult)> callback) {
               captured_callback = std::move(callback);
-            }));
+            });
 
     base::test::TestFuture<KeyRotationCommand::Status> future;
     rotation_command_->Trigger(params_, future.GetCallback());
@@ -513,12 +512,12 @@ TEST_P(MacKeyRotationCommandTest, Rotate_Timeout_ReturnAfterDestruction) {
     EXPECT_CALL(
         *mock_network_delegate_,
         SendPublicKeyToDmServer(GURL(kFakeDmServerUrl), kFakeDMToken, _, _))
-        .WillOnce(Invoke(
-            [&captured_callback](const GURL& url, const std::string& dm_token,
-                                 const std::string& body,
-                                 base::OnceCallback<void(int)> callback) {
-              captured_callback = std::move(callback);
-            }));
+        .WillOnce([&captured_callback](const GURL& url,
+                                       const std::string& dm_token,
+                                       const std::string& body,
+                                       base::OnceCallback<void(int)> callback) {
+          captured_callback = std::move(callback);
+        });
 
     base::test::TestFuture<KeyRotationCommand::Status> future;
     rotation_command_->Trigger(params_, future.GetCallback());

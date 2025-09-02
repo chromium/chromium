@@ -22,7 +22,6 @@ using KeyRotationResult =
     enterprise_connectors::DeviceTrustKeyManager::KeyRotationResult;
 
 using testing::_;
-using testing::Invoke;
 
 namespace enterprise_commands {
 
@@ -69,11 +68,11 @@ class RotateAttestationCredentialJobTest
 
   void MockKeyRotationWith(KeyRotationResult result) {
     EXPECT_CALL(mock_key_manager_, RotateKey(kNonceValue, _))
-        .WillOnce(Invoke(
+        .WillOnce(
             [result](const std::string& nonce,
                      base::OnceCallback<void(KeyRotationResult)> callback) {
               std::move(callback).Run(result);
-            }));
+            });
   }
 
   std::unique_ptr<RotateAttestationCredentialJob> CreateJob(

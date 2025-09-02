@@ -29,7 +29,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::Return;
 using testing::StrictMock;
 
@@ -82,30 +81,29 @@ class DeviceTrustKeyManagerImplTest : public testing::Test {
   void SetUpKeyLoadAndSyncWithSideEffect(base::RepeatingClosure& side_effect) {
     EXPECT_CALL(*mock_loader_, LoadKey(_))
         .WillRepeatedly(
-            Invoke([side_effect, this](KeyLoader::LoadKeyCallback callback) {
+            [side_effect, this](KeyLoader::LoadKeyCallback callback) {
               side_effect.Run();
               std::move(callback).Run(
                   DTCLoadKeyResult(kSuccessUploadCode, test_key_pair_));
-            }));
+            });
   }
 
   void SetUpKeyLoadAndSyncWithSideEffect(
       const DTCLoadKeyResult& load_key_result,
       base::RepeatingClosure& side_effect) {
     EXPECT_CALL(*mock_loader_, LoadKey(_))
-        .WillRepeatedly(Invoke([side_effect, load_key_result](
-                                   KeyLoader::LoadKeyCallback callback) {
+        .WillRepeatedly([side_effect,
+                         load_key_result](KeyLoader::LoadKeyCallback callback) {
           side_effect.Run();
           std::move(callback).Run(load_key_result);
-        }));
+        });
   }
 
   void SetUpKeyLoadAndSync(const DTCLoadKeyResult& load_key_result) {
     EXPECT_CALL(*mock_loader_, LoadKey(_))
-        .WillRepeatedly(
-            Invoke([load_key_result](KeyLoader::LoadKeyCallback callback) {
-              std::move(callback).Run(load_key_result);
-            }));
+        .WillRepeatedly([load_key_result](KeyLoader::LoadKeyCallback callback) {
+          std::move(callback).Run(load_key_result);
+        });
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -233,11 +231,11 @@ TEST_F(DeviceTrustKeyManagerImplTest,
   base::RunLoop create_key_loop;
   KeyRotationCommand::Callback key_rotation_callback;
   EXPECT_CALL(*mock_launcher(), LaunchKeyRotation(std::string(), _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](const std::string& nonce, KeyRotationCommand::Callback callback) {
             key_rotation_callback = std::move(callback);
             create_key_loop.Quit();
-          }));
+          });
 
   key_manager()->StartInitialization();
 
@@ -279,11 +277,11 @@ TEST_F(DeviceTrustKeyManagerImplTest,
   base::RunLoop create_key_loop;
   KeyRotationCommand::Callback key_rotation_callback;
   EXPECT_CALL(*mock_launcher(), LaunchKeyRotation(std::string(), _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](const std::string& nonce, KeyRotationCommand::Callback callback) {
             key_rotation_callback = std::move(callback);
             create_key_loop.Quit();
-          }));
+          });
 
   key_manager()->StartInitialization();
 
@@ -324,11 +322,11 @@ TEST_F(DeviceTrustKeyManagerImplTest,
   KeyRotationCommand::Callback key_rotation_callback;
   base::RunLoop create_key_loop;
   EXPECT_CALL(*mock_launcher(), LaunchKeyRotation(std::string(), _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](const std::string& nonce, KeyRotationCommand::Callback callback) {
             key_rotation_callback = std::move(callback);
             create_key_loop.Quit();
-          }));
+          });
 
   key_manager()->StartInitialization();
 
@@ -392,9 +390,9 @@ TEST_F(DeviceTrustKeyManagerImplTest, NoKey_LoadKeyResult_MayTriggerCreation) {
     if (test_case.triggers_creation) {
       SetUpKeyLoadAndSync(load_key_result);
       EXPECT_CALL(*mock_launcher(), LaunchKeyRotation(std::string(), _))
-          .WillOnce(Invoke(
+          .WillOnce(
               [&](const std::string& nonce,
-                  KeyRotationCommand::Callback callback) { run_loop.Quit(); }));
+                  KeyRotationCommand::Callback callback) { run_loop.Quit(); });
     } else {
       base::RepeatingClosure side_effect =
           base::BindLambdaForTesting([&run_loop, this]() {
@@ -432,11 +430,11 @@ TEST_F(DeviceTrustKeyManagerImplTest, Initialization_CreateFails_Retry) {
   KeyRotationCommand::Callback failed_rotation_callback;
   base::RunLoop create_key_fail_loop;
   EXPECT_CALL(*mock_launcher(), LaunchKeyRotation(std::string(), _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](const std::string& nonce, KeyRotationCommand::Callback callback) {
             failed_rotation_callback = std::move(callback);
             create_key_fail_loop.Quit();
-          }));
+          });
 
   key_manager()->StartInitialization();
 
@@ -453,11 +451,11 @@ TEST_F(DeviceTrustKeyManagerImplTest, Initialization_CreateFails_Retry) {
   KeyRotationCommand::Callback success_rotation_callback;
   base::RunLoop create_key_success_loop;
   EXPECT_CALL(*mock_launcher(), LaunchKeyRotation(std::string(), _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](const std::string& nonce, KeyRotationCommand::Callback callback) {
             success_rotation_callback = std::move(callback);
             create_key_success_loop.Quit();
-          }));
+          });
 
   // Should not be treated as a permanent failure.
   EXPECT_FALSE(key_manager()->HasPermanentFailure());
@@ -514,11 +512,11 @@ TEST_F(DeviceTrustKeyManagerImplTest,
   KeyRotationCommand::Callback key_rotation_callback;
   base::RunLoop create_key_loop;
   EXPECT_CALL(*mock_launcher(), LaunchKeyRotation(std::string(), _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](const std::string& nonce, KeyRotationCommand::Callback callback) {
             key_rotation_callback = std::move(callback);
             create_key_loop.Quit();
-          }));
+          });
 
   key_manager()->StartInitialization();
 
@@ -588,11 +586,11 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_Simple_Success) {
   KeyRotationCommand::Callback rotation_callback;
   base::RunLoop rotate_key_loop;
   EXPECT_CALL(*mock_launcher(), LaunchKeyRotation(kFakeNonce, _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](const std::string& nonce, KeyRotationCommand::Callback callback) {
             rotation_callback = std::move(callback);
             rotate_key_loop.Quit();
-          }));
+          });
 
   std::optional<KeyRotationResult> captured_result;
   auto completion_callback =
@@ -628,11 +626,11 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_Simple_Failed) {
   KeyRotationCommand::Callback rotation_callback;
   base::RunLoop rotate_key_loop;
   EXPECT_CALL(*mock_launcher(), LaunchKeyRotation(kFakeNonce, _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](const std::string& nonce, KeyRotationCommand::Callback callback) {
             rotation_callback = std::move(callback);
             rotate_key_loop.Quit();
-          }));
+          });
 
   std::optional<KeyRotationResult> captured_result;
   auto completion_callback =
@@ -669,11 +667,11 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_Simple_Failed_Key_Conflict) {
   KeyRotationCommand::Callback rotation_callback;
   base::RunLoop rotate_key_loop;
   EXPECT_CALL(*mock_launcher(), LaunchKeyRotation(kFakeNonce, _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](const std::string& nonce, KeyRotationCommand::Callback callback) {
             rotation_callback = std::move(callback);
             rotate_key_loop.Quit();
-          }));
+          });
 
   std::optional<KeyRotationResult> captured_result;
   auto completion_callback =
@@ -714,11 +712,11 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_Simple_Failed_OS_Failure) {
   KeyRotationCommand::Callback rotation_callback;
   base::RunLoop rotate_key_loop;
   EXPECT_CALL(*mock_launcher(), LaunchKeyRotation(kFakeNonce, _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](const std::string& nonce, KeyRotationCommand::Callback callback) {
             rotation_callback = std::move(callback);
             rotate_key_loop.Quit();
-          }));
+          });
 
   std::optional<KeyRotationResult> captured_result;
   auto completion_callback =
@@ -756,11 +754,11 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_Concurrent_Cancel_Success) {
   KeyRotationCommand::Callback first_rotation_callback;
   base::RunLoop first_rotate_key_loop;
   EXPECT_CALL(*mock_launcher(), LaunchKeyRotation(kFakeNonce, _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](const std::string& nonce, KeyRotationCommand::Callback callback) {
             first_rotation_callback = std::move(callback);
             first_rotate_key_loop.Quit();
-          }));
+          });
 
   // Create callback parameters for all calls.
   std::optional<KeyRotationResult> first_captured_result;
@@ -791,11 +789,11 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_Concurrent_Cancel_Success) {
   KeyRotationCommand::Callback second_rotation_callback;
   base::RunLoop second_rotate_key_loop;
   EXPECT_CALL(*mock_launcher(), LaunchKeyRotation(kOtherFakeNonce, _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](const std::string& nonce, KeyRotationCommand::Callback callback) {
             second_rotation_callback = std::move(callback);
             second_rotate_key_loop.Quit();
-          }));
+          });
 
   // Make the key rotation return a successful status.
   ASSERT_FALSE(first_rotation_callback.is_null());
@@ -866,11 +864,11 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_Concurrent_SuccessThenFail) {
     KeyRotationCommand::Callback first_rotation_callback;
     base::RunLoop first_rotate_key_loop;
     EXPECT_CALL(*mock_launcher(), LaunchKeyRotation(kFakeNonce, _))
-        .WillOnce(Invoke([&](const std::string& nonce,
-                             KeyRotationCommand::Callback callback) {
+        .WillOnce([&](const std::string& nonce,
+                      KeyRotationCommand::Callback callback) {
           first_rotation_callback = std::move(callback);
           first_rotate_key_loop.Quit();
-        }));
+        });
 
     // Create callback parameters for all calls.
     std::optional<KeyRotationResult> first_captured_result;
@@ -894,11 +892,11 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_Concurrent_SuccessThenFail) {
     KeyRotationCommand::Callback second_rotation_callback;
     base::RunLoop second_rotate_key_loop;
     EXPECT_CALL(*mock_launcher(), LaunchKeyRotation(kOtherFakeNonce, _))
-        .WillOnce(Invoke([&](const std::string& nonce,
-                             KeyRotationCommand::Callback callback) {
+        .WillOnce([&](const std::string& nonce,
+                      KeyRotationCommand::Callback callback) {
           second_rotation_callback = std::move(callback);
           second_rotate_key_loop.Quit();
-        }));
+        });
 
     // Make the key rotation return a successful status.
     ASSERT_FALSE(first_rotation_callback.is_null());
@@ -940,11 +938,11 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_AtLoadKey_Success) {
   KeyRotationCommand::Callback rotation_callback;
   base::RunLoop rotate_key_loop;
   EXPECT_CALL(*mock_launcher(), LaunchKeyRotation(kFakeNonce, _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](const std::string& nonce, KeyRotationCommand::Callback callback) {
             rotation_callback = std::move(callback);
             rotate_key_loop.Quit();
-          }));
+          });
 
   // Binding the rotate request to the main thread, as the sequence checker will
   // be expecting that.
@@ -991,11 +989,11 @@ TEST_F(DeviceTrustKeyManagerImplTest, RotateKey_AtLoadKey_Fails) {
   KeyRotationCommand::Callback rotation_callback;
   base::RunLoop rotate_key_loop;
   EXPECT_CALL(*mock_launcher(), LaunchKeyRotation(kFakeNonce, _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](const std::string& nonce, KeyRotationCommand::Callback callback) {
             rotation_callback = std::move(callback);
             rotate_key_loop.Quit();
-          }));
+          });
 
   // Binding the rotate request to the main thread, as the sequence checker will
   // be expecting that.
@@ -1066,11 +1064,11 @@ TEST_F(DeviceTrustKeyManagerImplTest, CreateKey_PermanentFailures) {
     KeyRotationCommand::Callback failed_rotation_callback;
     base::RunLoop create_key_fail_loop;
     EXPECT_CALL(*mock_launcher(), LaunchKeyRotation(std::string(), _))
-        .WillOnce(Invoke([&](const std::string& nonce,
-                             KeyRotationCommand::Callback callback) {
+        .WillOnce([&](const std::string& nonce,
+                      KeyRotationCommand::Callback callback) {
           failed_rotation_callback = std::move(callback);
           create_key_fail_loop.Quit();
-        }));
+        });
 
     key_manager()->StartInitialization();
 
@@ -1122,11 +1120,11 @@ TEST_F(DeviceTrustKeyManagerImplTest,
   base::RunLoop create_key_loop;
   KeyRotationCommand::Callback key_creation_callback;
   EXPECT_CALL(*mock_launcher(), LaunchKeyRotation(std::string(), _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](const std::string& nonce, KeyRotationCommand::Callback callback) {
             key_creation_callback = std::move(callback);
             create_key_loop.Quit();
-          }));
+          });
 
   key_manager()->StartInitialization();
 

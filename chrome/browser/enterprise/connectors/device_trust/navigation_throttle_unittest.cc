@@ -43,7 +43,6 @@
 
 using content::NavigationThrottle;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 
 namespace enterprise_connectors {
@@ -140,8 +139,8 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
         std::make_unique<FakeDeviceTrustConnectorService>(test_prefs_);
 
     ON_CALL(mock_device_trust_service_, Watches(_))
-        .WillByDefault(Invoke(
-            [this](const GURL& url) { return fake_connector_->Watches(url); }));
+        .WillByDefault(
+            [this](const GURL& url) { return fake_connector_->Watches(url); });
   }
 
   void CreateAndSetMockConsentRequester() {

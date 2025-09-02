@@ -34,7 +34,6 @@ using testing::_;
 using testing::ByMove;
 using testing::ElementsAre;
 using testing::InSequence;
-using testing::Invoke;
 using testing::Not;
 using testing::Pair;
 using testing::Return;
@@ -120,13 +119,13 @@ class KeyRotationManagerTest : public testing::Test {
   void SetUploadCode(HttpResponseCode response_code) {
     EXPECT_CALL(*mock_network_delegate_,
                 SendPublicKeyToDmServer(GURL(kDmServerUrl), kDmToken, _, _))
-        .WillOnce(Invoke(
-            [&, response_code](const GURL& url, const std::string& dm_token,
-                               const std::string& body,
-                               base::OnceCallback<void(int)> callback) {
-              captured_upload_body_ = body;
-              std::move(callback).Run(response_code);
-            }));
+        .WillOnce([&, response_code](const GURL& url,
+                                     const std::string& dm_token,
+                                     const std::string& body,
+                                     base::OnceCallback<void(int)> callback) {
+          captured_upload_body_ = body;
+          std::move(callback).Run(response_code);
+        });
   }
 
   void SetUpOldKey(bool exists = true) {
@@ -140,7 +139,7 @@ class KeyRotationManagerTest : public testing::Test {
       old_key_pair_.reset();
       EXPECT_CALL(*mock_persistence_delegate_,
                   LoadKeyPair(KeyStorageType::kPermanent, _))
-          .WillOnce(Invoke([]() { return nullptr; }));
+          .WillOnce([]() { return nullptr; });
     }
   }
 
@@ -156,8 +155,9 @@ class KeyRotationManagerTest : public testing::Test {
       EXPECT_CALL(*mock_persistence_delegate_, CreateKeyPair())
           .WillOnce(Return(new_key_pair_));
     } else {
-      EXPECT_CALL(*mock_persistence_delegate_, CreateKeyPair())
-          .WillOnce(Invoke([]() { return nullptr; }));
+      EXPECT_CALL(*mock_persistence_delegate_, CreateKeyPair()).WillOnce([]() {
+        return nullptr;
+      });
     }
   }
 

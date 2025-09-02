@@ -174,14 +174,14 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
        DataTransferPolicyController_Allowed) {
   PolicyControllerTest policy_controller;
   EXPECT_CALL(policy_controller, PasteIfAllowed)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [](base::optional_ref<const ui::DataTransferEndpoint> data_src,
              base::optional_ref<const ui::DataTransferEndpoint> data_dst,
              std::variant<size_t, std::vector<base::FilePath>> pasted_content,
              content::RenderFrameHost* rfh,
              base::OnceCallback<void(bool)> callback) {
             std::move(callback).Run(true);
-          }));
+          });
 
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
   PasteIfAllowedByPolicy(
@@ -200,14 +200,14 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
        DataTransferPolicyController_Blocked) {
   PolicyControllerTest policy_controller;
   EXPECT_CALL(policy_controller, PasteIfAllowed)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [](base::optional_ref<const ui::DataTransferEndpoint> data_src,
              base::optional_ref<const ui::DataTransferEndpoint> data_dst,
              std::variant<size_t, std::vector<base::FilePath>> pasted_content,
              content::RenderFrameHost* rfh,
              base::OnceCallback<void(bool)> callback) {
             std::move(callback).Run(false);
-          }));
+          });
 
   base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
   PasteIfAllowedByPolicy(

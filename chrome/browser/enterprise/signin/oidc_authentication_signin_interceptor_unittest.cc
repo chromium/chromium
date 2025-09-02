@@ -57,7 +57,6 @@
 #include "url/gurl.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::Return;
 
 using policy::MockCloudPolicyClient;
@@ -469,41 +468,41 @@ class OidcAuthenticationSigninInterceptorTest
           *mock_client_ptr,
           RegisterWithOidcResponse(_, kExampleOidcTokens.auth_token,
                                    kExampleOidcTokens.id_token, _, _, _, _))
-          .WillOnce(Invoke([&](const RegistrationParameters&,
-                               const std::string&, const std::string&,
-                               const std::string&, const base::TimeDelta&, bool,
-                               CloudPolicyClient::ResultCallback callback) {
+          .WillOnce([&](const RegistrationParameters&, const std::string&,
+                        const std::string&, const std::string&,
+                        const base::TimeDelta&, bool,
+                        CloudPolicyClient::ResultCallback callback) {
             mock_client_ptr->SetStatus(policy::DM_STATUS_TEMPORARY_UNAVAILABLE);
             mock_client_ptr->NotifyClientError();
             std::move(callback).Run(CloudPolicyClient::Result(
                 policy::DM_STATUS_TEMPORARY_UNAVAILABLE, /*net_error=*/1));
             register_run_loop.Quit();
-          }));
+          });
     } else if (expect_registration_attempt == RegistrationResult::kTimeout) {
       EXPECT_CALL(
           *mock_client_ptr,
           RegisterWithOidcResponse(_, kExampleOidcTokens.auth_token,
                                    kExampleOidcTokens.id_token, _, _, _, _))
-          .WillOnce(Invoke([&](const RegistrationParameters&,
-                               const std::string&, const std::string&,
-                               const std::string&, const base::TimeDelta&, bool,
-                               CloudPolicyClient::ResultCallback callback) {
+          .WillOnce([&](const RegistrationParameters&, const std::string&,
+                        const std::string&, const std::string&,
+                        const base::TimeDelta&, bool,
+                        CloudPolicyClient::ResultCallback callback) {
             mock_client_ptr->SetStatus(policy::DM_STATUS_TEMPORARY_UNAVAILABLE);
             mock_client_ptr->NotifyClientError();
             std::move(callback).Run(CloudPolicyClient::Result(
                 policy::DM_STATUS_TEMPORARY_UNAVAILABLE,
                 /*net_error=*/net::ERR_TIMED_OUT));
             register_run_loop.Quit();
-          }));
+          });
     } else if (expect_registration_attempt == RegistrationResult::kSuccess) {
       EXPECT_CALL(
           *mock_client_ptr,
           RegisterWithOidcResponse(_, kExampleOidcTokens.auth_token,
                                    kExampleOidcTokens.id_token, _, _, _, _))
-          .WillOnce(Invoke([&](const RegistrationParameters&,
-                               const std::string&, const std::string&,
-                               const std::string&, const base::TimeDelta&, bool,
-                               CloudPolicyClient::ResultCallback callback) {
+          .WillOnce([&](const RegistrationParameters&, const std::string&,
+                        const std::string&, const std::string&,
+                        const base::TimeDelta&, bool,
+                        CloudPolicyClient::ResultCallback callback) {
             mock_client_ptr->SetDMToken(kExampleDmToken);
             mock_client_ptr->SetStatus(policy::DM_STATUS_SUCCESS);
             mock_client_ptr->client_id_ = kExampleClientId;
@@ -518,7 +517,7 @@ class OidcAuthenticationSigninInterceptorTest
             std::move(callback).Run(CloudPolicyClient::Result(
                 policy::DM_STATUS_SUCCESS, /*net_error=*/0));
             register_run_loop.Quit();
-          }));
+          });
     }
 
     interceptor_->SetCloudPolicyClientForTesting(std::move(mock_client));
@@ -549,17 +548,17 @@ class OidcAuthenticationSigninInterceptorTest
             OidcProfileCreationResult::kSwitchedToExistingProfile) {
       EXPECT_CALL(*delegate_, ShowSigninInterceptionBubble(_, _, _))
           .Times(1)
-          .WillRepeatedly(Invoke(
+          .WillRepeatedly(
               [](content::WebContents*,
                  const WebSigninInterceptor::Delegate::BubbleParameters&,
                  base::OnceCallback<void(SigninInterceptionResult)> callback) {
                 std::move(callback).Run(SigninInterceptionResult::kAccepted);
                 return nullptr;
-              }));
+              });
     } else if (expect_dialog_to_show) {
       EXPECT_CALL(*delegate_, ShowOidcInterceptionDialog(_, _, _, _, _))
           .Times(1)
-          .WillRepeatedly(Invoke(
+          .WillRepeatedly(
               [&](content::WebContents*,
                   const WebSigninInterceptor::Delegate::BubbleParameters&,
                   signin::SigninChoiceWithConfirmAndRetryCallback callback,
@@ -569,7 +568,7 @@ class OidcAuthenticationSigninInterceptorTest
                     expected_operation_result);
                 fake_bubble_handle_ = fake_bubble_handle->AsWeakPtr();
                 return fake_bubble_handle;
-              }));
+              });
     } else {
       EXPECT_CALL(*delegate_, ShowOidcInterceptionDialog(_, _, _, _, _))
           .Times(0);
