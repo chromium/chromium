@@ -653,7 +653,7 @@ BlockLayoutAlgorithm::HandleNonsuccessfulLayoutResult(
 
 const LayoutResult* BlockLayoutAlgorithm::LayoutInlineChild(
     const InlineNode& node) {
-  float paragraph_scale = 1.0f;
+  ParagraphScale paragraph_scale;
   if (RuntimeEnabledFeatures::CssFitWidthTextConsistentEnabled()) {
     const bool grow_consistent =
         Style().TextGrow().Target() == FitTextTarget::kConsistent;
@@ -677,22 +677,22 @@ const LayoutResult* BlockLayoutAlgorithm::LayoutInlineChild(
       cloned_param.previous_result = previous_result_;
       BlockLayoutAlgorithm cloned_algorithm(cloned_param);
       const LayoutResult* result =
-          cloned_algorithm.LayoutInlineChild(node, std::nullopt);
+          cloned_algorithm.LayoutInlineChild(node, nullptr);
       paragraph_scale = MeasurePerBlockScale(
           InlineNode(To<LayoutBlockFlow>(Node().GetLayoutBox())),
           result->GetPhysicalFragment(), ChildAvailableSize().inline_size);
-      if ((paragraph_scale < 1.0f && !shrink_consistent) ||
-          (paragraph_scale > 1.0f && !grow_consistent)) {
-        paragraph_scale = 1.0f;
+      if ((paragraph_scale.scale < 1.0f && !shrink_consistent) ||
+          (paragraph_scale.scale > 1.0f && !grow_consistent)) {
+        paragraph_scale = ParagraphScale();
       }
     }
   }
-  return LayoutInlineChild(node, paragraph_scale);
+  return LayoutInlineChild(node, &paragraph_scale);
 }
 
 NOINLINE const LayoutResult* BlockLayoutAlgorithm::LayoutInlineChild(
     const InlineNode& node,
-    std::optional<float> paragraph_scale) {
+    const ParagraphScale* paragraph_scale) {
   const TextWrapStyle wrap = node.Style().GetTextWrapStyle();
   if (wrap == TextWrapStyle::kPretty) [[unlikely]] {
     UseCounter::Count(node.GetDocument(), WebFeature::kTextWrapPretty);
@@ -719,7 +719,7 @@ template <wtf_size_t capacity>
 NOINLINE const LayoutResult*
 BlockLayoutAlgorithm::LayoutWithOptimalInlineChildLayoutContext(
     const InlineNode& child,
-    std::optional<float> paragraph_scale) {
+    const ParagraphScale* paragraph_scale) {
   OptimalInlineChildLayoutContext<capacity> context(child, &container_builder_);
   context.EnableMeasuringModeIfNecessary(paragraph_scale);
   return Layout(&context);

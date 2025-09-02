@@ -160,16 +160,16 @@ bool ShouldApplyFitText(const InlineNode node) {
   return apply_text_grow || apply_text_shrink;
 }
 
-float MeasurePerBlockScale(const InlineNode node,
-                           const PhysicalFragment& fragment,
-                           LayoutUnit available_width) {
+ParagraphScale MeasurePerBlockScale(const InlineNode node,
+                                    const PhysicalFragment& fragment,
+                                    LayoutUnit available_width) {
   const auto* box_fragment = DynamicTo<PhysicalBoxFragment>(fragment);
   if (!box_fragment) {
-    return 1.0f;
+    return ParagraphScale();
   }
   const auto* items = box_fragment->Items();
   if (!items) {
-    return 1.0f;
+    return ParagraphScale();
   }
 
   LayoutUnit epsilon(2.0 * node.GetDocument().GetFrame()->DevicePixelRatio());
@@ -200,7 +200,7 @@ float MeasurePerBlockScale(const InlineNode node,
   const FitText& fit_text =
       is_grow ? node.Style().TextGrow() : node.Style().TextShrink();
   if (fit_text.Target() != FitTextTarget::kConsistent) {
-    return 1.0f;
+    return ParagraphScale();
   }
   for (InlineCursor cursor(*box_fragment, *items); cursor;
        cursor.MoveToNextSkippingChildren()) {
@@ -253,7 +253,9 @@ float MeasurePerBlockScale(const InlineNode node,
     // TODO(crbug.com/417306102): Respect to fit_text.SizeLimit().
     minimum_scale = std::min(minimum_scale, scale);
   }
-  return std::isfinite(minimum_scale) ? minimum_scale : 1.0f;
+  // TODO(crbug.com/417306102): Compute additional_paint_time_scale for the
+  // font-size method.
+  return {std::isfinite(minimum_scale) ? minimum_scale : 1.0f, 1.0f};
 }
 
 LineFitter::LineFitter(const InlineNode node, LineInfo* line_info)
@@ -313,7 +315,7 @@ float LineFitter::MeasureScale() {
 }
 
 bool LineFitter::FitLine(float scale_factor,
-                         std::optional<float> adjusting_scale) {
+                         std::optional<float> additional_paint_time_scale) {
   const bool is_grow = scale_factor > 1.0f;
   const FitText& fit_text =
       is_grow ? node_.Style().TextGrow() : node_.Style().TextShrink();
@@ -367,10 +369,10 @@ bool LineFitter::FitLine(float scale_factor,
       // scaling for an item was restricted by specifying a minimum or maximum
       // value.
       if (!restricted) {
-        if (adjusting_scale) {
+        if (additional_paint_time_scale) {
           // FitTextTarget::kConsistent case:
-          if (*adjusting_scale != 1.0f) {
-            ScaleLine(is_grow, *adjusting_scale,
+          if (*additional_paint_time_scale != 1.0f) {
+            ScaleLine(is_grow, *additional_paint_time_scale,
                       /* is_scaled_inline_only */ false, limit, line_info_);
           }
         } else {
