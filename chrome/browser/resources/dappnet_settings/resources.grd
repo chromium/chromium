@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit latest_public_release="0" current_release="1">
+  <outputs>
+    <output filename="grit/dappnet_settings_resources.h" type="rc_header">
+      <emit emit_type="prepend"></emit>
+    </output>
+    <output filename="grit/dappnet_settings_resources_map.cc" type="resource_map_source" />
+    <output filename="grit/dappnet_settings_resources_map.h" type="resource_map_header" />
+    <output filename="dappnet_settings_resources.pak" type="data_package" />
+  </outputs>
+  <release seq="1">
+    <includes>
+      <include name="IDR_DAPPNET_SETTINGS_HTML" 
+               file="dappnet_settings.html" resource_path="dappnet_settings.html" type="BINDATA" />
+      <include name="IDR_DAPPNET_SETTINGS_JS" 
+               file="dappnet_settings.js" resource_path="dappnet_settings.js" type="BINDATA" />
+      <include name="IDR_DAPPNET_SETTINGS_CSS" 
+               file="dappnet_settings.css" resource_path="dappnet_settings.css" type="BINDATA" />
+      <include name="IDR_DAPPNET_SETTINGS_API_JS" 
+               file="dappnet_settings_api.js" resource_path="dappnet_settings_api.js" type="BINDATA" />
+    </includes>
+  </release>
+</grit>

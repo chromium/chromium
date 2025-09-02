@@ -4,10 +4,22 @@ source_set("dappnet") {
   sources = [
     "dappnet_service_launcher.cc",
     "dappnet_service_launcher.h",
+    "ipfs_controller.cc",
+    "ipfs_controller.h",
+    "local_gateway_controller.cc",
+    "local_gateway_controller.h",
+    "process_controller.cc",
+    "process_controller.h",
   ]
 
   deps = [
     "//base",
     "//build:branding_buildflags",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//components/prefs",
+    "//net",
+    "//services/network/public/cpp",
+    "//url",
   ]
 }

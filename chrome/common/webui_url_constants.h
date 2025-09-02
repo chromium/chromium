@@ -75,6 +75,8 @@ inline constexpr char kChromeUIColorPipelineInternalsURL[] =
     "chrome://color-pipeline-internals";
 inline constexpr char kChromeUIComponentsHost[] = "components";
 inline constexpr char kChromeUIComponentsUrl[] = "chrome://components";
+inline constexpr char kChromeUIDappnetHost[] = "dappnet";
+inline constexpr char kChromeUIDappnetURL[] = "chrome://dappnet/";
 inline constexpr char kChromeUIConflictsHost[] = "conflicts";
 inline constexpr char kChromeUIConnectorsInternalsHost[] =
     "connectors-internals";

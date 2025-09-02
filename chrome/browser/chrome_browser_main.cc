@@ -1337,7 +1337,7 @@ void ChromeBrowserMainParts::PreBrowserStart() {
     chrome_extra_part->PreBrowserStart();
 
   // Start DappNet service early so it's available before user can type domains
-  chrome::GetDappNetServiceLauncher()->Start();
+  // DISABLED FOR UI DEMO: chrome::GetDappNetServiceLauncher()->Start();
 
 #if !BUILDFLAG(IS_ANDROID)
   // Start the tab manager here so that we give the most amount of time for the
@@ -1847,7 +1847,7 @@ void ChromeBrowserMainParts::PostMainMessageLoopRun() {
   web_usb_detector_.reset();
 
   // Stop DappNet service during shutdown
-  chrome::GetDappNetServiceLauncher()->Stop();
+  // DISABLED FOR UI DEMO: chrome::GetDappNetServiceLauncher()->Stop();
 
   for (auto& chrome_extra_part : chrome_extra_parts_)
     chrome_extra_part->PostMainMessageLoopRun();

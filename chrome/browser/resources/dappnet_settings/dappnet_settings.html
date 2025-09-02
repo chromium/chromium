@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Dappnet Settings</title>
+  <link rel="stylesheet" href="chrome://resources/css/chrome_shared.css">
+  <link rel="stylesheet" href="dappnet_settings.css">
+</head>
+<body>
+  <div class="header">
+    <h1>Dappnet Settings</h1>
+    <p class="subtitle">Configure Ethereum RPC endpoints, local gateway, and IPFS daemon</p>
+  </div>
+
+  <div class="main-content">
+    <div class="section" id="rpc-section">
+      <div class="section-header">
+        <h2>Ethereum RPC Endpoints</h2>
+        <button id="add-rpc-btn" class="primary-button">Add Endpoint</button>
+      </div>
+      <div id="rpc-endpoints-list" class="endpoints-list">
+        <div class="loading-placeholder">Loading endpoints...</div>
+      </div>
+    </div>
+
+    <div class="section" id="gateway-section">
+      <div class="section-header">
+        <h2>Local Gateway</h2>
+        <div class="status-indicator" id="gateway-status">
+          <span class="status-dot"></span>
+          <span class="status-text">Unknown</span>
+        </div>
+      </div>
+      <div class="process-controls">
+        <div class="process-info">
+          <div class="info-item">
+            <label>Port:</label>
+            <span id="gateway-port">-</span>
+          </div>
+          <div class="info-item">
+            <label>PID:</label>
+            <span id="gateway-pid">-</span>
+          </div>
+        </div>
+        <div class="control-buttons">
+          <button id="start-gateway-btn">Start</button>
+          <button id="stop-gateway-btn">Stop</button>
+          <button id="restart-gateway-btn">Restart</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="ipfs-section">
+      <div class="section-header">
+        <h2>IPFS Daemon</h2>
+        <div class="status-indicator" id="ipfs-status">
+          <span class="status-dot"></span>
+          <span class="status-text">Unknown</span>
+        </div>
+      </div>
+      <div class="process-controls">
+        <div class="process-info">
+          <div class="info-item">
+            <label>API Port:</label>
+            <span id="ipfs-api-port">-</span>
+          </div>
+          <div class="info-item">
+            <label>Gateway Port:</label>
+            <span id="ipfs-gateway-port">-</span>
+          </div>
+          <div class="info-item">
+            <label>Peers:</label>
+            <span id="ipfs-peer-count">-</span>
+          </div>
+        </div>
+        <div class="control-buttons">
+          <button id="start-ipfs-btn">Start</button>
+          <button id="stop-ipfs-btn">Stop</button>
+          <button id="restart-ipfs-btn">Restart</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add RPC Endpoint Modal -->
+  <div id="add-rpc-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add RPC Endpoint</h3>
+        <button class="close-button" id="close-modal">&times;</button>
+      </div>
+      <form id="add-rpc-form">
+        <div class="form-group">
+          <label for="rpc-name">Name:</label>
+          <input type="text" id="rpc-name" name="name" required 
+                 placeholder="e.g. Mainnet, Goerli">
+        </div>
+        <div class="form-group">
+          <label for="rpc-url">URL:</label>
+          <input type="url" id="rpc-url" name="url" required 
+                 placeholder="https://mainnet.infura.io/v3/YOUR-PROJECT-ID">
+        </div>
+        <div class="form-group">
+          <label for="rpc-chain-id">Chain ID:</label>
+          <input type="number" id="rpc-chain-id" name="chainId" required 
+                 placeholder="1 for Mainnet, 5 for Goerli">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="secondary-button" id="cancel-btn">Cancel</button>
+          <button type="button" id="test-connection-btn" class="secondary-button">Test Connection</button>
+          <button type="submit" class="primary-button">Add Endpoint</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Notification container -->
+  <div id="notifications" class="notifications-container"></div>
+
+  <script type="module" src="dappnet_settings_api.js"></script>
+  <script type="module" src="dappnet_settings.js"></script>
+</body>
+</html>

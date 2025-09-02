@@ -1,0 +1,50 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module dappnet.mojom;
+
+struct RpcEndpoint {
+  string id;
+  string url;
+  string name;
+  int32 chain_id;
+  bool is_default;
+};
+
+struct GatewayStatus {
+  bool is_running;
+  int32 port;
+  int32 pid;
+  string error_message;
+};
+
+struct IpfsStatus {
+  bool is_running;
+  int32 api_port;
+  int32 gateway_port;
+  int32 peer_count;
+};
+
+// Interface for managing Dappnet settings from the WebUI.
+interface DappnetSettingsHandler {
+  // RPC Management
+  GetRpcEndpoints() => (array<RpcEndpoint> endpoints);
+  AddRpcEndpoint(RpcEndpoint endpoint) => (bool success, string error);
+  UpdateRpcEndpoint(string id, RpcEndpoint endpoint) => (bool success);
+  RemoveRpcEndpoint(string id) => (bool success);
+  TestRpcConnection(string url) => (bool connected, string error);
+  SetDefaultRpc(string id) => (bool success);
+  
+  // Gateway Control
+  GetGatewayStatus() => (GatewayStatus status);
+  StartGateway() => (bool success, string error);
+  StopGateway() => (bool success);
+  RestartGateway() => (bool success, string error);
+  
+  // IPFS Control
+  GetIpfsStatus() => (IpfsStatus status);
+  StartIpfs() => (bool success, string error);
+  StopIpfs() => (bool success);
+  RestartIpfs() => (bool success, string error);
+};

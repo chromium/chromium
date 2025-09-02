@@ -1,0 +1,19 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("dappnet") {
+  sources = [
+    "dappnet_settings_ui.cc",
+    "dappnet_settings_ui.h",
+  ]
+  
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//chrome/browser/resources/dappnet_settings:resources",
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+}
