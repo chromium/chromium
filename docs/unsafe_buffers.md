@@ -17,7 +17,7 @@ When an unsafe usage is detected, Clang prints a warning similar to
 error: unsafe buffer access [-Werror,-Wunsafe-buffer-usage]
 ```
 and directs developers to this file for more information. Several common
-[Techniques](#container-based-ecosystem) for fixing these issues are presented
+[Techniques](#container_based-ecosystem) for fixing these issues are presented
 later in this document.
 
 Clang documentation includes a guide to working with unsafe-buffer-usage
