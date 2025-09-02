@@ -23,10 +23,10 @@ component("native_theme") {
     "overlay_scrollbar_constants.h",
   ]
 
-  if (is_android) {
+  if (is_android || is_ios) {
     sources += [
-      "native_theme_android.cc",
-      "native_theme_android.h",
+      "native_theme_mobile.cc",
+      "native_theme_mobile.h",
     ]
   }
 
@@ -43,13 +43,6 @@ component("native_theme") {
       "native_theme_mac.mm",
       "scrollbar_animator_mac.cc",
       "scrollbar_animator_mac.h",
-    ]
-  }
-
-  if (is_ios) {
-    sources += [
-      "native_theme_ios.h",
-      "native_theme_ios.mm",
     ]
   }
 
