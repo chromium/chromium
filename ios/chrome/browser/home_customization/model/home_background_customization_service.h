@@ -202,7 +202,7 @@ class HomeBackgroundCustomizationService : public KeyedService {
   void ClearCurrentUserUploadedBackground();
 
   // Return whether the NTP custom background is disabled by enterprise policy.
-  bool IsCustomizationDisabledByPolicy();
+  bool IsCustomizationDisabledOrColorManagedByPolicy();
 
  private:
   // Alerts observers when the background changes.

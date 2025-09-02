@@ -213,7 +213,7 @@ CGFloat const kSheetCornerRadius = 30;
       self.mainViewController.mutator = _mediator;
       self.mainViewController.searchEngineLogoMediatorProvider = self;
       self.mainViewController.customizationDisabledByPolicy =
-          _backgroundService->IsCustomizationDisabledByPolicy();
+          _backgroundService->IsCustomizationDisabledOrColorManagedByPolicy();
       self.mediator.mainPageConsumer = self.mainViewController;
       [self.mediator configureMainPageData];
       menuPage = self.mainViewController;

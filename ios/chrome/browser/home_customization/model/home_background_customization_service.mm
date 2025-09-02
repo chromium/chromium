@@ -13,6 +13,7 @@
 #import "base/logging.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
+#import "components/sync/protocol/theme_specifics.pb.h"
 #import "components/sync/protocol/theme_types.pb.h"
 #import "components/themes/pref_names.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_observer.h"
@@ -83,6 +84,16 @@ HomeBackgroundCustomizationService::HomeBackgroundCustomizationService(
   pref_change_registrar_.Add(prefs::kNTPCustomBackgroundEnabledByPolicy,
                              callback);
 
+  // If the theme color is managed by an enterprise policy, this takes
+  // precedence over any user-selected theme. The background is set to the
+  // policy-defined color.
+  if (pref_service_->IsManagedPreference(themes::prefs::kPolicyThemeColor)) {
+    SetBackgroundColor(
+        pref_service_->GetInteger(themes::prefs::kPolicyThemeColor),
+        sync_pb::UserColorTheme_BrowserColorVariant_TONAL_SPOT);
+    return;
+  }
+
   LoadCurrentTheme();
 
   const base::Value::List& recently_used_backgrounds_list =
@@ -149,7 +160,8 @@ void HomeBackgroundCustomizationService::RegisterProfilePrefs(
 
 std::optional<HomeCustomBackground>
 HomeBackgroundCustomizationService::GetCurrentCustomBackground() {
-  if (IsCustomizationDisabledByPolicy()) {
+  // If customization is disabled by policy, no custom background is available.
+  if (IsCustomizationDisabledOrColorManagedByPolicy()) {
     return std::nullopt;
   }
 
@@ -163,7 +175,8 @@ HomeBackgroundCustomizationService::GetCurrentCustomBackground() {
 
 std::optional<sync_pb::NtpCustomBackground>
 HomeBackgroundCustomizationService::GetCurrentNtpCustomBackground() {
-  if (IsCustomizationDisabledByPolicy()) {
+  // If customization is disabled by policy, no custom background is available.
+  if (IsCustomizationDisabledOrColorManagedByPolicy()) {
     return std::nullopt;
   }
 
@@ -175,7 +188,8 @@ HomeBackgroundCustomizationService::GetCurrentNtpCustomBackground() {
 
 std::optional<sync_pb::UserColorTheme>
 HomeBackgroundCustomizationService::GetCurrentColorTheme() {
-  if (IsCustomizationDisabledByPolicy()) {
+  // If customization is disabled by policy, no color theme is available.
+  if (!pref_service_->GetBoolean(prefs::kNTPCustomBackgroundEnabledByPolicy)) {
     return std::nullopt;
   }
 
@@ -206,6 +220,10 @@ void HomeBackgroundCustomizationService::SetCurrentBackground(
     return;
   }
 
+  if (IsCustomizationDisabledOrColorManagedByPolicy()) {
+    return;
+  }
+
   sync_pb::NtpCustomBackground new_background;
   new_background.set_url(background_url.spec());
   new_background.set_attribution_line_1(attribution_line_1);
@@ -225,6 +243,10 @@ void HomeBackgroundCustomizationService::SetBackgroundColor(
     SkColor color,
     sync_pb::UserColorTheme::BrowserColorVariant color_variant) {
   if (!IsNTPBackgroundCustomizationEnabled()) {
+    return;
+  }
+
+  if (!pref_service_->GetBoolean(prefs::kNTPCustomBackgroundEnabledByPolicy)) {
     return;
   }
 
@@ -284,6 +306,13 @@ void HomeBackgroundCustomizationService::StoreCurrentTheme() {
   if (!IsNTPBackgroundCustomizationEnabled()) {
     return;
   }
+
+  // Recently used backgrounds list if not updated if an entreprise policy for
+  // ntp customization is enabled.
+  if (IsCustomizationDisabledOrColorManagedByPolicy()) {
+    return;
+  }
+
   // Only update recently used backgrounds list if the background is not
   // default.
   std::optional<RecentlyUsedBackgroundInternal> new_recent_background =
@@ -313,6 +342,7 @@ void HomeBackgroundCustomizationService::StoreRecentlyUsedBackgroundsList() {
   if (!IsNTPBackgroundCustomizationEnabled()) {
     return;
   }
+
   base::Value::List recently_used_backgrounds_list;
   for (const RecentlyUsedBackgroundInternal& background :
        base::Reversed(recently_used_backgrounds_)) {
@@ -344,11 +374,6 @@ void HomeBackgroundCustomizationService::LoadCurrentTheme() {
   if (!IsNTPBackgroundCustomizationEnabled()) {
     return;
   }
-
-  if (IsCustomizationDisabledByPolicy()) {
-    return;
-  }
-
   current_theme_ = DecodeThemeSpecificsIos(
       pref_service_->GetString(prefs::kIosSavedThemeSpecificsIos));
 
@@ -386,6 +411,11 @@ void HomeBackgroundCustomizationService::SetCurrentUserUploadedBackground(
   if (!IsNTPBackgroundCustomizationEnabled()) {
     return;
   }
+
+  if (IsCustomizationDisabledOrColorManagedByPolicy()) {
+    return;
+  }
+
   HomeUserUploadedBackground background;
   background.image_path = image_path;
   background.framing_coordinates = framing_coordinates;
@@ -404,7 +434,8 @@ void HomeBackgroundCustomizationService::ClearCurrentUserUploadedBackground() {
   current_user_uploaded_background_ = std::nullopt;
 }
 
-bool HomeBackgroundCustomizationService::IsCustomizationDisabledByPolicy() {
+bool HomeBackgroundCustomizationService::
+    IsCustomizationDisabledOrColorManagedByPolicy() {
   return !pref_service_->GetBoolean(
              prefs::kNTPCustomBackgroundEnabledByPolicy) ||
          pref_service_->IsManagedPreference(themes::prefs::kPolicyThemeColor);
@@ -534,11 +565,23 @@ void HomeBackgroundCustomizationService::OnPolicyPrefsChanged(
     const std::string& name) {
   CHECK(themes::prefs::kPolicyThemeColor == name ||
         prefs::kNTPCustomBackgroundEnabledByPolicy == name);
-  if (IsCustomizationDisabledByPolicy()) {
+
+  // If the policy to enable custom backgrounds is set to false, clear any
+  // existing background and disable further customization.
+  if (!pref_service_->GetBoolean(prefs::kNTPCustomBackgroundEnabledByPolicy)) {
     ClearCurrentBackground();
     return;
   }
 
+  // If a theme color is enforced by policy, set the background to that color.
+  if (pref_service_->IsManagedPreference(themes::prefs::kPolicyThemeColor)) {
+    SetBackgroundColor(
+        pref_service_->GetInteger(themes::prefs::kPolicyThemeColor),
+        sync_pb::UserColorTheme_BrowserColorVariant_TONAL_SPOT);
+    return;
+  }
+
+  // If policies are removed, restore the user's previously selected theme.
   RestoreCurrentTheme();
   NotifyObserversOfBackgroundChange();
 }

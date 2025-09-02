@@ -94,7 +94,7 @@
   [self.mainPageConsumer populateToggles:toggleMap];
 
   if (IsNTPBackgroundCustomizationEnabled() &&
-      !_backgroundService->IsCustomizationDisabledByPolicy()) {
+      !_backgroundService->IsCustomizationDisabledOrColorManagedByPolicy()) {
     BackgroundCollectionConfiguration* collectionConfiguration =
         [[BackgroundCollectionConfiguration alloc] init];
 
