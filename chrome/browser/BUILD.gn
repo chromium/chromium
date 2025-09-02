@@ -1845,6 +1845,10 @@ static_library("browser") {
     # TODO(crbug.com/): Remove this circular dependency when
     # c/b/net/system_network_context_manager.h gets componentized.
     "//chrome/browser/assist_ranker:impl",
+
+    # TODO(crbug.com/353332589): Remove once profile_manager.h has been moved
+    # into the //chrome/browser/profiles target.
+    "//chrome/browser/regional_capabilities:metrics_provider_impl",
   ]
 
   public_deps = [
@@ -1987,6 +1991,8 @@ static_library("browser") {
     "//chrome/browser/profiling_host",
     "//chrome/browser/promos:utils",
     "//chrome/browser/reading_list",
+    "//chrome/browser/regional_capabilities",
+    "//chrome/browser/regional_capabilities:metrics_provider_impl",
     "//chrome/browser/resource_coordinator:tab_manager_features",
     "//chrome/browser/resources/accessibility:resources",
     "//chrome/browser/safe_browsing",
