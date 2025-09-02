@@ -114,6 +114,9 @@ class ContentsContainerView : public views::View,
   void ShowCaptureContentsBorder(std::optional<gfx::Rect> border_location);
   void HideCaptureContentsBorder();
 
+  // Returns the contents_view bounds including ntp footer.
+  gfx::Rect GetContentsViewBounds() const;
+
  private:
   void CreateCaptureContentsBorder();
   void UpdateCaptureContentsBorderLocation();

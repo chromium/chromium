@@ -297,16 +297,9 @@ void ContentsContainerView::ApplyWatermarkSettings(
 
 void ContentsContainerView::UpdateDevToolsDockedPlacement() {
   DevToolsDockedPlacement placement = DevToolsDockedPlacement::kUnknown;
-  gfx::Rect contents_view_bounds = contents_view_->bounds();
-  // Include ntp footer bounds so that we don't mistakenly believe devtools is
-  // bottom docked when the footer is showing.
-  if (new_tab_footer_view_ && new_tab_footer_view_->GetVisible()) {
-    CHECK(new_tab_footer_view_separator_);
-    contents_view_bounds.set_height(contents_view_bounds.height() +
-                                    new_tab_footer_view_->height() +
-                                    new_tab_footer_view_separator_->height());
-  }
+  gfx::Rect contents_view_bounds = GetContentsViewBounds();
   const gfx::Rect& container_bounds = GetContentsBounds();
+
   // If contents_webview has the same bounds as webview_container, it either
   // means that devtools are not open or devtools are open in a separate
   // window (not docked).
@@ -349,6 +342,18 @@ void ContentsContainerView::HideCaptureContentsBorder() {
   if (capture_contents_border_widget_) {
     capture_contents_border_widget_->Hide();
   }
+}
+
+gfx::Rect ContentsContainerView::GetContentsViewBounds() const {
+  gfx::Rect contents_view_bounds = contents_view_->bounds();
+  if (new_tab_footer_view_ && new_tab_footer_view_->GetVisible()) {
+    CHECK(new_tab_footer_view_separator_);
+    contents_view_bounds.set_height(contents_view_bounds.height() +
+                                    new_tab_footer_view_->height() +
+                                    new_tab_footer_view_separator_->height());
+  }
+
+  return contents_view_bounds;
 }
 
 void ContentsContainerView::CreateCaptureContentsBorder() {
