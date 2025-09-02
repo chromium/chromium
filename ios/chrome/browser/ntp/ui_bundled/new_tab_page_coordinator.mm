@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_coordinator.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import "base/feature_list.h"
 #import "base/metrics/field_trial_params.h"
 #import "base/metrics/histogram_functions.h"
@@ -133,6 +131,7 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
+#import "ios/chrome/browser/snackbar/public/snackbar_message.h"
 #import "ios/chrome/browser/supervised_user/model/family_link_user_capabilities_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/fakebox_focuser.h"
@@ -1854,10 +1853,10 @@
 - (void)showSignInDisableMessage {
   id<SnackbarCommands> handler =
       static_cast<id<SnackbarCommands>>(self.browser->GetCommandDispatcher());
-  MDCSnackbarMessage* message = CreateSnackbarMessage(l10n_util::GetNSString(
+  SnackbarMessage* message = CreateCustomSnackbarMessage(l10n_util::GetNSString(
       IDS_IOS_NTP_FEED_SIGNIN_PROMO_DISABLE_SNACKBAR_MESSAGE));
 
-  [handler showSnackbarMessage:message];
+  [handler showCustomSnackbarMessage:message];
 }
 
 // Saves the state of the NTP associated with `self.webState`.
