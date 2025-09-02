@@ -6,6 +6,7 @@
 #define UI_GFX_GEOMETRY_INSETS_OUTSETS_F_BASE_H_
 
 #include <string>
+#include <utility>
 
 #include "base/component_export.h"
 
@@ -34,6 +35,13 @@ class InsetsOutsetsFBase {
 
   // Returns true if the insets/outsets are empty.
   bool IsEmpty() const { return width() == 0.f && height() == 0.f; }
+
+  // Flips x- and y-axes.
+  void Transpose() {
+    using std::swap;
+    swap(top_, left_);
+    swap(bottom_, right_);
+  }
 
   // These setters can be used together with the default constructor and the
   // single-parameter constructor to construct InsetsF instances, for example:
