@@ -119,6 +119,7 @@ component("gtk") {
   deps = [
     ":gtk_stubs",
     "//base",
+    "//cc/paint",
     "//printing/buildflags",
     "//skia",
 

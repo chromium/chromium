@@ -672,8 +672,7 @@ void GtkUi::SetDarkTheme(bool dark) {
   auto* settings = gtk_settings_get_default();
   g_object_set(settings, "gtk-application-prefer-dark-theme", dark, nullptr);
   // OnThemeChanged() will be called via the
-  // notify::gtk-application-prefer-dark-theme handler to update the native
-  // theme.
+  // notify::gtk-application-prefer-dark-theme handler to update the colors.
 }
 
 void GtkUi::SetAccentColor(std::optional<SkColor> accent_color) {
@@ -920,10 +919,7 @@ void GtkUi::LoadGtkValues() {
   // we'd regress startup time. Figure out how to do that when we can't access
   // the prefs system from here.
   UpdateDeviceScaleFactor();
-  UpdateColors();
-}
 
-void GtkUi::UpdateColors() {
   // TODO(tluk): The below code sets various ThemeProvider colors for GTK. Some
   // of these definitions leverage colors that were previously defined by
   // NativeThemeGtk and are now defined as GTK ColorMixers. These ThemeProvider

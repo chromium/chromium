@@ -5,23 +5,26 @@
 #include "ui/gtk/native_theme_gtk.h"
 
 #include <algorithm>
+#include <string>
+#include <utility>
 
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "cc/paint/paint_canvas.h"
+#include "cc/paint/paint_flags.h"
+#include "cc/paint/paint_image.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/models/menu_separator_types.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
-#include "ui/color/color_provider_manager.h"
-#include "ui/gfx/color_palette.h"
+#include "ui/color/system_theme.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
-#include "ui/gtk/gtk_color_mixers.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_util.h"
-#include "ui/native_theme/native_theme_aura.h"
-#include "ui/native_theme/native_theme_utils.h"
+#include "ui/native_theme/native_theme_base.h"
 
 using base::StrCat;
 

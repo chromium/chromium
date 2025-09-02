@@ -142,10 +142,6 @@ class GtkUi : public ui::LinuxUiAndTheme {
   // Loads all GTK-provided settings.
   void LoadGtkValues();
 
-  // Extracts colors and tints from the GTK theme, both for the
-  // ThemeService interface and the colors we send to Blink.
-  void UpdateColors();
-
   // Listen for scale factor changes on `monitor`.
   void TrackMonitor(GdkMonitor* monitor);
 
