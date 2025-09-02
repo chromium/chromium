@@ -399,11 +399,6 @@ bool OffTheRecordProfileImpl::IsChild() const {
   return profile_->IsChild();
 }
 
-bool OffTheRecordProfileImpl::AllowsBrowserWindows() const {
-  return profile_->AllowsBrowserWindows() &&
-         otr_profile_id_->AllowsBrowserWindows();
-}
-
 PrefService* OffTheRecordProfileImpl::GetPrefs() {
   return prefs_.get();
 }

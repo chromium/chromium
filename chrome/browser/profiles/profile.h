@@ -288,9 +288,10 @@ class Profile : public content::BrowserContext {
   // Use `supervised_user::IsSubjectToParentalControls()` instead.
   virtual bool IsChild() const = 0;
 
-  // Returns whether opening browser windows is allowed in this profile. For
-  // example, browser windows are not allowed in Sign-in profile on Chrome OS.
-  virtual bool AllowsBrowserWindows() const = 0;
+  // Returns whether opening Browser windows is supported by this profile. For
+  // example, Browser windows are not allowed in Sign-in profile on Chrome OS.
+  // This condition is fixed for a given profile instance.
+  bool AllowsBrowserWindows() const;
 
   // Accessor. The instance is created upon first access.
   virtual ExtensionSpecialStoragePolicy*
@@ -518,6 +519,10 @@ class Profile : public content::BrowserContext {
   // Returns whether the user has signed in this profile to an account.
   virtual bool IsSignedIn() = 0;
 
+  void set_allows_browser_windows_for_testing(bool allows_browser_windows) {
+    allows_browser_windows_for_testing_ = allows_browser_windows;
+  }
+
   const std::optional<OTRProfileID> otr_profile_id_;
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -538,6 +543,10 @@ class Profile : public content::BrowserContext {
   // increment and decrement the level, respectively, rather than set it to
   // true or false, so that calls can be nested.
   int accessibility_pause_level_ = 0;
+
+  // Optional test param that allows tests to override the behavior of
+  // `AllowsBrowserWindows()`
+  std::optional<bool> allows_browser_windows_for_testing_;
 
   // Experimental objects to gauge the performance of caching frequently used
   // KeyedServices in a Profile pointer.

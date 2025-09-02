@@ -558,7 +558,6 @@ Browser::CreationStatus Browser::GetCreationStatusForProfile(Profile* profile) {
   }
 
   if (!IncognitoModePrefs::CanOpenBrowser(profile) ||
-      (profile->IsGuestSession() && !profile->IsOffTheRecord()) ||
       !profile->AllowsBrowserWindows() ||
       IsProfileDirectoryMarkedForDeletion(profile->GetPath())) {
     return CreationStatus::kErrorProfileUnsuitable;

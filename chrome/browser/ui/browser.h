@@ -372,7 +372,10 @@ class Browser : public TabStripModelObserver,
   static std::unique_ptr<Browser> DeprecatedCreateOwnedForTesting(
       const CreateParams& params);
 
-  // Returns whether a browser window can be created for the specified profile.
+  // Returns whether a browser window can currently be created for the specified
+  // profile. This condition may change during runtime for a given `profile`
+  // (e.g. a profile may support Browser windows but creating a Browser is
+  // disallowed during shutdown).
   static CreationStatus GetCreationStatusForProfile(Profile* profile);
 
   Browser(const Browser&) = delete;

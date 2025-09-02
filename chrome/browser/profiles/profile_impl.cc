@@ -1056,15 +1056,6 @@ bool ProfileImpl::IsChild() const {
          supervised_user::kChildAccountSUID;
 }
 
-bool ProfileImpl::AllowsBrowserWindows() const {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (ash::ProfileHelper::IsSigninProfile(this)) {
-    return false;
-  }
-#endif
-  return !IsSystemProfile();
-}
-
 ExtensionSpecialStoragePolicy* ProfileImpl::GetExtensionSpecialStoragePolicy() {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (!extension_special_storage_policy_.get()) {

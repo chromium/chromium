@@ -386,7 +386,6 @@ class TestingProfile : public Profile {
   Profile* GetOriginalProfile() override;
   const Profile* GetOriginalProfile() const override;
   bool IsChild() const override;
-  bool AllowsBrowserWindows() const override;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   void SetExtensionSpecialStoragePolicy(
       scoped_refptr<ExtensionSpecialStoragePolicy>
@@ -502,8 +501,6 @@ class TestingProfile : public Profile {
   raw_ptr<TestingProfile> original_profile_ = nullptr;
 
   bool guest_session_ = false;
-
-  bool allows_browser_windows_ = true;
 
   bool is_new_profile_ = false;
 

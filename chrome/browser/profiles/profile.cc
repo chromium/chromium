@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -537,6 +538,31 @@ const Profile::OTRProfileID& Profile::GetOTRProfileID() const {
 
 bool Profile::HasPrimaryOTRProfile() {
   return HasOffTheRecordProfile(OTRProfileID::PrimaryID());
+}
+
+bool Profile::AllowsBrowserWindows() const {
+  if (allows_browser_windows_for_testing_.has_value()) {
+    CHECK_IS_TEST();
+    return allows_browser_windows_for_testing_.value();
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Do not allow Browsers on signin-derived profiles.
+  if (ash::IsSigninBrowserContext(GetOriginalProfile())) {
+    return false;
+  }
+#endif
+  // Only OTR Browsers may be opened in guest mode.
+  if (IsGuestSession() && !IsOffTheRecord()) {
+    return false;
+  }
+
+  // Some OTR profiles are not allowed to open Browsers.
+  if (otr_profile_id_.has_value() && !otr_profile_id_->AllowsBrowserWindows()) {
+    return false;
+  }
+
+  return !IsSystemProfile();
 }
 
 class Profile::ChromeVariationsClient : public variations::VariationsClient {
