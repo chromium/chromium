@@ -85,14 +85,12 @@ String AdTracker::AdScriptAncestry::ToString() const {
   }
   builder.AppendFormat("matched ad filterlist rule: %s",
                        root_script_filterlist_rule.ToString().c_str());
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 // static
 AdTracker* AdTracker::FromExecutionContext(
     ExecutionContext* execution_context) {
-  if (!execution_context)
-    return nullptr;
   if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
     if (LocalFrame* frame = window->GetFrame()) {
       return frame->GetAdTracker();
@@ -190,8 +188,8 @@ void AdTracker::Will(const probe::CallFunction& probe) {
     return;
   }
 
-  auto it = ad_script_data_.find(probe.function->ScriptId());
-  if (it != ad_script_data_.end() && !bottom_most_ad_script_.has_value()) {
+  if (!bottom_most_ad_script_.has_value() &&
+      ad_script_data_.Contains(probe.function->ScriptId())) {
     bottom_most_ad_script_ = probe.function->ScriptId();
   }
 }
@@ -360,8 +358,8 @@ bool AdTracker::IsAdScriptInStackHelper(
   if (ad_script_data_.empty()) {
     return false;
   }
-  auto it = context_known_ad_scripts_.find(execution_context);
-  if (it == context_known_ad_scripts_.end() || it->value.empty()) {
+  if (auto it = context_known_ad_scripts_.find(execution_context);
+      it == context_known_ad_scripts_.end() || it->value.empty()) {
     return false;
   }
 
@@ -375,11 +373,15 @@ bool AdTracker::IsAdScriptInStackHelper(
   }
 
   auto script_it = ad_script_data_.find(top_script_id);
-  if (script_it != ad_script_data_.end() && out_ad_script) {
+  if (script_it == ad_script_data_.end()) {
+    return false;
+  }
+
+  if (out_ad_script) {
     *out_ad_script = script_it->value.id;
   }
 
-  return script_it != ad_script_data_.end();
+  return true;
 }
 
 bool AdTracker::IsKnownAdScript(ExecutionContext* execution_context,
