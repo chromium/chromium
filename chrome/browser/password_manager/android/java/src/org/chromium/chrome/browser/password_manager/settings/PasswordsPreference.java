@@ -99,14 +99,6 @@ public class PasswordsPreference extends ChromeBasePreference implements Profile
             return;
         }
 
-        // If the password manager is not available, but the auto-export hasn't finished yet
-        // don't show any subtitle either, because clicking the button will have no effect anyway
-        // and the version of the subtitle cannot be accurately determined.
-        if (!isPasswordManagerAvailable
-                && !prefService.getBoolean(Pref.UPM_UNMIGRATED_PASSWORDS_EXPORTED)) {
-            return;
-        }
-
         // If either the password manager is not available or it is available but there are
         // unmigrated passwords left in Chrome, show a subtitle notifying the user of that.
         // Automotive doesn't support the export flow, so only the "stopped working"

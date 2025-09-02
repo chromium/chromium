@@ -1143,6 +1143,16 @@ constexpr char kDesksLacrosProfileIdList[] =
     "ash.desks.desks_lacros_profile_id_list";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_ANDROID)
+// Deprecated 09/2025.
+constexpr char kObsoleteUpmUnmigratedPasswordsExported[] =
+    "profile.upm_unmigrated_passwords_exported";
+constexpr char kObsoletePasswordsUseUPMLocalAndSeparateStores[] =
+    "passwords_use_upm_local_and_separate_stores";
+constexpr char kObsoleteEmptyProfileStoreLoginDatabase[] =
+    "password_manager.empty_profile_store_login_database";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1648,6 +1658,14 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 08/2025.
   registry->RegisterListPref(kDesksLacrosProfileIdList);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_ANDROID)
+  // Deprecated 09/2025.
+  registry->RegisterBooleanPref(kObsoleteUpmUnmigratedPasswordsExported, false);
+  registry->RegisterIntegerPref(kObsoletePasswordsUseUPMLocalAndSeparateStores,
+                                0);
+  registry->RegisterBooleanPref(kObsoleteEmptyProfileStoreLoginDatabase, false);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace
@@ -2992,6 +3010,13 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 08/2025.
   profile_prefs->ClearPref(kDesksLacrosProfileIdList);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_ANDROID)
+  // Added 09/2025.
+  profile_prefs->ClearPref(kObsoleteUpmUnmigratedPasswordsExported);
+  profile_prefs->ClearPref(kObsoletePasswordsUseUPMLocalAndSeparateStores);
+  profile_prefs->ClearPref(kObsoleteEmptyProfileStoreLoginDatabase);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

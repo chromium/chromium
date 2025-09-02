@@ -47,6 +47,7 @@ using ::password_manager::PasswordStoreBuiltInBackend;
 using password_manager_android_util::PasswordManagerUtilBridge;
 #endif
 
+#if BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 std::unique_ptr<PasswordStoreBackend> CreateProfilePasswordStoreBuiltInBackend(
     const base::FilePath& login_db_directory,
     PrefService* prefs,
@@ -54,52 +55,30 @@ std::unique_ptr<PasswordStoreBackend> CreateProfilePasswordStoreBuiltInBackend(
   std::unique_ptr<password_manager::LoginDatabase> login_db(
       password_manager::CreateLoginDatabaseForProfileStorage(login_db_directory,
                                                              prefs));
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   password_manager::LoginDatabase* login_db_ptr = login_db.get();
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   std::unique_ptr<PasswordStoreBackend> backend =
       std::make_unique<PasswordStoreBuiltInBackend>(
           std::move(login_db),
           syncer::WipeModelUponSyncDisabledBehavior::kNever, prefs,
           os_crypt_async);
 
-#if BUILDFLAG(IS_ANDROID)
-  // base::Unretained() is safe because `prefs` lives as long as the profile
-  // and IntermediateCallbackForSettingPrefs() ensures the callback isn't
-  // invoked if the profile is being destroyed.
-  auto is_profile_db_empty_cb =
-      base::BindPostTaskToCurrentDefault(base::BindRepeating(
-          &password_manager::IntermediateCallbackForSettingPrefs,
-          backend->AsWeakPtr(),
-          base::BindRepeating(
-              &PrefService::SetBoolean, base::Unretained(prefs),
-              password_manager::prefs::kEmptyProfileStoreLoginDatabase)));
-  login_db_ptr->SetIsEmptyCb(std::move(is_profile_db_empty_cb));
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   base::FilePath user_data_dir;
   policy::path_parser::CheckUserDataDirPolicy(&user_data_dir);
   // If `user_data_dir` is empty it means that policy did not set it.
   login_db_ptr->SetIsUserDataDirPolicySet(!user_data_dir.empty());
-#endif
+#endif  //  BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   return backend;
 }
-
-#if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
-
+#else   // BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 // Creates the backend for the profile `PasswordStore` on Android, after
 // login db deprecation.
 std::unique_ptr<PasswordStoreBackend> CreateProfilePasswordStoreBackendAndroid(
     PrefService* prefs,
     const base::FilePath& login_db_directory,
     os_crypt_async::OSCryptAsync* os_crypt_async) {
-  if (!password_manager_android_util::LoginDbDeprecationReady(prefs)) {
-    // There are still passwords that need exporting, so instantiate the
-    // backend that connects to the login DB.
-    return CreateProfilePasswordStoreBuiltInBackend(login_db_directory, prefs,
-                                                    os_crypt_async);
-  }
   // Once the login DB is deprecated, there are only 2 options for
   // the backend: an empty one if the Android backend isn't supported,
   // or the Android backend.
@@ -126,8 +105,7 @@ std::unique_ptr<PasswordStoreBackend> CreateAccountPasswordStoreBackendAndroid(
   }
   return std::make_unique<password_manager::PasswordStoreEmptyBackend>();
 }
-
-#endif  // !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
+#endif  // BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 }  // namespace
 
 std::unique_ptr<PasswordStoreBackend> CreateProfilePasswordStoreBackend(

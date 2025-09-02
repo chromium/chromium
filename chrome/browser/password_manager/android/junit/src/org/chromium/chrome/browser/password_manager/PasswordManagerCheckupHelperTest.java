@@ -55,7 +55,6 @@ import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordManagerUnavailableException;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper.PasswordCheckOperation;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.pwm_disabled.PasswordCsvDownloadFlowController;
 import org.chromium.chrome.browser.pwm_disabled.PasswordCsvDownloadFlowControllerFactory;
@@ -1046,7 +1045,6 @@ public class PasswordManagerCheckupHelperTest {
         when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(
                         eq(mPrefService), eq(true)))
                 .thenReturn(false);
-        when(mPrefService.getBoolean(Pref.UPM_UNMIGRATED_PASSWORDS_EXPORTED)).thenReturn(true);
         LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(true);
 
         FragmentActivity testActivity =
@@ -1078,7 +1076,6 @@ public class PasswordManagerCheckupHelperTest {
         when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(
                         eq(mPrefService), eq(true)))
                 .thenReturn(false);
-        when(mPrefService.getBoolean(Pref.UPM_UNMIGRATED_PASSWORDS_EXPORTED)).thenReturn(true);
         LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(true);
 
         FragmentActivity testActivity =
@@ -1109,7 +1106,6 @@ public class PasswordManagerCheckupHelperTest {
         when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(
                         eq(mPrefService), eq(true)))
                 .thenReturn(false);
-        when(mPrefService.getBoolean(Pref.UPM_UNMIGRATED_PASSWORDS_EXPORTED)).thenReturn(true);
         LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(false);
 
         FragmentActivity testActivity =
@@ -1134,7 +1130,6 @@ public class PasswordManagerCheckupHelperTest {
         when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(
                         eq(mPrefService), eq(true)))
                 .thenReturn(false);
-        when(mPrefService.getBoolean(Pref.UPM_UNMIGRATED_PASSWORDS_EXPORTED)).thenReturn(true);
         LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(false);
 
         FragmentActivity testActivity =

@@ -18,7 +18,6 @@
 #include "components/password_manager/core/browser/password_change_backup_password_cleaner.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
-#include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -104,17 +103,6 @@ void SanitizeAndMigrateCredentials(
             &password_manager::CredentialsCleanerRunner::StartCleaning,
             cleaning_tasks_runner->GetWeakPtr()),
         delay);
-  }
-}
-
-void IntermediateCallbackForSettingPrefs(
-    base::WeakPtr<PasswordStoreBackend> backend,
-    LoginDatabase::IsEmptyCallback set_prefs_callback,
-    bool value) {
-  // When a `PasswordStoreBackend` is shut down, the weak pointers are
-  // invalidated.
-  if (backend) {
-    set_prefs_callback.Run(value);
   }
 }
 

@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerBackendException;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordManagerUnavailableException;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.chrome.browser.pwm_disabled.PasswordCsvDownloadFlowControllerFactory;
@@ -138,13 +137,6 @@ public class PasswordManagerHelper {
 
         PrefService prefService = UserPrefs.get(mProfile);
 
-        if (!PasswordManagerUtilBridge.isPasswordManagerAvailable(prefService)
-                && !prefService.getBoolean(Pref.UPM_UNMIGRATED_PASSWORDS_EXPORTED)) {
-            // The automatic export is ongoing. Usually a dialog offering the user to download
-            // the auto-exported CSV would be shown, but until the CSV is written, the dialog
-            // can't be shown. This is a rare corner-case.
-            return;
-        }
         if (!showPwmUnavailableOrDownloadCsvDialog(
                 context, modalDialogManagerSupplier, settingsCustomTabLauncher)) {
             LoadingModalDialogCoordinator loadingDialogCoordinator =
@@ -477,16 +469,6 @@ public class PasswordManagerHelper {
         try {
             checkupClient = getPasswordCheckupClientHelper();
         } catch (PasswordManagerUnavailableException exception) {
-            // This is slightly different than the access to the management UI where if there
-            // is an auto-exported CSV, a dialog shown even if the password manager is available
-            // If a checkup is possible, the results of the checkup are more important than
-            // the CSV. In addition, the CSV issue is being prominently presented on the
-            // main settings view.
-            if (!UserPrefs.get(mProfile).getBoolean(Pref.UPM_UNMIGRATED_PASSWORDS_EXPORTED)) {
-                // The auto-exported file is not ready, so there it's not possible to show a
-                // dialog to download the CSV.
-                return;
-            }
             assert settingsCustomTabLauncher != null;
             showPwmUnavailableOrDownloadCsvDialog(
                     context, modalDialogManagerSupplier, settingsCustomTabLauncher);

@@ -5,21 +5,11 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SPLIT_STORES_AND_LOCAL_UPM_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_SPLIT_STORES_AND_LOCAL_UPM_H_
 
-class PrefRegistrySimple;
-class PrefService;
+// TODO(crbug.com/442347616): Rename this file and the test fixture. Ideally
+// IsPasswordManagerAvailable() should live next to these methods and they would
+// all be named consistently.
 
 namespace password_manager {
-
-void RegisterLegacySplitStoresPref(PrefRegistrySimple* registry);
-
-// WARNING: Do not add new callers without consulting with ioanap@.
-//
-// This returns the value of a certain pref that used to dictate whether a
-// second PasswordStore should be created. As of 07/2025, Android always creates
-// 2 stores, regardless of the pref. For now, the pref value still exists on
-// disk and is read in specific places for migration reasons. But it is never
-// written in production anymore.
-bool GetLegacySplitStoresPref(const PrefService* pref_service);
 
 // Returns if it is a requirement to update the GMSCore based on whether split
 // password stores are supported or not.
@@ -29,8 +19,6 @@ bool IsGmsCoreUpdateRequired();
 // This is a exposed as a function because the value is different on auto /
 // non-auto and the form factor can only be checked in runtime.
 int GetSplitStoresUpmMinVersion();
-
-void SetLegacySplitStoresPrefForTest(PrefService* pref_service, bool enabled);
 
 }  // namespace password_manager
 

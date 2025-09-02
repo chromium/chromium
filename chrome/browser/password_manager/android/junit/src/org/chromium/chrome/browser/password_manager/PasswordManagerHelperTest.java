@@ -6,10 +6,8 @@ package org.chromium.chrome.browser.password_manager;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
@@ -54,7 +52,6 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerBackendException;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.pwm_disabled.PasswordCsvDownloadFlowController;
 import org.chromium.chrome.browser.pwm_disabled.PasswordCsvDownloadFlowControllerFactory;
@@ -702,7 +699,6 @@ public class PasswordManagerHelperTest {
         when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(
                         eq(mPrefService), eq(true)))
                 .thenReturn(false);
-        when(mPrefService.getBoolean(Pref.UPM_UNMIGRATED_PASSWORDS_EXPORTED)).thenReturn(true);
         LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(true);
 
         FragmentActivity testActivity =
@@ -767,7 +763,6 @@ public class PasswordManagerHelperTest {
         when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(
                         eq(mPrefService), eq(true)))
                 .thenReturn(false);
-        when(mPrefService.getBoolean(Pref.UPM_UNMIGRATED_PASSWORDS_EXPORTED)).thenReturn(true);
         LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(true);
 
         FragmentActivity testActivity =
@@ -799,7 +794,6 @@ public class PasswordManagerHelperTest {
         when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(
                         eq(mPrefService), eq(true)))
                 .thenReturn(false);
-        when(mPrefService.getBoolean(Pref.UPM_UNMIGRATED_PASSWORDS_EXPORTED)).thenReturn(true);
         LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(false);
 
         FragmentActivity testActivity =
@@ -825,7 +819,6 @@ public class PasswordManagerHelperTest {
         when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(
                         eq(mPrefService), eq(true)))
                 .thenReturn(false);
-        when(mPrefService.getBoolean(Pref.UPM_UNMIGRATED_PASSWORDS_EXPORTED)).thenReturn(true);
         LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(false);
 
         FragmentActivity testActivity =
@@ -843,43 +836,6 @@ public class PasswordManagerHelperTest {
         assertEquals(
                 testActivity.getResources().getString(R.string.access_loss_update_gms_title),
                 dialogModel.get(ModalDialogProperties.TITLE));
-    }
-
-    @Test
-    public void testDoesntShowDialogIfExportNotFinished() {
-        when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
-        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(
-                        eq(mPrefService), eq(true)))
-                .thenReturn(false);
-        when(mPrefService.getBoolean(Pref.UPM_UNMIGRATED_PASSWORDS_EXPORTED)).thenReturn(false);
-        LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(false);
-
-        FragmentActivity testActivity =
-                Robolectric.buildActivity(BrowserUiTestFragmentActivity.class).setup().get();
-        setUpUpdatableGmsCore(testActivity);
-        mPasswordManagerHelper.showPasswordSettings(
-                testActivity,
-                ManagePasswordsReferrer.CHROME_SETTINGS,
-                mModalDialogManagerSupplier,
-                /* managePasskeys= */ false,
-                TEST_NO_EMAIL_ADDRESS,
-                mSettingsCustomTabLauncher);
-
-        // Check that the unavailability dialog is not shown.
-        PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
-        assertNull(dialogModel);
-
-        // Check that the download CSV dialog is not shown.
-        PasswordCsvDownloadFlowController mockController =
-                mock(PasswordCsvDownloadFlowController.class);
-        PasswordCsvDownloadFlowControllerFactory.setControllerForTesting(mockController);
-        verify(mockController, never())
-                .showDialogAndStartFlow(
-                        any(), any(), anyBoolean(), anyBoolean(), eq(mSettingsCustomTabLauncher));
-
-        // Check that the management UI is not shown (the pwm is unavailable).
-        verify(mCredentialManagerLauncherMock, never())
-                .getLocalCredentialManagerIntent(anyInt(), any(), any());
     }
 
     private void setUpPwmAvailableWithoutUnmigratedPasswords() {

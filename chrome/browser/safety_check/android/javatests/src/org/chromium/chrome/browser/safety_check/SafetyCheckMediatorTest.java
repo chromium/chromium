@@ -692,6 +692,7 @@ public class SafetyCheckMediatorTest {
     @Test
     public void testClickListenerLeadsToUPMAccountPasswordCheckup() {
         // Order: initial state -> safety check triggered -> check done -> load completed.
+        LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(false);
         mMediator.setInitialState();
         assertEquals(PasswordsState.CHECKING, mPasswordCheckModel.get(PASSWORDS_STATE));
 
@@ -748,6 +749,7 @@ public class SafetyCheckMediatorTest {
 
     @Test
     public void testClickListenerLeadsToUPMLocalPasswordCheckup() {
+        LoginDbDeprecationUtilBridge.setHasCsvFileForTesting(false);
         PropertyModel passwordCheckLocalModel =
                 PasswordsCheckPreferenceProperties.createPasswordSafetyCheckModel("Passwords");
         mMediator =

@@ -18,7 +18,6 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -227,14 +226,12 @@ TEST_F(CredentialLeakControllerAndroidTest, NoDirectInteraction) {
                               LeakDialogDismissalReason::kNoDirectInteraction);
 }
 
-// The following tests are specific to the login DB deprecation.
-TEST_F(CredentialLeakControllerAndroidTest,
-       LeakTypeResetToChangeIfLoginDbDeprecationNotReady) {
-  // The export state is only valid for users who are not enrolled in UPM.
-  password_manager::SetLegacySplitStoresPrefForTest(profile()->GetPrefs(),
-                                                    false);
-  profile()->GetPrefs()->SetBoolean(
-      password_manager::prefs::kUpmUnmigratedPasswordsExported, false);
+TEST_F(CredentialLeakControllerAndroidTest, LeakType) {
+  if (base::android::device_info::is_automotive()) {
+    // Automotive only uses the base leak type and doesn't display the
+    // "Check passwords" button.
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
 
   std::unique_ptr<MockPasswordCheckupLauncherHelper> mock_launcher =
       std::make_unique<MockPasswordCheckupLauncherHelper>();
@@ -249,75 +246,6 @@ TEST_F(CredentialLeakControllerAndroidTest,
 
   // Expect that despite the original leak being of type `kCheckup` the positive
   // button is not the "Check" one.
-  EXPECT_CALL(
-      *weak_mock_launcher,
-      LaunchCheckupOnDevice(
-          _, profile(), _,
-          password_manager::PasswordCheckReferrerAndroid::kLeakDialog, _))
-      .Times(0);
-  controller->OnAcceptDialog();
-}
-
-TEST_F(CredentialLeakControllerAndroidTest,
-       LeakTypeNotResetIfPasswordsExported) {
-  if (base::android::device_info::is_automotive()) {
-    // Automotive only uses the base leak type and doesn't display the
-    // "Check passwords" button.
-    GTEST_SKIP() << "This test should not run on automotive.";
-  }
-
-  // The export state is only valid for users who are not enrolled in UPM.
-  password_manager::SetLegacySplitStoresPrefForTest(profile()->GetPrefs(),
-                                                    false);
-  profile()->GetPrefs()->SetBoolean(
-      password_manager::prefs::kUpmUnmigratedPasswordsExported, true);
-
-  std::unique_ptr<MockPasswordCheckupLauncherHelper> mock_launcher =
-      std::make_unique<MockPasswordCheckupLauncherHelper>();
-  MockPasswordCheckupLauncherHelper* weak_mock_launcher = mock_launcher.get();
-
-  // Setting `isReused` to true will normally cause the leak type to be
-  // `kCheckup`.
-  CredentialLeakControllerAndroid* controller =
-      MakeController(profile(), std::move(mock_launcher), IsSaved(false),
-                     IsReused(true), IsSyncing(false),
-                     /* account_email_ = */ "");
-
-  // Expect that despite the original leak being of type `kCheckup` the positive
-  // button is not the "Check" one.
-  EXPECT_CALL(
-      *weak_mock_launcher,
-      LaunchCheckupOnDevice(
-          _, profile(), _,
-          password_manager::PasswordCheckReferrerAndroid::kLeakDialog, _))
-      .Times(1);
-  controller->OnAcceptDialog();
-}
-
-TEST_F(CredentialLeakControllerAndroidTest,
-       LeakTypeNotResetIfUPMAlreadyActive) {
-  if (base::android::device_info::is_automotive()) {
-    // Automotive only uses the base leak type and doesn't display the
-    // "Check passwords" button.
-    GTEST_SKIP() << "This test should not run on automotive.";
-  }
-
-  password_manager::SetLegacySplitStoresPrefForTest(profile()->GetPrefs(),
-                                                    true);
-  profile()->GetPrefs()->SetBoolean(
-      password_manager::prefs::kUpmUnmigratedPasswordsExported, false);
-
-  std::unique_ptr<MockPasswordCheckupLauncherHelper> mock_launcher =
-      std::make_unique<MockPasswordCheckupLauncherHelper>();
-  MockPasswordCheckupLauncherHelper* weak_mock_launcher = mock_launcher.get();
-
-  // Setting `isReused` to true will cause the leak type to be `kCheckup`.
-  CredentialLeakControllerAndroid* controller =
-      MakeController(profile(), std::move(mock_launcher), IsSaved(false),
-                     IsReused(true), IsSyncing(false),
-                     /* account_email_ = */ "");
-
-  // Check that the checkup option is presented to the user if UPM is active.
   EXPECT_CALL(
       *weak_mock_launcher,
       LaunchCheckupOnDevice(
