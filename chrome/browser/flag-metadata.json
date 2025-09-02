@@ -6054,7 +6054,7 @@
   {
     "name": "ios-expanded-tips",
     "owners": ["scottyoder@google.com", "bwwilliams@google.com", "bling-pandamonium@google.com"],
-    "expiry_milestone": 142
+    "expiry_milestone": 145
   },
   {
     "name": "ios-fill-recovery-password",
@@ -6146,7 +6146,7 @@
   {
     "name": "ios-provides-app-notification-settings",
     "owners": ["scottyoder@google.com", "bling-pandamonium@google.com"],
-    "expiry_milestone": 141
+    "expiry_milestone": 148
   },
   {
     "name": "ios-provisional-notification-alert",
