@@ -62,10 +62,12 @@
 #include "ui/display/screen.h"
 #include "url/url_constants.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#error This file should only be included on desktop.
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #include "chrome/browser/ui/web_applications/navigation_capturing_process.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/multi_user_window_manager.h"
@@ -186,7 +188,6 @@ std::tuple<Browser*, int> GetBrowserAndTabForDisposition(
 
   switch (params.disposition) {
     case WindowOpenDisposition::SWITCH_TO_TAB:
-#if !BUILDFLAG(IS_ANDROID)
     {
       std::pair<Browser*, int> browser_and_index =
           GetIndexAndBrowserOfExistingTab(profile, params);
@@ -194,7 +195,6 @@ std::tuple<Browser*, int> GetBrowserAndTabForDisposition(
         return browser_and_index;
       }
     }
-#endif
       [[fallthrough]];
     case WindowOpenDisposition::CURRENT_TAB:
       if (params.browser) {
@@ -234,7 +234,6 @@ std::tuple<Browser*, int> GetBrowserAndTabForDisposition(
       // re-run with NEW_WINDOW.
       return {GetOrCreateBrowser(profile, params.user_gesture), -1};
     case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
-#if !BUILDFLAG(IS_ANDROID)
     {
       // The picture in picture window should be part of the opener's web app,
       // if any.
@@ -273,12 +272,6 @@ std::tuple<Browser*, int> GetBrowserAndTabForDisposition(
       browser_params.omit_from_session_restore = true;
       return {Browser::Create(browser_params), -1};
     }
-#else   // !IS_ANDROID
-      // For TYPE_PICTURE_IN_PICTURE
-      NOTIMPLEMENTED_LOG_ONCE();
-      return {nullptr, -1};
-#endif  // !IS_ANDROID
-
     case WindowOpenDisposition::NEW_POPUP: {
       // Make a new popup window.
       // Coerce app-style if |source| represents an app.
@@ -701,7 +694,6 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     contents_to_navigate_or_insert = params->switch_to_singleton_tab;
   }
 
-#if !BUILDFLAG(IS_ANDROID)
   // If this is a Picture in Picture window, then notify the pip manager about
   // it. This enables the opener and pip window to stay connected, so that (for
   // example), the pip window does not outlive the opener.
@@ -720,13 +712,11 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     PictureInPictureWindowManager::GetInstance()->EnterDocumentPictureInPicture(
         params->source_contents, contents_to_navigate_or_insert);
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   // TODO(crbug.com/364657540): Revisit integration with web_application system
   // later if needed.
   int singleton_index = -1;
 
-#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<web_app::NavigationCapturingProcess> app_navigation =
       web_app::NavigationCapturingProcess::MaybeHandleAppNavigation(*params);
 
@@ -741,11 +731,6 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     std::tie(params->browser, singleton_index) =
         GetBrowserAndTabForDisposition(*params);
   }
-
-#else  // !BUILDFLAG(IS_ANDROID)
-  std::tie(params->browser, singleton_index) =
-      GetBrowserAndTabForDisposition(*params);
-#endif
 
   if (!params->browser) {
     return nullptr;
@@ -995,13 +980,11 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
 // At this point, the `params->navigated_or_inserted_contents` is guaranteed to
 // be non null, so perform tasks if the navigation has been captured by a web
 // app, like enqueueing launch params.
-#if !BUILDFLAG(IS_ANDROID)
   if (app_navigation) {
     web_app::NavigationCapturingProcess::AfterWebContentsCreation(
         std::move(app_navigation), *params->navigated_or_inserted_contents,
         navigation_handle.get());
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
   return navigation_handle;
 }
 
