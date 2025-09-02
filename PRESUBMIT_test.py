@@ -3698,7 +3698,7 @@ class StringTest(unittest.TestCase):
     VALID_SHA1 = ('0000000000000000000000000000000000000000', )
     DO_NOT_UPLOAD_PNG_MESSAGE = ('Do not include actual screenshots in the '
                                  'changelist. Run '
-                                 'tools/translate/upload_screenshots.py to '
+                                 'tools/translation/upload_screenshots.py to '
                                  'upload them instead:')
     ADD_SIGNATURES_MESSAGE = ('You are adding UI strings.\n'
                               'To ensure the best translations, take '
@@ -3714,7 +3714,7 @@ class StringTest(unittest.TestCase):
     SHA1_FORMAT_MESSAGE = (
         'The following files do not seem to contain valid sha1 '
         'hashes. Make sure they contain hashes created by '
-        'tools/translate/upload_screenshots.py:')
+        'tools/translation/upload_screenshots.py:')
 
     def makeInputApi(self, files):
         input_api = MockInputApi()
