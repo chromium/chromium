@@ -2544,7 +2544,7 @@ TEST_F(RenderWidgetHostTest, OnVerticalScrollDirectionChanged) {
   const auto NotifyVerticalScrollDirectionChanged =
       [this](viz::VerticalScrollDirection scroll_direction) {
         static uint32_t frame_token = 1u;
-        host_->frame_token_message_queue_->DidProcessFrame(
+        host_->render_frame_metadata_provider_.DidProcessFrame(
             frame_token, base::TimeTicks::Now());
 
         cc::RenderFrameMetadata metadata;

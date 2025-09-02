@@ -174,8 +174,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       base::SafeRef<SiteInstanceGroup> site_instance_group,
       int32_t routing_id,
       bool hidden,
-      bool renderer_initiated_creation,
-      std::unique_ptr<FrameTokenMessageQueue> frame_token_message_queue);
+      bool renderer_initiated_creation);
 
   // Similar to `Create()`, but creates a self-owned `RenderWidgetHostImpl`. The
   // returned widget deletes itself when either:
@@ -187,8 +186,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       RenderWidgetHostDelegate* delegate,
       base::SafeRef<SiteInstanceGroup> site_instance_group,
       int32_t routing_id,
-      bool hidden,
-      std::unique_ptr<FrameTokenMessageQueue> frame_token_message_queue);
+      bool hidden);
 
   RenderWidgetHostImpl(const RenderWidgetHostImpl&) = delete;
   RenderWidgetHostImpl& operator=(const RenderWidgetHostImpl&) = delete;
@@ -1035,16 +1033,14 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // |delegate| goes away. |site_instance_group| will outlive this
   // widget but we store it via a `base::SafeRef` instead of a scoped_refptr to
   // not create a cycle and keep alive the `SiteInstanceGroup`.
-  RenderWidgetHostImpl(
-      FrameTree* frame_tree,
-      bool self_owned,
-      viz::FrameSinkId frame_sink_id,
-      RenderWidgetHostDelegate* delegate,
-      base::SafeRef<SiteInstanceGroup> site_instance_group,
-      int32_t routing_id,
-      bool hidden,
-      bool renderer_initiated_creation,
-      std::unique_ptr<FrameTokenMessageQueue> frame_token_message_queue);
+  RenderWidgetHostImpl(FrameTree* frame_tree,
+                       bool self_owned,
+                       viz::FrameSinkId frame_sink_id,
+                       RenderWidgetHostDelegate* delegate,
+                       base::SafeRef<SiteInstanceGroup> site_instance_group,
+                       int32_t routing_id,
+                       bool hidden,
+                       bool renderer_initiated_creation);
   // ---------------------------------------------------------------------------
   // The following method is overridden by RenderViewHost to send upwards to
   // its delegate.
@@ -1517,8 +1513,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // have a view.
   base::OnceCallback<void(base::UnguessableToken, const viz::FrameSinkId&)>
       create_frame_sink_callback_;
-
-  std::unique_ptr<FrameTokenMessageQueue> frame_token_message_queue_;
 
   std::optional<uint16_t> screen_orientation_angle_for_testing_;
   std::optional<display::mojom::ScreenOrientation>

@@ -441,8 +441,7 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
             site_instance_group,
             routing_id,
             hidden,
-            /*renderer_initiated_creation=*/false,
-            std::make_unique<FrameTokenMessageQueue>()) {
+            /*renderer_initiated_creation=*/false) {
     SetupMockRenderInputRouter();
     BindWidgetInterfaces(mojo::AssociatedRemote<blink::mojom::WidgetHost>()
                              .BindNewEndpointAndPassDedicatedReceiver(),

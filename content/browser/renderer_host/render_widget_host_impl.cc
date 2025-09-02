@@ -349,12 +349,11 @@ std::unique_ptr<RenderWidgetHostImpl> RenderWidgetHostImpl::Create(
     base::SafeRef<SiteInstanceGroup> site_instance_group,
     int32_t routing_id,
     bool hidden,
-    bool renderer_initiated_creation,
-    std::unique_ptr<FrameTokenMessageQueue> frame_token_message_queue) {
+    bool renderer_initiated_creation) {
   return base::WrapUnique(new RenderWidgetHostImpl(
       frame_tree, /*self_owned=*/false, frame_sink_id, delegate,
       std::move(site_instance_group), routing_id, hidden,
-      renderer_initiated_creation, std::move(frame_token_message_queue)));
+      renderer_initiated_creation));
 }
 
 // static
@@ -364,15 +363,13 @@ RenderWidgetHostImpl* RenderWidgetHostImpl::CreateSelfOwned(
     RenderWidgetHostDelegate* delegate,
     base::SafeRef<SiteInstanceGroup> site_instance_group,
     int32_t routing_id,
-    bool hidden,
-    std::unique_ptr<FrameTokenMessageQueue> frame_token_message_queue) {
+    bool hidden) {
   viz::FrameSinkId frame_sink_id =
       DefaultFrameSinkId(*site_instance_group, routing_id);
   return new RenderWidgetHostImpl(frame_tree, /*self_owned=*/true,
                                   frame_sink_id, delegate,
                                   std::move(site_instance_group), routing_id,
-                                  hidden, /*renderer_initiated_creation=*/true,
-                                  std::move(frame_token_message_queue));
+                                  hidden, /*renderer_initiated_creation=*/true);
 }
 
 RenderWidgetHostImpl::RenderWidgetHostImpl(
@@ -383,8 +380,7 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
     base::SafeRef<SiteInstanceGroup> site_instance_group,
     int32_t routing_id,
     bool hidden,
-    bool renderer_initiated_creation,
-    std::unique_ptr<FrameTokenMessageQueue> frame_token_message_queue)
+    bool renderer_initiated_creation)
     : frame_tree_(frame_tree),
       self_owned_(self_owned),
       waiting_for_init_(renderer_initiated_creation),
@@ -397,14 +393,14 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
       last_view_screen_rect_(kInvalidScreenRect),
       last_window_screen_rect_(kInvalidScreenRect),
       new_content_rendering_delay_(blink::kNewContentRenderingDelay),
-      frame_token_message_queue_(std::move(frame_token_message_queue)),
       render_frame_metadata_provider_(
 #if BUILDFLAG(IS_MAC)
-          ui::WindowResizeHelperMac::Get()->task_runner(),
+          ui::WindowResizeHelperMac::Get()->task_runner()
 #else
-          GetUIThreadTaskRunner({BrowserTaskType::kUserInput}),
+          GetUIThreadTaskRunner({BrowserTaskType::kUserInput})
 #endif
-          frame_token_message_queue_.get()),
+              ,
+          this),
       frame_sink_id_(frame_sink_id),
       compositor_metric_recorder_(
           (frame_tree && frame_tree->is_primary())
@@ -415,9 +411,6 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
 
   // The page should be hidden during prerendering.
   CHECK(!frame_tree_ || !frame_tree_->is_prerendering() || hidden);
-
-  CHECK(frame_token_message_queue_);
-  frame_token_message_queue_->Init(this);
 
   CHECK(delegate_);
   CHECK_NE(IPC::mojom::kRoutingIdNone, routing_id_);
@@ -2299,7 +2292,7 @@ void RenderWidgetHostImpl::ResetStateForCreatedRenderWidget(
   // is working properly.
   SetupInputRouter();
 
-  frame_token_message_queue_->Reset();
+  render_frame_metadata_provider_.ResetFrameTokenMessageQueue();
 }
 
 void RenderWidgetHostImpl::UpdateTextDirection(
@@ -3730,7 +3723,7 @@ bool RenderWidgetHostImpl::IsHidden() const {
 
 void RenderWidgetHostImpl::DidProcessFrame(uint32_t frame_token,
                                            base::TimeTicks activation_time) {
-  frame_token_message_queue_->DidProcessFrame(frame_token, activation_time);
+  render_frame_metadata_provider_.DidProcessFrame(frame_token, activation_time);
 }
 
 #if BUILDFLAG(IS_MAC)
