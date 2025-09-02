@@ -129,7 +129,6 @@
 #include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/sync_service.h"
-#include "components/sync/service/sync_service_utils.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/browser/web_contents.h"
@@ -858,71 +857,14 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   ASSERT_NE(entry, nullptr);
   EXPECT_FALSE(entry->IsEphemeral());
   EXPECT_EQ(entry->GetLocalProfileName(), u"Joe");
-  EXPECT_FALSE(entry->IsAuthenticated());
 
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_being_created);
+  EXPECT_FALSE(entry->IsAuthenticated());
   EXPECT_FALSE(sync_service->HasSyncConsent());
-
-  ThemeService* theme_service =
-      ThemeServiceFactory::GetForProfile(profile_being_created);
-  EXPECT_EQ(theme_service->GetUserColor(), std::nullopt);
-  // Simulate sync starting but receiving a default theme from the server.
-  theme_service->GetThemeSyncableService()->NotifyOnSyncStartedForTesting(
-      ThemeSyncableService::ThemeSyncState::kApplied);
   EXPECT_EQ(
       ThemeServiceFactory::GetForProfile(profile_being_created)->GetUserColor(),
       kProfileColor);
-}
-
-IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
-                       CreateSignedInProfileWithCustomTheme) {
-  base::HistogramTester histogram_tester;
-
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
-  // Simulate a successful sign-in and wait for the sign-in to propagate to the
-  // flow, resulting in sync confirmation screen getting displayed.
-  Profile* profile_being_created = SignInForNewProfile(
-      GetSyncConfirmationURL(), "joe.consumer@gmail.com", "Joe");
-
-  signin_metrics::AccessPoint expected_access_point =
-      signin_metrics::AccessPoint::kUserManager;
-
-  histogram_tester.ExpectUniqueSample("Signin.SignIn.Completed",
-                                      expected_access_point, 1);
-
-  // Simulate closing the UI with "No, thanks".
-  LoginUIServiceFactory::GetForProfile(profile_being_created)
-      ->SyncConfirmationUIClosed(LoginUIService::ABORT_SYNC);
-  Browser* new_browser = BrowserAddedWaiter(2u).Wait();
-  WaitForLoadStop(GURL("chrome://newtab/"),
-                  new_browser->tab_strip_model()->GetActiveWebContents());
-
-  // Check expectations when the profile creation flow is done.
-  WaitForPickerClosed();
-
-  ProfileAttributesEntry* entry =
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile_being_created->GetPath());
-  ASSERT_NE(entry, nullptr);
-  EXPECT_FALSE(entry->IsEphemeral());
-  EXPECT_EQ(entry->GetLocalProfileName(), u"Joe");
-  EXPECT_FALSE(entry->IsAuthenticated());
-
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile_being_created);
-  EXPECT_FALSE(sync_service->HasSyncConsent());
-
-  ThemeService* theme_service =
-      ThemeServiceFactory::GetForProfile(profile_being_created);
-  theme_service->SetUserColor(SK_ColorYELLOW);
-  // Simulate sync starting and receiving a custom theme from the server.
-  theme_service->GetThemeSyncableService()->NotifyOnSyncStartedForTesting(
-      ThemeSyncableService::ThemeSyncState::kApplied);
-  EXPECT_EQ(
-      ThemeServiceFactory::GetForProfile(profile_being_created)->GetUserColor(),
-      SK_ColorYELLOW);
 }
 
 // Regression test for https://crbug.com/1431342
@@ -1785,18 +1727,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   ASSERT_NE(entry, nullptr);
   EXPECT_FALSE(entry->IsEphemeral());
   EXPECT_EQ(entry->GetLocalProfileName(), u"Joe");
-  EXPECT_FALSE(entry->IsAuthenticated());
 
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_being_created);
+  EXPECT_FALSE(entry->IsAuthenticated());
   EXPECT_FALSE(sync_service->HasSyncConsent());
-
-  ThemeService* theme_service =
-      ThemeServiceFactory::GetForProfile(profile_being_created);
-  EXPECT_EQ(theme_service->GetUserColor(), std::nullopt);
-  // Simulate sync starting but receiving a default theme from the server.
-  theme_service->GetThemeSyncableService()->NotifyOnSyncStartedForTesting(
-      ThemeSyncableService::ThemeSyncState::kApplied);
   EXPECT_EQ(
       ThemeServiceFactory::GetForProfile(profile_being_created)->GetUserColor(),
       kProfileColor);
@@ -1926,18 +1861,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   ASSERT_NE(entry, nullptr);
   EXPECT_FALSE(entry->IsEphemeral());
   EXPECT_EQ(entry->GetLocalProfileName(), u"Joe");
-  EXPECT_FALSE(entry->IsAuthenticated());
 
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_being_created);
+  EXPECT_FALSE(entry->IsAuthenticated());
   EXPECT_FALSE(sync_service->HasSyncConsent());
-
-  ThemeService* theme_service =
-      ThemeServiceFactory::GetForProfile(profile_being_created);
-  EXPECT_EQ(theme_service->GetUserColor(), std::nullopt);
-  // Simulate sync starting but receiving a default theme from the server.
-  theme_service->GetThemeSyncableService()->NotifyOnSyncStartedForTesting(
-      ThemeSyncableService::ThemeSyncState::kApplied);
   EXPECT_EQ(
       ThemeServiceFactory::GetForProfile(profile_being_created)->GetUserColor(),
       kDifferentProfileColor);
@@ -2076,18 +2004,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   // Since the given name is not provided, the email address is used instead as
   // a profile name.
   EXPECT_EQ(entry->GetLocalProfileName(), u"joe.consumer@gmail.com");
-  EXPECT_FALSE(entry->IsAuthenticated());
 
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_being_created);
+  EXPECT_FALSE(entry->IsAuthenticated());
   EXPECT_FALSE(sync_service->HasSyncConsent());
-
-  ThemeService* theme_service =
-      ThemeServiceFactory::GetForProfile(profile_being_created);
-  EXPECT_EQ(theme_service->GetUserColor(), std::nullopt);
-  // Simulate sync starting but receiving a default theme from the server.
-  theme_service->GetThemeSyncableService()->NotifyOnSyncStartedForTesting(
-      ThemeSyncableService::ThemeSyncState::kApplied);
   EXPECT_EQ(
       ThemeServiceFactory::GetForProfile(profile_being_created)->GetUserColor(),
       kProfileColor);
@@ -2148,18 +2069,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   // Even if the given name is provided after the user clicked to complete the
   // flow, we still wait to use it as  profile name.
   EXPECT_EQ(entry->GetLocalProfileName(), u"Joe");
-  EXPECT_FALSE(entry->IsAuthenticated());
 
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_being_created);
+  EXPECT_FALSE(entry->IsAuthenticated());
   EXPECT_FALSE(sync_service->HasSyncConsent());
-
-  ThemeService* theme_service =
-      ThemeServiceFactory::GetForProfile(profile_being_created);
-  EXPECT_EQ(theme_service->GetUserColor(), std::nullopt);
-  // Simulate sync starting but receiving a default theme from the server.
-  theme_service->GetThemeSyncableService()->NotifyOnSyncStartedForTesting(
-      ThemeSyncableService::ThemeSyncState::kApplied);
   EXPECT_EQ(
       ThemeServiceFactory::GetForProfile(profile_being_created)->GetUserColor(),
       kProfileColor);
@@ -2929,18 +2843,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
   EXPECT_NE(entry->GetGAIAId(), GaiaId());
   EXPECT_FALSE(entry->IsEphemeral());
   EXPECT_EQ(entry->GetLocalProfileName(), u"enterprise.com");
-  EXPECT_FALSE(entry->IsAuthenticated());
 
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_being_created);
+  EXPECT_FALSE(entry->IsAuthenticated());
   EXPECT_FALSE(sync_service->HasSyncConsent());
-
-  ThemeService* theme_service =
-      ThemeServiceFactory::GetForProfile(profile_being_created);
-  EXPECT_EQ(theme_service->GetUserColor(), std::nullopt);
-  // Simulate sync starting but receiving a default theme from the server.
-  theme_service->GetThemeSyncableService()->NotifyOnSyncStartedForTesting(
-      ThemeSyncableService::ThemeSyncState::kApplied);
   EXPECT_EQ(
       ThemeServiceFactory::GetForProfile(profile_being_created)->GetUserColor(),
       kProfileColor);
