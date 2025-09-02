@@ -143,6 +143,24 @@ class MockTestClient : public TestClient {
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 };
 
+void SimulateMultiClick(PDFiumEngine& engine,
+                        const gfx::PointF& position,
+                        int click_count) {
+  for (int i = 0, click = 1; i < click_count; ++i, ++click) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    // On both Linux and ChromeOS `click_count` is only 1, 2 or 3. On MacOS and
+    // Windows `click_count` just keeps increasing as the user keeps clicking.
+    if (click > 3) {
+      click = 1;
+    }
+#endif
+    EXPECT_TRUE(engine.HandleInputEvent(MouseEventBuilder()
+                                            .CreateLeftClickAtPosition(position)
+                                            .SetClickCount(click)
+                                            .Build()));
+  }
+}
+
 }  // namespace
 
 class PDFiumEngineTest : public PDFiumTestBase {
@@ -866,10 +884,7 @@ TEST_P(PDFiumEngineTest, SelectTextWithDoubleClick) {
   EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
 
   constexpr gfx::PointF kPosition(100, 120);
-  EXPECT_TRUE(engine->HandleInputEvent(MouseEventBuilder()
-                                           .CreateLeftClickAtPosition(kPosition)
-                                           .SetClickCount(2)
-                                           .Build()));
+  SimulateMultiClick(*engine, kPosition, 2);
   EXPECT_EQ("Goodbye", engine->GetSelectedText());
 }
 
@@ -885,10 +900,63 @@ TEST_P(PDFiumEngineTest, SelectTextWithTripleClick) {
   EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
 
   constexpr gfx::PointF kPosition(100, 120);
-  EXPECT_TRUE(engine->HandleInputEvent(MouseEventBuilder()
-                                           .CreateLeftClickAtPosition(kPosition)
-                                           .SetClickCount(3)
-                                           .Build()));
+  SimulateMultiClick(*engine, kPosition, 3);
+  EXPECT_EQ("Goodbye, world!", engine->GetSelectedText());
+}
+
+TEST_P(PDFiumEngineTest, SelectTextWithFourClicks) {
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Plugin size chosen so all pages of the document are visible.
+  engine->PluginSizeUpdated({1024, 4096});
+
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+
+  constexpr gfx::PointF kPosition(100, 120);
+  SimulateMultiClick(*engine, kPosition, 4);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+#else
+  EXPECT_EQ("Goodbye, world!", engine->GetSelectedText());
+#endif
+}
+
+TEST_P(PDFiumEngineTest, SelectTextFiveClicks) {
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Plugin size chosen so all pages of the document are visible.
+  engine->PluginSizeUpdated({1024, 4096});
+
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+
+  constexpr gfx::PointF kPosition(100, 120);
+  SimulateMultiClick(*engine, kPosition, 5);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ("Goodbye", engine->GetSelectedText());
+#else
+  EXPECT_EQ("Goodbye, world!", engine->GetSelectedText());
+#endif
+}
+
+TEST_P(PDFiumEngineTest, SelectTextWithSixClicks) {
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Plugin size chosen so all pages of the document are visible.
+  engine->PluginSizeUpdated({1024, 4096});
+
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+
+  constexpr gfx::PointF kPosition(100, 120);
+  SimulateMultiClick(*engine, kPosition, 6);
   EXPECT_EQ("Goodbye, world!", engine->GetSelectedText());
 }
 
