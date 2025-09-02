@@ -149,7 +149,7 @@ ASH_EXPORT size_t GetCountOfCopiedFiles(const ui::ClipboardData& data);
 ASH_EXPORT std::u16string GetFileSystemSources(const ui::ClipboardData& data);
 
 // Returns the icon representation of the shortcut modifier key based on
-// keyboard layout and whether the Assistant feature is enabled.
+// keyboard layout.
 ASH_EXPORT const gfx::VectorIcon& GetShortcutKeyIcon();
 
 // Returns the name of the shortcut modifier key based on keyboard layout.

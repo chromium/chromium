@@ -34,7 +34,6 @@
 #include "ash/ambient/ui/ambient_container_view.h"
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ambient/util/ambient_util.h"
-#include "ash/assistant/model/assistant_interaction_model.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
@@ -43,7 +42,6 @@
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
-#include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -68,7 +66,6 @@
 #include "build/buildflag.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
-#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
@@ -318,10 +315,6 @@ void AmbientController::OnAmbientUiVisibilityChanged(
       ReleaseWakeLock();
 
       ClearPreTargetHandler();
-
-      // Should stop observing AssistantInteractionModel when ambient screen is
-      // not shown.
-      AssistantInteractionController::Get()->GetModel()->RemoveObserver(this);
 
       if (visibility == AmbientUiVisibility::kHidden) {
         if (LockScreen::HasInstance()) {
@@ -586,7 +579,7 @@ void AmbientController::OnUserActivity(const ui::Event* event) {
     return;
   }
   // While |kPreview| is loading, don't |DismissUI| on user activity.
-  // Users can still |DismissUI| with mouse, touch, key or assistant events.
+  // Users can still |DismissUI| with mouse, touch, key.
   if (ambient_ui_model_.ui_visibility() == AmbientUiVisibility::kPreview &&
       !IsShowing()) {
     return;
@@ -627,14 +620,6 @@ void AmbientController::OnTouchEvent(ui::TouchEvent* event) {
   // Prevent dispatching touch event to the windows behind screen saver.
   MaybeStopUiEventPropagation(event);
   DismissUI();
-}
-
-void AmbientController::OnInteractionStateChanged(
-    InteractionState interaction_state) {
-  if (interaction_state == InteractionState::kActive) {
-    // Assistant is active.
-    DismissUI();
-  }
 }
 
 void AmbientController::SetUiVisibilityShouldShow() {
@@ -1213,9 +1198,6 @@ void AmbientController::MaybeStartScreenSaver() {
 
   if (!user_activity_observer_.IsObserving())
     user_activity_observer_.Observe(ui::UserActivityDetector::Get());
-
-  // Add observer for assistant interaction model
-  AssistantInteractionController::Get()->GetModel()->AddObserver(this);
 
   session_metrics_recorder_ = std::make_unique<AmbientSessionMetricsRecorder>(
       ambient_ui_launcher_->CreateMetricsDelegate(GetCurrentUiSettings()));

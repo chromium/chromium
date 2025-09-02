@@ -57,7 +57,6 @@ after discussions on the right group.
       <annotation id="fwupd_firmware_update"/>
       <annotation id="gaia_reauth_token_fetcher"/>
       <annotation id="help_content_provider"/>
-      <annotation id="image_downloader"/>
       <annotation id="ime_url_downloader"/>
       <annotation id="kiosk_app_icon"/>
       <annotation id="launcher_item_suggest"/>

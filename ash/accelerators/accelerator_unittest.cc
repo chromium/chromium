@@ -9,8 +9,6 @@
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/app_list/test/app_list_test_helper.h"
-#include "ash/assistant/model/assistant_ui_model.h"
-#include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/shell.h"
 #include "ash/shell_observer.h"
 #include "ash/system/network/network_observer.h"
@@ -208,8 +206,6 @@ TEST_F(AcceleratorNewEntryPointTest, AssistantKeyWithNewEntryPointEnabled) {
       /*control=*/false, /*shift=*/false, /*alt=*/false, /*command=*/false);
 
   EXPECT_TRUE(open_new_entry_point_future.Wait());
-  EXPECT_EQ(0, user_action_tester.GetActionCount(
-                   "VoiceInteraction.Started.Assistant"));
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Assistant.NewEntryPoint.AssistantKey"));
 }

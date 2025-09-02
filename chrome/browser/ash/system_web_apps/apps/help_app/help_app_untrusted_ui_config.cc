@@ -212,8 +212,7 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
   source->AddBoolean(
       "assistantAllowed",
       assistant_allowed_state == assistant::AssistantAllowedState::ALLOWED);
-  source->AddBoolean("assistantEnabled",
-                     AssistantState::Get()->settings_enabled().value_or(false));
+  source->AddBoolean("assistantEnabled", false);
   source->AddBoolean("playStoreEnabled",
                      arc::IsArcPlayStoreEnabledForProfile(profile));
   source->AddBoolean("pinEnabled", quick_unlock::IsPinEnabled());

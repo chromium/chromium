@@ -32,18 +32,9 @@ component("model") {
     "assistant_ui_model.cc",
     "assistant_ui_model.h",
     "assistant_ui_model_observer.h",
-    "ui/assistant_card_element.cc",
-    "ui/assistant_card_element.h",
-    "ui/assistant_error_element.cc",
-    "ui/assistant_error_element.h",
-    "ui/assistant_text_element.cc",
-    "ui/assistant_text_element.h",
-    "ui/assistant_ui_element.cc",
-    "ui/assistant_ui_element.h",
   ]
 
   deps = [
-    "//ash/assistant/ui:constants",
     "//ash/public/cpp",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/ash/services/assistant/public/mojom",

@@ -13,7 +13,6 @@
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/assistant/assistant_controller_impl.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
@@ -33,7 +32,6 @@
 #include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/cpp/annotator/annotator_controller_base.h"
 #include "ash/public/cpp/app_types_util.h"
-#include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/system/toast_data.h"
@@ -97,7 +95,7 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/biod/fake_biod_client.h"
-#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -145,8 +143,6 @@ using ::chromeos::WindowStateType;
 // Percent by which the volume should be changed when a volume key is pressed.
 constexpr double kStepPercentage = 4.0;
 constexpr char kVirtualDesksToastId[] = "virtual_desks_toast";
-// Toast id for Assistant shortcuts.
-constexpr char kAssistantErrorToastId[] = "assistant_error";
 // Toast ID for the notification center tray "No notifications" toast.
 constexpr char kNotificationCenterTrayNoNotificationsToastId[] =
     "notification_center_tray_toast_ids.no_notifications";
@@ -1346,73 +1342,7 @@ void ToggleAssignToAllDesk() {
 }
 
 void ToggleAssistant() {
-  using assistant::AssistantAllowedState;
-  switch (AssistantState::Get()->allowed_state().value_or(
-      AssistantAllowedState::ALLOWED)) {
-    case AssistantAllowedState::DISALLOWED_BY_NONPRIMARY_USER:
-      // Show a toast if the active user is not primary.
-      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
-                l10n_util::GetStringUTF16(
-                    IDS_ASH_ASSISTANT_SECONDARY_USER_TOAST_MESSAGE));
-      return;
-    case AssistantAllowedState::DISALLOWED_BY_LOCALE:
-      // Show a toast if the Assistant is disabled due to unsupported
-      // locales.
-      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
-                l10n_util::GetStringUTF16(
-                    IDS_ASH_ASSISTANT_LOCALE_UNSUPPORTED_TOAST_MESSAGE));
-      return;
-    case AssistantAllowedState::DISALLOWED_BY_POLICY:
-      // Show a toast if the Assistant is disabled due to enterprise policy.
-      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
-                l10n_util::GetStringUTF16(
-                    IDS_ASH_ASSISTANT_DISABLED_BY_POLICY_MESSAGE));
-      return;
-    case AssistantAllowedState::DISALLOWED_BY_DEMO_MODE:
-      // Show a toast if the Assistant is disabled due to being in Demo
-      // Mode.
-      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
-                l10n_util::GetStringUTF16(
-                    IDS_ASH_ASSISTANT_DISABLED_IN_DEMO_MODE_MESSAGE));
-      return;
-    case AssistantAllowedState::DISALLOWED_BY_PUBLIC_SESSION:
-      // Show a toast if the Assistant is disabled due to being in public
-      // session.
-      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
-                l10n_util::GetStringUTF16(
-                    IDS_ASH_ASSISTANT_DISABLED_IN_PUBLIC_SESSION_MESSAGE));
-      return;
-    case AssistantAllowedState::DISALLOWED_BY_INCOGNITO:
-      // Show a toast if the Assistant is disabled due to being in Incognito
-      // mode.
-      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
-                l10n_util::GetStringUTF16(
-                    IDS_ASH_ASSISTANT_DISABLED_IN_GUEST_MESSAGE));
-      return;
-    case AssistantAllowedState::DISALLOWED_BY_ACCOUNT_TYPE:
-      // Show a toast if the Assistant is disabled due to the account type.
-      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
-                l10n_util::GetStringUTF16(
-                    IDS_ASH_ASSISTANT_DISABLED_BY_ACCOUNT_MESSAGE));
-      return;
-    case AssistantAllowedState::DISALLOWED_BY_KIOSK_MODE:
-      // No need to show toast in KIOSK mode.
-      return;
-    case AssistantAllowedState::DISALLOWED_BY_NO_BINARY:
-      // No need to show toast.
-      return;
-    case AssistantAllowedState::DISALLOWED_BY_NEW_ENTRY_POINT:
-      // Showing new entry point instead.
-      AssistantUiController::Get()->ShowUi(
-          assistant::AssistantEntryPoint::kHotkey);
-      return;
-    case AssistantAllowedState::ALLOWED:
-      // Nothing need to do if allowed.
-      break;
-  }
-  AssistantUiController::Get()->ToggleUi(
-      /*entry_point=*/assistant::AssistantEntryPoint::kHotkey,
-      /*exit_point=*/assistant::AssistantExitPoint::kHotkey);
+  assistant::AssistantBrowserDelegate::Get()->OpenNewEntryPoint();
 }
 
 void ToggleCalendar() {

@@ -5,7 +5,6 @@
 #ifndef ASH_ASSISTANT_MODEL_ASSISTANT_RESPONSE_H_
 #define ASH_ASSISTANT_MODEL_ASSISTANT_RESPONSE_H_
 
-#include <deque>
 #include <memory>
 #include <vector>
 
@@ -56,13 +55,6 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantResponse
   void AddObserver(AssistantResponseObserver* observer) const;
   void RemoveObserver(AssistantResponseObserver* observer) const;
 
-  // Adds the specified |ui_element| that should be rendered for the
-  // interaction.
-  void AddUiElement(std::unique_ptr<AssistantUiElement> ui_element);
-
-  // Returns all UI elements belonging to the response.
-  const std::vector<std::unique_ptr<AssistantUiElement>>& GetUiElements() const;
-
   // Adds the specified |suggestions| that should be rendered for the
   // interaction.
   void AddSuggestions(const std::vector<AssistantSuggestion>& suggestions);
@@ -106,17 +98,10 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantResponse
   friend class base::RefCounted<AssistantResponse>;
   ~AssistantResponse();
 
-  std::deque<std::unique_ptr<PendingUiElement>> pending_ui_elements_;
   std::vector<AssistantSuggestion> suggestions_;
   ProcessingState processing_state_ = ProcessingState::kUnprocessed;
   bool has_tts_ = false;
 
-  // We specify the declaration order below as intended because we want
-  // |processor_| to be destroyed before |ui_elements_| (we also forced this
-  // order in the destructor), so that when the response processing got
-  // interrupted, the |ProcessingCallback| can have a chance to return false
-  // during the destruction to indicate the failure of completion.
-  std::vector<std::unique_ptr<AssistantUiElement>> ui_elements_;
   std::unique_ptr<Processor> processor_;
 
   mutable base::ObserverList<AssistantResponseObserver> observers_;

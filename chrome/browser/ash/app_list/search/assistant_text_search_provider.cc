@@ -97,10 +97,6 @@ class AssistantTextSearchResult : public ChromeSearchResult {
 AssistantTextSearchProvider::AssistantTextSearchProvider()
     : SearchProvider(SearchCategory::kAssistant) {
   UpdateResults();
-
-  // Bind observers.
-  assistant_controller_observation_.Observe(ash::AssistantController::Get());
-  assistant_state_observation_.Observe(ash::AssistantState::Get());
 }
 
 AssistantTextSearchProvider::~AssistantTextSearchProvider() = default;
@@ -119,12 +115,6 @@ void AssistantTextSearchProvider::StopQuery() {
 }
 
 void AssistantTextSearchProvider::OnAssistantControllerDestroying() {
-  DCHECK(assistant_state_observation_.IsObservingSource(
-      ash::AssistantState::Get()));
-  assistant_state_observation_.Reset();
-  DCHECK(assistant_controller_observation_.IsObservingSource(
-      ash::AssistantController::Get()));
-  assistant_controller_observation_.Reset();
 }
 
 void AssistantTextSearchProvider::OnAssistantFeatureAllowedChanged(

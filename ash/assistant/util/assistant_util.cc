@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/constants/devicetype.h"
 #include "base/strings/string_util.h"
 
@@ -22,30 +21,15 @@ namespace util {
 
 bool IsStartingSession(AssistantVisibility new_visibility,
                        AssistantVisibility old_visibility) {
-  return old_visibility == AssistantVisibility::kClosed &&
-         new_visibility == AssistantVisibility::kVisible;
+  return false;
 }
 
 bool IsFinishingSession(AssistantVisibility new_visibility) {
-  return new_visibility == AssistantVisibility::kClosed;
+  return false;
 }
 
 bool IsVoiceEntryPoint(AssistantEntryPoint entry_point, bool prefer_voice) {
-  switch (entry_point) {
-    case AssistantEntryPoint::kHotword:
-      return true;
-    case AssistantEntryPoint::kHotkey:
-    case AssistantEntryPoint::kLauncherSearchBoxIcon:
-    case AssistantEntryPoint::kLongPressLauncher:
-      return prefer_voice;
-    case AssistantEntryPoint::kUnspecified:
-    case AssistantEntryPoint::kDeepLink:
-    case AssistantEntryPoint::kLauncherSearchResult:
-    case AssistantEntryPoint::kSetup:
-    case AssistantEntryPoint::kStylus:
-    case AssistantEntryPoint::kLauncherSearchIphChip:
-      return false;
-  }
+  return false;
 }
 
 bool IsGoogleDevice() {

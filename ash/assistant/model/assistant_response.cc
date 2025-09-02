@@ -8,8 +8,6 @@
 #include <utility>
 
 #include "ash/assistant/model/assistant_response_observer.h"
-#include "ash/assistant/model/ui/assistant_error_element.h"
-#include "ash/assistant/model/ui/assistant_ui_element.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -49,31 +47,7 @@ class AssistantResponse::Processor {
       std::move(callback_).Run(/*is_completed=*/false);
   }
 
-  void Process() {
-    // Responses should only be processed once.
-    DCHECK_EQ(ProcessingState::kUnprocessed, response_->processing_state());
-    response_->set_processing_state(ProcessingState::kProcessing);
-
-    // Completion of |response_| processing is indicated by |processing_count_|
-    // reaching zero. This value is decremented as each UI element is processed.
-    processing_count_ = response_->GetUiElements().size();
-
-    // Try finishing directly if there are no UI elements to be processed.
-    if (processing_count_ == 0) {
-      TryFinishing();
-      return;
-    }
-
-    for (const auto& ui_element : response_->GetUiElements()) {
-      // Start asynchronous processing of the UI element. Note that if the UI
-      // element does not require any pre-rendering processing the callback may
-      // be run synchronously. Also we must use WeakPtr here because |this| will
-      // destroy before |ui_element| by design.
-      ui_element->Process(
-          base::BindOnce(&AssistantResponse::Processor::OnFinishedProcessing,
-                         weak_ptr_factory_.GetWeakPtr()));
-    }
-  }
+  void Process() {}
 
  private:
   void OnFinishedProcessing() {
@@ -124,46 +98,6 @@ void AssistantResponse::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-void AssistantResponse::AddUiElement(
-    std::unique_ptr<AssistantUiElement> ui_element) {
-  // In processing v2, UI elements are first cached in a pending state...
-  auto pending_ui_element = std::make_unique<PendingUiElement>();
-  pending_ui_element->ui_element = std::move(ui_element);
-  pending_ui_element->is_processing = true;
-  pending_ui_elements_.push_back(std::move(pending_ui_element));
-
-  // ...while we perform any pre-processing necessary prior to rendering.
-  pending_ui_elements_.back()->ui_element->Process(base::BindOnce(
-      [](const base::WeakPtr<AssistantResponse>& self,
-         PendingUiElement* pending_ui_element) {
-        if (!self)
-          return;
-
-        // Indicate that |pending_ui_element| has finished processing.
-        pending_ui_element->is_processing = false;
-
-        // Add any UI elements that are ready for rendering to the response.
-        // Note that this may or may not include the |pending_ui_element| which
-        // just finished processing as we are required to add renderable UI
-        // elements to the response in the same order that they were initially
-        // pended to avoid inadvertently shuffling the response.
-        while (!self->pending_ui_elements_.empty() &&
-               !self->pending_ui_elements_.front()->is_processing) {
-          self->ui_elements_.push_back(
-              std::move(self->pending_ui_elements_.front()->ui_element));
-          self->pending_ui_elements_.pop_front();
-          self->NotifyUiElementAdded(self->ui_elements_.back().get());
-        }
-      },
-      weak_factory_.GetWeakPtr(),
-      base::Unretained(pending_ui_elements_.back().get())));
-}
-
-const std::vector<std::unique_ptr<AssistantUiElement>>&
-AssistantResponse::GetUiElements() const {
-  return ui_elements_;
-}
-
 void AssistantResponse::AddSuggestions(
     const std::vector<AssistantSuggestion>& suggestions) {
   for (const auto& suggestion : suggestions)
@@ -204,22 +138,11 @@ void AssistantResponse::NotifySuggestionsAdded(
 
 bool AssistantResponse::ContainsUiElement(
     const AssistantUiElement* element) const {
-  DCHECK(element);
-
-  bool contains_element = base::Contains(
-      ui_elements_, *element, &std::unique_ptr<AssistantUiElement>::operator*);
-
-  return contains_element || ContainsPendingUiElement(element);
+  return false;
 }
 
 bool AssistantResponse::ContainsPendingUiElement(
     const AssistantUiElement* element) const {
-  DCHECK(element);
-
-  return std::ranges::any_of(
-      pending_ui_elements_,
-      [element](const std::unique_ptr<PendingUiElement>& other) {
-        return *other->ui_element == *element;
-      });
+  return false;
 }
 }  // namespace ash

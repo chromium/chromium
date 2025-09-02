@@ -38,7 +38,6 @@
 #include "ash/api/tasks/tasks_delegate.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_feature_usage_metrics.h"
-#include "ash/assistant/assistant_controller_impl.h"
 #include "ash/auth/active_session_auth_controller_impl.h"
 #include "ash/birch/birch_model.h"
 #include "ash/booting/booting_animation_controller.h"
@@ -877,13 +876,7 @@ Shell::~Shell() {
   // Accelerometer file reader stops listening to tablet mode controller.
   AccelerometerReader::GetInstance()->StopListenToTabletModeController();
 
-  // Destroy |ambient_controller_| before |assistant_controller_|.
   ambient_controller_.reset();
-
-  // Destroy |assistant_controller_| earlier than |tablet_mode_controller_| so
-  // that the former will destroy the Assistant view hierarchy which has a
-  // dependency on the latter.
-  assistant_controller_.reset();
 
   // Because this function will call |TabletModeController::RemoveObserver|, do
   // it before destroying |tablet_mode_controller_|.
@@ -1607,7 +1600,6 @@ void Shell::Init(
   fullscreen_magnifier_controller_ =
       std::make_unique<FullscreenMagnifierController>();
   mru_window_tracker_ = std::make_unique<MruWindowTracker>();
-  assistant_controller_ = std::make_unique<AssistantControllerImpl>();
 
   // MultiDisplayMetricsController has a dependency on `mru_window_tracker_`.
   multi_display_metrics_controller_ =
@@ -1630,8 +1622,8 @@ void Shell::Init(
       std::make_unique<SunfishScannerFeatureWatcher>(*session_controller_,
                                                      *this);
 
-  // |tablet_mode_controller_| |mru_window_tracker_|, and
-  // |assistant_controller_| are put before |app_list_controller_| as they are
+  // |tablet_mode_controller_| |mru_window_tracker_|
+  // are put before |app_list_controller_| as they are
   // used in its constructor.
   app_list_controller_ = std::make_unique<AppListControllerImpl>();
 

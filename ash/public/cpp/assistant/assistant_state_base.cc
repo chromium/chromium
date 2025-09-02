@@ -22,10 +22,7 @@ using assistant::prefs::AssistantOnboardingMode;
 
 AssistantStateBase::AssistantStateBase() = default;
 
-AssistantStateBase::~AssistantStateBase() {
-  for (auto& observer : observers_)
-    observer.OnAssistantStateDestroyed();
-}
+AssistantStateBase::~AssistantStateBase() = default;
 
 std::string AssistantStateBase::ToString() const {
 #define STRINGIFY(field) \
@@ -37,15 +34,6 @@ std::string AssistantStateBase::ToString() const {
        STRINGIFY(locale()), STRINGIFY(arc_play_store_enabled()),
        STRINGIFY(locked_full_screen_enabled()), STRINGIFY(onboarding_mode())});
 #undef STRINGIFY
-}
-
-void AssistantStateBase::AddObserver(AssistantStateObserver* observer) {
-  observers_.AddObserver(observer);
-  InitializeObserver(observer);
-}
-
-void AssistantStateBase::RemoveObserver(AssistantStateObserver* observer) {
-  observers_.RemoveObserver(observer);
 }
 
 void AssistantStateBase::RegisterPrefChanges(PrefService* pref_service) {}
@@ -101,8 +89,6 @@ void AssistantStateBase::UpdateConsentStatus() {
     return;
   }
   consent_status_ = consent_status;
-  for (auto& observer : observers_)
-    observer.OnAssistantConsentStatusChanged(consent_status_.value());
 }
 
 void AssistantStateBase::UpdateContextEnabled() {
@@ -113,8 +99,6 @@ void AssistantStateBase::UpdateContextEnabled() {
     return;
   }
   context_enabled_ = context_enabled;
-  for (auto& observer : observers_)
-    observer.OnAssistantContextEnabled(context_enabled_.value());
 }
 
 void AssistantStateBase::UpdateSettingsEnabled() {
@@ -125,8 +109,6 @@ void AssistantStateBase::UpdateSettingsEnabled() {
     return;
   }
   settings_enabled_ = settings_enabled;
-  for (auto& observer : observers_)
-    observer.OnAssistantSettingsEnabled(settings_enabled_.value());
 }
 
 void AssistantStateBase::UpdateHotwordAlwaysOn() {
@@ -137,8 +119,6 @@ void AssistantStateBase::UpdateHotwordAlwaysOn() {
     return;
   }
   hotword_always_on_ = hotword_always_on;
-  for (auto& observer : observers_)
-    observer.OnAssistantHotwordAlwaysOn(hotword_always_on_.value());
 }
 
 void AssistantStateBase::UpdateHotwordEnabled() {
@@ -149,8 +129,6 @@ void AssistantStateBase::UpdateHotwordEnabled() {
     return;
   }
   hotword_enabled_ = hotword_enabled;
-  for (auto& observer : observers_)
-    observer.OnAssistantHotwordEnabled(hotword_enabled_.value());
 }
 
 void AssistantStateBase::UpdateLaunchWithMicOpen() {
@@ -161,8 +139,6 @@ void AssistantStateBase::UpdateLaunchWithMicOpen() {
     return;
   }
   launch_with_mic_open_ = launch_with_mic_open;
-  for (auto& observer : observers_)
-    observer.OnAssistantLaunchWithMicOpen(launch_with_mic_open_.value());
 }
 
 void AssistantStateBase::UpdateNotificationEnabled() {
@@ -173,8 +149,6 @@ void AssistantStateBase::UpdateNotificationEnabled() {
     return;
   }
   notification_enabled_ = notification_enabled;
-  for (auto& observer : observers_)
-    observer.OnAssistantNotificationEnabled(notification_enabled_.value());
 }
 
 void AssistantStateBase::UpdateOnboardingMode() {
@@ -186,42 +160,28 @@ void AssistantStateBase::UpdateOnboardingMode() {
     return;
 
   onboarding_mode_ = onboarding_mode;
-  for (auto& observer : observers_)
-    observer.OnAssistantOnboardingModeChanged(onboarding_mode_.value());
 }
 
 void AssistantStateBase::UpdateAssistantStatus(
     assistant::AssistantStatus status) {
   assistant_status_ = status;
-  for (auto& observer : observers_)
-    observer.OnAssistantStatusChanged(assistant_status_);
 }
 
 void AssistantStateBase::UpdateFeatureAllowedState(
     assistant::AssistantAllowedState state) {
   allowed_state_ = state;
-  for (auto& observer : observers_)
-    observer.OnAssistantFeatureAllowedChanged(allowed_state_.value());
 }
 
 void AssistantStateBase::UpdateLocale(const std::string& locale) {
   locale_ = locale;
-  for (auto& observer : observers_)
-    observer.OnLocaleChanged(locale_.value());
 }
 
 void AssistantStateBase::UpdateArcPlayStoreEnabled(bool enabled) {
   arc_play_store_enabled_ = enabled;
-  for (auto& observer : observers_)
-    observer.OnArcPlayStoreEnabledChanged(arc_play_store_enabled_.value());
 }
 
 void AssistantStateBase::UpdateLockedFullScreenState(bool enabled) {
   locked_full_screen_enabled_ = enabled;
-  for (auto& observer : observers_) {
-    observer.OnLockedFullScreenStateChanged(
-        locked_full_screen_enabled_.value());
-  }
 }
 
 }  // namespace ash

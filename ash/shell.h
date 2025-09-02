@@ -114,7 +114,6 @@ class AshColorProvider;
 class AshDBusServices;
 class AshFocusRules;
 class AshTouchTransformController;
-class AssistantControllerImpl;
 class AudioEffectsController;
 class AutoclickController;
 class AutozoomControllerImpl;
@@ -446,9 +445,6 @@ class ASH_EXPORT Shell : public SessionObserver,
     return ash_accelerator_configuration_.get();
   }
   AcceleratorLookup* accelerator_lookup() { return accelerator_lookup_.get(); }
-  AssistantControllerImpl* assistant_controller() {
-    return assistant_controller_.get();
-  }
   AudioEffectsController* audio_effects_controller() {
     return audio_effects_controller_.get();
   }
@@ -1036,7 +1032,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   // May be null in tests or when running on linux-chromeos.
   scoped_refptr<dbus::Bus> dbus_bus_;
   std::unique_ptr<AshDBusServices> ash_dbus_services_;
-  std::unique_ptr<AssistantControllerImpl> assistant_controller_;
   std::unique_ptr<AudioEffectsController> audio_effects_controller_;
   std::unique_ptr<AutozoomControllerImpl> autozoom_controller_;
   std::unique_ptr<BacklightsForcedOffSetter> backlights_forced_off_setter_;

@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_ASSISTANT_UI_BASE_STACK_LAYOUT_H_
-#define ASH_ASSISTANT_UI_BASE_STACK_LAYOUT_H_
+#ifndef ASH_CURTAIN_STACK_LAYOUT_H_
+#define ASH_CURTAIN_STACK_LAYOUT_H_
 
 #include <map>
 
-#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/layout/proposed_layout.h"
@@ -18,8 +17,7 @@ namespace ash {
 // FillLayout in that we respect the preferred size of views during layout. It's
 // possible to explicitly specify which dimension to respect. In contrast,
 // FillLayout will cause its views to match the bounds of the host.
-class COMPONENT_EXPORT(ASSISTANT_UI) StackLayout
-    : public views::LayoutManagerBase {
+class StackLayout : public views::LayoutManagerBase {
  public:
   enum class RespectDimension : uint32_t {
     // Respect width. If enabled, child's preferred width will be used and will
@@ -70,4 +68,4 @@ class COMPONENT_EXPORT(ASSISTANT_UI) StackLayout
 
 }  // namespace ash
 
-#endif  // ASH_ASSISTANT_UI_BASE_STACK_LAYOUT_H_
+#endif  // ASH_CURTAIN_STACK_LAYOUT_H_

@@ -8,7 +8,6 @@
 #include <optional>
 #include <ostream>
 
-#include "ash/assistant/ui/assistant_ui_constants.h"
 #include "base/component_export.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
@@ -98,7 +97,7 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantUiModel {
 
   AssistantVisibility visibility_ = AssistantVisibility::kClosed;
   AssistantEntryPoint entry_point_ = AssistantEntryPoint::kUnspecified;
-  int app_list_bubble_width_ = kPreferredWidthDip;
+  int app_list_bubble_width_ = 0;
 
   mutable base::ObserverList<AssistantUiModelObserver> observers_;
 

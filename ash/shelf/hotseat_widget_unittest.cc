@@ -11,7 +11,6 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_view.h"
-#include "ash/assistant/assistant_controller_impl.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/focus/focus_cycler.h"
@@ -404,8 +403,7 @@ TEST_P(HotseatWidgetTest, LongPressHomeWithoutAppWindow) {
   EXPECT_EQ(CaptureModeController::Get()->IsActive(),
             sunfish_or_scanner_enabled());
 
-  // Hotseat should not change when starting a Sunfish-session or showing
-  // Assistant.
+  // Hotseat should not change when starting a Sunfish-session
   watcher.CheckEqual({});
 }
 

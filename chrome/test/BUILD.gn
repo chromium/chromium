@@ -8853,7 +8853,6 @@ test("unit_tests") {
       "//ash/assistant/model",
       "//ash/assistant/util",
       "//ash/public/cpp:test_support",
-      "//ash/public/cpp/assistant/test_support",
       "//ash/public/cpp/resources:ash_public_unscaled_resources",
       "//ash/resources/vector_icons",
       "//ash/strings",

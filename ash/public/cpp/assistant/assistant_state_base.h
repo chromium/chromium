@@ -10,7 +10,6 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
@@ -113,9 +112,6 @@ class ASH_PUBLIC_EXPORT AssistantStateBase {
 
   std::string ToString() const;
 
-  void AddObserver(AssistantStateObserver* observer);
-  void RemoveObserver(AssistantStateObserver* observer);
-
   void RegisterPrefChanges(PrefService* pref_service);
 
   bool IsScreenContextAllowed() const;
@@ -188,8 +184,6 @@ class ASH_PUBLIC_EXPORT AssistantStateBase {
 
   // Observes user profile prefs for the Assistant.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-
-  base::ObserverList<AssistantStateObserver> observers_;
 };
 
 }  // namespace ash

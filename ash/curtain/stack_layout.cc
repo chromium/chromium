@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/assistant/ui/base/stack_layout.h"
+#include "ash/curtain/stack_layout.h"
 
 #include <algorithm>
 #include <numeric>
@@ -43,8 +43,9 @@ gfx::Size StackLayout::GetPreferredSize(
 int StackLayout::GetPreferredHeightForWidth(const views::View* host,
                                             int width) const {
   const auto& children = host->children();
-  if (children.empty())
+  if (children.empty()) {
     return 0;
+  }
   std::vector<int> heights(children.size());
   std::ranges::transform(
       children, heights.begin(),
@@ -80,15 +81,17 @@ views::ProposedLayout StackLayout::CalculateProposedLayout(
       child_x = (host_width - child_width) / 2;
     }
 
-    if (dimension & static_cast<uint32_t>(RespectDimension::kHeight))
+    if (dimension & static_cast<uint32_t>(RespectDimension::kHeight)) {
       child_height = child->GetHeightForWidth(child_width);
+    }
 
     int child_y = 0;
     auto iter = vertical_alignment_map_.find(child);
     if (iter != vertical_alignment_map_.end()) {
       VerticalAlignment vertical_alignment = iter->second;
-      if (vertical_alignment == VerticalAlignment::kCenter)
+      if (vertical_alignment == VerticalAlignment::kCenter) {
         child_y = std::max(0, (host_height - child_height) / 2);
+      }
     }
 
     layouts.child_layouts.emplace_back(
