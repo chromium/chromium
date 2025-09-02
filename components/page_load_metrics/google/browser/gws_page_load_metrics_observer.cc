@@ -362,7 +362,12 @@ void GWSPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
   }
   PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSFirstContentfulPaint,
                       timing.paint_timing->first_contentful_paint.value());
-  return;
+  if (is_header_from_synthetic_response_) {
+    PAGE_LOAD_HISTOGRAM(
+        base::StrCat({internal::kHistogramGWSFirstContentfulPaint,
+                      internal::kHistogramSyntheticResponseSuffix}),
+        timing.paint_timing->first_contentful_paint.value());
+  }
 }
 
 void GWSPageLoadMetricsObserver::OnDomContentLoadedEventStart(
@@ -413,8 +418,14 @@ void GWSPageLoadMetricsObserver::OnParseStart(
     PAGE_LOAD_HISTOGRAM(internal::kHistogramServiceWorkerParseStartSearch,
                         timing.parse_timing->parse_start.value());
   }
-  is_header_from_synthetic_response_ =
-      page_load_metrics::IsServiceWorkerSyntheticResponseEnabled(GetDelegate());
+  if (page_load_metrics::IsServiceWorkerSyntheticResponseEnabled(
+          GetDelegate())) {
+    is_header_from_synthetic_response_ = true;
+    PAGE_LOAD_HISTOGRAM(
+        base::StrCat({internal::kHistogramGWSParseStart,
+                      internal::kHistogramSyntheticResponseSuffix}),
+        timing.parse_timing->parse_start.value());
+  }
 }
 
 void GWSPageLoadMetricsObserver::OnConnectStart(
