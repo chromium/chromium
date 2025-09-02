@@ -742,6 +742,15 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Failed to migrate schema"/>
 </enum>
 
+<enum name="UpdateSignatureResult">
+  <summary>Result of updating the app shortcut's signature.</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed to create static code object"/>
+  <int value="2" label="Failed to create code signer"/>
+  <int value="3" label="Failed to add signature"/>
+  <int value="4" label="Failed to copy signing information"/>
+</enum>
+
 <enum name="WebAppCreateShortcutIconLinuxResult">
   <summary>Result for creating shortcut icon on Linux</summary>
   <int value="0" label="Success"/>
