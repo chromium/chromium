@@ -706,26 +706,8 @@
           <settings-subpage page-title="$i18n{siteSettingsBluetoothScanning}"
               search-label="$i18n{siteSettingsAllSitesSearch}"
               search-term="{{searchFilter_}}">
-            <div class="content-settings-header secondary">
-              $i18n{siteSettingsBluetoothScanningDescription}
-            </div>
-            <settings-category-default-radio-group
-                category="[[contentSettingsTypesEnum_.BLUETOOTH_SCANNING]]"
-                allow-option-label=
-                    "$i18n{siteSettingsBluetoothScanningAsk}"
-                allow-option-icon="settings:bluetooth-scanning"
-                block-option-label="$i18n{siteSettingsBluetoothScanningBlock}"
-                block-option-icon="settings:bluetooth-off">
-            </settings-category-default-radio-group>
-            <category-setting-exceptions
-                category="[[contentSettingsTypesEnum_.BLUETOOTH_SCANNING]]"
-                read-only-list
-                block-header=
-                    "$i18n{siteSettingsBluetoothScanningBlockedExceptions}"
-                allow-header=
-                    "$i18n{siteSettingsBluetoothScanningAllowedExceptions}"
-                search-filter="[[searchFilter_]]">
-            </category-setting-exceptions>
+            <settings-bluetooth-scanning-page search-term="[[searchFilter_]]">
+            </settings-bluetooth-scanning-page>
           </settings-subpage>
         </template>
       </template>
@@ -733,47 +715,14 @@
         <settings-subpage page-title="$i18n{siteSettingsVr}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <div class="content-settings-header secondary">
-            $i18n{siteSettingsVrDescription}
-          </div>
-          <settings-category-default-radio-group
-              category="[[contentSettingsTypesEnum_.VR]]"
-              allow-option-label="$i18n{siteSettingsVrAllowed}"
-              allow-option-icon="privacy:cardboard"
-              block-option-label="$i18n{siteSettingsVrBlocked}"
-              block-option-icon="privacy:cardboard-off">
-          </settings-category-default-radio-group>
-          <category-setting-exceptions
-              category="[[contentSettingsTypesEnum_.VR]]"
-              read-only-list
-              allow-header="$i18n{siteSettingsVrAllowedExceptions}"
-              block-header="$i18n{siteSettingsVrBlockedExceptions}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
+          <settings-vr-page search-term="[[searchFilter_]]"></settings-vr-page>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/ar" no-search>
         <settings-subpage page-title="$i18n{siteSettingsAr}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <div class="content-settings-header secondary">
-            $i18n{siteSettingsArDescription}
-          </div>
-          <!-- TODO(crbug.com/40176677): Fix redesign string when available.-->
-          <settings-category-default-radio-group
-              category="[[contentSettingsTypesEnum_.AR]]"
-              allow-option-label="$i18n{siteSettingsArAsk}"
-              allow-option-icon="privacy:cardboard"
-              block-option-label="$i18n{siteSettingsArBlock}"
-              block-option-icon="privacy:cardboard-off">
-          </settings-category-default-radio-group>
-          <category-setting-exceptions
-              category="[[contentSettingsTypesEnum_.AR]]"
-              read-only-list
-              allow-header="$i18n{siteSettingsArAllowedExceptions}"
-              block-header="$i18n{siteSettingsArBlockedExceptions}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
+          <settings-ar-page search-term="[[searchFilter_]]"></settings-ar-page>
         </settings-subpage>
       </template>
       <template is="dom-if" if="[[enableHandTrackingContentSetting_]]">
@@ -781,23 +730,8 @@
         <settings-subpage page-title="$i18n{siteSettingsHandTracking}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <div class="content-settings-header secondary">
-            $i18n{siteSettingsHandTrackingDescription}
-          </div>
-          <settings-category-default-radio-group
-              category="[[contentSettingsTypesEnum_.HAND_TRACKING]]"
-              allow-option-label="$i18n{siteSettingsHandTrackingAsk}"
-              allow-option-icon="privacy:hand-gesture"
-              block-option-label="$i18n{siteSettingsHandTrackingBlock}"
-              block-option-icon="privacy:hand-gesture-off">
-          </settings-category-default-radio-group>
-          <category-setting-exceptions
-              category="[[contentSettingsTypesEnum_.HAND_TRACKING]]"
-              read-only-list
-              allow-header="$i18n{siteSettingsHandTrackingAllowedExceptions}"
-              block-header="$i18n{siteSettingsHandTrackingBlockedExceptions}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
+          <settings-hand-tracking-page search-term="[[searchFilter_]]">
+          </settings-hand-tracking-page>
         </settings-subpage>
       </template>
       </template>
@@ -805,100 +739,32 @@
         <settings-subpage page-title="$i18n{siteSettingsIdleDetection}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <div class="content-settings-header secondary">
-            $i18n{siteSettingsDeviceUseDescription}
-          </div>
-          <settings-category-default-radio-group
-              category="[[contentSettingsTypesEnum_.IDLE_DETECTION]]"
-              allow-option-label="$i18n{siteSettingsDeviceUseAllowed}"
-              allow-option-icon="settings:devices"
-              block-option-label="$i18n{siteSettingsDeviceUseBlocked}"
-              block-option-icon="privacy:devices-off">
-          </settings-category-default-radio-group>
-          <category-setting-exceptions
-              category="[[contentSettingsTypesEnum_.IDLE_DETECTION]]"
-              allow-header="$i18n{siteSettingsDeviceUseAllowedExceptions}"
-              block-header="$i18n{siteSettingsDeviceUseBlockedExceptions}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
+          <settings-idle-detection-page search-term="[[searchFilter_]]">
+          </settings-idle-detection-page>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/windowManagement" no-search>
         <settings-subpage page-title="$i18n{siteSettingsWindowManagement}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <div class="content-settings-header secondary">
-            $i18n{siteSettingsWindowManagementDescription}
-          </div>
-          <settings-category-default-radio-group
-              category="[[contentSettingsTypesEnum_.WINDOW_MANAGEMENT]]"
-              allow-option-label="$i18n{siteSettingsWindowManagementAsk}"
-              allow-option-icon="privacy:select-window"
-              block-option-label="$i18n{siteSettingsWindowManagementBlocked}"
-              block-option-icon="privacy:select-window-off">
-          </settings-category-default-radio-group>
-          <category-setting-exceptions
-              category="[[contentSettingsTypesEnum_.WINDOW_MANAGEMENT]]"
-              allow-header="$i18n{siteSettingsWindowManagementAskExceptions}"
-              block-header=
-                  "$i18n{siteSettingsWindowManagementBlockedExceptions}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
+          <settings-window-management-page search-term="[[searchFilter_]]">
+          </settings-window-management-page>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/localFonts" no-search>
         <settings-subpage page-title="$i18n{fonts}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <div class="content-settings-header secondary">
-            $i18n{siteSettingsFontsDescription}
-          </div>
-          <settings-category-default-radio-group
-              category="[[contentSettingsTypesEnum_.LOCAL_FONTS]]"
-              allow-option-label="$i18n{siteSettingsFontsAllowed}"
-              allow-option-icon="privacy:font-download"
-              block-option-label="$i18n{siteSettingsFontsBlocked}"
-              block-option-icon="privacy:font-download-off">
-          </settings-category-default-radio-group>
-          <category-setting-exceptions
-              category="[[contentSettingsTypesEnum_.LOCAL_FONTS]]"
-              block-header="$i18n{siteSettingsFontsBlockedExceptions}"
-              allow-header="$i18n{siteSettingsFontsAllowedExceptions}"
-              search-filter="[[searchFilter_]]">
-          </category-setting-exceptions>
+          <settings-local-fonts-page search-term="[[searchFilter_]]">
+          </settings-local-fonts-page>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/storageAccess" no-search>
         <settings-subpage page-title="$i18n{siteSettingsStorageAccess}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <div class="content-settings-header secondary">
-            $i18n{storageAccessDescription}
-          </div>
-          <settings-category-default-radio-group
-              category="[[contentSettingsTypesEnum_.STORAGE_ACCESS]]"
-              allow-option-label="$i18n{storageAccessAllowed}"
-              allow-option-icon="privacy:storage-access"
-              block-option-label="$i18n{storageAccessBlocked}"
-              block-option-icon="privacy:storage-access-off">
-          </settings-category-default-radio-group>
-          <!-- Exceptions section. -->
-          <div class="content-settings-header">
-            <h2>$i18n{siteSettingsCustomizedBehaviors}</h2>
-            <div class="cr-secondary-text">
-              $i18n{siteSettingsCustomizedBehaviorsDescription}
-            </div>
-          </div>
-          <storage-access-site-list
-              category-subtype="[[contentSettingEnum_.BLOCK]]"
-              category-header="$i18n{storageAccessBlockedExceptions}"
-              search-filter="[[searchFilter_]]">
-          </storage-access-site-list>
-          <storage-access-site-list
-              category-subtype="[[contentSettingEnum_.ALLOW]]"
-              category-header="$i18n{storageAccessAllowedExceptions}"
-              search-filter="[[searchFilter_]]">
-          </storage-access-site-list>
+          <settings-storage-access-page search-term="[[searchFilter_]]">
+          </settings-storage-access-page>
         </settings-subpage>
       </template>
       <template is="dom-if" if="[[autoPictureInPictureEnabled_]]">
@@ -906,25 +772,9 @@
           <settings-subpage page-title="$i18n{siteSettingsAutoPictureInPicture}"
               search-label="$i18n{siteSettingsAllSitesSearch}"
               search-term="{{searchFilter_}}">
-            <div class="content-settings-header secondary">
-              $i18n{siteSettingsAutoPictureInPictureDescription}
-            </div>
-            <settings-category-default-radio-group
-                category="[[contentSettingsTypesEnum_.AUTO_PICTURE_IN_PICTURE]]"
-                allow-option-label=
-                    "$i18n{siteSettingsAutoPictureInPictureAllowed}"
-                allow-option-icon="settings:picture-in-picture"
-                block-option-label="$i18n{siteSettingsAutoPictureInPictureBlocked}"
-                block-option-icon="settings:picture-in-picture-off">
-            </settings-category-default-radio-group>
-            <category-setting-exceptions
-                category="[[contentSettingsTypesEnum_.AUTO_PICTURE_IN_PICTURE]]"
-                allow-header=
-                    "$i18n{siteSettingsAutoPictureInPictureAllowedExceptions}"
-                block-header=
-                    "$i18n{siteSettingsAutoPictureInPictureBlockedExceptions}"
-                search-filter="[[searchFilter_]]">
-            </category-setting-exceptions>
+            <settings-auto-picture-in-picture-page
+                search-term="[[searchFilter_]]">
+            </settings-auto-picture-in-picture-page>
           </settings-subpage>
        </template>
       </template>
@@ -933,25 +783,9 @@
           <settings-subpage page-title="$i18n{siteSettingsCapturedSurfaceControl}"
               search-label="$i18n{siteSettingsAllSitesSearch}"
               search-term="{{searchFilter_}}">
-            <div class="content-settings-header secondary">
-              $i18n{siteSettingsCapturedSurfaceControlDescription}
-            </div>
-            <settings-category-default-radio-group
-                category="[[contentSettingsTypesEnum_.CAPTURED_SURFACE_CONTROL]]"
-                allow-option-label=
-                    "$i18n{siteSettingsCapturedSurfaceControlAllowed}"
-                allow-option-icon="settings:touchpad-mouse"
-                block-option-label="$i18n{siteSettingsCapturedSurfaceControlBlocked}"
-                block-option-icon="settings:touchpad-mouse-off">
-            </settings-category-default-radio-group>
-            <category-setting-exceptions
-                category="[[contentSettingsTypesEnum_.CAPTURED_SURFACE_CONTROL]]"
-                allow-header=
-                    "$i18n{siteSettingsCapturedSurfaceControlAllowedExceptions}"
-                block-header=
-                    "$i18n{siteSettingsCapturedSurfaceControlBlockedExceptions}"
-                search-filter="[[searchFilter_]]">
-            </category-setting-exceptions>
+            <settings-captured-surface-control-page
+                search-term="[[searchFilter_]]">
+            </settings-captured-surface-control-page>
           </settings-subpage>
        </template>
       </template>

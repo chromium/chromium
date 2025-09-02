@@ -22,7 +22,6 @@ import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_brow
 
 const redesignedPages: Route[] = [
   routes.SITE_SETTINGS_ADS,
-  routes.SITE_SETTINGS_AR,
   routes.SITE_SETTINGS_AUTOMATIC_DOWNLOADS,
   routes.SITE_SETTINGS_BACKGROUND_SYNC,
   routes.SITE_SETTINGS_CAMERA,
@@ -31,11 +30,9 @@ const redesignedPages: Route[] = [
   routes.SITE_SETTINGS_FILE_SYSTEM_WRITE,
   routes.SITE_SETTINGS_HANDLERS,
   routes.SITE_SETTINGS_HID_DEVICES,
-  routes.SITE_SETTINGS_IDLE_DETECTION,
   routes.SITE_SETTINGS_IMAGES,
   routes.SITE_SETTINGS_JAVASCRIPT,
   routes.SITE_SETTINGS_JAVASCRIPT_OPTIMIZER,
-  routes.SITE_SETTINGS_LOCAL_FONTS,
   routes.SITE_SETTINGS_MICROPHONE,
   routes.SITE_SETTINGS_MIDI_DEVICES,
   routes.SITE_SETTINGS_NOTIFICATIONS,
@@ -46,9 +43,7 @@ const redesignedPages: Route[] = [
   routes.SITE_SETTINGS_SENSORS,
   routes.SITE_SETTINGS_SERIAL_PORTS,
   routes.SITE_SETTINGS_SOUND,
-  routes.SITE_SETTINGS_STORAGE_ACCESS,
   routes.SITE_SETTINGS_USB_DEVICES,
-  routes.SITE_SETTINGS_VR,
 
   // WEB_PRINTING is currently only supported on ChromeOS.
   // <if expr="is_chromeos">
@@ -206,7 +201,8 @@ suite('PrivacyPage', function() {
     await flushTasks();
 
     const categorySettingExceptions =
-        page.shadowRoot!.querySelectorAll('storage-access-site-list');
+        page.shadowRoot!.querySelector('settings-storage-access-page')!
+            .shadowRoot!.querySelectorAll('storage-access-site-list');
 
     assertEquals(2, categorySettingExceptions.length);
     assertTrue(isVisible(categorySettingExceptions[0]!));
