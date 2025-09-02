@@ -305,7 +305,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'src_internal_revision': 'd9853f3ce8dce7ce84f0c2701cf93bfbed617347',
+  'src_internal_revision': 'e46adb2a47820df7744bc13326380f6f467b33eb',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
@@ -313,7 +313,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': '1f4839b6a7095c09cb5cc10603ad7b22037405f3',
+  'v8_revision': 'c394d52a2d90c92f05e5b44c9a104c594447c637',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
@@ -4811,8 +4811,8 @@ hooks = [
                Var('reapi_instance'),
                '--reapi_address',
                Var('reapi_address'),
-	       '--reapi_backend_config_path',
-	       Var('reapi_backend_config_path'),
+        '--reapi_backend_config_path',
+        Var('reapi_backend_config_path'),
                ],
   },
   {
