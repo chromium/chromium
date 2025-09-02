@@ -593,10 +593,6 @@ variations::VariationsClient* Profile::GetVariationsClient() {
   return chrome_variations_client_.get();
 }
 
-base::WeakPtr<const Profile> Profile::GetWeakPtr() const {
-  return weak_factory_.GetWeakPtr();
-}
-
 base::WeakPtr<Profile> Profile::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }

@@ -1214,7 +1214,7 @@ std::unique_ptr<Profile> ProfileManager::CreateProfileAsyncHelper(
   return Profile::CreateProfile(path, this, Profile::CreateMode::kAsynchronous);
 }
 
-bool ProfileManager::HasKeepAliveForTesting(const Profile* profile,
+bool ProfileManager::HasKeepAliveForTesting(Profile* profile,
                                             ProfileKeepAliveOrigin origin) {
   DCHECK(profile);
   ProfileInfo* info = GetProfileInfoByPath(profile->GetPath());
@@ -1243,7 +1243,7 @@ void ProfileManager::RecordZombieMetrics() {
   base::UmaHistogramCounts100("Profile.ZombieProfileCount", zombie_count);
 }
 
-void ProfileManager::AddKeepAlive(const Profile* profile,
+void ProfileManager::AddKeepAlive(Profile* profile,
                                   ProfileKeepAliveOrigin origin) {
   DCHECK_NE(ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow, origin);
 
@@ -1286,7 +1286,7 @@ void ProfileManager::AddKeepAlive(const Profile* profile,
   }
 }
 
-void ProfileManager::RemoveKeepAlive(const Profile* profile,
+void ProfileManager::RemoveKeepAlive(Profile* profile,
                                      ProfileKeepAliveOrigin origin) {
   DCHECK_NE(ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow, origin);
 
@@ -1340,7 +1340,7 @@ void ProfileManager::RemoveKeepAlive(const Profile* profile,
   UnloadProfileIfNoKeepAlive(info);
 }
 
-void ProfileManager::ClearFirstBrowserWindowKeepAlive(const Profile* profile) {
+void ProfileManager::ClearFirstBrowserWindowKeepAlive(Profile* profile) {
   CHECK(profile);
   CHECK(!profile->IsOffTheRecord());
 

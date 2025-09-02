@@ -25,22 +25,22 @@ enum class ProfileKeepAliveOrigin;
 // off-the-record Profile triggers a DCHECK.
 class ScopedProfileKeepAlive {
  public:
-  ScopedProfileKeepAlive(const Profile* profile, ProfileKeepAliveOrigin origin);
+  ScopedProfileKeepAlive(Profile* profile, ProfileKeepAliveOrigin origin);
   ~ScopedProfileKeepAlive();
 
   ScopedProfileKeepAlive(const ScopedProfileKeepAlive&) = delete;
   ScopedProfileKeepAlive& operator=(const ScopedProfileKeepAlive&) = delete;
 
-  const Profile* profile() { return profile_.get(); }
+  Profile* profile() { return profile_.get(); }
   ProfileKeepAliveOrigin origin() { return origin_; }
 
  private:
   // Called after the ScopedProfileKeepAlive has been deleted, so this is a
   // static method where we pass parameters manually.
-  static void RemoveKeepAliveOnUIThread(base::WeakPtr<const Profile> profile,
+  static void RemoveKeepAliveOnUIThread(base::WeakPtr<Profile> profile,
                                         ProfileKeepAliveOrigin origin);
 
-  const base::WeakPtr<const Profile> profile_;
+  const base::WeakPtr<Profile> profile_;
   const ProfileKeepAliveOrigin origin_;
 };
 

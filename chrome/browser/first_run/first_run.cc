@@ -431,9 +431,7 @@ void ImportBookmarksFromDict(
     return;
   }
 
-  // Safe to remove const as ScopedProfileKeepAlive just wraps a non-const
-  // Profile* as const in its constructor.
-  Profile* profile = const_cast<Profile*>(scoped_profile->profile());
+  Profile* profile = scoped_profile->profile();
 
   bookmark_model->BeginExtensiveChanges();
   absl::Cleanup end_changes = [bookmark_model] {

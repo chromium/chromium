@@ -310,8 +310,7 @@ class ProfileManager : public Profile::Delegate {
 
   // Used for testing. Returns true if |profile| has at least one ref of type
   // |origin|.
-  bool HasKeepAliveForTesting(const Profile* profile,
-                              ProfileKeepAliveOrigin origin);
+  bool HasKeepAliveForTesting(Profile* profile, ProfileKeepAliveOrigin origin);
 
   // Disables the periodic reporting of profile metrics, as this is causing
   // tests to time out.
@@ -338,7 +337,7 @@ class ProfileManager : public Profile::Delegate {
   // Removes the kWaitingForFirstBrowserWindow keepalive. This allows a
   // Profile* to be deleted from now on, even if it never had a visible
   // browser window.
-  void ClearFirstBrowserWindowKeepAlive(const Profile* profile);
+  void ClearFirstBrowserWindowKeepAlive(Profile* profile);
 
   // Returns whether |path| is allowed for profile creation.
   bool IsAllowedProfilePath(const base::FilePath& path) const;
@@ -442,8 +441,8 @@ class ProfileManager : public Profile::Delegate {
 
   // Increments/decrements the refcount on a |profile|. (it must not be an
   // off-the-record profile)
-  void AddKeepAlive(const Profile* profile, ProfileKeepAliveOrigin origin);
-  void RemoveKeepAlive(const Profile* profile, ProfileKeepAliveOrigin origin);
+  void AddKeepAlive(Profile* profile, ProfileKeepAliveOrigin origin);
+  void RemoveKeepAlive(Profile* profile, ProfileKeepAliveOrigin origin);
 
   void RecordZombieMetrics();
 
