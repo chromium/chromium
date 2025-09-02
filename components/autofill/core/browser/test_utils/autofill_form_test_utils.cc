@@ -225,8 +225,10 @@ void FormStructureTest::CheckFormStructureTestData(
     auto form_structure = std::make_unique<FormStructure>(form);
 
     if (test_case.form_flags.determine_heuristic_type) {
-      DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
-                              *form_structure, nullptr);
+      const HeuristicPredictions heuristic_predictions =
+          DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
+                                  *form_structure, nullptr);
+      heuristic_predictions.ApplyTo(form_structure->fields());
       form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                    LanguageCode(""), nullptr);
     }

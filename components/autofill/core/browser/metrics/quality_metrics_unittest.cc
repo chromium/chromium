@@ -841,8 +841,9 @@ TEST_F(QualityMetricsTest, BasedOnAutocomplete) {
   std::unique_ptr<FormStructure> form_structure =
       std::make_unique<FormStructure>(form);
   FormStructure* form_structure_ptr = form_structure.get();
-  DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
-                          *form_structure, nullptr);
+  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
+      GeoIpCountryCode(""), LanguageCode(""), *form_structure, nullptr);
+  heuristic_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
   ASSERT_TRUE(

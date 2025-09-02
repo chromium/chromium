@@ -756,9 +756,10 @@ void AutofillManager::ParseFormsAsyncCommon(
   auto run_heuristics = [](AsyncContext context) {
     SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.ParseFormsAsync.RunHeuristics");
     for (auto& form_structure : context.form_structures) {
-      DetermineHeuristicTypes(context.country_code,
-                              context.current_page_language, *form_structure,
-                              context.log_manager.get());
+      HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
+          context.country_code, context.current_page_language, *form_structure,
+          context.log_manager.get());
+      heuristic_predictions.ApplyTo(form_structure->fields());
     }
     return context;
   };

@@ -491,8 +491,9 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
     // Similarly to AutofillManager::ParseFormsAsync, the heuristics are
     // executed after the ML model. If ML predictions are enabled, this does
     // not override the heuristic types but performs rationalization.
-    DetermineHeuristicTypes(client_country, page_language, *form_structure,
-                            log_manager);
+    const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
+        client_country, page_language, *form_structure, log_manager);
+    heuristic_predictions.ApplyTo(form_structure->fields());
     form_structure->RationalizeAndAssignSections(client_country, page_language,
                                                  log_manager);
 

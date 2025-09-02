@@ -71,9 +71,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FormData form_data = GenerateFormData(data_provider);
 
   FormStructure form_structure(form_data);
-  DetermineHeuristicTypes(GenerateGeoIpCountryCode(data_provider),
-                          LanguageCode(""), form_structure,
-                          /*log_manager=*/nullptr);
+  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
+      GenerateGeoIpCountryCode(data_provider), LanguageCode(""), form_structure,
+      /*log_manager=*/nullptr);
+  heuristic_predictions.ApplyTo(form_structure.fields());
   form_structure.RationalizeAndAssignSections(
       GenerateGeoIpCountryCode(data_provider), LanguageCode(""),
       /*log_manager=*/nullptr);

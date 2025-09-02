@@ -37,8 +37,10 @@ TEST_F(CWVAutofillFormTest, Initialization) {
   autofill::FormData form_data = autofill::test::CreateTestAddressFormData();
   std::unique_ptr<autofill::FormStructure> form_structure =
       std::make_unique<autofill::FormStructure>(form_data);
-  DetermineHeuristicTypes(GeoIpCountryCode(""), autofill::LanguageCode(""),
-                          *form_structure, nullptr);
+  const autofill::HeuristicPredictions heuristic_predictions =
+      DetermineHeuristicTypes(GeoIpCountryCode(""), autofill::LanguageCode(""),
+                              *form_structure, nullptr);
+  heuristic_predictions.ApplyTo(form_structure->fields());
   form_structure->RationalizeAndAssignSections(
       GeoIpCountryCode(""), autofill::LanguageCode(""), nullptr);
   CWVAutofillForm* form =

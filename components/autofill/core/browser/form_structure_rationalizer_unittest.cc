@@ -133,8 +133,9 @@ std::unique_ptr<FormStructure> BuildFormStructure(
 
   // Identifies the sections based on the heuristics types.
   if (run_heuristics) {
-    DetermineHeuristicTypes(GeoIpCountryCode(""), LanguageCode(""),
-                            *form_structure, nullptr);
+    const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
+        GeoIpCountryCode(""), LanguageCode(""), *form_structure, nullptr);
+    heuristic_predictions.ApplyTo(form_structure->fields());
     form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                  LanguageCode(""), nullptr);
   } else {

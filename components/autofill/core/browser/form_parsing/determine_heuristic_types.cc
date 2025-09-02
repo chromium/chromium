@@ -130,10 +130,11 @@ void HeuristicPredictions::ApplyTo(
   }
 }
 
-void DetermineHeuristicTypes(const GeoIpCountryCode& client_country,
-                             const LanguageCode& current_page_language,
-                             FormStructure& form,
-                             LogManager* log_manager) {
+HeuristicPredictions DetermineHeuristicTypes(
+    const GeoIpCountryCode& client_country,
+    const LanguageCode& current_page_language,
+    FormStructure& form,
+    LogManager* log_manager) {
   SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.DetermineHeuristicTypes");
 
   const LanguageCode& page_language =
@@ -148,10 +149,9 @@ void DetermineHeuristicTypes(const GeoIpCountryCode& client_country,
                          PatternFile::kLegacy,
 #endif
                          GetActiveRegexFeatures(), log_manager);
-  HeuristicPredictions predictions = HeuristicPredictions(
-      HeuristicSource::kRegexes, ParseFieldTypesWithPatterns(form, context),
-      form.fields());
-  predictions.ApplyTo(form.fields());
+  return HeuristicPredictions(HeuristicSource::kRegexes,
+                              ParseFieldTypesWithPatterns(form, context),
+                              form.fields());
 }
 
 }  // namespace autofill

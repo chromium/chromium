@@ -22,6 +22,7 @@ class AutofillField;
 class FormStructure;
 class LogManager;
 
+// Holds the predictions returned by DetermineHeuristicTypes().
 class HeuristicPredictions {
  public:
   HeuristicPredictions(HeuristicSource source,
@@ -43,10 +44,11 @@ class HeuristicPredictions {
 
 // Runs several heuristics against the form fields to determine their possible
 // types.
-void DetermineHeuristicTypes(const GeoIpCountryCode& client_country,
-                             const LanguageCode& current_page_language,
-                             FormStructure& form,
-                             LogManager* log_manager);
+[[nodiscard]] HeuristicPredictions DetermineHeuristicTypes(
+    const GeoIpCountryCode& client_country,
+    const LanguageCode& current_page_language,
+    FormStructure& form,
+    LogManager* log_manager);
 
 }  // namespace autofill
 

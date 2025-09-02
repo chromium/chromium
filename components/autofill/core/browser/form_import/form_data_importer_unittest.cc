@@ -212,8 +212,9 @@ std::unique_ptr<FormStructure> ConstructFormStructureFromFormData(
     GeoIpCountryCode geo_country = GeoIpCountryCode("")) {
   auto cached_form_structure =
       std::make_unique<FormStructure>(test::WithoutValues(form));
-  DetermineHeuristicTypes(geo_country, LanguageCode(""), *cached_form_structure,
-                          nullptr);
+  const HeuristicPredictions heuristic_predictions = DetermineHeuristicTypes(
+      geo_country, LanguageCode(""), *cached_form_structure, nullptr);
+  heuristic_predictions.ApplyTo(cached_form_structure->fields());
   cached_form_structure->RationalizeAndAssignSections(
       geo_country, LanguageCode(""), nullptr);
 
