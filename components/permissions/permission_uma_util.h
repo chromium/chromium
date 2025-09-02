@@ -920,6 +920,10 @@ class PermissionUmaUtil {
   // workflow was initiated.
   static void RecordPassageEmbedderMetadataValid(bool valid);
 
+  // Records whether the UI selection logic of the
+  // PermissionBasedPredictionUiSelector ran into a timeout.
+  static void RecordPredictionServiceTimeout(bool timeout);
+
   // Records if the browser was active at the time the prompt started displaying
   static void RecordPromptShownInActiveBrowser(
       RequestTypeForUma request_type,

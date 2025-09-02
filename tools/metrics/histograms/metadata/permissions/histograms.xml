@@ -1060,6 +1060,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Permissions.PredictionService.Timeout" enum="BooleanTimedOut"
+    expires_after="2025-12-01">
+  <owner>elklm@chromium.org</owner>
+  <owner>hempjudith@google.com</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded when the overall timeout for the prediction service is reached.
+    This indicates that the entire process of selecting a permission UI took
+    longer than the allowed time. This is not recorded when the request is
+    cancelled.
+  </summary>
+</histogram>
+
 <histogram name="Permissions.PredictionServiceSource.{PermissionType}"
     enum="PermissionPredictionSource" expires_after="2025-12-07">
   <owner>elklm@chromium.org</owner>

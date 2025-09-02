@@ -143,7 +143,7 @@ class PredictionBasedPermissionUiSelector
                            HoldbackDecisionTest);
 
   // A safe way to invoke the callback with a decision.
-  void FinishRequest(Decision decision);
+  void FinishRequest(Decision decision, bool timeout = false);
 
   // Resets the permission request, the language detection observer and the
   // passage embedder delegate, which cancels all async operations managed by

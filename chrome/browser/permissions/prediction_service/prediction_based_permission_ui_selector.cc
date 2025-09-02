@@ -482,9 +482,8 @@ void PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel(
 
 void PredictionBasedPermissionUiSelector::OnTimeout() {
   VLOG(1) << "[CPSS] Overall timeout for prediction reached.";
-  // TODO(crbug.com/441889637): Add a UMA metric for this timeout event.
   Cleanup();
-  FinishRequest(Decision::UseNormalUiAndShowNoWarning());
+  FinishRequest(Decision::UseNormalUiAndShowNoWarning(), /*timeout=*/true);
 }
 
 void PredictionBasedPermissionUiSelector::Cancel() {
@@ -493,9 +492,12 @@ void PredictionBasedPermissionUiSelector::Cancel() {
   Cleanup();
 }
 
-void PredictionBasedPermissionUiSelector::FinishRequest(Decision decision) {
+void PredictionBasedPermissionUiSelector::FinishRequest(Decision decision,
+                                                        bool timeout) {
   timeout_timer_.Stop();
+  PermissionUmaUtil::RecordPredictionServiceTimeout(timeout);
   if (!callback_) {
+    VLOG(1) << "[CPSS] FinishRequest called but callback is null";
     return;
   }
 

@@ -2234,4 +2234,9 @@ void PermissionUmaUtil::RecordPassageEmbedderMetadataValid(bool valid) {
   base::UmaHistogramBoolean("Permissions.AIv4.EmbedderMetadataValid", valid);
 }
 
+// static
+void PermissionUmaUtil::RecordPredictionServiceTimeout(bool timeout) {
+  base::UmaHistogramBoolean("Permissions.PredictionService.Timeout", timeout);
+}
+
 }  // namespace permissions

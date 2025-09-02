@@ -135,6 +135,8 @@ constexpr char kCpssV1InquiryDurationHistogram[] =
     "Permissions.OnDevicePredictionService.InquiryDuration";
 constexpr char kCpssV3InquiryDurationHistogram[] =
     "Permissions.PredictionService.InquiryDuration";
+constexpr char kPredictionServiceTimeoutHistogram[] =
+    "Permissions.PredictionService.Timeout";
 constexpr char kTFLiteLibAvailableHistogram[] =
     "Permissions.PredictionService.TFLiteLibAvailable";
 constexpr char kMSBBHistogram[] = "Permissions.PredictionService.MSBB";
@@ -603,10 +605,14 @@ IN_PROC_BROWSER_TEST_P(PredictionServiceHoldbackBrowserTest,
                 .Run(/*lookup_successful=*/true,
                      /*response_from_cache=*/true, prediction_service_response);
           })));
+
   TriggerPromptAndVerifyUi(test_url, PermissionAction::DISMISSED,
                            GetParam().should_expect_quiet_ui,
                            /*expected_relevance=*/std::nullopt,
                            GetParam().prediction_service_likelihood);
+
+  histogram_tester().ExpectUniqueSample(kPredictionServiceTimeoutHistogram,
+                                        false, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(PredictionServiceHoldbackBrowserTest,
@@ -629,6 +635,9 @@ IN_PROC_BROWSER_TEST_P(PredictionServiceHoldbackBrowserTest,
       /*should_expect_quiet_ui=*/false,
       /*expected_relevance=*/std::nullopt,
       /*expected_prediction_likelihood=*/std::nullopt);
+
+  histogram_tester().ExpectUniqueSample(kPredictionServiceTimeoutHistogram,
+                                        true, 1);
 }
 
 // -----------------------------------------------------------------------------
@@ -772,6 +781,10 @@ IN_PROC_BROWSER_TEST_P(SignatureModelPredictionServiceBrowserTest,
 
   histogram_tester().ExpectTotalCount(kCpssV1InquiryDurationHistogram,
                                       /*expected_count=*/1);
+  // Because of the action history we need to trigger the CPSSv1 model we expect
+  // 5 records here.
+  histogram_tester().ExpectUniqueSample(kPredictionServiceTimeoutHistogram,
+                                        false, 5);
 }
 
 // -----------------------------------------------------------------------------
@@ -1056,6 +1069,9 @@ IN_PROC_BROWSER_TEST_P(Aiv3ModelPredictionServiceBrowserTest,
           ? kAIv3NotificationsHoldbackResponseHistogram
           : kAIv3GeolocationHoldbackResponseHistogram,
       /*sample=*/false, /*expected_count=*/1);
+
+  histogram_tester().ExpectUniqueSample(kPredictionServiceTimeoutHistogram,
+                                        false, 1);
 }
 
 // -----------------------------------------------------------------------------
@@ -1271,6 +1287,9 @@ IN_PROC_BROWSER_TEST_P(Aiv4ModelLanguageDetectionBrowserTest,
                                        /*sample=*/GetParam().expected_status,
                                        /*expected_count=*/1);
 
+  histogram_tester().ExpectUniqueSample(kPredictionServiceTimeoutHistogram,
+                                        false, 1);
+
   // Avoid dangling raw_ptr warning:
   model_handler_provider()->set_passage_embedder_for_testing(nullptr);
 }
@@ -1426,6 +1445,9 @@ IN_PROC_BROWSER_TEST_P(Aiv4ModelFailureBrowserTest,
       kAiv4NotificationsPermissionRequestRelevanceHistogram,
       /*expected_count=*/0);
 
+  histogram_tester().ExpectUniqueSample(kPredictionServiceTimeoutHistogram,
+                                        false, 1);
+
   // Avoid dangling raw_ptr warning:
   model_handler_provider()->set_passage_embedder_for_testing(nullptr);
 }
@@ -1490,6 +1512,9 @@ IN_PROC_BROWSER_TEST_F(Aiv4ModelTimeoutBrowserTest,
       kAiv4FinishedPassageEmbeddingsTaskOutdatedHistogram,
       /*sample=*/1,
       /*expected_count=*/1);
+
+  histogram_tester().ExpectUniqueSample(kPredictionServiceTimeoutHistogram,
+                                        false, 1);
 
   // Avoid dangling raw_ptr warning:
   model_handler_provider()->set_passage_embedder_for_testing(nullptr);
@@ -1681,6 +1706,9 @@ IN_PROC_BROWSER_TEST_P(Aiv4ModelPredictionServiceBrowserTest,
           : kAiv4GeolocationRenderedTextSizeHistogram,
       /*sample=*/55,
       /*expected_bucket_count=*/1);
+
+  histogram_tester().ExpectUniqueSample(kPredictionServiceTimeoutHistogram,
+                                        false, 1);
 }
 
 }  // namespace permissions
