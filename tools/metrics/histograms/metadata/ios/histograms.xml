@@ -347,17 +347,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.Bookmarks.DefaultBookmarkFolderOutcome"
-    enum="IOSDefaultBookmarkFolderOutcome" expires_after="2025-08-24">
-  <owner>mastiz@chromium.org</owner>
-  <owner>arthurmilchior@chromium.org</owner>
-  <component>1457392</component>
-  <summary>
-    Logs how the default bookmark folder is determined, when one or more
-    bookmarks are being saved by the user. Only recorded on iOS.
-  </summary>
-</histogram>
-
 <histogram name="IOS.BringAndroidTabs.ActionOnPrompt"
     enum="IOSBringAndroidTabsPromptActionType" expires_after="2026-01-04">
   <owner>hiramahmood@google.com</owner>
