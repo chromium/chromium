@@ -130,20 +130,12 @@ def _ExtractNodeComment(node: IDLNode) -> str:
   if ext_attribute_node is not None:
     return _ExtractNodeComment(ext_attribute_node)
 
-  # The IDL parser doesn't annotate Operation nodes with their line number
-  # correctly, but the Arguments child node will have the correct line number,
-  # so use that instead.
-  # Note: If the Operation node had any extended attributes, it will have
-  # already been handled by the conditional before this one.
-  if node.GetClass() == 'Operation':
-    return _ExtractNodeComment(node.GetOneOf('Arguments'))
-
   # Look through the lines above the current node and extract every consecutive
   # line that is a comment until a blank or non-comment line is found.
   filename, line_number = node.GetFileAndLine()
-  # The IDL parser we use doesn't annotate some classes of nodes with the
-  # correct line number and just reports them as line 0. In theory we shouldn't
-  # pass any of those nodes to this function, so throw an error if happens.
+
+  # In theory the IDL parser shouldn't annotate any of our nodes with line
+  # number 0, but in case it does we throw an error to make it obvious.
   assert line_number > 0, node.GetLogLine(
       'Attempted to extract a description comment for an IDL node, but the line'
       ' number of the node was reported as 0: %s.' % (node.GetName()))
@@ -676,14 +668,7 @@ class Event:
     parameter_descriptions = ProcessNodeDescription(
         callback_node).parameter_descriptions
 
-    # The WebIDL Parser incorrectly reports the line number for Attributes we
-    # use to define events as 0, so we need to use the Typeref node on the
-    # Attribute instead to get the correct line number to extract the
-    # description comment.
-    # TODO(crbug.com/396176041): Clean this up once the line number issue is
-    # resolved in the Parser.
-    description = ProcessNodeDescription(
-        self.node.GetOneOf('Type').GetOneOf('Typeref')).description
+    description = ProcessNodeDescription(self.node).description
     if (description):
       properties['description'] = description
 
