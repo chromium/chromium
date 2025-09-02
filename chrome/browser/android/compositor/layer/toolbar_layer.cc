@@ -12,6 +12,7 @@
 #include "cc/slim/ui_resource_layer.h"
 #include "chrome/browser/android/compositor/resources/toolbar_resource.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/quads/offset_tag.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -164,9 +165,13 @@ void ToolbarLayer::UpdateProgressBar(int progress_bar_x,
                                      bool visible,
                                      const viz::OffsetTag& offset_tag) {
   bool is_progress_bar_visible = SkColorGetA(progress_bar_background_color);
-  if (features::IsAndroidAnimatedProgressBarInVizEnabled()) {
+  if (features::IsAndroidAnimatedProgressBarInVizEnabled() ||
+      features::IsAndroidAnimatedProgressBarInBrowserEnabled()) {
     is_progress_bar_visible = visible;
-    progress_bar_layers_->SetOffsetTag(offset_tag);
+
+    if (features::IsAndroidAnimatedProgressBarInVizEnabled()) {
+      progress_bar_layers_->SetOffsetTag(offset_tag);
+    }
   }
 
   progress_bar_background_layer_->SetHideLayerAndSubtree(!is_progress_bar_visible);

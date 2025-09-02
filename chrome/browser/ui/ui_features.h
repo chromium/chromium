@@ -420,6 +420,12 @@ BASE_DECLARE_FEATURE(kBookmarkTabGroupConversion);
 
 bool IsBookmarkTabGroupConversionEnabled();
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kAndroidAnimatedProgressBarInBrowser);
+
+bool IsAndroidAnimatedProgressBarInBrowserEnabled();
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_UI_UI_FEATURES_H_

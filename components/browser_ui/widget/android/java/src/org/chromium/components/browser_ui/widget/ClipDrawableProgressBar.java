@@ -260,7 +260,7 @@ public class ClipDrawableProgressBar extends ImageView {
      */
     public void getDrawingInfo(DrawingInfo drawingInfoOut) {
         boolean visible = getVisibility() == VISIBLE;
-        if (ChromeFeatureList.sAndroidAnimatedProgressBarInViz.isEnabled()) {
+        if (shouldAnimateCompositedLayer()) {
             visible = mDesiredVisibility == VISIBLE;
             drawingInfoOut.visible = visible;
         }
@@ -339,7 +339,7 @@ public class ClipDrawableProgressBar extends ImageView {
         int newVisibility = mDesiredVisibility;
         if (getAlpha() == 0 && mDesiredVisibility == VISIBLE) newVisibility = INVISIBLE;
         if (oldVisibility != newVisibility) {
-            if (!ChromeFeatureList.sAndroidAnimatedProgressBarInViz.isEnabled()) {
+            if (!shouldAnimateCompositedLayer()) {
                 super.setVisibility(newVisibility);
             }
             if (mProgressBarObserver != null) mProgressBarObserver.onVisibilityChanged();
@@ -418,7 +418,7 @@ public class ClipDrawableProgressBar extends ImageView {
 
     @Override
     protected boolean onSetAlpha(int alpha) {
-        if (ChromeFeatureList.sAndroidAnimatedProgressBarInViz.isEnabled()) {
+        if (shouldAnimateCompositedLayer()) {
             if (alpha == 0) {
                 mDesiredVisibility = INVISIBLE;
             } else {
@@ -427,5 +427,10 @@ public class ClipDrawableProgressBar extends ImageView {
         }
         updateInternalVisibility();
         return super.onSetAlpha(alpha);
+    }
+
+    private boolean shouldAnimateCompositedLayer() {
+        return ChromeFeatureList.sAndroidAnimatedProgressBarInViz.isEnabled()
+                || ChromeFeatureList.sAndroidAnimatedProgressBarInBrowser.isEnabled();
     }
 }

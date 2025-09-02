@@ -4,12 +4,16 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
+import android.animation.TimeAnimator;
+import android.animation.TimeAnimator.TimeListener;
 import android.content.Context;
+import android.graphics.Rect;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
 
 import org.chromium.base.Callback;
+import org.chromium.base.MathUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -114,6 +118,25 @@ public class TopToolbarOverlayMediator {
     private @Nullable OffsetTag mBottomProgressBarOffsetTag;
     private @ControlsPosition int mControlsPosition;
 
+    private float mAnimatedProgress;
+    private float mTargetProgress;
+    private static final long ANIMATION_DURATION_MS = 3000;
+
+    private final TimeAnimator mProgressBarAnimation = new TimeAnimator();
+
+    {
+        mProgressBarAnimation.setTimeListener(
+                new TimeListener() {
+                    @Override
+                    public void onTimeUpdate(
+                            TimeAnimator animation, long totalTimeMs, long deltaTimeMs) {
+                        mAnimatedProgress += (deltaTimeMs / ((float) ANIMATION_DURATION_MS));
+                        mAnimatedProgress = Math.min(mAnimatedProgress, mTargetProgress);
+                        updateProgress();
+                    }
+                });
+    }
+
     TopToolbarOverlayMediator(
             PropertyModel model,
             Context context,
@@ -176,7 +199,18 @@ public class TopToolbarOverlayMediator {
 
                             @Override
                             public void onLoadProgressChanged(Tab tab, float progress) {
-                                updateProgress();
+                                mTargetProgress = progress;
+                                if (ChromeFeatureList.sAndroidAnimatedProgressBarInBrowser
+                                        .isEnabled()) {
+                                    if (MathUtils.areFloatsEqual(1.0f, progress)) {
+                                        mProgressBarAnimation.cancel();
+                                        updateProgress();
+                                    } else if (!mProgressBarAnimation.isStarted()) {
+                                        mProgressBarAnimation.start();
+                                    }
+                                } else {
+                                    updateProgress();
+                                }
                             }
 
                             @Override
@@ -395,6 +429,23 @@ public class TopToolbarOverlayMediator {
             }
 
             onProgressBarOffsetTagsChanged();
+        }
+
+        if (ChromeFeatureList.sAndroidAnimatedProgressBarInBrowser.isEnabled()) {
+            Rect foregroundRect = drawingInfo.progressBarRect;
+            Rect backgroundRect = drawingInfo.progressBarBackgroundRect;
+            Rect staticBackgroundRect = drawingInfo.progressBarStaticBackgroundRect;
+            int progressX =
+                    foregroundRect.left
+                            + Math.round(mAnimatedProgress * staticBackgroundRect.width());
+            int gap = backgroundRect.left - foregroundRect.right;
+            drawingInfo.progressBarRect.set(
+                    foregroundRect.left, foregroundRect.top, progressX, foregroundRect.bottom);
+            drawingInfo.progressBarBackgroundRect.set(
+                    progressX + gap,
+                    backgroundRect.top,
+                    backgroundRect.right,
+                    backgroundRect.bottom);
         }
 
         // TODO(https://crbug.com/439461293) Try not updating the model if nothing changed.

@@ -726,4 +726,15 @@ bool IsNewTabAddsToActiveGroupEnabled() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kAndroidAnimatedProgressBarInBrowser,
+             "AndroidAnimatedProgressBarInBrowser",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAndroidAnimatedProgressBarInBrowserEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kAndroidAnimatedProgressBarInBrowser);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace features

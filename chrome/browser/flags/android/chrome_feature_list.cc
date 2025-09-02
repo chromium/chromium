@@ -139,6 +139,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &download::features::kSmartSuggestionForLargeDownloads,
     &base::features::kCollectAndroidFrameTimelineMetrics,
     &download::features::kDownloadNotificationServiceUnifiedAPI,
+    &features::kAndroidAnimatedProgressBarInBrowser,
     &features::kAndroidAnimatedProgressBarInViz,
     &features::kAndroidBcivBottomControls,
     &features::kAndroidBrowserControlsInViz,
@@ -196,7 +197,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAdaptiveButtonInTopToolbarCustomizationV2,
     &kAdaptiveButtonInTopToolbarPageSummary,
     &kAllowTabClosingUponMinimization,
-    &kAndroidAnimatedProgressBarInBrowser,
     &kAndroidAppIntegration,
     &kAndroidAppIntegrationV2,
     &kNewTabPageCustomization,
@@ -540,10 +540,6 @@ BASE_FEATURE(kAdaptiveButtonInTopToolbarPageSummary,
 BASE_FEATURE(kAllowTabClosingUponMinimization,
              "AllowTabClosingUponMinimization",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAndroidAnimatedProgressBarInBrowser,
-             "AndroidAnimatedProgressBarInBrowser",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidAppIntegration,
              "AndroidAppIntegration",

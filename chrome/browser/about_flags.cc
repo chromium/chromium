@@ -13269,7 +13269,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidAnimatedProgressBarInBrowserName,
      flag_descriptions::kAndroidAnimatedProgressBarInBrowserDescription,
      kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidAnimatedProgressBarInBrowser)},
+     FEATURE_VALUE_TYPE(features::kAndroidAnimatedProgressBarInBrowser)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"enable-cross-device-pref-tracker",
