@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_experiment_api.mojom.h"
 
 class GURL;
+class TabStripModelObserver;
 
 namespace tab_groups {
 

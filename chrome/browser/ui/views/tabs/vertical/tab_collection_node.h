@@ -29,7 +29,7 @@ class TabCollectionNode {
 
   TabCollectionNode();
   explicit TabCollectionNode(CustomAddChildView add_node_to_parent_callback);
-  ~TabCollectionNode();
+  virtual ~TabCollectionNode();
 
   // A TabCollectionNode will be created for each of the children
   // 'Container' The container which holds children information and Data.

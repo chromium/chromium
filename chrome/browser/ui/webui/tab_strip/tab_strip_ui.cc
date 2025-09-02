@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_register.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
@@ -112,9 +112,9 @@ void TabStripUI::BindInterface(
 
 void TabStripUI::BindInterface(
     mojo::PendingReceiver<tabs_api::mojom::TabStripService> receiver) {
-  if (auto* tab_strip_service =
-          browser_->browser_window_features()->tab_strip_service()) {
-    tab_strip_service->Accept(std::move(receiver));
+  if (auto* tab_strip_service_feature =
+          browser_->browser_window_features()->tab_strip_service_feature()) {
+    tab_strip_service_feature->Accept(std::move(receiver));
   }
 }
 

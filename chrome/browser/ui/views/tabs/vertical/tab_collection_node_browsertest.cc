@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -125,14 +126,15 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   auto parent_view = std::make_unique<views::View>();
 
   RootTabCollectionNode root_node(
-      browser()->GetFeatures().tab_strip_service(), parent_view.get(),
+      browser()
+          ->GetFeatures()
+          .tab_strip_service_feature()
+          ->GetTabStripService(),
+      parent_view.get(),
       base::BindRepeating(static_cast<views::View* (
                               views::View::*)(std::unique_ptr<views::View>)>(
                               &views::View::AddChildView),
                           base::Unretained(parent_view.get())));
-
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return !root_node.children().empty(); }));
 
   // The root node should contain two nodes: one for pinned, one for unpinned.
   ASSERT_EQ(root_node.children().size(), 2u);
@@ -159,14 +161,15 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   auto parent_view = std::make_unique<views::View>();
 
   RootTabCollectionNode root_node(
-      browser()->GetFeatures().tab_strip_service(), parent_view.get(),
+      browser()
+          ->GetFeatures()
+          .tab_strip_service_feature()
+          ->GetTabStripService(),
+      parent_view.get(),
       base::BindRepeating(static_cast<views::View* (
                               views::View::*)(std::unique_ptr<views::View>)>(
                               &views::View::AddChildView),
                           base::Unretained(parent_view.get())));
-
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return !root_node.children().empty(); }));
 
   // The root node should contain two nodes: one for pinned, one for unpinned.
   ASSERT_EQ(root_node.children().size(), 2u);
@@ -192,14 +195,15 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   auto parent_view = std::make_unique<views::View>();
 
   RootTabCollectionNode root_node(
-      browser()->GetFeatures().tab_strip_service(), parent_view.get(),
+      browser()
+          ->GetFeatures()
+          .tab_strip_service_feature()
+          ->GetTabStripService(),
+      parent_view.get(),
       base::BindRepeating(static_cast<views::View* (
                               views::View::*)(std::unique_ptr<views::View>)>(
                               &views::View::AddChildView),
                           base::Unretained(parent_view.get())));
-
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return !root_node.children().empty(); }));
 
   // The root node should contain two nodes: one for pinned, one for unpinned.
   ASSERT_EQ(root_node.children().size(), 2u);
@@ -230,14 +234,15 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   auto parent_view = std::make_unique<views::View>();
 
   RootTabCollectionNode root_node(
-      browser()->GetFeatures().tab_strip_service(), parent_view.get(),
+      browser()
+          ->GetFeatures()
+          .tab_strip_service_feature()
+          ->GetTabStripService(),
+      parent_view.get(),
       base::BindRepeating(static_cast<views::View* (
                               views::View::*)(std::unique_ptr<views::View>)>(
                               &views::View::AddChildView),
                           base::Unretained(parent_view.get())));
-
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return !root_node.children().empty(); }));
 
   // The root node should contain two nodes: one for pinned, one for unpinned.
   ASSERT_EQ(root_node.children().size(), 2u);
@@ -281,14 +286,15 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeWithSplitTabBrowserTest,
   auto parent_view = std::make_unique<views::View>();
 
   RootTabCollectionNode root_node(
-      browser()->GetFeatures().tab_strip_service(), parent_view.get(),
+      browser()
+          ->GetFeatures()
+          .tab_strip_service_feature()
+          ->GetTabStripService(),
+      parent_view.get(),
       base::BindRepeating(static_cast<views::View* (
                               views::View::*)(std::unique_ptr<views::View>)>(
                               &views::View::AddChildView),
                           base::Unretained(parent_view.get())));
-
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return !root_node.children().empty(); }));
 
   // The root node should contain two nodes: one for pinned, one for unpinned.
   ASSERT_EQ(root_node.children().size(), 2u);
@@ -321,14 +327,15 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeWithSplitTabBrowserTest,
   auto parent_view = std::make_unique<views::View>();
 
   RootTabCollectionNode root_node(
-      browser()->GetFeatures().tab_strip_service(), parent_view.get(),
+      browser()
+          ->GetFeatures()
+          .tab_strip_service_feature()
+          ->GetTabStripService(),
+      parent_view.get(),
       base::BindRepeating(static_cast<views::View* (
                               views::View::*)(std::unique_ptr<views::View>)>(
                               &views::View::AddChildView),
                           base::Unretained(parent_view.get())));
-
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return !root_node.children().empty(); }));
 
   // Root -> Pinned Node, Unpinned Node
   ASSERT_EQ(root_node.children().size(), 2u);
@@ -361,14 +368,15 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   auto parent_view = std::make_unique<views::View>();
 
   RootTabCollectionNode root_node(
-      browser()->GetFeatures().tab_strip_service(), parent_view.get(),
+      browser()
+          ->GetFeatures()
+          .tab_strip_service_feature()
+          ->GetTabStripService(),
+      parent_view.get(),
       base::BindRepeating(static_cast<views::View* (
                               views::View::*)(std::unique_ptr<views::View>)>(
                               &views::View::AddChildView),
                           base::Unretained(parent_view.get())));
-
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return !root_node.children().empty(); }));
 
   // The root node should contain two nodes: one for pinned, one for unpinned.
   ASSERT_EQ(root_node.children().size(), 2u);
@@ -419,14 +427,15 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
       base::BindRepeating(&CreateViewWithMiddleView, &middle_view));
 
   RootTabCollectionNode root_node(
-      browser()->GetFeatures().tab_strip_service(), parent_view.get(),
+      browser()
+          ->GetFeatures()
+          .tab_strip_service_feature()
+          ->GetTabStripService(),
+      parent_view.get(),
       base::BindRepeating(static_cast<views::View* (
                               views::View::*)(std::unique_ptr<views::View>)>(
                               &views::View::AddChildView),
                           base::Unretained(parent_view.get())));
-
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return !root_node.children().empty(); }));
 
   // The root node should contain two nodes: one for pinned, one for unpinned.
   ASSERT_EQ(root_node.children().size(), 2u);

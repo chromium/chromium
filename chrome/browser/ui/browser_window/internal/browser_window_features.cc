@@ -255,7 +255,7 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
   tab_strip_model_ = browser->GetTabStripModel();
 
-  tab_strip_service_ =
+  tab_strip_service_feature_ =
       std::make_unique<TabStripServiceMojoHandler>(browser, tab_strip_model_);
 
   memory_saver_bubble_controller_ =

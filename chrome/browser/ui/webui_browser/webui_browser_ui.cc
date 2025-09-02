@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_register.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
@@ -128,11 +128,12 @@ void WebUIBrowserUI::BindInterface(
 
 void WebUIBrowserUI::BindInterface(
     mojo::PendingReceiver<tabs_api::mojom::TabStripService> receiver) {
-  auto* tab_strip_service =
-      browser_->browser_window_features()->tab_strip_service();
-  CHECK(tab_strip_service) << "Browser missing TabStripService, did you enable "
-                              "TabStripBrowserApi feature flag?";
-  tab_strip_service->Accept(std::move(receiver));
+  auto* tab_strip_service_feature =
+      browser_->browser_window_features()->tab_strip_service_feature();
+  CHECK(tab_strip_service_feature)
+      << "Browser missing TabStripService, did you enable "
+         "TabStripBrowserApi feature flag?";
+  tab_strip_service_feature->Accept(std::move(receiver));
 }
 
 void WebUIBrowserUI::BindInterface(

@@ -72,7 +72,7 @@ class TabMenuModelDelegate;
 class TabSearchToolbarButtonController;
 class TabListBridge;
 class TabStripModel;
-class TabStripServiceRegister;
+class TabStripServiceFeature;
 class ToastController;
 class ToastService;
 class TranslateBubbleController;
@@ -361,8 +361,8 @@ class BrowserWindowFeatures {
   }
 
   // Only fetch the tab_strip_service to register a pending receiver.
-  TabStripServiceRegister* tab_strip_service() {
-    return tab_strip_service_.get();
+  TabStripServiceFeature* tab_strip_service_feature() {
+    return tab_strip_service_feature_.get();
   }
 
   LocationBarModel* location_bar_model() { return location_bar_model_.get(); }
@@ -635,7 +635,7 @@ class BrowserWindowFeatures {
   std::unique_ptr<ColorProviderBrowserHelper> color_provider_browser_helper_;
 
   // This is an experimental API that interacts with the TabStripModel.
-  std::unique_ptr<TabStripServiceRegister> tab_strip_service_;
+  std::unique_ptr<TabStripServiceFeature> tab_strip_service_feature_;
 
   // The Find Bar. This may be NULL if there is no Find Bar, and if it is
   // non-NULL, it may or may not be visible.

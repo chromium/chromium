@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_experiment_api.mojom.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_register.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/types/node_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -30,7 +30,7 @@ class TabStripServiceMojoHandler
     : public tabs_api::mojom::TabStripService,
       public tabs_api::mojom::TabStripExperimentService,
       public TabStripModelObserver,
-      public TabStripServiceRegister {
+      public TabStripServiceFeature {
  public:
   TabStripServiceMojoHandler(BrowserWindowInterface* browser,
                              TabStripModel* tab_strip_model);
@@ -75,7 +75,7 @@ class TabStripServiceMojoHandler
                             const tab_groups::TabGroupVisualData& visual_data,
                             UpdateTabGroupVisualCallback) override;
 
-  tabs_api::TabStripService* GetTabStripService() const;
+  tabs_api::TabStripService* GetTabStripService() const override;
 
  private:
   void BroadcastEvents(
