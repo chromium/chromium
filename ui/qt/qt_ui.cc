@@ -47,8 +47,7 @@
 #include "ui/linux/linux_ui.h"
 #include "ui/linux/linux_ui_delegate.h"
 #include "ui/linux/nav_button_provider.h"
-#include "ui/native_theme/native_theme_aura.h"
-#include "ui/native_theme/native_theme_base.h"
+#include "ui/qt/native_theme_qt.h"
 #include "ui/qt/qt_interface.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_policy.h"
@@ -126,50 +125,6 @@ gfx::FontRenderParams::Hinting QtHintingToGfxHinting(
 }
 
 }  // namespace
-
-class QtNativeTheme : public ui::NativeThemeAura {
- public:
-  explicit QtNativeTheme(QtInterface* shim)
-      : ui::NativeThemeAura(/*use_overlay_scrollbars=*/false,
-                            /*should_only_use_dark_colors=*/false,
-                            ui::SystemTheme::kQt),
-        shim_(shim) {}
-  QtNativeTheme(const QtNativeTheme&) = delete;
-  QtNativeTheme& operator=(const QtNativeTheme&) = delete;
-  ~QtNativeTheme() override = default;
-
-  void ThemeChanged(bool prefer_dark_theme) {
-    set_use_dark_colors(IsForcedDarkMode() || prefer_dark_theme);
-    set_preferred_color_scheme(CalculatePreferredColorScheme());
-
-    NotifyOnNativeThemeUpdated();
-  }
-
-  // ui::NativeTheme:
-  DISABLE_CFI_VCALL
-  void PaintFrameTopArea(cc::PaintCanvas* canvas,
-                         State state,
-                         const gfx::Rect& rect,
-                         const FrameTopAreaExtraParams& frame_top_area,
-                         ColorScheme color_scheme) const override {
-    auto image = shim_->DrawHeader(
-        rect.width(), rect.height(), frame_top_area.default_background_color,
-        frame_top_area.is_active ? ColorState::kNormal : ColorState::kInactive,
-        frame_top_area.use_custom_frame);
-    SkImageInfo image_info = SkImageInfo::Make(
-        image.width, image.height, kBGRA_8888_SkColorType, kPremul_SkAlphaType);
-    SkBitmap bitmap;
-    bitmap.installPixels(
-        image_info, image.data_argb.Take(), image_info.minRowBytes(),
-        [](void* data, void*) { free(data); }, nullptr);
-    bitmap.setImmutable();
-    canvas->drawImage(cc::PaintImage::CreateFromBitmap(std::move(bitmap)),
-                      rect.x(), rect.y());
-  }
-
- private:
-  raw_ptr<QtInterface> const shim_;
-};
 
 QtUi::QtUi(ui::LinuxUi* fallback_linux_ui)
     : fallback_linux_ui_(fallback_linux_ui) {}
@@ -255,7 +210,7 @@ bool QtUi::Initialize() {
   cmd_line_ = CopyCmdLine(cmd_line);
   shim_.reset((reinterpret_cast<decltype(&CreateQtInterface)>(
       create_qt_interface)(this, &cmd_line_.argc, cmd_line_.argv.data())));
-  native_theme_ = std::make_unique<QtNativeTheme>(shim_.get());
+  native_theme_ = std::make_unique<NativeThemeQt>(shim_.get());
   ui::ColorProviderManager::Get().AppendColorProviderInitializer(
       base::BindRepeating(&QtUi::AddNativeColorMixer, base::Unretained(this)));
   ScaleFactorMaybeChangedImpl();
