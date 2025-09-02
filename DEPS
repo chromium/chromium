@@ -1289,7 +1289,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chrome_win_arm64',
-          'version': 'version:2@141.0.7340.0',
+          'version': 'version:2@141.0.7376.0',
         },
       ],
   },
