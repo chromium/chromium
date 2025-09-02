@@ -1,7 +1,0 @@
-{
-  "android-desktop-x64-compile-dbg": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  }
-}
