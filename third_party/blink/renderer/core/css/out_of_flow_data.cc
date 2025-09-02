@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/out_of_flow_data.h"
 
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 
@@ -44,6 +45,18 @@ bool OutOfFlowData::ApplyPendingSuccessfulPositionFallbackAndAnchorScrollShift(
     // displayed, or because we switched to a different position option.
     default_anchor_scroll_shift_ =
         PotentialNextDefaultAnchorScrollShift(*To<LayoutBox>(layout_object));
+
+    // Record any time an absolutely positioned element switches its fallback
+    // value. Note that we don't track fixed positioned elements since one of
+    // the proposed behaviors doesn't change the behavior of fixed positioned
+    // elements, but does change it for absolutely positioned elements.
+    if (!last_successful_position_fallback_.IsEmpty() &&
+        new_successful_position_fallback_.index_ !=
+            last_successful_position_fallback_.index_ &&
+        layout_object->IsAbsolutePositioned()) {
+      UseCounter::Count(layout_object->GetDocument(),
+                        WebFeature::kAbsposPositionTryFallbacksChange);
+    }
 
     last_successful_position_fallback_ = new_successful_position_fallback_;
     new_successful_position_fallback_.Clear();

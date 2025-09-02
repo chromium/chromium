@@ -4963,6 +4963,7 @@ enum WebFeature {
   kSRIIntegrityAttributeOnInlineScript = 5652,
   kCredentialsGetImmediateMediationWithPasswordsOnly = 5653,
   kCSSAtRuleRoute = 5654,
+  kAbsposPositionTryFallbacksChange = 5655,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
