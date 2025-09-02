@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/containers/extend.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
@@ -39,6 +40,7 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_labels.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/strings/grit/components_strings.h"
@@ -222,6 +224,19 @@ Suggestion CreateUndoSuggestion() {
   return suggestion;
 }
 
+std::vector<Suggestion> GetFooterSuggestions(
+    const FormFieldData& trigger_field) {
+  std::vector<Suggestion> suggestions;
+  suggestions.reserve(3);
+
+  suggestions.emplace_back(SuggestionType::kSeparator);
+  if (trigger_field.is_autofilled()) {
+    suggestions.emplace_back(CreateUndoSuggestion());
+  }
+  suggestions.emplace_back(CreateManageSuggestion());
+  return suggestions;
+}
+
 // Returns suggestions whose set of fields and values to be filled are not
 // subsets of another.
 std::vector<SuggestionWithMetadata> DedupeFillingSuggestions(
@@ -366,57 +381,82 @@ SuggestionWithMetadata GetSuggestionForEntity(
                                 base::flat_map(std::move(field_to_value)));
 }
 
+// The desired ordering criteria are the following:
+// - Entities of the same type should appear together.
+// - Entities of type A should appear before entities of type B if the most
+//   "frecent" entity of type A is more frecent than the most frecent entity of
+//   type B.
+//
+// In other terms, entities are grouped so that the most “frecent” suggestion
+// will be shown first, then all suggestions of the same type, then the next
+// most “frecent” suggestion, and so on.
+std::vector<const EntityInstance*> OrderedEntitiesForSuggestion(
+    std::vector<const EntityInstance*>&& entities) {
+  // Sort entities based on their frecency.
+  std::ranges::sort(entities,
+                    [comp = EntityInstance::FrecencyOrder(base::Time::Now())](
+                        const EntityInstance* lhs, const EntityInstance* rhs) {
+                      return comp(*lhs, *rhs);
+                    });
+  // Group entities based on their entity type. Note that by doing so after the
+  // first sorting step, it is guaranteed that each individual vector in the map
+  // is also sorted accordingly.
+  std::map<EntityType, std::vector<const EntityInstance*>>
+      sorted_entities_by_type;
+  for (const EntityInstance* entity : entities) {
+    sorted_entities_by_type[entity->type()].push_back(entity);
+  }
+
+  std::vector<const EntityInstance*> sorted_entities;
+  sorted_entities.reserve(entities.size());
+  // By iterating over `entities`, sorted by frecency, the desired ordering is
+  // achieved.
+  for (const EntityInstance* entity : entities) {
+    base::Extend(sorted_entities,
+                 std::move(sorted_entities_by_type[entity->type()]));
+    sorted_entities_by_type[entity->type()].clear();
+  }
+  return sorted_entities;
+}
+
+std::vector<const EntityInstance*> GetEntitiesForSuggestion(
+    base::span<const EntityInstance> entities,
+    const AttributeTypeAssignment& attribute_type_assignment,
+    const FieldGlobalId& trigger_field_id,
+    const std::string& app_locale) {
+  std::vector<const EntityInstance*> relevant_entities;
+  for (const EntityInstance& entity : entities) {
+    base::optional_ref<const AutofillFieldWithAttributeType>
+        trigger_field_with_type = FindField(
+            attribute_type_assignment.Find(entity.type()), trigger_field_id);
+    if (trigger_field_with_type &&
+        EntityShouldProduceSuggestion(entity, *trigger_field_with_type,
+                                      app_locale)) {
+      relevant_entities.push_back(&entity);
+    }
+  }
+  return OrderedEntitiesForSuggestion(std::move(relevant_entities));
+}
+
 std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
     const FormStructure& form,
     const FormFieldData& trigger_field_data,
     base::span<const EntityInstance> entities,
     const std::string& app_locale) {
-  const AutofillField* trigger_field =
-      form.GetFieldById(trigger_field_data.global_id());
-  CHECK(trigger_field);
+  const AutofillField& trigger_field =
+      CHECK_DEREF(form.GetFieldById(trigger_field_data.global_id()));
 
   AttributeTypeAssignment assignment =
-      AttributeTypeAssignment(form.fields(), trigger_field->section());
-
-  // Sort entities based on their frecency.
-  std::vector<const EntityInstance*> sorted_entities_by_frecency =
-      base::ToVector(entities,
-                     [](const EntityInstance& entity) { return &entity; });
-  std::ranges::sort(sorted_entities_by_frecency,
-                    [comp = EntityInstance::FrecencyOrder(base::Time::Now())](
-                        const EntityInstance* lhs, const EntityInstance* rhs) {
-                      return comp(*lhs, *rhs);
-                    });
-  // Group entities based on their entity type.
-  std::map<EntityType, std::vector<const EntityInstance*>>
-      sorted_entities_by_type;
-  for (const EntityInstance* entity : sorted_entities_by_frecency) {
-    sorted_entities_by_type[entity->type()].push_back(entity);
-  }
-
-  // Entities are grouped so that the most “frecent” suggestion
-  // will be shown first, then all suggestions of the same type, then the next
-  // most “frecent” suggestion, and so on.
-  std::vector<const EntityInstance*> sorted_entities;
-  sorted_entities.reserve(sorted_entities_by_frecency.size());
-  for (const EntityInstance* entity : sorted_entities_by_frecency) {
-    base::Extend(sorted_entities,
-                 std::move(sorted_entities_by_type[entity->type()]));
-    sorted_entities_by_type[entity->type()].clear();
-  }
+      AttributeTypeAssignment(form.fields(), trigger_field.section());
 
   std::vector<SuggestionWithMetadata> suggestions_with_metadata;
-  for (const EntityInstance* entity : sorted_entities) {
+  for (const EntityInstance* entity : GetEntitiesForSuggestion(
+           entities, assignment, trigger_field_data.global_id(), app_locale)) {
     base::span<const AutofillFieldWithAttributeType> fields_with_types =
         assignment.Find(entity->type());
     base::optional_ref<const AutofillFieldWithAttributeType>
         trigger_field_with_type =
-            FindField(fields_with_types, trigger_field->global_id());
-    if (!trigger_field_with_type ||
-        !EntityShouldProduceSuggestion(*entity, *trigger_field_with_type,
-                                       app_locale)) {
-      continue;
-    }
+            FindField(fields_with_types, trigger_field.global_id());
     suggestions_with_metadata.push_back(GetSuggestionForEntity(
         *entity, fields_with_types, *trigger_field_with_type, app_locale));
   }
@@ -449,14 +489,7 @@ std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
       DedupeFillingSuggestions(std::move(suggestions_with_metadata)),
       other_entities_that_can_fill_section, app_locale);
 
-  // Footer suggestions.
-  suggestions.emplace_back(SuggestionType::kSeparator);
-  // TODO(crbug.com/420455175): Use `autofill_field` when `is_autofilled` starts
-  // meaning the same thing in both `AutofillField` and `FormFieldData`.
-  if (trigger_field->is_autofilled()) {
-    suggestions.emplace_back(CreateUndoSuggestion());
-  }
-  suggestions.emplace_back(CreateManageSuggestion());
+  base::Extend(suggestions, GetFooterSuggestions(trigger_field_data));
   return suggestions;
 }
 
