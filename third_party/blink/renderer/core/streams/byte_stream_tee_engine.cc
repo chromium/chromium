@@ -151,8 +151,8 @@ class ByteStreamTeeEngine::ByteTeeReadRequest final : public ReadRequest {
         ExecutionContext::From(script_state)->GetAgent()->event_loop();
     v8::Global<v8::Value> value(script_state->GetIsolate(), chunk);
     event_loop->EnqueueMicrotask(
-        WTF::BindOnce(&ByteTeeReadRequest::ChunkStepsBody, WrapPersistent(this),
-                      WrapPersistent(script_state), std::move(value)));
+        BindOnce(&ByteTeeReadRequest::ChunkStepsBody, WrapPersistent(this),
+                 WrapPersistent(script_state), std::move(value)));
   }
 
   void CloseSteps(ScriptState* script_state) const override {
@@ -313,9 +313,9 @@ class ByteStreamTeeEngine::ByteTeeReadIntoRequest final
                   ExceptionState&) const override {
     scoped_refptr<scheduler::EventLoop> event_loop =
         ExecutionContext::From(script_state)->GetAgent()->event_loop();
-    event_loop->EnqueueMicrotask(WTF::BindOnce(
-        &ByteTeeReadIntoRequest::ChunkStepsBody, WrapPersistent(this),
-        WrapPersistent(script_state), WrapPersistent(chunk)));
+    event_loop->EnqueueMicrotask(
+        BindOnce(&ByteTeeReadIntoRequest::ChunkStepsBody, WrapPersistent(this),
+                 WrapPersistent(script_state), WrapPersistent(chunk)));
   }
 
   void CloseSteps(ScriptState* script_state,

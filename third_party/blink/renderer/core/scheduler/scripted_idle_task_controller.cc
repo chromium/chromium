@@ -209,9 +209,8 @@ void ScriptedIdleTaskController::PostSchedulerIdleAndTimeoutTasks(
   //    limit. When a callback is processed, it's critical to remove the timeout
   //    task from the queue. Failure to do so is likely to result in OOM.
   if (timeout_millis > 0) {
-    auto callback =
-        WTF::BindOnce(&ScriptedIdleTaskController::SchedulerTimeoutTask,
-                      WrapWeakPersistent(this), id);
+    auto callback = BindOnce(&ScriptedIdleTaskController::SchedulerTimeoutTask,
+                             WrapWeakPersistent(this), id);
     it->value->delayed_task_handle_ =
         GetExecutionContext()
             ->GetTaskRunner(TaskType::kIdleTask)
@@ -256,9 +255,9 @@ void ScriptedIdleTaskController::PostSchedulerIdleTask(
 
   // Post the scheduler idle task.
   scheduler_->PostIdleTask(
-      FROM_HERE, WTF::BindOnce(&ScriptedIdleTaskController::SchedulerIdleTask,
-                               WrapWeakPersistent(this), it->key,
-                               DecrementOnDelete(num_scheduler_idle_tasks_)));
+      FROM_HERE, blink::BindOnce(&ScriptedIdleTaskController::SchedulerIdleTask,
+                                 WrapWeakPersistent(this), it->key,
+                                 DecrementOnDelete(num_scheduler_idle_tasks_)));
 }
 
 void ScriptedIdleTaskController::SchedulerIdleTask(

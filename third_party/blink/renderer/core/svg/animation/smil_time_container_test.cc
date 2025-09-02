@@ -327,7 +327,7 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest, SetElapsedBeforeStart) {
       </rect>
     </svg>
   )HTML");
-  OnContentLoaded(WTF::BindOnce([](Document& document) {
+  OnContentLoaded(BindOnce([](Document& document) {
     auto* svg_root =
         To<SVGSVGElement>(document.getElementById(AtomicString("container")));
     ASSERT_TRUE(svg_root);
@@ -413,7 +413,7 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest, PauseBeforeStart) {
       </rect>
     </svg>
   )HTML");
-  OnContentLoaded(WTF::BindOnce([](Document& document) {
+  OnContentLoaded(BindOnce([](Document& document) {
     auto* svg_root =
         To<SVGSVGElement>(document.getElementById(AtomicString("container")));
     ASSERT_TRUE(svg_root);
@@ -508,7 +508,7 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest,
       </rect>
     </svg>
   )HTML");
-  OnContentLoaded(WTF::BindOnce([](Document& document) {
+  OnContentLoaded(BindOnce([](Document& document) {
     auto* svg_root =
         To<SVGSVGElement>(document.getElementById(AtomicString("container")));
     ASSERT_TRUE(svg_root);
@@ -564,7 +564,7 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest, PauseAndResumeBeforeStart) {
       </rect>
     </svg>
   )HTML");
-  OnContentLoaded(WTF::BindOnce([](Document& document) {
+  OnContentLoaded(BindOnce([](Document& document) {
     auto* svg_root =
         To<SVGSVGElement>(document.getElementById(AtomicString("container")));
     ASSERT_TRUE(svg_root);

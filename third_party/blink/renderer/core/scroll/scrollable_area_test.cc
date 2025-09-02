@@ -250,11 +250,11 @@ TEST_P(ScrollableAreaTest, ScrollAnimatorCallbackFiresOnAnimationCancel) {
   scrollable_area->SetScrollOffset(
       ScrollOffset(0, 10000), mojom::blink::ScrollType::kProgrammatic,
       mojom::blink::ScrollBehavior::kSmooth,
-      ScrollableArea::ScrollCallback(WTF::BindOnce(
+      ScrollableArea::ScrollCallback(BindOnce(
           [](bool* finished, ScrollableArea::ScrollCompletionMode) {
             *finished = true;
           },
-          WTF::Unretained(&finished))));
+          Unretained(&finished))));
   EXPECT_EQ(0.0, scrollable_area->GetScrollAnimator().CurrentOffset().y());
   EXPECT_FALSE(finished);
   scrollable_area->CancelProgrammaticScrollAnimation();
@@ -274,11 +274,11 @@ TEST_P(ScrollableAreaTest, ScrollAnimatorCallbackFiresOnInstantScroll) {
   scrollable_area->SetScrollOffset(
       ScrollOffset(0, 10000), mojom::blink::ScrollType::kProgrammatic,
       mojom::blink::ScrollBehavior::kInstant,
-      ScrollableArea::ScrollCallback(WTF::BindOnce(
+      ScrollableArea::ScrollCallback(BindOnce(
           [](bool* finished, ScrollableArea::ScrollCompletionMode) {
             *finished = true;
           },
-          WTF::Unretained(&finished))));
+          Unretained(&finished))));
   EXPECT_EQ(100, scrollable_area->GetScrollAnimator().CurrentOffset().y());
   EXPECT_TRUE(finished);
 }
@@ -295,11 +295,11 @@ TEST_P(ScrollableAreaTest, ScrollAnimatorCallbackFiresOnAnimationFinish) {
   scrollable_area->SetScrollOffset(
       ScrollOffset(0, 9), mojom::blink::ScrollType::kProgrammatic,
       mojom::blink::ScrollBehavior::kSmooth,
-      ScrollableArea::ScrollCallback(WTF::BindOnce(
+      ScrollableArea::ScrollCallback(BindOnce(
           [](bool* finished, ScrollableArea::ScrollCompletionMode) {
             *finished = true;
           },
-          WTF::Unretained(&finished))));
+          Unretained(&finished))));
   EXPECT_EQ(0.0, scrollable_area->GetScrollAnimator().CurrentOffset().y());
   EXPECT_FALSE(finished);
   scrollable_area->UpdateCompositorScrollAnimations();
@@ -323,11 +323,11 @@ TEST_P(ScrollableAreaTest, ScrollBackToInitialPosition) {
   scrollable_area->SetScrollOffset(
       ScrollOffset(0, 50), mojom::blink::ScrollType::kProgrammatic,
       mojom::blink::ScrollBehavior::kSmooth,
-      ScrollableArea::ScrollCallback(WTF::BindOnce(
+      ScrollableArea::ScrollCallback(BindOnce(
           [](bool* finished, ScrollableArea::ScrollCompletionMode) {
             *finished = true;
           },
-          WTF::Unretained(&finished))));
+          Unretained(&finished))));
   scrollable_area->SetScrollOffset(ScrollOffset(0, 0),
                                    mojom::blink::ScrollType::kProgrammatic,
                                    mojom::blink::ScrollBehavior::kSmooth);

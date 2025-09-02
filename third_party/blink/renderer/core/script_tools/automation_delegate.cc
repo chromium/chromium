@@ -161,7 +161,7 @@ void AutomationDelegate::ExecuteTool(
   if (it == tool_map_.end()) {
     task_runner_->PostTask(
         FROM_HERE,
-        WTF::BindOnce(
+        blink::BindOnce(
             std::move(tool_executed_cb),
             base::unexpected(WebDocument::ScriptToolError::kInvalidToolName)));
     return;
@@ -176,7 +176,7 @@ void AutomationDelegate::ExecuteTool(
   if (script_object.IsNull()) {
     task_runner_->PostTask(
         FROM_HERE,
-        WTF::BindOnce(
+        blink::BindOnce(
             std::move(tool_executed_cb),
             base::unexpected(
                 WebDocument::ScriptToolError::kInvalidInputArguments)));

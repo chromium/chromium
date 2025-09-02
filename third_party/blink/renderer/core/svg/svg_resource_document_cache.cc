@@ -99,8 +99,8 @@ void SVGResourceDocumentCache::ProcessCustomWeakness(
     return;
   }
   dispose_task_pending_ = dispose_task_runner_->PostTask(
-      FROM_HERE, WTF::BindOnce(&SVGResourceDocumentCache::DisposeUnobserved,
-                               WrapWeakPersistent(this)));
+      FROM_HERE, BindOnce(&SVGResourceDocumentCache::DisposeUnobserved,
+                          WrapWeakPersistent(this)));
 }
 
 void SVGResourceDocumentCache::Trace(Visitor* visitor) const {

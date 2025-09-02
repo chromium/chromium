@@ -235,8 +235,8 @@ void SVGSMILElement::Condition::ConnectSyncBase(SVGSMILElement& timed_element) {
   auto* svg_smil_element =
       DynamicTo<SVGSMILElement>(SVGURIReference::ObserveTarget(
           base_id_observer_, timed_element.GetTreeScope(), base_id_,
-          WTF::BindRepeating(&SVGSMILElement::BuildPendingResource,
-                             WrapWeakPersistent(&timed_element))));
+          BindRepeating(&SVGSMILElement::BuildPendingResource,
+                        WrapWeakPersistent(&timed_element))));
   if (!svg_smil_element)
     return;
   base_element_ = svg_smil_element;
@@ -264,8 +264,8 @@ void SVGSMILElement::Condition::ConnectEventBase(
   } else {
     target = SVGURIReference::ObserveTarget(
         base_id_observer_, timed_element.GetTreeScope(), base_id_,
-        WTF::BindRepeating(&SVGSMILElement::BuildPendingResource,
-                           WrapWeakPersistent(&timed_element)));
+        BindRepeating(&SVGSMILElement::BuildPendingResource,
+                      WrapWeakPersistent(&timed_element)));
   }
   if (!target)
     return;

@@ -141,8 +141,8 @@ SVGResourceDocumentContent::UpdateDocument(scoped_refptr<SharedBuffer> data,
   auto* chrome_client = MakeGarbageCollected<ChromeClient>(this);
   document_host_ = MakeGarbageCollected<IsolatedSVGDocumentHost>(
       *chrome_client, *agent_group_scheduler_, std::move(data),
-      WTF::BindOnce(&SVGResourceDocumentContent::AsyncLoadingFinished,
-                    WrapWeakPersistent(this)),
+      BindOnce(&SVGResourceDocumentContent::AsyncLoadingFinished,
+               WrapWeakPersistent(this)),
       /* inherited_settings */ nullptr, /* inherited_color_maps */ nullptr,
       IsolatedSVGDocumentHost::ProcessingMode::kStatic);
   // If IsLoaded() returns true then the document load completed synchronously,
@@ -202,8 +202,8 @@ void SVGResourceDocumentContent::AddObserver(
   if (IsLoaded()) {
     task_runner_->PostTask(
         FROM_HERE,
-        WTF::BindOnce(&SVGResourceDocumentContent::NotifyObserver,
-                      WrapPersistent(this), WrapWeakPersistent(observer)));
+        BindOnce(&SVGResourceDocumentContent::NotifyObserver,
+                 WrapPersistent(this), WrapWeakPersistent(observer)));
   }
 }
 

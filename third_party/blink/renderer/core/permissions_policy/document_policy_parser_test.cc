@@ -19,7 +19,7 @@ constexpr const mojom::blink::DocumentPolicyFeature kDoubleFeature =
     static_cast<mojom::blink::DocumentPolicyFeature>(2);
 
 // This is the test version of |PolicyParserMessageBuffer::Message| as
-// WTF::String cannot be statically allocated.
+// blink::String cannot be statically allocated.
 struct MessageForTest {
   mojom::ConsoleMessageLevel level;
   const char* content;

@@ -57,8 +57,8 @@ class VirtualTimeTest : public SimTest {
         mojom::blink::UserActivationOption::kDoNotActivate,
         mojom::blink::EvaluationTiming::kSynchronous,
         mojom::blink::LoadEventBlockingOption::kDoNotBlock,
-        WTF::BindOnce(&ScriptExecutionCallbackHelper::Completed,
-                      base::Unretained(&callback_helper)),
+        blink::BindOnce(&ScriptExecutionCallbackHelper::Completed,
+                        base::Unretained(&callback_helper)),
         BackForwardCacheAware::kAllow,
         mojom::blink::WantResultOption::kWantResult,
         mojom::blink::PromiseResultOption::kDoNotWait);
@@ -86,8 +86,8 @@ class VirtualTimeTest : public SimTest {
     base::RunLoop loop;
     scheduler::GetSingleThreadTaskRunnerForTesting()->PostDelayedTask(
         FROM_HERE,
-        WTF::BindOnce(&VirtualTimeTest::StopVirtualTimeAndExitRunLoop,
-                      WTF::Unretained(this), loop.QuitClosure()),
+        blink::BindOnce(&VirtualTimeTest::StopVirtualTimeAndExitRunLoop,
+                        Unretained(this), loop.QuitClosure()),
         base::Milliseconds(delay_ms));
 
     loop.Run();

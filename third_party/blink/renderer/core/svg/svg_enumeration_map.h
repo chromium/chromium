@@ -35,7 +35,7 @@ class CORE_EXPORT SVGEnumerationMap {
     CHECK(value);  // We should never store 0 (*_UNKNOWN) in the map.
     return entries_[static_cast<size_t>(value - 1)];
   }
-  uint16_t ValueFromName(const WTF::String&) const;
+  uint16_t ValueFromName(const String&) const;
 
   uint16_t ValueOfLast() const {
     return static_cast<uint16_t>(entries_.size());

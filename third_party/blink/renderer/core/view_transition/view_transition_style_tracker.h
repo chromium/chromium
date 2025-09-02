@@ -462,7 +462,7 @@ class ViewTransitionStyleTracker
       pending_transition_element_names_;
 
   // This vector is passed as constructed to cc's view transition request,
-  // so this uses the std::vector for that reason, instead of WTF::Vector.
+  // so this uses the std::vector for that reason, instead of blink::Vector.
   std::vector<viz::ViewTransitionElementResourceId> capture_resource_ids_
       ALLOW_DISCOURAGED_TYPE("cc API uses STL types");
 

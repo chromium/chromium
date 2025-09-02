@@ -232,7 +232,7 @@ class TextPaintTimingDetectorTest : public testing::Test {
   void SetFontSize(Element* font_element, uint16_t font_size) {
     DCHECK_EQ(font_element->nodeName(), "FONT");
     font_element->setAttribute(html_names::kSizeAttr,
-                               AtomicString(WTF::String::Number(font_size)));
+                               AtomicString(String::Number(font_size)));
   }
 
   void SetElementStyle(Element* element, String style) {

@@ -72,8 +72,8 @@ TEST_F(OutlinePainterTest, IterateCollapsedPath) {
   path.close();
   // Collapsed contour should not cause crash and should be ignored.
   OutlinePainter::IterateRightAnglePathForTesting(
-      path, WTF::BindRepeating(
-                [](const Vector<OutlinePainter::Line>&) { NOTREACHED(); }));
+      path,
+      BindRepeating([](const Vector<OutlinePainter::Line>&) { NOTREACHED(); }));
 }
 
 }  // namespace blink

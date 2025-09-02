@@ -77,23 +77,22 @@ class CORE_EXPORT GapDataList {
   }
 
   // TODO(javiercon): Specialize this for StyleColor, EBorderStyle, and int.
-  WTF::String ToString() const {
-    WTF::String result;
+  String ToString() const {
+    String result;
     for (const auto& gap_data : gap_data_list_) {
       if (gap_data.IsRepeaterData()) {
         result = result + "Repeater: ";
-        result =
-            result +
-            WTF::String::Number(gap_data.GetValueRepeater()->RepeatCount()) +
-            ", ";
+        result = result +
+                 String::Number(gap_data.GetValueRepeater()->RepeatCount()) +
+                 ", ";
         for (const auto& value :
              gap_data.GetValueRepeater()->RepeatedValues()) {
-          result = result + WTF::String::Number(value);
+          result = result + String::Number(value);
           result = result + " ";
         }
       } else {
         result = result + "Value: ";
-        result = result + WTF::String::Number(gap_data.GetValue());
+        result = result + String::Number(gap_data.GetValue());
       }
       result = result + "; ";
     }

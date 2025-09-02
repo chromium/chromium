@@ -171,7 +171,7 @@ ImagePaintTimingDetector::TakePaintTimingCallback() {
     return std::nullopt;
 
   added_entry_in_latest_frame_ = false;
-  auto callback = WTF::BindOnce(
+  auto callback = BindOnce(
       [](ImagePaintTimingDetector* self, uint32_t frame_index,
          bool is_recording_lcp, const base::TimeTicks& presentation_timestamp,
          const DOMPaintTimingInfo& paint_timing_info) {

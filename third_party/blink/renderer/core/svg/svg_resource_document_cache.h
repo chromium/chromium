@@ -43,7 +43,7 @@ class CORE_EXPORT SVGResourceDocumentCache final
 
   // The key is "URL (without fragment)" and the request mode (kSameOrigin or
   // kCors - other modes should be filtered by AllowedRequestMode).
-  using CacheKey = std::pair<WTF::String, network::mojom::blink::RequestMode>;
+  using CacheKey = std::pair<String, network::mojom::blink::RequestMode>;
 
   static CacheKey MakeCacheKey(const FetchParameters& params);
 

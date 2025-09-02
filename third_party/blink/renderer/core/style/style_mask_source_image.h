@@ -44,7 +44,7 @@ class StyleMaskSourceImage : public StyleImage {
   bool IsLoaded() const override;
   bool IsLoading() const override;
   bool ErrorOccurred() const override;
-  bool IsAccessAllowed(WTF::String& failing_url) const override;
+  bool IsAccessAllowed(String& failing_url) const override;
 
   NaturalSizingInfo GetNaturalSizingInfo(
       float multiplier,

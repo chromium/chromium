@@ -110,8 +110,8 @@ void DOMViewTransition::DidSkipTransition(
     view_transition_->NotifySkippedTransitionDOMCallbackScheduled();
     execution_context_->GetTaskRunner(TaskType::kMiscPlatformAPI)
         ->PostTask(FROM_HERE,
-                   WTF::BindOnce(&DOMViewTransition::InvokeDOMChangeCallback,
-                                 WrapPersistent(this)));
+                   BindOnce(&DOMViewTransition::InvokeDOMChangeCallback,
+                            WrapPersistent(this)));
   } else if (dom_callback_result_ == DOMCallbackResult::kFailed) {
     // If the DOM callback finished and there was a failure then the finished
     // promise should have been rejected with updateCallbackDone.
@@ -276,8 +276,8 @@ void DOMViewTransition::AtMicrotask(ViewTransition::PromiseResponse response,
     return;
   }
   execution_context_->GetAgent()->event_loop()->EnqueueMicrotask(
-      WTF::BindOnce(&DOMViewTransition::HandlePromise, WrapPersistent(this),
-                    response, WrapPersistent(property)));
+      BindOnce(&DOMViewTransition::HandlePromise, WrapPersistent(this),
+               response, WrapPersistent(property)));
 }
 
 void DOMViewTransition::HandlePromise(ViewTransition::PromiseResponse response,

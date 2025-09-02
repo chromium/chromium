@@ -932,8 +932,8 @@ static inline bool HandleNamespaceAttributes(
     AtomicString namespace_q_name = g_xmlns_atom;
     AtomicString namespace_uri = ToAtomicString(ns.uri);
     if (ns.prefix) {
-      namespace_q_name = AtomicString(
-          StrCat({WTF::g_xmlns_with_colon, ToAtomicString(ns.prefix)}));
+      namespace_q_name =
+          AtomicString(StrCat({g_xmlns_with_colon, ToAtomicString(ns.prefix)}));
     }
     std::optional<QualifiedName> parsed_name = Element::ParseAttributeName(
         xmlns_names::kNamespaceURI, namespace_q_name, exception_state);

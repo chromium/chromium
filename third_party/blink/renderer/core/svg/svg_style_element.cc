@@ -130,9 +130,8 @@ void SVGStyleElement::NotifyLoadedSheetAndAllCriticalSubresources(
   if (error_status != kNoErrorLoadingSubresource) {
     GetDocument()
         .GetTaskRunner(TaskType::kDOMManipulation)
-        ->PostTask(FROM_HERE,
-                   WTF::BindOnce(&SVGStyleElement::DispatchPendingEvent,
-                                 WrapPersistent(this)));
+        ->PostTask(FROM_HERE, BindOnce(&SVGStyleElement::DispatchPendingEvent,
+                                       WrapPersistent(this)));
   }
 }
 

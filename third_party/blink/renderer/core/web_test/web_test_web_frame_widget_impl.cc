@@ -151,8 +151,8 @@ void WebTestWebFrameWidgetImpl::ScheduleAnimationInternal(bool do_raster) {
 
     frame->GetTaskRunner(TaskType::kInternalTest)
         ->PostDelayedTask(FROM_HERE,
-                          WTF::BindOnce(&WebTestWebFrameWidgetImpl::AnimateNow,
-                                        WrapWeakPersistent(this)),
+                          BindOnce(&WebTestWebFrameWidgetImpl::AnimateNow,
+                                   WrapWeakPersistent(this)),
                           base::Milliseconds(1));
   }
 }
@@ -286,7 +286,7 @@ void WebTestWebFrameWidgetImpl::SynchronouslyComposite(
 
   in_synchronous_composite_ = true;
 
-  auto wrapped_callback = WTF::BindOnce(
+  auto wrapped_callback = blink::BindOnce(
       [](base::OnceClosure cb, bool* in_synchronous_composite) {
         *in_synchronous_composite = false;
         if (cb) {

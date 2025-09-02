@@ -263,7 +263,7 @@ URLPatternComponentResult* MakeURLPatternComponentResult(
   auto* result = URLPatternComponentResult::Create();
   result->setInput(input);
 
-  // Convert null WTF::String values to v8::Undefined.  We have to do this
+  // Convert null blink::String values to v8::Undefined.  We have to do this
   // manually because the webidl compiler compiler does not currently
   // support `(USVString or undefined)` in a record value.
   // TODO(crbug.com/1293259): Use webidl `(USVString or undefined)` when

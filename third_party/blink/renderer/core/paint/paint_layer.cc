@@ -2687,7 +2687,7 @@ void ShowLayerTree(const blink::PaintLayer* layer) {
   }
 
   if (blink::LocalFrame* frame = layer->GetLayoutObject().GetFrame()) {
-    WTF::String output =
+    blink::String output =
         ExternalRepresentation(frame,
                                blink::kLayoutAsTextShowLayerNesting |
                                    blink::kLayoutAsTextShowAddresses |

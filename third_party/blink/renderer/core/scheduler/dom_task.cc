@@ -77,12 +77,12 @@ DOMTask::DOMTask(ScriptPromiseResolver<IDLAny>* resolver,
   if (AbortSignal* abort_source = scheduler_task_context->AbortSource();
       abort_source && abort_source->CanAbort()) {
     abort_handle_ = abort_source->AddAlgorithm(
-        WTF::BindOnce(&DOMTask::OnAbort, WrapWeakPersistent(this)));
+        BindOnce(&DOMTask::OnAbort, WrapWeakPersistent(this)));
   }
 
   task_handle_ = PostDelayedCancellableTask(
       task_queue_->GetTaskRunner(), FROM_HERE,
-      WTF::BindOnce(&DOMTask::Invoke, WrapPersistent(this)), delay);
+      BindOnce(&DOMTask::Invoke, WrapPersistent(this)), delay);
 
   ScriptState* script_state =
       callback_->CallbackRelevantScriptStateOrReportError("DOMTask", "Create");

@@ -337,8 +337,8 @@ Element* SVGUseElement::ResolveTargetElement() {
     } else {
       return ObserveTarget(
           target_id_observer_, OriginatingTreeScope(), element_identifier,
-          WTF::BindRepeating(&SVGUseElement::InvalidateTargetReference,
-                             WrapWeakPersistent(this)));
+          BindRepeating(&SVGUseElement::InvalidateTargetReference,
+                        WrapWeakPersistent(this)));
     }
   }
   if (!document_content_) {
@@ -656,8 +656,8 @@ void SVGUseElement::ResourceNotifyFinished(
   DCHECK(!pending_event_.IsActive());
   pending_event_ = PostCancellableTask(
       *GetDocument().GetTaskRunner(TaskType::kDOMManipulation), FROM_HERE,
-      WTF::BindOnce(&SVGUseElement::QueueOrDispatchPendingEvent,
-                    WrapPersistent(this), event_name));
+      BindOnce(&SVGUseElement::QueueOrDispatchPendingEvent,
+               WrapPersistent(this), event_name));
 }
 
 SVGAnimatedPropertyBase* SVGUseElement::PropertyFromAttribute(

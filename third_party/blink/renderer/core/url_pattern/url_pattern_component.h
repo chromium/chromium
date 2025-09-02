@@ -107,7 +107,7 @@ class Component final : public GarbageCollected<Component> {
   // `should_treat_as_standard_url` must be the result of calling
   // `ShouldTreatAsStandardURL()` for the corresponding "protocol" object.
   std::optional<String> Generate(
-      const WTF::Vector<std::pair<String, String>>& groups,
+      const Vector<std::pair<String, String>>& groups,
       bool should_treat_as_standard_url,
       ExceptionState& exception_state) const;
 

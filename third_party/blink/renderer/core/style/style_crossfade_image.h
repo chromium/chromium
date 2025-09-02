@@ -37,7 +37,7 @@ class StyleCrossfadeImage final : public StyleImage {
   bool IsLoading() const override;
   bool IsLoaded() const override;
   bool ErrorOccurred() const override;
-  bool IsAccessAllowed(WTF::String&) const override;
+  bool IsAccessAllowed(String&) const override;
 
   NaturalSizingInfo GetNaturalSizingInfo(
       float multiplier,

@@ -98,8 +98,8 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
           ExecutionContext::From(script_state)->GetAgent()->event_loop();
       v8::Global<v8::Value> value(script_state->GetIsolate(), chunk);
       event_loop->EnqueueMicrotask(
-          WTF::BindOnce(&TeeReadRequest::ChunkStepsBody, WrapPersistent(this),
-                        WrapPersistent(script_state), std::move(value)));
+          BindOnce(&TeeReadRequest::ChunkStepsBody, WrapPersistent(this),
+                   WrapPersistent(script_state), std::move(value)));
     }
 
     void CloseSteps(ScriptState* script_state) const override {

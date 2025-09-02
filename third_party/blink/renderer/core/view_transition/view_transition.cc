@@ -650,9 +650,8 @@ void ViewTransition::ProcessCurrentState() {
         // Post a task to run the next state (cleanup) outside of the current
         // lifecycle update.
         document_->GetTaskRunner(TaskType::kMiscPlatformAPI)
-            ->PostTask(FROM_HERE,
-                       WTF::BindOnce(&ViewTransition::ProcessCurrentState,
-                                     WrapWeakPersistent(this)));
+            ->PostTask(FROM_HERE, BindOnce(&ViewTransition::ProcessCurrentState,
+                                           WrapWeakPersistent(this)));
 
         // Advance to the pending state. This will stop processing for the
         // current lifecycle update since WaitsForNotification(kPendingDone)
@@ -1009,8 +1008,8 @@ void ViewTransition::PauseRendering() {
           : base::Seconds(4);
   document_->GetTaskRunner(TaskType::kInternalFrameLifecycleControl)
       ->PostDelayedTask(FROM_HERE,
-                        WTF::BindOnce(&ViewTransition::OnRenderingPausedTimeout,
-                                      WrapWeakPersistent(this)),
+                        BindOnce(&ViewTransition::OnRenderingPausedTimeout,
+                                 WrapWeakPersistent(this)),
                         timeout_delay);
 }
 

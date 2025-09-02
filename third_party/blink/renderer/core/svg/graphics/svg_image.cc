@@ -698,8 +698,8 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
   // loaded by a top-level document.
   document_host_ = MakeGarbageCollected<IsolatedSVGDocumentHost>(
       *chrome_client_, *agent_group_scheduler_, Data(),
-      WTF::BindOnce(&SVGImage::NotifyAsyncLoadCompleted,
-                    weak_ptr_factory_.GetWeakPtr()),
+      blink::BindOnce(&SVGImage::NotifyAsyncLoadCompleted,
+                      weak_ptr_factory_.GetWeakPtr()),
       settings_to_use, color_maps,
       IsolatedSVGDocumentHost::ProcessingMode::kAnimated);
 

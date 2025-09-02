@@ -110,11 +110,11 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   // Times when the first paint happens after the page is restored from the
   // back-forward cache. If the element value is zero time tick, the first paint
   // event did not happen for that navigation.
-  WTF::Vector<base::TimeTicks> FirstPaintsAfterBackForwardCacheRestore() const {
+  Vector<base::TimeTicks> FirstPaintsAfterBackForwardCacheRestore() const {
     return first_paints_after_back_forward_cache_restore_presentation_;
   }
 
-  WTF::Vector<RequestAnimationFrameTimesAfterBackForwardCacheRestore>
+  Vector<RequestAnimationFrameTimesAfterBackForwardCacheRestore>
   RequestAnimationFramesAfterBackForwardCacheRestore() const {
     return request_animation_frames_after_back_forward_cache_restore_;
   }
@@ -228,9 +228,9 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
     return paint_details_.first_paint_;
   }
 
-  WTF::Vector<base::TimeTicks>
+  Vector<base::TimeTicks>
       first_paints_after_back_forward_cache_restore_presentation_;
-  WTF::Vector<RequestAnimationFrameTimesAfterBackForwardCacheRestore>
+  Vector<RequestAnimationFrameTimesAfterBackForwardCacheRestore>
       request_animation_frames_after_back_forward_cache_restore_;
   struct PaintDetails {
     // TODO(crbug/738235): Non first_*_presentation_ variables are only being

@@ -401,7 +401,7 @@ bool Component::Match(StringView input,
     group_list->ReserveInitialCapacity(
         base::checked_cast<wtf_size_t>(pattern_group_list.size()));
     for (const auto& pair : pattern_group_list) {
-      // We need to be careful converting the group value to a WTF::String.
+      // We need to be careful converting the group value to a blink::String.
       // If the value is std::nullopt, then we want to use a null String.
       // If the value exists, but is zero length, then we want to use an empty
       // string.  We must handle this explicitly since FromUTF8() can convert
@@ -441,7 +441,7 @@ bool Component::ShouldTreatAsStandardURL() const {
 }
 
 std::optional<String> Component::Generate(
-    const WTF::Vector<std::pair<String, String>>& groups,
+    const Vector<std::pair<String, String>>& groups,
     bool should_treat_as_standard_url,
     ExceptionState& exception_state) const {
   std::string pattern_string = pattern_.GeneratePatternString();

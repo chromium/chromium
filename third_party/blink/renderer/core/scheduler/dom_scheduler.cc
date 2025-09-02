@@ -256,11 +256,11 @@ void DOMScheduler::setTaskId(v8::Isolate* isolate,
   // Clear `task_state` at the end of the current task since there might not be
   // a task scope on the stack to clear it.
   scheduler->ExecuteAfterCurrentTaskForTesting(
-      WTF::BindOnce(
+      BindOnce(
           [](v8::Isolate* isolate) {
             TaskAttributionTaskState::SetCurrent(isolate, nullptr);
           },
-          WTF::Unretained(isolate)),
+          Unretained(isolate)),
       ExecuteAfterCurrentTaskRestricted{});
 }
 
@@ -290,7 +290,7 @@ DOMScheduler::DOMTaskQueue* DOMScheduler::CreateDynamicPriorityTaskQueue(
   CHECK(task_queue);
   auto* dom_task_queue =
       MakeGarbageCollected<DOMTaskQueue>(std::move(task_queue), priority);
-  auto* handle = signal->AddPriorityChangeAlgorithm(WTF::BindRepeating(
+  auto* handle = signal->AddPriorityChangeAlgorithm(BindRepeating(
       &DOMScheduler::OnPriorityChange, WrapWeakPersistent(this),
       WrapWeakPersistent(signal), WrapWeakPersistent(dom_task_queue)));
   dom_task_queue->SetPriorityChangeHandle(handle);

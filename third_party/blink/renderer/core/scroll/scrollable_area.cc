@@ -291,7 +291,7 @@ bool ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
   if (on_finish)
     RegisterScrollCompleteCallback(std::move(on_finish));
 
-  ScrollableArea::ScrollCallback run_scroll_complete_callbacks(WTF::BindOnce(
+  ScrollableArea::ScrollCallback run_scroll_complete_callbacks(BindOnce(
       [](WeakPersistent<ScrollableArea> area, ScrollCompletionMode mode) {
         if (area) {
           area->RunScrollCompleteCallbacks(mode);
@@ -579,7 +579,7 @@ bool ScrollableArea::ProgrammaticScrollHelper(
   }
 
   ScrollCallback callback = std::move(on_finish);
-  callback = ScrollCallback(WTF::BindOnce(
+  callback = ScrollCallback(blink::BindOnce(
       [](ScrollCallback original_callback, WeakPersistent<ScrollableArea> area,
          ScrollCompletionMode mode) {
         if (area) {

@@ -57,7 +57,7 @@ class SVGPoint final : public SVGListablePropertyBase {
   void SetX(float f) { value_.set_x(f); }
   void SetY(float f) { value_.set_y(f); }
 
-  WTF::String ValueAsString() const override;
+  String ValueAsString() const override;
 
   void Add(const SVGPropertyBase*, const SVGElement*) override;
   void CalculateAnimatedValue(

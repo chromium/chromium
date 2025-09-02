@@ -82,7 +82,7 @@ class CORE_EXPORT ClipRect {
 
   void Reset();
 
-  WTF::String ToString() const;
+  String ToString() const;
 
  private:
   void SetRectInternal(const FloatClipRect&);

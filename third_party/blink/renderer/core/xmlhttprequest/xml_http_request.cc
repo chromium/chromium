@@ -1309,8 +1309,8 @@ void XMLHttpRequest::HandleDidCancel() {
 
   pending_abort_event_ = PostCancellableTask(
       *GetExecutionContext()->GetTaskRunner(TaskType::kNetworking), FROM_HERE,
-      WTF::BindOnce(&XMLHttpRequest::HandleRequestError, WrapPersistent(this),
-                    DOMExceptionCode::kAbortError, event_type_names::kAbort));
+      BindOnce(&XMLHttpRequest::HandleRequestError, WrapPersistent(this),
+               DOMExceptionCode::kAbortError, event_type_names::kAbort));
 }
 
 void XMLHttpRequest::HandleRequestError(DOMExceptionCode exception_code,

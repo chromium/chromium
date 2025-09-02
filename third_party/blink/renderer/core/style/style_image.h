@@ -89,7 +89,7 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
 
   // Is the <image> considered same-origin? `failing_url` is set to the
   // (potentially formatted) URL of the first non-same-origin <image>.
-  virtual bool IsAccessAllowed(WTF::String& failing_url) const = 0;
+  virtual bool IsAccessAllowed(String& failing_url) const = 0;
 
   // Determine the natural dimensions (width, height, aspect ratio) of this
   // <image>, scaled by `multiplier`.

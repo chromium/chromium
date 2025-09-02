@@ -9,9 +9,8 @@ namespace blink {
 
 #if DCHECK_IS_ON()
 String ScrollStartData::ToString() const {
-  return WTF::String::Format("{type: %i, length:%s}",
-                             static_cast<int>(value_type),
-                             value.ToString().Ascii().c_str());
+  return String::Format("{type: %i, length:%s}", static_cast<int>(value_type),
+                        value.ToString().Ascii().c_str());
 }
 #endif
 

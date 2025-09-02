@@ -48,7 +48,7 @@ class XPathExpression : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static XPathExpression* CreateExpression(const WTF::String& expression,
+  static XPathExpression* CreateExpression(const String& expression,
                                            V8XPathNSResolver*,
                                            ExecutionContext* execution_context,
                                            ExceptionState&);

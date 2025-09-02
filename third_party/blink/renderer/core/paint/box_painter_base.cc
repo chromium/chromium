@@ -556,7 +556,7 @@ BoxPainterBase::FillLayerInfo::FillLayerInfo(
 
   is_printing = doc.Printing();
 
-  WTF::String failing_url;
+  String failing_url;
   should_paint_image = image && image->CanRender() &&
                        (!(paint_flags & PaintFlag::kPrivacyPreserving) ||
                         image->IsAccessAllowed(failing_url));
@@ -1449,7 +1449,7 @@ void BoxPainterBase::PaintBorder(const ImageResourceObserver& obj,
   }
 
   // border-image is not affected by border-radius.
-  WTF::String failing_url;
+  String failing_url;
   if (!(info.IsPrivacyPreserving() && style.BorderImage().GetImage() &&
         !style.BorderImage().GetImage()->IsAccessAllowed(failing_url))) {
     if (NinePieceImagePainter::Paint(info.context, obj, document, node, rect,
@@ -1474,7 +1474,7 @@ void BoxPainterBase::PaintMaskImages(
 
   PaintFillLayers(paint_info, Color::kTransparent, style_.MaskLayers(),
                   paint_rect, bg_paint_context);
-  WTF::String failing_url;
+  String failing_url;
   if (!(paint_info.IsPrivacyPreserving() && style_.MaskBoxImage().GetImage() &&
         !style_.MaskBoxImage().GetImage()->IsAccessAllowed(failing_url))) {
     NinePieceImagePainter::Paint(paint_info.context, obj, document_, node_,

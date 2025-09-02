@@ -52,7 +52,7 @@ class SVGPropertyBase : public GarbageCollected<SVGPropertyBase> {
 
   virtual ~SVGPropertyBase() = default;
 
-  virtual WTF::String ValueAsString() const = 0;
+  virtual String ValueAsString() const = 0;
 
   // Set the initial value based on a per-type defined (encoded) value. Overload
   // this in the specific subclass to handle initial values, and set

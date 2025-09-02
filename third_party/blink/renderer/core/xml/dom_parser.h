@@ -45,7 +45,7 @@ class CORE_EXPORT DOMParser final : public ScriptWrappable {
 
   explicit DOMParser(ScriptState*);
 
-  Document* ParseFromStringWithoutTrustedTypes(const WTF::String&,
+  Document* ParseFromStringWithoutTrustedTypes(const String&,
                                                const V8SupportedType& type);
   Document* parseFromString(const V8UnionStringOrTrustedHTML*,
                             const V8SupportedType& type,

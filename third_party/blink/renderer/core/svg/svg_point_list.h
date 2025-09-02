@@ -48,7 +48,7 @@ class SVGPointList final
   SVGPointList();
   ~SVGPointList() override;
 
-  SVGParsingError SetValueAsString(const WTF::String&);
+  SVGParsingError SetValueAsString(const String&);
 
   // SVGPropertyBase:
   void Add(const SVGPropertyBase*, const SVGElement*) override;

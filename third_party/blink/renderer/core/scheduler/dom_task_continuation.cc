@@ -30,12 +30,12 @@ DOMTaskContinuation::DOMTaskContinuation(
   if (signal_ && signal_->CanAbort()) {
     CHECK(!signal_->aborted());
     abort_handle_ = signal_->AddAlgorithm(
-        WTF::BindOnce(&DOMTaskContinuation::OnAbort, WrapWeakPersistent(this)));
+        BindOnce(&DOMTaskContinuation::OnAbort, WrapWeakPersistent(this)));
   }
 
   task_handle_ = PostCancellableTask(
       task_queue_->GetTaskRunner(), FROM_HERE,
-      WTF::BindOnce(&DOMTaskContinuation::Invoke, WrapPersistent(this)));
+      BindOnce(&DOMTaskContinuation::Invoke, WrapPersistent(this)));
 
   auto* context = ExecutionContext::From(resolver->GetScriptState());
   CHECK(context);

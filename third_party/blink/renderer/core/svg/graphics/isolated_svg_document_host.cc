@@ -63,7 +63,7 @@ class IsolatedSVGDocumentHost::LocalFrameClient : public EmptyLocalFrameClient {
     // SVG Images have unique security rules that prevent all subresource
     // requests except for data urls.
     return base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
-        WTF::BindOnce(
+        BindOnce(
             [](const network::ResourceRequest& resource_request,
                mojo::PendingReceiver<network::mojom::URLLoader> receiver,
                mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
@@ -219,8 +219,8 @@ void IsolatedSVGDocumentHost::LoadCompleted() {
       // to make LoadEventFinished() true when AsyncLoadCompleted() is called.
       async_load_task_handle_ = PostCancellableTask(
           *GetFrame()->GetTaskRunner(TaskType::kInternalLoading), FROM_HERE,
-          WTF::BindOnce(&IsolatedSVGDocumentHost::AsyncLoadCompleted,
-                        WrapPersistent(this)));
+          BindOnce(&IsolatedSVGDocumentHost::AsyncLoadCompleted,
+                   WrapPersistent(this)));
       break;
 
     case kNotStarted:

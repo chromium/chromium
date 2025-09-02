@@ -300,7 +300,7 @@ void PaintTiming::MarkPaintTimingInternal() {
 
   // 10. Let flushPaintTimings be the following steps:
   PaintTimingCallback flush_paint_timings =
-      WTF::BindOnce(
+      blink::BindOnce(
           [](WindowPerformance* performance,
              const PendingPaintTimingRecord& record,
              AnimationFrameTimingInfo* frame_timing_info,
@@ -383,7 +383,7 @@ void PaintTiming::MarkPaintTimingInternal() {
   // 12. Run the following steps In parallel:
   // 12.1 Wait until an implementation-defined time when the current frame has
   //    been presented to the user.
-  RegisterNotifyPresentationTime(WTF::BindOnce(
+  RegisterNotifyPresentationTime(blink::BindOnce(
       [](PaintTiming* self, PaintTimingCallback flush_paint_timings,
          const PendingPaintTimingRecord& record,
          const viz::FrameTimingDetails& frame_timing_details) {
@@ -526,10 +526,10 @@ void PaintTiming::Mark(PaintEvent event) {
 void PaintTiming::
     RegisterNotifyFirstPaintAfterBackForwardCacheRestorePresentationTime(
         wtf_size_t index) {
-  RegisterNotifyPresentationTime(WTF::BindOnce(
-      &PaintTiming::
-          ReportFirstPaintAfterBackForwardCacheRestorePresentationTime,
-      WrapWeakPersistent(this), index));
+  RegisterNotifyPresentationTime(
+      BindOnce(&PaintTiming::
+                   ReportFirstPaintAfterBackForwardCacheRestorePresentationTime,
+               WrapWeakPersistent(this), index));
 }
 
 void PaintTiming::RegisterNotifyPresentationTime(ReportTimeCallback callback) {
