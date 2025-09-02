@@ -494,7 +494,7 @@ template <typename T>
 struct ToV8Traits<IDLArray<T>> {
   [[nodiscard]] static v8::Local<v8::Value> ToV8(ScriptState* script_state,
                                                  const FrozenArray<T>& value) {
-    return value.ToV8(script_state);
+    return const_cast<FrozenArray<T>&>(value).ToV8(script_state);
   }
 
   // TODO(yukishiino): Remove this overload as IDL FrozenArray should be

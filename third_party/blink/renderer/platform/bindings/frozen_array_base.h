@@ -26,9 +26,6 @@ class PLATFORM_EXPORT FrozenArrayBase : public ScriptWrappable {
  public:
   ~FrozenArrayBase() override = default;
 
-  v8::Local<v8::Value> ToV8(ScriptState* script_state) const;
-  v8::Local<v8::Value> ToV8(ScriptState* script_state);
-
   // ScriptWrappable overrides:
   v8::Local<v8::Value> Wrap(ScriptState* script_state) override;
   [[nodiscard]] v8::Local<v8::Object> AssociateWithWrapper(
