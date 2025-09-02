@@ -13,7 +13,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/browser_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/tab_strip_model_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_sync_impl.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_impl.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_mojo_handler.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/testing/toy_tab_strip.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/testing/toy_tab_strip_browser_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/testing/toy_tab_strip_model_adapter.h"
@@ -41,10 +42,10 @@ class TabStripServiceImplTest : public ::testing::Test {
 
   void SetUp() override {
     tab_strip_ = std::make_unique<testing::ToyTabStrip>();
-    auto tab_strip_service = std::make_unique<TabStripServiceSyncImpl>(
+    auto tab_strip_service = std::make_unique<TabStripServiceImpl>(
         std::make_unique<testing::ToyTabStripBrowserAdapter>(tab_strip_.get()),
         std::make_unique<testing::ToyTabStripModelAdapter>(tab_strip_.get()));
-    impl_ = std::make_unique<TabStripServiceImpl>(
+    impl_ = std::make_unique<TabStripServiceMojoHandler>(
         std::move(tab_strip_service),
         std::make_unique<testing::ToyTabStripModelAdapter>(tab_strip_.get()));
     impl_->Accept(client_.BindNewPipeAndPassReceiver());
@@ -57,7 +58,7 @@ class TabStripServiceImplTest : public ::testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TabStripServiceImpl> impl_;
+  std::unique_ptr<TabStripServiceMojoHandler> impl_;
 };
 
 TEST_F(TabStripServiceImplTest, CreateNewTab) {
