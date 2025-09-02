@@ -1105,6 +1105,12 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
         request_->cookie_partition_key(), CookieSourceType::kHTTP,
         &returned_status);
 
+    // Log if the resulting cookie is partitioned, if a cookie was created.
+    if (cookie) {
+      base::UmaHistogramBoolean("Cookie.SetCookieContainsPartitioned",
+                                cookie->IsPartitioned());
+    }
+
     std::optional<CanonicalCookie> cookie_to_return = std::nullopt;
     if (returned_status.IsInclude()) {
       DCHECK(cookie);

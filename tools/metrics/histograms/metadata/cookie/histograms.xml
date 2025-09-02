@@ -1074,6 +1074,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.SetCookieContainsPartitioned" enum="Boolean"
+    expires_after="2026-01-18">
+  <owner>dylancutler@google.com</owner>
+  <owner>src/net/cookies/OWNERS</owner>
+  <summary>
+    This histogram records if a Set-Cookie header resulted in a partitioned or
+    unpartitioned cookie. Only recorded if the header resulted in a valid
+    cookie. This allows us to estimate what percentage of Set-Cookie headers
+    contain the Partitioned attribute.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.SourceType.Subsampled" enum="CookieSourceType"
     expires_after="2026-01-04">
   <owner>arichiv@chromium.org</owner>
