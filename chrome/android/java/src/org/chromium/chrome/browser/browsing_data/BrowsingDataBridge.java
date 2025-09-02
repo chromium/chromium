@@ -144,9 +144,9 @@ public final class BrowsingDataBridge implements Destroyable {
             int[] dataTypes,
             @TimePeriod int timePeriod,
             String[] excludedDomains,
-            int[] excludedDomainReasons,
-            String[] ignoredDomains,
-            int[] ignoredDomainReasons) {
+            int @Nullable [] excludedDomainReasons,
+            String @Nullable [] ignoredDomains,
+            int @Nullable [] ignoredDomainReasons) {
         BrowsingDataBridgeJni.get()
                 .clearBrowsingData(
                         mProfile,
@@ -324,9 +324,9 @@ public final class BrowsingDataBridge implements Destroyable {
                 @JniType("std::vector<int32_t>") int[] dataTypes,
                 int timePeriod,
                 @JniType("std::vector<std::string>") String[] excludedDomains,
-                @JniType("std::vector<int32_t>") int[] excludedDomainReasons,
-                @JniType("std::vector<std::string>") String[] ignoredDomains,
-                @JniType("std::vector<int32_t>") int[] ignoredDomainReasons);
+                @JniType("std::vector<int32_t>") int @Nullable [] excludedDomainReasons,
+                @JniType("std::vector<std::string>") String @Nullable [] ignoredDomains,
+                @JniType("std::vector<int32_t>") int @Nullable [] ignoredDomainReasons);
 
         void requestInfoAboutOtherFormsOfBrowsingHistory(
                 @JniType("Profile*") Profile profile, OtherFormsOfBrowsingHistoryListener listener);
