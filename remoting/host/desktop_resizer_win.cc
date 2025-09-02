@@ -256,12 +256,10 @@ bool DesktopResizerWin::IsResizeSupported() {
 bool DesktopResizerWin::GetPrimaryDisplayMode(DWORD mode_number,
                                               DWORD flags,
                                               DEVMODE* mode) {
-  UNSAFE_TODO(memset(mode, 0, sizeof(DEVMODE)));
-  mode->dmSize = sizeof(DEVMODE);
-  if (!EnumDisplaySettingsEx(nullptr, mode_number, mode, flags)) {
-    return false;
-  }
-  return true;
+  *mode = {
+      .dmSize = sizeof(DEVMODE),
+  };
+  return EnumDisplaySettingsEx(nullptr, mode_number, mode, flags);
 }
 
 // static
