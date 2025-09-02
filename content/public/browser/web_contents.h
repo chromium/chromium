@@ -1538,6 +1538,9 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // user activation work: crbug.com/848778
   virtual bool HasRecentInteraction() = 0;
 
+  // Returns the time ticks of the last user interaction.
+  virtual base::TimeTicks GetLastInteractionTimeTicks() = 0;
+
   // Causes the WebContents to ignore input events for at least as long as the
   // token exists. In the event of multiple calls, input events will be ignored
   // until all tokens have been destroyed.

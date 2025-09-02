@@ -636,6 +636,7 @@ class CONTENT_EXPORT WebContentsImpl
       std::unique_ptr<SelectionPopupDelegate> delegate) override;
 #endif
   bool HasRecentInteraction() override;
+  base::TimeTicks GetLastInteractionTimeTicks() override;
   [[nodiscard]] ScopedIgnoreInputEvents IgnoreInputEvents(
       std::optional<WebInputEventAuditCallback> audit_callback) override;
   bool ShouldIgnoreInputEventsForTesting() override;
