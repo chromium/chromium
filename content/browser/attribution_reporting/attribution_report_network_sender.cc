@@ -95,10 +95,6 @@ void AttributionReportNetworkSender::OnApplicationStateChanged(
 
 AttributionReportNetworkSender::~AttributionReportNetworkSender() = default;
 
-void AttributionReportNetworkSender::SetInFirstBatch(bool in_first_batch) {
-  in_first_batch_ = in_first_batch;
-}
-
 void AttributionReportNetworkSender::SendReport(
     AttributionReport report,
     bool is_debug_report,
@@ -257,12 +253,6 @@ void AttributionReportNetworkSender::OnReportSent(
   std::optional<bool> retry_succeed =
       loader->GetNumRetries() > 0 ? std::make_optional<bool>(net_ok_and_http_ok)
                                   : std::nullopt;
-
-  if (in_first_batch_) {
-    base::UmaHistogramSparse(
-        "Conversions.FirstBatch.HttpResponseOrNetErrorCode",
-        response_or_net_error);
-  }
 
 #if BUILDFLAG(IS_ANDROID)
   std::string_view suffix;

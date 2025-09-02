@@ -39,8 +39,6 @@ class AttributionReportSender {
   using AggregatableDebugReportSentCallback = base::OnceCallback<
       void(const AggregatableDebugReport&, base::ValueView, int status)>;
 
-  virtual void SetInFirstBatch(bool in_first_batch) = 0;
-
   // Sends `report` and runs `sent_callback` when done.
   virtual void SendReport(AttributionReport report,
                           bool is_debug_report,

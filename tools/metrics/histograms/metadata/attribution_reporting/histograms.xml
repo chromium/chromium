@@ -651,21 +651,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.FirstBatch.HttpResponseOrNetErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-02-22">
-  <owner>apaseltiner@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Error info for sending an attribution report, recorded for each report
-    within the first report delivery batch for a new user session i.e. upon
-    initialization of AttributionManager. The HTTP response code is recorded if
-    there is no net error code for the request, or the net error code indicates
-    there was a response code failure. Note: The first batch of reports may not
-    send exactly at manager startup due to purposeful delays added as to not
-    allow temporal joins between them.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.GetAllDataKeysTime" units="ms"
     expires_after="2026-02-22">
   <owner>linnan@chromium.org</owner>
