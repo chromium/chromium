@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "remoting/protocol/validating_authenticator.h"
+
 #include <memory>
 #include <string>
 #include <tuple>
@@ -12,11 +14,11 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/protocol_mock_objects.h"
-#include "remoting/protocol/validating_authenticator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
@@ -28,30 +30,21 @@ namespace {
 using testing::_;
 using testing::Return;
 
-typedef ValidatingAuthenticator::Result ValidationResult;
+using ValidationResult = ValidatingAuthenticator::Result;
 
 constexpr char kRemoteTestJid[] = "ficticious_jid_for_testing";
-
-// testing::InvokeArgument<N> does not work with base::OnceCallback, fortunately
-// gmock makes it simple to create action templates that do for the various
-// possible numbers of arguments.
-ACTION_TEMPLATE(InvokeCallbackArgument,
-                HAS_1_TEMPLATE_PARAMS(int, k),
-                AND_0_VALUE_PARAMS()) {
-  std::move(const_cast<base::OnceClosure&>(std::get<k>(args))).Run();
-}
 
 }  // namespace
 
 class ValidatingAuthenticatorTest : public testing::Test {
  public:
-  ValidatingAuthenticatorTest();
+  ValidatingAuthenticatorTest() = default;
 
   ValidatingAuthenticatorTest(const ValidatingAuthenticatorTest&) = delete;
   ValidatingAuthenticatorTest& operator=(const ValidatingAuthenticatorTest&) =
       delete;
 
-  ~ValidatingAuthenticatorTest() override;
+  ~ValidatingAuthenticatorTest() override = default;
 
   void ValidateCallback(const std::string& remote_jid,
                         ValidatingAuthenticator::ResultCallback callback);
@@ -85,10 +78,6 @@ class ValidatingAuthenticatorTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
-ValidatingAuthenticatorTest::ValidatingAuthenticatorTest() = default;
-
-ValidatingAuthenticatorTest::~ValidatingAuthenticatorTest() = default;
-
 void ValidatingAuthenticatorTest::ValidateCallback(
     const std::string& remote_jid,
     ValidatingAuthenticator::ResultCallback callback) {
@@ -118,8 +107,7 @@ void ValidatingAuthenticatorTest::SendMessageAndWaitForCallback() {
 
 TEST_F(ValidatingAuthenticatorTest, ValidConnection_SingleMessage) {
   EXPECT_CALL(*mock_authenticator_, ProcessMessage(_, _))
-      .Times(1)
-      .WillOnce(InvokeCallbackArgument<1>());
+      .WillOnce(base::test::RunOnceCallback<1>());
 
   ON_CALL(*mock_authenticator_, state())
       .WillByDefault(Return(Authenticator::ACCEPTED));
@@ -134,7 +122,7 @@ TEST_F(ValidatingAuthenticatorTest, ValidConnection_TwoMessages) {
   // like it is waiting for a second message.
   EXPECT_CALL(*mock_authenticator_, ProcessMessage(_, _))
       .Times(2)
-      .WillRepeatedly(InvokeCallbackArgument<1>());
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>());
 
   EXPECT_CALL(*mock_authenticator_, state())
       .WillRepeatedly(Return(Authenticator::MESSAGE_READY));
@@ -153,7 +141,6 @@ TEST_F(ValidatingAuthenticatorTest, ValidConnection_TwoMessages) {
   std::unique_ptr<jingle_xmpp::XmlElement> next_message(
       Authenticator::CreateEmptyAuthenticatorMessage());
   EXPECT_CALL(*mock_authenticator_, GetNextMessagePtr())
-      .Times(1)
       .WillOnce(Return(next_message.release()));
 
   validating_authenticator_->GetNextMessage();
@@ -172,8 +159,7 @@ TEST_F(ValidatingAuthenticatorTest, ValidConnection_SendBeforeAccept) {
   // This test simulates an authenticator which needs to send a message before
   // transitioning to the ACCEPTED state.
   EXPECT_CALL(*mock_authenticator_, ProcessMessage(_, _))
-      .Times(1)
-      .WillRepeatedly(InvokeCallbackArgument<1>());
+      .WillOnce(base::test::RunOnceCallback<1>());
 
   EXPECT_CALL(*mock_authenticator_, state())
       .WillOnce(Return(Authenticator::MESSAGE_READY))
@@ -185,7 +171,6 @@ TEST_F(ValidatingAuthenticatorTest, ValidConnection_SendBeforeAccept) {
   std::unique_ptr<jingle_xmpp::XmlElement> next_message(
       Authenticator::CreateEmptyAuthenticatorMessage());
   EXPECT_CALL(*mock_authenticator_, GetNextMessagePtr())
-      .Times(1)
       .WillOnce(Return(next_message.release()));
 
   SendMessageAndWaitForCallback();
@@ -199,8 +184,7 @@ TEST_F(ValidatingAuthenticatorTest, ValidConnection_SendBeforeAccept) {
 
 TEST_F(ValidatingAuthenticatorTest, ValidConnection_ErrorInvalidCredentials) {
   EXPECT_CALL(*mock_authenticator_, ProcessMessage(_, _))
-      .Times(1)
-      .WillOnce(InvokeCallbackArgument<1>());
+      .WillOnce(base::test::RunOnceCallback<1>());
 
   ON_CALL(*mock_authenticator_, state())
       .WillByDefault(Return(Authenticator::ACCEPTED));
@@ -216,8 +200,7 @@ TEST_F(ValidatingAuthenticatorTest, ValidConnection_ErrorInvalidCredentials) {
 
 TEST_F(ValidatingAuthenticatorTest, ValidConnection_ErrorRejectedByUser) {
   EXPECT_CALL(*mock_authenticator_, ProcessMessage(_, _))
-      .Times(1)
-      .WillOnce(InvokeCallbackArgument<1>());
+      .WillOnce(base::test::RunOnceCallback<1>());
 
   ON_CALL(*mock_authenticator_, state())
       .WillByDefault(Return(Authenticator::ACCEPTED));
@@ -234,8 +217,7 @@ TEST_F(ValidatingAuthenticatorTest, ValidConnection_ErrorRejectedByUser) {
 TEST_F(ValidatingAuthenticatorTest,
        ValidConnectionMessageWaiting_ErrorRejectedByUser) {
   EXPECT_CALL(*mock_authenticator_, ProcessMessage(_, _))
-      .Times(1)
-      .WillOnce(InvokeCallbackArgument<1>());
+      .WillOnce(base::test::RunOnceCallback<1>());
 
   EXPECT_CALL(*mock_authenticator_, state())
       .WillOnce(Return(Authenticator::MESSAGE_READY))
@@ -260,8 +242,7 @@ TEST_F(ValidatingAuthenticatorTest,
 
 TEST_F(ValidatingAuthenticatorTest, ValidConnection_ErrorTooManyConnections) {
   EXPECT_CALL(*mock_authenticator_, ProcessMessage(_, _))
-      .Times(1)
-      .WillOnce(InvokeCallbackArgument<1>());
+      .WillOnce(base::test::RunOnceCallback<1>());
 
   ON_CALL(*mock_authenticator_, state())
       .WillByDefault(Return(Authenticator::ACCEPTED));
@@ -277,8 +258,7 @@ TEST_F(ValidatingAuthenticatorTest, ValidConnection_ErrorTooManyConnections) {
 
 TEST_F(ValidatingAuthenticatorTest, InvalidConnection_InvalidCredentials) {
   EXPECT_CALL(*mock_authenticator_, ProcessMessage(_, _))
-      .Times(1)
-      .WillOnce(InvokeCallbackArgument<1>());
+      .WillOnce(base::test::RunOnceCallback<1>());
 
   ON_CALL(*mock_authenticator_, state())
       .WillByDefault(Return(Authenticator::REJECTED));
@@ -297,8 +277,7 @@ TEST_F(ValidatingAuthenticatorTest, InvalidConnection_InvalidCredentials) {
 
 TEST_F(ValidatingAuthenticatorTest, InvalidConnection_InvalidAccount) {
   EXPECT_CALL(*mock_authenticator_, ProcessMessage(_, _))
-      .Times(1)
-      .WillOnce(InvokeCallbackArgument<1>());
+      .WillOnce(base::test::RunOnceCallback<1>());
 
   ON_CALL(*mock_authenticator_, state())
       .WillByDefault(Return(Authenticator::REJECTED));
@@ -317,8 +296,7 @@ TEST_F(ValidatingAuthenticatorTest, InvalidConnection_InvalidAccount) {
 
 TEST_F(ValidatingAuthenticatorTest, InvalidConnection_InvalidState) {
   EXPECT_CALL(*mock_authenticator_, ProcessMessage(_, _))
-      .Times(1)
-      .WillOnce(InvokeCallbackArgument<1>());
+      .WillOnce(base::test::RunOnceCallback<1>());
 
   ON_CALL(*mock_authenticator_, state())
       .WillByDefault(Return(Authenticator::REJECTED));
@@ -339,7 +317,7 @@ TEST_F(ValidatingAuthenticatorTest, StateChangeAfterAccepted_Propagated) {
   validating_authenticator_->set_state_change_after_accepted_callback(
       state_changed_after_accepted.Get());
   EXPECT_CALL(*mock_authenticator_, ProcessMessage(_, _))
-      .WillOnce(InvokeCallbackArgument<1>());
+      .WillOnce(base::test::RunOnceCallback<1>());
 
   ON_CALL(*mock_authenticator_, state())
       .WillByDefault(Return(Authenticator::ACCEPTED));
