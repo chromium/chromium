@@ -703,17 +703,18 @@ LensOverlayQueryController::CreateEndpointFetcher(
       /*url_loader_factory=*/profile_
           ? profile_->GetURLLoaderFactory().get()
           : g_browser_process->shared_url_loader_factory(),
-      /*url=*/fetch_url,
-      /*content_type=*/kContentType,
-      /*timeout=*/timeout,
-      /*post_data=*/std::move(request_string),
-      /*headers=*/request_headers,
-      /*cors_exempt_headers=*/cors_exempt_headers, chrome::GetChannel(),
-      /*request_params=*/
+      /*identity_manager=*/nullptr,
       EndpointFetcher::RequestParams::Builder(http_method,
                                               kTrafficAnnotationTag)
+          .SetChannel(chrome::GetChannel())
+          .SetContentType(kContentType)
+          .SetCorsExemptHeaders(cors_exempt_headers)
           .SetCredentialsMode(CredentialsMode::kInclude)
+          .SetHeaders(request_headers)
+          .SetPostData(std::move(request_string))
           .SetSetSiteForCookies(true)
+          .SetTimeout(timeout)
+          .SetUrl(fetch_url)
           .SetUploadProgressCallback(std::move(upload_progress_callback))
           .Build());
 }
