@@ -1058,13 +1058,11 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest, AppFrameColor) {
   SkColor active_frame_color =
       window->GetProperty(chromeos::kFrameActiveColorKey);
 
-  const bool is_dark_mode_state =
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->GetNativeTheme()
-          ->ShouldUseDarkColors();
-  EXPECT_EQ(active_frame_color, is_dark_mode_state
-                                    ? gfx::kGoogleGrey900
-                                    : SkColorSetRGB(0xFF, 0xFF, 0xFF))
+  const auto* const native_theme =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetNativeTheme();
+  const bool dark_mode = native_theme->ShouldUseDarkColors();
+  EXPECT_EQ(active_frame_color,
+            dark_mode ? gfx::kGoogleGrey900 : SkColorSetRGB(0xFF, 0xFF, 0xFF))
       << "RGB: " << SkColorGetR(active_frame_color) << ", "
       << SkColorGetG(active_frame_color) << ", "
       << SkColorGetB(active_frame_color);

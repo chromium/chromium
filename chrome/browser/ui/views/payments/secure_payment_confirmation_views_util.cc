@@ -69,12 +69,11 @@ class SecurePaymentConfirmationHeaderIconView : public NonAccessibleImageView {
   // NonAccessibleImageView:
   void OnThemeChanged() override {
     NonAccessibleImageView::OnThemeChanged();
-    SetImage(use_cart_image_
-                 ? GetHeaderImageSkia(GetNativeTheme()->ShouldUseDarkColors())
-                 : ui::ImageModel::FromVectorIcon(
-                       GetPlatformVectorIcon(
-                           GetNativeTheme()->ShouldUseDarkColors()),
-                       gfx::kPlaceholderColor));
+    const bool dark_mode = GetNativeTheme()->ShouldUseDarkColors();
+    SetImage(use_cart_image_ ? GetHeaderImageSkia(dark_mode)
+                             : ui::ImageModel::FromVectorIcon(
+                                   GetPlatformVectorIcon(dark_mode),
+                                   gfx::kPlaceholderColor));
   }
 
  private:

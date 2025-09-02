@@ -38,12 +38,6 @@ class OmniboxPopupViewViewsTest : public InProcessBrowserTest {
     test::ThemeServiceChangedWaiter waiter_;
   };
 
-  OmniboxPopupViewViewsTest() = default;
-
-  OmniboxPopupViewViewsTest(const OmniboxPopupViewViewsTest&) = delete;
-  OmniboxPopupViewViewsTest& operator=(const OmniboxPopupViewViewsTest&) =
-      delete;
-
   views::Widget* CreatePopupForTestQuery();
   views::Widget* GetPopupWidget() { return popup_view()->GetWidget(); }
   OmniboxHeaderView* GetHeaderViewAt(int index) {
