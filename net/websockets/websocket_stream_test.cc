@@ -1870,5 +1870,43 @@ TEST_P(WebSocketStreamCreateTest, HandleConnectionCloseInFirstSegment) {
   ASSERT_THAT(rv2, IsError(ERR_CONNECTION_CLOSED));
 }
 
+TEST_P(WebSocketStreamCreateTest, OnURLRequestConnectedDelayed) {
+  AddSSLData();
+  EXPECT_FALSE(url_request_);
+  on_url_request_connected_rv_ = ERR_IO_PENDING;
+  CreateAndConnectStandard("wss://www.example.org/", NoSubProtocols(), {}, {},
+                           {});
+  EXPECT_FALSE(request_info_);
+  EXPECT_FALSE(response_info_);
+  WaitUntilOnURLRequestConnected();
+
+  EXPECT_FALSE(stream_);
+  EXPECT_FALSE(has_failed());
+
+  std::move(on_url_request_connected_callback_).Run(OK);
+  WaitUntilConnectDone();
+  EXPECT_TRUE(stream_);
+  EXPECT_FALSE(has_failed());
+}
+
+TEST_P(WebSocketStreamCreateTest, OnURLRequestConnectedDelayedTimeout) {
+  AddSSLData();
+  EXPECT_FALSE(url_request_);
+  on_url_request_connected_rv_ = ERR_IO_PENDING;
+  CreateAndConnectStandard("wss://www.example.org/", NoSubProtocols(), {}, {},
+                           {});
+  EXPECT_FALSE(request_info_);
+  EXPECT_FALSE(response_info_);
+  WaitUntilOnURLRequestConnected();
+
+  EXPECT_FALSE(stream_);
+  EXPECT_FALSE(has_failed());
+
+  std::move(on_url_request_connected_callback_).Run(ERR_CONNECTION_TIMED_OUT);
+  WaitUntilConnectDone();
+  EXPECT_FALSE(stream_);
+  EXPECT_TRUE(has_failed());
+}
+
 }  // namespace
 }  // namespace net

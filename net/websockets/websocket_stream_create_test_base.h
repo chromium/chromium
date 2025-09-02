@@ -86,6 +86,10 @@ class WebSocketStreamCreateTestBase : public WithTaskEnvironment {
   // called.
   void WaitUntilOnAuthRequired();
 
+  // Runs |run_loop_waiting_on_url_request_connected_| until
+  // OnURLRequestConnected() is called.
+  void WaitUntilOnURLRequestConnected();
+
   // A simple function to make the tests more readable.
   std::vector<std::string> NoSubProtocols();
 
@@ -112,6 +116,12 @@ class WebSocketStreamCreateTestBase : public WithTaskEnvironment {
   std::optional<AuthCredentials> auth_credentials_;
   // OnAuthRequired returns this value.
   int on_auth_required_rv_ = OK;
+
+  // Used to control the behaviour of OnURLRequestConnected()
+  CompletionOnceCallback on_url_request_connected_callback_;
+  int on_url_request_connected_rv_ = OK;
+
+  base::RunLoop run_loop_waiting_on_url_request_connected_;
 
   base::RunLoop connect_run_loop_;
 

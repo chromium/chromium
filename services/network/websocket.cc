@@ -181,8 +181,9 @@ class WebSocket::WebSocketEventHandler final
   // net::WebSocketEventInterface implementation
 
   void OnCreateURLRequest(net::URLRequest* url_request) override;
-  void OnURLRequestConnected(net::URLRequest* request,
-                             const net::TransportInfo& info) override;
+  int OnURLRequestConnected(net::URLRequest* request,
+                            const net::TransportInfo& info,
+                            net::CompletionOnceCallback callback) override;
   void OnAddChannelResponse(
       std::unique_ptr<net::WebSocketHandshakeResponseInfo> response,
       const std::string& selected_subprotocol,
@@ -240,18 +241,21 @@ void WebSocket::WebSocketEventHandler::OnCreateURLRequest(
   }
 }
 
-void WebSocket::WebSocketEventHandler::OnURLRequestConnected(
+int WebSocket::WebSocketEventHandler::OnURLRequestConnected(
     net::URLRequest* request,
-    const net::TransportInfo& info) {
+    const net::TransportInfo& info,
+    net::CompletionOnceCallback callback) {
   if (impl_->url_loader_network_observer_) {
     mojom::IPAddressSpace ip_address_space =
         TransportInfoToIPAddressSpace(info);
+    // TODO(crbug.com/434744665): Add LNA check here, feature-flag guarded.
     if (ip_address_space == network::mojom::IPAddressSpace::kLoopback ||
         ip_address_space == network::mojom::IPAddressSpace::kLocal) {
       impl_->url_loader_network_observer_->OnWebSocketConnectedToPrivateNetwork(
           ip_address_space);
     }
   }
+  return net::OK;
 }
 
 void WebSocket::WebSocketEventHandler::OnAddChannelResponse(

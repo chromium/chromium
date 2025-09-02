@@ -173,7 +173,6 @@ class MockWebSocketEventInterface : public WebSocketEventInterface {
   }
 
   MOCK_METHOD1(OnCreateURLRequest, void(URLRequest*));
-  MOCK_METHOD2(OnURLRequestConnected, void(URLRequest*, const TransportInfo&));
   MOCK_METHOD3(OnAddChannelResponse,
                void(std::unique_ptr<WebSocketHandshakeResponseInfo> response,
                     const std::string&,
@@ -214,6 +213,13 @@ class MockWebSocketEventInterface : public WebSocketEventInterface {
                                 credentials);
   }
 
+  int OnURLRequestConnected(URLRequest* request,
+                            const TransportInfo& transport_info,
+                            CompletionOnceCallback callback) override {
+    return OnURLRequestConnectedCalled(request, transport_info,
+                                       std::move(callback));
+  }
+
   MOCK_METHOD0(OnStartOpeningHandshakeCalled, void());  // NOLINT
   MOCK_METHOD4(
       OnSSLCertificateErrorCalled,
@@ -223,14 +229,19 @@ class MockWebSocketEventInterface : public WebSocketEventInterface {
                    scoped_refptr<HttpResponseHeaders>,
                    const IPEndPoint&,
                    std::optional<AuthCredentials>*));
+  MOCK_METHOD3(OnURLRequestConnectedCalled,
+               int(URLRequest*, const TransportInfo&, CompletionOnceCallback));
 };
 
 // This fake EventInterface is for tests which need a WebSocketEventInterface
 // implementation but are not verifying how it is used.
 class FakeWebSocketEventInterface : public WebSocketEventInterface {
   void OnCreateURLRequest(URLRequest* request) override {}
-  void OnURLRequestConnected(URLRequest* request,
-                             const TransportInfo& info) override {}
+  int OnURLRequestConnected(URLRequest* request,
+                            const TransportInfo& info,
+                            CompletionOnceCallback callback) override {
+    return OK;
+  }
   void OnAddChannelResponse(
       std::unique_ptr<WebSocketHandshakeResponseInfo> response,
       const std::string& selected_protocol,
@@ -2671,6 +2682,26 @@ TEST_F(WebSocketChannelEventInterfaceTest, OnSSLCertificateErrorCalled) {
   CreateChannelAndConnect();
   connect_data_.argument_saver.connect_delegate->OnSSLCertificateError(
       std::move(fake_callbacks), net::ERR_CERT_DATE_INVALID, ssl_info, fatal);
+}
+
+// Calls to OnURLRequestConnected() must be passed through to the event
+// interface.
+TEST_F(WebSocketChannelEventInterfaceTest, OnURLRequestConnected) {
+  const GURL wss_url("wss://example.com/on_url_request_connnected");
+
+  TransportInfo transport_info;
+  std::unique_ptr<URLRequestContext> context =
+      CreateTestURLRequestContextBuilder()->Build();
+  std::unique_ptr<URLRequest> request = context->CreateRequest(
+      wss_url, net::DEFAULT_PRIORITY, nullptr, TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  EXPECT_CALL(*event_interface_,
+              OnURLRequestConnectedCalled(request.get(), transport_info, _))
+      .WillOnce(Return(OK));
+
+  CreateChannelAndConnect();
+  connect_data_.argument_saver.connect_delegate->OnURLRequestConnected(
+      request.get(), transport_info, {});
 }
 
 // Calls to OnAuthRequired() must be passed through to the event interface.

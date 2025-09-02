@@ -194,8 +194,11 @@ class TestConnectDelegate : public WebSocketStream::ConnectDelegate {
   ~TestConnectDelegate() override = default;
 
   void OnCreateRequest(URLRequest* request) override {}
-  void OnURLRequestConnected(URLRequest* request,
-                             const TransportInfo& info) override {}
+  int OnURLRequestConnected(URLRequest* request,
+                            const TransportInfo& info,
+                            CompletionOnceCallback) override {
+    return OK;
+  }
   void OnSuccess(
       std::unique_ptr<WebSocketStream> stream,
       std::unique_ptr<WebSocketHandshakeResponseInfo> response) override {}

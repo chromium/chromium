@@ -373,8 +373,8 @@ class SSLErrorCallbacks : public WebSocketEventInterface::SSLErrorCallbacks {
 int Delegate::OnConnected(URLRequest* request,
                           const TransportInfo& info,
                           CompletionOnceCallback callback) {
-  owner_->connect_delegate()->OnURLRequestConnected(request, info);
-  return OK;
+  return owner_->connect_delegate()->OnURLRequestConnected(request, info,
+                                                           std::move(callback));
 }
 
 void Delegate::OnReceivedRedirect(URLRequest* request,

@@ -270,8 +270,12 @@ void WebSocketTestURLRequestContextHost::SetProxyConfig(
       std::move(proxy_resolution_service));
 }
 
-void DummyConnectDelegate::OnURLRequestConnected(URLRequest* request,
-                                                 const TransportInfo& info) {}
+int DummyConnectDelegate::OnURLRequestConnected(
+    URLRequest* request,
+    const TransportInfo& info,
+    CompletionOnceCallback callback) {
+  return OK;
+}
 
 int DummyConnectDelegate::OnAuthRequired(
     const AuthChallengeInfo& auth_info,

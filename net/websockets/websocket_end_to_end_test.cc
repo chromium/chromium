@@ -123,7 +123,7 @@ class ConnectTestingEventInterface : public WebSocketEventInterface {
   ConnectTestingEventInterface& operator=(const ConnectTestingEventInterface&) =
       delete;
 
-  void WaitForResponse();
+  void WaitForResponse() { on_response_future_.Get(); }
 
   bool failed() const { return failed_; }
 
@@ -141,8 +141,9 @@ class ConnectTestingEventInterface : public WebSocketEventInterface {
   // Implementation of WebSocketEventInterface.
   void OnCreateURLRequest(URLRequest* request) override {}
 
-  void OnURLRequestConnected(net::URLRequest* request,
-                             const net::TransportInfo& info) override {}
+  int OnURLRequestConnected(net::URLRequest* request,
+                            const net::TransportInfo& info,
+                            net::CompletionOnceCallback callback) override;
 
   void OnAddChannelResponse(
       std::unique_ptr<WebSocketHandshakeResponseInfo> response,
@@ -188,8 +189,6 @@ class ConnectTestingEventInterface : public WebSocketEventInterface {
   void WaitForDropChannel() { drop_channel_future_.Get(); }
 
  private:
-  void QuitLoop();
-  void RunNewLoop();
   void SetReceivedMessageFuture(std::string received_message);
 
   // failed_ is true if the handshake failed (ie. OnFailChannel was called).
@@ -202,13 +201,11 @@ class ConnectTestingEventInterface : public WebSocketEventInterface {
 
   base::test::TestFuture<std::string> received_message_future_;
   base::test::TestFuture<void> drop_channel_future_;
+  base::test::TestFuture<void> on_response_future_;
 };
 
 ConnectTestingEventInterface::ConnectTestingEventInterface() = default;
 
-void ConnectTestingEventInterface::WaitForResponse() {
-  RunNewLoop();
-}
 
 std::string ConnectTestingEventInterface::failure_message() const {
   return failure_message_;
@@ -222,6 +219,13 @@ std::string ConnectTestingEventInterface::extensions() const {
   return extensions_;
 }
 
+int ConnectTestingEventInterface::OnURLRequestConnected(
+    net::URLRequest* request,
+    const net::TransportInfo& info,
+    net::CompletionOnceCallback callback) {
+  return OK;
+}
+
 void ConnectTestingEventInterface::OnAddChannelResponse(
     std::unique_ptr<WebSocketHandshakeResponseInfo> response,
     const std::string& selected_subprotocol,
@@ -229,7 +233,7 @@ void ConnectTestingEventInterface::OnAddChannelResponse(
   response_ = std::move(response);
   selected_subprotocol_ = selected_subprotocol;
   extensions_ = extensions;
-  QuitLoop();
+  on_response_future_.SetValue();
 }
 
 void ConnectTestingEventInterface::OnDataFrame(bool fin,
@@ -265,7 +269,7 @@ void ConnectTestingEventInterface::OnFailChannel(
   DVLOG(3) << "OnFailChannel invoked with message: " << message;
   failed_ = true;
   failure_message_ = message;
-  QuitLoop();
+  on_response_future_.SetValue();
 }
 
 void ConnectTestingEventInterface::OnStartOpeningHandshake(
@@ -293,19 +297,6 @@ int ConnectTestingEventInterface::OnAuthRequired(
   return OK;
 }
 
-void ConnectTestingEventInterface::QuitLoop() {
-  if (!run_loop_) {
-    DVLOG(3) << "No active run loop to quit.";
-    return;
-  }
-  run_loop_->Quit();
-}
-
-void ConnectTestingEventInterface::RunNewLoop() {
-  run_loop_.emplace();
-  run_loop_->Run();
-}
-
 void ConnectTestingEventInterface::SetReceivedMessageFuture(
     std::string received_message) {
   received_message_future_.SetValue(received_message);
@@ -313,6 +304,41 @@ void ConnectTestingEventInterface::SetReceivedMessageFuture(
 
 std::string ConnectTestingEventInterface::GetDataFramePayload() {
   return received_message_future_.Get();
+}
+
+// Addition on top of ConnectTestingEventInterface that allows for delayed
+// connections based on the response from OnURLRequestConnected.
+class DelayedOnURLConnectedEventInterface
+    : public ConnectTestingEventInterface {
+ public:
+  // Returns ERR_IO_PENDING.
+  int OnURLRequestConnected(net::URLRequest* request,
+                            const net::TransportInfo& info,
+                            net::CompletionOnceCallback callback) override;
+
+  void WaitForConnectedEvent() { on_connected_future_.Get(); }
+  void RunCallback(int net_err);
+
+ private:
+  base::test::TestFuture<void> on_connected_future_;
+  net::CompletionOnceCallback callback_;
+};
+
+int DelayedOnURLConnectedEventInterface::OnURLRequestConnected(
+    net::URLRequest* request,
+    const net::TransportInfo& info,
+    net::CompletionOnceCallback callback) {
+  callback_ = std::move(callback);
+  on_connected_future_.SetValue();
+  return ERR_IO_PENDING;
+}
+
+void DelayedOnURLConnectedEventInterface::RunCallback(int net_err) {
+  if (callback_) {
+    std::move(callback_).Run(net_err);
+  } else {
+    DVLOG(3) << "No callback to run";
+  }
 }
 
 // A subclass of TestNetworkDelegate that additionally implements the
@@ -394,9 +420,8 @@ class WebSocketEndToEndTest : public TestWithTaskEnvironment {
         proxy_delegate_.get());
   }
 
-  // Send the connect request to |socket_url| and wait for a response. Returns
-  // true if the handshake succeeded.
-  bool ConnectAndWait(const GURL& socket_url) {
+  void Connect(const GURL& socket_url,
+               std::unique_ptr<ConnectTestingEventInterface> event_interface) {
     if (!context_) {
       InitialiseContext();
     }
@@ -406,7 +431,6 @@ class WebSocketEndToEndTest : public TestWithTaskEnvironment {
     IsolationInfo isolation_info =
         IsolationInfo::Create(IsolationInfo::RequestType::kOther, origin,
                               origin, SiteForCookies::FromOrigin(origin));
-    auto event_interface = std::make_unique<ConnectTestingEventInterface>();
     event_interface_ = event_interface.get();
     channel_ = std::make_unique<WebSocketChannel>(std::move(event_interface),
                                                   context_.get());
@@ -414,6 +438,12 @@ class WebSocketEndToEndTest : public TestWithTaskEnvironment {
         GURL(socket_url), sub_protocols_, origin, site_for_cookies,
         StorageAccessApiStatus::kNone, isolation_info, HttpRequestHeaders(),
         TRAFFIC_ANNOTATION_FOR_TESTS);
+  }
+
+  // Send the connect request to |socket_url| and wait for a response. Returns
+  // true if the handshake succeeded.
+  bool ConnectAndWait(const GURL& socket_url) {
+    Connect(socket_url, std::make_unique<ConnectTestingEventInterface>());
     event_interface_->WaitForResponse();
     return !event_interface_->failed();
   }
@@ -1008,6 +1038,75 @@ TEST_F(WebSocketEndToEndTest, EncryptedClientHello) {
 
   // Expect request to have reached the server using the upgraded URL.
   EXPECT_EQ(event_interface_->response()->url, wss_url);
+}
+
+TEST_F(WebSocketEndToEndTest, WebSocketDelayedConnectionTest) {
+  test_server::EmbeddedTestServer embedded_test_server(
+      test_server::EmbeddedTestServer::TYPE_HTTP);
+
+  test_server::InstallDefaultWebSocketHandlers(&embedded_test_server);
+
+  ASSERT_TRUE(embedded_test_server.Start());
+
+  GURL echo_url = test_server::ToWebSocketUrl(
+      embedded_test_server.GetURL("/echo-with-no-extension"));
+  std::unique_ptr<DelayedOnURLConnectedEventInterface> event_interface =
+      std::make_unique<DelayedOnURLConnectedEventInterface>();
+
+  DelayedOnURLConnectedEventInterface* event_interface_ptr =
+      event_interface.get();
+  Connect(echo_url, std::move(event_interface));
+  event_interface_ptr->WaitForConnectedEvent();
+  event_interface_ptr->RunCallback(OK);
+  event_interface_->WaitForResponse();
+  ASSERT_TRUE(!event_interface_->failed());
+}
+
+TEST_F(WebSocketEndToEndTest, WebSocketDelayedConnectionFailedTest) {
+  test_server::EmbeddedTestServer embedded_test_server(
+      test_server::EmbeddedTestServer::TYPE_HTTP);
+
+  test_server::InstallDefaultWebSocketHandlers(&embedded_test_server);
+
+  ASSERT_TRUE(embedded_test_server.Start());
+
+  GURL echo_url = test_server::ToWebSocketUrl(
+      embedded_test_server.GetURL("/echo-with-no-extension"));
+  std::unique_ptr<DelayedOnURLConnectedEventInterface> event_interface =
+      std::make_unique<DelayedOnURLConnectedEventInterface>();
+
+  DelayedOnURLConnectedEventInterface* event_interface_ptr =
+      event_interface.get();
+  Connect(echo_url, std::move(event_interface));
+  event_interface_ptr->WaitForConnectedEvent();
+  // RunUntilIdle() to prove that the connection won't continue without
+  // an OK from the callback.
+  RunUntilIdle();
+  event_interface_ptr->RunCallback(ERR_FAILED);
+  event_interface_->WaitForResponse();
+  ASSERT_TRUE(event_interface_->failed());
+}
+
+// Reset channel_ after OnURLConnected is called and returns ERR_IO_PENDING, for
+// ASAN/MSAN coverage.
+TEST_F(WebSocketEndToEndTest, WebSocketDelayedConnectionResetChannelTest) {
+  test_server::EmbeddedTestServer embedded_test_server(
+      test_server::EmbeddedTestServer::TYPE_HTTP);
+
+  test_server::InstallDefaultWebSocketHandlers(&embedded_test_server);
+
+  ASSERT_TRUE(embedded_test_server.Start());
+
+  GURL echo_url = test_server::ToWebSocketUrl(
+      embedded_test_server.GetURL("/echo-with-no-extension"));
+  std::unique_ptr<DelayedOnURLConnectedEventInterface> event_interface =
+      std::make_unique<DelayedOnURLConnectedEventInterface>();
+
+  DelayedOnURLConnectedEventInterface* event_interface_ptr =
+      event_interface.get();
+  Connect(echo_url, std::move(event_interface));
+  event_interface_ptr->WaitForConnectedEvent();
+  channel_.reset();
 }
 
 }  // namespace
