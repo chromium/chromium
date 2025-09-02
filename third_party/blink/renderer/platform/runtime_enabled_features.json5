@@ -5029,7 +5029,7 @@
     // This feature enables drag and drop using touch input devices. Replaces
     // the old "--enable-touch-drag-drop" and "--disable-touch-drag-drop"
     // switches.
-    // Enabled by default in Android and ChromeOS.
+    // Enabled by default in Android, ChromeOS and Windows.
     {
       name: "TouchDragAndDrop",
       base_feature: "none",
@@ -5041,7 +5041,7 @@
       name: "TouchDragOnShortPress",
       depends_on: ["TouchDragAndDrop"],
       status: {
-        "Win": "experimental",
+        "Win": "stable",
       },
     },
     // Many websites disable mouse support when touch APIs are available.  We'd
