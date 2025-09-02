@@ -12571,6 +12571,9 @@
                 },
                 {
                     "name": "Enabled_DsePreload2",
+                    "params": {
+                        "kDsePreload2UsePreloadServingMetrics": "true"
+                    },
                     "enable_features": [
                         "DsePreload2",
                         "HttpCacheNoVarySearch",
@@ -18895,7 +18898,8 @@
                     "name": "Enabled_NoTimeout_Burst",
                     "params": {
                         "kPrerender2FallbackPrefetchSchedulerPolicy": "Burst",
-                        "kPrerender2FallbackPrefetchUseBlockUntilHeadTimetout": "false"
+                        "kPrerender2FallbackPrefetchUseBlockUntilHeadTimetout": "false",
+                        "kPrerender2FallbackUsePreloadServingMetrics": "true"
                     },
                     "enable_features": [
                         "Prerender2FallbackPrefetchSpecRules"
