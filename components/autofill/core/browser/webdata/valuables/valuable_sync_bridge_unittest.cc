@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
+#include "components/autofill/core/browser/webdata/autofill_ai/entity_sync_util.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
@@ -40,6 +41,7 @@ namespace {
 using base::test::EqualsProto;
 using testing::_;
 using testing::ElementsAre;
+using testing::IsEmpty;
 using testing::Return;
 using testing::UnorderedElementsAre;
 
@@ -56,6 +58,17 @@ std::vector<LoyaltyCard> ExtractLoyaltyCardsFromDataBatch(
         data_pair.second->specifics.autofill_valuable()));
   }
   return loyalty_cards;
+}
+
+std::vector<EntityInstance> ExtractEntitiesFromDataBatch(
+    std::unique_ptr<syncer::DataBatch> batch) {
+  std::vector<EntityInstance> entities;
+  while (batch->HasNext()) {
+    const syncer::KeyAndData& data_pair = batch->Next();
+    entities.push_back(*CreateEntityInstanceFromSpecifics(
+        data_pair.second->specifics.autofill_valuable()));
+  }
+  return entities;
 }
 
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromLoyaltyCardSpecifics(
@@ -81,7 +94,6 @@ EntityInstance GetServerVehicleEntityInstance(
   options.nickname = "";
   options.date_modified = {};
   options.record_type = EntityInstance::RecordType::kServerWallet;
-
   return test::GetVehicleEntityInstance(options);
 }
 
@@ -359,8 +371,8 @@ TEST_F(ValuableSyncBridgeDeathTest, GetDataForCommit) {
   EXPECT_DEATH_IF_SUPPORTED({ bridge().GetDataForCommit({}); }, ".*");
 }
 
-// Tests that `GetAllDataForDebugging()` returns all local data.
-TEST_F(ValuableSyncBridgeTest, GetAllDataForDebugging) {
+// Tests that `GetAllDataForDebugging()` returns all loyalty cards.
+TEST_F(ValuableSyncBridgeTest, GetAllDataForDebuggingForLoyaltyCards) {
   const LoyaltyCard card1 = TestLoyaltyCard(kId1);
   const LoyaltyCard card2 = TestLoyaltyCard(kId2);
   AddLoyaltyCards({card1, card2});
@@ -368,6 +380,21 @@ TEST_F(ValuableSyncBridgeTest, GetAllDataForDebugging) {
   std::vector<LoyaltyCard> loyalty_cards =
       ExtractLoyaltyCardsFromDataBatch(bridge().GetAllDataForDebugging());
   EXPECT_THAT(loyalty_cards, UnorderedElementsAre(card1, card2));
+}
+
+// Tests that `GetAllDataForDebugging()` returns no vehicle registrations if the
+// profile DB flag is not enabled.
+TEST_F(ValuableSyncBridgeTest,
+       GetAllDataForDebuggingForVehicleRegistrationsFlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(syncer::kSyncMoveValuablesToProfileDb);
+  EntityInstance server_vehicle = GetServerVehicleEntityInstance(
+      {.guid = "00000000-0000-4000-8000-500000000000"});
+  AddEntities({server_vehicle});
+
+  std::vector<EntityInstance> entities =
+      ExtractEntitiesFromDataBatch(bridge().GetAllDataForDebugging());
+  EXPECT_THAT(entities, IsEmpty());
 }
 
 // Tests that `ApplyDisableSyncChanges()` clears all data in ValuablesTable when
@@ -469,6 +496,19 @@ TEST_F(ValuableSyncBridgeTest, SetEntities_ProfileDbMigrationFeatureDisabled) {
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Tests that `GetAllDataForDebugging()` returns all vehicle registrations.
+TEST_F(ValuableSyncBridgeTest, GetAllDataForDebuggingForVehicleRegistrations) {
+  EntityInstance local_vehicle = GetLocalVehicleEntityInstance(
+      {.guid = "00000000-0000-4000-8000-300000000000"});
+  EntityInstance server_vehicle = GetServerVehicleEntityInstance(
+      {.guid = "00000000-0000-4000-8000-500000000000"});
+  AddEntities({local_vehicle, server_vehicle});
+
+  std::vector<EntityInstance> entities =
+      ExtractEntitiesFromDataBatch(bridge().GetAllDataForDebugging());
+  EXPECT_THAT(entities, ElementsAre(server_vehicle));
+}
+
 // Tests that `SetEntities()` does not add vehicle entities when the vehicle
 // sync feature is disabled.
 TEST_F(ValuableSyncBridgeTest, SetEntities_VehicleSyncDisabled) {
@@ -480,7 +520,7 @@ TEST_F(ValuableSyncBridgeTest, SetEntities_VehicleSyncDisabled) {
   EXPECT_CALL(backend(),
               NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE));
   EXPECT_TRUE(SyncEntityInstances({GetServerVehicleEntityInstance()}));
-  EXPECT_THAT(GetAllEntityInstancesFromTable(), testing::IsEmpty());
+  EXPECT_THAT(GetAllEntityInstancesFromTable(), IsEmpty());
 }
 
 // Tests that `SetEntities()` correctly adds vehicle entities to the table.

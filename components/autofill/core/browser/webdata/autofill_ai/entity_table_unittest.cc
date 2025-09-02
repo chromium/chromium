@@ -77,6 +77,24 @@ TEST_F(EntityTableTest, BasicWriteThenRead_ReadOnlyInstance) {
   EXPECT_THAT(table().GetEntityInstances(), UnorderedElementsAre(pp));
 }
 
+// Tests retrieving entity instances by record type.
+TEST_F(EntityTableTest, GetEntityInstancesByRecordType) {
+  EntityInstance local_pp = test::GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kLocal});
+  EntityInstance server_dl = test::GetDriversLicenseEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(local_pp));
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(server_dl));
+  EXPECT_THAT(table().GetEntityInstances(),
+              UnorderedElementsAre(local_pp, server_dl));
+  EXPECT_THAT(table().GetEntityInstances(EntityInstance::RecordType::kLocal),
+              UnorderedElementsAre(local_pp));
+  EXPECT_THAT(
+      table().GetEntityInstances(EntityInstance::RecordType::kServerWallet),
+      UnorderedElementsAre(server_dl));
+}
+
 // Tests updating entity instances.
 TEST_F(EntityTableTest, AddOrUpdateEntityInstance) {
   EntityInstance pp = test::GetPassportEntityInstance(

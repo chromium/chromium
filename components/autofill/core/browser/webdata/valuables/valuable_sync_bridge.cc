@@ -154,6 +154,24 @@ std::unique_ptr<syncer::MutableDataBatch> ValuableSyncBridge::GetData() {
     const std::string& id = card.id().value();
     batch->Put(id, CreateEntityDataFromLoyaltyCard(card));
   }
+
+  if (!base::FeatureList::IsEnabled(syncer::kSyncMoveValuablesToProfileDb)) {
+    return batch;
+  }
+
+  const bool is_sync_vehicle_registrations_enabled =
+      IsSyncWalletVehicleRegistrationsEnabled();
+
+  for (const EntityInstance& instance : GetEntityTable()->GetEntityInstances(
+           EntityInstance::RecordType::kServerWallet)) {
+    if (instance.type().name() == EntityTypeName::kVehicle &&
+        is_sync_vehicle_registrations_enabled) {
+      const std::string& id = instance.guid().value();
+      batch->Put(id, CreateEntityDataFromEntityInstance(instance));
+    }
+    // TODO(crbug.com/436547381) Include flight reservations.
+  }
+
   return batch;
 }
 

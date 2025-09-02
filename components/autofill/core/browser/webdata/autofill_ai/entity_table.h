@@ -105,7 +105,10 @@ class EntityTable : public WebDatabaseTable {
   // - GUIDs are in a valid format.
   // - At least one of the necessary-attributes constraints from the schema is
   //   satisfied.
-  std::vector<EntityInstance> GetEntityInstances() const;
+  // Results can be filtered by `record_type`, if provided.
+  std::vector<EntityInstance> GetEntityInstances(
+      std::optional<EntityInstance::RecordType> record_type =
+          std::nullopt) const;
 
  private:
   // Contains information about an attribute stored in the `attributes` table.
