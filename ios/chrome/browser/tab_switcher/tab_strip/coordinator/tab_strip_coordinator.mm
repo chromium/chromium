@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/tab_switcher/tab_strip/coordinator/tab_strip_coordinator.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import "base/check_op.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/uuid.h"
@@ -45,6 +43,8 @@
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/snackbar/public/snackbar_message.h"
+#import "ios/chrome/browser/snackbar/public/snackbar_message_action.h"
 #import "ios/chrome/browser/tab_switcher/tab_strip/coordinator/tab_strip_mediator.h"
 #import "ios/chrome/browser/tab_switcher/tab_strip/coordinator/tab_strip_mediator_delegate.h"
 #import "ios/chrome/browser/tab_switcher/tab_strip/ui/context_menu/tab_strip_context_menu_helper.h"
@@ -363,15 +363,15 @@ constexpr CGFloat kFacePileAvatarSize = 16;
   NSString* messageLabel =
       base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
           IDS_IOS_TAB_GROUP_SNACKBAR_LABEL, numberOfClosedGroups));
-  MDCSnackbarMessage* message = CreateSnackbarMessage(messageLabel);
-  MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
+  SnackbarMessage* message = CreateCustomSnackbarMessage(messageLabel);
+  SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
   action.handler = openTabGroupPanelAction;
   action.title = l10n_util::GetNSString(IDS_IOS_TAB_GROUP_SNACKBAR_ACTION);
   message.action = action;
 
   id<SnackbarCommands> snackbarCommandsHandler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
-  [snackbarCommandsHandler showSnackbarMessage:message];
+  [snackbarCommandsHandler showCustomSnackbarMessage:message];
 }
 
 - (void)manageTabGroup:(base::WeakPtr<const TabGroup>)group {
