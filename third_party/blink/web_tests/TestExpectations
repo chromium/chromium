@@ -3036,8 +3036,6 @@ crbug.com/438780122 external/wpt/digital-credentials/non-fully-active.https.html
 crbug.com/438789183 [ Win11-arm64 ] external/wpt/fetch/fetch-later/new-window.tentative.https.window.html [ Crash ]
 crbug.com/438873385 [ Win11-arm64 ] external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/access-to-coop-page-from-other_coop-ro_cross-origin.https.html [ Crash ]
 crbug.com/438780144 [ Win11-arm64 ] external/wpt/html/document-isolation-policy/credentialless-shared-worker.https.tentative.window.html?request_origin=same_origin&worker_dip=none&window_dip=credentialless [ Skip Timeout ]
-crbug.com/438873384 [ Win11-arm64 ] external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-iframe-messagechannel.https.html [ Crash ]
-crbug.com/438873384 [ Win11-arm64 ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/navigatorcookies-cookieenabled-true.html [ Crash ]
 crbug.com/438873383 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/authentication-cross-origin.sub.https.html [ Crash ]
 crbug.com/438873383 [ Win11-arm64 ] external/wpt/secure-payment-confirmation/enrollment-bbk-per-passkey.https.html [ Crash Failure Timeout ]
 crbug.com/438873383 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-failed-zero-success-fraction.tentative.html [ Crash ]
