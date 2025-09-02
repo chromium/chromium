@@ -148,6 +148,7 @@ robolectric_binary("keyboard_accessory_junit_tests") {
     "//chrome/browser/back_press/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/fullscreen/android:java",
+    "//chrome/browser/keyboard_accessory/android/internal:java",
     "//chrome/browser/keyboard_accessory/android/java",
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/profiles/android:java",

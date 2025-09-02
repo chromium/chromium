@@ -17,12 +17,14 @@ import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProper
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Properties defined here reflect the visible state of the ManualFilling-components. */
+@NullMarked
 class ManualFillingProperties {
     static final PropertyModel.WritableBooleanPropertyKey SHOW_WHEN_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey("show_when_visible");
@@ -62,9 +64,9 @@ class ManualFillingProperties {
      * enforced and the effects are triggered. See more here:
      * http://go/keyboard-accessory-v2#heading=h.1ack25xnyuxz
      *
-     * e.g. for <code> int FLOATING_BAR = BAR | HIDDEN_SHEET | FLOATING; </code>
-     * The state FLOATING_BAR must close the sheet but show the bar. To satisfy the FLOATING
-     * property, the state will ensure that the keyboard can not affect it.
+     * <p>e.g. for <code> int FLOATING_BAR = BAR | HIDDEN_SHEET | FLOATING; </code> The state
+     * FLOATING_BAR must close the sheet but show the bar. To satisfy the FLOATING property, the
+     * state will ensure that the keyboard can not affect it.
      */
     @IntDef({
         HIDDEN,
