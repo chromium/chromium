@@ -6717,6 +6717,9 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_SNACKBAR_ACTION_UNDO" desc="The iOS snackbar action when succeed to unfollow a web content. [iOS only]">
         Undo
       </message>
+      <message name="IDS_IOS_SNACKBAR_DISMISS_ACTION" desc="The name of the 'Dismiss' accessibility action for a snackbar, which can be activated via the rotor.">
+        Dismiss
+      </message>
       <message name="IDS_IOS_SNACKBAR_MESSAGE_FOLLOW_FAILED" desc="The iOS snackbar message when failed to follow a web content. [iOS only]">
         Can't follow. Something went wrong.
       </message>

@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @class MDCSnackbarMessage;
+@class SnackbarMessage;
 
 // Commands related to Snackbar.
 @protocol SnackbarCommands
@@ -29,6 +30,25 @@
 // Shows a snackbar with `message` using `bottomOffset` as bottom offset.
 - (void)showSnackbarMessage:(MDCSnackbarMessage*)message
                bottomOffset:(CGFloat)offset;
+
+// Shows a snackbar using a SnackbarMessage. On navigation controllers,
+// use the bottom toolbar height as bottom offset. Otherwise, use the browser's
+// bottom toolbar height as bottom offset.
+- (void)showCustomSnackbarMessage:(SnackbarMessage*)message;
+
+// Shows a snackbar using a SnackbarMessage. Use the browser's bottom
+// toolbar height as bottom offset. This is used when the presented view will be
+// dismissed and web content will become visible.
+- (void)showCustomSnackbarMessageOverBrowserToolbar:(SnackbarMessage*)message;
+
+// Shows a snackbar using a SnackbarMessage, with haptic feedback.
+- (void)showCustomSnackbarMessage:(SnackbarMessage*)message
+                   withHapticType:(UINotificationFeedbackType)type;
+
+// Shows a snackbar using a SnackbarMessage, with a specific bottom
+// offset.
+- (void)showCustomSnackbarMessage:(SnackbarMessage*)message
+                     bottomOffset:(CGFloat)offset;
 
 // Shows a snackbar displaying a message with `messageText` and a button with
 // `buttonText` which triggers `messageAction` on tap. `completionAction` will

@@ -105,7 +105,8 @@ void MaybeTapSigninBottomSheetAndHistoryConfirmationDialog(
 id<GREYMatcher> SignOutSnackbarLabelMatcher() {
   NSString* snackbarLabel = l10n_util::GetNSString(
       IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE);
-  return grey_accessibilityLabel(snackbarLabel);
+  return grey_allOf(grey_accessibilityLabel(snackbarLabel),
+                    grey_sufficientlyVisible(), nil);
 }
 
 }  // namespace
@@ -386,14 +387,17 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
       IDS_IOS_ACCOUNT_MENU_SWITCH_CONFIRMATION_TITLE,
       base::SysNSStringToUTF16(fakeIdentity.userGivenName));
   NSError* error = nil;
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(signedInSnackbarTitle)]
-      assertWithMatcher:grey_notNil()
+
+  id<GREYMatcher> snackbarMatcher = grey_allOf(
+      chrome_test_util::SnackbarViewMatcher(),
+      grey_descendant(grey_accessibilityLabel(signedInSnackbarTitle)), nil);
+
+  [[EarlGrey selectElementWithMatcher:snackbarMatcher]
+      assertWithMatcher:grey_interactable()
                   error:&error];
   if (error == nil) {
     // Snackbar is presented, dismiss it.
-    [[EarlGrey
-        selectElementWithMatcher:grey_accessibilityLabel(signedInSnackbarTitle)]
+    [[EarlGrey selectElementWithMatcher:snackbarMatcher]
         performAction:grey_tap()];
   }
 }

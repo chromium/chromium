@@ -154,7 +154,6 @@ MDCSnackbarMessage* CreateUndoToastWithWrapper(UndoManagerWrapper* wrapper,
   };
 
   action.title = l10n_util::GetNSString(IDS_IOS_BOOKMARK_NEW_UNDO_BUTTON_TITLE);
-  action.accessibilityIdentifier = @"Undo";
   action.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_BOOKMARK_NEW_UNDO_BUTTON_TITLE);
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);

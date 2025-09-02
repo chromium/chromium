@@ -142,8 +142,9 @@ void WaitForIdleTimeoutScreenAndClickContinue() {
 // Waits to confirm that the snackbar is shown after idle timeout actions run.
 void VerifyActionsSnackbarShown(int actions_string_id) {
   id<GREYMatcher> snackbarMatcher = grey_allOf(
-      grey_accessibilityID(@"MDCSnackbarMessageTitleAutomationIdentifier"),
-      grey_text(l10n_util::GetNSString(actions_string_id)), nil);
+      chrome_test_util::SnackbarViewMatcher(),
+      grey_descendant(grey_text(l10n_util::GetNSString(actions_string_id))),
+      nil);
   // Wait for the snackbar to appear.
   [ChromeEarlGrey testUIElementAppearanceWithMatcher:snackbarMatcher];
   // Wait for the snackbar to disappear to make sure it is not indefinitely in
@@ -156,8 +157,7 @@ void VerifyActionsSnackbarShown(int actions_string_id) {
 // Verifies that the snackbar does not appear within 5 seconds. The condition is
 // expected to timeout and return false.
 void VerifySnackbarDoesNotAppear() {
-  id<GREYMatcher> snackbarMatcher =
-      grey_accessibilityID(@"MDCSnackbarMessageTitleAutomationIdentifier");
+  id<GREYMatcher> snackbarMatcher = chrome_test_util::SnackbarViewMatcher();
   ConditionBlock condition = ^{
     NSError* error = nil;
     [[EarlGrey selectElementWithMatcher:snackbarMatcher]

@@ -234,7 +234,6 @@ void CompletePostSignInActions(PostSignInActionSet post_signin_actions,
       &HandleSignoutForSnackbar, browser->AsWeakPtr(), clear_selectable_type));
 
   action.title = l10n_util::GetNSString(IDS_IOS_SIGNIN_SNACKBAR_UNDO);
-  action.accessibilityIdentifier = kSigninSnackbarUndo;
   NSString* messageText =
       l10n_util::GetNSStringF(IDS_IOS_SIGNIN_SNACKBAR_SIGNED_IN_AS,
                               base::SysNSStringToUTF16(identity.userEmail));

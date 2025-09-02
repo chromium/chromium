@@ -507,6 +507,9 @@
 // Returns matcher for a fake omnibox on a new tab page.
 + (id<GREYMatcher>)fakeOmnibox;
 
+// Returns matcher for the snackbar view.
++ (id<GREYMatcher>)snackbarViewMatcher;
+
 // Returns matcher for a label of a Discover feed header.
 + (id<GREYMatcher>)discoverHeaderLabel;
 

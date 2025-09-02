@@ -28,7 +28,6 @@ source_set("model") {
     "url_downloader.mm",
   ]
   deps = [
-    ":constants",
     "//base",
     "//components/browser_sync",
     "//components/dom_distiller/ios",
@@ -96,13 +95,6 @@ source_set("reading_list_remover") {
     # the inclusion of reading_list_download_service.h is allowed using
     # allow_circular_includes_from.
     "//ios/chrome/browser/dom_distiller/model",
-  ]
-}
-
-source_set("constants") {
-  sources = [
-    "reading_list_constants.h",
-    "reading_list_constants.mm",
   ]
 }
 

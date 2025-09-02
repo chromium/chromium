@@ -15,6 +15,7 @@ include_rules = [
   "+ios/chrome/browser/settings/ui_bundled",
   "+ios/chrome/browser/sharing/ui_bundled",
   "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/snackbar/public",
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/window_activities/model/window_activity_helpers.h",

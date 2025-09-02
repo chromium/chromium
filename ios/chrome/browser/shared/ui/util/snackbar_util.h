@@ -8,9 +8,14 @@
 #import <UIKit/UIKit.h>
 
 @class MDCSnackbarMessage;
+@class SnackbarMessage;
 
 // Returns a MDCSnackbarMessage instance. During EGTests, the snackbar duration
 // is updated to have the maximum duration.
 MDCSnackbarMessage* CreateSnackbarMessage(NSString* text);
+
+// Returns a SnackbarMessage instance. During EGTests, the snackbar duration
+// is updated to have the maximum duration.
+SnackbarMessage* CreateCustomSnackbarMessage(NSString* text);
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_UTIL_SNACKBAR_UTIL_H_

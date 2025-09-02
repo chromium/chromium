@@ -907,9 +907,9 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
   // A snackbar should be displayed with a failure message.
   NSString* failureMessage =
       l10n_util::GetNSString(IDS_IOS_READER_MODE_SNACKBAR_FAILURE_MESSAGE);
-  id<GREYMatcher> snackbarMatcher = grey_allOf(
-      grey_accessibilityID(@"MDCSnackbarMessageTitleAutomationIdentifier"),
-      grey_accessibilityLabel(failureMessage), nil);
+  id<GREYMatcher> snackbarMatcher =
+      grey_allOf(chrome_test_util::SnackbarViewMatcher(),
+                 grey_descendant(grey_accessibilityLabel(failureMessage)), nil);
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:snackbarMatcher];
 }
 
@@ -933,9 +933,9 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
   // A snackbar should be displayed with a failure message.
   NSString* failureMessage =
       l10n_util::GetNSString(IDS_IOS_READER_MODE_SNACKBAR_FAILURE_MESSAGE);
-  id<GREYMatcher> snackbarMatcher = grey_allOf(
-      grey_accessibilityID(@"MDCSnackbarMessageTitleAutomationIdentifier"),
-      grey_accessibilityLabel(failureMessage), nil);
+  id<GREYMatcher> snackbarMatcher =
+      grey_allOf(chrome_test_util::SnackbarViewMatcher(),
+                 grey_descendant(grey_accessibilityLabel(failureMessage)), nil);
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:snackbarMatcher];
 }
 

@@ -655,6 +655,10 @@ id<GREYMatcher> FakeOmnibox() {
   return [ChromeMatchersAppInterface fakeOmnibox];
 }
 
+id<GREYMatcher> SnackbarViewMatcher() {
+  return [ChromeMatchersAppInterface snackbarViewMatcher];
+}
+
 id<GREYMatcher> DiscoverHeaderLabel() {
   return [ChromeMatchersAppInterface discoverHeaderLabel];
 }

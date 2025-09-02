@@ -8,10 +8,22 @@
 
 #import "base/time/time.h"
 #import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/snackbar/public/snackbar_message.h"
 
 MDCSnackbarMessage* CreateSnackbarMessage(NSString* text) {
   MDCSnackbarMessage* snackbar_message =
       [MDCSnackbarMessage messageWithText:text];
+  base::TimeDelta overridden_duration =
+      tests_hook::GetOverriddenSnackbarDuration();
+  if (overridden_duration.InSeconds() != 0) {
+    snackbar_message.duration = overridden_duration.InSeconds();
+  }
+  return snackbar_message;
+}
+
+SnackbarMessage* CreateCustomSnackbarMessage(NSString* text) {
+  SnackbarMessage* snackbar_message =
+      [[SnackbarMessage alloc] initWithTitle:text];
   base::TimeDelta overridden_duration =
       tests_hook::GetOverriddenSnackbarDuration();
   if (overridden_duration.InSeconds() != 0) {

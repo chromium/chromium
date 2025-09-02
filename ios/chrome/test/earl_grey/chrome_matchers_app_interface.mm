@@ -54,6 +54,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/snackbar/public/snackbar_constants.h"
 #import "ios/chrome/browser/tab_switcher/tab_strip/ui/swift_constants_for_objective_c.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/inactive_tabs/inactive_tabs_constants.h"
@@ -1207,6 +1208,10 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(ntp_home::FakeOmniboxAccessibilityID());
 }
 
++ (id<GREYMatcher>)snackbarViewMatcher {
+  return grey_accessibilityID(kSnackbarAccessibilityId);
+}
+
 + (id<GREYMatcher>)discoverHeaderLabel {
   return grey_accessibilityID(ntp_home::DiscoverHeaderTitleAccessibilityID());
 }
@@ -1393,13 +1398,12 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   NSString* messageLabel =
       base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
           IDS_IOS_TAB_GROUP_SNACKBAR_LABEL, tabGroupCount));
-  return grey_allOf(
-      grey_accessibilityID(@"MDCSnackbarMessageTitleAutomationIdentifier"),
-      grey_text(messageLabel), nil);
+  return grey_allOf([ChromeMatchersAppInterface snackbarViewMatcher],
+                    grey_descendant(grey_text(messageLabel)), nil);
 }
 
 + (id<GREYMatcher>)tabGroupSnackBarAction {
-  return grey_allOf(grey_kindOfClassName(@"M3CButton"),
+  return grey_allOf(grey_accessibilityID(kSnackbarButtonAccessibilityId),
                     grey_buttonTitle(l10n_util::GetNSString(
                         IDS_IOS_TAB_GROUP_SNACKBAR_ACTION)),
                     nil);

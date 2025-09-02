@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/snackbar/public/snackbar_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -390,8 +391,12 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
   [BookmarkEarlGreyUI waitForDeletionOfBookmarkWithTitle:@"Folder 1"];
 
   // Press undo
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Undo")]
-      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityID(kSnackbarButtonAccessibilityId),
+                     grey_accessibilityLabel(l10n_util::GetNSString(
+                         IDS_IOS_BOOKMARK_NEW_UNDO_BUTTON_TITLE)),
+                     nil)] performAction:grey_tap()];
 
   // Verify it's back.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Folder 1")]
@@ -789,8 +794,12 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
       assertWithMatcher:grey_nil()];
 
   // Press undo
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Undo")]
-      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityID(kSnackbarButtonAccessibilityId),
+                     grey_accessibilityLabel(l10n_util::GetNSString(
+                         IDS_IOS_BOOKMARK_NEW_UNDO_BUTTON_TITLE)),
+                     nil)] performAction:grey_tap()];
   // Verify folder is in source and not in destination.
   [BookmarkEarlGrey verifyChildCount:0
                     inFolderWithName:@"Folder 1.1"

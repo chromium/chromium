@@ -31,6 +31,7 @@ extern NSString* const kMDCSecondaryInkColor;
 extern NSString* const kPlaceholderImageTintColor;
 // Primary background color.
 extern NSString* const kPrimaryBackgroundColor;
+extern NSString* const kInvertedPrimaryBackgroundColor;
 extern NSString* const kScrimBackgroundColor;
 extern NSString* const kDarkerScrimBackgroundColor;
 // Secondary background color.

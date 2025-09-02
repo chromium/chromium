@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_constants.h"
+#import "ios/chrome/browser/snackbar/public/snackbar_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -253,16 +254,18 @@ id<GREYMatcher> SearchIconButton() {
 }
 
 - (void)closeUndoSnackbarAndWait {
-  id<GREYMatcher> snackbar_matcher =
-      grey_accessibilityID(@"MDCSnackbarMessageTitleAutomationIdentifier");
+  id<GREYMatcher> snackbar_matcher = chrome_test_util::SnackbarViewMatcher();
   [[EarlGrey selectElementWithMatcher:snackbar_matcher]
       performAction:grey_tap()];
   // Wait until it's gone.
   ConditionBlock condition = ^{
     NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Undo")]
-        assertWithMatcher:grey_notVisible()
-                    error:&error];
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_allOf(grey_accessibilityID(kSnackbarButtonAccessibilityId),
+                       grey_accessibilityLabel(l10n_util::GetNSString(
+                           IDS_IOS_BOOKMARK_NEW_UNDO_BUTTON_TITLE)),
+                       nil)] assertWithMatcher:grey_notVisible() error:&error];
     return error == nil;
   };
   EG_TEST_HELPER_ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(

@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_matchers.h"
-#import "ios/chrome/browser/reading_list/model/reading_list_constants.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_app_interface.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_constants.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_egtest_utils.h"
@@ -20,6 +19,7 @@
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/snackbar/public/snackbar_constants.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -61,12 +61,8 @@ id<GREYMatcher> SignedInSnackbar(NSString* email) {
   return grey_text(snackbarMessage);
 }
 
-id<GREYMatcher> SignedInSnackbarUndoButton() {
-  return grey_accessibilityID(kSigninSnackbarUndo);
-}
-
-id<GREYMatcher> AddedToAccountReadingListSnackbarUndoButton() {
-  return grey_accessibilityID(kReadingListAddedToAccountSnackbarUndoID);
+id<GREYMatcher> SnackbarButton() {
+  return grey_accessibilityID(kSnackbarButtonAccessibilityId);
 }
 
 // Provides responses containing a custom title for fake URLs.
@@ -176,8 +172,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:SignedInSnackbar(
                                               fakeIdentity.userEmail)];
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:SignedInSnackbarUndoButton()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:SnackbarButton()];
 
   // Dismiss the snackbar.
   [[EarlGrey selectElementWithMatcher:SignedInSnackbar(fakeIdentity.userEmail)]
@@ -207,8 +202,12 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity.userEmail];
   // Tap on "Undo".
   [[EarlGrey
-      selectElementWithMatcher:grey_allOf(SignedInSnackbarUndoButton(),
-                                          grey_sufficientlyVisible(), nil)]
+      selectElementWithMatcher:grey_allOf(
+                                   SnackbarButton(),
+                                   grey_accessibilityLabel(
+                                       l10n_util::GetNSString(
+                                           IDS_IOS_SIGNIN_SNACKBAR_UNDO)),
+                                   grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   // Verify that the snackbar disappears, the promo is shown, and the user is
   // signed-out.
@@ -398,9 +397,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Verify that the right snackbar appears and there's no undo button on it.
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:AddedToLocalReadingListSnackbar()];
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(AddedToAccountReadingListSnackbarUndoButton(),
-                            grey_sufficientlyVisible(), nil)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(SnackbarButton(),
+                                          grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_nil()];
 
   // Dismiss the snackbar.
@@ -488,7 +487,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Tap on undo when the snackbar appears.
   [ChromeEarlGrey
       waitForAndTapButton:grey_allOf(
-                              AddedToAccountReadingListSnackbarUndoButton(),
+                              SnackbarButton(),
+                              grey_accessibilityLabel(l10n_util::GetNSString(
+                                  IDS_IOS_READING_LIST_SNACKBAR_UNDO_ACTION)),
                               grey_sufficientlyVisible(), nil)];
   // Verify that Page 1 is not in the Reading List.
   OpenReadingList();

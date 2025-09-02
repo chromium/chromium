@@ -238,6 +238,8 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:eg_app_support+eg2",
     "//ios/chrome/browser/shared/ui/util:omnibox_util",
+    "//ios/chrome/browser/snackbar/public:constants",
+    "//ios/chrome/browser/snackbar/ui_bundled:eg_app_support+eg2",
     "//ios/chrome/browser/ssl/model:eg_app_support+eg2",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/tab_switcher/tab_strip/ui:swift_constants_for_objective_c",

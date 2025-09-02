@@ -380,7 +380,6 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
     [weakSelf allowMostVisitedURL:URL];
   };
   action.title = l10n_util::GetNSString(IDS_NEW_TAB_UNDO_THUMBNAIL_REMOVE);
-  action.accessibilityIdentifier = @"Undo";
 
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
   MDCSnackbarMessage* message = CreateSnackbarMessage(

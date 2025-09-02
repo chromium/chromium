@@ -6,6 +6,7 @@
 #import "components/browsing_data/core/pref_names.h"
 #import "components/policy/policy_constants.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
+#import "components/strings/grit/components_strings.h"
 #import "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
@@ -23,6 +24,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/capabilities_types.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/snackbar/public/snackbar_constants.h"
 #import "ios/chrome/browser/supervised_user/ui/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -973,8 +975,11 @@ static const char* kInterstitialDetails = "Details";
           grey_accessibilityID(kParentAccessViewAccessibilityIdentifier)];
 
   // Wait for the error snackbar message to be visible and tap to dismiss it.
-  id<GREYMatcher> snackbarCloseButton =
-      grey_accessibilityID(kParentAccessSnackbarClose);
+  id<GREYMatcher> snackbarCloseButton = grey_allOf(
+      grey_accessibilityID(kSnackbarButtonAccessibilityId),
+      grey_accessibilityLabel(l10n_util::GetNSString(
+          IDS_PARENTAL_LOCAL_APPROVAL_SNACKBAR_GENERIC_ERROR_BACK_BUTTON)),
+      nil);
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:snackbarCloseButton];
   [[EarlGrey selectElementWithMatcher:snackbarCloseButton]

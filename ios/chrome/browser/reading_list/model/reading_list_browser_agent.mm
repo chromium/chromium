@@ -16,7 +16,6 @@
 #import "components/sync/base/features.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
-#import "ios/chrome/browser/reading_list/model/reading_list_constants.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -206,7 +205,6 @@ ReadingListBrowserAgent::CreateUndoActionWithReadingListURLs(
       agent->RemoveURLsFromReadingList(urls);
     }
   };
-  action.accessibilityIdentifier = kReadingListAddedToAccountSnackbarUndoID;
   action.title =
       l10n_util::GetNSString(IDS_IOS_READING_LIST_SNACKBAR_UNDO_ACTION);
   action.accessibilityLabel =

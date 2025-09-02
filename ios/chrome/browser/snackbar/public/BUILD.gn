@@ -1,0 +1,32 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("constants") {
+  sources = [
+    "snackbar_constants.h",
+    "snackbar_constants.mm",
+  ]
+}
+
+source_set("public") {
+  sources = [
+    "snackbar_message.h",
+    "snackbar_message.mm",
+    "snackbar_message_action.h",
+    "snackbar_message_action.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/app/strings:ios_branded_strings",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/shared/model/profile:features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util/identity_snackbar",
+    "//ios/chrome/common/ui/colors",
+    "//ios/third_party/material_components_ios",
+    "//ui/base",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}

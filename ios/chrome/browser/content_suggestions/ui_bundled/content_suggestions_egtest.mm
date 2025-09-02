@@ -247,9 +247,7 @@ void TapMagicStackEditButton() {
 
   // Check the snack bar notifying the user that an element has been removed is
   // displayed.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(@"MDCSnackbarMessageTitleAutomationIdentifier")]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SnackbarViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap on undo.

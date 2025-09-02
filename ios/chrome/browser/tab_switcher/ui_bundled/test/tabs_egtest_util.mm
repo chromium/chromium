@@ -75,8 +75,7 @@ void WaitForSnackbarTriggeredByTappingItem(NSString* snackbarLabel,
   [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
 
   // Wait for the snackbar to appear.
-  id<GREYMatcher> snackbar_matcher =
-      grey_accessibilityID(@"MDCSnackbarMessageTitleAutomationIdentifier");
+  id<GREYMatcher> snackbar_matcher = chrome_test_util::SnackbarViewMatcher();
   ConditionBlock wait_for_appearance = ^{
     NSError* error = nil;
     [[EarlGrey selectElementWithMatcher:snackbar_matcher]
