@@ -327,8 +327,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // are modified externally from the provider's SkSurface.
   virtual void NotifyTexParamsModified(const CanvasResource* resource) {}
 
-  FlushReason printing_fallback_reason() { return printing_fallback_reason_; }
-
   void RestoreBackBuffer(const cc::PaintImage&);
 
   ResourceProviderType GetType() const { return type_; }
@@ -498,7 +496,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   bool clear_frame_ = true;
   FlushReason last_flush_reason_ = FlushReason::kNone;
-  FlushReason printing_fallback_reason_ = FlushReason::kNone;
   std::optional<cc::PaintRecord> last_recording_;
 
   base::WeakPtrFactory<CanvasResourceProvider> weak_ptr_factory_{this};

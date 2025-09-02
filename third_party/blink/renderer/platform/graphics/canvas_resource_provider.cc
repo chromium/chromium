@@ -1772,7 +1772,6 @@ void CanvasResourceProvider::RecordingCleared() {
   mode_ = SkSurface::kDiscard_ContentChangeMode;
   clear_frame_ = true;
   last_flush_reason_ = FlushReason::kNone;
-  printing_fallback_reason_ = FlushReason::kNone;
 }
 
 MemoryManagedPaintCanvas& CanvasResourceProvider::Canvas(bool needs_will_draw) {
@@ -1886,15 +1885,11 @@ std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
 
   // If a previous flush rasterized some paint ops, we lost part of the
   // recording and must fallback to raster printing instead of vectorial
-  // printing. Record the reason why this happened.
-  if (want_to_print && !clear_frame_) {
-    printing_fallback_reason_ = last_flush_reason_;
-  }
+  // printing.
   last_flush_reason_ = reason;
   clear_frame_ = false;
   if (reason == FlushReason::kClear) {
     clear_frame_ = true;
-    printing_fallback_reason_ = FlushReason::kNone;
   }
   cc::PaintRecord recording;
   recording = recorder_->ReleaseMainRecording();
