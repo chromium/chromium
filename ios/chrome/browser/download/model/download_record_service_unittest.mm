@@ -31,6 +31,9 @@ using testing::StrictMock;
 
 namespace {
 
+const std::string kTestDownloadId = "test_download";
+const char kUpdatedPathStr[] = "/updated/path/file.pdf";
+
 // Mock observer for testing notifications.
 class MockDownloadRecordObserver : public DownloadRecordObserver {
  public:
@@ -215,6 +218,56 @@ TEST_F(DownloadRecordServiceTest, RemoveNonExistentDownloadById) {
 
   // The implementation considers removing non-existent records as success.
   EXPECT_TRUE(removal_success);
+}
+
+TEST_F(DownloadRecordServiceTest, UpdateDownloadFilePath) {
+  auto task = CreateFakeDownloadTask(kTestDownloadId);
+  RecordDownloadAndValidate(task.get());
+
+  // Set up observer to verify the update notification.
+  StrictMock<MockDownloadRecordObserver> mock_observer;
+  service_->AddObserver(&mock_observer);
+
+  base::RunLoop update_run_loop;
+  bool update_success = false;
+  const base::FilePath updated_path(kUpdatedPathStr);
+
+  // Expect OnDownloadUpdated to be called with the updated file path.
+  EXPECT_CALL(mock_observer, OnDownloadUpdated(_))
+      .WillOnce([&](const DownloadRecord& record) {
+        EXPECT_EQ(kTestDownloadId, record.download_id);
+        EXPECT_EQ(updated_path, record.file_path);
+        update_run_loop.Quit();
+      });
+
+  service_->UpdateDownloadFilePathAsync(
+      kTestDownloadId, updated_path,
+      base::BindLambdaForTesting(
+          [&](bool success) { update_success = success; }));
+
+  update_run_loop.Run();
+
+  EXPECT_TRUE(update_success);
+
+  service_->RemoveObserver(&mock_observer);
+}
+
+TEST_F(DownloadRecordServiceTest, UpdateNonExistentDownloadFilePath) {
+  const std::string non_existent_id = "non_existent_download";
+  const base::FilePath test_path("/test/path/file.pdf");
+
+  base::RunLoop run_loop;
+  bool update_success = true;  // Initialize to true to test it becomes false
+
+  service_->UpdateDownloadFilePathAsync(
+      non_existent_id, test_path, base::BindLambdaForTesting([&](bool success) {
+        update_success = success;
+        run_loop.Quit();
+      }));
+
+  run_loop.Run();
+
+  EXPECT_FALSE(update_success);
 }
 
 TEST_F(DownloadRecordServiceTest, UpdateDownloadStates) {
