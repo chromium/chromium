@@ -4721,6 +4721,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Autofill_PolledCreditCardSuggestions">
+  <obsolete>
+    Deprecated as of 09/2025. All suggestions generators always poll the data
+  </obsolete>
   <owner>battre@chromium.org</owner>
   <description>
     This user action is logged when the user interacts with an autofillable
@@ -4729,6 +4732,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Autofill_PolledLoyaltyCardSuggestions">
+  <obsolete>
+    Deprecated as of 09/2025. All suggestions generators always poll the data
+  </obsolete>
   <owner>vizcay@google.com</owner>
   <description>
     This user action is logged when the user interacts with an autofillable
@@ -4737,6 +4743,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Autofill_PolledProfileSuggestions">
+  <obsolete>
+    Deprecated as of 09/2025. All suggestions generators always poll the data
+  </obsolete>
   <owner>battre@chromium.org</owner>
   <description>
     This user action is logged when the user interacts with an autofillable
@@ -4836,8 +4845,7 @@ should be able to be added at any place in this file.
   <owner>battre@chromium.org</owner>
   <description>
     This user action is logged when the user is shown some credit card
-    suggestions. This should always happen after a
-    Autofill_PolledCreditCardSuggestion.
+    suggestions.
   </description>
 </action>
 
@@ -4863,7 +4871,6 @@ should be able to be added at any place in this file.
   <owner>battre@chromium.org</owner>
   <description>
     This user action is logged when the user is shown some profile suggestions.
-    This should always happen after a Autofill_PolledProfileSuggestion.
   </description>
 </action>
 

@@ -104,11 +104,6 @@ void LoyaltyCardFormEventLogger::OnDidFillSuggestion(
   card_categories_filled_.insert(loyalty_card.GetAffiliationCategory(url));
 }
 
-void LoyaltyCardFormEventLogger::RecordPollSuggestions() {
-  base::RecordAction(
-      base::UserMetricsAction("Autofill_PolledLoyaltyCardSuggestions"));
-}
-
 void LoyaltyCardFormEventLogger::RecordParseForm() {
   base::RecordAction(base::UserMetricsAction("Autofill_ParsedLoyaltyCardForm"));
 }

@@ -153,7 +153,6 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
 
  protected:
   // FormEventLoggerBase pure-virtual overrides.
-  void RecordPollSuggestions() override;
   void RecordParseForm() override;
   void RecordShowSuggestions() override;
 

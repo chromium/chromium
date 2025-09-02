@@ -89,7 +89,6 @@ class AddressFormEventLogger : public FormEventLoggerBase {
   void OnDestroyed() override;
 
  protected:
-  void RecordPollSuggestions() override;
   void RecordParseForm() override;
   void RecordShowSuggestions() override;
   void OnLog(const std::string& name,

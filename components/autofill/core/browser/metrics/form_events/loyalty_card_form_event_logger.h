@@ -46,7 +46,6 @@ class LoyaltyCardFormEventLogger : public FormEventLoggerBase {
       const GURL& url);
 
  protected:
-  void RecordPollSuggestions() override;
   void RecordParseForm() override;
   void RecordShowSuggestions() override;
 

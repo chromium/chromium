@@ -269,11 +269,6 @@ void AddressFormEventLogger::OnLog(const std::string& name,
   }
 }
 
-void AddressFormEventLogger::RecordPollSuggestions() {
-  base::RecordAction(
-      base::UserMetricsAction("Autofill_PolledProfileSuggestions"));
-}
-
 void AddressFormEventLogger::RecordParseForm() {
   base::RecordAction(base::UserMetricsAction("Autofill_ParsedProfileForm"));
 }

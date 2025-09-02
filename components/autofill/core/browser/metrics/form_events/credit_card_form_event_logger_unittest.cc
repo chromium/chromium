@@ -1915,25 +1915,16 @@ TEST_F(CreditCardFormEventLoggerTest, NonSecureCreditCardForm) {
 
   autofill_manager().AddSeenForm(form, field_types);
 
-  // Simulate an Autofill query on a credit card field.
-  {
-    base::UserActionTester user_action_tester;
-    autofill_manager().OnAskForValuesToFillTest(
-        form, form.fields().front().global_id());
-    EXPECT_EQ(1, user_action_tester.GetActionCount(
-                     "Autofill_PolledCreditCardSuggestions"));
-  }
-
   // Simulate submitting the credit card form.
-  {
-    base::HistogramTester histograms;
-    SubmitForm(form);
-    histograms.ExpectBucketCount("Autofill.FormEvents.CreditCard",
-                                 FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 1);
-    histograms.ExpectBucketCount(
-        "Autofill.FormEvents.CreditCard.WithOnlyLocalData",
-        FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 1);
-  }
+  base::HistogramTester histograms;
+  autofill_manager().OnAskForValuesToFillTest(
+      form, form.fields().front().global_id());
+  SubmitForm(form);
+  histograms.ExpectBucketCount("Autofill.FormEvents.CreditCard",
+                               FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 1);
+  histograms.ExpectBucketCount(
+      "Autofill.FormEvents.CreditCard.WithOnlyLocalData",
+      FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 1);
 }
 
 // Tests that credit card form submissions are *not* logged specially when the
@@ -1947,24 +1938,15 @@ TEST_F(CreditCardFormEventLoggerTest,
   auto [form, field_types] = CreateNameNumberYearForm();
   autofill_manager().AddSeenForm(form, field_types);
 
-  // Simulate an Autofill query on a credit card field.
-  {
-    base::UserActionTester user_action_tester;
-    autofill_manager().OnAskForValuesToFillTest(
-        form, form.fields().back().global_id());
-    EXPECT_EQ(1, user_action_tester.GetActionCount(
-                     "Autofill_PolledCreditCardSuggestions"));
-  }
-
   // Simulate submitting the credit card form.
-  {
-    base::HistogramTester histograms;
-    SubmitForm(form);
-    histograms.ExpectBucketCount("Autofill.FormEvents.CreditCard",
-                                 FORM_EVENT_NO_SUGGESTION_WILL_SUBMIT_ONCE, 1);
-    histograms.ExpectBucketCount("Autofill.FormEvents.CreditCard",
-                                 FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 1);
-  }
+  base::HistogramTester histograms;
+  autofill_manager().OnAskForValuesToFillTest(form,
+                                              form.fields().back().global_id());
+  SubmitForm(form);
+  histograms.ExpectBucketCount("Autofill.FormEvents.CreditCard",
+                               FORM_EVENT_NO_SUGGESTION_WILL_SUBMIT_ONCE, 1);
+  histograms.ExpectBucketCount("Autofill.FormEvents.CreditCard",
+                               FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 1);
 }
 
 }  // namespace autofill::autofill_metrics

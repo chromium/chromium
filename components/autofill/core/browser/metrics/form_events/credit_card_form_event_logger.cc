@@ -590,11 +590,6 @@ CreditCardFormEventLogger::GetFilledCreditCardForTesting() {
   return filled_credit_card_;
 }
 
-void CreditCardFormEventLogger::RecordPollSuggestions() {
-  base::RecordAction(
-      base::UserMetricsAction("Autofill_PolledCreditCardSuggestions"));
-}
-
 void CreditCardFormEventLogger::RecordParseForm() {
   base::RecordAction(base::UserMetricsAction("Autofill_ParsedCreditCardForm"));
 }

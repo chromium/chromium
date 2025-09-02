@@ -3013,8 +3013,6 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     return {};
   }
 #endif
-  metrics_->address_form_event_logger.OnDidPollSuggestions(
-      trigger_field.global_id());
 
   // If the user triggers suggestions on an autofilled field, field-by-field
   // filling suggestions should be shown so that the user could easily correct
@@ -3062,8 +3060,6 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
     autofill_metrics::SuggestionRankingContext& ranking_context) {
   metrics_->credit_card_form_event_logger.set_signin_state_for_metrics(
       metrics_->signin_state_for_metrics);
-  metrics_->credit_card_form_event_logger.OnDidPollSuggestions(
-      trigger_field.global_id());
 
   std::u16string card_number_field_value = u"";
   bool is_card_number_autofilled = false;
@@ -3134,8 +3130,6 @@ std::vector<Suggestion> BrowserAutofillManager::GetLoyaltyCardSuggestions(
   if (!valuables_manager) {
     return {};
   }
-  metrics_->loyalty_card_form_event_logger.OnDidPollSuggestions(
-      field.global_id());
   return GetSuggestionsForLoyaltyCards(form, form_structure, field,
                                        autofill_field, client());
 }

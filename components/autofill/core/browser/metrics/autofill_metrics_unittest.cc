@@ -691,15 +691,6 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
 
   autofill_manager().AddSeenForm(form, field_types);
 
-  // Simulate an Autofill query on a credit card field.
-  {
-    base::UserActionTester user_action_tester;
-    autofill_manager().OnAskForValuesToFillTest(
-        form, form.fields().front().global_id());
-    EXPECT_EQ(1, user_action_tester.GetActionCount(
-                     "Autofill_PolledCreditCardSuggestions"));
-  }
-
   // Simulate showing a credit card suggestion polled from "Name on card" field.
   {
     base::UserActionTester user_action_tester;
@@ -887,15 +878,6 @@ TEST_F(AutofillMetricsTest, ProfileCheckoutFlowUserActions) {
 
   autofill_manager().AddSeenForm(form, field_types);
 
-  // Simulate an Autofill query on a profile field.
-  {
-    base::UserActionTester user_action_tester;
-    autofill_manager().OnAskForValuesToFillTest(form,
-                                                form.fields()[0].global_id());
-    EXPECT_EQ(1, user_action_tester.GetActionCount(
-                     "Autofill_PolledProfileSuggestions"));
-  }
-
   // Simulate showing a profile suggestion polled from "State" field.
   {
     base::UserActionTester user_action_tester;
@@ -1009,14 +991,6 @@ TEST_F(AutofillMetricsTest, LoyaltyCardCheckoutFlowUserActions) {
         1, user_action_tester.GetActionCount("Autofill_ParsedLoyaltyCardForm"));
   }
 
-  // Simulate an Autofill query on a loyalty card field.
-  {
-    base::UserActionTester user_action_tester;
-    autofill_manager().OnAskForValuesToFillTest(form,
-                                                form.fields()[1].global_id());
-    EXPECT_EQ(1, user_action_tester.GetActionCount(
-                     "Autofill_PolledLoyaltyCardSuggestions"));
-  }
   // Simulate showing a loyalty card suggestion polled from "Loyalty Number"
   // field.
   {
@@ -1025,55 +999,6 @@ TEST_F(AutofillMetricsTest, LoyaltyCardCheckoutFlowUserActions) {
     EXPECT_EQ(1, user_action_tester.GetActionCount(
                      "Autofill_ShowedLoyaltyCardSuggestions"));
   }
-}
-
-// Tests that the Autofill_PolledCreditCardSuggestions user action is only
-// logged once if the field is queried repeatedly.
-TEST_F(AutofillMetricsTest, PolledCreditCardSuggestions_DebounceLogs) {
-  RecreateCreditCards(/*include_local_credit_card=*/true,
-                      /*include_masked_server_credit_card=*/false,
-                      /*masked_card_is_enrolled_for_virtual_card=*/false);
-
-  FormData form =
-      CreateForm({CreateTestFormField("Name on card", "cc-name", "",
-                                      FormControlType::kInputText),
-                  CreateTestFormField("Credit card", "cardnum", "",
-                                      FormControlType::kInputText),
-                  CreateTestFormField("Expiration date", "expdate", "",
-                                      FormControlType::kInputText)});
-
-  std::vector<FieldType> field_types = {CREDIT_CARD_NAME_FULL,
-                                        CREDIT_CARD_NUMBER,
-                                        CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR};
-
-  autofill_manager().AddSeenForm(form, field_types);
-
-  // Simulate an Autofill query on a credit card field. A poll should be logged.
-  base::UserActionTester user_action_tester;
-  autofill_manager().OnAskForValuesToFillTest(form,
-                                              form.fields()[0].global_id());
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Autofill_PolledCreditCardSuggestions"));
-
-  // Simulate a second query on the same field. There should still only be one
-  // logged poll.
-  autofill_manager().OnAskForValuesToFillTest(form,
-                                              form.fields()[0].global_id());
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Autofill_PolledCreditCardSuggestions"));
-
-  // Simulate a query to another field. There should be a second poll logged.
-  autofill_manager().OnAskForValuesToFillTest(form,
-                                              form.fields()[1].global_id());
-  EXPECT_EQ(2, user_action_tester.GetActionCount(
-                   "Autofill_PolledCreditCardSuggestions"));
-
-  // Simulate a query back to the initial field. There should be a third poll
-  // logged.
-  autofill_manager().OnAskForValuesToFillTest(form,
-                                              form.fields()[0].global_id());
-  EXPECT_EQ(3, user_action_tester.GetActionCount(
-                   "Autofill_PolledCreditCardSuggestions"));
 }
 
 // Tests that the Autofill.QueriedCreditCardFormIsSecure histogram is logged
@@ -1133,50 +1058,6 @@ TEST_F(AutofillMetricsTest, QueriedCreditCardFormIsSecure) {
     histogram_tester.ExpectUniqueSample(
         "Autofill.QueriedCreditCardFormIsSecure", true, 1);
   }
-}
-
-// Tests that the Autofill_PolledProfileSuggestions user action is only logged
-// once if the field is queried repeatedly.
-TEST_F(AutofillMetricsTest, PolledProfileSuggestions_DebounceLogs) {
-  RecreateProfile();
-
-  FormData form = CreateForm(
-      {CreateTestFormField("State", "state", "", FormControlType::kInputText),
-       CreateTestFormField("City", "city", "", FormControlType::kInputText),
-       CreateTestFormField("Street", "street", "",
-                           FormControlType::kInputText)});
-
-  std::vector<FieldType> field_types = {ADDRESS_HOME_STATE, ADDRESS_HOME_CITY,
-                                        ADDRESS_HOME_STREET_ADDRESS};
-
-  autofill_manager().AddSeenForm(form, field_types);
-
-  // Simulate an Autofill query on a profile field. A poll should be logged.
-  base::UserActionTester user_action_tester;
-  autofill_manager().OnAskForValuesToFillTest(form,
-                                              form.fields()[0].global_id());
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Autofill_PolledProfileSuggestions"));
-
-  // Simulate a second query on the same field. There should still only be poll
-  // logged.
-  autofill_manager().OnAskForValuesToFillTest(form,
-                                              form.fields()[0].global_id());
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Autofill_PolledProfileSuggestions"));
-
-  // Simulate a query to another field. There should be a second poll logged.
-  autofill_manager().OnAskForValuesToFillTest(form,
-                                              form.fields()[1].global_id());
-  EXPECT_EQ(2, user_action_tester.GetActionCount(
-                   "Autofill_PolledProfileSuggestions"));
-
-  // Simulate a query back to the initial field. There should be a third poll
-  // logged.
-  autofill_manager().OnAskForValuesToFillTest(form,
-                                              form.fields()[0].global_id());
-  EXPECT_EQ(3, user_action_tester.GetActionCount(
-                   "Autofill_PolledProfileSuggestions"));
 }
 
 // Test that we log submitted form events for credit cards.

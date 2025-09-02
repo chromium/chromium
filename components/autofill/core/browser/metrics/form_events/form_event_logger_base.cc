@@ -96,17 +96,6 @@ void FormEventLoggerBase::OnDidInteractWithAutofillableForm(
   }
 }
 
-void FormEventLoggerBase::OnDidPollSuggestions(FieldGlobalId field_id) {
-  // Record only one poll user action for consecutive polls of the same field.
-  // This is to avoid recording too many poll actions (for example when a user
-  // types in a field, triggering multiple queries) to make the analysis more
-  // simple.
-  if (field_id != last_polled_field_id_) {
-    RecordPollSuggestions();
-    last_polled_field_id_ = field_id;
-  }
-}
-
 void FormEventLoggerBase::OnDidIdentifyForm(
     const FormStructure& form,
     FormIdentificationTime identification_time) {
