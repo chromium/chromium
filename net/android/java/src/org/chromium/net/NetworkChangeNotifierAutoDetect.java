@@ -995,48 +995,45 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
     private boolean mRegisterNetworkCallbackFailed;
 
     /** Observer interface by which observer is notified of network changes. */
-    public static interface Observer {
+    public interface Observer {
         /** Called when default network changes. */
-        public void onConnectionTypeChanged(@ConnectionType int newConnectionType);
+        void onConnectionTypeChanged(@ConnectionType int newConnectionType);
 
         /** Called when connection cost of default network changes. */
-        public void onConnectionCostChanged(int newConnectionCost);
+        void onConnectionCostChanged(int newConnectionCost);
 
         /** Called when connection subtype of default network changes. */
-        public void onConnectionSubtypeChanged(int newConnectionSubtype);
+        void onConnectionSubtypeChanged(int newConnectionSubtype);
 
         /**
-         * Called when device connects to network with NetID netId. For
-         * example device associates with a WiFi access point.
-         * connectionType is the type of the network; a member of
+         * Called when device connects to network with NetID netId. For example device associates
+         * with a WiFi access point. connectionType is the type of the network; a member of
          * ConnectionType. Only called on Android L and above.
          */
-        public void onNetworkConnect(long netId, int connectionType);
+        void onNetworkConnect(long netId, int connectionType);
 
         /**
-         * Called when device determines the connection to the network with
-         * NetID netId is no longer preferred, for example when a device
-         * transitions from cellular to WiFi it might deem the cellular
-         * connection no longer preferred. The device will disconnect from
-         * the network in 30s allowing network communications on that network
-         * to wrap up. Only called on Android L and above.
+         * Called when device determines the connection to the network with NetID netId is no longer
+         * preferred, for example when a device transitions from cellular to WiFi it might deem the
+         * cellular connection no longer preferred. The device will disconnect from the network in
+         * 30s allowing network communications on that network to wrap up. Only called on Android L
+         * and above.
          */
-        public void onNetworkSoonToDisconnect(long netId);
+        void onNetworkSoonToDisconnect(long netId);
 
         /**
-         * Called when device disconnects from network with NetID netId.
-         * Only called on Android L and above.
+         * Called when device disconnects from network with NetID netId. Only called on Android L
+         * and above.
          */
-        public void onNetworkDisconnect(long netId);
+        void onNetworkDisconnect(long netId);
 
         /**
-         * Called to cause a purge of cached lists of active networks, of any
-         * networks not in the accompanying list of active networks. This is
-         * issued if a period elapsed where disconnected notifications may have
-         * been missed, and acts to keep cached lists of active networks
-         * accurate. Only called on Android L and above.
+         * Called to cause a purge of cached lists of active networks, of any networks not in the
+         * accompanying list of active networks. This is issued if a period elapsed where
+         * disconnected notifications may have been missed, and acts to keep cached lists of active
+         * networks accurate. Only called on Android L and above.
          */
-        public void purgeActiveNetworkList(long[] activeNetIds);
+        void purgeActiveNetworkList(long[] activeNetIds);
     }
 
     /**

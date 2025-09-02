@@ -113,7 +113,7 @@ public class ProxyChangeListener {
 
     /** The delegate for ProxyChangeListener. Use for testing. */
     public interface Delegate {
-        public void proxySettingsChanged();
+        void proxySettingsChanged();
     }
 
     private ProxyChangeListener() {

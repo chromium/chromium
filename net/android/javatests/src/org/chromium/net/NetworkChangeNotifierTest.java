@@ -369,7 +369,7 @@ public class NetworkChangeNotifierTest {
 
     // Types of network changes. Each is associated with a NetworkChangeNotifierAutoDetect.Observer
     // callback, and NONE is provided to indicate no callback observed.
-    private static enum ChangeType {
+    private enum ChangeType {
         NONE,
         CONNECT,
         SOON_TO_DISCONNECT,
@@ -459,7 +459,7 @@ public class NetworkChangeNotifierTest {
     private MockConnectivityManagerDelegate mConnectivityDelegate;
     private MockWifiManagerDelegate mWifiDelegate;
 
-    private static enum WatchForChanges {
+    private enum WatchForChanges {
         ALWAYS,
         ONLY_WHEN_APP_IN_FOREGROUND,
     }
