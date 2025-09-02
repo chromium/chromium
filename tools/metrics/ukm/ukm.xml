@@ -3739,6 +3739,50 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="AutofillAi.UserPromptMetrics">
+  <owner>jihadghanna@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>brunobraga@google.com</owner>
+  <summary>
+    Records when an AutofillAi prompt is shown to the user, such as saving or
+    updating entities.
+  </summary>
+  <metric name="EntityType">
+    <summary>
+      The type of entity for which the current metric record is being logged
+      (E.g. Passport, Driver's License, etc.).
+    </summary>
+  </metric>
+  <metric name="FormSessionIdentifier">
+    <summary>
+      A random variable assigned to a specific instance of a HTML form in a
+      specific renderer. This should be globally unique and suitable for
+      counting distinct forms. Two different users would have different values.
+      A single user loading the same form in two different tabs would have two
+      different values. This is used to link the fields to a form in
+      AutofillAi.KeyMetrics.
+    </summary>
+  </metric>
+  <metric name="PromptType">
+    <summary>
+      Describes the type of prompt shown to the user. This could be for example
+      a save or update entity prompt.
+    </summary>
+  </metric>
+  <metric name="Result">
+    <summary>
+      The decision made by the user after being shown a prompt. This could be
+      for example, accepted, declined or ignored.
+    </summary>
+  </metric>
+  <metric name="StorageType">
+    <summary>
+      Describes to which storage the data will be saved if the user accepts the
+      prompt, such locally or in the wallet server.
+    </summary>
+  </metric>
+</event>
+
 <event name="BackForwardCacheDisabledForRenderFrameHostReason">
   <owner>hajimehoshi@chromium.org</owner>
   <summary>

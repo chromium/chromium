@@ -120,6 +120,37 @@ optimization_guide::proto::AutofillAiFieldEventType GetFieldEventType(
   NOTREACHED();
 }
 
+optimization_guide::proto::AutofillAiPromptUserDecision GetUserDecision(
+    AutofillClient::EntitySaveOrUpdatePromptResult decision) {
+  if (decision.did_user_decline) {
+    return optimization_guide::proto::AUTOFILL_AI_PROMPT_USER_DECISION_DECLINED;
+  } else if (!decision.did_user_decline && !decision.entity) {
+    return optimization_guide::proto::AUTOFILL_AI_PROMPT_USER_DECISION_IGNORED;
+  } else {
+    return optimization_guide::proto::AUTOFILL_AI_PROMPT_USER_DECISION_ACCEPTED;
+  }
+}
+
+optimization_guide::proto::AutofillAiPromptType GetPromptType(
+    AutofillClient::AutofillAiPromptTypes prompt_type) {
+  switch (prompt_type) {
+    case AutofillClient::AutofillAiPromptTypes::kSave:
+      return optimization_guide::proto::AUTOFILL_AI_PROMPT_TYPE_SAVE_ENTITY;
+    case AutofillClient::AutofillAiPromptTypes::kUpdate:
+      return optimization_guide::proto::AUTOFILL_AI_PROMPT_TYPE_UPDATE_ENTITY;
+  }
+}
+
+optimization_guide::proto::AutofillAiEntityStorageType GetStorageType(
+    EntityInstance::RecordType record_type) {
+  switch (record_type) {
+    case EntityInstance::RecordType::kLocal:
+      return optimization_guide::proto::AUTOFILL_AI_ENTITY_STORAGE_TYPE_LOCAL;
+    case EntityInstance::RecordType::kServerWallet:
+      return optimization_guide::proto::AUTOFILL_AI_ENTITY_STORAGE_TYPE_WALLET;
+  }
+}
+
 }  // namespace
 
 AutofillAiUkmLogger::AutofillAiUkmLogger(AutofillClient* client)
@@ -225,8 +256,43 @@ void AutofillAiUkmLogger::LogSaveOrUpdatePromptResult(
     EntityInstance::RecordType record_type,
     uint64_t form_session_id,
     const std::string& domain,
-    AutofillClient::EntitySaveOrUpdatePromptResult result) {
-  // TODO(crbug.com/439779727): Log to MQLS and UKM.
+    AutofillClient::EntitySaveOrUpdatePromptResult result,
+    ukm::SourceId ukm_source_id) {
+  if (optimization_guide::ModelQualityLogsUploaderService* uploader_ =
+          client_->GetMqlsUploadService();
+      uploader_ &&
+      MayPerformAutofillAiAction(*client_, AutofillAiAction::kLogToMqls)) {
+    // Note that the actual logging of the metric happens when `log_entry` goes
+    // out of scope and is destroyed. Also note that in this case it is not
+    // necessary to check if the user is opted in because it is assumed that all
+    // field event types can only occur if the user is opted in for Autofill AI.
+    optimization_guide::ModelQualityLogEntry log_entry(
+        client_->GetMqlsUploadService()->GetWeakPtr());
+
+    optimization_guide::proto::AutofillAiUserPromptMetrics*
+        mqls_user_prompt_event = log_entry.log_ai_data_request()
+                                     ->mutable_forms_classifications()
+                                     ->mutable_quality()
+                                     ->mutable_user_prompt_metrics();
+
+    mqls_user_prompt_event->set_domain(domain);
+    mqls_user_prompt_event->set_form_session_identifier(form_session_id);
+    mqls_user_prompt_event->set_storage_type(GetStorageType(record_type));
+    mqls_user_prompt_event->set_prompt_type(GetPromptType(prompt_type));
+    mqls_user_prompt_event->set_entity_type(GetEntityType(entity_type));
+    mqls_user_prompt_event->set_result(GetUserDecision(result));
+  }
+
+  if (!CanLogUkm(ukm_source_id)) {
+    return;
+  }
+  ukm::builders::AutofillAi_UserPromptMetrics(ukm_source_id)
+      .SetFormSessionIdentifier(form_session_id)
+      .SetEntityType(base::to_underlying(entity_type.name()))
+      .SetStorageType(GetStorageType(record_type))
+      .SetPromptType(GetPromptType(prompt_type))
+      .SetResult(GetUserDecision(result))
+      .Record(client_->GetUkmRecorder());
 }
 
 void AutofillAiUkmLogger::LogFieldEvent(ukm::SourceId ukm_source_id,

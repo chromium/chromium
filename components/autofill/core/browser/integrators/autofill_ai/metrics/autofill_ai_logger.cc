@@ -222,9 +222,11 @@ void AutofillAiLogger::OnSaveOrUpdatePromptResult(
     EntityInstance::RecordType record_type,
     uint64_t form_session_id,
     const std::string& domain,
-    AutofillClient::EntitySaveOrUpdatePromptResult result) {
+    AutofillClient::EntitySaveOrUpdatePromptResult result,
+    ukm::SourceId ukm_source_id) {
   ukm_logger_.LogSaveOrUpdatePromptResult(prompt_type, entity_type, record_type,
-                                          form_session_id, domain, result);
+                                          form_session_id, domain, result,
+                                          ukm_source_id);
 }
 
 void AutofillAiLogger::RecordKeyMetrics(

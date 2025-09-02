@@ -198,10 +198,11 @@ bool AutofillAiManager::OnFormSubmitted(const FormStructure& form,
                                         ukm::SourceId ukm_source_id) {
   logger_.RecordFormMetrics(form, ukm_source_id, /*submission_state=*/true,
                             GetAutofillAiOptInStatus(*client_));
-  return MaybeImportForm(form);
+  return MaybeImportForm(form, ukm_source_id);
 }
 
-bool AutofillAiManager::MaybeImportForm(const FormStructure& form) {
+bool AutofillAiManager::MaybeImportForm(const FormStructure& form,
+                                        ukm::SourceId ukm_source_id) {
   if (!MayPerformAutofillAiAction(*client_, AutofillAiAction::kImport)) {
     return false;
   }
@@ -230,7 +231,7 @@ bool AutofillAiManager::MaybeImportForm(const FormStructure& form) {
                         form.main_frame_origin(),
                         net::registry_controlled_domains::
                             EXCLUDE_PRIVATE_REGISTRIES),
-                    old_entity->guid())
+                    ukm_source_id, old_entity->guid())
               : BindOnce(
                     &AutofillAiManager::HandleSavePromptResult, GetWeakPtr(),
                     form.source_url(),
@@ -239,7 +240,7 @@ bool AutofillAiManager::MaybeImportForm(const FormStructure& form) {
                         form.main_frame_origin(),
                         net::registry_controlled_domains::
                             EXCLUDE_PRIVATE_REGISTRIES),
-                    new_entity);
+                    ukm_source_id, new_entity);
       client_->ShowEntitySaveOrUpdateBubble(std::move(new_entity),
                                             std::move(old_entity),
                                             std::move(prompt_result_callback));
@@ -252,11 +253,12 @@ void AutofillAiManager::HandleSavePromptResult(
     const GURL& form_url,
     uint64_t form_session_id,
     const std::string& domain,
+    ukm::SourceId ukm_source_id,
     const EntityInstance& entity,
     AutofillClient::EntitySaveOrUpdatePromptResult result) {
   logger_.OnSaveOrUpdatePromptResult(
       AutofillClient::AutofillAiPromptTypes::kSave, entity.type(),
-      entity.record_type(), form_session_id, domain, result);
+      entity.record_type(), form_session_id, domain, result, ukm_source_id);
   if (!result.entity) {
     if (result.did_user_decline) {
       AddStrikeForSaveAttempt(form_url, entity);
@@ -276,6 +278,7 @@ void AutofillAiManager::HandleSavePromptResult(
 void AutofillAiManager::HandleUpdatePromptResult(
     uint64_t form_session_id,
     const std::string& domain,
+    ukm::SourceId ukm_source_id,
     const EntityInstance::EntityId& entity_uuid,
     AutofillClient::EntitySaveOrUpdatePromptResult result) {
   if (const EntityDataManager* entity_manager =
@@ -284,7 +287,8 @@ void AutofillAiManager::HandleUpdatePromptResult(
             entity_manager->GetEntityInstance(entity_uuid)) {
       logger_.OnSaveOrUpdatePromptResult(
           AutofillClient::AutofillAiPromptTypes::kUpdate, entity->type(),
-          entity->record_type(), form_session_id, domain, result);
+          entity->record_type(), form_session_id, domain, result,
+          ukm_source_id);
     }
   }
 

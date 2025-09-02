@@ -58,6 +58,7 @@ constexpr auto kDriversLicense = EntityType(EntityTypeName::kDriversLicense);
 constexpr auto kPassport = EntityType(EntityTypeName::kPassport);
 constexpr auto kNationalIdCard = EntityType(EntityTypeName::kNationalIdCard);
 constexpr char kDefaultUrl[] = "https://example.com";
+constexpr uint64_t kFormSession = 123456UL;
 
 class MockAutofillClient : public TestAutofillClient {
  public:
@@ -727,19 +728,28 @@ class AutofillAiMqlsMetricsTest : public BaseAutofillAiTest {
 
   const optimization_guide::proto::AutofillAiFieldEvent&
   GetLastFieldEventLogs() {
-    return *(logs_uploader_->uploaded_logs()
-                 .back()
-                 ->mutable_forms_classifications()
-                 ->mutable_quality()
-                 ->mutable_field_event());
+    return logs_uploader_->uploaded_logs()
+        .back()
+        ->forms_classifications()
+        .quality()
+        .field_event();
   }
 
   const optimization_guide::proto::AutofillAiKeyMetrics& GetKeyMetricsLogs() {
-    return *(logs_uploader_->uploaded_logs()
-                 .back()
-                 ->mutable_forms_classifications()
-                 ->mutable_quality()
-                 ->mutable_key_metrics());
+    return logs_uploader_->uploaded_logs()
+        .back()
+        ->forms_classifications()
+        .quality()
+        .key_metrics();
+  }
+
+  const optimization_guide::proto::AutofillAiUserPromptMetrics&
+  GetUserPromptMetrics() {
+    return logs_uploader_->uploaded_logs()
+        .back()
+        ->forms_classifications()
+        .quality()
+        .user_prompt_metrics();
   }
 
   void ExpectCorrectMqlsFieldEventLogging(
@@ -844,6 +854,31 @@ TEST_F(AutofillAiMqlsMetricsTest, FieldEvent) {
       GetLastFieldEventLogs(), *form, *form->field(0),
       AutofillAiUkmLogger::EventType::kEditedAutofilledValue,
       /*event_order=*/3);
+}
+
+TEST_F(AutofillAiMqlsMetricsTest, UserPrompts) {
+  test_api(manager()).logger().OnSaveOrUpdatePromptResult(
+      AutofillClient::AutofillAiPromptTypes::kUpdate, kPassport,
+      EntityInstance::RecordType::kLocal, /*form_session_id=*/kFormSession,
+      "myform_root.com",
+      AutofillClient::EntitySaveOrUpdatePromptResult(
+          /*did_user_decline=*/false, test::GetPassportEntityInstance()),
+      /*ukm_source_id=*/{});
+  ASSERT_EQ(mqls_logs().size(), 1u);
+
+  const optimization_guide::proto::AutofillAiUserPromptMetrics&
+      mqls_user_prompt = GetUserPromptMetrics();
+  EXPECT_EQ(mqls_user_prompt.domain(), "myform_root.com");
+  EXPECT_EQ(mqls_user_prompt.form_session_identifier(), kFormSession);
+  EXPECT_EQ(mqls_user_prompt.storage_type(),
+            optimization_guide::proto::AUTOFILL_AI_ENTITY_STORAGE_TYPE_LOCAL);
+  EXPECT_EQ(mqls_user_prompt.prompt_type(),
+            optimization_guide::proto::AUTOFILL_AI_PROMPT_TYPE_UPDATE_ENTITY);
+  EXPECT_EQ(mqls_user_prompt.entity_type(),
+            optimization_guide::proto::AUTOFILL_AI_ENTITY_TYPE_PASSPORT);
+  EXPECT_EQ(
+      mqls_user_prompt.result(),
+      optimization_guide::proto::AUTOFILL_AI_PROMPT_USER_DECISION_ACCEPTED);
 }
 
 TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics) {
