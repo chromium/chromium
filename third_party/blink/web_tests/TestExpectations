@@ -2959,14 +2959,14 @@ crbug.com/441715182 virtual/threaded/external/wpt/css/css-view-transitions/remov
 crbug.com/441715182 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/remove-root-element-firefox-bug-1982469-crash.html [ Crash Timeout ]
 crbug.com/441715182 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/remove-root-element-firefox-bug-1982469-crash.html [ Crash Timeout ]
 
-external/wpt/css/css-color/display-p3-linear-001.html [ Failure ]
-external/wpt/css/css-color/display-p3-linear-002.html [ Failure ]
-external/wpt/css/css-color/display-p3-linear-003.html [ Failure ]
-external/wpt/css/css-color/display-p3-linear-004.html [ Failure ]
-external/wpt/css/css-color/display-p3-linear-005.html [ Failure ]
-external/wpt/css/css-color/display-p3-linear-006.html [ Failure ]
-external/wpt/html/rendering/replaced-elements/attributes-for-embedded-content-and-images/video-default-object-height-constrained-by-max-width.html [ Failure ]
-external/wpt/html/rendering/replaced-elements/attributes-for-embedded-content-and-images/video-default-object-width-constrained-by-max-height.html [ Failure ]
+crbug.com/442617303 external/wpt/css/css-color/display-p3-linear-001.html [ Failure ]
+crbug.com/442617303 external/wpt/css/css-color/display-p3-linear-002.html [ Failure ]
+crbug.com/442617303 external/wpt/css/css-color/display-p3-linear-003.html [ Failure ]
+crbug.com/442617303 external/wpt/css/css-color/display-p3-linear-004.html [ Failure ]
+crbug.com/442617303 external/wpt/css/css-color/display-p3-linear-005.html [ Failure ]
+crbug.com/442617303 external/wpt/css/css-color/display-p3-linear-006.html [ Failure ]
+crbug.com/442617304 external/wpt/html/rendering/replaced-elements/attributes-for-embedded-content-and-images/video-default-object-height-constrained-by-max-width.html [ Failure ]
+crbug.com/442617304 external/wpt/html/rendering/replaced-elements/attributes-for-embedded-content-and-images/video-default-object-width-constrained-by-max-height.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/441356800 external/wpt/html/semantics/embedded-content/the-video-element/video_timeupdate_on_seek.html [ Timeout ]
