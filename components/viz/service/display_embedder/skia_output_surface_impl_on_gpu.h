@@ -286,6 +286,10 @@ class SkiaOutputSurfaceImplOnGpu
     return context_state_.get();
   }
 
+  gpu::SharedImageFactory* shared_image_factory() const {
+    return shared_image_factory_.get();
+  }
+
 #if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
     BUILDFLAG(USE_V4L2_CODEC)
   void DetileOverlay(gpu::Mailbox input,

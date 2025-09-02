@@ -18,6 +18,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
@@ -45,6 +46,7 @@
 #include "components/viz/service/display_embedder/image_context_impl.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
 #include "components/viz/service/display_embedder/skia_output_surface_impl_on_gpu.h"
+#include "components/viz/service/display_embedder/skia_output_surface_shared_image_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -404,6 +406,11 @@ SkiaOutputSurfaceImpl::~SkiaOutputSurfaceImpl() {
     RemoveRenderPassResource(std::move(render_pass_ids));
   }
   DCHECK(render_pass_image_cache_.empty());
+
+  // Break reference cycle.
+  if (shared_image_interface_) {
+    shared_image_interface_->DetachOutputSurfaceOnHostThread();
+  }
 
   // Save a copy of this pointer before moving it into the task. Tasks that are
   // already enqueud may need to use it before |impl_on_gpu_| is destroyed.
@@ -1090,6 +1097,17 @@ bool SkiaOutputSurfaceImpl::Initialize() {
   // |capabilities_| will be initialized in InitializeOnGpuThread(), so have to
   // wait.
   FlushGpuTasks(SyncMode::kWaitForTasksFinished);
+  // Exit early if creation of `impl_on_gpu` fails.
+  if (!result) {
+    return false;
+  }
+
+  // We need to wait for `impl_on_gpu_` to be initialized to initialize
+  // `shared_image_interface_`, so can't do that before now.
+  DCHECK(impl_on_gpu_);
+  shared_image_interface_ =
+      base::MakeRefCounted<SkiaOutputSurfaceSharedImageInterface>(
+          *this, *impl_on_gpu_);
 
   if (capabilities_.damage_area_from_skia_output_device) {
     damage_of_current_buffer_.emplace();
@@ -1104,7 +1122,7 @@ bool SkiaOutputSurfaceImpl::Initialize() {
         graphite_recorder_, graphite_cache_controller_.get(),
         dependency_->GetClientTaskRunner());
   }
-  return result;
+  return true;
 }
 
 void SkiaOutputSurfaceImpl::InitializeOnGpuThread(bool* result) {
@@ -1548,9 +1566,8 @@ void SkiaOutputSurfaceImpl::RemoveContextLostObserver(
 }
 
 gpu::SyncToken SkiaOutputSurfaceImpl::Flush() {
-  gpu::SyncToken sync_token(
-      gpu::CommandBufferNamespace::VIZ_SKIA_OUTPUT_SURFACE,
-      impl_on_gpu_->command_buffer_id(), ++sync_fence_release_);
+  DCHECK(shared_image_interface_);
+  gpu::SyncToken sync_token = shared_image_interface_->GenNextSyncToken();
   sync_token.SetVerifyFlush();
   FlushGpuTasks(SyncMode::kNoWait, sync_token);
   return sync_token;

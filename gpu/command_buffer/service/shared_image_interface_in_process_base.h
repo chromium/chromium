@@ -141,7 +141,7 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcessBase
 
   CommandBufferId command_buffer_id() const { return command_buffer_id_; }
 
-  // Sequence checker for tasks that run on the gpu "thread".
+  // Sequence checker for tasks that run on the gpu thread.
   SEQUENCE_CHECKER(gpu_sequence_checker_);
 
  private:

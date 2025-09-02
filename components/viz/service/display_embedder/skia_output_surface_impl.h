@@ -67,6 +67,7 @@ namespace viz {
 class ImageContextImpl;
 class SkiaOutputSurfaceDependency;
 class SkiaOutputSurfaceImplOnGpu;
+class SkiaOutputSurfaceSharedImageInterface;
 
 // The SkiaOutputSurface implementation. It is the output surface for
 // SkiaRenderer. It lives on the compositor thread, but it will post tasks
@@ -217,6 +218,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
       CopyOutputRequest::CopyOutputRequestCallback result_callback) override;
 
  private:
+  friend class SkiaOutputSurfaceSharedImageInterface;
+
   bool Initialize();
   void InitializeOnGpuThread(bool* result);
   GrSurfaceCharacterization CreateGrSurfaceCharacterizationRenderPass(
@@ -288,7 +291,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   // Observers for context lost.
   base::ObserverList<ContextLostObserver>::Unchecked observers_;
 
-  uint64_t sync_fence_release_ = 0;
+  scoped_refptr<SkiaOutputSurfaceSharedImageInterface> shared_image_interface_;
   raw_ptr<SkiaOutputSurfaceDependency> dependency_;
   UpdateVSyncParametersCallback update_vsync_parameters_callback_;
 

@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -153,6 +154,7 @@ void SharedImageInterfaceInProcess::SetUpOnGpu(
 
 void SharedImageInterfaceInProcess::DestroyOnGpu(
     base::WaitableEvent* completion) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   bool have_context = MakeContextCurrentOnGpuThread();
   if (shared_image_factory_) {
     shared_image_factory_->DestroyAllSharedImages(have_context);
@@ -167,6 +169,7 @@ void SharedImageInterfaceInProcess::DestroyOnGpu(
 
 SharedImageFactory*
 SharedImageInterfaceInProcess::GetSharedImageFactoryOnGpuThread() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   if (shared_image_factory_) {
     return shared_image_factory_.get();
   }
@@ -183,6 +186,7 @@ SharedImageInterfaceInProcess::GetSharedImageFactoryOnGpuThread() {
 
 bool SharedImageInterfaceInProcess::MakeContextCurrentOnGpuThread(
     bool needs_gl) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   if (gl::GetGLImplementation() == gl::kGLImplementationDisabled) {
     return true;
   }
@@ -202,6 +206,7 @@ bool SharedImageInterfaceInProcess::MakeContextCurrentOnGpuThread(
 }
 
 void SharedImageInterfaceInProcess::MarkContextLostOnGpuThread() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   context_state_->MarkContextLost();
 }
 

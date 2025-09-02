@@ -172,6 +172,8 @@ viz_component("service") {
     "display_embedder/skia_output_surface_impl_on_gpu.h",
     "display_embedder/skia_output_surface_impl_on_gpu_debug_capture.cc",
     "display_embedder/skia_output_surface_impl_on_gpu_debug_capture.h",
+    "display_embedder/skia_output_surface_shared_image_interface.cc",
+    "display_embedder/skia_output_surface_shared_image_interface.h",
     "display_embedder/skia_render_copy_results.cc",
     "display_embedder/skia_render_copy_results.h",
     "display_embedder/software_output_surface.cc",
