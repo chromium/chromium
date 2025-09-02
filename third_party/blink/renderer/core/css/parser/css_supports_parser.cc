@@ -259,6 +259,9 @@ bool CSSSupportsParser::ConsumeAtRuleFn(CSSParserTokenStream& stream) {
     case CSSAtRuleID::kCSSAtRuleProperty:
       rule_type = StyleRule::kProperty;
       break;
+    case CSSAtRuleID::kCSSAtRuleRoute:
+      rule_type = StyleRule::kRoute;
+      break;
     case CSSAtRuleID::kCSSAtRuleScope:
       rule_type = StyleRule::kScope;
       break;

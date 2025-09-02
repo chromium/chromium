@@ -898,6 +898,8 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRuleContents(
       return ConsumePageRule(stream);
     case CSSAtRuleID::kCSSAtRuleProperty:
       return ConsumePropertyRule(stream);
+    case CSSAtRuleID::kCSSAtRuleRoute:
+      return ConsumeRouteRule(stream, nesting_type, parent_rule_for_nesting);
     case CSSAtRuleID::kCSSAtRuleScope:
       return ConsumeScopeRule(stream, nesting_type, parent_rule_for_nesting);
     case CSSAtRuleID::kCSSAtRuleCounterStyle:
@@ -1889,6 +1891,40 @@ StyleRuleProperty* CSSParserImpl::ConsumePropertyRule(
     return nullptr;
   }
   return rule;
+}
+
+StyleRuleRoute* CSSParserImpl::ConsumeRouteRule(
+    CSSParserTokenStream& stream,
+    CSSNestingType nesting_type,
+    StyleRule* parent_rule_for_nesting) {
+  // Parse the prelude.
+  wtf_size_t prelude_offset_start = stream.LookAheadOffset();
+  const CSSParserToken& name_token = stream.Peek();
+  String name = name_token.Value().ToString();
+  stream.ConsumeIncludingWhitespace();
+  wtf_size_t prelude_offset_end = stream.LookAheadOffset();
+  if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream,
+                                             CSSAtRuleID::kCSSAtRuleRoute)) {
+    return nullptr;
+  }
+
+  // Parse the body.
+  CSSParserTokenStream::BlockGuard guard(stream);
+  if (observer_) {
+    observer_->StartRuleHeader(StyleRule::kRoute, prelude_offset_start);
+    observer_->EndRuleHeader(prelude_offset_end);
+    observer_->StartRuleBody(stream.Offset());
+  }
+
+  HeapVector<Member<StyleRuleBase>, 4> rules;
+  ConsumeRuleListOrNestedDeclarationList(stream, nesting_type,
+                                         parent_rule_for_nesting, &rules);
+
+  if (observer_) {
+    observer_->EndRuleBody(stream.Offset());
+  }
+
+  return MakeGarbageCollected<StyleRuleRoute>(name, std::move(rules));
 }
 
 StyleRuleCounterStyle* CSSParserImpl::ConsumeCounterStyleRule(

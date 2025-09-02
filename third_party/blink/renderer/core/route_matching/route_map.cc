@@ -17,16 +17,22 @@ namespace blink {
 
 const char RouteMap::kSupplementName[] = "RouteMap";
 
-const RouteMap* RouteMap::Get(const Document& document) {
-  return Supplement<Document>::From<RouteMap>(document);
+const RouteMap* RouteMap::Get(const Document* document) {
+  if (!document) {
+    return nullptr;
+  }
+  return Supplement<Document>::From<RouteMap>(*document);
 }
 
-RouteMap* RouteMap::Get(Document& document) {
-  return Supplement<Document>::From<RouteMap>(document);
+RouteMap* RouteMap::Get(Document* document) {
+  if (!document) {
+    return nullptr;
+  }
+  return Supplement<Document>::From<RouteMap>(*document);
 }
 
 RouteMap& RouteMap::Ensure(Document& document) {
-  RouteMap* route_map = Get(document);
+  RouteMap* route_map = Get(&document);
   if (!route_map) {
     route_map = MakeGarbageCollected<RouteMap>(document);
     Supplement<Document>::ProvideTo<RouteMap>(document, route_map);

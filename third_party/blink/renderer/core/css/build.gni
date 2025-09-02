@@ -290,6 +290,8 @@ blink_core_sources_css = [
   "css_revert_rule_value.h",
   "css_revert_value.cc",
   "css_revert_value.h",
+  "css_route_rule.cc",
+  "css_route_rule.h",
   "css_rule.cc",
   "css_rule.h",
   "css_rule_list.h",

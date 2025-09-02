@@ -4104,9 +4104,7 @@
     // https://chromestatus.com/feature/4771962874363904
     {
       name: "RouteMatching",
-      status: {
-        "default": "test",
-      },
+      status: "test",
     },
     {
       name: "RtcAudioJitterBufferMaxPackets",

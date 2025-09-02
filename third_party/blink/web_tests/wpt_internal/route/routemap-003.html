@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<title>Set new URL, add @route rule</title>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<link rel="help" href="https://github.com/WICG/declarative-partial-updates?tab=readme-ov-file#part-2-route-matching">
+<script type="routemap">
+  {
+    "routes": [
+      {
+        "name": "r1",
+        "pattern": [ "match-later" ]
+      }
+    ]
+  }
+</script>
+<style id="sheetElm">
+  #target {
+    width: 7px;
+  }
+</style>
+<div id="target"></div>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  test(()=> {
+    assert_equals(getComputedStyle(target).width, "7px");
+  }, "Initially no match");
+
+  test(()=> {
+    history.pushState(0, null, "match-later");
+    sheetElm.sheet.insertRule("@route r1 { #target { width: 100px; } }", 1);
+    assert_equals(getComputedStyle(target).width, "100px");
+  }, "New URL, add route rule");
+
+  test(()=> {
+    sheetElm.sheet.deleteRule(1);
+    assert_equals(getComputedStyle(target).width, "7px");
+  }, "Remove route rule");
+
+  test(()=> {
+    sheetElm.sheet.insertRule("@route r1 { #target { width: 200px; } }", 1);
+    assert_equals(getComputedStyle(target).width, "200px");
+  }, "Add route rule again");
+</script>

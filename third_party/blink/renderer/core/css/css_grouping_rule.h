@@ -136,6 +136,7 @@ struct DowncastTraits<CSSGroupingRule> {
       case CSSRule::kLayerBlockRule:
       case CSSRule::kMixinRule:
       case CSSRule::kPageRule:
+      case CSSRule::kRouteRule:
       case CSSRule::kScopeRule:
       case CSSRule::kStartingStyleRule:
         return true;

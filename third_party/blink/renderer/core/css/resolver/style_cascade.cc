@@ -2021,6 +2021,10 @@ void StyleCascade::FlattenFunctionBody(
         FlattenFunctionBody(*container_rule, function_tree_scope, result,
                             locals);
       }
+    } else if (auto* route_rule = DynamicTo<StyleRuleRoute>(child.Get())) {
+      // TODO(crbug.com/431374376): Implement
+      (void)route_rule;
+      NOTREACHED() << "Not yet implemented.";
     }
   }
 }

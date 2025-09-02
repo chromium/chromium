@@ -39,6 +39,7 @@
 namespace blink {
 
 class CSSValue;
+class Document;
 class LocalFrame;
 class MediaQuery;
 class MediaQueryExpNode;
@@ -84,6 +85,8 @@ class CORE_EXPORT MediaQueryEvaluator final
   ~MediaQueryEvaluator();
 
   const MediaValues& GetMediaValues() const { return *media_values_; }
+
+  const Document* GetDocument() const;
 
   bool MediaTypeMatch(const String& media_type_to_match) const;
 

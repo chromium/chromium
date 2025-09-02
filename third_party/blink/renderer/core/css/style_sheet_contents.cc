@@ -671,6 +671,7 @@ static bool ChildRulesHaveFailedOrCanceledSubresources(
       case StyleRuleBase::kContainer:
       case StyleRuleBase::kMedia:
       case StyleRuleBase::kLayerBlock:
+      case StyleRuleBase::kRoute:
       case StyleRuleBase::kScope:
       case StyleRuleBase::kStartingStyle:
         if (ChildRulesHaveFailedOrCanceledSubresources(
@@ -913,7 +914,8 @@ RuleSet& StyleSheetContents::EnsureRuleSet(const MediaQueryEvaluator& medium,
       rule_set_diff_->MarkUnrepresentable();
     }
   }
-  if (rule_set_ && rule_set_->DidMediaQueryResultsChange(medium)) {
+  if (rule_set_ && (rule_set_->DidMediaQueryResultsChange(medium) ||
+                    rule_set_->DidRoutesChange(medium.GetDocument()))) {
     rule_set_ = nullptr;
   }
   if (rule_set_diff_) {

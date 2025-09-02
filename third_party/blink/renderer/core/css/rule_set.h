@@ -500,6 +500,9 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   const HeapVector<Member<StyleRulePage>>& PageRules() const {
     return page_rules_;
   }
+  const HeapVector<Member<StyleRuleRoute>>& RouteRules() const {
+    return route_rules_;
+  }
   const HeapVector<Member<StyleRuleFontFace>>& FontFaceRules() const {
     return font_face_rules_;
   }
@@ -593,6 +596,8 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
            based_on_mixin_generation_ != current_mixin_generation;
   }
 
+  bool DidRoutesChange(const Document*) const;
+
   // We use a vector of Interval<T> to represent that rules with positions
   // between start_position (inclusive) and the next Interval<T>'s
   // start_position (exclusive) share some property:
@@ -652,6 +657,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   void AddToRuleSet(const AtomicString& key, RuleMap&, const RuleData&);
   void AddToRuleSet(HeapVector<RuleData>&, const RuleData&);
   void AddPageRule(StyleRulePage*);
+  void AddRouteRule(StyleRuleRoute*);
   void AddFontFaceRule(StyleRuleFontFace*);
   void AddKeyframesRule(StyleRuleKeyframes*);
   void AddPropertyRule(StyleRuleProperty*);
@@ -776,6 +782,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   HeapVector<RuleData> root_element_rules_;
   RuleFeatureSet features_;
   HeapVector<Member<StyleRulePage>> page_rules_;
+  HeapVector<Member<StyleRuleRoute>> route_rules_;
   HeapVector<Member<StyleRuleFontFace>> font_face_rules_;
   HeapVector<Member<StyleRuleFontPaletteValues>> font_palette_values_rules_;
   HeapVector<Member<StyleRuleFontFeatureValues>> font_feature_values_rules_;
@@ -786,6 +793,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   HeapVector<Member<StyleRulePositionTry>> position_try_rules_;
   HeapVector<MediaQuerySetResult> media_query_set_results_;
   HeapVector<Member<StyleRuleFunction>> function_rules_;
+  HashSet<String> active_routes_;
 
   // Whether there is a ruleset bucket for rules with a selector on
   // the style attribute (which is rare, but allowed). If so, the caller

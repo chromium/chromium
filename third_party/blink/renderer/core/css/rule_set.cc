@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
+#include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/robin_hood_map-inl.h"
 #include "third_party/blink/renderer/core/css/seeker.h"
 #include "third_party/blink/renderer/core/css/selector_checker-inl.h"
@@ -49,11 +50,13 @@
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
 #include "third_party/blink/renderer/core/css/style_rule_nested_declarations.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_utils.h"
 #include "third_party/blink/renderer/core/html/track/text_track_cue.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/invalidation_set_to_selector_map.h"
+#include "third_party/blink/renderer/core/route_matching/route_map.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -880,6 +883,11 @@ void RuleSet::AddPageRule(StyleRulePage* rule) {
   page_rules_.push_back(rule);
 }
 
+void RuleSet::AddRouteRule(StyleRuleRoute* rule) {
+  need_compaction_ = true;
+  route_rules_.push_back(rule);
+}
+
 void RuleSet::AddFontFaceRule(StyleRuleFontFace* rule) {
   need_compaction_ = true;
   font_face_rules_.push_back(rule);
@@ -942,6 +950,15 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
     } else if (auto* page_rule = DynamicTo<StyleRulePage>(rule)) {
       page_rule->SetCascadeLayer(cascade_layer);
       AddPageRule(page_rule);
+    } else if (auto* route_rule = DynamicTo<StyleRuleRoute>(rule)) {
+      const Document* document = medium.GetMediaValues().GetDocument();
+      if (const RouteMap* route_map = RouteMap::Get(document)) {
+        if (route_map->MatchesRoute(document->Url(), route_rule->GetName())) {
+          AddChildRules(parent_rule, route_rule->ChildRules(), medium, mixins,
+                        add_rule_flags, container_query, cascade_layer,
+                        style_scope, apply_mixins_stack);
+        }
+      }
     } else if (auto* media_rule = DynamicTo<StyleRuleMedia>(rule)) {
       if (MatchMediaForAddRules(medium, media_rule->MediaQueries())) {
         AddChildRules(parent_rule, media_rule->ChildRules(), medium, mixins,
@@ -1130,6 +1147,14 @@ void RuleSet::AddRulesFromSheet(const StyleSheetContents* sheet,
     if (import_rule->GetStyleSheet()) {
       AddRulesFromSheet(import_rule->GetStyleSheet(), medium, mixins,
                         import_layer, import_rule->GetScope());
+    }
+  }
+
+  const Document* document = medium.GetDocument();
+  if (const RouteMap* route_map = RouteMap::Get(document)) {
+    // In case there are multiple style sheets, we only need to do this once:
+    if (active_routes_.empty()) {
+      active_routes_ = route_map->GetActiveRoutes(document->Url());
     }
   }
 
@@ -1669,6 +1694,20 @@ bool RuleSet::DidMediaQueryResultsChange(
   return evaluator.DidResultsChange(media_query_set_results_);
 }
 
+bool RuleSet::DidRoutesChange(const Document* document) const {
+  if (!document) {
+    return false;
+  }
+  if (const RouteMap* route_map = RouteMap::Get(document)) {
+    HashSet<String> current_routes =
+        route_map->GetActiveRoutes(document->Url());
+    if (current_routes != active_routes_) {
+      return true;
+    }
+  }
+  return false;
+}
+
 const CascadeLayer* RuleSet::GetLayerForTest(const RuleData& rule) const {
   if (!layer_intervals_.size() ||
       layer_intervals_[0].start_position > rule.GetPosition()) {
@@ -1715,6 +1754,7 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(view_transition_rules_);
   visitor->Trace(keyframes_rules_);
   visitor->Trace(property_rules_);
+  visitor->Trace(route_rules_);
   visitor->Trace(counter_style_rules_);
   visitor->Trace(position_try_rules_);
   visitor->Trace(function_rules_);

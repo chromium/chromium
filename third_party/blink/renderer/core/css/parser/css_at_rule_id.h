@@ -25,6 +25,7 @@ enum class CSSAtRuleID {
   kCSSAtRulePage,
   kCSSAtRulePositionTry,
   kCSSAtRuleProperty,
+  kCSSAtRuleRoute,
   kCSSAtRuleContainer,
   kCSSAtRuleCounterStyle,
   kCSSAtRuleScope,

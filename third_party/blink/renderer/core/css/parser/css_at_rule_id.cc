@@ -71,6 +71,9 @@ CSSAtRuleID CssAtRuleID(StringView name) {
   if (EqualIgnoringASCIICase(name, "property")) {
     return CSSAtRuleID::kCSSAtRuleProperty;
   }
+  if (EqualIgnoringASCIICase(name, "route")) {
+    return CSSAtRuleID::kCSSAtRuleRoute;
+  }
   if (EqualIgnoringASCIICase(name, "container")) {
     return CSSAtRuleID::kCSSAtRuleContainer;
   }
@@ -191,6 +194,8 @@ StringView CssAtRuleIDToString(CSSAtRuleID id) {
       return "@position-try";
     case CSSAtRuleID::kCSSAtRuleProperty:
       return "@property";
+    case CSSAtRuleID::kCSSAtRuleRoute:
+      return "@route";
     case CSSAtRuleID::kCSSAtRuleContainer:
       return "@container";
     case CSSAtRuleID::kCSSAtRuleCounterStyle:
@@ -314,6 +319,8 @@ std::optional<WebFeature> AtRuleFeature(CSSAtRuleID rule_id) {
       return WebFeature::kCSSAtRulePageMargin;
     case CSSAtRuleID::kCSSAtRuleProperty:
       return WebFeature::kCSSAtRuleProperty;
+    case CSSAtRuleID::kCSSAtRuleRoute:
+      return WebFeature::kCSSAtRuleRoute;
     case CSSAtRuleID::kCSSAtRuleContainer:
       return WebFeature::kCSSAtRuleContainer;
     case CSSAtRuleID::kCSSAtRuleCounterStyle:

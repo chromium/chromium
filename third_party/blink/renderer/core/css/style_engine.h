@@ -770,6 +770,10 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void RevisitStyleSheetForInspector(StyleSheetContents* contents,
                                      const RuleFeatureSet* features) const;
 
+  // Call when @route rules may need to be re-evaluated, because the current URL
+  // has changed.
+  void RoutesMayHaveChanged() { SetNeedsActiveStyleUpdate(GetDocument()); }
+
  private:
   void UpdateCounters(const Element& element,
                       CountersAttachmentContext& context);

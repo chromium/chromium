@@ -62,9 +62,10 @@ class CORE_EXPORT RouteMap final : public GarbageCollected<RouteMap>,
   // For testing only.
   RouteMap();
 
-  // Supplement support:
-  static const RouteMap* Get(const Document&);
-  static RouteMap* Get(Document&);
+  // Supplement support. Document pointers may be null (in which case null will
+  // be returned).
+  static const RouteMap* Get(const Document*);
+  static RouteMap* Get(Document*);
   static RouteMap& Ensure(Document&);
 
   ParseResult ParseAndApplyRoutes(const String& route_map_text);

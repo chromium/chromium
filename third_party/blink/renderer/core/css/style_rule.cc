@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/css/css_page_rule.h"
 #include "third_party/blink/renderer/core/css/css_position_try_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_rule.h"
+#include "third_party/blink/renderer/core/css/css_route_rule.h"
 #include "third_party/blink/renderer/core/css/css_scope_rule.h"
 #include "third_party/blink/renderer/core/css/css_starting_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
@@ -117,6 +118,9 @@ void StyleRuleBase::Trace(Visitor* visitor) const {
       return;
     case kProperty:
       To<StyleRuleProperty>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kRoute:
+      To<StyleRuleRoute>(this)->TraceAfterDispatch(visitor);
       return;
     case kFontFace:
       To<StyleRuleFontFace>(this)->TraceAfterDispatch(visitor);
@@ -214,6 +218,9 @@ void StyleRuleBase::FinalizeGarbageCollectedObject() {
     case kProperty:
       To<StyleRuleProperty>(this)->~StyleRuleProperty();
       return;
+    case kRoute:
+      To<StyleRuleRoute>(this)->~StyleRuleRoute();
+      return;
     case kFontFace:
       To<StyleRuleFontFace>(this)->~StyleRuleFontFace();
       return;
@@ -303,6 +310,8 @@ StyleRuleBase* StyleRuleBase::Copy() const {
       return To<StyleRulePageMargin>(this)->Copy();
     case kProperty:
       return To<StyleRuleProperty>(this)->Copy();
+    case kRoute:
+      return To<StyleRuleRoute>(this)->Copy();
     case kFontFace:
       return To<StyleRuleFontFace>(this)->Copy();
     case kFontPaletteValues:
@@ -377,6 +386,10 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(wtf_size_t position_hint,
     case kPageMargin:
       rule = MakeGarbageCollected<CSSMarginRule>(To<StyleRulePageMargin>(self),
                                                  parent_sheet);
+      break;
+    case kRoute:
+      rule = MakeGarbageCollected<CSSRouteRule>(To<StyleRuleRoute>(self),
+                                                parent_sheet);
       break;
     case kProperty:
       rule = MakeGarbageCollected<CSSPropertyRule>(To<StyleRuleProperty>(self),
@@ -675,6 +688,8 @@ StyleRuleBase* StyleRuleBase::Renest(StyleRule* new_parent) {
       return RenestGroupRule(To<StyleRuleContainer>(this), new_parent);
     case kMedia:
       return RenestGroupRule(To<StyleRuleMedia>(this), new_parent);
+    case kRoute:
+      return RenestGroupRule(To<StyleRuleRoute>(this), new_parent);
     case kSupports:
       return RenestGroupRule(To<StyleRuleSupports>(this), new_parent);
     case kStartingStyle: {
@@ -1048,6 +1063,14 @@ void StyleRuleContainer::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(container_query_);
   StyleRuleCondition::TraceAfterDispatch(visitor);
 }
+
+StyleRuleRoute::StyleRuleRoute(const String& name,
+                               HeapVector<Member<StyleRuleBase>> child_rules)
+    : StyleRuleCondition(kRoute, std::move(child_rules)), name_(name) {}
+
+StyleRuleRoute::StyleRuleRoute(const StyleRuleRoute& other,
+                               HeapVector<Member<StyleRuleBase>> child_rules)
+    : StyleRuleCondition(kRoute, std::move(child_rules)), name_(other.name_) {}
 
 StyleRuleStartingStyle::StyleRuleStartingStyle(
     HeapVector<Member<StyleRuleBase>> rules)

@@ -63,6 +63,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
     kPage,
     kPageMargin,
     kProperty,
+    kRoute,
     kKeyframes,
     kKeyframe,
     kLayerBlock,
@@ -118,6 +119,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
   bool IsPageRule() const { return GetType() == kPage; }
   bool IsPageRuleMargin() const { return GetType() == kPageMargin; }
   bool IsPropertyRule() const { return GetType() == kProperty; }
+  bool IsRouteRule() const { return GetType() == kRoute; }
   bool IsStyleRule() const { return GetType() == kStyle; }
   bool IsScopeRule() const { return GetType() == kScope; }
   bool IsSupportsRule() const { return GetType() == kSupports; }
@@ -600,6 +602,27 @@ class CORE_EXPORT StyleRuleContainer : public StyleRuleCondition {
   Member<ContainerQuery> container_query_;
 };
 
+class StyleRuleRoute : public StyleRuleCondition {
+ public:
+  StyleRuleRoute(const String& name,
+                 HeapVector<Member<StyleRuleBase>> child_rules);
+  StyleRuleRoute(const StyleRuleRoute&) = default;
+  StyleRuleRoute(const StyleRuleRoute&, HeapVector<Member<StyleRuleBase>>);
+
+  StyleRuleRoute* Copy() const {
+    return MakeGarbageCollected<StyleRuleRoute>(*this);
+  }
+
+  const String& GetName() const { return name_; }
+
+  void TraceAfterDispatch(Visitor* v) const {
+    StyleRuleCondition::TraceAfterDispatch(v);
+  }
+
+ private:
+  String name_;
+};
+
 class StyleRuleStartingStyle : public StyleRuleGroup {
  public:
   explicit StyleRuleStartingStyle(HeapVector<Member<StyleRuleBase>> rules);
@@ -815,6 +838,13 @@ template <>
 struct DowncastTraits<StyleRuleProperty> {
   static bool AllowFrom(const StyleRuleBase& rule) {
     return rule.IsPropertyRule();
+  }
+};
+
+template <>
+struct DowncastTraits<StyleRuleRoute> {
+  static bool AllowFrom(const StyleRuleBase& rule) {
+    return rule.IsRouteRule();
   }
 };
 

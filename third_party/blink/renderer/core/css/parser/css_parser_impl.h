@@ -48,6 +48,7 @@ class StyleRuleNamespace;
 class StyleRulePage;
 class StyleRulePositionTry;
 class StyleRuleProperty;
+class StyleRuleRoute;
 class StyleRuleSupports;
 class StyleSheetContents;
 class Element;
@@ -80,6 +81,7 @@ class CORE_EXPORT CSSParserImpl {
           CSSAtRuleID::kCSSAtRulePage,
           CSSAtRuleID::kCSSAtRulePositionTry,
           CSSAtRuleID::kCSSAtRuleProperty,
+          CSSAtRuleID::kCSSAtRuleRoute,
           CSSAtRuleID::kCSSAtRuleContainer,
           CSSAtRuleID::kCSSAtRuleCounterStyle,
           CSSAtRuleID::kCSSAtRuleScope,
@@ -143,6 +145,7 @@ class CORE_EXPORT CSSParserImpl {
       CSSAtRuleID::kCSSAtRuleMedia,
       CSSAtRuleID::kCSSAtRuleSupports,
       CSSAtRuleID::kCSSAtRuleContainer,
+      CSSAtRuleID::kCSSAtRuleRoute,
   };
 
   // Rules that are valid when nested within a style rule.
@@ -314,6 +317,9 @@ class CORE_EXPORT CSSParserImpl {
                                            CSSParserTokenStream&);
   StyleRulePage* ConsumePageRule(CSSParserTokenStream&);
   StyleRuleProperty* ConsumePropertyRule(CSSParserTokenStream&);
+  StyleRuleRoute* ConsumeRouteRule(CSSParserTokenStream&,
+                                   CSSNestingType,
+                                   StyleRule* parent_rule_for_nesting);
   StyleRuleCounterStyle* ConsumeCounterStyleRule(CSSParserTokenStream&);
   StyleRuleBase* ConsumeScopeRule(CSSParserTokenStream&,
                                   CSSNestingType,
