@@ -2303,12 +2303,11 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "updater-mac-pool",
+    name = "updater-tests-pool",
     generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
-            # Bots in this pool support passwordless sudo.
-            "pool": "chromium.updater.mac",
+            "pool": "chromium.tests.updater",
         },
     ),
 )

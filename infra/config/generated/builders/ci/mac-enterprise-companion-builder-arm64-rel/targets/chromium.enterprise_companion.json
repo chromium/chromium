@@ -17,7 +17,7 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-12",
-            "pool": "chromium.updater.mac"
+            "pool": "chromium.tests.updater"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -35,7 +35,7 @@
           "dimensions": {
             "cpu": "arm64",
             "os": "Mac-12",
-            "pool": "chromium.updater.mac"
+            "pool": "chromium.tests.updater"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },

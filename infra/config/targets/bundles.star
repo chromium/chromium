@@ -2702,7 +2702,7 @@ targets.bundle(
     ],
     per_test_modifications = {
         "enterprise_companion_integration_tests": [
-            "updater-default-pool",
+            "updater-tests-pool",
         ],
         "enterprise_companion_tests": [
             "updater-default-pool",
@@ -2718,10 +2718,10 @@ targets.bundle(
     ],
     per_test_modifications = {
         "enterprise_companion_integration_tests": [
-            "updater-mac-pool",
+            "updater-tests-pool",
         ],
         "enterprise_companion_tests": [
-            "updater-mac-pool",
+            "updater-tests-pool",
         ],
     },
 )
@@ -6886,7 +6886,7 @@ targets.bundle(
             "updater-default-pool",
         ],
         "updater_tests_system": [
-            "updater-mac-pool",
+            "updater-tests-pool",
         ],
     },
 )
