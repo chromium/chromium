@@ -30,6 +30,7 @@
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_manager/valuables/test_valuables_data_manager.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_quality/addresses/test_address_normalizer.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver_factory.h"
@@ -447,6 +448,9 @@ class TestAutofillClientTemplate : public T {
 
   void set_test_addresses(
       std::vector<AutofillProfile> test_addresses) override {
+    for (AutofillProfile& profile : test_addresses) {
+      profile.set_is_devtools_testing_profile(true);
+    }
     test_addresses_ = std::move(test_addresses);
   }
 

@@ -230,7 +230,7 @@ void AutofillHandler::SetAddresses(
       autofill::AutofillProfilesFromJSON(&profiles);
   if (autofill_profiles) {
     const std::string locale = "en-US";
-    for (const autofill::AutofillProfile& profile : *autofill_profiles) {
+    for (autofill::AutofillProfile& profile : *autofill_profiles) {
       const std::u16string test_address_country =
           profile.GetInfo(autofill::FieldType::ADDRESS_HOME_COUNTRY, locale);
       // The current test address for Germany is based on the old model. If the
@@ -241,7 +241,7 @@ void AutofillHandler::SetAddresses(
       if (test_address_country == u"Germany") {
         continue;
       }
-
+      profile.set_is_devtools_testing_profile(true);
       test_address_for_countries.push_back(profile);
     }
   }

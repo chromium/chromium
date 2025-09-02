@@ -280,7 +280,8 @@ AutofillProfile::AutofillProfile(const AutofillProfile& profile)
     : phone_number_(this),
       address_(profile.GetAddress()),
       token_quality_(this),
-      usage_history_information_(profile.usage_history_information_) {
+      usage_history_information_(profile.usage_history_information_),
+      is_devtools_testing_profile_(profile.is_devtools_testing_profile_) {
   operator=(profile);
 }
 
@@ -320,6 +321,8 @@ AutofillProfile& AutofillProfile::operator=(const AutofillProfile& profile) {
 
   token_quality_ = profile.token_quality_;
   token_quality_.set_profile(this);
+
+  is_devtools_testing_profile_ = profile.is_devtools_testing_profile_;
 
   return *this;
 }

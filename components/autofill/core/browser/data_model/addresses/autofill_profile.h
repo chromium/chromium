@@ -381,6 +381,13 @@ class AutofillProfile : public FormGroup {
   UsageHistoryInformation& usage_history();
   const UsageHistoryInformation& usage_history() const;
 
+  bool is_devtools_testing_profile() const {
+    return is_devtools_testing_profile_;
+  }
+  void set_is_devtools_testing_profile(bool is_devtools_testing_profile) {
+    is_devtools_testing_profile_ = is_devtools_testing_profile;
+  }
+
  private:
   friend class AutofillProfileTestApi;
 
@@ -458,6 +465,8 @@ class AutofillProfile : public FormGroup {
   ProfileTokenQuality token_quality_;
 
   UsageHistoryInformation usage_history_information_;
+
+  bool is_devtools_testing_profile_ = false;
 };
 
 // So we can compare AutofillProfiles with EXPECT_EQ().
