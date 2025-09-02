@@ -16,13 +16,14 @@
 namespace autofill {
 
 SynchronousFormCache::SynchronousFormCache() = default;
-SynchronousFormCache::SynchronousFormCache(FormData& form) {
-  Insert(form.renderer_id(), form);
+SynchronousFormCache::SynchronousFormCache(
+    const FormData& form LIFETIME_BOUND) {
+  Insert(form.renderer_id(), &form);
 }
 SynchronousFormCache::SynchronousFormCache(
     FormRendererId form_id,
     base::optional_ref<const FormData> form) {
-  Insert(form_id, form);
+  Insert(form_id, form ? form.as_ptr() : nullptr);
 }
 SynchronousFormCache::SynchronousFormCache(
     const std::map<FormRendererId, std::unique_ptr<FormData>>& forms) {
@@ -41,8 +42,6 @@ std::optional<FormData> SynchronousFormCache::GetOrExtractForm(
     form_util::ButtonTitlesCache* button_titles_cache,
     DenseSet<form_util::ExtractOption> extract_options) const {
   if (!cache_.empty()) {
-    CHECK(base::FeatureList::IsEnabled(
-        features::kAutofillOptimizeFormExtraction));
     if (FormRendererId form_id = form_util::GetFormRendererId(form_element);
         cache_.contains(form_id)) {
       auto it = cache_.find(form_id);
@@ -68,10 +67,8 @@ std::optional<FormData> SynchronousFormCache::GetOrExtractForm(
 }
 
 void SynchronousFormCache::Insert(FormRendererId form_id,
-                                  base::optional_ref<const FormData> form) {
-  if (base::FeatureList::IsEnabled(features::kAutofillOptimizeFormExtraction)) {
-    cache_.insert({form_id, form});
-  }
+                                  const FormData* form) {
+  cache_.emplace(form_id, form);
 }
 
 }  // namespace autofill

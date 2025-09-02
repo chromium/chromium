@@ -549,8 +549,6 @@ AutofillAgent::AutofillAgent(
                                .uses_platform_autofill)),
       password_autofill_agent_(std::move(password_autofill_agent)),
       password_generation_agent_(std::move(password_generation_agent)),
-      optimize_form_extraction_(base::FeatureList::IsEnabled(
-          features::kAutofillOptimizeFormExtraction)),
       replace_form_element_observer_(base::FeatureList::IsEnabled(
           features::kAutofillReplaceFormElementObserver)) {
   form_tracker_->SetUserGestureRequired(config_.user_gesture_required);
@@ -1821,9 +1819,6 @@ void AutofillAgent::DidChangeFormRelatedElementDynamically(
       // need to run this function as this would be redundant.
       return false;
     }
-    if (!optimize_form_extraction_) {
-      return true;
-    }
     // Early bailout for node removal.
     if (form_related_change == blink::WebFormRelatedChangeType::kRemove &&
         !replace_form_element_observer_) {
@@ -2130,9 +2125,6 @@ void AutofillAgent::OnProvisionallySaveForm(
   // version of the to-be-submitted form.
   auto update_submission_data_on_user_edit = [&] {
     if (form_element) {
-      if (!optimize_form_extraction_) {
-        UpdateLastInteractedElement(form_util::GetFormRendererId(form_element));
-      }
       return;
     }
     CHECK(element);
@@ -2144,9 +2136,6 @@ void AutofillAgent::OnProvisionallySaveForm(
         });
     formless_elements_user_edited_.insert(
         form_util::GetFieldRendererId(element));
-    if (!optimize_form_extraction_) {
-      UpdateLastInteractedElement(form_util::GetFieldRendererId(element));
-    }
   };
 
   switch (source) {

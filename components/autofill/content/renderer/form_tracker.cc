@@ -354,12 +354,10 @@ void FormTracker::WillDetach(blink::DetachReason detach_reason) {
 
 void FormTracker::WillSendSubmitEvent(const WebFormElement& form) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
-  if (base::FeatureList::IsEnabled(features::kAutofillOptimizeFormExtraction)) {
-    CHECK(form);
-    // TODO(crbug.com/40281981): Figure out if this is still needed, and
-    // document the reason, otherwise remove.
-    UpdateLastInteractedElement(form_util::GetFormRendererId(form));
-  }
+  CHECK(form);
+  // TODO(crbug.com/40281981): Figure out if this is still needed, and document
+  // the reason, otherwise remove.
+  UpdateLastInteractedElement(form_util::GetFormRendererId(form));
   agent_->OnProvisionallySaveForm(form, blink::WebFormControlElement(),
                                   SaveFormReason::kWillSendSubmitEvent);
 }

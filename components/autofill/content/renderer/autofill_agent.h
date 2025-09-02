@@ -570,7 +570,6 @@ class AutofillAgent : public content::RenderFrameObserver,
     FieldRendererId field = {};
   } last_ask_for_values_to_fill_;
 
-  const bool optimize_form_extraction_ = false;
   const bool replace_form_element_observer_ = false;
 
   base::WeakPtrFactory<AutofillAgent> weak_ptr_factory_{this};

@@ -817,8 +817,6 @@ TEST_F(AutofillAgentTest, PreviewThenClear) {
 // trigger a DOM reparse (for performance reasons).
 TEST_F(AutofillAgentTest,
        DynamicElementNotificationFiltering_AddNonAutofillableElement) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillOptimizeFormExtraction};
   LoadHTML(R"(<form id="form_id"> <input id="name"></form>)");
   const auto& extracted_forms =
       test_api(autofill_agent()).form_cache().extracted_forms();
@@ -854,8 +852,6 @@ TEST_F(AutofillAgentTest,
 // reparse and update the cache.
 TEST_F(AutofillAgentTest,
        DynamicElementNotificationFiltering_AddAutofillableElement) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillOptimizeFormExtraction};
   LoadHTML(R"(<form id="form_id"> <input id="name"></form>)");
   const auto& extracted_forms =
       test_api(autofill_agent()).form_cache().extracted_forms();
@@ -885,8 +881,6 @@ TEST_F(AutofillAgentTest,
 // Tests that when JS adds a new form to the DOM, we trigger a DOM
 // reparse and update the cache.
 TEST_F(AutofillAgentTest, DynamicElementNotificationFiltering_AddForm) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillOptimizeFormExtraction};
   LoadHTML(R"(<form id="form_id"> <input id="name"></form>)");
   ASSERT_EQ(num_extracted_forms(), 1u);
 

@@ -975,21 +975,6 @@ TEST_F(FormAutofillUtilsTest,
 }
 
 TEST_F(FormAutofillUtilsTest,
-       FindFormAndFieldForFormControlElement_NotExtractBounds) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kAutofillOptimizeFormExtraction);
-  LoadHTML("<body><form id='form1'><input id='i1'></form></body>");
-  WebDocument doc = GetDocument();
-  auto web_control = GetFormControlElementById(doc, "i1");
-  std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
-      form_and_field = FindFormAndFieldForFormControlElement(web_control);
-
-  ASSERT_TRUE(form_and_field);
-  auto& [form, field] = *form_and_field;
-  EXPECT_TRUE(form.fields().back().bounds().IsEmpty());
-}
-
-TEST_F(FormAutofillUtilsTest,
        FindFormAndFieldForFormControlElement_ExtractUnownedBounds) {
   LoadHTML("<body><input id='i1'></body>");
   WebDocument doc = GetDocument();
@@ -1056,25 +1041,6 @@ TEST_F(FormAutofillUtilsTest,
   EXPECT_EQ(options[0].text, u"one");
   EXPECT_EQ(options[1].text, u"two");
   EXPECT_EQ(field->datalist_options().size(), options.size());
-}
-
-TEST_F(FormAutofillUtilsTest,
-       FindFormAndFieldForFormControlElement_NotExtractDataList) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kAutofillOptimizeFormExtraction);
-  LoadHTML(
-      "<body><input list='datalist_id' name='count' id='i1'><datalist "
-      "id='datalist_id'><option value='1'>one</option><option "
-      "value='2'>two</option></datalist></body>");
-  WebDocument doc = GetDocument();
-  auto web_control = GetElementById(doc, "i1").To<WebInputElement>();
-  std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
-      form_and_field = FindFormAndFieldForFormControlElement(
-          web_control, {ExtractOption::kBounds});
-
-  ASSERT_TRUE(form_and_field);
-  auto& [form, field] = *form_and_field;
-  EXPECT_TRUE(form.fields().back().datalist_options().empty());
 }
 
 TEST_F(FormAutofillUtilsTest,

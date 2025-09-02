@@ -391,13 +391,6 @@ BASE_FEATURE(kAutofillImproveCityFieldClassification,
              "AutofillImproveCityFieldClassification",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, Autofill will try to reuse the result of previous form
-// extractions in subsequent functions that needs the form extracted, provided
-// we have guarantees that in the meantime the form couldn't have changed.
-BASE_FEATURE(kAutofillOptimizeFormExtraction,
-             "AutofillOptimizeFormExtraction",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, credit cards that are split into different fields are imported.
 // TODO: crbug.com/392179445 - Clean up when launched.
 BASE_FEATURE(kAutofillFixSplitCreditCardImport,

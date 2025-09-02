@@ -2013,16 +2013,11 @@ void WebFormControlElementToFormField(
   if (auto input_element = element.DynamicTo<WebInputElement>()) {
     SetCheckStatus(field, IsCheckableElement(input_element),
                    input_element.IsChecked());
-    if (extract_options.contains(ExtractOption::kDatalist) ||
-        base::FeatureList::IsEnabled(
-            features::kAutofillOptimizeFormExtraction)) {
-      // TODO(crbug.com/316143236): Remove this metric once debugging is
-      // complete.
-      base::UmaHistogramEnumeration(
-          "Autofill.DataList.Events",
-          AutofillDataListEvents::kDataListOptionsParsed);
-      field->set_datalist_options(GetDataListOptions(input_element));
-    }
+    // TODO(crbug.com/316143236): Remove this metric once debugging is complete.
+    base::UmaHistogramEnumeration(
+        "Autofill.DataList.Events",
+        AutofillDataListEvents::kDataListOptionsParsed);
+    field->set_datalist_options(GetDataListOptions(input_element));
   } else if (IsTextAreaElement(element)) {
     // Nothing more to do in this case.
   } else {
@@ -2030,14 +2025,11 @@ void WebFormControlElementToFormField(
     DCHECK(IsSelectElement(element));
     field->set_options(GetSelectOptions(element.To<WebSelectElement>()));
   }
-  if (extract_options.contains(ExtractOption::kBounds) ||
-      base::FeatureList::IsEnabled(features::kAutofillOptimizeFormExtraction)) {
-    if (auto* local_frame = element.GetDocument().GetFrame()) {
-      if (auto* render_frame =
-              content::RenderFrame::FromWebFrame(local_frame)) {
-        field->set_bounds(gfx::RectF(
-            render_frame->ConvertViewportToWindow(element.BoundsInWidget())));
-      }
+
+  if (auto* local_frame = element.GetDocument().GetFrame()) {
+    if (auto* render_frame = content::RenderFrame::FromWebFrame(local_frame)) {
+      field->set_bounds(gfx::RectF(
+          render_frame->ConvertViewportToWindow(element.BoundsInWidget())));
     }
   }
 
@@ -2088,25 +2080,22 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
 
   std::vector<WebFormControlElement> control_elements =
       GetOwnedAutofillableFormControls(document, form_element);
-  if (base::FeatureList::IsEnabled(features::kAutofillOptimizeFormExtraction) &&
-      control_elements.size() > kMaxExtractableFields) {
+  if (control_elements.size() > kMaxExtractableFields) {
     return std::nullopt;
   }
   std::vector<WebElement> iframe_elements =
       GetIframeElements(document, form_element);
 
-  if (base::FeatureList::IsEnabled(features::kAutofillOptimizeFormExtraction)) {
-    std::erase_if(iframe_elements, [](const WebElement& iframe_element) {
-      WebFrame* iframe = WebFrame::FromFrameOwnerElement(iframe_element);
-      return !iframe ||
-             (!iframe->IsWebLocalFrame() && !iframe->IsWebRemoteFrame());
-    });
-    if (iframe_elements.size() > kMaxExtractableChildFrames) {
-      iframe_elements.clear();
-    }
-    if (control_elements.empty() && iframe_elements.empty()) {
-      return std::nullopt;
-    }
+  std::erase_if(iframe_elements, [](const WebElement& iframe_element) {
+    WebFrame* iframe = WebFrame::FromFrameOwnerElement(iframe_element);
+    return !iframe ||
+           (!iframe->IsWebLocalFrame() && !iframe->IsWebRemoteFrame());
+  });
+  if (iframe_elements.size() > kMaxExtractableChildFrames) {
+    iframe_elements.clear();
+  }
+  if (control_elements.empty() && iframe_elements.empty()) {
+    return std::nullopt;
   }
 
   // Extracts fields from `control_elements` into `fields` and sets
@@ -2178,24 +2167,8 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
     } else if (iframe && iframe->IsWebRemoteFrame()) {
       child_frame.token = RemoteFrameToken(
           iframe->ToWebRemoteFrame()->GetRemoteFrameToken().value());
-    } else if (base::FeatureList::IsEnabled(
-                   features::kAutofillOptimizeFormExtraction)) {
+    } else {
       NOTREACHED();
-    }
-  }
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillOptimizeFormExtraction)) {
-    std::erase_if(child_frames, [](const auto& child_frame) {
-      return std::visit([](const auto& token) { return token.is_empty(); },
-                        child_frame.token);
-    });
-    if (child_frames.size() > kMaxExtractableChildFrames) {
-      child_frames.clear();
-    }
-    const bool success = (!fields.empty() || !child_frames.empty()) &&
-                         fields.size() <= kMaxExtractableFields;
-    if (!success) {
-      return std::nullopt;
     }
   }
 

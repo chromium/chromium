@@ -415,9 +415,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
     std::vector<FieldRef> elements_;
   };
 
-  // TODO(crbug.com/40947729): Make `submitted_form` a const reference when
-  // `AutofillOptimizeFormExtraction` is launched.
-  void OnFormSubmitted(FormData submitted_form);
+  void OnFormSubmitted(const FormData& submitted_form);
 
   // Annotate `forms` and all fields in the current frame with form and field
   // signatures as HTML attributes. Used by
