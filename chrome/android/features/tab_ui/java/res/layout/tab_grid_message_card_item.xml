@@ -28,6 +28,7 @@ found in the LICENSE file.
         android:layout_gravity="start|center_vertical"
         android:layout_marginVertical="@dimen/message_card_description_vertical_margin"
         android:layout_weight="1"
+        android:screenReaderFocusable="true"
         android:textAlignment="viewStart"
         android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
     <org.chromium.ui.widget.ButtonCompat
