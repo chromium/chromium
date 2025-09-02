@@ -91,15 +91,13 @@ void U2fSignOperation::OnSignResponseReceived(
     }
   } else {
     FIDO_LOG(ERROR) << "U2F device responded with empty response";
-    if (base::FeatureList::IsEnabled(device::kWebAuthnRetryU2FErrors)) {
-      failed_and_retried_ = true;
-      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(&U2fSignOperation::WinkAndTrySign,
-                         weak_factory_.GetWeakPtr()),
-          kU2fRetryDelay);
-      return;
-    }
+    failed_and_retried_ = true;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&U2fSignOperation::WinkAndTrySign,
+                       weak_factory_.GetWeakPtr()),
+        kU2fRetryDelay);
+    return;
   }
 
   // Older U2F devices may respond with the length of the input as an error
