@@ -7,13 +7,16 @@ package org.chromium.ui.listmenu;
 import static org.chromium.ui.base.KeyNavigationUtil.isGoBackward;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.HOVER_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE_ID;
 import static org.chromium.ui.listmenu.ListMenuSubmenuHeaderItemProperties.KEY_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
 
 import android.content.res.Resources;
+import android.os.Handler;
 import android.util.Pair;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ListView;
 
@@ -39,6 +42,8 @@ import java.util.Set;
 
 @NullMarked
 public class ListMenuUtils {
+    private static @Nullable Runnable sFlyoutAfterDelayRunnable;
+
     /**
      * Defines a contract for managing a series of flyout popups, typically used for nested context
      * menus. An implementing class is responsible for the lifecycle of these popups, including
@@ -141,9 +146,19 @@ public class ListMenuUtils {
      * @param headerModelList {@link ModelList} for unscrollable top header; null if headers scroll.
      * @param contentModelList {@link ModelList} for the scrollable content of the menu.
      * @param item The menu item which was clicked.
+     * @param drillDownOverrideValue An optional override value. If non-null, we use drilldown if
+     *     it's true and flyout if it's false to display submenus. If null, we determine which to
+     *     use based on system conditions.
      */
     private static void onItemWithSubmenuClicked(
-            @Nullable ModelList headerModelList, ModelList contentModelList, ListItem item) {
+            @Nullable ModelList headerModelList,
+            ModelList contentModelList,
+            ListItem item,
+            @Nullable Boolean drillDownOverrideValue) {
+        if (!shouldUseDrillDown(drillDownOverrideValue)) {
+            return;
+        }
+
         @Nullable ModelList parentHeaderModelList =
                 headerModelList == null ? null : shallowCopy(headerModelList);
         ModelList parentModelList = shallowCopy(contentModelList);
@@ -225,30 +240,155 @@ public class ListMenuUtils {
         }
     }
 
+    private static void onItemWithSubmenuHovered(
+            ListItem item,
+            View view,
+            FlyoutHandler flyoutHandler,
+            int levelOfHoveredItem,
+            @Nullable Boolean drillDownOverrideValue) {
+        if (shouldUseDrillDown(drillDownOverrideValue)) {
+            return;
+        }
+
+        // Since we received a new `HOVER` event, we cancel the previous timer.
+        cancelFlyoutDelay(view);
+
+        // We wait for a set period of time before we go on with the UI changes to ensure user
+        // intent.
+        sFlyoutAfterDelayRunnable =
+                () -> {
+                    onFlyoutAfterDelay(item, view, flyoutHandler, levelOfHoveredItem);
+                };
+        Handler handler = view.getHandler();
+        assert handler != null;
+        handler.postDelayed(
+                sFlyoutAfterDelayRunnable,
+                view.getContext().getResources().getInteger(R.integer.flyout_menu_delay_in_ms));
+    }
+
+    private static void onFlyoutAfterDelay(
+            ListItem item, View view, FlyoutHandler flyoutHandler, int levelOfHoveredItem) {
+        List<Pair<@Nullable ListItem, ?>> dialogs = flyoutHandler.getFlyoutWindows();
+
+        if (levelOfHoveredItem >= dialogs.size()) {
+            return;
+        }
+
+        boolean keepChildWindow = false;
+
+        // If child popups exist.
+        if (levelOfHoveredItem < dialogs.size() - 1) {
+            // We want to keep the direct child open if the hover is still on the same child.
+            ListItem parentItemOfCurrentFlyoutPopup = dialogs.get(levelOfHoveredItem + 1).first;
+            keepChildWindow = item == parentItemOfCurrentFlyoutPopup;
+            flyoutHandler.removeFlyoutWindows(
+                    keepChildWindow ? levelOfHoveredItem + 2 : levelOfHoveredItem + 1);
+        }
+
+        // Create a new child popup if the item has submenu and we removed the child window.
+        if (item.model.containsKey(SUBMENU_ITEMS) && !keepChildWindow) {
+            flyoutHandler.addFlyoutWindow(item, view);
+        }
+    }
+
+    private static void cancelFlyoutDelay(View view) {
+        if (sFlyoutAfterDelayRunnable != null) {
+            Handler handler = view.getHandler();
+            if (handler != null) {
+                handler.removeCallbacks(sFlyoutAfterDelayRunnable);
+            }
+            sFlyoutAfterDelayRunnable = null;
+        }
+    }
+
     /**
-     * Runs {@param dismissDialog} at the end of each callback, recursively (through submenu items).
-     * If the item doesn't already have a click callback in its model, no click callback is added.
+     * Determines whether to use a drill-down menu style. Currently defaults to using drilldown
+     * unless an override value is given.
+     *
+     * @param drillDownOverrideValue An optional override value. If non-null, this value is returned
+     *     directly. If null, the method determines the appropriate style based on system
+     *     conditions.
+     * @return True to use the drill-down style, false to use the flyout style.
+     */
+    private static boolean shouldUseDrillDown(@Nullable Boolean drillDownOverrideValue) {
+        if (drillDownOverrideValue != null) {
+            return drillDownOverrideValue;
+        }
+
+        // TODO(http://crbug.com/440938039): Return `false` when conditions qualify for flyout.
+        return true;
+    }
+
+    /**
+     * Sets up the necessary callbacks for a menu item and its sub-items, recursively. This includes
+     * setting `HOVER_LISTENER` for flyout menus and `CLICK_LISTENER` for drill-down menus. It also
+     * attaches the {@param dismissDialog} runnable to the click handlers of terminal items.
      *
      * @param headerModelList {@link ModelList} for unscrollable top header; null if headers scroll.
      * @param contentModelList {@link ModelList} for the scrollable content of the menu.
      * @param item The item to start with.
      * @param dismissDialog The {@link Runnable} to run.
+     * @param flyoutHandler The {@link FlyoutHandler} to manage the popups.
+     * @param drillDownOverrideValue An optional override value. If non-null, we use drilldown if
+     *     it's true and flyout if it's false to display submenus. If null, this class determines
+     *     the appropriate style based on system conditions.
      */
     private static void setupCallbacksRecursivelyForItem(
             @Nullable ModelList headerModelList,
             ModelList contentModelList,
             ListItem item,
-            Runnable dismissDialog) {
+            Runnable dismissDialog,
+            @Nullable FlyoutHandler flyoutHandler,
+            int levelOfHoveredItem,
+            @Nullable Boolean drillDownOverrideValue) {
         if (item.model == null) return;
+
+        // We add `HOVER_LISTENER` to items without submenus too because we might need to dismiss
+        // open flyout popups.
+        if (flyoutHandler != null && item.model.containsKey(HOVER_LISTENER)) {
+            item.model.set(
+                    HOVER_LISTENER,
+                    (view, event) -> {
+                        switch (event.getAction()) {
+                            case MotionEvent.ACTION_HOVER_ENTER:
+                                onItemWithSubmenuHovered(
+                                        item,
+                                        view,
+                                        flyoutHandler,
+                                        levelOfHoveredItem,
+                                        drillDownOverrideValue);
+                                break;
+                            case MotionEvent.ACTION_HOVER_EXIT:
+                                // We only want to remove the flyout popups when the user hovers
+                                // over another item. We don't close the flyout popup even when the
+                                // item itself loses hover.
+                                break;
+                            default:
+                                break;
+                        }
+                        return false;
+                    });
+        }
+
         if (item.model.containsKey(SUBMENU_ITEMS)) {
             item.model.set(
                     CLICK_LISTENER,
                     (unusedView) ->
-                            onItemWithSubmenuClicked(headerModelList, contentModelList, item));
+                            onItemWithSubmenuClicked(
+                                    headerModelList,
+                                    contentModelList,
+                                    item,
+                                    drillDownOverrideValue));
             for (ListItem submenuItem :
                     PropertyModel.getFromModelOrDefault(item.model, SUBMENU_ITEMS, List.of())) {
                 setupCallbacksRecursivelyForItem(
-                        headerModelList, contentModelList, submenuItem, dismissDialog);
+                        headerModelList,
+                        contentModelList,
+                        submenuItem,
+                        dismissDialog,
+                        flyoutHandler,
+                        levelOfHoveredItem + 1,
+                        drillDownOverrideValue);
             }
         } else {
             // Note: SUBMENU_HEADER items should be (and are) excluded by this, because
@@ -267,20 +407,38 @@ public class ListMenuUtils {
      * @param headerModelList {@link ModelList} for unscrollable top header; null if headers scroll.
      * @param contentModelList {@link ModelList} for the scrollable content of the menu.
      * @param dismissDialog The {@link Runnable} to run.
+     * @param flyoutHandler The {@link FlyoutHandler} to manage the popups.
+     * @param drillDownOverrideValue An optional override value. If non-null, we use drilldown if
+     *     it's true and flyout if it's false to display submenus. If null, this class determines
+     *     the appropriate style based on system conditions.
      */
     public static void setupCallbacksRecursively(
             @Nullable ModelList headerModelList,
             ModelList contentModelList,
-            Runnable dismissDialog) {
+            Runnable dismissDialog,
+            @Nullable FlyoutHandler flyoutHandler,
+            @Nullable Boolean drillDownOverrideValue) {
         if (headerModelList != null) {
             for (ListItem listItem : headerModelList) {
                 setupCallbacksRecursivelyForItem(
-                        headerModelList, contentModelList, listItem, dismissDialog);
+                        headerModelList,
+                        contentModelList,
+                        listItem,
+                        dismissDialog,
+                        flyoutHandler,
+                        /* levelOfHoveredItem= */ 0,
+                        drillDownOverrideValue);
             }
         }
         for (ListItem listItem : contentModelList) {
             setupCallbacksRecursivelyForItem(
-                    headerModelList, contentModelList, listItem, dismissDialog);
+                    headerModelList,
+                    contentModelList,
+                    listItem,
+                    dismissDialog,
+                    flyoutHandler,
+                    /* levelOfHoveredItem= */ 0,
+                    drillDownOverrideValue);
         }
     }
 

@@ -219,8 +219,14 @@ public class BasicListMenu implements ListMenu {
      *
      * @param dismissDialog The {@link Runnable} to run.
      */
-    public void setupCallbacksRecursively(Runnable dismissDialog) {
-        ListMenuUtils.setupCallbacksRecursively(mHeaderModelList, mContentModelList, dismissDialog);
+    public void setupCallbacksRecursively(
+            Runnable dismissDialog, @Nullable Boolean drillDownOverrideValue) {
+        ListMenuUtils.setupCallbacksRecursively(
+                mHeaderModelList,
+                mContentModelList,
+                dismissDialog,
+                /* flyoutHandler= */ null,
+                drillDownOverrideValue);
     }
 
     private void callDelegate(@Nullable Delegate delegate, PropertyModel model) {

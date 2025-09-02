@@ -11,19 +11,28 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM;
 import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM_WITH_SUBMENU;
 import static org.chromium.ui.listmenu.ListItemType.SUBMENU_HEADER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.HOVER_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
 import static org.chromium.ui.listmenu.ListMenuUtils.setupCallbacksRecursively;
 
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Pair;
+import android.view.MotionEvent;
 import android.view.View.OnClickListener;
 import android.widget.ListView;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -32,13 +41,17 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.listmenu.ListMenuUtils.FlyoutHandler;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** Unit tests for the context menu mediator. */
@@ -58,6 +71,7 @@ public class ListMenuUtilsUnitTest {
     @Mock private Runnable mDismissDialog;
     @Mock private ListView mListView;
     @Mock private ListObservable.ListObserver<Void> mListObserver;
+    @Mock private FlyoutHandler<Object> mFlyoutHandler;
 
     private final ModelList mModelList = new ModelList();
     private ListItem mListItemWithModelClickCallback;
@@ -114,11 +128,19 @@ public class ListMenuUtilsUnitTest {
                                 .with(MENU_ITEM_ID, TEST_MENU_ITEM_ID)
                                 .build());
         mModelList.add(mListItemWithoutModelClickCallback);
+
+        when(mListView.getContext()).thenReturn(ApplicationProvider.getApplicationContext());
+        when(mListView.getHandler()).thenReturn(new Handler(Looper.getMainLooper()));
     }
 
     @Test
     public void getItemList_submenuNavigation_noStaticHeader() {
-        setupCallbacksRecursively(/* headerModelList= */ null, mModelList, mDismissDialog);
+        setupCallbacksRecursively(
+                /* headerModelList= */ null,
+                mModelList,
+                mDismissDialog,
+                /* flyoutHandler= */ null,
+                /* drillDownOverrideValue= */ true);
         // Click into submenu 0
         activateClickListener(mSubmenuLevel0);
         assertEquals(
@@ -172,7 +194,12 @@ public class ListMenuUtilsUnitTest {
         ModelList headerModelList = new ModelList();
 
         // Begin test
-        setupCallbacksRecursively(headerModelList, mModelList, mDismissDialog);
+        setupCallbacksRecursively(
+                headerModelList,
+                mModelList,
+                mDismissDialog,
+                /* flyoutHandler= */ null,
+                /* drillDownOverrideValue= */ true);
         // Click into submenu 0
         activateClickListener(mSubmenuLevel0);
         assertEquals(
@@ -261,7 +288,12 @@ public class ListMenuUtilsUnitTest {
 
     @Test
     public void getItemList_withoutModelClickCallback_noClickCallbackAdded() {
-        setupCallbacksRecursively(/* headerModelList= */ null, mModelList, mDismissDialog);
+        setupCallbacksRecursively(
+                /* headerModelList= */ null,
+                mModelList,
+                mDismissDialog,
+                /* flyoutHandler= */ null,
+                /* drillDownOverrideValue= */ true);
         boolean hasClickListener =
                 mListItemWithoutModelClickCallback.model.containsKey(CLICK_LISTENER);
         assertTrue(
@@ -278,14 +310,24 @@ public class ListMenuUtilsUnitTest {
 
     @Test
     public void getItemList_withModelClickCallback_dismissAdded() {
-        setupCallbacksRecursively(/* headerModelList= */ null, mModelList, mDismissDialog);
+        setupCallbacksRecursively(
+                /* headerModelList= */ null,
+                mModelList,
+                mDismissDialog,
+                /* flyoutHandler= */ null,
+                /* drillDownOverrideValue= */ true);
         mListItemWithModelClickCallback.model.get(CLICK_LISTENER).onClick(mListView);
         verify(mDismissDialog, times(1)).run();
     }
 
     @Test
     public void getItemList_submenuNavigation_noOneByOneDataChange() {
-        setupCallbacksRecursively(/* headerModelList= */ null, mModelList, mDismissDialog);
+        setupCallbacksRecursively(
+                /* headerModelList= */ null,
+                mModelList,
+                mDismissDialog,
+                /* flyoutHandler= */ null,
+                /* drillDownOverrideValue= */ true);
         mModelList.addObserver(mListObserver);
         // Click into submenu 0
         activateClickListener(mSubmenuLevel0);
@@ -296,11 +338,123 @@ public class ListMenuUtilsUnitTest {
         verify(mListObserver, times(1)).onItemRangeInserted(mModelList, 2, 1);
     }
 
+    @Test
+    public void getItemList_submenuFlyoutNavigation_hoverShowsFlyoutAfterDelay() {
+        setupCallbacksRecursively(
+                /* headerModelList= */ null,
+                mModelList,
+                mDismissDialog,
+                mFlyoutHandler,
+                /* drillDownOverrideValue= */ false);
+
+        // Create the main menu popup window (level 0).
+        List<Pair<@Nullable ListItem, Object>> dialogs = new ArrayList<>();
+        dialogs.add(new Pair(null, new Object()));
+        when(mFlyoutHandler.getFlyoutWindows()).thenReturn(dialogs);
+
+        // Start hover on one of the items on the main menu (level 0).
+        activateHoverListener(mSubmenuLevel0);
+
+        // Verify that before the delay, no new window is added.
+        verify(mFlyoutHandler, never()).addFlyoutWindow(any(), any());
+
+        // Wait for the UI delay.
+        waitForUiDelay();
+
+        // Verify that the call to create a new popup (level 1) is called.
+        verify(mFlyoutHandler).addFlyoutWindow(mSubmenuLevel0, mListView);
+        dialogs.add(new Pair(mSubmenuLevel0, new Object()));
+
+        // Hover on an item inside the level 1 popup for long enough.
+        activateHoverListener(mSubmenuLevel1);
+        waitForUiDelay();
+
+        // Verify that the call to create another popup (level 2) is called.
+        verify(mFlyoutHandler).addFlyoutWindow(mSubmenuLevel1, mListView);
+    }
+
+    @Test
+    public void getItemList_submenuFlyoutNavigation_hoverOnNewItemClosesAllDescendentPopups() {
+        setupCallbacksRecursively(
+                /* headerModelList= */ null,
+                mModelList,
+                mDismissDialog,
+                mFlyoutHandler,
+                /* drillDownOverrideValue= */ false);
+
+        List<Pair<@Nullable ListItem, Object>> dialogs = new ArrayList<>();
+        when(mFlyoutHandler.getFlyoutWindows()).thenReturn(dialogs);
+
+        // Create level 0, 1, and 2 popup windows.
+        dialogs.add(new Pair(null, new Object())); // Level 0 popup.
+        dialogs.add(new Pair(mSubmenuLevel0, new Object())); // Level 1 popup.
+        dialogs.add(new Pair(mSubmenuLevel1, new Object())); // Level 2 popup.
+
+        // Hover on a different item on the level 0 popup.
+        activateHoverListener(mListItemWithoutModelClickCallback);
+        waitForUiDelay();
+
+        // Popups of level 1 and 2 should be removed.
+        verify(mFlyoutHandler).removeFlyoutWindows(1);
+
+        // Create level 0, 1, and 2 popup windows again.
+        dialogs = new ArrayList<>();
+        dialogs.add(new Pair(null, new Object())); // Level 0 popup.
+        dialogs.add(new Pair(mSubmenuLevel0, new Object())); // Level 1 popup.
+        dialogs.add(new Pair(mSubmenuLevel1, new Object())); // Level 2 popup.
+
+        // Hover on a different item on the level 1 popup.
+        activateHoverListener(mSubmenu0Child1);
+        waitForUiDelay();
+
+        // Level 2 popup should be removed, but level 1 popup should remain.
+        verify(mFlyoutHandler).removeFlyoutWindows(2);
+    }
+
+    @Test
+    public void getItemList_submenuFlyoutNavigation_hoverOnOriginalItemKeepsDirectChild() {
+        setupCallbacksRecursively(
+                /* headerModelList= */ null,
+                mModelList,
+                mDismissDialog,
+                mFlyoutHandler,
+                /* drillDownOverrideValue= */ false);
+
+        List<Pair<@Nullable ListItem, Object>> dialogs = new ArrayList<>();
+        when(mFlyoutHandler.getFlyoutWindows()).thenReturn(dialogs);
+
+        // Create level 0, 1, and 2 popup windows.
+        dialogs.add(new Pair(null, new Object())); // Level 0 popup.
+        dialogs.add(new Pair(mSubmenuLevel0, new Object())); // Level 1 popup.
+        dialogs.add(new Pair(mSubmenuLevel1, new Object())); // Level 2 popup.
+
+        // Hover on the original item on the level 0 popup.
+        activateHoverListener(mSubmenuLevel0);
+        waitForUiDelay();
+
+        // Level 2 popup should be removed, but level 1 popup should remain.
+        verify(mFlyoutHandler).removeFlyoutWindows(2);
+        dialogs.subList(2, dialogs.size()).clear();
+    }
+
     private void activateClickListener(ListItem item) {
         item.model.get(CLICK_LISTENER).onClick(mListView);
     }
 
+    private void activateHoverListener(ListItem item) {
+        item.model
+                .get(HOVER_LISTENER)
+                .onHover(
+                        mListView,
+                        MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, 1.f, 1.f, 0));
+    }
+
     private static CharSequence getTitle(ListItem item) {
         return item.model.get(TITLE);
+    }
+
+    private static void waitForUiDelay() {
+        shadowOf(Looper.getMainLooper()).idle();
+        ShadowLooper.runMainLooperOneTask();
     }
 }

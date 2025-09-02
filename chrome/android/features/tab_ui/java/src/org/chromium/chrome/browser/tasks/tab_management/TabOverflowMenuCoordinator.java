@@ -509,7 +509,9 @@ public abstract class TabOverflowMenuCoordinator<T> {
                     if (mMenuHolder != null) {
                         mMenuHolder.dismiss();
                     }
-                });
+                },
+                /* flyoutHandler= */ null,
+                /* drillDownOverrideValue= */ true);
     }
 
     public void configureMenuItemsForTesting(ModelList modelList, T id) {

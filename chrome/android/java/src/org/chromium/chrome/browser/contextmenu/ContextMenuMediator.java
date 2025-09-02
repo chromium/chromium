@@ -110,7 +110,12 @@ public class ContextMenuMediator {
         }
 
         // Setup submenu navigation callbacks.
-        setupCallbacksRecursively(/* headerModelList= */ null, mModelList, mDismissDialog);
+        setupCallbacksRecursively(
+                /* headerModelList= */ null,
+                mModelList,
+                mDismissDialog,
+                /* flyoutHandler= */ null,
+                /* drillDownOverrideValue= */ null);
         // Add callbacks to all other first-level items.
         for (ListItem item : mModelList) {
             if (item.type == ListItemType.MENU_ITEM
