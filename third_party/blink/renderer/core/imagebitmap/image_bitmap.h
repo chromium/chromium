@@ -178,8 +178,8 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
       PaintRecord,
       const gfx::Rect&,
       scoped_refptr<base::SequencedTaskRunner>,
-      WTF::CrossThreadOnceFunction<void(sk_sp<SkImage>,
-                                        const ImageOrientationEnum)> callback);
+      CrossThreadOnceFunction<void(sk_sp<SkImage>, const ImageOrientationEnum)>
+          callback);
   scoped_refptr<StaticBitmapImage> image_;
   bool is_neutered_ = false;
   int32_t memory_usage_ = 0;

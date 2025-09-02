@@ -78,8 +78,7 @@ class MockFileSystemManager : public mojom::blink::FileSystemManager {
       : broker_(broker) {
     broker.SetBinderForTesting(
         mojom::blink::FileSystemManager::Name_,
-        WTF::BindRepeating(&MockFileSystemManager::BindReceiver,
-                           WTF::Unretained(this)));
+        BindRepeating(&MockFileSystemManager::BindReceiver, Unretained(this)));
   }
 
   ~MockFileSystemManager() override {

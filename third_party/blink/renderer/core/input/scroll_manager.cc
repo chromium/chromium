@@ -248,7 +248,7 @@ bool ScrollManager::LogicalScroll(mojom::blink::ScrollDirection direction,
         NOTREACHED();
     }
 
-    ScrollableArea::ScrollCallback callback(WTF::BindOnce(
+    ScrollableArea::ScrollCallback callback(BindOnce(
         [](WeakPersistent<ScrollableArea> area,
            WeakPersistent<KeyboardEventManager> keyboard_event_manager,
            bool is_key_scroll,

@@ -72,7 +72,7 @@ class TextFragmentAnchorTestController : public TextFragmentAnchorTestBase {
     // When the beforematch event is not scheduled, a DCHECK will fail on
     // BeginFrame() because no event was scheduled, so we schedule an empty task
     // here.
-    GetDocument().EnqueueAnimationFrameTask(WTF::BindOnce([]() {}));
+    GetDocument().EnqueueAnimationFrameTask(BindOnce([]() {}));
     Compositor().BeginFrame();
   }
 
@@ -2360,8 +2360,8 @@ TEST_F(TextFragmentAnchorTest,
   MockUnhandledTapNotifierImpl mock_notifier;
   GetDocument().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
       mojom::blink::UnhandledTapNotifier::Name_,
-      WTF::BindRepeating(&MockUnhandledTapNotifierImpl::Bind,
-                         WTF::Unretained(&mock_notifier)));
+      BindRepeating(&MockUnhandledTapNotifierImpl::Bind,
+                    Unretained(&mock_notifier)));
 
   Range* range = Range::Create(GetDocument());
   range->setStart(GetDocument().getElementById(AtomicString("first")), 0,

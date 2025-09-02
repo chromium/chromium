@@ -698,7 +698,7 @@ mojom::blink::ClipboardFilesPtr SystemClipboard::Snapshot::CloneFiles(
     return {};
   }
 
-  WTF::Vector<mojom::blink::DataTransferFilePtr> vec;
+  Vector<mojom::blink::DataTransferFilePtr> vec;
   for (auto& dtf : files->files) {
     auto clones = CloneFsaToken(std::move(dtf->file_system_access_token));
     dtf->file_system_access_token = std::move(clones.first);

@@ -492,8 +492,8 @@ void TextFragmentAnchor::DidFinishSearch() {
 
   // Finalizing the anchor may cause script execution so schedule a new frame
   // to perform finalization.
-  frame_->GetDocument()->EnqueueAnimationFrameTask(WTF::BindOnce(
-      &TextFragmentAnchor::FinalizeAnchor, WrapWeakPersistent(this)));
+  frame_->GetDocument()->EnqueueAnimationFrameTask(
+      BindOnce(&TextFragmentAnchor::FinalizeAnchor, WrapWeakPersistent(this)));
   finalize_pending_ = true;
 }
 

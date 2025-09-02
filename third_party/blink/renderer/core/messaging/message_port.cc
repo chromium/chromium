@@ -238,7 +238,7 @@ void MessagePort::Entangle(MessagePortDescriptor port_descriptor,
   // 2. when the execution context is destroyed, the connector_ is reset.
   connector_->set_incoming_receiver(this);
   connector_->set_connection_error_handler(
-      WTF::BindOnce(&MessagePort::OnConnectionError, WrapWeakPersistent(this)));
+      BindOnce(&MessagePort::OnConnectionError, WrapWeakPersistent(this)));
 }
 
 void MessagePort::Entangle(MessagePortChannel channel) {
@@ -372,10 +372,9 @@ bool MessagePort::Accept(mojo::Message* mojo_message) {
     // BFCache tasks.
     dispatch_event_task_runner_->PostTask(
         FROM_HERE,
-        WTF::BindOnce(
-            &MessagePort::DispatchMessageEvent,
-            WrapPersistent(weak_cell_factory_for_dispatch_.GetWeakCell()),
-            std::move(message)));
+        BindOnce(&MessagePort::DispatchMessageEvent,
+                 WrapPersistent(weak_cell_factory_for_dispatch_.GetWeakCell()),
+                 std::move(message)));
   } else {
     MessagePort::DispatchMessageEvent(std::move(message));
   }

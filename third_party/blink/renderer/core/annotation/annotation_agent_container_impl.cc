@@ -250,9 +250,9 @@ void AnnotationAgentContainerImpl::CreateAgentFromSelection(
               "type", ToString(type));
   DCHECK(annotation_agent_generator_);
   annotation_agent_generator_->GetForCurrentSelection(
-      type,
-      WTF::BindOnce(&AnnotationAgentContainerImpl::DidFinishSelectorGeneration,
-                    WrapWeakPersistent(this), std::move(callback)));
+      type, blink::BindOnce(
+                &AnnotationAgentContainerImpl::DidFinishSelectorGeneration,
+                WrapWeakPersistent(this), std::move(callback)));
 }
 
 void AnnotationAgentContainerImpl::RemoveAgentsOfType(

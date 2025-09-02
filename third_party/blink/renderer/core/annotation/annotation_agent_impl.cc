@@ -271,7 +271,7 @@ void AnnotationAgentImpl::Bind(
 
   // Breaking the mojo connection will cause this agent to remove itself from
   // the container.
-  receiver_.set_disconnect_handler(WTF::BindOnce(
+  receiver_.set_disconnect_handler(BindOnce(
       [](WeakPersistent<AnnotationAgentImpl> agent) {
         if (!agent || !agent->OwningContainer()) {
           return;
@@ -316,8 +316,8 @@ void AnnotationAgentImpl::Attach(AnnotationAgentContainerImpl::PassKey) {
 
   needs_attachment_ = false;
   selector_->FindRange(*search_range, AnnotationSelector::kSynchronous,
-                       WTF::BindOnce(&AnnotationAgentImpl::DidFinishFindRange,
-                                     WrapWeakPersistent(this)));
+                       BindOnce(&AnnotationAgentImpl::DidFinishFindRange,
+                                WrapWeakPersistent(this)));
 }
 
 bool AnnotationAgentImpl::IsAttached() const {
@@ -499,8 +499,8 @@ void AnnotationAgentImpl::DidFinishFindRange(const RangeInFlatTree* range) {
     // throttled iframe.
     Document& document = *owning_container_->GetSupplementable();
     document.EnqueueAnimationFrameTask(
-        WTF::BindOnce(&AnnotationAgentImpl::PerformPreAttachDOMMutation,
-                      WrapPersistent(this)));
+        BindOnce(&AnnotationAgentImpl::PerformPreAttachDOMMutation,
+                 WrapPersistent(this)));
   }
 }
 

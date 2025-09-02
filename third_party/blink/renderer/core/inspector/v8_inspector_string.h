@@ -115,7 +115,7 @@ class CORE_EXPORT Binary : public crdtp::Serializable {
 
 }  // namespace blink
 
-// TODO(dgozman): migrate core/inspector/protocol to wtf::HashMap.
+// TODO(dgozman): migrate core/inspector/protocol to blink::HashMap.
 
 // See third_party/inspector_protocol/crdtp/serializer_traits.h.
 namespace crdtp {

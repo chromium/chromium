@@ -301,8 +301,8 @@ void NavigateEvent::Redirect(const String& url_string,
 void NavigateEvent::MaybeCommitImmediately(ScriptState* script_state) {
   delayed_load_start_task_handle_ = PostDelayedCancellableTask(
       *DomWindow()->GetTaskRunner(TaskType::kInternalLoading), FROM_HERE,
-      WTF::BindOnce(&NavigateEvent::DelayedLoadStartTimerFired,
-                    WrapWeakPersistent(this)),
+      BindOnce(&NavigateEvent::DelayedLoadStartTimerFired,
+               WrapWeakPersistent(this)),
       kDelayLoadStart);
 
   if (navigation_action_precommit_handlers_list_.empty()) {

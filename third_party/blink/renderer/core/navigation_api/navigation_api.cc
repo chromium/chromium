@@ -382,8 +382,8 @@ void NavigationApi::SetEntriesForRestore(
       disposed_entries->push_back(entry);
   }
   window_->GetTaskRunner(TaskType::kInternalDefault)
-      ->PostTask(FROM_HERE, WTF::BindOnce(&FireDisposeEventsAsync,
-                                          WrapPersistent(disposed_entries)));
+      ->PostTask(FROM_HERE, BindOnce(&FireDisposeEventsAsync,
+                                     WrapPersistent(disposed_entries)));
 }
 
 void NavigationApi::DisposeEntriesForSessionHistoryRemoval(

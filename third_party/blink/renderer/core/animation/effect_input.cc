@@ -338,7 +338,7 @@ void AddPropertyValuePairsForKeyframe(
   // By spec, we must sort the properties in "ascending order by the Unicode
   // codepoints that define each property name."
   std::sort(keyframe_properties.begin(), keyframe_properties.end(),
-            WTF::CodeUnitCompareLessThan);
+            CodeUnitCompareLessThan);
 
   TryRethrowScope rethrow_scope(isolate, exception_state);
   for (const auto& property : keyframe_properties) {
@@ -615,7 +615,7 @@ StringKeyframeVector ConvertObjectForm(Element* element,
   // By spec, we must sort the properties in "ascending order by the Unicode
   // codepoints that define each property name."
   std::sort(keyframe_properties.begin(), keyframe_properties.end(),
-            WTF::CodeUnitCompareLessThan);
+            CodeUnitCompareLessThan);
 
   for (const auto& property : keyframe_properties) {
     if (property == "offset" || property == "float" ||

@@ -20,9 +20,9 @@ class CORE_EXPORT URLFileAPI {
   STATIC_ONLY(URLFileAPI);
 
  public:
-  static WTF::String createObjectURL(ScriptState*, Blob*, ExceptionState&);
-  static void revokeObjectURL(ScriptState*, const WTF::String&);
-  static void revokeObjectURL(ExecutionContext*, const WTF::String&);
+  static String createObjectURL(ScriptState*, Blob*, ExceptionState&);
+  static void revokeObjectURL(ScriptState*, const String&);
+  static void revokeObjectURL(ExecutionContext*, const String&);
 };
 
 }  // namespace blink

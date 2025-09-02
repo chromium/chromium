@@ -877,7 +877,7 @@ bool Animation::HasLowerCompositeOrdering(
       // ::view-transition subtree but we may want to sort them based on their
       // actual composite order.
       // https://github.com/w3c/csswg-drafts/issues/9588.
-      return WTF::CodeUnitCompareLessThan(
+      return CodeUnitCompareLessThan(
           PseudoElement::PseudoElementNameForEvents(owning_element1),
           PseudoElement::PseudoElementNameForEvents(owning_element2));
     }
@@ -1957,8 +1957,8 @@ void Animation::ScheduleAsyncFinish() {
   // state temporarily.
   pending_finish_notification_ = true;
   if (!has_queued_microtask_) {
-    execution_context->GetAgent()->event_loop()->EnqueueMicrotask(WTF::BindOnce(
-        &Animation::AsyncFinishMicrotask, WrapWeakPersistent(this)));
+    execution_context->GetAgent()->event_loop()->EnqueueMicrotask(
+        BindOnce(&Animation::AsyncFinishMicrotask, WrapWeakPersistent(this)));
     has_queued_microtask_ = true;
   }
 }
@@ -3342,10 +3342,9 @@ void Animation::ResolvePromiseMaybeAsync(AnimationPromise* promise) {
   if (ScriptForbiddenScope::IsScriptForbidden()) {
     GetExecutionContext()
         ->GetTaskRunner(TaskType::kDOMManipulation)
-        ->PostTask(
-            FROM_HERE,
-            WTF::BindOnce(&AnimationPromise::Resolve<Animation*>,
-                          WrapPersistent(promise), WrapPersistent(this)));
+        ->PostTask(FROM_HERE,
+                   BindOnce(&AnimationPromise::Resolve<Animation*>,
+                            WrapPersistent(promise), WrapPersistent(this)));
   } else {
     promise->Resolve(this);
   }
@@ -3361,9 +3360,9 @@ void Animation::RejectAndResetPromiseMaybeAsync(AnimationPromise* promise) {
   if (ScriptForbiddenScope::IsScriptForbidden()) {
     GetExecutionContext()
         ->GetTaskRunner(TaskType::kDOMManipulation)
-        ->PostTask(FROM_HERE, WTF::BindOnce(&Animation::RejectAndResetPromise,
-                                            WrapPersistent(this),
-                                            WrapPersistent(promise)));
+        ->PostTask(FROM_HERE,
+                   BindOnce(&Animation::RejectAndResetPromise,
+                            WrapPersistent(this), WrapPersistent(promise)));
   } else {
     RejectAndResetPromise(promise);
   }

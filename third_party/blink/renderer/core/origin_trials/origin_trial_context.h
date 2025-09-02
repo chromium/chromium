@@ -262,8 +262,7 @@ class CORE_EXPORT OriginTrialContext final
   HashSet<mojom::blink::OriginTrialFeature> enabled_features_;
   HashSet<mojom::blink::OriginTrialFeature> installed_features_;
   HashSet<mojom::blink::OriginTrialFeature> navigation_activated_features_;
-  WTF::HashMap<mojom::blink::OriginTrialFeature, base::Time>
-      feature_expiry_times_;
+  HashMap<mojom::blink::OriginTrialFeature, base::Time> feature_expiry_times_;
   std::unique_ptr<TrialTokenValidator> trial_token_validator_;
   Member<ExecutionContext> context_;
   // Stores raw origin trial token along with the parse result.

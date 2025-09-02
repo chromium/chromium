@@ -589,8 +589,8 @@ void ImageBitmap::RasterizeImageOnBackgroundThread(
     PaintRecord paint_record,
     const gfx::Rect& dst_rect,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    WTF::CrossThreadOnceFunction<void(sk_sp<SkImage>,
-                                      const ImageOrientationEnum)> callback) {
+    CrossThreadOnceFunction<void(sk_sp<SkImage>, const ImageOrientationEnum)>
+        callback) {
   DCHECK(!IsMainThread());
   SkImageInfo info =
       SkImageInfo::MakeN32Premul(dst_rect.width(), dst_rect.height());

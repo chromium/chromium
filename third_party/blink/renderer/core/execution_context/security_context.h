@@ -89,7 +89,7 @@ class CORE_EXPORT SecurityContext {
   void Trace(Visitor*) const;
 
   using InsecureNavigationsSet = HashSet<unsigned, AlreadyHashedTraits>;
-  static WTF::Vector<unsigned> SerializeInsecureNavigationSet(
+  static Vector<unsigned> SerializeInsecureNavigationSet(
       const InsecureNavigationsSet&);
 
   const SecurityOrigin* GetSecurityOrigin() const {

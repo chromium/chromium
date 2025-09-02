@@ -1297,7 +1297,7 @@ TEST_F(EventHandlerTooltipTest, mouseLeaveClearsTooltip) {
       "<style>.box { width: 100%; height: 100%; }</style>"
       "<img src='image.png' class='box' title='tooltip'>link</img>");
 
-  EXPECT_EQ(WTF::String(), LastToolTipText());
+  EXPECT_EQ(String(), LastToolTipText());
 
   WebMouseEvent mouse_move_event(
       WebInputEvent::Type::kMouseMove, gfx::PointF(51, 50), gfx::PointF(51, 50),
@@ -1315,7 +1315,7 @@ TEST_F(EventHandlerTooltipTest, mouseLeaveClearsTooltip) {
   GetDocument().GetFrame()->GetEventHandler().HandleMouseLeaveEvent(
       mouse_leave_event);
 
-  EXPECT_EQ(WTF::String(), LastToolTipText());
+  EXPECT_EQ(String(), LastToolTipText());
 }
 
 // macOS doesn't have keyboard-triggered tooltips.
@@ -1333,7 +1333,7 @@ TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromTabUpdatesTooltip) {
         <button id='b2'>button 2</button>
       )HTML");
 
-  EXPECT_EQ(WTF::String(), LastToolTipText());
+  EXPECT_EQ(String(), LastToolTipText());
   EXPECT_EQ(gfx::Rect(), LastToolTipBounds());
 
   WebKeyboardEvent e{WebInputEvent::Type::kRawKeyDown,
@@ -1372,7 +1372,7 @@ TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromAccessKeyUpdatesTooltip) {
         <button id='b' title='my tooltip' accessKey='a'>button</button>
       )HTML");
 
-  EXPECT_EQ(WTF::String(), LastToolTipText());
+  EXPECT_EQ(String(), LastToolTipText());
   EXPECT_EQ(gfx::Rect(), LastToolTipBounds());
 
   WebKeyboardEvent e{WebInputEvent::Type::kRawKeyDown, WebInputEvent::kAltKey,
@@ -1401,7 +1401,7 @@ TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromMouseDoesntUpdateTooltip) {
         <button id='b' title='my tooltip'>button</button>
       )HTML");
 
-  EXPECT_EQ(WTF::String(), LastToolTipText());
+  EXPECT_EQ(String(), LastToolTipText());
   EXPECT_EQ(gfx::Rect(), LastToolTipBounds());
 
   Element* element = GetDocument().getElementById(AtomicString("b"));
@@ -1434,7 +1434,7 @@ TEST_F(EventHandlerTooltipTest, MAYBE_FocusSetFromScriptDoesntUpdateTooltip) {
         <button id='b' title='my tooltip'>button</button>
       )HTML");
 
-  EXPECT_EQ(WTF::String(), LastToolTipText());
+  EXPECT_EQ(String(), LastToolTipText());
   EXPECT_EQ(gfx::Rect(), LastToolTipBounds());
 
   Element* element = GetDocument().getElementById(AtomicString("b"));
@@ -1476,7 +1476,7 @@ TEST_F(EventHandlerTooltipTest,
   GetDocument().body()->AppendChild(script);
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
-  EXPECT_EQ(WTF::String(), LastToolTipText());
+  EXPECT_EQ(String(), LastToolTipText());
   EXPECT_EQ(gfx::Rect(), LastToolTipBounds());
 
   WebKeyboardEvent e{WebInputEvent::Type::kRawKeyDown,
@@ -2235,11 +2235,11 @@ TEST_F(EventHandlerSimTest, TestUpdateHoverAfterJSScrollAtBeginFrame) {
   scrollable_area->SetScrollOffset(
       ScrollOffset(0, 1000), mojom::blink::ScrollType::kProgrammatic,
       mojom::blink::ScrollBehavior::kSmooth,
-      ScrollableArea::ScrollCallback(WTF::BindOnce(
+      ScrollableArea::ScrollCallback(BindOnce(
           [](bool* finished, ScrollableArea::ScrollCompletionMode) {
             *finished = true;
           },
-          WTF::Unretained(&finished))));
+          Unretained(&finished))));
   Compositor().BeginFrame();
   LocalFrameView* frame_view = GetDocument().View();
   ASSERT_EQ(0, frame_view->LayoutViewport()->GetScrollOffset().y());

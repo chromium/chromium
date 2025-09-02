@@ -113,7 +113,7 @@
 namespace blink {
 
 namespace internal {
-// TODO(crbug.com/363289333): Try to add this functionality to wtf::String.
+// TODO(crbug.com/363289333): Try to add this functionality to blink::String.
 String ReplaceAllCaseInsensitive(
     String source,
     const String& from,

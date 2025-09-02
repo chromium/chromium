@@ -140,7 +140,7 @@ ScriptPromise<SelectorDirective> FragmentDirective::createSelectorDirective(
   auto* generator = MakeGarbageCollected<TextFragmentSelectorGenerator>(frame);
   generator->Generate(
       *range_in_flat_tree,
-      WTF::BindOnce(
+      BindOnce(
           [](ScriptPromiseResolver<SelectorDirective>* resolver,
              TextFragmentSelectorGenerator* generator,
              const RangeInFlatTree* range, const TextFragmentSelector& selector,

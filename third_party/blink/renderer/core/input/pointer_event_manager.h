@@ -275,7 +275,7 @@ class CORE_EXPORT PointerEventManager final
   // the updated `element_under_pointer_` (i.e. the updated element gets no
   // "out", but it gets an "over" if it happens to become the new
   // `element_under_pointer_` later on).
-  WTF::HashSet<int64_t> original_element_under_pointer_removed_;
+  HashSet<int64_t> original_element_under_pointer_removed_;
 
   PointerCapturingMap pointer_capture_target_;
   PointerCapturingMap pending_pointer_capture_target_;

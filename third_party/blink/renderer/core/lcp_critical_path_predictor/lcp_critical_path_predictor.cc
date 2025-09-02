@@ -150,9 +150,9 @@ void LCPCriticalPathPredictor::AddLCPPredictedCallback(LCPCallback callback) {
 void LCPCriticalPathPredictor::AddLCPPredictedCallback(
     base::OnceClosure callback) {
   LCPCallback lcp_callback =
-      WTF::BindOnce([](base::OnceClosure callback,
-                       const Element*) { std::move(callback).Run(); },
-                    std::move(callback));
+      blink::BindOnce([](base::OnceClosure callback,
+                         const Element*) { std::move(callback).Run(); },
+                      std::move(callback));
   AddLCPPredictedCallback(std::move(lcp_callback));
 }
 

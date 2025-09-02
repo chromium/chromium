@@ -113,7 +113,7 @@ class TouchActionTest : public testing::Test {
  public:
   TouchActionTest()
       : base_url_("http://www.test.com/"),
-        web_view_helper_(WTF::BindRepeating(
+        web_view_helper_(blink::BindRepeating(
             &frame_test_helpers::WebViewHelper::CreateTestWebFrameWidget<
                 TouchActionTrackingWebFrameWidget>)) {
     // TODO(crbug.com/751425): We should use the mock functionality

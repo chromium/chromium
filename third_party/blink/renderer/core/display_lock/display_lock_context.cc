@@ -511,8 +511,8 @@ void DisplayLockContext::ScheduleStateChangeEventIfNeeded() {
         ->GetTaskRunner(TaskType::kMiscPlatformAPI)
         ->PostTask(
             FROM_HERE,
-            WTF::BindOnce(&DisplayLockContext::DispatchStateChangeEventIfNeeded,
-                          WrapPersistent(this)));
+            BindOnce(&DisplayLockContext::DispatchStateChangeEventIfNeeded,
+                     WrapPersistent(this)));
     state_change_task_pending_ = true;
   }
 }

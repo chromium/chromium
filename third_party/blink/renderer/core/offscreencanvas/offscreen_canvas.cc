@@ -307,7 +307,7 @@ ScriptPromise<Blob> OffscreenCanvas::convertToBlob(
     const ImageEncodeOptions* options,
     ExceptionState& exception_state) {
   DCHECK(IsOffscreenCanvas());
-  WTF::String object_name = "OffscreenCanvas";
+  String object_name = "OffscreenCanvas";
   std::stringstream error_msg;
 
   if (is_neutered_) {

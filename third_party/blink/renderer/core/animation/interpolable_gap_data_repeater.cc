@@ -64,7 +64,7 @@ bool InterpolableGapLengthRepeater::IsCompatibleWith(
 GapData<int> InterpolableGapLengthRepeater::CreateGapData(
     const CSSToLengthConversionData& conversion_data,
     Length::ValueRange value_range) const {
-  WTF::Vector<int> repeated_values;
+  Vector<int> repeated_values;
   repeated_values.ReserveInitialCapacity(values_->length());
   for (wtf_size_t i = 0; i < values_->length(); ++i) {
     const InterpolableLength& length = To<InterpolableLength>(*values_->Get(i));

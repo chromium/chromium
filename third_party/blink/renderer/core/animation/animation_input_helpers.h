@@ -20,13 +20,13 @@ class CORE_EXPORT AnimationInputHelpers {
   STATIC_ONLY(AnimationInputHelpers);
 
  public:
-  static CSSPropertyID KeyframeAttributeToCSSProperty(const WTF::String&,
+  static CSSPropertyID KeyframeAttributeToCSSProperty(const String&,
                                                       const Document&);
-  static scoped_refptr<TimingFunction> ParseTimingFunction(const WTF::String&,
+  static scoped_refptr<TimingFunction> ParseTimingFunction(const String&,
                                                            Document*,
                                                            ExceptionState&);
 
-  static WTF::String PropertyHandleToKeyframeAttribute(PropertyHandle);
+  static String PropertyHandleToKeyframeAttribute(PropertyHandle);
 };
 
 }  // namespace blink

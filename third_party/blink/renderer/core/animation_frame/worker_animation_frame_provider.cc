@@ -45,7 +45,7 @@ void WorkerAnimationFrameProvider::BeginFrame(const viz::BeginFrameArgs& args) {
                          TRACE_ID_GLOBAL(args.trace_id),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
-  context_->GetAgent()->event_loop()->EnqueueMicrotask(WTF::BindOnce(
+  context_->GetAgent()->event_loop()->EnqueueMicrotask(BindOnce(
       [](WeakPersistent<WorkerAnimationFrameProvider> provider,
          const viz::BeginFrameArgs& args) {
         if (!provider)

@@ -71,11 +71,11 @@ String SelectivePermissionInterventionMessage(
 }  // namespace
 
 // static
-WTF::Vector<unsigned> SecurityContext::SerializeInsecureNavigationSet(
+Vector<unsigned> SecurityContext::SerializeInsecureNavigationSet(
     const InsecureNavigationsSet& set) {
   // The set is serialized as a sorted array. Sorting it makes it easy to know
   // if two serialized sets are equal.
-  WTF::Vector<unsigned> serialized;
+  Vector<unsigned> serialized;
   serialized.reserve(set.size());
   for (unsigned host : set)
     serialized.emplace_back(host);

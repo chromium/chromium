@@ -200,7 +200,7 @@ class CORE_EXPORT SystemClipboard final
 
     mutable std::optional<mojom::blink::ClipboardFilesPtr> files_;
 
-    WTF::HashMap<String, String> custom_data_;
+    HashMap<String, String> custom_data_;
   };
 
   bool IsValidBufferType(mojom::blink::ClipboardBuffer);
