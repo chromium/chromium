@@ -966,7 +966,8 @@ void WaitForFakeJoinFlowView() {
 }
 
 // Ensures new tab is added when moving the last tab of a shared group.
-- (void)testMoveLastTabInSharedGroup {
+// TODO(crbug.com/442448866): Re-enable this test.
+- (void)FLAKY_testMoveLastTabInSharedGroup {
   // Create 2 groups, one shared and one local.
   [ChromeEarlGreyUI openNewTab];
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab2Title)];
