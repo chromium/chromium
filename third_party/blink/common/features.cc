@@ -52,6 +52,11 @@ BASE_FEATURE(AndroidSpellcheckFullApiBlink, base::FEATURE_DISABLED_BY_DEFAULT);
 // Avoids copying ResourceRequest::TrustedParams when possible.
 BASE_FEATURE(AvoidTrustedParamsCopies, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Async touchmoves after scroll.
+BASE_FEATURE(kAsyncTouchMovesImmediatelyAfterScroll,
+             "AsyncTouchMovesImmediatelyAfterScroll",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Block all MIDI access with the MIDI_SYSEX permission
 BASE_FEATURE(BlockMidiByDefault, base::FEATURE_ENABLED_BY_DEFAULT);
 
