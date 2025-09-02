@@ -203,11 +203,6 @@ const float kOpaque = 1.0;
 }  // namespace
 
 // static
-base::TimeDelta Textfield::GetCaretBlinkInterval() {
-  return ui::NativeTheme::GetInstanceForNativeUi()->GetCaretBlinkInterval();
-}
-
-// static
 const gfx::FontList& Textfield::GetDefaultFontList() {
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   return rb.GetFontListWithDelta(ui::kLabelFontSizeDelta);
@@ -3083,13 +3078,17 @@ int Textfield::CharsToDips(int width_in_chars) const {
 }
 
 bool Textfield::ShouldBlinkCursor() const {
-  return ShouldShowCursor() && !Textfield::GetCaretBlinkInterval().is_zero();
+  return ShouldShowCursor() && !ui::NativeTheme::GetInstanceForNativeUi()
+                                    ->GetCaretBlinkInterval()
+                                    .is_zero();
 }
 
 void Textfield::StartBlinkingCursor() {
   DCHECK(ShouldBlinkCursor());
-  cursor_blink_timer_.Start(FROM_HERE, Textfield::GetCaretBlinkInterval(), this,
-                            &Textfield::OnCursorBlinkTimerFired);
+  cursor_blink_timer_.Start(
+      FROM_HERE,
+      ui::NativeTheme::GetInstanceForNativeUi()->GetCaretBlinkInterval(), this,
+      &Textfield::OnCursorBlinkTimerFired);
 }
 
 void Textfield::StopBlinkingCursor() {

@@ -110,9 +110,6 @@ class VIEWS_EXPORT Textfield : public View,
   // Pair of |text_changed|, |cursor_changed|.
   using EditCommandResult = std::pair<bool, bool>;
 
-  // Returns the text cursor blink time, or 0 for no blinking.
-  static base::TimeDelta GetCaretBlinkInterval();
-
   // Returns the default FontList used by all textfields.
   static const gfx::FontList& GetDefaultFontList();
 
