@@ -1754,7 +1754,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ExplainWithGemini.CharSelected" units="characters"
-    expires_after="2025-08-31">
+    expires_after="2026-03-01">
   <owner>prasanaa@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
   <summary>
@@ -2458,7 +2458,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.HomeCustomization.MagicStack.SafetyCheck.Enabled"
-    enum="Boolean" expires_after="2025-10-12">
+    enum="Boolean" expires_after="2026-03-01">
   <owner>adamta@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
@@ -2468,7 +2468,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.HomeCustomization.MagicStack.SetUpList.Enabled"
-    enum="Boolean" expires_after="2025-10-12">
+    enum="Boolean" expires_after="2026-03-01">
   <owner>adamta@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
@@ -2478,7 +2478,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.HomeCustomization.MagicStack.TabResumption.Enabled"
-    enum="Boolean" expires_after="2025-10-12">
+    enum="Boolean" expires_after="2026-03-01">
   <owner>adamta@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
@@ -2488,7 +2488,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.HomeCustomization.MagicStack.Tips.Enabled" enum="Boolean"
-    expires_after="2025-10-12">
+    expires_after="2026-03-01">
   <owner>bwwilliams@google.com</owner>
   <owner>adamta@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
@@ -2499,7 +2499,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.HomeCustomization.Opened"
-    enum="IOSHomeCustomizationEntrypoint" expires_after="2025-12-14">
+    enum="IOSHomeCustomizationEntrypoint" expires_after="2026-03-01">
   <owner>adamta@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
