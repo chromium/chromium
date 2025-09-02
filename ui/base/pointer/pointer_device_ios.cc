@@ -11,8 +11,6 @@
 namespace ui {
 
 std::pair<int, int> GetAvailablePointerAndHoverTypesImpl() {
-  // TODO(crbug.com/379764624): when Apple provides a public alternative,
-  // replace the private API with it.
   static InputDeviceObserverIOS* input_device_observer_ios =
       InputDeviceObserverIOS::GetInstance();
   return {POINTER_TYPE_COARSE, input_device_observer_ios->GetHasMouseDevice()
