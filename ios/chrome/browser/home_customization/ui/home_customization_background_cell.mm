@@ -232,6 +232,7 @@ const CGFloat kAlphaValueWhenImageBackround = 0.6;
 
   UIView* logoView = searchEngineLogoMediator.view;
   logoView.translatesAutoresizingMaskIntoConstraints = NO;
+  logoView.userInteractionEnabled = NO;
 
   // Insert the logo view right after the spacer.
   [self.innerContentView insertArrangedSubview:logoView atIndex:1];
