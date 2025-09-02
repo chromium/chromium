@@ -2146,9 +2146,6 @@ void AutofillAgent::OnProvisionallySaveForm(
           form_element, WebInputElement(),
           SynchronousFormCache(form_util::GetFormRendererId(form_element),
                                provisionally_saved_form()));
-      // TODO(crbug.com/40281981): Figure out if this is still needed, and
-      // document the reason, otherwise remove.
-      update_submission_data_on_user_edit();
       // Fire the form submission event to avoid missing submissions where
       // websites handle the onsubmit event. This also gets the form before
       // Javascript's submit event handler could change it. We don't clear
