@@ -48,6 +48,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/commerce/model/push_notification",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/app_bundle_promo/coordinator",
     "//ios/chrome/browser/content_suggestions/ui_bundled/cells",
     "//ios/chrome/browser/content_suggestions/ui_bundled/cells:most_visited_tiles",
     "//ios/chrome/browser/content_suggestions/ui_bundled/cells:shortcuts",

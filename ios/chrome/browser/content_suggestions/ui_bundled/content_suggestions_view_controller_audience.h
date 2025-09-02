@@ -30,6 +30,9 @@ enum class TipIdentifier;
 // Indicates that the user has tapped the given `tip`.
 - (void)didSelectTip:(segmentation_platform::TipIdentifier)tip;
 
+// Indicates that the user has tapped the App Bundle promo.
+- (void)didSelectAppBundlePromo;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CONTENT_SUGGESTIONS_VIEW_CONTROLLER_AUDIENCE_H_

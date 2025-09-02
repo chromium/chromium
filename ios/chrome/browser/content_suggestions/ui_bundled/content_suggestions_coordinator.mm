@@ -641,6 +641,16 @@ using segmentation_platform::TipIdentifier;
   [_tipsMediator removeModuleWithCompletion:completion];
 }
 
+- (void)didSelectAppBundlePromo {
+  // Note: The promo modal only works when the `kAppBundlePromoEphemeralCard`
+  // feature is enabled. If this card is forced in the
+  // #ios-segmentation-ephemeral-card-ranker, tapping the card does NOT do
+  // anything. This is because the creation of the AppStorePromoService is gated
+  // behind the feature flag.
+  // TODO(crbug.com/441731330): Link user interaction handling and implement
+  // once App Bundle promo module is integrated with Magic Stack ranking.
+}
+
 - (void)openTipDestination:(segmentation_platform::TipIdentifier)tip {
   CHECK(IsTipsMagicStackEnabled());
   CHECK(_tipsMediator);
