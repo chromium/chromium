@@ -48,7 +48,6 @@ source_set("tab_resumption") {
     "//ios/chrome/browser/ntp/ui_bundled",
     "//ios/chrome/browser/ntp_tiles/model/tab_resumption:tab_resumption_prefs",
     "//ios/chrome/browser/optimization_guide/model",
-    "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/page_image/model",
     "//ios/chrome/browser/price_notifications/ui_bundled/cells",
     "//ios/chrome/browser/push_notification/model:push_notification_service_header",
@@ -70,6 +69,7 @@ source_set("tab_resumption") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:snackbar_util",
     "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/snackbar/public",
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/snapshots/model:model_common",
     "//ios/chrome/browser/start_surface/ui_bundled",
@@ -85,7 +85,6 @@ source_set("tab_resumption") {
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/favicon:favicon_constants",
     "//ios/chrome/common/ui/util",
-    "//ios/third_party/material_components_ios",
     "//ui/base",
     "//url",
   ]

@@ -8,11 +8,11 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/price_tracking_promo_mediator.h"
 
 class AuthenticationService;
-@class MDCSnackbarMessage;
 class NotificationsSettingsObserver;
 class PrefService;
 @class PriceTrackingPromoItem;
 class PushNotificationService;
+@class SnackbarMessage;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -43,7 +43,7 @@ class ImageDataFetcher;
 
 - (PriceTrackingPromoItem*)priceTrackingPromoItemForTesting;
 
-- (MDCSnackbarMessage*)snackbarMessageForTesting;
+- (SnackbarMessage*)snackbarMessageForTesting;
 
 - (NotificationsSettingsObserver*)notificationsSettingsObserverForTesting;
 

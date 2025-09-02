@@ -50,7 +50,6 @@ source_set("cells") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common:timing",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements",
@@ -108,6 +107,7 @@ source_set("most_visited_tiles") {
     "//ios/chrome/browser/shared/ui/util:snackbar_util",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:system_identity",
+    "//ios/chrome/browser/snackbar/public",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:url_loading_params_header",
     "//ios/chrome/browser/widget_kit/model:features",
@@ -116,7 +116,6 @@ source_set("most_visited_tiles") {
     "//ios/chrome/common/ui/favicon",
     "//ui/base",
   ]
-  public_deps = [ "//ios/third_party/material_components_ios" ]
   if (ios_enable_widget_kit_extension) {
     deps += [ "//ios/chrome/browser/widget_kit/model:model_swift" ]
   }

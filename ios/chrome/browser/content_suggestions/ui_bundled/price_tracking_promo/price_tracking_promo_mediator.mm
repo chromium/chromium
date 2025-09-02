@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/price_tracking_promo_mediator.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import "base/cancelable_callback.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
@@ -42,6 +40,8 @@
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/chrome/browser/snackbar/public/snackbar_message.h"
+#import "ios/chrome/browser/snackbar/public/snackbar_message_action.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
@@ -183,7 +183,7 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
 
 - (void)enablePriceTrackingSettingsAndShowSnackbar {
   [self enablePriceTrackingNotificationsSettings];
-  [self.dispatcher showSnackbarMessage:[self snackbarMessage]];
+  [self.dispatcher showCustomSnackbarMessage:[self snackbarMessage]];
 }
 
 #pragma mark - Public
@@ -270,7 +270,7 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
 
   if (granted && !error) {
     [self enablePriceTrackingNotificationsSettings];
-    [self.dispatcher showSnackbarMessage:[self snackbarMessage]];
+    [self.dispatcher showCustomSnackbarMessage:[self snackbarMessage]];
     [self disableModule];
   } else if (!granted && !promptShown && !error) {
     // If the prompt wasn't shown and permission is denied, the user
@@ -296,22 +296,20 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
 
 // Get snackbar indicating price tracking notifications are enabled with
 // an action to go to settings to toggle either.
-- (MDCSnackbarMessage*)snackbarMessage {
-  MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
+- (SnackbarMessage*)snackbarMessage {
+  SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
 
   action.handler = ^{
     [self.dispatcher showPriceTrackingNotificationsSettings];
   };
   action.title = l10n_util::GetNSString(
       IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_SNACKBAR_MANAGE);
-  action.accessibilityIdentifier = kPriceTrackingSettingsAccessibilityID;
   action.accessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_SNACKBAR_MANAGE);
 
-  MDCSnackbarMessage* message = CreateSnackbarMessage(l10n_util::GetNSString(
+  SnackbarMessage* message = CreateCustomSnackbarMessage(l10n_util::GetNSString(
       IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_SNACKBAR_TITLE));
   message.action = action;
-  message.category = kPriceTrackingSnackbarCategory;
   return message;
 }
 
@@ -459,7 +457,7 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
   return self->_priceTrackingPromoItem;
 }
 
-- (MDCSnackbarMessage*)snackbarMessageForTesting {
+- (SnackbarMessage*)snackbarMessageForTesting {
   return [self snackbarMessage];
 }
 

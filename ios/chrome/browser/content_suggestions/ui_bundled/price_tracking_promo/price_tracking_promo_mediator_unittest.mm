@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/price_tracking_promo_mediator.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
 #import <UserNotifications/UserNotifications.h>
 
 #import "base/strings/sys_string_conversions.h"
@@ -31,6 +30,9 @@
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/snackbar/public/snackbar_message.h"
+#import "ios/chrome/browser/snackbar/public/snackbar_message_action.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/push_notification/push_notification_api.h"
 #import "ios/testing/scoped_block_swizzler.h"
@@ -40,6 +42,7 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/l10n/l10n_util.h"
 
 class PriceTrackingPromoMediatorTest : public PlatformTest {
  public:
@@ -189,10 +192,15 @@ TEST_F(PriceTrackingPromoMediatorTest, TestReset) {
 }
 
 TEST_F(PriceTrackingPromoMediatorTest, TestGetSnackbarMessage) {
-  MDCSnackbarMessage* snackbarMessage = [mediator() snackbarMessageForTesting];
-  EXPECT_NSEQ(@"Price tracking notifications turned on", snackbarMessage.text);
-  EXPECT_NSEQ(@"Manage", snackbarMessage.action.title);
-  EXPECT_NSEQ(@"Manage", snackbarMessage.action.accessibilityLabel);
+  SnackbarMessage* snackbarMessage = [mediator() snackbarMessageForTesting];
+  EXPECT_NSEQ(
+      l10n_util::GetNSString(
+          IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_SNACKBAR_TITLE),
+      snackbarMessage.title);
+  EXPECT_NSEQ(
+      l10n_util::GetNSString(
+          IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_SNACKBAR_MANAGE),
+      snackbarMessage.action.title);
 }
 
 TEST_F(PriceTrackingPromoMediatorTest, TestPriceTrackingSettings) {
@@ -219,13 +227,12 @@ TEST_F(PriceTrackingPromoMediatorTest,
        TestEnablePriceTrackingSettingsAndShowSnackbar) {
   EXPECT_FALSE(
       pref_service()->GetBoolean(commerce::kPriceEmailNotificationsEnabled));
+  id mockDispatcher = OCMStrictProtocolMock(@protocol(SnackbarCommands));
+  mediator().dispatcher = mockDispatcher;
+  OCMExpect([mockDispatcher showCustomSnackbarMessage:[OCMArg isNotNil]]);
   [mediator() enablePriceTrackingSettingsAndShowSnackbar];
   EXPECT_TRUE(
       pref_service()->GetBoolean(commerce::kPriceEmailNotificationsEnabled));
-  id mockDispatcher = OCMStrictProtocolMock(@protocol(SnackbarCommands));
-  mediator().dispatcher = mockDispatcher;
-  OCMExpect([mockDispatcher showSnackbarMessage:[OCMArg isNotNil]]);
-  [mediator() enablePriceTrackingSettingsAndShowSnackbar];
   EXPECT_OCMOCK_VERIFY(mockDispatcher);
 }
 

@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_mediator.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/raw_ptr.h"
@@ -43,6 +41,8 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/snackbar/public/snackbar_message.h"
+#import "ios/chrome/browser/snackbar/public/snackbar_message_action.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
@@ -374,7 +374,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
 // Shows a snackbar with an action to undo the removal of the most visited item
 // with a `URL`.
 - (void)showMostVisitedUndoForURL:(GURL)URL {
-  MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
+  SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
   __weak MostVisitedTilesMediator* weakSelf = self;
   action.handler = ^{
     [weakSelf allowMostVisitedURL:URL];
@@ -382,11 +382,10 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   action.title = l10n_util::GetNSString(IDS_NEW_TAB_UNDO_THUMBNAIL_REMOVE);
 
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-  MDCSnackbarMessage* message = CreateSnackbarMessage(
+  SnackbarMessage* message = CreateCustomSnackbarMessage(
       l10n_util::GetNSString(IDS_IOS_NEW_TAB_MOST_VISITED_ITEM_REMOVED));
   message.action = action;
-  message.category = @"MostVisitedUndo";
-  [self.snackbarHandler showSnackbarMessage:message];
+  [self.snackbarHandler showCustomSnackbarMessage:message];
 }
 
 - (void)allowMostVisitedURL:(GURL)URL {
@@ -411,9 +410,9 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
 - (void)
     lookForNewMostVisitedSite:(const base::Value::List&)freshMostVisitedSites
           oldMostVisitedSites:(const base::Value::List&)oldMostVisitedSites {
-  for (auto const& freshSiteURLValue : freshMostVisitedSites) {
+  for (const auto& freshSiteURLValue : freshMostVisitedSites) {
     BOOL freshSiteInOldList = NO;
-    for (auto const& oldSiteURLValue : oldMostVisitedSites) {
+    for (const auto& oldSiteURLValue : oldMostVisitedSites) {
       if (freshSiteURLValue.GetString() == oldSiteURLValue.GetString()) {
         freshSiteInOldList = YES;
         break;

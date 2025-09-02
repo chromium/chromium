@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_mediator.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import <algorithm>
 
 #import "base/apple/foundation_util.h"
@@ -82,6 +80,8 @@
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/snackbar/public/snackbar_message.h"
+#import "ios/chrome/browser/snackbar/public/snackbar_message_action.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
@@ -581,12 +581,13 @@ class TabResumptionMediatorProxy {
 
 - (void)onTracked:(ShopCardTrackItemResult)result
              item:(TabResumptionItem*)item {
-  [self.dispatcher showSnackbarMessage:[self snackbarMessage:result item:item]];
+  [self.dispatcher showCustomSnackbarMessage:[self snackbarMessage:result
+                                                              item:item]];
 }
 
-- (MDCSnackbarMessage*)snackbarMessage:(ShopCardTrackItemResult)result
-                                  item:(TabResumptionItem*)item {
-  MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
+- (SnackbarMessage*)snackbarMessage:(ShopCardTrackItemResult)result
+                               item:(TabResumptionItem*)item {
+  SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
 
   if (result != ShopCardTrackItemResult::kTrackError) {
     // Tracking was successful. Give option to go to price tracking menu.
@@ -605,29 +606,26 @@ class TabResumptionMediatorProxy {
         IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_SUCCESS_SNACKBAR_ACTION);
     action.accessibilityLabel = l10n_util::GetNSString(
         IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_SUCCESS_SNACKBAR_ACTION);
-    action.accessibilityIdentifier = kPriceTrackingOnTabSuccessAccessibilityID;
   } else {
     action.title = l10n_util::GetNSString(
         IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_FAILURE_SNACKBAR_ACTION);
     action.accessibilityLabel = l10n_util::GetNSString(
         IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_FAILURE_SNACKBAR_ACTION);
-    action.accessibilityIdentifier = kPriceTrackingOnTabFailureAccessibilityID;
   }
 
-  MDCSnackbarMessage* message;
+  SnackbarMessage* message;
   if (result == ShopCardTrackItemResult::kTrackSuccess) {
-    message = CreateSnackbarMessage(l10n_util::GetNSString(
+    message = CreateCustomSnackbarMessage(l10n_util::GetNSString(
         IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_SUCCESS_SNACKBAR));
   } else if (result == ShopCardTrackItemResult::kTrackSuccesNoNotification) {
-    message = CreateSnackbarMessage(l10n_util::GetNSString(
+    message = CreateCustomSnackbarMessage(l10n_util::GetNSString(
         IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_NO_PUSH_PERMISSION_SNACKBAR));
   } else {
-    message = CreateSnackbarMessage(l10n_util::GetNSString(
+    message = CreateCustomSnackbarMessage(l10n_util::GetNSString(
         IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_FAILURE_SNACKBAR));
   }
 
   message.action = action;
-  message.category = kPriceTrackingOnTabSnackbarCategory;
   return message;
 }
 
