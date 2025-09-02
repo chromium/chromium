@@ -12,15 +12,16 @@
 #include "base/memory/raw_ptr.h"
 #include "components/lens/contextual_input.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace lens {
 
-class TabContextualizationController {
+class TabContextualizationController : public content::WebContentsObserver {
  public:
   TabContextualizationController();
   explicit TabContextualizationController(tabs::TabInterface* tab);
-  ~TabContextualizationController();
+  ~TabContextualizationController() override;
 
   DECLARE_USER_DATA(TabContextualizationController);
   static TabContextualizationController* From(tabs::TabInterface* tab);
@@ -50,8 +51,26 @@ class TabContextualizationController {
   bool GetCurrentPageContextEligibility();
 
  private:
+  // content::WebContentsObserver:
+  void PrimaryPageChanged(content::Page& page) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+
+  // TabInterface::WillDiscardContentsCallback:
+  void WillDiscardContents(tabs::TabInterface* tab,
+                           content::WebContents* old_contents,
+                           content::WebContents* new_contents);
+
+  void OnEligibilityChecked(bool is_page_context_eligible);
+
   ::ui::ScopedUnownedUserData<TabContextualizationController>
       scoped_unowned_user_data_;
+
+  raw_ptr<tabs::TabInterface> tab_;
+
+  base::CallbackListSubscription tab_subscription_;
+
+  bool is_page_context_eligible_ = false;
 };
 
 }  // namespace lens
