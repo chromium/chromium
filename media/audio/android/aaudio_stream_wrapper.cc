@@ -9,6 +9,7 @@
 #include <array>
 #include <optional>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -23,6 +24,9 @@
 
 // AAudioStreamBuilder_setChannelMask was not introduced until API version 32.
 #define AAUDIO_CHANNEL_MASK_MIN_API 32
+
+BASE_FEATURE(AAudioInputLowLatencyModeByDefault,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace media {
 
@@ -175,6 +179,14 @@ AAudioStreamWrapper::AAudioStreamWrapper(DataCallback* callback,
   CHECK(params.IsValid());
   CHECK(callback_);
 
+  if (stream_type_ == StreamType::kInput &&
+      base::FeatureList::IsEnabled(kAAudioInputLowLatencyModeByDefault)) {
+    // Default to low latency for input streams.
+    performance_mode_ = AAUDIO_PERFORMANCE_MODE_LOW_LATENCY;
+  } else {
+    performance_mode_ = AAUDIO_PERFORMANCE_MODE_NONE;
+  }
+
   switch (params.latency_tag()) {
     case AudioLatency::Type::kExactMS:
     case AudioLatency::Type::kInteractive:
@@ -185,7 +197,8 @@ AAudioStreamWrapper::AAudioStreamWrapper(DataCallback* callback,
       performance_mode_ = AAUDIO_PERFORMANCE_MODE_POWER_SAVING;
       break;
     case AudioLatency::Type::kUnknown:
-      performance_mode_ = AAUDIO_PERFORMANCE_MODE_NONE;
+      // The default value should be set above.
+      break;
   }
 
   TRACE_EVENT2("audio", "AAudioStreamWrapper::AAudioStreamWrapper",
