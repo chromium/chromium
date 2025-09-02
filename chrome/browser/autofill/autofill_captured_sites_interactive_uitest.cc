@@ -140,8 +140,8 @@ class FormSubmissionCounter : public autofill::AutofillManager::Observer {
   ~FormSubmissionCounter() override = default;
 
   // AutofillManager::Observer:
-  void OnFormSubmitted(autofill::AutofillManager& manager,
-                       const autofill::FormData& form_data) override {
+  void OnBeforeFormSubmitted(autofill::AutofillManager& manager,
+                             const autofill::FormData& form_data) override {
     actual_form_signatures_submitted_.insert(base::NumberToString(
         autofill::CalculateFormSignature(form_data).value()));
   }

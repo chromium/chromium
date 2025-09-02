@@ -349,7 +349,8 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   EXPECT_CALL(observer, OnAfterLoadedServerPredictions).Times(0);
   EXPECT_CALL(observer, OnFieldTypesDetermined).Times(0);
   EXPECT_CALL(observer, OnFillOrPreviewForm).Times(0);
-  EXPECT_CALL(observer, OnFormSubmitted).Times(0);
+  EXPECT_CALL(observer, OnBeforeFormSubmitted).Times(0);
+  EXPECT_CALL(observer, OnAfterFormSubmitted).Times(0);
 
   EXPECT_CALL(manager(), ShouldParseForms)
       .Times(AtLeast(0))
@@ -453,7 +454,8 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   // TODO(crbug.com/) Test in browser_autofill_manager_unittest.cc that
   // FillOrPreviewForm() triggers OnFillOrPreviewForm().
 
-  EXPECT_CALL(observer, OnFormSubmitted(m, Ref(form)));
+  EXPECT_CALL(observer, OnBeforeFormSubmitted(m, Ref(form)));
+  EXPECT_CALL(observer, OnAfterFormSubmitted(m, Ref(form)));
   manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION);
 
   // Reset the manager, the observers should stick around.

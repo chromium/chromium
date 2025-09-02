@@ -178,7 +178,7 @@ void PlusAddressSubmissionLogger::OnAutofillManagerStateChanged(
   }
 }
 
-void PlusAddressSubmissionLogger::OnFormSubmitted(
+void PlusAddressSubmissionLogger::OnBeforeFormSubmitted(
     autofill::AutofillManager& manager,
     const autofill::FormData& form) {
   const CoreAccountInfo core_account_info =

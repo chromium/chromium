@@ -56,8 +56,8 @@ class PlusAddressSubmissionLogger final : autofill::AutofillManager::Observer {
       autofill::AutofillManager& manager,
       autofill::AutofillManager::LifecycleState old_state,
       autofill::AutofillManager::LifecycleState new_state) override;
-  void OnFormSubmitted(autofill::AutofillManager& manager,
-                       const autofill::FormData& form) override;
+  void OnBeforeFormSubmitted(autofill::AutofillManager& manager,
+                             const autofill::FormData& form) override;
 
   // Stops observing `manager` and removes all records for it.
   void RemoveManagerObservation(autofill::AutofillManager& manager);

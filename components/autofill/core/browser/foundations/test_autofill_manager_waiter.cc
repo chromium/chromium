@@ -246,9 +246,13 @@ void TestAutofillManagerWaiter::OnAfterJavaScriptChangedAutofilledValue(
   OnAfter(Event::kJavaScriptChangedAutofilledValue);
 }
 
-void TestAutofillManagerWaiter::OnFormSubmitted(AutofillManager& manager,
-                                                const FormData& form) {
+void TestAutofillManagerWaiter::OnBeforeFormSubmitted(AutofillManager& manager,
+                                                      const FormData& form) {
   OnBefore(Event::kFormSubmitted);
+}
+
+void TestAutofillManagerWaiter::OnAfterFormSubmitted(AutofillManager& manager,
+                                                     const FormData& form) {
   OnAfter(Event::kFormSubmitted);
 }
 

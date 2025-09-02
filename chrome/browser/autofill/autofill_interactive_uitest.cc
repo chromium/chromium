@@ -3114,7 +3114,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
   content::LoadStopObserver load_stop_observer(GetWebContents());
   BrowserAutofillManager& autofill_manager = *GetBrowserAutofillManager();
   TestAutofillManagerSingleEventWaiter submission_waiter(
-      autofill_manager, &AutofillManager::Observer::OnFormSubmitted);
+      autofill_manager, &AutofillManager::Observer::OnAfterFormSubmitted);
   ASSERT_TRUE(content::ExecJs(GetWebContents(),
                               "document.getElementById('testform').submit();"));
   ASSERT_TRUE(std::move(submission_waiter).Wait());

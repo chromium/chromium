@@ -210,8 +210,10 @@ class AutofillManager
     // `FormGlobalId` because the form structure cached inside `AutofillManager`
     // is not updated at this point yet and thus does not contain, e.g., the
     // submitted values, that an observer may wish to analyze.
-    virtual void OnFormSubmitted(AutofillManager& manager,
-                                 const FormData& form) {}
+    virtual void OnBeforeFormSubmitted(AutofillManager& manager,
+                                       const FormData& form) {}
+    virtual void OnAfterFormSubmitted(AutofillManager& manager,
+                                      const FormData& form) {}
   };
 
   AutofillManager(const AutofillManager&) = delete;

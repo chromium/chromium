@@ -178,7 +178,7 @@ class AutofillTest : public InProcessBrowserTest {
     test_api(personal_data_manager()->address_data_manager())
         .set_auto_accept_address_imports(true);
     TestAutofillManagerSingleEventWaiter submission_waiter(
-        *autofill_manager(), &AutofillManager::Observer::OnFormSubmitted);
+        *autofill_manager(), &AutofillManager::Observer::OnAfterFormSubmitted);
     ASSERT_TRUE(
         content::ExecJs(web_contents(), GetJSToFillForm(data) + submit_js));
     if (simulate_click) {

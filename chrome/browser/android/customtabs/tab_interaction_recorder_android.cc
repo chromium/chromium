@@ -59,8 +59,8 @@ AutofillObserverImpl::~AutofillObserverImpl() {
   Invalidate();
 }
 
-void AutofillObserverImpl::OnFormSubmitted(autofill::AutofillManager&,
-                                           const autofill::FormData&) {
+void AutofillObserverImpl::OnBeforeFormSubmitted(autofill::AutofillManager&,
+                                                 const autofill::FormData&) {
   OnFormInteraction();
 }
 

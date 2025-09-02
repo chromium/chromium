@@ -236,7 +236,10 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
                                                FormGlobalId form,
                                                FieldGlobalId field) override;
 
-  void OnFormSubmitted(AutofillManager& manager, const FormData& form) override;
+  void OnBeforeFormSubmitted(AutofillManager& manager,
+                             const FormData& form) override;
+  void OnAfterFormSubmitted(AutofillManager& manager,
+                            const FormData& form) override;
 
   void OnBeforeLoadedServerPredictions(AutofillManager& manager) override;
   void OnAfterLoadedServerPredictions(AutofillManager& manager) override;
@@ -509,9 +512,13 @@ class TestAutofillManagerSingleEventWaiter {
       MaybeQuit(&Observer::OnFillOrPreviewForm, manager, form_id,
                 action_persistence, filled_field_ids, filling_payload);
     }
-    void OnFormSubmitted(AutofillManager& manager,
-                         const FormData& form) override {
-      MaybeQuit(&Observer::OnFormSubmitted, manager, form);
+    void OnBeforeFormSubmitted(AutofillManager& manager,
+                               const FormData& form) override {
+      MaybeQuit(&Observer::OnBeforeFormSubmitted, manager, form);
+    }
+    void OnAfterFormSubmitted(AutofillManager& manager,
+                              const FormData& form) override {
+      MaybeQuit(&Observer::OnAfterFormSubmitted, manager, form);
     }
     void OnBeforeLoadedServerPredictions(AutofillManager& manager) override {
       MaybeQuit(&Observer::OnBeforeLoadedServerPredictions, manager);
