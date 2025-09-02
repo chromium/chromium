@@ -355,18 +355,17 @@ gfx::Insets NativeThemeAura::GetScrollbarSolidColorThumbInsets(
   return gfx::Insets::VH(kThumbInset, extra_inset);
 }
 
-SkColor4f NativeThemeAura::GetScrollbarThumbColor(
+SkColor NativeThemeAura::GetScrollbarThumbColor(
     const ui::ColorProvider& color_provider,
     State state,
     const ScrollbarThumbExtraParams& extra_params) const {
   // Only non-overlay aura scrollbars use solid color thumb.
   CHECK(!use_overlay_scrollbar());
   if (extra_params.thumb_color.has_value()) {
-    return SkColor4f::FromColor(GetContrastingPressedOrHoveredColor(
-                                    extra_params.thumb_color,
-                                    extra_params.track_color, state,
-                                    /*part=*/Part::kScrollbarVerticalThumb)
-                                    .value());
+    return GetContrastingPressedOrHoveredColor(
+               extra_params.thumb_color, extra_params.track_color, state,
+               /*part=*/Part::kScrollbarVerticalThumb)
+        .value();
   }
   ColorId color_id = kColorWebNativeControlScrollbarThumb;
   if (state == NativeTheme::kHovered) {
@@ -374,7 +373,7 @@ SkColor4f NativeThemeAura::GetScrollbarThumbColor(
   } else if (state == NativeTheme::kPressed) {
     color_id = kColorWebNativeControlScrollbarThumbPressed;
   }
-  return SkColor4f::FromColor(color_provider.GetColor(color_id));
+  return color_provider.GetColor(color_id);
 }
 
 void NativeThemeAura::PaintScrollbarCorner(

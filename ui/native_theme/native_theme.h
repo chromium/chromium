@@ -378,7 +378,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeTheme {
   virtual gfx::Insets GetScrollbarSolidColorThumbInsets(Part part) const;
 
   // Called if the theme uses solid color for scrollbar thumb.
-  virtual SkColor4f GetScrollbarThumbColor(
+  virtual SkColor GetScrollbarThumbColor(
       const ui::ColorProvider& color_provider,
       State state,
       const ScrollbarThumbExtraParams& extra_params) const;

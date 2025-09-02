@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_conversions.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/native_theme/features/native_theme_features.h"
@@ -271,8 +272,9 @@ SkColor4f WebThemeEngineDefault::GetScrollbarThumbColor(
               /*part=*/WebThemeEngine::kPartScrollbarVerticalThumb, state,
               extra_params));
 
-  return ui::NativeTheme::GetInstanceForWeb()->GetScrollbarThumbColor(
-      *color_provider, NativeThemeState(state), native_theme_extra_params);
+  return SkColor4f::FromColor(
+      ui::NativeTheme::GetInstanceForWeb()->GetScrollbarThumbColor(
+          *color_provider, NativeThemeState(state), native_theme_extra_params));
 }
 
 void WebThemeEngineDefault::GetOverlayScrollbarStyle(ScrollbarStyle* style) {

@@ -134,7 +134,7 @@ gfx::Insets NativeThemeFluent::GetScrollbarSolidColorThumbInsets(
   return gfx::Insets();
 }
 
-SkColor4f NativeThemeFluent::GetScrollbarThumbColor(
+SkColor NativeThemeFluent::GetScrollbarThumbColor(
     const ui::ColorProvider& color_provider,
     State state,
     const ScrollbarThumbExtraParams& extra_params) const {
@@ -148,13 +148,12 @@ SkColor4f NativeThemeFluent::GetScrollbarThumbColor(
     }
     return kColorWebNativeControlScrollbarThumb;
   };
-  return SkColor4f::FromColor(
-      GetContrastingPressedOrHoveredColor(
-          extra_params.thumb_color,
-          extra_params.track_color.value_or(
-              color_provider.GetColor(kColorWebNativeControlScrollbarTrack)),
-          state, /*part=*/Part::kScrollbarVerticalThumb)
-          .value_or(color_provider.GetColor(get_color_id())));
+  return GetContrastingPressedOrHoveredColor(
+             extra_params.thumb_color,
+             extra_params.track_color.value_or(
+                 color_provider.GetColor(kColorWebNativeControlScrollbarTrack)),
+             state, /*part=*/Part::kScrollbarVerticalThumb)
+      .value_or(color_provider.GetColor(get_color_id()));
 }
 
 void NativeThemeFluent::PaintScrollbarCorner(

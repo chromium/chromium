@@ -452,7 +452,7 @@ gfx::Insets NativeTheme::GetScrollbarSolidColorThumbInsets(Part part) const {
   return gfx::Insets();
 }
 
-SkColor4f NativeTheme::GetScrollbarThumbColor(
+SkColor NativeTheme::GetScrollbarThumbColor(
     const ui::ColorProvider& color_provider,
     State state,
     const ScrollbarThumbExtraParams& extra_params) const {

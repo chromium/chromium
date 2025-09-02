@@ -65,7 +65,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeAura : public NativeThemeBase {
                            const ScrollbarThumbExtraParams& extra_params,
                            ColorScheme color_scheme) const override;
   gfx::Insets GetScrollbarSolidColorThumbInsets(Part part) const override;
-  SkColor4f GetScrollbarThumbColor(
+  SkColor GetScrollbarThumbColor(
       const ui::ColorProvider& color_provider,
       State state,
       const ScrollbarThumbExtraParams& extra) const override;
