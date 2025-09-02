@@ -1291,112 +1291,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro 13-inch (M4)",
-          "--version",
-          "18.2",
-          "--xcodebuild-sim-runner",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "17a5305f",
-          "--xctest"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
-        "module_scheme": "xctest",
-        "name": "ios_chrome_bookmarks_eg2tests_module iPad Pro 13-inch (M4) 18.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
-            }
-          ],
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-15"
-          },
-          "named_caches": [
-            {
-              "name": "runtime_ios_18_2",
-              "path": "Runtime-ios-18.2"
-            },
-            {
-              "name": "xcode_ios_17a5305f",
-              "path": "Xcode.app"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test": "ios_chrome_bookmarks_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
-        "variant_id": "iPad Pro 13-inch (M4) 18.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Pro 13-inch (M4)",
-          "--version",
-          "26.0",
-          "--xcodebuild-sim-runner",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "17a5305f",
-          "--xctest"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
-        "module_scheme": "xctest",
-        "name": "ios_chrome_bookmarks_eg2tests_module iPad Pro 13-inch (M4) 26.0",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
-            }
-          ],
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-15"
-          },
-          "named_caches": [
-            {
-              "name": "runtime_ios_26_0",
-              "path": "Runtime-ios-26.0"
-            },
-            {
-              "name": "xcode_ios_17a5305f",
-              "path": "Xcode.app"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test": "ios_chrome_bookmarks_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
-        "variant_id": "iPad Pro 13-inch (M4) 26.0"
-      },
-      {
-        "args": [
-          "--platform",
           "iPhone 15",
           "--version",
           "18.2",
@@ -1440,6 +1334,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -1505,61 +1404,6 @@
           "--clones",
           "2",
           "--platform",
-          "iPad Pro (12.9-inch) (6th generation)",
-          "--version",
-          "17.5",
-          "--xcodebuild-sim-runner",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "17a5305f",
-          "--xctest"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
-        "module_scheme": "xctest",
-        "name": "ios_chrome_integration_eg2tests_module iPad Pro (12.9-inch) (6th generation) 17.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
-            }
-          ],
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-15"
-          },
-          "named_caches": [
-            {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
-            },
-            {
-              "name": "xcode_ios_17a5305f",
-              "path": "Xcode.app"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 9
-        },
-        "test": "ios_chrome_integration_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
-        "variant_id": "iPad Pro (12.9-inch) (6th generation) 17.5"
-      },
-      {
-        "args": [
-          "--clones",
-          "2",
-          "--platform",
           "iPad Pro 13-inch (M4)",
           "--version",
           "18.2",
@@ -1603,6 +1447,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 9
         },
@@ -1713,6 +1562,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 9
         },
@@ -1768,6 +1622,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 9
         },
@@ -1835,116 +1694,6 @@
           "--clones",
           "2",
           "--platform",
-          "iPad Pro 13-inch (M4)",
-          "--version",
-          "18.2",
-          "--xcodebuild-sim-runner",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "17a5305f",
-          "--xctest"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
-        "module_scheme": "xctest",
-        "name": "ios_chrome_settings_eg2tests_module iPad Pro 13-inch (M4) 18.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
-            }
-          ],
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-15"
-          },
-          "named_caches": [
-            {
-              "name": "runtime_ios_18_2",
-              "path": "Runtime-ios-18.2"
-            },
-            {
-              "name": "xcode_ios_17a5305f",
-              "path": "Xcode.app"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
-        },
-        "test": "ios_chrome_settings_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
-        "variant_id": "iPad Pro 13-inch (M4) 18.2"
-      },
-      {
-        "args": [
-          "--clones",
-          "2",
-          "--platform",
-          "iPad Pro 13-inch (M4)",
-          "--version",
-          "26.0",
-          "--xcodebuild-sim-runner",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "17a5305f",
-          "--xctest"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
-        "module_scheme": "xctest",
-        "name": "ios_chrome_settings_eg2tests_module iPad Pro 13-inch (M4) 26.0",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
-            }
-          ],
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-15"
-          },
-          "named_caches": [
-            {
-              "name": "runtime_ios_26_0",
-              "path": "Runtime-ios-26.0"
-            },
-            {
-              "name": "xcode_ios_17a5305f",
-              "path": "Xcode.app"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
-        },
-        "test": "ios_chrome_settings_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
-        "variant_id": "iPad Pro 13-inch (M4) 26.0"
-      },
-      {
-        "args": [
-          "--clones",
-          "2",
-          "--platform",
           "iPhone 15",
           "--version",
           "18.2",
@@ -1988,6 +1737,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
@@ -2053,112 +1807,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro 13-inch (M4)",
-          "--version",
-          "18.2",
-          "--xcodebuild-sim-runner",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "17a5305f",
-          "--xctest"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
-        "module_scheme": "xctest",
-        "name": "ios_chrome_signin_eg2tests_module iPad Pro 13-inch (M4) 18.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
-            }
-          ],
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-15"
-          },
-          "named_caches": [
-            {
-              "name": "runtime_ios_18_2",
-              "path": "Runtime-ios-18.2"
-            },
-            {
-              "name": "xcode_ios_17a5305f",
-              "path": "Xcode.app"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
-        },
-        "test": "ios_chrome_signin_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
-        "variant_id": "iPad Pro 13-inch (M4) 18.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Pro 13-inch (M4)",
-          "--version",
-          "26.0",
-          "--xcodebuild-sim-runner",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "17a5305f",
-          "--xctest"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
-        "module_scheme": "xctest",
-        "name": "ios_chrome_signin_eg2tests_module iPad Pro 13-inch (M4) 26.0",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
-            }
-          ],
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-15"
-          },
-          "named_caches": [
-            {
-              "name": "runtime_ios_26_0",
-              "path": "Runtime-ios-26.0"
-            },
-            {
-              "name": "xcode_ios_17a5305f",
-              "path": "Xcode.app"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
-        },
-        "test": "ios_chrome_signin_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
-        "variant_id": "iPad Pro 13-inch (M4) 26.0"
-      },
-      {
-        "args": [
-          "--platform",
           "iPhone 15",
           "--version",
           "18.2",
@@ -2202,6 +1850,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
         },
@@ -2265,110 +1918,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro 13-inch (M4)",
-          "--version",
-          "18.2",
-          "--xcodebuild-sim-runner",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "17a5305f",
-          "--xctest"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
-        "module_scheme": "xctest",
-        "name": "ios_chrome_smoke_eg2tests_module iPad Pro 13-inch (M4) 18.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
-            }
-          ],
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-15"
-          },
-          "named_caches": [
-            {
-              "name": "runtime_ios_18_2",
-              "path": "Runtime-ios-18.2"
-            },
-            {
-              "name": "xcode_ios_17a5305f",
-              "path": "Xcode.app"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ios_chrome_smoke_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
-        "variant_id": "iPad Pro 13-inch (M4) 18.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Pro 13-inch (M4)",
-          "--version",
-          "26.0",
-          "--xcodebuild-sim-runner",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "17a5305f",
-          "--xctest"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
-        "module_scheme": "xctest",
-        "name": "ios_chrome_smoke_eg2tests_module iPad Pro 13-inch (M4) 26.0",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
-            }
-          ],
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-15"
-          },
-          "named_caches": [
-            {
-              "name": "runtime_ios_26_0",
-              "path": "Runtime-ios-26.0"
-            },
-            {
-              "name": "xcode_ios_17a5305f",
-              "path": "Xcode.app"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ios_chrome_smoke_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
-        "variant_id": "iPad Pro 13-inch (M4) 26.0"
-      },
-      {
-        "args": [
-          "--platform",
           "iPhone 15",
           "--version",
           "18.2",
@@ -2412,6 +1961,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_chrome_smoke_eg2tests_module",
@@ -2475,116 +2029,6 @@
           "--clones",
           "2",
           "--platform",
-          "iPad Pro 13-inch (M4)",
-          "--version",
-          "18.2",
-          "--xcodebuild-sim-runner",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "17a5305f",
-          "--xctest"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
-        "module_scheme": "xctest",
-        "name": "ios_chrome_ui_eg2tests_module iPad Pro 13-inch (M4) 18.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
-            }
-          ],
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-15"
-          },
-          "named_caches": [
-            {
-              "name": "runtime_ios_18_2",
-              "path": "Runtime-ios-18.2"
-            },
-            {
-              "name": "xcode_ios_17a5305f",
-              "path": "Xcode.app"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 12
-        },
-        "test": "ios_chrome_ui_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
-        "variant_id": "iPad Pro 13-inch (M4) 18.2"
-      },
-      {
-        "args": [
-          "--clones",
-          "2",
-          "--platform",
-          "iPad Pro 13-inch (M4)",
-          "--version",
-          "26.0",
-          "--xcodebuild-sim-runner",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "17a5305f",
-          "--xctest"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
-        "module_scheme": "xctest",
-        "name": "ios_chrome_ui_eg2tests_module iPad Pro 13-inch (M4) 26.0",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
-            }
-          ],
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-15"
-          },
-          "named_caches": [
-            {
-              "name": "runtime_ios_26_0",
-              "path": "Runtime-ios-26.0"
-            },
-            {
-              "name": "xcode_ios_17a5305f",
-              "path": "Xcode.app"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 12
-        },
-        "test": "ios_chrome_ui_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
-        "variant_id": "iPad Pro 13-inch (M4) 26.0"
-      },
-      {
-        "args": [
-          "--clones",
-          "2",
-          "--platform",
           "iPhone 15",
           "--version",
           "18.2",
@@ -2628,6 +2072,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
@@ -2907,112 +2356,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro 13-inch (M4)",
-          "--version",
-          "18.2",
-          "--xcodebuild-sim-runner",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "17a5305f",
-          "--xctest"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
-        "module_scheme": "xctest",
-        "name": "ios_chrome_web_eg2tests_module iPad Pro 13-inch (M4) 18.2",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
-            }
-          ],
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-15"
-          },
-          "named_caches": [
-            {
-              "name": "runtime_ios_18_2",
-              "path": "Runtime-ios-18.2"
-            },
-            {
-              "name": "xcode_ios_17a5305f",
-              "path": "Xcode.app"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test": "ios_chrome_web_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
-        "variant_id": "iPad Pro 13-inch (M4) 18.2"
-      },
-      {
-        "args": [
-          "--platform",
-          "iPad Pro 13-inch (M4)",
-          "--version",
-          "26.0",
-          "--xcodebuild-sim-runner",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "17a5305f",
-          "--xctest"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
-        "module_scheme": "xctest",
-        "name": "ios_chrome_web_eg2tests_module iPad Pro 13-inch (M4) 26.0",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
-            }
-          ],
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-15"
-          },
-          "named_caches": [
-            {
-              "name": "runtime_ios_26_0",
-              "path": "Runtime-ios-26.0"
-            },
-            {
-              "name": "xcode_ios_17a5305f",
-              "path": "Xcode.app"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
-        },
-        "test": "ios_chrome_web_eg2tests_module",
-        "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
-        "variant_id": "iPad Pro 13-inch (M4) 26.0"
-      },
-      {
-        "args": [
-          "--platform",
           "iPhone 15",
           "--version",
           "18.2",
@@ -3056,6 +2399,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -3656,58 +3004,6 @@
       {
         "args": [
           "--platform",
-          "iPad Pro (12.9-inch) (6th generation)",
-          "--version",
-          "17.5",
-          "--xcodebuild-sim-runner",
-          "--out-dir",
-          "${ISOLATED_OUTDIR}",
-          "--xcode-build-version",
-          "17a5305f",
-          "--xctest"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "module_name": "//ios/web/shell/test:ios_web_shell_eg2tests_module/",
-        "module_scheme": "xctest",
-        "name": "ios_web_shell_eg2tests_module iPad Pro (12.9-inch) (6th generation) 17.5",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/mac_toolchain/${platform}",
-              "location": ".",
-              "revision": "git_revision:4c7290150d1c360cecc6a93c0214dc531585c3ab"
-            }
-          ],
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-15"
-          },
-          "named_caches": [
-            {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
-            },
-            {
-              "name": "xcode_ios_17a5305f",
-              "path": "Xcode.app"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "ios_web_shell_eg2tests_module",
-        "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/",
-        "variant_id": "iPad Pro (12.9-inch) (6th generation) 17.5"
-      },
-      {
-        "args": [
-          "--platform",
           "iPad Pro 13-inch (M4)",
           "--version",
           "18.2",
@@ -3751,6 +3047,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_shell_eg2tests_module",
@@ -3855,6 +3156,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_shell_eg2tests_module",
@@ -3907,6 +3213,11 @@
               "path": "Xcode.app"
             }
           ],
+          "optional_dimensions": {
+            "30": {
+              "cpu": "Apple_(Virtual)"
+            }
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_shell_eg2tests_module",
