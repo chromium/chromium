@@ -9,6 +9,9 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/no_destructor.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 
 namespace ui {
 
@@ -16,40 +19,37 @@ namespace ui {
 // org.chromium.ui.accessibility.AccessibilityState.
 class COMPONENT_EXPORT(AX_BASE_ANDROID) AccessibilityState {
  public:
-  // Provides an interface for clients to listen to animator duration scale
-  // changes.
-  class AccessibilityStateDelegate {
+  class AccessibilityStateObserver : public base::CheckedObserver {
    public:
     // Called when the animator duration scale changes.
-    virtual void OnAnimatorDurationScaleChanged() = 0;
+    virtual void OnAnimatorDurationScaleChanged() {}
 
     // Called when the display inversion state changes.
-    virtual void OnDisplayInversionEnabledChanged(bool enabled) = 0;
+    virtual void OnDisplayInversionEnabledChanged(bool enabled) {}
 
     // Called when the contrast level changes.
-    virtual void OnContrastLevelChanged(bool highContrastEnabled) = 0;
+    virtual void OnContrastLevelChanged(bool high_contrast_enabled) {}
 
     // Called during browser startup and any time enabled services change.
-    virtual void RecordAccessibilityServiceInfoHistograms() = 0;
+    virtual void RecordAccessibilityServiceInfoHistograms() {}
   };
 
-  static void RegisterAccessibilityStateDelegate(
-      AccessibilityStateDelegate* delegate);
+  static AccessibilityState* Get();
 
-  static void UnregisterAccessibilityStateDelegate(
-      AccessibilityStateDelegate* delegate);
+  void AddObserver(AccessibilityStateObserver* observer);
+  void RemoveObserver(AccessibilityStateObserver* observer);
 
   // Notifies all delegates of an animator duration scale change.
-  static void NotifyAnimatorDurationScaleObservers();
+  void NotifyAnimatorDurationScaleObservers();
 
   // Notifies all delegates of a display inversion state change.
-  static void NotifyDisplayInversionEnabledObservers(bool enabled);
+  void NotifyDisplayInversionEnabledObservers(bool enabled);
 
   // Notifies all delegates of a contrast level change.
-  static void NotifyContrastLevelObservers(bool highContrastEnabled);
+  void NotifyContrastLevelObservers(bool high_contrast_enabled);
 
   // Notifies all delegates to record service info histograms.
-  static void NotifyRecordAccessibilityServiceInfoHistogram();
+  void NotifyRecordAccessibilityServiceInfoHistogram();
 
   // --------------------------------------------------------------------------
   // Methods that call into AccessibilityState.java via JNI
@@ -87,6 +87,14 @@ class COMPONENT_EXPORT(AX_BASE_ANDROID) AccessibilityState {
   // user is typing in a field), false if it should return bullets. Default
   // true.
   static bool ShouldExposePasswordText();
+
+ private:
+  friend class base::NoDestructor<AccessibilityState>;  // For constructor.
+
+  AccessibilityState();
+  ~AccessibilityState();
+
+  base::ObserverList<AccessibilityStateObserver> observers_;
 };
 
 }  // namespace ui

@@ -254,12 +254,11 @@ enum {
 }  // namespace
 
 BrowserAccessibilityStateImplAndroid::BrowserAccessibilityStateImplAndroid() {
-  ui::AccessibilityState::RegisterAccessibilityStateDelegate(this);
+  accessibility_state_observation_.Observe(ui::AccessibilityState::Get());
 }
 
-BrowserAccessibilityStateImplAndroid::~BrowserAccessibilityStateImplAndroid() {
-  ui::AccessibilityState::UnregisterAccessibilityStateDelegate(this);
-}
+BrowserAccessibilityStateImplAndroid::~BrowserAccessibilityStateImplAndroid() =
+    default;
 
 void BrowserAccessibilityStateImplAndroid::
     RecordAccessibilityServiceInfoHistograms() {
