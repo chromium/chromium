@@ -23,6 +23,7 @@
 #include "ui/base/ui_base_switches.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/win/dark_mode_support.h"
 #include "base/win/win_util.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -95,9 +96,11 @@ extern "C" int ContentTestMain(int argc, const char** argv) {
   }
 
 #if BUILDFLAG(IS_WIN)
-  // Load and pin user32.dll to avoid having to load it once tests start while
-  // on the main thread loop where blocking calls are disallowed.
+  // Load and pin user32.dll and uxtheme.dll to avoid having to load them once
+  // tests start while on the main thread loop where blocking calls are
+  // disallowed.
   base::win::PinUser32();
+  base::win::AllowDarkModeForApp(true);
 #endif  // BUILDFLAG(IS_WIN)
   content::ContentTestLauncherDelegate launcher_delegate;
   return LaunchTests(&launcher_delegate, parallel_jobs, argc,
