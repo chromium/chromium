@@ -21,7 +21,7 @@
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "ipc/ipc_channel.h"
+#include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_sender.h"
@@ -46,7 +46,7 @@ class ChannelReflectorListener : public Listener {
 
   ~ChannelReflectorListener() override;
 
-  void Init(Sender* channel, base::OnceClosure quit_closure);
+  void Init(ChannelProxy* channel, base::OnceClosure quit_closure);
 
   bool OnMessageReceived(const Message& message) override;
 
@@ -61,7 +61,7 @@ class ChannelReflectorListener : public Listener {
   void Send(IPC::Message* message);
 
  private:
-  raw_ptr<Sender> channel_;
+  raw_ptr<ChannelProxy> channel_;
   base::OnceClosure quit_closure_;
 };
 

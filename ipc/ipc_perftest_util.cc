@@ -36,7 +36,7 @@ ChannelReflectorListener::~ChannelReflectorListener() {
   VLOG(1) << "Client listener down";
 }
 
-void ChannelReflectorListener::Init(Sender* channel,
+void ChannelReflectorListener::Init(ChannelProxy* channel,
                                     base::OnceClosure quit_closure) {
   DCHECK(!channel_);
   channel_ = channel;

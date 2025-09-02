@@ -39,7 +39,6 @@ class IPCChannelMojoTestBase : public testing::Test {
 
   void DestroyChannel();
 
-  IPC::Sender* sender() { return channel(); }
   IPC::Channel* channel() { return channel_.get(); }
   const base::Process& client_process() const { return helper_.test_child(); }
 
