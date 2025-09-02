@@ -235,18 +235,6 @@ void TestManagePasswordsUIController::HideBubble() {
   }
 }
 
-password_manager::PasswordForm BuildFormFromLoginAndURL(
-    const std::string& username,
-    const std::string& password,
-    const std::string& url) {
-  password_manager::PasswordForm form;
-  form.username_value = base::ASCIIToUTF16(username);
-  form.password_value = base::ASCIIToUTF16(password);
-  form.url = GURL(url);
-  form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
-  return form;
-}
-
 password_manager::PasswordForm CreateInsecureCredential(PasswordForm form) {
   form.password_issues.insert(
       {InsecureType::kLeaked,
@@ -1709,74 +1697,6 @@ TEST_F(ManagePasswordsUIControllerTest,
   EXPECT_TRUE(controller()->opened_automatic_bubble());
   ExpectIconAndControllerStateIs(
       password_manager::ui::PENDING_PASSWORD_UPDATE_STATE);
-}
-
-TEST_F(ManagePasswordsUIControllerTest,
-       NotifyUnsyncedCredentialsWillBeDeleted) {
-  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-  std::vector<password_manager::PasswordForm> credentials(2);
-  credentials[0] =
-      BuildFormFromLoginAndURL("user1", "password1", "http://a.com");
-  credentials[1] =
-      BuildFormFromLoginAndURL("user2", "password2", "http://b.com");
-
-  controller()->NotifyUnsyncedCredentialsWillBeDeleted(credentials);
-
-  EXPECT_EQ(controller()->GetUnsyncedCredentials(), credentials);
-  EXPECT_TRUE(controller()->opened_automatic_bubble());
-  ExpectIconAndControllerStateIs(
-      password_manager::ui::WILL_DELETE_UNSYNCED_ACCOUNT_PASSWORDS_STATE);
-}
-
-TEST_F(ManagePasswordsUIControllerTest, SaveUnsyncedCredentialsInProfileStore) {
-  std::vector<password_manager::PasswordForm> credentials = {
-      BuildFormFromLoginAndURL("user1", "password1", "http://a.com"),
-      BuildFormFromLoginAndURL("user2", "password2", "http://b.com")};
-
-  // Set expectations on the store.
-  MockPasswordStoreInterface* profile_store =
-      client().GetProfilePasswordStore();
-  EXPECT_CALL(*profile_store,
-              AddLogin(MatchesLoginAndURL(credentials[0].username_value,
-                                          credentials[0].password_value,
-                                          credentials[0].url),
-                       _));
-  EXPECT_CALL(*profile_store,
-              AddLogin(MatchesLoginAndURL(credentials[1].username_value,
-                                          credentials[1].password_value,
-                                          credentials[1].url),
-                       _));
-
-  // Save.
-  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-  controller()->SaveUnsyncedCredentialsInProfileStore(credentials);
-
-  // Check the credentials are gone and the bubble is closed.
-  EXPECT_TRUE(controller()->GetUnsyncedCredentials().empty());
-  EXPECT_FALSE(controller()->opened_automatic_bubble());
-  ExpectIconAndControllerStateIs(password_manager::ui::INACTIVE_STATE);
-}
-
-TEST_F(ManagePasswordsUIControllerTest, DiscardUnsyncedCredentials) {
-  // Setup state with unsynced credentials.
-  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-  std::vector<password_manager::PasswordForm> credentials = {
-      BuildFormFromLoginAndURL("user", "password", "http://a.com")};
-  controller()->NotifyUnsyncedCredentialsWillBeDeleted(std::move(credentials));
-
-  // No save should happen on the profile store.
-  MockPasswordStoreInterface* profile_store =
-      client().GetProfilePasswordStore();
-  EXPECT_CALL(*profile_store, AddLogin).Times(0);
-
-  // Discard.
-  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
-  controller()->DiscardUnsyncedCredentials();
-
-  // Check the credentials are gone and the bubble is closed.
-  EXPECT_TRUE(controller()->GetUnsyncedCredentials().empty());
-  EXPECT_FALSE(controller()->opened_automatic_bubble());
-  ExpectIconAndControllerStateIs(password_manager::ui::INACTIVE_STATE);
 }
 
 TEST_F(ManagePasswordsUIControllerTest, OpenBubbleForMovableForm) {

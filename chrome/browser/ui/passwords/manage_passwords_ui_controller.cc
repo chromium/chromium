@@ -687,16 +687,6 @@ void ManagePasswordsUIController::OnAddUsernameSaveClicked(
   UpdateBubbleAndIconVisibility();
 }
 
-void ManagePasswordsUIController::NotifyUnsyncedCredentialsWillBeDeleted(
-    std::vector<password_manager::PasswordForm> unsynced_credentials) {
-  passwords_data_.ProcessUnsyncedCredentialsWillBeDeleted(
-      std::move(unsynced_credentials));
-  DCHECK(GetState() ==
-         password_manager::ui::WILL_DELETE_UNSYNCED_ACCOUNT_PASSWORDS_STATE);
-  bubble_status_ = BubbleStatus::SHOULD_POP_UP;
-  UpdateBubbleAndIconVisibility();
-}
-
 void ManagePasswordsUIController::OnLoginsChanged(
     password_manager::PasswordStoreInterface* /*store*/,
     const password_manager::PasswordStoreChangeList& changes) {
@@ -821,11 +811,6 @@ ManagePasswordsUIController::GetCredentialSource() const {
   return form_manager
              ? form_manager->GetCredentialSource()
              : password_manager::metrics_util::CredentialSourceType::kUnknown;
-}
-
-const std::vector<password_manager::PasswordForm>&
-ManagePasswordsUIController::GetUnsyncedCredentials() const {
-  return passwords_data_.unsynced_credentials();
 }
 
 const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
@@ -1046,30 +1031,6 @@ void ManagePasswordsUIController::SavePassword(const std::u16string& username,
         feature_engagement::kIPHPasswordsManagementBubbleAfterSaveFeature);
     MaybeShowPasswordManagerShortcutIPH(browser);
   }
-}
-
-void ManagePasswordsUIController::SaveUnsyncedCredentialsInProfileStore(
-    const std::vector<password_manager::PasswordForm>& selected_credentials) {
-  auto profile_store_form_saver =
-      std::make_unique<password_manager::FormSaverImpl>(
-          passwords_data_.client()->GetProfilePasswordStore());
-  for (const password_manager::PasswordForm& form : selected_credentials) {
-    // Only newly-saved or newly-updated credentials can be unsynced. Since
-    // conflicts are solved in that process, any entry in the profile store
-    // similar to |form| actually contains the same essential information. This
-    // means Save() can be safely called here, no password loss happens.
-    profile_store_form_saver->Save(form, /*matches=*/{},
-                                   /*old_password=*/std::u16string());
-  }
-  ClearPopUpFlagForBubble();
-  passwords_data_.OnInactive();
-  UpdateBubbleAndIconVisibility();
-}
-
-void ManagePasswordsUIController::DiscardUnsyncedCredentials() {
-  ClearPopUpFlagForBubble();
-  passwords_data_.OnInactive();
-  UpdateBubbleAndIconVisibility();
 }
 
 void ManagePasswordsUIController::MovePasswordToAccountStore() {

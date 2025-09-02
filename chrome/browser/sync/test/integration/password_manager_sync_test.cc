@@ -805,32 +805,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   bubble_observer.WaitForAutomaticUpdatePrompt();
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
-                       SignOutWithUnsyncedPasswordsOpensBubble) {
-  ASSERT_TRUE(SetupClients());
-  content::WebContents* web_contents = GetNewTab(GetBrowser(0));
-
-  SetupSyncTransportWithPasswordAccountStorage();
-
-  // Force credentials saved to the account to be unsynced.
-  GetFakeServer()->SetHttpError(net::HTTP_BAD_REQUEST);
-
-  NavigateToFile(web_contents, kExampleHostname,
-                 "/password/password_form.html");
-  FillAndSubmitPasswordForm(web_contents, "accountuser", "accountpass");
-
-  // Save the password in the account store.
-  BubbleObserver bubble_observer(web_contents);
-  bubble_observer.AcceptSavePrompt();
-  std::vector<std::unique_ptr<password_manager::PasswordForm>>
-      account_credentials = GetAllLoginsFromAccountPasswordStore();
-  ASSERT_THAT(account_credentials,
-              ElementsAre(MatchesLogin("accountuser", "accountpass")));
-
-  SignOut();
-  bubble_observer.WaitForSaveUnsyncedCredentialsPrompt();
-}
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // TODO(b/327118794): Delete this test once implicit signin no longer exists.

@@ -55,42 +55,6 @@ using password_manager::AffiliatedMatchHelper;
 using password_manager::PasswordForm;
 using password_manager::PasswordStore;
 using password_manager::PasswordStoreInterface;
-using password_manager::UnsyncedCredentialsDeletionNotifier;
-
-#if !BUILDFLAG(IS_ANDROID)
-// Returns a repeating callback that to show warning UI that credentials are
-// about to be deleted. Note that showing the UI is asynchronous, but safe to
-// call from any sequence.
-UnsyncedCredentialsDeletionNotifier CreateUnsyncedCredentialsDeletionNotifier(
-    Profile& profile) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // Tries to show warning UI that `credentials` will be deleted.
-  auto try_to_show_ui = base::BindRepeating(
-      [](base::WeakPtr<Profile> profile,
-         std::vector<PasswordForm> credentials) {
-        if (!profile) {
-          return;
-        }
-        Browser* browser = chrome::FindBrowserWithProfile(profile.get());
-        if (!browser) {
-          return;
-        }
-        content::WebContents* web_contents =
-            browser->tab_strip_model()->GetActiveWebContents();
-        if (!web_contents) {
-          return;
-        }
-        if (auto* ui_controller =
-                ManagePasswordsUIController::FromWebContents(web_contents)) {
-          ui_controller->NotifyUnsyncedCredentialsWillBeDeleted(
-              std::move(credentials));
-        }
-      },
-      profile.GetWeakPtr());
-  return base::BindPostTask(content::GetUIThreadTaskRunner({}),
-                            std::move(try_to_show_ui));
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
     content::BrowserContext* context) {
@@ -114,16 +78,9 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
       g_browser_process->os_crypt_async();
 
   scoped_refptr<password_manager::PasswordStore> ps =
-#if BUILDFLAG(IS_ANDROID)
       new password_manager::PasswordStore(CreateAccountPasswordStoreBackend(
           profile->GetPath(), profile->GetPrefs(),
-          /*unsynced_deletions_notifier=*/base::NullCallback(),
           os_crypt_async));
-#else
-      new password_manager::PasswordStore(CreateAccountPasswordStoreBackend(
-          profile->GetPath(), profile->GetPrefs(),
-          CreateUnsyncedCredentialsDeletionNotifier(*profile), os_crypt_async));
-#endif
 
   affiliations::AffiliationService* affiliation_service =
       AffiliationServiceFactory::GetForProfile(profile);

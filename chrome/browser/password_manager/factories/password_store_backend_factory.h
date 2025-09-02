@@ -35,8 +35,6 @@ std::unique_ptr<password_manager::PasswordStoreBackend>
 CreateAccountPasswordStoreBackend(
     const base::FilePath& login_db_directory,
     PrefService* prefs,
-    password_manager::UnsyncedCredentialsDeletionNotifier
-        unsynced_deletions_notifier,
     os_crypt_async::OSCryptAsync* os_crypt_async);
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_FACTORIES_PASSWORD_STORE_BACKEND_FACTORY_H_

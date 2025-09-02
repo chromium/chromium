@@ -148,11 +148,6 @@ bool BubbleObserver::WaitForFallbackForSaving() const {
   return false;
 }
 
-void BubbleObserver::WaitForSaveUnsyncedCredentialsPrompt() const {
-  WaitForState(
-      password_manager::ui::WILL_DELETE_UNSYNCED_ACCOUNT_PASSWORDS_STATE);
-}
-
 void BubbleObserver::WaitForState(
     password_manager::ui::State target_state) const {
   auto IsTargetStateObserved = [this, target_state]() {

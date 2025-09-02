@@ -40,7 +40,6 @@ class LoginDatabaseAsyncHelper : public PasswordStoreSync {
  public:
   LoginDatabaseAsyncHelper(
       std::unique_ptr<LoginDatabase> login_db,
-      UnsyncedCredentialsDeletionNotifier notifier,
       scoped_refptr<base::SequencedTaskRunner> main_task_runner,
       syncer::WipeModelUponSyncDisabledBehavior
           wipe_model_upon_sync_disabled_behavior);
@@ -110,8 +109,6 @@ class LoginDatabaseAsyncHelper : public PasswordStoreSync {
   void AddDeletionsHaveSyncedCallback(
       base::OnceCallback<void(bool)> sync_completion);
   void NotifyDeletionsHaveSynced(bool success) override;
-  void NotifyUnsyncedCredentialsWillBeDeleted(
-      std::vector<PasswordForm> unsynced_credentials) override;
   bool BeginTransaction() override;
   void RollbackTransaction() override;
   bool CommitTransaction() override;
@@ -159,8 +156,6 @@ class LoginDatabaseAsyncHelper : public PasswordStoreSync {
   base::RepeatingCallback<void(std::optional<PasswordStoreChangeList>, bool)>
       remote_forms_changes_received_callback_
           GUARDED_BY_CONTEXT(sequence_checker_);
-
-  UnsyncedCredentialsDeletionNotifier deletion_notifier_;
 
   // A list of callbacks that should be run once all pending deletions have been
   // sent to the Sync server. Note that the vector itself lives on the

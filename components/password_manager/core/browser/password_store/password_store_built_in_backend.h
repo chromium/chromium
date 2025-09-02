@@ -50,8 +50,7 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
       syncer::WipeModelUponSyncDisabledBehavior
           wipe_model_upon_sync_disabled_behavior,
       PrefService* prefs,
-      os_crypt_async::OSCryptAsync* os_crypt_async = nullptr,
-      UnsyncedCredentialsDeletionNotifier notifier = {});
+      os_crypt_async::OSCryptAsync* os_crypt_async = nullptr);
 
   ~PasswordStoreBuiltInBackend() override;
 

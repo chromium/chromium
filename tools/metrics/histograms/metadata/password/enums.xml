@@ -753,8 +753,8 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Opened automatically / Offering a password to update"/>
   <int value="9" label="Opened manually / Confirming generated password saved"/>
   <int value="10"
-      label="Opened automatically / Offering to save unsynced passwords
-             locally"/>
+      label="(obsolete) Opened automatically / Offering to save unsynced
+             passwords locally"/>
   <int value="11"
       label="Opened automatically / Notification about compromised passwords"/>
   <int value="12"

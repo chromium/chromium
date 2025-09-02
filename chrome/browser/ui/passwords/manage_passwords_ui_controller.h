@@ -133,9 +133,6 @@ class ManagePasswordsUIController
   void OnPasskeyNotAccepted(std::string passkey_rp_id) override;
   void OnPasskeyUpgrade(std::string passkey_rp_id) override;
 
-  virtual void NotifyUnsyncedCredentialsWillBeDeleted(
-      std::vector<password_manager::PasswordForm> unsynced_credentials);
-
   // PasswordStoreInterface::Observer:
   void OnLoginsChanged(
       password_manager::PasswordStoreInterface* store,
@@ -169,8 +166,6 @@ class ManagePasswordsUIController
       override;
   password_manager::ui::State GetState() const override;
   const password_manager::PasswordForm& GetPendingPassword() const override;
-  const std::vector<password_manager::PasswordForm>& GetUnsyncedCredentials()
-      const override;
   password_manager::metrics_util::CredentialSourceType GetCredentialSource()
       const override;
   const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
@@ -194,10 +189,6 @@ class ManagePasswordsUIController
   void OnPasswordsRevealed() override;
   void SavePassword(const std::u16string& username,
                     const std::u16string& password) override;
-  void SaveUnsyncedCredentialsInProfileStore(
-      const std::vector<password_manager::PasswordForm>& selected_credentials)
-      override;
-  void DiscardUnsyncedCredentials() override;
   void MovePasswordToAccountStore() override;
   void MovePendingPasswordToAccountStoreUsingHelper(
       const password_manager::PasswordForm& form,

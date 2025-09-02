@@ -13,7 +13,6 @@ source_set("bubble_controllers") {
     "move_to_account_store_bubble_controller.h",
     "password_bubble_controller_base.h",
     "post_save_compromised_bubble_controller.h",
-    "save_unsynced_credentials_locally_bubble_controller.h",
     "save_update_bubble_controller.h",
     "shared_passwords_notifications_bubble_controller.h",
   ]
@@ -53,7 +52,6 @@ source_set("impl") {
       "move_to_account_store_bubble_controller.cc",
       "password_bubble_controller_base.cc",
       "post_save_compromised_bubble_controller.cc",
-      "save_unsynced_credentials_locally_bubble_controller.cc",
       "save_update_bubble_controller.cc",
       "shared_passwords_notifications_bubble_controller.cc",
     ]
@@ -117,7 +115,6 @@ source_set("unit_tests") {
       "manage_passwords_bubble_controller_unittest.cc",
       "move_to_account_store_bubble_controller_unittest.cc",
       "post_save_compromised_bubble_controller_unittest.cc",
-      "save_unsynced_credentials_locally_bubble_controller_unittest.cc",
       "save_update_bubble_controller_unittest.cc",
       "shared_passwords_notifications_bubble_controller_unittest.cc",
     ]

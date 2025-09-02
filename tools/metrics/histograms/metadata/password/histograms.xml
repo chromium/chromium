@@ -542,18 +542,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PasswordManager.AccountStorage.UnsyncedPasswordsFoundDuringSignOut"
-    units="passwords" expires_after="2026-01-18">
-  <owner>treib@chromium.org</owner>
-  <owner>mamir@chromium.org</owner>
-  <summary>
-    Records how many passwords in the account store were unsynced when the user
-    signed out of their Google Account. Recorded only in Win/Mac/Linux when a
-    user of the account-scoped password storage signs out.
-  </summary>
-</histogram>
-
-<histogram
     name="PasswordManager.AccountStorageUserStateDuration{UserSyncingType}"
     units="ms" expires_after="2026-01-18">
   <owner>mamir@chromium.org</owner>

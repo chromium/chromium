@@ -628,17 +628,6 @@ TEST_F(ManagePasswordsStateTest, AutofillCausedByInternalFormManager) {
   EXPECT_EQ(url::Origin::Create(saved_match().url), passwords_data().origin());
 }
 
-TEST_F(ManagePasswordsStateTest, ProcessUnsyncedCredentialsWillBeDeleted) {
-  std::vector<PasswordForm> unsynced_credentials(1);
-  unsynced_credentials[0].username_value = u"user";
-  unsynced_credentials[0].password_value = u"password";
-  passwords_data().ProcessUnsyncedCredentialsWillBeDeleted(
-      unsynced_credentials);
-  EXPECT_EQ(passwords_data().state(),
-            password_manager::ui::WILL_DELETE_UNSYNCED_ACCOUNT_PASSWORDS_STATE);
-  EXPECT_EQ(passwords_data().unsynced_credentials(), unsynced_credentials);
-}
-
 TEST_F(ManagePasswordsStateTest, OnMovablePasswordSubmitted) {
   std::vector<PasswordForm> password_forms = {saved_match()};
   std::vector<PasswordForm> federated_matches = {local_federated_form()};

@@ -48,7 +48,6 @@ ManagePasswordsPageActionController::GetManagePasswordsTooltipText(
     case password_manager::ui::UPDATE_CONFIRMATION_STATE:
     case password_manager::ui::CREDENTIAL_REQUEST_STATE:
     case password_manager::ui::AUTO_SIGNIN_STATE:
-    case password_manager::ui::WILL_DELETE_UNSYNCED_ACCOUNT_PASSWORDS_STATE:
     case password_manager::ui::MANAGE_STATE:
     case password_manager::ui::PASSWORD_UPDATED_SAFE_STATE:
     case password_manager::ui::PASSWORD_UPDATED_MORE_TO_FIX:

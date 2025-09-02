@@ -10984,33 +10984,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_PASSWORD_MANAGER_EXPORT_DIALOG_TITLE" desc="The title of the file selection dialog for exporting passwords">
           Export Passwords From Chrome
         </message>
-        <message name="IDS_PASSWORD_MANAGER_UNSYNCED_CREDENTIALS_BUBBLE_TITLE_GPM" desc="The title of the 'save unsynced credentials' bubble.">
-          Save passwords?
-        </message>
-        <message name="IDS_PASSWORD_MANAGER_UNSYNCED_CREDENTIALS_BUBBLE_DESCRIPTION_GPM" desc="The description text of the 'save unsynced credentials' bubble.">
-          Google Password Manager couldn't save these passwords in your Google Account. You can save them to this device.
-        </message>
-
-        <if expr="not use_titlecase">
-          <message name="IDS_PASSWORD_MANAGER_SAVE_UNSYNCED_CREDENTIALS_BUTTON_GPM" desc="Button text for the 'save unsynced credentials' bubble's save option.">
-            Save to device
-          </message>
-        </if>
-        <if expr="use_titlecase">
-          <message name="IDS_PASSWORD_MANAGER_SAVE_UNSYNCED_CREDENTIALS_BUTTON_GPM" desc="In Title Case: Button text for the 'save unsynced credentials' bubble's save option.">
-            Save to Device
-          </message>
-        </if>
-        <if expr="not use_titlecase">
-          <message name="IDS_PASSWORD_MANAGER_DISCARD_UNSYNCED_CREDENTIALS_BUTTON" desc="Button text for the 'save unsynced credentials' bubble's discard option.">
-            No thanks
-          </message>
-        </if>
-        <if expr="use_titlecase">
-          <message name="IDS_PASSWORD_MANAGER_DISCARD_UNSYNCED_CREDENTIALS_BUTTON" desc="In Title Case: Button text for the 'save unsynced credentials' bubble's discard option.">
-            No Thanks
-          </message>
-        </if>
       </if>
       <if expr="is_android">
         <message name="IDS_PASSWORD_MANAGER_SAVE_BUTTON" desc="Mobile: Button text for the 'Save Password' infobar's 'Remember password' option"  formatter_data="android_java">

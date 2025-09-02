@@ -96,8 +96,7 @@ PasswordStoreBuiltInBackend::PasswordStoreBuiltInBackend(
     syncer::WipeModelUponSyncDisabledBehavior
         wipe_model_upon_sync_disabled_behavior,
     PrefService* prefs,
-    os_crypt_async::OSCryptAsync* os_crypt_async,
-    UnsyncedCredentialsDeletionNotifier notifier)
+    os_crypt_async::OSCryptAsync* os_crypt_async)
     : pref_service_(prefs), os_crypt_async_(os_crypt_async) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -105,8 +104,7 @@ PasswordStoreBuiltInBackend::PasswordStoreBuiltInBackend(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
   DCHECK(background_task_runner_);
   helper_ = std::make_unique<LoginDatabaseAsyncHelper>(
-      std::move(login_db), std::move(notifier),
-      base::SequencedTaskRunner::GetCurrentDefault(),
+      std::move(login_db), base::SequencedTaskRunner::GetCurrentDefault(),
       wipe_model_upon_sync_disabled_behavior);
 }
 

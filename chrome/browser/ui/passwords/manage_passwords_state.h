@@ -123,9 +123,6 @@ class ManagePasswordsState {
   void ProcessLoginsChanged(
       const password_manager::PasswordStoreChangeList& changes);
 
-  void ProcessUnsyncedCredentialsWillBeDeleted(
-      std::vector<password_manager::PasswordForm> unsynced_credentials);
-
   // Called when the user chooses a credential. |form| is passed to the
   // credentials callback. Method should be called in the
   // CREDENTIAL_REQUEST_STATE state.
@@ -140,10 +137,6 @@ class ManagePasswordsState {
                                  const std::u16string& new_password);
 
   password_manager::ui::State state() const { return state_; }
-  const std::vector<password_manager::PasswordForm>& unsynced_credentials()
-      const {
-    return unsynced_credentials_;
-  }
   const url::Origin& origin() const { return origin_; }
   password_manager::PasswordFormManagerForUI* form_manager() const {
     return form_manager_.get();
@@ -220,9 +213,6 @@ class ManagePasswordsState {
   // Contains all the current forms.
   std::vector<std::unique_ptr<password_manager::PasswordForm>>
       local_credentials_forms_;
-
-  // Contains any non synced credentials.
-  std::vector<password_manager::PasswordForm> unsynced_credentials_;
 
   // A callback to be invoked when user selects a credential.
   CredentialsCallback credentials_callback_;

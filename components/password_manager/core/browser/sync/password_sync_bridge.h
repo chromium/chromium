@@ -94,9 +94,6 @@ class PasswordSyncBridge : public syncer::DataTypeSyncBridge {
   // store. This should be called during MergeFullSyncData().
   std::optional<syncer::ModelError> CleanupPasswordStore();
 
-  // Retrieves the storage keys of all unsynced passwords in the store.
-  std::set<FormPrimaryKey> GetUnsyncedPasswordsStorageKeys();
-
   // If available, returns cached possibly trimmed PasswordSpecificsData for
   // given |storage_key|. By default, empty PasswordSpecificsData is returned.
   const sync_pb::PasswordSpecificsData& GetPossiblyTrimmedPasswordSpecificsData(

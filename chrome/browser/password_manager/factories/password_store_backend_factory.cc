@@ -152,8 +152,6 @@ std::unique_ptr<PasswordStoreBackend> CreateProfilePasswordStoreBackend(
 std::unique_ptr<PasswordStoreBackend> CreateAccountPasswordStoreBackend(
     const base::FilePath& login_db_directory,
     PrefService* prefs,
-    password_manager::UnsyncedCredentialsDeletionNotifier
-        unsynced_deletions_notifier,
     os_crypt_async::OSCryptAsync* os_crypt_async) {
   std::unique_ptr<password_manager::LoginDatabase> login_db(
       password_manager::CreateLoginDatabaseForAccountStorage(login_db_directory,
@@ -171,8 +169,7 @@ std::unique_ptr<PasswordStoreBackend> CreateAccountPasswordStoreBackend(
 #else
   backend = std::make_unique<PasswordStoreBuiltInBackend>(
       std::move(login_db), syncer::WipeModelUponSyncDisabledBehavior::kAlways,
-      prefs, os_crypt_async, std::move(unsynced_deletions_notifier));
-
+      prefs, os_crypt_async);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   base::FilePath user_data_dir;
