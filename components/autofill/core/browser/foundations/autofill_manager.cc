@@ -759,9 +759,6 @@ void AutofillManager::ParseFormsAsyncCommon(
       DetermineHeuristicTypes(context.country_code,
                               context.current_page_language, *form_structure,
                               context.log_manager.get());
-      form_structure->RationalizeAndAssignSections(
-          context.country_code, context.current_page_language,
-          context.log_manager.get());
     }
     return context;
   };
@@ -783,6 +780,9 @@ void AutofillManager::ParseFormsAsyncCommon(
           FormStructure& raw_form_structure = *form_structure;
           self->form_structures_[raw_form_structure.global_id()] =
               std::move(form_structure);
+          raw_form_structure.RationalizeAndAssignSections(
+              context.country_code, context.current_page_language,
+              context.log_manager.get());
           raw_form_structure.LogDeveloperEngagementMetric();
           self->LogCurrentFieldTypes(raw_form_structure);
           self->NotifyObservers(
