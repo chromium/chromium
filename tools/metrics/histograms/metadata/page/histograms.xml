@@ -3310,15 +3310,16 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Experimental.PageTiming.CachedResourceLoadTime.{RequestDestination}"
-    units="ms" expires_after="2024-02-09">
-  <owner>cduvall@chromium.org</owner>
-  <owner>jam@chromium.org</owner>
+    units="ms" expires_after="2026-01-11">
+  <owner>horo@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
   <summary>
     Measures the time from load start to when headers have been received for
     resource requests which come from the cache. Logged for every
     {RequestDestination} resource request from the cache.
 
-    This metric has incomplete data. It was expired between 2023-08-07 and M121.
+    This metric has incomplete data. It was expired after 2023-08-07 until M121,
+    and also after 2024-02-09 until M142.
   </summary>
   <token key="RequestDestination" variants="RequestDestination"/>
 </histogram>
