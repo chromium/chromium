@@ -61,6 +61,7 @@ include_rules = [
   "+chrome/browser/ui/browser_tabstrip.h",
   "+chrome/browser/ui/browser_tab_strip_tracker.h",
   "+chrome/browser/ui/browser_window.h",
+  "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
   "+chrome/browser/ui/chrome_pages.h",
   "+chrome/browser/ui/extensions",
   "+chrome/browser/ui/settings_window_manager_chromeos.h",

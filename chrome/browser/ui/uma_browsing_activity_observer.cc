@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
@@ -148,9 +149,10 @@ void UMABrowsingActivityObserver::LogBrowserTabCount() const {
 
   // Record how many tabs are in the current group. Records 0 if the active tab
   // is not in a group.
-  const Browser* current_browser = BrowserList::GetInstance()->GetLastActive();
+  BrowserWindowInterface* const current_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   if (current_browser) {
-    TabStripModel* const tab_strip_model = current_browser->tab_strip_model();
+    TabStripModel* const tab_strip_model = current_browser->GetTabStripModel();
     if (tab_strip_model->group_model()) {
       const std::optional<tab_groups::TabGroupId> active_group =
           tab_strip_model->GetTabGroupForTab(tab_strip_model->active_index());

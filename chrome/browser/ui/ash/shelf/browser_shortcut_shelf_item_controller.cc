@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -348,7 +349,8 @@ BrowserShortcutShelfItemController::ActivateOrAdvanceToNextBrowser() {
         /*should_trigger_session_restore=*/true);
     return ash::SHELF_ACTION_NEW_WINDOW_CREATED;
   }
-  Browser* browser = BrowserList::GetInstance()->GetLastActive();
+  Browser* browser = GetLastActiveBrowserWindowInterfaceWithAnyProfile()
+                         ->GetBrowserForMigrationOnly();
   if (items.size() == 1) {
     // If there is only one suitable browser, we can either activate it, or
     // bounce it (if it is already active).

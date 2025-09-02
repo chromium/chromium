@@ -291,7 +291,8 @@ void ToggleRequestTabletSite(Browser* browser);
 // using its mobile version layout. Note it won't take effect until the web
 // contents is reloaded.
 void SetAndroidOsForTabletSite(content::WebContents* current_tab);
-void ToggleFullscreenMode(Browser* browser, bool user_initiated = false);
+void ToggleFullscreenMode(BrowserWindowInterface* browser,
+                          bool user_initiated = false);
 void ClearCache(Browser* browser);
 bool IsDebuggerAttachedToCurrentTab(Browser* browser);
 void CopyURL(BrowserWindowInterface* bwi, content::WebContents* web_contents);

@@ -83,6 +83,12 @@ ui::BaseWindow* AndroidBrowserWindow::GetWindow() {
           AttachCurrentThread(), java_android_browser_window_));
 }
 
+const ui::BaseWindow* AndroidBrowserWindow::GetWindow() const {
+  return reinterpret_cast<ui::BaseWindow*>(
+      Java_AndroidBrowserWindow_getOrCreateNativeBaseWindowPtr(
+          AttachCurrentThread(), java_android_browser_window_));
+}
+
 Profile* AndroidBrowserWindow::GetProfile() {
   return const_cast<Profile*>(
       static_cast<const AndroidBrowserWindow*>(this)->GetProfile());

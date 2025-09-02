@@ -108,6 +108,7 @@
 #include "chrome/browser/ui/browser_ui_prefs.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -1198,7 +1199,7 @@ bool Browser::IsActive() const {
 #if BUILDFLAG(IS_MAC)
   // If this is a standalone PWA window, check BrowserList instead.
   if (GetAppBrowserController()) {
-    return BrowserList::GetInstance()->GetLastActive() == this;
+    return GetLastActiveBrowserWindowInterfaceWithAnyProfile() == this;
   }
 #endif
   return is_active_;
@@ -1268,6 +1269,10 @@ std::unique_ptr<ScopedWindowCallToAction> Browser::ShowCallToAction() {
 }
 
 ui::BaseWindow* Browser::GetWindow() {
+  return window_.get();
+}
+
+const ui::BaseWindow* Browser::GetWindow() const {
   return window_.get();
 }
 
@@ -2930,7 +2935,8 @@ void Browser::SetWebContentsBlocked(content::WebContents* web_contents,
 
   tab_strip_model_->SetTabBlocked(index, blocked);
 
-  bool browser_active = BrowserList::GetInstance()->GetLastActive() == this;
+  const bool browser_active =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile() == this;
   bool contents_is_active =
       tab_strip_model_->GetActiveWebContents() == web_contents;
   // If the WebContents is foremost (the active tab in the front-most browser)

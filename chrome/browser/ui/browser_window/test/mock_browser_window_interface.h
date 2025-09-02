@@ -91,6 +91,7 @@ class MockBrowserWindowInterface : public BrowserWindowInterface {
   MOCK_METHOD(Browser*, GetBrowserForMigrationOnly, (), (override));
   MOCK_METHOD(bool, IsTabModalPopupDeprecated, (), (const, override));
   MOCK_METHOD(ui::BaseWindow*, GetWindow, (), (override));
+  MOCK_METHOD(const ui::BaseWindow*, GetWindow, (), (const override));
   MOCK_METHOD(DesktopBrowserWindowCapabilities*, capabilities, (), (override));
   MOCK_METHOD(const DesktopBrowserWindowCapabilities*,
               capabilities,

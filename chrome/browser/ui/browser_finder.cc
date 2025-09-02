@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -305,8 +306,11 @@ Browser* FindBrowserWithWindow(gfx::NativeWindow window) {
 }
 
 Browser* FindBrowserWithActiveWindow() {
-  Browser* browser = BrowserList::GetInstance()->GetLastActive();
-  return browser && browser->window()->IsActive() ? browser : nullptr;
+  BrowserWindowInterface* browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  return browser && browser->GetWindow()->IsActive()
+             ? browser->GetBrowserForMigrationOnly()
+             : nullptr;
 }
 
 Browser* FindBrowserWithTab(const WebContents* web_contents) {

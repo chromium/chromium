@@ -90,6 +90,7 @@ class BrowserWindowInterface : public content::PageNavigator {
   // generic window actions, such as activation, querying minimize/maximized
   // state, etc.
   virtual ui::BaseWindow* GetWindow() = 0;
+  virtual const ui::BaseWindow* GetWindow() const = 0;
 
   // Returns the profile that semantically owns this browser window.
   // On most desktop platforms, there is only one profile per browser window.

@@ -1177,7 +1177,8 @@ BrowserView* BrowserView::GetBrowserViewForNativeWindow(
 }
 
 // static
-BrowserView* BrowserView::GetBrowserViewForBrowser(const Browser* browser) {
+BrowserView* BrowserView::GetBrowserViewForBrowser(
+    const BrowserWindowInterface* browser) {
   // It might look like this method should be implemented as:
   //   return static_cast<BrowserView*>(browser->window())
   // but in fact in unit tests browser->window() may not be a BrowserView even
@@ -1189,10 +1190,10 @@ BrowserView* BrowserView::GetBrowserViewForBrowser(const Browser* browser) {
   //
   // Lastly note that this function can be called during construction of
   // Browser, at which point browser->window() might return nullptr.
-  if (!browser->window() || !browser->window()->GetNativeWindow()) {
+  if (!browser->GetWindow() || !browser->GetWindow()->GetNativeWindow()) {
     return nullptr;
   }
-  return GetBrowserViewForNativeWindow(browser->window()->GetNativeWindow());
+  return GetBrowserViewForNativeWindow(browser->GetWindow()->GetNativeWindow());
 }
 
 // static

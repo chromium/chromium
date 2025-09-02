@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/javascript_dialogs/app_modal_dialog_manager.h"
@@ -86,7 +87,8 @@ void JavaScriptTabModalDialogManagerDelegateDesktop::SetTabNeedsAttention(
 }
 
 bool JavaScriptTabModalDialogManagerDelegateDesktop::IsWebContentsForemost() {
-  Browser* browser = BrowserList::GetInstance()->GetLastActive();
+  BrowserWindowInterface* browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   if (!browser) {
     // It's rare, but there are crashes from where sites are trying to show
     // dialogs in the split second of time between when their Browser is gone
@@ -97,7 +99,7 @@ bool JavaScriptTabModalDialogManagerDelegateDesktop::IsWebContentsForemost() {
   // A dialog can be shown on the inactive tab of a split. In that case the
   // inactive tab will be made active.
   std::vector<tabs::TabInterface*> tabs =
-      browser->tab_strip_model()->GetForegroundTabs();
+      browser->GetTabStripModel()->GetForegroundTabs();
   return std::any_of(tabs.begin(), tabs.end(),
                      [this](const tabs::TabInterface* tab) {
                        return tab->GetContents() == web_contents_;

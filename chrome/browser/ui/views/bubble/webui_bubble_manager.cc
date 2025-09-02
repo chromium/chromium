@@ -7,7 +7,7 @@
 #include "base/notimplemented.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_warmup_level_recorder.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_url_utils.h"
 #include "content/public/browser/render_frame_host.h"
@@ -67,11 +67,11 @@ bool WebUIBubbleManager::ShowBubble(const std::optional<gfx::Rect>& anchor,
   // Some bubbles can be triggered when there is no active browser (e.g. emoji
   // picker in Chrome OS launcher). In that case, the close bubble helper isn't
   // needed.
-  if ((!disable_close_bubble_helper_) &&
-      BrowserList::GetInstance()->GetLastActive()) {
+  BrowserWindowInterface* const last_active_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  if ((!disable_close_bubble_helper_) && last_active_browser) {
     close_bubble_helper_ = std::make_unique<CloseBubbleOnTabActivationHelper>(
-        bubble_view_.get(),
-        BrowserList::GetInstance()->GetLastActive()->tab_strip_model());
+        bubble_view_.get(), last_active_browser->GetTabStripModel());
   }
 
   if (identifier) {

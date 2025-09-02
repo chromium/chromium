@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/startup/infobar_utils.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
@@ -143,7 +144,8 @@ StartupBrowserCreatorImpl::StartupBrowserCreatorImpl(
 StartupBrowserCreatorImpl::~StartupBrowserCreatorImpl() = default;
 
 // static
-void StartupBrowserCreatorImpl::MaybeToggleFullscreen(Browser* browser) {
+void StartupBrowserCreatorImpl::MaybeToggleFullscreen(
+    BrowserWindowInterface* browser) {
   // In kiosk mode, we want to always be fullscreen.
   if (IsKioskModeEnabled() || base::CommandLine::ForCurrentProcess()->HasSwitch(
                                   switches::kStartFullscreen)) {
@@ -168,7 +170,8 @@ void StartupBrowserCreatorImpl::Launch(
   // It's possible for there to be no browser window, e.g. if someone
   // specified a non-sensical combination of options
   // ("--kiosk --no_startup_window"); do nothing in that case.
-  Browser* browser = BrowserList::GetInstance()->GetLastActive();
+  BrowserWindowInterface* browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   if (browser) {
     MaybeToggleFullscreen(browser);
   }

@@ -18,6 +18,7 @@
 #include "url/gurl.h"
 
 class Browser;
+class BrowserWindowInterface;
 class Profile;
 class StartupBrowserCreator;
 class StartupTabProvider;
@@ -54,7 +55,7 @@ class StartupBrowserCreatorImpl {
 
   // If command line specifies kiosk mode, or full screen mode, switch
   // to full screen.
-  static void MaybeToggleFullscreen(Browser* browser);
+  static void MaybeToggleFullscreen(BrowserWindowInterface* browser);
 
   // Creates the necessary windows for startup. |process_startup| indicates
   // whether Chrome is just starting up or already running and the user wants to

@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
@@ -54,8 +55,9 @@ void PopunderPreventer::WillActivateWebContents(
     content::WebContents* activating_contents) {
   DCHECK_EQ(activating_contents_.get(), activating_contents);
   // Check if the active window may be a popunder of `activating_contents`.
-  if (Browser* active = BrowserList::GetInstance()->GetLastActive()) {
-    AddPotentialPopunder(active->tab_strip_model()->GetActiveWebContents());
+  if (BrowserWindowInterface* active =
+          GetLastActiveBrowserWindowInterfaceWithAnyProfile()) {
+    AddPotentialPopunder(active->GetTabStripModel()->GetActiveWebContents());
   }
 }
 

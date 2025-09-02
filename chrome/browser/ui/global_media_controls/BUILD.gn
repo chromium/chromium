@@ -76,6 +76,7 @@ source_set("impl") {
     "//chrome/browser/feature_engagement",
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
     "//components/favicon/content",
     "//components/favicon/core",
