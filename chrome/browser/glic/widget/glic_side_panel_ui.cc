@@ -8,7 +8,8 @@
 
 namespace glic {
 
-GlicSidePanelUi::GlicSidePanelUi() = default;
+GlicSidePanelUi::GlicSidePanelUi(BrowserWindowInterface* associated_bwi)
+    : associated_bwi_(associated_bwi) {}
 GlicSidePanelUi::~GlicSidePanelUi() = default;
 
 const mojom::PanelState& GlicSidePanelUi::GetPanelState() const {

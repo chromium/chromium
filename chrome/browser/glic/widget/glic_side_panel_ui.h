@@ -16,7 +16,7 @@ namespace glic {
 // A stub implementation of GlicUiEmbedder for side panel UIs.
 class GlicSidePanelUi : public GlicUiEmbedder {
  public:
-  GlicSidePanelUi();
+  GlicSidePanelUi(BrowserWindowInterface* associated_bwi);
   ~GlicSidePanelUi() override;
 
   // GlicUiEmbedder:
@@ -34,6 +34,8 @@ class GlicSidePanelUi : public GlicUiEmbedder {
 
  private:
   mojom::PanelState panel_state_;
+
+  raw_ptr<BrowserWindowInterface> associated_bwi_;
 };
 
 }  // namespace glic

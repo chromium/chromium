@@ -19,6 +19,7 @@
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/fre/glic_fre_dialog_view.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic_ui_embedder.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -43,16 +44,6 @@
 
 namespace glic {
 
-GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
-    Profile* profile,
-    signin::IdentityManager* identity_manager,
-    GlicKeyedService* service,
-    GlicEnabling* enabling)
-    : profile_(profile),
-      host_manager_(std::make_unique<HostManager>(profile)) {}
-
-GlicInstanceCoordinatorImpl::~GlicInstanceCoordinatorImpl() = default;
-
 Host& GlicInstanceCoordinatorImpl::host() const {
   NOTIMPLEMENTED();
   return host_manager_->primary_host();
@@ -63,10 +54,32 @@ HostManager& GlicInstanceCoordinatorImpl::host_manager() {
   return *host_manager_;
 }
 
+GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
+    Profile* profile,
+    signin::IdentityManager* identity_manager,
+    GlicKeyedService* service,
+    GlicEnabling* enabling)
+    : profile_(profile),
+      host_manager_(std::make_unique<HostManager>(profile)) {}
+
+GlicInstanceCoordinatorImpl::~GlicInstanceCoordinatorImpl() = default;
+
 void GlicInstanceCoordinatorImpl::Toggle(BrowserWindowInterface* browser,
                                          bool prevent_close,
                                          mojom::InvocationSource source) {
-  NOTIMPLEMENTED();
+  if (!browser) {
+    ToggleFloaty();
+    return;
+  }
+  if (auto* instance = GetAttachedInstanceForBrowser(browser)) {
+    instance->Toggle();
+    return;
+  }
+  auto new_instance =
+      std::make_unique<GlicInstance>(browser, weak_ptr_factory_.GetWeakPtr());
+  new_instance->SetEmbedderType(GlicInstance::EmbedderType::kSidePanel);
+  new_instance->Show();
+  attached_instances_.push_back(std::move(new_instance));
 }
 
 bool GlicInstanceCoordinatorImpl::ActivateBrowser() {
@@ -307,10 +320,103 @@ GlicInstanceCoordinatorImpl::RegisterFloatyStateChange(
 }
 
 void GlicInstanceCoordinatorImpl::AttachInstance(GlicInstance* instance) {
-  NOTIMPLEMENTED();
+  CHECK(HasAttachedInstance(instance) || IsFloatingInstance(instance));
+
+  BrowserWindowInterface* bwi = instance->associated_bwi();
+  if (!bwi) {
+    return;
+  }
+
+  if (auto* current_instance = GetAttachedInstanceForBrowser(bwi)) {
+    CHECK(current_instance == instance)
+        << "Multiple Glic instances per browser window are not yet supported.";
+  }
+
+  // If we are attaching the floating instance, it needs to be moved to the
+  // main list.
+  if (floating_instance_ && floating_instance_.get() == instance) {
+    attached_instances_.push_back(std::move(floating_instance_));
+  }
+
+  instance->SetEmbedderType(GlicInstance::EmbedderType::kSidePanel);
+  instance->Show();
 }
 
 void GlicInstanceCoordinatorImpl::DetachInstance(GlicInstance* instance) {
+  if (!HasAttachedInstance(instance)) {
+    return;
+  }
+  if (instance == floating_instance_.get()) {
+    // Panel is already detached do nothing.
+    return;
+  }
+  instance->Close();
+
+  if (floating_instance_) {
+    ReattachFloatingInstance();
+  }
+
+  auto it =
+      std::find_if(attached_instances_.begin(), attached_instances_.end(),
+                   [instance](const auto& p) { return p.get() == instance; });
+  if (it != attached_instances_.end()) {
+    floating_instance_ = std::move(*it);
+    attached_instances_.erase(it);
+  }
+
+  floating_instance_->SetEmbedderType(GlicInstance::EmbedderType::kFloating);
+  floating_instance_->Show();
+}
+
+void GlicInstanceCoordinatorImpl::ShowAttached(BrowserWindowInterface* bwi) {
   NOTIMPLEMENTED();
 }
+void GlicInstanceCoordinatorImpl::ShowDetached() {
+  NOTIMPLEMENTED();
+}
+void GlicInstanceCoordinatorImpl::ToggleFloaty() {
+  NOTIMPLEMENTED();
+}
+
+GlicInstance* GlicInstanceCoordinatorImpl::GetAttachedInstanceForBrowser(
+    BrowserWindowInterface* bwi) {
+  for (auto& instance : attached_instances_) {
+    if (instance->associated_bwi() == bwi) {
+      return instance.get();
+    }
+  }
+  return nullptr;
+}
+
+void GlicInstanceCoordinatorImpl::RemoveInstance(GlicInstance* instance) {
+  std::erase_if(attached_instances_,
+                [instance](const auto& i) { return i.get() == instance; });
+}
+
+bool GlicInstanceCoordinatorImpl::HasAttachedInstance(GlicInstance* instance) {
+  for (auto& i : attached_instances_) {
+    if (i.get() == instance) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool GlicInstanceCoordinatorImpl::IsFloatingInstance(GlicInstance* instance) {
+  return floating_instance_ && floating_instance_.get() == instance;
+}
+
+void GlicInstanceCoordinatorImpl::ReattachFloatingInstance() {
+  if (!floating_instance_) {
+    return;
+  }
+  auto* bwi = floating_instance_->associated_bwi();
+  if (bwi) {
+    floating_instance_->SetEmbedderType(GlicInstance::EmbedderType::kSidePanel);
+    floating_instance_->Show();
+    attached_instances_.push_back(std::move(floating_instance_));
+  }
+  floating_instance_.reset();
+}
+
 }  // namespace glic

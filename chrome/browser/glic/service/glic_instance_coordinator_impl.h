@@ -116,16 +116,32 @@ class GlicInstanceCoordinatorImpl : public GlicWindowController,
       FloatyStateChangeCallback callback) override;
 
  private:
+  void ShowAttached(BrowserWindowInterface* bwi);
+  void ShowDetached();
+  void ToggleFloaty();
+
+  GlicInstance* GetAttachedInstanceForBrowser(BrowserWindowInterface* bwi);
+  void RemoveInstance(GlicInstance* instance);
+  bool HasAttachedInstance(GlicInstance* instance);
+  bool IsFloatingInstance(GlicInstance* instance);
+  void ReattachFloatingInstance();
+
   // List of callbacks to be notified when window activation has changed.
   base::RepeatingCallbackList<void(bool)> window_activation_callback_list_;
-
   using FloatyStateChangeCallbackList =
       base::RepeatingCallbackList<void(State, mojom::CurrentView view)>;
   FloatyStateChangeCallbackList floaty_state_change_callback_list_;
 
   mojom::PanelState panel_state_;
   const raw_ptr<Profile> profile_;
+
+  std::vector<std::unique_ptr<GlicInstance>> attached_instances_;
+  // Pointer to the instance (if any) that is currently floating.
+  std::unique_ptr<GlicInstance> floating_instance_;
+
   std::unique_ptr<HostManager> host_manager_;
+
+  base::WeakPtrFactory<GlicInstanceCoordinatorImpl> weak_ptr_factory_{this};
 };
 }  // namespace glic
 

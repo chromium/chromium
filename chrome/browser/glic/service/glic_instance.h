@@ -27,6 +27,11 @@ namespace glic {
 // PanelEmbedderDelegates during its lifetime.
 class GlicInstance : public PanelDelegate {
  public:
+  enum class EmbedderType {
+    kSidePanel,
+    kFloating,
+  };
+
   class AttachmentDelegate {
    public:
     virtual ~AttachmentDelegate() = default;
@@ -34,7 +39,8 @@ class GlicInstance : public PanelDelegate {
     virtual void DetachInstance(GlicInstance* instance) = 0;
   };
 
-  explicit GlicInstance(base::WeakPtr<AttachmentDelegate> attachment_delegate);
+  explicit GlicInstance(BrowserWindowInterface* bwi,
+                        base::WeakPtr<AttachmentDelegate> attachment_delegate);
   ~GlicInstance() override;
 
   GlicInstance(const GlicInstance&) = delete;
@@ -43,6 +49,14 @@ class GlicInstance : public PanelDelegate {
   void AttachPanel() override;
   void DetachPanel() override;
   bool IsShowing() const;
+  BrowserWindowInterface* associated_bwi() const { return associated_bwi_; }
+
+  // These methods should only be called by the GlicPanelCoordinator.
+  void SetEmbedderType(EmbedderType type);
+  void Show();
+  void Close();
+
+  void Toggle();
 
   // PanelDelegate:
   void ClosePanelAndShutdown() override;
@@ -65,13 +79,11 @@ class GlicInstance : public PanelDelegate {
 
   // Replaces GlicWindowController on existing GlicKeyedService.
   std::unique_ptr<GlicUiEmbedder> embedder_;
-  // bool is_chat_mode = true;
-  // Probably initiated from a default setting but can be changed independently
-  // per a Panel.
-  // bool is_following_active_tab_ = true;
+  EmbedderType embedder_type_ = EmbedderType::kSidePanel;
 
-  // The attached browser if currently showing in the side panel of a window.
-  raw_ptr<BrowserWindowInterface> attached_bwi_ = nullptr;
+  // The browser window this instance is associated with. This persists even
+  // when detached.
+  raw_ptr<BrowserWindowInterface> associated_bwi_ = nullptr;
   base::WeakPtr<AttachmentDelegate> attachment_delegate_;
 };
 
