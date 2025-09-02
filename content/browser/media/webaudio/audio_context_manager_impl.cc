@@ -66,7 +66,7 @@ AudioContextManagerImpl::~AudioContextManagerImpl() {
 
 void AudioContextManagerImpl::AudioContextAudiblePlaybackStarted(
     uint32_t audio_context_id) {
-  DCHECK(pending_audible_durations_[audio_context_id].is_null());
+  CHECK(pending_audible_durations_[audio_context_id].is_null());
 
   // Keeps track of the start audible time for this context.
   pending_audible_durations_[audio_context_id] = clock_->NowTicks();
