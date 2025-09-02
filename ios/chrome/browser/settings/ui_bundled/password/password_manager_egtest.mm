@@ -2375,15 +2375,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 }
 
 // Checks interaction with an info button for a hidden passkey.
-// TODO(crbug.com/442428665): Test is flaky on physical phone devices.
-#if !TARGET_OS_SIMULATOR
-#define MAYBE_testTappingInfoButtonForHiddenPasskey \
-  FLAKY_testTappingInfoButtonForHiddenPasskey
-#else
-#define MAYBE_testTappingInfoButtonForHiddenPasskey \
-  testTappingInfoButtonForHiddenPasskey
-#endif
-- (void)MAYBE_testTappingInfoButtonForHiddenPasskey {
+- (void)testTappingInfoButtonForHiddenPasskey {
   SaveHiddenPasskeyToStore();
 
   OpenPasswordManager();
