@@ -105,7 +105,6 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   GLES2Implementation(GLES2CmdHelper* helper,
                       scoped_refptr<ShareGroup> share_group,
                       TransferBufferInterface* transfer_buffer,
-                      bool bind_generates_resource,
                       bool lose_context_when_out_of_memory,
                       GpuControl* gpu_control);
 

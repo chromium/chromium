@@ -200,7 +200,6 @@ GLES2Implementation::GLES2Implementation(
     GLES2CmdHelper* helper,
     scoped_refptr<ShareGroup> share_group,
     TransferBufferInterface* transfer_buffer,
-    bool bind_generates_resource,
     bool lose_context_when_out_of_memory,
     GpuControl* gpu_control)
     : ImplementationBase(helper, transfer_buffer, gpu_control),
@@ -251,10 +250,8 @@ GLES2Implementation::GLES2Implementation(
 
   share_group_ =
       (share_group ? std::move(share_group)
-                   : new ShareGroup(
-                         bind_generates_resource,
+                   : base::MakeRefCounted<ShareGroup>(
                          gpu_control_->GetCommandBufferID().GetUnsafeValue()));
-  DCHECK(share_group_->bind_generates_resource() == bind_generates_resource);
 }
 
 gpu::ContextResult GLES2Implementation::Initialize(
@@ -297,17 +294,6 @@ gpu::ContextResult GLES2Implementation::Initialize(
 
   vertex_array_object_manager_ = std::make_unique<VertexArrayObjectManager>(
       gl_capabilities_.max_vertex_attribs);
-
-  // GL_BIND_GENERATES_RESOURCE_CHROMIUM state must be the same
-  // on Client & Service.
-  if (gl_capabilities_.bind_generates_resource_chromium !=
-      (share_group_->bind_generates_resource() ? 1 : 0)) {
-    SetGLError(GL_INVALID_OPERATION, "Initialize",
-               "Service bind_generates_resource mismatch.");
-    LOG(ERROR) << "ContextResult::kFatalFailure: "
-               << "bind_generates_resource mismatch";
-    return gpu::ContextResult::kFatalFailure;
-  }
 
   return gpu::ContextResult::kSuccess;
 }
@@ -5113,8 +5099,6 @@ void GLES2Implementation::BindBufferHelper(GLenum target, GLuint buffer_id) {
 
 void GLES2Implementation::BindBufferStub(GLenum target, GLuint buffer) {
   helper_->BindBuffer(target, buffer);
-  if (share_group_->bind_generates_resource())
-    helper_->CommandBufferHelper::OrderingBarrier();
 }
 
 bool GLES2Implementation::UpdateIndexedBufferState(GLenum target,
@@ -5178,8 +5162,6 @@ void GLES2Implementation::BindBufferBaseStub(GLenum target,
                                              GLuint index,
                                              GLuint buffer) {
   helper_->BindBufferBase(target, index, buffer);
-  if (share_group_->bind_generates_resource())
-    helper_->CommandBufferHelper::Flush();
 }
 
 void GLES2Implementation::BindBufferRangeHelper(GLenum target,
@@ -5202,8 +5184,6 @@ void GLES2Implementation::BindBufferRangeStub(GLenum target,
                                               GLintptr offset,
                                               GLsizeiptr size) {
   helper_->BindBufferRange(target, index, buffer, offset, size);
-  if (share_group_->bind_generates_resource())
-    helper_->CommandBufferHelper::Flush();
 }
 
 void GLES2Implementation::BindFramebufferHelper(GLenum target,
@@ -5277,8 +5257,6 @@ void GLES2Implementation::BindRenderbufferHelper(GLenum target,
 void GLES2Implementation::BindRenderbufferStub(GLenum target,
                                                GLuint renderbuffer) {
   helper_->BindRenderbuffer(target, renderbuffer);
-  if (share_group_->bind_generates_resource())
-    helper_->CommandBufferHelper::OrderingBarrier();
 }
 
 void GLES2Implementation::BindSamplerHelper(GLuint unit, GLuint sampler) {
@@ -5328,8 +5306,6 @@ void GLES2Implementation::BindTextureHelper(GLenum target, GLuint texture) {
 
 void GLES2Implementation::BindTextureStub(GLenum target, GLuint texture) {
   helper_->BindTexture(target, texture);
-  if (share_group_->bind_generates_resource())
-    helper_->CommandBufferHelper::OrderingBarrier();
 }
 
 void GLES2Implementation::BindTransformFeedbackHelper(
@@ -6741,8 +6717,6 @@ GLuint GLES2Implementation::CreateAndTexStorage2DSharedImageCHROMIUM(
   GetIdHandler(SharedIdNamespaces::kTextures)->MakeIds(this, 0, 1, &client_id);
   helper_->CreateAndTexStorage2DSharedImageINTERNALImmediate(client_id,
                                                              mailbox_data);
-  if (share_group_->bind_generates_resource())
-    helper_->CommandBufferHelper::OrderingBarrier();
   CheckGLError();
   return client_id;
 }

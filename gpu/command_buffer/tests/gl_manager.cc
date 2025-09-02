@@ -258,8 +258,7 @@ void GLManager::InitializeWithWorkaroundsImpl(
   // Create the object exposing the OpenGL API.
   gles2_implementation_.reset(new gles2::GLES2Implementation(
       gles2_helper_.get(), std::move(client_share_group),
-      transfer_buffer_.get(), bind_generates_resource,
-      options.lose_context_when_out_of_memory, this));
+      transfer_buffer_.get(), options.lose_context_when_out_of_memory, this));
 
   ASSERT_EQ(gles2_implementation_->Initialize(limits),
             gpu::ContextResult::kSuccess)

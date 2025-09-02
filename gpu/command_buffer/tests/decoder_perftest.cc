@@ -219,7 +219,7 @@ class RecordReplayContext : public GpuControl {
     const bool lose_context_when_out_of_memory = false;
     gles2_implementation_ = std::make_unique<gles2::GLES2Implementation>(
         gles2_helper_.get(), nullptr, transfer_buffer_.get(),
-        bind_generates_resource, lose_context_when_out_of_memory, this);
+        lose_context_when_out_of_memory, this);
 
     result = gles2_implementation_->Initialize(limits);
     DCHECK_EQ(result, ContextResult::kSuccess);
