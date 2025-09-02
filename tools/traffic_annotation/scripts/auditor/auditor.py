@@ -1819,7 +1819,6 @@ class AuditorUI:
                                                  self.path_filters,
                                                  self.skip_compdb)
     errors = []
-
     errors.extend(self.auditor.parse_extractor_output(all_annotations))
 
     # If we already have errors from parsing annotations, report them. Otherwise
@@ -1875,6 +1874,9 @@ class AuditorUI:
             'pyproto/chrome/browser/privacy/traffic_annotation_pb2.py'))
     return src_proto_mtime > build_proto_mtime
 
+def is_cog() -> bool:
+  """Returns true if the script is running inside a Cog workspace."""
+  return SRC_DIR.as_posix().startswith('/google/cog/cloud')
 
 if __name__ == "__main__":
   args_parser = argparse.ArgumentParser(
@@ -1940,6 +1942,12 @@ if __name__ == "__main__":
   args = args_parser.parse_args()
   build_path = Path(args.build_path)
 
+  # Check if in cog - if so, fail early.
+  if is_cog():
+    print("This script must not be run from cog workspaces.")
+    print("Note that running this script from Cider-G is not supported.")
+    sys.exit(1)
+
   print("Starting traffic annotation auditor. This may take a few minutes.")
   print("If you find a bug in this script, file bugs against the 'Enterprise>"
         "TrafficAnnotations' component and CC nicolaso@chromium.org.")
@@ -1947,7 +1955,6 @@ if __name__ == "__main__":
                          args.test_only, args.limit, args.annotations_file,
                          args.errors_file, args.skip_compdb,
                          args.skip_stale_build_check)
-
   try:
     sys.exit(auditor_ui.main())
   except extractor.SourceCodeParsingError:
