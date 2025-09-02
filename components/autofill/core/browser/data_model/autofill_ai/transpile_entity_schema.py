@@ -11,6 +11,7 @@ TODO(crbug.com/388590912): Add more details.
 """
 
 import argparse
+import collections
 import io
 import json
 import re
@@ -111,7 +112,7 @@ def generate_cpp_functions(schema):
   yield '  switch (name_) {'
   for entity, attribute in ((entity, attribute) for entity in schema for attribute in entity['attributes']):
     yield f'    case {attribute_name(entity["name"], attribute)}:'
-    is_obfuscated = attribute in entity.get('obfuscated attributes', [])
+    is_obfuscated = attribute in entity['obfuscated attributes']
     yield f'      return {"true" if is_obfuscated else "false"};'
   yield '  }'
   yield '  NOTREACHED();'
@@ -237,7 +238,7 @@ def generate_cpp_functions(schema):
   yield '      for (int& rank : ranks) {'
   yield '        rank = std::numeric_limits<int>::max();'
   yield '      }'
-  for entity, order in ((entity['name'], entity.get('disambiguation order', [])) for entity in schema):
+  for entity, order in ((entity['name'], entity['disambiguation order']) for entity in schema):
     for rank, attribute in enumerate(order):
       yield f'      ranks[base::to_underlying({attribute_name(entity, attribute)})] = {rank+1};'
   yield '      return ranks;'
@@ -290,6 +291,10 @@ namespace autofill {{
   yield f"""
 }}  // namespace autofill"""
 
+REQUIRED_KEYS = {'name', 'attributes', 'obfuscated attributes', 'required fields', 'import constraints', 'merge constraints', 'strike keys', 'disambiguation order', 'syncable'}
+OPTIONAL_KEYS = {'experiment feature', 'excluded geo-ips'}
+CONSTRAINTS_KEYS = {'import constraints', 'merge constraints', 'strike keys', 'required fields'}
+
 # For brevity, the schema allows shorthands:
 # - Constraints in the JSON object can refer to each other, e.g.,
 #   { "import constraints":  [ ["foo", "bar"], ["qux"] ],
@@ -304,20 +309,91 @@ namespace autofill {{
 #   { "import constraints":  [ ["foo"], ["bar"], ["qux"] ],
 #     "merge constraints":   [ ["foo", "bar", "qux"] ] }
 def resolve_shorthands(schema):
-  constraints = ['import constraints', 'merge constraints', 'strike keys', 'required fields']
   for entity in schema:
     # Constraints can be the shorthands 'all' (= all attributes) or 'any' (= at
     # least one attribute):
-    for constraint in constraints:
-      if entity[constraint] == 'all':
-        entity[constraint] = [[attribute for attribute in entity['attributes']]]
-      if entity[constraint] == 'any':
-        entity[constraint] = [[attribute] for attribute in entity['attributes']]
+    for constraints_key in CONSTRAINTS_KEYS:
+      if entity[constraints_key] == 'all':
+        entity[constraints_key] = [[attribute for attribute in entity['attributes']]]
+      if entity[constraints_key] == 'any':
+        entity[constraints_key] = [[attribute] for attribute in entity['attributes']]
 
     # Constraints can refer to one another.
-    for (lhs, rhs) in ((lhs, rhs) for lhs in constraints for rhs in constraints):
+    for (lhs, rhs) in ((lhs, rhs) for lhs in CONSTRAINTS_KEYS for rhs in CONSTRAINTS_KEYS):
       if entity[lhs] == rhs and isinstance(entity[rhs], list):
         entity[lhs] = entity[rhs]
+
+# Runs plausibility checks on the schema.
+# If the schema does not meet them, it aborts the script (which in turn aborts
+# the build).
+def validate_schema(schema):
+  def validate_attribute_list(entity, attributes, allow_empty, report):
+    if not isinstance(attributes, list):
+      report('is not a list')
+    if attributes == [] and not allow_empty:
+      report('is an empty list')
+
+    duplicate_attributes = {a for a, count in collections.Counter(attributes).items() if count > 1}
+    for a in duplicate_attributes:
+      report(f'contains a duplicate attribute {a}')
+
+    unknown_attributes = set(attributes) - set(entity['attributes'])
+    for a in unknown_attributes:
+      report(f'contains an unknown attribute "{a}"')
+
+  def validate_entity(entity, report):
+    missing_keys = REQUIRED_KEYS - entity.keys()
+    for k in missing_keys:
+      report(f'missing key "{k}"')
+    if missing_keys:
+      return  # We'd hit Python errors if we continue this iteration.
+
+    unknown_keys = entity.keys() - (REQUIRED_KEYS | OPTIONAL_KEYS)
+    for k in unknown_keys:
+      report(f'unknown key "{k}"')
+
+    if not isinstance(entity['name'], str):
+      report('"name": value is not a string')
+
+    if entity['name'] == '':
+      report('"name": value is the empty string')
+
+    known_attributes = set(entity['attributes'])
+    for attribute in known_attributes:
+      if not isinstance(attribute, str):
+        report(f'attribute {attribute} is not a string')
+      if attribute == '':
+        report(f'attribute {attribute} is empty')
+
+    def validate_attributes(attributes, prefix, allow_empty=False):
+      validate_attribute_list(entity, attributes, allow_empty, lambda msg: report(prefix +' '+ msg))
+
+    validate_attributes(entity['attributes'], prefix='"attributes"')
+    validate_attributes(entity['obfuscated attributes'], allow_empty=True, prefix='"obfuscated attributes"')
+    validate_attributes(entity['disambiguation order'], allow_empty=True, prefix='"disambiguation order"')
+    for constraints_key in CONSTRAINTS_KEYS:
+      for constraint in entity[constraints_key]:
+        validate_attributes(constraint, prefix=f'"{constraints_key}": some constraint')
+
+    if not isinstance(entity['syncable'], bool):
+      report('"syncable": value is not a Boolean')
+
+    if not isinstance(entity.get('experiment feature', ''), str):
+      report('"experiment feature": value is not a string')
+
+  found_error = False
+
+  def print_error(entity, msg):
+    nonlocal found_error
+    found_error = True
+    name = entity.get('name', '<unnamed>')
+    print(f'Error: Autofill AI schema: entity "{name}": {msg}', file=sys.stderr)
+
+  for entity in schema:
+    validate_entity(entity, report=lambda msg: print_error(entity, msg))
+
+  if found_error:
+    sys.exit(1)
 
 def parse_schema(input_file, output_files):
   schema = {}
@@ -325,6 +401,7 @@ def parse_schema(input_file, output_files):
     schema = json.load(input_handle)
 
   resolve_shorthands(schema)
+  validate_schema(schema)
 
   def write_to_handle(generator, output_file):
     include_guard = re.sub(r'\W', '_', output_file.upper()) +'_'
