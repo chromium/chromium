@@ -98,11 +98,30 @@ function compareFloatFreq(message, freqData, expectedFreq, should, options) {
   return {success: success, expected: expectedFreq};
 }
 
+// Compare the float frequency data in dB, |actualFreq|, against the expected
+// value, |expectedFreq|. |options| is a dictionary with the property
+// |floatRelError| for setting the comparison threshold and |precision| for
+// setting the printed precision.  Setting |precision| to |undefined| means
+// printing all digits.  If |options.precision} doesn't exist, use a default
+// precision.
+function compareFloatFreq_W3CTH(message, actualFreq, expectedFreq, options) {
+  // Any dB values below -100 is pretty much in the noise due to round-off in
+  // the (single-precisiion) FFT, so just clip those values to -100.
+  const lowerLimit = -100;
+  clipMagnitude(lowerLimit, expectedFreq);
+  clipMagnitude(lowerLimit, actualFreq);
+  const threshold = {relativeThreshold: options.floatRelError || 0};
+
+  assert_array_equal_within_eps(actualFreq, expectedFreq, threshold, message);
+
+  return {success: true, expected: expectedFreq};
+}
+
 // Apply FFT smoothing, accumulating the result in |oldFreqData| with the new
 // data in |newFreqData|.  The smoothing time constant is |smoothingTime|
 function smoothFFT(oldFreqData, newFreqData, smoothingTime) {
   for (let k = 0; k < oldFreqData.length; ++k) {
-    let value =
+    const value =
         smoothingTime * oldFreqData[k] + (1 - smoothingTime) * newFreqData[k];
     oldFreqData[k] = value;
   }
