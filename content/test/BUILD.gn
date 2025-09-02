@@ -3072,15 +3072,10 @@ test("content_unittests") {
     ]
   }
 
-  if (is_ios) {
-    sources += [
-      "../browser/renderer_host/render_widget_host_view_ios_uiview_unittest.mm",
-    ]
-  }
-
   if (is_ios && target_platform == "iphoneos") {
     sources += [
       "../browser/date_time_chooser/ios/date_time_chooser_util_unittest.mm",
+      "../browser/renderer_host/render_widget_host_view_ios_uiview_unittest.mm",
     ]
   }
 
