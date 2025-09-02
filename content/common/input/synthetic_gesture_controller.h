@@ -38,6 +38,8 @@ class CONTENT_EXPORT SyntheticGestureController {
     virtual bool HasGestureStopped() = 0;
 
     virtual bool IsHidden() const = 0;
+
+    virtual bool ShouldWaitForInputProcessed() = 0;
   };
   SyntheticGestureController(
       Delegate* delegate,

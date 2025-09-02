@@ -3724,6 +3724,16 @@ bool RenderWidgetHostImpl::HasGestureStopped() {
   return true;
 }
 
+bool RenderWidgetHostImpl::ShouldWaitForInputProcessed() {
+  for (auto& it : GetHostFrameSinkManager()->GetDisplayHitTestQuery()) {
+    if (it.second->ContainsActiveFrameSinkId(GetFrameSinkId())) {
+      // Browser already has hit test data for frame sink.
+      return false;
+    }
+  }
+  return true;
+}
+
 bool RenderWidgetHostImpl::IsHidden() const {
   return is_hidden_;
 }

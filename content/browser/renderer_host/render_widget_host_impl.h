@@ -816,6 +816,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // resolving any ambiguity that could arise from multiple inheritance.
   bool IsHidden() const override;
 
+  bool ShouldWaitForInputProcessed() override;
+
   // Signals that a frame with token |frame_token| was finished processing. If
   // there are any queued messages belonging to it, they will be processed.
   void DidProcessFrame(uint32_t frame_token, base::TimeTicks activation_time);

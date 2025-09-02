@@ -421,6 +421,7 @@ class DummySyntheticGestureControllerDelegate
   // SyntheticGestureController::Delegate:
   bool HasGestureStopped() override { return true; }
   bool IsHidden() const override { return false; }
+  bool ShouldWaitForInputProcessed() override { return true; }
 };
 
 class SyntheticPointerActionTest : public testing::Test {

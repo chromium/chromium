@@ -38,6 +38,12 @@ void SyntheticGestureController::EnsureRendererInitialized(
   if (renderer_known_to_be_initialized_)
     return;
 
+  if (!delegate_->ShouldWaitForInputProcessed()) {
+    renderer_known_to_be_initialized_ = true;
+    std::move(on_completed).Run();
+    return;
+  }
+
   base::OnceClosure wrapper = base::BindOnce(
       [](base::WeakPtr<SyntheticGestureController> weak_ptr,
          base::OnceClosure on_completed) {
