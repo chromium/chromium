@@ -202,7 +202,7 @@ export class ReadAloudHighlighter {
 
   private highlightCurrentWordOrPhrase_(highlightPhrases: boolean): void {
     if (this.currentGranularity_) {
-      this.currentGranularity_.setPrevious();
+      this.currentGranularity_.onWillHighlightWordOrPhrase();
     }
     const {
       speechUtteranceStartIndex,

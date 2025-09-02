@@ -27,6 +27,20 @@ export class MovementGranularity {
         this.highlights_.every(highlight => highlight.isEmpty());
   }
 
+  onWillHighlightWordOrPhrase() {
+    // Before word boundaries are received, the default is to use sentence
+    // highlight. So if a word boundary is received after highlighting the
+    // current sentence, clear that sentence highlight, and from now on the
+    // highlight will go by word.
+    if (this.highlights_.length === 1 &&
+        this.highlights_[0] instanceof SentenceHighlight) {
+      this.clearFormatting();
+      this.highlights_.pop();
+    } else {
+      this.setPrevious();
+    }
+  }
+
   setPrevious() {
     this.highlights_.forEach(highlight => highlight.setPrevious());
   }
