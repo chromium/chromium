@@ -1368,11 +1368,8 @@ class ApiTests extends ApiTestFixtureBase {
     assertDefined(metadataObservable);
     const metadataSequence = observeSequence(metadataObservable);
 
-    // The observable should not emit any more values.
-    // Wait a bit to ensure that any spurious updates would have been received.
-    await sleep(500);
-    // TODO(gklassen): update this to assert that the observable is completed
-    // once observeSequence is updated to handle complete.
+    // The observable should not emit any values, and should complete.
+    await metadataSequence.completed;
     assertTrue(metadataSequence.isEmpty());
   }
 
@@ -1487,11 +1484,8 @@ class ApiTests extends ApiTestFixtureBase {
     // Close the tab.
     await this.advanceToNextStep();
 
-    // The observable should not emit any more values.
-    // Wait a bit to ensure that any spurious updates would have been received.
-    await sleep(500);
-    // TODO(gklassen): update this to assert that the observable is completed
-    // once observeSequence is updated to handle complete.
+    // The observable should not emit any more values, and should complete.
+    await metadataSequence.completed;
     assertTrue(metadataSequence.isEmpty());
   }
 

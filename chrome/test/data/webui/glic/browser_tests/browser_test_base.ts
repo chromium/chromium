@@ -7,8 +7,8 @@
 //   --gn_target chrome/test/data/webui/glic:build_ts
 
 import {WebClientMode} from '/glic/glic_api/glic_api.js';
-import type {GlicBrowserHost, GlicHostRegistry, GlicWebClient, Observable, OpenPanelInfo, PanelOpeningData, Subscriber} from '/glic/glic_api/glic_api.js';
-import {ObservableValue} from '/glic/observable.js';
+import type {GlicBrowserHost, GlicHostRegistry, GlicWebClient, Observable, OpenPanelInfo, PanelOpeningData} from '/glic/glic_api/glic_api.js';
+import {ObservableValue, type Subscriber} from '/glic/observable.js';
 
 import {createGlicHostRegistryOnLoad} from '../api_boot.js';
 
@@ -36,8 +36,16 @@ export class SequencedSubscriber<T> {
   // The last value read from `next()`, or undefined if none was read.
   current: T|undefined;
 
+  // A promise that resolves when the observable is completed.
+  readonly completed: Promise<void>;
+
   constructor(observable: Observable<T>) {
-    this.subscriber = observable.subscribe(this.change.bind(this));
+    const completedResolvers = Promise.withResolvers<void>();
+    this.completed = completedResolvers.promise;
+    this.subscriber = observable.subscribeObserver!({
+      next: this.change.bind(this),
+      complete: completedResolvers.resolve,
+    });
   }
   async next(): Promise<T> {
     // Wrapping the returned value with `waitFor` improves failure logs
