@@ -197,6 +197,10 @@ void LogHomeAndWorkSupersetAffectedType(FieldType affected_type);
 // Logs that a type was edited manually in a home/work superset prompt.
 void LogHomeAndWorkSupersetEditedType(FieldType edited_type);
 
+// Logs that a type was edited manually for a specified import type.
+void LogProfileImportTypeEditedType(AutofillProfileImportType type,
+                                    FieldType edited_type);
+
 // Logs if at least one setting-inaccessible field was removed on import.
 void LogRemovedSettingInaccessibleFields(bool did_remove);
 

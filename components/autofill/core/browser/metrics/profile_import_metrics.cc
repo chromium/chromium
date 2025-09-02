@@ -4,12 +4,15 @@
 
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/i18n/char_iterator.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_cleaner.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_requirement_utils.h"
+#include "components/autofill/core/browser/form_import/addresses/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
@@ -92,6 +95,44 @@ AddressValidZipCodeSeparatorMetric GetAddressValidZipCodeSeparatorMetric(
       return AddressValidZipCodeSeparatorMetric::kOther;
   }
 }
+
+// LINT.IfChange(GetImportTypeMetricsString)
+
+std::string_view GetImportTypeMetricsString(AutofillProfileImportType type) {
+  switch (type) {
+    case AutofillProfileImportType::kNewProfile:
+      return "NewProfile";
+    case AutofillProfileImportType::kConfirmableMerge:
+      return "ConfirmableMerge";
+    case AutofillProfileImportType::kConfirmableMergeAndSilentUpdate:
+      return "ConfirmableMergeAndSilentUpdate";
+    case AutofillProfileImportType::kProfileMigration:
+      return "ProfileMigration";
+    case AutofillProfileImportType::kProfileMigrationAndSilentUpdate:
+      return "ProfileMigrationAndSilentUpdate";
+    case AutofillProfileImportType::kHomeAndWorkSuperset:
+      return "HomeAndWorkSuperset";
+    case AutofillProfileImportType::kNameEmailSuperset:
+      return "NameEmailSuperset";
+    case AutofillProfileImportType::kHomeWorkNameEmailMerge:
+      return "HomeWorkNameEmailMerge";
+    case AutofillProfileImportType::kDuplicateImport:
+      return "DuplicateImport";
+    case AutofillProfileImportType::kSilentUpdate:
+      return "SilentUpdate";
+    case AutofillProfileImportType::kSuppressedNewProfile:
+      return "SuppressedNewProfile";
+    case AutofillProfileImportType::kSuppressedConfirmableMergeAndSilentUpdate:
+      return "SuppressedConfirmableMergeAndSilentUpdate";
+    case AutofillProfileImportType::kSuppressedConfirmableMerge:
+      return "SuppressedConfirmableMerge";
+    case AutofillProfileImportType::kImportTypeUnspecified:
+      return "ImportTypeUnspecified";
+  }
+  NOTREACHED();
+}
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/histograms.xml:Autofill.ProfileImport.EditedType.ImportTypes)
 
 }  // namespace
 
@@ -243,6 +284,45 @@ void LogHomeAndWorkSupersetEditedType(FieldType edited_type) {
   base::UmaHistogramEnumeration(
       "Autofill.ProfileImport.HomeAndWorkSupersetEditedType",
       ConvertSettingsVisibleFieldTypeForMetrics(edited_type));
+}
+
+void LogProfileImportTypeEditedType(AutofillProfileImportType import_type,
+                                    FieldType edited_type) {
+  // TODO(crbug.com/441473556): Handle the rest of import types in a generic
+  // way.
+  switch (import_type) {
+    case AutofillProfileImportType::kNewProfile:
+      autofill_metrics::LogNewProfileEditedType(edited_type);
+      break;
+    case AutofillProfileImportType::kConfirmableMerge:
+    case AutofillProfileImportType::kConfirmableMergeAndSilentUpdate:
+      autofill_metrics::LogProfileUpdateEditedType(edited_type);
+      break;
+    case AutofillProfileImportType::kProfileMigration:
+    case AutofillProfileImportType::kProfileMigrationAndSilentUpdate:
+      autofill_metrics::LogProfileMigrationEditedType(edited_type);
+      break;
+    case AutofillProfileImportType::kHomeAndWorkSuperset:
+      autofill_metrics::LogHomeAndWorkSupersetEditedType(edited_type);
+      break;
+    case AutofillProfileImportType::kNameEmailSuperset:
+    case AutofillProfileImportType::kHomeWorkNameEmailMerge:
+      base::UmaHistogramEnumeration(
+          base::StrCat({"Autofill.ProfileImport.",
+                        GetImportTypeMetricsString(import_type),
+                        ".EditedType"}),
+          ConvertSettingsVisibleFieldTypeForMetrics(edited_type));
+      break;
+    // In the following cases the prompt is not offered to the user, thus no
+    // edits can happen.
+    case AutofillProfileImportType::kDuplicateImport:
+    case AutofillProfileImportType::kSilentUpdate:
+    case AutofillProfileImportType::kSuppressedNewProfile:
+    case AutofillProfileImportType::kSuppressedConfirmableMergeAndSilentUpdate:
+    case AutofillProfileImportType::kSuppressedConfirmableMerge:
+    case AutofillProfileImportType::kImportTypeUnspecified:
+      NOTREACHED();
+  }
 }
 
 // static

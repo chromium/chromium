@@ -2597,6 +2597,8 @@ Called by update_autofill_enums.py.-->
   <int value="11" label="ProfileMigration"/>
   <int value="12" label="ProfileMigrationAndSilentUpdate"/>
   <int value="13" label="HomeAndWorkSuperset"/>
+  <int value="14" label="NameEmailSuperset"/>
+  <int value="15" label="HomeWorkNameEmailMerge"/>
 </enum>
 
 <enum name="AutofillProfileRecordType">

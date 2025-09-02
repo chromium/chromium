@@ -612,17 +612,10 @@ int ProfileImportProcess::CollectedEditedTypeHistograms() const {
           *import_candidate_, *confirmed_import_candidate_, app_locale_);
   // Log edited types.
   for (const ProfileValueDifference& difference : edit_difference) {
-    if (import_type_ == AutofillProfileImportType::kNewProfile) {
-      autofill_metrics::LogNewProfileEditedType(difference.type);
-    } else if (is_confirmable_update()) {
-      autofill_metrics::LogProfileUpdateEditedType(difference.type);
-    } else if (is_migration()) {
-      autofill_metrics::LogProfileMigrationEditedType(difference.type);
-    } else {
-      CHECK_EQ(import_type(), AutofillProfileImportType::kHomeAndWorkSuperset);
-      autofill_metrics::LogHomeAndWorkSupersetEditedType(difference.type);
-    }
+    autofill_metrics::LogProfileImportTypeEditedType(import_type(),
+                                                     difference.type);
   }
+
   return edit_difference.size();
 }
 

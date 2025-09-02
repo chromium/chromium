@@ -5536,6 +5536,32 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
+<!-- LINT.IfChange(Autofill.ProfileImport.EditedType.ImportTypes) -->
+
+<histogram name="Autofill.ProfileImport.{ImportType}.EditedType"
+    enum="MandatoryReauthAuthEvent" expires_after="2026-06-01">
+  <owner>sygiet@google.com</owner>
+  <owner>pawelstus@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logs that a specific type was edited in a save/update/migrate/merge prompt.
+
+    {ImportType}
+  </summary>
+  <token key="ImportType">
+    <variant name="HomeWorkNameEmailMerge"
+        summary="Logs that a specific type was edited in a
+                 `kAccountNameEmail` and H/W superset prompt. This metric is
+                 emitted once the user-provided import decision is final."/>
+    <variant name="NameEmailSuperset"
+        summary="Logs that a specific type was edited in a
+                 `kAccountNameEmail` superset prompt. This metric is emitted
+                 once the user-provided import decision is final."/>
+  </token>
+</histogram>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/profile_import_metrics.cc:GetImportTypeMetricsString) -->
+
 <histogram name="Autofill.ProfileImportValidCandidate.ZipCode.Length"
     units="units" expires_after="2026-02-01">
   <owner>mmaryia@google.com</owner>

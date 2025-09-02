@@ -1190,6 +1190,35 @@ TEST_F(
                   {expected_profile, account_name_email_profile}));
 }
 
+// Tests that when importing a superset of the `kAccountNameEmail` profile,
+// metrics are correctly emitted.
+TEST_F(AutofillProfileImportProcessTest,
+       ImportingAccountNameEmailSupersetProfile_Metrics) {
+  address_data_manager().SetIsEligibleForAddressAccountStorage(true);
+  const AutofillProfile account_name_email_profile =
+      test::AccountNameEmailProfile();
+  const AutofillProfile observed_profile =
+      test::AccountNameEmailProfileSuperset();
+
+  address_data_manager().AddProfile(account_name_email_profile);
+
+  auto import_data = CreateProfileImportProcess(
+      observed_profile, /*allow_only_silent_updates=*/false);
+
+  // Simulate that the user accepts this import with edits.
+  AutofillProfile edited_profile = *import_data.import_candidate();
+  edited_profile.SetRawInfoWithVerificationStatus(
+      NAME_FULL, u"Updated Name Full", VerificationStatus::kUserVerified);
+  import_data.AcceptWithEdits(edited_profile);
+
+  base::HistogramTester histogram_tester;
+  import_data.CollectMetrics(/*ukm_recorder=*/nullptr,
+                             address_data_manager().GetProfiles());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ProfileImport.NameEmailSuperset.EditedType",
+      SettingsVisibleFieldTypeForMetrics::kName, 1);
+}
+
 // Tests that an accepted import of a profile that is a superset of both the
 // `kAccountNameEmail` profile and the `kAccountWork` profile results in a
 // creation of a new superset profile.
@@ -1338,6 +1367,46 @@ TEST_F(AutofillProfileImportProcessTest,
       observed_profile, /*allow_only_silent_updates=*/false, metadata);
   EXPECT_NE(import_data_2.import_type(),
             AutofillProfileImportType::kHomeWorkNameEmailMerge);
+}
+
+// Tests that when importing a superset of the `kAccountNameEmail` profile and
+// one of the H/W profiles, metrics are correctly emitted.
+TEST_F(AutofillProfileImportProcessTest,
+       ImportingHomeWorkNameEmailSupersetProfile_Metrics) {
+  address_data_manager().SetIsEligibleForAddressAccountStorage(true);
+  const AutofillProfile account_name_email_profile =
+      test::AccountNameEmailProfile();
+  const AutofillProfile home_profile =
+      test::OnlyAddressProfile(AutofillProfile::RecordType::kAccountHome);
+  const AutofillProfile observed_profile =
+      test::SupersetProfileOf({account_name_email_profile, home_profile},
+                              address_data_manager().app_locale(),
+                              AutofillProfile::RecordType::kLocalOrSyncable);
+
+  address_data_manager().AddProfile(home_profile);
+  address_data_manager().AddProfile(account_name_email_profile);
+
+  // Insert guids into `unedited_autofilled_profile_guids` to trigger
+  // `kAccountNameEmail` H/W merge flow.
+  ProfileImportMetadata metadata;
+  metadata.unedited_autofilled_profile_guids.insert(
+      account_name_email_profile.guid());
+  metadata.unedited_autofilled_profile_guids.insert(home_profile.guid());
+
+  auto import_data = CreateProfileImportProcess(
+      observed_profile, /*allow_only_silent_updates=*/false, metadata);
+
+  // Simulate that the user accepts this import with edits.
+  AutofillProfile edited_profile = *import_data.import_candidate();
+  edited_profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_CITY, u"Updated City", VerificationStatus::kUserVerified);
+  import_data.AcceptWithEdits(edited_profile);
+  base::HistogramTester histogram_tester;
+  import_data.CollectMetrics(/*ukm_recorder=*/nullptr,
+                             address_data_manager().GetProfiles());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ProfileImport.HomeWorkNameEmailMerge.EditedType",
+      SettingsVisibleFieldTypeForMetrics::kCity, 1);
 }
 
 }  // namespace
