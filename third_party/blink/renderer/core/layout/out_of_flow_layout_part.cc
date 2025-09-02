@@ -629,7 +629,7 @@ void OutOfFlowLayoutPart::Run() {
   container_builder_->SwapOutOfFlowPositionedCandidates(&candidates);
 
   if (!candidates.empty()) {
-    LayoutCandidates(&candidates);
+    LayoutCandidates(candidates);
   } else {
     container_builder_
         ->AdjustFixedposContainingBlockForFragmentainerDescendants();
@@ -669,8 +669,9 @@ void OutOfFlowLayoutPart::Run() {
     // we need to do this separately for each node, as laying out a node may
     // cause top-layer nodes to be added or removed.
     HandleFragmentation();
+    candidates.Shrink(0);
     container_builder_->SwapOutOfFlowPositionedCandidates(&candidates);
-    LayoutCandidates(&candidates);
+    LayoutCandidates(candidates);
   }
 }
 
@@ -1233,62 +1234,67 @@ void OutOfFlowLayoutPart::AddInlineContainingBlockInfo(
 }
 
 void OutOfFlowLayoutPart::LayoutCandidates(
-    HeapVector<LogicalOofPositionedNode>* candidates) {
-  while (candidates->size() > 0) {
-    if (!has_block_fragmentation_ ||
-        container_builder_->IsInitialColumnBalancingPass()) {
-      ComputeInlineContainingBlocks(*candidates);
-    }
-    for (auto& candidate : *candidates) {
-      LayoutBox* layout_box = candidate.box;
-      if (!container_builder_->IsBlockFragmentationContextRoot()) {
-        SaveStaticPositionOnPaintLayer(layout_box, candidate.static_position);
-      }
-      if (IsContainingBlockForCandidate(candidate)) {
-        if (has_block_fragmentation_) {
-          container_builder_->SetHasOutOfFlowInFragmentainerSubtree(true);
-          if (!container_builder_->IsInitialColumnBalancingPass()) {
-            LogicalOofNodeForFragmentation fragmentainer_descendant(candidate);
-            container_builder_->AdjustFragmentainerDescendant(
-                fragmentainer_descendant);
-            container_builder_
-                ->AdjustFixedposContainingBlockForInnerMulticols();
-            container_builder_->AddOutOfFlowFragmentainerDescendant(
-                fragmentainer_descendant);
-            continue;
-          }
-        }
-
-        NodeInfo node_info = SetupNodeInfo(candidate);
-        NodeToLayout node_to_layout = {
-            node_info,
-            CalculateOffset(node_info,
-                            /*is_inside_fragmentation_context=*/false)};
-        const LayoutResult* result = LayoutOOFNode(node_to_layout);
-        PhysicalBoxStrut physical_margins =
-            node_to_layout.offset_info.node_dimensions.margins
-                .ConvertToPhysical(
-                    node_info.node.Style().GetWritingDirection());
-        BoxStrut margins = physical_margins.ConvertToLogical(
-            container_builder_->GetWritingDirection());
-        container_builder_->AddResult(
-            *result, result->OutOfFlowPositionedOffset(), margins,
-            /* relative_offset */ std::nullopt, &candidate.inline_container);
-        container_builder_->SetHasOutOfFlowFragmentChild(true);
-        if (container_builder_->IsInitialColumnBalancingPass()) {
-          container_builder_->PropagateTallestUnbreakableBlockSize(
-              result->TallestUnbreakableBlockSize());
-        }
-      } else {
-        container_builder_->AddOutOfFlowDescendant(candidate);
-      }
-    }
-
-    // Sweep any candidates that might have been added.
-    // This happens when an absolute container has a fixed child.
-    candidates->Shrink(0);
-    container_builder_->SwapOutOfFlowPositionedCandidates(candidates);
+    const HeapVector<LogicalOofPositionedNode>& candidates) {
+  if (!has_block_fragmentation_ ||
+      container_builder_->IsInitialColumnBalancingPass()) {
+    ComputeInlineContainingBlocks(candidates);
   }
+  for (auto& candidate : candidates) {
+    LayoutBox* layout_box = candidate.box;
+    if (!container_builder_->IsBlockFragmentationContextRoot()) {
+      SaveStaticPositionOnPaintLayer(layout_box, candidate.static_position);
+    }
+    if (IsContainingBlockForCandidate(candidate)) {
+      if (has_block_fragmentation_) {
+        container_builder_->SetHasOutOfFlowInFragmentainerSubtree(true);
+        if (!container_builder_->IsInitialColumnBalancingPass()) {
+          LogicalOofNodeForFragmentation fragmentainer_descendant(candidate);
+          container_builder_->AdjustFragmentainerDescendant(
+              fragmentainer_descendant);
+          container_builder_->AdjustFixedposContainingBlockForInnerMulticols();
+          container_builder_->AddOutOfFlowFragmentainerDescendant(
+              fragmentainer_descendant);
+          continue;
+        }
+      }
+
+      NodeInfo node_info = SetupNodeInfo(candidate);
+      NodeToLayout node_to_layout = {
+          node_info,
+          CalculateOffset(node_info,
+                          /*is_inside_fragmentation_context=*/false)};
+      const LayoutResult* result = LayoutOOFNode(node_to_layout);
+      PhysicalBoxStrut physical_margins =
+          node_to_layout.offset_info.node_dimensions.margins.ConvertToPhysical(
+              node_info.node.Style().GetWritingDirection());
+      BoxStrut margins = physical_margins.ConvertToLogical(
+          container_builder_->GetWritingDirection());
+      container_builder_->AddResult(
+          *result, result->OutOfFlowPositionedOffset(), margins,
+          /* relative_offset */ std::nullopt, &candidate.inline_container);
+      container_builder_->SetHasOutOfFlowFragmentChild(true);
+      if (container_builder_->IsInitialColumnBalancingPass()) {
+        container_builder_->PropagateTallestUnbreakableBlockSize(
+            result->TallestUnbreakableBlockSize());
+      }
+
+      // Sweep and lay out any candidates that might have been added as part of
+      // laying out this child. This happens when achild has descendants that it
+      // doesn't contain (typically fixed-positioned descendants).
+      //
+      // This needs to be done before handling layout siblings of this child, to
+      // keep things in tree order, which is important for anchor positioning.
+      HeapVector<LogicalOofPositionedNode> child_candidates;
+      container_builder_->SwapOutOfFlowPositionedCandidates(&child_candidates);
+      if (!child_candidates.empty()) {
+        LayoutCandidates(child_candidates);
+      }
+    } else {
+      container_builder_->AddOutOfFlowDescendant(candidate);
+    }
+  }
+
+  DCHECK(!container_builder_->HasOutOfFlowPositionedCandidates());
 }
 
 void OutOfFlowLayoutPart::HandleMulticolsWithPendingOOFs(

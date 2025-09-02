@@ -309,7 +309,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       LogicalOffset containing_block_offset = LogicalOffset(),
       bool adjust_for_fragmentation = false);
 
-  void LayoutCandidates(HeapVector<LogicalOofPositionedNode>*);
+  void LayoutCandidates(const HeapVector<LogicalOofPositionedNode>&);
 
   void HandleMulticolsWithPendingOOFs(BoxFragmentBuilder* container_builder);
   void LayoutOOFsInMulticol(
