@@ -10637,22 +10637,22 @@
   {
     "name": "webxr-hand-anonymization",
     "owners": [ "//components/webxr/OWNERS", "xr-dev@chromium.org" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 154
   },
   {
     "name": "webxr-incubations",
     "owners": [ "//third_party/blink/renderer/modules/xr/OWNERS", "xr-dev@chromium.org" ],
-    "expiry_milestone": 142
+    "expiry_milestone": 154
   },
   {
     "name": "webxr-internals",
     "owners": [ "//components/webxr/OWNERS", "xr-dev@chromium.org" ],
-    "expiry_milestone": 142
+    "expiry_milestone": 154
   },
   {
     "name": "webxr-projection-layers",
     "owners": [ "//components/webxr/OWNERS", "xr-dev@chromium.org" ],
-    "expiry_milestone": 142
+    "expiry_milestone": 154
   },
   {
     "name": "webxr-runtime",
@@ -10675,7 +10675,7 @@
   {
     "name": "webxr-webgpu-binding",
     "owners": [ "//components/webxr/OWNERS", "xr-dev@chromium.org" ],
-    "expiry_milestone": 142
+    "expiry_milestone": 154
   },
   {
     "name": "whats-new-ios-m116",
