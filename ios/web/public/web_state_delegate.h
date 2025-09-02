@@ -101,7 +101,7 @@ class WebStateDelegate {
   virtual void OnAuthRequired(WebState* source,
                               NSURLProtectionSpace* protection_space,
                               NSURLCredential* proposed_credential,
-                              AuthCallback callback) = 0;
+                              AuthCallback callback);
 
   // Returns the UIView used to contain the WebView for sizing purposes. Can be
   // nil.
