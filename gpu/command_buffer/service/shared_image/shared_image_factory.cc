@@ -917,11 +917,11 @@ void SharedImageFactory::LogGetFactoryFailed(gpu::SharedImageUsageSet usage,
   // TODO(crbug.com/423037052): Handle offscreen canvas case for WebView where
   // we fail to find a shared image factory.
   // Suppress crashes due to this client for now.
-  if (new_debug_label == "CanvasResourceRasterGmb") {
+  if (new_debug_label.find("CanvasResourceRasterGmb") != std::string::npos) {
     return;
   }
 #endif
-  SCOPED_CRASH_KEY_STRING32("SIFactory", "DebugLabel", new_debug_label);
+  SCOPED_CRASH_KEY_STRING64("SIFactory", "DebugLabel", new_debug_label);
   SCOPED_CRASH_KEY_STRING64("SIFactory", "Format", format.ToString());
   SCOPED_CRASH_KEY_NUMBER("SIFactory", "Usage", usage);
   SCOPED_CRASH_KEY_STRING64("SIFactory", "GMBType", GmbTypeToString(gmb_type));
@@ -930,7 +930,7 @@ void SharedImageFactory::LogGetFactoryFailed(gpu::SharedImageUsageSet usage,
                         IsSharedBetweenThreads(usage));
   // DumpWithoutCrashing to get crash reports for failure to find a shared image
   // backing factory.
-  // base::debug::DumpWithoutCrashing();
+  base::debug::DumpWithoutCrashing();
 }
 
 bool SharedImageFactory::RegisterBacking(
