@@ -13,7 +13,6 @@ features:
   per_profile: true
 future_on:
 - android
-- fuchsia
 label: Extension IDs the user should be prevented from installing (or * for all)
 owners:
 - lazyboy@chromium.org

@@ -1245,7 +1245,8 @@ TEST_F(PolicyServiceTest, IsFirstPolicyLoadComplete) {
   policy_service_->RemoveObserver(POLICY_DOMAIN_SIGNIN_EXTENSIONS, &observer);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && \
+    !BUILDFLAG(IS_FUCHSIA)
 TEST_F(PolicyServiceTest, DictionaryPoliciesMerging) {
   const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
 
@@ -1462,7 +1463,7 @@ TEST_F(PolicyServiceTest, DictionaryPoliciesMerging_PrecedenceChange) {
   EXPECT_TRUE(VerifyPolicies(chrome_namespace, expected_chrome));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID) &&
-        // !BUILDFLAG(IS_IOS)
+        // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
 
 TEST_F(PolicyServiceTest, ListsPoliciesMerging) {
   const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());

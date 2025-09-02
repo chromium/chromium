@@ -4,8 +4,7 @@
       "win",
       "linux",
       "mac",
-      "chromeos",
-      "fuchsia"
+      "chromeos"
     ],
     "policy_pref_mapping_tests": [
       {

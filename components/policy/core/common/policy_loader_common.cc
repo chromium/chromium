@@ -16,7 +16,7 @@
 namespace policy {
 
 namespace {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
 // Duplicate the extension constants in order to avoid extension dependency.
 // However, those values below must be synced with files in extension folders.
 // In long term, we can refactor the code and create an interface for sensitive
@@ -83,7 +83,7 @@ void RecordInvalidPolicies(const std::string& policy_name) {
   base::UmaHistogramSparse("EnterpriseCheck.InvalidPolicies", details->id);
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
 // Marks the sensitive ExtensionInstallForceList policy entries, returns true if
 // there is any sensitive entries in the policy.
 bool FilterSensitiveExtensionsInstallForcelist(PolicyMap::Entry* map_entry) {
@@ -183,7 +183,7 @@ bool FilterSensitiveExtensionSettings(PolicyMap::Entry* map_entry) {
 
 void FilterSensitivePolicies(PolicyMap* policy) {
   int invalid_policies = 0;
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
   if (FilterSensitiveExtensionsInstallForcelist(
           policy->GetMutable(key::kExtensionInstallForcelist))) {
     invalid_policies++;

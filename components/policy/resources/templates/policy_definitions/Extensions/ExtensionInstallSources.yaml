@@ -10,8 +10,6 @@ example_value:
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 label: URL patterns to allow extension, app, and user script installs from
 owners:
 - dbertoni@chromium.org

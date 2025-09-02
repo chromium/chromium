@@ -24,8 +24,6 @@ features:
 supported_on:
 - chrome.*:112-
 - chrome_os:112-
-future_on:
-- fuchsia
 owners:
 - mpetrisor@chromium.org
 - chromeos-commercial-identity@google.com

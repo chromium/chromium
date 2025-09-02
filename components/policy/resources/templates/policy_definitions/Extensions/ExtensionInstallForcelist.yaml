@@ -27,7 +27,6 @@ features:
   per_profile: true
 future_on:
 - android
-- fuchsia
 label: Extension/App IDs and update URLs to be silently installed
 owners:
 - karandeepb@chromium.org
