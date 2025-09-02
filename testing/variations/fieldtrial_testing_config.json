@@ -13559,8 +13559,12 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "reactivation_order": ""
+                    },
                     "enable_features": [
-                        "IOSOneTimeDefaultBrowserNotification"
+                        "IOSOneTimeDefaultBrowserNotification",
+                        "IOSReactivationNotifications"
                     ]
                 }
             ]
@@ -13627,49 +13631,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "kIOSProactivePasswordGenerationBottomSheet"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IOSProactiveTipsNotifications": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "LensFirst_7day",
-                    "enable_features": [
-                        "IOSReactivationNotifications"
-                    ]
-                },
-                {
-                    "name": "LensFirst_3Day",
-                    "params": {
-                        "reactivation_trigger_time": "72h"
-                    },
-                    "enable_features": [
-                        "IOSReactivationNotifications"
-                    ]
-                },
-                {
-                    "name": "ESBFirst_7Day",
-                    "params": {
-                        "reactivation_order": "8,7,1"
-                    },
-                    "enable_features": [
-                        "IOSReactivationNotifications"
-                    ]
-                },
-                {
-                    "name": "ESBFirst_3Day",
-                    "params": {
-                        "reactivation_order": "8,7,1",
-                        "reactivation_trigger_time": "72h"
-                    },
-                    "enable_features": [
-                        "IOSReactivationNotifications"
                     ]
                 }
             ]
