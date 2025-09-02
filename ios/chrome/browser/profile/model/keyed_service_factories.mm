@@ -120,6 +120,7 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_profile_service_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_download_service_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
+#import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/chrome_enterprise_url_lookup_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/chrome_password_protection_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/hash_realtime_service_factory.h"
@@ -135,6 +136,7 @@
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/screen_time/model/screen_time_buildflags.h"
 #import "ios/chrome/browser/script_blocking/model/script_blocking_rule_applier_service_factory.h"
+#import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_triggering_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_fetcher_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_prepopulate_data_resolver_factory.h"
@@ -246,8 +248,10 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   ios::PasswordManagerLogRouterFactory::GetInstance();
   ios::PlaceholderServiceFactory::GetInstance();
   ios::ProviderStateServiceFactory::GetInstance();
+  ios::RegionalCapabilitiesServiceFactory::GetInstance();
   ios::SearchEngineChoiceServiceFactory::GetInstance();
   ios::ShortcutsBackendFactory::GetInstance();
+  ios::SearchEngineChoiceTriggeringServiceFactory::GetInstance();
   ios::SigninErrorControllerFactory::GetInstance();
   ios::TemplateURLFetcherFactory::GetInstance();
   ios::TemplateURLPrepopulateDataResolverFactory::GetInstance();

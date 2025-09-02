@@ -4,11 +4,17 @@
 
 source_set("model") {
   sources = [
+    "search_engine_choice_triggering_service.h",
+    "search_engine_choice_triggering_service.mm",
+    "search_engine_choice_triggering_service_factory.h",
+    "search_engine_choice_triggering_service_factory.mm",
     "search_engine_choice_util.h",
     "search_engine_choice_util.mm",
   ]
   deps = [
     "//base",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
     "//components/search_engines",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/policy/model",
@@ -16,8 +22,10 @@ source_set("model") {
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/public/provider/chrome/browser/signin:choice_api",
+    "//ios/web/public",
   ]
   frameworks = [ "UIKit.framework" ]
 }
