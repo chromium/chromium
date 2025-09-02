@@ -48,6 +48,7 @@ source_set("impl") {
   deps = [
     ":search",
     "//base",
+    "//chrome/browser/history",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search",
     "//chrome/browser/search/background",

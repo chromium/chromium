@@ -274,6 +274,7 @@ if (!is_android) {
       "//chrome/browser/extensions:test_support",
       "//chrome/browser/extensions/api/extension_action",
       "//chrome/browser/favicon",
+      "//chrome/browser/history",
       "//chrome/browser/prefs",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/signin",

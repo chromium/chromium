@@ -62,6 +62,7 @@ static_library("autofill") {
   ]
   deps = [
     "//chrome/browser:browser_process",
+    "//chrome/browser/history",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles",
     "//chrome/browser/signin",

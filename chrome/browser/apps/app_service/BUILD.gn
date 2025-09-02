@@ -251,6 +251,7 @@ source_set("app_service") {
       "//chrome/browser/ash/system_web_apps/apps/media_app",
       "//chrome/browser/chromeos/arc",
       "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
+      "//chrome/browser/history",
       "//chrome/browser/image_fetcher",
       "//chrome/browser/policy:system_features_disable_list",
       "//chrome/browser/resources",

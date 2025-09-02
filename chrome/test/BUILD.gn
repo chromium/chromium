@@ -518,6 +518,7 @@ static_library("test_support") {
     "//chrome/app:command_ids",
     "//chrome/browser/autofill",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/history",
     "//chrome/browser/permissions",
     "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
     "//chrome/browser/policy/messaging_layer/storage_selector",
@@ -1402,6 +1403,7 @@ source_set("platform_browser_tests") {
     "//chrome/browser:browser_process",
     "//chrome/browser/autocomplete",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/history",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/password_manager/factories",
     "//chrome/browser/policy:test_support",
@@ -1847,6 +1849,7 @@ if (is_android) {
       "//chrome/browser/enterprise/data_controls",
       "//chrome/browser/fast_checkout:test_support",
       "//chrome/browser/flags:flags_android",
+      "//chrome/browser/history",
       "//chrome/browser/ip_protection:browser_tests",
       "//chrome/browser/keyboard_accessory/android:public",
       "//chrome/browser/metrics:test_support",
@@ -3958,6 +3961,7 @@ if (!is_android) {
       "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/contextual_cueing",
       "//chrome/browser/contextual_cueing:impl",
+      "//chrome/browser/history",
       "//chrome/browser/infobars:test_support",
       "//chrome/browser/notifications",
       "//chrome/browser/resource_coordinator",
@@ -7374,6 +7378,7 @@ test("unit_tests") {
   # serial_chooser_context_unittest.cc gets modularized.
   deps += [
     "//chrome/browser:flags",
+    "//chrome/browser/history",
     "//chrome/browser/serial",
     "//chrome/browser/ui/toolbar:test_support",
   ]
@@ -10847,6 +10852,7 @@ if (!is_android) {
       "//chrome/browser/autofill",
       "//chrome/browser/autofill:test_support",
       "//chrome/browser/devtools",
+      "//chrome/browser/history",
       "//chrome/browser/lifetime:termination_notification",
       "//chrome/browser/omnibox",
       "//chrome/browser/password_manager/factories",
@@ -11481,6 +11487,7 @@ if (!is_android && !is_chromeos_device) {
     # gets modularized.
     deps += [
       "//chrome/browser:flags",
+      "//chrome/browser/history",
       "//chrome/browser/privacy_sandbox:test_support",
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/views/location_bar/cookie_controls:interactive_ui_tests",

@@ -200,6 +200,7 @@ source_set("browser_tests") {
       "//chrome/browser/commerce",
       "//chrome/browser/devtools",
       "//chrome/browser/devtools:test_support",
+      "//chrome/browser/history",
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
       "//chrome/browser/optimization_guide",
       "//chrome/browser/optimization_guide:test_support",

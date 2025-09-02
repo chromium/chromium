@@ -138,6 +138,7 @@ source_set("impl") {
     ":autofill",
     "//chrome/browser:browser_process",
     "//chrome/browser/autofill",
+    "//chrome/browser/history",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/password_manager/factories",
     "//chrome/browser/plus_addresses",

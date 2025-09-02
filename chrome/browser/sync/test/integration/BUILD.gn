@@ -18,6 +18,7 @@ source_set("sync_integration_tests_impl") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   deps = [
     ":sync_integration_test_support",
+    "//chrome/browser/history",
     "//chrome/browser/password_manager/factories",
     "//chrome/browser/plus_addresses",
     "//chrome/browser/prefs",
@@ -438,6 +439,7 @@ source_set("sync_integration_test_support") {
     "//base",
     "//chrome/browser:main_extra_parts",
     "//chrome/browser/autofill",
+    "//chrome/browser/history",
     "//chrome/browser/password_manager/factories",
     "//chrome/browser/profiles",
     "//chrome/browser/search_engines",

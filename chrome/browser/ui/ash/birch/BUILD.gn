@@ -49,6 +49,7 @@ static_library("birch") {
     "//chrome/browser/ash/release_notes",
     "//chrome/browser/ash/video_conference",
     "//chrome/browser/favicon",
+    "//chrome/browser/history",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
     "//chrome/browser/sync",

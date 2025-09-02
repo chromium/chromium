@@ -36,6 +36,7 @@ static_library("omnibox") {
     "//chrome/browser/autocomplete",
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/favicon",
+    "//chrome/browser/history",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
     "//chromeos/ash/components/string_matching",

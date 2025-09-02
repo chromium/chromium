@@ -598,7 +598,6 @@ static_library("browser") {
     "history/domain_diversity_reporter_factory.cc",
     "history/domain_diversity_reporter_factory.h",
     "history/history_service_factory.cc",
-    "history/history_service_factory.h",
     "history/history_tab_helper.cc",
     "history/history_tab_helper.h",
     "history/history_utils.cc",
@@ -1835,7 +1834,7 @@ static_library("browser") {
     # - profile_password_store_factory.h"
     "//chrome/browser/ui/webauthn:impl",
 
-    # TODO(crbug.com/432421124): Remove this circular dependency when history_service_factory.h,
+    # TODO(crbug.com/432421124): Remove this circular dependency when
     # task_tab_helper.h and supervised_user_navigation_observer.h get componentized.
     "//chrome/browser/ui/sync:impl",
 
@@ -1936,6 +1935,7 @@ static_library("browser") {
     "//chrome/browser/file_system_access:impl",
     "//chrome/browser/fingerprinting_protection",
     "//chrome/browser/first_party_sets",
+    "//chrome/browser/history",
     "//chrome/browser/image_decoder",
     "//chrome/browser/image_fetcher",
     "//chrome/browser/ip_protection",
@@ -9214,6 +9214,7 @@ static_library("test_support") {
     ":lcp_critical_path_predictor_proto",
     "//build:chromeos_buildflags",
     "//chrome/app/theme:theme_resources",
+    "//chrome/browser/history",
     "//chrome/browser/policy/messaging_layer/proto:crd_event_proto",
     "//chrome/browser/search_engine_choice",
     "//chrome/browser/search_engines",

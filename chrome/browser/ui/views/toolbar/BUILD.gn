@@ -339,6 +339,7 @@ if (toolkit_views) {
       "//chrome/app:generated_resources",
       "//chrome/browser",
       "//chrome/browser:flags",
+      "//chrome/browser/history",
       "//chrome/browser/sessions",
       "//chrome/browser/ui:layout_constants",
       "//chrome/browser/ui:ui_features",

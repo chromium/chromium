@@ -82,6 +82,7 @@ source_set("impl") {
       "//chrome/browser/bitmap_fetcher",
       "//chrome/browser/extensions/api/omnibox",
       "//chrome/browser/favicon",
+      "//chrome/browser/history",
       "//chrome/browser/omnibox",
       "//chrome/browser/preloading/search_preload",
       "//chrome/browser/profiles:profile",
@@ -226,6 +227,7 @@ if (!is_android) {
         ]
         deps += [
           ":omnibox",
+          "//chrome/browser/history",
           "//chrome/browser/ui:browser_navigator_params_headers",
           "//chrome/browser/ui/browser_window",
         ]

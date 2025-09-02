@@ -43,6 +43,7 @@ source_set("exclusive_access") {
   ]
   deps = [
     "//chrome/browser/app_mode",
+    "//chrome/browser/history",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:ui_features",
     "//chrome/common:constants",

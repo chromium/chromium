@@ -24,6 +24,7 @@ source_set("impl") {
   deps = [
     ":commerce",
     "//chrome/browser:browser_process",
+    "//chrome/browser/history",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/persisted_state_db",
     "//chrome/browser/signin",

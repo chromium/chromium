@@ -238,6 +238,7 @@ source_set("unit_tests") {
     ":permissions_proto",
     ":test_support",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/history",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/permissions/system",
     "//chrome/browser/search_engines",
