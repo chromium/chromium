@@ -10,6 +10,7 @@
 #include <optional>
 #include <unordered_set>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -104,11 +105,13 @@ CertProvisioningSchedulerImpl::CreateDeviceCertProvisioningScheduler(
     PrefService* local_state,
     policy::CloudPolicyClient* cloud_policy_client,
     invalidation::InvalidationListener* invalidation_listener) {
+  CHECK(local_state);
+
   platform_keys::PlatformKeysService* platform_keys_service =
       GetPlatformKeysService(CertScope::kDevice, /*profile=*/nullptr);
   NetworkStateHandler* network_state_handler = GetNetworkStateHandler();
 
-  if (!local_state || !cloud_policy_client || !network_state_handler ||
+  if (!cloud_policy_client || !network_state_handler ||
       !platform_keys_service) {
     LOG(ERROR) << "Failed to create device certificate provisioning scheduler";
     return nullptr;
