@@ -146,8 +146,6 @@ component("gfx") {
     "skbitmap_operations.cc",
     "skbitmap_operations.h",
     "swap_result.cc",
-    "sys_color_change_listener.cc",
-    "sys_color_change_listener.h",
     "text_constants.h",
     "text_elider.cc",
     "text_elider.h",
@@ -418,8 +416,6 @@ component("gfx") {
       "gdi_util.h",
       "icon_util.cc",
       "icon_util.h",
-      "sys_color_change_listener.cc",
-      "sys_color_change_listener.h",
     ]
   }
 

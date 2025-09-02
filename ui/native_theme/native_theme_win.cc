@@ -303,8 +303,7 @@ void NativeThemeWin::Paint(cc::PaintCanvas* canvas,
 NativeThemeWin::NativeThemeWin(bool configure_web_instance,
                                bool should_only_use_dark_colors)
     : NativeTheme(should_only_use_dark_colors),
-      supports_windows_dark_mode_(base::win::IsDarkModeAvailable()),
-      color_change_listener_(this) {
+      supports_windows_dark_mode_(base::win::IsDarkModeAvailable()) {
   // By default UI should not use the system accent color.
   set_should_use_system_accent_color(false);
 
@@ -409,7 +408,15 @@ void NativeThemeWin::CloseHandlesInternal() {
   }
 }
 
-void NativeThemeWin::OnSysColorChange() {
+void NativeThemeWin::OnWndProc(HWND hwnd,
+                               UINT message,
+                               WPARAM wparam,
+                               LPARAM lparam) {
+  if (message != WM_SYSCOLORCHANGE &&
+      (message != WM_SETTINGCHANGE || wparam != SPI_SETHIGHCONTRAST)) {
+    return;
+  }
+
   UpdateSystemColors();
   if (!IsForcedHighContrast()) {
     set_forced_colors(IsUsingHighContrastThemeInternal());
