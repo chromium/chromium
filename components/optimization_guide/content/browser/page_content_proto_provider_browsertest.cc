@@ -10,6 +10,7 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/optimization_guide/content/browser/mock_media_transcript_provider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/web_contents.h"
@@ -95,9 +96,11 @@ blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
   return request;
 }
 
-blink::mojom::AIPageContentOptionsPtr GetActionableAIPageContentOptions() {
+blink::mojom::AIPageContentOptionsPtr GetActionableAIPageContentOptions(
+    bool include_same_site_only = false) {
   auto request = ActionableAIPageContentOptions(
       /*on_critical_path =*/true);
+  request->include_same_site_only = include_same_site_only;
   return request;
 }
 
@@ -903,6 +906,67 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
                    c_geometry.outer_bounding_box().y());
   EXPECT_NE(b_geometry.outer_bounding_box().x(),
             c_geometry.outer_bounding_box().x());
+}
+
+IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
+                       AIPageContentMultipleMixedCrossSiteFrames) {
+  LoadPage(https_server()->GetURL("a.com", "/iframe_mixed_cross_site.html"),
+           GetActionableAIPageContentOptions(/*include_same_site_only=*/true));
+
+  const auto& root_node = ActionableContentRootNode();
+
+  EXPECT_EQ(root_node.children_nodes().size(), 2);
+
+  const auto& same_site_frame = root_node.children_nodes()[0];
+  EXPECT_EQ(same_site_frame.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  const auto& same_site_frame_data =
+      same_site_frame.content_attributes().iframe_data();
+  AssertValidOrigin(same_site_frame_data.frame_data().security_origin(),
+                    ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0)
+                        ->GetLastCommittedOrigin());
+  EXPECT_FALSE(same_site_frame_data.likely_ad_frame());
+
+  const auto& same_site_frame_root = ContentRootNodeForFrameActionableMode(
+      same_site_frame.children_nodes()[0]);
+  EXPECT_EQ(same_site_frame_root.children_nodes().size(), 1);
+  AssertIsTextNode(same_site_frame_root.children_nodes()[0],
+                   "This page has no title.\n\n");
+  const auto& same_site_geometry =
+      same_site_frame.content_attributes().geometry();
+  AssertRectsEqual(same_site_geometry.outer_bounding_box(),
+                   same_site_geometry.visible_bounding_box());
+
+  const auto& cross_site_frame = root_node.children_nodes()[1];
+  EXPECT_EQ(cross_site_frame.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  const auto& cross_site_frame_data =
+      cross_site_frame.content_attributes().iframe_data();
+
+  // Ensure the frame data isn't populated and a redaction reason is included.
+  EXPECT_FALSE(cross_site_frame_data.likely_ad_frame());
+  EXPECT_FALSE(cross_site_frame_data.has_frame_data());
+  EXPECT_TRUE(cross_site_frame_data.has_redacted_frame_metadata());
+  EXPECT_EQ(cross_site_frame_data.redacted_frame_metadata().reason(),
+            optimization_guide::proto::IframeData_RedactedFrameMetadata::
+                REASON_CROSS_SITE);
+
+  // The cross-site frame itself should have no children.
+  EXPECT_EQ(cross_site_frame.children_nodes().size(), 0);
+
+  const auto& cross_site_frame_geometry =
+      cross_site_frame.content_attributes().geometry();
+  AssertRectsEqual(cross_site_frame_geometry.outer_bounding_box(),
+                   cross_site_frame_geometry.visible_bounding_box());
+
+  EXPECT_ALMOST_EQ(same_site_geometry.outer_bounding_box().width(),
+                   cross_site_frame_geometry.outer_bounding_box().width());
+  EXPECT_ALMOST_EQ(same_site_geometry.outer_bounding_box().height(),
+                   cross_site_frame_geometry.outer_bounding_box().height());
+  EXPECT_ALMOST_EQ(same_site_geometry.outer_bounding_box().y(),
+                   cross_site_frame_geometry.outer_bounding_box().y());
+  EXPECT_NE(same_site_geometry.outer_bounding_box().x(),
+            cross_site_frame_geometry.outer_bounding_box().x());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

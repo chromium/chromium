@@ -9,6 +9,7 @@
 #include "base/trace_event/trace_id_helper.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom-blink.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom-forward.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
@@ -54,6 +55,7 @@
 #include "third_party/blink/renderer/modules/content_extraction/ai_page_content_debug_utils.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -1047,18 +1049,37 @@ void AIPageContentAgent::ContentBuilder::ProcessIframe(
   content_node.content_attributes->iframe_data = std::move(iframe_data);
 
   auto* local_frame = DynamicTo<LocalFrame>(frame);
+  if (!local_frame) {
+    return;
+  }
+
+  if (options_->include_same_site_only && !frame.IsOutermostMainFrame()) {
+    const SecurityOrigin* frame_origin =
+        local_frame->GetSecurityContext()->GetSecurityOrigin();
+    const SecurityOrigin* main_frame_origin =
+        local_frame->Top()->GetSecurityContext()->GetSecurityOrigin();
+    CHECK(frame_origin);
+    CHECK(main_frame_origin);
+    if (!frame_origin->IsSameSiteWith(main_frame_origin)) {
+      content_node.content_attributes->iframe_data->content =
+          mojom::blink::AIPageContentIframeContent::NewRedactedFrameMetadata(
+              mojom::blink::RedactedFrameMetadata::New(
+                  mojom::blink::RedactedFrameMetadata::Reason::kCrossSite));
+      return;
+    }
+  }
 
   // Add interaction metadata before walking the tree to ensure we promote
   // interactive DOM nodes to ContentNodes.
-  if (local_frame && local_frame->GetDocument()) {
+  if (local_frame->GetDocument()) {
     auto frame_data = mojom::blink::AIPageContentFrameData::New();
     AddFrameData(*local_frame, *frame_data);
-    content_node.content_attributes->iframe_data->local_frame_data =
-        std::move(frame_data);
+    content_node.content_attributes->iframe_data->content =
+        mojom::blink::AIPageContentIframeContent::NewLocalFrameData(
+            std::move(frame_data));
   }
 
-  auto* child_layout_view =
-      local_frame ? local_frame->ContentLayoutObject() : nullptr;
+  auto* child_layout_view = local_frame->ContentLayoutObject();
   if (child_layout_view) {
     RecursionData child_recursion_data(*child_layout_view->Style());
     // The aria attribute values don't pierce frame boundaries.
@@ -1071,9 +1092,9 @@ void AIPageContentAgent::ContentBuilder::ProcessIframe(
         MaybeGenerateContentNode(*child_layout_view, child_recursion_data);
     CHECK(child_content_node);
 
-    // We could consider removing an iframe with no visible content. But this is
-    // likely not common and should be done in the browser so it's consistently
-    // done for local and remote frames.
+    // We could consider removing an iframe with no visible content. But this
+    // is likely not common and should be done in the browser so it's
+    // consistently done for local and remote frames.
     WalkChildren(*child_layout_view, *child_content_node, child_recursion_data);
     content_node.children_nodes.emplace_back(std::move(child_content_node));
   }

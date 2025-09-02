@@ -133,6 +133,7 @@ testing/data/fractional-scroll-fixed-position.html
 testing/data/fragment_middle_click.html
 testing/data/frame-a-b-c.html
 testing/data/frame.html
+testing/data/frame_another.html
 testing/data/frame_owner_properties.html
 testing/data/frame_timing_1.html
 testing/data/frame_timing_2.html
@@ -311,8 +312,8 @@ testing/data/navigation-api/onnavigate-window-stop.html
 testing/data/no_scale_for_you.html
 testing/data/no_viewport_tag.html
 testing/data/nodeimage.html
-testing/data/non_UTF8.wasm
 testing/data/non-scrollable.html
+testing/data/non_UTF8.wasm
 testing/data/non_user_input_text_update.html
 testing/data/not_an_image.ico
 testing/data/notifications/100x100.png

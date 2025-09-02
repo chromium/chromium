@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom-data-view.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -60,6 +61,10 @@ class AIPageContentAgentTest : public testing::Test {
     helper_.InitializeWithSettings(&UpdateWebSettings);
     helper_.Resize(kWindowSize);
     ASSERT_TRUE(helper_.LocalMainFrame());
+  }
+
+  void TearDown() override {
+    url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
   }
 
   void CheckListItemWithText(const mojom::blink::AIPageContentNode& node,
@@ -639,6 +644,128 @@ TEST_F(AIPageContentAgentTest, IFrameWithContent) {
 
   const auto& iframe_root = *iframe.children_nodes[0];
   CheckTextNode(*iframe_root.children_nodes[0], "inside iframe");
+}
+
+TEST_F(AIPageContentAgentTest, CrossSiteIframeIncluded) {
+  KURL main_url = url_test_helpers::ToKURL("http://example.com/main.html");
+  KURL cross_origin_url =
+      url_test_helpers::ToKURL("http://www.example.com/frame.html");
+  KURL cross_site_url =
+      url_test_helpers::ToKURL("http://altostrat.com/frame_another.html");
+
+  // Mock the cross origin, same-site iframe's content.
+  url_test_helpers::RegisterMockedURLLoadFromBase(
+      WebString::FromUTF8("http://www.example.com/"), test::CoreTestDataPath(),
+      WebString::FromUTF8("frame.html"));
+
+  // Mock the cross-site iframe's content.
+  url_test_helpers::RegisterMockedURLLoadFromBase(
+      WebString::FromUTF8("http://altostrat.com/"), test::CoreTestDataPath(),
+      WebString::FromUTF8("frame_another.html"));
+
+  // Load the main page which contains the same-site iframe and the cross-origin
+  // iframe.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "<iframe src='http://www.example.com/frame.html'></iframe>"
+      "<iframe src='http://altostrat.com/frame_another.html'></iframe>"
+      "</body>",
+      main_url);
+
+  // Let the iframe load.
+  test::RunPendingTasks();
+
+  auto options = GetAIPageContentOptionsForTest();
+
+  options.include_same_site_only = false;
+  GetAIPageContent(options);
+
+  const auto& root = ContentRootNode();
+  ASSERT_EQ(root.children_nodes.size(), 2u);
+
+  // Both nodes should be present.
+  const auto& same_site_iframe_node = *root.children_nodes[0];
+  const auto& cross_site_iframe_node = *root.children_nodes[1];
+  CheckIframeNode(same_site_iframe_node);
+  CheckIframeNode(cross_site_iframe_node);
+
+  // The contents of both nodes should be present as well.
+  ASSERT_EQ(same_site_iframe_node.children_nodes.size(), 1u);
+  ASSERT_EQ(cross_site_iframe_node.children_nodes.size(), 1u);
+
+  const auto& same_site_iframe_root = *same_site_iframe_node.children_nodes[0];
+  const auto& cross_site_iframe_root =
+      *cross_site_iframe_node.children_nodes[0];
+
+  CheckRootNode(same_site_iframe_root);
+  CheckRootNode(cross_site_iframe_root);
+  ASSERT_EQ(same_site_iframe_root.children_nodes.size(), 1u);
+  ASSERT_EQ(cross_site_iframe_root.children_nodes.size(), 1u);
+
+  CheckTextNode(*same_site_iframe_root.children_nodes[0], "I am an iframe\n");
+  CheckTextNode(*cross_site_iframe_root.children_nodes[0],
+                "I am another iframe\n");
+}
+
+TEST_F(AIPageContentAgentTest, CrossSiteIframeExcluded) {
+  KURL main_url = url_test_helpers::ToKURL("http://example.com/main.html");
+  KURL cross_origin_url =
+      url_test_helpers::ToKURL("http://www.example.com/frame.html");
+  KURL cross_site_url =
+      url_test_helpers::ToKURL("http://altostrat.com/frame_another.html");
+
+  // Mock the cross origin, same-site iframe's content.
+  url_test_helpers::RegisterMockedURLLoadFromBase(
+      WebString::FromUTF8("http://www.example.com/"), test::CoreTestDataPath(),
+      WebString::FromUTF8("frame.html"));
+
+  // Mock the cross-site iframe's content.
+  url_test_helpers::RegisterMockedURLLoadFromBase(
+      WebString::FromUTF8("http://altostrat.com/"), test::CoreTestDataPath(),
+      WebString::FromUTF8("frame_another.html"));
+
+  // Load the main page which contains the same-site iframe and the cross-origin
+  // iframe.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "<iframe src='http://www.example.com/frame.html'></iframe>"
+      "<iframe src='http://altostrat.com/frame_another.html'></iframe>"
+      "</body>",
+      main_url);
+
+  // Let the iframe load.
+  test::RunPendingTasks();
+
+  auto options = GetAIPageContentOptionsForTest();
+
+  options.include_same_site_only = true;
+  GetAIPageContent(options);
+
+  const auto& root = ContentRootNode();
+  ASSERT_EQ(root.children_nodes.size(), 2u);
+
+  // Both nodes should be present.
+  const auto& same_site_iframe_node = *root.children_nodes[0];
+  const auto& cross_site_iframe_node = *root.children_nodes[1];
+  CheckIframeNode(same_site_iframe_node);
+  CheckIframeNode(cross_site_iframe_node);
+
+  // Only the contents of the same-site iframe should be present.
+  ASSERT_EQ(same_site_iframe_node.children_nodes.size(), 1u);
+  ASSERT_TRUE(cross_site_iframe_node.children_nodes.empty());
+  ASSERT_EQ(cross_site_iframe_node.content_attributes->iframe_data->content
+                ->get_redacted_frame_metadata()
+                ->reason,
+            blink::mojom::RedactedFrameMetadata_Reason::kCrossSite);
+
+  const auto& same_site_iframe_root = *same_site_iframe_node.children_nodes[0];
+
+  CheckRootNode(same_site_iframe_root);
+  ASSERT_EQ(same_site_iframe_root.children_nodes.size(), 1u);
+
+  CheckTextNode(*same_site_iframe_root.children_nodes[0], "I am an iframe\n");
 }
 
 TEST_F(AIPageContentAgentTest, NoLayoutElement) {
@@ -2334,8 +2461,9 @@ TEST_F(AIPageContentAgentTest, SelectionInIframe) {
       Content()->frame_data->frame_interaction_info;
   ASSERT_FALSE(frame_interaction_info->selection);
 
+  EXPECT_TRUE(iframe.content_attributes->iframe_data->content);
   const auto& iframe_interaction_info =
-      iframe.content_attributes->iframe_data->local_frame_data
+      iframe.content_attributes->iframe_data->content->get_local_frame_data()
           ->frame_interaction_info;
   ASSERT_TRUE(iframe_interaction_info->selection);
   const auto& selection = *iframe_interaction_info->selection;
@@ -2512,13 +2640,17 @@ TEST_F(AIPageContentAgentTest, MetaTags) {
             mojom::blink::AIPageContentAttributeType::kIframe);
 
   const auto& iframe_data = *iframe.content_attributes->iframe_data;
-  EXPECT_EQ(iframe_data.local_frame_data->meta_data.size(), 2u);
 
-  EXPECT_EQ(iframe_data.local_frame_data->meta_data[0]->name, "author");
-  EXPECT_EQ(iframe_data.local_frame_data->meta_data[0]->content, "Gary");
+  EXPECT_TRUE(iframe.content_attributes->iframe_data->content);
+  EXPECT_EQ(iframe_data.content->get_local_frame_data()->meta_data.size(), 2u);
+  EXPECT_EQ(iframe_data.content->get_local_frame_data()->meta_data[0]->name,
+            "author");
+  EXPECT_EQ(iframe_data.content->get_local_frame_data()->meta_data[0]->content,
+            "Gary");
 
-  EXPECT_EQ(iframe_data.local_frame_data->meta_data[1]->name, "keywords");
-  EXPECT_EQ(iframe_data.local_frame_data->meta_data[1]->content,
+  EXPECT_EQ(iframe_data.content->get_local_frame_data()->meta_data[1]->name,
+            "keywords");
+  EXPECT_EQ(iframe_data.content->get_local_frame_data()->meta_data[1]->content,
             "HTML, CSS, JavaScript");
 }
 
@@ -2556,10 +2688,13 @@ TEST_F(AIPageContentAgentTest, NestedIframesMetaTags) {
             mojom::blink::AIPageContentAttributeType::kIframe);
 
   const auto& iframe_data = *iframe.content_attributes->iframe_data;
-  EXPECT_EQ(iframe_data.local_frame_data->meta_data.size(), 1u);
+  EXPECT_TRUE(iframe_data.content);
+  EXPECT_EQ(iframe_data.content->get_local_frame_data()->meta_data.size(), 1u);
 
-  EXPECT_EQ(iframe_data.local_frame_data->meta_data[0]->name, "author");
-  EXPECT_EQ(iframe_data.local_frame_data->meta_data[0]->content, "Gary");
+  EXPECT_EQ(iframe_data.content->get_local_frame_data()->meta_data[0]->name,
+            "author");
+  EXPECT_EQ(iframe_data.content->get_local_frame_data()->meta_data[0]->content,
+            "Gary");
 
   EXPECT_EQ(iframe.children_nodes.size(), 1u);
 
@@ -2572,10 +2707,15 @@ TEST_F(AIPageContentAgentTest, NestedIframesMetaTags) {
             mojom::blink::AIPageContentAttributeType::kIframe);
 
   const auto& subiframe_data = *subiframe.content_attributes->iframe_data;
-  EXPECT_EQ(subiframe_data.local_frame_data->meta_data.size(), 1u);
+  EXPECT_TRUE(subiframe_data.content);
+  EXPECT_EQ(subiframe_data.content->get_local_frame_data()->meta_data.size(),
+            1u);
 
-  EXPECT_EQ(subiframe_data.local_frame_data->meta_data[0]->name, "author");
-  EXPECT_EQ(subiframe_data.local_frame_data->meta_data[0]->content, "Jordan");
+  EXPECT_EQ(subiframe_data.content->get_local_frame_data()->meta_data[0]->name,
+            "author");
+  EXPECT_EQ(
+      subiframe_data.content->get_local_frame_data()->meta_data[0]->content,
+      "Jordan");
 }
 
 TEST_F(AIPageContentAgentTest, Title) {
@@ -2949,8 +3089,10 @@ TEST_F(AIPageContentAgentTest, PaidContentSubframe) {
   const auto& iframe = nodes[1];
   EXPECT_EQ(iframe->content_attributes->attribute_type,
             mojom::blink::AIPageContentAttributeType::kIframe);
-  EXPECT_TRUE(iframe->content_attributes->iframe_data->local_frame_data
-                  ->contains_paid_content);
+  EXPECT_TRUE(iframe->content_attributes->iframe_data->content);
+  EXPECT_TRUE(
+      iframe->content_attributes->iframe_data->content->get_local_frame_data()
+          ->contains_paid_content);
 
   auto& children = iframe->children_nodes[0]->children_nodes;
   EXPECT_FALSE(
@@ -3034,8 +3176,10 @@ TEST_F(AIPageContentAgentTest, PaidContentSubframeMicrodata) {
   const auto& iframe1 = nodes[2];
   EXPECT_EQ(iframe1->content_attributes->attribute_type,
             mojom::blink::AIPageContentAttributeType::kIframe);
-  EXPECT_TRUE(iframe1->content_attributes->iframe_data->local_frame_data
-                  ->contains_paid_content);
+  EXPECT_TRUE(iframe1->content_attributes->iframe_data->content);
+  EXPECT_TRUE(
+      iframe1->content_attributes->iframe_data->content->get_local_frame_data()
+          ->contains_paid_content);
 
   const auto& children1 = iframe1->children_nodes[0]->children_nodes;
   EXPECT_FALSE(
@@ -3048,8 +3192,10 @@ TEST_F(AIPageContentAgentTest, PaidContentSubframeMicrodata) {
   const auto& iframe2 = nodes[3];
   EXPECT_EQ(iframe2->content_attributes->attribute_type,
             mojom::blink::AIPageContentAttributeType::kIframe);
-  EXPECT_FALSE(iframe2->content_attributes->iframe_data->local_frame_data
-                   ->contains_paid_content);
+  EXPECT_TRUE(iframe2->content_attributes->iframe_data->content);
+  EXPECT_FALSE(
+      iframe2->content_attributes->iframe_data->content->get_local_frame_data()
+          ->contains_paid_content);
 
   const auto& children2 = iframe2->children_nodes[0]->children_nodes;
   EXPECT_FALSE(
@@ -3062,8 +3208,10 @@ TEST_F(AIPageContentAgentTest, PaidContentSubframeMicrodata) {
   const auto& iframe3 = nodes[4];
   EXPECT_EQ(iframe3->content_attributes->attribute_type,
             mojom::blink::AIPageContentAttributeType::kIframe);
-  EXPECT_TRUE(iframe3->content_attributes->iframe_data->local_frame_data
-                  ->contains_paid_content);
+  EXPECT_TRUE(iframe3->content_attributes->iframe_data->content);
+  EXPECT_TRUE(
+      iframe3->content_attributes->iframe_data->content->get_local_frame_data()
+          ->contains_paid_content);
 
   const auto& children3 = iframe3->children_nodes[0]->children_nodes;
   EXPECT_FALSE(

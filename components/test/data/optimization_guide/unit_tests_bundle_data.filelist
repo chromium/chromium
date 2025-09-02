@@ -20,6 +20,7 @@
 //components/test/data/optimization_guide/for_label.html
 //components/test/data/optimization_guide/i18n_visibility_test_model.tflite
 //components/test/data/optimization_guide/iframe_cross_site.html
+//components/test/data/optimization_guide/iframe_mixed_cross_site.html
 //components/test/data/optimization_guide/iframe_same_site.html
 //components/test/data/optimization_guide/invalid_model.crx3
 //components/test/data/optimization_guide/label_not_actionable.html

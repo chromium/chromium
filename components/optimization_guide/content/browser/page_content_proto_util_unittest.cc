@@ -590,21 +590,21 @@ TEST(PageContentProtoUtilTest, ConvertIframeData) {
   auto iframe_data = blink::mojom::AIPageContentIframeData::New();
   iframe_data->frame_token = iframe_token.frame_token;
   iframe_data->likely_ad_frame = true;
-  iframe_data->local_frame_data = blink::mojom::AIPageContentFrameData::New();
-  iframe_data->local_frame_data->frame_interaction_info =
+  auto frame_data = blink::mojom::AIPageContentFrameData::New();
+  frame_data->frame_interaction_info =
       blink::mojom::AIPageContentFrameInteractionInfo::New();
-  iframe_data->local_frame_data->frame_interaction_info->selection =
+  frame_data->frame_interaction_info->selection =
       blink::mojom::AIPageContentSelection::New();
-  iframe_data->local_frame_data->frame_interaction_info->selection
-      ->selected_text = "selected text";
-  iframe_data->local_frame_data->frame_interaction_info->selection
-      ->start_dom_node_id = 1;
-  iframe_data->local_frame_data->frame_interaction_info->selection
-      ->end_dom_node_id = 2;
-  iframe_data->local_frame_data->frame_interaction_info->selection
-      ->start_offset = 3;
-  iframe_data->local_frame_data->frame_interaction_info->selection->end_offset =
-      4;
+  frame_data->frame_interaction_info->selection->selected_text =
+      "selected text";
+  frame_data->frame_interaction_info->selection->start_dom_node_id = 1;
+  frame_data->frame_interaction_info->selection->end_dom_node_id = 2;
+  frame_data->frame_interaction_info->selection->start_offset = 3;
+  frame_data->frame_interaction_info->selection->end_offset = 4;
+  iframe_data->content =
+      blink::mojom::AIPageContentIframeContent::NewLocalFrameData(
+          std::move(frame_data));
+
   root_content->root_node->children_nodes.back()
       ->content_attributes->iframe_data = std::move(iframe_data);
 

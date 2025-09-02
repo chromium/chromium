@@ -37,11 +37,17 @@ struct TargetNodeInfo {
   raw_ptr<const optimization_guide::proto::ContentNode> node = nullptr;
 };
 
-using AIPageContentMap = base::flat_map<content::GlobalRenderFrameHostToken,
-                                        blink::mojom::AIPageContentPtr>;
+using AIPageContentMap =
+    base::flat_map<content::GlobalRenderFrameHostToken,
+                   std::variant<blink::mojom::AIPageContentPtr,
+                                blink::mojom::RedactedFrameMetadataPtr>>;
 
 // A set of frame tokens that have been seen during conversion.
 using FrameTokenSet = base::flat_set<content::GlobalRenderFrameHostToken>;
+
+using FrameOrRedaction =
+    std::variant<const blink::mojom::AIPageContentFrameData*,
+                 const blink::mojom::RedactedFrameMetadata*>;
 
 // A callback to get the RenderFrameInfo for a given frame token.
 using GetRenderFrameInfo =

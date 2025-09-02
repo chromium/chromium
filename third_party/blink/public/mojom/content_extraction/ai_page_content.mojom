@@ -309,6 +309,25 @@ struct AIPageContentFrameData {
   array<ScriptTool> script_tools;
 };
 
+// Provides metadata for local redacted frames.
+struct RedactedFrameMetadata {
+  enum Reason {
+    // This iframe was redacted because it is not on the same eTLD+1 site as
+    // the top-level frame.
+    kCrossSite,
+    // This iframe was redacted because it is not on the same origin as the
+    // top-level frame.
+    kCrossOrigin,
+  };
+  // Reason this iframe was redacted.
+  Reason reason;
+};
+
+union AIPageContentIframeContent {
+  AIPageContentFrameData local_frame_data;
+  RedactedFrameMetadata redacted_frame_metadata;
+};
+
 // Provides metadata for frames (local and remote) accessible from the
 // LocalFrameRoot of the corresponding AIPageContentAgent.
 struct AIPageContentIframeData {
@@ -321,7 +340,7 @@ struct AIPageContentIframeData {
   // Data common to all local frames (main and embedded). If this is a remote
   // frame, this metadata will be part of the AIPageContent pulled from the
   // local frame's renderer process.
-  AIPageContentFrameData? local_frame_data;
+  AIPageContentIframeContent? content;
 };
 
 struct AIPageContentTableData {
@@ -501,6 +520,10 @@ struct AIPageContentOptions {
   // Note: This option is not folded into AIPageContentMode since this
   // information is not added to the proto.
   int32 max_meta_elements = 0;
+
+  // If enabled, only include frames that are same-site with the top level
+  // frame's origin. This implies same-site cross-origin frames are included.
+  bool include_same_site_only = false;
 };
 
 // Used to obtain the AIPageContent representation for Documents. Lives in the
