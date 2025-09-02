@@ -400,8 +400,6 @@ class CORE_EXPORT HTMLCanvasElement final
 
   void OnWidthOrHeightAssigned();
 
-  void SetSurfaceSize(gfx::Size);
-
   bool SizeChangesAreAllowed(ExceptionState& exception_state);
 
   bool PaintsIntoCanvasBuffer() const;

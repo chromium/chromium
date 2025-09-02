@@ -985,7 +985,18 @@ void HTMLCanvasElement::OnWidthOrHeightAssigned() {
     return;
   }
 
-  SetSurfaceSize(new_size);
+  size_ = new_size;
+  if (RenderingContext()) {
+    RenderingContext()->SizeChanged();
+  }
+
+  DiscardResources();
+  if (IsRenderingContext2D() && context_->isContextLost()) {
+    context_->RestoreFromInvalidSizeIfNeeded();
+  }
+  if (frame_dispatcher_) {
+    frame_dispatcher_->Reshape(Size());
+  }
 
   if ((IsWebGL() && old_size != Size()) || IsWebGPU()) {
     context_->Reshape(width(), height());
@@ -1261,20 +1272,6 @@ bool HTMLCanvasElement::IsPrinting() const {
 
 UkmParameters HTMLCanvasElement::GetUkmParameters() {
   return {GetDocument().UkmRecorder(), GetDocument().UkmSourceID()};
-}
-
-void HTMLCanvasElement::SetSurfaceSize(gfx::Size size) {
-  size_ = size;
-  if (RenderingContext()) {
-    RenderingContext()->SizeChanged();
-  }
-
-  DiscardResources();
-  if (IsRenderingContext2D() && context_->isContextLost()) {
-    context_->RestoreFromInvalidSizeIfNeeded();
-  }
-  if (frame_dispatcher_)
-    frame_dispatcher_->Reshape(Size());
 }
 
 const AtomicString HTMLCanvasElement::ImageSourceURL() const {
