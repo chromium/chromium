@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/capture/video/android/video_capture_device_android.h"
 
 #include <stdint.h>
@@ -17,6 +12,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -364,15 +360,20 @@ void VideoCaptureDeviceAndroid::OnI420FrameAvailable(
   const int y_plane_length = width * height;
   const int uv_plane_length = y_plane_length / 4;
   const int buffer_length = y_plane_length + uv_plane_length * 2;
-  auto buffer = std::make_unique<uint8_t[]>(buffer_length);
+  auto buffer = base::HeapArray<uint8_t>::Uninit(
+      base::checked_cast<size_t>(buffer_length));
+
+  auto dst_y_span = buffer.subspan(0, y_plane_length);
+  auto dst_u_span = buffer.subspan(y_plane_length, uv_plane_length);
+  auto dst_v_span =
+      buffer.subspan(y_plane_length + uv_plane_length, uv_plane_length);
 
   libyuv::Android420ToI420(y_src, y_stride, u_src, uv_row_stride, v_src,
-                           uv_row_stride, uv_pixel_stride, buffer.get(), width,
-                           buffer.get() + y_plane_length, width / 2,
-                           buffer.get() + y_plane_length + uv_plane_length,
-                           width / 2, width, height);
+                           uv_row_stride, uv_pixel_stride, dst_y_span.data(),
+                           width, dst_u_span.data(), width / 2,
+                           dst_v_span.data(), width / 2, width, height);
 
-  SendIncomingDataToClient(buffer.get(), buffer_length, rotation, current_time,
+  SendIncomingDataToClient(buffer.data(), buffer_length, rotation, current_time,
                            capture_time);
 }
 
