@@ -6622,7 +6622,7 @@
       "hchao@chromium.org",
       "chrome-secure-web-and-net@chromium.org"
     ],
-    "expiry_milestone": 142
+    "expiry_milestone": 146
   },
   {
     "name": "local-network-access-check-webrtc",
