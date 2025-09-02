@@ -587,9 +587,12 @@ NET_EXPORT extern const base::FeatureParam<bool>
 NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyEnableIppInDevTools;
 
 // Enables the ability for IP protection features to be gated in the Privacy
-// and Security Panel within DevTools. When this flag is disabled, the IP
-// Protection section will not be shown in the DevTools panel, allowing testing
-// and development of the IP Protection features before public release.
+// and Security Panel within DevTools. When this flag is enabled, the IP
+// Protection section will be shown in the Privacy and Security section of the
+// DevTools panel allowing users to view proxied requests and bypass IP
+// Protection locally.
+// Do not remove or enable this flag for all users until crbug.com/442349180
+// is resolved.
 NET_EXPORT extern const base::FeatureParam<bool>
     kIpPrivacyEnableIppPanelInDevTools;
 
