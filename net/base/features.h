@@ -811,6 +811,11 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
                                       kHttpCacheNoVarySearchFakePersistence);
 
+// If true, don't erase the NoVarySearchCache entry when simple cache in-memory
+// hints indicate that the disk cache entry is not usable.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                      kHttpCacheNoVarySearchKeepNotSuitable);
+
 // Enables sending the CORS Origin header on the POST request for Reporting API
 // report uploads.
 NET_EXPORT BASE_DECLARE_FEATURE(kReportingApiCorsOriginHeader);
