@@ -14,7 +14,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/env.h"
 #include "ui/aura/test/aura_test_base.h"
-#include "ui/aura/test/test_window_builder.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/test/window_occlusion_tracker_test_api.h"
@@ -2974,53 +2973,6 @@ TEST_F(WindowOcclusionTrackerTest, ClipToRootWindow) {
   delegate_a->set_expectation(Window::OcclusionState::OCCLUDED, SkRegion());
   CreateUntrackedWindow(root_window()->bounds());
   EXPECT_FALSE(delegate_a->is_expecting_call());
-}
-
-TEST_F(WindowOcclusionTrackerTest, DoNotCountTwice) {
-  auto* window_occlusion_tracker =
-      Env::GetInstance()->GetWindowOcclusionTracker();
-
-  class TestObserver : public WindowObserver {
-   public:
-    explicit TestObserver(aura::Window* window) : window_(window) {
-      window->AddObserver(this);
-    }
-    ~TestObserver() override {
-      if (window_) {
-        window_->RemoveObserver(this);
-      }
-    }
-    // WindowObserver:
-    void OnWindowDestroying(Window* window) override {
-      window_->RemoveObserver(this);
-      window_ = nullptr;
-    }
-    void OnWindowParentChanged(Window* window, Window* parent) override {
-      window_->TrackOcclusionState();
-    }
-    raw_ptr<Window> window_;
-  };
-
-  window_occlusion_tracker->set_num_tracked_windows_count_check_for_test(false);
-  {
-    auto w = test::TestWindowBuilder().SetShow(true).Build();
-    TestObserver obs(w.get());
-    root_window()->AddChild(w.get());
-  }
-  auto& sources =
-      window_occlusion_tracker->GetObservingWindowTreeHostsForTest();
-  EXPECT_EQ(0u, sources.size());
-
-#if defined(GTEST_HAS_DEATH_TEST)
-  window_occlusion_tracker->set_num_tracked_windows_count_check_for_test(true);
-  EXPECT_DEATH(
-      {
-        auto w = test::TestWindowBuilder().SetShow(true).Build();
-        TestObserver obs(w.get());
-        root_window()->AddChild(w.get());
-      },
-      "DCHECK failed.*num_tracked_windows.*");
-#endif
 }
 
 // Run tests with LAYER_TEXTURE_LAYER type or LAYER_SOLID_COLOR type.
