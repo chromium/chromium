@@ -340,9 +340,9 @@ class ContentSettingSourceSetter {
 
 class SiteSettingsHandlerBaseTest : public testing::Test {
  public:
-  SiteSettingsHandlerBaseTest() {
-    // Fully initialize |profile_| in the constructor since some children
-    // classes need it right away for SetUp().
+  SiteSettingsHandlerBaseTest() = default;
+
+  void SetUp() override {
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     EXPECT_TRUE(testing_profile_manager_->SetUp());
@@ -356,9 +356,7 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS)
     SetUpUserManager(profile_.get());
 #endif
-  }
 
-  void SetUp() override {
     browsing_topics::BrowsingTopicsServiceFactory::GetInstance()
         ->SetTestingFactoryAndUse(
             profile(),
@@ -379,6 +377,8 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
         permissions::GetPermissionControllerDelegate(profile()));
 
     safety_hub_test_util::CreateNotificationPermissionsReviewService(profile());
+
+    SetUpIsolatedWebApp();
 
     handler_ = std::make_unique<SiteSettingsHandler>(profile());
     handler()->set_web_ui(web_ui());
@@ -1173,6 +1173,9 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
       {{BrowsingDataModel::StorageType::kCookie},
        /*storage_size=*/0,
        /*cookie_count=*/1}};
+
+ protected:
+  virtual void SetUpIsolatedWebApp() {}
 
  private:
   content::BrowserTaskEnvironment task_environment_{
@@ -2951,12 +2954,10 @@ TEST_F(SiteSettingsHandlerTest, TemporaryCookieExceptions) {
 
 class SiteSettingsHandlerIsolatedWebAppTest
     : public SiteSettingsHandlerBaseTest {
- public:
-  void SetUp() override {
+ protected:
+  void SetUpIsolatedWebApp() override {
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
     iwa_url_info_ = InstallIsolatedWebApp("IWA Name");
-
-    SiteSettingsHandlerBaseTest::SetUp();
   }
 
  protected:
@@ -3980,25 +3981,11 @@ TEST_P(StorageAccessSiteSettingsHandlerLifetimeTest,
 
 class PersistentPermissionsSiteSettingsHandlerTest
     : public SiteSettingsHandlerBaseTest {
-  void SetUp() override {
-    SiteSettingsHandlerBaseTest::SetUp();
-    handler_ = std::make_unique<SiteSettingsHandler>(&profile_);
-    handler_->set_web_ui(web_ui());
-    handler_->AllowJavascript();
-    web_ui()->ClearTrackedCalls();
-  }
-
-  void TearDown() override { handler_->DisallowJavascript(); }
-
  public:
   PersistentPermissionsSiteSettingsHandlerTest() {
     feature_list_.InitAndEnableFeature(
         features::kFileSystemAccessPersistentPermissions);
   }
-
- protected:
-  TestingProfile profile_;
-  std::unique_ptr<SiteSettingsHandler> handler_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -4009,7 +3996,7 @@ class PersistentPermissionsSiteSettingsHandlerTest
 TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
        HandleGetFileSystemGrants) {
   ChromeFileSystemAccessPermissionContext* context =
-      FileSystemAccessPermissionContextFactory::GetForProfile(&profile_);
+      FileSystemAccessPermissionContextFactory::GetForProfile(profile());
 
   auto kTestOrigin1 = url::Origin::Create(GURL("https://www.a.com"));
   auto kTestOrigin2 = url::Origin::Create(GURL("https://www.b.com"));
@@ -4054,7 +4041,7 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
   base::Value::List get_file_system_permissions_args;
   get_file_system_permissions_args.Append(kCallbackId);
 
-  handler_->HandleGetFileSystemGrants(get_file_system_permissions_args);
+  handler()->HandleGetFileSystemGrants(get_file_system_permissions_args);
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   const base::Value::List& grants = data.arg3()->GetList();
 
@@ -4109,7 +4096,7 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
 TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
        HandleRevokeFileSystemGrant) {
   ChromeFileSystemAccessPermissionContext* context =
-      FileSystemAccessPermissionContextFactory::GetForProfile(&profile_);
+      FileSystemAccessPermissionContextFactory::GetForProfile(profile());
 
   auto kTestOrigin1 = url::Origin::Create(GURL("https://www.a.com"));
   auto kTestOrigin2 = url::Origin::Create(GURL("https://www.b.com"));
@@ -4146,8 +4133,8 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
   base::Value::List get_file_system_grants_permissions_args;
   get_file_system_grants_permissions_args.Append(kCallbackId);
 
-  handler_->HandleRevokeFileSystemGrant(revoke_origin1_grant_permissions_args);
-  handler_->HandleGetFileSystemGrants(get_file_system_grants_permissions_args);
+  handler()->HandleRevokeFileSystemGrant(revoke_origin1_grant_permissions_args);
+  handler()->HandleGetFileSystemGrants(get_file_system_grants_permissions_args);
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   const base::Value::List& grants = data.arg3()->GetList();
 
@@ -4168,8 +4155,8 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
   revoke_origin2_grant_permissions_args.Append("https://www.b.com");
   revoke_origin2_grant_permissions_args.Append("/e/");
 
-  handler_->HandleRevokeFileSystemGrant(revoke_origin2_grant_permissions_args);
-  handler_->HandleGetFileSystemGrants(get_file_system_grants_permissions_args);
+  handler()->HandleRevokeFileSystemGrant(revoke_origin2_grant_permissions_args);
+  handler()->HandleGetFileSystemGrants(get_file_system_grants_permissions_args);
   const content::TestWebUI::CallData& updated_data =
       *web_ui()->call_data().back();
   const base::Value::List& updated_grants = updated_data.arg3()->GetList();
@@ -4191,7 +4178,7 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
 TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
        HandleRevokeFileSystemGrants) {
   ChromeFileSystemAccessPermissionContext* context =
-      FileSystemAccessPermissionContextFactory::GetForProfile(&profile_);
+      FileSystemAccessPermissionContextFactory::GetForProfile(profile());
 
   auto kTestOrigin1 = url::Origin::Create(GURL("https://www.a.com"));
   auto kTestOrigin2 = url::Origin::Create(GURL("https://www.b.com"));
@@ -4223,7 +4210,7 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
   base::Value::List get_file_system_grants_permissions_args;
   get_file_system_grants_permissions_args.Append(kCallbackId);
 
-  handler_->HandleGetFileSystemGrants(get_file_system_grants_permissions_args);
+  handler()->HandleGetFileSystemGrants(get_file_system_grants_permissions_args);
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   const base::Value::List& grants = data.arg3()->GetList();
 
@@ -4234,9 +4221,9 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
   base::Value::List revoke_origin1_grants_permissions_args;
   revoke_origin1_grants_permissions_args.Append("https://www.a.com");
 
-  handler_->HandleRevokeFileSystemGrants(
+  handler()->HandleRevokeFileSystemGrants(
       revoke_origin1_grants_permissions_args);
-  handler_->HandleGetFileSystemGrants(get_file_system_grants_permissions_args);
+  handler()->HandleGetFileSystemGrants(get_file_system_grants_permissions_args);
   const content::TestWebUI::CallData& updated_data =
       *web_ui()->call_data().back();
   const base::Value::List& updated_grants = updated_data.arg3()->GetList();
