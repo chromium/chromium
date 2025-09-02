@@ -113,7 +113,7 @@ class ThemeTrackingCheckbox : public views::Checkbox {
     GetNativeTheme()->set_use_dark_colors(GetChecked());
 
     // An OS or Chrome theme change would do this automatically.
-    GetWidget()->ThemeChanged();
+    GetNativeTheme()->NotifyOnNativeThemeUpdated();
   }
 };
 ```

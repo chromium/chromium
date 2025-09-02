@@ -18,6 +18,7 @@
 #include "ui/gfx/native_window_types.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -52,7 +53,7 @@ class ThemeTrackingCheckbox : public views::Checkbox {
 
   void ButtonPressed() {
     GetNativeTheme()->set_use_dark_colors(GetChecked());
-    GetWidget()->ThemeChanged();
+    GetNativeTheme()->NotifyOnNativeThemeUpdated();
   }
 };
 

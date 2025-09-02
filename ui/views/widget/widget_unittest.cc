@@ -359,40 +359,10 @@ TEST_F(WidgetWithCustomParamsTest, NamePropagatedFromContentsViewClassName) {
   EXPECT_EQ(contents->GetClassName(), widget->GetName());
 }
 
-namespace {
-
-class TestView : public View {
-  METADATA_HEADER(TestView, View)
-
- public:
-  ~TestView() override = default;
-
-  void OnThemeChanged() override {
-    View::OnThemeChanged();
-    auto* native_theme = GetNativeTheme();
-    if (native_theme && native_theme->user_color()) {
-      user_color_ = *native_theme->user_color();
-    }
-  }
-
-  SkColor user_color() const { return user_color_; }
-
- private:
-  SkColor user_color_ = SK_ColorWHITE;
-};
-
-BEGIN_METADATA(TestView)
-END_METADATA
-
-}  // namespace
-
 class WidgetColorModeTest : public WidgetTest {
  public:
   static constexpr SkColor kLightColor = SK_ColorWHITE;
   static constexpr SkColor kDarkColor = SK_ColorBLACK;
-
-  WidgetColorModeTest() = default;
-  ~WidgetColorModeTest() override = default;
 
   void SetUp() override {
     WidgetTest::SetUp();
@@ -3864,7 +3834,7 @@ bool RunGetNativeThemeFromDestructor(Widget::InitParams params,
   // Destroyed by CloseNow() below.
   WidgetTest::WidgetAutoclosePtr widget(new Widget);
   // Deletes itself when the Widget is destroyed.
-  params.delegate = new GetNativeThemeFromDestructorView;
+  params.delegate = new GetNativeThemeFromDestructorView();
   if (!is_first_run) {
     params.native_widget =
         CreatePlatformNativeWidgetImpl(widget.get(), kStubCapture, nullptr);

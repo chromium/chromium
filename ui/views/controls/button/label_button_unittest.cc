@@ -76,11 +76,6 @@ END_METADATA
 
 class LabelButtonTest : public test::WidgetTest {
  public:
-  LabelButtonTest() = default;
-
-  LabelButtonTest(const LabelButtonTest&) = delete;
-  LabelButtonTest& operator=(const LabelButtonTest&) = delete;
-
   // testing::Test:
   void SetUp() override {
     WidgetTest::SetUp();
