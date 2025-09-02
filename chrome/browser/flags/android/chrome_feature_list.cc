@@ -327,7 +327,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kEnableXAxisActivityTransition,
     &kExperimentsForAgsa,
     &kFloatingSnackbar,
-    &kForceBrowserControlsUponExitingFullscreen,
     &kForceTranslucentNotificationTrampoline,
     &kFullscreenInsetsApiMigration,
     &kFullscreenInsetsApiMigrationOnAutomotive,
@@ -1073,10 +1072,6 @@ BASE_FEATURE(kExperimentsForAgsa,
 
 BASE_FEATURE(kFloatingSnackbar,
              "FloatingSnackbar",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kForceBrowserControlsUponExitingFullscreen,
-             "ForceBrowserControlsUponExitingFullscreen",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kForceTranslucentNotificationTrampoline,

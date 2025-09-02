@@ -434,8 +434,6 @@ public abstract class ChromeFeatureList {
     public static final String FILLING_PASSWORDS_FROM_ANY_ORIGIN = "FillingPasswordsFromAnyOrigin";
     public static final String FINGERPRINTING_PROTECTION_UX = "FingerprintingProtectionUx";
     public static final String FLOATING_SNACKBAR = "FloatingSnackbar";
-    public static final String FORCE_BROWSER_CONTROLS_UPON_EXITING_FULLSCREEN =
-            "ForceBrowserControlsUponExitingFullscreen";
     public static final String FORCE_LIST_TAB_SWITCHER = "ForceListTabSwitcher";
     public static final String FORCE_TRANSLUCENT_NOTIFICATION_TRAMPOLINE =
             "ForceTranslucentNotificationTrampoline";
@@ -1336,8 +1334,6 @@ public abstract class ChromeFeatureList {
     // value pre-native to false as it is safer if the feature needs to be killed via Finch config.
     public static final MutableFlagWithSafeDefault sEmptyTabListAnimationKillSwitch =
             newMutableFlagWithSafeDefault(EMPTY_TAB_LIST_ANIMATION_KILL_SWITCH, false);
-    public static final MutableFlagWithSafeDefault sForceBrowserControlsUponExitingFullscreen =
-            newMutableFlagWithSafeDefault(FORCE_BROWSER_CONTROLS_UPON_EXITING_FULLSCREEN, true);
     public static final MutableFlagWithSafeDefault sHubBackButton =
             newMutableFlagWithSafeDefault(HUB_BACK_BUTTON, false);
     public static final MutableFlagWithSafeDefault sHubSlideAnimation =
