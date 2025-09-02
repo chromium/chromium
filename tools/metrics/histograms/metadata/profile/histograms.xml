@@ -557,7 +557,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.NumberOfUnusedProfiles" units="profiles"
-    expires_after="2025-09-14">
+    expires_after="2026-06-14">
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
