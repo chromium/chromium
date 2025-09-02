@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
+#include "chrome/browser/ui/webui_browser/webui_browser_side_panel_ui.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
 #include "components/guest_contents/browser/guest_contents_handle.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -193,8 +194,7 @@ void WebUIBrowserPageHandler::LaunchDevToolsForBrowser() {
 }
 
 void WebUIBrowserPageHandler::OnSidePanelClosed() {
-  // TODO(webium): Find side panel UI and call OnSidePanelClosed().
-  NOTIMPLEMENTED();
+  GetBrowserWindow()->GetWebUIBrowserSidePanelUI()->OnSidePanelClosed();
 }
 
 void WebUIBrowserPageHandler::Minimize() {

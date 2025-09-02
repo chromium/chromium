@@ -137,3 +137,11 @@ cr-searchbox[dropdown-is-visible] {
 content-region {
   border-top: 1px var(--color-toolbar-separator) solid;
 }
+
+content-region[showing-side-panel] {
+  border-top: 1px var(--color-toolbar-separator) solid;
+  border-right: 1px var(--color-toolbar-separator) solid;
+  border-left: none;
+  border-bottom: none;
+  border-radius: 0 16px 0 0;
+}

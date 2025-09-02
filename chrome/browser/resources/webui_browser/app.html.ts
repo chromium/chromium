@@ -58,9 +58,11 @@ export function getHtml(this: WebuiBrowserAppElement) {
     </webui-browser-bookmark-bar>
   </div>
   <div id="main">
-    <content-region id="contentRegion"">
+    <content-region id="contentRegion"
+      ?showing-side-panel="${this.showingSidePanel_}">
     </content-region>
-    <side-panel id="sidePanel"></side-panel>
+    <side-panel id="sidePanel" @side-panel-closed="${this.onSidePanelClosed_}">
+    </side-panel>
   </div>
 </div>
 

@@ -1079,6 +1079,10 @@ void WebUIBrowserWindow::ShowSidePanel(SidePanelEntryKey side_panel_entry_key) {
   GetWebUIBrowserUI()->ShowSidePanel(side_panel_entry_key);
 }
 
+void WebUIBrowserWindow::CloseSidePanel() {
+  GetWebUIBrowserUI()->CloseSidePanel();
+}
+
 WebUIBrowserSidePanelUI* WebUIBrowserWindow::GetWebUIBrowserSidePanelUI() {
   return static_cast<WebUIBrowserSidePanelUI*>(
       browser_->browser_window_features()->side_panel_ui());

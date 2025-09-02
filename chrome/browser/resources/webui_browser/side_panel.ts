@@ -4,6 +4,7 @@
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {BrowserProxy} from './browser_proxy.js';
 import {getCss} from './side_panel.css.js';
 import {getHtml} from './side_panel.html.js';
 import {WebviewElement} from './webview.js';
@@ -39,6 +40,14 @@ export class SidePanel extends CrLitElement {
     this.title_ = title;
     this.showing_ = true;
     this.requestUpdate();
+  }
+
+  async close() {
+    this.showing_ = false;
+    this.webView = null;
+    this.dispatchEvent(new Event('side-panel-closed', {bubbles: true}));
+    await this.updateComplete;
+    BrowserProxy.getPageHandler().onSidePanelClosed();
   }
 
   hide() {

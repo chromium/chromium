@@ -28,6 +28,12 @@
   line-height: 20px;
 }
 
+#closeButton {
+  --cr-icon-button-icon-size: 16px;
+  /* Put button at the header tail */
+  margin-left: auto;
+}
+
 #content {
   flex: 1;
   border-radius: 16px;

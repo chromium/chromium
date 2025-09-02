@@ -57,6 +57,7 @@ export class WebuiBrowserAppElement extends CrLitElement implements
     return {
       backButtonDisabled_: {state: true, type: Boolean},
       forwardButtonDisabled_: {state: true, type: Boolean},
+      showingSidePanel_: {state: true, type: Boolean},
       reloadOrStopIcon_: {state: true, type: String},
     };
   }
@@ -67,6 +68,7 @@ export class WebuiBrowserAppElement extends CrLitElement implements
   protected accessor backButtonDisabled_: boolean = true;
   protected accessor forwardButtonDisabled_: boolean = true;
   protected accessor reloadOrStopIcon_: string = 'icon-refresh';
+  protected accessor showingSidePanel_: boolean = false;
 
   constructor() {
     super();
@@ -78,6 +80,7 @@ export class WebuiBrowserAppElement extends CrLitElement implements
 
     const callbackRouter = BrowserProxy.getCallbackRouter();
     callbackRouter.showSidePanel.addListener(this.showSidePanel_.bind(this));
+    callbackRouter.closeSidePanel.addListener(this.closeSidePanel_.bind(this));
   }
 
   override connectedCallback() {
@@ -249,7 +252,19 @@ export class WebuiBrowserAppElement extends CrLitElement implements
 
 
   protected showSidePanel_(guestContentsId: number, title: string) {
+    this.showingSidePanel_ = true;
     this.$.sidePanel.show(guestContentsId, title);
+  }
+
+  protected closeSidePanel_() {
+    this.$.sidePanel.close();
+    this.showingSidePanel_ = false;
+  }
+
+  // This function is called when the side panel closes itself. For example,
+  // when user clicks the close "x" button.
+  protected onSidePanelClosed_() {
+    this.showingSidePanel_ = false;
   }
 }
 

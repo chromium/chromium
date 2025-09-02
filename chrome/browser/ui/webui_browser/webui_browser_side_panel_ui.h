@@ -33,6 +33,8 @@ class WebUIBrowserSidePanelUI : public SidePanelUIBase {
 
   content::WebContents* GetWebContentsForId(SidePanelEntryId entry_id) const;
 
+  void OnSidePanelClosed();
+
  private:
   // SidePanelUIBase:
   void Close(bool suppress_animations) override;

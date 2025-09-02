@@ -200,8 +200,7 @@ void WebUIBrowserUI::ShowSidePanel(SidePanelEntryKey side_panel_entry_key) {
 }
 
 void WebUIBrowserUI::CloseSidePanel() {
-  // TODO(webium): Create side panel and call page_->CloseSidePanel()
-  NOTIMPLEMENTED();
+  page_->CloseSidePanel();
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(WebUIBrowserUI)

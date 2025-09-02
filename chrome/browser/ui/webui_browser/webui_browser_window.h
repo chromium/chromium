@@ -261,6 +261,7 @@ class WebUIBrowserWindow : public BrowserWindow,
                                   ui::Accelerator* accelerator) const override;
 
   void ShowSidePanel(SidePanelEntryKey side_panel_entry_key);
+  void CloseSidePanel();
 
   WebUIBrowserSidePanelUI* GetWebUIBrowserSidePanelUI();
 
