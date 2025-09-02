@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import "base/i18n/message_formatter.h"
 #import "base/location.h"
 #import "base/metrics/histogram_functions.h"
@@ -26,6 +24,8 @@
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/snackbar/public/snackbar_message.h"
+#import "ios/chrome/browser/snackbar/public/snackbar_message_action.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
@@ -54,7 +54,7 @@ void ReadingListBrowserAgent::AddURLsToReadingList(
       GetAccountInfoFromLastAddedURL(urls.lastObject.URL);
 
   NSString* snackbar_text = nil;
-  MDCSnackbarMessageAction* snackbar_action = nil;
+  SnackbarMessageAction* snackbar_action = nil;
   if (!account_info.IsEmpty()) {
     std::u16string pattern = l10n_util::GetStringUTF16(
         IDS_IOS_READING_LIST_SNACKBAR_MESSAGE_FOR_ACCOUNT);
@@ -69,14 +69,14 @@ void ReadingListBrowserAgent::AddURLsToReadingList(
         l10n_util::GetNSString(IDS_IOS_READING_LIST_SNACKBAR_MESSAGE);
   }
 
-  MDCSnackbarMessage* message = CreateSnackbarMessage(snackbar_text);
+  SnackbarMessage* message = CreateCustomSnackbarMessage(snackbar_text);
   message.accessibilityLabel = snackbar_text;
   message.action = snackbar_action;
 
   CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
   id<SnackbarCommands> snackbar_commands_handler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
-  [snackbar_commands_handler showSnackbarMessage:message];
+  [snackbar_commands_handler showCustomSnackbarMessage:message];
 }
 
 void ReadingListBrowserAgent::BulkAddURLsToReadingListWithViewSnackbar(
@@ -137,16 +137,16 @@ void ReadingListBrowserAgent::BulkAddURLsToReadingListWithViewSnackbar(
   }
 
   // Create and show snackbar message.
-  MDCSnackbarMessageAction* action = CreateViewAction();
+  SnackbarMessageAction* action = CreateViewAction();
 
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-  MDCSnackbarMessage* message = CreateSnackbarMessage(result);
+  SnackbarMessage* message = CreateCustomSnackbarMessage(result);
   message.action = action;
 
   CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
   id<SnackbarCommands> snackbar_commands_handler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
-  [snackbar_commands_handler showSnackbarMessage:message];
+  [snackbar_commands_handler showCustomSnackbarMessage:message];
 }
 
 #pragma mark - Private
@@ -191,10 +191,10 @@ void ReadingListBrowserAgent::AddURLToReadingListwithTitle(const GURL& url,
                                    /*creation_time=*/std::nullopt);
 }
 
-MDCSnackbarMessageAction*
+SnackbarMessageAction*
 ReadingListBrowserAgent::CreateUndoActionWithReadingListURLs(
     NSArray<URLWithTitle*>* urls) {
-  MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
+  SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
   base::WeakPtr<ReadingListBrowserAgent> weak_agent =
       weak_ptr_factory_.GetWeakPtr();
   action.handler = ^{
@@ -222,8 +222,8 @@ void ReadingListBrowserAgent::RemoveURLsFromReadingList(
   }
 }
 
-MDCSnackbarMessageAction* ReadingListBrowserAgent::CreateViewAction() {
-  MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
+SnackbarMessageAction* ReadingListBrowserAgent::CreateViewAction() {
+  SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
   base::WeakPtr<ReadingListBrowserAgent> weak_agent =
       weak_ptr_factory_.GetWeakPtr();
   action.handler = ^{
