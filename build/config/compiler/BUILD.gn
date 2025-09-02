@@ -1759,7 +1759,8 @@ config("clang_revision") {
           "clang_revision=\"$_clang_revision\" but clang_version=\"$clang_version\". clang_version in build/toolchain/toolchain.gni is likely outdated.")
     }
 
-    if (toolchain_has_rust && _perform_consistency_checks) {
+    if (toolchain_has_rust && _perform_consistency_checks &&
+        !rust_force_head_revision) {
       # Ensure that the synced rust version matches what's in git.
       _rust_revision_lines =
           filter_include(read_file("//tools/rust/update_rust.py", "list lines"),

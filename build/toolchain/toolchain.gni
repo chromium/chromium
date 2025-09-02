@@ -13,6 +13,11 @@ declare_args() {
   # `gclient runhooks` is run as well.
   llvm_force_head_revision = false
 
+  # Equivalent to llvm_force_head_revision, but for rust. When true, we expect
+  # to find a locally-build version of rust rather than the version specified
+  # in //tools/clang/scripts/update.py.
+  rust_force_head_revision = false
+
   # Cronet is shipped in AOSP, where it is built using the Android Mainline
   # Clang. Please refer to go/cronet-builders-with-mainline-clang-design for
   # more information.
