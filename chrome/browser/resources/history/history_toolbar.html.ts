@@ -1,3 +1,14 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {HistoryToolbarElement} from './history_toolbar.js';
+
+export function getHtml(this: HistoryToolbarElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
 <cr-toolbar id="mainToolbar"
     disable-right-content-grow
     ?has-overlay="${this.itemsSelected_}"
@@ -29,3 +40,6 @@
   </cr-button>
 
 </cr-toolbar-selection-overlay>
+<!--_html_template_end_-->`;
+  // clang-format on
+}

@@ -23,27 +23,31 @@ build_webui("build") {
     "images/avatar_surrounding_illustration_dark.svg",
   ]
 
-  # Files holding a Polymer element definition and have an equivalent .html file.
-  web_component_files = [
-    "app.ts",
-    "history_embeddings_promo.ts",
-    "history_item.ts",
-    "history_list.ts",
-    "history_toolbar.ts",
-    "side_bar.ts",
-    "synced_device_card.ts",
-    "synced_device_manager.ts",
-  ]
-
   ts_files = [
+    "app.html.ts",
+    "app.ts",
     "browser_service.ts",
     "constants.ts",
     "externs.ts",
     "history.ts",
+    "history_embeddings_promo.html.ts",
+    "history_embeddings_promo.ts",
+    "history_item.html.ts",
+    "history_item.ts",
+    "history_list.html.ts",
+    "history_list.ts",
+    "history_toolbar.html.ts",
+    "history_toolbar.ts",
     "lazy_load.ts",
     "query_manager.ts",
     "router.ts",
     "searched_label.ts",
+    "side_bar.html.ts",
+    "side_bar.ts",
+    "synced_device_card.html.ts",
+    "synced_device_card.ts",
+    "synced_device_manager.html.ts",
+    "synced_device_manager.ts",
   ]
 
   # Files that are passed as input to css_to_wrapper().

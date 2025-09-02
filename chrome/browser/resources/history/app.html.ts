@@ -1,4 +1,14 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {HistoryAppElement} from './app.js';
+
+export function getHtml(this: HistoryAppElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
     <history-query-manager
         .queryResult="${this.queryResult_}"
         @query-finished="${this.onQueryFinished_}"
@@ -101,7 +111,7 @@
                   .scrollTarget="${this.scrollTarget_}"
                   .scrollOffset="${this.tabContentScrollOffset_}">
               </history-list>
-             ${this.historyClustersSelected_() ? html`
+              ${this.historyClustersSelected_() ? html`
                 <history-clusters id="history-clusters"
                     ?is-active="${this.getShowResultsByGroup_()}"
                     .query="${this.queryState_.searchTerm}"
@@ -139,3 +149,6 @@
         </history-side-bar>
       </cr-drawer>`}'>
     </cr-lazy-render-lit>
+<!--_html_template_end_-->`;
+  // clang-format on
+}

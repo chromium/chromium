@@ -1,3 +1,14 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {HistoryListElement} from './history_list.js';
+
+export function getHtml(this: HistoryListElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
     <div id="noResults" class="centered-message"
         ?hidden="${this.hasResults_()}">
       ${this.noResultsMessage_()}
@@ -63,4 +74,7 @@
             $i18n{removeBookmark}
           </button>
         </cr-action-menu>`}'>
-      </cr-lazy-render-lit>
+    </cr-lazy-render-lit>
+<!--_html_template_end_-->`;
+  // clang-format on
+}

@@ -1,3 +1,14 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {HistorySyncedDeviceManagerElement} from './synced_device_manager.js';
+
+export function getHtml(this: HistorySyncedDeviceManagerElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
 <div id="synced-device-list" class="history-cards"
     ?hidden="${!this.syncedDevices_.length}">
   ${this.syncedDevices_.map((syncedDevice, index) => html`
@@ -70,3 +81,6 @@ ${this.useHistorySyncOptinScreen_ ? html `
   </cr-action-menu>
 `}'>
 </cr-lazy-render-lit>
+<!--_html_template_end_-->`;
+  // clang-format on
+}

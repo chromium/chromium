@@ -1,3 +1,14 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {HistoryItemElement} from './history_item.js';
+
+export function getHtml(this: HistoryItemElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
     <div id="main-container">
       <div id="background-clip" aria-hidden="true">
         <div id="background"></div>
@@ -88,3 +99,6 @@
         <div id="time-gap-separator" ?hidden="${!this.hasTimeGap}"></div>
       </div>
     </div>
+<!--_html_template_end_-->`;
+  // clang-format on
+}

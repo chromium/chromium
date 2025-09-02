@@ -1,3 +1,14 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {HistorySideBarElement} from './side_bar.js';
+
+export function getHtml(this: HistorySideBarElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
 <cr-menu-selector id="menu" selected="${this.selectedPage}"
     @selected-changed="${this.onSelectorSelectedChanged_}"
     selectable=".page-item" attr-for-selected="path"
@@ -43,3 +54,6 @@
     <div ?hidden="${!this.showGMAAndGAA_}">$i18nRaw{sidebarFooterGMAAndGAA}</div>
   </div>
 </div>
+<!--_html_template_end_-->`;
+  // clang-format on
+}
