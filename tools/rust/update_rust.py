@@ -97,15 +97,8 @@ def main():
         '- validate: print the expected package version, and ensure it\n'
         '  matches the installed package.')
     parser.add_argument('--output-dir', help='Where to extract the package.')
-    # TODO(crbug.com/407563488): Remove this argument once all uses are removed
-    parser.add_argument('--print-package-version',
-                        action='store_true',
-                        help='Deprecated and will be removed in the future.\n'
-                        'Use `--print-revision validate` instead.')
-    args = parser.parse_args()
 
-    if args.print_package_version:
-        args.print_revision = 'validate'
+    args = parser.parse_args()
 
     if args.print_revision == 'rust':
         print(f'{RUST_REVISION}-{RUST_SUB_REVISION}')
