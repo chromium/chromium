@@ -143,6 +143,6 @@
   "internal_grds": [
     # Test grd that contains a part file that doesn't exist.
     "tools/translation/testdata/internal.grd",
-    "third_party/search_engines_data/resources_internal/search_engine_descriptions_strings.grd": "The strings are already translated when provided",
+    "third_party/search_engines_data/resources_internal/search_engine_descriptions_strings.grd",
   ],
 }
