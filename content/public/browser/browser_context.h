@@ -47,10 +47,6 @@ namespace storage {
 class ExternalMountPoints;
 }
 
-namespace leveldb_proto {
-class ProtoDatabaseProvider;
-}
-
 namespace media {
 class VideoDecodePerfHistory;
 class WebrtcVideoPerfHistory;
@@ -499,12 +495,6 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // Returns the OriginTrialsControllerDelegate associated with the context if
   // any, nullptr otherwise.
   virtual OriginTrialsControllerDelegate* GetOriginTrialsControllerDelegate();
-
-  // Takes the ProtoDatabaseProvider, if any, for the default storage partition.
-  // Embedders may choose to create a ProtoDatabaseProvider early, so this
-  // provides a way to reuse it.
-  virtual std::unique_ptr<leveldb_proto::ProtoDatabaseProvider>
-  TakeDefaultProtoDatabaseProvider();
 
 #if BUILDFLAG(IS_ANDROID)
   // Returns extra request headers to be set when navigation happens for `url`.
