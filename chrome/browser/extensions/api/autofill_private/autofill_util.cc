@@ -290,9 +290,9 @@ CountryEntryList GenerateCountryList() {
   const variations::VariationsService* variations_service =
       g_browser_process->variations_service();
   model.SetCountries(
-      autofill::GeoIpCountryCode(variations_service
-                                     ? variations_service->GetLatestCountry()
-                                     : std::string()),
+      GeoIpCountryCode(variations_service
+                           ? variations_service->GetLatestCountry()
+                           : std::string()),
       extensions::ExtensionsBrowserClient::Get()->GetApplicationLocale());
   const std::vector<std::unique_ptr<autofill::AutofillCountry>>& countries =
       model.countries();

@@ -54,7 +54,7 @@ FastCheckoutTriggerOutcome FastCheckoutTriggerValidatorImpl::ShouldRun(
   }
 
   if (autofill_client_->GetVariationConfigCountryCode() !=
-      autofill::GeoIpCountryCode("US")) {
+      GeoIpCountryCode("US")) {
     return FastCheckoutTriggerOutcome::kUnsupportedCountry;
   }
 
